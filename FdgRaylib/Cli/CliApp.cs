@@ -5,7 +5,9 @@ using FDG.Players;
 using FDG.SaveLoad;
 using FDG.StageResolution;
 using FDG.StageResolution.Requests;
+using FDG.TextInterface;
 using FdgRaylib.Cli.Resolvers;
+using FdgRaylib.Rendering;
 using Raylib_cs;
 
 namespace FdgRaylib.Cli;
@@ -13,6 +15,7 @@ namespace FdgRaylib.Cli;
 public class CliApp
 {
     private readonly bool _headless;
+    private readonly int _slowDelayMs;
 
     // Initialized by Prepare(); used by RunAsync().
     private LocalMessageBus? _messageBus;
@@ -20,13 +23,15 @@ public class CliApp
     private FDGGame_AsLocal? _localGame;
 
     public ITableState? TableState => _localGame?.TableState;
+    public GameLog? Log { get; private set; }
 
     // Filled during CreatePlayerSlots(); read by the renderer at draw time.
     public Dictionary<PlayerID, Color> PlayerColors { get; } = new();
 
-    public CliApp(bool headless)
+    public CliApp(bool headless, int slowDelayMs = 0)
     {
         _headless = headless;
+        _slowDelayMs = slowDelayMs;
     }
 
     // Creates the local game instance (and thus TableState) without any user prompts.
@@ -36,6 +41,9 @@ public class CliApp
         _messageBus    = new LocalMessageBus();
         _gameDataStore = GameDataStore.GameDataStoreBuilder.GetDefault();
         _localGame     = new FDGGame_AsLocal(_gameDataStore, _messageBus);
+
+        if (!_headless)
+            Log = new GameLog();
     }
 
     public async Task RunAsync()
@@ -43,7 +51,9 @@ public class CliApp
         if (_localGame == null) Prepare();
 
         Console.WriteLine("=== FDG Raylib ===");
-        Console.WriteLine(_headless ? "Mode: headless CLI" : "Mode: CLI + Raylib");
+        string modeDesc = _headless ? "headless CLI" : "CLI + Raylib";
+        if (_slowDelayMs > 0) modeDesc += $" (slow mode: {_slowDelayMs}ms)";
+        Console.WriteLine($"Mode: {modeDesc}");
         Console.WriteLine();
 
         var playerSlots = CreatePlayerSlots();
@@ -51,9 +61,16 @@ public class CliApp
         foreach (var slot in playerSlots)
             _localGame!.AddLocalPlayerID(slot.PlayerID);
 
-        var resolverRegistry = BuildResolverRegistry();
+        ILogMessageUI logUI = Log != null
+            ? new GuiLogMessageUI(Log)
+            : new CliLogMessageUI();
+
+        IStageResolverRegistry resolverRegistry = BuildResolverRegistry();
+        if (_slowDelayMs > 0)
+            resolverRegistry = new SlowModeResolverRegistry(resolverRegistry, _slowDelayMs);
+
         _localGame!.AssignInterfaces(
-            logMessageUI:          new CliLogMessageUI(),
+            logMessageUI:          logUI,
             playerMessageUI:       new CliPlayerMessageUI(),
             stageResolverRegistry: resolverRegistry,
             tempVisualDrawer:      new CliTempVisualDrawer());
