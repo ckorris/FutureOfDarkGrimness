@@ -5,46 +5,55 @@ using FDG.StageResolution.Requests;
 
 namespace FdgRaylib.Cli.Resolvers;
 
-/// <summary>
-/// CLI placement resolver. Prompts for x z coordinates per object to place.
-/// Used during deployment and map setup.
-/// </summary>
 public class PlaceObjectsResolver<T> : IStageResolver<PlaceObjectsRequest<T>, List<PlacedObjectEntry<T>>>
 {
     public Task<List<PlacedObjectEntry<T>>> Resolve(PlaceObjectsRequest<T> request)
     {
         var zone = request.DeploymentZone.GetValue();
+        int total = request.ModelsToPlace.Count;
         float cx = (zone.Left + zone.Right) / 2f;
         float cz = (zone.Bottom + zone.Top) / 2f;
-        float w = zone.Right - zone.Left;
-        float h = zone.Top - zone.Bottom;
+
         Console.WriteLine();
-        Console.WriteLine($"Place {request.ModelsToPlace.Count} object(s) in zone " +
-            $"(center {cx:F1}\", {cz:F1}\", size {w:F1}\" x {h:F1}\")");
-        Console.WriteLine("Enter position as: x z  (inches)");
+        Console.WriteLine($"--- Deploy: place {total} model{(total != 1 ? "s" : "")} ---");
+        Console.WriteLine($"  Zone X: {zone.Left:F1}\" to {zone.Right:F1}\"  |  Zone Z: {zone.Bottom:F1}\" to {zone.Top:F1}\"");
+        Console.WriteLine("  Enter position as 'x z' (inches). Positions must be inside the zone.");
+        Console.WriteLine();
 
         var placed = new List<PlacedObjectEntry<T>>();
-        foreach (var binding in request.ModelsToPlace)
+        for (int i = 0; i < request.ModelsToPlace.Count; i++)
         {
-            Console.Write($"  Place '{typeof(T).Name}': ");
-            string? input = Console.ReadLine()?.Trim();
-            string[] parts = input?.Split(' ', StringSplitOptions.RemoveEmptyEntries) ?? [];
+            var binding = request.ModelsToPlace[i];
+            Console.WriteLine($"  [{i + 1}/{total}] Model {i + 1}");
 
-            Position pos;
-            if (parts.Length >= 2 &&
-                float.TryParse(parts[0], out float x) &&
-                float.TryParse(parts[1], out float z))
+            while (true)
             {
-                pos = new Position(x, z);
-            }
-            else
-            {
-                // Default to zone center if input invalid
-                pos = new Position(cx, cz);
-                Console.WriteLine("  Could not parse — placing at zone center.");
-            }
+                Console.Write("  Position: ");
+                string? raw = Console.ReadLine();
+                if (raw == null) // EOF: spread models 2" apart in a line around zone center
+                {
+                    float offsetX = (i - (total - 1) / 2f) * 2f;
+                    float ex = Math.Clamp(cx + offsetX, zone.Left + 1f, zone.Right - 1f);
+                    Console.WriteLine($"    (EOF — auto-placing at {ex:F1}\", {cz:F1}\")");
+                    placed.Add(new PlacedObjectEntry<T>(binding, new Position(ex, cz)));
+                    break;
+                }
+                string? input = raw.Trim();
+                string[] parts = input.Split(' ', StringSplitOptions.RemoveEmptyEntries);
 
-            placed.Add(new PlacedObjectEntry<T>(binding, pos));
+                if (parts.Length >= 2 && float.TryParse(parts[0], out float x) && float.TryParse(parts[1], out float z))
+                {
+                    if (x < zone.Left || x > zone.Right || z < zone.Bottom || z > zone.Top)
+                    {
+                        Console.WriteLine($"    ! Outside zone — X must be {zone.Left:F1}\"–{zone.Right:F1}\", Z must be {zone.Bottom:F1}\"–{zone.Top:F1}\".");
+                        continue;
+                    }
+                    placed.Add(new PlacedObjectEntry<T>(binding, new Position(x, z)));
+                    break;
+                }
+
+                Console.WriteLine("    Could not parse — enter 'x z' (e.g. '10 5').");
+            }
         }
 
         return Task.FromResult(placed);

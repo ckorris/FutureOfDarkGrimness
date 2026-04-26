@@ -2,50 +2,62 @@ using FDG;
 using FDG.Data;
 using FDG.StageResolution;
 using FDG.StageResolution.Requests;
+using FDG.Stages;
 
 namespace FdgRaylib.Cli.Resolvers;
 
-/// <summary>
-/// CLI movement resolver. Prompts the user for a destination (x, z) per model.
-/// Accepts coordinates in inches; the table is 72" wide x 48" deep by default.
-/// </summary>
 public class DefineMovementPathResolver : IStageResolver<DefineMovementPathRequest, List<ModelMoveEntry>>
 {
     public Task<List<ModelMoveEntry>> Resolve(DefineMovementPathRequest request)
     {
         var unit = request.UnitDataBinding.GetValue();
-        Console.WriteLine();
-        Console.WriteLine($"Move unit '{unit.Name}' (max advance {request.MaxAdvanceDistance:F1}\", max charge {request.MaxChargeDistance:F1}\")");
-        Console.WriteLine("Enter destination for each model as: x z  (inches, e.g. '24 18')");
-        Console.WriteLine("Press Enter with no input to leave a model in place.");
+        var models = unit.ModelBindings;
 
-        var entries = new List<ModelMoveEntry>();
-        foreach (var modelBinding in request.UnitDataBinding.GetValue().ModelBindings)
+        while (true)
         {
-            var model = modelBinding.GetValue();
-            Console.Write($"  Model at ({model.Position.x:F1}\", {model.Position.z:F1}\"): ");
-            string? input = Console.ReadLine()?.Trim();
+            Console.WriteLine();
+            Console.WriteLine($"--- Move: {unit.Name} ({models.Count} model{(models.Count != 1 ? "s" : "")}) ---");
+            Console.WriteLine($"  Advance (≤ {request.MaxAdvanceDistance:F1}\"): move freely, can still shoot afterward");
+            Console.WriteLine($"  Rush    (≤ {request.MaxChargeDistance:F1}\"): move farther, but cannot shoot this turn");
+            if (models.Count > 1)
+            {
+                Console.WriteLine($"  Cohesion: each model must end within {GameWideConstants.MAX_MODEL_DISTANCE_FROM_ANY_OTHER_MODEL_INCHES:F0}\" (base-to-base) of at least one teammate");
+                Console.WriteLine($"            and within {GameWideConstants.MAX_MODEL_DISTANCE_FROM_ALL_OTHER_MODELS_INCHES:F0}\" of every other model");
+            }
+            Console.WriteLine("  Enter destination as 'x z' (inches, e.g. '24 18'), or press Enter to leave in place.");
+            Console.WriteLine();
 
-            if (string.IsNullOrEmpty(input))
+            var entries = new List<ModelMoveEntry>();
+            for (int i = 0; i < models.Count; i++)
             {
-                entries.Add(new ModelMoveEntry(modelBinding, new List<Position> { model.Position }));
-                continue;
+                var modelBinding = models[i];
+                var model = modelBinding.GetValue();
+                Console.Write($"  Model {i + 1} at ({model.Position.x:F1}\", {model.Position.z:F1}\"): ");
+                string? input = Console.ReadLine()?.Trim();
+
+                if (input == null || string.IsNullOrEmpty(input))
+                {
+                    entries.Add(new ModelMoveEntry(modelBinding, new List<Position> { model.Position }));
+                    continue;
+                }
+
+                string[] parts = input.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+                if (parts.Length >= 2 && float.TryParse(parts[0], out float x) && float.TryParse(parts[1], out float z))
+                    entries.Add(new ModelMoveEntry(modelBinding, new List<Position> { new Position(x, z) }));
+                else
+                {
+                    Console.WriteLine("    Could not parse — leaving in place.");
+                    entries.Add(new ModelMoveEntry(modelBinding, new List<Position> { model.Position }));
+                }
             }
 
-            string[] parts = input.Split(' ', StringSplitOptions.RemoveEmptyEntries);
-            if (parts.Length >= 2 &&
-                float.TryParse(parts[0], out float x) &&
-                float.TryParse(parts[1], out float z))
-            {
-                entries.Add(new ModelMoveEntry(modelBinding, new List<Position> { new Position(x, z) }));
-            }
-            else
-            {
-                Console.WriteLine("  Could not parse — leaving in place.");
-                entries.Add(new ModelMoveEntry(modelBinding, new List<Position> { model.Position }));
-            }
+            if (MovementUtilities.ValidatePaths(entries, request.MaxChargeDistance, out var errors))
+                return Task.FromResult(entries);
+
+            Console.WriteLine();
+            Console.WriteLine("  Movement is invalid — please re-enter all models:");
+            foreach (var err in errors)
+                Console.WriteLine($"    ! {MovementUtilities.ErrorReasonToString(err.ErrorReasonType)}");
         }
-
-        return Task.FromResult(entries);
     }
 }

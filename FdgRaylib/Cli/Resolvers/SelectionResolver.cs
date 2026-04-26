@@ -25,6 +25,7 @@ public class SelectionResolver<T> : IStageResolver<SelectionRequest<T>, DataBind
         {
             Console.Write("Choice: ");
             string? input = Console.ReadLine()?.Trim();
+            if (input == null) return Task.FromResult(request.ValidOptions[0].Option); // EOF default: first option
             if (int.TryParse(input, out int choice) &&
                 choice >= 1 && choice <= request.ValidOptions.Count)
             {

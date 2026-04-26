@@ -13,6 +13,7 @@ public class YesNoResolver : IStageResolver<YesNoRequest, bool>
             Console.WriteLine(request.QuestionText);
             Console.Write("[y/n]: ");
             string? input = Console.ReadLine()?.Trim().ToLower();
+            if (input == null) return Task.FromResult(true); // EOF default: yes
             if (input == "y" || input == "yes") return Task.FromResult(true);
             if (input == "n" || input == "no")  return Task.FromResult(false);
             Console.WriteLine("Please enter y or n.");

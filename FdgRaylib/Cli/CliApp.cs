@@ -27,7 +27,7 @@ public class CliApp
         var messageBus = new LocalMessageBus();
         var gameDataStore = GameDataStore.GameDataStoreBuilder.GetDefault();
 
-        var playerSlots = CreateTestPlayerSlots();
+        var playerSlots = CreatePlayerSlots();
 
         // Client-side game instance (handles requests from the server for local players)
         var localGame = new FDGGame_AsLocal(gameDataStore, messageBus);
@@ -58,54 +58,20 @@ public class CliApp
         await Task.Delay(Timeout.Infinite);
     }
 
-    private static PlayerSlot[] CreateTestPlayerSlots()
+    private static PlayerSlot[] CreatePlayerSlots()
     {
         var player1ID = new PlayerID(Guid.NewGuid());
         var player2ID = new PlayerID(Guid.NewGuid());
 
+        var army1 = ArmyLoader.PromptForArmy("Player 1");
+        Console.WriteLine();
+        var army2 = ArmyLoader.PromptForArmy("Player 2");
+        Console.WriteLine();
+
         return new[]
         {
-            new PlayerSlot(slotID: 0, teamNumber: 0, playerID: player1ID,
-                armyListFile: MakeTestArmy("Player 1")),
-            new PlayerSlot(slotID: 1, teamNumber: 1, playerID: player2ID,
-                armyListFile: MakeTestArmy("Player 2")),
-        };
-    }
-
-    private static ArmyListFile MakeTestArmy(string playerName)
-    {
-        return new ArmyListFile
-        {
-            Name = $"{playerName}'s Army",
-            Faction = "Test",
-            PointsLimit = 500,
-            Units = new List<UnitFileEntry>
-            {
-                new UnitFileEntry
-                {
-                    Name = "Warriors",
-                    ModelCount = 5,
-                    Quality = 4,
-                    Defense = 4,
-                    PointCost = 150,
-                    Weapons = new List<WeaponFileEntry>
-                    {
-                        new WeaponFileEntry { Name = "Rifle", RangeInches = 24, Attacks = 1 }
-                    }
-                },
-                new UnitFileEntry
-                {
-                    Name = "Heavy Gunners",
-                    ModelCount = 3,
-                    Quality = 4,
-                    Defense = 4,
-                    PointCost = 120,
-                    Weapons = new List<WeaponFileEntry>
-                    {
-                        new WeaponFileEntry { Name = "Heavy Rifle", RangeInches = 36, Attacks = 1 }
-                    }
-                }
-            }
+            new PlayerSlot(slotID: 0, teamNumber: 0, playerID: player1ID, armyListFile: army1),
+            new PlayerSlot(slotID: 1, teamNumber: 1, playerID: player2ID, armyListFile: army2),
         };
     }
 
@@ -115,11 +81,14 @@ public class CliApp
             .RegisterResolver(new YesNoResolver())
             .RegisterResolver(new StringSelectionResolver())
             .RegisterResolver(new ChooseDeploymentZoneResolver())
+            .RegisterResolver(new ChooseRangedAttackResolver())
             .RegisterResolver(new DefineMovementPathResolver())
             .RegisterResolver(new AssignWoundsResolver())
             // SelectionRequest<T> needs a registration per concrete type T the engine uses.
             .RegisterResolver(new SelectionResolver<UnitData>())
             .RegisterResolver(new SelectionResolver<ModelData>())
-            .RegisterResolver(new SelectionResolver<RectangularZone>());
+            .RegisterResolver(new SelectionResolver<RectangularZone>())
+            // PlaceObjectsRequest<T> needs a registration per concrete type T the engine uses.
+            .RegisterResolver(new PlaceObjectsResolver<ModelData>());
     }
 }
