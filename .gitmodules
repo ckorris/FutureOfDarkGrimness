@@ -1,0 +1,3 @@
+[submodule "FutureOfDarkGrimness"]
+	path = FutureOfDarkGrimness
+	url = git@github.com:ckorris/FutureOfDarkGrimness.git
