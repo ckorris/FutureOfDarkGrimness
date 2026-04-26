@@ -8,6 +8,13 @@ namespace FdgRaylib.Cli.Resolvers;
 
 public class DefineMovementPathResolver : IStageResolver<DefineMovementPathRequest, List<ModelMoveEntry>>
 {
+    private readonly ITableState? _tableState;
+
+    public DefineMovementPathResolver(ITableState? tableState = null)
+    {
+        _tableState = tableState;
+    }
+
     public Task<List<ModelMoveEntry>> Resolve(DefineMovementPathRequest request)
     {
         var unit = request.UnitDataBinding.GetValue();
@@ -28,6 +35,8 @@ public class DefineMovementPathResolver : IStageResolver<DefineMovementPathReque
             Console.WriteLine();
 
             var entries = new List<ModelMoveEntry>();
+            bool eof = false;
+
             for (int i = 0; i < models.Count; i++)
             {
                 var modelBinding = models[i];
@@ -35,7 +44,13 @@ public class DefineMovementPathResolver : IStageResolver<DefineMovementPathReque
                 Console.Write($"  Model {i + 1} at ({model.Position.x:F1}\", {model.Position.z:F1}\"): ");
                 string? input = Console.ReadLine()?.Trim();
 
-                if (input == null || string.IsNullOrEmpty(input))
+                if (input == null)
+                {
+                    eof = true;
+                    break;
+                }
+
+                if (string.IsNullOrEmpty(input))
                 {
                     entries.Add(new ModelMoveEntry(modelBinding, new List<Position> { model.Position }));
                     continue;
@@ -51,6 +66,9 @@ public class DefineMovementPathResolver : IStageResolver<DefineMovementPathReque
                 }
             }
 
+            if (eof)
+                return Task.FromResult(AutoAdvance(request));
+
             if (MovementUtilities.ValidatePaths(entries, request.MaxChargeDistance, out var errors))
                 return Task.FromResult(entries);
 
@@ -59,5 +77,65 @@ public class DefineMovementPathResolver : IStageResolver<DefineMovementPathReque
             foreach (var err in errors)
                 Console.WriteLine($"    ! {MovementUtilities.ErrorReasonToString(err.ErrorReasonType)}");
         }
+    }
+
+    // Automatically advance the unit toward the nearest enemy, keeping formation intact.
+    private List<ModelMoveEntry> AutoAdvance(DefineMovementPathRequest request)
+    {
+        var unit = request.UnitDataBinding.GetValue();
+        var models = unit.ModelBindings;
+
+        // Find live enemy model positions via ITableState.
+        List<Position> enemyPositions = new();
+        if (_tableState != null)
+        {
+            foreach (var u in _tableState.Units.Objects)
+            {
+                if (u.PlayerID == request.TargetPlayerID) continue;
+                foreach (var m in u.Models)
+                    if (m.GetIsAlive()) enemyPositions.Add(m.Position);
+            }
+        }
+
+        if (enemyPositions.Count == 0)
+            return StayInPlace(request);
+
+        // Compute unit center.
+        float cx = models.Average(mb => mb.GetValue().Position.x);
+        float cz = models.Average(mb => mb.GetValue().Position.z);
+
+        // Find nearest enemy.
+        Position nearest = enemyPositions
+            .OrderBy(p => (p.x - cx) * (p.x - cx) + (p.z - cz) * (p.z - cz))
+            .First();
+
+        float dx = nearest.x - cx;
+        float dz = nearest.z - cz;
+        float dist = MathF.Sqrt(dx * dx + dz * dz);
+
+        if (dist < 0.01f)
+            return StayInPlace(request);
+
+        // Advance up to MaxAdvanceDistance (with a tiny margin so float rounding never pushes
+        // the computed distance over the limit and disqualify the unit from shooting).
+        float step = Math.Min(request.MaxAdvanceDistance - 0.001f, Math.Max(0f, dist - 1f));
+        float ndx = dx / dist * step;
+        float ndz = dz / dist * step;
+
+        Console.WriteLine($"  [auto] advancing {step:F1}\" toward nearest enemy");
+
+        return models.Select(mb =>
+        {
+            var m = mb.GetValue();
+            var newPos = new Position(m.Position.x + ndx, m.Position.z + ndz);
+            return new ModelMoveEntry(mb, new List<Position> { newPos });
+        }).ToList();
+    }
+
+    private static List<ModelMoveEntry> StayInPlace(DefineMovementPathRequest request)
+    {
+        return request.UnitDataBinding.GetValue().ModelBindings
+            .Select(mb => new ModelMoveEntry(mb, new List<Position> { mb.GetValue().Position }))
+            .ToList();
     }
 }

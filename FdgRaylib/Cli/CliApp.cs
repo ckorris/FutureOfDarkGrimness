@@ -116,7 +116,7 @@ public class CliApp
             .RegisterResolver(new StringSelectionResolver())
             .RegisterResolver(new ChooseDeploymentZoneResolver())
             .RegisterResolver(new ChooseRangedAttackResolver())
-            .RegisterResolver(new DefineMovementPathResolver())
+            .RegisterResolver(new DefineMovementPathResolver(_localGame!.TableState))
             .RegisterResolver(new AssignWoundsResolver())
             .RegisterResolver(new SelectionResolver<UnitData>())
             .RegisterResolver(new SelectionResolver<ModelData>())

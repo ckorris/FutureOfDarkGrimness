@@ -29,7 +29,7 @@ public class PlaceObjectsResolver<T> : IStageResolver<PlaceObjectsRequest<T>, Li
             .Select(b => GetBaseRadius(b.GetValue()))
             .DefaultIfEmpty(0.75f)
             .Max();
-        float autoSpacing = maxRadius * 2 + 1f;
+        float autoSpacing = maxRadius * 2 + 0.1f;
 
         float zoneCz = (zone.Bottom + zone.Top) / 2f;
         float cz = Math.Clamp(zoneCz + deployIndex * ZRowOffset, zone.Bottom, zone.Top);
