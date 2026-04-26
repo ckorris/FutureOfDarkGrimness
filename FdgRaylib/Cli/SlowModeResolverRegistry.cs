@@ -30,7 +30,10 @@ public class SlowModeResolverRegistry : IStageResolverRegistry
         return await _inner.ResolveRequest<TRequest, TReply>(request);
     }
 
-    public Task<string> ResolveRequestAsJson(string typeFullName, string requestJson,
+    public async Task<string> ResolveRequestAsJson(string typeFullName, string requestJson,
         IReadableGameDataStore gameDataStore)
-        => _inner.ResolveRequestAsJson(typeFullName, requestJson, gameDataStore);
+    {
+        await Task.Delay(_delayMs);
+        return await _inner.ResolveRequestAsJson(typeFullName, requestJson, gameDataStore);
+    }
 }

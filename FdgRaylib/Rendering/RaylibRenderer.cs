@@ -9,11 +9,11 @@ namespace FdgRaylib.Rendering;
 
 public class RaylibRenderer
 {
-    private const float Scale = 10f;  // pixels per inch
-    private const int Margin = 50;
-    private const int TableWIn = (int)GameWideConstants.DEFAULT_TABLE_WIDTH_INCHES;
-    private const int TableHIn = (int)GameWideConstants.DEFAULT_TABLE_HEIGHT_INCHES;
-    private const int LogPanelWidth = 350;
+    private const float TableWIn = GameWideConstants.DEFAULT_TABLE_WIDTH_INCHES;
+    private const float TableHIn = GameWideConstants.DEFAULT_TABLE_HEIGHT_INCHES;
+    private const int   LogPanelWidth  = 350;   // fixed pixel width for the log panel
+    private const int   MinMargin      = 20;     // minimum pixels between table and window edge
+    private const float DefaultScale   = 10f;    // initial px/inch at launch
 
     private static readonly Color TableColor  = new(40, 100, 40, 255);
     private static readonly Color TableBorder = new(20, 60, 20, 255);
@@ -25,9 +25,11 @@ public class RaylibRenderer
 
     private readonly ConcurrentDictionary<IModel, Color> _placedModels = new();
 
-    // Auto-scroll state for the log panel.
     private bool _autoScroll = true;
-    private int _lastLogCount = 0;
+    private int  _lastLogCount = 0;
+
+    // Per-frame layout, recomputed whenever the window size changes.
+    private record Layout(float Scale, int OriginX, int OriginY, int LogX, int ScreenH);
 
     public RaylibRenderer(ITableState tableState, Func<PlayerID, Color> colorForPlayer,
         GameLog? log = null)
@@ -55,25 +57,27 @@ public class RaylibRenderer
 
     public void Run()
     {
-        int tableW = (int)(TableWIn * Scale) + Margin * 2;
-        int tableH = (int)(TableHIn * Scale) + Margin * 2;
-        int winW = tableW + (_log != null ? LogPanelWidth : 0);
-        int winH = tableH;
+        int logW   = _log != null ? LogPanelWidth : 0;
+        int initW  = (int)(TableWIn * DefaultScale) + MinMargin * 2 + logW;
+        int initH  = (int)(TableHIn * DefaultScale) + MinMargin * 2;
 
-        Raylib.InitWindow(winW, winH, "Future of Dark Grimness");
+        Raylib.SetConfigFlags(ConfigFlags.ResizableWindow);
+        Raylib.InitWindow(initW, initH, "Future of Dark Grimness");
         Raylib.SetTargetFPS(30);
         rlImGui.Setup(true);
 
         while (!Raylib.WindowShouldClose())
         {
+            var layout = ComputeLayout(Raylib.GetScreenWidth(), Raylib.GetScreenHeight());
+
             Raylib.BeginDrawing();
             Raylib.ClearBackground(Background);
 
-            DrawTable();
-            DrawModels();
+            DrawTable(layout);
+            DrawModels(layout);
 
             rlImGui.Begin();
-            if (_log != null) DrawLogPanel(tableW, winH);
+            if (_log != null) DrawLogPanel(layout);
             rlImGui.End();
 
             Raylib.EndDrawing();
@@ -83,34 +87,53 @@ public class RaylibRenderer
         Raylib.CloseWindow();
     }
 
-    private static void DrawTable()
+    // Fit the table (maintaining aspect ratio) into the area left of the log panel,
+    // then centre it with equal margins on all sides.
+    private Layout ComputeLayout(int screenW, int screenH)
     {
-        int tw = (int)(TableWIn * Scale);
-        int th = (int)(TableHIn * Scale);
-        Raylib.DrawRectangle(Margin, Margin, tw, th, TableColor);
-        Raylib.DrawRectangleLines(Margin, Margin, tw, th, TableBorder);
+        int logW      = _log != null ? LogPanelWidth : 0;
+        int tableAreaW = screenW - logW;
+
+        float scaleX = (tableAreaW - MinMargin * 2f) / TableWIn;
+        float scaleY = (screenH   - MinMargin * 2f) / TableHIn;
+        float scale  = Math.Max(1f, Math.Min(scaleX, scaleY));
+
+        int tablePixW = (int)(TableWIn * scale);
+        int tablePixH = (int)(TableHIn * scale);
+        int originX   = (tableAreaW - tablePixW) / 2;
+        int originY   = (screenH    - tablePixH) / 2;
+
+        return new Layout(scale, originX, originY, tableAreaW, screenH);
     }
 
-    private void DrawModels()
+    private static void DrawTable(Layout l)
+    {
+        int tw = (int)(TableWIn * l.Scale);
+        int th = (int)(TableHIn * l.Scale);
+        Raylib.DrawRectangle(l.OriginX, l.OriginY, tw, th, TableColor);
+        Raylib.DrawRectangleLines(l.OriginX, l.OriginY, tw, th, TableBorder);
+    }
+
+    private void DrawModels(Layout l)
     {
         foreach (var (model, color) in _placedModels)
         {
             if (!model.GetIsAlive()) continue;
 
             var pos = model.Position;
-            int cx = Margin + (int)(pos.x * Scale);
-            int cy = Margin + (int)((TableHIn - pos.z) * Scale);
-            float radius = model.BaseRadiusInches * Scale;
+            int cx = l.OriginX + (int)(pos.x * l.Scale);
+            int cy = l.OriginY + (int)((TableHIn - pos.z) * l.Scale);
+            float radius = model.BaseRadiusInches * l.Scale;
 
             Raylib.DrawCircle(cx, cy, radius, color);
             Raylib.DrawCircleLines(cx, cy, radius, Color.Black);
         }
     }
 
-    private void DrawLogPanel(int x, int height)
+    private void DrawLogPanel(Layout l)
     {
-        ImGui.SetNextWindowPos(new Vector2(x, 0), ImGuiCond.Always);
-        ImGui.SetNextWindowSize(new Vector2(LogPanelWidth, height), ImGuiCond.Always);
+        ImGui.SetNextWindowPos(new Vector2(l.LogX, 0), ImGuiCond.Always);
+        ImGui.SetNextWindowSize(new Vector2(LogPanelWidth, l.ScreenH), ImGuiCond.Always);
         ImGui.Begin("Game Log",
             ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoCollapse);
 
@@ -124,11 +147,9 @@ public class RaylibRenderer
         foreach (var msg in messages)
             ImGui.TextWrapped(msg);
 
-        // Auto-scroll to bottom when new messages arrive, unless user scrolled up.
         if (hasNew && _autoScroll)
             ImGui.SetScrollHereY(1.0f);
 
-        // If user scrolled away from bottom, disable auto-scroll; re-enable at bottom.
         _autoScroll = ImGui.GetScrollY() >= ImGui.GetScrollMaxY() - 4f;
 
         ImGui.EndChild();
