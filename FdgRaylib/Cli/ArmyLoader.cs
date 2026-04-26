@@ -20,6 +20,11 @@ public static class ArmyLoader
         {
             Console.Write("Choice: ");
             string? input = Console.ReadLine()?.Trim();
+            if (input == null)
+            {
+                Console.WriteLine("(EOF — using built-in test army)");
+                return MakeTestArmy(playerLabel);
+            }
             if (input == "1") return LoadFromFile();
             if (input == "2") return MakeTestArmy(playerLabel);
             Console.WriteLine("Enter 1 or 2.");
