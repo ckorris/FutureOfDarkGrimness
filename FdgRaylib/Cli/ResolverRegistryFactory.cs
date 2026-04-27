@@ -28,19 +28,26 @@ public static class ResolverRegistryFactory
     public static (IStageResolverRegistry Registry, GuiResolverOverlay Overlay) BuildGui(ITableState tableState)
     {
         var overlay = new GuiResolverOverlay();
-        var yesNo   = new GuiYesNoResolver();
+
+        var yesNo         = new GuiYesNoResolver();
+        var selectUnit    = new GuiSelectionResolver<UnitData>();
+        var selectModel   = new GuiSelectionResolver<ModelData>();
+        var selectZone    = new GuiSelectionResolver<RectangularZone>();
         overlay.Register(yesNo);
+        overlay.Register(selectUnit);
+        overlay.Register(selectModel);
+        overlay.Register(selectZone);
 
         var registry = new StageResolverRegistry()
             .RegisterResolver(yesNo)                                         // GUI
+            .RegisterResolver(selectUnit)                                    // GUI
+            .RegisterResolver(selectModel)                                   // GUI
+            .RegisterResolver(selectZone)                                    // GUI
             .RegisterResolver(new StringSelectionResolver())                 // CLI fallback
             .RegisterResolver(new ChooseDeploymentZoneResolver())            // CLI fallback
             .RegisterResolver(new ChooseRangedAttackResolver())              // CLI fallback
             .RegisterResolver(new DefineMovementPathResolver(tableState))    // CLI fallback
             .RegisterResolver(new AssignWoundsResolver())                    // CLI fallback
-            .RegisterResolver(new SelectionResolver<UnitData>())             // CLI fallback
-            .RegisterResolver(new SelectionResolver<ModelData>())            // CLI fallback
-            .RegisterResolver(new SelectionResolver<RectangularZone>())      // CLI fallback
             .RegisterResolver(new PlaceObjectsResolver<ModelData>(tableState)); // CLI fallback
 
         return (registry, overlay);
