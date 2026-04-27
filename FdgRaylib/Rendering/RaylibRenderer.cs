@@ -21,6 +21,7 @@ public class RaylibRenderer
     public MainMenuScreen    MainMenu     { get; } = new();
     public ArmyBuilderScreen ArmyBuilder  { get; } = new();
     public HostModal         HostModal    { get; } = new();
+    public ClientModal       ClientModal  { get; } = new();
     public LobbyScreen       LobbyScreen  { get; } = new();
 
     private IAppScreen _currentScreen;

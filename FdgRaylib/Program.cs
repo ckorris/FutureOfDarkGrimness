@@ -28,7 +28,7 @@ else
         renderer.NavigateTo(renderer.ArmyBuilder);
 
     renderer.MainMenu.OnClientClicked = () =>
-        Console.WriteLine("[Client] Not yet implemented.");
+        renderer.NavigateTo(renderer.ClientModal);
 
     renderer.MainMenu.OnQuitClicked = renderer.RequestClose;
 
@@ -41,6 +41,16 @@ else
         renderer.NavigateTo(renderer.MainMenu);
 
     renderer.HostModal.OnCreated = lobby =>
+    {
+        renderer.LobbyScreen.SetViewModel(lobby);
+        renderer.NavigateTo(renderer.LobbyScreen);
+    };
+
+    // ── Client Modal ───────────────────────────────────────────────────────────
+    renderer.ClientModal.OnCancel = () =>
+        renderer.NavigateTo(renderer.MainMenu);
+
+    renderer.ClientModal.OnConnected = lobby =>
     {
         renderer.LobbyScreen.SetViewModel(lobby);
         renderer.NavigateTo(renderer.LobbyScreen);
