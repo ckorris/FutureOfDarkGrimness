@@ -3,7 +3,7 @@ using ImGuiNET;
 
 namespace FdgRaylib.Rendering;
 
-public class MainMenuScreen
+public class MainMenuScreen : IAppScreen
 {
     public Action? OnHostClicked;
     public Action? OnClientClicked;

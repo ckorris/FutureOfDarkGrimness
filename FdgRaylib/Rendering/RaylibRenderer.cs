@@ -19,12 +19,22 @@ public class RaylibRenderer
     private static readonly Color Background  = new(30, 30, 30, 255);
 
     public MainMenuScreen MainMenu { get; } = new();
+    public ArmyBuilderScreen ArmyBuilder { get; } = new();
+
+    private IAppScreen _currentScreen;
 
     private ITableState? _tableState;
     private Func<PlayerID, Color>? _colorForPlayer;
     private GameLog? _log;
     private bool _inGame = false;
     private bool _closeRequested = false;
+
+    public RaylibRenderer()
+    {
+        _currentScreen = MainMenu;
+    }
+
+    public void NavigateTo(IAppScreen screen) => _currentScreen = screen;
 
     private readonly ConcurrentDictionary<IModel, Color> _placedModels = new();
     private bool _autoScroll = true;
@@ -88,7 +98,7 @@ public class RaylibRenderer
             else
             {
                 rlImGui.Begin();
-                MainMenu.Draw(screenW, screenH);
+                _currentScreen.Draw(screenW, screenH);
                 rlImGui.End();
             }
 

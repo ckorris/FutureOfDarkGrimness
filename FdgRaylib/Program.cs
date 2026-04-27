@@ -30,9 +30,11 @@ else
             app.Log);
     };
 
-    renderer.MainMenu.OnClientClicked       = () => Console.WriteLine("[Client] Not yet implemented.");
-    renderer.MainMenu.OnArmyBuilderClicked  = () => Console.WriteLine("[Army Builder] Not yet implemented.");
-    renderer.MainMenu.OnQuitClicked         = renderer.RequestClose;
+    renderer.MainMenu.OnArmyBuilderClicked = () => renderer.NavigateTo(renderer.ArmyBuilder);
+    renderer.ArmyBuilder.OnBack            = () => renderer.NavigateTo(renderer.MainMenu);
+
+    renderer.MainMenu.OnClientClicked = () => Console.WriteLine("[Client] Not yet implemented.");
+    renderer.MainMenu.OnQuitClicked   = renderer.RequestClose;
 
     renderer.Run();
 }
