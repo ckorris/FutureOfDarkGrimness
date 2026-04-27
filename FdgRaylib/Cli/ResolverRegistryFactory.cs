@@ -35,12 +35,14 @@ public static class ResolverRegistryFactory
         var selectZone    = new GuiSelectionResolver<RectangularZone>();
         var strSel        = new GuiStringSelectionResolver();
         var deployZone    = new GuiChooseDeploymentZoneResolver();
+        var rangedAttack  = new GuiChooseRangedAttackResolver();
         overlay.Register(yesNo);
         overlay.Register(selectUnit);
         overlay.Register(selectModel);
         overlay.Register(selectZone);
         overlay.Register(strSel);
         overlay.Register(deployZone);
+        overlay.Register(rangedAttack);
 
         var registry = new StageResolverRegistry()
             .RegisterResolver(yesNo)                                         // GUI
@@ -49,7 +51,7 @@ public static class ResolverRegistryFactory
             .RegisterResolver(selectZone)                                    // GUI
             .RegisterResolver(strSel)                                        // GUI
             .RegisterResolver(deployZone)                                    // GUI
-            .RegisterResolver(new ChooseRangedAttackResolver())              // CLI fallback
+            .RegisterResolver(rangedAttack)                                  // GUI
             .RegisterResolver(new DefineMovementPathResolver(tableState))    // CLI fallback
             .RegisterResolver(new AssignWoundsResolver())                    // CLI fallback
             .RegisterResolver(new PlaceObjectsResolver<ModelData>(tableState)); // CLI fallback
