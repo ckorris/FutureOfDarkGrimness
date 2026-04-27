@@ -20,21 +20,42 @@ else
 {
     var renderer = new RaylibRenderer();
 
+    // ── Main Menu ──────────────────────────────────────────────────────────────
     renderer.MainMenu.OnHostClicked = () =>
+        renderer.NavigateTo(renderer.HostModal);
+
+    renderer.MainMenu.OnArmyBuilderClicked = () =>
+        renderer.NavigateTo(renderer.ArmyBuilder);
+
+    renderer.MainMenu.OnClientClicked = () =>
+        Console.WriteLine("[Client] Not yet implemented.");
+
+    renderer.MainMenu.OnQuitClicked = renderer.RequestClose;
+
+    // ── Army Builder ───────────────────────────────────────────────────────────
+    renderer.ArmyBuilder.OnBack = () =>
+        renderer.NavigateTo(renderer.MainMenu);
+
+    // ── Host Modal ─────────────────────────────────────────────────────────────
+    renderer.HostModal.OnCancel = () =>
+        renderer.NavigateTo(renderer.MainMenu);
+
+    renderer.HostModal.OnCreated = lobby =>
     {
-        app.Prepare();
-        _ = Task.Run(() => app.RunAsync());
-        renderer.TransitionToGame(
-            app.TableState!,
-            playerID => app.PlayerColors.GetValueOrDefault(playerID, Raylib_cs.Color.White),
-            app.Log);
+        renderer.LobbyScreen.SetViewModel(lobby);
+        renderer.NavigateTo(renderer.LobbyScreen);
     };
 
-    renderer.MainMenu.OnArmyBuilderClicked = () => renderer.NavigateTo(renderer.ArmyBuilder);
-    renderer.ArmyBuilder.OnBack            = () => renderer.NavigateTo(renderer.MainMenu);
+    // ── Lobby ──────────────────────────────────────────────────────────────────
+    renderer.LobbyScreen.OnBack = () =>
+        renderer.NavigateTo(renderer.MainMenu);
 
-    renderer.MainMenu.OnClientClicked = () => Console.WriteLine("[Client] Not yet implemented.");
-    renderer.MainMenu.OnQuitClicked   = renderer.RequestClose;
+    renderer.LobbyScreen.OnGameLaunched = (tableState, colorFunc, log) =>
+        renderer.TransitionToGame(tableState, colorFunc, log);
+
+    // ── Local play (Host with no network players) also still works via CliApp ─
+    // The old "Host" path now goes through the lobby. CliApp is only used
+    // in headless mode above.
 
     renderer.Run();
 }

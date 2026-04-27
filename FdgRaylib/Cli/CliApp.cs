@@ -117,17 +117,5 @@ public class CliApp
     }
 
     private IStageResolverRegistry BuildResolverRegistry()
-    {
-        return new StageResolverRegistry()
-            .RegisterResolver(new YesNoResolver())
-            .RegisterResolver(new StringSelectionResolver())
-            .RegisterResolver(new ChooseDeploymentZoneResolver())
-            .RegisterResolver(new ChooseRangedAttackResolver())
-            .RegisterResolver(new DefineMovementPathResolver(_localGame!.TableState))
-            .RegisterResolver(new AssignWoundsResolver())
-            .RegisterResolver(new SelectionResolver<UnitData>())
-            .RegisterResolver(new SelectionResolver<ModelData>())
-            .RegisterResolver(new SelectionResolver<RectangularZone>())
-            .RegisterResolver(new PlaceObjectsResolver<ModelData>(_localGame!.TableState));
-    }
+        => ResolverRegistryFactory.Build(_localGame!.TableState);
 }

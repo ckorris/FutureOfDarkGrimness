@@ -18,8 +18,10 @@ public class RaylibRenderer
     private static readonly Color TableBorder = new(20, 60, 20, 255);
     private static readonly Color Background  = new(30, 30, 30, 255);
 
-    public MainMenuScreen MainMenu { get; } = new();
-    public ArmyBuilderScreen ArmyBuilder { get; } = new();
+    public MainMenuScreen    MainMenu     { get; } = new();
+    public ArmyBuilderScreen ArmyBuilder  { get; } = new();
+    public HostModal         HostModal    { get; } = new();
+    public LobbyScreen       LobbyScreen  { get; } = new();
 
     private IAppScreen _currentScreen;
 
