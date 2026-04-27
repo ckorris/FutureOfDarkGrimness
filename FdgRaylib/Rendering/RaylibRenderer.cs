@@ -1,6 +1,7 @@
 using System.Collections.Concurrent;
 using System.Numerics;
 using FDG;
+using FdgRaylib.Rendering.Resolvers;
 using ImGuiNET;
 using Raylib_cs;
 using rlImGui_cs;
@@ -29,6 +30,7 @@ public class RaylibRenderer
     private ITableState? _tableState;
     private Func<PlayerID, Color>? _colorForPlayer;
     private GameLog? _log;
+    private GuiResolverOverlay? _resolverOverlay;
     private bool _inGame = false;
     private bool _closeRequested = false;
 
@@ -46,11 +48,12 @@ public class RaylibRenderer
     private record Layout(float Scale, int OriginX, int OriginY, int LogX, int ScreenH);
 
     public void TransitionToGame(ITableState tableState, Func<PlayerID, Color> colorForPlayer,
-        GameLog? log)
+        GameLog? log, GuiResolverOverlay? resolverOverlay = null)
     {
-        _tableState     = tableState;
-        _colorForPlayer = colorForPlayer;
-        _log            = log;
+        _tableState      = tableState;
+        _colorForPlayer  = colorForPlayer;
+        _log             = log;
+        _resolverOverlay = resolverOverlay;
 
         tableState.Models.OnObjectCreated += SubscribeToModel;
         foreach (var model in tableState.Models.Objects)
@@ -96,6 +99,7 @@ public class RaylibRenderer
 
                 rlImGui.Begin();
                 if (_log != null) DrawLogPanel(layout);
+                _resolverOverlay?.Draw(screenW, screenH);
                 rlImGui.End();
             }
             else

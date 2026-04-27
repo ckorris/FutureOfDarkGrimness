@@ -1,0 +1,88 @@
+using System.Numerics;
+using FDG.StageResolution;
+using FDG.StageResolution.Requests;
+using ImGuiNET;
+
+namespace FdgRaylib.Rendering.Resolvers;
+
+public class GuiYesNoResolver : IStageResolver<YesNoRequest, bool>, IGuiResolver
+{
+    private readonly object _lock = new();
+    private string? _question;
+    private TaskCompletionSource<bool>? _tcs;
+
+    public bool HasPendingRequest { get { lock (_lock) return _question != null; } }
+
+    public Task<bool> Resolve(YesNoRequest request)
+    {
+        var tcs = new TaskCompletionSource<bool>();
+        lock (_lock)
+        {
+            _tcs      = tcs;
+            _question = request.QuestionText;
+        }
+        return tcs.Task;
+    }
+
+    public void Draw(int screenW, int screenH)
+    {
+        string? question;
+        TaskCompletionSource<bool>? tcs;
+        lock (_lock) { question = _question; tcs = _tcs; }
+        if (question == null || tcs == null) return;
+
+        // Semi-transparent backdrop
+        ImGui.SetNextWindowPos(Vector2.Zero, ImGuiCond.Always);
+        ImGui.SetNextWindowSize(new Vector2(screenW, screenH), ImGuiCond.Always);
+        ImGui.PushStyleColor(ImGuiCol.WindowBg, new Vector4(0f, 0f, 0f, 0.55f));
+        ImGui.Begin("##YesNoBackdrop",
+            ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoCollapse |
+            ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoScrollbar);
+        ImGui.PopStyleColor();
+
+        float dw = MathF.Min(screenW * 0.40f, 520f);
+        float dh = screenH * 0.22f;
+        float dx = (screenW - dw) * 0.5f;
+        float dy = (screenH - dh) * 0.5f;
+
+        ImGui.SetCursorPos(new Vector2(dx, dy));
+        ImGui.PushStyleColor(ImGuiCol.ChildBg, new Vector4(0.15f, 0.15f, 0.20f, 0.97f));
+        ImGui.PushStyleVar(ImGuiStyleVar.ChildRounding, 6f);
+        ImGui.BeginChild("##YesNoDialog", new Vector2(dw, dh), ImGuiChildFlags.Borders,
+            ImGuiWindowFlags.NoScrollbar);
+        ImGui.PopStyleColor();
+        ImGui.PopStyleVar();
+
+        float pad = 16f;
+
+        // Question text (wrapped, centered)
+        ImGui.SetCursorPos(new Vector2(pad, pad));
+        ImGui.PushTextWrapPos(dw - pad);
+        ImGui.TextUnformatted(question);
+        ImGui.PopTextWrapPos();
+
+        // Buttons anchored to bottom of dialog
+        float btnW = dw * 0.35f;
+        float btnH = 36f;
+        float gap  = dw * 0.06f;
+        float firstX = (dw - btnW * 2 - gap) * 0.5f;
+        float btnY = dh - pad - btnH;
+
+        ImGui.SetCursorPos(new Vector2(firstX, btnY));
+        if (ImGui.Button("Yes", new Vector2(btnW, btnH)))
+            Complete(tcs, true);
+
+        ImGui.SameLine(0, gap);
+        if (ImGui.Button("No", new Vector2(btnW, btnH)))
+            Complete(tcs, false);
+
+        ImGui.EndChild();
+        ImGui.End();
+    }
+
+    private void Complete(TaskCompletionSource<bool> tcs, bool answer)
+    {
+        lock (_lock) { _question = null; _tcs = null; }
+        tcs.SetResult(answer);
+    }
+}
