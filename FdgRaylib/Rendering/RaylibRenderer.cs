@@ -9,39 +9,44 @@ namespace FdgRaylib.Rendering;
 
 public class RaylibRenderer
 {
-    private const float TableWIn = GameWideConstants.DEFAULT_TABLE_WIDTH_INCHES;
-    private const float TableHIn = GameWideConstants.DEFAULT_TABLE_HEIGHT_INCHES;
-    private const int   LogPanelWidth  = 350;   // fixed pixel width for the log panel
-    private const int   MinMargin      = 20;     // minimum pixels between table and window edge
-    private const float DefaultScale   = 10f;    // initial px/inch at launch
+    private const float TableWIn      = GameWideConstants.DEFAULT_TABLE_WIDTH_INCHES;
+    private const float TableHIn      = GameWideConstants.DEFAULT_TABLE_HEIGHT_INCHES;
+    private const int   LogPanelWidth = 350;
+    private const int   MinMargin     = 20;
 
     private static readonly Color TableColor  = new(40, 100, 40, 255);
     private static readonly Color TableBorder = new(20, 60, 20, 255);
     private static readonly Color Background  = new(30, 30, 30, 255);
 
-    private readonly ITableState _tableState;
-    private readonly Func<PlayerID, Color> _colorForPlayer;
-    private readonly GameLog? _log;
+    public MainMenuScreen MainMenu { get; } = new();
+
+    private ITableState? _tableState;
+    private Func<PlayerID, Color>? _colorForPlayer;
+    private GameLog? _log;
+    private bool _inGame = false;
+    private bool _closeRequested = false;
 
     private readonly ConcurrentDictionary<IModel, Color> _placedModels = new();
-
     private bool _autoScroll = true;
     private int  _lastLogCount = 0;
 
-    // Per-frame layout, recomputed whenever the window size changes.
     private record Layout(float Scale, int OriginX, int OriginY, int LogX, int ScreenH);
 
-    public RaylibRenderer(ITableState tableState, Func<PlayerID, Color> colorForPlayer,
-        GameLog? log = null)
+    public void TransitionToGame(ITableState tableState, Func<PlayerID, Color> colorForPlayer,
+        GameLog? log)
     {
-        _tableState = tableState;
+        _tableState     = tableState;
         _colorForPlayer = colorForPlayer;
-        _log = log;
+        _log            = log;
 
         tableState.Models.OnObjectCreated += SubscribeToModel;
         foreach (var model in tableState.Models.Objects)
             SubscribeToModel(model);
+
+        _inGame = true;
     }
+
+    public void RequestClose() => _closeRequested = true;
 
     private void SubscribeToModel(IModel model)
     {
@@ -50,35 +55,42 @@ public class RaylibRenderer
 
     private void OnModelPlaced(IModel model)
     {
-        var unit = _tableState.Units.Objects.FirstOrDefault(u => u.Models.Contains(model));
+        var unit = _tableState!.Units.Objects.FirstOrDefault(u => u.Models.Contains(model));
         if (unit != null)
-            _placedModels[model] = _colorForPlayer(unit.PlayerID);
+            _placedModels[model] = _colorForPlayer!(unit.PlayerID);
     }
 
     public void Run()
     {
-        int logW   = _log != null ? LogPanelWidth : 0;
-        int initW  = (int)(TableWIn * DefaultScale) + MinMargin * 2 + logW;
-        int initH  = (int)(TableHIn * DefaultScale) + MinMargin * 2;
-
         Raylib.SetConfigFlags(ConfigFlags.ResizableWindow);
-        Raylib.InitWindow(initW, initH, "Future of Dark Grimness");
+        Raylib.InitWindow(1280, 720, "Future of Dark Grimness");
         Raylib.SetTargetFPS(30);
         rlImGui.Setup(true);
 
-        while (!Raylib.WindowShouldClose())
+        while (!Raylib.WindowShouldClose() && !_closeRequested)
         {
-            var layout = ComputeLayout(Raylib.GetScreenWidth(), Raylib.GetScreenHeight());
+            int screenW = Raylib.GetScreenWidth();
+            int screenH = Raylib.GetScreenHeight();
 
             Raylib.BeginDrawing();
             Raylib.ClearBackground(Background);
 
-            DrawTable(layout);
-            DrawModels(layout);
+            if (_inGame)
+            {
+                var layout = ComputeLayout(screenW, screenH);
+                DrawTable(layout);
+                DrawModels(layout);
 
-            rlImGui.Begin();
-            if (_log != null) DrawLogPanel(layout);
-            rlImGui.End();
+                rlImGui.Begin();
+                if (_log != null) DrawLogPanel(layout);
+                rlImGui.End();
+            }
+            else
+            {
+                rlImGui.Begin();
+                MainMenu.Draw(screenW, screenH);
+                rlImGui.End();
+            }
 
             Raylib.EndDrawing();
         }
@@ -87,11 +99,9 @@ public class RaylibRenderer
         Raylib.CloseWindow();
     }
 
-    // Fit the table (maintaining aspect ratio) into the area left of the log panel,
-    // then centre it with equal margins on all sides.
     private Layout ComputeLayout(int screenW, int screenH)
     {
-        int logW      = _log != null ? LogPanelWidth : 0;
+        int logW       = _log != null ? LogPanelWidth : 0;
         int tableAreaW = screenW - logW;
 
         float scaleX = (tableAreaW - MinMargin * 2f) / TableWIn;

@@ -22,7 +22,10 @@ dotnet run --project FdgRaylib/FdgRaylib.csproj
 dotnet run --project FdgRaylib/FdgRaylib.csproj -- --headless
 
 # Pipe empty stdin to auto-resolve everything via EOF defaults
-echo "" | dotnet run --project FdgRaylib/FdgRaylib.csproj
+printf "2\n2\n" | dotnet run --project FdgRaylib/FdgRaylib.csproj -- --headless
+
+# Slow mode: pause N ms before each resolver call (default 1500ms if no value given)
+dotnet run --project FdgRaylib/FdgRaylib.csproj -- --slow 2000
 
 # Run engine tests
 dotnet test FutureOfDarkGrimness/FutureOfDarkGrimness.csproj
@@ -52,8 +55,8 @@ Key resolvers:
 |----------|---------|-------------|
 | `YesNoResolver` | Yes/no decision | `true` |
 | `SelectionResolver<T>` | Pick one from a list | First option |
-| `PlaceObjectsResolver<T>` | Place models in a zone | Spread left-to-right with 1" gap between bases, staggered Z row per unit |
-| `DefineMovementPathResolver` | Move models | Stay in place |
+| `PlaceObjectsResolver<T>` | Place models in a zone | Spread left-to-right with 0.1" gap between bases, staggered Z row per unit |
+| `DefineMovementPathResolver` | Move models | Auto-advance toward nearest live enemy (whole unit moves same Δ to preserve cohesion) |
 | `ChooseRangedAttackResolver` | Choose weapon + target | First valid option |
 | `AssignWoundsResolver` | Assign wounds to models | Auto-fill |
 
@@ -61,6 +64,7 @@ Key resolvers:
 - Rejects positions outside the deployment zone.
 - Rejects positions where the base would overlap any other base — including models from previously deployed units already on the table (read from `ITableState`).
 - Auto-placement scans left-to-right to find the first free spot; each successive unit for the same player uses a 2" Z offset and half-step X stagger to avoid visual clustering.
+- **Gap must be 0.1" (not 1.0")**: `MAX_MODEL_DISTANCE_FROM_ANY_OTHER_MODEL_INCHES` is 1.0" base-to-base. If auto-placement uses exactly 1.0" gap, diagonal movement arithmetic (float accumulation) can push models fractionally over the cohesion limit and fail validation. Keep spacing well under that limit.
 
 ### Engine Concepts
 - **`ITableState`**: Live observable view of the game world. Has `Units`, `Models`, `Armies`, `Teams`, `Terrain` — each with `OnObjectCreated`/`OnObjectRemoved` events and an `Objects` enumerable.
@@ -68,6 +72,16 @@ Key resolvers:
 - **`IUnit`**: Has `Models` (list of `IModel`) and `PlayerID`.
 - **`DataBinding<T>`**: Wrapper around a value stored in `GameDataStore`; `GetValue()` is always current.
 - **`LocalMessageBus`**: Implements both `IMessageBusHost` and `IMessageBusClient` — used for single-machine play without a network layer.
+
+### Movement Float Precision (`DefineMovementPathResolver`)
+- `AutoAdvance` caps `step` at `MaxAdvanceDistance - 0.001f`. Without this, computing the 3D distance of the resulting move can come out fractionally above `MaxAdvanceDistance` due to float rounding, which causes `ChooseActionStage.GetCanShoot` to block shooting even when the unit advanced at the legal limit.
+
+### Game Termination
+- `ReconcileObjectivesStage` counts entries and transitions to `VictoryCalculationStage` after 4 rounds (hardcoded stub — objectives not yet implemented).
+- `VictoryCalculationStage` logs a tie and calls `IGameContext.NotifyGameEnded("It's a tie!")`.
+- The notification propagates: `GameContext.OnGameEnded` event → `FDGServer.OnGameEnded` event → `CliApp` `TaskCompletionSource` → `RunAsync` returns.
+- In GUI mode the Raylib window stays open after the game ends; the user closes it manually. In headless mode the process exits once `RunAsync` completes.
+- Victory condition is intentionally always a tie for now — in GrimDark Future rules you can win even if all your models are eliminated (objectives determine the winner), so unit counts must never be used as a win condition.
 
 ## Key Files
 

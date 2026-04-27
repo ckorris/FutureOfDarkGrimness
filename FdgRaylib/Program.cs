@@ -10,20 +10,29 @@ if (slowIdx >= 0)
     slowDelayMs = slowIdx + 1 < args.Length && int.TryParse(args[slowIdx + 1], out int ms) ? ms : 1500;
 
 var app = new CliApp(headless, slowDelayMs);
-app.Prepare();
 
 if (headless)
 {
+    app.Prepare();
     await app.RunAsync();
 }
 else
 {
-    _ = Task.Run(() => app.RunAsync());
+    var renderer = new RaylibRenderer();
 
-    var renderer = new RaylibRenderer(
-        app.TableState!,
-        playerID => app.PlayerColors.GetValueOrDefault(playerID, Raylib_cs.Color.White),
-        app.Log);
+    renderer.MainMenu.OnHostClicked = () =>
+    {
+        app.Prepare();
+        _ = Task.Run(() => app.RunAsync());
+        renderer.TransitionToGame(
+            app.TableState!,
+            playerID => app.PlayerColors.GetValueOrDefault(playerID, Raylib_cs.Color.White),
+            app.Log);
+    };
+
+    renderer.MainMenu.OnClientClicked       = () => Console.WriteLine("[Client] Not yet implemented.");
+    renderer.MainMenu.OnArmyBuilderClicked  = () => Console.WriteLine("[Army Builder] Not yet implemented.");
+    renderer.MainMenu.OnQuitClicked         = renderer.RequestClose;
 
     renderer.Run();
 }

@@ -83,10 +83,17 @@ public class CliApp
 
         var gameSettings = GameSettings.GetDefault();
         gameSettings.RandomnessType = ERandomnessType.Realistic;
-        var server = new FDGServer(_gameDataStore!, _messageBus!, gameSettings, playerSlots);
 
-        Console.WriteLine("Game started. Press Ctrl+C to quit.");
-        await Task.Delay(Timeout.Infinite);
+        var gameEnded = new TaskCompletionSource();
+        var server = new FDGServer(_gameDataStore!, _messageBus!, gameSettings, playerSlots);
+        server.OnGameEnded += result =>
+        {
+            logUI.DisplayLogMessage($"Game ended: {result}");
+            gameEnded.TrySetResult();
+        };
+
+        Console.WriteLine("Game started.");
+        await gameEnded.Task;
     }
 
     private PlayerSlot[] CreatePlayerSlots()
