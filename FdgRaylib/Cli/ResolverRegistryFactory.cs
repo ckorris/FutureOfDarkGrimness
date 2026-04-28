@@ -38,6 +38,7 @@ public static class ResolverRegistryFactory
         var rangedAttack  = new GuiChooseRangedAttackResolver();
         var assignWounds  = new GuiAssignWoundsResolver();
         var movement      = new GuiDefineMovementResolver(tableState);
+        var placeObjects  = new GuiPlaceObjectsResolver<ModelData>(tableState);
         overlay.Register(yesNo);
         overlay.Register(selectUnit);
         overlay.Register(selectModel);
@@ -47,6 +48,7 @@ public static class ResolverRegistryFactory
         overlay.Register(rangedAttack);
         overlay.Register(assignWounds);
         overlay.Register(movement);
+        overlay.Register(placeObjects);
 
         var registry = new StageResolverRegistry()
             .RegisterResolver(yesNo)                                         // GUI
@@ -58,7 +60,7 @@ public static class ResolverRegistryFactory
             .RegisterResolver(rangedAttack)                                  // GUI
             .RegisterResolver(assignWounds)                                  // GUI
             .RegisterResolver(movement)                                      // GUI
-            .RegisterResolver(new PlaceObjectsResolver<ModelData>(tableState)); // CLI fallback
+            .RegisterResolver(placeObjects);                                 // GUI
 
         return (registry, overlay);
     }
