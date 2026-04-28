@@ -99,6 +99,7 @@ public class RaylibRenderer
 
                 rlImGui.Begin();
                 if (_log != null) DrawLogPanel(layout);
+                _resolverOverlay?.UpdateLayout(layout.Scale, layout.OriginX, layout.OriginY, TableHIn);
                 _resolverOverlay?.Draw(screenW, screenH);
                 rlImGui.End();
             }

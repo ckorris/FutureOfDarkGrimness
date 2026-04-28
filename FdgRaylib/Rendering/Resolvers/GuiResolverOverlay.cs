@@ -10,6 +10,12 @@ public class GuiResolverOverlay
 
     public void Register(IGuiResolver resolver) => _resolvers.Add(resolver);
 
+    public void UpdateLayout(float scale, int originX, int originY, float tableH)
+    {
+        foreach (IGuiResolver r in _resolvers)
+            if (r is IGuiCanvasOverlay c) c.UpdateLayout(scale, originX, originY, tableH);
+    }
+
     public void Draw(int screenW, int screenH)
     {
         foreach (IGuiResolver r in _resolvers)
