@@ -129,6 +129,7 @@ public class HostModal : IAppScreen
         _ = host.StartAsync();
 
         var viewModel = new LobbyViewModel_Host(_yourName, _serverName, _password, host);
+        viewModel.TerrainLayout = FdgRaylib.Cli.TerrainLoader.BuildTestLayout();
         Reset();
         OnCreated?.Invoke(viewModel);
     }

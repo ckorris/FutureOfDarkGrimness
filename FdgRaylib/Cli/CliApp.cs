@@ -85,7 +85,8 @@ public class CliApp
         gameSettings.RandomnessType = ERandomnessType.Realistic;
 
         var gameEnded = new TaskCompletionSource();
-        var server = new FDGServer(_gameDataStore!, _messageBus!, gameSettings, playerSlots);
+        var terrainLayout = TerrainLoader.BuildTestLayout();
+        var server = new FDGServer(_gameDataStore!, _messageBus!, gameSettings, playerSlots, terrainLayout);
         server.OnGameEnded += result =>
         {
             logUI.DisplayLogMessage($"Game ended: {result}");
