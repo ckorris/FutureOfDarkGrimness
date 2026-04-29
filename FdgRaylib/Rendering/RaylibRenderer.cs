@@ -59,7 +59,25 @@ public class RaylibRenderer
         foreach (var model in tableState.Models.Objects)
             SubscribeToModel(model);
 
+        tableState.Terrain.OnObjectCreated += AddTerrain;
+        tableState.Terrain.OnObjectRemoved += RemoveTerrain;
+        foreach (var terrain in tableState.Terrain.Objects)
+            AddTerrain(terrain);
+
         _inGame = true;
+    }
+
+    private readonly List<ITerrain> _terrain = new();
+    private readonly object _terrainLock = new();
+
+    private void AddTerrain(ITerrain terrain)
+    {
+        lock (_terrainLock) _terrain.Add(terrain);
+    }
+
+    private void RemoveTerrain(ITerrain terrain)
+    {
+        lock (_terrainLock) _terrain.Remove(terrain);
     }
 
     public void RequestClose() => _closeRequested = true;
@@ -95,6 +113,7 @@ public class RaylibRenderer
             {
                 var layout = ComputeLayout(screenW, screenH);
                 DrawTable(layout);
+                DrawTerrain(layout);
                 DrawModels(layout);
 
                 rlImGui.Begin();
@@ -140,6 +159,18 @@ public class RaylibRenderer
         int th = (int)(TableHIn * l.Scale);
         Raylib.DrawRectangle(l.OriginX, l.OriginY, tw, th, TableColor);
         Raylib.DrawRectangleLines(l.OriginX, l.OriginY, tw, th, TableBorder);
+    }
+
+    private void DrawTerrain(Layout l)
+    {
+        ITerrain[] snapshot;
+        lock (_terrainLock) snapshot = _terrain.ToArray();
+
+        foreach (var terrain in snapshot)
+        {
+            (Color fill, Color outline) = TerrainColors.For(terrain.TerrainType);
+            ZoneRenderer.DrawFilled(terrain.Shape, l.Scale, l.OriginX, l.OriginY, TableHIn, fill, outline);
+        }
     }
 
     private void DrawModels(Layout l)

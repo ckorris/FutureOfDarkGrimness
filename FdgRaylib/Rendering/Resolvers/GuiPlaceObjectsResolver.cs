@@ -112,14 +112,11 @@ public class GuiPlaceObjectsResolver<T>
         DrawInfoPanel(screenW, request, tcs);
     }
 
-    private void DrawZone(ImDrawListPtr dl, RectangularZone zone)
+    private void DrawZone(ImDrawListPtr dl, IZone zone)
     {
-        var (zx1, zy1) = InchesToPixel(zone.Left,  zone.Top);    // top-left on screen
-        var (zx2, zy2) = InchesToPixel(zone.Right, zone.Bottom); // bottom-right on screen
         uint fill    = ImGui.ColorConvertFloat4ToU32(new Vector4(0.20f, 0.60f, 1.00f, 0.12f));
         uint outline = ImGui.ColorConvertFloat4ToU32(new Vector4(0.20f, 0.60f, 1.00f, 0.80f));
-        dl.AddRectFilled(new Vector2(zx1, zy1), new Vector2(zx2, zy2), fill);
-        dl.AddRect(new Vector2(zx1, zy1), new Vector2(zx2, zy2), outline, 0f, ImDrawFlags.None, 2f);
+        ZoneRenderer.DrawFilled(zone, dl, _scale, _originX, _originY, _tableH, fill, outline);
     }
 
     private void DrawPlacedSoFar(ImDrawListPtr dl)
