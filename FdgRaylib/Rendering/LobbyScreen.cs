@@ -64,8 +64,11 @@ public class LobbyScreen : IAppScreen
         float margin       = 10f;
         float settingsW    = screenW * 0.25f;
         float mainW        = screenW - settingsW - margin * 3;
-        float headerH      = 40f;
-        float chatInputH   = 30f;
+        float fontSize     = ImGui.GetFontSize();
+        float framePadY    = ImGui.GetStyle().FramePadding.Y;
+        float naturalBtnH  = fontSize + framePadY * 2;
+        float headerH      = MathF.Max(40f, naturalBtnH + 12f);
+        float chatInputH   = MathF.Max(30f, naturalBtnH + 6f);
         float rightH       = screenH - margin * 2;
         float innerH       = screenH - margin * 2 - headerH - chatInputH - margin * 2;
         float playerListH  = innerH * 0.55f;
@@ -75,10 +78,10 @@ public class LobbyScreen : IAppScreen
         ImGui.SetCursorPos(new Vector2(margin, margin));
         ImGui.BeginChild("##header", new Vector2(mainW, headerH), ImGuiChildFlags.Borders);
 
-        float fontSize   = ImGui.GetFontSize();
-        float fontScale  = (headerH * 0.65f) / fontSize;
-        ImGui.SetWindowFontScale(fontScale);
-        ImGui.SetCursorPosY((headerH - fontSize * fontScale) * 0.5f);
+        float headerFontH  = headerH * 0.65f;
+        float headerScale  = headerFontH / fontSize;
+        ImGui.SetWindowFontScale(headerScale);
+        ImGui.SetCursorPosY((headerH - headerFontH) * 0.5f);
         ImGui.TextUnformatted(_viewModel.ServerName);
         ImGui.SetWindowFontScale(1f);
 
