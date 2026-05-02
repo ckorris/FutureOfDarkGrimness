@@ -102,7 +102,24 @@ public class RaylibRenderer
         Raylib.SetConfigFlags(ConfigFlags.ResizableWindow);
         Raylib.InitWindow(1280, 720, "Future of Dark Grimness");
         Raylib.SetTargetFPS(30);
+
+        int monitor   = Raylib.GetCurrentMonitor();
+        int monitorW  = Raylib.GetMonitorWidth(monitor);
+        int monitorH  = Raylib.GetMonitorHeight(monitor);
+        int initW     = Math.Min(1280 * 2, monitorW);
+        int initH     = Math.Min(720  * 2, monitorH);
+        Raylib.SetWindowSize(initW, initH);
+
         rlImGui.Setup(true);
+
+        // Load a TTF font so ImGui renders crisp text instead of scaling the
+        // default 13px bitmap. Size 18 looks good across the range of window sizes.
+        string fontPath = Path.Combine(AppContext.BaseDirectory, "Assets", "DejaVuSans.ttf");
+        if (File.Exists(fontPath))
+        {
+            ImGui.GetIO().Fonts.AddFontFromFileTTF(fontPath, 18f);
+            rlImGui.ReloadFonts();
+        }
 
         while (!Raylib.WindowShouldClose() && !_closeRequested)
         {
