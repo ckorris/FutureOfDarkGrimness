@@ -266,7 +266,7 @@ public class LobbyScreen : IAppScreen
         var logUI = new GuiLogMessageUI(log);
         var (resolvers, overlay) = ResolverRegistryFactory.BuildGui(game.TableState);
 
-        game.AssignInterfaces(logUI, new CliPlayerMessageUI(), resolvers, new CliTempVisualDrawer());
+        game.AssignInterfaces(logUI, new CliPlayerMessageUI(), resolvers, new CliTempVisualDrawer(), outstandingTaskDisplay: null);
 
         var colors  = new Dictionary<PlayerID, Color>();
         var players = _viewModel?.PlayerInfos ?? [];
