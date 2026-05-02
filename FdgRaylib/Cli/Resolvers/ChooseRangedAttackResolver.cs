@@ -30,6 +30,8 @@ public class ChooseRangedAttackResolver : IStageResolver<ChooseRangedAttackReque
                 string label = $"{weaponStats}  →  {targetUnit.Name} ({targetModels} models, {canShoot} shooters in range";
                 if (cannotShoot > 0)
                     label += $", {cannotShoot} out of range";
+                if (targetStats.HasCover)
+                    label += ", Cover";
                 label += ")";
 
                 options.Add((label, new RangedAttackChoice(weaponOption.Weapon, targetStats.TargetUnit)));

@@ -101,6 +101,7 @@ public class GuiChooseRangedAttackResolver
 
                 string label = $"{weaponStats}  →  {targetUnit.Name}  ({totalModels} models, {canShoot} in range";
                 if (cannotShoot > 0) label += $", {cannotShoot} out of range";
+                if (targetStats.HasCover) label += ", Cover";
                 label += ")";
 
                 list.Add((label, new RangedAttackChoice(weaponOption.Weapon, targetStats.TargetUnit)));
