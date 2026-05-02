@@ -47,9 +47,9 @@ public class ClientModal : IAppScreen
 
         float pad = 32f * scale;
 
-        ImGui.SetWindowFontScale(1.8f * scale);
+        ImGui.PushFont(RaylibRenderer.LargeFont);
         CenterText("CONNECT TO SERVER", dw);
-        ImGui.SetWindowFontScale(1.0f * scale);
+        ImGui.PopFont();
 
         ImGui.BeginDisabled(_isConnecting);
         ImGui.SetCursorPosX(pad);

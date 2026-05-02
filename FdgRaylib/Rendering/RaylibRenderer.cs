@@ -10,6 +10,10 @@ namespace FdgRaylib.Rendering;
 
 public class RaylibRenderer
 {
+    // Populated once during Run() after fonts are loaded; null until then.
+    public static ImGuiNET.ImFontPtr BodyFont;
+    public static ImGuiNET.ImFontPtr LargeFont;
+
     private const float TableWIn      = GameWideConstants.DEFAULT_TABLE_WIDTH_INCHES;
     private const float TableHIn      = GameWideConstants.DEFAULT_TABLE_HEIGHT_INCHES;
     private const int   LogPanelWidth = 350;
@@ -112,12 +116,16 @@ public class RaylibRenderer
 
         rlImGui.Setup(true);
 
-        // Load a TTF font so ImGui renders crisp text instead of scaling the
-        // default 13px bitmap. Size 18 looks good across the range of window sizes.
+        // Replace the default 13px bitmap font with DejaVuSans TTF.
+        // Must clear the atlas first — Setup already added the pixel font at index 0;
+        // adding without clearing would leave it as the default and push ours to index 1.
         string fontPath = Path.Combine(AppContext.BaseDirectory, "Assets", "DejaVuSans.ttf");
         if (File.Exists(fontPath))
         {
-            ImGui.GetIO().Fonts.AddFontFromFileTTF(fontPath, 18f);
+            var fonts = ImGui.GetIO().Fonts;
+            fonts.Clear();
+            BodyFont  = fonts.AddFontFromFileTTF(fontPath, 18f);
+            LargeFont = fonts.AddFontFromFileTTF(fontPath, 32f);
             rlImGui.ReloadFonts();
         }
 
