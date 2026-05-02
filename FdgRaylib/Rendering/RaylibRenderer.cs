@@ -36,6 +36,7 @@ public class RaylibRenderer
     private GameLog? _log;
     private GuiResolverOverlay? _resolverOverlay;
     private GuiOutstandingTaskDisplay? _taskDisplay;
+    private readonly TableTooltipOverlay _tooltipOverlay = new();
     private bool _inGame = false;
     private bool _closeRequested = false;
 
@@ -61,6 +62,7 @@ public class RaylibRenderer
         _log             = log;
         _resolverOverlay = resolverOverlay;
         _taskDisplay     = taskDisplay;
+        _tooltipOverlay.Attach(tableState, colorForPlayer);
 
         tableState.Models.OnObjectCreated += SubscribeToModel;
         foreach (var model in tableState.Models.Objects)
@@ -147,6 +149,8 @@ public class RaylibRenderer
                 rlImGui.Begin();
                 if (_log != null) DrawLogPanel(layout);
                 _taskDisplay?.Draw(screenW, screenH);
+                _tooltipOverlay.UpdateLayout(layout.Scale, layout.OriginX, layout.OriginY, TableHIn);
+                _tooltipOverlay.Draw(screenW, screenH);
                 _resolverOverlay?.UpdateLayout(layout.Scale, layout.OriginX, layout.OriginY, TableHIn);
                 _resolverOverlay?.Draw(screenW, screenH);
                 rlImGui.End();
