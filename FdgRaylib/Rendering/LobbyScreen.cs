@@ -17,7 +17,7 @@ namespace FdgRaylib.Rendering;
 public class LobbyScreen : IAppScreen
 {
     public Action? OnBack;
-    public Action<ITableState, Func<PlayerID, Color>, GameLog?, GuiResolverOverlay>? OnGameLaunched;
+    public Action<ITableState, Func<PlayerID, Color>, GameLog?, GuiResolverOverlay, GuiOutstandingTaskDisplay>? OnGameLaunched;
 
     private ILobbyViewModel? _viewModel;
     private string _chatInput = "";
@@ -266,14 +266,15 @@ public class LobbyScreen : IAppScreen
         var logUI = new GuiLogMessageUI(log);
         var (resolvers, overlay) = ResolverRegistryFactory.BuildGui(game.TableState);
 
-        game.AssignInterfaces(logUI, new CliPlayerMessageUI(), resolvers, new CliTempVisualDrawer(), outstandingTaskDisplay: null);
+        var taskDisplay = new GuiOutstandingTaskDisplay();
+        game.AssignInterfaces(logUI, new CliPlayerMessageUI(), resolvers, new CliTempVisualDrawer(), outstandingTaskDisplay: taskDisplay);
 
         var colors  = new Dictionary<PlayerID, Color>();
         var players = _viewModel?.PlayerInfos ?? [];
         for (int i = 0; i < players.Count; i++)
             colors[players[i].PlayerID] = PlayerPalette[i % PlayerPalette.Length];
 
-        OnGameLaunched?.Invoke(game.TableState, pid => colors.GetValueOrDefault(pid, Color.White), log, overlay);
+        OnGameLaunched?.Invoke(game.TableState, pid => colors.GetValueOrDefault(pid, Color.White), log, overlay, taskDisplay);
     }
 
     private static void DrawIntField(string label, int current, Action<int> setter)

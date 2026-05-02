@@ -31,6 +31,7 @@ public class RaylibRenderer
     private Func<PlayerID, Color>? _colorForPlayer;
     private GameLog? _log;
     private GuiResolverOverlay? _resolverOverlay;
+    private GuiOutstandingTaskDisplay? _taskDisplay;
     private bool _inGame = false;
     private bool _closeRequested = false;
 
@@ -48,12 +49,14 @@ public class RaylibRenderer
     private record Layout(float Scale, int OriginX, int OriginY, int LogX, int ScreenH);
 
     public void TransitionToGame(ITableState tableState, Func<PlayerID, Color> colorForPlayer,
-        GameLog? log, GuiResolverOverlay? resolverOverlay = null)
+        GameLog? log, GuiResolverOverlay? resolverOverlay = null,
+        GuiOutstandingTaskDisplay? taskDisplay = null)
     {
         _tableState      = tableState;
         _colorForPlayer  = colorForPlayer;
         _log             = log;
         _resolverOverlay = resolverOverlay;
+        _taskDisplay     = taskDisplay;
 
         tableState.Models.OnObjectCreated += SubscribeToModel;
         foreach (var model in tableState.Models.Objects)
@@ -118,6 +121,7 @@ public class RaylibRenderer
 
                 rlImGui.Begin();
                 if (_log != null) DrawLogPanel(layout);
+                _taskDisplay?.Draw(screenW, screenH);
                 _resolverOverlay?.UpdateLayout(layout.Scale, layout.OriginX, layout.OriginY, TableHIn);
                 _resolverOverlay?.Draw(screenW, screenH);
                 rlImGui.End();
