@@ -101,6 +101,21 @@ public class TableTooltipOverlay
         // Draw unit name labels
         if (_showLabels)
             DrawUnitLabels();
+
+        // Toolbar button
+        ImGui.SetNextWindowPos(new Vector2(8, 8), ImGuiCond.Always);
+        ImGui.SetNextWindowSize(Vector2.Zero); // auto-size
+        ImGui.SetNextWindowBgAlpha(0.70f);
+        ImGui.Begin("##tabletools",
+            ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoCollapse |
+            ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.AlwaysAutoResize |
+            ImGuiWindowFlags.NoFocusOnAppearing | ImGuiWindowFlags.NoNav);
+
+        string btnLabel = _showLabels ? "Labels: ON" : "Labels: OFF";
+        if (ImGui.Button(btnLabel))
+            _showLabels = !_showLabels;
+
+        ImGui.End();
     }
 
     private void DrawUnitTooltip(IUnit unit, IModel model)
