@@ -53,6 +53,8 @@ public class GuiDefineMovementResolver
         lock (_lock) { request = _request; tcs = _tcs; }
         if (request == null || tcs == null) return;
 
+        var terrain = _tableState.Terrain.Objects.ToList();
+
         var io     = ImGui.GetIO();
         var dl     = ImGui.GetBackgroundDrawList();
         var models = request.UnitDataBinding.GetValue().ModelBindings;
@@ -70,6 +72,7 @@ public class GuiDefineMovementResolver
         // Range rings on each model's current position
         uint advColor  = ImGui.ColorConvertFloat4ToU32(new Vector4(0.20f, 0.90f, 0.20f, 0.50f));
         uint rushColor = ImGui.ColorConvertFloat4ToU32(new Vector4(0.90f, 0.85f, 0.20f, 0.40f));
+        uint capColor  = ImGui.ColorConvertFloat4ToU32(new Vector4(1.00f, 0.55f, 0.10f, 0.65f));
         foreach (var mb in models)
         {
             var m = mb.GetValue();
@@ -81,10 +84,23 @@ public class GuiDefineMovementResolver
         // Ghost formation at hover
         List<ModelMoveEntry>? tentative = null;
         bool tentativeValid = false;
+        bool tentativeCrossesDifficult = false;
         if (overTable)
         {
-            tentative      = BuildEntries(request, ddx, ddz);
-            tentativeValid = MovementUtilities.ValidatePaths(tentative, request.MaxChargeDistance, out _);
+            tentative = BuildEntries(request, ddx, ddz);
+            tentativeValid = MovementUtilities.ValidatePaths(tentative, request.MaxChargeDistance, terrain, out _);
+            tentativeCrossesDifficult = tentative.Any(m => CrossesDifficultTerrain(m, terrain));
+
+            // Draw orange difficult-terrain cap rings when relevant
+            if (tentativeCrossesDifficult)
+            {
+                foreach (var mb in models)
+                {
+                    var m = mb.GetValue();
+                    var (px, py) = InchesToPixel(m.Position.x, m.Position.z);
+                    dl.AddCircle(new Vector2(px, py), GameWideConstants.DIFFICULT_TERRAIN_MOVE_CAP_INCHES * _scale, capColor, 64, 2f);
+                }
+            }
 
             uint ghostFill    = tentativeValid
                 ? ImGui.ColorConvertFloat4ToU32(new Vector4(0.20f, 1.00f, 0.20f, 0.45f))
@@ -107,7 +123,7 @@ public class GuiDefineMovementResolver
         if (overTable && !io.WantCaptureMouse && ImGui.IsMouseClicked(ImGuiMouseButton.Left))
         {
             tentative ??= BuildEntries(request, ddx, ddz);
-            if (MovementUtilities.ValidatePaths(tentative, request.MaxChargeDistance, out var errors))
+            if (MovementUtilities.ValidatePaths(tentative, request.MaxChargeDistance, terrain, out var errors))
             {
                 Complete(tcs, tentative);
                 return;
@@ -119,14 +135,14 @@ public class GuiDefineMovementResolver
         if (_errorMessage != null && ImGui.GetTime() > _errorExpiry)
             _errorMessage = null;
 
-        DrawInfoPanel(screenW, request, request.UnitDataBinding.GetValue().Name, tcs);
+        DrawInfoPanel(screenW, request, request.UnitDataBinding.GetValue().Name, tcs, tentativeCrossesDifficult);
     }
 
     private void DrawInfoPanel(int screenW, DefineMovementPathRequest request, string unitName,
-        TaskCompletionSource<List<ModelMoveEntry>> tcs)
+        TaskCompletionSource<List<ModelMoveEntry>> tcs, bool crossesDifficult)
     {
         float panelW = MathF.Min(screenW * 0.42f, 500f);
-        float panelH = 110f;
+        float panelH = crossesDifficult ? 130f : 110f;
         ImGui.SetNextWindowPos(new Vector2((screenW - panelW) * 0.5f, 16f), ImGuiCond.Always);
         ImGui.SetNextWindowSize(new Vector2(panelW, panelH), ImGuiCond.Always);
         ImGui.PushStyleColor(ImGuiCol.WindowBg, new Vector4(0.10f, 0.10f, 0.15f, 0.92f));
@@ -149,6 +165,13 @@ public class GuiDefineMovementResolver
         else
         {
             ImGui.TextDisabled("Click the table to move.  Green ring = advance,  yellow = rush.");
+        }
+
+        if (crossesDifficult)
+        {
+            ImGui.PushStyleColor(ImGuiCol.Text, new Vector4(1.00f, 0.55f, 0.10f, 1f));
+            ImGui.TextUnformatted($"Difficult terrain in path — max {GameWideConstants.DIFFICULT_TERRAIN_MOVE_CAP_INCHES}\"");
+            ImGui.PopStyleColor();
         }
 
         ImGui.Spacing();
@@ -227,4 +250,20 @@ public class GuiDefineMovementResolver
         px >= _originX && py >= _originY &&
         px <= _originX + GameWideConstants.DEFAULT_TABLE_WIDTH_INCHES * _scale &&
         py <= _originY + _tableH * _scale;
+
+    private static bool CrossesDifficultTerrain(ModelMoveEntry move, List<ITerrain> terrain)
+    {
+        var difficult = terrain.Where(t => t.TerrainType.HasFlag(ETerrainType.Difficult)).ToList();
+        if (difficult.Count == 0 || move.Positions.Count == 0) return false;
+
+        var startPos = move.Model.GetValue().PositionBinding.GetValue();
+        var seg = new Float2(startPos.x, startPos.z);
+        for (int i = 0; i < move.Positions.Count; i++)
+        {
+            var end = new Float2(move.Positions[i].x, move.Positions[i].z);
+            if (difficult.Any(p => p.DoesPathIntersectZone(seg, end))) return true;
+            seg = end;
+        }
+        return false;
+    }
 }
