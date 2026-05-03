@@ -73,7 +73,8 @@ public class CliApp
             logMessageUI:          logUI,
             playerMessageUI:       new CliPlayerMessageUI(),
             stageResolverRegistry: resolverRegistry,
-            tempVisualDrawer:      new CliTempVisualDrawer());
+            tempVisualDrawer:      new CliTempVisualDrawer(),
+            outstandingTaskDisplay: null);
 
         foreach (var slot in playerSlots)
         {
@@ -112,8 +113,8 @@ public class CliApp
 
         return new[]
         {
-            new PlayerSlot(slotID: 0, teamNumber: 0, playerID: player1ID, armyListFile: army1),
-            new PlayerSlot(slotID: 1, teamNumber: 1, playerID: player2ID, armyListFile: army2),
+            new PlayerSlot(slotID: 0, teamNumber: 0, playerID: player1ID, armyListFile: army1, gameDataStore: _gameDataStore!),
+            new PlayerSlot(slotID: 1, teamNumber: 1, playerID: player2ID, armyListFile: army2, gameDataStore: _gameDataStore!),
         };
     }
 

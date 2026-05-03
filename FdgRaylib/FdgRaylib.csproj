@@ -18,4 +18,10 @@
     <ProjectReference Include="..\FutureOfDarkGrimness\FutureOfDarkGrimness.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Content Include="Assets\**">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
 </Project>

@@ -10,6 +10,10 @@ namespace FdgRaylib.Rendering;
 
 public class RaylibRenderer
 {
+    // Populated once during Run() after fonts are loaded; null until then.
+    public static ImGuiNET.ImFontPtr BodyFont;
+    public static ImGuiNET.ImFontPtr LargeFont;
+
     private const float TableWIn      = GameWideConstants.DEFAULT_TABLE_WIDTH_INCHES;
     private const float TableHIn      = GameWideConstants.DEFAULT_TABLE_HEIGHT_INCHES;
     private const int   LogPanelWidth = 350;
@@ -31,6 +35,9 @@ public class RaylibRenderer
     private Func<PlayerID, Color>? _colorForPlayer;
     private GameLog? _log;
     private GuiResolverOverlay? _resolverOverlay;
+    private GuiOutstandingTaskDisplay? _taskDisplay;
+    private readonly TableTooltipOverlay _tooltipOverlay = new();
+    private readonly TableHitTester      _hitTester      = new();
     private bool _inGame = false;
     private bool _closeRequested = false;
 
@@ -48,12 +55,15 @@ public class RaylibRenderer
     private record Layout(float Scale, int OriginX, int OriginY, int LogX, int ScreenH);
 
     public void TransitionToGame(ITableState tableState, Func<PlayerID, Color> colorForPlayer,
-        GameLog? log, GuiResolverOverlay? resolverOverlay = null)
+        GameLog? log, GuiResolverOverlay? resolverOverlay = null,
+        GuiOutstandingTaskDisplay? taskDisplay = null)
     {
         _tableState      = tableState;
         _colorForPlayer  = colorForPlayer;
         _log             = log;
         _resolverOverlay = resolverOverlay;
+        _taskDisplay     = taskDisplay;
+        _tooltipOverlay.Attach(tableState, colorForPlayer);
 
         tableState.Models.OnObjectCreated += SubscribeToModel;
         foreach (var model in tableState.Models.Objects)
@@ -99,7 +109,28 @@ public class RaylibRenderer
         Raylib.SetConfigFlags(ConfigFlags.ResizableWindow);
         Raylib.InitWindow(1280, 720, "Future of Dark Grimness");
         Raylib.SetTargetFPS(30);
+
+        int monitor   = Raylib.GetCurrentMonitor();
+        int monitorW  = Raylib.GetMonitorWidth(monitor);
+        int monitorH  = Raylib.GetMonitorHeight(monitor);
+        int initW     = Math.Min(1280 * 2, monitorW);
+        int initH     = Math.Min(720  * 2, monitorH);
+        Raylib.SetWindowSize(initW, initH);
+
         rlImGui.Setup(true);
+
+        // Replace the default 13px bitmap font with DejaVuSans TTF.
+        // Must clear the atlas first — Setup already added the pixel font at index 0;
+        // adding without clearing would leave it as the default and push ours to index 1.
+        string fontPath = Path.Combine(AppContext.BaseDirectory, "Assets", "DejaVuSans.ttf");
+        if (File.Exists(fontPath))
+        {
+            var fonts = ImGui.GetIO().Fonts;
+            fonts.Clear();
+            BodyFont  = fonts.AddFontFromFileTTF(fontPath, 18f);
+            LargeFont = fonts.AddFontFromFileTTF(fontPath, 32f);
+            rlImGui.ReloadFonts();
+        }
 
         while (!Raylib.WindowShouldClose() && !_closeRequested)
         {
@@ -117,7 +148,11 @@ public class RaylibRenderer
                 DrawModels(layout);
 
                 rlImGui.Begin();
+                _hitTester.Update(_tableState!, layout.Scale, layout.OriginX, layout.OriginY, TableHIn);
                 if (_log != null) DrawLogPanel(layout);
+                _taskDisplay?.Draw(screenW, screenH);
+                _tooltipOverlay.UpdateLayout(layout.Scale, layout.OriginX, layout.OriginY, TableHIn);
+                _tooltipOverlay.Draw(screenW, screenH, _hitTester, _resolverOverlay?.ActiveInteractionHandler);
                 _resolverOverlay?.UpdateLayout(layout.Scale, layout.OriginX, layout.OriginY, TableHIn);
                 _resolverOverlay?.Draw(screenW, screenH);
                 rlImGui.End();
