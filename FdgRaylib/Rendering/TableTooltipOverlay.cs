@@ -20,7 +20,7 @@ public class TableTooltipOverlay
     private int   _originY;
     private float _tableH;
 
-    private bool _showLabels = false;
+    private bool _showLabels = true;
 
     public void Attach(ITableState tableState, Func<PlayerID, Color> colorForPlayer)
     {
@@ -102,8 +102,10 @@ public class TableTooltipOverlay
         if (_showLabels)
             DrawUnitLabels();
 
-        // Toolbar button
-        ImGui.SetNextWindowPos(new Vector2(8, 8), ImGuiCond.Always);
+        // Toolbar button — anchored to bottom-left, sized before positioning
+        float btnH = ImGui.GetFontSize() + ImGui.GetStyle().FramePadding.Y * 2;
+        float winPad = ImGui.GetStyle().WindowPadding.Y;
+        ImGui.SetNextWindowPos(new Vector2(8, screenH - btnH - winPad * 2 - 8), ImGuiCond.Always);
         ImGui.SetNextWindowSize(Vector2.Zero); // auto-size
         ImGui.SetNextWindowBgAlpha(0.70f);
         ImGui.Begin("##tabletools",
