@@ -37,6 +37,7 @@ public class RaylibRenderer
     private GuiResolverOverlay? _resolverOverlay;
     private GuiOutstandingTaskDisplay? _taskDisplay;
     private readonly TableTooltipOverlay _tooltipOverlay = new();
+    private readonly TableHitTester      _hitTester      = new();
     private bool _inGame = false;
     private bool _closeRequested = false;
 
@@ -147,10 +148,11 @@ public class RaylibRenderer
                 DrawModels(layout);
 
                 rlImGui.Begin();
+                _hitTester.Update(_tableState!, layout.Scale, layout.OriginX, layout.OriginY, TableHIn);
                 if (_log != null) DrawLogPanel(layout);
                 _taskDisplay?.Draw(screenW, screenH);
                 _tooltipOverlay.UpdateLayout(layout.Scale, layout.OriginX, layout.OriginY, TableHIn);
-                _tooltipOverlay.Draw(screenW, screenH);
+                _tooltipOverlay.Draw(screenW, screenH, _hitTester, _resolverOverlay?.ActiveInteractionHandler);
                 _resolverOverlay?.UpdateLayout(layout.Scale, layout.OriginX, layout.OriginY, TableHIn);
                 _resolverOverlay?.Draw(screenW, screenH);
                 rlImGui.End();

@@ -16,6 +16,21 @@ public class GuiResolverOverlay
             if (r is IGuiCanvasOverlay c) c.UpdateLayout(scale, originX, originY, tableH);
     }
 
+    /// <summary>
+    /// Returns the ICanvasInteractionHandler for the currently active resolver, if it
+    /// implements one. Null when no resolver is pending or the active one doesn't opt in.
+    /// </summary>
+    public ICanvasInteractionHandler? ActiveInteractionHandler
+    {
+        get
+        {
+            foreach (IGuiResolver r in _resolvers)
+                if (r.HasPendingRequest)
+                    return r as ICanvasInteractionHandler;
+            return null;
+        }
+    }
+
     public void Draw(int screenW, int screenH)
     {
         foreach (IGuiResolver r in _resolvers)
