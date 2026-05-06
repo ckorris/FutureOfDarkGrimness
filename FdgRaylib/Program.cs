@@ -67,5 +67,18 @@ else
     // The old "Host" path now goes through the lobby. CliApp is only used
     // in headless mode above.
 
-    renderer.Run();
+    try
+    {
+        renderer.Run();
+    }
+    catch (Exception ex)
+    {
+        Console.Error.WriteLine();
+        Console.Error.WriteLine("=== FATAL ERROR ===");
+        Console.Error.WriteLine(ex);
+        Console.Error.WriteLine("===================");
+        Console.Error.WriteLine("Press Enter to exit.");
+        Console.ReadLine();
+        throw;
+    }
 }

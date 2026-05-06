@@ -51,14 +51,8 @@ Not blocking the current phase, but worth doing as the system matures.
 
 ## Deferred phases (not bugs, just reminders)
 
-- **Unit perimeters block LoS** — Phase 9. Same algorithm as terrain blocking,
-  different shape source (model bases as circles).
 - **Height-aware sight lines** — once heightmaps land. The `ITerrain.HeightInches`
   field is already there; the segment query becomes 3D.
-- **Difficult terrain caps unit move at 6"** — Phase 4. Touches
-  `ChooseActionStage`'s `MaxAdvanceDistance` calculation.
-- **Dangerous terrain test** — Phase 5. Lives in
-  `ApplyNonMovementTerrainEffectsStage`.
 - **`PathTemplate.ValidateAll()` doesn't pass terrain** — currently calls the
   no-terrain `ValidatePaths` overload. PathTemplate isn't on any production
   path right now (only its own tests/samples), so this is harmless until it

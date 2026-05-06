@@ -44,8 +44,9 @@ public class GuiChooseRangedAttackResolver
         float pad     = 16f;
         float headerH = 64f;
         float rowH    = 36f;
+        float backH   = rowH + pad;
         float dw = MathF.Min(screenW * 0.55f, 680f);
-        float dh = MathF.Min(headerH + pad + options.Count * rowH + pad * 2, screenH * 0.82f);
+        float dh = MathF.Min(headerH + pad + options.Count * rowH + backH + pad * 2, screenH * 0.82f);
         float dx = (screenW - dw) * 0.5f;
         float dy = (screenH - dh) * 0.5f;
 
@@ -80,6 +81,12 @@ public class GuiChooseRangedAttackResolver
             if (ImGui.Button($"{label}##{i}", new Vector2(btnW, rowH - 4f)))
                 Complete(tcs, choice);
         }
+
+        ImGui.Spacing();
+        ImGui.PushStyleColor(ImGuiCol.Button, new Vector4(0.25f, 0.25f, 0.30f, 1f));
+        if (ImGui.Button("Back##back", new Vector2(btnW, rowH - 4f)))
+            Complete(tcs, null!);
+        ImGui.PopStyleColor();
 
         ImGui.EndChild();
         ImGui.EndChild();

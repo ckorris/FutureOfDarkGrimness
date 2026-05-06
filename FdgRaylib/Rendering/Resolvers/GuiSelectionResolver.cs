@@ -47,8 +47,9 @@ public class GuiSelectionResolver<T> : IStageResolver<SelectionRequest<T>, DataB
         float rowH   = 32f;
         float pad    = 16f;
         float instrH = 48f;
+        float backH  = rowH + pad; // extra height for Back button
         float dw = MathF.Min(screenW * 0.45f, 560f);
-        float dh = MathF.Min(instrH + pad + totalRows * rowH + pad * 2, screenH * 0.80f);
+        float dh = MathF.Min(instrH + pad + totalRows * rowH + backH + pad * 2, screenH * 0.80f);
         float dx = (screenW - dw) * 0.5f;
         float dy = (screenH - dh) * 0.5f;
 
@@ -92,6 +93,14 @@ public class GuiSelectionResolver<T> : IStageResolver<SelectionRequest<T>, DataB
             }
             ImGui.PopStyleColor();
         }
+
+        // Back button
+        float backY = listY + totalRows * rowH + pad;
+        ImGui.SetCursorPos(new Vector2(pad, backY));
+        ImGui.PushStyleColor(ImGuiCol.Button, new Vector4(0.25f, 0.25f, 0.30f, 1f));
+        if (ImGui.Button("Back##back", new Vector2(btnW, rowH - 4f)))
+            Complete(tcs, null!);
+        ImGui.PopStyleColor();
 
         ImGui.EndChild();
         ImGui.End();

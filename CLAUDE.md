@@ -93,10 +93,10 @@ Resolvers that need to interact with the table canvas (movement, placement) addi
 | Request | CLI resolver | GUI resolver | Notes |
 |---|---|---|---|
 | `YesNoRequest` | `YesNoResolver` | `GuiYesNoResolver` | EOF default: `true` |
-| `SelectionRequest<T>` | `SelectionResolver<T>` | `GuiSelectionResolver<T>` | Registered for `UnitData`, `ModelData`, `RectangularZone` |
+| `SelectionRequest<T>` | `SelectionResolver<T>` | `GuiSelectionResolver<T>` | Registered for `UnitData`, `ModelData`, `RectangularZone`; GUI has a Back button that resolves `null` |
 | `StringSelectionRequest` | `StringSelectionResolver` | `GuiStringSelectionResolver` | |
 | `ChooseDeploymentZoneRequest` | `ChooseDeploymentZoneResolver` | `GuiChooseDeploymentZoneResolver` | |
-| `ChooseRangedAttackRequest` | `ChooseRangedAttackResolver` | `GuiChooseRangedAttackResolver` | Flattens weapon × target into a single button list |
+| `ChooseRangedAttackRequest` | `ChooseRangedAttackResolver` | `GuiChooseRangedAttackResolver` | Flattens weapon × target into a single button list; GUI has a Back button that resolves `null` |
 | `AssignWoundsRequest` | `AssignWoundsResolver` | `GuiAssignWoundsResolver` | Stateful — `AssignWoundsResults` accumulates clicks; auto-completes when full |
 | `DefineMovementPathRequest` | `DefineMovementPathResolver` | `GuiDefineMovementResolver` | Click destination on canvas; whole unit moves same Δ |
 | `PlaceObjectsRequest<T>` | `PlaceObjectsResolver<T>` | `GuiPlaceObjectsResolver<T>` | Click each model in turn within deployment zone |
@@ -105,6 +105,8 @@ Resolvers that need to interact with the table canvas (movement, placement) addi
 
 - **Deployment spacing**: `MAX_MODEL_DISTANCE_FROM_ANY_OTHER_MODEL_INCHES` is 1.0" base-to-base. Auto-placement uses 0.1" gap, **not 1.0"** — at exactly 1.0", float accumulation during diagonal movement can push models fractionally over the cohesion limit.
 - **Movement float precision**: `AutoAdvance` caps `step` at `MaxAdvanceDistance - 0.001f`. Without this margin, the resulting 3D move distance can come out fractionally above `MaxAdvanceDistance` and `ChooseActionStage.GetCanShoot` will block shooting after a legal advance.
+- **Back / cancel sentinel**: `GuiSelectionResolver<T>` and `GuiChooseRangedAttackResolver` resolve with `null` when the player clicks Back. Any stage that awaits those requests must null-check the result and activate its `BackToChooseAction` binding rather than proceeding. `ChooseMeleeDefenderStage` and `ChooseRangedAttackStage` already do this.
+- **Charge availability**: `ChooseActionStage.GetCanCharge` queries live unit positions and grays out Charge when no enemy is within `MELEE_RANGE_INCHES_HORIZONTAL` (2"). The check re-runs each time Choose Action is entered, so it stays accurate after movement.
 
 ## Engine Concepts
 
@@ -139,10 +141,10 @@ The engine has substantial gaps. Don't assume rules are enforced just because a 
 - `VictoryCalculationStage` — always declares a tie
 - `MapSetupStage` — no terrain or objective placement (TODO)
 
-**Movement validation is missing**
-- `MovementUtilities.ValidateMovingThroughImpassibleTerrain` — empty
-- `MovementUtilities.ValidateMovingThroughEnemyUnits` — empty
-- `ChooseRangedAttackStage.DoesModelHaveLineOfSight` — returns `true` unconditionally
+**Movement validation is partial**
+- `MovementUtilities.ValidateMovingThroughImpassibleTerrain` — implemented; blocks moves whose path intersects any `Impassible`-flagged terrain piece
+- `MovementUtilities.ValidateMovingThroughEnemyUnits` — empty (TODO)
+- LoS is fully implemented: `ChooseRangedAttackStage` and `OcclusionCheckStage` call `LineOfSightUtilities.HasLineOfSight` with terrain + model-base circular blockers (excluding the attacking and defending unit's own models)
 
 **Melee is barely implemented**
 - `DetermineInRangeAttackersStage` / `DetermineInRangeDefendersStage` — skip range checks; any model can fight
@@ -154,7 +156,8 @@ The engine has substantial gaps. Don't assume rules are enforced just because a 
 - `RollForMoraleStage` — modifiers TODO
 
 **Round/turn machinery placeholders**
-- `StartOfRoundExtraActionStage`, `ApplyNonMovementTerrainEffectsStage`, `ReconcileNewRoundStage` — transition with no work
+- `StartOfRoundExtraActionStage`, `ReconcileNewRoundStage` — transition with no work
+- `ApplyNonMovementTerrainEffectsStage` — implemented: rolls d6 per model whose path crosses `Dangerous` terrain; deals 1 wound on a roll of 1
 - `ChooseActionStage` — custom-action branch hardcoded `false`
 
 **Half-built**
