@@ -74,11 +74,18 @@ public class RaylibRenderer
         foreach (var terrain in tableState.Terrain.Objects)
             AddTerrain(terrain);
 
+        tableState.Objectives.OnObjectCreated += AddObjective;
+        tableState.Objectives.OnObjectRemoved += RemoveObjective;
+        foreach (var objective in tableState.Objectives.Objects)
+            AddObjective(objective);
+
         _inGame = true;
     }
 
-    private readonly List<ITerrain> _terrain = new();
-    private readonly object _terrainLock = new();
+    private readonly List<ITerrain>   _terrain      = new();
+    private readonly object           _terrainLock  = new();
+    private readonly List<IObjective> _objectives   = new();
+    private readonly object           _objectivesLock = new();
 
     private void AddTerrain(ITerrain terrain)
     {
@@ -88,6 +95,16 @@ public class RaylibRenderer
     private void RemoveTerrain(ITerrain terrain)
     {
         lock (_terrainLock) _terrain.Remove(terrain);
+    }
+
+    private void AddObjective(IObjective objective)
+    {
+        lock (_objectivesLock) _objectives.Add(objective);
+    }
+
+    private void RemoveObjective(IObjective objective)
+    {
+        lock (_objectivesLock) _objectives.Remove(objective);
     }
 
     public void RequestClose() => _closeRequested = true;
@@ -145,6 +162,7 @@ public class RaylibRenderer
                 var layout = ComputeLayout(screenW, screenH);
                 DrawTable(layout);
                 DrawTerrain(layout);
+                DrawObjectives(layout);
                 DrawModels(layout);
 
                 rlImGui.Begin();
@@ -205,6 +223,43 @@ public class RaylibRenderer
         {
             (Color fill, Color outline) = TerrainColors.For(terrain.TerrainType);
             ZoneRenderer.DrawFilled(terrain.Shape, l.Scale, l.OriginX, l.OriginY, TableHIn, fill, outline);
+        }
+    }
+
+    private static readonly Color ObjectiveNeutralColor = new(160, 160, 160, 255);
+    private const float ObjectiveMarkerRadiusInches = 0.5f;
+    private const float ObjectiveSeizureRadiusInches = 3f;
+
+    private void DrawObjectives(Layout l)
+    {
+        IObjective[] snapshot;
+        lock (_objectivesLock) snapshot = _objectives.ToArray();
+
+        for (int i = 0; i < snapshot.Length; i++)
+        {
+            var obj = snapshot[i];
+            int cx = l.OriginX + (int)(obj.Position.x * l.Scale);
+            int cy = l.OriginY + (int)((TableHIn - obj.Position.z) * l.Scale);
+
+            Color baseColor = obj.OwnerID.HasValue
+                ? _colorForPlayer!(obj.OwnerID.Value)
+                : ObjectiveNeutralColor;
+
+            // Translucent 3" seizure zone.
+            float seizurePx = ObjectiveSeizureRadiusInches * l.Scale;
+            Raylib.DrawCircle(cx, cy, seizurePx, new Color(baseColor.R, baseColor.G, baseColor.B, (byte)45));
+            Raylib.DrawCircleLines(cx, cy, seizurePx, new Color(baseColor.R, baseColor.G, baseColor.B, (byte)180));
+
+            // Solid inner marker.
+            float markerPx = ObjectiveMarkerRadiusInches * l.Scale;
+            Raylib.DrawCircle(cx, cy, markerPx, baseColor);
+            Raylib.DrawCircleLines(cx, cy, markerPx, Color.Black);
+
+            // Index number centered inside the marker.
+            string label = (i + 1).ToString();
+            int fontSize = Math.Max(8, (int)(markerPx * 1.5f));
+            int textW    = Raylib.MeasureText(label, fontSize);
+            Raylib.DrawText(label, cx - textW / 2, cy - fontSize / 2, fontSize, Color.White);
         }
     }
 
