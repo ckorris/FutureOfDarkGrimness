@@ -41,7 +41,6 @@ public static class ResolverRegistryFactory
         var assignWounds = new GuiAssignWoundsResolver();
         var movement     = new GuiDefineMovementResolver(tableState);
         var placeObjects = new GuiPlaceObjectsResolver<ModelData>(tableState);
-
         overlay.Register(yesNo);
         overlay.Register(selectUnit);
         overlay.Register(selectModel);
