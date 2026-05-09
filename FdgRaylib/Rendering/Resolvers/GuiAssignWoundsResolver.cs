@@ -100,7 +100,7 @@ public class GuiAssignWoundsResolver : IStageResolver<AssignWoundsRequest, Assig
         ImGui.SetCursorPos(new Vector2(pad, btnY));
         if (ImGui.Button("Auto-assign All", new Vector2(btnW, footH - 4f)))
         {
-            AutoFillRemaining(results);
+            results.AutoFill();
             Complete(tcs, results);
         }
 
@@ -114,13 +114,4 @@ public class GuiAssignWoundsResolver : IStageResolver<AssignWoundsRequest, Assig
         tcs.SetResult(results);
     }
 
-    // AssignWoundsResults.AutoFill() has a bug (modelWoundsRemaining always 0); fill manually.
-    private static void AutoFillRemaining(AssignWoundsResults results)
-    {
-        foreach (var pw in results.PendingWounds)
-        {
-            if (results.IsFinishedAssigning) break;
-            results.TryAddWounds(pw.Model);
-        }
-    }
 }

@@ -18,6 +18,7 @@ public static class ResolverRegistryFactory
             .RegisterResolver(new ChooseRangedAttackResolver())
             .RegisterResolver(new DefineMovementPathResolver(tableState))
             .RegisterResolver(new AssignWoundsResolver())
+            .RegisterResolver(new ChooseMeleeDefenderResolver())
             .RegisterResolver(new SelectionResolver<UnitData>())
             .RegisterResolver(new SelectionResolver<ModelData>())
             .RegisterResolver(new SelectionResolver<RectangularZone>())
@@ -29,16 +30,18 @@ public static class ResolverRegistryFactory
     {
         var overlay = new GuiResolverOverlay();
 
-        var yesNo         = new GuiYesNoResolver();
-        var selectUnit    = new GuiSelectionResolver<UnitData>();
-        var selectModel   = new GuiSelectionResolver<ModelData>();
-        var selectZone    = new GuiSelectionResolver<RectangularZone>();
-        var strSel        = new GuiStringSelectionResolver();
-        var deployZone    = new GuiChooseDeploymentZoneResolver();
-        var rangedAttack  = new GuiChooseRangedAttackResolver();
-        var assignWounds  = new GuiAssignWoundsResolver();
-        var movement      = new GuiDefineMovementResolver(tableState);
-        var placeObjects  = new GuiPlaceObjectsResolver<ModelData>(tableState);
+        var yesNo        = new GuiYesNoResolver();
+        var selectUnit   = new GuiSelectionResolver<UnitData>();
+        var selectModel  = new GuiSelectionResolver<ModelData>();
+        var selectZone   = new GuiSelectionResolver<RectangularZone>();
+        var strSel       = new GuiStringSelectionResolver();
+        var deployZone   = new GuiChooseDeploymentZoneResolver();
+        var rangedAttack = new GuiChooseRangedAttackResolver(tableState);
+        var meleeTarget  = new GuiChooseMeleeTargetResolver(tableState);
+        var assignWounds = new GuiAssignWoundsResolver();
+        var movement     = new GuiDefineMovementResolver(tableState);
+        var placeObjects = new GuiPlaceObjectsResolver<ModelData>(tableState);
+
         overlay.Register(yesNo);
         overlay.Register(selectUnit);
         overlay.Register(selectModel);
@@ -46,6 +49,7 @@ public static class ResolverRegistryFactory
         overlay.Register(strSel);
         overlay.Register(deployZone);
         overlay.Register(rangedAttack);
+        overlay.Register(meleeTarget);
         overlay.Register(assignWounds);
         overlay.Register(movement);
         overlay.Register(placeObjects);
@@ -58,6 +62,7 @@ public static class ResolverRegistryFactory
             .RegisterResolver(strSel)                                        // GUI
             .RegisterResolver(deployZone)                                    // GUI
             .RegisterResolver(rangedAttack)                                  // GUI
+            .RegisterResolver(meleeTarget)                                   // GUI
             .RegisterResolver(assignWounds)                                  // GUI
             .RegisterResolver(movement)                                      // GUI
             .RegisterResolver(placeObjects);                                 // GUI
