@@ -35,7 +35,7 @@ public static class ResolverRegistryFactory
         var selectZone    = new GuiSelectionResolver<RectangularZone>();
         var strSel        = new GuiStringSelectionResolver();
         var deployZone    = new GuiChooseDeploymentZoneResolver();
-        var rangedAttack  = new GuiChooseRangedAttackResolver();
+        var rangedAttack  = new GuiChooseRangedAttackResolver(tableState);
         var assignWounds  = new GuiAssignWoundsResolver();
         var movement      = new GuiDefineMovementResolver(tableState);
         var placeObjects  = new GuiPlaceObjectsResolver<ModelData>(tableState);

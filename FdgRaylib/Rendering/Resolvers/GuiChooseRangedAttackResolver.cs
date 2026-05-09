@@ -1,5 +1,6 @@
 using System.Numerics;
 using FDG;
+using FDG.Data;
 using FDG.StageResolution;
 using FDG.StageResolution.Requests;
 using ImGuiNET;
@@ -8,11 +9,30 @@ using static FDG.StageResolution.Requests.ChooseRangedAttackRequest;
 namespace FdgRaylib.Rendering.Resolvers;
 
 public class GuiChooseRangedAttackResolver
-    : IStageResolver<ChooseRangedAttackRequest, RangedAttackChoice>, IGuiResolver
+    : IStageResolver<ChooseRangedAttackRequest, RangedAttackChoice>, IGuiResolver, IGuiCanvasOverlay
 {
+    private readonly ITableState _tableState;
     private readonly object _lock = new();
     private ChooseRangedAttackRequest? _request;
     private TaskCompletionSource<RangedAttackChoice>? _tcs;
+
+    // Layout — main-thread only, no lock needed
+    private float _scale   = 10f;
+    private float _tableH  = GameWideConstants.DEFAULT_TABLE_HEIGHT_INCHES;
+    private int   _originX, _originY;
+
+    // Hover state — main-thread only
+    private (int weaponIdx, int targetIdx) _hoveredOption = (-1, -1);
+
+    public GuiChooseRangedAttackResolver(ITableState tableState) => _tableState = tableState;
+
+    public void UpdateLayout(float scale, int originX, int originY, float tableH)
+    {
+        _scale   = scale;
+        _originX = originX;
+        _originY = originY;
+        _tableH  = tableH;
+    }
 
     public bool HasPendingRequest { get { lock (_lock) return _request != null; } }
 
@@ -30,8 +50,10 @@ public class GuiChooseRangedAttackResolver
         lock (_lock) { request = _request; tcs = _tcs; }
         if (request == null || tcs == null) return;
 
-        // Build flat option list once per frame (cheap — small lists)
         var options = BuildOptions(request);
+
+        // Draw canvas lines for hovered option before the ImGui window
+        DrawHoverLines(request, options);
 
         ImGui.SetNextWindowPos(Vector2.Zero, ImGuiCond.Always);
         ImGui.SetNextWindowSize(new Vector2(screenW, screenH), ImGuiCond.Always);
@@ -75,12 +97,16 @@ public class GuiChooseRangedAttackResolver
             ImGuiWindowFlags.HorizontalScrollbar);
 
         float btnW = ImGui.GetContentRegionAvail().X;
+        (int weaponIdx, int targetIdx) newHovered = (-1, -1);
         for (int i = 0; i < options.Count; i++)
         {
-            var (label, choice) = options[i];
+            var (label, choice, wIdx, tIdx) = options[i];
             if (ImGui.Button($"{label}##{i}", new Vector2(btnW, rowH - 4f)))
                 Complete(tcs, choice);
+            if (ImGui.IsItemHovered())
+                newHovered = (wIdx, tIdx);
         }
+        _hoveredOption = newHovered;
 
         ImGui.Spacing();
         ImGui.PushStyleColor(ImGuiCol.Button, new Vector4(0.25f, 0.25f, 0.30f, 1f));
@@ -93,14 +119,65 @@ public class GuiChooseRangedAttackResolver
         ImGui.End();
     }
 
-    private static List<(string Label, RangedAttackChoice Choice)> BuildOptions(ChooseRangedAttackRequest request)
+    private void DrawHoverLines(ChooseRangedAttackRequest request,
+        List<(string Label, RangedAttackChoice Choice, int WIdx, int TIdx)> options)
     {
-        var list = new List<(string, RangedAttackChoice)>();
-        foreach (var weaponOption in request.WeaponOptions)
+        var (wIdx, tIdx) = _hoveredOption;
+        if (wIdx < 0 || wIdx >= request.WeaponOptions.Count) return;
+
+        var weaponOption = request.WeaponOptions[wIdx];
+        if (tIdx < 0 || tIdx >= weaponOption.WeaponTargetStats.Count) return;
+
+        var targetStats  = weaponOption.WeaponTargetStats[tIdx];
+        var attackerUnit = request.AttackingUnit.GetValue();
+        var targetUnit   = targetStats.TargetUnit.GetValue();
+
+        var dl = ImGui.GetBackgroundDrawList();
+
+        uint colorCan    = ImGui.ColorConvertFloat4ToU32(new Vector4(0.20f, 1.00f, 0.20f, 0.80f));
+        uint colorCannot = ImGui.ColorConvertFloat4ToU32(new Vector4(1.00f, 0.30f, 0.30f, 0.55f));
+        uint colorTarget = ImGui.ColorConvertFloat4ToU32(new Vector4(1.00f, 0.85f, 0.10f, 0.65f));
+
+        // Highlight target models
+        foreach (var mb in targetUnit.ModelBindings)
         {
-            string weaponStats = weaponOption.Weapon.GetWeaponNameAndStats();
-            foreach (var targetStats in weaponOption.WeaponTargetStats)
+            var m = mb.GetValue();
+            var (tx, ty) = InchesToPixel(m.Position.x, m.Position.z);
+            dl.AddCircle(new Vector2(tx, ty), m.BaseRadiusInches * _scale + 3f, colorTarget, 32, 2f);
+        }
+
+        // Lines from each attacker to each target model
+        foreach (var attackerBinding in attackerUnit.ModelBindings)
+        {
+            var attacker = attackerBinding.GetValue();
+            var (ax, ay) = InchesToPixel(attacker.Position.x, attacker.Position.z);
+            bool canShoot = targetStats.modelsThatCanShoot.Contains(attackerBinding);
+            uint lineColor = canShoot ? colorCan : colorCannot;
+
+            foreach (var defenderBinding in targetUnit.ModelBindings)
             {
+                var defender = defenderBinding.GetValue();
+                var (tx, ty) = InchesToPixel(defender.Position.x, defender.Position.z);
+                dl.AddLine(new Vector2(ax, ay), new Vector2(tx, ty), lineColor, 1.5f);
+            }
+        }
+    }
+
+    private static List<(string Label, RangedAttackChoice Choice, int WIdx, int TIdx)> BuildOptions(
+        ChooseRangedAttackRequest request)
+    {
+        var list = new List<(string, RangedAttackChoice, int, int)>();
+        for (int wi = 0; wi < request.WeaponOptions.Count; wi++)
+        {
+            var weaponOption = request.WeaponOptions[wi];
+            string weaponStats = weaponOption.Weapon.GetWeaponNameAndStats();
+            for (int ti = 0; ti < weaponOption.WeaponTargetStats.Count; ti++)
+            {
+                var targetStats = weaponOption.WeaponTargetStats[ti];
+
+                // Skip targets no model can actually reach
+                if (targetStats.modelsThatCanShoot.Count == 0) continue;
+
                 var targetUnit  = targetStats.TargetUnit.GetValue();
                 int canShoot    = targetStats.modelsThatCanShoot.Count;
                 int cannotShoot = targetStats.modelsWithWeaponThatCannotShoot.Count;
@@ -111,7 +188,7 @@ public class GuiChooseRangedAttackResolver
                 if (targetStats.HasCover) label += ", Cover";
                 label += ")";
 
-                list.Add((label, new RangedAttackChoice(weaponOption.Weapon, targetStats.TargetUnit)));
+                list.Add((label, new RangedAttackChoice(weaponOption.Weapon, targetStats.TargetUnit), wi, ti));
             }
         }
         return list;
@@ -120,6 +197,14 @@ public class GuiChooseRangedAttackResolver
     private void Complete(TaskCompletionSource<RangedAttackChoice> tcs, RangedAttackChoice choice)
     {
         lock (_lock) { _request = null; _tcs = null; }
+        _hoveredOption = (-1, -1);
         tcs.SetResult(choice);
+    }
+
+    private (float px, float py) InchesToPixel(float x, float z)
+    {
+        float px = _originX + x * _scale;
+        float py = _originY + (_tableH - z) * _scale;
+        return (px, py);
     }
 }
