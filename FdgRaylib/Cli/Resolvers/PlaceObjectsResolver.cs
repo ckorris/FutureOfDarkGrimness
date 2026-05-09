@@ -78,6 +78,12 @@ public class PlaceObjectsResolver<T> : IStageResolver<PlaceObjectsRequest<T>, Li
                         continue;
                     }
 
+                    if (placed.Count > 0 && !IsInCohesion(newPos, r, placed))
+                    {
+                        Console.WriteLine($"    ! Outside cohesion — must be within {GameWideConstants.MAX_MODEL_DISTANCE_FROM_ANY_OTHER_MODEL_INCHES}\" base-to-base of a placed model.");
+                        continue;
+                    }
+
                     placed.Add(new PlacedObjectEntry<T>(binding, newPos));
                     break;
                 }
@@ -101,9 +107,10 @@ public class PlaceObjectsResolver<T> : IStageResolver<PlaceObjectsRequest<T>, Li
         for (float x = xStart; x <= zone.Right - r; x += step)
         {
             var candidate = new Position(x, cz);
-            if (CheckOverlap(candidate, r, placedSoFar) == null &&
-                CheckOverlapWithExisting(candidate, r, existing) == null)
-                return candidate;
+            if (CheckOverlap(candidate, r, placedSoFar) != null) continue;
+            if (CheckOverlapWithExisting(candidate, r, existing) != null) continue;
+            if (placedSoFar.Count > 0 && !IsInCohesion(candidate, r, placedSoFar)) continue;
+            return candidate;
         }
 
         // Fallback: best effort at zone center (shouldn't happen on a 72" table)
@@ -155,4 +162,16 @@ public class PlaceObjectsResolver<T> : IStageResolver<PlaceObjectsRequest<T>, Li
 
     private static float GetBaseRadius(T value) =>
         value is ModelData m ? m.BaseRadiusInches : 0.75f;
+
+    private static bool IsInCohesion(Position candidate, float radius, List<PlacedObjectEntry<T>> placed)
+    {
+        foreach (var entry in placed)
+        {
+            float er = GetBaseRadius(entry.Binding.GetValue());
+            float b2b = Dist(candidate, entry.Position) - radius - er;
+            if (b2b <= GameWideConstants.MAX_MODEL_DISTANCE_FROM_ANY_OTHER_MODEL_INCHES)
+                return true;
+        }
+        return false;
+    }
 }

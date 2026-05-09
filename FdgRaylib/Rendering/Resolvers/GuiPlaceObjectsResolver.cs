@@ -79,7 +79,8 @@ public class GuiPlaceObjectsResolver<T>
         bool inZone   = mouseInX >= zone.Left  + currentRadius && mouseInX <= zone.Right - currentRadius &&
                         mouseInZ >= zone.Bottom + currentRadius && mouseInZ <= zone.Top   - currentRadius;
         string? overlap = inZone ? CheckOverlap(candidate, currentRadius) : null;
-        bool valid = inZone && overlap == null;
+        bool inCohesion = _placed.Count == 0 || IsInCohesionWithPlaced(candidate, currentRadius);
+        bool valid = inZone && overlap == null && inCohesion;
 
         if (overTable) DrawGhost(dl, io.MousePos, currentRadius * _scale, valid);
 
@@ -94,6 +95,11 @@ public class GuiPlaceObjectsResolver<T>
             {
                 _errorMessage = $"Bases overlap ({overlap}).";
                 _errorExpiry  = ImGui.GetTime() + 2.0;
+            }
+            else if (!inCohesion)
+            {
+                _errorMessage = $"Outside cohesion — must be within {GameWideConstants.MAX_MODEL_DISTANCE_FROM_ANY_OTHER_MODEL_INCHES}\" base-to-base of a placed model.";
+                _errorExpiry  = ImGui.GetTime() + 2.5;
             }
             else
             {
@@ -244,7 +250,9 @@ public class GuiPlaceObjectsResolver<T>
                 for (float x = zone.Left + r; x <= zone.Right - r; x += step * 0.5f)
                 {
                     var c = new Position(x, z);
-                    if (CheckOverlap(c, r) == null) { result = c; return true; }
+                    if (CheckOverlap(c, r) != null) continue;
+                    if (!IsInCohesionWithPlaced(c, r)) continue;
+                    result = c; return true;
                 }
             }
         }
@@ -306,4 +314,17 @@ public class GuiPlaceObjectsResolver<T>
     }
 
     private static float GetBaseRadius(T value) => value is ModelData m ? m.BaseRadiusInches : 0.75f;
+
+    private bool IsInCohesionWithPlaced(Position candidate, float candidateRadius)
+    {
+        if (_placed.Count == 0) return true;
+        foreach (var entry in _placed)
+        {
+            float er = GetBaseRadius(entry.Binding.GetValue());
+            float b2b = Dist(candidate, entry.Position) - candidateRadius - er;
+            if (b2b <= GameWideConstants.MAX_MODEL_DISTANCE_FROM_ANY_OTHER_MODEL_INCHES)
+                return true;
+        }
+        return false;
+    }
 }
