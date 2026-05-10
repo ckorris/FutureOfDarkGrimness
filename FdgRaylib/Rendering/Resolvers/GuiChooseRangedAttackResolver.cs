@@ -9,7 +9,8 @@ using static FDG.StageResolution.Requests.ChooseRangedAttackRequest;
 namespace FdgRaylib.Rendering.Resolvers;
 
 public class GuiChooseRangedAttackResolver
-    : IStageResolver<ChooseRangedAttackRequest, RangedAttackChoice>, IGuiResolver, IGuiCanvasOverlay
+    : IStageResolver<ChooseRangedAttackRequest, RangedAttackChoice>, IGuiResolver, IGuiCanvasOverlay,
+      ICanvasInteractionHandler
 {
     private readonly ITableState _tableState;
     private readonly object _lock = new();
@@ -22,7 +23,10 @@ public class GuiChooseRangedAttackResolver
     private int   _originX, _originY;
 
     // Hover state — main-thread only
-    private (int weaponIdx, int targetIdx) _hoveredOption = (-1, -1);
+    // _hoveredOption: set by button hover in the dialog panel
+    // _canvasHoveredOption: set by GetHoverLabel when cursor is over a unit on the table
+    private (int weaponIdx, int targetIdx) _hoveredOption       = (-1, -1);
+    private (int weaponIdx, int targetIdx) _canvasHoveredOption = (-1, -1);
 
     public GuiChooseRangedAttackResolver(ITableState tableState) => _tableState = tableState;
 
@@ -53,7 +57,7 @@ public class GuiChooseRangedAttackResolver
         var options = BuildOptions(request);
 
         // Draw canvas lines for hovered option before the ImGui window
-        DrawHoverLines(request, options);
+        DrawHoverLines(request);
 
         ImGui.SetNextWindowPos(Vector2.Zero, ImGuiCond.Always);
         ImGui.SetNextWindowSize(new Vector2(screenW, screenH), ImGuiCond.Always);
@@ -118,10 +122,67 @@ public class GuiChooseRangedAttackResolver
         ImGui.End();
     }
 
-    private void DrawHoverLines(ChooseRangedAttackRequest request,
-        List<(string Label, RangedAttackChoice Choice, int WIdx, int TIdx)> options)
+    // ICanvasInteractionHandler — called from TableTooltipOverlay before Draw() each frame
+    public string? GetHoverLabel(IUnit unit, IModel model)
     {
-        var (wIdx, tIdx) = _hoveredOption;
+        var (wIdx, tIdx) = FindBestOptionForUnit(unit);
+        _canvasHoveredOption = (wIdx, tIdx);
+        if (wIdx < 0) return null;
+
+        ChooseRangedAttackRequest? request;
+        lock (_lock) { request = _request; }
+        if (request == null) return null;
+
+        int canShoot = request.WeaponOptions[wIdx].WeaponTargetStats[tIdx].modelsThatCanShoot.Count;
+        return $"Click to shoot  ({canShoot} model{(canShoot != 1 ? "s" : "")} in range)";
+    }
+
+    public void HandleClick(IUnit unit, IModel model)
+    {
+        ChooseRangedAttackRequest? request;
+        TaskCompletionSource<RangedAttackChoice>? tcs;
+        lock (_lock) { request = _request; tcs = _tcs; }
+        if (request == null || tcs == null) return;
+
+        var (wIdx, tIdx) = FindBestOptionForUnit(unit);
+        if (wIdx < 0) return;
+
+        var weaponOption = request.WeaponOptions[wIdx];
+        var targetStats  = weaponOption.WeaponTargetStats[tIdx];
+        Complete(tcs, new RangedAttackChoice(weaponOption.Weapon, targetStats.TargetUnit));
+    }
+
+    // Finds the weapon+target entry for the given unit with the most models that can shoot.
+    private (int wIdx, int tIdx) FindBestOptionForUnit(IUnit unit)
+    {
+        ChooseRangedAttackRequest? request;
+        lock (_lock) { request = _request; }
+        if (request == null) return (-1, -1);
+
+        int bestWIdx = -1, bestTIdx = -1, bestCount = -1;
+        for (int wi = 0; wi < request.WeaponOptions.Count; wi++)
+        {
+            var weaponOption = request.WeaponOptions[wi];
+            for (int ti = 0; ti < weaponOption.WeaponTargetStats.Count; ti++)
+            {
+                var targetStats = weaponOption.WeaponTargetStats[ti];
+                if (targetStats.TargetUnit.GetValue() != unit) continue;
+                int count = targetStats.modelsThatCanShoot.Count;
+                if (count > bestCount)
+                {
+                    bestCount = count;
+                    bestWIdx  = wi;
+                    bestTIdx  = ti;
+                }
+            }
+        }
+        return bestCount > 0 ? (bestWIdx, bestTIdx) : (-1, -1);
+    }
+
+    private void DrawHoverLines(ChooseRangedAttackRequest request)
+    {
+        // Button hover takes priority; fall back to canvas hover
+        var (wIdx, tIdx) = _hoveredOption.weaponIdx >= 0 ? _hoveredOption : _canvasHoveredOption;
         if (wIdx < 0 || wIdx >= request.WeaponOptions.Count) return;
 
         var weaponOption = request.WeaponOptions[wIdx];
@@ -196,7 +257,8 @@ public class GuiChooseRangedAttackResolver
     private void Complete(TaskCompletionSource<RangedAttackChoice> tcs, RangedAttackChoice choice)
     {
         lock (_lock) { _request = null; _tcs = null; }
-        _hoveredOption = (-1, -1);
+        _hoveredOption       = (-1, -1);
+        _canvasHoveredOption = (-1, -1);
         tcs.SetResult(choice);
     }
 
