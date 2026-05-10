@@ -147,19 +147,18 @@ public class GuiChooseRangedAttackResolver
             }
             if (ImGui.IsItemHovered())
             {
-                // Highlight first valid target for this weapon on hover
                 int firstTIdx = FindFirstValidTargetInWeapon(wi, request);
                 newHovered = firstTIdx >= 0 ? (wi, firstTIdx) : (-1, -1);
             }
 
-            var rMin = ImGui.GetItemRectMin();
-            ImGui.SetCursorScreenPos(rMin + new Vector2(4, 2));
-            ImGui.TextUnformatted(wo.Weapon.Name);
-            ImGui.SetCursorScreenPos(rMin + new Vector2(4, ImGui.GetTextLineHeight() + 4));
-            ImGui.PushStyleColor(ImGuiCol.Text, new Vector4(0.65f, 0.65f, 0.70f, 1f));
-            ImGui.TextUnformatted($"{wo.Weapon.RangeInches}\", A{wo.Weapon.Attacks} AP{wo.Weapon.ArmorPenetration}");
-            ImGui.PopStyleColor();
-            ImGui.SetCursorPosY(ImGui.GetCursorPosY() + ImGui.GetStyle().ItemSpacing.Y);
+            // Overlay text via draw list — no cursor manipulation, no boundary extension.
+            var rMin    = ImGui.GetItemRectMin();
+            var dl      = ImGui.GetWindowDrawList();
+            uint colTxt = ImGui.GetColorU32(ImGuiCol.Text);
+            uint colSub = ImGui.ColorConvertFloat4ToU32(new Vector4(0.65f, 0.65f, 0.70f, 1f));
+            dl.AddText(rMin + new Vector2(4, 2), colTxt, wo.Weapon.Name);
+            dl.AddText(rMin + new Vector2(4, ImGui.GetTextLineHeight() + 4), colSub,
+                $"{wo.Weapon.RangeInches}\", A{wo.Weapon.Attacks} AP{wo.Weapon.ArmorPenetration}");
         }
         ImGui.EndChild();
 
@@ -189,28 +188,28 @@ public class GuiChooseRangedAttackResolver
                 if (ImGui.IsItemHovered())
                     newHovered = (_selectedWeaponIdx, ti);
 
-                var rMin = ImGui.GetItemRectMin();
-                ImGui.SetCursorScreenPos(rMin + new Vector2(4, 2));
-                ImGui.TextUnformatted(name);
-                ImGui.SetCursorScreenPos(rMin + new Vector2(4, ImGui.GetTextLineHeight() + 4));
+                if (!canShoot) ImGui.EndDisabled();
 
+                // Overlay text via draw list — no cursor manipulation, no boundary extension.
+                var rMin    = ImGui.GetItemRectMin();
+                var dl      = ImGui.GetWindowDrawList();
+                uint colTxt = ImGui.GetColorU32(ImGuiCol.Text);
+                dl.AddText(rMin + new Vector2(4, 2), colTxt, name);
+
+                string sub;
+                uint colSub;
                 if (!canShoot)
                 {
-                    ImGui.PushStyleColor(ImGuiCol.Text, new Vector4(0.70f, 0.35f, 0.35f, 1f));
-                    ImGui.TextUnformatted("Out of range");
-                    ImGui.PopStyleColor();
+                    sub    = "Out of range";
+                    colSub = ImGui.ColorConvertFloat4ToU32(new Vector4(0.70f, 0.35f, 0.35f, 1f));
                 }
                 else
                 {
-                    string sub = $"{ts.modelsThatCanShoot.Count}/{ts.TargetUnit.GetValue().ModelBindings.Count} in range";
+                    sub = $"{ts.modelsThatCanShoot.Count}/{ts.TargetUnit.GetValue().ModelBindings.Count} in range";
                     if (ts.HasCover) sub += ", Cover";
-                    ImGui.PushStyleColor(ImGuiCol.Text, new Vector4(0.40f, 0.85f, 0.40f, 1f));
-                    ImGui.TextUnformatted(sub);
-                    ImGui.PopStyleColor();
+                    colSub = ImGui.ColorConvertFloat4ToU32(new Vector4(0.40f, 0.85f, 0.40f, 1f));
                 }
-
-                if (!canShoot) ImGui.EndDisabled();
-                ImGui.SetCursorPosY(ImGui.GetCursorPosY() + ImGui.GetStyle().ItemSpacing.Y);
+                dl.AddText(rMin + new Vector2(4, ImGui.GetTextLineHeight() + 4), colSub, sub);
             }
         }
         else
@@ -292,6 +291,10 @@ public class GuiChooseRangedAttackResolver
         if (!canFire) ImGui.EndDisabled();
 
         ImGui.End();
+
+        // Clear canvas hover so it only persists for the single frame after GetHoverLabel set it.
+        // (If the mouse is still over a model next frame, GetHoverLabel will set it again before Draw.)
+        _canvasHoveredOption = (-1, -1);
     }
 
     // ── Canvas line drawing ───────────────────────────────────────────────────

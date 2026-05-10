@@ -40,6 +40,7 @@ public class RaylibRenderer
     private readonly TableHitTester      _hitTester      = new();
     private bool _inGame = false;
     private bool _closeRequested = false;
+    private bool _resolverOverlayFaulted = false;
 
     public RaylibRenderer()
     {
@@ -172,7 +173,19 @@ public class RaylibRenderer
                 _tooltipOverlay.UpdateLayout(layout.Scale, layout.OriginX, layout.OriginY, TableHIn);
                 _tooltipOverlay.Draw(screenW, screenH, _hitTester, _resolverOverlay?.ActiveInteractionHandler);
                 _resolverOverlay?.UpdateLayout(layout.Scale, layout.OriginX, layout.OriginY, TableHIn);
-                _resolverOverlay?.Draw(screenW, screenH);
+                if (!_resolverOverlayFaulted)
+                {
+                    try
+                    {
+                        _resolverOverlay?.Draw(screenW, screenH);
+                    }
+                    catch (Exception ex)
+                    {
+                        _resolverOverlayFaulted = true;
+                        _log?.Add($"[RESOLVER ERROR] {ex.GetType().Name}: {ex.Message}");
+                        _log?.Add(ex.StackTrace ?? "(no stack trace)");
+                    }
+                }
                 rlImGui.End();
             }
             else
