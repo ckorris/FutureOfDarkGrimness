@@ -59,44 +59,41 @@ public class GuiChooseRangedAttackResolver
         // Draw canvas lines for hovered option before the ImGui window
         DrawHoverLines(request);
 
+        // Invisible full-screen backdrop (no input, no visual) — keeps the window layer consistent
         ImGui.SetNextWindowPos(Vector2.Zero, ImGuiCond.Always);
         ImGui.SetNextWindowSize(new Vector2(screenW, screenH), ImGuiCond.Always);
         ImGui.Begin("##RangedBackdrop",
             ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoCollapse |
             ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoScrollbar | ImGuiWindowFlags.NoInputs |
             ImGuiWindowFlags.NoBackground);
+        ImGui.End();
 
-        float pad     = 16f;
-        float headerH = 64f;
-        float rowH    = 36f;
-        float backH   = rowH + pad;
+        float pad  = 16f;
+        float rowH = 36f;
+        float backH = rowH + pad;
         float dw = MathF.Min(screenW * 0.55f, 680f);
-        float dh = MathF.Min(headerH + pad + options.Count * rowH + backH + pad * 2, screenH * 0.82f);
+        float dh = MathF.Min(pad + options.Count * rowH + backH + pad * 2, screenH * 0.82f);
         float dx = (screenW - dw) * 0.5f;
         float dy = (screenH - dh) * 0.5f;
 
-        ImGui.SetCursorPos(new Vector2(dx, dy));
-        ImGui.PushStyleColor(ImGuiCol.ChildBg, new Vector4(0.15f, 0.15f, 0.20f, 0.97f));
-        ImGui.PushStyleVar(ImGuiStyleVar.ChildRounding, 6f);
-        ImGui.BeginChild("##RangedDialog", new Vector2(dw, dh), ImGuiChildFlags.Borders,
-            ImGuiWindowFlags.NoScrollbar);
+        string attackerName = request.AttackingUnit.GetValue().Name;
+        ImGui.SetNextWindowPos(new Vector2(dx, dy), ImGuiCond.FirstUseEver);
+        ImGui.SetNextWindowSize(new Vector2(dw, dh), ImGuiCond.Always);
+        ImGui.PushStyleColor(ImGuiCol.WindowBg, new Vector4(0.15f, 0.15f, 0.20f, 0.97f));
+        ImGui.PushStyleVar(ImGuiStyleVar.WindowRounding, 6f);
+        ImGui.Begin($"Shoot: {attackerName}##RangedDialog",
+            ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoScrollbar);
         ImGui.PopStyleColor();
         ImGui.PopStyleVar();
 
-        // Header
-        string attackerName = request.AttackingUnit.GetValue().Name;
-        ImGui.SetCursorPos(new Vector2(pad, pad));
+        // Subtitle
         ImGui.PushTextWrapPos(dw - pad);
-        ImGui.TextUnformatted($"Shoot: {attackerName}");
-        ImGui.Spacing();
         ImGui.TextUnformatted("Choose a weapon and target.");
         ImGui.PopTextWrapPos();
 
         // Scrollable option list
-        float listY = pad + headerH;
-        float listH = dh - listY - pad;
-        ImGui.SetCursorPos(new Vector2(pad, listY));
-        ImGui.BeginChild("##RangedList", new Vector2(dw - pad * 2, listH), ImGuiChildFlags.None,
+        float listH = ImGui.GetContentRegionAvail().Y - backH - pad;
+        ImGui.BeginChild("##RangedList", new Vector2(-1, listH), ImGuiChildFlags.None,
             ImGuiWindowFlags.HorizontalScrollbar);
 
         float btnW = ImGui.GetContentRegionAvail().X;
@@ -117,7 +114,6 @@ public class GuiChooseRangedAttackResolver
             Complete(tcs, null!);
         ImGui.PopStyleColor();
 
-        ImGui.EndChild();
         ImGui.EndChild();
         ImGui.End();
     }
