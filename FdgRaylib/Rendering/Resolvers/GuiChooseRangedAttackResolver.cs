@@ -9,13 +9,13 @@ using static FDG.StageResolution.Requests.ChooseRangedAttackRequest;
 namespace FdgRaylib.Rendering.Resolvers;
 
 public class GuiChooseRangedAttackResolver
-    : IStageResolver<ChooseRangedAttackRequest, RangedAttackChoice>, IGuiResolver, IGuiCanvasOverlay,
+    : IStageResolver<ChooseRangedAttackRequest, CancellableResult<RangedAttackChoice>>, IGuiResolver, IGuiCanvasOverlay,
       ICanvasInteractionHandler
 {
     private readonly ITableState _tableState;
     private readonly object _lock = new();
     private ChooseRangedAttackRequest? _request;
-    private TaskCompletionSource<RangedAttackChoice>? _tcs;
+    private TaskCompletionSource<CancellableResult<RangedAttackChoice>>? _tcs;
 
     // Layout — main-thread only
     private float _scale   = 10f;
@@ -45,9 +45,9 @@ public class GuiChooseRangedAttackResolver
 
     public bool HasPendingRequest { get { lock (_lock) return _request != null; } }
 
-    public Task<RangedAttackChoice> Resolve(ChooseRangedAttackRequest request)
+    public Task<CancellableResult<RangedAttackChoice>> Resolve(ChooseRangedAttackRequest request)
     {
-        var tcs = new TaskCompletionSource<RangedAttackChoice>();
+        var tcs = new TaskCompletionSource<CancellableResult<RangedAttackChoice>>();
         lock (_lock) { _tcs = tcs; _request = request; }
         return tcs.Task;
     }
@@ -87,7 +87,7 @@ public class GuiChooseRangedAttackResolver
     public void Draw(int screenW, int screenH)
     {
         ChooseRangedAttackRequest? request;
-        TaskCompletionSource<RangedAttackChoice>? tcs;
+        TaskCompletionSource<CancellableResult<RangedAttackChoice>>? tcs;
         lock (_lock) { request = _request; tcs = _tcs; }
         if (request == null || tcs == null) return;
 
@@ -270,7 +270,7 @@ public class GuiChooseRangedAttackResolver
         // ── Footer ────────────────────────────────────────────────────────────
         ImGui.SetCursorPosY(ImGui.GetCursorPosY() + pad);
         ImGui.PushStyleColor(ImGuiCol.Button, new Vector4(0.25f, 0.25f, 0.30f, 1f));
-        if (ImGui.Button("Back##back")) Complete(tcs, null!);
+        if (ImGui.Button("Back##back")) Complete(tcs, new Cancelled<RangedAttackChoice>());
         ImGui.PopStyleColor();
 
         ImGui.SameLine();
@@ -285,7 +285,7 @@ public class GuiChooseRangedAttackResolver
         {
             var wo = request.WeaponOptions[_selectedWeaponIdx];
             var ts = wo.WeaponTargetStats[_selectedTargetTIdx];
-            Complete(tcs, new RangedAttackChoice(wo.Weapon, ts.TargetUnit));
+            Complete(tcs, new Selected<RangedAttackChoice>(new RangedAttackChoice(wo.Weapon, ts.TargetUnit)));
         }
         ImGui.PopStyleColor();
         if (!canFire) ImGui.EndDisabled();
@@ -359,7 +359,7 @@ public class GuiChooseRangedAttackResolver
         return -1;
     }
 
-    private void Complete(TaskCompletionSource<RangedAttackChoice> tcs, RangedAttackChoice choice)
+    private void Complete(TaskCompletionSource<CancellableResult<RangedAttackChoice>> tcs, CancellableResult<RangedAttackChoice> choice)
     {
         lock (_lock) { _request = null; _tcs = null; }
         _lastRequest        = null;
