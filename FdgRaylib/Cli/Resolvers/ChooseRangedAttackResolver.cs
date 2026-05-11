@@ -5,9 +5,9 @@ using static FDG.StageResolution.Requests.ChooseRangedAttackRequest;
 
 namespace FdgRaylib.Cli.Resolvers;
 
-public class ChooseRangedAttackResolver : IStageResolver<ChooseRangedAttackRequest, RangedAttackChoice>
+public class ChooseRangedAttackResolver : IStageResolver<ChooseRangedAttackRequest, CancellableResult<RangedAttackChoice>>
 {
-    public Task<RangedAttackChoice> Resolve(ChooseRangedAttackRequest request)
+    public Task<CancellableResult<RangedAttackChoice>> Resolve(ChooseRangedAttackRequest request)
     {
         var attackerUnit = request.AttackingUnit.GetValue();
         Console.WriteLine();
@@ -44,14 +44,21 @@ public class ChooseRangedAttackResolver : IStageResolver<ChooseRangedAttackReque
         for (int i = 0; i < options.Count; i++)
             Console.WriteLine($"  [{i + 1}] {options[i].label}");
 
+        Console.WriteLine($"  [0] Back");
+
         while (true)
         {
             Console.Write("Choice: ");
             string? input = Console.ReadLine()?.Trim();
-            if (input == null) return Task.FromResult(options[0].choice); // EOF default: first option
-            if (int.TryParse(input, out int choice) && choice >= 1 && choice <= options.Count)
-                return Task.FromResult(options[choice - 1].choice);
-            Console.WriteLine($"  Enter a number between 1 and {options.Count}.");
+            // EOF default: first option (keeps piped-input scripts working).
+            if (input == null) return Task.FromResult<CancellableResult<RangedAttackChoice>>(new Selected<RangedAttackChoice>(options[0].choice));
+            if (int.TryParse(input, out int choice))
+            {
+                if (choice == 0) return Task.FromResult<CancellableResult<RangedAttackChoice>>(new Cancelled<RangedAttackChoice>());
+                if (choice >= 1 && choice <= options.Count)
+                    return Task.FromResult<CancellableResult<RangedAttackChoice>>(new Selected<RangedAttackChoice>(options[choice - 1].choice));
+            }
+            Console.WriteLine($"  Enter 0 (Back) or a number between 1 and {options.Count}.");
         }
     }
 }
