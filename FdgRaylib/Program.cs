@@ -1,6 +1,24 @@
 using FdgRaylib.Cli;
 using FdgRaylib.Rendering;
 
+string crashLogPath = Path.Combine(AppContext.BaseDirectory, "crash.log");
+
+void WriteCrash(string source, object? exObj)
+{
+    string text = $"=== {DateTime.Now:O}  {source} ===\n{exObj}\n\n";
+    Console.Error.WriteLine(text);
+    try { File.AppendAllText(crashLogPath, text); } catch { /* best-effort */ }
+}
+
+AppDomain.CurrentDomain.UnhandledException += (_, e) =>
+    WriteCrash("AppDomain.UnhandledException", e.ExceptionObject);
+
+TaskScheduler.UnobservedTaskException += (_, e) =>
+{
+    WriteCrash("TaskScheduler.UnobservedTaskException", e.Exception);
+    e.SetObserved();
+};
+
 bool headless = args.Contains("--headless");
 
 // --slow [ms]  — pause N milliseconds before each resolver call (default 1500ms)
@@ -60,8 +78,8 @@ else
     renderer.LobbyScreen.OnBack = () =>
         renderer.NavigateTo(renderer.MainMenu);
 
-    renderer.LobbyScreen.OnGameLaunched = (tableState, colorFunc, log, overlay) =>
-        renderer.TransitionToGame(tableState, colorFunc, log, overlay);
+    renderer.LobbyScreen.OnGameLaunched = (tableState, colorFunc, log, overlay, taskDisplay) =>
+        renderer.TransitionToGame(tableState, colorFunc, log, overlay, taskDisplay);
 
     // ── Local play (Host with no network players) also still works via CliApp ─
     // The old "Host" path now goes through the lobby. CliApp is only used
@@ -73,10 +91,7 @@ else
     }
     catch (Exception ex)
     {
-        Console.Error.WriteLine();
-        Console.Error.WriteLine("=== FATAL ERROR ===");
-        Console.Error.WriteLine(ex);
-        Console.Error.WriteLine("===================");
+        WriteCrash("renderer.Run() threw", ex);
         Console.Error.WriteLine("Press Enter to exit.");
         Console.ReadLine();
         throw;
