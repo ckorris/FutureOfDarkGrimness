@@ -88,6 +88,7 @@ These are umbrellas; will fragment per-rule when picked up.
 ## Client / renderer
 
 - [ ] 040 — Post-game navigation back to main menu in GUI mode (currently window just stays open)
+- [ ] 041 — Factor line of sight into movement resolver's ranged-targeting overlay (`GuiDefineMovementResolver.DrawRangedTargeting` currently checks range only)
 
 ---
 
