@@ -2,6 +2,10 @@
 
 A Raylib-based client for **Future of Dark Grimness** — a tabletop wargame rules engine. The repository contains two C# .NET 8 projects.
 
+## Commit messages
+
+Never mention Claude, AI, or any assistant attribution in commit messages — no `Co-Authored-By: Claude`, no "Generated with Claude Code" trailers, nothing of the sort. Plain commit messages only.
+
 ## Projects
 
 | Project | Type | Purpose |
