@@ -254,13 +254,11 @@ public class GuiDefineMovementResolver
         TaskCompletionSource<List<ModelMoveEntry>> tcs, List<ITerrain> terrain)
     {
         float panelW = MathF.Min(screenW * 0.5f, 560f);
-        float panelH = 230f;
-        ImGui.SetNextWindowPos(new Vector2((screenW - panelW) * 0.5f, 16f), ImGuiCond.Always);
-        ImGui.SetNextWindowSize(new Vector2(panelW, panelH), ImGuiCond.Always);
+        ImGui.SetNextWindowPos(new Vector2((screenW - panelW) * 0.5f, 16f), ImGuiCond.FirstUseEver);
+        ImGui.SetNextWindowSizeConstraints(new Vector2(panelW, 0f), new Vector2(panelW, float.MaxValue));
         ImGui.PushStyleColor(ImGuiCol.WindowBg, new Vector4(0.10f, 0.10f, 0.15f, 0.92f));
         ImGui.Begin("##MovementPanel",
-            ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoCollapse |
-            ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoScrollbar);
+            ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoScrollbar | ImGuiWindowFlags.AlwaysAutoResize);
         ImGui.PopStyleColor();
 
         string unitName = request.UnitDataBinding.GetValue().Name;
@@ -283,7 +281,8 @@ public class GuiDefineMovementResolver
             ImGui.TextDisabled("No model selected. Left-click a model on the table.");
         }
 
-        ImGui.TextDisabled("L-click: select.  R-click: waypoint.  Space: next model.  Backspace: undo.");
+        ImGui.TextDisabled("L-click: select   R-click: waypoint");
+        ImGui.TextDisabled("Space: next model   Backspace: undo");
 
         ImGui.Checkbox("Stay within Advance (hold Shift to force)", ref _stayInAdvance);
 
@@ -317,8 +316,8 @@ public class GuiDefineMovementResolver
         if (!canSubmit) ImGui.BeginDisabled();
         bool donePressed = ImGui.Button("Done", new Vector2(btnW, 28f));
         if (!canSubmit) ImGui.EndDisabled();
-        if (!canSubmit && ImGui.IsItemHovered(ImGuiHoveredFlags.AllowWhenDisabled))
-            ImGui.SetTooltip(string.Join("\n", issues));
+        if (ImGui.IsItemHovered(ImGuiHoveredFlags.AllowWhenDisabled))
+            ImGui.SetTooltip(canSubmit ? "Commit this move and continue." : string.Join("\n", issues));
         if (canSubmit && donePressed)
         {
             Complete(tcs, results);
@@ -326,20 +325,28 @@ public class GuiDefineMovementResolver
             return;
         }
         ImGui.SameLine();
-        if (ImGui.Button("Clear selected", new Vector2(btnW, 28f)))
-        {
-            if (_selectedModel != null) pt.ClearModelSteps(_selectedModel);
-        }
+        bool clearPressed = ImGui.Button("Clear selected", new Vector2(btnW, 28f));
+        if (ImGui.IsItemHovered())
+            ImGui.SetTooltip("Remove all waypoints from the currently selected model.");
+        if (clearPressed && _selectedModel != null) pt.ClearModelSteps(_selectedModel);
+
         ImGui.SameLine();
-        if (ImGui.Button("Skip all", new Vector2(btnW, 28f)))
+        bool skipPressed = ImGui.Button("Skip all", new Vector2(btnW, 28f));
+        if (ImGui.IsItemHovered())
+            ImGui.SetTooltip("Don't move the unit. Every model stays in place.");
+        if (skipPressed)
         {
             pt.ClearAllSteps();
             Complete(tcs, pt.GetResultsAsList());
             ImGui.End();
             return;
         }
+
         ImGui.SameLine();
-        if (ImGui.Button("Auto-advance", new Vector2(btnW, 28f)))
+        bool autoPressed = ImGui.Button("Auto-advance", new Vector2(btnW, 28f));
+        if (ImGui.IsItemHovered())
+            ImGui.SetTooltip("Move the whole unit toward the nearest enemy, stopping ~1\" short. Stays within Advance distance so the unit can still shoot.");
+        if (autoPressed)
         {
             Complete(tcs, AutoAdvance(request));
             ImGui.End();
@@ -444,7 +451,7 @@ public class GuiDefineMovementResolver
 
         var (ax, ay) = InchesToPixel(aEdgeX, aEdgeZ);
         var (bx, by) = InchesToPixel(bEdgeX, bEdgeZ);
-        dl.AddLine(new Vector2(ax, ay), new Vector2(bx, by), CohesionLineCol, 1f);
+        AddDottedLine(dl, new Vector2(ax, ay), new Vector2(bx, by), CohesionLineCol, 1f);
 
         // Perpendicular serif ticks at each endpoint
         // Pixel-space perpendicular (y axis is flipped vs z but symmetric so perpendicular formula holds)
@@ -472,7 +479,40 @@ public class GuiDefineMovementResolver
         float radiusInches = (centerDist + ra + rb) * 0.5f;
 
         var (cx, cy) = InchesToPixel(midX, midZ);
-        dl.AddCircle(new Vector2(cx, cy), radiusInches * _scale, CohesionLineCol, 96, 1f);
+        AddDottedCircle(dl, new Vector2(cx, cy), radiusInches * _scale, CohesionLineCol, 1f);
+    }
+
+    private static void AddDottedLine(ImDrawListPtr dl, Vector2 a, Vector2 b, uint color, float thickness,
+        float dashLen = 5f, float gapLen = 4f)
+    {
+        Vector2 d = b - a;
+        float len = MathF.Sqrt(d.X * d.X + d.Y * d.Y);
+        if (len < 0.01f) return;
+        Vector2 dir = d / len;
+        float t = 0f;
+        while (t < len)
+        {
+            float t2 = MathF.Min(t + dashLen, len);
+            dl.AddLine(a + dir * t, a + dir * t2, color, thickness);
+            t = t2 + gapLen;
+        }
+    }
+
+    private static void AddDottedCircle(ImDrawListPtr dl, Vector2 center, float radius, uint color, float thickness)
+    {
+        if (radius < 1f) return;
+        // Aim for ~6px dashes around the circumference.
+        float circ = MathF.PI * 2f * radius;
+        int dashes = Math.Clamp((int)MathF.Round(circ / 10f), 12, 200);
+        float step = MathF.PI * 2f / (dashes * 2);
+        for (int i = 0; i < dashes; i++)
+        {
+            float a0 = step * (i * 2);
+            float a1 = step * (i * 2 + 1);
+            Vector2 p0 = new(center.X + MathF.Cos(a0) * radius, center.Y + MathF.Sin(a0) * radius);
+            Vector2 p1 = new(center.X + MathF.Cos(a1) * radius, center.Y + MathF.Sin(a1) * radius);
+            dl.AddLine(p0, p1, color, thickness);
+        }
     }
 
     private List<ModelMoveEntry> AutoAdvance(DefineMovementPathRequest request)
