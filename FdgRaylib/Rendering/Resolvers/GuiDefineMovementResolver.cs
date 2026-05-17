@@ -534,7 +534,7 @@ public class GuiDefineMovementResolver
             committed[kvp.Key] = kvp.Value.Count > 0 ? kvp.Value[^1] : kvp.Key.Position;
 
         var ourPlayerID = request.TargetPlayerID;
-        uint enemyTextCol = ImGui.ColorConvertFloat4ToU32(new Vector4(1.00f, 1.00f, 0.70f, 1f));
+        uint enemyTextCol = ImGui.ColorConvertFloat4ToU32(new Vector4(0.60f, 1.00f, 0.60f, 1f));
         uint lineCol      = ImGui.ColorConvertFloat4ToU32(new Vector4(0.30f, 1.00f, 0.30f, 0.85f));
         uint midTextCol   = ImGui.ColorConvertFloat4ToU32(new Vector4(0.60f, 1.00f, 0.60f, 1f));
         float lineH = ImGui.GetTextLineHeight();
