@@ -31,7 +31,7 @@ public class AssignWoundsResolver : IStageResolver<AssignWoundsRequest, AssignWo
 
             if (input == null || input == "a" || string.IsNullOrEmpty(input))
             {
-                AutoFillRemaining(results);
+                results.AutoFill();
                 break;
             }
 
@@ -49,13 +49,4 @@ public class AssignWoundsResolver : IStageResolver<AssignWoundsRequest, AssignWo
         return Task.FromResult(results);
     }
 
-    // AutoFill on AssignWoundsResults has a bug (modelWoundsRemaining always 0), so fill manually.
-    private static void AutoFillRemaining(AssignWoundsResults results)
-    {
-        foreach (var pw in results.PendingWounds)
-        {
-            if (results.IsFinishedAssigning) break;
-            results.TryAddWounds(pw.Model);
-        }
-    }
 }

@@ -21,6 +21,7 @@ public static class ResolverRegistryFactory
             .RegisterResolver(new SelectionResolver<UnitData>())
             .RegisterResolver(new SelectionResolver<ModelData>())
             .RegisterResolver(new SelectionResolver<RectangularZone>())
+            .RegisterResolver(new CancellableSelectionResolver<UnitData>())
             .RegisterResolver(new PlaceObjectsResolver<ModelData>(tableState));
     }
 
@@ -33,9 +34,10 @@ public static class ResolverRegistryFactory
         var selectUnit    = new GuiSelectionResolver<UnitData>();
         var selectModel   = new GuiSelectionResolver<ModelData>();
         var selectZone    = new GuiSelectionResolver<RectangularZone>();
+        var cancelSelectUnit = new GuiCancellableSelectionResolver<UnitData>();
         var strSel        = new GuiStringSelectionResolver();
         var deployZone    = new GuiChooseDeploymentZoneResolver();
-        var rangedAttack  = new GuiChooseRangedAttackResolver();
+        var rangedAttack  = new GuiChooseRangedAttackResolver(tableState);
         var assignWounds  = new GuiAssignWoundsResolver();
         var movement      = new GuiDefineMovementResolver(tableState);
         var placeObjects  = new GuiPlaceObjectsResolver<ModelData>(tableState);
@@ -43,6 +45,7 @@ public static class ResolverRegistryFactory
         overlay.Register(selectUnit);
         overlay.Register(selectModel);
         overlay.Register(selectZone);
+        overlay.Register(cancelSelectUnit);
         overlay.Register(strSel);
         overlay.Register(deployZone);
         overlay.Register(rangedAttack);
@@ -55,6 +58,7 @@ public static class ResolverRegistryFactory
             .RegisterResolver(selectUnit)                                    // GUI
             .RegisterResolver(selectModel)                                   // GUI
             .RegisterResolver(selectZone)                                    // GUI
+            .RegisterResolver(cancelSelectUnit)                              // GUI
             .RegisterResolver(strSel)                                        // GUI
             .RegisterResolver(deployZone)                                    // GUI
             .RegisterResolver(rangedAttack)                                  // GUI

@@ -33,11 +33,10 @@ public class GuiAssignWoundsResolver : IStageResolver<AssignWoundsRequest, Assig
 
         ImGui.SetNextWindowPos(Vector2.Zero, ImGuiCond.Always);
         ImGui.SetNextWindowSize(new Vector2(screenW, screenH), ImGuiCond.Always);
-        ImGui.PushStyleColor(ImGuiCol.WindowBg, new Vector4(0f, 0f, 0f, 0.55f));
         ImGui.Begin("##WoundsBackdrop",
             ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoCollapse |
-            ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoScrollbar);
-        ImGui.PopStyleColor();
+            ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoScrollbar | ImGuiWindowFlags.NoInputs |
+            ImGuiWindowFlags.NoBackground);
 
         var models  = results.PendingWounds;
         float rowH  = 36f;
@@ -100,7 +99,7 @@ public class GuiAssignWoundsResolver : IStageResolver<AssignWoundsRequest, Assig
         ImGui.SetCursorPos(new Vector2(pad, btnY));
         if (ImGui.Button("Auto-assign All", new Vector2(btnW, footH - 4f)))
         {
-            AutoFillRemaining(results);
+            results.AutoFill();
             Complete(tcs, results);
         }
 
@@ -114,13 +113,4 @@ public class GuiAssignWoundsResolver : IStageResolver<AssignWoundsRequest, Assig
         tcs.SetResult(results);
     }
 
-    // AssignWoundsResults.AutoFill() has a bug (modelWoundsRemaining always 0); fill manually.
-    private static void AutoFillRemaining(AssignWoundsResults results)
-    {
-        foreach (var pw in results.PendingWounds)
-        {
-            if (results.IsFinishedAssigning) break;
-            results.TryAddWounds(pw.Model);
-        }
-    }
 }

@@ -35,11 +35,10 @@ public class GuiSelectionResolver<T> : IStageResolver<SelectionRequest<T>, DataB
         // Semi-transparent backdrop
         ImGui.SetNextWindowPos(Vector2.Zero, ImGuiCond.Always);
         ImGui.SetNextWindowSize(new Vector2(screenW, screenH), ImGuiCond.Always);
-        ImGui.PushStyleColor(ImGuiCol.WindowBg, new Vector4(0f, 0f, 0f, 0.55f));
         ImGui.Begin("##SelectionBackdrop",
             ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoCollapse |
-            ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoScrollbar);
-        ImGui.PopStyleColor();
+            ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoScrollbar | ImGuiWindowFlags.NoInputs |
+            ImGuiWindowFlags.NoBackground);
 
         int validCount   = request.ValidOptions.Count;
         int invalidCount = request.InvalidOptions.Count;

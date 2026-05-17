@@ -192,6 +192,9 @@ public class LobbyScreen : IAppScreen
             ImGui.Spacing();
             if (ImGui.Button("Add Local Player"))
                 _viewModel.AddLocalPlayer();
+            ImGui.SameLine();
+            if (ImGui.Button("Add AI Player"))
+                _viewModel.AddAiPlayer();
         }
     }
 

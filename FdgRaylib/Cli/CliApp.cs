@@ -1,4 +1,5 @@
 using FDG;
+using FDG.Ai;
 using FDG.Data;
 using FDG.GameModel;
 using FDG.Players;
@@ -21,6 +22,7 @@ public class CliApp
     private LocalMessageBus? _messageBus;
     private GameDataStore? _gameDataStore;
     private FDGGame_AsLocal? _localGame;
+    private FDGGame_AsLocal? _aiGame;
 
     public ITableState? TableState => _localGame?.TableState;
     public GameLog? Log { get; private set; }
@@ -58,8 +60,8 @@ public class CliApp
 
         var playerSlots = CreatePlayerSlots();
 
-        foreach (var slot in playerSlots)
-            _localGame!.AddLocalPlayerID(slot.PlayerID);
+        // Player 1 — human (CLI)
+        _localGame!.AddLocalPlayerID(playerSlots[0].PlayerID);
 
         ILogMessageUI logUI = Log != null
             ? new GuiLogMessageUI(Log)
@@ -76,18 +78,20 @@ public class CliApp
             tempVisualDrawer:      new CliTempVisualDrawer(),
             outstandingTaskDisplay: null);
 
-        foreach (var slot in playerSlots)
-        {
-            var controller = new LocalPlayerController(slot.Name, slot.PlayerID, _localGame);
-            slot.AssignPlayerController(controller);
-        }
+        var humanController = new LocalPlayerController(playerSlots[0].Name, playerSlots[0].PlayerID, _localGame);
+        playerSlots[0].AssignPlayerController(humanController);
+
+        // Player 2 — computer (solo-rules AI)
+        _aiGame = new FDGGame_AsLocal(_gameDataStore!, _messageBus!);
+        var aiController = AiResolverRegistryFactory.CreateSoloRulesController(
+            playerSlots[1].Name, playerSlots[1].PlayerID, _aiGame);
+        playerSlots[1].AssignPlayerController(aiController);
 
         var gameSettings = GameSettings.GetDefault();
         gameSettings.RandomnessType = ERandomnessType.Realistic;
 
         var gameEnded = new TaskCompletionSource();
-        var terrainLayout = TerrainLoader.BuildTestLayout();
-        var server = new FDGServer(_gameDataStore!, _messageBus!, gameSettings, playerSlots, terrainLayout);
+        var server = new FDGServer(_gameDataStore!, _messageBus!, gameSettings, playerSlots);
         server.OnGameEnded += result =>
         {
             logUI.DisplayLogMessage($"Game ended: {result}");

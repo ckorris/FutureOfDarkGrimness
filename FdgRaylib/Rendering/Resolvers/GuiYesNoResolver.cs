@@ -34,11 +34,10 @@ public class GuiYesNoResolver : IStageResolver<YesNoRequest, bool>, IGuiResolver
         // Semi-transparent backdrop
         ImGui.SetNextWindowPos(Vector2.Zero, ImGuiCond.Always);
         ImGui.SetNextWindowSize(new Vector2(screenW, screenH), ImGuiCond.Always);
-        ImGui.PushStyleColor(ImGuiCol.WindowBg, new Vector4(0f, 0f, 0f, 0.55f));
         ImGui.Begin("##YesNoBackdrop",
             ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoCollapse |
-            ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoScrollbar);
-        ImGui.PopStyleColor();
+            ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoScrollbar | ImGuiWindowFlags.NoInputs |
+            ImGuiWindowFlags.NoBackground);
 
         float dw = MathF.Min(screenW * 0.40f, 520f);
         float dh = screenH * 0.22f;
