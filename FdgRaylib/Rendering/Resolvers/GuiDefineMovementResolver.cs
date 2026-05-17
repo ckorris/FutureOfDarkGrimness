@@ -37,7 +37,8 @@ public class GuiDefineMovementResolver
     private static readonly uint ModelOutline    = ImGui.ColorConvertFloat4ToU32(new Vector4(0.7f, 0.7f, 0.7f, 0.7f));
     private static readonly uint GhostOutline    = ImGui.ColorConvertFloat4ToU32(new Vector4(1f, 1f, 1f, 0.85f));
     private static readonly uint FinalGhostCol   = ImGui.ColorConvertFloat4ToU32(new Vector4(1f, 1f, 1f, 0.25f));
-    private static readonly uint CohesionLineCol = ImGui.ColorConvertFloat4ToU32(new Vector4(0.75f, 0.75f, 0.75f, 0.85f));
+    private static readonly uint CohesionLineCol = ImGui.ColorConvertFloat4ToU32(new Vector4(1.00f, 0.55f, 0.55f, 0.90f));
+    private static readonly uint OverlapFill     = ImGui.ColorConvertFloat4ToU32(new Vector4(1.00f, 0.25f, 0.25f, 0.55f));
 
     public GuiDefineMovementResolver(ITableState tableState) => _tableState = tableState;
 
@@ -144,6 +145,7 @@ public class GuiDefineMovementResolver
         bool wantInput = !io.WantCaptureMouse && !io.WantCaptureKeyboard;
         Position? ghostPos = null;
         bool ghostIsRush = false;
+        bool ghostOverlaps = false;
 
         bool advanceOnly = _stayInAdvance || ImGui.IsKeyDown(ImGuiKey.LeftShift) || ImGui.IsKeyDown(ImGuiKey.RightShift);
 
@@ -179,6 +181,7 @@ public class GuiDefineMovementResolver
 
             float cumWithGhost = totalSoFar + allowed;
             ghostIsRush = cumWithGhost + 0.0001f >= maxAdvance;
+            ghostOverlaps = WouldOverlapAnyModel(ghostPos.Value, _selectedModel, request, paths);
 
             // Preview line from anchor to ghost
             var (ax, ay) = InchesToPixel(anchor.x, anchor.z);
@@ -188,9 +191,10 @@ public class GuiDefineMovementResolver
 
             // Ghost base circle
             float r = _selectedModel.BaseRadiusInches * _scale;
-            uint fill = ghostIsRush
-                ? ImGui.ColorConvertFloat4ToU32(new Vector4(1.00f, 0.55f, 0.10f, 0.40f))
-                : ImGui.ColorConvertFloat4ToU32(new Vector4(0.25f, 0.95f, 0.25f, 0.40f));
+            uint fill;
+            if (ghostOverlaps) fill = OverlapFill;
+            else if (ghostIsRush) fill = ImGui.ColorConvertFloat4ToU32(new Vector4(1.00f, 0.55f, 0.10f, 0.40f));
+            else fill = ImGui.ColorConvertFloat4ToU32(new Vector4(0.25f, 0.95f, 0.25f, 0.40f));
             dl.AddCircleFilled(new Vector2(gx, gy), r, fill);
             dl.AddCircle(new Vector2(gx, gy), r, GhostOutline, 32, 1.5f);
 
@@ -219,8 +223,8 @@ public class GuiDefineMovementResolver
                 if (hit != null) _selectedModel = hit;
             }
 
-            // Right-click adds a waypoint at clamped ghost position
-            if (ImGui.IsMouseClicked(ImGuiMouseButton.Right) && _selectedModel != null && ghostPos.HasValue)
+            // Right-click adds a waypoint at clamped ghost position (blocked if it would overlap another model)
+            if (ImGui.IsMouseClicked(ImGuiMouseButton.Right) && _selectedModel != null && ghostPos.HasValue && !ghostOverlaps)
             {
                 float totalSoFar = pt.GetTotalDistanceMoved(_selectedModel);
                 float cap = advanceOnly ? maxAdvance : maxCharge;
@@ -354,6 +358,34 @@ public class GuiDefineMovementResolver
         }
 
         ImGui.End();
+    }
+
+    private bool WouldOverlapAnyModel(Position ghostPos, IModel ghostModel,
+        DefineMovementPathRequest request,
+        IReadOnlyDictionary<IModel, IReadOnlyList<Position>> paths)
+    {
+        var ownUnit = request.UnitDataBinding.GetValue();
+        float gr = ghostModel.BaseRadiusInches;
+        foreach (var unit in _tableState.Units.Objects)
+        {
+            bool isOwnUnit = unit == ownUnit;
+            foreach (var m in unit.Models)
+            {
+                if (!m.GetIsAlive()) continue;
+                if (ReferenceEquals(m, ghostModel)) continue;
+
+                // Same-unit models follow their planned path's end; others stay where they are.
+                Position p = m.Position;
+                if (isOwnUnit && paths.TryGetValue(m, out var path) && path.Count > 0)
+                    p = path[^1];
+
+                float dx = ghostPos.x - p.x;
+                float dz = ghostPos.z - p.z;
+                float horiz = MathF.Sqrt(dx * dx + dz * dz);
+                if (horiz + 0.001f < gr + m.BaseRadiusInches) return true;
+            }
+        }
+        return false;
     }
 
     private static List<(IModel model, Position pos)> BuildFinalPositions(
