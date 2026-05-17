@@ -56,10 +56,30 @@ public class LobbyScreen : IAppScreen
 
         if (_viewModel == null) return;
 
+        // Scale UI elements up for the lobby — default ImGui font is on the small side at
+        // these screen sizes. 1.2x roughly = "two sizes bigger" and grows buttons by the
+        // same factor (since button height = font + frame padding).
+        var io = ImGui.GetIO();
+        float originalFontScale = io.FontGlobalScale;
+        io.FontGlobalScale = originalFontScale * 1.2f;
+
+        try
+        {
+            DrawScaled(screenW, screenH);
+        }
+        finally
+        {
+            io.FontGlobalScale = originalFontScale;
+        }
+    }
+
+    private void DrawScaled(int screenW, int screenH)
+    {
         ImGui.SetNextWindowPos(Vector2.Zero, ImGuiCond.Always);
         ImGui.SetNextWindowSize(new Vector2(screenW, screenH), ImGuiCond.Always);
         ImGui.Begin("Lobby",
-            ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoCollapse);
+            ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoCollapse |
+            ImGuiWindowFlags.NoTitleBar);
 
         float margin       = 10f;
         float settingsW    = screenW * 0.25f;
@@ -68,7 +88,9 @@ public class LobbyScreen : IAppScreen
         float framePadY    = ImGui.GetStyle().FramePadding.Y;
         float naturalBtnH  = fontSize + framePadY * 2;
         float headerH      = MathF.Max(40f, naturalBtnH + 12f);
-        float chatInputH   = MathF.Max(30f, naturalBtnH + 6f);
+        // Chat-input row (and Launch button on the right) ~50% taller than the standard
+        // button height so the action area at the bottom is easier to hit.
+        float chatInputH   = MathF.Max(45f, (naturalBtnH + 6f) * 1.5f);
         float rightH       = screenH - margin * 2;
         float innerH       = screenH - margin * 2 - headerH - chatInputH - margin * 2;
         float playerListH  = innerH * 0.55f;
@@ -98,6 +120,7 @@ public class LobbyScreen : IAppScreen
         float playerListY = margin + headerH + margin;
         ImGui.SetCursorPos(new Vector2(margin, playerListY));
         ImGui.BeginChild("##players", new Vector2(mainW, playerListH), ImGuiChildFlags.Borders);
+        ImGui.SetWindowFontScale(1.5f);  // rows + font ~50% bigger than the rest of the lobby
         DrawPlayerList(mainW);
         ImGui.EndChild();
 
@@ -106,32 +129,51 @@ public class LobbyScreen : IAppScreen
         ImGui.SetCursorPos(new Vector2(margin, chatY));
         ImGui.BeginChild("##chatlog", new Vector2(mainW, chatH), ImGuiChildFlags.Borders,
             ImGuiWindowFlags.HorizontalScrollbar);
+        ImGui.SetWindowFontScale(1.5f);  // match the player + settings panels
         DrawChatLog();
         ImGui.EndChild();
 
         // ── Chat Input + Send ─────────────────────────────────────────────────
+        // Wrapped in a child so SetWindowFontScale applies locally — matches the chat log + launch button.
         float chatInputY = screenH - margin - chatInputH;
         float sendBtnW   = 60f;
         ImGui.SetCursorPos(new Vector2(margin, chatInputY));
+        ImGui.PushStyleVar(ImGuiStyleVar.WindowPadding, Vector2.Zero);
+        ImGui.BeginChild("##chatrow", new Vector2(mainW, chatInputH), ImGuiChildFlags.None,
+            ImGuiWindowFlags.NoScrollbar);
+        ImGui.PopStyleVar();
+        ImGui.SetWindowFontScale(1.5f);
+
+        // InputText height = font + 2*FramePadding.Y. Recompute padding against the now-scaled font size.
+        float scaledFontSize  = ImGui.GetFontSize();
+        float inputVerticalPad = MathF.Max(framePadY, (chatInputH - scaledFontSize) * 0.5f);
+        ImGui.PushStyleVar(ImGuiStyleVar.FramePadding,
+            new Vector2(ImGui.GetStyle().FramePadding.X, inputVerticalPad));
         ImGui.SetNextItemWidth(mainW - sendBtnW - margin);
         if (ImGui.InputText("##chatinput", ref _chatInput, 512, ImGuiInputTextFlags.EnterReturnsTrue))
             SubmitChat();
+        ImGui.PopStyleVar();
 
         ImGui.SameLine();
         if (ImGui.Button("Send", new Vector2(sendBtnW, chatInputH)) &&
             !string.IsNullOrWhiteSpace(_chatInput))
             SubmitChat();
 
+        ImGui.EndChild();
+
         // ── Settings + Launch (right panel) ───────────────────────────────────
         float rightX = margin * 2 + mainW;
         ImGui.SetCursorPos(new Vector2(rightX, margin));
         ImGui.BeginChild("##settings", new Vector2(settingsW, rightH - chatInputH - margin),
             ImGuiChildFlags.Borders);
+        ImGui.SetWindowFontScale(1.5f);  // settings fields ~50% bigger than the rest of the lobby
         DrawSettings(settingsW);
         ImGui.EndChild();
 
         ImGui.SetCursorPos(new Vector2(rightX, margin + rightH - chatInputH));
-        ImGui.BeginChild("##launch", new Vector2(settingsW, chatInputH), ImGuiChildFlags.Borders);
+        // No border on the launch child — the button itself fills the panel and provides the visual edge.
+        ImGui.BeginChild("##launch", new Vector2(settingsW, chatInputH), ImGuiChildFlags.None);
+        ImGui.SetWindowFontScale(1.5f);  // match the chat row + other panels
         DrawLaunch(settingsW, chatInputH);
         ImGui.EndChild();
 
