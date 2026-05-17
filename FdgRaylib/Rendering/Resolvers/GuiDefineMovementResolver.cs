@@ -26,6 +26,7 @@ public class GuiDefineMovementResolver
     // Pathing state — main-thread only after Resolve assigns it
     private PathTemplate? _pathTemplate;
     private IModel? _selectedModel;
+    private bool _stayInAdvance; // toggle — off by default, reset each Resolve
 
     private string? _errorMessage;
     private double  _errorExpiry;
@@ -66,6 +67,7 @@ public class GuiDefineMovementResolver
             _request       = request;
             _pathTemplate  = template;
             _selectedModel = first;
+            _stayInAdvance = false;
             _errorMessage  = null;
         }
         return tcs.Task;
@@ -146,28 +148,31 @@ public class GuiDefineMovementResolver
         Position? ghostPos = null;
         bool ghostIsRush = false;
 
+        bool advanceOnly = _stayInAdvance || ImGui.IsKeyDown(ImGuiKey.LeftShift) || ImGui.IsKeyDown(ImGuiKey.RightShift);
+
         if (_selectedModel != null && overTable && !io.WantCaptureMouse)
         {
             var anchor = pt.GetModelLastPathPosition(_selectedModel);
             float totalSoFar = pt.GetTotalDistanceMoved(_selectedModel);
-            float remCharge = maxCharge - totalSoFar;
+            float cap        = advanceOnly ? maxAdvance : maxCharge;
+            float remaining  = cap - totalSoFar;
             var (mx, mz) = PixelToInches(io.MousePos.X, io.MousePos.Y);
             float dx = mx - anchor.x;
             float dz = mz - anchor.z;
             float dist = MathF.Sqrt(dx * dx + dz * dz);
 
             float allowed;
-            if (remCharge <= 0.001f)
+            if (remaining <= 0.001f)
             {
                 allowed = 0f;
             }
-            else if (dist <= remCharge)
+            else if (dist <= remaining)
             {
                 allowed = dist;
             }
             else
             {
-                allowed = MathF.Max(0f, remCharge - 0.001f); // small margin against float drift
+                allowed = MathF.Max(0f, remaining - 0.001f); // small margin against float drift
             }
 
             float nx, nz;
@@ -217,7 +222,8 @@ public class GuiDefineMovementResolver
             if (ImGui.IsMouseClicked(ImGuiMouseButton.Right) && _selectedModel != null && ghostPos.HasValue)
             {
                 float totalSoFar = pt.GetTotalDistanceMoved(_selectedModel);
-                if (maxCharge - totalSoFar > 0.001f)
+                float cap = advanceOnly ? maxAdvance : maxCharge;
+                if (cap - totalSoFar > 0.001f)
                     pt.AddStep(_selectedModel, ghostPos.Value);
             }
         }
@@ -227,6 +233,17 @@ public class GuiDefineMovementResolver
         {
             if (paths.TryGetValue(_selectedModel, out var list) && list.Count > 0)
                 pt.RemoveLastStep(_selectedModel);
+        }
+
+        // Spacebar cycles to next model in the unit's list
+        if (wantInput && ImGui.IsKeyPressed(ImGuiKey.Space))
+        {
+            var keys = paths.Keys.ToList();
+            if (keys.Count > 0)
+            {
+                int idx = _selectedModel == null ? -1 : keys.IndexOf(_selectedModel);
+                _selectedModel = keys[(idx + 1) % keys.Count];
+            }
         }
 
         if (_errorMessage != null && ImGui.GetTime() > _errorExpiry)
@@ -239,7 +256,7 @@ public class GuiDefineMovementResolver
         TaskCompletionSource<List<ModelMoveEntry>> tcs, List<ITerrain> terrain)
     {
         float panelW = MathF.Min(screenW * 0.5f, 560f);
-        float panelH = 200f;
+        float panelH = 230f;
         ImGui.SetNextWindowPos(new Vector2((screenW - panelW) * 0.5f, 16f), ImGuiCond.Always);
         ImGui.SetNextWindowSize(new Vector2(panelW, panelH), ImGuiCond.Always);
         ImGui.PushStyleColor(ImGuiCol.WindowBg, new Vector4(0.10f, 0.10f, 0.15f, 0.92f));
@@ -276,8 +293,10 @@ public class GuiDefineMovementResolver
         }
         else
         {
-            ImGui.TextDisabled("Left-click: select model.  Right-click: add waypoint.  Backspace: undo.");
+            ImGui.TextDisabled("L-click: select.  R-click: waypoint.  Space: next model.  Backspace: undo.");
         }
+
+        ImGui.Checkbox("Stay within Advance (hold Shift to force)", ref _stayInAdvance);
 
         ImGui.Spacing();
         float spacing = ImGui.GetStyle().ItemSpacing.X;
