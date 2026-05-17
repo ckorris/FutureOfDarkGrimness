@@ -1,7 +1,7 @@
 # 001 — D3+2 objective placement (alternating, interactive)
 
-**Status**: in-progress
-**Related**: branch `ObjectivePlacement`
+**Status**: done
+**Related**: branch `ObjectivePlacement` (parent + submodule)
 
 ## Goal
 
@@ -181,6 +181,40 @@ of scope.
   play is a separate concern from "is there a player at this seat at
   all." A meta-comment in the AI resolver should make this explicit
   so future readers don't try to make it competitive.
+
+## Outcome
+
+Shipped on branch `ObjectivePlacement` (both repos). End-to-end working: AI
+players place via `AiPlaceObjectiveResolver`, humans via `GuiPlaceObjectiveResolver`,
+engine drives alternation via `PlaceObjectivesStage` (now a `ParentStage`) and
+the shared `TeamPlayerAlternationCursor`.
+
+Subtasks shipped:
+1. `PlaceObjectiveRequest` request type — done
+2. `ObjectivePlacementValidator` pure-function — done (Unreachable stub returns Valid; revisit if a real terrain layout produces a legal-band island)
+3. Alternating driver (`PlaceObjectivesStage` + `DetermineNextObjectivePlacerStage` + `PlaceOneObjectiveStage` + `IObjectivePlacementTurnContext`) — done
+4. CLI resolver — **deferred** (no resolver registered for `--headless` builds; will hit MissingResolverException there until added)
+5. GUI resolver (`GuiPlaceObjectiveResolver`) — done. Ghost matches placed-marker visual (0.5" base + 3" seizure ring from center + index), green/red outline for validity, click → freeze + Confirm/Cancel panel, Enter/Esc shortcuts. Panel default position centered below Outstanding Tasks, draggable.
+6. Debug auto-place toggle (`GameSettings.AutoPlaceObjectivesDebug`) — done
+7. AI resolver — done. v2 strategy: random X (X imbalance doesn't favor either team); target Z mirrored from existing centroid through table center with ±2" jitter; first placement is random; near-center centroid handled (last placement stays near center, others fall back to random)
+8. Tests — **deferred**
+
+Out of scope / follow-ups:
+- CLI resolver for `PlaceObjectiveRequest` (subtask 4)
+- Automated tests covering the validator + alternating driver (subtask 8)
+- Reachability check ("spots too tight to get to") — validator stub
+- `DEPLOYMENT_DISTANCE_INCHES = 9" vs rules-12"` reconciliation (deferred under #004/#005)
+
+Also incidentally fixed in this branch:
+- Pre-existing race in `RequestMessageSender`: awaiting-notification was sent
+  after the request, so a synchronous resolver (like the new AI) could complete
+  before listers saw the awaiting message — taskID got "stuck" forever in
+  Outstanding Tasks. Swapped the order. Surfaced only because this was the
+  first sync resolver tied to OutstandingTaskLister.
+
+Submodule commits: `6db25f9`, `f8574ca`, `f806ec5`, `9acf950`, `5e7dd55`, `44a943d`
+Parent commits: planning commit `ab8ab60`, GUI resolver + submodule bump `515e223`,
+panel reposition `2ca1d15`.
 
 ## Notes
 
