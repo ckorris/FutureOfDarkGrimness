@@ -28,9 +28,6 @@ public class GuiDefineMovementResolver
     private IModel? _selectedModel;
     private bool _stayInAdvance; // toggle — off by default, reset each Resolve
 
-    private string? _errorMessage;
-    private double  _errorExpiry;
-
     // Colors
     private static readonly uint AdvanceColor    = ImGui.ColorConvertFloat4ToU32(new Vector4(0.25f, 0.95f, 0.25f, 0.95f));
     private static readonly uint RushColor       = ImGui.ColorConvertFloat4ToU32(new Vector4(1.00f, 0.55f, 0.10f, 0.95f));
@@ -40,6 +37,7 @@ public class GuiDefineMovementResolver
     private static readonly uint ModelOutline    = ImGui.ColorConvertFloat4ToU32(new Vector4(0.7f, 0.7f, 0.7f, 0.7f));
     private static readonly uint GhostOutline    = ImGui.ColorConvertFloat4ToU32(new Vector4(1f, 1f, 1f, 0.85f));
     private static readonly uint FinalGhostCol   = ImGui.ColorConvertFloat4ToU32(new Vector4(1f, 1f, 1f, 0.25f));
+    private static readonly uint CohesionLineCol = ImGui.ColorConvertFloat4ToU32(new Vector4(0.75f, 0.75f, 0.75f, 0.85f));
 
     public GuiDefineMovementResolver(ITableState tableState) => _tableState = tableState;
 
@@ -68,7 +66,6 @@ public class GuiDefineMovementResolver
             _pathTemplate  = template;
             _selectedModel = first;
             _stayInAdvance = false;
-            _errorMessage  = null;
         }
         return tcs.Task;
     }
@@ -196,6 +193,10 @@ public class GuiDefineMovementResolver
                 : ImGui.ColorConvertFloat4ToU32(new Vector4(0.25f, 0.95f, 0.25f, 0.40f));
             dl.AddCircleFilled(new Vector2(gx, gy), r, fill);
             dl.AddCircle(new Vector2(gx, gy), r, GhostOutline, 32, 1.5f);
+
+            // Cohesion warnings: indicators reflect would-be positions if user committed here
+            var finalsWithGhost = BuildFinalPositions(paths, _selectedModel, ghostPos);
+            DrawCohesionIndicators(dl, finalsWithGhost, _selectedModel);
         }
 
         // 4) Mouse / keyboard input
@@ -246,9 +247,6 @@ public class GuiDefineMovementResolver
             }
         }
 
-        if (_errorMessage != null && ImGui.GetTime() > _errorExpiry)
-            _errorMessage = null;
-
         DrawInfoPanel(screenW, request, pt, tcs, terrain);
     }
 
@@ -285,16 +283,7 @@ public class GuiDefineMovementResolver
             ImGui.TextDisabled("No model selected. Left-click a model on the table.");
         }
 
-        if (_errorMessage != null)
-        {
-            ImGui.PushStyleColor(ImGuiCol.Text, new Vector4(1f, 0.4f, 0.4f, 1f));
-            ImGui.TextWrapped(_errorMessage);
-            ImGui.PopStyleColor();
-        }
-        else
-        {
-            ImGui.TextDisabled("L-click: select.  R-click: waypoint.  Space: next model.  Backspace: undo.");
-        }
+        ImGui.TextDisabled("L-click: select.  R-click: waypoint.  Space: next model.  Backspace: undo.");
 
         ImGui.Checkbox("Stay within Advance (hold Shift to force)", ref _stayInAdvance);
 
@@ -303,17 +292,38 @@ public class GuiDefineMovementResolver
         float pad     = ImGui.GetStyle().WindowPadding.X * 2;
         float btnW    = (panelW - pad - spacing * 3) / 4f;
 
-        if (ImGui.Button("Done", new Vector2(btnW, 28f)))
+        var results = pt.GetResultsAsList();
+        bool engineValid = MovementUtilities.ValidatePaths(results, request.MaxChargeDistance, terrain, out var engineErrors);
+        var finals = BuildFinalPositions(pt.CurrentPaths, null, null);
+        var cohesion = CheckCohesion(finals);
+
+        var issues = new List<string>();
+        if (!engineValid)
         {
-            var results = pt.GetResultsAsList();
-            if (MovementUtilities.ValidatePaths(results, request.MaxChargeDistance, terrain, out var errors))
+            // Skip the engine's coherency errors — its check is broken; we report our own below.
+            foreach (var e in engineErrors)
             {
-                Complete(tcs, results);
-                ImGui.End();
-                return;
+                if (e.ErrorReasonType == EErrorReasonType.TooFarFromAnyUnitModel ||
+                    e.ErrorReasonType == EErrorReasonType.TooFarFromAllUnitModels) continue;
+                issues.Add(MovementUtilities.ErrorReasonToString(e.ErrorReasonType));
             }
-            _errorMessage = string.Join(" | ", errors.Select(e => MovementUtilities.ErrorReasonToString(e.ErrorReasonType)));
-            _errorExpiry  = ImGui.GetTime() + 3.0;
+        }
+        foreach (var t in cohesion.TooFarFromAny)
+            issues.Add($"Cohesion: model is {t.dist:F2}\" from nearest other (max {GameWideConstants.MAX_MODEL_DISTANCE_FROM_ANY_OTHER_MODEL_INCHES}\")");
+        if (cohesion.FarthestPair.HasValue)
+            issues.Add($"Cohesion: two models would be {cohesion.FarthestPair.Value.dist:F2}\" apart (max {GameWideConstants.MAX_MODEL_DISTANCE_FROM_ALL_OTHER_MODELS_INCHES}\")");
+
+        bool canSubmit = issues.Count == 0;
+        if (!canSubmit) ImGui.BeginDisabled();
+        bool donePressed = ImGui.Button("Done", new Vector2(btnW, 28f));
+        if (!canSubmit) ImGui.EndDisabled();
+        if (!canSubmit && ImGui.IsItemHovered(ImGuiHoveredFlags.AllowWhenDisabled))
+            ImGui.SetTooltip(string.Join("\n", issues));
+        if (canSubmit && donePressed)
+        {
+            Complete(tcs, results);
+            ImGui.End();
+            return;
         }
         ImGui.SameLine();
         if (ImGui.Button("Clear selected", new Vector2(btnW, 28f)))
@@ -337,6 +347,132 @@ public class GuiDefineMovementResolver
         }
 
         ImGui.End();
+    }
+
+    private static List<(IModel model, Position pos)> BuildFinalPositions(
+        IReadOnlyDictionary<IModel, IReadOnlyList<Position>> paths,
+        IModel? ghostModel, Position? ghostPos)
+    {
+        var list = new List<(IModel, Position)>(paths.Count);
+        foreach (var kvp in paths)
+        {
+            var m = kvp.Key;
+            Position p;
+            if (ReferenceEquals(m, ghostModel) && ghostPos.HasValue) p = ghostPos.Value;
+            else if (kvp.Value.Count > 0) p = kvp.Value[^1];
+            else p = m.Position;
+            list.Add((m, p));
+        }
+        return list;
+    }
+
+    private readonly struct CohesionViolations
+    {
+        public readonly List<(IModel model, IModel nearest, Position pos, Position nearestPos, float dist)> TooFarFromAny;
+        public readonly (IModel a, IModel b, Position pa, Position pb, float dist)? FarthestPair;
+
+        public CohesionViolations(
+            List<(IModel, IModel, Position, Position, float)> tooFar,
+            (IModel, IModel, Position, Position, float)? farthest)
+        { TooFarFromAny = tooFar; FarthestPair = farthest; }
+
+        public bool Any => TooFarFromAny.Count > 0 || FarthestPair.HasValue;
+    }
+
+    private static CohesionViolations CheckCohesion(List<(IModel model, Position pos)> finals)
+    {
+        var tooFar = new List<(IModel, IModel, Position, Position, float)>();
+        (IModel, IModel, Position, Position, float)? farPair = null;
+
+        if (finals.Count <= 1) return new CohesionViolations(tooFar, null);
+
+        for (int i = 0; i < finals.Count; i++)
+        {
+            float nearestDist = float.PositiveInfinity;
+            int nearestIdx = -1;
+            for (int j = 0; j < finals.Count; j++)
+            {
+                if (i == j) continue;
+                float d = DistanceUtilities.GetBaseToBaseDistanceInches_3D(
+                    finals[i].pos, finals[j].pos,
+                    finals[i].model.BaseRadiusInches, finals[j].model.BaseRadiusInches);
+                if (d < nearestDist) { nearestDist = d; nearestIdx = j; }
+                if (i < j && (!farPair.HasValue || d > farPair.Value.Item5))
+                    farPair = (finals[i].model, finals[j].model, finals[i].pos, finals[j].pos, d);
+            }
+            if (nearestDist > GameWideConstants.MAX_MODEL_DISTANCE_FROM_ANY_OTHER_MODEL_INCHES && nearestIdx >= 0)
+                tooFar.Add((finals[i].model, finals[nearestIdx].model, finals[i].pos, finals[nearestIdx].pos, nearestDist));
+        }
+
+        if (farPair.HasValue && farPair.Value.Item5 <= GameWideConstants.MAX_MODEL_DISTANCE_FROM_ALL_OTHER_MODELS_INCHES)
+            farPair = null;
+
+        return new CohesionViolations(tooFar, farPair);
+    }
+
+    private void DrawCohesionIndicators(ImDrawListPtr dl, List<(IModel model, Position pos)> finals, IModel? ghostModel)
+    {
+        var v = CheckCohesion(finals);
+
+        // Rule A: line from ghost edge to its nearest neighbor edge, only if ghost itself is the violator
+        if (ghostModel != null)
+        {
+            var ghostEntry = v.TooFarFromAny.FirstOrDefault(t => ReferenceEquals(t.model, ghostModel));
+            if (ghostEntry.model != null)
+                DrawDimensionLine(dl, ghostEntry.pos, ghostEntry.model.BaseRadiusInches,
+                                      ghostEntry.nearestPos, ghostEntry.nearest.BaseRadiusInches);
+        }
+
+        // Rule B: bounding circle around the two farthest models
+        if (v.FarthestPair.HasValue)
+        {
+            var f = v.FarthestPair.Value;
+            DrawBoundingCircle(dl, f.pa, f.a.BaseRadiusInches, f.pb, f.b.BaseRadiusInches);
+        }
+    }
+
+    private void DrawDimensionLine(ImDrawListPtr dl, Position a, float ra, Position b, float rb)
+    {
+        float dx = b.x - a.x;
+        float dz = b.z - a.z;
+        float len = MathF.Sqrt(dx * dx + dz * dz);
+        if (len < 0.0001f) return;
+        float nx = dx / len, nz = dz / len;
+        // Edge-of-base endpoints in inches
+        float aEdgeX = a.x + nx * ra,  aEdgeZ = a.z + nz * ra;
+        float bEdgeX = b.x - nx * rb,  bEdgeZ = b.z - nz * rb;
+
+        var (ax, ay) = InchesToPixel(aEdgeX, aEdgeZ);
+        var (bx, by) = InchesToPixel(bEdgeX, bEdgeZ);
+        dl.AddLine(new Vector2(ax, ay), new Vector2(bx, by), CohesionLineCol, 1f);
+
+        // Perpendicular serif ticks at each endpoint
+        // Pixel-space perpendicular (y axis is flipped vs z but symmetric so perpendicular formula holds)
+        float lpx = bx - ax, lpy = by - ay;
+        float lplen = MathF.Sqrt(lpx * lpx + lpy * lpy);
+        if (lplen < 0.0001f) return;
+        float px = -lpy / lplen, py = lpx / lplen;
+        const float tick = 4f;
+        dl.AddLine(new Vector2(ax - px * tick, ay - py * tick), new Vector2(ax + px * tick, ay + py * tick), CohesionLineCol, 1f);
+        dl.AddLine(new Vector2(bx - px * tick, by - py * tick), new Vector2(bx + px * tick, by + py * tick), CohesionLineCol, 1f);
+    }
+
+    private void DrawBoundingCircle(ImDrawListPtr dl, Position a, float ra, Position b, float rb)
+    {
+        float dx = b.x - a.x;
+        float dz = b.z - a.z;
+        float centerDist = MathF.Sqrt(dx * dx + dz * dz);
+        if (centerDist < 0.0001f) return;
+        float nx = dx / centerDist, nz = dz / centerDist;
+        // Far edges of each base, along the line between centers
+        float aFarX = a.x - nx * ra,  aFarZ = a.z - nz * ra;
+        float bFarX = b.x + nx * rb,  bFarZ = b.z + nz * rb;
+        float midX = (aFarX + bFarX) * 0.5f;
+        float midZ = (aFarZ + bFarZ) * 0.5f;
+        float radiusInches = (centerDist + ra + rb) * 0.5f;
+
+        var (cx, cy) = InchesToPixel(midX, midZ);
+        dl.AddCircle(new Vector2(cx, cy), radiusInches * _scale, CohesionLineCol, 96, 1f);
     }
 
     private List<ModelMoveEntry> AutoAdvance(DefineMovementPathRequest request)
