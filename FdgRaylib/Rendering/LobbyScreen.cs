@@ -129,16 +129,24 @@ public class LobbyScreen : IAppScreen
         ImGui.SetCursorPos(new Vector2(margin, chatY));
         ImGui.BeginChild("##chatlog", new Vector2(mainW, chatH), ImGuiChildFlags.Borders,
             ImGuiWindowFlags.HorizontalScrollbar);
+        ImGui.SetWindowFontScale(1.5f);  // match the player + settings panels
         DrawChatLog();
         ImGui.EndChild();
 
         // ── Chat Input + Send ─────────────────────────────────────────────────
+        // Wrapped in a child so SetWindowFontScale applies locally — matches the chat log + launch button.
         float chatInputY = screenH - margin - chatInputH;
         float sendBtnW   = 60f;
         ImGui.SetCursorPos(new Vector2(margin, chatInputY));
+        ImGui.PushStyleVar(ImGuiStyleVar.WindowPadding, Vector2.Zero);
+        ImGui.BeginChild("##chatrow", new Vector2(mainW, chatInputH), ImGuiChildFlags.None,
+            ImGuiWindowFlags.NoScrollbar);
+        ImGui.PopStyleVar();
+        ImGui.SetWindowFontScale(1.5f);
 
-        // InputText height = font + 2*FramePadding.Y. Push enough vertical padding to fill chatInputH.
-        float inputVerticalPad = MathF.Max(framePadY, (chatInputH - fontSize) * 0.5f);
+        // InputText height = font + 2*FramePadding.Y. Recompute padding against the now-scaled font size.
+        float scaledFontSize  = ImGui.GetFontSize();
+        float inputVerticalPad = MathF.Max(framePadY, (chatInputH - scaledFontSize) * 0.5f);
         ImGui.PushStyleVar(ImGuiStyleVar.FramePadding,
             new Vector2(ImGui.GetStyle().FramePadding.X, inputVerticalPad));
         ImGui.SetNextItemWidth(mainW - sendBtnW - margin);
@@ -150,6 +158,8 @@ public class LobbyScreen : IAppScreen
         if (ImGui.Button("Send", new Vector2(sendBtnW, chatInputH)) &&
             !string.IsNullOrWhiteSpace(_chatInput))
             SubmitChat();
+
+        ImGui.EndChild();
 
         // ── Settings + Launch (right panel) ───────────────────────────────────
         float rightX = margin * 2 + mainW;
@@ -163,6 +173,7 @@ public class LobbyScreen : IAppScreen
         ImGui.SetCursorPos(new Vector2(rightX, margin + rightH - chatInputH));
         // No border on the launch child — the button itself fills the panel and provides the visual edge.
         ImGui.BeginChild("##launch", new Vector2(settingsW, chatInputH), ImGuiChildFlags.None);
+        ImGui.SetWindowFontScale(1.5f);  // match the chat row + other panels
         DrawLaunch(settingsW, chatInputH);
         ImGui.EndChild();
 
