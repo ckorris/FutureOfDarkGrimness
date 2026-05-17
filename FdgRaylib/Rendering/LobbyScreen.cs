@@ -120,6 +120,7 @@ public class LobbyScreen : IAppScreen
         float playerListY = margin + headerH + margin;
         ImGui.SetCursorPos(new Vector2(margin, playerListY));
         ImGui.BeginChild("##players", new Vector2(mainW, playerListH), ImGuiChildFlags.Borders);
+        ImGui.SetWindowFontScale(1.5f);  // rows + font ~50% bigger than the rest of the lobby
         DrawPlayerList(mainW);
         ImGui.EndChild();
 
@@ -135,9 +136,15 @@ public class LobbyScreen : IAppScreen
         float chatInputY = screenH - margin - chatInputH;
         float sendBtnW   = 60f;
         ImGui.SetCursorPos(new Vector2(margin, chatInputY));
+
+        // InputText height = font + 2*FramePadding.Y. Push enough vertical padding to fill chatInputH.
+        float inputVerticalPad = MathF.Max(framePadY, (chatInputH - fontSize) * 0.5f);
+        ImGui.PushStyleVar(ImGuiStyleVar.FramePadding,
+            new Vector2(ImGui.GetStyle().FramePadding.X, inputVerticalPad));
         ImGui.SetNextItemWidth(mainW - sendBtnW - margin);
         if (ImGui.InputText("##chatinput", ref _chatInput, 512, ImGuiInputTextFlags.EnterReturnsTrue))
             SubmitChat();
+        ImGui.PopStyleVar();
 
         ImGui.SameLine();
         if (ImGui.Button("Send", new Vector2(sendBtnW, chatInputH)) &&
@@ -149,11 +156,13 @@ public class LobbyScreen : IAppScreen
         ImGui.SetCursorPos(new Vector2(rightX, margin));
         ImGui.BeginChild("##settings", new Vector2(settingsW, rightH - chatInputH - margin),
             ImGuiChildFlags.Borders);
+        ImGui.SetWindowFontScale(1.5f);  // settings fields ~50% bigger than the rest of the lobby
         DrawSettings(settingsW);
         ImGui.EndChild();
 
         ImGui.SetCursorPos(new Vector2(rightX, margin + rightH - chatInputH));
-        ImGui.BeginChild("##launch", new Vector2(settingsW, chatInputH), ImGuiChildFlags.Borders);
+        // No border on the launch child — the button itself fills the panel and provides the visual edge.
+        ImGui.BeginChild("##launch", new Vector2(settingsW, chatInputH), ImGuiChildFlags.None);
         DrawLaunch(settingsW, chatInputH);
         ImGui.EndChild();
 
