@@ -27,6 +27,7 @@ public class GuiDefineMovementResolver
     private PathTemplate? _pathTemplate;
     private IModel? _selectedModel;
     private bool _stayInAdvance; // toggle — off by default, reset each Resolve
+    private bool _showRangedTargeting = true; // toggle — on by default, persists across Resolve calls
 
     // Colors
     private static readonly uint AdvanceColor    = ImGui.ColorConvertFloat4ToU32(new Vector4(0.25f, 0.95f, 0.25f, 0.95f));
@@ -146,6 +147,7 @@ public class GuiDefineMovementResolver
         Position? ghostPos = null;
         bool ghostIsRush = false;
         bool ghostOverlaps = false;
+        float ghostExtraDist = 0f;
 
         bool advanceOnly = _stayInAdvance || ImGui.IsKeyDown(ImGuiKey.LeftShift) || ImGui.IsKeyDown(ImGuiKey.RightShift);
 
@@ -181,6 +183,7 @@ public class GuiDefineMovementResolver
 
             float cumWithGhost = totalSoFar + allowed;
             ghostIsRush = cumWithGhost + 0.0001f >= maxAdvance;
+            ghostExtraDist = allowed;
             ghostOverlaps = WouldOverlapAnyModel(ghostPos.Value, _selectedModel, request, paths);
 
             // Preview line from anchor to ghost
@@ -202,6 +205,10 @@ public class GuiDefineMovementResolver
             var finalsWithGhost = BuildFinalPositions(paths, _selectedModel, ghostPos);
             DrawCohesionIndicators(dl, finalsWithGhost, _selectedModel);
         }
+
+        // 3b) Ranged-targeting overlay (toggle, on by default)
+        if (_showRangedTargeting)
+            DrawRangedTargeting(dl, request, pt, paths, ghostPos, ghostExtraDist);
 
         // 4) Mouse / keyboard input
         if (overTable && !io.WantCaptureMouse)
@@ -289,6 +296,9 @@ public class GuiDefineMovementResolver
         ImGui.TextDisabled("Space: next model   Backspace: undo");
 
         ImGui.Checkbox("Stay within Advance (hold Shift to force)", ref _stayInAdvance);
+        ImGui.Checkbox("Show ranged targeting", ref _showRangedTargeting);
+        if (ImGui.IsItemHovered())
+            ImGui.SetTooltip("Show which weapons can hit each enemy unit, and draw fire lines from the selected model. Hidden when the unit has moved too far to shoot.");
 
         ImGui.Spacing();
         float spacing = ImGui.GetStyle().ItemSpacing.X;
@@ -494,6 +504,153 @@ public class GuiDefineMovementResolver
         const float tick = 4f;
         dl.AddLine(new Vector2(ax - px * tick, ay - py * tick), new Vector2(ax + px * tick, ay + py * tick), CohesionLineCol, 1f);
         dl.AddLine(new Vector2(bx - px * tick, by - py * tick), new Vector2(bx + px * tick, by + py * tick), CohesionLineCol, 1f);
+    }
+
+    private void DrawRangedTargeting(ImDrawListPtr dl,
+        DefineMovementPathRequest request,
+        PathTemplate pt,
+        IReadOnlyDictionary<IModel, IReadOnlyList<Position>> paths,
+        Position? ghostPos, float ghostExtraDist)
+    {
+        // TODO: factor in line of sight when deciding what counts as "in range" / a valid shooter.
+
+        // Bail entirely if any model in the unit has moved past Advance — the unit can't shoot.
+        foreach (var m in paths.Keys)
+        {
+            float total = pt.GetTotalDistanceMoved(m);
+            if (ReferenceEquals(m, _selectedModel) && ghostPos.HasValue) total += ghostExtraDist;
+            if (total > request.MaxAdvanceDistance + 0.0001f) return;
+        }
+
+        // Projected positions for our unit (ghost-aware for the selected model).
+        var projected = new Dictionary<IModel, Position>(paths.Count);
+        foreach (var kvp in paths)
+        {
+            IModel m = kvp.Key;
+            Position p;
+            if (ReferenceEquals(m, _selectedModel) && ghostPos.HasValue) p = ghostPos.Value;
+            else if (kvp.Value.Count > 0) p = kvp.Value[^1];
+            else p = m.Position;
+            projected[m] = p;
+        }
+
+        var ourPlayerID = request.TargetPlayerID;
+        uint enemyTextCol = ImGui.ColorConvertFloat4ToU32(new Vector4(1.00f, 1.00f, 0.70f, 1f));
+        uint lineCol      = ImGui.ColorConvertFloat4ToU32(new Vector4(0.30f, 1.00f, 0.30f, 0.85f));
+        uint midTextCol   = ImGui.ColorConvertFloat4ToU32(new Vector4(0.60f, 1.00f, 0.60f, 1f));
+        float lineH = ImGui.GetTextLineHeight();
+
+        // 1) Per-enemy-unit aggregate text (every weapon in our unit that can reach any model of the enemy unit).
+        foreach (IUnit enemyUnit in _tableState.Units.Objects)
+        {
+            if (enemyUnit.PlayerID == ourPlayerID) continue;
+            var aliveEnemies = enemyUnit.Models.Where(em => em.GetIsAlive()).ToList();
+            if (aliveEnemies.Count == 0) continue;
+
+            var counts = new Dictionary<string, int>();
+            foreach (var kvp in projected)
+            {
+                IModel ourModel = kvp.Key;
+                Position from = kvp.Value;
+                foreach (var w in ourModel.Weapons)
+                {
+                    if (!w.IsRanged()) continue;
+                    bool inRange = false;
+                    foreach (var em in aliveEnemies)
+                    {
+                        float b2b = DistanceUtilities.GetBaseToBaseDistanceInches_2D(
+                            from, em.Position, ourModel.BaseRadiusInches, em.BaseRadiusInches);
+                        if (b2b <= w.RangeInches) { inRange = true; break; }
+                    }
+                    if (inRange)
+                    {
+                        counts.TryGetValue(w.Name, out int c);
+                        counts[w.Name] = c + 1;
+                    }
+                }
+            }
+            if (counts.Count == 0) continue;
+
+            float ecx = aliveEnemies.Average(em => em.Position.x);
+            float ecz = aliveEnemies.Average(em => em.Position.z);
+            var (cpx, cpy) = InchesToPixel(ecx, ecz);
+
+            var lines = counts.OrderByDescending(kv => kv.Value).ThenBy(kv => kv.Key)
+                .Select(kv => $"{kv.Value}x {kv.Key}").ToList();
+            float blockH = lines.Count * lineH;
+            float yTop = cpy - blockH - 20f;
+            for (int i = 0; i < lines.Count; i++)
+            {
+                var size = ImGui.CalcTextSize(lines[i]);
+                dl.AddText(new Vector2(cpx - size.X * 0.5f, yTop + i * lineH), enemyTextCol, lines[i]);
+            }
+        }
+
+        // 2) Per-selected-model fire lines + per-line weapon labels.
+        if (_selectedModel == null) return;
+        var selRanged = _selectedModel.Weapons.Where(w => w.IsRanged()).ToList();
+        if (selRanged.Count == 0) return;
+        Position selPos = projected[_selectedModel];
+
+        // For each weapon, pick the nearest enemy model in range per enemy unit.
+        // Group resulting (line endpoint = enemy model) -> list of weapons hitting it.
+        var byTarget = new Dictionary<IModel, List<IWeapon>>();
+        foreach (IUnit enemyUnit in _tableState.Units.Objects)
+        {
+            if (enemyUnit.PlayerID == ourPlayerID) continue;
+            var aliveEnemies = enemyUnit.Models.Where(em => em.GetIsAlive()).ToList();
+            if (aliveEnemies.Count == 0) continue;
+
+            foreach (var w in selRanged)
+            {
+                IModel? nearest = null;
+                float nearestB2B = float.MaxValue;
+                foreach (var em in aliveEnemies)
+                {
+                    float b2b = DistanceUtilities.GetBaseToBaseDistanceInches_2D(
+                        selPos, em.Position, _selectedModel.BaseRadiusInches, em.BaseRadiusInches);
+                    if (b2b > w.RangeInches) continue;
+                    if (b2b < nearestB2B) { nearestB2B = b2b; nearest = em; }
+                }
+                if (nearest == null) continue;
+                if (!byTarget.TryGetValue(nearest, out var list)) byTarget[nearest] = list = new List<IWeapon>();
+                list.Add(w);
+            }
+        }
+
+        const float stagger = 6f;
+        foreach (var kvp in byTarget)
+        {
+            var target = kvp.Key;
+            var weapons = kvp.Value.OrderBy(w => w.Name).ToList();
+            int n = weapons.Count;
+
+            var (ax, ay) = InchesToPixel(selPos.x, selPos.z);
+            var (bx, by) = InchesToPixel(target.Position.x, target.Position.z);
+            float dx = bx - ax, dy = by - ay;
+            float len = MathF.Sqrt(dx * dx + dy * dy);
+            if (len < 0.001f) continue;
+            float perpX = -dy / len, perpY = dx / len;
+
+            for (int i = 0; i < n; i++)
+            {
+                float offset = (i - (n - 1) * 0.5f) * stagger;
+                var sa = new Vector2(ax + perpX * offset, ay + perpY * offset);
+                var sb = new Vector2(bx + perpX * offset, by + perpY * offset);
+                dl.AddLine(sa, sb, lineCol, 1.5f);
+            }
+
+            // Weapon name labels stacked at the (un-staggered) midpoint.
+            float mx = (ax + bx) * 0.5f, my = (ay + by) * 0.5f;
+            float blockH = n * lineH;
+            float yTop = my - blockH * 0.5f;
+            for (int i = 0; i < n; i++)
+            {
+                string name = weapons[i].Name;
+                var size = ImGui.CalcTextSize(name);
+                dl.AddText(new Vector2(mx - size.X * 0.5f, yTop + i * lineH), midTextCol, name);
+            }
+        }
     }
 
     private void DrawBoundingCircle(ImDrawListPtr dl, Position a, float ra, Position b, float rb)
