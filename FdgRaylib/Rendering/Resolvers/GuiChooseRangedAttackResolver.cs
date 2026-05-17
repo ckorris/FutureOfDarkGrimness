@@ -33,6 +33,11 @@ public class GuiChooseRangedAttackResolver
     private (int wIdx, int tIdx) _hoveredOption       = (-1, -1);
     private (int wIdx, int tIdx) _canvasHoveredOption = (-1, -1);
 
+    // Per-attacker fire counter — once we've sent at least one Selected for this attacker, Back is hidden.
+    // Reset when the request's AttackingUnit changes.
+    private DataReference? _trackedAttackerRef;
+    private int            _firesThisAction;
+
     public GuiChooseRangedAttackResolver(ITableState tableState) => _tableState = tableState;
 
     public void UpdateLayout(float scale, int originX, int originY, float tableH)
@@ -64,7 +69,9 @@ public class GuiChooseRangedAttackResolver
         if (tIdx < 0) { _canvasHoveredOption = (-1, -1); return null; }
 
         _canvasHoveredOption = (_selectedWeaponIdx, tIdx);
-        int canShoot = request.WeaponOptions[_selectedWeaponIdx].WeaponTargetStats[tIdx].modelsThatCanShoot.Count;
+        var ts = request.WeaponOptions[_selectedWeaponIdx].WeaponTargetStats[tIdx];
+        if (ts.UnselectableReason != null) return ts.UnselectableReason;
+        int canShoot = ts.modelsThatCanShoot.Count;
         if (canShoot == 0) return "Out of range";
         return $"Click to select  ({canShoot} model{(canShoot != 1 ? "s" : "")} in range)";
     }
@@ -77,7 +84,9 @@ public class GuiChooseRangedAttackResolver
 
         int tIdx = FindTargetInWeapon(unit, _selectedWeaponIdx, request);
         if (tIdx < 0) return;
-        if (request.WeaponOptions[_selectedWeaponIdx].WeaponTargetStats[tIdx].modelsThatCanShoot.Count == 0) return;
+        var ts = request.WeaponOptions[_selectedWeaponIdx].WeaponTargetStats[tIdx];
+        if (ts.UnselectableReason != null) return;
+        if (ts.modelsThatCanShoot.Count == 0) return;
 
         _selectedTargetTIdx = tIdx;
     }
@@ -91,10 +100,16 @@ public class GuiChooseRangedAttackResolver
         lock (_lock) { request = _request; tcs = _tcs; }
         if (request == null || tcs == null) return;
 
-        // Auto-select first weapon on new request
+        // Auto-select first selectable weapon on new request; reset fire counter if attacker changed.
         if (!ReferenceEquals(request, _lastRequest))
         {
             _lastRequest        = request;
+            DataReference attackerRef = request.AttackingUnit.Reference;
+            if (_trackedAttackerRef == null || !_trackedAttackerRef.Value.Equals(attackerRef))
+            {
+                _trackedAttackerRef = attackerRef;
+                _firesThisAction    = 0;
+            }
             _selectedWeaponIdx  = request.WeaponOptions.Count > 0 ? 0 : -1;
             _selectedTargetTIdx = -1;
         }
@@ -136,14 +151,20 @@ public class GuiChooseRangedAttackResolver
         ImGui.Separator();
         for (int wi = 0; wi < request.WeaponOptions.Count; wi++)
         {
-            var wo      = request.WeaponOptions[wi];
-            bool sel    = _selectedWeaponIdx == wi;
-            float itemH = ImGui.GetTextLineHeight() * 2.4f;
+            var wo            = request.WeaponOptions[wi];
+            bool sel          = _selectedWeaponIdx == wi;
+            bool selectableW  = HasAnyFireableTarget(wo);
+            float itemH       = ImGui.GetTextLineHeight() * 2.4f;
+
+            if (!selectableW) ImGui.BeginDisabled(true);
 
             if (ImGui.Selectable($"##{wi}", sel, ImGuiSelectableFlags.None, new Vector2(0, itemH)))
             {
-                if (_selectedWeaponIdx != wi) _selectedTargetTIdx = -1;
-                _selectedWeaponIdx = wi;
+                if (selectableW)
+                {
+                    if (_selectedWeaponIdx != wi) _selectedTargetTIdx = -1;
+                    _selectedWeaponIdx = wi;
+                }
             }
             if (ImGui.IsItemHovered())
             {
@@ -151,11 +172,22 @@ public class GuiChooseRangedAttackResolver
                 newHovered = firstTIdx >= 0 ? (wi, firstTIdx) : (-1, -1);
             }
 
+            if (!selectableW) ImGui.EndDisabled();
+
+            // BeginDisabled suppresses IsItemHovered, so re-query with AllowWhenDisabled to
+            // surface a tooltip explaining why the weapon is unavailable.
+            if (!selectableW && ImGui.IsItemHovered(ImGuiHoveredFlags.AllowWhenDisabled))
+                ImGui.SetTooltip(DescribeWeaponUnavailability(wo));
+
             // Overlay text via draw list — no cursor manipulation, no boundary extension.
             var rMin    = ImGui.GetItemRectMin();
             var dl      = ImGui.GetWindowDrawList();
-            uint colTxt = ImGui.GetColorU32(ImGuiCol.Text);
-            uint colSub = ImGui.ColorConvertFloat4ToU32(new Vector4(0.65f, 0.65f, 0.70f, 1f));
+            uint colTxt = selectableW
+                ? ImGui.GetColorU32(ImGuiCol.Text)
+                : ImGui.ColorConvertFloat4ToU32(new Vector4(0.55f, 0.55f, 0.55f, 1f));
+            uint colSub = selectableW
+                ? ImGui.ColorConvertFloat4ToU32(new Vector4(0.65f, 0.65f, 0.70f, 1f))
+                : ImGui.ColorConvertFloat4ToU32(new Vector4(0.50f, 0.50f, 0.50f, 1f));
             dl.AddText(rMin + new Vector2(4, 2), colTxt, wo.Weapon.Name);
             dl.AddText(rMin + new Vector2(4, ImGui.GetTextLineHeight() + 4), colSub,
                 $"{wo.Weapon.RangeInches}\", A{wo.Weapon.Attacks} AP{wo.Weapon.ArmorPenetration}");
@@ -173,32 +205,46 @@ public class GuiChooseRangedAttackResolver
             var wo = request.WeaponOptions[_selectedWeaponIdx];
             for (int ti = 0; ti < wo.WeaponTargetStats.Count; ti++)
             {
-                var ts       = wo.WeaponTargetStats[ti];
-                bool canShoot = ts.modelsThatCanShoot.Count > 0;
-                bool sel      = _selectedTargetTIdx == ti;
-                string name   = ts.TargetUnit.GetValue().Name;
-                float itemH   = ImGui.GetTextLineHeight() * 2.4f;
+                var ts             = wo.WeaponTargetStats[ti];
+                bool inRange       = ts.modelsThatCanShoot.Count > 0;
+                bool ruleBlocked   = ts.UnselectableReason != null;
+                bool selectableT   = inRange && !ruleBlocked;
+                bool sel           = _selectedTargetTIdx == ti;
+                string name        = ts.TargetUnit.GetValue().Name;
+                float itemH        = ImGui.GetTextLineHeight() * 2.4f;
 
-                if (!canShoot) ImGui.BeginDisabled(true);
+                if (!selectableT) ImGui.BeginDisabled(true);
 
                 if (ImGui.Selectable($"##{ti}", sel, ImGuiSelectableFlags.None, new Vector2(0, itemH)))
                 {
-                    if (canShoot) _selectedTargetTIdx = ti;
+                    if (selectableT) _selectedTargetTIdx = ti;
                 }
                 if (ImGui.IsItemHovered())
                     newHovered = (_selectedWeaponIdx, ti);
 
-                if (!canShoot) ImGui.EndDisabled();
+                if (!selectableT) ImGui.EndDisabled();
+
+                // Rule-blocked rows still show a tooltip explaining why (BeginDisabled suppresses IsItemHovered,
+                // so use AllowWhenDisabled to keep the hover query alive).
+                if (ruleBlocked && ImGui.IsItemHovered(ImGuiHoveredFlags.AllowWhenDisabled))
+                    ImGui.SetTooltip(ts.UnselectableReason);
 
                 // Overlay text via draw list — no cursor manipulation, no boundary extension.
                 var rMin    = ImGui.GetItemRectMin();
                 var dl      = ImGui.GetWindowDrawList();
-                uint colTxt = ImGui.GetColorU32(ImGuiCol.Text);
+                uint colTxt = selectableT
+                    ? ImGui.GetColorU32(ImGuiCol.Text)
+                    : ImGui.ColorConvertFloat4ToU32(new Vector4(0.55f, 0.55f, 0.55f, 1f));
                 dl.AddText(rMin + new Vector2(4, 2), colTxt, name);
 
                 string sub;
                 uint colSub;
-                if (!canShoot)
+                if (ruleBlocked)
+                {
+                    sub    = ts.UnselectableReason!;
+                    colSub = ImGui.ColorConvertFloat4ToU32(new Vector4(0.70f, 0.55f, 0.30f, 1f));
+                }
+                else if (!inRange)
                 {
                     sub    = "Out of range";
                     colSub = ImGui.ColorConvertFloat4ToU32(new Vector4(0.70f, 0.35f, 0.35f, 1f));
@@ -269,13 +315,21 @@ public class GuiChooseRangedAttackResolver
 
         // ── Footer ────────────────────────────────────────────────────────────
         ImGui.SetCursorPosY(ImGui.GetCursorPosY() + pad);
-        ImGui.PushStyleColor(ImGuiCol.Button, new Vector4(0.25f, 0.25f, 0.30f, 1f));
-        if (ImGui.Button("Back##back")) Complete(tcs, new Cancelled<RangedAttackChoice>());
-        ImGui.PopStyleColor();
 
-        ImGui.SameLine();
+        // Back is only allowed before the first weapon has fired this shoot action — once you start
+        // shooting, you're committed to finishing the shoot stage.
+        if (_firesThisAction == 0)
+        {
+            ImGui.PushStyleColor(ImGuiCol.Button, new Vector4(0.25f, 0.25f, 0.30f, 1f));
+            if (ImGui.Button("Back##back")) Complete(tcs, new Cancelled<RangedAttackChoice>());
+            ImGui.PopStyleColor();
+            ImGui.SameLine();
+        }
 
         bool canFire = _selectedWeaponIdx >= 0 && _selectedTargetTIdx >= 0
+                    && request.WeaponOptions[_selectedWeaponIdx]
+                              .WeaponTargetStats[_selectedTargetTIdx]
+                              .UnselectableReason == null
                     && request.WeaponOptions[_selectedWeaponIdx]
                               .WeaponTargetStats[_selectedTargetTIdx]
                               .modelsThatCanShoot.Count > 0;
@@ -285,6 +339,7 @@ public class GuiChooseRangedAttackResolver
         {
             var wo = request.WeaponOptions[_selectedWeaponIdx];
             var ts = wo.WeaponTargetStats[_selectedTargetTIdx];
+            _firesThisAction++;
             Complete(tcs, new Selected<RangedAttackChoice>(new RangedAttackChoice(wo.Weapon, ts.TargetUnit)));
         }
         ImGui.PopStyleColor();
@@ -311,13 +366,11 @@ public class GuiChooseRangedAttackResolver
         var wo = request.WeaponOptions[effective.wIdx];
         if (effective.tIdx < 0 || effective.tIdx >= wo.WeaponTargetStats.Count) return;
 
-        var ts          = wo.WeaponTargetStats[effective.tIdx];
-        var attackerUnit = request.AttackingUnit.GetValue();
-        var targetUnit   = ts.TargetUnit.GetValue();
-        var dl           = ImGui.GetBackgroundDrawList();
+        var ts         = wo.WeaponTargetStats[effective.tIdx];
+        var targetUnit = ts.TargetUnit.GetValue();
+        var dl         = ImGui.GetBackgroundDrawList();
 
         uint colorCan    = ImGui.ColorConvertFloat4ToU32(new Vector4(0.20f, 1.00f, 0.20f, 0.80f));
-        uint colorCannot = ImGui.ColorConvertFloat4ToU32(new Vector4(1.00f, 0.30f, 0.30f, 0.55f));
         uint colorTarget = ImGui.ColorConvertFloat4ToU32(new Vector4(1.00f, 0.85f, 0.10f, 0.65f));
 
         foreach (var mb in targetUnit.ModelBindings)
@@ -327,18 +380,46 @@ public class GuiChooseRangedAttackResolver
             dl.AddCircle(new Vector2(tx, ty), m.BaseRadiusInches * _scale + 3f, colorTarget, 32, 2f);
         }
 
-        foreach (var ab in attackerUnit.ModelBindings)
+        // One line per shooter — from each attacker model that can hit this unit, to its
+        // nearest target model. Uses 2D distance as a proxy for "valid"; per-model LoS data
+        // isn't in the request, but the unit-level modelsThatCanShoot set guarantees at
+        // least one defender is reachable. Label each line at its midpoint with the 3D
+        // base-to-base distance in inches (matches the engine's range-check metric).
+        uint colorLabel = ImGui.ColorConvertFloat4ToU32(new Vector4(0.85f, 1.00f, 0.85f, 0.95f));
+        uint colorLabelBg = ImGui.ColorConvertFloat4ToU32(new Vector4(0f, 0f, 0f, 0.55f));
+        foreach (var ab in ts.modelsThatCanShoot)
         {
             var attacker = ab.GetValue();
+            ModelData? nearest = NearestModel(attacker, targetUnit.ModelBindings);
+            if (nearest == null) continue;
             var (ax, ay) = InchesToPixel(attacker.Position.x, attacker.Position.z);
-            uint lineColor = ts.modelsThatCanShoot.Contains(ab) ? colorCan : colorCannot;
-            foreach (var db in targetUnit.ModelBindings)
-            {
-                var defender = db.GetValue();
-                var (tx, ty) = InchesToPixel(defender.Position.x, defender.Position.z);
-                dl.AddLine(new Vector2(ax, ay), new Vector2(tx, ty), lineColor, 1.5f);
-            }
+            var (tx, ty) = InchesToPixel(nearest.Position.x, nearest.Position.z);
+            dl.AddLine(new Vector2(ax, ay), new Vector2(tx, ty), colorCan, 1.5f);
+
+            float distInches = DistanceUtilities.GetBaseToBaseDistanceInches_3D(
+                attacker.Position, nearest.Position, attacker.BaseRadiusInches, nearest.BaseRadiusInches);
+            string distText = $"{distInches:F1}\"";
+            var textSize = ImGui.CalcTextSize(distText);
+            var mid = new Vector2((ax + tx) * 0.5f - textSize.X * 0.5f,
+                                  (ay + ty) * 0.5f - textSize.Y * 0.5f);
+            dl.AddRectFilled(mid - new Vector2(3, 1), mid + textSize + new Vector2(3, 1),
+                colorLabelBg, 2f);
+            dl.AddText(mid, colorLabel, distText);
         }
+    }
+
+    private static ModelData? NearestModel(ModelData from, IReadOnlyList<DataBinding<ModelData>> candidates)
+    {
+        ModelData? best = null;
+        float bestDist = float.PositiveInfinity;
+        foreach (var mb in candidates)
+        {
+            var m  = mb.GetValue();
+            float d = DistanceUtilities.GetBaseToBaseDistanceInches_3D(
+                from.Position, m.Position, from.BaseRadiusInches, m.BaseRadiusInches);
+            if (d < bestDist) { bestDist = d; best = m; }
+        }
+        return best;
     }
 
     // ── Helpers ───────────────────────────────────────────────────────────────
@@ -355,8 +436,32 @@ public class GuiChooseRangedAttackResolver
     {
         var stats = request.WeaponOptions[wIdx].WeaponTargetStats;
         for (int ti = 0; ti < stats.Count; ti++)
-            if (stats[ti].modelsThatCanShoot.Count > 0) return ti;
+            if (stats[ti].UnselectableReason == null && stats[ti].modelsThatCanShoot.Count > 0) return ti;
         return -1;
+    }
+
+    private static bool HasAnyFireableTarget(WeaponOption wo)
+    {
+        foreach (var ts in wo.WeaponTargetStats)
+            if (ts.UnselectableReason == null && ts.modelsThatCanShoot.Count > 0) return true;
+        return false;
+    }
+
+    // Picks a tooltip explaining why a weapon row is grayed out. If every target's only barrier is
+    // an explicit UnselectableReason (e.g. the 2-target-per-shoot-action limit), surface that;
+    // otherwise fall back to the in-range diagnostic.
+    private static string DescribeWeaponUnavailability(WeaponOption wo)
+    {
+        string? ruleReason = null;
+        bool anyTargetExists = false;
+        foreach (var ts in wo.WeaponTargetStats)
+        {
+            anyTargetExists = true;
+            if (ts.UnselectableReason == null) return "No models with this weapon are in range or have line of sight.";
+            ruleReason ??= ts.UnselectableReason;
+        }
+        if (!anyTargetExists) return "No enemy units to target.";
+        return ruleReason!;
     }
 
     private void Complete(TaskCompletionSource<CancellableResult<RangedAttackChoice>> tcs, CancellableResult<RangedAttackChoice> choice)

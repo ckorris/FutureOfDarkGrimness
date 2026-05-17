@@ -68,7 +68,7 @@ public class GuiChooseDeploymentZoneResolver
         {
             var zb   = request.AvailableZones[i];
             var zone = zb.GetValue();
-            string label = $"Zone {i + 1}  (X {zone.Left:F0}\"–{zone.Right:F0}\", Z {zone.Bottom:F0}\"–{zone.Top:F0}\")##{i}";
+            string label = $"Zone {i + 1}  (X {zone.Left:F0}\"-{zone.Right:F0}\", Z {zone.Bottom:F0}\"-{zone.Top:F0}\")##{i}";
             ImGui.SetCursorPos(new Vector2(pad, listY + i * rowH));
             if (ImGui.Button(label, new Vector2(btnW, rowH - 4f)))
                 Complete(tcs, zb);
@@ -81,7 +81,7 @@ public class GuiChooseDeploymentZoneResolver
             for (int i = 0; i < takenCount; i++)
             {
                 var zone  = request.UnavailableZones[i].GetValue();
-                string label = $"Zone — (X {zone.Left:F0}\"–{zone.Right:F0}\", Z {zone.Bottom:F0}\"–{zone.Top:F0}\") [taken]##{availCount + i}";
+                string label = $"Zone -- (X {zone.Left:F0}\"-{zone.Right:F0}\", Z {zone.Bottom:F0}\"-{zone.Top:F0}\") [taken]##{availCount + i}";
                 ImGui.SetCursorPos(new Vector2(pad, takenStart + i * rowH));
                 ImGui.BeginDisabled(true);
                 ImGui.Button(label, new Vector2(btnW, rowH - 4f));

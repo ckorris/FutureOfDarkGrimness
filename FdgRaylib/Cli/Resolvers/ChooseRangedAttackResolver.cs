@@ -15,7 +15,7 @@ public class ChooseRangedAttackResolver : IStageResolver<ChooseRangedAttackReque
         Console.WriteLine("  Choose a weapon and target. Models out of range/LOS cannot contribute.");
         Console.WriteLine();
 
-        var options = new List<(string label, RangedAttackChoice choice)>();
+        var options = new List<(string label, RangedAttackChoice? choice)>();
 
         foreach (var weaponOption in request.WeaponOptions)
         {
@@ -34,7 +34,12 @@ public class ChooseRangedAttackResolver : IStageResolver<ChooseRangedAttackReque
                     label += ", Cover";
                 label += ")";
 
-                options.Add((label, new RangedAttackChoice(weaponOption.Weapon, targetStats.TargetUnit)));
+                bool selectable = targetStats.UnselectableReason == null && canShoot > 0;
+                if (targetStats.UnselectableReason != null)
+                    label += $"  [unavailable: {targetStats.UnselectableReason}]";
+
+                options.Add((label,
+                    selectable ? new RangedAttackChoice(weaponOption.Weapon, targetStats.TargetUnit) : null));
             }
         }
 
@@ -42,21 +47,37 @@ public class ChooseRangedAttackResolver : IStageResolver<ChooseRangedAttackReque
             throw new InvalidOperationException("ChooseRangedAttackRequest had no valid options.");
 
         for (int i = 0; i < options.Count; i++)
-            Console.WriteLine($"  [{i + 1}] {options[i].label}");
+        {
+            string prefix = options[i].choice != null ? $"  [{i + 1}]" : "  [-]";
+            Console.WriteLine($"{prefix} {options[i].label}");
+        }
 
         Console.WriteLine($"  [0] Back");
+
+        // First selectable option, for EOF default.
+        int firstSelectable = options.FindIndex(o => o.choice != null);
 
         while (true)
         {
             Console.Write("Choice: ");
             string? input = Console.ReadLine()?.Trim();
-            // EOF default: first option (keeps piped-input scripts working).
-            if (input == null) return Task.FromResult<CancellableResult<RangedAttackChoice>>(new Selected<RangedAttackChoice>(options[0].choice));
+            // EOF default: first selectable option (keeps piped-input scripts working).
+            if (input == null)
+            {
+                if (firstSelectable < 0) return Task.FromResult<CancellableResult<RangedAttackChoice>>(new Cancelled<RangedAttackChoice>());
+                return Task.FromResult<CancellableResult<RangedAttackChoice>>(new Selected<RangedAttackChoice>(options[firstSelectable].choice!));
+            }
             if (int.TryParse(input, out int choice))
             {
                 if (choice == 0) return Task.FromResult<CancellableResult<RangedAttackChoice>>(new Cancelled<RangedAttackChoice>());
                 if (choice >= 1 && choice <= options.Count)
-                    return Task.FromResult<CancellableResult<RangedAttackChoice>>(new Selected<RangedAttackChoice>(options[choice - 1].choice));
+                {
+                    var picked = options[choice - 1].choice;
+                    if (picked != null)
+                        return Task.FromResult<CancellableResult<RangedAttackChoice>>(new Selected<RangedAttackChoice>(picked));
+                    Console.WriteLine("  That option is unavailable.");
+                    continue;
+                }
             }
             Console.WriteLine($"  Enter 0 (Back) or a number between 1 and {options.Count}.");
         }

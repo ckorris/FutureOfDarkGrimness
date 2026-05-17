@@ -38,6 +38,7 @@ Numbers are permanent and never reused. If an item is split, its line stays and 
 - [ ] 014 — Fix `RangedContext` `NotImplementedException` paths (`BeginNewAttack`, `SetAttackWeapon`, `ConsumeAttackIntoContext`)
 - [ ] 015 — Attack-count modifiers in shooting flow (`RollToHitStage` TODO)
 - [ ] 016 — Hit→wound effect propagation (`DetermineSaveRollsNeededStage` TODO)
+- [ ] 043 — Dead models still contribute weapons to attack lists. `IUnit.AllWeapons(predicate)` (`FutureOfDarkGrimness/GameObjects/Core/IUnit.cs:58`) iterates `unit.Models` without filtering on `GetIsAlive()`, so `GetMeleeWeapons()` / `GetRangedWeapons()` include weapons from dead models. `CombatActionContext`'s constructor feeds those into `_availableWeapons` for **all three** flows: initial melee attack, strike-back, and shooting. Confirmed by inspection (no live repro needed beyond the user's strike-back report). Fix likely: filter alive models inside `AllWeapons(predicate)`, or add an alive-only overload that the combat context calls. Consider whether the no-predicate `AllWeapons()` (used for army-list display?) should also change or stay as-is.
 
 ## Melee
 

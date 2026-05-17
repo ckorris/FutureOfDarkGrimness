@@ -81,7 +81,7 @@ public class GuiAssignWoundsResolver : IStageResolver<AssignWoundsRequest, Assig
             float remaining = total - dealt - pw.Wounds;
             bool canTake   = remaining > 0;
 
-            string label = $"Model {i + 1}  —  {remaining:F0} wounds remaining##{i}";
+            string label = $"Model {i + 1}  -  {remaining:F0} wounds remaining##{i}";
             ImGui.BeginDisabled(!canTake);
             if (ImGui.Button(label, new Vector2(ImGui.GetContentRegionAvail().X, rowH - 4f)))
             {

@@ -98,7 +98,7 @@ public class GuiPlaceObjectsResolver<T>
             }
             else if (!inCohesion)
             {
-                _errorMessage = $"Outside cohesion — must be within {GameWideConstants.MAX_MODEL_DISTANCE_FROM_ANY_OTHER_MODEL_INCHES}\" base-to-base of a placed model.";
+                _errorMessage = $"Outside cohesion - must be within {GameWideConstants.MAX_MODEL_DISTANCE_FROM_ANY_OTHER_MODEL_INCHES}\" base-to-base of a placed model.";
                 _errorExpiry  = ImGui.GetTime() + 2.5;
             }
             else
@@ -164,7 +164,7 @@ public class GuiPlaceObjectsResolver<T>
 
         ImGui.TextUnformatted($"Deploy: {_placed.Count} / {total} models placed");
         ImGui.SameLine();
-        ImGui.TextDisabled($"  zone X {request.DeploymentZone.GetValue().Left:F0}–{request.DeploymentZone.GetValue().Right:F0}\"");
+        ImGui.TextDisabled($"  zone X {request.DeploymentZone.GetValue().Left:F0}-{request.DeploymentZone.GetValue().Right:F0}\"");
 
         ImGui.Spacing();
         if (_errorMessage != null)
@@ -196,7 +196,7 @@ public class GuiPlaceObjectsResolver<T>
                 Complete(tcs, new List<PlacedObjectEntry<T>>(_placed));
             else
             {
-                _errorMessage = "Could not auto-place all remaining models — zone too crowded.";
+                _errorMessage = "Could not auto-place all remaining models - zone too crowded.";
                 _errorExpiry  = ImGui.GetTime() + 3.0;
             }
         }
