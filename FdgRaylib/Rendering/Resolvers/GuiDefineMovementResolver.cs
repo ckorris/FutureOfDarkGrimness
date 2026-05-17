@@ -27,7 +27,7 @@ public class GuiDefineMovementResolver
     private PathTemplate? _pathTemplate;
     private IModel? _selectedModel;
     private bool _stayInAdvance; // toggle — off by default, reset each Resolve
-    private bool _showRangedTargeting = true; // toggle — on by default, persists across Resolve calls
+    private bool _showTargeting = true; // toggle — on by default, persists across Resolve calls (covers both ranged + melee)
 
     // Colors
     private static readonly uint AdvanceColor    = ImGui.ColorConvertFloat4ToU32(new Vector4(0.25f, 0.95f, 0.25f, 0.95f));
@@ -40,6 +40,8 @@ public class GuiDefineMovementResolver
     private static readonly uint FinalGhostCol   = ImGui.ColorConvertFloat4ToU32(new Vector4(1f, 1f, 1f, 0.25f));
     private static readonly uint CohesionLineCol = ImGui.ColorConvertFloat4ToU32(new Vector4(1.00f, 0.55f, 0.55f, 0.90f));
     private static readonly uint OverlapFill     = ImGui.ColorConvertFloat4ToU32(new Vector4(1.00f, 0.25f, 0.25f, 0.55f));
+    private static readonly uint ChargeTextCol   = ImGui.ColorConvertFloat4ToU32(new Vector4(1.00f, 0.92f, 0.30f, 1f));
+    private static readonly uint ChargeLineCol   = ImGui.ColorConvertFloat4ToU32(new Vector4(1.00f, 0.85f, 0.20f, 0.95f));
 
     public GuiDefineMovementResolver(ITableState tableState) => _tableState = tableState;
 
@@ -206,9 +208,9 @@ public class GuiDefineMovementResolver
             DrawCohesionIndicators(dl, finalsWithGhost, _selectedModel);
         }
 
-        // 3b) Ranged-targeting overlay (toggle, on by default)
-        if (_showRangedTargeting)
-            DrawRangedTargeting(dl, screenW, request, pt, paths, ghostPos, ghostExtraDist);
+        // 3b) Targeting overlay (toggle, on by default) — combines ranged + melee
+        if (_showTargeting)
+            DrawTargeting(dl, screenW, request, pt, paths, ghostPos, ghostExtraDist);
 
         // 4) Mouse / keyboard input
         if (overTable && !io.WantCaptureMouse)
@@ -296,9 +298,9 @@ public class GuiDefineMovementResolver
         ImGui.TextDisabled("Space: next model   Backspace: undo");
 
         ImGui.Checkbox("Stay within Advance (hold Shift to force)", ref _stayInAdvance);
-        ImGui.Checkbox("Show ranged targeting", ref _showRangedTargeting);
+        ImGui.Checkbox("Show targeting", ref _showTargeting);
         if (ImGui.IsItemHovered())
-            ImGui.SetTooltip("Show which weapons can hit each enemy unit, and draw fire lines from the selected model. Hidden when the unit has moved too far to shoot.");
+            ImGui.SetTooltip("Show ranged weapons in range of each enemy unit (green), how many of your models can charge it (yellow), fire lines from the selected model, and a charge line when the ghost is within melee range. Ranged info hides if the unit has moved too far to shoot.");
 
         ImGui.Spacing();
         float spacing = ImGui.GetStyle().ItemSpacing.X;
@@ -506,17 +508,16 @@ public class GuiDefineMovementResolver
         dl.AddLine(new Vector2(bx - px * tick, by - py * tick), new Vector2(bx + px * tick, by + py * tick), CohesionLineCol, 1f);
     }
 
-    private void DrawRangedTargeting(ImDrawListPtr dl, int screenW,
+    private void DrawTargeting(ImDrawListPtr dl, int screenW,
         DefineMovementPathRequest request,
         PathTemplate pt,
         IReadOnlyDictionary<IModel, IReadOnlyList<Position>> paths,
         Position? ghostPos, float ghostExtraDist)
     {
-        // TODO: factor in line of sight when deciding what counts as "in range" / a valid shooter.
+        // TODO: factor in line of sight when deciding what counts as "in range" / a valid shooter (WorkItem 041).
 
-        // The aggregate per-enemy-unit list is driven by committed paths only, so it doesn't
-        // flicker while the cursor hovers past the rush boundary. The per-line shooting from the
-        // selected model stays ghost-aware below.
+        // Shooting aggregate is driven by committed paths so it doesn't flicker on rush-boundary hover.
+        // Per-line shooting from the selected model + the charge overlay are ghost-aware.
         bool canShootCommitted = true;
         foreach (var m in paths.Keys)
             if (pt.GetTotalDistanceMoved(m) > request.MaxAdvanceDistance + 0.0001f) { canShootCommitted = false; break; }
@@ -528,52 +529,89 @@ public class GuiDefineMovementResolver
             if (selTotal > request.MaxAdvanceDistance + 0.0001f) canShootWithGhost = false;
         }
 
-        // Committed positions (used by the aggregate list).
+        // Committed positions per own model (shooting aggregate uses these as-is).
         var committed = new Dictionary<IModel, Position>(paths.Count);
         foreach (var kvp in paths)
             committed[kvp.Key] = kvp.Value.Count > 0 ? kvp.Value[^1] : kvp.Key.Position;
+
+        // Ghost-aware positions per own model (charge aggregate uses these — selected model uses live ghost).
+        var ghostAware = new Dictionary<IModel, Position>(committed);
+        if (_selectedModel != null && ghostPos.HasValue)
+            ghostAware[_selectedModel] = ghostPos.Value;
 
         var ourPlayerID = request.TargetPlayerID;
         uint enemyTextCol = ImGui.ColorConvertFloat4ToU32(new Vector4(0.60f, 1.00f, 0.60f, 1f));
         uint lineCol      = ImGui.ColorConvertFloat4ToU32(new Vector4(0.30f, 1.00f, 0.30f, 0.85f));
         uint midTextCol   = ImGui.ColorConvertFloat4ToU32(new Vector4(0.60f, 1.00f, 0.60f, 1f));
         float lineH = ImGui.GetTextLineHeight();
+        const float meleeRange = GameWideConstants.MELEE_RANGE_INCHES_HORIZONTAL;
 
-        // 1) Per-enemy-unit aggregate text (every weapon in our unit that can reach any model of the enemy unit).
-        if (canShootCommitted) foreach (IUnit enemyUnit in _tableState.Units.Objects)
+        // 1) Per-enemy-unit aggregate text: shooting weapon counts (green) + charger count (yellow), combined.
+        foreach (IUnit enemyUnit in _tableState.Units.Objects)
         {
             if (enemyUnit.PlayerID == ourPlayerID) continue;
             var aliveEnemies = enemyUnit.Models.Where(em => em.GetIsAlive()).ToList();
             if (aliveEnemies.Count == 0) continue;
 
-            var counts = new Dictionary<string, int>();
-            foreach (var kvp in committed)
+            // Shooting weapon counts (committed-only, only when our unit can still shoot).
+            var weaponCounts = new Dictionary<string, int>();
+            if (canShootCommitted)
             {
-                IModel ourModel = kvp.Key;
-                Position from = kvp.Value;
-                foreach (var w in ourModel.Weapons)
+                foreach (var kvp in committed)
                 {
-                    if (!w.IsRanged()) continue;
-                    bool inRange = false;
-                    foreach (var em in aliveEnemies)
+                    IModel ourModel = kvp.Key;
+                    Position from = kvp.Value;
+                    foreach (var w in ourModel.Weapons)
                     {
-                        float b2b = DistanceUtilities.GetBaseToBaseDistanceInches_2D(
-                            from, em.Position, ourModel.BaseRadiusInches, em.BaseRadiusInches);
-                        if (b2b <= w.RangeInches) { inRange = true; break; }
-                    }
-                    if (inRange)
-                    {
-                        counts.TryGetValue(w.Name, out int c);
-                        counts[w.Name] = c + 1;
+                        if (!w.IsRanged()) continue;
+                        bool inRange = false;
+                        foreach (var em in aliveEnemies)
+                        {
+                            float b2b = DistanceUtilities.GetBaseToBaseDistanceInches_2D(
+                                from, em.Position, ourModel.BaseRadiusInches, em.BaseRadiusInches);
+                            if (b2b <= w.RangeInches) { inRange = true; break; }
+                        }
+                        if (inRange)
+                        {
+                            weaponCounts.TryGetValue(w.Name, out int c);
+                            weaponCounts[w.Name] = c + 1;
+                        }
                     }
                 }
             }
-            if (counts.Count == 0) continue;
+
+            // Charger count (ghost-aware — selected model uses live ghost position).
+            int chargers = 0;
+            foreach (var kvp in ghostAware)
+            {
+                IModel ourModel = kvp.Key;
+                Position from = kvp.Value;
+                foreach (var em in aliveEnemies)
+                {
+                    float b2b = DistanceUtilities.GetBaseToBaseDistanceInches_2D(
+                        from, em.Position, ourModel.BaseRadiusInches, em.BaseRadiusInches);
+                    if (b2b <= meleeRange) { chargers++; break; }
+                }
+            }
+
+            if (weaponCounts.Count == 0 && chargers == 0) continue;
+
+            // Build combined display lines (charge line first, then shooting weapons).
+            var lines = new List<(string text, uint color)>();
+            if (chargers > 0)
+                lines.Add(($"{chargers} can charge", ChargeTextCol));
+            foreach (var kv in weaponCounts.OrderByDescending(kv => kv.Value).ThenBy(kv => kv.Key))
+                lines.Add(($"{kv.Value}x {kv.Key}", enemyTextCol));
+
+            float blockH = lines.Count * lineH;
+            float blockW = 0f;
+            var sizes = new Vector2[lines.Count];
+            for (int i = 0; i < lines.Count; i++) { sizes[i] = ImGui.CalcTextSize(lines[i].text); if (sizes[i].X > blockW) blockW = sizes[i].X; }
 
             float ecz = aliveEnemies.Average(em => em.Position.z);
             var (_, cpy) = InchesToPixel(0, ecz);
 
-            // Compute the unit's horizontal screen-pixel extent (base edges included).
+            // Unit's horizontal screen-pixel extent (base edges included).
             float minPx = float.MaxValue, maxPx = float.MinValue;
             foreach (var em in aliveEnemies)
             {
@@ -583,20 +621,50 @@ public class GuiDefineMovementResolver
                 if (epx + r > maxPx) maxPx = epx + r;
             }
 
-            var lines = counts.OrderByDescending(kv => kv.Value).ThenBy(kv => kv.Key)
-                .Select(kv => $"{kv.Value}x {kv.Key}").ToList();
-            float blockH = lines.Count * lineH;
-            float blockW = 0f;
-            var lineSizes = new Vector2[lines.Count];
-            for (int i = 0; i < lines.Count; i++) { lineSizes[i] = ImGui.CalcTextSize(lines[i]); if (lineSizes[i].X > blockW) blockW = lineSizes[i].X; }
-
             const float margin = 12f;
             float xLeftAnchor  = maxPx + margin;
             float xRightAnchor = minPx - margin - blockW;
             float xAnchor = xLeftAnchor + blockW <= screenW - 4f ? xLeftAnchor : xRightAnchor;
             float yTop = cpy - blockH * 0.5f;
             for (int i = 0; i < lines.Count; i++)
-                dl.AddText(new Vector2(xAnchor, yTop + i * lineH), enemyTextCol, lines[i]);
+                dl.AddText(new Vector2(xAnchor, yTop + i * lineH), lines[i].color, lines[i].text);
+        }
+
+        // Charge line: short edge-to-edge line from the selected model's ghost to its nearest chargeable enemy model.
+        if (_selectedModel != null && ghostPos.HasValue)
+        {
+            IModel? nearestChargeTarget = null;
+            float nearestB2B = float.MaxValue;
+            foreach (IUnit enemyUnit in _tableState.Units.Objects)
+            {
+                if (enemyUnit.PlayerID == ourPlayerID) continue;
+                foreach (var em in enemyUnit.Models)
+                {
+                    if (!em.GetIsAlive()) continue;
+                    float b2b = DistanceUtilities.GetBaseToBaseDistanceInches_2D(
+                        ghostPos.Value, em.Position, _selectedModel.BaseRadiusInches, em.BaseRadiusInches);
+                    if (b2b > meleeRange) continue;
+                    if (b2b < nearestB2B) { nearestB2B = b2b; nearestChargeTarget = em; }
+                }
+            }
+            if (nearestChargeTarget != null)
+            {
+                float ax = ghostPos.Value.x, az = ghostPos.Value.z;
+                float bx = nearestChargeTarget.Position.x, bz = nearestChargeTarget.Position.z;
+                float dx = bx - ax, dz = bz - az;
+                float centerDist = MathF.Sqrt(dx * dx + dz * dz);
+                if (centerDist > 0.0001f)
+                {
+                    float nx = dx / centerDist, nz = dz / centerDist;
+                    float aEdgeX = ax + nx * _selectedModel.BaseRadiusInches;
+                    float aEdgeZ = az + nz * _selectedModel.BaseRadiusInches;
+                    float bEdgeX = bx - nx * nearestChargeTarget.BaseRadiusInches;
+                    float bEdgeZ = bz - nz * nearestChargeTarget.BaseRadiusInches;
+                    var (px0, py0) = InchesToPixel(aEdgeX, aEdgeZ);
+                    var (px1, py1) = InchesToPixel(bEdgeX, bEdgeZ);
+                    dl.AddLine(new Vector2(px0, py0), new Vector2(px1, py1), ChargeLineCol, 2f);
+                }
+            }
         }
 
         // 2) Per-selected-model fire lines + per-line weapon labels (ghost-aware).
