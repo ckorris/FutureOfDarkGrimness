@@ -2,9 +2,20 @@
 
 A Raylib-based client for **Future of Dark Grimness** — a tabletop wargame rules engine. The repository contains two C# .NET 8 projects.
 
-## Commit messages
+## Git Conventions
 
-Never mention Claude, AI, or any assistant attribution in commit messages — no `Co-Authored-By: Claude`, no "Generated with Claude Code" trailers, nothing of the sort. Plain commit messages only.
+- Do not include Claude, AI, or co-author attributions in commit messages.
+
+## Work Items
+
+Long-running engineering tasks are tracked outside this file to keep the context budget tight:
+
+- `WorkItemsList.md` (repo root) — numbered index of all known work, always-loaded. Items are roughly Jira-ticket sized.
+- `WorkItems/NNN-slug.md` — per-item working memory: goal, dated running notes, decisions, and final outcome. Created when work starts on that item, not preemptively. See `WorkItems/README.md` for the template and conventions.
+
+When working on a numbered item, **append** dated entries to its Notes section (newest on top); record rationale separately in Decisions; write an Outcome and move the index line to `## Done` when finished. Numbers are permanent and never reused.
+
+This file-based system is for durable, cross-session tracking. The built-in Task tool is still the right place for in-session ad-hoc todos.
 
 ## Projects
 
@@ -93,10 +104,10 @@ Resolvers that need to interact with the table canvas (movement, placement) addi
 | Request | CLI resolver | GUI resolver | Notes |
 |---|---|---|---|
 | `YesNoRequest` | `YesNoResolver` | `GuiYesNoResolver` | EOF default: `true` |
-| `SelectionRequest<T>` | `SelectionResolver<T>` | `GuiSelectionResolver<T>` | Registered for `UnitData`, `ModelData`, `RectangularZone` |
+| `SelectionRequest<T>` | `SelectionResolver<T>` | `GuiSelectionResolver<T>` | Registered for `UnitData`, `ModelData`, `RectangularZone`; GUI has a Back button that resolves `null` |
 | `StringSelectionRequest` | `StringSelectionResolver` | `GuiStringSelectionResolver` | |
 | `ChooseDeploymentZoneRequest` | `ChooseDeploymentZoneResolver` | `GuiChooseDeploymentZoneResolver` | |
-| `ChooseRangedAttackRequest` | `ChooseRangedAttackResolver` | `GuiChooseRangedAttackResolver` | Flattens weapon × target into a single button list |
+| `ChooseRangedAttackRequest` | `ChooseRangedAttackResolver` | `GuiChooseRangedAttackResolver` | Flattens weapon × target into a single button list; GUI has a Back button that resolves `null` |
 | `AssignWoundsRequest` | `AssignWoundsResolver` | `GuiAssignWoundsResolver` | Stateful — `AssignWoundsResults` accumulates clicks; auto-completes when full |
 | `DefineMovementPathRequest` | `DefineMovementPathResolver` | `GuiDefineMovementResolver` | Click destination on canvas; whole unit moves same Δ |
 | `PlaceObjectsRequest<T>` | `PlaceObjectsResolver<T>` | `GuiPlaceObjectsResolver<T>` | Click each model in turn within deployment zone |
@@ -105,6 +116,8 @@ Resolvers that need to interact with the table canvas (movement, placement) addi
 
 - **Deployment spacing**: `MAX_MODEL_DISTANCE_FROM_ANY_OTHER_MODEL_INCHES` is 1.0" base-to-base. Auto-placement uses 0.1" gap, **not 1.0"** — at exactly 1.0", float accumulation during diagonal movement can push models fractionally over the cohesion limit.
 - **Movement float precision**: `AutoAdvance` caps `step` at `MaxAdvanceDistance - 0.001f`. Without this margin, the resulting 3D move distance can come out fractionally above `MaxAdvanceDistance` and `ChooseActionStage.GetCanShoot` will block shooting after a legal advance.
+- **Back / cancel sentinel**: `GuiSelectionResolver<T>` and `GuiChooseRangedAttackResolver` resolve with `null` when the player clicks Back. Any stage that awaits those requests must null-check the result and activate its `BackToChooseAction` binding rather than proceeding. `ChooseMeleeDefenderStage` and `ChooseRangedAttackStage` already do this.
+- **Charge availability**: `ChooseActionStage.GetCanCharge` queries live unit positions and grays out Charge when no enemy is within `MELEE_RANGE_INCHES_HORIZONTAL` (2"). The check re-runs each time Choose Action is entered, so it stays accurate after movement.
 
 ## Engine Concepts
 
@@ -124,25 +137,24 @@ Resolvers that need to interact with the table canvas (movement, placement) addi
 
 ## Game Termination
 
-- `ReconcileObjectivesStage` counts entries and transitions to `VictoryCalculationStage` after 4 rounds (hardcoded stub).
-- `VictoryCalculationStage` logs a tie and calls `IGameContext.NotifyGameEnded("It's a tie!")`.
+- `ReconcileObjectivesStage` runs at the end of each round: any objective with living models from exactly one player within 3" (base-edge to objective center) is seized by that player; objectives contested by multiple players become neutral; otherwise ownership is preserved. After 4 rounds (the official game length per the GDF rulebook, not a stub) it transitions to `VictoryCalculationStage`.
+- `VictoryCalculationStage` tallies controlled objectives per player and calls `IGameContext.NotifyGameEnded(...)` — a unique top scorer wins, ties (or zero objectives controlled) end in a tie.
 - The notification propagates: `GameContext.OnGameEnded` event → `FDGServer.OnGameEnded` event → `CliApp` `TaskCompletionSource` → `RunAsync` returns.
 - In GUI mode the Raylib window stays open after the game ends; the user closes it manually. (Navigating back to the main menu post-game is **not yet wired up**.)
-- Victory is intentionally always a tie for now — in GrimDark Future rules a player can win even if all their models are eliminated (objectives determine winner), so unit counts must never be used as a win condition.
+- In GrimDark Future rules a player can win even if all their models are eliminated (objectives determine the winner), so unit counts must never be used as a win condition.
 
 ## Known stubs in the engine
 
 The engine has substantial gaps. Don't assume rules are enforced just because a stage exists. Surveyed Apr 2026:
 
-**Won't end the game properly**
-- `ReconcileObjectivesStage` — hardcoded 4-round counter; no objective control logic
-- `VictoryCalculationStage` — always declares a tie
-- `MapSetupStage` — no terrain or objective placement (TODO)
+**Setup gaps**
+- `MapSetupStage` children (`RollForObjectiveCountStage`, `PlaceObjectivesStage`, `RollForFirstObjectivePlacementStage`) — files exist but D3+2 objective placement and terrain placement aren't implemented yet
+- `ReconcileObjectivesStage` and `VictoryCalculationStage` themselves are implemented (seizure + objective tally → real winner) — but they operate on whatever objectives `MapSetupStage` produces, which is currently nothing
 
-**Movement validation is missing**
-- `MovementUtilities.ValidateMovingThroughImpassibleTerrain` — empty
-- `MovementUtilities.ValidateMovingThroughEnemyUnits` — empty
-- `ChooseRangedAttackStage.DoesModelHaveLineOfSight` — returns `true` unconditionally
+**Movement validation is partial**
+- `MovementUtilities.ValidateMovingThroughImpassibleTerrain` — implemented; blocks moves whose path intersects any `Impassible`-flagged terrain piece
+- `MovementUtilities.ValidateMovingThroughEnemyUnits` — empty (TODO)
+- LoS is fully implemented: `ChooseRangedAttackStage` and `OcclusionCheckStage` call `LineOfSightUtilities.HasLineOfSight` with terrain + model-base circular blockers (excluding the attacking and defending unit's own models)
 
 **Melee is barely implemented**
 - `DetermineInRangeAttackersStage` / `DetermineInRangeDefendersStage` — skip range checks; any model can fight
@@ -154,7 +166,8 @@ The engine has substantial gaps. Don't assume rules are enforced just because a 
 - `RollForMoraleStage` — modifiers TODO
 
 **Round/turn machinery placeholders**
-- `StartOfRoundExtraActionStage`, `ApplyNonMovementTerrainEffectsStage`, `ReconcileNewRoundStage` — transition with no work
+- `StartOfRoundExtraActionStage`, `ReconcileNewRoundStage` — transition with no work
+- `ApplyNonMovementTerrainEffectsStage` — implemented: rolls d6 per model whose path crosses `Dangerous` terrain; deals 1 wound on a roll of 1
 - `ChooseActionStage` — custom-action branch hardcoded `false`
 
 **Half-built**

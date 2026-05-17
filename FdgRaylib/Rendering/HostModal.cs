@@ -47,9 +47,9 @@ public class HostModal : IAppScreen
         ImGui.SetCursorPos(new Vector2(pad, pad));
 
         // Title
-        ImGui.SetWindowFontScale(1.8f * scale);
+        ImGui.PushFont(RaylibRenderer.LargeFont);
         CenterText("HOST SERVER", dw);
-        ImGui.SetWindowFontScale(1.0f * scale);
+        ImGui.PopFont();
 
         ImGui.SetCursorPosX(pad);
         DrawLabeledInput("Your Name",   ref _yourName,   dw, scale);
@@ -129,7 +129,6 @@ public class HostModal : IAppScreen
         _ = host.StartAsync();
 
         var viewModel = new LobbyViewModel_Host(_yourName, _serverName, _password, host);
-        viewModel.TerrainLayout = FdgRaylib.Cli.TerrainLoader.BuildTestLayout();
         Reset();
         OnCreated?.Invoke(viewModel);
     }
