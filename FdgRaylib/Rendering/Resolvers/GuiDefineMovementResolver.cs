@@ -514,25 +514,24 @@ public class GuiDefineMovementResolver
     {
         // TODO: factor in line of sight when deciding what counts as "in range" / a valid shooter.
 
-        // Bail entirely if any model in the unit has moved past Advance — the unit can't shoot.
+        // The aggregate per-enemy-unit list is driven by committed paths only, so it doesn't
+        // flicker while the cursor hovers past the rush boundary. The per-line shooting from the
+        // selected model stays ghost-aware below.
+        bool canShootCommitted = true;
         foreach (var m in paths.Keys)
+            if (pt.GetTotalDistanceMoved(m) > request.MaxAdvanceDistance + 0.0001f) { canShootCommitted = false; break; }
+
+        bool canShootWithGhost = canShootCommitted;
+        if (canShootWithGhost && _selectedModel != null && ghostPos.HasValue)
         {
-            float total = pt.GetTotalDistanceMoved(m);
-            if (ReferenceEquals(m, _selectedModel) && ghostPos.HasValue) total += ghostExtraDist;
-            if (total > request.MaxAdvanceDistance + 0.0001f) return;
+            float selTotal = pt.GetTotalDistanceMoved(_selectedModel) + ghostExtraDist;
+            if (selTotal > request.MaxAdvanceDistance + 0.0001f) canShootWithGhost = false;
         }
 
-        // Projected positions for our unit (ghost-aware for the selected model).
-        var projected = new Dictionary<IModel, Position>(paths.Count);
+        // Committed positions (used by the aggregate list).
+        var committed = new Dictionary<IModel, Position>(paths.Count);
         foreach (var kvp in paths)
-        {
-            IModel m = kvp.Key;
-            Position p;
-            if (ReferenceEquals(m, _selectedModel) && ghostPos.HasValue) p = ghostPos.Value;
-            else if (kvp.Value.Count > 0) p = kvp.Value[^1];
-            else p = m.Position;
-            projected[m] = p;
-        }
+            committed[kvp.Key] = kvp.Value.Count > 0 ? kvp.Value[^1] : kvp.Key.Position;
 
         var ourPlayerID = request.TargetPlayerID;
         uint enemyTextCol = ImGui.ColorConvertFloat4ToU32(new Vector4(1.00f, 1.00f, 0.70f, 1f));
@@ -541,14 +540,14 @@ public class GuiDefineMovementResolver
         float lineH = ImGui.GetTextLineHeight();
 
         // 1) Per-enemy-unit aggregate text (every weapon in our unit that can reach any model of the enemy unit).
-        foreach (IUnit enemyUnit in _tableState.Units.Objects)
+        if (canShootCommitted) foreach (IUnit enemyUnit in _tableState.Units.Objects)
         {
             if (enemyUnit.PlayerID == ourPlayerID) continue;
             var aliveEnemies = enemyUnit.Models.Where(em => em.GetIsAlive()).ToList();
             if (aliveEnemies.Count == 0) continue;
 
             var counts = new Dictionary<string, int>();
-            foreach (var kvp in projected)
+            foreach (var kvp in committed)
             {
                 IModel ourModel = kvp.Key;
                 Position from = kvp.Value;
@@ -600,11 +599,12 @@ public class GuiDefineMovementResolver
                 dl.AddText(new Vector2(xAnchor, yTop + i * lineH), enemyTextCol, lines[i]);
         }
 
-        // 2) Per-selected-model fire lines + per-line weapon labels.
+        // 2) Per-selected-model fire lines + per-line weapon labels (ghost-aware).
+        if (!canShootWithGhost) return;
         if (_selectedModel == null) return;
         var selRanged = _selectedModel.Weapons.Where(w => w.IsRanged()).ToList();
         if (selRanged.Count == 0) return;
-        Position selPos = projected[_selectedModel];
+        Position selPos = ghostPos ?? committed[_selectedModel];
 
         // For each weapon, pick the nearest enemy model in range per enemy unit.
         // Group resulting (line endpoint = enemy model) -> list of weapons hitting it.
