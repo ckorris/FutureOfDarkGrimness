@@ -10,7 +10,6 @@ Numbers are permanent and never reused. If an item is split, its line stays and 
 
 ## Setup & map
 
-- [ ] 001 — D3+2 objective placement (alternating, >9" apart, outside deploy zones)
 - [ ] 002 — Terrain placement workflow (`MapSetupStage` children currently empty)
 - [ ] 003 — Force organization validation (optional rule: hero/unit/copy/cost caps)
 
@@ -88,9 +87,10 @@ These are umbrellas; will fragment per-rule when picked up.
 ## Client / renderer
 
 - [ ] 040 — Post-game navigation back to main menu in GUI mode (currently window just stays open)
+- [ ] 041 — Factor line of sight into movement resolver's ranged-targeting overlay (`GuiDefineMovementResolver.DrawRangedTargeting` currently checks range only)
 
 ---
 
 ## Done
 
-(none yet)
+- [x] 001 — D3+2 objective placement: interactive alternating-team placement w/ validator + AI strategy + debug auto-place toggle ([WorkItems/001](WorkItems/001-objective-placement.md))
