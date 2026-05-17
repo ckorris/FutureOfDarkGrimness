@@ -184,6 +184,79 @@ of scope.
 
 ## Notes
 
+- 2026-05-17: Engine foundation in place. Submodule branch
+  `ObjectivePlacement` now contains subtasks 1–3 + 6 + the shared
+  alternation utility (subtask "make one utility" called out by user).
+
+  **What landed (submodule commits `6db25f9`, `f8574ca`):**
+
+  Pure additions:
+  - `StageResolution/Requests/PlaceObjectiveRequest.cs` — per-marker
+    request carrying placer ID, marker index, total count, legal band,
+    min separation. Result is a single `Position`.
+  - `StateMachine/MapSetupStage/PlaceObjectivesStage/ObjectivePlacementValidator.cs`
+    — pure-function `Check(...)` returning `ObjectivePlacementValidity`
+    (Valid / OutsideLegalBand / TooCloseToObjective / ImpassableTerrain
+    / Unreachable). Unreachable stub returns Valid for now.
+  - `Utilities/TeamPlayerAlternationCursor.cs` — shared cursor used by
+    deployment, round activations, and objective placement. State is
+    team order + per-team player index (plain data, save-load friendly);
+    "does team/player have work" predicates are passed at advance time
+    so the cursor doesn't store delegates.
+  - `StateMachine/MapSetupStage/MapSetupContext.cs` — outer context
+    (`IMapSetupContext`) for the map-setup phase, holds rolled
+    objective count + team placement order across sibling stages.
+  - `StateMachine/MapSetupStage/PlaceObjectivesStage/ObjectivePlacementTurnContext.cs`
+    — per-turn inner context with the cursor and `MarkersPlaced`
+    counter.
+  - `StateMachine/MapSetupStage/PlaceObjectivesStage/DetermineNextObjectivePlacerStage.cs`
+    — advances the cursor; signals `OnAllMarkersPlaced` when the
+    counter hits the target.
+  - `StateMachine/MapSetupStage/PlaceObjectivesStage/PlaceOneObjectiveStage.cs`
+    — emits `PlaceObjectiveRequest`, validates result, re-prompts on
+    invalid, creates the `ObjectiveData`. If
+    `GameSettings.AutoPlaceObjectivesDebug` is true, runs the legacy
+    grid-RNG auto-placer for that marker instead.
+
+  Modified existing files:
+  - `GameModel/GameSettings.cs` — added `AutoPlaceObjectivesDebug`
+    (default false).
+  - `StateMachine/GameContext.cs` (+ `IGameContext`) — added
+    `Settings` property; ctor takes `GameSettings`.
+  - `GameModel/FDGServer.cs` — passes settings to `GameContext` ctor.
+  - `Tests/TerrainTestHelpers.cs::TestGameContext` — defaults Settings.
+  - `StateMachine/MapSetupStage/MapSetupStage.cs` — now
+    `ParentStage<IGameContext, IMapSetupContext>`. Child types updated.
+    No more `Func<int>` capture; uses context fields.
+  - `StateMachine/MapSetupStage/PlaceObjectivesStage/PlaceObjectivesStage.cs`
+    — now `ParentStage<IMapSetupContext, IObjectivePlacementTurnContext>`.
+    Computes legal band from a local `12"` margin (NOT the 9"
+    `DEPLOYMENT_DISTANCE_INCHES` — see Decisions). Wires the two-stage
+    driver loop.
+  - `RollForObjectiveCountStage.cs`, `RollForFirstObjectivePlacementStage.cs`,
+    `RollForFirstTerrainPlacementStage.cs`, `PlaceTerrainStage.cs` —
+    retyped to `StageBase<IMapSetupContext>`. The two objective roll
+    stages write their results to context (`SetObjectiveCount`,
+    `SetObjectivePlacementTeamOrder`) instead of via callbacks.
+  - `StateMachine/DeploymentStage/DeployAllUnitsStage/DeploymentTurnContext.cs`
+    — `CurrentDeployingTeamIndex` and `CurrentDeployingPlayerIndexPerTeam`
+    now delegate to an internal `TeamPlayerAlternationCursor`. Public
+    interface preserved; external callers (`DeployUnitStage`,
+    `ChooseUnitToDeployStage`) unchanged.
+  - `StateMachine/DeploymentStage/DeployAllUnitsStage/DetermineNextDeployPlayerStage/DetermineNextDeployPlayerStage.cs`
+    — body collapsed from ~70 lines of inline advance logic to a
+    single `Cursor.TryAdvance(...)` call.
+  - `StateMachine/MainPhaseRoundStage/SingleRoundStage/SingleRoundContext.cs`
+    — same cursor migration as deployment. `TryAdvanceToNextPlayer`
+    now delegates to `Cursor.TryAdvance` with this context's
+    `DoesTeamHaveRemainingActivations` / `DoesPlayerHaveRemainingActivations`.
+
+  All 101 engine tests still pass.
+
+  Per user direction (2026-05-17): no `[JsonConstructor]` /
+  serialization attributes added yet — save/load approach is TBD and
+  premature tags would be confusing later.
+
 - 2026-05-17: Added AI placement subtask + dispatcher decision. Check
   `origin/ComputerPlayer` for prior AI work before starting subtask 7.
 - 2026-05-17: Branch created, gap analysis written, design decisions
