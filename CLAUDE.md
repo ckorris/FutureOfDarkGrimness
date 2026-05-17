@@ -6,6 +6,17 @@ A Raylib-based client for **Future of Dark Grimness** — a tabletop wargame rul
 
 - Do not include Claude, AI, or co-author attributions in commit messages.
 
+## Work Items
+
+Long-running engineering tasks are tracked outside this file to keep the context budget tight:
+
+- `WorkItemsList.md` (repo root) — numbered index of all known work, always-loaded. Items are roughly Jira-ticket sized.
+- `WorkItems/NNN-slug.md` — per-item working memory: goal, dated running notes, decisions, and final outcome. Created when work starts on that item, not preemptively. See `WorkItems/README.md` for the template and conventions.
+
+When working on a numbered item, **append** dated entries to its Notes section (newest on top); record rationale separately in Decisions; write an Outcome and move the index line to `## Done` when finished. Numbers are permanent and never reused.
+
+This file-based system is for durable, cross-session tracking. The built-in Task tool is still the right place for in-session ad-hoc todos.
+
 ## Projects
 
 | Project | Type | Purpose |
@@ -126,20 +137,19 @@ Resolvers that need to interact with the table canvas (movement, placement) addi
 
 ## Game Termination
 
-- `ReconcileObjectivesStage` counts entries and transitions to `VictoryCalculationStage` after 4 rounds (hardcoded stub).
-- `VictoryCalculationStage` logs a tie and calls `IGameContext.NotifyGameEnded("It's a tie!")`.
+- `ReconcileObjectivesStage` runs at the end of each round: any objective with living models from exactly one player within 3" (base-edge to objective center) is seized by that player; objectives contested by multiple players become neutral; otherwise ownership is preserved. After 4 rounds (the official game length per the GDF rulebook, not a stub) it transitions to `VictoryCalculationStage`.
+- `VictoryCalculationStage` tallies controlled objectives per player and calls `IGameContext.NotifyGameEnded(...)` — a unique top scorer wins, ties (or zero objectives controlled) end in a tie.
 - The notification propagates: `GameContext.OnGameEnded` event → `FDGServer.OnGameEnded` event → `CliApp` `TaskCompletionSource` → `RunAsync` returns.
 - In GUI mode the Raylib window stays open after the game ends; the user closes it manually. (Navigating back to the main menu post-game is **not yet wired up**.)
-- Victory is intentionally always a tie for now — in GrimDark Future rules a player can win even if all their models are eliminated (objectives determine winner), so unit counts must never be used as a win condition.
+- In GrimDark Future rules a player can win even if all their models are eliminated (objectives determine the winner), so unit counts must never be used as a win condition.
 
 ## Known stubs in the engine
 
 The engine has substantial gaps. Don't assume rules are enforced just because a stage exists. Surveyed Apr 2026:
 
-**Won't end the game properly**
-- `ReconcileObjectivesStage` — hardcoded 4-round counter; no objective control logic
-- `VictoryCalculationStage` — always declares a tie
-- `MapSetupStage` — no terrain or objective placement (TODO)
+**Setup gaps**
+- `MapSetupStage` children (`RollForObjectiveCountStage`, `PlaceObjectivesStage`, `RollForFirstObjectivePlacementStage`) — files exist but D3+2 objective placement and terrain placement aren't implemented yet
+- `ReconcileObjectivesStage` and `VictoryCalculationStage` themselves are implemented (seizure + objective tally → real winner) — but they operate on whatever objectives `MapSetupStage` produces, which is currently nothing
 
 **Movement validation is partial**
 - `MovementUtilities.ValidateMovingThroughImpassibleTerrain` — implemented; blocks moves whose path intersects any `Impassible`-flagged terrain piece
