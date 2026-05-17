@@ -208,7 +208,7 @@ public class GuiDefineMovementResolver
 
         // 3b) Ranged-targeting overlay (toggle, on by default)
         if (_showRangedTargeting)
-            DrawRangedTargeting(dl, request, pt, paths, ghostPos, ghostExtraDist);
+            DrawRangedTargeting(dl, screenW, request, pt, paths, ghostPos, ghostExtraDist);
 
         // 4) Mouse / keyboard input
         if (overTable && !io.WantCaptureMouse)
@@ -506,7 +506,7 @@ public class GuiDefineMovementResolver
         dl.AddLine(new Vector2(bx - px * tick, by - py * tick), new Vector2(bx + px * tick, by + py * tick), CohesionLineCol, 1f);
     }
 
-    private void DrawRangedTargeting(ImDrawListPtr dl,
+    private void DrawRangedTargeting(ImDrawListPtr dl, int screenW,
         DefineMovementPathRequest request,
         PathTemplate pt,
         IReadOnlyDictionary<IModel, IReadOnlyList<Position>> paths,
@@ -571,19 +571,33 @@ public class GuiDefineMovementResolver
             }
             if (counts.Count == 0) continue;
 
-            float ecx = aliveEnemies.Average(em => em.Position.x);
             float ecz = aliveEnemies.Average(em => em.Position.z);
-            var (cpx, cpy) = InchesToPixel(ecx, ecz);
+            var (_, cpy) = InchesToPixel(0, ecz);
+
+            // Compute the unit's horizontal screen-pixel extent (base edges included).
+            float minPx = float.MaxValue, maxPx = float.MinValue;
+            foreach (var em in aliveEnemies)
+            {
+                var (epx, _) = InchesToPixel(em.Position.x, em.Position.z);
+                float r = em.BaseRadiusInches * _scale;
+                if (epx - r < minPx) minPx = epx - r;
+                if (epx + r > maxPx) maxPx = epx + r;
+            }
 
             var lines = counts.OrderByDescending(kv => kv.Value).ThenBy(kv => kv.Key)
                 .Select(kv => $"{kv.Value}x {kv.Key}").ToList();
             float blockH = lines.Count * lineH;
-            float yTop = cpy - blockH - 20f;
+            float blockW = 0f;
+            var lineSizes = new Vector2[lines.Count];
+            for (int i = 0; i < lines.Count; i++) { lineSizes[i] = ImGui.CalcTextSize(lines[i]); if (lineSizes[i].X > blockW) blockW = lineSizes[i].X; }
+
+            const float margin = 12f;
+            float xLeftAnchor  = maxPx + margin;
+            float xRightAnchor = minPx - margin - blockW;
+            float xAnchor = xLeftAnchor + blockW <= screenW - 4f ? xLeftAnchor : xRightAnchor;
+            float yTop = cpy - blockH * 0.5f;
             for (int i = 0; i < lines.Count; i++)
-            {
-                var size = ImGui.CalcTextSize(lines[i]);
-                dl.AddText(new Vector2(cpx - size.X * 0.5f, yTop + i * lineH), enemyTextCol, lines[i]);
-            }
+                dl.AddText(new Vector2(xAnchor, yTop + i * lineH), enemyTextCol, lines[i]);
         }
 
         // 2) Per-selected-model fire lines + per-line weapon labels.
@@ -640,16 +654,20 @@ public class GuiDefineMovementResolver
                 dl.AddLine(sa, sb, lineCol, 1.5f);
             }
 
-            // Weapon name labels stacked at the (un-staggered) midpoint.
+            // Weapon name labels stacked beside the line midpoint (screen-right by default,
+            // flipped to screen-left if right side would clip the window edge).
             float mx = (ax + bx) * 0.5f, my = (ay + by) * 0.5f;
             float blockH = n * lineH;
+            float blockW = 0f;
+            var sizes = new Vector2[n];
+            for (int i = 0; i < n; i++) { sizes[i] = ImGui.CalcTextSize(weapons[i].Name); if (sizes[i].X > blockW) blockW = sizes[i].X; }
+            const float margin = 8f;
+            float xLeftAnchor  = mx + margin;
+            float xRightAnchor = mx - margin - blockW;
+            float xAnchor = xLeftAnchor + blockW <= screenW - 4f ? xLeftAnchor : xRightAnchor;
             float yTop = my - blockH * 0.5f;
             for (int i = 0; i < n; i++)
-            {
-                string name = weapons[i].Name;
-                var size = ImGui.CalcTextSize(name);
-                dl.AddText(new Vector2(mx - size.X * 0.5f, yTop + i * lineH), midTextCol, name);
-            }
+                dl.AddText(new Vector2(xAnchor, yTop + i * lineH), midTextCol, weapons[i].Name);
         }
     }
 
