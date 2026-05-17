@@ -14,18 +14,31 @@ public class GuiDefineMovementResolver
     private readonly ITableState _tableState;
     private readonly object _lock = new();
 
-    // Layout — main-thread only, no lock needed
-    private float _scale   = 10f;
-    private float _tableH  = GameWideConstants.DEFAULT_TABLE_HEIGHT_INCHES;
+    // Layout — main-thread only
+    private float _scale  = 10f;
+    private float _tableH = GameWideConstants.DEFAULT_TABLE_HEIGHT_INCHES;
     private int   _originX, _originY;
 
     // Request state
     private DefineMovementPathRequest? _request;
     private TaskCompletionSource<List<ModelMoveEntry>>? _tcs;
 
-    // Error feedback — main-thread only
+    // Pathing state — main-thread only after Resolve assigns it
+    private PathTemplate? _pathTemplate;
+    private IModel? _selectedModel;
+
     private string? _errorMessage;
     private double  _errorExpiry;
+
+    // Colors
+    private static readonly uint AdvanceColor    = ImGui.ColorConvertFloat4ToU32(new Vector4(0.25f, 0.95f, 0.25f, 0.95f));
+    private static readonly uint RushColor       = ImGui.ColorConvertFloat4ToU32(new Vector4(1.00f, 0.55f, 0.10f, 0.95f));
+    private static readonly uint AdvanceRingCol  = ImGui.ColorConvertFloat4ToU32(new Vector4(0.25f, 0.95f, 0.25f, 0.55f));
+    private static readonly uint RushRingCol     = ImGui.ColorConvertFloat4ToU32(new Vector4(1.00f, 0.55f, 0.10f, 0.55f));
+    private static readonly uint SelectionOutline = ImGui.ColorConvertFloat4ToU32(new Vector4(1f, 1f, 1f, 0.95f));
+    private static readonly uint ModelOutline    = ImGui.ColorConvertFloat4ToU32(new Vector4(0.7f, 0.7f, 0.7f, 0.7f));
+    private static readonly uint GhostOutline    = ImGui.ColorConvertFloat4ToU32(new Vector4(1f, 1f, 1f, 0.85f));
+    private static readonly uint FinalGhostCol   = ImGui.ColorConvertFloat4ToU32(new Vector4(1f, 1f, 1f, 0.25f));
 
     public GuiDefineMovementResolver(ITableState tableState) => _tableState = tableState;
 
@@ -42,7 +55,19 @@ public class GuiDefineMovementResolver
     public Task<List<ModelMoveEntry>> Resolve(DefineMovementPathRequest request)
     {
         var tcs = new TaskCompletionSource<List<ModelMoveEntry>>();
-        lock (_lock) { _tcs = tcs; _request = request; _errorMessage = null; }
+        var template = new PathTemplate(request.UnitDataBinding, request.MaxChargeDistance);
+        var first = request.UnitDataBinding.GetValue().ModelBindings
+            .Select(mb => mb.GetValue() as IModel)
+            .FirstOrDefault(m => m != null && m.GetIsAlive());
+
+        lock (_lock)
+        {
+            _tcs           = tcs;
+            _request       = request;
+            _pathTemplate  = template;
+            _selectedModel = first;
+            _errorMessage  = null;
+        }
         return tcs.Task;
     }
 
@@ -50,99 +75,171 @@ public class GuiDefineMovementResolver
     {
         DefineMovementPathRequest? request;
         TaskCompletionSource<List<ModelMoveEntry>>? tcs;
-        lock (_lock) { request = _request; tcs = _tcs; }
-        if (request == null || tcs == null) return;
+        PathTemplate? pt;
+        lock (_lock) { request = _request; tcs = _tcs; pt = _pathTemplate; }
+        if (request == null || tcs == null || pt == null) return;
 
-        var terrain = _tableState.Terrain.Objects.ToList();
+        var io       = ImGui.GetIO();
+        var dl       = ImGui.GetBackgroundDrawList();
+        var terrain  = _tableState.Terrain.Objects.ToList();
+        var paths    = pt.CurrentPaths;
 
-        var io     = ImGui.GetIO();
-        var dl     = ImGui.GetBackgroundDrawList();
-        var models = request.UnitDataBinding.GetValue().ModelBindings;
+        float maxAdvance = request.MaxAdvanceDistance;
+        float maxCharge  = request.MaxChargeDistance;
 
-        // Unit centre
-        float cx = models.Average(mb => mb.GetValue().Position.x);
-        float cz = models.Average(mb => mb.GetValue().Position.z);
-
-        // Mouse → table inches
-        var (mouseInX, mouseInZ) = PixelToInches(io.MousePos.X, io.MousePos.Y);
-        float ddx = mouseInX - cx;
-        float ddz = mouseInZ - cz;
-        bool overTable = IsOverTable(io.MousePos.X, io.MousePos.Y);
-
-        // Range rings on each model's current position
-        uint advColor  = ImGui.ColorConvertFloat4ToU32(new Vector4(0.20f, 0.90f, 0.20f, 0.50f));
-        uint rushColor = ImGui.ColorConvertFloat4ToU32(new Vector4(0.90f, 0.85f, 0.20f, 0.40f));
-        uint capColor  = ImGui.ColorConvertFloat4ToU32(new Vector4(1.00f, 0.55f, 0.10f, 0.65f));
-        foreach (var mb in models)
+        // 1) Draw each model's start circle + committed path lines + final ghost circle
+        foreach (var kvp in paths)
         {
-            var m = mb.GetValue();
-            var (px, py) = InchesToPixel(m.Position.x, m.Position.z);
-            dl.AddCircle(new Vector2(px, py), request.MaxAdvanceDistance * _scale, advColor,  64, 1.5f);
-            dl.AddCircle(new Vector2(px, py), request.MaxChargeDistance  * _scale, rushColor, 64, 1.5f);
-        }
+            var model = kvp.Key;
+            var pathPoints = kvp.Value;
+            var start = model.Position;
+            var (sx, sy) = InchesToPixel(start.x, start.z);
+            float r = model.BaseRadiusInches * _scale;
 
-        // Ghost formation at hover
-        List<ModelMoveEntry>? tentative = null;
-        bool tentativeValid = false;
-        bool tentativeCrossesDifficult = false;
-        if (overTable)
-        {
-            tentative = BuildEntries(request, ddx, ddz);
-            tentativeValid = MovementUtilities.ValidatePaths(tentative, request.MaxChargeDistance, terrain, out _);
-            tentativeCrossesDifficult = tentative.Any(m => CrossesDifficultTerrain(m, terrain));
+            // Start circle (real model position)
+            uint outline = ReferenceEquals(model, _selectedModel) ? SelectionOutline : ModelOutline;
+            float thick  = ReferenceEquals(model, _selectedModel) ? 2.5f : 1.5f;
+            dl.AddCircle(new Vector2(sx, sy), r, outline, 32, thick);
 
-            // Draw orange difficult-terrain cap rings when relevant
-            if (tentativeCrossesDifficult)
+            // Path lines
+            if (pathPoints.Count > 0)
             {
-                foreach (var mb in models)
+                Position prev = start;
+                float cum = 0f;
+                for (int i = 0; i < pathPoints.Count; i++)
                 {
-                    var m = mb.GetValue();
-                    var (px, py) = InchesToPixel(m.Position.x, m.Position.z);
-                    dl.AddCircle(new Vector2(px, py), GameWideConstants.DIFFICULT_TERRAIN_MOVE_CAP_INCHES * _scale, capColor, 64, 2f);
+                    var cur = pathPoints[i];
+                    uint col = cum + 0.0001f >= maxAdvance ? RushColor : AdvanceColor;
+                    var (px, py) = InchesToPixel(prev.x, prev.z);
+                    var (cx, cy) = InchesToPixel(cur.x, cur.z);
+                    dl.AddLine(new Vector2(px, py), new Vector2(cx, cy), col, 2f);
+                    cum += Position.GetDistance3D(prev, cur);
+                    prev = cur;
                 }
-            }
 
-            uint ghostFill    = tentativeValid
-                ? ImGui.ColorConvertFloat4ToU32(new Vector4(0.20f, 1.00f, 0.20f, 0.45f))
-                : ImGui.ColorConvertFloat4ToU32(new Vector4(1.00f, 0.20f, 0.20f, 0.45f));
-            uint ghostOutline = ImGui.ColorConvertFloat4ToU32(new Vector4(1f, 1f, 1f, 0.80f));
-
-            foreach (var mb in models)
-            {
-                var m  = mb.GetValue();
-                float nx = m.Position.x + ddx;
-                float nz = m.Position.z + ddz;
-                var (gx, gy) = InchesToPixel(nx, nz);
-                float r = m.BaseRadiusInches * _scale;
-                dl.AddCircleFilled(new Vector2(gx, gy), r, ghostFill);
-                dl.AddCircle(new Vector2(gx, gy), r, ghostOutline, 32, 1f);
+                // Final position ghost circle
+                var last = pathPoints[^1];
+                var (lx, ly) = InchesToPixel(last.x, last.z);
+                dl.AddCircleFilled(new Vector2(lx, ly), r, FinalGhostCol);
+                dl.AddCircle(new Vector2(lx, ly), r, outline, 32, thick);
             }
         }
 
-        // Click to confirm destination
-        if (overTable && !io.WantCaptureMouse && ImGui.IsMouseClicked(ImGuiMouseButton.Left))
+        // 2) Range rings around selected model's last waypoint
+        if (_selectedModel != null)
         {
-            tentative ??= BuildEntries(request, ddx, ddz);
-            if (MovementUtilities.ValidatePaths(tentative, request.MaxChargeDistance, terrain, out var errors))
+            float totalSoFar = pt.GetTotalDistanceMoved(_selectedModel);
+            var anchor = pt.GetModelLastPathPosition(_selectedModel);
+            var (ax, ay) = InchesToPixel(anchor.x, anchor.z);
+
+            float remAdvance = maxAdvance - totalSoFar;
+            float remCharge  = maxCharge  - totalSoFar;
+            if (remAdvance > 0.01f)
+                dl.AddCircle(new Vector2(ax, ay), remAdvance * _scale, AdvanceRingCol, 64, 1.5f);
+            if (remCharge > 0.01f)
+                dl.AddCircle(new Vector2(ax, ay), remCharge  * _scale, RushRingCol,    64, 1.5f);
+        }
+
+        // 3) Ghost following mouse for selected model (clamped)
+        bool overTable = IsOverTable(io.MousePos.X, io.MousePos.Y);
+        bool wantInput = !io.WantCaptureMouse && !io.WantCaptureKeyboard;
+        Position? ghostPos = null;
+        bool ghostIsRush = false;
+
+        if (_selectedModel != null && overTable && !io.WantCaptureMouse)
+        {
+            var anchor = pt.GetModelLastPathPosition(_selectedModel);
+            float totalSoFar = pt.GetTotalDistanceMoved(_selectedModel);
+            float remCharge = maxCharge - totalSoFar;
+            var (mx, mz) = PixelToInches(io.MousePos.X, io.MousePos.Y);
+            float dx = mx - anchor.x;
+            float dz = mz - anchor.z;
+            float dist = MathF.Sqrt(dx * dx + dz * dz);
+
+            float allowed;
+            if (remCharge <= 0.001f)
             {
-                Complete(tcs, tentative);
-                return;
+                allowed = 0f;
             }
-            _errorMessage = string.Join(" | ", errors.Select(e => MovementUtilities.ErrorReasonToString(e.ErrorReasonType)));
-            _errorExpiry  = ImGui.GetTime() + 2.5;
+            else if (dist <= remCharge)
+            {
+                allowed = dist;
+            }
+            else
+            {
+                allowed = MathF.Max(0f, remCharge - 0.001f); // small margin against float drift
+            }
+
+            float nx, nz;
+            if (dist < 0.0001f) { nx = anchor.x; nz = anchor.z; }
+            else                { nx = anchor.x + dx / dist * allowed; nz = anchor.z + dz / dist * allowed; }
+            ghostPos = new Position(nx, nz);
+
+            float cumWithGhost = totalSoFar + allowed;
+            ghostIsRush = cumWithGhost + 0.0001f >= maxAdvance;
+
+            // Preview line from anchor to ghost
+            var (ax, ay) = InchesToPixel(anchor.x, anchor.z);
+            var (gx, gy) = InchesToPixel(nx, nz);
+            uint previewCol = ghostIsRush ? RushColor : AdvanceColor;
+            dl.AddLine(new Vector2(ax, ay), new Vector2(gx, gy), previewCol, 2f);
+
+            // Ghost base circle
+            float r = _selectedModel.BaseRadiusInches * _scale;
+            uint fill = ghostIsRush
+                ? ImGui.ColorConvertFloat4ToU32(new Vector4(1.00f, 0.55f, 0.10f, 0.40f))
+                : ImGui.ColorConvertFloat4ToU32(new Vector4(0.25f, 0.95f, 0.25f, 0.40f));
+            dl.AddCircleFilled(new Vector2(gx, gy), r, fill);
+            dl.AddCircle(new Vector2(gx, gy), r, GhostOutline, 32, 1.5f);
+        }
+
+        // 4) Mouse / keyboard input
+        if (overTable && !io.WantCaptureMouse)
+        {
+            // Left-click selects a model whose start circle is hit
+            if (ImGui.IsMouseClicked(ImGuiMouseButton.Left))
+            {
+                var (mx, mz) = PixelToInches(io.MousePos.X, io.MousePos.Y);
+                IModel? hit = null;
+                float bestDist = float.MaxValue;
+                foreach (var model in paths.Keys)
+                {
+                    float dx = mx - model.Position.x;
+                    float dz = mz - model.Position.z;
+                    float d2 = dx * dx + dz * dz;
+                    float rr = model.BaseRadiusInches * model.BaseRadiusInches;
+                    if (d2 <= rr && d2 < bestDist) { hit = model; bestDist = d2; }
+                }
+                if (hit != null) _selectedModel = hit;
+            }
+
+            // Right-click adds a waypoint at clamped ghost position
+            if (ImGui.IsMouseClicked(ImGuiMouseButton.Right) && _selectedModel != null && ghostPos.HasValue)
+            {
+                float totalSoFar = pt.GetTotalDistanceMoved(_selectedModel);
+                if (maxCharge - totalSoFar > 0.001f)
+                    pt.AddStep(_selectedModel, ghostPos.Value);
+            }
+        }
+
+        // Backspace removes last waypoint of selected model
+        if (wantInput && _selectedModel != null && ImGui.IsKeyPressed(ImGuiKey.Backspace))
+        {
+            if (paths.TryGetValue(_selectedModel, out var list) && list.Count > 0)
+                pt.RemoveLastStep(_selectedModel);
         }
 
         if (_errorMessage != null && ImGui.GetTime() > _errorExpiry)
             _errorMessage = null;
 
-        DrawInfoPanel(screenW, request, request.UnitDataBinding.GetValue().Name, tcs, tentativeCrossesDifficult);
+        DrawInfoPanel(screenW, request, pt, tcs, terrain);
     }
 
-    private void DrawInfoPanel(int screenW, DefineMovementPathRequest request, string unitName,
-        TaskCompletionSource<List<ModelMoveEntry>> tcs, bool crossesDifficult)
+    private void DrawInfoPanel(int screenW, DefineMovementPathRequest request, PathTemplate pt,
+        TaskCompletionSource<List<ModelMoveEntry>> tcs, List<ITerrain> terrain)
     {
-        float panelW = MathF.Min(screenW * 0.42f, 500f);
-        float panelH = crossesDifficult ? 130f : 110f;
+        float panelW = MathF.Min(screenW * 0.5f, 560f);
+        float panelH = 200f;
         ImGui.SetNextWindowPos(new Vector2((screenW - panelW) * 0.5f, 16f), ImGuiCond.Always);
         ImGui.SetNextWindowSize(new Vector2(panelW, panelH), ImGuiCond.Always);
         ImGui.PushStyleColor(ImGuiCol.WindowBg, new Vector4(0.10f, 0.10f, 0.15f, 0.92f));
@@ -151,11 +248,26 @@ public class GuiDefineMovementResolver
             ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoScrollbar);
         ImGui.PopStyleColor();
 
+        string unitName = request.UnitDataBinding.GetValue().Name;
         ImGui.TextUnformatted($"Move: {unitName}");
         ImGui.SameLine();
-        ImGui.TextDisabled($"  advance ≤ {request.MaxAdvanceDistance:F1}\"  |  rush ≤ {request.MaxChargeDistance:F1}\"");
+        ImGui.TextDisabled($"  advance ≤ {request.MaxAdvanceDistance:F1}\"   rush ≤ {request.MaxChargeDistance:F1}\"");
 
         ImGui.Spacing();
+        if (_selectedModel != null)
+        {
+            float dist = pt.GetTotalDistanceMoved(_selectedModel);
+            bool inRush = dist + 0.0001f >= request.MaxAdvanceDistance;
+            var color = inRush ? new Vector4(1.00f, 0.55f, 0.10f, 1f) : new Vector4(0.25f, 0.95f, 0.25f, 1f);
+            ImGui.PushStyleColor(ImGuiCol.Text, color);
+            ImGui.TextUnformatted($"Selected model: {dist:F2}\" / {request.MaxChargeDistance:F1}\"  ({(inRush ? "RUSH — cannot shoot" : "advance — may shoot")})");
+            ImGui.PopStyleColor();
+        }
+        else
+        {
+            ImGui.TextDisabled("No model selected. Left-click a model on the table.");
+        }
+
         if (_errorMessage != null)
         {
             ImGui.PushStyleColor(ImGuiCol.Text, new Vector4(1f, 0.4f, 0.4f, 1f));
@@ -164,38 +276,49 @@ public class GuiDefineMovementResolver
         }
         else
         {
-            ImGui.TextDisabled("Click the table to move.  Green ring = advance,  yellow = rush.");
-        }
-
-        if (crossesDifficult)
-        {
-            ImGui.PushStyleColor(ImGuiCol.Text, new Vector4(1.00f, 0.55f, 0.10f, 1f));
-            ImGui.TextUnformatted($"Difficult terrain in path — max {GameWideConstants.DIFFICULT_TERRAIN_MOVE_CAP_INCHES}\"");
-            ImGui.PopStyleColor();
+            ImGui.TextDisabled("Left-click: select model.  Right-click: add waypoint.  Backspace: undo.");
         }
 
         ImGui.Spacing();
-        float btnW = (panelW - ImGui.GetStyle().ItemSpacing.X - ImGui.GetStyle().WindowPadding.X * 2) * 0.5f;
-        if (ImGui.Button("Skip (stay in place)", new Vector2(btnW, 28f)))
-            Complete(tcs, StayInPlace(request));
+        float spacing = ImGui.GetStyle().ItemSpacing.X;
+        float pad     = ImGui.GetStyle().WindowPadding.X * 2;
+        float btnW    = (panelW - pad - spacing * 3) / 4f;
+
+        if (ImGui.Button("Done", new Vector2(btnW, 28f)))
+        {
+            var results = pt.GetResultsAsList();
+            if (MovementUtilities.ValidatePaths(results, request.MaxChargeDistance, terrain, out var errors))
+            {
+                Complete(tcs, results);
+                ImGui.End();
+                return;
+            }
+            _errorMessage = string.Join(" | ", errors.Select(e => MovementUtilities.ErrorReasonToString(e.ErrorReasonType)));
+            _errorExpiry  = ImGui.GetTime() + 3.0;
+        }
+        ImGui.SameLine();
+        if (ImGui.Button("Clear selected", new Vector2(btnW, 28f)))
+        {
+            if (_selectedModel != null) pt.ClearModelSteps(_selectedModel);
+        }
+        ImGui.SameLine();
+        if (ImGui.Button("Skip all", new Vector2(btnW, 28f)))
+        {
+            pt.ClearAllSteps();
+            Complete(tcs, pt.GetResultsAsList());
+            ImGui.End();
+            return;
+        }
         ImGui.SameLine();
         if (ImGui.Button("Auto-advance", new Vector2(btnW, 28f)))
+        {
             Complete(tcs, AutoAdvance(request));
+            ImGui.End();
+            return;
+        }
 
         ImGui.End();
     }
-
-    private List<ModelMoveEntry> BuildEntries(DefineMovementPathRequest request, float ddx, float ddz) =>
-        request.UnitDataBinding.GetValue().ModelBindings.Select(mb =>
-        {
-            var m = mb.GetValue();
-            return new ModelMoveEntry(mb, new List<Position> { new Position(m.Position.x + ddx, m.Position.z + ddz) });
-        }).ToList();
-
-    private static List<ModelMoveEntry> StayInPlace(DefineMovementPathRequest request) =>
-        request.UnitDataBinding.GetValue().ModelBindings
-            .Select(mb => new ModelMoveEntry(mb, new List<Position> { mb.GetValue().Position }))
-            .ToList();
 
     private List<ModelMoveEntry> AutoAdvance(DefineMovementPathRequest request)
     {
@@ -234,9 +357,20 @@ public class GuiDefineMovementResolver
         }).ToList();
     }
 
+    private static List<ModelMoveEntry> StayInPlace(DefineMovementPathRequest request) =>
+        request.UnitDataBinding.GetValue().ModelBindings
+            .Select(mb => new ModelMoveEntry(mb, new List<Position>()))
+            .ToList();
+
     private void Complete(TaskCompletionSource<List<ModelMoveEntry>> tcs, List<ModelMoveEntry> entries)
     {
-        lock (_lock) { _request = null; _tcs = null; }
+        lock (_lock)
+        {
+            _request       = null;
+            _tcs           = null;
+            _pathTemplate  = null;
+            _selectedModel = null;
+        }
         tcs.SetResult(entries);
     }
 
@@ -250,20 +384,4 @@ public class GuiDefineMovementResolver
         px >= _originX && py >= _originY &&
         px <= _originX + GameWideConstants.DEFAULT_TABLE_WIDTH_INCHES * _scale &&
         py <= _originY + _tableH * _scale;
-
-    private static bool CrossesDifficultTerrain(ModelMoveEntry move, List<ITerrain> terrain)
-    {
-        var difficult = terrain.Where(t => t.TerrainType.HasFlag(ETerrainType.Difficult)).ToList();
-        if (difficult.Count == 0 || move.Positions.Count == 0) return false;
-
-        var startPos = move.Model.GetValue().PositionBinding.GetValue();
-        var seg = new Float2(startPos.x, startPos.z);
-        for (int i = 0; i < move.Positions.Count; i++)
-        {
-            var end = new Float2(move.Positions[i].x, move.Positions[i].z);
-            if (difficult.Any(p => p.DoesPathIntersectZone(seg, end))) return true;
-            seg = end;
-        }
-        return false;
-    }
 }
