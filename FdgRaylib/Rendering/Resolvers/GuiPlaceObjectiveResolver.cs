@@ -188,10 +188,14 @@ public class GuiPlaceObjectiveResolver
     private void DrawInfoPanel(int screenW, PlaceObjectiveRequest request,
         TaskCompletionSource<Position> tcs, Position? pending)
     {
-        // Default top-left so we don't sit under GuiOutstandingTaskDisplay (top-center).
-        // FirstUseEver lets the user drag the window once and have it stick.
-        ImGui.SetNextWindowPos(new Vector2(16f, 16f), ImGuiCond.FirstUseEver);
-        ImGui.SetNextWindowSize(new Vector2(360f, 0f), ImGuiCond.FirstUseEver);
+        // Default centered horizontally, just below where GuiOutstandingTaskDisplay sits.
+        // OutstandingTasks is at y=8 with AlwaysAutoResize; ~140px down clears the typical
+        // 5-row list. FirstUseEver lets the user drag the window if they want it elsewhere.
+        const float PanelDefaultWidth = 360f;
+        const float OutstandingTasksClearance = 140f;
+        float defaultX = MathF.Max(8f, (screenW - PanelDefaultWidth) * 0.5f);
+        ImGui.SetNextWindowPos(new Vector2(defaultX, OutstandingTasksClearance), ImGuiCond.FirstUseEver);
+        ImGui.SetNextWindowSize(new Vector2(PanelDefaultWidth, 0f), ImGuiCond.FirstUseEver);
         ImGui.SetNextWindowBgAlpha(0.92f);
 
         ImGui.Begin("Place Objective",
