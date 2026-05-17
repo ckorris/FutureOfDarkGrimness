@@ -10,7 +10,7 @@ Numbers are permanent and never reused. If an item is split, its line stays and 
 
 ## Setup & map
 
-- [ ] 001 — D3+2 objective placement (alternating, >9" apart, outside deploy zones)
+- [ ] 001 — D3+2 objective placement: interactive alternating-team placement w/ validator + debug auto-place toggle ([WorkItems/001](WorkItems/001-objective-placement.md))
 - [ ] 002 — Terrain placement workflow (`MapSetupStage` children currently empty)
 - [ ] 003 — Force organization validation (optional rule: hero/unit/copy/cost caps)
 
