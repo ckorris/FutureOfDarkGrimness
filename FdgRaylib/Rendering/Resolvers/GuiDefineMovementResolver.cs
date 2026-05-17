@@ -266,7 +266,7 @@ public class GuiDefineMovementResolver
         string unitName = request.UnitDataBinding.GetValue().Name;
         ImGui.TextUnformatted($"Move: {unitName}");
         ImGui.SameLine();
-        ImGui.TextDisabled($"  advance ≤ {request.MaxAdvanceDistance:F1}\"   rush ≤ {request.MaxChargeDistance:F1}\"");
+        ImGui.TextDisabled($"  advance up to {FormatInches(request.MaxAdvanceDistance)}\"   rush up to {FormatInches(request.MaxChargeDistance)}\"");
 
         ImGui.Spacing();
         if (_selectedModel != null)
@@ -275,7 +275,7 @@ public class GuiDefineMovementResolver
             bool inRush = dist + 0.0001f >= request.MaxAdvanceDistance;
             var color = inRush ? new Vector4(1.00f, 0.55f, 0.10f, 1f) : new Vector4(0.25f, 0.95f, 0.25f, 1f);
             ImGui.PushStyleColor(ImGuiCol.Text, color);
-            ImGui.TextUnformatted($"Selected model: {dist:F2}\" / {request.MaxChargeDistance:F1}\"  ({(inRush ? "RUSH — cannot shoot" : "advance — may shoot")})");
+            ImGui.TextUnformatted($"Selected model: {dist:F2}\" / {FormatInches(request.MaxChargeDistance)}\"  ({(inRush ? "RUSH - cannot shoot" : "advance - may shoot")})");
             ImGui.PopStyleColor();
         }
         else
@@ -309,9 +309,9 @@ public class GuiDefineMovementResolver
             }
         }
         foreach (var t in cohesion.TooFarFromAny)
-            issues.Add($"Cohesion: model is {t.dist:F2}\" from nearest other (max {GameWideConstants.MAX_MODEL_DISTANCE_FROM_ANY_OTHER_MODEL_INCHES}\")");
+            issues.Add($"Cohesion: model is {t.dist:F2}\" from nearest other (max {FormatInches(GameWideConstants.MAX_MODEL_DISTANCE_FROM_ANY_OTHER_MODEL_INCHES)}\")");
         if (cohesion.FarthestPair.HasValue)
-            issues.Add($"Cohesion: two models would be {cohesion.FarthestPair.Value.dist:F2}\" apart (max {GameWideConstants.MAX_MODEL_DISTANCE_FROM_ALL_OTHER_MODELS_INCHES}\")");
+            issues.Add($"Cohesion: two models would be {cohesion.FarthestPair.Value.dist:F2}\" apart (max {FormatInches(GameWideConstants.MAX_MODEL_DISTANCE_FROM_ALL_OTHER_MODELS_INCHES)}\")");
 
         bool canSubmit = issues.Count == 0;
         if (!canSubmit) ImGui.BeginDisabled();
@@ -534,6 +534,13 @@ public class GuiDefineMovementResolver
 
     private (float px, float py) InchesToPixel(float x, float z) =>
         (_originX + x * _scale, _originY + (_tableH - z) * _scale);
+
+    private static string FormatInches(float value)
+    {
+        float frac = value - MathF.Floor(value);
+        if (frac < 0.05f || frac > 0.95f) return MathF.Round(value).ToString("0");
+        return value.ToString("0.0");
+    }
 
     private bool IsOverTable(float px, float py) =>
         px >= _originX && py >= _originY &&
