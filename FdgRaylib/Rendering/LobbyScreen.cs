@@ -56,10 +56,30 @@ public class LobbyScreen : IAppScreen
 
         if (_viewModel == null) return;
 
+        // Scale UI elements up for the lobby — default ImGui font is on the small side at
+        // these screen sizes. 1.2x roughly = "two sizes bigger" and grows buttons by the
+        // same factor (since button height = font + frame padding).
+        var io = ImGui.GetIO();
+        float originalFontScale = io.FontGlobalScale;
+        io.FontGlobalScale = originalFontScale * 1.2f;
+
+        try
+        {
+            DrawScaled(screenW, screenH);
+        }
+        finally
+        {
+            io.FontGlobalScale = originalFontScale;
+        }
+    }
+
+    private void DrawScaled(int screenW, int screenH)
+    {
         ImGui.SetNextWindowPos(Vector2.Zero, ImGuiCond.Always);
         ImGui.SetNextWindowSize(new Vector2(screenW, screenH), ImGuiCond.Always);
         ImGui.Begin("Lobby",
-            ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoCollapse);
+            ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoCollapse |
+            ImGuiWindowFlags.NoTitleBar);
 
         float margin       = 10f;
         float settingsW    = screenW * 0.25f;
@@ -68,7 +88,9 @@ public class LobbyScreen : IAppScreen
         float framePadY    = ImGui.GetStyle().FramePadding.Y;
         float naturalBtnH  = fontSize + framePadY * 2;
         float headerH      = MathF.Max(40f, naturalBtnH + 12f);
-        float chatInputH   = MathF.Max(30f, naturalBtnH + 6f);
+        // Chat-input row (and Launch button on the right) ~50% taller than the standard
+        // button height so the action area at the bottom is easier to hit.
+        float chatInputH   = MathF.Max(45f, (naturalBtnH + 6f) * 1.5f);
         float rightH       = screenH - margin * 2;
         float innerH       = screenH - margin * 2 - headerH - chatInputH - margin * 2;
         float playerListH  = innerH * 0.55f;
