@@ -22,7 +22,8 @@ public static class ResolverRegistryFactory
             .RegisterResolver(new SelectionResolver<ModelData>())
             .RegisterResolver(new SelectionResolver<RectangularZone>())
             .RegisterResolver(new CancellableSelectionResolver<UnitData>())
-            .RegisterResolver(new PlaceObjectsResolver<ModelData>(tableState));
+            .RegisterResolver(new PlaceObjectsResolver<ModelData>(tableState))
+            .RegisterResolver(new PlaceOneTerrainResolver(tableState));
     }
 
     /// <summary>GUI build — interactive resolvers where implemented, CLI fallback otherwise.</summary>
