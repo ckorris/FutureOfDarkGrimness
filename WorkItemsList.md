@@ -33,8 +33,6 @@ Numbers are permanent and never reused. If an item is split, its line stays and 
 
 ## Shooting
 
-- [ ] 013 — Weapon-group target selection (up to 2 targets per unit's shoot action)
-- [ ] 014 — Fix `RangedContext` `NotImplementedException` paths (`BeginNewAttack`, `SetAttackWeapon`, `ConsumeAttackIntoContext`)
 - [ ] 015 — Attack-count modifiers in shooting flow (`RollToHitStage` TODO)
 - [ ] 016 — Hit→wound effect propagation (`DetermineSaveRollsNeededStage` TODO)
 
@@ -94,4 +92,6 @@ These are umbrellas; will fragment per-rule when picked up.
 ## Done
 
 - [x] 001 — D3+2 objective placement: interactive alternating-team placement w/ validator + AI strategy + debug auto-place toggle ([WorkItems/001](WorkItems/001-objective-placement.md))
+- [x] 013 — Weapon-group target selection (up to 2 targets per shoot action): already implemented via `GameWideConstants.MAX_TARGETED_UNITS_PER_SHOOT_ACTION` + `attackedDefenderRefs` tracking in `ChooseRangedAttackStage`; item was stale
+- [x] 014 — `RangedContext` NIE paths: file was dead code (entire body in a `/* ... */` block); actual ranged flow uses `CombatActionContext`. File deleted.
 - [x] 043 — Filter dead models out of `IUnit.AllWeapons` so dead models no longer contribute weapons to attack/strike-back/shoot lists or the tooltip readout
