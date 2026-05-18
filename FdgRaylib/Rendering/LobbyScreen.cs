@@ -28,6 +28,12 @@ public class LobbyScreen : IAppScreen
         $"Army List (*{ArmyListFile.EXTENSION_WITH_PERIOD})",
         new[] { $"*{ArmyListFile.EXTENSION_WITH_PERIOD}" });
 
+    private static readonly FileFilter TerrainFilter = new(
+        $"Terrain Layout (*{TerrainLayoutFile.EXTENSION_WITH_PERIOD})",
+        new[] { $"*{TerrainLayoutFile.EXTENSION_WITH_PERIOD}" });
+
+    private string? _lastLaunchError;
+
     private static readonly JsonSerializerSettings JsonSettings = new()
     {
         TypeNameHandling = TypeNameHandling.Auto,
@@ -263,7 +269,19 @@ public class LobbyScreen : IAppScreen
         ImGui.PushItemWidth(panelW - innerPad * 2);
 
         DrawIntField("Army Points",    _viewModel.ArmyPoints,    _viewModel.SetArmyPoints);
-        DrawIntField("Terrain Count",  _viewModel.TerrainCount,  _viewModel.SetTerrainCount);
+        DrawEnumCombo("Terrain Mode",  _viewModel.TerrainPlacementMode, _viewModel.SetTerrainPlacementMode);
+
+        // Conditional sub-options under Terrain Mode.
+        switch (_viewModel.TerrainPlacementMode)
+        {
+            case ETerrainPlacementMode.Alternating:
+                DrawTerrainCountSlider(_viewModel.TerrainCount, _viewModel.SetTerrainCount);
+                break;
+            case ETerrainPlacementMode.LoadFromFile:
+                DrawTerrainLayoutPicker(_viewModel.TerrainLayoutPath, _viewModel.SetTerrainLayoutPath);
+                break;
+        }
+
         DrawEnumCombo("Randomness",    _viewModel.RandomnessType, _viewModel.SetRandomnessType);
         DrawEnumCombo("Turn Style",    _viewModel.TurnStyle,      _viewModel.SetTurnStyle);
 
@@ -277,13 +295,50 @@ public class LobbyScreen : IAppScreen
         ImGui.BeginDisabled(!canLaunch);
 
         Vector2 avail = ImGui.GetContentRegionAvail();
-        if (ImGui.Button("LAUNCH", avail))
+        // Reserve space for the inline error line below the button when present.
+        float errorLineH = _lastLaunchError != null ? ImGui.GetTextLineHeightWithSpacing() + 4f : 0f;
+        Vector2 buttonSize = new Vector2(avail.X, MathF.Max(0f, avail.Y - errorLineH));
+        if (ImGui.Button("LAUNCH", buttonSize))
         {
             if (!_viewModel.TryLaunchGame(out string? fail))
-                Console.WriteLine($"Launch failed: {fail}");
+                _lastLaunchError = fail ?? "Launch failed.";
+            else
+                _lastLaunchError = null;
+        }
+
+        if (_lastLaunchError != null)
+        {
+            ImGui.PushStyleColor(ImGuiCol.Text, new Vector4(1f, 0.4f, 0.4f, 1f));
+            ImGui.TextWrapped(_lastLaunchError);
+            ImGui.PopStyleColor();
         }
 
         ImGui.EndDisabled();
+    }
+
+    private static void DrawTerrainCountSlider(int current, Action<int> setter)
+    {
+        ImGui.TextUnformatted("Terrain Count");
+        ImGui.SameLine();
+        int v = current;
+        if (ImGui.SliderInt("##TerrainCount", ref v, 1, FDG.Stages.PlaceTerrainStage.MaxAlternatingPieceCount) && v != current)
+            setter(v);
+    }
+
+    private static void DrawTerrainLayoutPicker(string? current, Action<string?> setter)
+    {
+        ImGui.TextUnformatted("Layout File");
+        string display = string.IsNullOrEmpty(current) ? "(none selected)" : Path.GetFileName(current);
+        ImGui.SameLine();
+        if (ImGui.Button($"{display}##LayoutPick", new Vector2(ImGui.GetContentRegionAvail().X, 0f)))
+        {
+            var (canceled, paths) = TinyDialogs.OpenFileDialog("Load Terrain Layout", "", false, TerrainFilter);
+            if (!canceled)
+            {
+                string? path = paths?.FirstOrDefault();
+                if (!string.IsNullOrEmpty(path)) setter(path);
+            }
+        }
     }
 
     private void SubmitChat()

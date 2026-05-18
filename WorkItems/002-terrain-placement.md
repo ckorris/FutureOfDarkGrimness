@@ -349,6 +349,57 @@ read the same on-disk format.
 
 ## Notes
 
+- 2026-05-17: Subtasks 2–10 shipped on branch `TerrainPlacement`. End
+  to end working in headless (`printf "2\n2\n" | dotnet run -- --headless`
+  completes; verified terrain placement runs through all three modes
+  without crashes; AI vs AI alternating placed 8 pieces successfully).
+  Visual UI (GUI resolver + lobby conditional fields + inline launch
+  error) is **untested** — no display available in this session.
+
+  Shipped:
+  - **#2 Validator** (`TerrainPlacementValidator`): pure function
+    checking bounds + overlap with 0.01" margin. 14 unit tests in
+    `TerrainPlacementValidatorTests.cs`. Supports rect/rect,
+    circle/circle, rect/circle, circle/rect.
+  - **#3 Request types** (`PlaceOneTerrainRequest`,
+    `TerrainPlacementResult`). Pool sent in the request; existing
+    terrain read live from `TableState`.
+  - **#4 Stage refactor**: `PlaceTerrainStage` is now mode-aware. Auto
+    + LoadFromFile dump pieces verbatim; Alternating loops with
+    `TeamPlayerAlternationCursor` + re-prompt on invalid placement.
+    Templates translated via `TerrainTemplateUtilities.TranslateToCenter`.
+  - **#5 Pool externalization**: built-in pool moved into
+    `DefaultTerrainPool` (still code, not JSON — JSON path deferred
+    to #044). Same shape data as the old `BuildTestLayout`.
+  - **#6 CLI resolver** (`PlaceOneTerrainResolver`): stdin parse +
+    EOF-defaulted grid search so piped headless runs progress.
+  - **#7 GUI resolver** (`GuiPlaceOneTerrainResolver`): three-state UI
+    (template picker → cursor ghost → frozen confirm). Uses
+    `ZoneRenderer.DrawFilled` for shape rendering. **Visual review
+    pending** — no display in this session.
+  - **#8 AI resolver** (`AiPlaceOneTerrainResolver`): random template
+    + rejection-sample position with grid fallback. Deliberately
+    dumb. Registered in `AiResolverRegistryFactory.BuildSoloRules`.
+  - **#9 Lobby UI**: `Terrain Mode` combo + conditional sub-controls
+    (slider 1–30 for Alternating, file picker for LoadFromFile).
+    `Terrain Count` row replaced by the conditional slider.
+  - **#10 Launch validation**: `LobbyViewModel_Host.TryLaunchGame`
+    rejects Alternating count outside 1–30 and LoadFromFile with a
+    missing / unparseable path; LobbyScreen surfaces the failure
+    inline (red text) below the LAUNCH button.
+  - Incidental: flipped `AutoPlaceObjectivesDebug = true` for headless
+    in `CliApp` so the piped smoke test #001 promised actually works.
+
+  Deferred / out of scope:
+  - **#11 Integration test** for `PlaceTerrainStage` in Alternating
+    mode (mirrors #001's deferred subtask 8). Validator + the headless
+    end-to-end smoke test cover the basics.
+  - **Visual review** of the GUI resolver and lobby conditional layout
+    — needs a display to verify.
+  - JSON-asset externalization of the built-in pool — tracked under
+    #044.
+  - Terrain rotation — tracked under #045.
+
 - 2026-05-17: Subtask 1 shipped on submodule branch
   `TerrainPlacement`. Engine settings + context plumbing in place:
   - `ETerrainPlacementMode { AutoFromLayout, Alternating, LoadFromFile }`
