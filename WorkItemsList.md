@@ -10,7 +10,7 @@ Numbers are permanent and never reused. If an item is split, its line stays and 
 
 ## Setup & map
 
-- [ ] 002 — Terrain placement workflow (`MapSetupStage` children currently empty)
+- [ ] 002 — Terrain placement workflow (`MapSetupStage` children currently empty) — in progress on `TerrainPlacement` ([WorkItems/002](WorkItems/002-terrain-placement.md))
 - [ ] 003 — Force organization validation (optional rule: hero/unit/copy/cost caps)
 
 ## Deployment
@@ -88,6 +88,8 @@ These are umbrellas; will fragment per-rule when picked up.
 
 - [ ] 040 — Post-game navigation back to main menu in GUI mode (currently window just stays open)
 - [ ] 041 — Factor line of sight into movement resolver's ranged-targeting overlay (`GuiDefineMovementResolver.DrawRangedTargeting` currently checks range only)
+- [ ] 044 — Multi-pool terrain selection: lobby picker for which `TerrainLayoutFile` feeds `AutoFromLayout` / `Alternating`. Spun off from #002 — that ships with one hardcoded built-in pool.
+- [ ] 045 — Terrain rotation: angle field on `RectangularZone` (or new `RotatedRectZone` shape) + GUI resolver R-key rotate. Threads through movement / LoS / overlap / save-load. Spun off from #002.
 
 ---
 
