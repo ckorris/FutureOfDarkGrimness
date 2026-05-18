@@ -1,6 +1,6 @@
 # 018 — Pile In move
 
-**Status**: in-progress (branch `018-pile-in` in repo and submodule)
+**Status**: done
 **Related**: WorkItemsList #018, #017 (in-range checks consume the result), #019 (consolidation is the sibling reactive-move)
 
 ## Goal
@@ -57,6 +57,7 @@ Add `PileInTests.cs`:
 
 ## Notes
 
+- 2026-05-17: Post-review cleanup — folded the candidate-filter / sort into a single pass over live defenders, dropped two helpers (`IsInBaseContactWithAny`, `NearestB2BToCharger`) and the dead BTB recheck in the main loop. Tests still green.
 - 2026-05-17: Implemented `PileInUtilities.ComputePileInMoves` + rewired `PileInStage`. Added 7 NUnit cases (`Tests/PileInTests.cs`) covering already-BTB, in-range and over-range pile-in, mixed unit, impassable-terrain block, defender-blocked-by-defender step shortening, and coherency invariant. All 121 submodule tests pass, full solution builds.
 - 2026-05-17: Pulled from index, work item file created, plan signed off.
 
@@ -68,4 +69,8 @@ Add `PileInTests.cs`:
 
 ## Outcome
 
-_TBD_
+Pile In ships as an engine-internal auto-resolved stage. Defender models not already at base contact with a charging model now step up to 3" toward their nearest charging model, stop at BTB, avoid overlapping other models, refuse to cross `Impassible` terrain, and back out individual moves when needed to preserve strict 1"/9" unit coherency. No new resolver/request types — the stage resolves itself from `ITableState`. Covered by 7 unit tests; rest of the submodule suite (121 tests) still green.
+
+Followups (not needed for this item):
+- Vertical pile-in distance is parked under item #022 (vertical melee handling).
+- A defender-player-interactive pile-in resolver could be added later if auto-resolve proves unsatisfying; the engine logic becomes its AI/default path.
