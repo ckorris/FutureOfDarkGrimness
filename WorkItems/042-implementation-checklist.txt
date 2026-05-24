@@ -7,116 +7,176 @@ Order phases top-to-bottom. Each phase ends at a build/test checkpoint.
 Mark progress inline:  [ ] todo   [~] in-progress   [x] done
 
 
-PHASE 0 — Decisions (admin, 5 minutes)
+PHASE 0 — Decisions (admin, 5 minutes)            [DONE 2026-05-24]
 --------------------------------------
 
-[ ] Confirm rule system lives in FutureOfDarkGrimness/Rules/
-[ ] Confirm namespace is FDG.Rules
-[ ] Confirm tests live in FutureOfDarkGrimness/Tests/, NUnit, reuse FixedDiceRoller
+[x] Rule system lives in FutureOfDarkGrimness/Rules/
+[x] Namespaces FDG.Rules.Foundation / FDG.Rules.Tokens (folder-based)
+[x] Tests in FutureOfDarkGrimness/Tests/, NUnit, reuse FixedDiceRoller
 
 
-PHASE 1 — Foundation data types (no logic)
+PHASE 1 — Foundation data types (no logic)        [DONE 2026-05-24]
 ------------------------------------------
 
-Create in FutureOfDarkGrimness/Rules/Foundation/:
+In FutureOfDarkGrimness/Rules/Foundation/:
 
-[ ] HookId.cs                    enum, all 37 hook IDs (see APPENDIX A below)
-[ ] Lifetime.cs                  enum: ThisAttack, ThisActivation, ThisRound,
-                                       NextTrigger, Aura, UntilEndOfGame
-[ ] TokenType.cs                 record struct (string Id); static engine-known
-                                       constants Shaken, FatiguedThisRound, SpellTokens
-[ ] TokenClearTrigger.cs         abstract record + sealed subtypes:
-                                       ManualOnly, RoundEnd, ActivationEnd, AttackEnd,
-                                       FirstTrigger, UnitDestroyed, OwnerDestroyed,
-                                       CustomHook(HookId)
-[ ] Cost.cs                      abstract record + sealed subtypes:
-                                       OncePerActivation, OncePerRound, OncePerGame,
-                                       SpellTokens(int), ConsumesToken(TokenType, int)
-[ ] TargetSelector.cs            record (Range, MinCount, MaxCount, Affinity,
-                                       RequireLineOfSight, RequiredToken)
-[ ] TargetAffinity.cs            enum: Friend, Foe, Self
+[x] EHookID.cs            37 hook IDs, explicit numeric values with ~10-spare
+                          gaps; phase order Round → Deployment → Lifecycle →
+                          Activation → Movement → Shooting → Melee → Morale →
+                          Casting. ALL filenames adopted E-prefix convention.
+[x] ELifetime.cs          enum (ThisAttack, ThisActivation, ThisRound,
+                          NextTrigger, Aura, UntilEndOfGame)
+[x] TokenType.cs          readonly record struct (string Id) — identity-only,
+                          no IsSingleton metadata (deliberate; see arch doc).
+                          Engine constants Shaken / Fatigued / SpellTokens
+                          plus matching SHAKEN_ID / FATIGUED_ID /
+                          SPELL_TOKENS_ID const strings.
+[x] TokenClearTrigger.cs  abstract record + sealed subtypes: ManualOnly,
+                          RoundEnd, ActivationEnd, AttackEnd, FirstTrigger,
+                          UnitDestroyed, OwnerDestroyed, CustomHook(EHookID)
+[x] Cost.cs               abstract record + sealed subtypes: OncePerActivation,
+                          OncePerRound, OncePerGame, SpellTokens(int),
+                          ConsumesToken(TokenType TType, int Count = 1)
+[x] TargetSelector.cs     record (float RangeInches, int Min/MaxCount,
+                          ETargetAffinity, bool RequireLoS, TokenType? Required)
+[x] ETargetAffinity.cs    enum: Self, Friend, Foe, Any  (Any added beyond spec)
 
-CHECKPOINT: dotnet build passes.
+CHECKPOINT: dotnet build passes.   ✓
 
 
-PHASE 2 — Token system (first real implementation)
+PHASE 2 — Token system (first real implementation)  [DONE 2026-05-24]
 --------------------------------------------------
 
 Pre-work:
-[ ] Confirm IUnit / IModel have a stable id; if not, add UnitId record struct
-    and a property to both interfaces.
+[x] UnitID added at GameObjects/Core/UnitID.cs (mirrors PlayerID exactly).
+    IUnit.ID added; UnitData generates Guid.NewGuid() in all constructors;
+    [JsonConstructor] accepts optional UnitID? id = null. IModel has no ID
+    (not needed for the token system; deferred to save/load work).
 
-Create in FutureOfDarkGrimness/Rules/Tokens/:
+In FutureOfDarkGrimness/Rules/Tokens/:
 
-[ ] TokenPayload.cs              abstract record; leave file empty of concretes
-                                       until a rule effect actually needs one
-[ ] Token.cs                     record (Type, Count, Payload?, OwnerUnitId?,
-                                       ClearTrigger, CreatedAtHook?)
-[ ] ITokenContainer.cs           interface — Add, Remove, Has, Count, All,
-                                       WithOwner, OnTokenAdded, OnTokenRemoved
-[ ] TokenContainer.cs            concrete implementation
-                                       - stack same (Type, Owner) by incrementing Count
-                                       - separate entries for different Owner
-                                       - cap engine-known singletons at Count == 1
+[x] TokenPayload.cs       abstract record; no concrete subtypes yet
+[x] Token.cs              positional record: Type, Count, ClearTrigger (required,
+                          non-nullable), Payload? = null, OwnerUnitID? = null,
+                          CreatedAtHook? = null
+[x] ITokenContainer.cs    AddToken, RemoveTokens(type, count) → int actually
+                          removed, HasToken, GetTokenCount, GetAllTokens(type?),
+                          TokensWithOwner; three events: OnTokenAdded,
+                          OnTokenRemoved, OnTokenCountChanged. All events
+                          [JsonIgnore] — observers re-attach on rehydration.
+[x] TokenContainer.cs     stacks by (Type, OwnerUnitID); OWNER-AGNOSTIC for
+                          removal (RemoveTokens iterates across all matching
+                          entries in insertion order); does NOT enforce
+                          singleton caps (deferred to effect-dispatch layer
+                          Phase 7d, since the failure mode is cosmetic).
 
 Engine integration:
-[ ] Add Tokens property (ITokenContainer) to IUnit
-[ ] Add Tokens property (ITokenContainer) to IModel
-[ ] Initialize backing TokenContainer in UnitData / ModelData constructors
+[x] IUnit.Tokens          { get; } — doc comment notes events don't survive load
+[x] IModel.Tokens         { get; } — same
+[x] UnitData / ModelData  [JsonProperty] private TokenContainer _tokens = new()
+                          plus [JsonIgnore] public ITokenContainer projection.
 
-Tests in FutureOfDarkGrimness/Tests/TokenContainerTests.cs:
+Tests:
 
-[ ] Add_ThenHas_ReturnsTrue
-[ ] Add_SameTypeSameOwner_StacksCount
-[ ] Add_SameTypeDifferentOwner_KeepsSeparateEntries
-[ ] Remove_BelowZero_Clamps
-[ ] WithOwner_FiltersByOwnerId
-[ ] OnTokenAdded_FiresOnAdd
-[ ] OnTokenRemoved_FiresOnRemove
-[ ] Shaken_NeverStacksAboveOne
-[ ] Count_OfMissingType_ReturnsZero
-[ ] All_ReturnsEverything
+[x] TokenContainerTests.cs   16 tests (AddToken new/stack/diff-owner/non-pos;
+                             RemoveTokens partial/full/missing/over/across-
+                             owners/non-pos; HasToken/GetTokenCount/GetAllTokens/
+                             TokensWithOwner)
+[x] TokenRoundTripTests.cs   3 tests (model token round-trip, unit token
+                             round-trip with cross-owner Unstoppable Marks and
+                             TokenClearTrigger subtype preservation, empty
+                             container round-trip)
+[x] UnitIDTests.cs           4 tests (assigned-on-construction, uniqueness,
+                             explicit-from-JsonConstructor, GameDataStore
+                             round-trip)
 
-CHECKPOINT: all token tests green. Real implementation behind you.
+CHECKPOINT: 175 tests green.   ✓
+
+Notes on what differs from the original sketch (see architecture doc's
+"Phase 1 & 2 implementation notes" for full rationale):
+  - TokenType IsSingleton lives on the type itself (instance property +
+    custom Equals + throw on mismatch), not in a centralized registry.
+  - TokenContainer is owner-agnostic for removal; singleton enforcement is
+    deferred to the effect-dispatch layer (Phase 7d).
+  - Three events instead of two (OnTokenAdded / OnTokenCountChanged /
+    OnTokenRemoved), each fired at most once per mutation.
+  - Token.ClearTrigger is required (non-nullable); ManualOnly for permanent.
 
 
-PHASE 3 — Rule data model (data shapes only)
+PHASE 3 — Rule data model (data shapes only)         [DONE 2026-05-24]
 --------------------------------------------
 
-Create in FutureOfDarkGrimness/Rules/Model/:
+In FutureOfDarkGrimness/Rules/Definitions/  (renamed from Model/ to avoid
+collision with IModel):
 
-[ ] Condition.cs                 abstract record + sealed subtypes:
+[x] EStatKind.cs                 enum: Quality, Defense, Tough
+[x] EActionType.cs               enum: Hold, Advance, Rush, Charge
+[x] ERollKind.cs                 enum: Hit, Save, Morale
+[x] RerollCondition.cs           abstract record (user-authored)
+[x] DiceExpression.cs            abstract record + subtypes: DX(int Sides),
+                                       DXPlusY(int Sides, int AddValue),
+                                       CoinFlip, D3, D6
+                                       (user kept generic DX alongside named
+                                       D3/D6/CoinFlip rather than collapsing
+                                       to one approach — flagged as overlap)
+[x] Condition.cs                 abstract record + sealed subtypes:
                                        Always, UnitHasRule, TargetHasRule,
                                        ActionTypeIs, UnmodifiedRollEquals,
-                                       DistanceGT, StatGTE,
+                                       DistanceGreaterThan,
+                                       StatGreaterOrEqualTo(EStatKind, int),
                                        TargetMajorityHasTough, TokenPresent,
                                        And, Or, Not
-[ ] StatKind.cs                  enum: Quality, Defense, Tough
-[ ] ActionType.cs                enum: Hold, Advance, Rush, Charge
-[ ] RollKind.cs                  enum: Hit, Save, Morale
-[ ] RerollCondition.cs           abstract record + subtypes:
-                                       OnUnmodifiedValue, AllFailures
-[ ] DiceExpr.cs                  abstract record + subtypes: Fixed, D3, D6
-[ ] Effect.cs                    abstract record + sealed subtypes:
+[x] Effect.cs                    abstract record + sealed subtypes:
+                                       StatModifier(EStatKind, int, ELifetime),
                                        RollModifier, Reroll, AddExtraHit,
-                                       AddExtraWound, MovementBonus, IgnoreRule,
-                                       AddRule, Aura, DealHits, Heal,
-                                       StatModifier, GrantToken, ConsumeToken,
-                                       TriggeredMove, Reactivate
-[ ] IEntityRef.cs                marker interface; implemented by IUnit and IModel
-[ ] RuleOperation.cs             abstract record + sealed subtypes:
+                                       AddExtraWound, MovementBonus,
+                                       IgnoreRule, AddRule, Aura, DealHits,
+                                       Heal(DiceExpression),
+                                       GrantToken(TokenType, int, TokenClearTrigger),
+                                       ConsumeToken, TriggeredMove, Reactivate
+[x] RuleOperation.cs             abstract record + sealed subtypes — token ops
+                                       split by target type (Unit vs Model)
+                                       for compile-time safety; no marker
+                                       interface, IEntityRef dropped from plan.
+                                       Order tag for SuppressRule is dispatcher
+                                       sidecar metadata, not a record field.
                                        ApplyRollModifier, ApplyReroll,
                                        InsertExtraHits, InsertExtraWounds,
-                                       GrantTokenOp, ConsumeTokenOp,
-                                       RemoveOtherEffect, InvokeTriggeredMove,
-                                       InvokeReactivate, InvokeDealHits, InvokeHeal
-[ ] HookEntry.cs                 record (HookId, Condition, Effect, Lifetime)
-[ ] ActivatedAbility.cs          record (TriggerHook, Cost, TargetSelector,
-                                       Effect, AvailableWhen)
-[ ] SpecialRuleDefinition.cs     record (Name, DisplayName?, Passive[],
-                                       Activated[], Aliases?)
+                                       ApplyStatModifier, ApplyMovementBonus,
+                                       SuppressRule, GrantTokenToUnit,
+                                       GrantTokenToModel, ConsumeTokensFromUnit,
+                                       ConsumeTokensFromModel,
+                                       InvokeTriggeredMove, InvokeReactivate,
+                                       InvokeDealHits, InvokeHeal
+[x] HookEntry.cs                 record (EHookID, Condition, Effect, ELifetime)
+[x] ActivatedAbility.cs          record (EHookID TriggerHook, Cost,
+                                       TargetSelector, Effect, Condition
+                                       AvailableWhen)
+[x] SpecialRuleDefinition.cs     record (string Name, string? DisplayName,
+                                       IReadOnlyList<HookEntry> Passive,
+                                       IReadOnlyList<ActivatedAbility> Activated,
+                                       IReadOnlyList<string>? Aliases)
 
-CHECKPOINT: dotnet build passes. No tests added here.
+CHECKPOINT: dotnet build passes. No tests added (data shapes only).   ✓
+
+Notes on what differs from the original sketch:
+  - All enums use E-prefix project convention (EStatKind, EActionType,
+    ERollKind, ELifetime, EHookID).
+  - Condition.StatGreaterOrEqualTo takes both EStatKind and int (not just int)
+    so the comparison knows which stat to read.
+  - Effect.StatModifier takes ELifetime (without it, persistent stat tweaks
+    couldn't declare their duration). Effect.GrantToken takes Count and
+    TokenClearTrigger (without them, every grant would lack count and clear
+    policy).
+  - DiceExpression keeps both generic DX(int) and specific D3/D6/CoinFlip;
+    overlap between e.g. DX(3) and D3 is a known wart (different types,
+    same semantics). Resolve when a real test forces the issue.
+  - Aura kept separate from AddRule (Aura propagates unit-wide; AddRule grants
+    to bearer only).
+  - Heal is the only Effect with a DiceExpression amount; everything else
+    uses plain int/float for fixed authored values.
+  - IEntityRef marker interface dropped — token operations are split into
+    Unit/Model variants for compile-time safety instead.
 
 
 PHASE 4 — Hook bus, minimal

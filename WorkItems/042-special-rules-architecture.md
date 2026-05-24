@@ -72,7 +72,7 @@ Recommended before locking the design: skim 2–3 more armies in different flavo
 - **2026-05-11**: Lua escape hatch deferred, not abandoned. Add later if the data vocabulary is forced past its breaking point. Plan B doesn't preclude it.
 - **2026-05-11**: Core rules live in C#, army rules in data. Boundary: a rule is "core" if the engine itself references it by name (Regeneration handler, Tough wound-priority, Caster token mechanics). Everything else is data.
 - **2026-05-11**: Tokens are the single state container for rule-related per-entity state. No ad-hoc state fields scattered across the engine for rule purposes. Existing engine status (Shaken, Fatigued) should migrate onto the token system.
-- **2026-05-11**: Networking determinism enforced by hashing the loaded rule definitions at lobby-ready and rejecting a game start on mismatch.
+- **2026-05-11**: Networking — initially framed as "deterministic dual-computation"; **corrected 2026-05-24**: the engine is host-authoritative (only host runs rules; client receives `StageTaskRequestMessage` and only resolves player decisions). So rule registry hashing at lobby-ready is for **shared vocabulary** (client can interpret + render anything the host sends), not for deterministic dual-computation. Same mechanism, different motivation. Asymmetric failure modes: client missing a rule = degraded render; host missing a rule = silently broken gameplay. Reject mismatches; do not auto-negotiate; do not ship registry over the wire. Army-list rule references should also validate against the host's registry at army upload with rule-name-specific errors (friendlier than a generic hash mismatch). Saves embed the host's rule hash and refuse to load against a mismatched registry.
 - **2026-05-11**: Save/load implication — hook handlers must be **stateless**; all state lives in tokens, GameDataStore, and stage-machine snapshot. The hard part of save/load is the stage machine, not the rule system (which becomes trivially serializable under Plan B).
 
 ## Notes
@@ -270,6 +270,101 @@ Tagged union, all fields immutable, trivially serializable. Tokens without paylo
 
 Pure data — `List<Token>` per entity, fully serializable. No callbacks, no closures, no engine references. Restoring a game restores tokens verbatim, and the hook bus reattaches its `TokenClearService` against the restored state.
 
+## Phase 1 & 2 implementation notes (2026-05-24)
+
+Foundation data types and the token system are committed. The shipped implementation diverges from the original sketches in a handful of deliberate ways — recorded here so future sessions don't re-derive the rationale.
+
+### Naming + folder conventions
+
+- All foundation enums prefixed `E` (`EHookID`, `ELifetime`, `ETargetAffinity`) — project convention.
+- Namespaces: `FDG.Rules.Foundation`, `FDG.Rules.Tokens`. Phase 3 folder renamed `Model/` → **`Definitions/`** to avoid collision with `IModel`.
+- Engine-known token IDs exposed as `public const string` constants on `TokenType` so they're usable in attributes, switch cases, and JSON, alongside the typed `static readonly TokenType` instances.
+- `EHookID` uses explicit numeric values with ~10-spare gaps per phase group; phase order is Round → Deployment → Lifecycle → Activation → Movement → Shooting → Melee → Morale → Casting.
+
+### TokenType is identity-only; no singleton metadata
+
+- `TokenType` is `readonly record struct (string Id)` — just an identifier wrapper, auto-generated equality on `Id`. No `IsSingleton` field.
+- Singleton enforcement is **not** the container's concern (see TokenContainer note below). Considered putting `IsSingleton` on `TokenType` via a custom `Equals`-throws-on-mismatch trick to preserve JSON authorability without a registry, but ultimately dropped — the container doesn't need to know type metadata, and pushing the policy up to the effect-dispatch layer (Phase 7d) is cleaner than threading flags through the type.
+
+### TokenContainer is owner-agnostic for removal; does NOT enforce singletons
+
+- `RemoveTokens(type, count)` iterates across **all** matching entries regardless of `OwnerUnitID`, draining in insertion order. The "filter by owner" semantics deliberately *aren't* in the container — callers (cost gates, effect dispatch) handle owner-scoping at the layer above.
+- Singleton enforcement deferred to the effect-dispatch layer (Phase 7d). The container stays a pure data structure with no semantic opinions about its contents. Failure mode is cosmetic (Shaken could stack to Count=2 if effects double-add); `HasToken` still works, clear-on-event still removes whole entries.
+
+### Three-event semantic on `ITokenContainer`
+
+- `OnTokenAdded` — fires when a `(Type, Owner)` pair newly appears.
+- `OnTokenCountChanged` — fires when an existing entry's count changes without crossing the zero boundary (stacking on Add, partial Remove).
+- `OnTokenRemoved` — fires when an entry's count reaches zero and the entry is deleted.
+- Each mutation fires at most one of the three. No-op mutations (non-positive counts, missing types) fire nothing.
+- Events are `[JsonIgnore]` and don't survive save/load. Observers re-attach on rehydration; **no gameplay logic** is allowed to subscribe — rules go through the hook bus.
+
+### `Token` is a positional record with `ClearTrigger` required and non-nullable
+
+- Final signature: `Token(TokenType Type, int Count, TokenClearTrigger ClearTrigger, TokenPayload? Payload = null, UnitID? OwnerUnitID = null, EHookID? CreatedAtHook = null)`.
+- `ClearTrigger` is required to force every token to declare its lifecycle explicitly (use `TokenClearTrigger.ManualOnly` for permanent tokens).
+- Stacking semantics: same `(Type, OwnerUnitID)` pair stacks `Count`; the incoming token's `Payload`/`ClearTrigger`/`CreatedAtHook` are discarded in favor of the existing entry's. Correct for "increment this count" — would need rethinking if rules ever want to merge two distinct effect-instances of the same type.
+
+### Unit / model integration
+
+- `UnitID` added at `GameObjects/Core/UnitID.cs`, mirroring `PlayerID` exactly. Generated in all `UnitData` constructors; `[JsonConstructor]` accepts optional `UnitID? id = null` so deserialization preserves saved IDs.
+- `IUnit.Tokens` and `IModel.Tokens` added. `UnitData` and `ModelData` have `[JsonProperty] private TokenContainer _tokens = new()` backing fields plus `[JsonIgnore] public ITokenContainer Tokens => _tokens` projections.
+- `TokenContainer` deserializes itself via its own `[JsonProperty] private List<Token> _tokens`.
+
+### Test coverage
+
+- `TokenContainerTests.cs` — 16 tests covering AddToken (new/stacking/different-owner/non-positive), RemoveTokens (partial/full/missing/over-request/across-owners/non-positive), and all queries.
+- `TokenRoundTripTests.cs` — 3 tests asserting tokens (including cross-unit owner separation and `TokenClearTrigger` discriminated-union subtypes) survive the full GameDataStore JSON round-trip used by the network layer.
+- `UnitIDTests.cs` — 4 tests covering UnitID assignment, uniqueness, JsonConstructor explicit-ID, and full round-trip.
+- 175 tests total in suite, all green.
+
+## Phase 3 implementation notes (2026-05-24)
+
+Rule data shapes committed. All 13 files in `Rules/Definitions/`. Architecture deltas from the original sketch:
+
+### Naming + structural conventions
+
+- All enums use E-prefix (`EStatKind`, `EActionType`, `ERollKind`, plus `EHookID`/`ELifetime` from Foundation). Consistent with the established project style.
+- `Definitions/` folder (not `Model/`) to avoid collision with `IModel`.
+- Collections on `SpecialRuleDefinition` use `IReadOnlyList<T>`, not arrays, to prevent post-construction mutation of rule definitions.
+
+### `IEntityRef` dropped — token operations split by target type
+
+Original plan had a marker interface (`IEntityRef`) so a single `GrantTokenOp` could target either `IUnit` or `IModel`. Switched to two sealed subtypes — `GrantTokenToUnit(IUnit, Token)` and `GrantTokenToModel(IModel, Token)` (same pattern for `ConsumeTokensFrom...`) — because the type system enforces correctness with no marker interface and only two cases exist. `IEntityRef` is not part of the codebase.
+
+### `Effect` vs `RuleOperation` — kept as two layers
+
+Most subtypes map 1:1, but the layers diverge on:
+
+- **Random amount resolution**: `Effect.Heal(DiceExpression)` becomes `RuleOperation.InvokeHeal(IModel, int)` after the dispatcher rolls the dice.
+- **Conditional expansion**: `Effect.AddExtraHit(OnRollValue, Count)` produces zero or more `InsertExtraHits` operations depending on natural rolls.
+- **Aura expansion**: `Effect.Aura(RuleName)` produces multiple `GrantTokenToUnit` operations, one per unit-mate.
+- **Live entity binding**: engine-primitive operations (`InvokeTriggeredMove`, `InvokeReactivate`, `InvokeDealHits`) carry specific `IUnit`/`IModel` references that aren't present in the context-free Effect declaration.
+- **Queue manipulation**: `RuleOperation.SuppressRule(RuleName)` removes pending operations from the dispatcher queue — has to operate on resolved Operations, not on declared Effects.
+
+The split costs ~80% mechanical duplication for a queue that's pure data once produced — deterministic, serializable, inspectable. The TDD approach in Phase 6 depends on this: tests assert on the returned operation queue rather than mocking game state and observing side effects. Origin-rule tracking for `SuppressRule` is dispatcher sidecar metadata, not a field on the records.
+
+### Discriminator subtypes lifted into data instead of duplicated as effects
+
+`RollKind` (Hit / Save / Morale) and `StatKind` (Quality / Defense / Tough) carried as data on effects like `RollModifier(ERollKind Roll, int Delta)` and `StatModifier(EStatKind, int, ELifetime)` rather than spawning three sibling subtypes per roll/stat. Keeps the Effect vocabulary tight.
+
+### Other small calls
+
+- **`Aura` kept separate from `AddRule`**: Aura propagates to all unit-mates while bearer lives; AddRule grants to bearer only with explicit `ELifetime`. Could have collapsed via a hypothetical `ELifetime.AuraToUnit` scope but the propagation semantics differ enough to justify their own subtype.
+- **`Heal` is the only Effect with a `DiceExpression` parameter**. Every other amount field is plain `int` or `float` — fixed authored values per the rule corpus surveyed so far.
+- **`DiceExpression` carries both generic `DX(int Sides)` and specific `D3`/`D6`/`CoinFlip`** subtypes. Known overlap (e.g. `DX(3)` and `D3` are distinct types representing the same roll) — flagged for resolution if a future rule forces the issue.
+- **`Reactivate` has no parameters**. Self-reactivation is the only case in the corpus; if a future rule reactivates someone else, add a `UnitID Target` parameter.
+
+### Composition records
+
+- `HookEntry(EHookID, Condition, Effect, ELifetime)` — atomic unit of passive rule wiring.
+- `ActivatedAbility(EHookID TriggerHook, Cost, TargetSelector, Effect, Condition AvailableWhen)` — player-triggered abilities and spells. Spells are activated abilities with `Cost.SpellTokens`.
+- `SpecialRuleDefinition(string Name, string? DisplayName, IReadOnlyList<HookEntry> Passive, IReadOnlyList<ActivatedAbility> Activated, IReadOnlyList<string>? Aliases)` — top-level rule record. `Aliases` lets army-specific renames resolve to the same definition without duplication.
+
+### Test coverage
+
+Phase 3 is data shapes only — no new tests. Test suite remains at 175 green. Phase 4 (hook bus) and Phase 5 (test harness) follow next; Phase 6 begins the 20-test red baseline.
+
 ## Outcome
 
-(pending — written when the architecture is committed and the dependent items 026–034 can proceed)
+(pending — written when items 026–034 can proceed against this architecture)
