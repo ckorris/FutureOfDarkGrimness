@@ -10,7 +10,6 @@ Numbers are permanent and never reused. If an item is split, its line stays and 
 
 ## Setup & map
 
-- [ ] 002 — Terrain placement workflow (`MapSetupStage` children currently empty)
 - [ ] 003 — Force organization validation (optional rule: hero/unit/copy/cost caps)
 
 ## Deployment
@@ -39,7 +38,6 @@ Numbers are permanent and never reused. If an item is split, its line stays and 
 ## Melee
 
 - [ ] 017 — In-range attacker/defender determination (2" horizontal, 4" vertical) — replace current "everyone fights" behavior
-- [ ] 019 — Consolidation moves after melee resolution (3" if one destroyed, 1" back if neither)
 - [ ] 020 — Fatigue: per-unit/per-round flag — hit on unmodified 6s after first melee attack this round. May not need to be a stage; current `ApplyFatigueStage` may be deletable.
 - [ ] 021 — Morale roll modifiers + Fear/Fearless effects in `DetermineMeleeWinnerStage` and `RollForMoraleStage`
 - [ ] 022 — Vertical melee range handling (`ChooseMeleeDefenderStage` TODO)
@@ -85,6 +83,11 @@ These are umbrellas; will fragment per-rule when picked up.
 
 - [ ] 040 — Post-game navigation back to main menu in GUI mode (currently window just stays open)
 - [ ] 041 — Factor line of sight into movement resolver's ranged-targeting overlay (`GuiDefineMovementResolver.DrawRangedTargeting` currently checks range only)
+- [ ] 044 — Multi-pool terrain selection: lobby picker for which `TerrainLayoutFile` feeds `AutoFromLayout` / `Alternating`. Spun off from #002 — that ships with one hardcoded built-in pool.
+
+## Movement
+
+- [ ] 046 — Movement validation ignores model base radius for terrain footprints. `MovementUtilities.ValidateMovingThroughImpassibleTerrain` (and the difficult/dangerous variants) test a zero-width center-to-center line against terrain footprints, so a model can park with its center just outside an impassable shape while its base overlaps it. Fix: inflate the terrain footprint by the model's `BaseRadiusInches` (Minkowski expansion) or use swept-disc distance, in `MovementUtilities`. Resolver layer needs no changes. Pre-existing — surfaced more by #002's richer terrain.
 
 ---
 
@@ -95,4 +98,7 @@ These are umbrellas; will fragment per-rule when picked up.
 - [x] 014 — `RangedContext` NIE paths: file was dead code (entire body in a `/* ... */` block); actual ranged flow uses `CombatActionContext`. File deleted.
 - [x] 018 — Pile In move: defender models not already in BTB step up to 3" toward nearest charging model, with impassible-terrain and strict coherency fallbacks ([WorkItems/018](WorkItems/018-pile-in.md))
 - [x] 043 — Filter dead models out of `IUnit.AllWeapons` so dead models no longer contribute weapons to attack/strike-back/shoot lists or the tooltip readout
-- [x] 044 — Deployment zone selection: draw labelled zones on the canvas, allow clicking zones directly, synchronise hover between dialog and table, and renumber in reading order ([WorkItems/044](WorkItems/044-deployment-zone-labels.md))
+- [x] 019 — Consolidation moves after melee resolution: 3" Wipeout / 1" Disengage with per-model GUI path-builder, AI resolver, table-bounds clamp, and validation against terrain + cohesion + cap ([WorkItems/019](WorkItems/019-consolidation-moves.md))
+- [x] 002 — Terrain placement workflow: three-mode lobby setting (AutoFromLayout / Alternating / LoadFromFile), AI + human + CLI resolvers, `CompositeZone` for L-shapes, `RotatedZoneWrapper` + SAT for 45° rotation, GUI thumbnails + R-key rotate ([WorkItems/002](WorkItems/002-terrain-placement.md))
+- [x] 045 — Terrain rotation: shipped inline with #002 via `RotatedZoneWrapper` + SAT overlap math + R-key in GUI resolver ([WorkItems/002](WorkItems/002-terrain-placement.md))
+- [x] 047 — Deployment zone selection: draw labelled zones on the canvas, allow clicking zones directly, synchronise hover between dialog and table, and renumber in reading order ([WorkItems/047](WorkItems/047-deployment-zone-labels.md))

@@ -1,4 +1,4 @@
-## 044 — Deployment zone selection: labels, canvas click, reading-order numbering
+## 047 — Deployment zone selection: labels, canvas click, reading-order numbering
 
 **Status**: done
 
