@@ -91,6 +91,10 @@ These are umbrellas; will fragment per-rule when picked up.
 - [ ] 044 — Multi-pool terrain selection: lobby picker for which `TerrainLayoutFile` feeds `AutoFromLayout` / `Alternating`. Spun off from #002 — that ships with one hardcoded built-in pool.
 - [ ] 045 — Terrain rotation: angle field on `RectangularZone` (or new `RotatedRectZone` shape) + GUI resolver R-key rotate. Threads through movement / LoS / overlap / save-load. Spun off from #002.
 
+## Movement
+
+- [ ] 046 — Movement validation ignores model base radius for terrain footprints. `MovementUtilities.ValidateMovingThroughImpassibleTerrain` (and the difficult/dangerous variants) test a zero-width center-to-center line against terrain footprints, so a model can park with its center just outside an impassable shape while its base overlaps it. Fix: inflate the terrain footprint by the model's `BaseRadiusInches` (Minkowski expansion) or use swept-disc distance, in `MovementUtilities`. Resolver layer needs no changes. Pre-existing — surfaced more by #002's richer terrain.
+
 ---
 
 ## Done
