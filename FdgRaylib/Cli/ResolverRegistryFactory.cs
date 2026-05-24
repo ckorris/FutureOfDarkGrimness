@@ -17,6 +17,7 @@ public static class ResolverRegistryFactory
             .RegisterResolver(new ChooseDeploymentZoneResolver())
             .RegisterResolver(new ChooseRangedAttackResolver())
             .RegisterResolver(new DefineMovementPathResolver(tableState))
+            .RegisterResolver(new ConsolidationMoveResolver())
             .RegisterResolver(new AssignWoundsResolver())
             .RegisterResolver(new SelectionResolver<UnitData>())
             .RegisterResolver(new SelectionResolver<ModelData>())
@@ -40,6 +41,7 @@ public static class ResolverRegistryFactory
         var rangedAttack  = new GuiChooseRangedAttackResolver(tableState);
         var assignWounds  = new GuiAssignWoundsResolver();
         var movement      = new GuiDefineMovementResolver(tableState);
+        var consolidate   = new GuiConsolidationMoveResolver(tableState);
         var placeObjects  = new GuiPlaceObjectsResolver<ModelData>(tableState);
         var placeObjective = new GuiPlaceObjectiveResolver(tableState);
         overlay.Register(yesNo);
@@ -52,6 +54,7 @@ public static class ResolverRegistryFactory
         overlay.Register(rangedAttack);
         overlay.Register(assignWounds);
         overlay.Register(movement);
+        overlay.Register(consolidate);
         overlay.Register(placeObjects);
         overlay.Register(placeObjective);
 
@@ -66,6 +69,7 @@ public static class ResolverRegistryFactory
             .RegisterResolver(rangedAttack)                                  // GUI
             .RegisterResolver(assignWounds)                                  // GUI
             .RegisterResolver(movement)                                      // GUI
+            .RegisterResolver(consolidate)                                   // GUI
             .RegisterResolver(placeObjects)                                  // GUI
             .RegisterResolver(placeObjective);                               // GUI
 
