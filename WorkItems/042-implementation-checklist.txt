@@ -179,25 +179,46 @@ Notes on what differs from the original sketch:
     Unit/Model variants for compile-time safety instead.
 
 
-PHASE 4 — Hook bus, minimal
+PHASE 4 — Hook bus, minimal                       [DONE 2026-05-24]
 ---------------------------
 
-Create in FutureOfDarkGrimness/Rules/Dispatch/:
+Created in FutureOfDarkGrimness/Rules/Dispatch/:
 
-[ ] IHookContext.cs              marker interface; HookId Hook { get; }
-[ ] IRuleHookBus.cs              interface: Dispatch(IHookContext) returns
+[x] IHookContext.cs              marker interface; EHookID Hook { get; }
+[x] IRuleHookBus.cs              interface: Dispatch(IHookContext) returns
                                        IReadOnlyList<RuleOperation>
-[ ] RuleHookBus.cs               concrete; initial impl returns empty list (stub)
-[ ] IRuleResolver.cs             interface: SpecialRuleDefinition Resolve(string)
-[ ] RuleResolver.cs              concrete; in-memory Dictionary registry,
-                                       handles aliases
+[x] RuleHookBus.cs               concrete; initial impl returns empty list (stub)
+[x] IRuleResolver.cs             interface: ResolvedRule Resolve(string)
+                                       (returns wrapper, not bare definition)
+[x] ResolvedRule.cs              record (string RequestedName, SpecialRuleDefinition
+                                       Definition). Preserves the caller's name
+                                       alongside the resolved definition so
+                                       identity-based IgnoreRule and alias-aware
+                                       display both work.
+[x] RuleResolver.cs              concrete sealed class; single Dictionary keyed
+                                       by both canonical names AND aliases →
+                                       same SpecialRuleDefinition instance.
+                                       Register / RegisterAlias / Resolve.
+                                       Throws on collisions and missing lookups.
 
 Concrete contexts (add only as tests need them):
 
 [ ] HitRollCompleteContext.cs    (Attacker, Defender, Weapon, Hits[], IsCharging)
 [ ] (more added later per test)
 
-CHECKPOINT: bus exists, Dispatch returns empty list. dotnet build passes.
+CHECKPOINT: bus exists, Dispatch returns empty list. dotnet build passes.   ✓
+
+Notes on what differs from the original sketch:
+  - Aliases moved off SpecialRuleDefinition (Phase 3 retrofit) and onto the
+    resolver. Core rule data no longer has to know about army-specific renames.
+  - IRuleResolver.Resolve returns ResolvedRule, not SpecialRuleDefinition.
+    The wrapper carries the requested name so IgnoreRule comparisons are by
+    Definition reference (alias-transparent) while UI keeps the army-flavored
+    name for display ("Healing Pods (Regeneration)").
+  - DisplayName also dropped from SpecialRuleDefinition — aliases cover the
+    rename case; revisit only if a real need emerges.
+  - Concrete hook contexts deferred to Phase 5/6 — added when the first red
+    test needs to construct one.
 
 
 PHASE 5 — Test harness

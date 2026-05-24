@@ -359,11 +359,26 @@ The split costs ~80% mechanical duplication for a queue that's pure data once pr
 
 - `HookEntry(EHookID, Condition, Effect, ELifetime)` — atomic unit of passive rule wiring.
 - `ActivatedAbility(EHookID TriggerHook, Cost, TargetSelector, Effect, Condition AvailableWhen)` — player-triggered abilities and spells. Spells are activated abilities with `Cost.SpellTokens`.
-- `SpecialRuleDefinition(string Name, string? DisplayName, IReadOnlyList<HookEntry> Passive, IReadOnlyList<ActivatedAbility> Activated, IReadOnlyList<string>? Aliases)` — top-level rule record. `Aliases` lets army-specific renames resolve to the same definition without duplication.
+- `SpecialRuleDefinition(string Name, IReadOnlyList<HookEntry> Passive, IReadOnlyList<ActivatedAbility> Activated)` — top-level rule record. `Aliases` and `DisplayName` originally on this record were removed in Phase 4 (see notes below) — aliases live on the resolver instead so custom armies don't have to mutate core rule data.
 
 ### Test coverage
 
 Phase 3 is data shapes only — no new tests. Test suite remains at 175 green. Phase 4 (hook bus) and Phase 5 (test harness) follow next; Phase 6 begins the 20-test red baseline.
+
+## Phase 4 implementation notes (2026-05-24)
+
+The bus skeleton landed as five files in `Rules/Dispatch/`: `IHookContext` (marker, exposes `EHookID Hook`), `IRuleHookBus` / `RuleHookBus` (stub returning empty list), and `IRuleResolver` / `ResolvedRule` / `RuleResolver` (the registry).
+
+Two design changes from the original sketch, both driven by the question "how does a custom army register an alias for a core rule?":
+
+- **Aliases moved off `SpecialRuleDefinition` onto the resolver.** The original shape made the canonical definition list its own aliases — but that meant a custom army had to mutate core rule data to flavor-rename Regeneration as "Healing Pods." Now the resolver exposes `RegisterAlias(alias, existingName)` and stores both keys in a single dictionary pointing at the same `SpecialRuleDefinition` instance. Core data is untouched; the army owns its names.
+- **`Resolve` returns `ResolvedRule(RequestedName, Definition)` instead of a bare definition.** The wrapper exists because the two requirements pull in different directions: `Effect.IgnoreRule("Regeneration")` must catch units that authored it as "Healing Pods" (drives **identity-based** comparison on `Definition` reference), but the UI must still display "Healing Pods (Regeneration)" (needs the caller's original name preserved). The wrapper holds both.
+
+`DisplayName` was also dropped from `SpecialRuleDefinition` in the same pass — aliases cover the rename case; the field was speculative.
+
+Concrete hook context types (`HitRollCompleteContext` etc.) are intentionally **not** added yet. They'll be created one at a time in Phase 5/6 as red tests demand them, so we don't guess at fields that aren't yet exercised.
+
+The stub bus is still wired to return `new List<RuleOperation>()` on every call — real dispatch logic (hook-ID indexing, scope filtering, condition evaluation, effect→operation translation) lands in Phase 7a onward.
 
 ## Outcome
 
