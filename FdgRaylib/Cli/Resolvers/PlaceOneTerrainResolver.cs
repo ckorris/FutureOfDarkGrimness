@@ -80,19 +80,18 @@ public class PlaceOneTerrainResolver : IStageResolver<PlaceOneTerrainRequest, Te
             new Float2(request.TableWidthInches * 0.5f, request.TableHeightInches * 0.5f));
     }
 
-    private static (float halfW, float halfH) GetHalfExtents(IZone zone) => zone switch
+    private static (float halfW, float halfH) GetHalfExtents(IZone zone)
     {
-        RectangularZone r => ((r.Right - r.Left) * 0.5f, (r.Top - r.Bottom) * 0.5f),
-        CircularZone c => (c.Radius, c.Radius),
-        _ => (0f, 0f),
-    };
+        (float lx, float hx, float ly, float hy) = zone.GetAABB();
+        return ((hx - lx) * 0.5f, (hy - ly) * 0.5f);
+    }
 
-    private static string DescribeShape(IZone shape) => shape switch
+    private static string DescribeShape(IZone shape)
     {
-        RectangularZone r => $"rect {r.Right - r.Left:F1}\"x{r.Top - r.Bottom:F1}\"",
-        CircularZone c => $"circle r={c.Radius:F1}\"",
-        _ => shape.GetType().Name,
-    };
+        if (shape is CircularZone c) return $"circle r={c.Radius:F1}\"";
+        (float lx, float hx, float ly, float hy) = shape.GetAABB();
+        return $"{hx - lx:F1}\"x{hy - ly:F1}\"";
+    }
 
     private static bool TryParseXZ(string text, out float x, out float z)
     {

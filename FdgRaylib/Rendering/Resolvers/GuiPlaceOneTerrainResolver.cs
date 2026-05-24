@@ -147,7 +147,7 @@ public class GuiPlaceOneTerrainResolver
         if (type.HasFlag(ETerrainType.Blocking))
             return (new Vector4(0.45f, 0.45f, 0.50f, 1f), new Vector4(0.55f, 0.55f, 0.60f, 1f));
         if (type.HasFlag(ETerrainType.Cover))
-            return (new Vector4(0.30f, 0.65f, 0.35f, 1f), new Vector4(0.40f, 0.85f, 0.45f, 1f));
+            return (new Vector4(0.55f, 0.40f, 0.25f, 1f), new Vector4(0.75f, 0.55f, 0.35f, 1f));
         if (type.HasFlag(ETerrainType.Difficult))
             return (new Vector4(0.80f, 0.70f, 0.30f, 1f), new Vector4(0.95f, 0.85f, 0.40f, 1f));
         return (new Vector4(0.65f, 0.65f, 0.65f, 1f), new Vector4(0.80f, 0.80f, 0.80f, 1f));
@@ -257,19 +257,16 @@ public class GuiPlaceOneTerrainResolver
         float max = 0f;
         foreach (var entry in pool)
         {
-            switch (entry.Shape)
-            {
-                case RectangularZone r:
-                    max = MathF.Max(max, MathF.Max(r.Right - r.Left, r.Top - r.Bottom));
-                    break;
-                case CircularZone c:
-                    max = MathF.Max(max, c.Radius * 2f);
-                    break;
-            }
+            (float lx, float hx, float ly, float hy) = entry.Shape.GetAABB();
+            max = MathF.Max(max, MathF.Max(hx - lx, hy - ly));
         }
         return max;
     }
 
+    /// <summary>
+    /// Draws each primitive in the template at its real relative position, scaled to
+    /// the thumbnail by <paramref name="ppi"/> and centered on the template's AABB.
+    /// </summary>
     private static void DrawTemplateThumbnail(ImDrawListPtr dl, TerrainPieceEntry entry,
         Vector2 topLeft, Vector2 size, float ppi)
     {
@@ -277,23 +274,37 @@ public class GuiPlaceOneTerrainResolver
         uint fill = ImGui.ColorConvertFloat4ToU32(new Vector4(fillBase.X, fillBase.Y, fillBase.Z, 0.55f));
         uint outline = ImGui.ColorConvertFloat4ToU32(outlineBase);
 
-        Vector2 center = topLeft + size * 0.5f;
+        Float2 templateCenter = entry.Shape.GetAABBCenter();
+        Vector2 thumbCenter = topLeft + size * 0.5f;
 
-        switch (entry.Shape)
+        foreach (var prim in entry.Shape.Primitives())
+            DrawPrimitiveInThumbnail(dl, prim, templateCenter, thumbCenter, ppi, fill, outline);
+    }
+
+    private static void DrawPrimitiveInThumbnail(ImDrawListPtr dl, IZone prim,
+        Float2 templateCenter, Vector2 thumbCenter, float ppi, uint fill, uint outline)
+    {
+        switch (prim)
         {
             case RectangularZone r:
+                float relCenterX = (r.Left + r.Right) * 0.5f - templateCenter.X;
+                float relCenterY = (r.Bottom + r.Top) * 0.5f - templateCenter.Y;
                 float pw = (r.Right - r.Left) * ppi;
                 float ph = (r.Top - r.Bottom) * ppi;
-                Vector2 tl = center - new Vector2(pw, ph) * 0.5f;
-                Vector2 br = center + new Vector2(pw, ph) * 0.5f;
+                Vector2 rectCenterPx = thumbCenter + new Vector2(relCenterX, relCenterY) * ppi;
+                Vector2 tl = rectCenterPx - new Vector2(pw, ph) * 0.5f;
+                Vector2 br = rectCenterPx + new Vector2(pw, ph) * 0.5f;
                 dl.AddRectFilled(tl, br, fill);
                 dl.AddRect(tl, br, outline, 0f, ImDrawFlags.None, 1f);
                 break;
 
             case CircularZone c:
+                float ccx = c.Center.X - templateCenter.X;
+                float ccy = c.Center.Y - templateCenter.Y;
                 float pr = c.Radius * ppi;
-                dl.AddCircleFilled(center, pr, fill, 24);
-                dl.AddCircle(center, pr, outline, 24, 1f);
+                Vector2 cPx = thumbCenter + new Vector2(ccx, ccy) * ppi;
+                dl.AddCircleFilled(cPx, pr, fill, 24);
+                dl.AddCircle(cPx, pr, outline, 24, 1f);
                 break;
         }
     }
@@ -301,12 +312,10 @@ public class GuiPlaceOneTerrainResolver
     private static string DescribeTemplate(TerrainPieceEntry entry)
     {
         string typeText = entry.TerrainType == ETerrainType.None ? "None" : entry.TerrainType.ToString();
-        return entry.Shape switch
-        {
-            RectangularZone r => $"{typeText} ({r.Right - r.Left:F1}\"x{r.Top - r.Bottom:F1}\")",
-            CircularZone c => $"{typeText} (r={c.Radius:F1}\")",
-            _ => typeText,
-        };
+        if (entry.Shape is CircularZone c)
+            return $"{typeText} (r={c.Radius:F1}\")";
+        (float lx, float hx, float ly, float hy) = entry.Shape.GetAABB();
+        return $"{typeText} ({hx - lx:F1}\"x{hy - ly:F1}\")";
     }
 
     private void Complete(TaskCompletionSource<TerrainPlacementResult> tcs, TerrainPlacementResult result)

@@ -39,6 +39,11 @@ public static class ZoneRenderer
                 Raylib.DrawCircleLines((int)cx, (int)cy, pr, outline);
                 break;
 
+            case CompositeZone comp:
+                foreach (var part in comp.Parts)
+                    DrawFilled(part, scale, originX, originY, tableH, fill, outline, outlineThickness);
+                break;
+
             default:
                 //Unknown zone shape — skip. Add a case here when a new IZone is introduced.
                 break;
@@ -63,6 +68,11 @@ public static class ZoneRenderer
                 float pr = c.Radius * scale;
                 drawList.AddCircleFilled(center, pr, fillColor, CircleSegments);
                 drawList.AddCircle(center, pr, outlineColor, CircleSegments, outlineThickness);
+                break;
+
+            case CompositeZone comp:
+                foreach (var part in comp.Parts)
+                    DrawFilled(part, drawList, scale, originX, originY, tableH, fillColor, outlineColor, outlineThickness);
                 break;
         }
     }
