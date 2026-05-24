@@ -50,8 +50,9 @@ Numbers are permanent and never reused. If an item is split, its line stays and 
 
 ## Special rules — framework
 
-- [ ] 026 — Unit special rules framework: `UnitData.SpecialRules`, `GetRealSpecialRulesFromArmyList`, `GetMobility` currently return defaults
-- [ ] 027 — Weapon special rules framework (`IWeapon.cs` TODOs)
+- [ ] 042 — Special rules architecture (Plan B: data-driven `Condition × Effect` records over a named hook surface, with a unit/model token system as the state primitive). Prerequisite for 026–034. See `WorkItems/042-special-rules-architecture.md`.
+- [ ] 026 — Unit special rules framework wiring (`UnitData.SpecialRules`, `GetRealSpecialRulesFromArmyList`, `GetMobility`) — depends on 042
+- [ ] 027 — Weapon special rules framework (`IWeapon.cs` TODOs) — depends on 042
 - [ ] 028 — Deadly weapon priority (resolve first, wounds don't carry across models)
 
 ## Special rules — implementations

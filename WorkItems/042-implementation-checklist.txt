@@ -1,0 +1,336 @@
+Special Rules Architecture — Implementation Checklist
+======================================================
+
+Companion to WorkItems/042-special-rules-architecture.md.
+Order phases top-to-bottom. Each phase ends at a build/test checkpoint.
+
+Mark progress inline:  [ ] todo   [~] in-progress   [x] done
+
+
+PHASE 0 — Decisions (admin, 5 minutes)
+--------------------------------------
+
+[ ] Confirm rule system lives in FutureOfDarkGrimness/Rules/
+[ ] Confirm namespace is FDG.Rules
+[ ] Confirm tests live in FutureOfDarkGrimness/Tests/, NUnit, reuse FixedDiceRoller
+
+
+PHASE 1 — Foundation data types (no logic)
+------------------------------------------
+
+Create in FutureOfDarkGrimness/Rules/Foundation/:
+
+[ ] HookId.cs                    enum, all 37 hook IDs (see APPENDIX A below)
+[ ] Lifetime.cs                  enum: ThisAttack, ThisActivation, ThisRound,
+                                       NextTrigger, Aura, UntilEndOfGame
+[ ] TokenType.cs                 record struct (string Id); static engine-known
+                                       constants Shaken, FatiguedThisRound, SpellTokens
+[ ] TokenClearTrigger.cs         abstract record + sealed subtypes:
+                                       ManualOnly, RoundEnd, ActivationEnd, AttackEnd,
+                                       FirstTrigger, UnitDestroyed, OwnerDestroyed,
+                                       CustomHook(HookId)
+[ ] Cost.cs                      abstract record + sealed subtypes:
+                                       OncePerActivation, OncePerRound, OncePerGame,
+                                       SpellTokens(int), ConsumesToken(TokenType, int)
+[ ] TargetSelector.cs            record (Range, MinCount, MaxCount, Affinity,
+                                       RequireLineOfSight, RequiredToken)
+[ ] TargetAffinity.cs            enum: Friend, Foe, Self
+
+CHECKPOINT: dotnet build passes.
+
+
+PHASE 2 — Token system (first real implementation)
+--------------------------------------------------
+
+Pre-work:
+[ ] Confirm IUnit / IModel have a stable id; if not, add UnitId record struct
+    and a property to both interfaces.
+
+Create in FutureOfDarkGrimness/Rules/Tokens/:
+
+[ ] TokenPayload.cs              abstract record; leave file empty of concretes
+                                       until a rule effect actually needs one
+[ ] Token.cs                     record (Type, Count, Payload?, OwnerUnitId?,
+                                       ClearTrigger, CreatedAtHook?)
+[ ] ITokenContainer.cs           interface — Add, Remove, Has, Count, All,
+                                       WithOwner, OnTokenAdded, OnTokenRemoved
+[ ] TokenContainer.cs            concrete implementation
+                                       - stack same (Type, Owner) by incrementing Count
+                                       - separate entries for different Owner
+                                       - cap engine-known singletons at Count == 1
+
+Engine integration:
+[ ] Add Tokens property (ITokenContainer) to IUnit
+[ ] Add Tokens property (ITokenContainer) to IModel
+[ ] Initialize backing TokenContainer in UnitData / ModelData constructors
+
+Tests in FutureOfDarkGrimness/Tests/TokenContainerTests.cs:
+
+[ ] Add_ThenHas_ReturnsTrue
+[ ] Add_SameTypeSameOwner_StacksCount
+[ ] Add_SameTypeDifferentOwner_KeepsSeparateEntries
+[ ] Remove_BelowZero_Clamps
+[ ] WithOwner_FiltersByOwnerId
+[ ] OnTokenAdded_FiresOnAdd
+[ ] OnTokenRemoved_FiresOnRemove
+[ ] Shaken_NeverStacksAboveOne
+[ ] Count_OfMissingType_ReturnsZero
+[ ] All_ReturnsEverything
+
+CHECKPOINT: all token tests green. Real implementation behind you.
+
+
+PHASE 3 — Rule data model (data shapes only)
+--------------------------------------------
+
+Create in FutureOfDarkGrimness/Rules/Model/:
+
+[ ] Condition.cs                 abstract record + sealed subtypes:
+                                       Always, UnitHasRule, TargetHasRule,
+                                       ActionTypeIs, UnmodifiedRollEquals,
+                                       DistanceGT, StatGTE,
+                                       TargetMajorityHasTough, TokenPresent,
+                                       And, Or, Not
+[ ] StatKind.cs                  enum: Quality, Defense, Tough
+[ ] ActionType.cs                enum: Hold, Advance, Rush, Charge
+[ ] RollKind.cs                  enum: Hit, Save, Morale
+[ ] RerollCondition.cs           abstract record + subtypes:
+                                       OnUnmodifiedValue, AllFailures
+[ ] DiceExpr.cs                  abstract record + subtypes: Fixed, D3, D6
+[ ] Effect.cs                    abstract record + sealed subtypes:
+                                       RollModifier, Reroll, AddExtraHit,
+                                       AddExtraWound, MovementBonus, IgnoreRule,
+                                       AddRule, Aura, DealHits, Heal,
+                                       StatModifier, GrantToken, ConsumeToken,
+                                       TriggeredMove, Reactivate
+[ ] IEntityRef.cs                marker interface; implemented by IUnit and IModel
+[ ] RuleOperation.cs             abstract record + sealed subtypes:
+                                       ApplyRollModifier, ApplyReroll,
+                                       InsertExtraHits, InsertExtraWounds,
+                                       GrantTokenOp, ConsumeTokenOp,
+                                       RemoveOtherEffect, InvokeTriggeredMove,
+                                       InvokeReactivate, InvokeDealHits, InvokeHeal
+[ ] HookEntry.cs                 record (HookId, Condition, Effect, Lifetime)
+[ ] ActivatedAbility.cs          record (TriggerHook, Cost, TargetSelector,
+                                       Effect, AvailableWhen)
+[ ] SpecialRuleDefinition.cs     record (Name, DisplayName?, Passive[],
+                                       Activated[], Aliases?)
+
+CHECKPOINT: dotnet build passes. No tests added here.
+
+
+PHASE 4 — Hook bus, minimal
+---------------------------
+
+Create in FutureOfDarkGrimness/Rules/Dispatch/:
+
+[ ] IHookContext.cs              marker interface; HookId Hook { get; }
+[ ] IRuleHookBus.cs              interface: Dispatch(IHookContext) returns
+                                       IReadOnlyList<RuleOperation>
+[ ] RuleHookBus.cs               concrete; initial impl returns empty list (stub)
+[ ] IRuleResolver.cs             interface: SpecialRuleDefinition Resolve(string)
+[ ] RuleResolver.cs              concrete; in-memory Dictionary registry,
+                                       handles aliases
+
+Concrete contexts (add only as tests need them):
+
+[ ] HitRollCompleteContext.cs    (Attacker, Defender, Weapon, Hits[], IsCharging)
+[ ] (more added later per test)
+
+CHECKPOINT: bus exists, Dispatch returns empty list. dotnet build passes.
+
+
+PHASE 5 — Test harness
+----------------------
+
+Create in FutureOfDarkGrimness/Tests/RulesHarness/:
+
+[ ] TestRuleHarness.cs           class with:
+                                       - Resolver (RuleResolver)
+                                       - Bus (RuleHookBus)
+                                       - GameContext (TestGameContext +
+                                         FixedDiceRoller)
+                                       - BuildUnit(playerName, modelCount,
+                                         params specialRules)
+                                       - AttachRule(unit, definition)
+                                       - Fire(IHookContext) shorthand
+[ ] RuleAssertions.cs            HasOperation<T>() NUnit-style helper
+
+Smoke test in FutureOfDarkGrimness/Tests/SpecialRuleTests.cs:
+
+[ ] HarnessFires_NoRules_ReturnsEmpty
+
+CHECKPOINT: smoke test green. Harness API stabilizes as you write red tests next.
+
+
+PHASE 6 — Curated failing tests (RED)
+-------------------------------------
+
+In FutureOfDarkGrimness/Tests/SpecialRuleTests.cs.
+
+Each test:
+  - constructs a TestRuleHarness
+  - builds attacker/defender units
+  - registers the rule definition inline (no JSON yet)
+  - fires the relevant hook context
+  - asserts on the returned RuleOperation queue
+
+[ ] 01. Furious_OnUnmodified6Hit_AddsExtraHit
+[ ] 02. Stealth_WhenShotFromBeyond9_AppliesMinus1ToHit
+[ ] 03. Fast_OnAdvance_AddsTwoInches
+[ ] 04. MeleeShrouding_OnEnemyCharge_AppliesMinus3MovementToEnemy
+[ ] 05. Bane_OnDefenseUnmodified6_TriggersReroll
+[ ] 06. Rending_OnHitRoll6_PromotesToAP4
+[ ] 07. Mend_OnPreAttack_OffersAbilityWithCost
+[ ] 08. Mend_WhenAccepted_HealsTargetModel
+[ ] 09. SpellAdvancedSight_WhenCast_AppliesNextTimeBuffToTargets
+[ ] 10. PiercingFrenzy_OnEnemyUnitDestroyed_AddsMarkerToken
+[ ] 11. PiercingFrenzy_WithTwoMarkers_AddsAPPlus2InRolls
+[ ] 12. RegenerationAura_AppliesRegenerationToWholeUnit
+[ ] 13. Infiltrate_UsesAmbushPrimitive_WithDistanceOverride
+[ ] 14. UnpredictableFighter_RollsAndAppliesOneOfTwoBranches
+[ ] 15. UnstoppableMark_PlacesTokenOnEnemy_WithOwnerSet
+[ ] 16. UnstoppableMark_WhenOwnerDestroyed_TokenRemoved
+[ ] 17. Vanguard_AfterDeploy_OffersReposition_Within9Inches
+[ ] 18. MartialProwess_OnNextActivator_OffersReactivation_OncePerGame
+[ ] 19. Strafing_DuringMoveThroughEnemy_OffersMidMoveAttack
+[ ] 20. HarassingBoost_WithMajorityHasHarassing_OverridesHarassingDistance
+
+CHECKPOINT: all 20 tests fail (red baseline). Commit this state — it's the spec.
+
+
+PHASE 7 — Implementation (GREEN, iterative)
+-------------------------------------------
+
+Turn tests green in this order. Each sub-phase is one focused session.
+
+[ ] 7a — Condition evaluator
+       Implement: walk Condition AST against an IHookContext, return bool.
+       Tests turned green: 01, 02, 03, 04
+
+[ ] 7b — Effect → Operation mapping (basic effect types)
+       Implement: RollModifier, AddExtraHit, AddExtraWound, Reroll, MovementBonus,
+       IgnoreRule each translate into matching RuleOperation entries.
+       Tests turned green: 05, 06
+
+[ ] 7c — Activated abilities end-to-end
+       Implement: harness supports offer/accept pattern, ability cost gating,
+       target selector resolution, ability effect emission.
+       Tests turned green: 07, 08, 09
+
+[ ] 7d — Token-aware effects
+       Implement: GrantToken / ConsumeToken effect → operation; TokenPresent
+       and similar conditions read live token state.
+       Tests turned green: 10, 11
+
+[ ] 7e — Aura + parameter override
+       Implement: Aura effect grants a referenced rule to whole unit;
+       rule resolver supports parameter overrides in references.
+       Tests turned green: 12, 13, 20
+
+[ ] 7f — Random branches
+       Implement: random trigger type — engine rolls a die, applies one of N branches.
+       Tests turned green: 14
+
+[ ] 7g — Cross-unit tokens + cleanup
+       Implement: TokenContainer cleanup on owner destruction
+       (subscribes to OnUnitDestroyed hook).
+       Tests turned green: 15, 16
+
+[ ] 7h — Engine primitives (DEPENDS ON 042)
+       Implement: TriggeredMove, Reactivate, mid-move attack as callable
+       subsystems. Wire RuleOperation invocations to call them.
+       Tests turned green: 17, 18, 19
+
+
+PARALLEL / DOWNSTREAM
+---------------------
+
+[ ] 042 — Refactor stages to expose core operations as invocable subsystems
+       (movement, attack, deploy, wound application). Required for Phase 7h.
+       Can start any time after Phase 3.
+
+[ ] Future: JSON/YAML data loader + schema validation. Wait until C# model
+       is settled by Phases 6 and 7 against real rules.
+
+[ ] Future: networking sync — hash rule registry at lobby-ready, reject on mismatch.
+
+[ ] Future: more army samples (vehicle-heavy, psychic/horror, swarm) to
+       stress-test the vocabulary before locking it down.
+
+
+NOTES
+-----
+
+- Don't write the JSON/YAML loader until Phase 7 is done. Definitions are
+  inline-constructed C# objects in tests until the model is proven.
+- The engine refactor (042) is parallel work, not a prerequisite for Phases 1–6.
+  Most rule tests assert that the right operation is queued, not that the
+  operation actually executes against the engine.
+- If you discover a missing helper while writing tests, add it to TestRuleHarness,
+  not to the fixture file.
+
+
+APPENDIX A — Hook surface (37 hooks)
+------------------------------------
+
+Full descriptions of each hook (when it fires, context payload) live in
+WorkItems/042-special-rules-architecture.md under "Hook surface". This list
+is the canonical enum population for HookId.cs.
+
+Round-level (2):
+    OnRoundStart
+    OnRoundEnd
+
+Activation-level (5):
+    OnNextActivatorRequested
+    OnActivationStart
+    OnActionChoice
+    OnPreAttack
+    OnEndOfActivation
+
+Movement (5):
+    OnMoveActionDeclared
+    OnChargeDeclared
+    OnMoveThroughEnemy
+    OnMoveThroughTerrain
+    OnMoveResolved
+
+Shooting (11):
+    OnShootTargetsSelected
+    OnPreHitRollCount
+    OnHitRollModifier
+    OnHitRollComplete
+    OnPreSaveRollCount
+    OnSaveRollModifier
+    OnSaveRollComplete
+    OnPreApplyWound
+    OnPostApplyWound
+    OnUnitDestroyed
+    OnPostShoot
+
+Melee (4 melee-specific; shoot hooks reused with a combatKind flag for everything else):
+    OnChargeContact
+    OnCounterTrigger
+    OnMeleeResolution
+    OnPostMelee
+
+Morale (4):
+    OnPreMoraleTest
+    OnMoraleTestComplete
+    OnShakenApplied
+    OnShakenCleared
+
+Deployment (3):
+    OnPreDeploymentSelect
+    OnUnitDeployed
+    OnPostDeploymentComplete
+
+Casting (3):
+    OnSpellCastAttempt
+    OnSpellAssistOffered
+    OnSpellResolved
+
+Lifecycle / token bookkeeping (2):
+    OnUnitCreated
+    OnWoundIgnored
