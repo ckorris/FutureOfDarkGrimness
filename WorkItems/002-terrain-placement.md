@@ -1,6 +1,6 @@
 # 002 — Terrain placement workflow
 
-**Status**: in-progress
+**Status**: done
 **Related**: branch `TerrainPlacement` (parent + submodule); spiritual sequel to #001 (objective placement)
 
 ## Goal
@@ -349,6 +349,79 @@ read the same on-disk format.
 
 ## Notes
 
+- 2026-05-24: Merged to master on both repos. End-to-end working in
+  GUI (verified visually: lobby mode selector + conditional slider/file
+  picker, R-key rotation rotates the ghost 45° with live-validated
+  outline color, thumbnails show to-scale shape previews including
+  composites). Pre-existing movement validation gap (ignores model
+  base radius) surfaced and spun off as #046.
+
+- 2026-05-24: **45° rotation** shipped (closes #045 inline; that work
+  item is being marked done rather than left as a follow-up).
+  - New `RotatedZoneWrapper(IZone inner, float angleDegrees, Float2 pivot)`
+    delegates `IsPointWithinZone` / `DoesPathIntersectZone` to the inner
+    after inverse-rotating the query — so movement + LoS get rotation
+    transparently with no changes there (both go through interface
+    methods, not type switches).
+  - `ZoneExtensions.Primitives` walker flattens rotated composites into
+    a uniform leaf set: `RectangularZone`, `CircularZone` (rotation of
+    a circle off-pivot collapses to a translated circle since circles
+    are rotation-invariant), and `RotatedZoneWrapper<RectangularZone>`
+    (the OBB primitive). Nested wrappers compose by adding angles and
+    rotating pivots.
+  - Validator's `PrimitiveOverlaps` extended with SAT for OBB×OBB and
+    OBB×AABB (AABB treated as 0°-rotated OBB) and OBB×Circle (transform
+    circle center into OBB local frame, then rect-circle distance).
+  - GUI: `_rotationDegrees` state in resolver, R increments by 45° in
+    both AwaitingClick and AwaitingConfirm; resets to 0° on template
+    change; info panel shows rotation + hint. Renderer adds rotated-rect
+    cases in both Raylib (`DrawTriangle ×2`) and ImGui (`AddQuadFilled`
+    + `AddQuad`) flavors.
+  - AI picks random angle ∈ {0, 45, 90, …, 315}. CLI input syntax now
+    `<idx> <x>,<z> [rotation_deg]`.
+  - `TerrainPlacementResult` gained `RotationDegrees`; engine applies
+    `Rotate(template, angle)` → `TranslateToCenter` before placing.
+  - 7 new OBB validator tests including "AABB overlaps but OBB doesn't"
+    (catches lazy-AABB shortcuts). 139 engine tests total, all green.
+
+- 2026-05-24: **Composite zones + L-shape buildings** shipped (the user
+  proposed the composite-zone design; see Decisions below for the
+  semantics agreed: union for membership, decompose-to-primitives for
+  overlap, sub-zones invisible at the table-state level).
+  - New `CompositeZone(IReadOnlyList<IZone> parts)` with union
+    semantics for `IsPointWithinZone` / `DoesPathIntersectZone`.
+    Sub-zones don't exist as independent `ITerrain` entries; the
+    composite is the only thing the game world sees.
+  - `ZoneExtensions.Primitives` + `GetAABB` + `GetAABBCenter` helpers
+    replace ad-hoc type-switching across the codebase (validator,
+    AI resolver, GUI thumbnail, CLI describe).
+  - Validator's overlap math now decomposes to primitives and runs the
+    Cartesian product — composite overlap "just works" with the
+    existing rect/rect, rect/circle, circle/circle cases. 4 new tests
+    (rect-in-L-notch valid, rect-overlapping-L-bar rejected, etc.).
+  - Renderer (`ZoneRenderer`) gained composite cases for both Raylib
+    and ImGui draw paths.
+  - GUI thumbnail picker now iterates `Primitives()` and draws each
+    in its proper relative position with a single shared `ppi` so
+    L-shapes look like L-shapes.
+  - Pool changes: dedup'd forest/sandbag duplicates; forest changed
+    from circle to 6×6 rect; cover tint changed green → brown per
+    user; added small/tall plain buildings + small/large L-shaped
+    buildings (all Blocking | Impassible).
+
+- 2026-05-24: **Zero-piece skip**. If
+  `Settings.TerrainPlacementMode == Alternating && TerrainPieceCount == 0`,
+  both `RollForFirstTerrainPlacementStage` and `PlaceTerrainStage`
+  early-return via the shared `PlaceTerrainStage.ShouldSkipTerrainPhase`
+  predicate — they log a "skipping" line and activate their
+  done-bindings without rolling or placing. Lobby slider min lowered
+  to 0; validator accepts 0.
+
+- 2026-05-24: **Template-picker thumbnails**. Replaced text-only
+  buttons with `InvisibleButton` rows + manual draw (hover-aware
+  background fill). All thumbnails share one `ppi` derived from the
+  pool's largest piece, so relative sizes read correctly.
+
 - 2026-05-17: Subtasks 2–10 shipped on branch `TerrainPlacement`. End
   to end working in headless (`printf "2\n2\n" | dotnet run -- --headless`
   completes; verified terrain placement runs through all three modes
@@ -436,4 +509,66 @@ read the same on-disk format.
 
 ## Outcome
 
-_To be written when the item closes._
+Shipped on `TerrainPlacement` branch and merged to master on both
+repos (parent: `e713c6c`; submodule: `2ba1c5b`).
+
+End-to-end working in GUI and headless. Three placement modes selected
+in the lobby:
+- `AutoFromLayout` — server places the built-in `DefaultTerrainPool` verbatim
+- `LoadFromFile` — server places contents of a user-chosen `.fdgterrain` JSON verbatim
+- `Alternating` — roll-off winner places first, players alternate one
+  piece each, picking from the pool template panel with thumbnail
+  previews; R-key rotates 45°; ghost shows live-validated outline;
+  inline launch error if Alternating count or LoadFromFile path is invalid.
+
+Two new `IZone` primitives shipped to support shape variety the
+rulebook implies (Blocking + Impassible buildings of various forms):
+- `CompositeZone` — union of N sub-zones; sub-zones not exposed as
+  independent terrain pieces. Used for L-shaped buildings.
+- `RotatedZoneWrapper` — wraps any `IZone` with rotation around a
+  pivot. Movement + LoS get rotation transparently via interface
+  dispatch. Validator overlap math extended with SAT (OBB×OBB,
+  OBB×AABB) and OBB×Circle local-frame transform.
+
+AI resolver places random template at random center with random 45°
+rotation (rejection-sample against validator; grid fallback if the
+table is crammed). Deliberately dumb — smarter AI is a separate
+concern (see "On the AI resolver" discussion in session log if
+revisited).
+
+Pre-existing behaviors confirmed working through new shapes:
+- Headless AI vs AI in Alternating mode placed N pieces (8 / 9) end
+  to end across composites and rotated rects.
+- 152/152 engine tests pass after the merge with upstream #018/#019.
+
+Out of scope / spun off:
+- **#044** — Multi-pool terrain selection (lobby picker for which
+  `TerrainLayoutFile` feeds the built-in pool slot). v1 ships with
+  one hardcoded `DefaultTerrainPool`.
+- **#045** — Originally scoped as the rotation follow-up; pulled into
+  v1 mid-stream and shipped (45° increments via SAT). Marking #045
+  done alongside #002.
+- **#046** — Movement validation ignores model base radius for terrain
+  footprints (zero-width segment vs. swept disc). Pre-existing
+  limitation surfaced more often by #002's richer terrain.
+- **#11 (subtask)** — Engine-side integration test for the Alternating
+  loop. Deferred per #001 precedent.
+
+Files added (engine submodule):
+- `TableState/Zones/CompositeZone.cs`
+- `TableState/Zones/RotatedZoneWrapper.cs`
+- `TableState/Zones/ZoneExtensions.cs`
+- `SaveLoad/TerrainLayoutLoader.cs`
+- `StageResolution/Requests/PlaceOneTerrainRequest.cs`
+- `StateMachine/MapSetupStage/PlaceTerrainStage/TerrainPlacementValidator.cs`
+- `StateMachine/MapSetupStage/PlaceTerrainStage/TerrainTemplateUtilities.cs`
+- `StateMachine/MapSetupStage/PlaceTerrainStage/DefaultTerrainPool.cs`
+- `Ai/Resolvers/AiPlaceOneTerrainResolver.cs`
+- `Tests/TerrainPlacementValidatorTests.cs`
+
+Files added (parent):
+- `FdgRaylib/Cli/Resolvers/PlaceOneTerrainResolver.cs`
+- `FdgRaylib/Rendering/Resolvers/GuiPlaceOneTerrainResolver.cs`
+
+Incidental fix: `CliApp` now sets `AutoPlaceObjectivesDebug = true` in
+headless mode, finally honoring the smoke-test promise from #001.

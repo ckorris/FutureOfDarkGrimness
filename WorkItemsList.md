@@ -10,7 +10,6 @@ Numbers are permanent and never reused. If an item is split, its line stays and 
 
 ## Setup & map
 
-- [ ] 002 — Terrain placement workflow (`MapSetupStage` children currently empty) — in progress on `TerrainPlacement` ([WorkItems/002](WorkItems/002-terrain-placement.md))
 - [ ] 003 — Force organization validation (optional rule: hero/unit/copy/cost caps)
 
 ## Deployment
@@ -85,7 +84,6 @@ These are umbrellas; will fragment per-rule when picked up.
 - [ ] 040 — Post-game navigation back to main menu in GUI mode (currently window just stays open)
 - [ ] 041 — Factor line of sight into movement resolver's ranged-targeting overlay (`GuiDefineMovementResolver.DrawRangedTargeting` currently checks range only)
 - [ ] 044 — Multi-pool terrain selection: lobby picker for which `TerrainLayoutFile` feeds `AutoFromLayout` / `Alternating`. Spun off from #002 — that ships with one hardcoded built-in pool.
-- [ ] 045 — Terrain rotation: angle field on `RectangularZone` (or new `RotatedRectZone` shape) + GUI resolver R-key rotate. Threads through movement / LoS / overlap / save-load. Spun off from #002.
 
 ## Movement
 
@@ -101,3 +99,5 @@ These are umbrellas; will fragment per-rule when picked up.
 - [x] 018 — Pile In move: defender models not already in BTB step up to 3" toward nearest charging model, with impassible-terrain and strict coherency fallbacks ([WorkItems/018](WorkItems/018-pile-in.md))
 - [x] 043 — Filter dead models out of `IUnit.AllWeapons` so dead models no longer contribute weapons to attack/strike-back/shoot lists or the tooltip readout
 - [x] 019 — Consolidation moves after melee resolution: 3" Wipeout / 1" Disengage with per-model GUI path-builder, AI resolver, table-bounds clamp, and validation against terrain + cohesion + cap ([WorkItems/019](WorkItems/019-consolidation-moves.md))
+- [x] 002 — Terrain placement workflow: three-mode lobby setting (AutoFromLayout / Alternating / LoadFromFile), AI + human + CLI resolvers, `CompositeZone` for L-shapes, `RotatedZoneWrapper` + SAT for 45° rotation, GUI thumbnails + R-key rotate ([WorkItems/002](WorkItems/002-terrain-placement.md))
+- [x] 045 — Terrain rotation: shipped inline with #002 via `RotatedZoneWrapper` + SAT overlap math + R-key in GUI resolver ([WorkItems/002](WorkItems/002-terrain-placement.md))
