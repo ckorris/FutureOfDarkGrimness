@@ -29,7 +29,7 @@ public class PlaceOneTerrainResolver : IStageResolver<PlaceOneTerrainRequest, Te
             var entry = request.Pool[i];
             Console.WriteLine($"  [{i}] {entry.TerrainType}  {DescribeShape(entry.Shape)}");
         }
-        Console.Write("Enter <template_index> <x>,<z>: ");
+        Console.Write("Enter <template_index> <x>,<z> [rotation_deg]: ");
 
         string? input = Console.ReadLine();
         if (input == null)
@@ -38,13 +38,15 @@ public class PlaceOneTerrainResolver : IStageResolver<PlaceOneTerrainRequest, Te
             return Task.FromResult(EofFallback(request));
         }
 
-        var parts = input.Trim().Split(' ', 2, StringSplitOptions.RemoveEmptyEntries);
-        if (parts.Length == 2
+        var parts = input.Trim().Split(' ', 3, StringSplitOptions.RemoveEmptyEntries);
+        if (parts.Length >= 2
             && int.TryParse(parts[0], out int idx)
             && idx >= 0 && idx < request.Pool.Count
             && TryParseXZ(parts[1], out float x, out float z))
         {
-            return Task.FromResult(new TerrainPlacementResult(idx, new Float2(x, z)));
+            float rot = 0f;
+            if (parts.Length >= 3) float.TryParse(parts[2], out rot);
+            return Task.FromResult(new TerrainPlacementResult(idx, new Float2(x, z), rot));
         }
 
         Console.WriteLine("Could not parse input; using fallback placement.");

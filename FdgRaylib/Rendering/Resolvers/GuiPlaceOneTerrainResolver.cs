@@ -33,6 +33,9 @@ public class GuiPlaceOneTerrainResolver
     private TaskCompletionSource<TerrainPlacementResult>? _tcs;
     private int? _selectedTemplate;
     private Float2? _pendingCenter;
+    private float _rotationDegrees;  // 0..315 in 45° steps; reset on template change.
+
+    private const float RotationStepDegrees = 45f;
 
     public GuiPlaceOneTerrainResolver(ITableState tableState) => _tableState = tableState;
 
@@ -52,6 +55,7 @@ public class GuiPlaceOneTerrainResolver
             _request = request;
             _selectedTemplate = null;
             _pendingCenter = null;
+            _rotationDegrees = 0f;
         }
         return tcs.Task;
     }
@@ -62,7 +66,13 @@ public class GuiPlaceOneTerrainResolver
         TaskCompletionSource<TerrainPlacementResult>? tcs;
         int? selected;
         Float2? pending;
-        lock (_lock) { request = _request; tcs = _tcs; selected = _selectedTemplate; pending = _pendingCenter; }
+        float rotation;
+        lock (_lock)
+        {
+            request = _request; tcs = _tcs;
+            selected = _selectedTemplate; pending = _pendingCenter;
+            rotation = _rotationDegrees;
+        }
         if (request == null || tcs == null) return;
 
         var io = ImGui.GetIO();
@@ -70,12 +80,25 @@ public class GuiPlaceOneTerrainResolver
 
         if (selected.HasValue)
         {
+            // R rotates regardless of whether we're awaiting-click or awaiting-confirm.
+            if (ImGui.IsKeyPressed(ImGuiKey.R))
+            {
+                rotation = (rotation + RotationStepDegrees) % 360f;
+                lock (_lock) _rotationDegrees = rotation;
+            }
+
             TerrainPieceEntry template = request.Pool[selected.Value];
+            IZone rotatedTemplate = TerrainTemplateUtilities.Rotate(template.Shape, rotation);
 
             if (pending.HasValue)
             {
-                // AwaitingConfirm: frozen ghost.
-                DrawGhost(dl, template, pending.Value, valid: true, frozen: true);
+                // AwaitingConfirm: frozen ghost, but rotation is still live (R re-rotates around the pending center).
+                IZone placedShape = TerrainTemplateUtilities.TranslateToCenter(rotatedTemplate, pending.Value);
+                bool stillValid = TerrainPlacementValidator.Check(
+                    placedShape, request.TableWidthInches, request.TableHeightInches,
+                    _tableState.Terrain.Objects) == TerrainPlacementValidity.Valid;
+
+                DrawGhost(dl, template.TerrainType, placedShape, valid: stillValid, frozen: true);
 
                 if (ImGui.IsKeyPressed(ImGuiKey.Escape))
                 {
@@ -90,13 +113,13 @@ public class GuiPlaceOneTerrainResolver
                 var (mx, mz) = PixelToInches(io.MousePos.X, io.MousePos.Y);
                 Float2 center = new Float2(mx, mz);
 
-                IZone candidateShape = TerrainTemplateUtilities.TranslateToCenter(template.Shape, center);
+                IZone candidateShape = TerrainTemplateUtilities.TranslateToCenter(rotatedTemplate, center);
                 bool valid = TerrainPlacementValidator.Check(
                     candidateShape, request.TableWidthInches, request.TableHeightInches,
                     _tableState.Terrain.Objects) == TerrainPlacementValidity.Valid;
 
                 if (overTable)
-                    DrawGhost(dl, template, center, valid, frozen: false);
+                    DrawGhost(dl, template.TerrainType, candidateShape, valid, frozen: false);
 
                 if (overTable && !io.WantCaptureMouse && valid &&
                     ImGui.IsMouseClicked(ImGuiMouseButton.Left))
@@ -105,24 +128,23 @@ public class GuiPlaceOneTerrainResolver
                     pending = center;
                 }
 
-                // Right-click or Esc returns to template selection.
+                // Right-click or Esc returns to template selection (also resets rotation).
                 if (ImGui.IsKeyPressed(ImGuiKey.Escape) ||
                     (!io.WantCaptureMouse && ImGui.IsMouseClicked(ImGuiMouseButton.Right)))
                 {
-                    lock (_lock) _selectedTemplate = null;
+                    lock (_lock) { _selectedTemplate = null; _rotationDegrees = 0f; }
                     selected = null;
+                    rotation = 0f;
                 }
             }
         }
 
-        DrawInfoPanel(screenW, screenH, request, tcs, selected, pending);
+        DrawInfoPanel(screenW, screenH, request, tcs, selected, pending, rotation);
     }
 
-    private void DrawGhost(ImDrawListPtr dl, TerrainPieceEntry template, Float2 center, bool valid, bool frozen)
+    private void DrawGhost(ImDrawListPtr dl, ETerrainType terrainType, IZone placed, bool valid, bool frozen)
     {
-        IZone placed = TerrainTemplateUtilities.TranslateToCenter(template.Shape, center);
-
-        (Vector4 fillBase, Vector4 outlineBase) = TerrainTypeColors(template.TerrainType);
+        (Vector4 fillBase, Vector4 outlineBase) = TerrainTypeColors(terrainType);
         float fillAlpha = frozen ? 0.45f : 0.30f;
         Vector4 fillColor = new Vector4(fillBase.X, fillBase.Y, fillBase.Z, fillAlpha);
 
@@ -154,7 +176,7 @@ public class GuiPlaceOneTerrainResolver
     }
 
     private void DrawInfoPanel(int screenW, int screenH, PlaceOneTerrainRequest request,
-        TaskCompletionSource<TerrainPlacementResult> tcs, int? selected, Float2? pending)
+        TaskCompletionSource<TerrainPlacementResult> tcs, int? selected, Float2? pending, float rotationDegrees)
     {
         const float PanelWidth = 280f;
         ImGui.SetNextWindowPos(new Vector2(screenW - PanelWidth - 12f, 80f), ImGuiCond.FirstUseEver);
@@ -173,7 +195,8 @@ public class GuiPlaceOneTerrainResolver
         if (pending.HasValue && selected.HasValue)
         {
             ImGui.TextWrapped($"Place {DescribeTemplate(request.Pool[selected.Value])} here?");
-            ImGui.TextDisabled($"Center: ({pending.Value.X:F1}\", {pending.Value.Y:F1}\")");
+            ImGui.TextDisabled($"Center: ({pending.Value.X:F1}\", {pending.Value.Y:F1}\")  Rotation: {rotationDegrees:F0}°");
+            ImGui.TextDisabled("Press R to rotate 45°.");
             ImGui.Spacing();
 
             float btnW = 120f;
@@ -184,13 +207,14 @@ public class GuiPlaceOneTerrainResolver
             bool cancelPressed = ImGui.Button("Cancel", new Vector2(btnW, 28f));
 
             if (confirmPressed)
-                Complete(tcs, new TerrainPlacementResult(selected.Value, pending.Value));
+                Complete(tcs, new TerrainPlacementResult(selected.Value, pending.Value, rotationDegrees));
             else if (cancelPressed)
-                lock (_lock) { _pendingCenter = null; _selectedTemplate = null; }
+                lock (_lock) { _pendingCenter = null; _selectedTemplate = null; _rotationDegrees = 0f; }
         }
         else if (selected.HasValue)
         {
             ImGui.TextWrapped($"Placing: {DescribeTemplate(request.Pool[selected.Value])}");
+            ImGui.TextDisabled($"Rotation: {rotationDegrees:F0}° (R = rotate 45°)");
             ImGui.TextDisabled("Hover to preview. Left-click to place. Right-click or Esc to switch template.");
         }
         else
@@ -320,7 +344,7 @@ public class GuiPlaceOneTerrainResolver
 
     private void Complete(TaskCompletionSource<TerrainPlacementResult> tcs, TerrainPlacementResult result)
     {
-        lock (_lock) { _request = null; _tcs = null; _selectedTemplate = null; _pendingCenter = null; }
+        lock (_lock) { _request = null; _tcs = null; _selectedTemplate = null; _pendingCenter = null; _rotationDegrees = 0f; }
         tcs.SetResult(result);
     }
 
