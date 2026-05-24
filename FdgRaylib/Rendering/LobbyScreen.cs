@@ -321,7 +321,7 @@ public class LobbyScreen : IAppScreen
         ImGui.TextUnformatted("Terrain Count");
         ImGui.SameLine();
         int v = current;
-        if (ImGui.SliderInt("##TerrainCount", ref v, 1, FDG.Stages.PlaceTerrainStage.MaxAlternatingPieceCount) && v != current)
+        if (ImGui.SliderInt("##TerrainCount", ref v, 0, FDG.Stages.PlaceTerrainStage.MaxAlternatingPieceCount) && v != current)
             setter(v);
     }
 

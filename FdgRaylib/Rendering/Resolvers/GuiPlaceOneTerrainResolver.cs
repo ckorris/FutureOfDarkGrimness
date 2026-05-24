@@ -196,18 +196,106 @@ public class GuiPlaceOneTerrainResolver
         else
         {
             ImGui.TextUnformatted("Pick a piece:");
-            for (int i = 0; i < request.Pool.Count; i++)
-            {
-                var entry = request.Pool[i];
-                string label = $"{DescribeTemplate(entry)}##t{i}";
-                if (ImGui.Button(label, new Vector2(PanelWidth - 20f, 0f)))
-                {
-                    lock (_lock) _selectedTemplate = i;
-                }
-            }
+            DrawTemplatePicker(request.Pool, PanelWidth);
         }
 
         ImGui.End();
+    }
+
+    /// <summary>
+    /// Per-row template picker with a small to-scale shape preview on the left and the
+    /// type/dimensions label on the right. All thumbnails share one pixels-per-inch
+    /// scale derived from the largest piece in the pool, so relative sizes read
+    /// correctly (a 6x4" building looks bigger than a 5"-radius forest).
+    /// </summary>
+    private void DrawTemplatePicker(IReadOnlyList<TerrainPieceEntry> pool, float panelWidth)
+    {
+        const float ThumbW = 56f;
+        const float ThumbH = 36f;
+        const float RowPad = 4f;
+        const float ThumbDrawPad = 3f;
+        float rowH = ThumbH + RowPad * 2;
+        float rowW = panelWidth - 20f;
+
+        float maxDim = ComputeMaxDimension(pool);
+        float ppi = maxDim > 0f
+            ? MathF.Min(ThumbW - ThumbDrawPad * 2, ThumbH - ThumbDrawPad * 2) / maxDim
+            : 1f;
+
+        var dl = ImGui.GetWindowDrawList();
+
+        for (int i = 0; i < pool.Count; i++)
+        {
+            TerrainPieceEntry entry = pool[i];
+            Vector2 rowOrigin = ImGui.GetCursorScreenPos();
+
+            bool clicked = ImGui.InvisibleButton($"##t{i}", new Vector2(rowW, rowH));
+            bool hovered = ImGui.IsItemHovered();
+            bool active = ImGui.IsItemActive();
+
+            uint bg = ImGui.GetColorU32(
+                active ? ImGuiCol.ButtonActive
+                : hovered ? ImGuiCol.ButtonHovered
+                : ImGuiCol.Button);
+            dl.AddRectFilled(rowOrigin, rowOrigin + new Vector2(rowW, rowH), bg, 4f);
+
+            Vector2 thumbTL = rowOrigin + new Vector2(RowPad, RowPad);
+            DrawTemplateThumbnail(dl, entry, thumbTL, new Vector2(ThumbW, ThumbH), ppi);
+
+            Vector2 textPos = rowOrigin + new Vector2(
+                RowPad + ThumbW + RowPad * 2,
+                rowH * 0.5f - ImGui.GetTextLineHeight() * 0.5f);
+            dl.AddText(textPos, ImGui.GetColorU32(ImGuiCol.Text), DescribeTemplate(entry));
+
+            if (clicked)
+                lock (_lock) _selectedTemplate = i;
+        }
+    }
+
+    private static float ComputeMaxDimension(IReadOnlyList<TerrainPieceEntry> pool)
+    {
+        float max = 0f;
+        foreach (var entry in pool)
+        {
+            switch (entry.Shape)
+            {
+                case RectangularZone r:
+                    max = MathF.Max(max, MathF.Max(r.Right - r.Left, r.Top - r.Bottom));
+                    break;
+                case CircularZone c:
+                    max = MathF.Max(max, c.Radius * 2f);
+                    break;
+            }
+        }
+        return max;
+    }
+
+    private static void DrawTemplateThumbnail(ImDrawListPtr dl, TerrainPieceEntry entry,
+        Vector2 topLeft, Vector2 size, float ppi)
+    {
+        (Vector4 fillBase, Vector4 outlineBase) = TerrainTypeColors(entry.TerrainType);
+        uint fill = ImGui.ColorConvertFloat4ToU32(new Vector4(fillBase.X, fillBase.Y, fillBase.Z, 0.55f));
+        uint outline = ImGui.ColorConvertFloat4ToU32(outlineBase);
+
+        Vector2 center = topLeft + size * 0.5f;
+
+        switch (entry.Shape)
+        {
+            case RectangularZone r:
+                float pw = (r.Right - r.Left) * ppi;
+                float ph = (r.Top - r.Bottom) * ppi;
+                Vector2 tl = center - new Vector2(pw, ph) * 0.5f;
+                Vector2 br = center + new Vector2(pw, ph) * 0.5f;
+                dl.AddRectFilled(tl, br, fill);
+                dl.AddRect(tl, br, outline, 0f, ImDrawFlags.None, 1f);
+                break;
+
+            case CircularZone c:
+                float pr = c.Radius * ppi;
+                dl.AddCircleFilled(center, pr, fill, 24);
+                dl.AddCircle(center, pr, outline, 24, 1f);
+                break;
+        }
     }
 
     private static string DescribeTemplate(TerrainPieceEntry entry)
