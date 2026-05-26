@@ -252,7 +252,7 @@ public class GuiChooseRangedAttackResolver
                 else
                 {
                     sub = $"{ts.modelsThatCanShoot.Count}/{ts.TargetUnit.GetValue().ModelBindings.Count} in range";
-                    if (ts.HasCover) sub += ", Cover";
+                    if (ts.HasCover) sub += ", Cover (+1 Def)";
                     colSub = ImGui.ColorConvertFloat4ToU32(new Vector4(0.40f, 0.85f, 0.40f, 1f));
                 }
                 dl.AddText(rMin + new Vector2(4, ImGui.GetTextLineHeight() + 4), colSub, sub);
@@ -299,7 +299,7 @@ public class GuiChooseRangedAttackResolver
             if (ts.HasCover)
             {
                 ImGui.PushStyleColor(ImGuiCol.Text, new Vector4(0.85f, 0.75f, 0.30f, 1f));
-                ImGui.TextUnformatted("Cover");
+                ImGui.TextUnformatted("Cover  +1 to defense roll");
                 ImGui.PopStyleColor();
             }
         }

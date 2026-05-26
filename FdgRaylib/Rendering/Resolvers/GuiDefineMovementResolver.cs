@@ -300,7 +300,7 @@ public class GuiDefineMovementResolver
         ImGui.Checkbox("Stay within Advance (hold Shift to force)", ref _stayInAdvance);
         ImGui.Checkbox("Show targeting", ref _showTargeting);
         if (ImGui.IsItemHovered())
-            ImGui.SetTooltip("Show ranged weapons in range AND with line of sight to each enemy unit (green), how many of your models can charge it (yellow), fire lines from the selected model, and a charge line when the ghost is within melee range. When no enemy model is visible to a weapon, a red blocked-stub with an X marks where the shot would hit a wall. Ranged info hides if the unit has moved too far to shoot.");
+            ImGui.SetTooltip("Show ranged weapons in range AND with line of sight to each enemy unit (green), how many of your models can charge it (yellow), fire lines from the selected model, and a charge line when the ghost is within melee range. Fire lines turn yellow and dashed when the shot passes through cover (+1 to the target's defense roll). When no enemy model is visible to a weapon, a red blocked-stub with an X marks where the shot would hit a wall. Ranged info hides if the unit has moved too far to shoot.");
 
         ImGui.Spacing();
         float spacing = ImGui.GetStyle().ItemSpacing.X;
@@ -542,6 +542,8 @@ public class GuiDefineMovementResolver
         uint lineCol      = ImGui.ColorConvertFloat4ToU32(new Vector4(0.30f, 1.00f, 0.30f, 0.85f));
         uint midTextCol   = ImGui.ColorConvertFloat4ToU32(new Vector4(0.60f, 1.00f, 0.60f, 1f));
         uint blockedLineCol = ImGui.ColorConvertFloat4ToU32(new Vector4(1.00f, 0.35f, 0.35f, 0.85f));
+        uint coverLineCol   = ImGui.ColorConvertFloat4ToU32(new Vector4(0.85f, 0.80f, 0.30f, 0.85f));
+        uint coverTextCol   = ImGui.ColorConvertFloat4ToU32(new Vector4(0.95f, 0.85f, 0.35f, 1f));
         float lineH = ImGui.GetTextLineHeight();
         const float meleeRange = GameWideConstants.MELEE_RANGE_INCHES_HORIZONTAL;
 
@@ -712,6 +714,7 @@ public class GuiDefineMovementResolver
         // Group resulting (target enemy model) -> list of weapons hitting it, partitioned by
         // clear vs blocked so the renderer can style them differently.
         var byTarget = new Dictionary<IModel, List<IWeapon>>();
+        var coverTargets = new HashSet<IModel>(ReferenceEqualityComparer.Instance);
         var blockedByTarget = new Dictionary<IModel, (List<IWeapon> weapons, IUnit enemyUnit)>();
         foreach (IUnit enemyUnit in _tableState.Units.Objects)
         {
@@ -724,21 +727,24 @@ public class GuiDefineMovementResolver
             {
                 IModel? nearestClear   = null; float nearestClearB2B   = float.MaxValue;
                 IModel? nearestInRange = null; float nearestInRangeB2B = float.MaxValue;
+                ESightLineEffect nearestClearEffect = ESightLineEffect.Clear;
                 foreach (var em in aliveEnemies)
                 {
                     float b2b = DistanceUtilities.GetBaseToBaseDistanceInches_2D(
                         selPos, em.Position, _selectedModel.BaseRadiusInches, em.BaseRadiusInches);
                     if (b2b > w.RangeInches) continue;
                     if (b2b < nearestInRangeB2B) { nearestInRangeB2B = b2b; nearestInRange = em; }
-                    if (LineOfSightUtilities.HasLineOfSight(selPos, em.Position, unitBlockers))
+                    var effect = LineOfSightUtilities.EvaluateSightLine(selPos, em.Position, unitBlockers);
+                    if (effect != ESightLineEffect.Blocking)
                     {
-                        if (b2b < nearestClearB2B) { nearestClearB2B = b2b; nearestClear = em; }
+                        if (b2b < nearestClearB2B) { nearestClearB2B = b2b; nearestClear = em; nearestClearEffect = effect; }
                     }
                 }
                 if (nearestClear != null)
                 {
                     if (!byTarget.TryGetValue(nearestClear, out var list)) byTarget[nearestClear] = list = new List<IWeapon>();
                     list.Add(w);
+                    if (nearestClearEffect == ESightLineEffect.Cover) coverTargets.Add(nearestClear);
                 }
                 else if (nearestInRange != null)
                 {
@@ -755,6 +761,9 @@ public class GuiDefineMovementResolver
             var target = kvp.Key;
             var weapons = kvp.Value.OrderBy(w => w.Name).ToList();
             int n = weapons.Count;
+            bool inCover = coverTargets.Contains(target);
+            uint thisLineCol = inCover ? coverLineCol : lineCol;
+            uint thisTextCol = inCover ? coverTextCol : midTextCol;
 
             var (ax, ay) = InchesToPixel(selPos.x, selPos.z);
             var (bx, by) = InchesToPixel(target.Position.x, target.Position.z);
@@ -768,23 +777,32 @@ public class GuiDefineMovementResolver
                 float offset = (i - (n - 1) * 0.5f) * stagger;
                 var sa = new Vector2(ax + perpX * offset, ay + perpY * offset);
                 var sb = new Vector2(bx + perpX * offset, by + perpY * offset);
-                dl.AddLine(sa, sb, lineCol, 1.5f);
+                if (inCover) AddDottedLine(dl, sa, sb, thisLineCol, 1.5f);
+                else         dl.AddLine(sa, sb, thisLineCol, 1.5f);
             }
 
             // Weapon name labels stacked beside the line midpoint (screen-right by default,
-            // flipped to screen-left if right side would clip the window edge).
+            // flipped to screen-left if right side would clip the window edge). When the shot
+            // passes through cover terrain, append "(cover)" to each weapon name so the player
+            // sees the +1 defense modifier inline.
             float mx = (ax + bx) * 0.5f, my = (ay + by) * 0.5f;
             float blockH = n * lineH;
             float blockW = 0f;
+            string[] labels = new string[n];
             var sizes = new Vector2[n];
-            for (int i = 0; i < n; i++) { sizes[i] = ImGui.CalcTextSize(weapons[i].Name); if (sizes[i].X > blockW) blockW = sizes[i].X; }
+            for (int i = 0; i < n; i++)
+            {
+                labels[i] = inCover ? $"{weapons[i].Name} (cover)" : weapons[i].Name;
+                sizes[i] = ImGui.CalcTextSize(labels[i]);
+                if (sizes[i].X > blockW) blockW = sizes[i].X;
+            }
             const float margin = 8f;
             float xLeftAnchor  = mx + margin;
             float xRightAnchor = mx - margin - blockW;
             float xAnchor = xLeftAnchor + blockW <= screenW - 4f ? xLeftAnchor : xRightAnchor;
             float yTop = my - blockH * 0.5f;
             for (int i = 0; i < n; i++)
-                dl.AddText(new Vector2(xAnchor, yTop + i * lineH), midTextCol, weapons[i].Name);
+                dl.AddText(new Vector2(xAnchor, yTop + i * lineH), thisTextCol, labels[i]);
         }
 
         // Blocked targets: stub from the selected model toward the would-be-nearest target,
