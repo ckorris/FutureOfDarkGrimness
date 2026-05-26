@@ -52,8 +52,8 @@ public class GuiConsolidationMoveResolver
     public Task<List<ModelMoveEntry>> Resolve(ConsolidationMoveRequest request)
     {
         var tcs = new TaskCompletionSource<List<ModelMoveEntry>>();
-        // PathTemplate's "advance" cap is half of charge; we only use the charge cap as our single consolidation cap.
-        var template = new PathTemplate(request.UnitDataBinding, request.MaxDistanceInches);
+        // Consolidation uses a single hard cap; the "advance" threshold is irrelevant here.
+        var template = new PathTemplate(request.UnitDataBinding, request.MaxDistanceInches, request.MaxDistanceInches);
         var first = request.UnitDataBinding.GetValue().ModelBindings
             .Select(mb => mb.GetValue() as IModel)
             .FirstOrDefault(m => m != null && m.GetIsAlive());
