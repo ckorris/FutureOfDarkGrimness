@@ -300,7 +300,7 @@ public class GuiDefineMovementResolver
         ImGui.Checkbox("Stay within Advance (hold Shift to force)", ref _stayInAdvance);
         ImGui.Checkbox("Show targeting", ref _showTargeting);
         if (ImGui.IsItemHovered())
-            ImGui.SetTooltip("Show ranged weapons in range of each enemy unit (green), how many of your models can charge it (yellow), fire lines from the selected model, and a charge line when the ghost is within melee range. Ranged info hides if the unit has moved too far to shoot.");
+            ImGui.SetTooltip("Show ranged weapons in range AND with line of sight to each enemy unit (green), how many of your models can charge it (yellow), fire lines from the selected model, and a charge line when the ghost is within melee range. When no enemy model is visible to a weapon, a red blocked-stub with an X marks where the shot would hit a wall. Ranged info hides if the unit has moved too far to shoot.");
 
         ImGui.Spacing();
         float spacing = ImGui.GetStyle().ItemSpacing.X;
@@ -514,8 +514,6 @@ public class GuiDefineMovementResolver
         IReadOnlyDictionary<IModel, IReadOnlyList<Position>> paths,
         Position? ghostPos, float ghostExtraDist)
     {
-        // TODO: factor in line of sight when deciding what counts as "in range" / a valid shooter (WorkItem 041).
-
         // Shooting aggregate is driven by committed paths so it doesn't flicker on rush-boundary hover.
         // Per-line shooting from the selected model + the charge overlay are ghost-aware.
         bool canShootCommitted = true;
@@ -543,8 +541,39 @@ public class GuiDefineMovementResolver
         uint enemyTextCol = ImGui.ColorConvertFloat4ToU32(new Vector4(0.60f, 1.00f, 0.60f, 1f));
         uint lineCol      = ImGui.ColorConvertFloat4ToU32(new Vector4(0.30f, 1.00f, 0.30f, 0.85f));
         uint midTextCol   = ImGui.ColorConvertFloat4ToU32(new Vector4(0.60f, 1.00f, 0.60f, 1f));
+        uint blockedLineCol = ImGui.ColorConvertFloat4ToU32(new Vector4(1.00f, 0.35f, 0.35f, 0.85f));
         float lineH = ImGui.GetTextLineHeight();
         const float meleeRange = GameWideConstants.MELEE_RANGE_INCHES_HORIZONTAL;
+
+        // Per-frame blocker snapshots: each enemy unit gets its own terrain+model-blocker list
+        // because BuildModelBlockers excludes the defender unit (so it won't self-block).
+        // Cost: one BuildModelBlockers call per enemy unit per frame. Cheap; the resulting
+        // lists are walked many times during LoS checks below.
+        IUnit ourUnit = request.UnitDataBinding.GetValue();
+        var terrainSnapshot = _tableState.Terrain.Objects.ToList();
+        var blockersByEnemyUnit = new Dictionary<IUnit, List<ITerrain>>(ReferenceEqualityComparer.Instance);
+        foreach (IUnit enemyUnit in _tableState.Units.Objects)
+        {
+            if (enemyUnit.PlayerID == ourPlayerID) continue;
+            var modelBlockers = LineOfSightUtilities.BuildModelBlockers(_tableState, ourUnit, enemyUnit);
+            var combined = new List<ITerrain>(terrainSnapshot.Count + modelBlockers.Count);
+            combined.AddRange(terrainSnapshot);
+            combined.AddRange(modelBlockers);
+            blockersByEnemyUnit[enemyUnit] = combined;
+        }
+
+        // LoS cache keyed by (attacker model, defender model) — values are committed-position
+        // results only. The selected model's ghost-position LoS is computed fresh on use
+        // because the ghost moves with the mouse and would invalidate cached values.
+        var losCache = new Dictionary<(IModel, IModel), bool>();
+        bool LoSCommitted(IModel attackerModel, Position attackerPos, IModel defenderModel, IUnit defenderUnit)
+        {
+            var key = (attackerModel, defenderModel);
+            if (losCache.TryGetValue(key, out bool v)) return v;
+            v = LineOfSightUtilities.HasLineOfSight(attackerPos, defenderModel.Position, blockersByEnemyUnit[defenderUnit]);
+            losCache[key] = v;
+            return v;
+        }
 
         // 1) Per-enemy-unit aggregate text: shooting weapon counts (green) + charger count (yellow), combined.
         foreach (IUnit enemyUnit in _tableState.Units.Objects)
@@ -569,7 +598,9 @@ public class GuiDefineMovementResolver
                         {
                             float b2b = DistanceUtilities.GetBaseToBaseDistanceInches_2D(
                                 from, em.Position, ourModel.BaseRadiusInches, em.BaseRadiusInches);
-                            if (b2b <= w.RangeInches) { inRange = true; break; }
+                            if (b2b > w.RangeInches) continue;
+                            if (!LoSCommitted(ourModel, from, em, enemyUnit)) continue;
+                            inRange = true; break;
                         }
                         if (inRange)
                         {
@@ -674,29 +705,47 @@ public class GuiDefineMovementResolver
         if (selRanged.Count == 0) return;
         Position selPos = ghostPos ?? committed[_selectedModel];
 
-        // For each weapon, pick the nearest enemy model in range per enemy unit.
-        // Group resulting (line endpoint = enemy model) -> list of weapons hitting it.
+        // For each weapon, prefer the nearest in-range enemy model with line of sight (clear shot).
+        // If no in-range model has LoS, fall back to the nearest in-range model overall as a
+        // "blocked" target — we'll render that with a red stub + X at the block point so the
+        // player can see why the shot doesn't land.
+        // Group resulting (target enemy model) -> list of weapons hitting it, partitioned by
+        // clear vs blocked so the renderer can style them differently.
         var byTarget = new Dictionary<IModel, List<IWeapon>>();
+        var blockedByTarget = new Dictionary<IModel, (List<IWeapon> weapons, IUnit enemyUnit)>();
         foreach (IUnit enemyUnit in _tableState.Units.Objects)
         {
             if (enemyUnit.PlayerID == ourPlayerID) continue;
             var aliveEnemies = enemyUnit.Models.Where(em => em.GetIsAlive()).ToList();
             if (aliveEnemies.Count == 0) continue;
 
+            var unitBlockers = blockersByEnemyUnit[enemyUnit];
             foreach (var w in selRanged)
             {
-                IModel? nearest = null;
-                float nearestB2B = float.MaxValue;
+                IModel? nearestClear   = null; float nearestClearB2B   = float.MaxValue;
+                IModel? nearestInRange = null; float nearestInRangeB2B = float.MaxValue;
                 foreach (var em in aliveEnemies)
                 {
                     float b2b = DistanceUtilities.GetBaseToBaseDistanceInches_2D(
                         selPos, em.Position, _selectedModel.BaseRadiusInches, em.BaseRadiusInches);
                     if (b2b > w.RangeInches) continue;
-                    if (b2b < nearestB2B) { nearestB2B = b2b; nearest = em; }
+                    if (b2b < nearestInRangeB2B) { nearestInRangeB2B = b2b; nearestInRange = em; }
+                    if (LineOfSightUtilities.HasLineOfSight(selPos, em.Position, unitBlockers))
+                    {
+                        if (b2b < nearestClearB2B) { nearestClearB2B = b2b; nearestClear = em; }
+                    }
                 }
-                if (nearest == null) continue;
-                if (!byTarget.TryGetValue(nearest, out var list)) byTarget[nearest] = list = new List<IWeapon>();
-                list.Add(w);
+                if (nearestClear != null)
+                {
+                    if (!byTarget.TryGetValue(nearestClear, out var list)) byTarget[nearestClear] = list = new List<IWeapon>();
+                    list.Add(w);
+                }
+                else if (nearestInRange != null)
+                {
+                    if (!blockedByTarget.TryGetValue(nearestInRange, out var entry))
+                        blockedByTarget[nearestInRange] = entry = (new List<IWeapon>(), enemyUnit);
+                    entry.weapons.Add(w);
+                }
             }
         }
 
@@ -736,6 +785,53 @@ public class GuiDefineMovementResolver
             float yTop = my - blockH * 0.5f;
             for (int i = 0; i < n; i++)
                 dl.AddText(new Vector2(xAnchor, yTop + i * lineH), midTextCol, weapons[i].Name);
+        }
+
+        // Blocked targets: stub from the selected model toward the would-be-nearest target,
+        // stopping at the first blocker's entry point, with an X drawn at the block point.
+        foreach (var kvp in blockedByTarget)
+        {
+            var target = kvp.Key;
+            var weapons = kvp.Value.weapons.OrderBy(w => w.Name).ToList();
+            int n = weapons.Count;
+
+            var hit = LineOfSightUtilities.GetFirstBlockingHit(selPos, target.Position,
+                blockersByEnemyUnit[kvp.Value.enemyUnit]);
+            if (!hit.HasValue) continue; // sanity: we only land here when LoS failed, so a blocker exists
+
+            var (ax, ay) = InchesToPixel(selPos.x, selPos.z);
+            var (bx, by) = InchesToPixel(hit.Value.hit.x, hit.Value.hit.z);
+            float dx = bx - ax, dy = by - ay;
+            float len = MathF.Sqrt(dx * dx + dy * dy);
+            if (len < 0.001f) continue;
+            float perpX = -dy / len, perpY = dx / len;
+
+            for (int i = 0; i < n; i++)
+            {
+                float offset = (i - (n - 1) * 0.5f) * stagger;
+                var sa = new Vector2(ax + perpX * offset, ay + perpY * offset);
+                var sb = new Vector2(bx + perpX * offset, by + perpY * offset);
+                dl.AddLine(sa, sb, blockedLineCol, 1.5f);
+            }
+
+            // X marker at the block point
+            const float xSize = 6f;
+            dl.AddLine(new Vector2(bx - xSize, by - xSize), new Vector2(bx + xSize, by + xSize), blockedLineCol, 2f);
+            dl.AddLine(new Vector2(bx - xSize, by + xSize), new Vector2(bx + xSize, by - xSize), blockedLineCol, 2f);
+
+            // Weapon name labels stacked at the midpoint of the stub.
+            float mx = (ax + bx) * 0.5f, my = (ay + by) * 0.5f;
+            float blockH = n * lineH;
+            float blockW = 0f;
+            var sizes = new Vector2[n];
+            for (int i = 0; i < n; i++) { sizes[i] = ImGui.CalcTextSize(weapons[i].Name); if (sizes[i].X > blockW) blockW = sizes[i].X; }
+            const float margin = 8f;
+            float xLeftAnchor  = mx + margin;
+            float xRightAnchor = mx - margin - blockW;
+            float xAnchor = xLeftAnchor + blockW <= screenW - 4f ? xLeftAnchor : xRightAnchor;
+            float yTop = my - blockH * 0.5f;
+            for (int i = 0; i < n; i++)
+                dl.AddText(new Vector2(xAnchor, yTop + i * lineH), blockedLineCol, weapons[i].Name);
         }
     }
 
