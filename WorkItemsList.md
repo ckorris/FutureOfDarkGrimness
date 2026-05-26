@@ -83,7 +83,9 @@ These are umbrellas; will fragment per-rule when picked up.
 ## Client / renderer
 
 - [ ] 040 — Post-game navigation back to main menu in GUI mode (currently window just stays open)
-- [ ] 041 — Factor line of sight into movement resolver's ranged-targeting overlay (`GuiDefineMovementResolver.DrawRangedTargeting` currently checks range only)
+- [ ] 041 — Factor line of sight into movement resolver's ranged-targeting overlay (`GuiDefineMovementResolver.DrawTargeting` currently checks range only). Depends on 046. Per-weapon: prefer nearest in-range enemy model with LoS (normal line); if none has LoS, draw blocked stub + X to nearest in-range model via 046. Per-frame cache of `EvaluateSightLine` results keyed by `(attacker model, defender model)` references.
+- [ ] 045 — Cover indication. Engine already returns `ESightLineEffect.Cover` from `EvaluateSightLine`; renderer's movement targeting overlay must distinguish `Cover` from `Clear` (e.g., dashed/desaturated line). Review `CoverCheckStage` end-to-end and surface the resulting save modifier in shot UI.
+- [ ] 046 — Engine API `LineOfSightUtilities.GetFirstBlockingHit(attacker, target, terrain) -> (Position hit, ITerrain piece)?` returning the closest blocker intersection along the (attacker, target) segment. Consumed by 041's overlay to draw a blocked stub + X at the block point.
 
 ---
 
@@ -95,3 +97,4 @@ These are umbrellas; will fragment per-rule when picked up.
 - [x] 018 — Pile In move: defender models not already in BTB step up to 3" toward nearest charging model, with impassible-terrain and strict coherency fallbacks ([WorkItems/018](WorkItems/018-pile-in.md))
 - [x] 043 — Filter dead models out of `IUnit.AllWeapons` so dead models no longer contribute weapons to attack/strike-back/shoot lists or the tooltip readout
 - [x] 019 — Consolidation moves after melee resolution: 3" Wipeout / 1" Disengage with per-model GUI path-builder, AI resolver, table-bounds clamp, and validation against terrain + cohesion + cap ([WorkItems/019](WorkItems/019-consolidation-moves.md))
+- [x] 044 — Allied/same-team models no longer block LoS: `LineOfSightUtilities.BuildModelBlockers` now excludes every model whose unit's `PlayerID` shares a team with the attacker, plus the defender unit. Two new test cases in `ModelBlockerTests` ([WorkItems/044](WorkItems/044-los-ally-exclusion.md))
