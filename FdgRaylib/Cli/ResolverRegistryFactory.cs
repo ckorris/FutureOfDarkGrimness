@@ -23,7 +23,8 @@ public static class ResolverRegistryFactory
             .RegisterResolver(new SelectionResolver<ModelData>())
             .RegisterResolver(new SelectionResolver<RectangularZone>())
             .RegisterResolver(new CancellableSelectionResolver<UnitData>())
-            .RegisterResolver(new PlaceObjectsResolver<ModelData>(tableState));
+            .RegisterResolver(new PlaceObjectsResolver<ModelData>(tableState))
+            .RegisterResolver(new PlaceOneTerrainResolver(tableState));
     }
 
     /// <summary>GUI build — interactive resolvers where implemented, CLI fallback otherwise.</summary>
@@ -44,6 +45,7 @@ public static class ResolverRegistryFactory
         var consolidate   = new GuiConsolidationMoveResolver(tableState);
         var placeObjects  = new GuiPlaceObjectsResolver<ModelData>(tableState);
         var placeObjective = new GuiPlaceObjectiveResolver(tableState);
+        var placeTerrain   = new GuiPlaceOneTerrainResolver(tableState);
         overlay.Register(yesNo);
         overlay.Register(selectUnit);
         overlay.Register(selectModel);
@@ -57,6 +59,7 @@ public static class ResolverRegistryFactory
         overlay.Register(consolidate);
         overlay.Register(placeObjects);
         overlay.Register(placeObjective);
+        overlay.Register(placeTerrain);
 
         var registry = new StageResolverRegistry()
             .RegisterResolver(yesNo)                                         // GUI
@@ -71,7 +74,8 @@ public static class ResolverRegistryFactory
             .RegisterResolver(movement)                                      // GUI
             .RegisterResolver(consolidate)                                   // GUI
             .RegisterResolver(placeObjects)                                  // GUI
-            .RegisterResolver(placeObjective);                               // GUI
+            .RegisterResolver(placeObjective)                                // GUI
+            .RegisterResolver(placeTerrain);                                 // GUI
 
         return (registry, overlay);
     }

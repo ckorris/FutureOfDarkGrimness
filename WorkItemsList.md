@@ -10,11 +10,11 @@ Numbers are permanent and never reused. If an item is split, its line stays and 
 
 ## Setup & map
 
-- [ ] 002 — Terrain placement workflow (`MapSetupStage` children currently empty)
 - [ ] 003 — Force organization validation (optional rule: hero/unit/copy/cost caps)
 
 ## Deployment
 
+- [ ] 048 — Block deployment of models into impassible terrain (auto-placement and GUI both need intersection check; observed: AI placed model inside building flush against deployment zone edge) ([WorkItems/048](WorkItems/048-deployment-into-impassible.md))
 - [ ] 004 — Ambush deployment between rounds (set-aside + alternating placement at start of rounds 2+)
 - [ ] 005 — Scout deployment after main deployment (alternating, within 12" of zone)
 - [ ] 006 — Hero joins unit + takes morale on behalf of unit
@@ -83,9 +83,12 @@ These are umbrellas; will fragment per-rule when picked up.
 ## Client / renderer
 
 - [ ] 040 — Post-game navigation back to main menu in GUI mode (currently window just stays open)
-- [ ] 041 — Factor line of sight into movement resolver's ranged-targeting overlay (`GuiDefineMovementResolver.DrawTargeting` currently checks range only). Depends on 046. Per-weapon: prefer nearest in-range enemy model with LoS (normal line); if none has LoS, draw blocked stub + X to nearest in-range model via 046. Per-frame cache of `EvaluateSightLine` results keyed by `(attacker model, defender model)` references.
-- [ ] 045 — Cover indication. Engine already returns `ESightLineEffect.Cover` from `EvaluateSightLine`; renderer's movement targeting overlay must distinguish `Cover` from `Clear` (e.g., dashed/desaturated line). Review `CoverCheckStage` end-to-end and surface the resulting save modifier in shot UI.
-- [ ] 046 — Engine API `LineOfSightUtilities.GetFirstBlockingHit(attacker, target, terrain) -> (Position hit, ITerrain piece)?` returning the closest blocker intersection along the (attacker, target) segment. Consumed by 041's overlay to draw a blocked stub + X at the block point.
+- [ ] 041 — Factor line of sight into movement resolver's ranged-targeting overlay (`GuiDefineMovementResolver.DrawRangedTargeting` currently checks range only)
+- [ ] 044 — Multi-pool terrain selection: lobby picker for which `TerrainLayoutFile` feeds `AutoFromLayout` / `Alternating`. Spun off from #002 — that ships with one hardcoded built-in pool.
+
+## Movement
+
+- [ ] 046 — Movement validation ignores model base radius for terrain footprints. `MovementUtilities.ValidateMovingThroughImpassibleTerrain` (and the difficult/dangerous variants) test a zero-width center-to-center line against terrain footprints, so a model can park with its center just outside an impassable shape while its base overlaps it. Fix: inflate the terrain footprint by the model's `BaseRadiusInches` (Minkowski expansion) or use swept-disc distance, in `MovementUtilities`. Resolver layer needs no changes. Pre-existing — surfaced more by #002's richer terrain.
 
 ---
 
@@ -97,4 +100,6 @@ These are umbrellas; will fragment per-rule when picked up.
 - [x] 018 — Pile In move: defender models not already in BTB step up to 3" toward nearest charging model, with impassible-terrain and strict coherency fallbacks ([WorkItems/018](WorkItems/018-pile-in.md))
 - [x] 043 — Filter dead models out of `IUnit.AllWeapons` so dead models no longer contribute weapons to attack/strike-back/shoot lists or the tooltip readout
 - [x] 019 — Consolidation moves after melee resolution: 3" Wipeout / 1" Disengage with per-model GUI path-builder, AI resolver, table-bounds clamp, and validation against terrain + cohesion + cap ([WorkItems/019](WorkItems/019-consolidation-moves.md))
-- [x] 044 — Allied/same-team models no longer block LoS: `LineOfSightUtilities.BuildModelBlockers` now excludes every model whose unit's `PlayerID` shares a team with the attacker, plus the defender unit. Two new test cases in `ModelBlockerTests` ([WorkItems/044](WorkItems/044-los-ally-exclusion.md))
+- [x] 002 — Terrain placement workflow: three-mode lobby setting (AutoFromLayout / Alternating / LoadFromFile), AI + human + CLI resolvers, `CompositeZone` for L-shapes, `RotatedZoneWrapper` + SAT for 45° rotation, GUI thumbnails + R-key rotate ([WorkItems/002](WorkItems/002-terrain-placement.md))
+- [x] 045 — Terrain rotation: shipped inline with #002 via `RotatedZoneWrapper` + SAT overlap math + R-key in GUI resolver ([WorkItems/002](WorkItems/002-terrain-placement.md))
+- [x] 047 — Deployment zone selection: draw labelled zones on the canvas, allow clicking zones directly, synchronise hover between dialog and table, and renumber in reading order ([WorkItems/047](WorkItems/047-deployment-zone-labels.md))

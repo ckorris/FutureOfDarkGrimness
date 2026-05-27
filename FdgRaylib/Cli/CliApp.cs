@@ -89,6 +89,7 @@ public class CliApp
 
         var gameSettings = GameSettings.GetDefault();
         gameSettings.RandomnessType = ERandomnessType.Realistic;
+        gameSettings.AutoPlaceObjectivesDebug = true;
 
         var gameEnded = new TaskCompletionSource();
         var server = new FDGServer(_gameDataStore!, _messageBus!, gameSettings, playerSlots);
