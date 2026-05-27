@@ -14,6 +14,7 @@ Numbers are permanent and never reused. If an item is split, its line stays and 
 
 ## Deployment
 
+- [ ] 048 — Block deployment of models into impassible terrain (auto-placement and GUI both need intersection check; observed: AI placed model inside building flush against deployment zone edge) ([WorkItems/048](WorkItems/048-deployment-into-impassible.md))
 - [ ] 004 — Ambush deployment between rounds (set-aside + alternating placement at start of rounds 2+)
 - [ ] 005 — Scout deployment after main deployment (alternating, within 12" of zone)
 - [ ] 006 — Hero joins unit + takes morale on behalf of unit
