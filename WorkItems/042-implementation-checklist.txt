@@ -221,12 +221,12 @@ Notes on what differs from the original sketch:
     test needs to construct one.
 
 
-PHASE 5 — Test harness
+PHASE 5 — Test harness                                            [DONE 2026-05-28]
 ----------------------
 
 Create in FutureOfDarkGrimness/Tests/RulesHarness/:
 
-[ ] TestRuleHarness.cs           class with:
+[x] TestRuleHarness.cs           class with:
                                        - Resolver (RuleResolver)
                                        - Bus (RuleHookBus)
                                        - GameContext (TestGameContext +
@@ -235,13 +235,31 @@ Create in FutureOfDarkGrimness/Tests/RulesHarness/:
                                          params specialRules)
                                        - AttachRule(unit, definition)
                                        - Fire(IHookContext) shorthand
-[ ] RuleAssertions.cs            HasOperation<T>() NUnit-style helper
+[x] RuleAssertions.cs            HasOperation<T>() NUnit-style helper
 
 Smoke test in FutureOfDarkGrimness/Tests/SpecialRuleTests.cs:
 
-[ ] HarnessFires_NoRules_ReturnsEmpty
+[x] HarnessFires_NoRules_ReturnsEmpty
 
-CHECKPOINT: smoke test green. Harness API stabilizes as you write red tests next.
+CHECKPOINT: smoke test green. Harness API stabilizes as you write red tests next.   ✓
+
+Implementation notes (2026-05-28):
+  - Rule->unit linkage added now (chosen over a harness-private map): IUnit gains
+    IReadOnlyList<ResolvedRule> RuleDefinitions; UnitData stores it in a backing
+    list with a [JsonIgnore] accessor + AttachRuleDefinition(ResolvedRule).
+    Stores ResolvedRule (not bare definition) so alias display survives. [JsonIgnore]
+    is deliberate: production resolves rules from army-list names at load (existing
+    TODO), so names are the persisted form, not full definitions. IModel got no
+    equivalent yet — deferred to the first model-scoped rule test.
+  - BuildUnit takes rule *names* (params string[]), resolved via Resolver — exercises
+    the alias path. AttachRule(unit, definition) is the direct, resolver-free path.
+  - Concrete hook contexts still deferred; added a minimal internal TestHookContext
+    record (Hook only) so the smoke test can fire the bus. First real context lands
+    in Phase 6.
+  - Refactor: TerrainTestHelpers.cs (all generic, nothing terrain-specific) split
+    into Tests/Doubles/{FixedDice,TestGameContext,NullServices,NoOpLayer}.cs — same
+    FDG.Tests namespace + internal visibility, so the 7 consuming test files compiled
+    unchanged. Full suite stayed green (176 tests).
 
 
 PHASE 6 — Curated failing tests (RED)

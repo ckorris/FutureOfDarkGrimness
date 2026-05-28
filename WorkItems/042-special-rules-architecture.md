@@ -380,6 +380,21 @@ Concrete hook context types (`HitRollCompleteContext` etc.) are intentionally **
 
 The stub bus is still wired to return `new List<RuleOperation>()` on every call — real dispatch logic (hook-ID indexing, scope filtering, condition evaluation, effect→operation translation) lands in Phase 7a onward.
 
+## Phase 5 implementation notes (2026-05-28)
+
+`Tests/RulesHarness/TestRuleHarness.cs` is the single scaffold every rule test builds on: it owns the data store, a `TestGameContext` (deterministic `FixedDiceRoller`), the `RuleResolver`, and the stub `RuleHookBus`, and exposes `Register` / `RegisterAlias`, `BuildUnit(player, modelCount, params ruleNames)`, `AttachRule(unit, definition)`, and `Fire(IHookContext)`. `RuleAssertions.HasOperation<T>()` reads the returned queue. The smoke test `HarnessFires_NoRules_ReturnsEmpty` confirms the wiring against the stub bus.
+
+**Rule→unit linkage decided here.** The harness needs somewhere to record a unit's attached rules, and the eventual Phase 7a dispatcher needs to read them back. Chose to add the link to `IUnit` now (over a harness-private map) so the harness mirrors production:
+
+- `IUnit` gains `IReadOnlyList<ResolvedRule> RuleDefinitions`. `UnitData` stores it in a backing list with a `[JsonIgnore]` accessor plus `AttachRuleDefinition(ResolvedRule)` — mirroring the `Tokens` backing/accessor split. Existing constructors are untouched; attachment is post-construction.
+- Stores `ResolvedRule`, not a bare `SpecialRuleDefinition`, so the requested name survives for alias display ("Healing Pods (Regeneration)") — the reason `ResolvedRule` exists.
+- `[JsonIgnore]` is deliberate: a unit's rules resolve from army-list rule *names* against the host registry at load (see networking note 2026-05-24), so names — not serialized definitions — are the persisted form. That load-time resolution is still an unbuilt TODO (`UnitData.GetRealSpecialRulesFromArmyList`); Phase 7/army integration wires it.
+- `IModel` gets no equivalent yet — model-scoped rule attachment is deferred to the first model-scoped rule test (e.g. Regenerative Strength) in Phase 6/7.
+
+Concrete hook contexts are still deferred; a minimal internal `TestHookContext(EHookID Hook)` record lets the smoke test fire the bus until the first payload-bearing context arrives in Phase 6.
+
+Refactor alongside: `Tests/TerrainTestHelpers.cs` (whose contents were all generic — nothing terrain-specific) was split into `Tests/Doubles/{FixedDice,TestGameContext,NullServices,NoOpLayer}.cs`, same `FDG.Tests` namespace + `internal` visibility, so the seven consuming test files compiled unchanged. Full suite green at 176 tests.
+
 ## Outcome
 
 (pending — written when items 026–034 can proceed against this architecture)
