@@ -395,6 +395,24 @@ Concrete hook contexts are still deferred; a minimal internal `TestHookContext(E
 
 Refactor alongside: `Tests/TerrainTestHelpers.cs` (whose contents were all generic — nothing terrain-specific) was split into `Tests/Doubles/{FixedDice,TestGameContext,NullServices,NoOpLayer}.cs`, same `FDG.Tests` namespace + `internal` visibility, so the seven consuming test files compiled unchanged. Full suite green at 176 tests.
 
+## Phase 6 implementation notes (2026-05-28)
+
+Scope expanded mid-phase from "20 curated shape tests" to **a unit test for every special rule in GF Core Rules v3.5.1, except AP (which stays a weapon stat)**. The 18 curated shape tests (offer/accept, auras, tokens — using illustrative *faction* rules like Mend / Piercing Frenzy / Unstoppable Mark, which are NOT core) are kept as shape coverage; core-rule coverage is additive.
+
+Key design decisions:
+
+- **Activated-ability offer/accept** (shape behind Mend/spells): an offer is **not** a `RuleOperation` (operations are resolved/deterministic; an offer is a pre-decision request). Surfaced via a separate `AbilityOffer` record + a two-call API: bus `GatherOffers(ctx)` / `ResolveAbility(offer, targets)`, harness `OfferAbilities` / `Accept`. `Accept` returns cost-consumption ops **and** effect ops in one queue.
+
+- **Argument model** (per-instance rule args — Deadly(3), Tough(6), Caster(2)): the rulebook has 8 single-int rules and **zero multi-arg rules**. Modelled variadically anyway and **not int-locked**: `RuleArgument` is a closed union (`Int` now; `Str`/`Float`/`Enum` added on demand — e.g. Alien Hives' Spawn(unit-type) → `Str`). Per-instance values live on the attachment (`ResolvedRule.Arguments`) and may be supplied/overridden at reference sites — collapsing per-instance args and reference-overrides into one mechanism. Arg-driven effect fields use `ValueSource` (`Literal | Arg(index)`); fixed-value effects keep plain ints. "Cap at 2 args for now" is an authoring guideline, not a structural limit.
+
+- **Tough is a special rule again**: `Tough(X)` sets model max wounds at creation (models default to 1); `EStatKind.Tough` is the read-back for threshold queries (Hero / Transport / Takedown). The rulebook treats Tough as both a wound count and a queried threshold, confirming the write-a-stat / read-the-stat split.
+
+- **Queue-level now, behavior later**: Phase 6/7 assert only that the correct `RuleOperation` is **queued**; an `Effect` may be defined but its execution unimplemented. Executing effects against engine state + behavior-level tests are a deliberate second pass — **Phase 8** on the checklist.
+
+- **Per-rule template**: each rule = inline `SpecialRuleDefinition` (HookEntry = hook + condition + effect) → fire its context → assert the queued operation. Add a new `Effect` per new authored intent; add a new `RuleOperation` only when no existing one expresses the resolved action (Effect→Operation is mostly 1:1 but can be 1→N or reuse an existing op). Contexts kept **minimal** — fields added on demand, with intent comments noting likely future additions.
+
+Progress at this commit: **19 of 32 core rules covered (RED)** + 18 shape tests. Remaining: Caster, Takedown, Counter, Limited, and the structural/engine group (Aircraft, Ambush, Scout, Flying, Strider, Immobile, Artillery, Hero, Transport) which leans on the parallel #042 engine refactor (RED-tested at the operation level). Suite: **176 green, 31 RED** (intended baseline).
+
 ## Outcome
 
 (pending — written when items 026–034 can proceed against this architecture)

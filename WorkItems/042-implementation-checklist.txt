@@ -342,6 +342,24 @@ Turn tests green in this order. Each sub-phase is one focused session.
        Tests turned green: 17, 18, 19
 
 
+PHASE 8 — Behavior-level coverage (second pass, after queue-level is green)
+---------------------------------------------------------------------------
+
+Phases 6/7 are deliberately QUEUE-LEVEL: tests assert the right RuleOperation is
+queued; an Effect may be defined but its execution against engine state left
+unimplemented. This second pass closes that gap:
+
+[ ] Implement operation EXECUTION against live engine state (wound actually
+       multiplied, model actually healed, token actually granted, etc.).
+[ ] Add behavior-level tests asserting the EFFECT happened, not just that the
+       operation was queued. Drive the execution work test-first.
+
+Rationale (decided 2026-05-28): queue-level now lets us get tests green by
+implementing rules + hooks + dispatch while effects stay "defined but inert";
+executing them is a focused later pass. End state = layered coverage (operation
+queued AND effect applied). See architecture doc Phase 6 notes.
+
+
 PARALLEL / DOWNSTREAM
 ---------------------
 
