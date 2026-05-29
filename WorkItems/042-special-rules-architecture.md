@@ -411,7 +411,20 @@ Key design decisions:
 
 - **Per-rule template**: each rule = inline `SpecialRuleDefinition` (HookEntry = hook + condition + effect) → fire its context → assert the queued operation. Add a new `Effect` per new authored intent; add a new `RuleOperation` only when no existing one expresses the resolved action (Effect→Operation is mostly 1:1 but can be 1→N or reuse an existing op). Contexts kept **minimal** — fields added on demand, with intent comments noting likely future additions.
 
-Progress at this commit: **19 of 32 core rules covered (RED)** + 18 shape tests. Remaining: Caster, Takedown, Counter, Limited, and the structural/engine group (Aircraft, Ambush, Scout, Flying, Strider, Immobile, Artillery, Hero, Transport) which leans on the parallel #042 engine refactor (RED-tested at the operation level). Suite: **176 green, 31 RED** (intended baseline).
+Progress at the prior commit: **19 of 32 core rules covered (RED)** + 18 shape tests. Suite was 176 green, 31 RED.
+
+### Phase 6 completion notes (2026-05-28, second session)
+
+Added the remaining structural/engine core rules. **30 of 32 core rules now have RED tests** (Hero and Transport deliberately deferred — see below). Suite: **176 green, 42 RED** (intended baseline).
+
+- **Authoritative source = the v3.5.1 PDF, not the OPR Community Wiki.** The wiki's GF special-rules page is an older/different cut: it had *dropped* Takedown, Artillery, and Limited and *added* Lance / Lock-On / Poison / Sniper / Entrenched, none of which are in the v3.5.1 Core Rules PDF the project targets. Confirmed the project's 32-rule corpus (excl AP) against the PDF (`GF - Core Rules v3.5.1.pdf`). When the rule text matters, read the PDF.
+- **Hero and Transport(X) are skipped from the queue-level RED baseline** (decision 2026-05-28). Both are essentially static metadata with no natural runtime `RuleOperation`: Hero = deployment legality + "may take morale tests on behalf of the unit" + "uses unit's Defense until others dead"; Transport(X) = carry capacity. Inventing operations for them now would be speculative generality. They land when the #042 engine refactor defines the relevant primitives (unit-joining, morale delegation, transport embark/disembark), at which point their behavior — and any operations — get RED-tested for real.
+- **New vocabulary added this session** (each only because a rule in scope needed it):
+  - `Effect.GrantToken.Count` migrated from `int` → `ValueSource` so Caster(X) grants `Arg(0)` tokens; the two existing literal grants (Piercing Frenzy, Unstoppable Mark) wrap `Literal(1)`. `RuleOperation.GrantTokenToUnit` keeps an int count (resolved side).
+  - New Effects + matching RuleOperations: `StrikeFirst` (Counter), `TargetIndividualModel` (Takedown), `RestrictActions(Allowed)` (Immobile; also Artillery Hold-only facet), `RangeModifier`/`ApplyRangeModifier` (Aircraft), `IgnoreTerrainEffects` (Flying + Strider), `DeferDeployment` (Ambush + Scout).
+  - Reused existing vocab: Artillery's "+1 to hit >9\"" and Caster/Limited token grants need no new operation types.
+  - New contexts: `RoundStartContext`, `CounterTriggerContext`, `ShootTargetsSelectedContext`, `PostShootContext`, `PreDeploymentSelectContext`. Artillery/Aircraft reuse `HitRollModifierContext`; Immobile/Flying/Strider reuse `MoveActionDeclaredContext`.
+- **Multi-facet rules tested at their headline facet**, with the secondary facets noted in code comments as deferred: Counter (−1 Impact per Counter model), Aircraft (Advance-only + 30" straight-line movement), Artillery (enemies −2 from >9", Hold-only), Flying (move *through* units), Strider-vs-Flying terrain-scope distinction. These are Phase 8 execution concerns.
 
 ## Outcome
 

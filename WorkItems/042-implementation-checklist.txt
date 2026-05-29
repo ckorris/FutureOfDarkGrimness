@@ -297,6 +297,25 @@ Each test:
 
 CHECKPOINT: all 20 tests fail (red baseline). Commit this state — it's the spec.
 
+STATUS (2026-05-28): Scope expanded to "every GF v3.5.1 core rule except AP."
+  30 of 32 core rules now have RED tests; suite is 176 green, 42 RED.
+  - The 18 numbered shape tests above (01-12, 15-19) are kept as system-shape
+    coverage (offer/accept, auras, tokens) using illustrative FACTION rules;
+    items 13, 14, 20 (Infiltrate / UnpredictableFighter / HarassingBoost) are
+    still TODO and flip green in Phase 7e/7f.
+  - Core-rule coverage added on top: Furious, Stealth, Fast, Rending, Surge,
+    Relentless, Slow, Thrust, Indirect, Reliable, Unstoppable, Fearless,
+    Regeneration, Tough, Blast, Impact, Fear, Deadly, Bane (session 1) +
+    Caster, Artillery, Limited, Counter, Takedown, Immobile, Aircraft, Flying,
+    Strider, Scout, Ambush (session 2).
+  - DEFERRED: Hero and Transport(X) are static metadata with no natural runtime
+    operation; skipped until the #042 engine refactor defines unit-joining /
+    morale-delegation / transport embark primitives. See arch doc "Phase 6
+    completion notes" for rationale.
+  - SOURCE NOTE: the OPR Community Wiki is an OLDER cut than v3.5.1 (drops
+    Takedown/Artillery/Limited, adds Lance/Lock-On/Poison/Sniper/Entrenched).
+    Trust the v3.5.1 PDF for rule text.
+
 
 PHASE 7 — Implementation (GREEN, iterative)
 -------------------------------------------
