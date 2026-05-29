@@ -320,45 +320,82 @@ STATUS (2026-05-28): Scope expanded to "every GF v3.5.1 core rule except AP."
 PHASE 7 — Implementation (GREEN, iterative)
 -------------------------------------------
 
-Turn tests green in this order. Each sub-phase is one focused session.
+Turn the 42 RED tests green. NOTE (2026-05-28): the sub-phase mapping below was
+written for the original 20 curated tests; the corpus is now 42 (all v3.5.1 core
+rules except AP/Hero/Transport, plus the shape tests). The numbered references
+(01-20) still point at the curated shape tests; the named core rules are listed
+per bucket alongside them.
+
+KEY REFRAME: nearly every test is QUEUE-LEVEL — it asserts an operation was
+queued, not that it executed. So the bulk of the 42 go green from the dispatcher
+spine + condition evaluator + effect->operation mapping (7-spine/7a/7b) alone.
+The structural core rules (Aircraft, Immobile, Counter, Scout, Ambush, Flying,
+Strider, Takedown, Caster, Artillery, Limited) need NO execution to pass — only
+correct queuing. Execution is Phase 8 / the #042 engine track.
+
+[ ] 7-spine — Dispatcher (RuleHookBus.Dispatch), the piece everything needs
+       Implement: walk the relevant units' ResolvedRules, match HookEntry by
+       EHookID against the firing context, evaluate Condition, translate matching
+       Effects -> RuleOperation(s), resolving ValueSource.Arg(i) against the
+       firing rule's Arguments.
+       CRUX DECISION: which units' rules are evaluated for a context, and from
+       whose perspective. Stealth/Regeneration/Aircraft sit on the DEFENDER but
+       fire on shooting contexts; Furious/Rending/Bane sit on the ATTACKER on the
+       same hooks. The bus must evaluate every unit the context references and let
+       each rule's hook+condition decide — not assume "attacker." Settle this
+       convention here before building 7a/7b.
 
 [ ] 7a — Condition evaluator
-       Implement: walk Condition AST against an IHookContext, return bool.
-       Tests turned green: 01, 02, 03, 04
+       Implement: walk Condition AST against an IHookContext, return bool. This is
+       where the deliberately-minimal contexts grow fields (distance, unmodified
+       rolls, action type, AttackerMoved, round number, ...) as the evaluator
+       needs to read them.
+       Conditions exercised: Always, UnmodifiedRollEquals, DistanceGreaterThan,
+       ActionTypeIs, AfterMoving, TokenPresent, And/Or/Not.
+       Tests green: 01-04 + Stealth, Fast, Slow, Relentless, Indirect, Artillery,
+       Immobile.
 
-[ ] 7b — Effect → Operation mapping (basic effect types)
+[ ] 7b — Effect -> Operation mapping (the spine's translation table)
        Implement: RollModifier, AddExtraHit, AddExtraWound, Reroll, MovementBonus,
-       IgnoreRule each translate into matching RuleOperation entries.
-       Tests turned green: 05, 06
+       IgnoreRule, QualityFloor, RangeModifier, StrikeFirst, TargetIndividualModel,
+       RestrictActions, IgnoreTerrainEffects, DeferDeployment, and the arg-driven
+       set (MultiplyWounds, MultiplyHits, ChargeImpactHits, ExtraMeleeWoundCount,
+       SetMaxWounds) each translate into matching RuleOperation entries. AddExtraHit
+       expands per matching die; ValueSource.Arg resolves against the rule args.
+       Tests green: 05, 06 + Furious, Surge, Rending, Thrust, Reliable, Unstoppable,
+       Fearless, Regeneration, Tough, Blast, Impact, Fear, Deadly, Bane, Counter,
+       Takedown, Aircraft, Flying, Strider, Scout, Ambush.
 
 [ ] 7c — Activated abilities end-to-end
-       Implement: harness supports offer/accept pattern, ability cost gating,
-       target selector resolution, ability effect emission.
-       Tests turned green: 07, 08, 09
+       Implement: real GatherOffers/ResolveAbility — offer/accept, ability cost
+       gating, target selector resolution, ability effect emission.
+       Tests green: 07, 08, 09 (Mend offer/accept, Advanced Sight).
 
 [ ] 7d — Token-aware effects
-       Implement: GrantToken / ConsumeToken effect → operation; TokenPresent
-       and similar conditions read live token state.
-       Tests turned green: 10, 11
+       Implement: GrantToken / ConsumeToken effect -> operation (GrantToken count
+       now via ValueSource — Caster grants Arg(0)); TokenPresent and similar
+       conditions read live token state.
+       Tests green: 10, 11 (Piercing Frenzy) + Caster, Limited.
 
 [ ] 7e — Aura + parameter override
        Implement: Aura effect grants a referenced rule to whole unit;
        rule resolver supports parameter overrides in references.
-       Tests turned green: 12, 13, 20
+       Tests green: 12, 13, 20 (Regeneration Aura, Infiltrate, Harassing Boost).
+       NOTE: 13/20 tests not yet written (still TODO from Phase 6).
 
 [ ] 7f — Random branches
        Implement: random trigger type — engine rolls a die, applies one of N branches.
-       Tests turned green: 14
+       Tests green: 14 (Unpredictable Fighter). NOTE: test not yet written.
 
 [ ] 7g — Cross-unit tokens + cleanup
        Implement: TokenContainer cleanup on owner destruction
        (subscribes to OnUnitDestroyed hook).
-       Tests turned green: 15, 16
+       Tests green: 15, 16 (Unstoppable Mark place + owner-destroyed cleanup).
 
 [ ] 7h — Engine primitives (DEPENDS ON 042)
        Implement: TriggeredMove, Reactivate, mid-move attack as callable
        subsystems. Wire RuleOperation invocations to call them.
-       Tests turned green: 17, 18, 19
+       Tests green: 17, 18, 19 (Vanguard, Martial Prowess, Strafing).
 
 
 PHASE 8 — Behavior-level coverage (second pass, after queue-level is green)
