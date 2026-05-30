@@ -338,12 +338,19 @@ correct queuing. Execution is Phase 8 / the #042 engine track.
        EHookID against the firing context, evaluate Condition, translate matching
        Effects -> RuleOperation(s), resolving ValueSource.Arg(i) against the
        firing rule's Arguments.
-       CRUX DECISION: which units' rules are evaluated for a context, and from
-       whose perspective. Stealth/Regeneration/Aircraft sit on the DEFENDER but
-       fire on shooting contexts; Furious/Rending/Bane sit on the ATTACKER on the
-       same hooks. The bus must evaluate every unit the context references and let
-       each rule's hook+condition decide — not assume "attacker." Settle this
-       convention here before building 7a/7b.
+       CRUX DECISION — SETTLED 2026-05-29 (see arch doc "Phase 7 design notes"):
+       A rule is an egocentric statement keyed on a perspective-anchored "when"
+       (perspective FUSED into the trigger, not a separable side-tag — so a
+       wrong-seat rule simply can't match). Dispatch evaluates rules carried ONLY
+       by the units the firing event NAMES as participants (target for
+       defender-side whens, attacker for attacker-side whens — the old
+       GetDefender/GetAttackerSpecialRules scoping, as data). NO board scan.
+       Relational rules (Fear, Melee Shrouding) read another unit's rules only
+       when that unit is a participant in the same event, via a TargetHasRule-style
+       condition. Conditions stay SEPARATE from whens (whens = moment x seat;
+       quantitative/comparative tests = conditions) so whens stay finite and
+       conditions can stack. Per-event flow: when fires -> evaluate conditions
+       (maybe none) -> add effect to queue.
 
 [ ] 7a — Condition evaluator
        Implement: walk Condition AST against an IHookContext, return bool. This is
@@ -365,6 +372,13 @@ correct queuing. Execution is Phase 8 / the #042 engine track.
        Tests green: 05, 06 + Furious, Surge, Rending, Thrust, Reliable, Unstoppable,
        Fearless, Regeneration, Tough, Blast, Impact, Fear, Deadly, Bane, Counter,
        Takedown, Aircraft, Flying, Strider, Scout, Ambush.
+       COMPOSITION (decided 2026-05-29): keep declarative stacking; whens-as-pipeline
+       -points give ordering for free. Suppression (IgnoreRule/SuppressRule) resolves
+       in a FIRST PASS (apply removals, then fold the rest). Set-vs-add within a when
+       is rare — add a fixed effect-kind precedence only when a real pair forces it.
+       OPEN QUESTION to settle HERE before writing the fold: do effect-generated
+       outputs re-enter the when-pipeline? (Do AddExtraHit's hits re-fire hit whens /
+       re-trigger Furious?) Default assumption: NO — generated hits are terminal.
 
 [ ] 7c — Activated abilities end-to-end
        Implement: real GatherOffers/ResolveAbility — offer/accept, ability cost
@@ -377,10 +391,15 @@ correct queuing. Execution is Phase 8 / the #042 engine track.
        conditions read live token state.
        Tests green: 10, 11 (Piercing Frenzy) + Caster, Limited.
 
-[ ] 7e — Aura + parameter override
-       Implement: Aura effect grants a referenced rule to whole unit;
-       rule resolver supports parameter overrides in references.
-       Tests green: 12, 13, 20 (Regeneration Aura, Infiltrate, Harassing Boost).
+[ ] 7e — Aura (now: whole-unit promotion) + parameter override
+       SCOPE CUT 2026-05-29: distance auras DROPPED (corpus has none; building a
+       proximity scan for a non-existent case = speculative generality). The only
+       real "aura" is a Hero joined to a unit -> STATIC PROMOTION (rule becomes one
+       the unit carries, resolved at join time, off the event path; permanent in
+       v1). Hero is already deferred, so test 12 ("applies to whole unit") collapses
+       to "the unit carries the rule, every model benefits" — no scan/token/re-check.
+       Still implement: parameter overrides in rule references.
+       Tests green: 12 (trivial under promotion), 13, 20 (Infiltrate, Harassing Boost).
        NOTE: 13/20 tests not yet written (still TODO from Phase 6).
 
 [ ] 7f — Random branches
@@ -507,3 +526,120 @@ Casting (3):
 Lifecycle / token bookkeeping (2):
     OnUnitCreated
     OnWoundIgnored
+
+
+APPENDIX B — Whens per special rule (brainstorm 2026-05-29)
+----------------------------------------------------------
+
+Source: GF Beginner's Guide "Special Rules Reference" (pp.13-15) — matches the
+project's v3.5.1 corpus (has Takedown/Artillery/Limited). All 32 rules except AP.
+
+A "when" is the perspective-FUSED trigger (moment x seat) decided in the Phase 7
+design session: "when I shoot" and "when an enemy shoots me" are DIFFERENT whens
+over the same engine event. Under the hood a when maps to (EHookID x seat); the
+seat is resolved by which participant carries the rule, so authoring a wrong seat
+is impossible. Conditions/effects are shown in [..] only to justify the when — they
+are NOT part of it (they layer on top and stack). High reuse below is the point:
+basic whens cover many rules.
+
+CANONICAL WHEN VOCABULARY (deduped, grouped by resolution phase)
+  Round/lifecycle
+    [W1] when a round starts (self)
+    [W2] when this model is created (self)
+  Deployment
+    [W3] when this unit deploys (self)
+    [W4] when objective control is checked for this unit (self)
+  Action / movement (actor seat)
+    [W5] when this unit declares an action (self=actor)
+    [W6] when this unit moves (self=mover)
+    [W7] when this unit charges (self=charger)
+  Charge defense (defender seat)
+    [W8] when this unit is charged (self=charged)
+  Shooting — attacker seat
+    [W9]  when this unit selects a shooting target (self=attacker)
+    [W10] when this unit rolls to hit (self=attacker)  -- shooting OR melee; the
+          shoot/melee split is a CONDITION (combatKind), NOT a separate when
+    [W11] when this unit's hits are totaled (self=attacker)
+  Shooting — defender seat
+    [W12] when an enemy rolls to hit this unit, shooting (self=target)
+  Melee
+    [W13] -- MERGED INTO W10. Melee hit rolls reuse the hit-roll when via the combatKind
+          flag (arch doc hook-surface: "shoot hooks reused ... for everything else").
+          Only charge-contact / counter / melee-resolution / post-melee are melee-only moments.
+    [W14] when melee is resolved (self=combatant)
+  Saves / wounds
+    [W15] when the target saves against this unit's attack (self=attacker)
+    [W16] when this unit's attack wounds the target (self=attacker)
+    [W17] when this unit takes a wound (self=defender)
+    [W18] when wounds are assigned to this unit (self=defender)
+    [W19] when the target would ignore a wound from this unit's attack (self=attacker)
+  Morale
+    [W20] when this unit fails a morale test (self)
+  Casting
+    [W21] when this unit casts a spell (self=caster)
+    [W22] when a friendly caster casts within 18" of this unit (self=assisting)  *** TRIPWIRE
+  Weapon availability
+    [W23] when this unit attacks with this weapon (self=attacker)
+
+PER-RULE MAPPING (rule [primary seat] -> when(s); [condition -> effect])
+  Aircraft [mixed]  -> W6 [Advance-only, straight, +30", ignore units/terrain],
+                       W8 [cannot be charged], W12 [-12" to attacker range],
+                       W4 [cannot seize/contest]
+  Ambush [self]     -> W3 [set aside], W1 [from rnd 2: place >9" from enemies],
+                       W4 [no seize/contest the round it arrives]
+  Artillery [mixed] -> W5 [Hold-only], W10 [dist>9 -> +1 hit], W12 [dist>9 -> -2 to attacker]
+  Bane [attacker]   -> W15 [unmodified Defense 6 -> reroll], W19 [suppress Regeneration]
+  Blast(X) [atk]    -> W9 [ignore cover], W11 [each hit x X, cap = target model count]  (ORDERING: "after other rules")
+  Caster(X) [caster]-> W1 [gain X spell tokens, cap 6], W21 [spend tokens to cast],
+                       W22 [assist +/-1 per token]  *** proximity tripwire; likely deferred
+  Counter [defender]-> W8 [strike first; -1 charger Impact rolls per Counter model]
+  Deadly(X) [atk]   -> W16 [wound x X, single model, no carry-over]  (ORDERING: "resolved first")
+  Fast [mover]      -> W6 [Advance +2", Rush/Charge +4"]
+  Fear(X) [combatant]-> W14 [counts as +X wounds dealt for who-won-melee]
+  Fearless [self]   -> W20 [roll d6; 4+ counts as passed]
+  Flying [mover]    -> W6 [move through units+terrain; ignore terrain effects]
+  Furious [atk]     -> W10 [melee AND charging AND unmodified 6 -> +1 hit]
+  Immobile [actor]  -> W5 [Hold-only]
+  Impact(X) [charger]-> W7 [not fatigued -> roll X; each 2+ -> 1 hit]
+  Indirect [atk]    -> W10 [after moving -> -1 hit], W9 [target non-LoS as if LoS; ignore cover]
+  Limited [atk]     -> W23 [once per game -> consume once-per-game token]
+  Regeneration [def]-> W17 [roll d6 per wound; 5+ ignored]
+  Relentless [atk]  -> W10 [dist>9 AND unmodified 6 -> +1 hit]
+  Rending [atk]     -> W10 [unmodified 6 -> those hits get AP(4)], W19 [suppress Regeneration]
+  Reliable [atk]    -> W10 [set base Quality to 2+ (still modifiable)]
+  Scout [self]      -> W3 [set aside; after all deploy, place within 12" of zone]
+  Slow [mover]      -> W6 [Advance -2", Rush/Charge -4"]
+  Stealth [def]     -> W12 [dist>9 -> -1 to attacker hit]
+  Strider [mover]   -> W6 [ignore difficult-terrain effects]  (narrower than Flying)
+  Surge [atk]       -> W10 [unmodified 6 -> +1 hit]  (NO combat-kind condition -> fires in shooting AND melee)
+  Takedown [atk]    -> W9 [target individual model, resolve as unit of [1]; ignore intervening LoS/cover]  (ORDERING: "resolved first")
+  Thrust [atk]      -> W10 [melee AND charging -> +1 hit and AP(+1)]
+  Tough(X) [self/def]-> W2 [set max wounds = X], W18 [assignment order: most-wounded tough first; heroes last]
+  Unstoppable [atk] -> W10 [ignore all negative modifiers to this weapon], W19 [suppress Regeneration]
+
+DEFERRED (static metadata; no runtime when until #042 engine primitives exist)
+  Hero      -> would be W3 [deploy joined], W20 [take morale on unit's behalf],
+               + "use unit's Defense until others dead" (a stat-read relationship).
+  Transport(X) -> W3 [units inside deploy with it], "when this transport is destroyed"
+               [occupants: dangerous test + Shaken + place within 6"], embark/disembark.
+
+OBSERVATIONS
+  - TWO distinct mechanisms, don't confuse them: (a) a rule may list MULTIPLE whens
+    (a SpecialRuleDefinition is a LIST of HookEntries) for genuinely DIFFERENT moments
+    -- Aircraft 4, Bane 2, Tough 2; (b) a single moment that occurs in BOTH shooting
+    and melee (hit/save/wound rolls) is ONE when with combatKind as a CONDITION, not
+    two whens. Surge is case (b); splitting it into shoot+melee whens was over-cutting.
+  - W6 ("when this unit moves") alone carries Fast/Slow/Flying/Strider/Aircraft —
+    confirms whens should stay basic and let conditions/effects differentiate.
+  - W10 ("rolls to hit") is the busiest by far: Artillery/Indirect/Relentless/Surge/
+    Reliable/Rending/Unstoppable + melee Furious/Thrust. Shooting-only ones add a
+    [shooting] condition, melee-only ones add [melee]; pure weapon rules (Surge/
+    Reliable/Rending/Unstoppable) add neither and fire in both. All differ only by
+    condition/effect.
+  - W19 is a pure SUPPRESSION when shared by Bane/Rending/Unstoppable (all "ignore
+    Regeneration") — feeds the 7b first-pass suppression decision.
+  - ORDERING flags (Blast "after other rules", Deadly/Takedown "resolved first") are
+    the concrete cases behind the 7b feedback/precedence open question.
+  - W22 (Caster assist within 18") is the ONE proximity-to-non-participant rule in
+    the corpus — the aura tripwire. If we implement assist, the pull model returns
+    for it alone; otherwise defer.

@@ -426,6 +426,105 @@ Added the remaining structural/engine core rules. **30 of 32 core rules now have
   - New contexts: `RoundStartContext`, `CounterTriggerContext`, `ShootTargetsSelectedContext`, `PostShootContext`, `PreDeploymentSelectContext`. Artillery/Aircraft reuse `HitRollModifierContext`; Immobile/Flying/Strider reuse `MoveActionDeclaredContext`.
 - **Multi-facet rules tested at their headline facet**, with the secondary facets noted in code comments as deferred: Counter (−1 Impact per Counter model), Aircraft (Advance-only + 30" straight-line movement), Artillery (enemies −2 from >9", Hold-only), Flying (move *through* units), Strider-vs-Flying terrain-scope distinction. These are Phase 8 execution concerns.
 
+## Phase 7 design notes (2026-05-29) — the dispatch model
+
+Before writing the 7-spine dispatcher, a design session worked the "which units, from
+whose perspective" question (the 7-spine CRUX) from first principles instead of patching
+it case-by-case. The conclusions below supersede the tentative "evaluate every referenced
+unit and let hook+condition decide" lean recorded against 7-spine in the checklist.
+
+### The fundamental framing: a rule is an egocentric statement keyed on a "when"
+
+Every special rule is authored from the point of view of its bearer — "when *I* roll to
+hit," "when *an enemy* shoots *me* from >9\"," "when *I'm* charged." The terms *I* / *the
+enemy* / *the target* are meaningless until the bearer's place in the event is known. The
+earlier struggle (whose dice, which side, what distance) was the symptom of never modelling
+two things: **(1) the event, completely** — the full relational situation, not a thin
+per-hook snapshot — and **(2) the bearer's role within it**, since the rule resolves
+entirely relative to that role.
+
+The organizing primitive is therefore the **"when"**: a perspective-anchored trigger.
+"When this unit rolls to hit" and "when another unit rolls to hit this unit" are two
+*different* whens over the same underlying engine event (a hit roll). Perspective is
+**fused into the when**, not carried as a separate `Side`/role field — so an author
+cannot express a contradictory seat (the failure mode a separable side-tag allowed). This
+is the eventual rule-authoring UX: each rule starts by picking a "when" from a finite,
+auditable list. It generalizes the old `ISpecialRule_Attacker`/`_Defender` split into data,
+and scales past a binary actor/subject to N-role events ("when a unit I destroyed dies").
+
+### Whens stay basic; conditions are separate
+
+A when names only **moment × seat**. Everything quantitative or comparative (">9\"", "a
+natural 6", "target has Tough") is a **condition** layered on top (the list may be empty).
+Two reasons: (a) keeps the when-list finite — without this, every numeric variant becomes a
+new when and the list degenerates into one-hook-per-rule; (b) conditions are the unit that
+*stacks*. Firing order: **when fires the event → its conditions are evaluated (possibly
+none) → if they pass, the effect is added to the queue.** Rule of thumb for the line: if
+two rules trigger at the same moment from the same seat and differ only in a test, that
+difference is a condition, not a new when.
+
+### Dispatch reads only the event's named participants — no world scan
+
+For a given when, the bus evaluates rules carried **only by the units the event already
+names** — the target for defender-side whens, the attacker for attacker-side whens (exactly
+the old `GetDefenderSpecialRules()` / `GetAttackerSpecialRules()` scoping, as data). It never
+scans the table. Relational rules (Fear: an enemy in melee worsens my morale; Melee
+Shrouding: the charged unit slows the charger) **do** read another unit's rules — but that
+unit is a *participant in the same event*, read via a `TargetHasRule`-style condition. So
+"rules from other units" survives, scoped to the event's cast, never the whole board.
+
+### Auras: distance auras dropped; hero-in-unit is static promotion
+
+The only thing that ever motivated a board-wide scan was a standing distance aura ("buff
+friendlies within X\""). **The corpus has none** — so building proximity-scan machinery for
+it would be speculative generality (violates the project's no-speculative-generality
+principle). Decision: **drop distance auras entirely.** The real "aura" in GF is a **Hero
+joined to a unit** granting the unit a rule — modelled as **static promotion** (the rule
+becomes one the *unit* carries, resolved once at join time, off the event path; permanent in
+v1, no removal logic). Hero is already deferred until the engine has unit-joining, so auras
+can be set aside for the current phase entirely. The Phase 6 shape test "applies to the whole
+unit" (test 12) collapses to "the unit carries the rule, every model benefits" — no scan, no
+token, no live re-check.
+
+Tripwire: the day a *single* rule keys on "within X\" of a non-participant," the pull model
+(aura = a rule on the granter, projected onto units at event time via a live condition; **not**
+a stored token — a token is *remembered state*, an aura is a *live query*, and storing a live
+query as state is the maintenance trap we explicitly rejected) returns — for that rule only,
+and only then.
+
+### Effect composition / ordering — mostly free, small residue
+
+We keep the **declarative stacking** model (effects → inspectable operation queue) over the
+old manual context-mutation. The cost of going declarative is owing an explicit *resolution
+model* — but it turns out small, because **if whens are pipeline points, the game's own
+resolution sequence does almost all the ordering for free** (a reroll attaches to a different
+when than a +1; running the engine's steps in order runs them in order). Residue:
+
+- **Suppression is the one true cross-cutter.** `IgnoreRule`/`SuppressRule` removes *other*
+  effects, so it resolves in a **first pass** (apply removals, then fold the rest) — not a
+  phase architecture. (Matches the existing "Order tag for SuppressRule is dispatcher sidecar
+  metadata" note in the Phase 3 notes.)
+- **Set-vs-add within one when** ("set Quality to 2" beating a "+1") is the only within-step
+  conflict and is rare. Resolve with a tiny fixed effect-kind precedence **only when a real
+  rule pair forces it** — do not build a priority system speculatively.
+- **OPEN QUESTION — feedback/cascades.** Does an effect's *generated output* re-enter the
+  when-pipeline? (AddExtraHit makes hits — do those hits re-fire the hit whens and re-trigger
+  Furious?) Usually "no — generated hits are auto-hits, terminal," but this must be **stated**
+  before the fold is written, or stacking silently becomes recursive. Decide at 7b.
+
+### What this means for the checklist
+
+- 7-spine's CRUX is settled: **enumerate the event's named participants; for each, evaluate
+  its rules whose when matches the firing event (perspective fused, so a wrong-seat rule
+  simply doesn't match); evaluate conditions with the bearer as self; map passing effects to
+  operations.** No board scan, no separable side-tag.
+- The harness/tests need the event to carry its full participant cast (already true for the
+  attacker/target contexts) so conditions can read the other participant. Whether `Fire`
+  needs to name a bearer explicitly depends on the final when representation — to be pinned
+  when 7-spine is implemented.
+- 7e (Aura + parameter override) shrinks dramatically: distance auras are gone; "whole-unit"
+  is static promotion. The override half (parameterized rule references) still stands.
+
 ## Outcome
 
 (pending — written when items 026–034 can proceed against this architecture)
