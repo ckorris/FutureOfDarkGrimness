@@ -29,11 +29,21 @@ public class GuiDefineMovementResolver
     private bool _stayInAdvance; // toggle — off by default, reset each Resolve
     private bool _showTargeting = true; // toggle — on by default, persists across Resolve calls (covers both ranged + melee)
 
-    // Colors
+    // Move bands: Advance (green, can shoot after), Rush (yellow, can't shoot), Charge (orange,
+    // only legal if at least one model ends in melee). The Charge band only exists for units
+    // whose Charge distance is greater than their Rush distance — when equal, there are only
+    // two bands and the visual matches the pre-decoupling behavior.
+    private enum MoveBand { Advance, Rush, Charge }
+
     private static readonly uint AdvanceColor    = ImGui.ColorConvertFloat4ToU32(new Vector4(0.25f, 0.95f, 0.25f, 0.95f));
-    private static readonly uint RushColor       = ImGui.ColorConvertFloat4ToU32(new Vector4(1.00f, 0.55f, 0.10f, 0.95f));
+    private static readonly uint RushColor       = ImGui.ColorConvertFloat4ToU32(new Vector4(1.00f, 0.92f, 0.20f, 0.95f));
+    private static readonly uint ChargeColor     = ImGui.ColorConvertFloat4ToU32(new Vector4(1.00f, 0.55f, 0.10f, 0.95f));
     private static readonly uint AdvanceRingCol  = ImGui.ColorConvertFloat4ToU32(new Vector4(0.25f, 0.95f, 0.25f, 0.55f));
-    private static readonly uint RushRingCol     = ImGui.ColorConvertFloat4ToU32(new Vector4(1.00f, 0.55f, 0.10f, 0.55f));
+    private static readonly uint RushRingCol     = ImGui.ColorConvertFloat4ToU32(new Vector4(1.00f, 0.92f, 0.20f, 0.55f));
+    private static readonly uint ChargeRingCol   = ImGui.ColorConvertFloat4ToU32(new Vector4(1.00f, 0.55f, 0.10f, 0.55f));
+    private static readonly uint AdvanceFill     = ImGui.ColorConvertFloat4ToU32(new Vector4(0.25f, 0.95f, 0.25f, 0.40f));
+    private static readonly uint RushFill        = ImGui.ColorConvertFloat4ToU32(new Vector4(1.00f, 0.92f, 0.20f, 0.40f));
+    private static readonly uint ChargeFill      = ImGui.ColorConvertFloat4ToU32(new Vector4(1.00f, 0.55f, 0.10f, 0.40f));
     private static readonly uint SelectionOutline = ImGui.ColorConvertFloat4ToU32(new Vector4(1f, 1f, 1f, 0.95f));
     private static readonly uint ModelOutline    = ImGui.ColorConvertFloat4ToU32(new Vector4(0.7f, 0.7f, 0.7f, 0.7f));
     private static readonly uint GhostOutline    = ImGui.ColorConvertFloat4ToU32(new Vector4(1f, 1f, 1f, 0.85f));
@@ -58,7 +68,7 @@ public class GuiDefineMovementResolver
     public Task<List<ModelMoveEntry>> Resolve(DefineMovementPathRequest request)
     {
         var tcs = new TaskCompletionSource<List<ModelMoveEntry>>();
-        var template = new PathTemplate(request.UnitDataBinding, request.MaxChargeDistance);
+        var template = new PathTemplate(request.UnitDataBinding, request.MaxAdvanceDistance, request.MaxDistanceInches);
         var first = request.UnitDataBinding.GetValue().ModelBindings
             .Select(mb => mb.GetValue() as IModel)
             .FirstOrDefault(m => m != null && m.GetIsAlive());
@@ -88,7 +98,9 @@ public class GuiDefineMovementResolver
         var paths    = pt.CurrentPaths;
 
         float maxAdvance = request.MaxAdvanceDistance;
-        float maxCharge  = request.MaxChargeDistance;
+        float maxRush    = request.MaxRushDistance;
+        float maxCharge  = request.MaxDistanceInches;
+        bool  hasChargeBand = maxCharge > maxRush + 0.0001f;
 
         // 1) Draw each model's start circle + committed path lines + final ghost circle
         foreach (var kvp in paths)
@@ -112,7 +124,7 @@ public class GuiDefineMovementResolver
                 for (int i = 0; i < pathPoints.Count; i++)
                 {
                     var cur = pathPoints[i];
-                    uint col = cum + 0.0001f >= maxAdvance ? RushColor : AdvanceColor;
+                    uint col = LineColorFor(ClassifyBand(cum, maxAdvance, maxRush, hasChargeBand));
                     var (px, py) = InchesToPixel(prev.x, prev.z);
                     var (cx, cy) = InchesToPixel(cur.x, cur.z);
                     dl.AddLine(new Vector2(px, py), new Vector2(cx, cy), col, 2f);
@@ -130,18 +142,7 @@ public class GuiDefineMovementResolver
 
         // 2) Range rings around selected model's last waypoint
         if (_selectedModel != null)
-        {
-            float totalSoFar = pt.GetTotalDistanceMoved(_selectedModel);
-            var anchor = pt.GetModelLastPathPosition(_selectedModel);
-            var (ax, ay) = InchesToPixel(anchor.x, anchor.z);
-
-            float remAdvance = maxAdvance - totalSoFar;
-            float remCharge  = maxCharge  - totalSoFar;
-            if (remAdvance > 0.01f)
-                dl.AddCircle(new Vector2(ax, ay), remAdvance * _scale, AdvanceRingCol, 64, 1.5f);
-            if (remCharge > 0.01f)
-                dl.AddCircle(new Vector2(ax, ay), remCharge  * _scale, RushRingCol,    64, 1.5f);
-        }
+            DrawRangeRings(dl, pt, maxAdvance, maxRush, maxCharge, hasChargeBand);
 
         // 3) Ghost following mouse for selected model (clamped)
         bool overTable = IsOverTable(io.MousePos.X, io.MousePos.Y);
@@ -184,22 +185,19 @@ public class GuiDefineMovementResolver
             ghostPos = new Position(nx, nz);
 
             float cumWithGhost = totalSoFar + allowed;
-            ghostIsRush = cumWithGhost + 0.0001f >= maxAdvance;
+            MoveBand ghostBand = ClassifyBand(cumWithGhost, maxAdvance, maxRush, hasChargeBand);
+            ghostIsRush    = ghostBand != MoveBand.Advance;
             ghostExtraDist = allowed;
-            ghostOverlaps = WouldOverlapAnyModel(ghostPos.Value, _selectedModel, request, paths);
+            ghostOverlaps  = WouldOverlapAnyModel(ghostPos.Value, _selectedModel, request, paths);
 
             // Preview line from anchor to ghost
             var (ax, ay) = InchesToPixel(anchor.x, anchor.z);
             var (gx, gy) = InchesToPixel(nx, nz);
-            uint previewCol = ghostIsRush ? RushColor : AdvanceColor;
-            dl.AddLine(new Vector2(ax, ay), new Vector2(gx, gy), previewCol, 2f);
+            dl.AddLine(new Vector2(ax, ay), new Vector2(gx, gy), LineColorFor(ghostBand), 2f);
 
             // Ghost base circle
             float r = _selectedModel.BaseRadiusInches * _scale;
-            uint fill;
-            if (ghostOverlaps) fill = OverlapFill;
-            else if (ghostIsRush) fill = ImGui.ColorConvertFloat4ToU32(new Vector4(1.00f, 0.55f, 0.10f, 0.40f));
-            else fill = ImGui.ColorConvertFloat4ToU32(new Vector4(0.25f, 0.95f, 0.25f, 0.40f));
+            uint fill = ghostOverlaps ? OverlapFill : FillColorFor(ghostBand);
             dl.AddCircleFilled(new Vector2(gx, gy), r, fill);
             dl.AddCircle(new Vector2(gx, gy), r, GhostOutline, 32, 1.5f);
 
@@ -277,7 +275,7 @@ public class GuiDefineMovementResolver
         string unitName = request.UnitDataBinding.GetValue().Name;
         ImGui.TextUnformatted($"Move: {unitName}");
         ImGui.SameLine();
-        ImGui.TextDisabled($"  advance up to {FormatInches(request.MaxAdvanceDistance)}\"   rush up to {FormatInches(request.MaxChargeDistance)}\"");
+        ImGui.TextDisabled("  " + FormatDistanceSummary(request));
 
         ImGui.Spacing();
         if (_selectedModel != null)
@@ -286,7 +284,7 @@ public class GuiDefineMovementResolver
             bool inRush = dist + 0.0001f >= request.MaxAdvanceDistance;
             var color = inRush ? new Vector4(1.00f, 0.55f, 0.10f, 1f) : new Vector4(0.25f, 0.95f, 0.25f, 1f);
             ImGui.PushStyleColor(ImGuiCol.Text, color);
-            ImGui.TextUnformatted($"Selected model: {dist:F2}\" / {FormatInches(request.MaxChargeDistance)}\"  ({(inRush ? "RUSH - cannot shoot" : "advance - may shoot")})");
+            ImGui.TextUnformatted($"Selected model: {dist:F2}\" / {FormatInches(request.MaxDistanceInches)}\"  ({(inRush ? "RUSH - cannot shoot" : "advance - may shoot")})");
             ImGui.PopStyleColor();
         }
         else
@@ -308,7 +306,10 @@ public class GuiDefineMovementResolver
         float btnW    = (panelW - pad - spacing * 3) / 4f;
 
         var results = pt.GetResultsAsList();
-        bool engineValid = MovementUtilities.ValidatePaths(results, request.MaxChargeDistance, terrain, out var engineErrors);
+        var enemyPositions = GetEnemyPositionsForRequest(request);
+        bool engineValid = MovementUtilities.ValidatePaths(results,
+            request.MaxRushDistance, request.MaxDistanceInches,
+            enemyPositions, terrain, out var engineErrors);
         var finals = BuildFinalPositions(pt.CurrentPaths, null, null);
         var cohesion = CheckCohesion(finals);
 
@@ -370,6 +371,80 @@ public class GuiDefineMovementResolver
         }
 
         ImGui.End();
+    }
+
+    /// <summary>
+    /// Draws up to three remaining-range rings around the selected model's current path
+    /// endpoint. The Rush ring is suppressed when Rush equals Charge — keeping the visual
+    /// identical to before the Rush/Charge split.
+    /// </summary>
+    private void DrawRangeRings(ImDrawListPtr dl, PathTemplate pt,
+        float maxAdvance, float maxRush, float maxCharge, bool hasChargeBand)
+    {
+        if (_selectedModel == null) return;
+
+        float totalSoFar = pt.GetTotalDistanceMoved(_selectedModel);
+        var anchor = pt.GetModelLastPathPosition(_selectedModel);
+        var (ax, ay) = InchesToPixel(anchor.x, anchor.z);
+        var center = new Vector2(ax, ay);
+
+        DrawRingIfRemaining(dl, center, maxAdvance - totalSoFar,            AdvanceRingCol);
+        if (hasChargeBand)
+            DrawRingIfRemaining(dl, center, maxRush - totalSoFar,           RushRingCol);
+        DrawRingIfRemaining(dl, center, maxCharge - totalSoFar,             ChargeRingCol);
+    }
+
+    private void DrawRingIfRemaining(ImDrawListPtr dl, Vector2 center, float remainingInches, uint color)
+    {
+        if (remainingInches > 0.01f)
+            dl.AddCircle(center, remainingInches * _scale, color, 64, 1.5f);
+    }
+
+    /// <summary>
+    /// Classifies a cumulative move distance into a band. When Charge equals Rush, the
+    /// Rush band is suppressed and post-Advance distance maps directly to Charge — keeping
+    /// the visual identical to before the Rush/Charge split.
+    /// </summary>
+    private static MoveBand ClassifyBand(float cumDistance, float maxAdvance, float maxRush, bool hasChargeBand)
+    {
+        const float Epsilon = 0.0001f;
+        if (cumDistance + Epsilon < maxAdvance) return MoveBand.Advance;
+        if (hasChargeBand && cumDistance + Epsilon < maxRush) return MoveBand.Rush;
+        return MoveBand.Charge;
+    }
+
+    private static uint LineColorFor(MoveBand band) => band switch
+    {
+        MoveBand.Advance => AdvanceColor,
+        MoveBand.Rush    => RushColor,
+        _                => ChargeColor,
+    };
+
+    private static uint FillColorFor(MoveBand band) => band switch
+    {
+        MoveBand.Advance => AdvanceFill,
+        MoveBand.Rush    => RushFill,
+        _                => ChargeFill,
+    };
+
+    private static string FormatDistanceSummary(DefineMovementPathRequest request)
+    {
+        string s = $"advance up to {FormatInches(request.MaxAdvanceDistance)}\"   rush up to {FormatInches(request.MaxRushDistance)}\"";
+        if (request.MaxDistanceInches > request.MaxRushDistance + 0.0001f)
+            s += $"   charge up to {FormatInches(request.MaxDistanceInches)}\"";
+        return s;
+    }
+
+    private List<Position> GetEnemyPositionsForRequest(DefineMovementPathRequest request)
+    {
+        var positions = new List<Position>();
+        foreach (var u in _tableState.Units.Objects)
+        {
+            if (u.PlayerID == request.TargetPlayerID) continue;
+            foreach (var m in u.Models)
+                if (m.GetIsAlive()) positions.Add(m.Position);
+        }
+        return positions;
     }
 
     private bool WouldOverlapAnyModel(Position ghostPos, IModel ghostModel,
