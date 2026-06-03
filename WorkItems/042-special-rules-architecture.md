@@ -525,6 +525,64 @@ when than a +1; running the engine's steps in order runs them in order). Residue
 - 7e (Aura + parameter override) shrinks dramatically: distance auras are gone; "whole-unit"
   is static promotion. The override half (parameterized rule references) still stands.
 
+## Phase 7 implementation notes (2026-06-03)
+
+The 7-spine dispatcher landed, and two decisions from the design session changed shape
+from what the earlier notes assumed. Both are now in code (`Rules/Dispatch/RuleEvaluator.cs`).
+
+### The dispatcher is a direct-addressing evaluator, not a bus
+
+Working the "which units, from whose perspective" question to its end killed the bus. A
+message bus exists for pub/sub decoupling — anonymous subscribers a publisher doesn't know
+about. None of that applies here: rules live on units (no registration), the caller always
+knows the units involved (the event's named participants, or all units for round-level), and
+the caller needs the operation queue back **synchronously** to apply it. That's a query, not
+a broadcast. So dispatch is a stateless `RuleEvaluator`:
+
+```
+IReadOnlyList<RuleOperation> Evaluate(IUnit unit, ERuleSeat seat, IHookContext context)
+```
+
+The stage addresses each involved unit directly, once per seat (attacker as `Actor`, defender
+as `Subject`), concatenates the queues, and applies them. Perspective is carried by
+`ERuleSeat { Actor, Subject }` — a field on `HookEntry` defaulting to `Actor`; an entry fires
+only when its seat matches the seat the caller is evaluating, so a defensive rule on an
+attacking unit simply can't match (verified by `Stealth_OnAttacker_DoesNotApplyModifier`). It's
+a class, not static functions, because it will hold injected collaborators (dice roller for
+random-amount effects at 7c; resolver for name references/auras at 7e). Conditions read context
+fields through tiny **capability interfaces** (`IHasDistance`, `IHasUnmodifiedHitRolls`) so the
+evaluator never downcasts to a concrete context type; `EvaluateCondition`/`MapEffect` are
+pattern-match switches over the closed `Condition`/`Effect` sum types (the idiomatic shape for a
+tree-walking interpreter; data stays pure in the Definitions layer). The bus
+(`RuleHookBus`/`Fire`/`GatherOffers`/`ResolveAbility`) survives only as scaffolding for
+not-yet-migrated tests and retires when nothing references it.
+
+### Dice results are `IDiceResults`, and dice-derived counts are `float`
+
+The engine's dice abstraction (`Utilities/Probability`) is a **per-face histogram**
+(`IDiceResults`: `At(face)` = count on that face, as a `float`), and there are two rollers behind
+the same interface: the realistic one (integer counts) and the **`ProbabilisticDiceRoller`**
+(every face = `rollCount / sideCount`, i.e. expected counts — an enable-able "average outcome"
+mode). The Phase 6 tests had modelled rolls as `IReadOnlyList<int>` per-die lists, which is both
+the wrong shape and int-locked — it silently breaks probabilistic mode (`3.5 != 6`).
+
+Fixed: roll-bearing contexts (`HitRollCompleteContext`, `SaveRollCompleteContext`) and
+`IHasUnmodifiedHitRolls` now carry `IDiceResults`; "natural 6" is `results.At(6)`; and
+dice-**derived** operation counts (`InsertExtraHits`, `InsertExtraWounds`, `InvokeHeal.Amount`)
+are `float`, because they come out fractional under the probabilistic roller. Authored counts
+(`MultiplyHits/Wounds` multipliers, `ChargeImpactHits` dice-to-roll, `InvokeDealHits` fixed hit
+count) stay `int`. **Project-wide invariant: never represent a roll, or a value derived from a
+roll, as an int — everything must survive the probabilistic roller.** A "natural-N" rule's
+`UnmodifiedRollEquals` condition is at most a guard (`At(N) > 0`, ~always true probabilistically);
+the real quantity lives in the effect (`At(N) * Count`).
+
+### Done so far
+
+Stealth and Furious are green through `Evaluate` (179 pass / 40 red). Conditions implemented:
+`DistanceGreaterThan`, `UnmodifiedRollEquals`. Effects: `RollModifier`, `AddExtraHit`. Remaining
+rules flip `Fire -> Evaluate` as each is implemented. Rule definitions are still inline in tests
+(no C# catalog / JSON yet — deliberately deferred to the future loader).
+
 ## Outcome
 
 (pending — written when items 026–034 can proceed against this architecture)

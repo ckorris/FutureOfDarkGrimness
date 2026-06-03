@@ -320,6 +320,47 @@ STATUS (2026-05-28): Scope expanded to "every GF v3.5.1 core rule except AP."
 PHASE 7 — Implementation (GREEN, iterative)
 -------------------------------------------
 
+IMPLEMENTATION PROGRESS (2026-06-03, post-break session) — suite 179 green / 40 red:
+
+  * 7-spine LANDED, but NOT as a bus. Decided the "bus" was dead weight: the caller
+    always knows the units and roles involved and needs the operation queue back
+    synchronously (a query, not a broadcast). So dispatch is a stateless
+    Rules/Dispatch/RuleEvaluator.cs with:
+        Evaluate(IUnit unit, ERuleSeat seat, IHookContext context) -> IReadOnlyList<RuleOperation>
+    The caller (stage / test) addresses each involved unit directly, once per seat
+    (e.g. attacker as Actor, defender as Subject), and applies the returned ops.
+  * SEAT MODEL: ERuleSeat { Actor, Subject } (Rules/Foundation). It's a field on
+    HookEntry, defaulting to Actor; only defensive entries state Subject. An entry
+    fires only when entry.Seat == the seat the caller is evaluating, so a wrong-seat
+    rule simply can't match (Stealth on a shooter does nothing — there's a test).
+  * CONDITIONS read context fields via tiny CAPABILITY INTERFACES (Rules/Dispatch/
+    IHasDistance, IHasUnmodifiedHitRolls) so the evaluator never downcasts to a
+    concrete context. EvaluateCondition / MapEffect are pattern-match switches over
+    the closed Condition/Effect sum types (default: throw — gaps surface loudly).
+    Add a capability interface per new field on demand.
+  * DICE RESULTS = IDiceResults (the engine's per-face histogram), NOT int lists.
+    Roll-bearing contexts (HitRollComplete, SaveRollComplete) and IHasUnmodifiedHitRolls
+    carry IDiceResults; "natural 6" is results.At(6). Dice-DERIVED operation counts
+    are float (InsertExtraHits / InsertExtraWounds / InvokeHeal) because they are
+    fractional under the ProbabilisticDiceRoller (n dice -> n/6 sixes). Authored
+    counts (multipliers, dice-to-roll, fixed hit counts) stay int. Tests build
+    histograms via Tests/RulesHarness/TestDice.Faces(...). THIS IS A PROJECT-WIDE
+    INVARIANT: never int-lock a value that derives from a die roll.
+  * DONE so far (via Evaluate): Stealth (Subject, DistanceGreaterThan -> ApplyRollModifier)
+    and Furious (Actor, UnmodifiedRollEquals/At(6) -> InsertExtraHits). Conditions
+    implemented: DistanceGreaterThan, UnmodifiedRollEquals. Effects: RollModifier,
+    AddExtraHit.
+  * THE BUS IS DYING, NOT DEAD. RuleHookBus + harness.Fire still back the 34 not-yet-
+    migrated passive tests; GatherOffers/ResolveAbility (7 activated-ability tests:
+    1 OfferAbilities + 6 Accept) have no evaluator home until 7c. MIGRATION RULE:
+    flip each test Fire->Evaluate WHEN its rule is implemented (the green verifies the
+    seat). Do NOT bulk-migrate unimplemented rules (sets seats blind, just trades
+    clean-red for throw-red). Delete Dispatch/Fire when the last passive rule migrates;
+    delete the rest of the bus at 7c.
+  * NOT DONE: a canonical rule catalog (C# or JSON). Stealth/Furious definitions are
+    still inline in tests. Deliberately deferred — JSON loader will own this later;
+    a notepad file holds the catalog meanwhile. Don't build a C# CoreRules catalog now.
+
 Turn the 42 RED tests green. NOTE (2026-05-28): the sub-phase mapping below was
 written for the original 20 curated tests; the corpus is now 42 (all v3.5.1 core
 rules except AP/Hero/Transport, plus the shape tests). The numbered references
