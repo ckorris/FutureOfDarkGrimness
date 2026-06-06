@@ -528,10 +528,27 @@ correct queuing. Execution is Phase 8 / the #042 engine track.
        Implement: random trigger type — engine rolls a die, applies one of N branches.
        Tests green: 14 (Unpredictable Fighter). NOTE: test not yet written.
 
-[ ] 7g — Cross-unit tokens + cleanup
-       Implement: TokenContainer cleanup on owner destruction
-       (subscribes to OnUnitDestroyed hook).
+[x] 7g — Cross-unit tokens + cleanup                                 [DONE 2026-06-06]
+       Implement: TokenContainer cleanup on owner destruction.
        Tests green: 15, 16 (Unstoppable Mark place + owner-destroyed cleanup).
+       Suite 241 / 0 — Phase 7's full RED baseline is now green.
+         * TokenClearService (Rules/Tokens): ClearForDestroyedOwner(destroyedOwner,
+           containers) walks every container, and for each token the dead unit OWNS
+           (TokensWithOwner) whose ClearTrigger is OwnerDestroyed, removes it. Tokens
+           the dead unit owns under a different trigger are left alone (clearing is
+           trigger-driven, not "all tokens owned by A" — supersedes the early sketch).
+           Hook- and store-agnostic: caller supplies the containers + the dead unit's
+           ID (harness walks the store; a real stage will walk ITableState later).
+         * NOT a bus subscription (bus is dead). Harness.Fire routes a
+           UnitDestroyedContext to the service (the stand-in for the destroying stage);
+           other hooks still hit the vestigial Bus.Dispatch stub.
+         * NEW container API: ITokenContainer.RemoveTokensWithOwner(type, owner, count)
+           — owner-SCOPED removal, since the existing RemoveTokens is owner-AGNOSTIC
+           (Phase 2 deliberately pushed owner-scoping "to the layer above"). Without it,
+           one placer's mark couldn't clear without risking another placer's same-type
+           mark. TokenContainer refactored so both removers share a private
+           RemoveMatching(predicate, count) core. +2 TokenContainerTests (owner-scoped
+           removal leaves other owners' tokens; missing owner is a no-op).
 
 [ ] 7h — Engine primitives (DEPENDS ON 042)
        Implement: TriggeredMove, Reactivate, mid-move attack as callable

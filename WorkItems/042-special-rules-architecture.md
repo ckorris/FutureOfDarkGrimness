@@ -1,6 +1,6 @@
 # 042 — Special rules architecture
 
-**Status**: in-progress (Phase 7 — passive dispatch + activated abilities (7c) complete: every passively-dispatchable core/shape rule and all 7 activated-ability tests are green through `RuleEvaluator`. Suite 238/1; the 1 red is 7g cross-unit token cleanup. Behavior-level execution (Phase 8) and 7d–7h remain)
+**Status**: in-progress (Phase 7 — dispatch complete: every passive rule, all 7 activated abilities (7c), and cross-unit token cleanup (7g) are green through `RuleEvaluator` + `TokenClearService`. **Suite 241/0 — the full Phase 7 RED baseline is green.** Behavior-level execution (Phase 8), the remaining engine-primitive sub-phases (7h: TriggeredMove/Reactivate/mid-move attack), and the JSON loader remain)
 **Related**: #026, #027, #028, #029, #030, #031, #032, #033, #034 (all depend on this)
 
 ## Goal
@@ -678,11 +678,33 @@ used-marker / `FirstTrigger` clearing land in 7d / Phase 8.
 
 ### Remaining red + still deferred
 
-1 red: test 16 (7g — `TokenClearService` walking containers on `OnUnitDestroyed` to
-remove `OwnerDestroyed` tokens; not an operation-queue concern). Unchanged deferrals:
-behavior-level execution (Phase 8), C#/JSON catalog, per-model aura expansion,
-Hero/Transport, activated-ability args (no corpus ability uses `ValueSource.Arg`, so
-`AbilityOffer` carries none — thread `ResolvedRule.Arguments` when one appears).
+Unchanged deferrals: behavior-level execution (Phase 8), C#/JSON catalog, per-model
+aura expansion, Hero/Transport, activated-ability args (no corpus ability uses
+`ValueSource.Arg`, so `AbilityOffer` carries none — thread `ResolvedRule.Arguments`
+when one appears).
+
+## Phase 7g implementation notes (2026-06-06) — cross-unit token cleanup → suite 241/0
+
+The last red (owner-destroyed cleanup) is green; **the full Phase 7 RED baseline now
+passes**. `TokenClearService` (in `Rules/Tokens`) exposes
+`ClearForDestroyedOwner(UnitID destroyedOwner, IEnumerable<ITokenContainer>)`: it walks
+every supplied container and removes the tokens the dead unit *owns* (via
+`TokensWithOwner`) whose `ClearTrigger` is `OwnerDestroyed`. Clearing is **trigger-driven**
+— a token the dead unit owns under a different trigger is left alone (this supersedes the
+early arch-sketch line "all tokens with OwnerUnitId == A are removed"; the per-trigger
+model is the one we built). The service is hook- and store-agnostic: the caller passes the
+containers and the dead unit's ID, so the harness walks the data store today and a real
+destroying stage will walk `ITableState` once rules are wired into the engine. It is **not**
+a bus subscription — the bus is dead; `harness.Fire` routes a `UnitDestroyedContext` to the
+service directly.
+
+New container API: **`ITokenContainer.RemoveTokensWithOwner(type, owner, count)`** —
+owner-*scoped* removal. The existing `RemoveTokens` is owner-*agnostic* by deliberate Phase 2
+design ("owner-scoping lives in the layer above"), so without this a placer's mark couldn't
+clear without risking another placer's same-type mark on the same target. `TokenContainer`
+now routes both removers through a private `RemoveMatching(predicate, count)` core; +2
+`TokenContainerTests` lock the owner-scoping (other owners' tokens survive; missing owner is
+a no-op).
 
 ## Outcome
 
