@@ -53,7 +53,7 @@ Numbers are permanent and never reused. If an item is split, its line stays and 
 
 ## Special rules — framework
 
-- [ ] 042 — Special rules architecture (Plan B: data-driven `Condition × Effect` records over a named hook surface, with a unit/model token system as the state primitive). Prerequisite for 026–034. See `WorkItems/042-special-rules-architecture.md`.
+- [~] 042 — Special rules architecture (Plan B: data-driven `Condition × Effect` records over a named hook surface, with a unit/model token system as the state primitive). Prerequisite for 026–034. **Phase 7 passive dispatch complete** (polymorphic `RuleEvaluator` + `RuleValidator`; every passively-dispatchable rule green, suite 215/8 → 231/8 post-merge). Remaining: 7 activated-ability tests (Phase 7c), 1 token-clear, behavior-level execution (Phase 8), JSON loader. See `WorkItems/042-special-rules-architecture.md`.
 - [ ] 026 — Unit special rules framework wiring (`UnitData.SpecialRules`, `GetRealSpecialRulesFromArmyList`, `GetMobility`) — depends on 042
 - [ ] 027 — Weapon special rules framework (`IWeapon.cs` TODOs) — depends on 042
 - [ ] 028 — Deadly weapon priority (resolve first, wounds don't carry across models)

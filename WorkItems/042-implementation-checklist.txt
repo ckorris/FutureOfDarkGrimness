@@ -320,6 +320,56 @@ STATUS (2026-05-28): Scope expanded to "every GF v3.5.1 core rule except AP."
 PHASE 7 — Implementation (GREEN, iterative)
 -------------------------------------------
 
+IMPLEMENTATION PROGRESS (2026-06-06) — suite 215 green / 8 red (231 / 8 after merging
+master's +16 LoS/terrain tests). ALL passively-dispatchable rules now green:
+
+  * SWITCHES -> POLYMORPHISM. The 06-03 EvaluateCondition/MapEffect switches in
+    RuleEvaluator are GONE. Logic now lives on the records: Condition.Evaluate(RuleInvocation)
+    and Effect.Apply(RuleInvocation, ops). RuleEvaluator is just the loop now.
+    Capability requirement carried by a GENERIC INTERMEDIATE: CapabilityCondition<TCap> /
+    CapabilityEffect<TCap> (Rules/Definitions) where the type arg IS the required capability
+    — one binding in the leaf's base clause gives both the typed EvaluateCore/ApplyCore body
+    and the reflectable RequiredCapabilities (= [typeof(TCap)]). Capability-free primitives
+    override the untyped method directly; composites (And/Not) union/passthrough children.
+    New marker ICapability (Foundation) tags capability interfaces. WHY (not the switch):
+    rules will be authored as JSON via a tool that links this library, never by hand — the
+    compiler never sees a tool-composed rule, so compile-time exhaustiveness was never the
+    guard; per-record methods + a runtime validator is the honest shape.
+  * RULE VALIDATOR (the authored-rule safety net). Rules/Dispatch/RuleValidator.cs:
+    Validate(SpecialRuleDefinition) -> RuleViolation[] checks each HookEntry's condition+effect
+    RequiredCapabilities against the capabilities its hook's context provides. Empty req =
+    always valid; unknown hook = skipped. Shared by engine-at-load AND the future tool
+    (validate-before-save; also drives the tool's dropdowns so a bad pairing is unconstructible).
+    HookContextCatalog.cs supplies hook->provided-capabilities, built BY REFLECTION (read each
+    IHookContext's constant Hook off an uninitialized instance) — no hand-maintained table.
+    4 tests in Tests/RuleValidatorTests.cs.
+  * RULEINVOCATION (bearer + args threading). Evaluate/Apply now take
+    RuleInvocation(IHookContext Hook, IUnit Bearer, IReadOnlyList<RuleArgument> Arguments)
+    instead of the bare context (bearer/args can't live on the hook ctx — same event is
+    evaluated for several units/seats). Built per-rule in RuleEvaluator's loop. ValueSource
+    gained Resolve(arguments) (Literal -> value; Arg(i) -> arguments[i]). This unblocked the
+    arg-bearing effects (Deadly/Tough/Blast/Impact/Fear), bearer-targeted GrantToken
+    (Caster/Piercing Frenzy/Limited; new TokenType.RuleGrant), Aura (one rule-grant token on
+    the bearer; per-model expansion still deferred), and TokenPresent (reads Bearer.Tokens).
+    Public RuleEvaluator.Evaluate(unit,seat,context) + harness Evaluate(...) signatures unchanged.
+  * CAPABILITIES/CONTEXTS added: IHasActionType (in Definitions, not Foundation — it refs
+    EActionType, a Definitions type, and Foundation stays dependency-free), IHasAttackerMoved
+    (Foundation). HitRollCompleteContext now also : IHasDistance (Relentless's And);
+    HitRollModifierContext : IHasAttackerMoved (Indirect); MoveActionDeclaredContext :
+    IHasActionType (Fast/Slow/Immobile).
+  * ALL passive rules migrated to Evaluate (seats verified by going green; defensive rules —
+    Stealth, Melee Shrouding, Regeneration, Counter, Aircraft — carry ERuleSeat.Subject).
+  * 8 RED REMAIN, both groups out of scope for PASSIVE dispatch:
+      - 7 activated abilities (Mend x2, Advanced Sight, Unstoppable Mark place, Vanguard,
+        Martial Prowess, Strafing) — still on GatherOffers/ResolveAbility bus stub. => PHASE 7c
+        (next milestone; clears 6 of the 8).
+      - 1 token-clear (Unstoppable Mark owner-destroyed) — needs a TokenClearService walking
+        containers on OnUnitDestroyed to remove OwnerDestroyed tokens. Not a queue concern.
+  * BUS now backs only: the no-rules smoke test (harness.Fire) + the 7 activated-ability tests
+    (OfferAbilities/Accept). Retires at 7c.
+  * STILL DEFERRED (unchanged): C#-catalog/JSON loader (defs still inline in tests), behavior-
+    level execution of queued ops (PHASE 8), per-model aura expansion, Hero/Transport.
+
 IMPLEMENTATION PROGRESS (2026-06-03, post-break session) — suite 179 green / 40 red:
 
   * 7-spine LANDED, but NOT as a bus. Decided the "bus" was dead weight: the caller

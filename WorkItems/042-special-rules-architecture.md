@@ -1,6 +1,6 @@
 # 042 — Special rules architecture
 
-**Status**: in-progress (design phase)
+**Status**: in-progress (Phase 7 — passive dispatch complete: every passively-dispatchable core/shape rule is green through `RuleEvaluator`; activated abilities and behavior-level execution remain)
 **Related**: #026, #027, #028, #029, #030, #031, #032, #033, #034 (all depend on this)
 
 ## Goal
@@ -582,6 +582,42 @@ Stealth and Furious are green through `Evaluate` (179 pass / 40 red). Conditions
 `DistanceGreaterThan`, `UnmodifiedRollEquals`. Effects: `RollModifier`, `AddExtraHit`. Remaining
 rules flip `Fire -> Evaluate` as each is implemented. Rule definitions are still inline in tests
 (no C# catalog / JSON yet — deliberately deferred to the future loader).
+
+## Phase 7 implementation notes (2026-06-06) — polymorphic dispatch, validator, rule migration, bearer/arg threading
+
+Three structural changes this session took the suite from **179 / 40** to **215 / 8** (then **231 / 8** after merging master's +16 LoS/terrain tests). Every rule that can be expressed through *passive* dispatch is now green through `RuleEvaluator`. The changes supersede parts of the 2026-06-03 notes (specifically, the `EvaluateCondition`/`MapEffect` switch is gone).
+
+### 1. Switches → polymorphism on the records (generic-intermediate capability layer)
+
+The 06-03 dispatcher evaluated conditions/effects with two `switch` statements in `RuleEvaluator` that downcast the context to a capability interface. Replaced with virtual methods on the records themselves: `Condition.Evaluate(RuleInvocation)` and `Effect.Apply(RuleInvocation, ops)`. `RuleEvaluator` is now just the loop — no switch, no casting, no capability knowledge.
+
+The capability requirement is expressed via a **generic intermediate**: `CapabilityCondition<TCap>` / `CapabilityEffect<TCap>` (in `Rules/Definitions/`) where the type argument *is* the required capability. A leaf binds it once in its base clause (`DistanceGreaterThan : CapabilityCondition<IHasDistance>`); from that single binding both the typed `EvaluateCore(TCap)`/`ApplyCore(TCap, ops)` body (can't read the wrong capability) and the reflectable `RequiredCapabilities` (`[typeof(TCap)]`) derive. Capability-free primitives (Always, RollModifier, the constant effects, token/arg effects) override the untyped method on the base directly and inherit empty `RequiredCapabilities`; composites (`And`/`Or`/`Not`) union/passthrough their children's. New marker `ICapability` (Foundation) tags the capability interfaces so the validator/catalog can find them precisely.
+
+**Why polymorphism over the switch, given a closed sum type:** the switch's only real cost was shotgun-surgery (edit the enum *and* two switch arms) — and that cost is worth removing because the eventual authoring path is **JSON via a tool that links this library** (never hand-written). The compiler never sees a tool-composed rule, so compile-time exhaustiveness was never going to guard authored rules anyway; per-record methods + a runtime validator (below) is the honest shape. Capability interfaces stay the decoupling seam (a condition needs a *capability*, not a context type), unchanged by the switch→method move.
+
+### 2. `RuleValidator` + `HookContextCatalog` — the authored-rule safety net
+
+Because rules will be authored as data (no compile-time check), the safety net is **validate-before-save (the tool) + validate-at-load (the engine)**, sharing one implementation. `RuleValidator.Validate(SpecialRuleDefinition)` checks, for each `HookEntry`, that the condition's and effect's `RequiredCapabilities` are all provided by the context fired at that hook; returns `RuleViolation`s. Semantics: empty requirement → always valid; unknown hook → skipped (no false positive). `HookContextCatalog` supplies "what capabilities does hook H's context provide," built **by reflection** (scan `IHookContext` implementors, read each constant `Hook` off an uninitialized instance via `RuntimeHelpers.GetUninitializedObject`) so there's no hand-maintained table to rot. 4 tests in `Tests/RuleValidatorTests.cs`. (The future tool would also drive its condition/effect dropdowns off the same capability metadata, so a mismatched pairing is *unconstructible*, not just rejected.)
+
+### 3. `RuleInvocation` — threading bearer + arguments through dispatch
+
+`Evaluate`/`Apply` originally received only the `IHookContext` (the world event). A class of rules also needs **who the bearer is** and **the attachment's arguments**, which can't live on the hook context (the same event is evaluated for multiple units/seats). Bundled into `RuleInvocation(IHookContext Hook, IUnit Bearer, IReadOnlyList<RuleArgument> Arguments)` (built per-rule in `RuleEvaluator`'s loop) and passed to `Evaluate`/`Apply` in place of the bare context. `ValueSource` gained a polymorphic `Resolve(arguments)` (Literal → value; Arg(i) → `arguments[i]`). This unblocked the argument-bearing effects (Deadly/Tough/Blast/Impact/Fear via `ValueSource.Arg`), the bearer-targeted token effects (Caster/Piercing Frenzy/Limited via `GrantToken`; new `TokenType.RuleGrant` constant), the `Aura` effect (one rule-grant token on the bearer; per-model expansion still deferred), and the `TokenPresent` condition (reads `Bearer.Tokens.GetTokenCount`).
+
+The public `RuleEvaluator.Evaluate(unit, seat, context)` and harness `Evaluate(...)` signatures are unchanged — only the per-record `Evaluate`/`Apply` take `RuleInvocation`.
+
+### Capabilities / contexts added this session
+
+`IHasActionType` (in `Definitions`, not `Foundation`, because it references `EActionType` — a Definitions type — and Foundation must stay dependency-free), `IHasAttackerMoved` (Foundation). `HitRollCompleteContext` now also implements `IHasDistance` (Relentless's `And(UnmodifiedRollEquals, DistanceGreaterThan)`); `HitRollModifierContext` implements `IHasAttackerMoved` (Indirect); `MoveActionDeclaredContext` implements `IHasActionType` (Fast/Slow/Immobile).
+
+### Migration status — 215 green / 8 red (pre-merge); 231 / 8 after merging master
+
+Migrated to `Evaluate` (with their seats verified by going green): Stealth, Furious, Surge, Rending, Artillery, Reliable, Aircraft, Fast, Slow, Melee Shrouding, Bane, Thrust, Indirect, Unstoppable, Fearless, Regeneration, Counter, Takedown, Immobile, Flying, Strider, Scout, Ambush, Relentless, Deadly, Tough, Blast, Impact, Fear, Caster, Piercing Frenzy (×2), Limited, Regeneration Aura. Defensive rules (Stealth, Melee Shrouding, Regeneration, Counter, Aircraft) carry `ERuleSeat.Subject`.
+
+**The 8 remaining reds are out of scope for *passive* dispatch:**
+- **7 activated abilities** (Mend ×2, Advanced Sight, Unstoppable Mark place, Vanguard, Martial Prowess, Strafing) — still on the `GatherOffers`/`ResolveAbility` bus stub. That's **Phase 7c**: turn the offer/accept path into real dispatch. This is the obvious next milestone (clears 6 of the 8).
+- **1 token-clear lifecycle** (Unstoppable Mark owner-destroyed) — needs the `TokenClearService` that walks containers on `OnUnitDestroyed` and removes `OwnerDestroyed`-triggered tokens. Not an operation-queue concern.
+
+Also still deferred (unchanged from prior notes): behavior-level execution of the queued operations (**Phase 8**), the C#-catalog/JSON loader (rule definitions are still inline in tests), per-model aura expansion, and Hero/Transport (await the engine refactor's unit-joining/transport primitives).
 
 ## Outcome
 
