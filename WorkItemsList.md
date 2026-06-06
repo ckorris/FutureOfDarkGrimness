@@ -6,6 +6,8 @@ See `WorkItems/README.md` for the per-item file template. Per-item working notes
 
 Numbers are permanent and never reused. If an item is split, its line stays and points at the new numbers.
 
+> **2026-06-03 — reconciliation.** This index had drifted out of sync with the `WorkItems/NNN-*.md` detail files and git history. Numbers **044/045/046** had each been reused across two parallel efforts (a terrain/deployment effort and a line-of-sight effort), violating the never-reuse rule. Resolved by treating the on-disk detail files + merged commits as authoritative: **044/045/046 now mean the line-of-sight cluster** (matching `WorkItems/044-046-*.md`). The two terrain tasks that had been squatting on 044 and 046 were reassigned fresh permanent numbers **049** and **050**. Work item **012** (merged: engine `a967fa1`, GUI `3a6f189`) and **044** (LoS ally-exclusion, merged `8701abf`) were complete but never checked off — fixed. Terrain rotation, formerly listed as its own #045, is folded into the #002 entry where it actually shipped. Items **041 / 045 / 046** are implemented and on master but parked in *Awaiting verification* until manually eyeballed in the running app.
+
 ---
 
 ## Setup & map
@@ -14,6 +16,7 @@ Numbers are permanent and never reused. If an item is split, its line stays and 
 
 ## Deployment
 
+- [ ] 048 — Block deployment of models into impassible terrain (auto-placement and GUI both need intersection check; observed: AI placed model inside building flush against deployment zone edge) ([WorkItems/048](WorkItems/048-deployment-into-impassible.md))
 - [ ] 004 — Ambush deployment between rounds (set-aside + alternating placement at start of rounds 2+)
 - [ ] 005 — Scout deployment after main deployment (alternating, within 12" of zone)
 - [ ] 006 — Hero joins unit + takes morale on behalf of unit
@@ -28,7 +31,7 @@ Numbers are permanent and never reused. If an item is split, its line stays and 
 ## Movement
 
 - [ ] 011 — `MovementUtilities.ValidateMovingThroughEnemyUnits` (currently empty)
-- [ ] 012 — Decouple Advance distance from total move distance in `PathTemplate` (currently hardcoded half)
+- [ ] 050 — Movement validation ignores model base radius for terrain footprints. `MovementUtilities.ValidateMovingThroughImpassibleTerrain` (and the difficult/dangerous variants) test a zero-width center-to-center line against terrain footprints, so a model can park with its center just outside an impassable shape while its base overlaps it. Fix: inflate the terrain footprint by the model's `BaseRadiusInches` (Minkowski expansion) or use swept-disc distance, in `MovementUtilities`. Resolver layer needs no changes. Pre-existing — surfaced more by #002's richer terrain. (Reassigned from 046, whose number was reused for the line-of-sight cluster.)
 
 ## Shooting
 
@@ -83,23 +86,29 @@ These are umbrellas; will fragment per-rule when picked up.
 ## Client / renderer
 
 - [ ] 040 — Post-game navigation back to main menu in GUI mode (currently window just stays open)
-- [ ] 041 — Factor line of sight into movement resolver's ranged-targeting overlay (`GuiDefineMovementResolver.DrawRangedTargeting` currently checks range only)
-- [ ] 044 — Multi-pool terrain selection: lobby picker for which `TerrainLayoutFile` feeds `AutoFromLayout` / `Alternating`. Spun off from #002 — that ships with one hardcoded built-in pool.
+- [ ] 049 — Multi-pool terrain selection: lobby picker for which `TerrainLayoutFile` feeds `AutoFromLayout` / `Alternating`. Spun off from #002 — that ships with one hardcoded built-in pool. (Reassigned from 044, whose number was reused for the line-of-sight cluster.)
 
-## Movement
+---
 
-- [ ] 046 — Movement validation ignores model base radius for terrain footprints. `MovementUtilities.ValidateMovingThroughImpassibleTerrain` (and the difficult/dangerous variants) test a zero-width center-to-center line against terrain footprints, so a model can park with its center just outside an impassable shape while its base overlaps it. Fix: inflate the terrain footprint by the model's `BaseRadiusInches` (Minkowski expansion) or use swept-disc distance, in `MovementUtilities`. Resolver layer needs no changes. Pre-existing — surfaced more by #002's richer terrain.
+## Awaiting verification
+
+Implemented and merged to master; engine test suite green. Held open only until the behavior is confirmed by hand in the running app — tick and move to `## Done` once verified.
+
+- [ ] 041 — Factor line of sight into movement resolver's ranged-targeting overlay: both the per-enemy-unit weapon list and the per-model fire lines now require LoS (terrain + model-base blockers), with a red block-stub when no model in the unit is visible. ([WorkItems/041](WorkItems/041-movement-resolver-ranged-los.md)) — commit `ec2f552`
+- [ ] 045 — Cover indication in targeting overlay and shot UI: fire lines through cover render dashed yellow; shot picker spells out "Cover (+1 Def)". Presentation-only, no engine change. ([WorkItems/045](WorkItems/045-cover-indication.md)) — commit `cc341b0`
+- [ ] 046 — `GetFirstBlockingHit` engine API: returns the closest `Blocking` terrain entry point along an (attacker, target) segment so overlays can draw a stub + marker; `IZone.GetFirstSegmentEntry` on circle/rect. 6 new `LineOfSightTests` cases, suite 135/135. ([WorkItems/046](WorkItems/046-los-first-blocking-hit.md)) — commit `d9e60fb`
 
 ---
 
 ## Done
 
 - [x] 001 — D3+2 objective placement: interactive alternating-team placement w/ validator + AI strategy + debug auto-place toggle ([WorkItems/001](WorkItems/001-objective-placement.md))
+- [x] 012 — Decouple Advance / Rush / Charge distances: engine splits `MaxRushDistance` from `MaxChargeDistance`, `PathTemplate` carries all three explicitly (no more hardcoded half), `ValidatePaths` gains a "beyond Rush ⇒ a model must end in melee" check + Pass-gating; GUI movement resolver gains a three-band (Advance/Rush/Charge) ring preview + Done gating. Tests added (`ChargeReachValidationTests`, `ChooseActionPassDisableTests`). Engine `a967fa1`, GUI `3a6f189`.
 - [x] 013 — Weapon-group target selection (up to 2 targets per shoot action): already implemented via `GameWideConstants.MAX_TARGETED_UNITS_PER_SHOOT_ACTION` + `attackedDefenderRefs` tracking in `ChooseRangedAttackStage`; item was stale
 - [x] 014 — `RangedContext` NIE paths: file was dead code (entire body in a `/* ... */` block); actual ranged flow uses `CombatActionContext`. File deleted.
 - [x] 018 — Pile In move: defender models not already in BTB step up to 3" toward nearest charging model, with impassible-terrain and strict coherency fallbacks ([WorkItems/018](WorkItems/018-pile-in.md))
 - [x] 043 — Filter dead models out of `IUnit.AllWeapons` so dead models no longer contribute weapons to attack/strike-back/shoot lists or the tooltip readout
 - [x] 019 — Consolidation moves after melee resolution: 3" Wipeout / 1" Disengage with per-model GUI path-builder, AI resolver, table-bounds clamp, and validation against terrain + cohesion + cap ([WorkItems/019](WorkItems/019-consolidation-moves.md))
-- [x] 002 — Terrain placement workflow: three-mode lobby setting (AutoFromLayout / Alternating / LoadFromFile), AI + human + CLI resolvers, `CompositeZone` for L-shapes, `RotatedZoneWrapper` + SAT for 45° rotation, GUI thumbnails + R-key rotate ([WorkItems/002](WorkItems/002-terrain-placement.md))
-- [x] 045 — Terrain rotation: shipped inline with #002 via `RotatedZoneWrapper` + SAT overlap math + R-key in GUI resolver ([WorkItems/002](WorkItems/002-terrain-placement.md))
+- [x] 044 — Allied/same-team models don't block line of sight: `LineOfSightUtilities.BuildModelBlockers` now excludes every model on the attacker's team (via `tableState.Teams`) plus the defender unit's models, falling back to attacker-player-only when no team is registered. New `ModelBlockerTests` cases (ally exclusion, third-party enemy still blocks). ([WorkItems/044](WorkItems/044-los-ally-exclusion.md)) — commit `8701abf`
+- [x] 002 — Terrain placement workflow: three-mode lobby setting (AutoFromLayout / Alternating / LoadFromFile), AI + human + CLI resolvers, `CompositeZone` for L-shapes, `RotatedZoneWrapper` + SAT for 45° rotation, GUI thumbnails + R-key rotate. (Includes terrain rotation, formerly tracked separately as #045.) ([WorkItems/002](WorkItems/002-terrain-placement.md))
 - [x] 047 — Deployment zone selection: draw labelled zones on the canvas, allow clicking zones directly, synchronise hover between dialog and table, and renumber in reading order ([WorkItems/047](WorkItems/047-deployment-zone-labels.md))

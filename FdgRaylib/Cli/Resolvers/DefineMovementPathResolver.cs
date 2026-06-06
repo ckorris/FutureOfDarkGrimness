@@ -25,7 +25,7 @@ public class DefineMovementPathResolver : IStageResolver<DefineMovementPathReque
             Console.WriteLine();
             Console.WriteLine($"--- Move: {unit.Name} ({models.Count} model{(models.Count != 1 ? "s" : "")}) ---");
             Console.WriteLine($"  Advance (≤ {request.MaxAdvanceDistance:F1}\"): move freely, can still shoot afterward");
-            Console.WriteLine($"  Rush    (≤ {request.MaxChargeDistance:F1}\"): move farther, but cannot shoot this turn");
+            Console.WriteLine($"  Rush    (≤ {request.MaxDistanceInches:F1}\"): move farther, but cannot shoot this turn");
             if (models.Count > 1)
             {
                 Console.WriteLine($"  Cohesion: each model must end within {GameWideConstants.MAX_MODEL_DISTANCE_FROM_ANY_OTHER_MODEL_INCHES:F0}\" (base-to-base) of at least one teammate");
@@ -69,7 +69,7 @@ public class DefineMovementPathResolver : IStageResolver<DefineMovementPathReque
             if (eof)
                 return Task.FromResult(AutoAdvance(request));
 
-            if (MovementUtilities.ValidatePaths(entries, request.MaxChargeDistance, out var errors))
+            if (MovementUtilities.ValidatePaths(entries, request.MaxDistanceInches, out var errors))
                 return Task.FromResult(entries);
 
             Console.WriteLine();

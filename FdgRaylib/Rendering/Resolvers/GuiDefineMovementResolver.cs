@@ -29,11 +29,21 @@ public class GuiDefineMovementResolver
     private bool _stayInAdvance; // toggle — off by default, reset each Resolve
     private bool _showTargeting = true; // toggle — on by default, persists across Resolve calls (covers both ranged + melee)
 
-    // Colors
+    // Move bands: Advance (green, can shoot after), Rush (yellow, can't shoot), Charge (orange,
+    // only legal if at least one model ends in melee). The Charge band only exists for units
+    // whose Charge distance is greater than their Rush distance — when equal, there are only
+    // two bands and the visual matches the pre-decoupling behavior.
+    private enum MoveBand { Advance, Rush, Charge }
+
     private static readonly uint AdvanceColor    = ImGui.ColorConvertFloat4ToU32(new Vector4(0.25f, 0.95f, 0.25f, 0.95f));
-    private static readonly uint RushColor       = ImGui.ColorConvertFloat4ToU32(new Vector4(1.00f, 0.55f, 0.10f, 0.95f));
+    private static readonly uint RushColor       = ImGui.ColorConvertFloat4ToU32(new Vector4(1.00f, 0.92f, 0.20f, 0.95f));
+    private static readonly uint ChargeColor     = ImGui.ColorConvertFloat4ToU32(new Vector4(1.00f, 0.55f, 0.10f, 0.95f));
     private static readonly uint AdvanceRingCol  = ImGui.ColorConvertFloat4ToU32(new Vector4(0.25f, 0.95f, 0.25f, 0.55f));
-    private static readonly uint RushRingCol     = ImGui.ColorConvertFloat4ToU32(new Vector4(1.00f, 0.55f, 0.10f, 0.55f));
+    private static readonly uint RushRingCol     = ImGui.ColorConvertFloat4ToU32(new Vector4(1.00f, 0.92f, 0.20f, 0.55f));
+    private static readonly uint ChargeRingCol   = ImGui.ColorConvertFloat4ToU32(new Vector4(1.00f, 0.55f, 0.10f, 0.55f));
+    private static readonly uint AdvanceFill     = ImGui.ColorConvertFloat4ToU32(new Vector4(0.25f, 0.95f, 0.25f, 0.40f));
+    private static readonly uint RushFill        = ImGui.ColorConvertFloat4ToU32(new Vector4(1.00f, 0.92f, 0.20f, 0.40f));
+    private static readonly uint ChargeFill      = ImGui.ColorConvertFloat4ToU32(new Vector4(1.00f, 0.55f, 0.10f, 0.40f));
     private static readonly uint SelectionOutline = ImGui.ColorConvertFloat4ToU32(new Vector4(1f, 1f, 1f, 0.95f));
     private static readonly uint ModelOutline    = ImGui.ColorConvertFloat4ToU32(new Vector4(0.7f, 0.7f, 0.7f, 0.7f));
     private static readonly uint GhostOutline    = ImGui.ColorConvertFloat4ToU32(new Vector4(1f, 1f, 1f, 0.85f));
@@ -58,7 +68,7 @@ public class GuiDefineMovementResolver
     public Task<List<ModelMoveEntry>> Resolve(DefineMovementPathRequest request)
     {
         var tcs = new TaskCompletionSource<List<ModelMoveEntry>>();
-        var template = new PathTemplate(request.UnitDataBinding, request.MaxChargeDistance);
+        var template = new PathTemplate(request.UnitDataBinding, request.MaxAdvanceDistance, request.MaxDistanceInches);
         var first = request.UnitDataBinding.GetValue().ModelBindings
             .Select(mb => mb.GetValue() as IModel)
             .FirstOrDefault(m => m != null && m.GetIsAlive());
@@ -88,7 +98,9 @@ public class GuiDefineMovementResolver
         var paths    = pt.CurrentPaths;
 
         float maxAdvance = request.MaxAdvanceDistance;
-        float maxCharge  = request.MaxChargeDistance;
+        float maxRush    = request.MaxRushDistance;
+        float maxCharge  = request.MaxDistanceInches;
+        bool  hasChargeBand = maxCharge > maxRush + 0.0001f;
 
         // 1) Draw each model's start circle + committed path lines + final ghost circle
         foreach (var kvp in paths)
@@ -112,7 +124,7 @@ public class GuiDefineMovementResolver
                 for (int i = 0; i < pathPoints.Count; i++)
                 {
                     var cur = pathPoints[i];
-                    uint col = cum + 0.0001f >= maxAdvance ? RushColor : AdvanceColor;
+                    uint col = LineColorFor(ClassifyBand(cum, maxAdvance, maxRush, hasChargeBand));
                     var (px, py) = InchesToPixel(prev.x, prev.z);
                     var (cx, cy) = InchesToPixel(cur.x, cur.z);
                     dl.AddLine(new Vector2(px, py), new Vector2(cx, cy), col, 2f);
@@ -130,18 +142,7 @@ public class GuiDefineMovementResolver
 
         // 2) Range rings around selected model's last waypoint
         if (_selectedModel != null)
-        {
-            float totalSoFar = pt.GetTotalDistanceMoved(_selectedModel);
-            var anchor = pt.GetModelLastPathPosition(_selectedModel);
-            var (ax, ay) = InchesToPixel(anchor.x, anchor.z);
-
-            float remAdvance = maxAdvance - totalSoFar;
-            float remCharge  = maxCharge  - totalSoFar;
-            if (remAdvance > 0.01f)
-                dl.AddCircle(new Vector2(ax, ay), remAdvance * _scale, AdvanceRingCol, 64, 1.5f);
-            if (remCharge > 0.01f)
-                dl.AddCircle(new Vector2(ax, ay), remCharge  * _scale, RushRingCol,    64, 1.5f);
-        }
+            DrawRangeRings(dl, pt, maxAdvance, maxRush, maxCharge, hasChargeBand);
 
         // 3) Ghost following mouse for selected model (clamped)
         bool overTable = IsOverTable(io.MousePos.X, io.MousePos.Y);
@@ -184,22 +185,19 @@ public class GuiDefineMovementResolver
             ghostPos = new Position(nx, nz);
 
             float cumWithGhost = totalSoFar + allowed;
-            ghostIsRush = cumWithGhost + 0.0001f >= maxAdvance;
+            MoveBand ghostBand = ClassifyBand(cumWithGhost, maxAdvance, maxRush, hasChargeBand);
+            ghostIsRush    = ghostBand != MoveBand.Advance;
             ghostExtraDist = allowed;
-            ghostOverlaps = WouldOverlapAnyModel(ghostPos.Value, _selectedModel, request, paths);
+            ghostOverlaps  = WouldOverlapAnyModel(ghostPos.Value, _selectedModel, request, paths);
 
             // Preview line from anchor to ghost
             var (ax, ay) = InchesToPixel(anchor.x, anchor.z);
             var (gx, gy) = InchesToPixel(nx, nz);
-            uint previewCol = ghostIsRush ? RushColor : AdvanceColor;
-            dl.AddLine(new Vector2(ax, ay), new Vector2(gx, gy), previewCol, 2f);
+            dl.AddLine(new Vector2(ax, ay), new Vector2(gx, gy), LineColorFor(ghostBand), 2f);
 
             // Ghost base circle
             float r = _selectedModel.BaseRadiusInches * _scale;
-            uint fill;
-            if (ghostOverlaps) fill = OverlapFill;
-            else if (ghostIsRush) fill = ImGui.ColorConvertFloat4ToU32(new Vector4(1.00f, 0.55f, 0.10f, 0.40f));
-            else fill = ImGui.ColorConvertFloat4ToU32(new Vector4(0.25f, 0.95f, 0.25f, 0.40f));
+            uint fill = ghostOverlaps ? OverlapFill : FillColorFor(ghostBand);
             dl.AddCircleFilled(new Vector2(gx, gy), r, fill);
             dl.AddCircle(new Vector2(gx, gy), r, GhostOutline, 32, 1.5f);
 
@@ -277,7 +275,7 @@ public class GuiDefineMovementResolver
         string unitName = request.UnitDataBinding.GetValue().Name;
         ImGui.TextUnformatted($"Move: {unitName}");
         ImGui.SameLine();
-        ImGui.TextDisabled($"  advance up to {FormatInches(request.MaxAdvanceDistance)}\"   rush up to {FormatInches(request.MaxChargeDistance)}\"");
+        ImGui.TextDisabled("  " + FormatDistanceSummary(request));
 
         ImGui.Spacing();
         if (_selectedModel != null)
@@ -286,7 +284,7 @@ public class GuiDefineMovementResolver
             bool inRush = dist + 0.0001f >= request.MaxAdvanceDistance;
             var color = inRush ? new Vector4(1.00f, 0.55f, 0.10f, 1f) : new Vector4(0.25f, 0.95f, 0.25f, 1f);
             ImGui.PushStyleColor(ImGuiCol.Text, color);
-            ImGui.TextUnformatted($"Selected model: {dist:F2}\" / {FormatInches(request.MaxChargeDistance)}\"  ({(inRush ? "RUSH - cannot shoot" : "advance - may shoot")})");
+            ImGui.TextUnformatted($"Selected model: {dist:F2}\" / {FormatInches(request.MaxDistanceInches)}\"  ({(inRush ? "RUSH - cannot shoot" : "advance - may shoot")})");
             ImGui.PopStyleColor();
         }
         else
@@ -300,7 +298,7 @@ public class GuiDefineMovementResolver
         ImGui.Checkbox("Stay within Advance (hold Shift to force)", ref _stayInAdvance);
         ImGui.Checkbox("Show targeting", ref _showTargeting);
         if (ImGui.IsItemHovered())
-            ImGui.SetTooltip("Show ranged weapons in range of each enemy unit (green), how many of your models can charge it (yellow), fire lines from the selected model, and a charge line when the ghost is within melee range. Ranged info hides if the unit has moved too far to shoot.");
+            ImGui.SetTooltip("Show ranged weapons in range AND with line of sight to each enemy unit (green), how many of your models can charge it (yellow), fire lines from the selected model, and a charge line when the ghost is within melee range. Fire lines turn yellow and dashed when the shot passes through cover (+1 to the target's defense roll). When no enemy model is visible to a weapon, a red blocked-stub with an X marks where the shot would hit a wall. Ranged info hides if the unit has moved too far to shoot.");
 
         ImGui.Spacing();
         float spacing = ImGui.GetStyle().ItemSpacing.X;
@@ -308,7 +306,10 @@ public class GuiDefineMovementResolver
         float btnW    = (panelW - pad - spacing * 3) / 4f;
 
         var results = pt.GetResultsAsList();
-        bool engineValid = MovementUtilities.ValidatePaths(results, request.MaxChargeDistance, terrain, out var engineErrors);
+        var enemyPositions = GetEnemyPositionsForRequest(request);
+        bool engineValid = MovementUtilities.ValidatePaths(results,
+            request.MaxRushDistance, request.MaxDistanceInches,
+            enemyPositions, terrain, out var engineErrors);
         var finals = BuildFinalPositions(pt.CurrentPaths, null, null);
         var cohesion = CheckCohesion(finals);
 
@@ -370,6 +371,80 @@ public class GuiDefineMovementResolver
         }
 
         ImGui.End();
+    }
+
+    /// <summary>
+    /// Draws up to three remaining-range rings around the selected model's current path
+    /// endpoint. The Rush ring is suppressed when Rush equals Charge — keeping the visual
+    /// identical to before the Rush/Charge split.
+    /// </summary>
+    private void DrawRangeRings(ImDrawListPtr dl, PathTemplate pt,
+        float maxAdvance, float maxRush, float maxCharge, bool hasChargeBand)
+    {
+        if (_selectedModel == null) return;
+
+        float totalSoFar = pt.GetTotalDistanceMoved(_selectedModel);
+        var anchor = pt.GetModelLastPathPosition(_selectedModel);
+        var (ax, ay) = InchesToPixel(anchor.x, anchor.z);
+        var center = new Vector2(ax, ay);
+
+        DrawRingIfRemaining(dl, center, maxAdvance - totalSoFar,            AdvanceRingCol);
+        if (hasChargeBand)
+            DrawRingIfRemaining(dl, center, maxRush - totalSoFar,           RushRingCol);
+        DrawRingIfRemaining(dl, center, maxCharge - totalSoFar,             ChargeRingCol);
+    }
+
+    private void DrawRingIfRemaining(ImDrawListPtr dl, Vector2 center, float remainingInches, uint color)
+    {
+        if (remainingInches > 0.01f)
+            dl.AddCircle(center, remainingInches * _scale, color, 64, 1.5f);
+    }
+
+    /// <summary>
+    /// Classifies a cumulative move distance into a band. When Charge equals Rush, the
+    /// Rush band is suppressed and post-Advance distance maps directly to Charge — keeping
+    /// the visual identical to before the Rush/Charge split.
+    /// </summary>
+    private static MoveBand ClassifyBand(float cumDistance, float maxAdvance, float maxRush, bool hasChargeBand)
+    {
+        const float Epsilon = 0.0001f;
+        if (cumDistance + Epsilon < maxAdvance) return MoveBand.Advance;
+        if (hasChargeBand && cumDistance + Epsilon < maxRush) return MoveBand.Rush;
+        return MoveBand.Charge;
+    }
+
+    private static uint LineColorFor(MoveBand band) => band switch
+    {
+        MoveBand.Advance => AdvanceColor,
+        MoveBand.Rush    => RushColor,
+        _                => ChargeColor,
+    };
+
+    private static uint FillColorFor(MoveBand band) => band switch
+    {
+        MoveBand.Advance => AdvanceFill,
+        MoveBand.Rush    => RushFill,
+        _                => ChargeFill,
+    };
+
+    private static string FormatDistanceSummary(DefineMovementPathRequest request)
+    {
+        string s = $"advance up to {FormatInches(request.MaxAdvanceDistance)}\"   rush up to {FormatInches(request.MaxRushDistance)}\"";
+        if (request.MaxDistanceInches > request.MaxRushDistance + 0.0001f)
+            s += $"   charge up to {FormatInches(request.MaxDistanceInches)}\"";
+        return s;
+    }
+
+    private List<Position> GetEnemyPositionsForRequest(DefineMovementPathRequest request)
+    {
+        var positions = new List<Position>();
+        foreach (var u in _tableState.Units.Objects)
+        {
+            if (u.PlayerID == request.TargetPlayerID) continue;
+            foreach (var m in u.Models)
+                if (m.GetIsAlive()) positions.Add(m.Position);
+        }
+        return positions;
     }
 
     private bool WouldOverlapAnyModel(Position ghostPos, IModel ghostModel,
@@ -514,8 +589,6 @@ public class GuiDefineMovementResolver
         IReadOnlyDictionary<IModel, IReadOnlyList<Position>> paths,
         Position? ghostPos, float ghostExtraDist)
     {
-        // TODO: factor in line of sight when deciding what counts as "in range" / a valid shooter (WorkItem 041).
-
         // Shooting aggregate is driven by committed paths so it doesn't flicker on rush-boundary hover.
         // Per-line shooting from the selected model + the charge overlay are ghost-aware.
         bool canShootCommitted = true;
@@ -543,8 +616,41 @@ public class GuiDefineMovementResolver
         uint enemyTextCol = ImGui.ColorConvertFloat4ToU32(new Vector4(0.60f, 1.00f, 0.60f, 1f));
         uint lineCol      = ImGui.ColorConvertFloat4ToU32(new Vector4(0.30f, 1.00f, 0.30f, 0.85f));
         uint midTextCol   = ImGui.ColorConvertFloat4ToU32(new Vector4(0.60f, 1.00f, 0.60f, 1f));
+        uint blockedLineCol = ImGui.ColorConvertFloat4ToU32(new Vector4(1.00f, 0.35f, 0.35f, 0.85f));
+        uint coverLineCol   = ImGui.ColorConvertFloat4ToU32(new Vector4(0.85f, 0.80f, 0.30f, 0.85f));
+        uint coverTextCol   = ImGui.ColorConvertFloat4ToU32(new Vector4(0.95f, 0.85f, 0.35f, 1f));
         float lineH = ImGui.GetTextLineHeight();
         const float meleeRange = GameWideConstants.MELEE_RANGE_INCHES_HORIZONTAL;
+
+        // Per-frame blocker snapshots: each enemy unit gets its own terrain+model-blocker list
+        // because BuildModelBlockers excludes the defender unit (so it won't self-block).
+        // Cost: one BuildModelBlockers call per enemy unit per frame. Cheap; the resulting
+        // lists are walked many times during LoS checks below.
+        IUnit ourUnit = request.UnitDataBinding.GetValue();
+        var terrainSnapshot = _tableState.Terrain.Objects.ToList();
+        var blockersByEnemyUnit = new Dictionary<IUnit, List<ITerrain>>(ReferenceEqualityComparer.Instance);
+        foreach (IUnit enemyUnit in _tableState.Units.Objects)
+        {
+            if (enemyUnit.PlayerID == ourPlayerID) continue;
+            var modelBlockers = LineOfSightUtilities.BuildModelBlockers(_tableState, ourUnit, enemyUnit);
+            var combined = new List<ITerrain>(terrainSnapshot.Count + modelBlockers.Count);
+            combined.AddRange(terrainSnapshot);
+            combined.AddRange(modelBlockers);
+            blockersByEnemyUnit[enemyUnit] = combined;
+        }
+
+        // LoS cache keyed by (attacker model, defender model) — values are committed-position
+        // results only. The selected model's ghost-position LoS is computed fresh on use
+        // because the ghost moves with the mouse and would invalidate cached values.
+        var losCache = new Dictionary<(IModel, IModel), bool>();
+        bool LoSCommitted(IModel attackerModel, Position attackerPos, IModel defenderModel, IUnit defenderUnit)
+        {
+            var key = (attackerModel, defenderModel);
+            if (losCache.TryGetValue(key, out bool v)) return v;
+            v = LineOfSightUtilities.HasLineOfSight(attackerPos, defenderModel.Position, blockersByEnemyUnit[defenderUnit]);
+            losCache[key] = v;
+            return v;
+        }
 
         // 1) Per-enemy-unit aggregate text: shooting weapon counts (green) + charger count (yellow), combined.
         foreach (IUnit enemyUnit in _tableState.Units.Objects)
@@ -569,7 +675,9 @@ public class GuiDefineMovementResolver
                         {
                             float b2b = DistanceUtilities.GetBaseToBaseDistanceInches_2D(
                                 from, em.Position, ourModel.BaseRadiusInches, em.BaseRadiusInches);
-                            if (b2b <= w.RangeInches) { inRange = true; break; }
+                            if (b2b > w.RangeInches) continue;
+                            if (!LoSCommitted(ourModel, from, em, enemyUnit)) continue;
+                            inRange = true; break;
                         }
                         if (inRange)
                         {
@@ -674,29 +782,51 @@ public class GuiDefineMovementResolver
         if (selRanged.Count == 0) return;
         Position selPos = ghostPos ?? committed[_selectedModel];
 
-        // For each weapon, pick the nearest enemy model in range per enemy unit.
-        // Group resulting (line endpoint = enemy model) -> list of weapons hitting it.
+        // For each weapon, prefer the nearest in-range enemy model with line of sight (clear shot).
+        // If no in-range model has LoS, fall back to the nearest in-range model overall as a
+        // "blocked" target — we'll render that with a red stub + X at the block point so the
+        // player can see why the shot doesn't land.
+        // Group resulting (target enemy model) -> list of weapons hitting it, partitioned by
+        // clear vs blocked so the renderer can style them differently.
         var byTarget = new Dictionary<IModel, List<IWeapon>>();
+        var coverTargets = new HashSet<IModel>(ReferenceEqualityComparer.Instance);
+        var blockedByTarget = new Dictionary<IModel, (List<IWeapon> weapons, IUnit enemyUnit)>();
         foreach (IUnit enemyUnit in _tableState.Units.Objects)
         {
             if (enemyUnit.PlayerID == ourPlayerID) continue;
             var aliveEnemies = enemyUnit.Models.Where(em => em.GetIsAlive()).ToList();
             if (aliveEnemies.Count == 0) continue;
 
+            var unitBlockers = blockersByEnemyUnit[enemyUnit];
             foreach (var w in selRanged)
             {
-                IModel? nearest = null;
-                float nearestB2B = float.MaxValue;
+                IModel? nearestClear   = null; float nearestClearB2B   = float.MaxValue;
+                IModel? nearestInRange = null; float nearestInRangeB2B = float.MaxValue;
+                ESightLineEffect nearestClearEffect = ESightLineEffect.Clear;
                 foreach (var em in aliveEnemies)
                 {
                     float b2b = DistanceUtilities.GetBaseToBaseDistanceInches_2D(
                         selPos, em.Position, _selectedModel.BaseRadiusInches, em.BaseRadiusInches);
                     if (b2b > w.RangeInches) continue;
-                    if (b2b < nearestB2B) { nearestB2B = b2b; nearest = em; }
+                    if (b2b < nearestInRangeB2B) { nearestInRangeB2B = b2b; nearestInRange = em; }
+                    var effect = LineOfSightUtilities.EvaluateSightLine(selPos, em.Position, unitBlockers);
+                    if (effect != ESightLineEffect.Blocking)
+                    {
+                        if (b2b < nearestClearB2B) { nearestClearB2B = b2b; nearestClear = em; nearestClearEffect = effect; }
+                    }
                 }
-                if (nearest == null) continue;
-                if (!byTarget.TryGetValue(nearest, out var list)) byTarget[nearest] = list = new List<IWeapon>();
-                list.Add(w);
+                if (nearestClear != null)
+                {
+                    if (!byTarget.TryGetValue(nearestClear, out var list)) byTarget[nearestClear] = list = new List<IWeapon>();
+                    list.Add(w);
+                    if (nearestClearEffect == ESightLineEffect.Cover) coverTargets.Add(nearestClear);
+                }
+                else if (nearestInRange != null)
+                {
+                    if (!blockedByTarget.TryGetValue(nearestInRange, out var entry))
+                        blockedByTarget[nearestInRange] = entry = (new List<IWeapon>(), enemyUnit);
+                    entry.weapons.Add(w);
+                }
             }
         }
 
@@ -706,6 +836,9 @@ public class GuiDefineMovementResolver
             var target = kvp.Key;
             var weapons = kvp.Value.OrderBy(w => w.Name).ToList();
             int n = weapons.Count;
+            bool inCover = coverTargets.Contains(target);
+            uint thisLineCol = inCover ? coverLineCol : lineCol;
+            uint thisTextCol = inCover ? coverTextCol : midTextCol;
 
             var (ax, ay) = InchesToPixel(selPos.x, selPos.z);
             var (bx, by) = InchesToPixel(target.Position.x, target.Position.z);
@@ -719,11 +852,67 @@ public class GuiDefineMovementResolver
                 float offset = (i - (n - 1) * 0.5f) * stagger;
                 var sa = new Vector2(ax + perpX * offset, ay + perpY * offset);
                 var sb = new Vector2(bx + perpX * offset, by + perpY * offset);
-                dl.AddLine(sa, sb, lineCol, 1.5f);
+                if (inCover) AddDottedLine(dl, sa, sb, thisLineCol, 1.5f);
+                else         dl.AddLine(sa, sb, thisLineCol, 1.5f);
             }
 
             // Weapon name labels stacked beside the line midpoint (screen-right by default,
-            // flipped to screen-left if right side would clip the window edge).
+            // flipped to screen-left if right side would clip the window edge). When the shot
+            // passes through cover terrain, append "(cover)" to each weapon name so the player
+            // sees the +1 defense modifier inline.
+            float mx = (ax + bx) * 0.5f, my = (ay + by) * 0.5f;
+            float blockH = n * lineH;
+            float blockW = 0f;
+            string[] labels = new string[n];
+            var sizes = new Vector2[n];
+            for (int i = 0; i < n; i++)
+            {
+                labels[i] = inCover ? $"{weapons[i].Name} (cover)" : weapons[i].Name;
+                sizes[i] = ImGui.CalcTextSize(labels[i]);
+                if (sizes[i].X > blockW) blockW = sizes[i].X;
+            }
+            const float margin = 8f;
+            float xLeftAnchor  = mx + margin;
+            float xRightAnchor = mx - margin - blockW;
+            float xAnchor = xLeftAnchor + blockW <= screenW - 4f ? xLeftAnchor : xRightAnchor;
+            float yTop = my - blockH * 0.5f;
+            for (int i = 0; i < n; i++)
+                dl.AddText(new Vector2(xAnchor, yTop + i * lineH), thisTextCol, labels[i]);
+        }
+
+        // Blocked targets: stub from the selected model toward the would-be-nearest target,
+        // stopping at the first blocker's entry point, with an X drawn at the block point.
+        foreach (var kvp in blockedByTarget)
+        {
+            var target = kvp.Key;
+            var weapons = kvp.Value.weapons.OrderBy(w => w.Name).ToList();
+            int n = weapons.Count;
+
+            var hit = LineOfSightUtilities.GetFirstBlockingHit(selPos, target.Position,
+                blockersByEnemyUnit[kvp.Value.enemyUnit]);
+            if (!hit.HasValue) continue; // sanity: we only land here when LoS failed, so a blocker exists
+
+            var (ax, ay) = InchesToPixel(selPos.x, selPos.z);
+            var (bx, by) = InchesToPixel(hit.Value.hit.x, hit.Value.hit.z);
+            float dx = bx - ax, dy = by - ay;
+            float len = MathF.Sqrt(dx * dx + dy * dy);
+            if (len < 0.001f) continue;
+            float perpX = -dy / len, perpY = dx / len;
+
+            for (int i = 0; i < n; i++)
+            {
+                float offset = (i - (n - 1) * 0.5f) * stagger;
+                var sa = new Vector2(ax + perpX * offset, ay + perpY * offset);
+                var sb = new Vector2(bx + perpX * offset, by + perpY * offset);
+                dl.AddLine(sa, sb, blockedLineCol, 1.5f);
+            }
+
+            // X marker at the block point
+            const float xSize = 6f;
+            dl.AddLine(new Vector2(bx - xSize, by - xSize), new Vector2(bx + xSize, by + xSize), blockedLineCol, 2f);
+            dl.AddLine(new Vector2(bx - xSize, by + xSize), new Vector2(bx + xSize, by - xSize), blockedLineCol, 2f);
+
+            // Weapon name labels stacked at the midpoint of the stub.
             float mx = (ax + bx) * 0.5f, my = (ay + by) * 0.5f;
             float blockH = n * lineH;
             float blockW = 0f;
@@ -735,7 +924,7 @@ public class GuiDefineMovementResolver
             float xAnchor = xLeftAnchor + blockW <= screenW - 4f ? xLeftAnchor : xRightAnchor;
             float yTop = my - blockH * 0.5f;
             for (int i = 0; i < n; i++)
-                dl.AddText(new Vector2(xAnchor, yTop + i * lineH), midTextCol, weapons[i].Name);
+                dl.AddText(new Vector2(xAnchor, yTop + i * lineH), blockedLineCol, weapons[i].Name);
         }
     }
 
