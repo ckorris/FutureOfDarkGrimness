@@ -471,10 +471,41 @@ correct queuing. Execution is Phase 8 / the #042 engine track.
        outputs re-enter the when-pipeline? (Do AddExtraHit's hits re-fire hit whens /
        re-trigger Furious?) Default assumption: NO — generated hits are terminal.
 
-[ ] 7c — Activated abilities end-to-end
+[x] 7c — Activated abilities end-to-end                              [DONE 2026-06-06]
        Implement: real GatherOffers/ResolveAbility — offer/accept, ability cost
        gating, target selector resolution, ability effect emission.
-       Tests green: 07, 08, 09 (Mend offer/accept, Advanced Sight).
+       Tests green: 07, 08, 09 (Mend offer/accept, Advanced Sight) + 15, 17, 18,
+       19 (Unstoppable Mark place, Vanguard, Martial Prowess, Strafing). Suite
+       238 / 1 (the lone red is test 16 = 7g owner-destroyed cleanup).
+       DONE as direct dispatch on RuleEvaluator (bus stub retired), NOT a bus:
+         * GatherOffers/ResolveAbility added to RuleEvaluator, mirroring Evaluate.
+           Harness OfferAbilities/Accept re-point to it. Bus.GatherOffers/
+           ResolveAbility deleted; Bus.Dispatch lingers only for harness.Fire
+           (smoke test + test 16) until 7g.
+         * TARGET THREADING: RuleInvocation gained `IUnit? Target` (effects land on
+           `Target ?? Bearer` via EffectiveTarget), `IDiceRoller? DiceRoller`, and
+           Hook went nullable (accepted abilities resolve off the live-event path;
+           only capability effects read Hook, and they only fire under Evaluate).
+           Reuses the ONE polymorphic Effect.Apply for passive AND activated — no
+           parallel switch. Six effects got target-aware Apply bodies (GrantToken
+           edited; AddRule/Heal/TriggeredMove/Reactivate/DealHits added).
+         * TOKEN OWNER stays UnitID (NOT player): OwnerDestroyed is per-unit, player
+           is derivable from unit but not vice-versa (cited Unstoppable Mark). Owner
+           = bearer whenever a token lands on a unit != bearer (EffectiveTarget.ID !=
+           Bearer.ID), null self-targeted — uniform across GrantToken/AddRule, falls
+           out of Target ?? Bearer, no per-effect branching.
+         * COST OPS emitted in ResolveAbility (queue = full transaction): SpellTokens/
+           ConsumesToken -> ConsumeTokensFromUnit; OncePer* -> grant a per-ability
+           "AbilityUsed:<rule>" marker (ActivationEnd/RoundEnd/ManualOnly clear).
+           Affordability filtered in GatherOffers. UNTESTED-BUT-EMITTED (only
+           SpellTokens affordability is exercised by test 07; the 6 Accept tests
+           assert only the effect op): OncePer* cost ops, Heal amount, Heal model
+           pick (first model). Their EXECUTION + the used-marker/FirstTrigger
+           clearing is 7d / Phase 8.
+         * NEW: Definitions/IHasActingUnit (capability; in Definitions not Foundation
+           because it refs IUnit, same rule as IHasActionType) — PreAttackContext
+           implements it so GatherOffers reads the acting unit off a bare context.
+           DiceExpression gained `int Sides` (D3=>3, D6=>6) so Heal can roll.
 
 [ ] 7d — Token-aware effects
        Implement: GrantToken / ConsumeToken effect -> operation (GrantToken count

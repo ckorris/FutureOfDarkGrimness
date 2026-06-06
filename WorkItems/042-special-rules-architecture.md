@@ -1,6 +1,6 @@
 # 042 — Special rules architecture
 
-**Status**: in-progress (Phase 7 — passive dispatch complete: every passively-dispatchable core/shape rule is green through `RuleEvaluator`; activated abilities and behavior-level execution remain)
+**Status**: in-progress (Phase 7 — passive dispatch + activated abilities (7c) complete: every passively-dispatchable core/shape rule and all 7 activated-ability tests are green through `RuleEvaluator`. Suite 238/1; the 1 red is 7g cross-unit token cleanup. Behavior-level execution (Phase 8) and 7d–7h remain)
 **Related**: #026, #027, #028, #029, #030, #031, #032, #033, #034 (all depend on this)
 
 ## Goal
@@ -618,6 +618,71 @@ Migrated to `Evaluate` (with their seats verified by going green): Stealth, Furi
 - **1 token-clear lifecycle** (Unstoppable Mark owner-destroyed) — needs the `TokenClearService` that walks containers on `OnUnitDestroyed` and removes `OwnerDestroyed`-triggered tokens. Not an operation-queue concern.
 
 Also still deferred (unchanged from prior notes): behavior-level execution of the queued operations (**Phase 8**), the C#-catalog/JSON loader (rule definitions are still inline in tests), per-model aura expansion, and Hero/Transport (await the engine refactor's unit-joining/transport primitives).
+
+## Phase 7c implementation notes (2026-06-06) — activated abilities as direct dispatch
+
+The 7 activated-ability tests are green (suite **238 / 1**; the lone red is test 16,
+the 7g owner-destroyed cleanup). Activated offer/accept moved off the `RuleHookBus`
+stub onto `RuleEvaluator` — the same "it's a query, not a broadcast" reasoning that
+killed the passive bus. The one new fact an activated ability carries over a passive
+rule is **a target distinct from the bearer**; everything else is mechanical reuse.
+
+### Offer/accept live on RuleEvaluator, reusing the one Effect.Apply
+
+`RuleEvaluator` gained `GatherOffers(context)` and `ResolveAbility(offer, targets)`
+beside `Evaluate`. `GatherOffers` reads the acting unit off the context via a new
+`IHasActingUnit` capability (in `Definitions`, not `Foundation`, because it refs
+`IUnit` — same layering rule as `IHasActionType`), walks its `Activated` abilities,
+and keeps those whose `TriggerHook` matches, whose `AvailableWhen` passes, and whose
+`Cost` is affordable. `ResolveAbility` emits cost ops then applies the effect once per
+target. The harness `OfferAbilities`/`Accept` re-point to the evaluator; the bus is now
+a `Dispatch`-only stub backing `harness.Fire` (smoke test + test 16) until 7g.
+
+### Target threading — extend RuleInvocation, don't fork Apply
+
+`RuleInvocation` is now the **resolution environment**: `(IHookContext? Hook, IUnit
+Bearer, args, IUnit? Target = null, IDiceRoller? DiceRoller = null)` with computed
+`EffectiveTarget => Target ?? Bearer` and `OwnerForEffectiveTarget`. Effects land on
+`EffectiveTarget`, so the **same polymorphic `Effect.Apply`** serves passive (Target
+null → bearer) and activated (explicit target) — no parallel switch, and `GrantToken`
+isn't duplicated. `Hook` went nullable because an accepted ability resolves off the
+live-event path; only capability-typed effects read `Hook`, and they only ever fire
+under `Evaluate` (Hook always set), so `null is TCap` is a safe miss. The evaluator
+holds an injected `IDiceRoller` (anticipated in the 06-03 notes) and threads it into
+every invocation; `Heal` rolls `DiceExpression.Sides` and reduces the histogram to a
+scalar pip-total (`Σ face·At(face)` — fractional under the probabilistic roller, hence
+`InvokeHeal.Amount` is float). Six effects got target-aware `Apply` bodies: `GrantToken`
+(edited), `AddRule`, `Heal`, `TriggeredMove`, `Reactivate`, `DealHits`.
+
+### Token owner is a unit, not a player (design call, 2026-06-06)
+
+`OwnerUnitID` stays `UnitID`. Decisive rule: **Unstoppable Mark**'s `OwnerDestroyed`
+clear means "remove when the *placing unit* dies" — a unit dying and a player being
+eliminated are different events (a player isn't out until their last model dies, and
+can win on objectives with zero models), so a `PlayerID` owner would make `OwnerDestroyed`
+near-permanent. `UnitID` is the strict superset: player is derivable from unit (lookup),
+unit is never derivable from player; the DAO-targeting-laser "any of my units may spend
+it" pattern is a *query-site* concern (group marks by `owner → PlayerID`), not a storage
+one. Owner-stamping rule: bearer whenever a token lands on a unit ≠ bearer, null
+self-targeted — uniform across `GrantToken`/`AddRule`, falls out of `Target ?? Bearer`.
+
+### Cost ops emitted now; what stays untested-but-emitted
+
+`ResolveAbility`'s queue is the full transaction. `SpellTokens`/`ConsumesToken` →
+`ConsumeTokensFromUnit`; `OncePer{Activation,Round,Game}` → grant a per-ability
+`"AbilityUsed:<rule>"` marker with the matching clear trigger; affordability is filtered
+in `GatherOffers`. **Untested-but-emitted** (no current test asserts them): the OncePer*
+cost ops + their affordability (only `SpellTokens` affordability is exercised, test 07),
+`Heal`'s amount, and `Heal`'s model pick (first model). Their *execution* and the
+used-marker / `FirstTrigger` clearing land in 7d / Phase 8.
+
+### Remaining red + still deferred
+
+1 red: test 16 (7g — `TokenClearService` walking containers on `OnUnitDestroyed` to
+remove `OwnerDestroyed` tokens; not an operation-queue concern). Unchanged deferrals:
+behavior-level execution (Phase 8), C#/JSON catalog, per-model aura expansion,
+Hero/Transport, activated-ability args (no corpus ability uses `ValueSource.Arg`, so
+`AbilityOffer` carries none — thread `ResolvedRule.Arguments` when one appears).
 
 ## Outcome
 
