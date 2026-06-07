@@ -706,6 +706,99 @@ now routes both removers through a private `RemoveMatching(predicate, count)` co
 `TokenContainerTests` lock the owner-scoping (other owners' tokens survive; missing owner is
 a no-op).
 
+## Integration notes (2026-06-07) — applying the operation queue to a stage (`SinkOperation<TSink>`)
+
+The first vertical slice (wiring a real rule into a real stage — Stealth's −1-to-hit through the
+shooting `DetermineHitRollNeededStage`) settled **how a stage applies the operation queue**. This is
+the standard for every stage integration from here.
+
+### A stage fires a "when" and reads a folded sink — it never interprets an operation
+
+A stage's whole interaction with the rule system: (1) build the hook context (the "when"); (2)
+`RuleEvaluator.EvaluateAll(context, (unitA, seatA), (unitB, seatB), …)` to get the operation queue
+from the event's named participants; (3) hand the queue to a **sink** that folds the operations it
+cares about; (4) read the folded value back and combine it with the stage's own base computation. The
+stage does **not** switch on operation types, does not handle suppression, and is blind to which rules
+fired. Application logic lives in the sink, not the stage.
+
+Rejected alternative: the stage interpreting the queue inline (scatters effect-application across
+stages — the exact smell the queue model exists to avoid). Also rejected: reverting to in-place context
+mutation (the old `ISpecialRule`/`ICombatEffect` model) — it can't express imperative effects
+(heal/reactivate/deal-hits/grant-token) or suppression, and would require rewriting the queue-asserting
+test suite. The queue stays; only its *application* is centralized into sinks.
+
+### Operation→sink dispatch: `SinkOperation<TSink>` + `OfType` + polymorphic `ApplyTo`
+
+An operation that targets a sink derives `SinkOperation<TSink> : RuleOperation`, where `TSink` is the
+sink's **write interface** (e.g. `ApplyRollModifier : SinkOperation<IRollModifierSink>` with
+`ApplyTo(IRollModifierSink sink) => sink.Add(Roll, Delta)`). A sink folds its slice of the queue with
+`operations.OfType<SinkOperation<IRollModifierSink>>()` then `op.ApplyTo(this)`.
+
+**This is the operation-side mirror of `CapabilityEffect<TCap>`** — the generic parameter declares the
+requirement (there, the capability an effect needs; here, the sink an operation targets) and one runtime
+match binds it. Use this pattern. Do **NOT**:
+- Switch / `is` on **concrete** operation types (`op is RuleOperation.ApplyRollModifier`). That keys on the
+  open-ended axis (~25 ops, one new arm per op). `OfType<SinkOperation<TSink>>` keys on the **closed** axis
+  (sink categories, ~5) and catches future ops of that category automatically.
+- Put a no-op `ApplyTo(ISink)` on the **base** `RuleOperation` (the rejected "option A"). It accretes a
+  no-op per sink category onto every operation. `SinkOperation<TSink>` gives each operation exactly one
+  meaningful `ApplyTo`; non-sink operations (e.g. `SuppressRule`, resolved in the suppression first-pass)
+  stay plain `RuleOperation` and are never matched.
+
+Why a runtime `OfType` is acceptable here when we otherwise avoid type inspection: a single heterogeneous,
+serializable operation queue (the tested #042 artifact) forces exactly **one** discrimination *somewhere*
+when applying it to a typed sink. `OfType<SinkOperation<TSink>>` spends it as one grouped, category-level,
+future-proof filter at the ~5 application sites — the same shape (and same prior acceptance) as
+`CapabilityEffect`'s `Hook is TCap`. The "zero checks" alternative only *looks* check-free; it calls a
+no-op on every irrelevant operation instead.
+
+### Sink shape
+
+A sink has a **write face** — an interface in `Definitions` (e.g. `IRollModifierSink.Add`) that operations
+target via `ApplyTo` — and a **read face** — a method on the concrete sink (e.g. `RollModifierSink.Net`)
+that the stage reads. Keep them separate: never put the read method on the write interface (it would couple
+operations to the read API and break `OfType` inference). The concrete sink owns its
+`ApplyFrom(IEnumerable<RuleOperation>)` selection loop, so the stage stays a one-liner and there's no
+generic-inference footgun — inferring `TSink` from a concrete sink variable collapses it to the concrete
+type and `OfType` then matches nothing, so `TSink` must be pinned to the interface.
+
+Roll modifiers are `int`: authored constants that adjust an integer d6 threshold, not values derived from a
+roll, so the "never int-lock a roll-derived value" invariant doesn't apply (they mirror
+`RuleOperation.ApplyRollModifier.Delta`, already `int`). Floats remain reserved for roll-*derived* counts
+(`InsertExtraHits`, `InvokeHeal`).
+
+### Slice status & next (2026-06-07) — Stealth is live through the real stage
+
+**Implemented and green — suite 245/0**, 4 tests in `Tests/HitRollRuleIntegrationTests.cs` driving the real
+`DetermineHitRollNeededStage`: Stealth raises the hit threshold from >9" (Subject seat), no-ops within 9",
+no-ops on the attacker (seat), baseline unchanged with no rules. Wired this slice:
+
+- `IGameContext.RuleEvaluator` — built inside `GameContext` from its own dice roller + text output (NOT
+  injected; a stateless evaluator with no external config doesn't need DI, and that keeps every
+  `new GameContext(...)` call site, incl. `FDGServer`, unchanged). `TestGameContext` + the two test-local
+  contexts (`TestCtx`, `TestGameContextWithRequester`) build their own with no logger.
+- `RuleEvaluator.EvaluateAll(context, (unit, seat)…)` — collects the queue from named participants
+  (suppression first-pass is a commented seam, not yet implemented).
+- `IRollModifierSink` (Definitions write face) + `RollModifierSink` (Dispatch; owns the `ApplyFrom` ⇒
+  `OfType<SinkOperation<IRollModifierSink>>` selection + `Net` read face) + `SinkOperation<TSink>`
+  (only `ApplyRollModifier` rebased onto it so far).
+- Per-rule game-log: `RuleEvaluator` takes an optional `ITextOutput`; logs `"{bearer}'s {rule} {op.Describe()}"`
+  for each operation an effect produces. `RuleOperation.Describe()` is virtual (base "applied an effect";
+  `ApplyRollModifier` → "added -1 to Hit rolls"). Production logs; tests stay quiet (null logger). Caveat:
+  logs at queue time (pre-suppression) — fine until suppression lands.
+
+**Next, roughly in order:**
+1. Extra-hit path (Surge/Furious) at `RollToHitStage` — needs the scalar→`IDiceResults` bridge
+   (`InsertExtraHits(float)` → synthetic hits the save flow consumes). The histogram-vs-scalar wrinkle;
+   genuine Phase-8 execution, deferred from this slice on purpose.
+2. More sinks as stages get wired, same pattern each time (write interface in Definitions → rebase the
+   relevant ops onto `SinkOperation<thatSink>` → fold in the stage): save-roll modifier (Cover —
+   *reuses* `IRollModifierSink` with `ERollKind.Save`), movement budget (Fast/Slow), wound (Deadly).
+3. Army-list → registry rule resolution, so real units carry rules and a headless game shows the log live
+   (today rules attach only in tests via `UnitData.AttachRuleDefinition`).
+4. A Tier-1 world-effect executor (heal / token / reactivate) for the activated abilities — applied
+   centrally, zero stage code (see the three application tiers in the discussion above).
+
 ## Outcome
 
 (pending — written when items 026–034 can proceed against this architecture)

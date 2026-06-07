@@ -559,6 +559,27 @@ correct queuing. Execution is Phase 8 / the #042 engine track.
 PHASE 8 — Behavior-level coverage (second pass, after queue-level is green)
 ---------------------------------------------------------------------------
 
+INTEGRATION PROGRESS (2026-06-07) — first rule live in a real stage. Suite 245/0.
+  * Stealth's -1-to-hit flows through the REAL DetermineHitRollNeededStage. 4 tests in
+    Tests/HitRollRuleIntegrationTests.cs (>9" raises threshold to 5; <9" no-op; on the
+    attacker no-op by seat; no-rules baseline 4). This retires the "can a real stage build
+    the context, call Evaluate for both seats, and apply the queue" risk.
+  * APPLICATION PATTERN (now the standard; full rationale in arch doc "Integration notes"):
+    stage fires a "when" (build context + RuleEvaluator.EvaluateAll(ctx, (unit,seat)...)),
+    hands the queue to a SINK that folds it, reads back a plain value. Stage interprets NO
+    operation. Operation->sink dispatch = SinkOperation<TSink> + OfType<SinkOperation<TSink>>
+    + virtual ApplyTo (mirrors CapabilityEffect<TCap>). Do NOT switch on concrete op types,
+    do NOT put no-op ApplyTo on the RuleOperation base. Sink has a write face (interface in
+    Definitions) + read face (concrete method).
+  * Wired: IGameContext.RuleEvaluator (built in GameContext from its roller + textOutput),
+    EvaluateAll, IRollModifierSink/RollModifierSink, SinkOperation<TSink> (ApplyRollModifier
+    rebased), per-rule game-log (RuleEvaluator optional ITextOutput; RuleOperation.Describe()).
+  * NEXT: extra-hit path (Surge) at RollToHitStage needs scalar->IDiceResults bridge (real
+    Phase-8 execution); more sinks (save reuses IRollModifierSink w/ ERollKind.Save; movement;
+    wound) as stages get wired; army-list->registry resolution for live in-game rules.
+
+
+
 Phases 6/7 are deliberately QUEUE-LEVEL: tests assert the right RuleOperation is
 queued; an Effect may be defined but its execution against engine state left
 unimplemented. This second pass closes that gap:
