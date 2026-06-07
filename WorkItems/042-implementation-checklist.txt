@@ -773,6 +773,40 @@ INTEGRATION PROGRESS (2026-06-07, cont. 8) — SIXTH sink: quality floor (Reliab
     (movement) + Surge/Relentless/Furious (extra-hit) + Deadly (wound-multiplier) + Regeneration
     (wound-ignore) = 12, plus Unstoppable (suppressor), across SIX sinks.
 
+INTEGRATION PROGRESS (2026-06-07, cont. 9) — SEVENTH sink: max wounds (Tough) live at army-load. Suite 268/0.
+  * Tough(X) now sets each model's max wounds for real: it fires Lifecycle_OnUnitCreated -> SetMaxWounds(Arg(0)),
+    a new MaxWoundsSink folds the value, and the applicator calls IModel.SetMaxWounds on every model in the
+    unit. SEVENTH SinkOperation<TSink> shape (best-of MAX int). Once TotalWounds reflects Tough, the rest of
+    the wound system already handles multi-wound models — RemainingWounds, GetIsAlive, the AssignWoundsStage
+    lethal/auto branches, and AssignWoundsResults absorption (AutoFill/TryAddWounds cap per model by
+    TotalWounds) all key off TotalWounds, so no allocation code was needed for absorption.
+  * NOT A STAGE — a LIFECYCLE applicator. OnUnitCreated isn't fired by the state machine; the caller is
+    army-load. New Rules/Dispatch/UnitCreationRules.Apply(unit, evaluator) fires the hook, folds the sink,
+    applies. FDGServer calls it per unit AFTER _gameContext is built (CreateArmies runs before the
+    GameContext/RuleEvaluator exists, and #042 rules attach after models are constructed) — so it walks the
+    store post-setup using the real evaluator (game log included). The integration test calls the same
+    applicator (no drift).
+  * MODEL MUTATION: ModelData.TotalWounds is now { get; private set; } and IModel gained SetMaxWounds(int)
+    (sets TotalWounds + refills RemainingWoundsBinding — a creation-time primitive, models start full).
+    CalculateTotalWounds still returns the default for non-tough models. SINK: IMaxWoundsSink (write face,
+    Definitions, SetMax(int)) + MaxWoundsSink (read face, Dispatch, keeps highest). RuleOperation.SetMaxWounds
+    rebased onto SinkOperation<IMaxWoundsSink> (ApplyTo + Describe) — queue test Tough_OnCreation_SetsMaxWounds
+    keeps passing.
+  * CATALOG: Tough (Actor, Lifecycle_OnUnitCreated, Always -> SetMaxWounds(Arg(0)), UntilEndOfGame) added to
+    CoreRuleCatalog + All. Numeric arg flows via the existing DescribeRuleEntry path (Tough(3) -> [Int(3)]),
+    like Deadly — closes the numeric-arg load loop for a second rule.
+  * 2 tests in Tests/ToughRuleIntegrationTests.cs: Tough(3) -> every model TotalWounds 3, unit RemainingWounds
+    9 (3 models x 3); no-Tough -> models keep 1. Headless 4-round game ran clean (a player won on objectives;
+    the per-unit OnUnitCreated army-load loop runs with no error/regression).
+  * DEFERRED (stated, confirmed with user): the tough-aware allocation ORDER (most-wounded tough first, heroes
+    last) stays the existing AssignWoundsResults TODO — a player-choice refinement on code flagged buggy, and
+    its heroes-last half needs Hero (unimplemented). Numeric absorption works without it.
+  * SAVE/LOAD CAVEAT (pre-existing, documented): TotalWounds is [JsonIgnore] and recomputed via
+    CalculateTotalWounds (=1) on load, so Tough max-wounds won't survive a JSON round-trip until OnUnitCreated
+    is re-fired at load. Out of scope; no current test round-trips a tough unit.
+  * Rules now live in real stages/lifecycle: + Tough (max-wounds) = 13, plus Unstoppable (suppressor),
+    across SEVEN sinks.
+
 [x] SUPPRESSION vs. PER-RULE LOG (DONE 2026-06-07; see INTEGRATION PROGRESS cont. 6).
     Was: the per-rule game-log line emitted at QUEUE TIME, before the suppression first-pass,
     so a suppressed rule would print a phantom "X added -1 to hit". FIXED by moving log emission
