@@ -660,6 +660,33 @@ INTEGRATION PROGRESS (2026-06-07, cont. 4) — ARMY-LIST -> RULE-REGISTRY RESOLU
     no hit rolls fired; its live RollToHitStage path stays proven by ExtraHitRuleIntegrationTests (now catalog-
     backed). Milestone met: declared rules load from army data and fire in real stages, hack gone.
 
+INTEGRATION PROGRESS (2026-06-07, cont. 5) — FOURTH sink: wound multiplier (Deadly) live. Suite 259/0.
+  * Deadly(X) now flows through the REAL AssignWoundsStage: the stage fires Shooting_OnPreApplyWound, the
+    RuleEvaluator queues MultiplyWounds, and a new WoundModifierSink folds the net multiplier into the wound
+    count the stage hands to the player. Stage interprets no op (reads one scalar) — same pattern as the other
+    three sinks. FOURTH SinkOperation<TSink> shape: scalar-INT multiplier (roll=keyed-int, movement=keyed-float,
+    hits=scalar-float, wounds=scalar-int). Pattern holds.
+  * SINK: IWoundModifierSink (write face, Definitions, Multiply(int)) + WoundModifierSink (read face, Dispatch,
+    NetMultiplier init 1, product-compounding). RuleOperation.MultiplyWounds rebased onto
+    SinkOperation<IWoundModifierSink> (ApplyTo + Describe); it stays a RuleOperation, so the existing
+    Deadly_OnWound_MultipliesByArgument queue test (SpecialRuleTests) keeps passing — no churn.
+  * DEADLY in the catalog (CoreRuleCatalog.Deadly) — first NUMERIC rule wired live. The X flows in through
+    FDGServer's existing DescribeRuleEntry (SpecialRuleEntry_CoreNumeric -> [Int(X)]), so a .fdgarmy listing
+    "Deadly(3)" attaches with Arguments=[Int(3)] and triples wounds. Closes the numeric-arg load loop for #026.
+  * 2 tests in Tests/WoundRuleIntegrationTests.cs driving the real stage: no-rule baseline (1 failed save -> 1
+    wound to assign) and Deadly(3) (-> 3). Defender has 5 wounds so the multiplied count stays sub-lethal and
+    lands in the "ask the player" branch; a CapturingWoundRequester records the requested count (NullPlayerRequester
+    never completes, so that branch needs a real reply). New test-local WoundTestContext (RuleEvaluator + injectable
+    requester), mirroring ChooseRangedAttack's TestGameContextWithRequester.
+  * SCOPE (stated, not silently cut): this multiplies the TOTAL wound count — faithful for total damage. Deadly's
+    per-wound / single-model / no-carry-over allocation nuance stays Phase-8 (the stage already has a tough-aware
+    allocation TODO). Commented at the seam.
+  * SAVE-ROLL SINK DROPPED (was the checklist's floated "next"): no #042 UNIT rule drives a save modifier (AP is a
+    weapon stat, Cover is terrain). ApplyRollModifier is already SinkOperation<IRollModifierSink> keyed by ERollKind,
+    so wiring the save stage is trivial THE DAY a save-modifying unit rule exists — building it now = speculative.
+  * Rules now live in real stages: Stealth/Artillery/Indirect (hit) + Fast/Very Fast/Slow (movement) +
+    Surge/Relentless/Furious (extra-hit) + Deadly (wound) = 10 across FOUR sinks.
+
 [ ] SUPPRESSION vs. PER-RULE LOG (defer; revisit when SuppressRule lands).
     The per-rule game-log line is emitted in RuleEvaluator at QUEUE TIME — the moment an
     Effect.Apply pushes an operation, before any suppression first-pass runs. Once
