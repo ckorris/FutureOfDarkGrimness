@@ -687,15 +687,43 @@ INTEGRATION PROGRESS (2026-06-07, cont. 5) — FOURTH sink: wound multiplier (De
   * Rules now live in real stages: Stealth/Artillery/Indirect (hit) + Fast/Very Fast/Slow (movement) +
     Surge/Relentless/Furious (extra-hit) + Deadly (wound) = 10 across FOUR sinks.
 
-[ ] SUPPRESSION vs. PER-RULE LOG (defer; revisit when SuppressRule lands).
-    The per-rule game-log line is emitted in RuleEvaluator at QUEUE TIME — the moment an
-    Effect.Apply pushes an operation, before any suppression first-pass runs. Once
-    suppression (IgnoreRule/SuppressRule, the 7b first-pass that removes ops before the
-    fold) is implemented, a suppressed rule would still print a phantom "X added -1 to hit"
-    even though its operation was dropped. FIX WHEN SUPPRESSION LANDS: move the log emission
-    after the suppression pass (log surviving ops only), or tag each op with its source rule
-    and log at fold time in the sink. Accurate today because nothing suppresses yet.
-    (2026-06-07; see also live-demo TEST stealth in FDGServer.CreateArmies.)
+INTEGRATION PROGRESS (2026-06-07, cont. 6) — SUPPRESSION FIRST-PASS (IgnoreRule/SuppressRule). Suite 262/0.
+  * The EvaluateAll TODO seam is GONE. A queued SuppressRule("X") now removes, from the combined
+    operation queue, every op whose ORIGIN RULE's canonical name is "X" — unblocking Bane/Rending/
+    Unstoppable's "ignore Regeneration" facet (the mechanism; those rules aren't catalog-live yet).
+    The SuppressRule meta-op is itself consumed (a stage never applies it). Pattern: collect-tagged ->
+    suppress -> fold, exactly as the 7b note prescribed.
+  * ORIGIN TRACKING is dispatcher SIDECAR, not a field on RuleOperation (honors the long-standing
+    RuleOperation.cs doc note): a private readonly record struct TaggedOperation(Op, Origin ResolvedRule,
+    Bearer IUnit) pairs each produced op with its source during CollectTagged; the public API still
+    returns bare IReadOnlyList<RuleOperation>. CollectTagged is shared by Evaluate (per-unit) and
+    EvaluateAll (combined).
+  * MATCH BY CANONICAL NAME (the design fork — chose name-match over resolver reference-identity):
+    suppression compares SuppressRule.RuleName against origin.Definition.Name, so an alias-renamed
+    victim (a unit authoring Regeneration as "Healing Pods", Definition.Name still "Regeneration") is
+    caught with NO resolver dependency on RuleEvaluator. Full reference-identity (resolving the
+    suppressor's own aliased name) deferred — no corpus rule needs it.
+  * SCOPE — suppression runs ONLY in EvaluateAll, not per-unit Evaluate. Cross-unit suppression
+    (attacker Unstoppable vs defender Regeneration) only exists once participants are combined, and the
+    queue-level test Unstoppable_IgnoresRegeneration asserts single-unit Evaluate still RETURNS the
+    SuppressRule op. Evaluate stays raw; EvaluateAll resolves.
+  * LOG CAVEAT CLOSED (the coupled deferred item below): logging moved AFTER the suppression pass in
+    EvaluateAll — suppressed victim ops log nothing (phantom fixed), each SuppressRule logs "X ignored Y"
+    (new SuppressRule.Describe() override) then is dropped, survivors log normally. Per-unit Evaluate
+    logs all its ops (accurate — no suppression there).
+  * 3 tests in SpecialRuleTests (queue-level, via new harness EvaluateAll wrapper): Unstoppable removes
+    Regeneration's IgnoreWound from the combined queue + consumes the SuppressRule; baseline (no
+    suppressor -> IgnoreWound survives); alias victim ("Healing Pods") suppressed by canonical name.
+  * NOT WIRED LIVE: no save-roll/Regeneration stage exists (save-roll sink was dropped, cont. 5;
+    Regeneration's IgnoreWound isn't in a stage), so suppression is proven at the EvaluateAll queue
+    level — the same level the seam lives at. Live application follows when a Regeneration stage gets
+    wired (Phase 8). Bane/Rending not added to CoreRuleCatalog here.
+
+[x] SUPPRESSION vs. PER-RULE LOG (DONE 2026-06-07; see INTEGRATION PROGRESS cont. 6).
+    Was: the per-rule game-log line emitted at QUEUE TIME, before the suppression first-pass,
+    so a suppressed rule would print a phantom "X added -1 to hit". FIXED by moving log emission
+    after the suppression pass in EvaluateAll (chose option 1 — log surviving ops only). The
+    per-unit Evaluate still logs all its ops (no suppression at that level, so accurate).
 
 
 
