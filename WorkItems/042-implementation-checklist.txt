@@ -594,6 +594,19 @@ INTEGRATION PROGRESS (2026-06-07, cont.) — Artillery + Indirect live in the hi
     Harmless today (Indirect only lands on indirect-fire weapons, not yet auto-attached), but add a
     combatKind capability to the context before Surge/Thrust/Furious (melee hit rules) land.
 
+INTEGRATION PROGRESS (2026-06-07, cont. 2) — second sink: Fast + Slow live in movement. Suite 251/0.
+  * SECOND SINK proves the SinkOperation<TSink> pattern generalizes (was the open question): a new
+    IMovementModifierSink (write face, Rules/Definitions) + MovementModifierSink (read face, Rules/Dispatch)
+    keyed by EActionType/float, exact mirror of IRollModifierSink/RollModifierSink (ERollKind/int).
+    ApplyMovementBonus rebased onto SinkOperation<IMovementModifierSink> (ApplyTo + Describe). No new design.
+  * WIRED in MovementActionContext ctor (the real production path that builds the move budget). Because the
+    context holds THREE budgets at once (Advance/Rush/Charge) and the action isn't pinned yet, it evaluates
+    EvaluateAll once PER action type (each with that action's current base distance) into ONE sink, then adds
+    Net(action) to each budget. Legacy ISpecialRule_Movement precursor loop left intact above it (coexist).
+  * 2 tests in Tests/MovementRuleIntegrationTests.cs (separate behavior file): Fast +2" Advance only (no leak
+    into Rush/Charge), Slow -2/-4/-4 across all three. Baselines from a no-rule unit (survive constant changes).
+  * Rules now live in real stages: Stealth/Artillery/Indirect (hit sink) + Fast/Slow (movement sink) = 5.
+
 [ ] SUPPRESSION vs. PER-RULE LOG (defer; revisit when SuppressRule lands).
     The per-rule game-log line is emitted in RuleEvaluator at QUEUE TIME — the moment an
     Effect.Apply pushes an operation, before any suppression first-pass runs. Once
