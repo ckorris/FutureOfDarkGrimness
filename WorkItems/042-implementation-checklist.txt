@@ -607,6 +607,34 @@ INTEGRATION PROGRESS (2026-06-07, cont. 2) — second sink: Fast + Slow live in 
     into Rush/Charge), Slow -2/-4/-4 across all three. Baselines from a no-rule unit (survive constant changes).
   * Rules now live in real stages: Stealth/Artillery/Indirect (hit sink) + Fast/Slow (movement sink) = 5.
 
+INTEGRATION PROGRESS (2026-06-07, cont. 3) — THIRD sink + scalar->histogram bridge. Suite 257/0.
+  * EXTRA-HIT PATH live: Surge / Relentless / Furious flow through the REAL RollToHitStage. This is the
+    "real teeth" slice — first op that MUTATES A COLLECTION (appends hits) rather than folding a scalar.
+    6 tests in Tests/ExtraHitRuleIntegrationTests.cs (FixedDiceRoller(6) -> every die a natural 6, so each
+    case is "2 hits with the rule, 1 without"): Surge ungated; Relentless >9" gate (fires far, not near);
+    Furious melee gate (fires in melee, not shooting).
+  * THIRD SINK: IHitInjectionSink (write face, Definitions) + HitInjectionSink (read face, Dispatch) —
+    single float accumulator (no key), TotalExtraHits. InsertExtraHits rebased onto SinkOperation<IHitInjectionSink>.
+    SinkOperation<TSink> now proven across THREE shapes: keyed-int (roll), keyed-float (movement), scalar-float
+    (hits). Pattern holds.
+  * SCALAR->IDiceResults BRIDGE (the design crux): RollToHitStage builds HitRollCompleteContext from the
+    UNMODIFIED rolls + distance + IsMelee, EvaluateAll(Actor), folds the sink, and if TotalExtraHits>0 appends
+    ONE synthetic SuccessfulHitInfo whose DiceResults.TotalRolls == count (placed at top face = auto-success).
+    Float count preserved end-to-end (probabilistic-roller safe; honors the dice invariant). Face is cosmetic:
+    the save stage (DetermineSaveRollsNeededStage) counts by TotalRolls + weapon AP, never reads a hit's face.
+    Generated hits are TERMINAL — not re-evaluated against 6-rules (no infinite Furious). RollToHitResults'
+    SuccessfulHitList was already designed to grow ("effects might add more"), so this is the intended seam.
+  * STEP 0 (combat-kind) shipped with this slice: IHasCombatKind capability + Condition.IsMelee; IsMelee threaded
+    CombatActionContext._isMelee -> CombatMetadata.IsMelee -> HitRollCompleteContext.IsMelee (mirror of AttackerMoved).
+    HookContextCatalog picks up the new provided capability by reflection automatically.
+  * DEFERRED -> WorkItem #051: Furious's CHARGE gate (melee gate done; "on a charge" needs action-state threading
+    like AttackerMoved). Held until melee subsystem (#017/#020) is fleshed out. Furious currently fires on any
+    melee 6, not just charges.
+  * LEGACY COEXISTENCE: a legacy Relentless (ICombatEffect<RollToHitResults>) still appends extra hits the old way.
+    Our tests attach only #042 rules so no double-count; reconcile when the legacy combat-effect pipeline retires.
+  * Rules now live in real stages: Stealth/Artillery/Indirect (hit) + Fast/Slow (movement) + Surge/Relentless/Furious
+    (extra-hit) = 8.
+
 [ ] SUPPRESSION vs. PER-RULE LOG (defer; revisit when SuppressRule lands).
     The per-rule game-log line is emitted in RuleEvaluator at QUEUE TIME — the moment an
     Effect.Apply pushes an operation, before any suppression first-pass runs. Once

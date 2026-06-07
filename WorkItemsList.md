@@ -64,6 +64,7 @@ These are umbrellas; will fragment per-rule when picked up.
 
 - [ ] 029 — Movement-modifier rules: Fast, Slow, VeryFast, Immobile, Strider, Aircraft, Flying
 - [ ] 030 — Combat-modifier rules: Furious, Impact, Counter, Thrust, Surge, Relentless
+- [ ] 051 — Furious charge gate: extra-hits-on-6 should fire only when the bearer is in melee **AND charging**. The combat-kind (melee) gate shipped with the #042 extra-hit slice; the "charging" condition was deferred — it needs charge/action state threaded into the hit-roll-complete context (same shape as the `AttackerMoved` threading). Until then Furious over-applies to *any* melee attack, not just charges. Hold until the melee subsystem (#017/#020) is fleshed out — charge-precision on a stubby melee engine is premature. (Spun off from the #042 extra-hit slice, 2026-06-07.)
 - [ ] 031 — Defense/unit rules: Tough, Regeneration, Stealth, Fear, Fearless, Hero, Scout, Ambush
 - [ ] 032 — Weapon rules: AP, Rending, Blast, Reliable, Indirect, Takedown, Limited, Unstoppable, Bane
 
