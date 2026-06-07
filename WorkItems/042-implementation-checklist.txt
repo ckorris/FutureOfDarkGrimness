@@ -719,6 +719,42 @@ INTEGRATION PROGRESS (2026-06-07, cont. 6) — SUPPRESSION FIRST-PASS (IgnoreRul
     level — the same level the seam lives at. Live application follows when a Regeneration stage gets
     wired (Phase 8). Bane/Rending not added to CoreRuleCatalog here.
 
+INTEGRATION PROGRESS (2026-06-07, cont. 7) — FIFTH sink: wound-ignore (Regeneration) live + suppression
+end-to-end through the REAL stage. Suite 264/0.
+  * Regeneration now flows through the REAL AssignWoundsStage: the stage fires Shooting_OnSaveRollComplete
+    for BOTH participants (attacker Actor, defender Subject), folds a new WoundIgnoreSink, then rolls one
+    d6 per wound at the sink's threshold and subtracts the 5+ count. Stage interprets no op (reads only
+    HasIgnore + Threshold, owns the roll). FIFTH SinkOperation<TSink> shape: keyed-int (roll), keyed-float
+    (movement), scalar-float (hits), scalar-int (wound multiplier), and now best-of threshold (wound
+    ignore). Pattern holds.
+  * SUPPRESSION IS LIVE end-to-end (the payoff of cont. 6, which was queue-level only): because the stage
+    evaluates both seats in ONE EvaluateAll, an attacker's Unstoppable (IgnoreRule("Regeneration"), Actor)
+    is consumed by the suppression first-pass before the ignore sink folds, so Regeneration is cancelled at
+    the real wound stage. This supersedes cont. 6's "NOT WIRED LIVE" caveat.
+  * SINK: IWoundIgnoreSink (write face, Definitions, IgnoreOn(int)) + WoundIgnoreSink (read face, Dispatch:
+    keeps the BEST/lowest threshold, exposes HasIgnore + Threshold; per-source separate rolls deferred —
+    corpus has only Regeneration). RuleOperation.IgnoreWound rebased onto SinkOperation<IWoundIgnoreSink>
+    (ApplyTo + Describe) — still a RuleOperation, so the queue tests (Regeneration_OnWound + the 3 cont. 6
+    suppression tests) keep passing unchanged.
+  * CATALOG: Regeneration (5+, Subject) and Unstoppable (suppressor, Actor) added to CoreRuleCatalog +
+    All. Both now resolve from army data (Unstoppable's second facet — ignore negative modifiers —
+    deferred to a modifier-immunity effect).
+  * THE PER-WOUND ROLL is genuine execution: ProbabilisticDiceRoller makes it deterministic in tests
+    (N dice -> N/6 per face -> Regeneration(5+) ignores N/3; honors the dice invariant — ignored count is
+    a float). The stage rebuilds the unmodified save histogram from failed+successful subsets
+    (CombineSaveRolls) so SaveRollCompleteContext is honest for a future Bane (At(6)); Regeneration itself
+    reads nothing from it (Condition.Always).
+  * ORDERING: wound-ignore applied AFTER Deadly's multiply (rulebook tags Deadly "resolved first"). The
+    Deadly x Regeneration per-wound/single-model interaction is the existing Phase-8 allocation nuance; the
+    integration tests exercise Regeneration ALONE so they don't depend on it.
+  * 2 tests in Tests/WoundIgnoreRuleIntegrationTests.cs driving the real stage (WoundTestContext roller now
+    injectable): Regeneration defender ignores a third of wounds (3 -> 2); Unstoppable attacker suppresses
+    it end-to-end (3 -> 3). Headless 4-round game ran clean (no shooting reached, but the AssignWoundsStage
+    path is structurally exercised + green via the integration tests).
+  * Rules now live in real stages: Stealth/Artillery/Indirect (hit) + Fast/Very Fast/Slow (movement) +
+    Surge/Relentless/Furious (extra-hit) + Deadly (wound-multiplier) + Regeneration (wound-ignore) = 11,
+    plus Unstoppable (suppressor), across FIVE sinks.
+
 [x] SUPPRESSION vs. PER-RULE LOG (DONE 2026-06-07; see INTEGRATION PROGRESS cont. 6).
     Was: the per-rule game-log line emitted at QUEUE TIME, before the suppression first-pass,
     so a suppressed rule would print a phantom "X added -1 to hit". FIXED by moving log emission
