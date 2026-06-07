@@ -755,6 +755,24 @@ end-to-end through the REAL stage. Suite 264/0.
     Surge/Relentless/Furious (extra-hit) + Deadly (wound-multiplier) + Regeneration (wound-ignore) = 11,
     plus Unstoppable (suppressor), across FIVE sinks.
 
+INTEGRATION PROGRESS (2026-06-07, cont. 8) — SIXTH sink: quality floor (Reliable) live. Suite 266/0.
+  * Reliable now flows through the REAL DetermineHitRollNeededStage: "this unit's Quality is treated as
+    2+, still modifiable." A new QualityFloorSink folds QualityFloor ops to the best (lowest) value; the
+    stage improves the BASE quality (min(quality, floor)) BEFORE the existing RollModifierSink stacks
+    per-roll modifiers. SIXTH SinkOperation<TSink> shape (best-of int, mirroring the wound-ignore sink's
+    best-of threshold). Two sinks now fold from the SAME EvaluateAll(OnHitRollModifier) call — Reliable
+    rides the call Stealth/Artillery/Indirect already made; pure attach, no new evaluation.
+  * SINK: IQualityFloorSink (write face, Definitions, FloorTo(int)) + QualityFloorSink (read face,
+    Dispatch: keeps lowest, exposes HasFloor + Quality). RuleOperation.QualityFloor rebased onto
+    SinkOperation<IQualityFloorSink> (ApplyTo + Describe) — still a RuleOperation, so the queue test
+    Reliable_AttacksAtQuality2Plus keeps passing unchanged.
+  * CATALOG: Reliable (Actor, OnHitRollModifier, Always -> QualityFloor(2)) added to CoreRuleCatalog + All.
+  * 2 tests added to HitRollRuleIntegrationTests (same stage, reuses RunStage/MakeUnit): Reliable floors
+    base quality 4 -> 2; Reliable + Stealth-defender proves "still modifiable" (floor 2, then -1 -> 3).
+  * Rules now live in real stages: Stealth/Artillery/Indirect + Reliable (hit) + Fast/Very Fast/Slow
+    (movement) + Surge/Relentless/Furious (extra-hit) + Deadly (wound-multiplier) + Regeneration
+    (wound-ignore) = 12, plus Unstoppable (suppressor), across SIX sinks.
+
 [x] SUPPRESSION vs. PER-RULE LOG (DONE 2026-06-07; see INTEGRATION PROGRESS cont. 6).
     Was: the per-rule game-log line emitted at QUEUE TIME, before the suppression first-pass,
     so a suppressed rule would print a phantom "X added -1 to hit". FIXED by moving log emission
