@@ -578,6 +578,22 @@ INTEGRATION PROGRESS (2026-06-07) — first rule live in a real stage. Suite 245
     Phase-8 execution); more sinks (save reuses IRollModifierSink w/ ERollKind.Save; movement;
     wound) as stages get wired; army-list->registry resolution for live in-game rules.
 
+INTEGRATION PROGRESS (2026-06-07, cont.) — Artillery + Indirect live in the hit stage. Suite 249/0.
+  * Two more hit-roll-modifier rules now flow through the real DetermineHitRollNeededStage, reusing
+    the wired RollModifierSink (no new sink): Artillery (+1 to hit beyond 9", Actor seat -> threshold
+    4->3) and Indirect (-1 to hit after moving, Actor -> 4->5). +4 tests in HitRollRuleIntegrationTests
+    (behavior file, kept separate from the queue corpus in SpecialRuleTests).
+  * Artillery was pure attach (distance already computed in the stage). Indirect needed real
+    "did the attacker move this activation" data: threaded UnitActionContext.HasMoved -> CombatActionContext
+    (new optional ctor arg attackerMoved, sourced in ShootStage/MeleeStage.GetNewChildContext from
+    contextSelf.HasMoved) -> CombatMetadata.AttackerMoved (new optional ctor arg, default false) ->
+    HitRollModifierContext.AttackerMoved. Removed the hard-coded `AttackerMoved: false` TODO in the stage.
+  * COMBAT-KIND GAP (still latent, now more relevant): DetermineHitRollNeededStage is shared by shooting
+    AND melee, and HitRollModifierContext carries no shoot-vs-melee flag. AttackerMoved is now threaded for
+    melee too (a charge sets HasMoved), so a charging unit carrying Indirect would wrongly take -1 in melee.
+    Harmless today (Indirect only lands on indirect-fire weapons, not yet auto-attached), but add a
+    combatKind capability to the context before Surge/Thrust/Furious (melee hit rules) land.
+
 [ ] SUPPRESSION vs. PER-RULE LOG (defer; revisit when SuppressRule lands).
     The per-rule game-log line is emitted in RuleEvaluator at QUEUE TIME — the moment an
     Effect.Apply pushes an operation, before any suppression first-pass runs. Once
