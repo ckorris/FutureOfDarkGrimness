@@ -578,6 +578,16 @@ INTEGRATION PROGRESS (2026-06-07) — first rule live in a real stage. Suite 245
     Phase-8 execution); more sinks (save reuses IRollModifierSink w/ ERollKind.Save; movement;
     wound) as stages get wired; army-list->registry resolution for live in-game rules.
 
+[ ] SUPPRESSION vs. PER-RULE LOG (defer; revisit when SuppressRule lands).
+    The per-rule game-log line is emitted in RuleEvaluator at QUEUE TIME — the moment an
+    Effect.Apply pushes an operation, before any suppression first-pass runs. Once
+    suppression (IgnoreRule/SuppressRule, the 7b first-pass that removes ops before the
+    fold) is implemented, a suppressed rule would still print a phantom "X added -1 to hit"
+    even though its operation was dropped. FIX WHEN SUPPRESSION LANDS: move the log emission
+    after the suppression pass (log surviving ops only), or tag each op with its source rule
+    and log at fold time in the sink. Accurate today because nothing suppresses yet.
+    (2026-06-07; see also live-demo TEST stealth in FDGServer.CreateArmies.)
+
 
 
 Phases 6/7 are deliberately QUEUE-LEVEL: tests assert the right RuleOperation is
