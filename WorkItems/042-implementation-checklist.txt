@@ -635,6 +635,31 @@ INTEGRATION PROGRESS (2026-06-07, cont. 3) — THIRD sink + scalar->histogram br
   * Rules now live in real stages: Stealth/Artillery/Indirect (hit) + Fast/Slow (movement) + Surge/Relentless/Furious
     (extra-hit) = 8.
 
+INTEGRATION PROGRESS (2026-06-07, cont. 4) — ARMY-LIST -> RULE-REGISTRY RESOLUTION (#026). Suite 257/0.
+  * The //TEST hack in FDGServer.CreateArmies (hardcoded Stealth onto player 2) is DELETED. Real units now
+    carry their declared #042 rules in a live game, resolved from army-list names at army-load.
+  * CORE-RULE CATALOG (the single source of truth, was the design fork — chose C# over JSON, matching
+    "core rules live in C#"; JSON loader stays deferred for army-SPECIFIC rules): Rules/Dispatch/CoreRuleCatalog.cs
+    holds the 8 live rule definitions (moved verbatim out of the 3 integration-test files, which now reference
+    CoreRuleCatalog.<Rule> — so the green integration suite VALIDATES the catalog, no drift) + a 9th, Very Fast
+    (Fast doubled: Advance +4"), added as a demo of the data path. `All` is computed-on-access (not a static
+    field) to dodge static-init ordering vs the per-rule properties. CreateResolver() registers every def.
+  * RESOLUTION at load: FDGServer.CreateArmies builds one RuleResolver from the catalog and threads it into
+    CreateArmyDataFromArmyFile; per unit, AttachRulesFromArmyList maps each UnitFileEntry.SpecialRules entry to
+    (lookupName, args) via DescribeRuleEntry (Core->Name; CoreNumeric->Name + [Int(value)]; Alias->aliased rule)
+    and TryResolve+AttachRuleDefinition. UNKNOWN-RULE POLICY (the other fork — chose skip+log over throw):
+    a valid-but-unimplemented core rule (Tough/Hero/Rending/...) is skipped with a Debug.WriteLine warning, so
+    partial/realistic armies still load and implemented rules still fire. New: IRuleResolver.TryResolve (non-
+    throwing) so skip-and-warn isn't exception-as-control-flow.
+  * BUILT-IN TEST ARMY (FdgRaylib/Cli/ArmyLoader.cs, app side) now declares rules: Warriors carry Stealth +
+    Very Fast, Heavy Gunners carry Surge — so the EOF-default headless run demonstrates the data path.
+  * LIVE HEADLESS RUN confirmed end-to-end (printf "2\n2\n" | dotnet run -- --headless): game ran all 4 rounds,
+    logged "Warriors's Very Fast added +4\" to Advance movement" (movement sink) and "Warriors's Stealth added
+    -1 to Hit rolls" (hit sink) repeatedly, zero errors, zero skip-warnings (all 3 names resolved). Surge did
+    NOT get a live chance — default auto-play kept units out of shooting range/LoS ("No enemies in range"), so
+    no hit rolls fired; its live RollToHitStage path stays proven by ExtraHitRuleIntegrationTests (now catalog-
+    backed). Milestone met: declared rules load from army data and fire in real stages, hack gone.
+
 [ ] SUPPRESSION vs. PER-RULE LOG (defer; revisit when SuppressRule lands).
     The per-rule game-log line is emitted in RuleEvaluator at QUEUE TIME — the moment an
     Effect.Apply pushes an operation, before any suppression first-pass runs. Once

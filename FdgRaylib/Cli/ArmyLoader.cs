@@ -81,6 +81,11 @@ public static class ArmyLoader
                     Quality = 4,
                     Defense = 4,
                     PointCost = 150,
+                    SpecialRules = new List<SpecialRuleEntry>
+                    {
+                        new SpecialRuleEntry_Core("Stealth"),
+                        new SpecialRuleEntry_Core("Very Fast"),
+                    },
                     Weapons = new List<WeaponFileEntry>
                     {
                         new WeaponFileEntry { Name = "Rifle", RangeInches = 24, Attacks = 1 }
@@ -93,6 +98,10 @@ public static class ArmyLoader
                     Quality = 4,
                     Defense = 4,
                     PointCost = 120,
+                    SpecialRules = new List<SpecialRuleEntry>
+                    {
+                        new SpecialRuleEntry_Core("Surge"),
+                    },
                     Weapons = new List<WeaponFileEntry>
                     {
                         new WeaponFileEntry { Name = "Heavy Rifle", RangeInches = 36, Attacks = 1 }

@@ -54,7 +54,7 @@ Numbers are permanent and never reused. If an item is split, its line stays and 
 ## Special rules — framework
 
 - [~] 042 — Special rules architecture (Plan B: data-driven `Condition × Effect` records over a named hook surface, with a unit/model token system as the state primitive). Prerequisite for 026–034. **Phase 7 passive dispatch complete** (polymorphic `RuleEvaluator` + `RuleValidator`; every passively-dispatchable rule green, suite 215/8 → 231/8 post-merge). Remaining: 7 activated-ability tests (Phase 7c), 1 token-clear, behavior-level execution (Phase 8), JSON loader. See `WorkItems/042-special-rules-architecture.md`.
-- [ ] 026 — Unit special rules framework wiring (`UnitData.SpecialRules`, `GetRealSpecialRulesFromArmyList`, `GetMobility`) — depends on 042
+- [~] 026 — Unit special rules framework wiring (`UnitData.SpecialRules`, `GetRealSpecialRulesFromArmyList`, `GetMobility`) — depends on 042. **Army-list → #042 rule-registry resolution done** (2026-06-07): `Rules/Dispatch/CoreRuleCatalog.cs` (9 live core rules incl. Very Fast) + `RuleResolver.TryResolve`; `FDGServer` resolves each `UnitFileEntry.SpecialRules` name and `AttachRuleDefinition`s it (skip+log for unimplemented), replacing the old hardcoded-Stealth `//TEST` hack — declared rules now fire in live headless games. Remaining: the legacy `GetRealSpecialRulesFromArmyList`/`GetMobility` paths (separate `SpecialRule` type) and numeric-arg core rules (not yet in catalog).
 - [ ] 027 — Weapon special rules framework (`IWeapon.cs` TODOs) — depends on 042
 - [ ] 028 — Deadly weapon priority (resolve first, wounds don't carry across models)
 
