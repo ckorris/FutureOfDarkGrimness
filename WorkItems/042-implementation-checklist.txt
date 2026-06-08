@@ -941,6 +941,41 @@ INTEGRATION PROGRESS (2026-06-07, cont. 13) — DEPLOY primitive: Scout (deferre
   * Rules now live across TWO engine subsystems: movement (Vanguard) + deploy (Scout), both on the #042
     "expose core operations as invocable subsystems" track.
 
+INTEGRATION PROGRESS (2026-06-07, cont. 14) — Ambush (round-2+ reserve arrival) live, faithful >9"-from-
+enemies placement. Suite 281/0.
+  * Completes the deploy subsystem's two core rules (Scout + Ambush), both on the shared defer/reserve
+    primitive. User chose faithful placement + player-chosen arrival round.
+  * EDeferTiming.LaterRound added; CoreRuleCatalog.Ambush (PreDeploymentSelect -> DeferDeployment(LaterRound,
+    9), Actor) + All. DeferDeployment's PlacementRangeInches is now interpreted per timing: Scout = forward
+    zone extension; Ambush = min distance from enemies. No deployment-stage change — the existing partition
+    reserves it and PlaceDeferredUnitsStage already skips non-AfterNormalDeployment, leaving it unplaced.
+  * RESERVE = UNPLACED (no token): a never-deployed unit's models sit at origin (0,0,0); that IS the reserve
+    state and self-clears on placement. The arrival pass finds reserves by re-evaluating PreDeploymentSelect
+    (data-driven, no rule-name hardcoding) + the unplaced filter.
+  * ARRIVAL: StartOfRoundExtraActionStage (was an empty placeholder), RoundCount >= 2, scans alive+unplaced
+    units that yield DeferDeployment(LaterRound), asks the owner YesNoRequest per unit (all resolvers handle
+    it; AI auto-accepts), and on accept places via a WHOLE-TABLE PlaceObjectsRequest with the 9" enemy-distance
+    constraint, then SetPosition + logs "arrived from Ambush." Decline keeps it in reserve for a later round.
+  * FAITHFUL >9"-FROM-ENEMIES (the resolver ripple the user approved): PlaceObjectsRequest gained
+    MinDistanceFromEnemiesInches (default 0 = unchanged for deployment/Scout). All three place resolvers honor
+    it (enemy = PlayerID != target, mirroring AiDefineMovementResolver): AI scans a Z-row grid for a legal
+    deep-strike spot; CLI rejects typed/auto positions too close; GUI rejects clicks + shows the rule. Proven
+    deterministically by AiPlaceObjectsResolverTests (>9" from a mid-table enemy).
+  * RESERVES DON'T PLAY UNTIL THEY ARRIVE (caught in headless: pre-fix the reserve activated + was targetable
+    in round 1, bypassing Ambush). New IUnit.GetIsOnBattlefield() (any living model off origin); applied at the
+    activation pool (SingleRoundContext.SetUnactivatedUnits) and ranged target enumeration
+    (ChooseRangedAttackStage). Melee defender selection + objective seizure already filter by position-distance,
+    so reserves at origin are naturally excluded there. Arrival happens in StartOfRound (before SingleRound
+    builds the pool), so an arrived unit joins that round's pool.
+  * ARMY: built-in test army gains an "Infiltrators" unit (Ambush). TESTS: AmbushRuleIntegrationTests (round
+    gate / accept-with-9"-constraint / decline) + AiPlaceObjectsResolverTests; existing Ambush queue test
+    stays green. HEADLESS confirmed: Infiltrators withheld through round 1, both players' arrive at the start
+    of round 2, only then activate/are targetable; 4 rounds, zero exceptions.
+  * DEFERRED: "can't seize/contest the round it arrives" objective nuance (needs round-cleared "arrived this
+    round" tracking in ReconcileObjectivesStage); team-aware enemy detection (player-based for now).
+  * Deploy subsystem now covers Scout + Ambush; movement covers Vanguard. Remaining 7h primitives: Reactivate
+    (Martial Prowess), mid-move DealHits (Strafing) + the Impact core rule on the deal-hits seam.
+
 [x] SUPPRESSION vs. PER-RULE LOG (DONE 2026-06-07; see INTEGRATION PROGRESS cont. 6).
     Was: the per-rule game-log line emitted at QUEUE TIME, before the suppression first-pass,
     so a suppressed rule would print a phantom "X added -1 to hit". FIXED by moving log emission

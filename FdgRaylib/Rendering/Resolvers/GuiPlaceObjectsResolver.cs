@@ -66,6 +66,9 @@ public class GuiPlaceObjectsResolver<T>
         var dl   = ImGui.GetBackgroundDrawList();
         var zone = request.DeploymentZone.GetValue();
 
+        float minEnemyDist = request.MinDistanceFromEnemiesInches;
+        var enemies = minEnemyDist > 0f ? GetEnemyPositions(request.TargetPlayerID) : _noEnemies;
+
         DrawZone(dl, zone);
         DrawPlacedSoFar(dl);
 
@@ -80,7 +83,8 @@ public class GuiPlaceObjectsResolver<T>
                         mouseInZ >= zone.Bottom + currentRadius && mouseInZ <= zone.Top   - currentRadius;
         string? overlap = inZone ? CheckOverlap(candidate, currentRadius) : null;
         bool inCohesion = _placed.Count == 0 || IsInCohesionWithPlaced(candidate, currentRadius);
-        bool valid = inZone && overlap == null && inCohesion;
+        bool farFromEnemies = minEnemyDist <= 0f || !TooCloseToEnemy(candidate, enemies, minEnemyDist);
+        bool valid = inZone && overlap == null && inCohesion && farFromEnemies;
 
         if (overTable) DrawGhost(dl, io.MousePos, currentRadius * _scale, valid);
 
@@ -99,6 +103,11 @@ public class GuiPlaceObjectsResolver<T>
             else if (!inCohesion)
             {
                 _errorMessage = $"Outside cohesion - must be within {GameWideConstants.MAX_MODEL_DISTANCE_FROM_ANY_OTHER_MODEL_INCHES}\" base-to-base of a placed model.";
+                _errorExpiry  = ImGui.GetTime() + 2.5;
+            }
+            else if (!farFromEnemies)
+            {
+                _errorMessage = $"Too close to an enemy - must be over {minEnemyDist:F0}\" from enemy units.";
                 _errorExpiry  = ImGui.GetTime() + 2.5;
             }
             else
@@ -223,19 +232,23 @@ public class GuiPlaceObjectsResolver<T>
         float step = maxRadius * 2 + 0.1f;
         float startCz = (zone.Bottom + zone.Top) / 2f;
 
+        float minEnemyDist = request.MinDistanceFromEnemiesInches;
+        var enemies = minEnemyDist > 0f ? GetEnemyPositions(request.TargetPlayerID) : _noEnemies;
+
         for (int i = _placed.Count; i < request.ModelsToPlace.Count; i++)
         {
             var binding = request.ModelsToPlace[i];
             float r = GetBaseRadius(binding.GetValue());
 
-            if (!TryFindAutoPosition(r, step, zone, startCz, out Position pos))
+            if (!TryFindAutoPosition(r, step, zone, startCz, enemies, minEnemyDist, out Position pos))
                 return false;
             _placed.Add(new PlacedObjectEntry<T>(binding, pos));
         }
         return true;
     }
 
-    private bool TryFindAutoPosition(float r, float step, RectangularZone zone, float startCz, out Position result)
+    private bool TryFindAutoPosition(float r, float step, RectangularZone zone, float startCz,
+        List<Position> enemies, float minEnemyDist, out Position result)
     {
         // Sweep rows out from zone centre: 0, +step, -step, +2*step, -2*step, ...
         int maxRows = (int)((zone.Top - zone.Bottom) / step) + 1;
@@ -251,12 +264,39 @@ public class GuiPlaceObjectsResolver<T>
                 {
                     var c = new Position(x, z);
                     if (CheckOverlap(c, r) != null) continue;
+                    if (minEnemyDist > 0f && TooCloseToEnemy(c, enemies, minEnemyDist)) continue;
                     if (!IsInCohesionWithPlaced(c, r)) continue;
                     result = c; return true;
                 }
             }
         }
         result = default;
+        return false;
+    }
+
+    private static readonly List<Position> _noEnemies = new();
+
+    private List<Position> GetEnemyPositions(PlayerID self)
+    {
+        var positions = new List<Position>();
+        foreach (var unit in _tableState.Units.Objects)
+        {
+            if (unit.PlayerID == self) continue;
+            foreach (var model in unit.Models)
+            {
+                var pos = model.Position;
+                if (!model.GetIsAlive()) continue;
+                if (pos.x == 0f && pos.z == 0f) continue;
+                positions.Add(pos);
+            }
+        }
+        return positions;
+    }
+
+    private static bool TooCloseToEnemy(Position p, List<Position> enemies, float minDist)
+    {
+        foreach (var e in enemies)
+            if (Dist(p, e) < minDist) return true;
         return false;
     }
 

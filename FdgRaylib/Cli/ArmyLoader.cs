@@ -108,6 +108,22 @@ public static class ArmyLoader
                     {
                         new WeaponFileEntry { Name = "Heavy Rifle", RangeInches = 36, Attacks = 1 }
                     }
+                },
+                new UnitFileEntry
+                {
+                    Name = "Infiltrators",
+                    ModelCount = 2,
+                    Quality = 4,
+                    Defense = 4,
+                    PointCost = 80,
+                    SpecialRules = new List<SpecialRuleEntry>
+                    {
+                        new SpecialRuleEntry_Core("Ambush"),
+                    },
+                    Weapons = new List<WeaponFileEntry>
+                    {
+                        new WeaponFileEntry { Name = "Rifle", RangeInches = 24, Attacks = 1 }
+                    }
                 }
             }
         };

@@ -22,6 +22,9 @@ public class PlaceObjectsResolver<T> : IStageResolver<PlaceObjectsRequest<T>, Li
         var zone = request.DeploymentZone.GetValue();
         int total = request.ModelsToPlace.Count;
 
+        float minEnemyDist = request.MinDistanceFromEnemiesInches;
+        var enemies = minEnemyDist > 0f ? GetEnemyPositions(request.TargetPlayerID) : new List<Position>();
+
         _deployCountPerPlayer.TryGetValue(request.TargetPlayerID, out int deployIndex);
         _deployCountPerPlayer[request.TargetPlayerID] = deployIndex + 1;
 
@@ -54,7 +57,7 @@ public class PlaceObjectsResolver<T> : IStageResolver<PlaceObjectsRequest<T>, Li
                 string? raw = Console.ReadLine();
                 if (raw == null)
                 {
-                    var pos = FindAutoPosition(r, autoSpacing, zone, cz, xStagger, placed);
+                    var pos = FindAutoPosition(r, autoSpacing, zone, cz, xStagger, placed, enemies, minEnemyDist);
                     Console.WriteLine($"    (EOF — auto-placing at {pos.x:F1}\", {pos.z:F1}\")");
                     placed.Add(new PlacedObjectEntry<T>(binding, pos));
                     break;
@@ -84,6 +87,12 @@ public class PlaceObjectsResolver<T> : IStageResolver<PlaceObjectsRequest<T>, Li
                         continue;
                     }
 
+                    if (TooCloseToEnemy(newPos, enemies, minEnemyDist))
+                    {
+                        Console.WriteLine($"    ! Too close to an enemy — must be over {minEnemyDist:F0}\" from enemy units.");
+                        continue;
+                    }
+
                     placed.Add(new PlacedObjectEntry<T>(binding, newPos));
                     break;
                 }
@@ -99,9 +108,28 @@ public class PlaceObjectsResolver<T> : IStageResolver<PlaceObjectsRequest<T>, Li
     // skipping over models already on the table from previous deployment requests.
     // Each deployment row is staggered by half a step on X to avoid vertical alignment.
     private Position FindAutoPosition(float r, float step, RectangularZone zone, float cz,
-        float xStagger, List<PlacedObjectEntry<T>> placedSoFar)
+        float xStagger, List<PlacedObjectEntry<T>> placedSoFar, List<Position> enemies, float minEnemyDist)
     {
-        var existing = GetTableOccupants();
+        var existing = GetTableOccupants().ToList();
+
+        // With an enemy-distance constraint (Ambush), scan Z rows too, not just the center row.
+        if (minEnemyDist > 0f)
+        {
+            for (float z = zone.Bottom + r; z <= zone.Top - r; z += step)
+            {
+                for (float x = zone.Left + r; x <= zone.Right - r; x += step)
+                {
+                    var candidate = new Position(x, z);
+                    if (CheckOverlap(candidate, r, placedSoFar) != null) continue;
+                    if (CheckOverlapWithExisting(candidate, r, existing) != null) continue;
+                    if (TooCloseToEnemy(candidate, enemies, minEnemyDist)) continue;
+                    if (placedSoFar.Count > 0 && !IsInCohesion(candidate, r, placedSoFar)) continue;
+                    return candidate;
+                }
+            }
+            return new Position(Math.Clamp((zone.Left + zone.Right) / 2f, zone.Left + r, zone.Right - r),
+                Math.Clamp((zone.Bottom + zone.Top) / 2f, zone.Bottom + r, zone.Top - r));
+        }
 
         float xStart = zone.Left + r + xStagger;
         for (float x = xStart; x <= zone.Right - r; x += step)
@@ -115,6 +143,31 @@ public class PlaceObjectsResolver<T> : IStageResolver<PlaceObjectsRequest<T>, Li
 
         // Fallback: best effort at zone center (shouldn't happen on a 72" table)
         return new Position(Math.Clamp((zone.Left + zone.Right) / 2f, zone.Left + r, zone.Right - r), cz);
+    }
+
+    private List<Position> GetEnemyPositions(PlayerID self)
+    {
+        var positions = new List<Position>();
+        if (_tableState == null) return positions;
+        foreach (var unit in _tableState.Units.Objects)
+        {
+            if (unit.PlayerID == self) continue;
+            foreach (var model in unit.Models)
+            {
+                var pos = model.Position;
+                if (!model.GetIsAlive()) continue;
+                if (pos.x == 0f && pos.z == 0f) continue;
+                positions.Add(pos);
+            }
+        }
+        return positions;
+    }
+
+    private static bool TooCloseToEnemy(Position p, List<Position> enemies, float minDist)
+    {
+        foreach (var e in enemies)
+            if (Dist(p, e) < minDist) return true;
+        return false;
     }
 
     private IEnumerable<(Position pos, float radius)> GetTableOccupants()
