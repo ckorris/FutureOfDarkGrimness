@@ -1030,6 +1030,30 @@ INTEGRATION PROGRESS (2026-06-08, cont. 16) — Blast live (NINTH sink: hit mult
   * DEFERRED (Appendix C): Blast's "ignore cover" facet (W9) — the target's cover save bonus is not yet
     suppressed.
 
+INTEGRATION PROGRESS (2026-06-08, cont. 17) — Takedown live (targeting restructure, shooting). Suite 292/0.
+  * FIRST TARGETING-STRUCTURE rule: Takedown re-scopes a shooting attack to ONE chosen model ("a unit of
+    [1]"). NOT a sink — it's a marker (TargetIndividualModel, a plain RuleOperation) read by two stages,
+    plus a new cross-stage result (IndividualTargetResult, in BuildTargetListStage.cs).
+  * BuildTargetListStage (shooting only, gated on !IsMelee — the hook is a shooting "when" and melee reuses
+    this stage) fires OnShootTargetsSelected for the attacker; if TargetIndividualModel is queued, it asks
+    the ATTACKER to pick a living model via the existing SelectionRequest<ModelData> (registered in all
+    three registries — CLI/GUI/AI, so no new resolver) and stashes IndividualTargetResult on the metadata.
+    The target list itself is left FULL (so LoS/occlusion/cover are unaffected — the LoS-ignore facet is
+    deferred), keeping the change to wound allocation only.
+  * AssignWoundsStage, when an IndividualTargetResult is present, BYPASSES the normal allocation branches
+    and funnels all wounds to that one model — capped at its remaining wounds, NO carry-over to the rest of
+    the unit. New single-model AssignWoundsResults(DataBinding<ModelData>, float) ctor (only that model in
+    PendingWounds); caller caps the count so AutoFill always places every wound.
+  * CATALOG: CoreRuleCatalog.Takedown (OnShootTargetsSelected, Always -> TargetIndividualModel, Actor) +
+    All; count 21 -> 22 live defs. PRECEDENCE: Takedown's "resolved first" flag is moot — the model is
+    picked pre-rolls, so it's already first (consistent with the cont. 16 sink-fold-placement decision).
+  * TESTS: Tests/TakedownRuleIntegrationTests.cs (3): BuildTargetListStage stashes the attacker's pick (and
+    no-Takedown stashes nothing); AssignWoundsStage confines 2 failed saves to a 1-wound model -> 1 wound,
+    rest of the unit untouched (cap + no carry-over). New CannedModelSelectionRequester. Suite 289 -> 292.
+  * ARMY + HEADLESS: built-in Infiltrators (Ambush) declare Takedown; after they arrive (round 2+) and
+    shoot, the log shows the single-model targeting. Game finishes on objectives, zero exceptions.
+  * DEFERRED (Appendix C): "ignore intervening LoS/cover" facet (W9).
+
 [x] SUPPRESSION vs. PER-RULE LOG (DONE 2026-06-07; see INTEGRATION PROGRESS cont. 6).
     Was: the per-rule game-log line emitted at QUEUE TIME, before the suppression first-pass,
     so a suppressed rule would print a phantom "X added -1 to hit". FIXED by moving log emission
@@ -1278,14 +1302,17 @@ is the single at-a-glance "implemented vs deferred facets" ledger — previously
 gaps were scattered across the arch doc, this checklist, and a few catalog XML
 comments (and several were unrecorded). Rules NOT in this table are either fully
 implemented (Stealth, Reliable, Fast, Slow, Surge, Relentless, Regeneration, Bane,
-Scout, Thrust) or not implemented at all (the 13 listed in the "not yet implemented"
+Scout, Thrust) or not implemented at all (the 12 listed in the "not yet implemented"
 set — Aircraft, Caster, Counter, Fear, Fearless, Flying, Immobile, Impact,
-Limited, Strider, Takedown, Hero, Transport).
+Limited, Strider, Hero, Transport).
 
   Rule         Live facet                       Deferred facet (NOT yet done)
   ----         ----------                        -----------------------------
   Blast(X)     each hit x X, capped at the      Ignore cover (W9) — the target's cover save bonus
                target unit's model count        still applies; not yet suppressed.
+  Takedown     pick one target model; all       Ignore intervening LoS/cover (W9) — Takedown still
+               wounds confined to it (capped    respects LoS/occlusion + cover. The "resolved before
+               at its wounds, no carry-over)    other weapons" ordering is moot (model picked pre-rolls).
   Artillery    +1 to hit beyond 9"              (1) Hold-only action restriction (W5);
                                                 (2) enemies shooting it from >9" take -2
                                                     to hit (W12, defensive seat).

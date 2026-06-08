@@ -122,6 +122,7 @@ public static class ArmyLoader
                     SpecialRules = new List<SpecialRuleEntry>
                     {
                         new SpecialRuleEntry_Core("Ambush"),
+                        new SpecialRuleEntry_Core("Takedown"),
                     },
                     Weapons = new List<WeaponFileEntry>
                     {
