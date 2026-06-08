@@ -225,17 +225,32 @@ public class LobbyScreen : IAppScreen
                 if (overPoints) ImGui.PopStyleColor();
 
                 ImGui.TableNextColumn();
-                bool canModify = _viewModel.CheckCanModifyPlayerIDInfo(info.PlayerID);
-                ImGui.BeginDisabled(!canModify);
-                if (ImGui.SmallButton($"Load Army##{i}"))
-                    TryLoadArmyForPlayer(info.PlayerID);
-                ImGui.EndDisabled();
+                if (_viewModel.IsResumeMode)
+                {
+                    // Re-crew a saved slot. Host only; Local/AI today (networked client assignment TBD).
+                    ImGui.BeginDisabled(!_viewModel.HasHostPrivileges);
+                    if (ImGui.SmallButton($"Local##{i}"))
+                        _viewModel.SetSavedSlotPlayerType(info.PlayerID, EPlayerType.Local);
+                    ImGui.SameLine();
+                    if (ImGui.SmallButton($"AI##{i}"))
+                        _viewModel.SetSavedSlotPlayerType(info.PlayerID, EPlayerType.AI);
+                    ImGui.EndDisabled();
+                }
+                else
+                {
+                    bool canModify = _viewModel.CheckCanModifyPlayerIDInfo(info.PlayerID);
+                    ImGui.BeginDisabled(!canModify);
+                    if (ImGui.SmallButton($"Load Army##{i}"))
+                        TryLoadArmyForPlayer(info.PlayerID);
+                    ImGui.EndDisabled();
+                }
             }
 
             ImGui.EndTable();
         }
 
-        if (_viewModel.HasHostPrivileges)
+        // Slots are fixed when resuming a saved game, so no add/remove there.
+        if (_viewModel.HasHostPrivileges && !_viewModel.IsResumeMode)
         {
             ImGui.Spacing();
             if (ImGui.Button("Add Local Player"))
