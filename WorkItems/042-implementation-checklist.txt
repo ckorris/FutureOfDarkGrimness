@@ -882,6 +882,30 @@ exposed as an invocable subsystem; InvokeTriggeredMove (Vanguard) wired live. Su
     would surface Vanguard in a LIVE game (so Vanguard is NOT added to CoreRuleCatalog yet — no live firing
     site); InvokeReactivate (Martial Prowess) and InvokeDealHits (Strafing) execution — next slices on this seam.
 
+INTEGRATION PROGRESS (2026-06-07, cont. 12) — Vanguard LIVE in a real game: deployment offer/accept/execute
+chain wired (the cont. 11 deferral, now closed). Suite 275/0; verified in a headless human-vs-AI game.
+  * FIRST PRODUCTION USE of GatherOffers/ResolveAbility/OperationExecutor (was test-only). DeployUnitStage,
+    right after it commits model positions, fires the new UnitDeployedContext (Hook=Deployment_OnUnitDeployed,
+    IHasActingUnit) via RuleEvaluator.GatherOffers; for each offer it asks the OWNING player a YesNoRequest,
+    and on accept runs ResolveAbility -> OperationExecutor.Execute(ops, new GameOperationServices(GameContext)).
+    Self-targeted only for now (Vanguard); a log line "{unit} used {rule}." marks acceptance.
+  * NO NEW RESOLVERS NEEDED — reused DefineMovementPathRequest (already has CLI/GUI/AI resolvers) for the move
+    and YesNoRequest (ditto) for accept. So the AI player resolves the whole thing with its EXISTING
+    AiYesNoResolver (always accepts) + AiDefineMovementResolver (advances toward nearest enemy); the human gets
+    the CLI/GUI YesNo + movement resolvers. Honoring "give the AI a resolver" was free — both request types were
+    already covered; verified rather than added.
+  * CATALOG + ARMY: Vanguard added to CoreRuleCatalog (+ All) as an ActivatedAbility (Deployment_OnUnitDeployed,
+    OncePerGame, Self, TriggeredMove 9"); Warriors in ArmyLoader's built-in test army now declare it, so it
+    resolves from army-list names and fires in the EOF-default headless run.
+  * HEADLESS PROOF (printf "2\n2\n" | ... --headless): BOTH players' Warriors logged "Warriors used Vanguard."
+    and repositioned up to 9" toward the enemy right after deploying (Player 1 via the CLI [y/n] prompt;
+    Player 2 via the AI resolver, silently) — two activations, zero exceptions, game ran to a normal finish.
+    Heavy Gunners (no Vanguard) correctly got no offer.
+  * STILL DEFERRED: cost-op EXECUTION (the OncePerGame "used" marker token is emitted by ResolveAbility but
+    OperationExecutor only runs ExecutableOperations, so the marker isn't applied — moot for Vanguard since a
+    unit deploys once; real once-per-round/game gating lands with token-op execution, Phase 7d). Non-Self target
+    selection at deployment (none in corpus). InvokeReactivate / InvokeDealHits — next slices on this seam.
+
 [x] SUPPRESSION vs. PER-RULE LOG (DONE 2026-06-07; see INTEGRATION PROGRESS cont. 6).
     Was: the per-rule game-log line emitted at QUEUE TIME, before the suppression first-pass,
     so a suppressed rule would print a phantom "X added -1 to hit". FIXED by moving log emission
