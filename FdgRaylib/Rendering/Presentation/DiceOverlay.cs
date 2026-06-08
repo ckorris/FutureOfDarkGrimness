@@ -17,7 +17,7 @@ namespace FdgRaylib.Rendering.Presentation;
 /// </summary>
 public static class DiceOverlay
 {
-    private const float FlickerEnd = 0.4f; // fraction of the beat spent "rolling" before faces lock
+    private const float FlickerEnd = 0.3f; // fraction of the beat spent "rolling" before faces lock; rest lingers settled
 
     private static readonly Color Panel   = new(20, 20, 24, 210);
     private static readonly Color Success = new(60, 170, 70, 255);
