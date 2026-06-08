@@ -1,5 +1,9 @@
 using FdgRaylib.Cli;
 using FdgRaylib.Rendering;
+using FDG.Data;
+using FDG.Network.Connection;
+using FDG.SaveLoad;
+using TinyDialogsNet;
 
 string crashLogPath = Path.Combine(AppContext.BaseDirectory, "crash.log");
 
@@ -47,6 +51,37 @@ else
 
     renderer.MainMenu.OnClientClicked = () =>
         renderer.NavigateTo(renderer.ClientModal);
+
+    // ── Load Game (work item #052): open a .fdgsave, resume it as host ───────────
+    renderer.MainMenu.OnLoadGameClicked = () =>
+    {
+        var saveFilter = new FileFilter(
+            $"Saved Game (*{GameSaveFile.EXTENSION_WITH_PERIOD})",
+            new[] { $"*{GameSaveFile.EXTENSION_WITH_PERIOD}" });
+
+        var (canceled, paths) = TinyDialogs.OpenFileDialog("Load Game", "", false, saveFilter);
+        if (canceled) return;
+
+        string path = paths?.FirstOrDefault() ?? "";
+        if (!File.Exists(path)) return;
+
+        GameDataStore loadedStore;
+        try
+        {
+            loadedStore = GameSaveSerializer.Load(File.ReadAllText(path));
+        }
+        catch (Exception ex)
+        {
+            WriteCrash("Load game failed", ex);
+            return;
+        }
+
+        FDGHost host = new FDGHost();
+        _ = host.StartAsync();
+        var lobby = new LobbyViewModel_Host("Mr. Host", "Loaded Game", "", host, loadedStore);
+        renderer.LobbyScreen.SetViewModel(lobby);
+        renderer.NavigateTo(renderer.LobbyScreen);
+    };
 
     renderer.MainMenu.OnQuitClicked = renderer.RequestClose;
 

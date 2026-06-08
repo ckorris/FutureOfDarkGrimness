@@ -298,12 +298,12 @@ public class LobbyScreen : IAppScreen
         // Reserve space for the inline error line below the button when present.
         float errorLineH = _lastLaunchError != null ? ImGui.GetTextLineHeightWithSpacing() + 4f : 0f;
         Vector2 buttonSize = new Vector2(avail.X, MathF.Max(0f, avail.Y - errorLineH));
-        if (ImGui.Button("LAUNCH", buttonSize))
+        bool resume = _viewModel.IsResumeMode;
+        if (ImGui.Button(resume ? "RESUME" : "LAUNCH", buttonSize))
         {
-            if (!_viewModel.TryLaunchGame(out string? fail))
-                _lastLaunchError = fail ?? "Launch failed.";
-            else
-                _lastLaunchError = null;
+            string? fail;
+            bool started = resume ? _viewModel.TryResumeGame(out fail) : _viewModel.TryLaunchGame(out fail);
+            _lastLaunchError = started ? null : (fail ?? "Launch failed.");
         }
 
         if (_lastLaunchError != null)
