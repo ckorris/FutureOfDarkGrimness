@@ -22,26 +22,30 @@ public static class AttackOverlay
     {
         if (beat.From.Count == 0 || beat.To.Count == 0) return;
 
-        int count = Math.Max(1, beat.AttackCount);
+        int volleys = Math.Max(1, beat.VolleyCount);
+        int shots = Math.Max(1, beat.ShotsPerVolley);
         // AP scales the animation size: AP0 = 1×, AP4 = 3×, linear from there.
         float apScale = 1f + 0.5f * Math.Max(0, beat.ArmorPenetration);
 
-        // Each attack owns a time slice [i/count, (i+1)/count]; its projectile/strike plays out as
-        // local progress runs 0→1 within that slice, so they appear one after another.
-        for (int i = 0; i < count; i++)
+        // Each volley owns a time slice [v/volleys, (v+1)/volleys], played one after another. Within
+        // a volley, all ShotsPerVolley weapons fire together (same local progress), one per model.
+        for (int v = 0; v < volleys; v++)
         {
-            float localT = progress * count - i;
-            if (localT <= 0f || localT >= 1f) continue;
+            float volleyT = progress * volleys - v;
+            if (volleyT <= 0f || volleyT >= 1f) continue;
 
-            Position fromPos = beat.From[i % beat.From.Count];
-            Position toPos = Nearest(fromPos, beat.To);
-            Vector2 f = ToPixel(fromPos, scale, originX, originY, tableH);
-            Vector2 t = ToPixel(toPos, scale, originX, originY, tableH);
+            for (int s = 0; s < shots; s++)
+            {
+                Position fromPos = beat.From[s % beat.From.Count];
+                Position toPos = Nearest(fromPos, beat.To);
+                Vector2 f = ToPixel(fromPos, scale, originX, originY, tableH);
+                Vector2 t = ToPixel(toPos, scale, originX, originY, tableH);
 
-            if (beat.IsMelee)
-                DrawClash(t, localT, scale, apScale);
-            else
-                DrawTracer(f, t, localT, apScale);
+                if (beat.IsMelee)
+                    DrawClash(t, volleyT, scale, apScale);
+                else
+                    DrawTracer(f, t, volleyT, apScale);
+            }
         }
     }
 
