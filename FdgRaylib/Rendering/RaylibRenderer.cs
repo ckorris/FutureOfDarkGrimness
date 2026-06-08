@@ -172,6 +172,12 @@ public class RaylibRenderer
                 DrawObjectives(layout);
                 DrawModels(layout);
 
+                if (_presentationPlayer != null &&
+                    _presentationPlayer.TryGetActiveDice(out var diceBeat, out var diceProgress))
+                {
+                    DiceOverlay.Draw(diceBeat, diceProgress, layout.LogX, screenH);
+                }
+
                 rlImGui.Begin();
                 _hitTester.Update(_tableState!, layout.Scale, layout.OriginX, layout.OriginY, TableHIn);
                 if (_log != null) DrawLogPanel(layout);

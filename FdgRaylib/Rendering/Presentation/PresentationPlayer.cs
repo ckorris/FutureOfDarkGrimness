@@ -37,6 +37,10 @@ public class PresentationPlayer : IPresentationSink
     private readonly Dictionary<Guid, GlideState> _glides = new();
     private readonly Dictionary<Guid, DeathState> _deaths = new();
 
+    // Screen-space dice display for the currently-active DiceRolledBeat (null when none).
+    private DiceRolledBeat? _activeDice;
+    private float _diceProgress;
+
     /// <summary>True while a beat is in flight or queued — used to gate interactive prompts.</summary>
     public bool IsAnimating
     {
@@ -107,6 +111,10 @@ public class PresentationPlayer : IPresentationSink
                 if (_deaths.TryGetValue(died.Model.ID, out var death))
                     death.SetProgress(t);
                 break;
+            case DiceRolledBeat dice:
+                _activeDice = dice;
+                _diceProgress = t;
+                break;
         }
     }
 
@@ -124,6 +132,20 @@ public class PresentationPlayer : IPresentationSink
                 if (_deaths.TryGetValue(died.Model.ID, out var death))
                     death.Done = true; // stays hidden from here on
                 break;
+            case DiceRolledBeat:
+                _activeDice = null;
+                break;
+        }
+    }
+
+    /// <summary>The dice roll being shown this frame, if any, with its 0..1 progress.</summary>
+    public bool TryGetActiveDice(out DiceRolledBeat beat, out float progress)
+    {
+        lock (_lock)
+        {
+            beat = _activeDice!;
+            progress = _diceProgress;
+            return _activeDice != null;
         }
     }
 
