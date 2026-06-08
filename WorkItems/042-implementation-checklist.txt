@@ -1139,6 +1139,32 @@ crash diagnosis). Suite 298/0.
   * LESSON: trust the STACK TRACE over the exception message string (which can lie). The cont. 19 "fix" and
     its concurrency narrative were wrong; this is the correction.
 
+INTEGRATION PROGRESS (2026-06-08, cont. 21) — Blast ignore-cover live + per-weapon sight info on the
+movement + ranged-target resolver requests. Suite 301/0.
+  * BLAST NOW IGNORES COVER (its second facet — Blast is fully implemented, removed from Appendix C). New
+    Effect.IgnoreCover + RuleOperation.IgnoreCover (a MARKER op, matched by OfType like Takedown/Suppress —
+    not a numeric sink). Blast gains a 2nd HookEntry at Shooting_OnSaveRollModifier (Always -> IgnoreCover),
+    via a minimal CoverIgnoreContext(attacker) — cover-ignore is a weapon property, target-independent.
+    CoverCheckStage drops the +1 cover bonus when the attacker's weapon ignores cover. 3 tests in
+    BlastCoverRuleIntegrationTests (real CoverCheckStage: in-cover defender -> bonus 1 without Blast, 0 with;
+    + the derivation). NOTE: the headless auto-game places no terrain (MapSetup stubs), so cover never arises
+    live — the integration test (explicit Cover terrain) is the proof.
+  * RESOLVER-INFO THREADING (user-requested; resolvers NOT modified, just given the data). Per-weapon flags
+    "ignores cover" / "ignores terrain" now ride BOTH resolver requests so movement + target-selection can
+    later represent post-move shootability and cover-/terrain-blocked-but-shootable targets:
+      - ChooseRangedAttackRequest.WeaponOption gains IgnoresCover + IgnoresTerrain; BuildWeaponOptions sets
+        them per weapon (also feeds GetCanShoot, which shares that builder).
+      - DefineMovementPathRequest gains List<WeaponSightProfile> (Weapon, IgnoresCover, IgnoresTerrain) for
+        the unit's ranged weapons; built at both construction sites (DefinePathStage + GameOperationServices)
+        via the new WeaponSightProfileBuilder.
+    SINGLE SOURCE OF TRUTH: Rules/Dispatch/SightRuleQueries derives the flags from the unit's #042 rules, used
+    by the cover stage, the targeting builder, and the movement builder alike — so they can't disagree.
+    Unit-scoped today (Blast is a unit rule); the queries take a Weapon so the derivation can tighten
+    per-weapon when weapon-scoped rules land, without callers changing shape.
+  * INDIRECT SEAM: IgnoresTerrain is a real field on both requests but always false for now — Indirect's
+    "fire at non-LoS targets as if in LoS" facet (W9) is unimplemented, and Flying/Strider's
+    IgnoreTerrainEffects is MOVEMENT terrain, not LoS, so it must NOT feed this. Derivation lands with Indirect.
+
 [x] SUPPRESSION vs. PER-RULE LOG (DONE 2026-06-07; see INTEGRATION PROGRESS cont. 6).
     Was: the per-rule game-log line emitted at QUEUE TIME, before the suppression first-pass,
     so a suppressed rule would print a phantom "X added -1 to hit". FIXED by moving log emission
@@ -1387,14 +1413,12 @@ is the single at-a-glance "implemented vs deferred facets" ledger — previously
 gaps were scattered across the arch doc, this checklist, and a few catalog XML
 comments (and several were unrecorded). Rules NOT in this table are either fully
 implemented (Stealth, Reliable, Fast, Slow, Surge, Relentless, Regeneration, Bane,
-Scout, Thrust) or not implemented at all (the 10 listed in the "not yet implemented"
+Scout, Thrust, Blast) or not implemented at all (the 10 listed in the "not yet implemented"
 set — Aircraft, Caster, Fear, Fearless, Flying, Immobile,
 Limited, Strider, Hero, Transport).
 
   Rule         Live facet                       Deferred facet (NOT yet done)
   ----         ----------                        -----------------------------
-  Blast(X)     each hit x X, capped at the      Ignore cover (W9) — the target's cover save bonus
-               target unit's model count        still applies; not yet suppressed.
   Takedown     pick one target model; all       Ignore intervening LoS/cover (W9) — Takedown still
                wounds confined to it (capped    respects LoS/occlusion + cover. The "resolved before
                at its wounds, no carry-over)    other weapons" ordering is moot (model picked pre-rolls).
