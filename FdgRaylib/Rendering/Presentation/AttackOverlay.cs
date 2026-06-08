@@ -23,20 +23,18 @@ public static class AttackOverlay
         if (beat.From.Count == 0 || beat.To.Count == 0) return;
 
         int volleys = Math.Max(1, beat.VolleyCount);
-        int shots = Math.Max(1, beat.ShotsPerVolley);
         // AP scales the animation size: AP0 = 1×, AP4 = 3×, linear from there.
         float apScale = 1f + 0.5f * Math.Max(0, beat.ArmorPenetration);
 
         // Each volley owns a time slice [v/volleys, (v+1)/volleys], played one after another. Within
-        // a volley, all ShotsPerVolley weapons fire together (same local progress), one per model.
+        // a volley every firing weapon (From) fires together — each From entry is its real model.
         for (int v = 0; v < volleys; v++)
         {
             float volleyT = progress * volleys - v;
             if (volleyT <= 0f || volleyT >= 1f) continue;
 
-            for (int s = 0; s < shots; s++)
+            foreach (Position fromPos in beat.From)
             {
-                Position fromPos = beat.From[s % beat.From.Count];
                 Position toPos = Nearest(fromPos, beat.To);
                 Vector2 f = ToPixel(fromPos, scale, originX, originY, tableH);
                 Vector2 t = ToPixel(toPos, scale, originX, originY, tableH);
