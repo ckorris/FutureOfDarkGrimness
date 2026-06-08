@@ -1165,6 +1165,30 @@ movement + ranged-target resolver requests. Suite 301/0.
     "fire at non-LoS targets as if in LoS" facet (W9) is unimplemented, and Flying/Strider's
     IgnoreTerrainEffects is MOVEMENT terrain, not LoS, so it must NOT feed this. Derivation lands with Indirect.
 
+INTEGRATION PROGRESS (2026-06-08, cont. 22) — two pre-existing headless crashes fixed (exposed by #042's
+melee/charges, not caused by the rules). Suite 304/0; 10/10 headless games clean (exit 0, no crash).
+  * CASUALTY-COHESION CRASH (intermittent, ~25% of games). Root cause: weapons are distributed round-robin
+    so casualties leave HOLES in a formation — surviving neighbours of a dead model end up >1" apart,
+    breaking the 1" cohesion rule. BOTH movement resolvers (AI AiDefineMovementResolver + CLI
+    DefineMovementPathResolver.AutoAdvance, used by player 1 via piped EOF) RIGIDLY TRANSLATED the
+    formation, preserving the hole, so DefinePathStage's cohesion validation rejected the move and THREW
+    RequestResponseInvalidException (a hard crash; a holed unit can't even "stay in place"). Fix: new shared
+    FDG.Stages.CohesiveFormation (PackGrid + ClampRepackStep) RE-FORMS the living models into a tight grid
+    (0.1" base-to-base) at the destination, always cohesion-valid, clamped so each model stays within the
+    move budget; dead models are omitted (stay put). Both resolvers now call it. 3 tests in
+    CohesiveFormationTests validate the output against the real ValidatePaths cohesion check.
+    NOTE: a GUI human could still pick a cohesion-breaking move and hit the same DefinePathStage throw —
+    making that stage re-prompt instead of throw is a separate interactive-robustness follow-up.
+  * POST-GAME HANG (every headless game). Root cause: the FDGServer CONSTRUCTOR launched the state machine,
+    and in headless every resolver completes synchronously (piped EOF / AI) so the WHOLE GAME ran inside
+    `new FDGServer(...)` — before CliApp could subscribe to OnGameEnded. The game-ended signal was missed,
+    so `await gameEnded.Task` never completed and the process hung (timeout-reaped; my earlier "exit 0"
+    readings were a PIPESTATUS bug reading printf's exit, not the game's). Fix: LaunchStateMachineOnceReady
+    now `await Task.Yield()`s first, so construction returns immediately and the game runs on a continuation
+    — callers subscribe before it ends. Plus a try/catch around the (now detached) state machine that logs
+    a fault and fires OnGameEnded, so a future game error surfaces + exits cleanly instead of silently
+    hanging. Headless games now exit 0 and log "Game ended: ..." reliably.
+
 [x] SUPPRESSION vs. PER-RULE LOG (DONE 2026-06-07; see INTEGRATION PROGRESS cont. 6).
     Was: the per-rule game-log line emitted at QUEUE TIME, before the suppression first-pass,
     so a suppressed rule would print a phantom "X added -1 to hit". FIXED by moving log emission

@@ -79,11 +79,15 @@ public class DefineMovementPathResolver : IStageResolver<DefineMovementPathReque
         }
     }
 
-    // Automatically advance the unit toward the nearest enemy, keeping formation intact.
+    // Automatically advance the unit toward the nearest enemy, re-forming the living models into a
+    // cohesive grid at the destination. A rigid translate would preserve any hole a casualty left in the
+    // formation and be rejected for breaking cohesion (which would crash DefinePathStage), so we re-pack.
     private List<ModelMoveEntry> AutoAdvance(DefineMovementPathRequest request)
     {
         var unit = request.UnitDataBinding.GetValue();
-        var models = unit.ModelBindings;
+        var living = unit.ModelBindings.Where(mb => mb.GetValue().GetIsAlive()).ToList();
+        if (living.Count == 0)
+            return StayInPlace(request);
 
         // Find live enemy model positions via ITableState.
         List<Position> enemyPositions = new();
@@ -97,14 +101,14 @@ public class DefineMovementPathResolver : IStageResolver<DefineMovementPathReque
             }
         }
 
+        // Compute the living models' centre.
+        float cx = living.Average(mb => mb.GetValue().Position.x);
+        float cz = living.Average(mb => mb.GetValue().Position.z);
+
+        // No enemy to advance on — re-form in place (closes any casualty hole so the move is legal).
         if (enemyPositions.Count == 0)
-            return StayInPlace(request);
+            return CohesiveFormation.PackGrid(living, cx, cz);
 
-        // Compute unit center.
-        float cx = models.Average(mb => mb.GetValue().Position.x);
-        float cz = models.Average(mb => mb.GetValue().Position.z);
-
-        // Find nearest enemy.
         Position nearest = enemyPositions
             .OrderBy(p => (p.x - cx) * (p.x - cx) + (p.z - cz) * (p.z - cz))
             .First();
@@ -114,22 +118,18 @@ public class DefineMovementPathResolver : IStageResolver<DefineMovementPathReque
         float dist = MathF.Sqrt(dx * dx + dz * dz);
 
         if (dist < 0.01f)
-            return StayInPlace(request);
+            return CohesiveFormation.PackGrid(living, cx, cz);
 
-        // Advance up to MaxAdvanceDistance (with a tiny margin so float rounding never pushes
-        // the computed distance over the limit and disqualify the unit from shooting).
+        // Advance up to MaxAdvanceDistance (tiny margin so float rounding can't disqualify shooting),
+        // clamped so the re-pack keeps every model within the movement budget.
         float step = Math.Min(request.MaxAdvanceDistance - 0.001f, Math.Max(0f, dist - 1f));
-        float ndx = dx / dist * step;
-        float ndz = dz / dist * step;
+        step = CohesiveFormation.ClampRepackStep(living, cx, cz, step, request.MaxDistanceInches);
+        float ndx = dx / dist;
+        float ndz = dz / dist;
 
         Console.WriteLine($"  [auto] advancing {step:F1}\" toward nearest enemy");
 
-        return models.Select(mb =>
-        {
-            var m = mb.GetValue();
-            var newPos = new Position(m.Position.x + ndx, m.Position.z + ndz);
-            return new ModelMoveEntry(mb, new List<Position> { newPos });
-        }).ToList();
+        return CohesiveFormation.PackGrid(living, cx + ndx * step, cz + ndz * step);
     }
 
     private static List<ModelMoveEntry> StayInPlace(DefineMovementPathRequest request)
