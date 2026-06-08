@@ -1203,6 +1203,70 @@ INTEGRATION PROGRESS (2026-06-08, cont. 23) — Furious charge-gate closed (#051
     show it — the FixedDiceRoller(6) integration test is the deterministic proof.
   * Furious is now FULLY implemented (no deferred facet) — moved to the Appendix C "fully implemented" set.
 
+INTEGRATION PROGRESS (2026-06-08, cont. 24) — Reactivate (Martial Prowess) live: a unit may activate a
+  SECOND time, once per game. Suite 310/0; headless exit 0, reactivation fires once then the gate holds.
+  * SEAM CHOICE — MARKER, not ExecutableOperation. Like Scout/Ambush's DeferDeployment (see RuleOperation
+    .DeferDeployment doc), InvokeReactivate stays a plain RuleOperation the stage READS, because it mutates
+    activation-turn-scoped state (the round's unactivated pool in SingleRoundContext) that the
+    IOperationServices seam — which only sees IGameContext — can't reach. The ExecutableOperation seam
+    (Vanguard/Strafing) is for effects reachable through IGameContext; this isn't one.
+  * WIRING: new NextActivatorRequestedContext(IUnit) : IHookContext, IHasActingUnit at hook
+    Activation_OnNextActivatorRequested. DeterminePlayerTurnStage, after advancing to the active player and
+    BEFORE the SingleTurnStage snapshot, fires the hook for each of that player's already-activated, on-table
+    units, GatherOffers -> YesNo -> ResolveAbility, then applies the queue stage-side: GrantTokenToUnit ->
+    AddToken (the cost marker), InvokeReactivate -> ISingleRoundContext.ReinstateUnitForActivation (new
+    method; re-adds the unit to _unactivatedUnits so it reappears as a Choose-Unit option and a later
+    MarkUnitAsActivated won't throw). Catalog: CoreRuleCatalog.MartialProwess ("Martial Prowess") + .All.
+  * COST ENFORCED LOCALLY (important finding): NOTHING in production applies the once-per cost ops —
+    RuleEvaluator.EmitCostOps PRODUCES GrantTokenToUnit/ConsumeTokensFromUnit, but OperationExecutor runs
+    only ExecutableOperations, so the marker is never granted anywhere (latent no-op; harmless for Vanguard
+    since a unit deploys once). For Reactivate an unenforced OncePerGame would loop forever, so the stage
+    grants the marker itself. A general cost-op applier is deferred (Appendix C) — it would also fix Vanguard.
+  * TESTS: ReactivateRuleIntegrationTests (5) — dispatch offers + queues InvokeReactivate & cost marker;
+    once-per-game closes after the marker; ReinstateUnitForActivation round-trip lets MarkUnitAsActivated
+    re-run without throwing; the real DeterminePlayerTurnStage reinstates+marks on accept and does neither
+    on decline.
+  * ARMY: built-in Heavy Gunners declare "Martial Prowess" (player has 3 units, so the bearer can be
+    already-activated while another unit is still pending — the condition the offer needs).
+  * DEFERRED (Appendix C): (a) reactivation is only OFFERED while the player still has a pending normal
+    activation that turn — if the bearer is the player's LAST unit, TryAdvanceToNextPlayer ends their turns
+    before the offer fires (round-end doesn't consult pending reactivations); (b) no general cost-op applier
+    (once-per costs enforced only where a stage does it by hand — here and, unenforced, Vanguard).
+
+INTEGRATION PROGRESS (2026-06-08, cont. 25) — Strafing (mid-move attack) live: passing through an enemy
+  offers a 3-hit attack on it, once per activation. Suite 315/0; headless exit 0, both movers strafed once.
+  * SEAM CHOICE — IN-STAGE, not the ExecutableOperation seam the plan assumed. KEY FINDING: the engine's
+    stage transitions are async-VOID fire-and-forget (StageBase.SignalEvent is void; ParentStage's Transition
+    delegate is void and ExecuteTransition doesn't await it). A multi-stage resolution pipeline therefore only
+    sequences correctly when it runs as a real CHILD STAGE in the state machine — running it from
+    GameOperationServices via OperationExecutor would return before the AssignWounds request is answered. So
+    DealHits is resolved by a movement sub-stage (mirroring how Impact's hits resolve as a child of the melee
+    stage), NOT via IOperationServices.DealHits. InvokeDealHits stays a plain marker the stage reads (so the
+    queue-level test 19 is untouched); no IOperationServices/GameOperationServices/terminal-layer churn.
+  * WIRING: new MoveThroughEnemyContext(IUnit) : IHookContext, IHasActingUnit at hook
+    Movement_OnMoveThroughEnemy. New StrafingStage : ParentStage<IMovementActionContext, ICombatMetadata>,
+    inserted in MovementStage AFTER ApplyNonMovementTerrainEffects and BEFORE ExecuteMove (so move-through is
+    read from each model's START position, pre-commit). Enter: detect crossed enemy units, GatherOffers ->
+    YesNo -> ResolveAbility(offer, [enemy]); grant the cost marker stage-side; seed the DealHits count as a
+    synthetic AP-0 RollToHitResults + CoverCheckResults(0) and run the SAME save->wound children as Impact
+    (DetermineSaveRollsNeeded -> RollToSave -> AssignWounds -> ApplyWounds). The child pipeline + SyntheticHits
+    are duplicated from ResolveImpactHitsStage (the two are now candidates for a shared synthetic-hits base —
+    deliberately NOT extracted to avoid touching the live Impact path mid-slice).
+  * GEOMETRY: MovementUtilities.GetEnemyUnitsMovedThrough — a move-through is any moving model's path segment
+    coming within base-to-base contact (moving radius + enemy radius) of a living enemy model
+    (point-to-segment distance in x/z). Fills the role the empty ValidateMovingThroughEnemyUnits TODO hinted
+    at, but as DETECTION (for the strafe trigger), not move VALIDATION.
+  * CATALOG: CoreRuleCatalog.Strafing ("Strafing", OncePerActivation, Foe TargetSelector, DealHits(3)) + .All.
+    ARMY: built-in Warriors (Very Fast, so they cover ground and pass through enemies) declare "Strafing".
+  * TESTS: StrafingRuleIntegrationTests (5) — geometry detects a crossed enemy and ignores one off the line;
+    dispatch offers + queues InvokeDealHits(target,3) & the cost marker; once-per-activation closes after the
+    marker; the real StrafingStage feeds 3 hits through save->wound on accept (AllOnFaceDiceRoller(1) fails all
+    saves -> 3 wounds reach assignment) and resolves nothing on decline.
+  * DEFERRED (Appendix C): (a) only the FIRST crossed enemy is offered (OncePerActivation caps to one strafe);
+    (b) DealHits.WithRules not applied (Strafing carries none — AP/Blast-carrying spells pending); (c) the
+    OncePerActivation marker is granted but never auto-cleared (no activation-end token-clear), so in practice
+    a unit strafes at most once per GAME, not once per activation.
+
 [x] SUPPRESSION vs. PER-RULE LOG (DONE 2026-06-07; see INTEGRATION PROGRESS cont. 6).
     Was: the per-rule game-log line emitted at QUEUE TIME, before the suppression first-pass,
     so a suppressed rule would print a phantom "X added -1 to hit". FIXED by moving log emission
@@ -1490,6 +1554,20 @@ Limited, Strider, Hero, Transport).
   Ambush       reserve + round-2+ arrival,      Cannot seize/contest objectives the round
                placed >9" from enemies          it arrives (W4) — needs "arrived this round"
                                                 tracking in ReconcileObjectivesStage.
+  Martial      once-per-game second activation   Offered ONLY while the player still has a pending
+  Prowess      of an already-activated unit      normal activation that turn — if the bearer is the
+               (re-added to the unactivated      player's LAST unit, TryAdvanceToNextPlayer ends their
+               pool, marker enforces once)       turns before the offer fires (round-end doesn't consult
+                                                pending reactivations). Cross-cutting: no general
+                                                cost-op applier — once-per costs are enforced only where
+                                                a stage grants the marker by hand (here; Vanguard's is
+                                                unenforced/latent).
+  Strafing     moving through an enemy offers a   (1) only the FIRST crossed enemy is offered;
+               3-hit mid-move attack on it,       (2) DealHits.WithRules not applied (Strafing carries
+               resolved through save+wound        none — AP/Blast-carrying spell hits pending);
+                                                (3) the OncePerActivation marker is granted but never
+                                                    auto-cleared (no activation-end token-clear yet), so a
+                                                    unit strafes at most once per GAME, not per activation.
 
   Maintenance: when a deferred facet ships, delete its row (or move the rule out of
   this table). When a NEW rule goes live with a known gap, add a row here at the same
