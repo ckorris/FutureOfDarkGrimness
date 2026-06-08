@@ -1212,3 +1212,52 @@ OBSERVATIONS
   - W22 (Caster assist within 18") is the ONE proximity-to-non-participant rule in
     the corpus — the aura tripwire. If we implement assist, the pull model returns
     for it alone; otherwise defer.
+
+
+APPENDIX C — Partial-facet ledger (implemented rules with deferred facets)
+-------------------------------------------------------------------------
+
+Added 2026-06-08. The rules below are LIVE in CoreRuleCatalog but ship only their
+headline facet; a secondary facet from the v3.5.1 text (see Appendix B's per-rule
+W-mapping for the authoritative full behavior) is not yet implemented. This table
+is the single at-a-glance "implemented vs deferred facets" ledger — previously the
+gaps were scattered across the arch doc, this checklist, and a few catalog XML
+comments (and several were unrecorded). Rules NOT in this table are either fully
+implemented (Stealth, Reliable, Fast, Slow, Surge, Relentless, Regeneration, Bane,
+Scout) or not implemented at all (the 15 listed in the "not yet implemented" set —
+Aircraft, Blast, Caster, Counter, Fear, Fearless, Flying, Immobile, Impact, Limited,
+Strider, Takedown, Thrust, Hero, Transport).
+
+  Rule         Live facet                       Deferred facet (NOT yet done)
+  ----         ----------                        -----------------------------
+  Artillery    +1 to hit beyond 9"              (1) Hold-only action restriction (W5);
+                                                (2) enemies shooting it from >9" take -2
+                                                    to hit (W12, defensive seat).
+  Indirect     -1 to hit after moving (W10)     Fire at non-LoS targets as if in LoS /
+                                                ignore cover (W9) — arguably the rule's
+                                                headline use; currently absent. (Also see
+                                                line ~598: charge sets HasMoved, so an
+                                                Indirect carrier wrongly takes -1 in melee.)
+  Furious      melee + unmodified 6 -> +1 hit   The "only while charging" condition is
+                                                dropped — fires on every melee 6, not just
+                                                on the charge turn (W10).
+  Deadly(X)    wounds x X (multiplier live)     Single-model targeting + no carry-over of
+                                                excess wounds to another model (W16). The
+                                                AssignWounds allocation nuance is Phase-8
+                                                (see line ~687).
+  Tough(X)     sets model max wounds (W2)       Wound-assignment ORDER (most-wounded tough
+                                                first; heroes last) not enforced (W18). Its
+                                                heroes-last half also needs Hero (see ~806).
+  Unstoppable  ignores Regeneration (suppress)  "Ignores all negative modifiers to this
+                                                weapon" facet — needs a modifier-immunity
+                                                effect (noted in catalog XML comment).
+  Rending      whole-attack AP-4 when ANY hit   True PER-HIT AP (only the 6s get AP) —
+               rolled a 6                        simplified to whole-attack (catalog comment).
+  Ambush       reserve + round-2+ arrival,      Cannot seize/contest objectives the round
+               placed >9" from enemies          it arrives (W4) — needs "arrived this round"
+                                                tracking in ReconcileObjectivesStage.
+
+  Maintenance: when a deferred facet ships, delete its row (or move the rule out of
+  this table). When a NEW rule goes live with a known gap, add a row here at the same
+  time — this is the canonical place, so the catalog/arch-doc no longer need to each
+  carry their own partial copy.
