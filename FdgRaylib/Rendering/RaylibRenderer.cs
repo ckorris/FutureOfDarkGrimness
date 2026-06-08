@@ -179,6 +179,12 @@ public class RaylibRenderer
                 }
 
                 if (_presentationPlayer != null &&
+                    _presentationPlayer.TryGetActiveSave(out var saveBeat, out var saveProgress))
+                {
+                    SaveOverlay.Draw(saveBeat, saveProgress, layout.Scale, layout.OriginX, layout.OriginY, TableHIn);
+                }
+
+                if (_presentationPlayer != null &&
                     _presentationPlayer.TryGetActiveDice(out var diceBeat, out var diceProgress))
                 {
                     DiceOverlay.Draw(diceBeat, diceProgress, layout.LogX, screenH);
@@ -304,17 +310,15 @@ public class RaylibRenderer
         }
     }
 
-    private static readonly Color DeathFlashColor = new(220, 40, 40, 255);
-
     private void DrawModels(Layout l)
     {
         foreach (var (model, color) in _placedModels)
         {
             // The presentation player decides position/visibility/effects: gliding mid-move,
-            // flashing-and-fading while dying, hidden once dead, else at authoritative position.
+            // tinted while dying (red, fading) or hurt (orange), hidden once dead, else authoritative.
             ModelDrawState draw = _presentationPlayer?.GetModelDrawState(model)
                 ?? (model.GetIsAlive()
-                    ? new ModelDrawState(true, model.Position, 1f, false)
+                    ? new ModelDrawState(true, model.Position, 1f, null)
                     : ModelDrawState.Hidden);
 
             if (!draw.Visible) continue;
@@ -323,7 +327,7 @@ public class RaylibRenderer
             int cy = l.OriginY + (int)((TableHIn - draw.Position.z) * l.Scale);
             float radius = model.BaseRadiusInches * l.Scale;
 
-            Color baseColor = draw.FlashRed ? DeathFlashColor : color;
+            Color baseColor = draw.Tint is { } tint ? new Color(tint.R, tint.G, tint.B, (byte)255) : color;
             byte a = (byte)Math.Clamp(draw.Alpha * 255f, 0f, 255f);
             Color fill    = new(baseColor.R, baseColor.G, baseColor.B, a);
             Color outline = new((byte)0, (byte)0, (byte)0, a);

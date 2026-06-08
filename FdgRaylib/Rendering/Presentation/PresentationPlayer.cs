@@ -49,6 +49,16 @@ public class PresentationPlayer : IPresentationSink
     private AttackBeat? _activeAttack;
     private float _attackProgress;
 
+    // Models flashing a "hurt but survived" tint (the wounded beat is active for each).
+    private readonly HashSet<Guid> _wounded = new();
+
+    // World-space save "pings" for the currently-active SaveBeat (null when none).
+    private SaveBeat? _activeSave;
+    private float _saveProgress;
+
+    private static readonly TextColor DeathTint = new(220, 40, 40, 255);  // red, fades out
+    private static readonly TextColor HurtTint  = new(255, 170, 60, 255); // orange flinch, no fade
+
     /// <summary>True while a beat is in flight or queued — used to gate interactive prompts.</summary>
     public bool IsAnimating
     {
@@ -74,6 +84,9 @@ public class PresentationPlayer : IPresentationSink
                     break;
                 case ModelDiedBeat died:
                     _deaths[died.Model.ID] = new DeathState(died.Position);
+                    break;
+                case ModelWoundedBeat wounded:
+                    _wounded.Add(wounded.Model.ID);
                     break;
             }
         }
@@ -131,6 +144,11 @@ public class PresentationPlayer : IPresentationSink
                 _activeAttack = attack;
                 _attackProgress = t;
                 break;
+            case SaveBeat save:
+                _activeSave = save;
+                _saveProgress = t;
+                break;
+            // ModelWoundedBeat is a presence flag (registered at enqueue, cleared on finish) — no per-frame work.
         }
     }
 
@@ -156,6 +174,12 @@ public class PresentationPlayer : IPresentationSink
                 break;
             case AttackBeat:
                 _activeAttack = null;
+                break;
+            case SaveBeat:
+                _activeSave = null;
+                break;
+            case ModelWoundedBeat wounded:
+                _wounded.Remove(wounded.Model.ID); // back to normal color
                 break;
         }
     }
@@ -193,6 +217,17 @@ public class PresentationPlayer : IPresentationSink
         }
     }
 
+    /// <summary>The save "pings" being shown this frame, if any, with their 0..1 progress.</summary>
+    public bool TryGetActiveSave(out SaveBeat beat, out float progress)
+    {
+        lock (_lock)
+        {
+            beat = _activeSave!;
+            progress = _saveProgress;
+            return _activeSave != null;
+        }
+    }
+
     /// <summary>
     /// How the renderer should draw <paramref name="model"/> this frame: at its glide/death
     /// override if one is active, else at its authoritative position (or hidden if dead with no
@@ -207,16 +242,19 @@ public class PresentationPlayer : IPresentationSink
             {
                 return death.Done
                     ? ModelDrawState.Hidden
-                    : new ModelDrawState(true, death.Position, death.Alpha, death.FlashRed);
+                    : new ModelDrawState(true, death.Position, death.Alpha, DeathTint);
             }
 
             if (_glides.TryGetValue(id, out var glide))
-                return new ModelDrawState(true, glide.Current, 1f, false);
+                return new ModelDrawState(true, glide.Current, 1f, null);
+
+            if (_wounded.Contains(id))
+                return new ModelDrawState(true, model.Position, 1f, HurtTint);
 
             if (model.GetIsDead())
                 return ModelDrawState.Hidden;
 
-            return new ModelDrawState(true, model.Position, 1f, false);
+            return new ModelDrawState(true, model.Position, 1f, null);
         }
     }
 
@@ -274,30 +312,20 @@ public class PresentationPlayer : IPresentationSink
             new Position(a.x + (b.x - a.x) * f, a.z + (b.z - a.z) * f);
     }
 
-    /// <summary>Red flash, then fade to nothing.</summary>
+    /// <summary>Red tint throughout, holding full alpha briefly then fading to nothing.</summary>
     private sealed class DeathState
     {
         private const float FlashFraction = 0.35f;
 
         public Position Position { get; }
         public float Alpha { get; private set; } = 1f;
-        public bool FlashRed { get; private set; }
         public bool Done;
 
         public DeathState(Position position) => Position = position;
 
         public void SetProgress(float t)
         {
-            if (t < FlashFraction)
-            {
-                FlashRed = true;
-                Alpha = 1f;
-            }
-            else
-            {
-                FlashRed = true; // stays red-tinted while fading out
-                Alpha = 1f - (t - FlashFraction) / (1f - FlashFraction);
-            }
+            Alpha = t < FlashFraction ? 1f : 1f - (t - FlashFraction) / (1f - FlashFraction);
         }
     }
 }
@@ -308,15 +336,17 @@ public readonly struct ModelDrawState
     public bool Visible { get; }
     public Position Position { get; }
     public float Alpha { get; }
-    public bool FlashRed { get; }
 
-    public ModelDrawState(bool visible, Position position, float alpha, bool flashRed)
+    /// <summary>Replacement color (death = red, hurt = orange), or null to use the player's team color.</summary>
+    public TextColor? Tint { get; }
+
+    public ModelDrawState(bool visible, Position position, float alpha, TextColor? tint)
     {
         Visible = visible;
         Position = position;
         Alpha = alpha;
-        FlashRed = flashRed;
+        Tint = tint;
     }
 
-    public static ModelDrawState Hidden => new ModelDrawState(false, new Position(0f, 0f), 0f, false);
+    public static ModelDrawState Hidden => new ModelDrawState(false, new Position(0f, 0f), 0f, null);
 }
