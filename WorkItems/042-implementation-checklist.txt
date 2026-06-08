@@ -1082,6 +1082,41 @@ Suite 295/0.
   * DEFERRED (Appendix C): the "not fatigued" gate (fatigue absent) — Impact always rolls; Counter's companion
     "-1 impact roll per Counter model" facet.
 
+INTEGRATION PROGRESS (2026-06-08, cont. 19) — Counter live (strike-order reversal). ALL FIVE core-COMBAT
+rules now live. Suite 297/0.
+  * THE STRIKE-ORDER REVERSAL: a charged unit with Counter strikes FIRST. New DetermineStrikeOrderStage
+    runs in MeleeStage after charge-contact (Impact) and before PileIn: fires CounterTriggerContext for the
+    defender (Subject seat), and on a queued StrikeFirst op SWAPS the attacker/defender roles via a new
+    CombatActionContext.SwapCombatRoles(). The entire existing swing/strike-back flow then runs unchanged
+    with roles reversed — the Counter unit takes the main (first) swing; the charger is offered the
+    strike-back. Chosen over an explicit second-swing branch because the whole downstream flow already keys
+    off AttackingUnit/DefendingUnit, and DetermineMeleeWinner is symmetric in *RemainingWoundsAtStart.
+  * SwapCombatRoles swaps AttackingUnit<->DefendingUnit + their at-start wounds, REBUILDS the melee-weapon
+    pool from the new attacker, and CLEARS IsCharging (the formerly-defending unit is not charging — so it
+    doesn't wrongly pick up Thrust). AttackingUnit became { get; private set; } and _isCharging lost its
+    readonly. The swap touches only the melee context — never models/positions/wounds — so it cannot affect
+    weapon enumeration elsewhere (relevant to the fix below).
+  * CATALOG: CoreRuleCatalog.Counter (Melee_OnCounterTrigger, Always -> StrikeFirst, Subject) + All;
+    count 23 -> 24 live defs. Order: runs AFTER Impact, so the charger still deals its impact hits before
+    the Counter unit strikes (faithful; the "-1 impact per Counter model" reduction is deferred, Appendix C).
+  * TESTS: Tests/CounterRuleIntegrationTests.cs (2) drive the REAL DetermineStrikeOrderStage: a charged
+    Counter defender becomes the attacker (roles + at-start wounds swapped); no-Counter keeps normal order.
+    Suite 295 -> 297.
+  * PRE-EXISTING CRASH FIXED (exposed, not caused, by this slice): ChooseRangedAttackStage THREW
+    "Available weapon dictionary was empty" if a unit reached it with no ranged weapons. Proven impossible
+    single-threaded (ChooseAction's GetCanShoot guards it, and an invalid resolver choice throws elsewhere),
+    so it's a CONCURRENCY race — the 2-player headless AI threads share the data store, and a concurrent
+    attack can kill the last ranged-weapon model between the GetCanShoot check and the context build. The new
+    melee activity (Heavy Gunners now fight) surfaces it. Fix: end the shoot GRACEFULLY (mirror the existing
+    "no fireable target" handling) instead of throwing; BackToChooseAction re-runs GetCanShoot against
+    current state, so nothing loops. NOT a Counter-logic bug (the swap can't affect ranged-weapon counts).
+  * ARMY + HEADLESS: built-in Heavy Gunners gain a melee "Fists" + Counter; when Warriors charge them,
+    Counter logs "Heavy Gunners's Counter: it strikes first against the charging Warriors" and the Heavy
+    Gunners swing before the Warriors strike back. Game finishes, no exceptions.
+  * MILESTONE: the five not-yet-started core-COMBAT rules (Thrust, Blast, Impact, Takedown, Counter) are all
+    live end-to-end. 24 core rules now live; 19 across sinks + Takedown (targeting marker) + Impact/Counter
+    (melee structure). The 7b precedence question is settled (sink-fold/hook placement realizes ordering).
+
 [x] SUPPRESSION vs. PER-RULE LOG (DONE 2026-06-07; see INTEGRATION PROGRESS cont. 6).
     Was: the per-rule game-log line emitted at QUEUE TIME, before the suppression first-pass,
     so a suppressed rule would print a phantom "X added -1 to hit". FIXED by moving log emission
@@ -1330,8 +1365,8 @@ is the single at-a-glance "implemented vs deferred facets" ledger — previously
 gaps were scattered across the arch doc, this checklist, and a few catalog XML
 comments (and several were unrecorded). Rules NOT in this table are either fully
 implemented (Stealth, Reliable, Fast, Slow, Surge, Relentless, Regeneration, Bane,
-Scout, Thrust) or not implemented at all (the 11 listed in the "not yet implemented"
-set — Aircraft, Caster, Counter, Fear, Fearless, Flying, Immobile,
+Scout, Thrust) or not implemented at all (the 10 listed in the "not yet implemented"
+set — Aircraft, Caster, Fear, Fearless, Flying, Immobile,
 Limited, Strider, Hero, Transport).
 
   Rule         Live facet                       Deferred facet (NOT yet done)
@@ -1345,6 +1380,9 @@ Limited, Strider, Hero, Transport).
                2+ a hit, resolved through        (ApplyFatigueStage is a stub), so Impact always rolls
                save+wound before normal swings   even on a charge that should be fatigued. Counter's
                                                  "-1 impact roll per Counter model" facet also deferred.
+  Counter      charged unit strikes first        "-1 impact roll per Counter model" companion facet
+               (attacker/defender roles          (W8) — the charger's Impact dice are not reduced by
+               swapped for the melee)            the number of Counter models in the charged unit.
   Artillery    +1 to hit beyond 9"              (1) Hold-only action restriction (W5);
                                                 (2) enemies shooting it from >9" take -2
                                                     to hit (W12, defensive seat).

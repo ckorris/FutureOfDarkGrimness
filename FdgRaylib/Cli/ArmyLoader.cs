@@ -107,10 +107,12 @@ public static class ArmyLoader
                         new SpecialRuleEntry_Core("Surge"),
                         new SpecialRuleEntry_Core("Scout"),
                         new SpecialRuleEntry_CoreNumeric("Blast", 3),
+                        new SpecialRuleEntry_Core("Counter"),
                     },
                     Weapons = new List<WeaponFileEntry>
                     {
-                        new WeaponFileEntry { Name = "Heavy Rifle", RangeInches = 36, Attacks = 1 }
+                        new WeaponFileEntry { Name = "Heavy Rifle", RangeInches = 36, Attacks = 1 },
+                        new WeaponFileEntry { Name = "Fists", RangeInches = 0, Attacks = 1 }
                     }
                 },
                 new UnitFileEntry
