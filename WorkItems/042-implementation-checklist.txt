@@ -550,10 +550,15 @@ correct queuing. Execution is Phase 8 / the #042 engine track.
            RemoveMatching(predicate, count) core. +2 TokenContainerTests (owner-scoped
            removal leaves other owners' tokens; missing owner is a no-op).
 
-[ ] 7h — Engine primitives (DEPENDS ON 042)
+[~] 7h — Engine primitives (DEPENDS ON 042)
        Implement: TriggeredMove, Reactivate, mid-move attack as callable
        subsystems. Wire RuleOperation invocations to call them.
        Tests green: 17, 18, 19 (Vanguard, Martial Prowess, Strafing).
+       DONE 2026-06-07 (see INTEGRATION PROGRESS cont. 11): TriggeredMove is a callable
+       subsystem (MovementExecutor) and InvokeTriggeredMove is wired through the new
+       ExecutableOperation/OperationExecutor seam -> Vanguard (17) now has behavior-level
+       coverage. Reactivate (18) and mid-move attack (19) remain queue-level; they slot
+       into the same seam next.
 
 
 PHASE 8 — Behavior-level coverage (second pass, after queue-level is green)
@@ -839,6 +844,44 @@ INTEGRATION PROGRESS (2026-06-07, cont. 10) — Bane + Rending live (save reroll
     rules, plus Unstoppable (suppressor), across EIGHT sinks (RollModifier[hit+save], Movement, HitInjection,
     WoundModifier, WoundIgnore, QualityFloor, MaxWounds, Reroll).
 
+INTEGRATION PROGRESS (2026-06-07, cont. 11) — ENGINE-PRIMITIVE REFACTOR begins (Phase 7h): MOVEMENT
+exposed as an invocable subsystem; InvokeTriggeredMove (Vanguard) wired live. Suite 275/0.
+  * THE BEACHHEAD for the PARALLEL "042 — expose core operations as invocable subsystems" item.
+    Movement is the smallest primitive and directly unblocks InvokeTriggeredMove -> Vanguard. The other
+    two 7h primitives (Reactivate/Martial Prowess, mid-move DealHits/Strafing) slot into the SAME seam in
+    later slices and are untouched here (still queue-level green, plain RuleOperations).
+  * MOVEMENT PRIMITIVE (pure refactor first, suite stayed 272/0): new FDG.Stages.MovementExecutor lifts the
+    SetPosition commit loop out of ExecuteMoveStage and the dangerous-terrain-wound logic out of
+    ApplyNonMovementTerrainEffectsStage into ApplyDangerousTerrainEffects + CommitPositions (KEPT SEPARATE —
+    the normal flow runs them as distinct stages; merging would double-apply terrain). Both stages now
+    delegate. TryMove(unit, paths, maxInches) is the out-of-band entry: validates via the single-budget
+    ValidatePaths overload (no charge semantics) then Commits; returns false + reasons with NO mutation on
+    invalid input. This is THE deliverable — "move a unit" is now callable from anywhere.
+  * IMPERATIVE-OP EXECUTION SEAM (the imperative mirror of SinkOperation<TSink>, as the user chose): new
+    ExecutableOperation : RuleOperation with Execute(IOperationServices) (Rules/Definitions), write-face
+    IOperationServices (only MoveUnit so far), and OperationExecutor (Rules/Dispatch) that runs a queue's
+    imperative ops via ONE OfType<ExecutableOperation> filter. RuleOperation.InvokeTriggeredMove rebased onto
+    ExecutableOperation (Execute -> services.MoveUnit; + Describe) — still a RuleOperation, so the queue test
+    (test 17, Vanguard) keeps passing unchanged. SINKS fold scalars; this seam ENACTS imperative effects —
+    the "Tier-1 world-effect executor" the arch doc anticipated. WHY a seam now (not inline): the user picked
+    the general shape so Reactivate/DealHits add an IOperationServices member + an ExecutableOperation body
+    with no new design (no speculative members added for them yet).
+  * ENGINE-SIDE IMPL: FDG.Stages.GameOperationServices(IGameContext) implements IOperationServices.MoveUnit
+    by resolving the IUnit -> DataBinding<UnitData> through the store's armies (by UnitID, mirroring
+    GetEnemyModelPositions), building a DefineMovementPathRequest with the single maxInches budget in all
+    three slots, awaiting the player's destination via the existing requester, then calling
+    MovementExecutor.TryMove (throws RequestResponseInvalidException on an invalid response, like DefinePathStage).
+  * BEHAVIOR TEST (Phase-8 rhythm): Tests/TriggeredMoveRuleIntegrationTests.cs (3 tests, separate behavior file).
+    TryMove direct: a 3" move commits new positions; a 20" move is rejected and positions are UNCHANGED.
+    Vanguard through the seam: ResolveAbility (test 17's ability shape) -> OperationExecutor.Execute ->
+    GameOperationServices -> MovementExecutor, with only the player's destination faked via a CannedMovePathRequester
+    (mirrors WoundRuleIntegrationTests' CapturingWoundRequester); asserts the 9" budget reaches the resolver and
+    every model actually moved. Headless 4-round game ran clean (auto-advance moves flow through the refactored
+    MovementExecutor.Commit).
+  * DEFERRED (stated, not silently cut): the deployment GatherOffers/accept flow + GUI/CLI reposition UX that
+    would surface Vanguard in a LIVE game (so Vanguard is NOT added to CoreRuleCatalog yet — no live firing
+    site); InvokeReactivate (Martial Prowess) and InvokeDealHits (Strafing) execution — next slices on this seam.
+
 [x] SUPPRESSION vs. PER-RULE LOG (DONE 2026-06-07; see INTEGRATION PROGRESS cont. 6).
     Was: the per-rule game-log line emitted at QUEUE TIME, before the suppression first-pass,
     so a suppressed rule would print a phantom "X added -1 to hit". FIXED by moving log emission
@@ -865,9 +908,11 @@ queued AND effect applied). See architecture doc Phase 6 notes.
 PARALLEL / DOWNSTREAM
 ---------------------
 
-[ ] 042 — Refactor stages to expose core operations as invocable subsystems
+[~] 042 — Refactor stages to expose core operations as invocable subsystems
        (movement, attack, deploy, wound application). Required for Phase 7h.
        Can start any time after Phase 3.
+       MOVEMENT done 2026-06-07 (MovementExecutor; see INTEGRATION PROGRESS cont. 11).
+       Attack / deploy / wound-application still to expose.
 
 [ ] Future: JSON/YAML data loader + schema validation. Wait until C# model
        is settled by Phases 6 and 7 against real rules.
