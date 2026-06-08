@@ -17,7 +17,7 @@ namespace FdgRaylib.Rendering;
 public class LobbyScreen : IAppScreen
 {
     public Action? OnBack;
-    public Action<ITableState, Func<PlayerID, Color>, GameLog?, GuiResolverOverlay, GuiOutstandingTaskDisplay>? OnGameLaunched;
+    public Action<ITableState, Func<PlayerID, Color>, GameLog?, GuiResolverOverlay, GuiOutstandingTaskDisplay, Func<string?>?>? OnGameLaunched;
 
     private ILobbyViewModel? _viewModel;
     private string _chatInput = "";
@@ -377,7 +377,10 @@ public class LobbyScreen : IAppScreen
         for (int i = 0; i < players.Count; i++)
             colors[players[i].PlayerID] = PlayerPalette[i % PlayerPalette.Length];
 
-        OnGameLaunched?.Invoke(game.TableState, pid => colors.GetValueOrDefault(pid, Color.White), log, overlay, taskDisplay);
+        // Host-only save hook (work item #054 will add client-initiated saving).
+        Func<string?>? saveGame = _viewModel != null && _viewModel.CanSaveGame ? _viewModel.SaveGameToJson : null;
+
+        OnGameLaunched?.Invoke(game.TableState, pid => colors.GetValueOrDefault(pid, Color.White), log, overlay, taskDisplay, saveGame);
     }
 
     private static void DrawIntField(string label, int current, Action<int> setter)

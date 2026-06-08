@@ -57,14 +57,14 @@ public class RaylibRenderer
 
     public void TransitionToGame(ITableState tableState, Func<PlayerID, Color> colorForPlayer,
         GameLog? log, GuiResolverOverlay? resolverOverlay = null,
-        GuiOutstandingTaskDisplay? taskDisplay = null)
+        GuiOutstandingTaskDisplay? taskDisplay = null, Func<string?>? saveGameToJson = null)
     {
         _tableState      = tableState;
         _colorForPlayer  = colorForPlayer;
         _log             = log;
         _resolverOverlay = resolverOverlay;
         _taskDisplay     = taskDisplay;
-        _tooltipOverlay.Attach(tableState, colorForPlayer);
+        _tooltipOverlay.Attach(tableState, colorForPlayer, saveGameToJson);
 
         tableState.Models.OnObjectCreated += SubscribeToModel;
         foreach (var model in tableState.Models.Objects)
