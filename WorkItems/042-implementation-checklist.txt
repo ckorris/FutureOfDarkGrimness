@@ -807,6 +807,38 @@ INTEGRATION PROGRESS (2026-06-07, cont. 9) — SEVENTH sink: max wounds (Tough) 
   * Rules now live in real stages/lifecycle: + Tough (max-wounds) = 13, plus Unstoppable (suppressor),
     across SEVEN sinks.
 
+INTEGRATION PROGRESS (2026-06-07, cont. 10) — Bane + Rending live (save reroll + save modifier). Suite 272/0.
+  Two cross-stage rules; the first ops that are PRODUCED at one "when" and CONSUMED at another stage.
+  * RENDING (NO new sink — reuses RollModifierSink w/ ERollKind.Save, finally the save-modifier sink
+    anticipated in cont. 5): an unmodified 6 to hit promotes AP, modelled as RollModifier(Save,-4). Fired
+    at OnHitRollComplete (where the UNMODIFIED roll is correct — synthetic Surge hits sit at face 6 and
+    would pollute a later read). RollToHitStage folds it from the same hit-complete ops and stashes the
+    scalar on new RollToHitResults.SaveModifier; DetermineSaveRollsNeededStage applies it
+    (baseDefenseWithAP -= SaveModifier, mirroring the hit stage's HitRollNeeded -= Net convention).
+    Fold-at-production / carry-scalar / apply-at-consumption — the pattern for an op whose effect lands on
+    a later stage. SIMPLIFICATION (queue-test model): flat -4 to ALL saves when ANY hit rolled a 6; true
+    per-hit AP deferred. 2 tests in RendingRuleIntegrationTests (drives RollToHit -> DetermineSaveRollsNeeded:
+    natural 6 -> threshold 4->8; no-Rending -> 4).
+  * BANE (EIGHTH sink): the defender re-rolls unmodified Defense 6s. ApplyReroll(Save, OnUnmodifiedValue)
+    rebased onto SinkOperation<IRerollSink>; RerollSink read face RerollSavesOnUnmodifiedMax. AssignWoundsStage
+    now fires OnSaveRollComplete ONCE (hoisted before Deadly) and, on Bane, re-rolls each successful save
+    group's natural-max (6) count, adding the new failures (DiceRoller.Roll(n).Below(clamp(saveNeeded))) to
+    the wound total BEFORE Deadly multiplies. OnUnmodifiedValue interpreted as "unmodified max face (6)" —
+    only corpus case; add a value field if a non-6 reroll rule appears. 2 tests in BaneRuleIntegrationTests
+    (ProbabilisticDiceRoller: 1 failed + reroll 2 sixes = 1 + 2x3/6 = 2; no-Bane = 1).
+  * SUPPRESSION PAYOFF: Bane's and Rending's shared W19 "ignore Regeneration" facet is just an extra
+    OnSaveRollComplete IgnoreRule HookEntry on each catalog def — evaluated in the existing both-seats
+    AssignWoundsStage call and cancelled via the suppression first-pass. No new wiring; three rules now
+    drive it (Unstoppable, Bane, Rending).
+  * REORDER: AssignWoundsStage save-complete EvaluateAll moved ahead of the Deadly (pre-apply-wound) block
+    so its queue feeds both the reroll (before Deadly) and the wound-ignore (after Deadly). Existing
+    Regeneration/suppression integration tests unchanged and green (same ops, same folds, hoisted).
+  * Both rules added to CoreRuleCatalog (+ All). DEFERRED: per-hit AP (Rending); non-6 reroll value;
+    morale reroll (Fearless stays queue-only).
+  * Rules now live in real stages/lifecycle: + Rending (save modifier) + Bane (save reroll) = 15 primary
+    rules, plus Unstoppable (suppressor), across EIGHT sinks (RollModifier[hit+save], Movement, HitInjection,
+    WoundModifier, WoundIgnore, QualityFloor, MaxWounds, Reroll).
+
 [x] SUPPRESSION vs. PER-RULE LOG (DONE 2026-06-07; see INTEGRATION PROGRESS cont. 6).
     Was: the per-rule game-log line emitted at QUEUE TIME, before the suppression first-pass,
     so a suppressed rule would print a phantom "X added -1 to hit". FIXED by moving log emission
