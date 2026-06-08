@@ -370,7 +370,9 @@ public class LobbyScreen : IAppScreen
         var (resolvers, overlay) = ResolverRegistryFactory.BuildGui(game.TableState);
 
         var taskDisplay = new GuiOutstandingTaskDisplay();
-        game.AssignInterfaces(logUI, new CliPlayerMessageUI(), resolvers, new CliTempVisualDrawer(), outstandingTaskDisplay: taskDisplay);
+        game.AssignInterfaces(logUI, new CliPlayerMessageUI(), resolvers, new CliTempVisualDrawer(),
+            presentationSink: null, // work item 052: real rendering sink wired in #5
+            outstandingTaskDisplay: taskDisplay);
 
         var colors  = new Dictionary<PlayerID, Color>();
         var players = _viewModel?.PlayerInfos ?? [];

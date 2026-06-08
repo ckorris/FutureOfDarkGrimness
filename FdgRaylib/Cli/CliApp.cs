@@ -76,6 +76,7 @@ public class CliApp
             playerMessageUI:       new CliPlayerMessageUI(),
             stageResolverRegistry: resolverRegistry,
             tempVisualDrawer:      new CliTempVisualDrawer(),
+            presentationSink:      null, // headless: beats emitted but not rendered (work item 052, #5 adds a sink)
             outstandingTaskDisplay: null);
 
         var humanController = new LocalPlayerController(playerSlots[0].Name, playerSlots[0].PlayerID, _localGame);
