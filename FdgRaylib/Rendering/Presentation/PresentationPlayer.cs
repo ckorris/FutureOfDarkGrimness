@@ -41,6 +41,10 @@ public class PresentationPlayer : IPresentationSink
     private DiceRolledBeat? _activeDice;
     private float _diceProgress;
 
+    // Screen-space banner for the currently-active BannerBeat (null when none).
+    private BannerBeat? _activeBanner;
+    private float _bannerProgress;
+
     /// <summary>True while a beat is in flight or queued — used to gate interactive prompts.</summary>
     public bool IsAnimating
     {
@@ -115,6 +119,10 @@ public class PresentationPlayer : IPresentationSink
                 _activeDice = dice;
                 _diceProgress = t;
                 break;
+            case BannerBeat banner:
+                _activeBanner = banner;
+                _bannerProgress = t;
+                break;
         }
     }
 
@@ -135,6 +143,9 @@ public class PresentationPlayer : IPresentationSink
             case DiceRolledBeat:
                 _activeDice = null;
                 break;
+            case BannerBeat:
+                _activeBanner = null;
+                break;
         }
     }
 
@@ -146,6 +157,17 @@ public class PresentationPlayer : IPresentationSink
             beat = _activeDice!;
             progress = _diceProgress;
             return _activeDice != null;
+        }
+    }
+
+    /// <summary>The banner being shown this frame, if any, with its 0..1 progress.</summary>
+    public bool TryGetActiveBanner(out BannerBeat beat, out float progress)
+    {
+        lock (_lock)
+        {
+            beat = _activeBanner!;
+            progress = _bannerProgress;
+            return _activeBanner != null;
         }
     }
 

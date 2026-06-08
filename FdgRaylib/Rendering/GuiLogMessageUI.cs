@@ -1,3 +1,4 @@
+using FDG;
 using FDG.TextInterface;
 
 namespace FdgRaylib.Rendering;
@@ -13,11 +14,11 @@ public class GuiLogMessageUI : ILogMessageUI
         _log = log;
     }
 
-    public void DisplayLogMessage(string message)
+    public void DisplayLogMessage(string message, TextColor color)
     {
         if (message == _lastMessage) return;
         _lastMessage = message;
         Console.WriteLine($"[LOG] {message}");
-        _log.Add(message);
+        _log.Add(message, color);
     }
 }

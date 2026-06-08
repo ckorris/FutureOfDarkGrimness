@@ -95,7 +95,7 @@ public class CliApp
         var server = new FDGServer(_gameDataStore!, _messageBus!, gameSettings, playerSlots);
         server.OnGameEnded += result =>
         {
-            logUI.DisplayLogMessage($"Game ended: {result}");
+            logUI.DisplayLogMessage($"Game ended: {result}", TextColor.White);
             gameEnded.TrySetResult();
         };
 

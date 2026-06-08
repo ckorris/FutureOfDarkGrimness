@@ -178,6 +178,12 @@ public class RaylibRenderer
                     DiceOverlay.Draw(diceBeat, diceProgress, layout.LogX, screenH);
                 }
 
+                if (_presentationPlayer != null &&
+                    _presentationPlayer.TryGetActiveBanner(out var bannerBeat, out var bannerProgress))
+                {
+                    BannerOverlay.Draw(bannerBeat, bannerProgress, layout.LogX, screenH);
+                }
+
                 rlImGui.Begin();
                 _hitTester.Update(_tableState!, layout.Scale, layout.OriginX, layout.OriginY, TableHIn);
                 if (_log != null) DrawLogPanel(layout);
@@ -197,8 +203,9 @@ public class RaylibRenderer
                     catch (Exception ex)
                     {
                         _resolverOverlayFaulted = true;
-                        _log?.Add($"[RESOLVER ERROR] {ex.GetType().Name}: {ex.Message}");
-                        _log?.Add(ex.StackTrace ?? "(no stack trace)");
+                        var errColor = new TextColor(255, 120, 120, 255);
+                        _log?.Add($"[RESOLVER ERROR] {ex.GetType().Name}: {ex.Message}", errColor);
+                        _log?.Add(ex.StackTrace ?? "(no stack trace)", errColor);
                     }
                 }
                 rlImGui.End();
@@ -334,8 +341,13 @@ public class RaylibRenderer
         ImGui.BeginChild("scrolling", Vector2.Zero, ImGuiChildFlags.None,
             ImGuiWindowFlags.HorizontalScrollbar);
 
-        foreach (var msg in messages)
-            ImGui.TextWrapped(msg);
+        foreach (var entry in messages)
+        {
+            var c = entry.Color;
+            ImGui.PushStyleColor(ImGuiCol.Text, new Vector4(c.R / 255f, c.G / 255f, c.B / 255f, c.A / 255f));
+            ImGui.TextWrapped(entry.Message);
+            ImGui.PopStyleColor();
+        }
 
         if (hasNew && _autoScroll)
             ImGui.SetScrollHereY(1.0f);
