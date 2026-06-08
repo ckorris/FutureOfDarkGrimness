@@ -113,6 +113,11 @@ public class RaylibRenderer
     private void SubscribeToModel(IModel model)
     {
         model.OnPositionChanged += (_, _) => OnModelPlaced(model);
+
+        // A model restored from a save already has its position set, so no OnPositionChanged will
+        // fire to register it for drawing — seed it now. (0,0,0) means unplaced, so skip those.
+        if (model.Position.x != 0f || model.Position.z != 0f)
+            OnModelPlaced(model);
     }
 
     private void OnModelPlaced(IModel model)
