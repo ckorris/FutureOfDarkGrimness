@@ -85,6 +85,7 @@ These are umbrellas; will fragment per-rule when picked up.
 ## Client / renderer
 
 - [ ] 040 — Post-game navigation back to main menu in GUI mode (currently window just stays open)
+- [ ] 053 — Sound cues on the presentation beat stream: audio for beats (gunshot, clang, death, dice, banner). App-side, rides #052's beats, no engine change expected. Open question: sound assets (see `WorkItems/053-sound.md`). Next up after #052's visuals.
 - [ ] 052 — Presentation beat stream: engine-owned, paced, semantic event stream (`context.Present(beat)`) so play feels lifelike — gliding movement, projectile→save/hurt→death beats, tumbling dice, stage-change flashes. Free-running (engine self-paces on a wall clock it owns; no renderer ack), inline emission from stages, host-authoritative & replicated, headless degrades to instant + text. App owns the visual model/tweens; engine owns the beats and pacing. Spans the engine submodule + client. See `WorkItems/052-presentation-beat-stream.md`.
 - [ ] 049 — Multi-pool terrain selection: lobby picker for which `TerrainLayoutFile` feeds `AutoFromLayout` / `Alternating`. Spun off from #002 — that ships with one hardcoded built-in pool. (Reassigned from 044, whose number was reused for the line-of-sight cluster.)
 
