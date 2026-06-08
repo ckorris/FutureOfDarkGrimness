@@ -1,6 +1,6 @@
 # 053 — Sound cues on the presentation beat stream
 
-**Status**: todo
+**Status**: done (pipeline + placeholder; real assets pending)
 **Related**: builds on #052 (presentation beat stream)
 
 ## Goal
@@ -36,7 +36,34 @@ Sound **assets**. We have none yet. Options:
 Recommended: (b) — build the pipeline + mapping now with a placeholder, swap real assets in after.
 Ask the user which before loading any files.
 
+## Outcome (2026-06-08)
+Pipeline built end-to-end, app-side, no engine change. All GUI-only; headless never inits audio.
+
+Asset decision: **placeholder-first (b)** — a built-in in-memory tone covers every cue until real
+`.wav` files land in `FdgRaylib/Assets/Sounds/` (drop-in by filename, no code change).
+
+Shipped:
+- `FdgRaylib/Audio/AudioManager.cs` — **general-purpose** (per user request: reusable for UI clicks,
+  menu stings, etc., not just beats). Owns the Raylib audio device, caches sounds by string key,
+  `Play(key)`, `Dispose()` (unloads all + closes device). No-ops entirely if no audio device
+  (`Enabled` false). Missing files fall back to a generated placeholder (sine + exp decay, built as
+  an in-memory WAV via `LoadWaveFromMemory`; needed `<AllowUnsafeBlocks>` for the pointer overload).
+- `FdgRaylib/Rendering/Presentation/PresentationSoundCues.cs` — the only beat-aware sound code. Pure
+  `CueFor(beat)` mapping (Attack→gunshot/melee, Dice, Save, Wound, Death, Banner, Move) + `LoadInto`
+  that registers each cue from `Assets/Sounds/{key}.wav`.
+- `PresentationPlayer.BeatStarted` — audio-agnostic `Action<PresentationBeat>` raised on the render
+  thread (outside the lock) the frame a beat becomes active. Renderer wires it to `AudioManager.Play`
+  so the cue fires in lockstep with the visual.
+- `RaylibRenderer`: builds `AudioManager` + `LoadInto` at `Run()` startup; disposes before
+  `CloseWindow()`; hooks `BeatStarted` in `TransitionToGame`.
+- `FdgRaylib/Assets/Sounds/README.md` — cue→filename table for whoever supplies real assets.
+
+Tests: none added — playback is GUI-only and the user opted out of app-level tests; the only pure bit
+(`CueFor`) lives in the app. Engine suite still 314 green (no engine touch). Build clean.
+
+Caveat: not yet heard on a machine with audio (user away from their box). One cue per beat (volleys
+play a single shot sound for now). Real assets + per-volley layering are the obvious follow-ups.
+
 ## Notes
-- 2026-06-08: Created as the next slice after #052's visuals. Not started — resume by settling the
-  asset question above, then wiring the audio device + a `SoundCues`/`SoundPlayer` (mapping +
-  playback) driven off `PresentationPlayer`.
+- 2026-06-08: Created as the next slice after #052's visuals. Resolved the asset question
+  (placeholder-first) and built the full pipeline same day — see Outcome.

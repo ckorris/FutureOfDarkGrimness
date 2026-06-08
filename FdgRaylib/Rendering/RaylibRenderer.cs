@@ -1,6 +1,7 @@
 using System.Collections.Concurrent;
 using System.Numerics;
 using FDG;
+using FdgRaylib.Audio;
 using FdgRaylib.Rendering.Presentation;
 using FdgRaylib.Rendering.Resolvers;
 using ImGuiNET;
@@ -38,6 +39,7 @@ public class RaylibRenderer
     private GuiResolverOverlay? _resolverOverlay;
     private GuiOutstandingTaskDisplay? _taskDisplay;
     private PresentationPlayer? _presentationPlayer;
+    private AudioManager? _audio;
     private readonly TableTooltipOverlay _tooltipOverlay = new();
     private readonly TableHitTester      _hitTester      = new();
     private bool _inGame = false;
@@ -69,6 +71,15 @@ public class RaylibRenderer
         _taskDisplay        = taskDisplay;
         _presentationPlayer = presentationPlayer;
         _tooltipOverlay.Attach(tableState, colorForPlayer);
+
+        // Play a sound cue the moment each beat becomes active, in lockstep with its visual. Audio is
+        // GUI-only and may be unavailable (then AudioManager no-ops), so this is best-effort.
+        if (_presentationPlayer != null && _audio != null)
+            _presentationPlayer.BeatStarted += beat =>
+            {
+                string? cue = PresentationSoundCues.CueFor(beat);
+                if (cue != null) _audio.Play(cue);
+            };
 
         tableState.Models.OnObjectCreated += SubscribeToModel;
         foreach (var model in tableState.Models.Objects)
@@ -140,6 +151,11 @@ public class RaylibRenderer
         Raylib.SetWindowSize(initW, initH);
 
         rlImGui.Setup(true);
+
+        // App-wide audio device + presentation cue bank (placeholder until real assets land in
+        // Assets/Sounds/). No-ops gracefully if no audio device is available.
+        _audio = new AudioManager();
+        PresentationSoundCues.LoadInto(_audio);
 
         // Replace the default 13px bitmap font with DejaVuSans TTF.
         // Must clear the atlas first — Setup already added the pixel font at index 0;
@@ -233,6 +249,7 @@ public class RaylibRenderer
         }
 
         rlImGui.Shutdown();
+        _audio?.Dispose();
         Raylib.CloseWindow();
     }
 

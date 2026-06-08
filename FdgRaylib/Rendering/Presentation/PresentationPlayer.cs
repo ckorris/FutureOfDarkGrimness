@@ -65,6 +65,13 @@ public class PresentationPlayer : IPresentationSink
         get { lock (_lock) return _active != null || _incoming.Count > 0; }
     }
 
+    /// <summary>
+    /// Raised on the render thread the frame a beat becomes active (dequeued), so consumers can fire
+    /// effects that should start with the visual — e.g. sound cues. Kept audio-agnostic on purpose:
+    /// the renderer wires this to the <c>AudioManager</c>. Invoked outside the internal lock.
+    /// </summary>
+    public Action<PresentationBeat>? BeatStarted;
+
     // ---------------- engine thread ----------------
 
     public void OnBeat(PresentationBeat beat)
@@ -96,27 +103,34 @@ public class PresentationPlayer : IPresentationSink
 
     public void Update(float dtSeconds)
     {
+        PresentationBeat? started = null;
         lock (_lock)
         {
             if (_active == null && _incoming.Count > 0)
             {
                 _active = _incoming.Dequeue();
                 _elapsedSeconds = 0f;
+                started = _active;
             }
-            if (_active == null) return;
-
-            _elapsedSeconds += dtSeconds;
-            float dur = (float)_active.NominalDuration.TotalSeconds;
-            float t = dur <= 0f ? 1f : Math.Clamp(_elapsedSeconds / dur, 0f, 1f);
-
-            Advance(_active, t);
-
-            if (_elapsedSeconds >= dur)
+            if (_active != null)
             {
-                Finish(_active);
-                _active = null;
+                _elapsedSeconds += dtSeconds;
+                float dur = (float)_active.NominalDuration.TotalSeconds;
+                float t = dur <= 0f ? 1f : Math.Clamp(_elapsedSeconds / dur, 0f, 1f);
+
+                Advance(_active, t);
+
+                if (_elapsedSeconds >= dur)
+                {
+                    Finish(_active);
+                    _active = null;
+                }
             }
         }
+
+        // Outside the lock: the cue handler (sound) shouldn't run under our lock, and it never
+        // re-enters the player.
+        if (started != null) BeatStarted?.Invoke(started);
     }
 
     private void Advance(PresentationBeat beat, float t)
