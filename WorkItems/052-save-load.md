@@ -27,6 +27,8 @@ The entire mutable game world already lives in one ECS-style `GameDataStore` tha
 
 ## Notes
 
+- 2026-06-08: **Live-test bug #1 (fixed).** First GUI load test: restored models didn't draw (unit labels showed, model discs didn't). Cause: `RaylibRenderer.DrawModels` only draws `_placedModels`, populated solely from `OnPositionChanged` — which never fires for save-loaded models (their positions are set during store replay, not via live `SetPosition`). Fix: seed already-positioned models into `_placedModels` when subscribing (`RaylibRenderer.SubscribeToModel`). Good reminder: renderer seeding that keys off live events misses restored state — terrain/objectives were already seeded directly, models were the gap.
+
 - 2026-06-08: **Phase 6b done — feature implemented end to end (all phases).** Per-slot Local/AI picker in the resume lobby (`SetSavedSlotPlayerType`; add/remove hidden in resume; covers solo + hotseat). Networked re-crew: a client joining a resumed game is auto-assigned to the next AI saved slot and adopts that slot's saved PlayerID — **strictly isolated behind `_isResume`** so the new-game join flow is untouched; correct-by-design for 1v1, not yet live-tested. **Still unverified live:** the single-machine load→resume loop in the GUI, and any networked resume (needs two machines). Remaining refinement: host-chosen connection→slot assignment (vs the current auto-fill).
 
 - 2026-06-08: **Phases 5 + 6a implemented — single-machine save/load works end to end.**
