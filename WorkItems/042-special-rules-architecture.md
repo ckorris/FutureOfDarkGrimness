@@ -1,6 +1,6 @@
 # 042 — Special rules architecture
 
-**Status**: in-progress (Phase 7 dispatch complete; **Phase 8 integration + the Phase 7h engine-primitive refactor underway. Suite 281/0.** 15 rules live across 8 sinks via `SinkOperation<TSink>`; two engine subsystems now invocable — MOVEMENT (Vanguard) via `MovementExecutor` + the `ExecutableOperation`/`OperationExecutor` imperative-op seam, and DEPLOY (Scout + Ambush) via the defer/reserve primitive. Remaining: attack/reactivate primitives (Reactivate/Strafing/Impact), morale/casting, and the JSON loader. Live history: `042-implementation-checklist.txt` INTEGRATION PROGRESS cont. 1–14.)
+**Status**: in-progress (Phase 7 dispatch complete; **Phase 8 integration + the Phase 7h engine-primitive refactor underway. Suite 286/0.** 16 rules live across 8 sinks via `SinkOperation<TSink>` (Thrust added on the shared `IsCharging` thread — melee-entry implies charge, so no separate flag); two engine subsystems now invocable — MOVEMENT (Vanguard) via `MovementExecutor` + the `ExecutableOperation`/`OperationExecutor` imperative-op seam, and DEPLOY (Scout + Ambush) via the defer/reserve primitive. In progress: the five core-COMBAT rules (Thrust done; Blast/Takedown/Impact/Counter next — Impact/Counter need new melee structure). Remaining: attack/reactivate primitives (Reactivate/Strafing), morale/casting, and the JSON loader. Live history: `042-implementation-checklist.txt` INTEGRATION PROGRESS cont. 1–15.)
 **Related**: #026, #027, #028, #029, #030, #031, #032, #033, #034 (all depend on this)
 
 ## Goal

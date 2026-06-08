@@ -976,6 +976,36 @@ enemies placement. Suite 281/0.
   * Deploy subsystem now covers Scout + Ambush; movement covers Vanguard. Remaining 7h primitives: Reactivate
     (Martial Prowess), mid-move DealHits (Strafing) + the Impact core rule on the deal-hits seam.
 
+INTEGRATION PROGRESS (2026-06-08, cont. 15) — Thrust live (first of the 5 core-COMBAT rules);
+shared IsCharging thread landed. Suite 286/0.
+  * NEW SHARED FOUNDATION — IsCharging thread (mirrors the IsMelee/AttackerMoved threads): new
+    capability IHasCharging (Foundation) + Condition.IsCharging (Definitions). CombatActionContext +
+    CombatMetadata gained an isCharging bool; KEY SIMPLIFICATION — melee is only ever entered via a
+    Charge action (MainUnitActionStage: chooseAction.ToCharge.Bind(melee)), so the charger's swing is
+    charging (MeleeStage.GetNewChildContext isCharging:true) and a strike-back is not (StrikeBackStage
+    default false). No separate "charged this activation" flag needed. HitRollModifierContext gained
+    IsMelee (closes the cont. 1 combat-kind gap) + IsCharging; HitRollCompleteContext gained IsCharging;
+    DetermineHitRollNeededStage + RollToHitStage now source both off the metadata. This thread also
+    unblocks the deferred Furious charge-gate (#051) whenever it's wanted.
+  * THRUST = pure catalog + the thread, NO new sink/stage: it rides the EXISTING hit-roll-modifier sink
+    (+1 to hit at OnHitRollModifier, lowering the threshold) and the EXISTING save-modifier carry
+    (AP(+1) modelled as RollModifier(Save,-1) at OnHitRollComplete -> RollToHitResults.SaveModifier ->
+    DetermineSaveRollsNeededStage), each gated on And(IsMelee, IsCharging). Same machinery as
+    Artillery/Stealth (hit) and Rending (save). CoreRuleCatalog.Thrust (+All); count 19 -> 20 live defs.
+  * QUEUE TEST realigned: the inline Thrust shape test moved off the conceptual Melee_OnChargeContact
+    hook onto the live OnHitRollModifier/OnHitRollComplete hooks with the IsMelee+IsCharging gate, so the
+    corpus matches the catalog (two Evaluate calls, one per hook). (ChargeContactContext/CounterTrigger
+    stay in use by the Impact/Counter queue tests.)
+  * TESTS: Tests/ThrustRuleIntegrationTests.cs (5) drives the REAL stages — charging melee lowers the
+    hit threshold 4->3 and carries SaveModifier -1; a strike-back (melee, not charging) and shooting both
+    no-op by the gate. Full suite 281 -> 286.
+  * ARMY + HEADLESS: built-in Warriors gained a melee Blade (RangeInches 0) + declare Thrust. Headless
+    4-round game: Warriors charge repeatedly and log "Warriors's Thrust added +1 to Hit rolls" /
+    "added -1 to Save rolls"; melee runs clean end-to-end (charge -> swing -> strikeback-skip -> winner),
+    game finishes on objectives with zero exceptions. This also DE-RISKS Impact/Counter — melee is
+    confirmed playable in headless before those slices build on it.
+  * Thrust is FULLY implemented (no deferred facet) — moved to the "fully implemented" set in Appendix C.
+
 [x] SUPPRESSION vs. PER-RULE LOG (DONE 2026-06-07; see INTEGRATION PROGRESS cont. 6).
     Was: the per-rule game-log line emitted at QUEUE TIME, before the suppression first-pass,
     so a suppressed rule would print a phantom "X added -1 to hit". FIXED by moving log emission
@@ -1224,9 +1254,9 @@ is the single at-a-glance "implemented vs deferred facets" ledger — previously
 gaps were scattered across the arch doc, this checklist, and a few catalog XML
 comments (and several were unrecorded). Rules NOT in this table are either fully
 implemented (Stealth, Reliable, Fast, Slow, Surge, Relentless, Regeneration, Bane,
-Scout) or not implemented at all (the 15 listed in the "not yet implemented" set —
-Aircraft, Blast, Caster, Counter, Fear, Fearless, Flying, Immobile, Impact, Limited,
-Strider, Takedown, Thrust, Hero, Transport).
+Scout, Thrust) or not implemented at all (the 14 listed in the "not yet implemented"
+set — Aircraft, Blast, Caster, Counter, Fear, Fearless, Flying, Immobile, Impact,
+Limited, Strider, Takedown, Hero, Transport).
 
   Rule         Live facet                       Deferred facet (NOT yet done)
   ----         ----------                        -----------------------------

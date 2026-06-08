@@ -86,10 +86,12 @@ public static class ArmyLoader
                         new SpecialRuleEntry_Core("Stealth"),
                         new SpecialRuleEntry_Core("Very Fast"),
                         new SpecialRuleEntry_Core("Vanguard"),
+                        new SpecialRuleEntry_Core("Thrust"),
                     },
                     Weapons = new List<WeaponFileEntry>
                     {
-                        new WeaponFileEntry { Name = "Rifle", RangeInches = 24, Attacks = 1 }
+                        new WeaponFileEntry { Name = "Rifle", RangeInches = 24, Attacks = 1 },
+                        new WeaponFileEntry { Name = "Blade", RangeInches = 0, Attacks = 2 }
                     }
                 },
                 new UnitFileEntry
