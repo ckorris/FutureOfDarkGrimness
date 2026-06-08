@@ -62,7 +62,8 @@ public class RaylibRenderer
     public void TransitionToGame(ITableState tableState, Func<PlayerID, Color> colorForPlayer,
         GameLog? log, GuiResolverOverlay? resolverOverlay = null,
         GuiOutstandingTaskDisplay? taskDisplay = null,
-        PresentationPlayer? presentationPlayer = null)
+        PresentationPlayer? presentationPlayer = null,
+        Func<string?>? saveGameToJson = null)
     {
         _tableState         = tableState;
         _colorForPlayer     = colorForPlayer;
@@ -70,7 +71,7 @@ public class RaylibRenderer
         _resolverOverlay    = resolverOverlay;
         _taskDisplay        = taskDisplay;
         _presentationPlayer = presentationPlayer;
-        _tooltipOverlay.Attach(tableState, colorForPlayer);
+        _tooltipOverlay.Attach(tableState, colorForPlayer, saveGameToJson);
 
         // Play a sound cue the moment each beat becomes active, in lockstep with its visual. Audio is
         // GUI-only and may be unavailable (then AudioManager no-ops), so this is best-effort.
@@ -128,6 +129,11 @@ public class RaylibRenderer
     private void SubscribeToModel(IModel model)
     {
         model.OnPositionChanged += (_, _) => OnModelPlaced(model);
+
+        // A model restored from a save already has its position set, so no OnPositionChanged will
+        // fire to register it for drawing — seed it now. (0,0,0) means unplaced, so skip those.
+        if (model.Position.x != 0f || model.Position.z != 0f)
+            OnModelPlaced(model);
     }
 
     private void OnModelPlaced(IModel model)
