@@ -1267,6 +1267,27 @@ INTEGRATION PROGRESS (2026-06-08, cont. 25) — Strafing (mid-move attack) live:
     OncePerActivation marker is granted but never auto-cleared (no activation-end token-clear), so in practice
     a unit strafes at most once per GAME, not once per activation.
 
+INTEGRATION PROGRESS (2026-06-08, cont. 26) — COST-GATE LIFECYCLE pass: the two cross-cutting gaps from
+  cont. 24/25 are closed. Suite 320/0; headless exit 0, a unit now strafes on multiple activations.
+  * COST-OP APPLIER: new OperationApplier.ApplyTokenOperations(ops) applies the token grants/consumes the
+    activated-ability dispatcher emits (GrantTokenToUnit/Model, ConsumeTokensFromUnit/Model) to live
+    containers — the synchronous, non-executable counterpart to OperationExecutor (which runs only
+    ExecutableOperations and so never applied cost tokens). Wired into the three ResolveAbility sites:
+    DeployUnitStage (Vanguard's OncePerGame is now ACTUALLY enforced — was latent), DeterminePlayerTurnStage
+    (Reactivate), StrafingStage — replacing the two by-hand grant loops.
+  * TOKEN-CLEAR: new TokenClearService.ClearForHook(firedHook, containers) removes tokens whose
+    ClearTrigger fires at the hook (ActivationEnd@Activation_OnEndOfActivation, RoundEnd@Round_OnRoundEnd,
+    CustomHook), owner-scoped when stamped. Driven by ReconcileEndOfActivationStage (clears the just-activated
+    unit's markers) and ReconcileObjectivesStage (round-end sweep over all units). Strafing's OncePerActivation
+    now genuinely resets each activation (headless: strafes went 2 -> 4, same unit re-strafing across turns).
+  * TESTS: TokenLifecycleTests (5) — ClearForHook clears Activation/Round markers at the matching hook and
+    leaves others; OperationApplier grants+consumes; ReconcileEndOfActivationStage clears the activated unit's
+    marker. Existing Reactivate/Strafing stage tests unchanged (marker still ends up granted, now via the
+    shared applier).
+  * Appendix C updated: Strafing's "marker never clears" facet REMOVED (now per-activation); Martial Prowess's
+    "no general cost-op applier" cross-cutting note REMOVED. Remaining token-clear triggers (AttackEnd,
+    FirstTrigger, UnitDestroyed) are still unwired — no live consumer yet.
+
 [x] SUPPRESSION vs. PER-RULE LOG (DONE 2026-06-07; see INTEGRATION PROGRESS cont. 6).
     Was: the per-rule game-log line emitted at QUEUE TIME, before the suppression first-pass,
     so a suppressed rule would print a phantom "X added -1 to hit". FIXED by moving log emission
@@ -1558,16 +1579,12 @@ Limited, Strider, Hero, Transport).
   Prowess      of an already-activated unit      normal activation that turn — if the bearer is the
                (re-added to the unactivated      player's LAST unit, TryAdvanceToNextPlayer ends their
                pool, marker enforces once)       turns before the offer fires (round-end doesn't consult
-                                                pending reactivations). Cross-cutting: no general
-                                                cost-op applier — once-per costs are enforced only where
-                                                a stage grants the marker by hand (here; Vanguard's is
-                                                unenforced/latent).
+                                                pending reactivations).
   Strafing     moving through an enemy offers a   (1) only the FIRST crossed enemy is offered;
                3-hit mid-move attack on it,       (2) DealHits.WithRules not applied (Strafing carries
-               resolved through save+wound        none — AP/Blast-carrying spell hits pending);
-                                                (3) the OncePerActivation marker is granted but never
-                                                    auto-cleared (no activation-end token-clear yet), so a
-                                                    unit strafes at most once per GAME, not per activation.
+               resolved through save+wound            none — AP/Blast-carrying spell hits pending).
+               (OncePerActivation, resets each
+               activation via the token-clear pass)
 
   Maintenance: when a deferred facet ships, delete its row (or move the rule out of
   this table). When a NEW rule goes live with a known gap, add a row here at the same
