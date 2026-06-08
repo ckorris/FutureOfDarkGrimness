@@ -27,6 +27,14 @@ The entire mutable game world already lives in one ECS-style `GameDataStore` tha
 
 ## Notes
 
+- 2026-06-08: **Phases 1–3 implemented (engine side), suite 293/0.** All on submodule branch `052-save-load`.
+  - Phase 1: `GameProgressData` component + `GameProgressUtilities` (Capture/Write/TryGet) + registration; round-trip + capture tests.
+  - Phase 2: `GameSaveSerializer`/`GameSaveFile` whole-store save/restore; finished `CreateFromTypeMap` (#039 closed); `ComponentStore.Capacity`; retry-based replay (forward refs); `UnitData.RewireModelWoundSubscriptions` post-load fix.
+  - Phase 3a: rolling `GameProgressData` snapshot written at the top of `DeterminePlayerTurnStage.Enter`; `SingleRoundContext.RoundCount` threaded from `MainPhaseContext`.
+  - Phase 3b: resume re-entry — `IGameContext.ResumeProgress` (default-interface one-shot token), `ParentStage.GetResumeEntry` hook, `StateMachine.Enter(ctx, stageName)`, `MainPhaseRoundStage`/`SingleRoundStage` resume overrides, `SingleRoundContext`/`MainPhaseContext` restore constructors, `GameProgressUtilities.Restore*`, `FDGServer` resume constructor (skips world creation + creation rules). Reserve re-offer semantics honored (skip already-run setup on the resumed round only; next round re-offers normally). Also persisted `ModelData.TotalWounds` (was `[JsonIgnore]`) so Tough survives load/network.
+  - Tests cover: restore rebuilds cursor/unactivated; full save→load→restore→next-pick-is-correct-player. NOT yet covered: full FDGServer/state-machine run (blocks on player-decision requests in a unit test) — thin glue, build-verified; will be exercised in GUI (Phases 5–6).
+  - Remaining: Phase 5 (in-game Save UX), Phase 6 (load-into-lobby + slot assignment + PlayerID remap), Phase 7 (multiplayer resume verify).
+
 - 2026-06-08: Item created from a deep five-front codebase investigation (state inventory, state machine, lobby/launch, serialization/networking, test conventions). Plan below.
 
 ### Plan of record
@@ -77,6 +85,36 @@ NUnit, `dotnet test FutureOfDarkGrimness/FutureOfDarkGrimness.csproj`. Model on 
 - Resume integration: advance mid-round (some units activated) → snapshot → restore into new `FDGServer` resume path → round count, activation order, remaining-unactivated set match; next activation picks the right unit; world not duplicated.
 - Post-load subscription wiring: wound a restored unit → `UnitData.OnWoundsDealt` still aggregates (guards the `[JsonConstructor]` bug).
 - Quiescence gate reports safe vs unsafe correctly.
+
+## Phase 3b design — resume re-entry (FOR REVIEW, not yet implemented)
+
+Goal: rebuild the running state machine from a loaded store + its `GameProgressData` so play continues at the start of the activation that was in progress when saved. Phases 1–3a already make every live store carry a correct rolling `GameProgressData` snapshot (written at the top of each `DeterminePlayerTurnStage.Enter`, before the next unit is chosen).
+
+### Activation-flow facts this builds on
+- Per-activation cycle: `DeterminePlayerTurnStage.Enter` *(snapshot here)* → `TryAdvanceToNextPlayer` (advances cursor) → `SingleTurnStage` (unit acts) → on leave, `MarkUnitAsActivated`. So the snapshot's cursor is the **pre-advance** value and the unit about to/currently act is **not yet** marked activated. Restoring that exact state and re-entering `DeterminePlayerTurnStage` reproduces the same `TryAdvance` pick → re-plays that activation.
+- `ReconcileNewRoundStage`: no-op. `StartOfRoundExtraActionStage`: offers Ambush reserves (round 2+) via player prompts, **once at the start of the round** (before any activation; the rolling snapshot is taken later, inside `SingleRoundStage`).
+- `MainPhaseRoundStage.Enter` runs **once**; its children loop among themselves, threading one `IMainPhaseContext` (with `RoundCount`) across all rounds. `SingleRoundStage.Enter` runs **once per round**.
+- Hard constraint: `SingleRoundStage.GetNewChildContext` rebuilds the unactivated set from armies (resets activations). On resume it must instead build from the snapshot.
+
+### Reserve (Ambush) re-offer semantics — save/load is transparent
+The ambush offer is **once per round**. If a player is offered a reserve at the start of round R, declines, activates a unit, then saves and loads: on resume they are **NOT** re-offered in round R (they already answered) — they are offered again only at the **start of round R+1**, via the normal round loop. We get this for free by **skipping the already-run setup stages (`ReconcileNewRound` + `StartOfRoundExtraAction`) on the resumed round only**; every subsequent round runs them normally. So a declined reserve is never lost (offered next round) and never double-asked (not re-offered in the resumed round). Because no reserve arrives *during* a skipped-setup resume, the snapshot's frozen `UnactivatedUnits` set stays exactly accurate — **Phase 1's representation is unchanged** (no `ActivatedUnits` rework).
+
+### Mechanism: one-shot restored-context injection
+1. **Resume token on `GameContext`.** Add `GameProgressData? ResumeProgress { get; }` + `ConsumeResumeProgress()`. On load, `FDGServer` reads the store's `GameProgressData` and seeds it. Consumed after the first `SingleRoundStage` builds its context, so every later round runs fresh.
+2. **`ParentStage` resume hook.** Add `protected virtual (StageBase<TContextChild> child, TContextChild context)? GetResumeEntry(TContextSelf ctx) => null;`. In `Enter`: if non-null, `TransitionToChild` into that child+context; else the existing fresh path (`_startingChild` + `GetNewChildContext`). Default null = zero behavior change for every other stage. (Also a useful seam for the #053 refactor.)
+3. **`StateMachine.Enter` overload** to start at a named stage (`MainPhaseRoundStage`) instead of `_startingStage` (MapSetup) — look up in the existing `_transitions` dict.
+4. **`MainPhaseRoundStage`** overrides `GetResumeEntry`: when `ResumeProgress` present, build an `IMainPhaseContext` from it (`RoundCount`, `TeamActivateOrder`) and return `(singleRoundStage, thatContext)` — skipping ReconcileNewRound + StartOfRoundExtraAction for this (already-set-up) resumed round. (Store the `SingleRoundStage` child as a field.) One-shot naturally, since `Enter` runs once; later rounds loop through setup normally (re-offering reserves at each round start).
+5. **`SingleRoundStage`** overrides `GetResumeEntry`: when `ResumeProgress` present, build a restored `SingleRoundContext` and return `(determinePlayerTurnStage, restoredContext)` (same starting child, restored context), then `ConsumeResumeProgress()`.
+6. **`SingleRoundContext` restore constructor** that sets cursor (`CurrentTeamIndex`, per-team player index by `TeamNumber`→`ITeam` via `TableState.Teams`), `_currentRoundTeamFinishOrder`, and `_unactivatedUnits` (regrouped from `GameProgressData.UnactivatedUnits` by each unit's `PlayerID`) — **without** calling `SetUnactivatedUnits`.
+7. **`GameProgressUtilities`** inverse-of-`Capture` helpers: map team numbers → `ITeam`, rebuild the cursor + unactivated structures from a snapshot.
+8. **`FDGServer` resume constructor** (or flag): takes the pre-loaded store; **skips** `AddTeamDataToGameDataStore` + `CreateArmies` + `UnitCreationRules` (data already present, wounds already set); uses `GameProgressData.Settings` for the dice roller etc.; seeds `ResumeProgress`; builds the machine and `Enter`s at `MainPhaseRoundStage`. (Store loaded via `GameSaveSerializer.Load`, which already re-wired unit subscriptions.)
+
+### Edge cases / risks
+- Reserve declined in the resumed round is offered again at the start of the **next** round (not re-asked on reload) — see semantics above.
+- First `DeterminePlayerTurnStage` after resume re-writes the snapshot (idempotent — same values).
+- VictoryCalculation/round-end transitions unaffected (resume only injects the first round's entry).
+- Saving during deployment/map-setup is out of scope (`EResumeStage` only handles `MainPhase`; disallow saving before round 1, or extend later).
+- Hardest to test: needs the machine driven with stub resolvers. Plan: an integration test using `NullPlayerRequester`/`NoOpLayer`-style doubles that loads a mid-round save and asserts the next activation picks the correct unit and the unactivated set shrinks correctly; plus a `SingleRoundContext` restore unit test (cursor + unactivated round-trip).
 
 ## Outcome
 _(written when the item closes)_
