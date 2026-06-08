@@ -1006,6 +1006,30 @@ shared IsCharging thread landed. Suite 286/0.
     confirmed playable in headless before those slices build on it.
   * Thrust is FULLY implemented (no deferred facet) — moved to the "fully implemented" set in Appendix C.
 
+INTEGRATION PROGRESS (2026-06-08, cont. 16) — Blast live (NINTH sink: hit multiplier). Suite 289/0.
+  * NINTH SinkOperation<TSink> shape: scalar-INT MULTIPLIER for hits (mirrors the wound-multiplier sink
+    but for the hit count). IHitMultiplierSink (write face, Definitions, Multiply(int)) + HitMultiplierSink
+    (read face, Dispatch, NetMultiplier init 1, product-compounding). RuleOperation.MultiplyHits rebased
+    onto SinkOperation<IHitMultiplierSink> (ApplyTo + Describe) — stays a RuleOperation, so the existing
+    Blast_OnHit_MultipliesHitsByArgument queue test keeps passing unchanged.
+  * FOLDED IN RollToHitStage, AFTER the hit-injection append — the concrete realization of Blast's
+    "after other rules" ORDERING flag (the 7b precedence question): it multiplies the POST-injection total
+    (so Surge's extra hits are included), then CAPS at the target unit's living-model count, and appends
+    the delta as synthetic hits via the existing SyntheticHits bridge. PRECEDENCE DECISION (settled here,
+    documented at the fold site + Appendix C): operation-application order is realized by WHERE each sink
+    is folded in the stage pipeline — NOT a central priority list in OperationExecutor. Blast folds after
+    injection; Takedown will fire pre-rolls; Deadly already precedes wound-ignore. No OperationExecutor change.
+  * CATALOG: CoreRuleCatalog.Blast (OnHitRollComplete, Always -> MultiplyHits(Arg(0)), Actor) + All;
+    count 20 -> 21 live defs. Numeric arg flows via the existing DescribeRuleEntry path (Blast(3) -> [Int(3)]),
+    like Deadly/Tough.
+  * TESTS: Tests/BlastRuleIntegrationTests.cs (3) drives the REAL RollToHitStage with FixedDiceRoller(6)
+    (1 base hit): no-rule -> 1; Blast(3) vs 5 models -> 3; Blast(10) vs 2 models -> capped at 2. Suite 286 -> 289.
+  * ARMY + HEADLESS: built-in Heavy Gunners declare Blast(3). Headless 4-round game logs the multiply and
+    the cap live ("Blast multiplied 2 hits x3, capped at 5 target models -> 5 total"; "1 hits x3, capped at
+    2 target models -> 2 total"), game finishes on objectives, zero exceptions.
+  * DEFERRED (Appendix C): Blast's "ignore cover" facet (W9) — the target's cover save bonus is not yet
+    suppressed.
+
 [x] SUPPRESSION vs. PER-RULE LOG (DONE 2026-06-07; see INTEGRATION PROGRESS cont. 6).
     Was: the per-rule game-log line emitted at QUEUE TIME, before the suppression first-pass,
     so a suppressed rule would print a phantom "X added -1 to hit". FIXED by moving log emission
@@ -1254,12 +1278,14 @@ is the single at-a-glance "implemented vs deferred facets" ledger — previously
 gaps were scattered across the arch doc, this checklist, and a few catalog XML
 comments (and several were unrecorded). Rules NOT in this table are either fully
 implemented (Stealth, Reliable, Fast, Slow, Surge, Relentless, Regeneration, Bane,
-Scout, Thrust) or not implemented at all (the 14 listed in the "not yet implemented"
-set — Aircraft, Blast, Caster, Counter, Fear, Fearless, Flying, Immobile, Impact,
+Scout, Thrust) or not implemented at all (the 13 listed in the "not yet implemented"
+set — Aircraft, Caster, Counter, Fear, Fearless, Flying, Immobile, Impact,
 Limited, Strider, Takedown, Hero, Transport).
 
   Rule         Live facet                       Deferred facet (NOT yet done)
   ----         ----------                        -----------------------------
+  Blast(X)     each hit x X, capped at the      Ignore cover (W9) — the target's cover save bonus
+               target unit's model count        still applies; not yet suppressed.
   Artillery    +1 to hit beyond 9"              (1) Hold-only action restriction (W5);
                                                 (2) enemies shooting it from >9" take -2
                                                     to hit (W12, defensive seat).

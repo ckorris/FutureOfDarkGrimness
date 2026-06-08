@@ -105,6 +105,7 @@ public static class ArmyLoader
                     {
                         new SpecialRuleEntry_Core("Surge"),
                         new SpecialRuleEntry_Core("Scout"),
+                        new SpecialRuleEntry_CoreNumeric("Blast", 3),
                     },
                     Weapons = new List<WeaponFileEntry>
                     {
