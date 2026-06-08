@@ -1,6 +1,7 @@
 using System.Collections.Concurrent;
 using System.Numerics;
 using FDG;
+using FdgRaylib.Rendering.Presentation;
 using FdgRaylib.Rendering.Resolvers;
 using ImGuiNET;
 using Raylib_cs;
@@ -36,6 +37,7 @@ public class RaylibRenderer
     private GameLog? _log;
     private GuiResolverOverlay? _resolverOverlay;
     private GuiOutstandingTaskDisplay? _taskDisplay;
+    private PresentationPlayer? _presentationPlayer;
     private readonly TableTooltipOverlay _tooltipOverlay = new();
     private readonly TableHitTester      _hitTester      = new();
     private bool _inGame = false;
@@ -57,13 +59,15 @@ public class RaylibRenderer
 
     public void TransitionToGame(ITableState tableState, Func<PlayerID, Color> colorForPlayer,
         GameLog? log, GuiResolverOverlay? resolverOverlay = null,
-        GuiOutstandingTaskDisplay? taskDisplay = null)
+        GuiOutstandingTaskDisplay? taskDisplay = null,
+        PresentationPlayer? presentationPlayer = null)
     {
-        _tableState      = tableState;
-        _colorForPlayer  = colorForPlayer;
-        _log             = log;
-        _resolverOverlay = resolverOverlay;
-        _taskDisplay     = taskDisplay;
+        _tableState         = tableState;
+        _colorForPlayer     = colorForPlayer;
+        _log                = log;
+        _resolverOverlay    = resolverOverlay;
+        _taskDisplay        = taskDisplay;
+        _presentationPlayer = presentationPlayer;
         _tooltipOverlay.Attach(tableState, colorForPlayer);
 
         tableState.Models.OnObjectCreated += SubscribeToModel;
@@ -160,6 +164,8 @@ public class RaylibRenderer
 
             if (_inGame)
             {
+                _presentationPlayer?.Update(Raylib.GetFrameTime());
+
                 var layout = ComputeLayout(screenW, screenH);
                 DrawTable(layout);
                 DrawTerrain(layout);
@@ -173,7 +179,10 @@ public class RaylibRenderer
                 _tooltipOverlay.UpdateLayout(layout.Scale, layout.OriginX, layout.OriginY, TableHIn);
                 _tooltipOverlay.Draw(screenW, screenH, _hitTester, _resolverOverlay?.ActiveInteractionHandler);
                 _resolverOverlay?.UpdateLayout(layout.Scale, layout.OriginX, layout.OriginY, TableHIn);
-                if (!_resolverOverlayFaulted)
+                // Hold interactive prompts until the animation queue drains, so the player always
+                // sees movement / shots land before being asked to react.
+                bool animating = _presentationPlayer?.IsAnimating ?? false;
+                if (!_resolverOverlayFaulted && !animating)
                 {
                     try
                     {
@@ -276,19 +285,32 @@ public class RaylibRenderer
         }
     }
 
+    private static readonly Color DeathFlashColor = new(220, 40, 40, 255);
+
     private void DrawModels(Layout l)
     {
         foreach (var (model, color) in _placedModels)
         {
-            if (!model.GetIsAlive()) continue;
+            // The presentation player decides position/visibility/effects: gliding mid-move,
+            // flashing-and-fading while dying, hidden once dead, else at authoritative position.
+            ModelDrawState draw = _presentationPlayer?.GetModelDrawState(model)
+                ?? (model.GetIsAlive()
+                    ? new ModelDrawState(true, model.Position, 1f, false)
+                    : ModelDrawState.Hidden);
 
-            var pos = model.Position;
-            int cx = l.OriginX + (int)(pos.x * l.Scale);
-            int cy = l.OriginY + (int)((TableHIn - pos.z) * l.Scale);
+            if (!draw.Visible) continue;
+
+            int cx = l.OriginX + (int)(draw.Position.x * l.Scale);
+            int cy = l.OriginY + (int)((TableHIn - draw.Position.z) * l.Scale);
             float radius = model.BaseRadiusInches * l.Scale;
 
-            Raylib.DrawCircle(cx, cy, radius, color);
-            Raylib.DrawCircleLines(cx, cy, radius, Color.Black);
+            Color baseColor = draw.FlashRed ? DeathFlashColor : color;
+            byte a = (byte)Math.Clamp(draw.Alpha * 255f, 0f, 255f);
+            Color fill    = new(baseColor.R, baseColor.G, baseColor.B, a);
+            Color outline = new((byte)0, (byte)0, (byte)0, a);
+
+            Raylib.DrawCircle(cx, cy, radius, fill);
+            Raylib.DrawCircleLines(cx, cy, radius, outline);
         }
     }
 

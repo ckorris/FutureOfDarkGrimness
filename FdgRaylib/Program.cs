@@ -78,8 +78,8 @@ else
     renderer.LobbyScreen.OnBack = () =>
         renderer.NavigateTo(renderer.MainMenu);
 
-    renderer.LobbyScreen.OnGameLaunched = (tableState, colorFunc, log, overlay, taskDisplay) =>
-        renderer.TransitionToGame(tableState, colorFunc, log, overlay, taskDisplay);
+    renderer.LobbyScreen.OnGameLaunched = (tableState, colorFunc, log, overlay, taskDisplay, presentationPlayer) =>
+        renderer.TransitionToGame(tableState, colorFunc, log, overlay, taskDisplay, presentationPlayer);
 
     // ── Local play (Host with no network players) also still works via CliApp ─
     // The old "Host" path now goes through the lobby. CliApp is only used

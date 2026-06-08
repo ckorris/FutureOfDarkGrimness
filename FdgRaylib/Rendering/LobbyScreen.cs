@@ -6,6 +6,7 @@ using FDG.Network.Messages;
 using FDG.Players;
 using FDG.SaveLoad;
 using FdgRaylib.Cli;
+using FdgRaylib.Rendering.Presentation;
 using FdgRaylib.Rendering.Resolvers;
 using ImGuiNET;
 using Newtonsoft.Json;
@@ -17,7 +18,7 @@ namespace FdgRaylib.Rendering;
 public class LobbyScreen : IAppScreen
 {
     public Action? OnBack;
-    public Action<ITableState, Func<PlayerID, Color>, GameLog?, GuiResolverOverlay, GuiOutstandingTaskDisplay>? OnGameLaunched;
+    public Action<ITableState, Func<PlayerID, Color>, GameLog?, GuiResolverOverlay, GuiOutstandingTaskDisplay, PresentationPlayer>? OnGameLaunched;
 
     private ILobbyViewModel? _viewModel;
     private string _chatInput = "";
@@ -370,8 +371,9 @@ public class LobbyScreen : IAppScreen
         var (resolvers, overlay) = ResolverRegistryFactory.BuildGui(game.TableState);
 
         var taskDisplay = new GuiOutstandingTaskDisplay();
+        var presentationPlayer = new PresentationPlayer();
         game.AssignInterfaces(logUI, new CliPlayerMessageUI(), resolvers, new CliTempVisualDrawer(),
-            presentationSink: null, // work item 052: real rendering sink wired in #5
+            presentationSink: presentationPlayer,
             outstandingTaskDisplay: taskDisplay);
 
         var colors  = new Dictionary<PlayerID, Color>();
@@ -379,7 +381,7 @@ public class LobbyScreen : IAppScreen
         for (int i = 0; i < players.Count; i++)
             colors[players[i].PlayerID] = PlayerPalette[i % PlayerPalette.Length];
 
-        OnGameLaunched?.Invoke(game.TableState, pid => colors.GetValueOrDefault(pid, Color.White), log, overlay, taskDisplay);
+        OnGameLaunched?.Invoke(game.TableState, pid => colors.GetValueOrDefault(pid, Color.White), log, overlay, taskDisplay, presentationPlayer);
     }
 
     private static void DrawIntField(string label, int current, Action<int> setter)
