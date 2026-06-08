@@ -906,6 +906,41 @@ chain wired (the cont. 11 deferral, now closed). Suite 275/0; verified in a head
     unit deploys once; real once-per-round/game gating lands with token-op execution, Phase 7d). Non-Self target
     selection at deployment (none in corpus). InvokeReactivate / InvokeDealHits — next slices on this seam.
 
+INTEGRATION PROGRESS (2026-06-07, cont. 13) — DEPLOY primitive: Scout (deferred deployment) live. Suite 277/0.
+  * SECOND engine subsystem exposed (after movement): the deploy/defer-reserve-place-later primitive, landing
+    a real core-32 rule — Scout. (Ambush is the explicit NEXT slice; it reuses this primitive — round-2+
+    arrival + >9"-from-enemies placement. User chose Scout-first.)
+  * DEFER MARKER PARAMETERIZED: RuleOperation.DeferDeployment + Effect.DeferDeployment now carry
+    (EDeferTiming Timing = AfterNormalDeployment, float PlacementRangeInches = 0f), defaulted so the existing
+    Scout/Ambush queue tests (bare new Effect.DeferDeployment()) keep compiling + asserting the type. New enum
+    EDeferTiming (Definitions); Ambush adds a LaterRound value next slice. DeferDeployment STAYS a plain
+    RuleOperation (a marker the deploy subsystem READS, like SuppressRule) — NOT an ExecutableOperation: it
+    mutates deploy-turn-scoped reserve state not reachable from the IOperationServices/IGameContext seam.
+  * RESERVE (shared primitive): DeploymentTurnContext ctor fires Deployment_OnPreDeploymentSelect per unit via
+    RuleEvaluator.Evaluate; units whose queue has DeferDeployment go to a new DeferredUnits reserve
+    (DeferredUnitEntry record) instead of UndeployedUnits. The normal loop + termination are unchanged and
+    finish with Scouts still reserved.
+  * PLACEMENT: new PlaceDeferredUnitsStage runs after the normal deploy loop (DeployAllUnitsStage rewired:
+    OnFinishedDeployingAllUnits -> PlaceDeferredUnitsStage -> ToMain). For each AfterNormalDeployment entry it
+    builds a FORWARD-EXPANDED zone (owner's deployment zone extended toward table center in Z by the range,
+    clamped at center; direction derived from zone-vs-center), creates a DataBinding<RectangularZone>, and
+    reuses the normal PlaceObjectsRequest<ModelData> flow (so CLI/GUI/AI place resolvers all work — NO new
+    resolvers). So Scout genuinely forward-deploys, not "deploy later in own zone".
+  * CATALOG + ARMY: CoreRuleCatalog.Scout (Deployment_OnPreDeploymentSelect, Always, DeferDeployment(
+    AfterNormalDeployment, 12f), Actor) + All. Built-in test army's Heavy Gunners declare Scout.
+  * TESTS: existing Scout/Ambush queue tests stay green (defaults). New Tests/ScoutRuleIntegrationTests.cs (3):
+    queue test + TWO-scout reserve (both in DeferredUnits, normal unit in pool) + TWO-scout placement
+    (PlacementCount==2, zone forward-expanded, every model ends forward). The two-unit cases deterministically
+    prove the partition + placement LOOP over multiple deferred units.
+  * HEADLESS: Scout-carrying Heavy Gunners are withheld during normal deploy, then "Entered Place Deferred
+    Units stage" -> "Heavy Gunners deployed via Scout" -> forward placement; game runs all 4 rounds, a player
+    wins, zero exceptions. NOTE: only one "deployed via Scout" console line shows for two players' scouts — a
+    console-output race (the AI deploys on a background thread; concurrent Console writes drop/merge one
+    server-log line). The placement itself is correct for both (the two-scout integration test proves the loop
+    places all reserved units); it's a cosmetic logging artifact, not a logic bug.
+  * Rules now live across TWO engine subsystems: movement (Vanguard) + deploy (Scout), both on the #042
+    "expose core operations as invocable subsystems" track.
+
 [x] SUPPRESSION vs. PER-RULE LOG (DONE 2026-06-07; see INTEGRATION PROGRESS cont. 6).
     Was: the per-rule game-log line emitted at QUEUE TIME, before the suppression first-pass,
     so a suppressed rule would print a phantom "X added -1 to hit". FIXED by moving log emission
