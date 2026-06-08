@@ -27,6 +27,12 @@ The entire mutable game world already lives in one ECS-style `GameDataStore` tha
 
 ## Notes
 
+- 2026-06-08: **Phases 5 + 6a implemented — single-machine save/load works end to end.**
+  - Phase 5 (Save): `ILobbyViewModel.CanSaveGame`/`SaveGameToJson()` (host serializes its store, client null — client saving is #054); `GameSaveFile.EXTENSION_WITH_PERIOD = ".fdgsave"`. App: host-only "Save Game" button in the in-game `##tabletools` toolbar → `SaveFileDialog` → writes `.fdgsave`; save hook threaded `LobbyScreen.HandleLaunch` → `OnGameLaunched` → `TransitionToGame` → `TableTooltipOverlay`.
+  - Phase 6a (Load → resume, single machine): `LobbyViewModel_Host` resume ctor seeds the slot list from the saved `PlayerSlotInfo`s (reusing saved PlayerIDs; default re-crew = host plays first slot, rest AI), settings from saved `GameProgressData`; `LaunchResume` deletes saved `PlayerSlotInfo` (dedup), rebuilds `PlayerSlot[]`, calls the resume `FDGServer` ctor. `ILobbyViewModel.IsResumeMode`/`TryResumeGame`/`SetSavedSlotPlayerType`. App: main-menu "Load Game" → open `.fdgsave` → `GameSaveSerializer.Load` → `FDGHost` + resume host VM → lobby; launch button shows RESUME in resume mode.
+  - **PlayerID remap (old Phase 4) dropped** by decision — resume reuses the saved PlayerIDs and just attaches new controllers, so no store rewrite.
+  - **Remaining = Phase 6b**: per-slot controller picker UI in the lobby (Local/AI, and assign a connected client to a saved slot) + networked client adoption protocol (host sends the saved PlayerID to the assigned client via the existing `LobbyPlayerIDAssignment` path; client adopts it). Needs live multi-machine testing. Also: manual GUI verification of the single-machine load→resume loop (builds + engine resume tests green; not yet eyeballed in the running app).
+
 - 2026-06-08: **Phases 1–3 implemented (engine side), suite 293/0.** All on submodule branch `052-save-load`.
   - Phase 1: `GameProgressData` component + `GameProgressUtilities` (Capture/Write/TryGet) + registration; round-trip + capture tests.
   - Phase 2: `GameSaveSerializer`/`GameSaveFile` whole-store save/restore; finished `CreateFromTypeMap` (#039 closed); `ComponentStore.Capacity`; retry-based replay (forward refs); `UnitData.RewireModelWoundSubscriptions` post-load fix.
