@@ -80,7 +80,8 @@ These are umbrellas; will fragment per-rule when picked up.
 - [ ] 036 — Server readiness handshake (`FDGServer.cs:148` TODO — wait for all clients ready)
 - [ ] 037 — Replace non-concurrent collections in `FDGHost` (`FDGHost.cs:75, :130` TODOs)
 - [ ] 038 — Resolve `LobbyViewModel_Host` `NotImplementedException` paths (`:288, :400`)
-- [ ] 039 — Resolve `GameDataStore.CreateFromTypeMap` `NotImplementedException` / introduce builder
+- [ ] 039 — Resolve `GameDataStore.CreateFromTypeMap` `NotImplementedException` / introduce builder — folded into #052 (durable save format needs it)
+- [ ] 052 — Save / Load a game in progress: snapshot the `GameDataStore` to a `.fdgsave` file + a new `GameProgressData` component (round/turn/activation state promoted into the store); load drops into a host lobby where saved slots are re-crewed (PlayerID remap), then `FDGServer` resumes mid-round via a new resume path. Save "any time" = rolling snapshot at each activation boundary; restore re-plays the current activation. Mostly submodule work (branch + bump). ([WorkItems/052](WorkItems/052-save-load.md))
 
 ## Client / renderer
 
