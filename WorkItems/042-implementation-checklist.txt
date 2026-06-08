@@ -1006,7 +1006,10 @@ PARALLEL / DOWNSTREAM
        (movement, attack, deploy, wound application). Required for Phase 7h.
        Can start any time after Phase 3.
        MOVEMENT done 2026-06-07 (MovementExecutor; see INTEGRATION PROGRESS cont. 11).
-       Attack / deploy / wound-application still to expose.
+       DEPLOY done 2026-06-07 (defer/reserve primitive: Scout cont. 13, Ambush cont. 14;
+       PlaceDeferredUnitsStage + StartOfRoundExtraActionStage arrival + PlaceObjectsRequest
+       enemy-distance constraint).
+       Attack / wound-application still to expose (Reactivate/Strafing/Impact next).
 
 [ ] Future: JSON/YAML data loader + schema validation. Wait until C# model
        is settled by Phases 6 and 7 against real rules.

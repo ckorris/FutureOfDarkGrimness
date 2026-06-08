@@ -1,6 +1,6 @@
 # 042 — Special rules architecture
 
-**Status**: in-progress (Phase 7 — dispatch complete: every passive rule, all 7 activated abilities (7c), and cross-unit token cleanup (7g) are green through `RuleEvaluator` + `TokenClearService`. **Suite 241/0 — the full Phase 7 RED baseline is green.** Behavior-level execution (Phase 8), the remaining engine-primitive sub-phases (7h: TriggeredMove/Reactivate/mid-move attack), and the JSON loader remain)
+**Status**: in-progress (Phase 7 dispatch complete; **Phase 8 integration + the Phase 7h engine-primitive refactor underway. Suite 281/0.** 15 rules live across 8 sinks via `SinkOperation<TSink>`; two engine subsystems now invocable — MOVEMENT (Vanguard) via `MovementExecutor` + the `ExecutableOperation`/`OperationExecutor` imperative-op seam, and DEPLOY (Scout + Ambush) via the defer/reserve primitive. Remaining: attack/reactivate primitives (Reactivate/Strafing/Impact), morale/casting, and the JSON loader. Live history: `042-implementation-checklist.txt` INTEGRATION PROGRESS cont. 1–14.)
 **Related**: #026, #027, #028, #029, #030, #031, #032, #033, #034 (all depend on this)
 
 ## Goal
@@ -798,6 +798,44 @@ no-ops on the attacker (seat), baseline unchanged with no rules. Wired this slic
    (today rules attach only in tests via `UnitData.AttachRuleDefinition`).
 4. A Tier-1 world-effect executor (heal / token / reactivate) for the activated abilities — applied
    centrally, zero stage code (see the three application tiers in the discussion above).
+
+## Integration notes (2026-06-07) — the imperative-op seam (`ExecutableOperation`) and the deploy primitive
+
+The `SinkOperation<TSink>` pattern above folds *scalars* (a roll modifier, a wound multiplier). Some operations
+instead *enact* an effect against engine state — move a unit, place a reserve. Phase 7h adds a second, parallel
+application pattern for these, plus the first two invocable engine subsystems. Full live history in the checklist
+(INTEGRATION PROGRESS cont. 11–14); the reusable patterns:
+
+### `ExecutableOperation` — the imperative-op mirror of `SinkOperation<TSink>`
+
+An operation that *does something* (rather than folding into a sink) derives `ExecutableOperation : RuleOperation`
+with `Execute(IOperationServices)`. The engine runs a queue's imperative ops with `OperationExecutor.Execute`:
+one `OfType<ExecutableOperation>()` filter, then `Execute` each (the imperative counterpart to a sink's `ApplyFrom`).
+`IOperationServices` (write face, Definitions) exposes what these ops need from the engine without Definitions
+depending on the engine assembly; the concrete impl (`GameOperationServices`, holds the `IGameContext`) lives
+engine-side. `InvokeTriggeredMove` is the first member (Vanguard → `services.MoveUnit`). Reactivate/DealHits slot
+in by adding an `IOperationServices` member + an `ExecutableOperation` body — no new design.
+
+Decision boundary: fold→sink, enact→executable, and operations the engine never enacts (`SuppressRule`, resolved
+in the suppression first-pass; `DeferDeployment`, a marker the deploy subsystem *reads*) stay plain `RuleOperation`.
+
+### Engine subsystems exposed as invocable primitives (the "042 refactor")
+
+The pattern for exposing a stage's work as callable-from-anywhere: lift the body into a static executor and have
+the normal stage delegate, so there's one path. Done so far:
+
+- **Movement** (`MovementExecutor`): `CommitPositions` + `ApplyDangerousTerrainEffects` (kept separate — the normal
+  flow runs them as distinct stages) and `TryMove(unit, paths, maxInches)` for out-of-band moves. `ExecuteMoveStage`
+  and `ApplyNonMovementTerrainEffectsStage` delegate to it. Drives `InvokeTriggeredMove` (Vanguard).
+- **Deploy** (the defer/reserve primitive): `DeferDeployment(EDeferTiming, PlacementRangeInches)` is a marker read at
+  the deployment partition (`DeploymentTurnContext`), which pulls deferring units out of the normal pool. Scout
+  (`AfterNormalDeployment`) is placed by `PlaceDeferredUnitsStage` in a forward-expanded zone; Ambush (`LaterRound`)
+  arrives from round 2 via `StartOfRoundExtraActionStage`, placed >9" from enemies (`PlaceObjectsRequest`'s new
+  `MinDistanceFromEnemiesInches`, honored by all three place resolvers). **Reserve = unplaced** (models at origin —
+  no token; self-clears on placement); reserves are excluded from activation and targeting via
+  `IUnit.GetIsOnBattlefield()` (melee/objectives already gate by position-distance).
+
+Both patterns are proven through real stages + behavior-level integration tests (queue-level tests unchanged).
 
 ## Outcome
 

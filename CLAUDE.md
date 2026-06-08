@@ -166,7 +166,8 @@ The engine has substantial gaps. Don't assume rules are enforced just because a 
 - `RollForMoraleStage` — modifiers TODO
 
 **Round/turn machinery placeholders**
-- `StartOfRoundExtraActionStage`, `ReconcileNewRoundStage` — transition with no work
+- `ReconcileNewRoundStage` — transitions with no work
+- `StartOfRoundExtraActionStage` — implemented: from round 2 it brings reserve (Ambush) units onto the table, offering each owner a Yes/No then placing it >9" from enemies (#042 deploy primitive)
 - `ApplyNonMovementTerrainEffectsStage` — implemented: rolls d6 per model whose path crosses `Dangerous` terrain; deals 1 wound on a roll of 1
 - `ChooseActionStage` — custom-action branch hardcoded `false`
 
