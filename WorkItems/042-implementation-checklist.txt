@@ -1054,6 +1054,34 @@ INTEGRATION PROGRESS (2026-06-08, cont. 17) — Takedown live (targeting restruc
     shoot, the log shows the single-model targeting. Game finishes on objectives, zero exceptions.
   * DEFERRED (Appendix C): "ignore intervening LoS/cover" facet (W9).
 
+INTEGRATION PROGRESS (2026-06-08, cont. 18) — Impact live (charge-contact auto-hits; new melee sub-stage).
+Suite 295/0.
+  * FIRST NEW MELEE STRUCTURE: a charge-contact moment didn't exist; new ResolveImpactHitsStage runs in
+    MeleeStage right after ChooseMeleeDefender and BEFORE PileIn/swings. Because melee is only entered via
+    Charge, only the charger reaches it (strike-back never runs it), so "on the charge" needs no flag.
+  * TENTH sink: IImpactSink (write face, Definitions, AddDice(int)) + ImpactSink (read face, Dispatch,
+    TotalDice, summing). RuleOperation.ChargeImpactHits rebased onto SinkOperation<IImpactSink> (queue test
+    Impact_OnCharge_RollsArgumentImpactDice stays green).
+  * THE STAGE: fires ChargeContactContext (attacker, Actor), folds ImpactSink -> X dice, rolls them, each
+    2+ a hit (AtOrAbove(2), float — probabilistic-safe), and runs those hits through the EXISTING save->wound
+    sub-pipeline (DetermineSaveRollsNeeded -> RollToSave -> AssignWounds -> ApplyWounds) against the defender.
+    The weaponless impact attack rides a synthetic AP-0 "Impact" weapon + a seeded RollToHitResults (the
+    SyntheticHits scalar->IDiceResults bridge, reused from RollToHitStage). Zero impact dice / zero hits ->
+    the stage skips straight to PileIn (OnImpactResolved). It's a ParentStage whose Enter computes the hits
+    first, then runs the child pipeline only if there are any.
+  * CATALOG: CoreRuleCatalog.Impact (Melee_OnChargeContact, Always -> ChargeImpactHits(Arg(0)), Actor) + All;
+    count 22 -> 23 live defs. Numeric arg via the existing DescribeRuleEntry path (Impact(2) -> [Int(2)]).
+  * TESTS: Tests/ImpactRuleIntegrationTests.cs (3) drive the REAL stage end-to-end: Impact(3) wipes a
+    2-wound defender before any swing; no-Impact leaves it untouched (skip path); Impact(3) sub-lethal vs a
+    5-wound unit assigns exactly 3 wounds (captured). Needed a test-local AllOnFaceDiceRoller — FixedDiceRoller
+    models a SINGLE die (TotalRolls==1) so it can't drive a multi-die roll; the new roller puts every rolled
+    die on a face so Roll(n) scales. Suite 292 -> 295.
+  * ARMY + HEADLESS: built-in Warriors (melee Blade) declare Impact(2). Headless 4-round game: Warriors charge
+    and log "Warriors's Impact rolled 2 dice -> N hit(s) on the charge" before the normal swing; game finishes
+    on objectives, zero exceptions.
+  * DEFERRED (Appendix C): the "not fatigued" gate (fatigue absent) — Impact always rolls; Counter's companion
+    "-1 impact roll per Counter model" facet.
+
 [x] SUPPRESSION vs. PER-RULE LOG (DONE 2026-06-07; see INTEGRATION PROGRESS cont. 6).
     Was: the per-rule game-log line emitted at QUEUE TIME, before the suppression first-pass,
     so a suppressed rule would print a phantom "X added -1 to hit". FIXED by moving log emission
@@ -1302,8 +1330,8 @@ is the single at-a-glance "implemented vs deferred facets" ledger — previously
 gaps were scattered across the arch doc, this checklist, and a few catalog XML
 comments (and several were unrecorded). Rules NOT in this table are either fully
 implemented (Stealth, Reliable, Fast, Slow, Surge, Relentless, Regeneration, Bane,
-Scout, Thrust) or not implemented at all (the 12 listed in the "not yet implemented"
-set — Aircraft, Caster, Counter, Fear, Fearless, Flying, Immobile, Impact,
+Scout, Thrust) or not implemented at all (the 11 listed in the "not yet implemented"
+set — Aircraft, Caster, Counter, Fear, Fearless, Flying, Immobile,
 Limited, Strider, Hero, Transport).
 
   Rule         Live facet                       Deferred facet (NOT yet done)
@@ -1313,6 +1341,10 @@ Limited, Strider, Hero, Transport).
   Takedown     pick one target model; all       Ignore intervening LoS/cover (W9) — Takedown still
                wounds confined to it (capped    respects LoS/occlusion + cover. The "resolved before
                at its wounds, no carry-over)    other weapons" ordering is moot (model picked pre-rolls).
+  Impact(X)    X dice on charge contact, each    "Not fatigued" gate (W7) — fatigue is absent
+               2+ a hit, resolved through        (ApplyFatigueStage is a stub), so Impact always rolls
+               save+wound before normal swings   even on a charge that should be fatigued. Counter's
+                                                 "-1 impact roll per Counter model" facet also deferred.
   Artillery    +1 to hit beyond 9"              (1) Hold-only action restriction (W5);
                                                 (2) enemies shooting it from >9" take -2
                                                     to hit (W12, defensive seat).
