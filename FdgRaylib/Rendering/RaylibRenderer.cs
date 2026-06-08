@@ -57,14 +57,14 @@ public class RaylibRenderer
 
     public void TransitionToGame(ITableState tableState, Func<PlayerID, Color> colorForPlayer,
         GameLog? log, GuiResolverOverlay? resolverOverlay = null,
-        GuiOutstandingTaskDisplay? taskDisplay = null)
+        GuiOutstandingTaskDisplay? taskDisplay = null, Func<string?>? saveGameToJson = null)
     {
         _tableState      = tableState;
         _colorForPlayer  = colorForPlayer;
         _log             = log;
         _resolverOverlay = resolverOverlay;
         _taskDisplay     = taskDisplay;
-        _tooltipOverlay.Attach(tableState, colorForPlayer);
+        _tooltipOverlay.Attach(tableState, colorForPlayer, saveGameToJson);
 
         tableState.Models.OnObjectCreated += SubscribeToModel;
         foreach (var model in tableState.Models.Objects)
@@ -113,6 +113,11 @@ public class RaylibRenderer
     private void SubscribeToModel(IModel model)
     {
         model.OnPositionChanged += (_, _) => OnModelPlaced(model);
+
+        // A model restored from a save already has its position set, so no OnPositionChanged will
+        // fire to register it for drawing — seed it now. (0,0,0) means unplaced, so skip those.
+        if (model.Position.x != 0f || model.Position.z != 0f)
+            OnModelPlaced(model);
     }
 
     private void OnModelPlaced(IModel model)

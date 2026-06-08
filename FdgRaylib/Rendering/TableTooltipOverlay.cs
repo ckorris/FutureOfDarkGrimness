@@ -1,9 +1,11 @@
 using System.Numerics;
 using FDG;
 using FDG.Players;
+using FDG.SaveLoad;
 using FdgRaylib.Rendering.Resolvers;
 using ImGuiNET;
 using Raylib_cs;
+using TinyDialogsNet;
 
 namespace FdgRaylib.Rendering;
 
@@ -26,9 +28,19 @@ public class TableTooltipOverlay
 
     private bool _showLabels = true;
 
-    public void Attach(ITableState tableState, Func<PlayerID, Color> colorForPlayer)
+    // Non-null only on the host (work item #054 will add client-initiated saving); returns the
+    // serialized game to write to a .fdgsave file.
+    private Func<string?>? _saveGameToJson;
+
+    private static readonly FileFilter SaveFilter = new(
+        $"Saved Game (*{GameSaveFile.EXTENSION_WITH_PERIOD})",
+        new[] { $"*{GameSaveFile.EXTENSION_WITH_PERIOD}" });
+
+    public void Attach(ITableState tableState, Func<PlayerID, Color> colorForPlayer,
+        Func<string?>? saveGameToJson = null)
     {
         _tableState = tableState;
+        _saveGameToJson = saveGameToJson;
     }
 
     public void UpdateLayout(float scale, int originX, int originY, float tableH)
@@ -79,7 +91,28 @@ public class TableTooltipOverlay
         if (ImGui.Button(btnLabel))
             _showLabels = !_showLabels;
 
+        if (_saveGameToJson != null)
+        {
+            ImGui.SameLine();
+            if (ImGui.Button("Save Game"))
+                HandleSaveGame();
+        }
+
         ImGui.End();
+    }
+
+    private void HandleSaveGame()
+    {
+        string? json = _saveGameToJson?.Invoke();
+        if (json == null) return;
+
+        var (canceled, path) = TinyDialogs.SaveFileDialog("Save Game", "", SaveFilter);
+        if (canceled || string.IsNullOrWhiteSpace(path)) return;
+
+        if (!path.EndsWith(GameSaveFile.EXTENSION_WITH_PERIOD, StringComparison.OrdinalIgnoreCase))
+            path += GameSaveFile.EXTENSION_WITH_PERIOD;
+
+        File.WriteAllText(path, json);
     }
 
     private static void DrawUnitTooltip(IUnit unit, IModel model,
