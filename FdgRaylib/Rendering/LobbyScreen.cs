@@ -372,7 +372,7 @@ public class LobbyScreen : IAppScreen
 
         var taskDisplay = new GuiOutstandingTaskDisplay();
         var presentationPlayer = new PresentationPlayer();
-        game.AssignInterfaces(logUI, new CliPlayerMessageUI(), resolvers, new CliTempVisualDrawer(),
+        game.AssignInterfaces(logUI, new CliPlayerMessageUI(), resolvers,
             presentationSink: presentationPlayer,
             outstandingTaskDisplay: taskDisplay);
 
