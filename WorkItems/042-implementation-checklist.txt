@@ -1189,6 +1189,20 @@ melee/charges, not caused by the rules). Suite 304/0; 10/10 headless games clean
     a fault and fires OnGameEnded, so a future game error surfaces + exits cleanly instead of silently
     hanging. Headless games now exit 0 and log "Game ended: ..." reliably.
 
+INTEGRATION PROGRESS (2026-06-08, cont. 23) — Furious charge-gate closed (#051 resolved). Suite 305/0.
+  * Furious's deferred "only while charging" condition (cont. 3 -> WorkItem #051) is now live — unblocked by
+    the shared IsCharging thread added in cont. 15 (for Thrust). Furious's catalog condition is now
+    And(IsMelee, And(IsCharging, UnmodifiedRollEquals(6))), so the extra hit fires only on the CHARGER's
+    melee swing (HitRollCompleteContext.IsCharging is true only there) — not on a strike-back or in shooting.
+  * TESTS: ExtraHitRuleIntegrationTests threads isCharging through its RunStage and now covers all three
+    cases against the real RollToHitStage: charging melee -> +1 hit; melee-but-not-charging (strike-back) ->
+    no extra; shooting -> no extra. (The curated SpecialRuleTests "01" shape test stays minimal — it tests
+    the AddExtraHit -> InsertExtraHits MECHANISM, not Furious's full gating.)
+  * ARMY: built-in Warriors (melee Blade, charge) declare Furious, so it CAN fire on charges; like Surge
+    (cont. 4) it's RNG-gated (needs a natural 6 during a charging melee), so a given headless run may not
+    show it — the FixedDiceRoller(6) integration test is the deterministic proof.
+  * Furious is now FULLY implemented (no deferred facet) — moved to the Appendix C "fully implemented" set.
+
 [x] SUPPRESSION vs. PER-RULE LOG (DONE 2026-06-07; see INTEGRATION PROGRESS cont. 6).
     Was: the per-rule game-log line emitted at QUEUE TIME, before the suppression first-pass,
     so a suppressed rule would print a phantom "X added -1 to hit". FIXED by moving log emission
@@ -1437,7 +1451,7 @@ is the single at-a-glance "implemented vs deferred facets" ledger — previously
 gaps were scattered across the arch doc, this checklist, and a few catalog XML
 comments (and several were unrecorded). Rules NOT in this table are either fully
 implemented (Stealth, Reliable, Fast, Slow, Surge, Relentless, Regeneration, Bane,
-Scout, Thrust, Blast) or not implemented at all (the 10 listed in the "not yet implemented"
+Scout, Thrust, Blast, Furious) or not implemented at all (the 10 listed in the "not yet implemented"
 set — Aircraft, Caster, Fear, Fearless, Flying, Immobile,
 Limited, Strider, Hero, Transport).
 
@@ -1461,9 +1475,6 @@ Limited, Strider, Hero, Transport).
                                                 headline use; currently absent. (Also see
                                                 line ~598: charge sets HasMoved, so an
                                                 Indirect carrier wrongly takes -1 in melee.)
-  Furious      melee + unmodified 6 -> +1 hit   The "only while charging" condition is
-                                                dropped — fires on every melee 6, not just
-                                                on the charge turn (W10).
   Deadly(X)    wounds x X (multiplier live)     Single-model targeting + no carry-over of
                                                 excess wounds to another model (W16). The
                                                 AssignWounds allocation nuance is Phase-8
