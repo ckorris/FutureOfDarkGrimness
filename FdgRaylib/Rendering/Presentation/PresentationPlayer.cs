@@ -45,6 +45,10 @@ public class PresentationPlayer : IPresentationSink
     private BannerBeat? _activeBanner;
     private float _bannerProgress;
 
+    // World-space attack (tracers / clash) for the currently-active AttackBeat (null when none).
+    private AttackBeat? _activeAttack;
+    private float _attackProgress;
+
     /// <summary>True while a beat is in flight or queued — used to gate interactive prompts.</summary>
     public bool IsAnimating
     {
@@ -123,6 +127,10 @@ public class PresentationPlayer : IPresentationSink
                 _activeBanner = banner;
                 _bannerProgress = t;
                 break;
+            case AttackBeat attack:
+                _activeAttack = attack;
+                _attackProgress = t;
+                break;
         }
     }
 
@@ -146,6 +154,9 @@ public class PresentationPlayer : IPresentationSink
             case BannerBeat:
                 _activeBanner = null;
                 break;
+            case AttackBeat:
+                _activeAttack = null;
+                break;
         }
     }
 
@@ -168,6 +179,17 @@ public class PresentationPlayer : IPresentationSink
             beat = _activeBanner!;
             progress = _bannerProgress;
             return _activeBanner != null;
+        }
+    }
+
+    /// <summary>The attack (tracers / clash) being shown this frame, if any, with its 0..1 progress.</summary>
+    public bool TryGetActiveAttack(out AttackBeat beat, out float progress)
+    {
+        lock (_lock)
+        {
+            beat = _activeAttack!;
+            progress = _attackProgress;
+            return _activeAttack != null;
         }
     }
 

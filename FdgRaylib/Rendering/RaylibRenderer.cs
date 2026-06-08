@@ -173,6 +173,12 @@ public class RaylibRenderer
                 DrawModels(layout);
 
                 if (_presentationPlayer != null &&
+                    _presentationPlayer.TryGetActiveAttack(out var attackBeat, out var attackProgress))
+                {
+                    AttackOverlay.Draw(attackBeat, attackProgress, layout.Scale, layout.OriginX, layout.OriginY, TableHIn);
+                }
+
+                if (_presentationPlayer != null &&
                     _presentationPlayer.TryGetActiveDice(out var diceBeat, out var diceProgress))
                 {
                     DiceOverlay.Draw(diceBeat, diceProgress, layout.LogX, screenH);
