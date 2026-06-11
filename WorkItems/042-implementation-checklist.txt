@@ -1288,6 +1288,21 @@ INTEGRATION PROGRESS (2026-06-08, cont. 26) — COST-GATE LIFECYCLE pass: the tw
     "no general cost-op applier" cross-cutting note REMOVED. Remaining token-clear triggers (AttackEnd,
     FirstTrigger, UnitDestroyed) are still unwired — no live consumer yet.
 
+INTEGRATION PROGRESS (2026-06-11, cont. 27) — Artillery's defensive facet (W12) live: enemies shooting
+  it from >9" take -2 to hit. Suite 325/0.
+  * PURE CATALOG ADDITION — no new sink, stage, condition, or context. Artillery gains a SECOND HookEntry
+    at Shooting_OnHitRollModifier (DistanceGreaterThan(9) -> RollModifier(Hit,-2), Subject seat), the
+    exact mirror of Stealth's already-live defender-seat distance modifier. The shared both-seats
+    EvaluateAll in DetermineHitRollNeededStage already folds it through the live RollModifierSink — the
+    attacker's +1 (Actor) and the target's -2 (Subject) entries fire independently by seat and stack.
+  * NO COMBAT-KIND GATE NEEDED: DistanceGreaterThan(9) is only ever true for ranged attacks (melee is
+    within 2"), so the facet self-excludes melee without an IsMelee condition — same reasoning that lets
+    Stealth/Artillery's existing distance entries stay un-gated.
+  * TESTS: 3 added to HitRollRuleIntegrationTests (Artillery defender beyond 9" -> threshold 4->6; within
+    9" -> no change; BOTH-seats Artillery -> 4 -1 +2 = 5, proving Actor and Subject stack). Suite 322 -> 325.
+  * APPENDIX C: Artillery's deferred-facet row trimmed to just the Hold-only action restriction (W5),
+    which still awaits the shared action-restriction enforcement (also blocks Immobile).
+
 [x] SUPPRESSION vs. PER-RULE LOG (DONE 2026-06-07; see INTEGRATION PROGRESS cont. 6).
     Was: the per-rule game-log line emitted at QUEUE TIME, before the suppression first-pass,
     so a suppressed rule would print a phantom "X added -1 to hit". FIXED by moving log emission
@@ -1552,9 +1567,10 @@ Limited, Strider, Hero, Transport).
   Counter      charged unit strikes first        "-1 impact roll per Counter model" companion facet
                (attacker/defender roles          (W8) — the charger's Impact dice are not reduced by
                swapped for the melee)            the number of Counter models in the charged unit.
-  Artillery    +1 to hit beyond 9"              (1) Hold-only action restriction (W5);
-                                                (2) enemies shooting it from >9" take -2
-                                                    to hit (W12, defensive seat).
+  Artillery    +1 to hit beyond 9" (Actor) +    Hold-only action restriction (W5) — needs the
+               enemies shooting it from >9"      action-restriction enforcement (shared with Immobile,
+               take -2 to hit (Subject)          not yet live). The defensive -2 facet (W12) is now
+                                                DONE (cont. 27).
   Indirect     -1 to hit after moving (W10)     Fire at non-LoS targets as if in LoS /
                                                 ignore cover (W9) — arguably the rule's
                                                 headline use; currently absent. (Also see
