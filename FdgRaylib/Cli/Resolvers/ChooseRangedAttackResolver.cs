@@ -20,6 +20,10 @@ public class ChooseRangedAttackResolver : IStageResolver<ChooseRangedAttackReque
         foreach (var weaponOption in request.WeaponOptions)
         {
             string weaponStats = weaponOption.Weapon.GetWeaponNameAndStats();
+            // #042 Indirect/Takedown: this weapon ignores line of sight, so targets behind terrain count
+            // as shootable. Flag it once on the weapon so the player understands why blocked units appear.
+            if (weaponOption.IgnoresTerrain)
+                weaponStats += " [ignores LoS]";
             foreach (var targetStats in weaponOption.WeaponTargetStats)
             {
                 int canShoot = targetStats.modelsThatCanShoot.Count;
@@ -30,8 +34,10 @@ public class ChooseRangedAttackResolver : IStageResolver<ChooseRangedAttackReque
                 string label = $"{weaponStats}  →  {targetUnit.Name} ({targetModels} models, {canShoot} shooters in range";
                 if (cannotShoot > 0)
                     label += $", {cannotShoot} out of range";
+                // #042 Blast/Indirect/Takedown: when the weapon ignores cover the +1 doesn't apply, so show
+                // it as ignored rather than a penalty.
                 if (targetStats.HasCover)
-                    label += ", Cover";
+                    label += weaponOption.IgnoresCover ? ", Cover (ignored)" : ", Cover";
                 label += ")";
 
                 bool selectable = targetStats.UnselectableReason == null && canShoot > 0;

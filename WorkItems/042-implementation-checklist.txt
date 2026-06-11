@@ -1346,6 +1346,35 @@ INTEGRATION PROGRESS (2026-06-11, cont. 29) — Deadly's no-carry-over confineme
   * DEFERRED (Appendix C, now overlapping Tough's W18 row): only the defender's free CHOICE of which models
     absorb clumps to minimise casualties — the tough-aware allocation-order nuance — remains.
 
+INTEGRATION PROGRESS (2026-06-11, cont. 30) — Indirect + Takedown "ignore LoS / cover" (W9) live, end to
+  end through the real stages AND reflected in the movement + shooting resolvers. Suite 338/0; headless exit 0.
+  * NEW VOCAB: Effect.IgnoreLineOfSight + RuleOperation.IgnoreLineOfSight (a marker, mirroring IgnoreCover;
+    distinct from Flying/Strider's MOVEMENT-terrain IgnoreTerrainEffects). Fired at Shooting_OnSaveRollModifier
+    via the reused attacker-only CoverIgnoreContext (now the general "weapon sight properties" context).
+    SightRuleQueries.IgnoresTerrain — the seam left false since cont. 21 — now returns whether that op is
+    queued; IgnoresCover already existed (Blast).
+  * CATALOG: Indirect gains IgnoreLineOfSight + IgnoreCover HookEntries, and its -1-after-moving is now gated
+    And(AfterMoving, Not(IsMelee)) — fixing the latent bug where a charge (which sets HasMoved) wrongly
+    penalised melee swings. Takedown gains IgnoreLineOfSight + IgnoreCover. Both reuse the same machinery as
+    Blast's cover-ignore.
+  * STAGES: ChooseRangedAttackStage threads a per-weapon ignoresLineOfSight flag into CanWeaponShootAtUnit so
+    a LoS-ignoring weapon enumerates targets behind terrain as shootable (range-gated only); OcclusionCheckStage
+    early-returns not-occluded for such weapons so the shot isn't cancelled at resolution. CoverCheckStage
+    already dropped cover via SightRuleQueries.IgnoresCover, so Indirect/Takedown get cover-ignore for free.
+  * RESOLVERS REFLECT INDIRECT (the requested part): the per-weapon IgnoresCover/IgnoresTerrain flags
+    (ChooseRangedAttackRequest.WeaponOption) and WeaponSightProfiles (DefineMovementPathRequest) were threaded
+    in cont. 21 but never consumed. Now: the CLI + GUI ranged resolvers show "[ignores LoS]" / "Cover (ignored)"
+    instead of a cover penalty; the GUI movement targeting overlay (post-move shootability) treats LoS-ignoring
+    weapons as able to hit behind terrain (aggregate weapon counts + per-model fire lines) and drops the dashed
+    cover line for cover-ignoring weapons. The data was already correct via WeaponSightProfileBuilder ->
+    SightRuleQueries; these consume it.
+  * TESTS: IndirectLineOfSightRuleIntegrationTests (Blocking wall between attacker/defender: occluded without
+    the rule, NOT occluded with Indirect or Takedown; + SightRuleQueries derives both flags from Indirect) and
+    a melee-gate test in HitRollRuleIntegrationTests (Indirect's -1 doesn't apply to a melee swing). Suite
+    333 -> 338. Headless: Infiltrators (Takedown) log "ignored intervening line of sight" / "ignored the
+    target's cover" live.
+  * Takedown and Indirect are now FULLY implemented (both rows removed from Appendix C).
+
 [x] SUPPRESSION vs. PER-RULE LOG (DONE 2026-06-07; see INTEGRATION PROGRESS cont. 6).
     Was: the per-rule game-log line emitted at QUEUE TIME, before the suppression first-pass,
     so a suppressed rule would print a phantom "X added -1 to hit". FIXED by moving log emission
@@ -1594,15 +1623,12 @@ is the single at-a-glance "implemented vs deferred facets" ledger — previously
 gaps were scattered across the arch doc, this checklist, and a few catalog XML
 comments (and several were unrecorded). Rules NOT in this table are either fully
 implemented (Stealth, Reliable, Fast, Slow, Surge, Relentless, Regeneration, Bane,
-Scout, Thrust, Blast, Furious, Counter, Ambush) or not implemented at all (the 10 listed in the "not yet implemented"
+Scout, Thrust, Blast, Furious, Counter, Ambush, Takedown, Indirect) or not implemented at all (the 10 listed in the "not yet implemented"
 set — Aircraft, Caster, Fear, Fearless, Flying, Immobile,
 Limited, Strider, Hero, Transport).
 
   Rule         Live facet                       Deferred facet (NOT yet done)
   ----         ----------                        -----------------------------
-  Takedown     pick one target model; all       Ignore intervening LoS/cover (W9) — Takedown still
-               wounds confined to it (capped    respects LoS/occlusion + cover. The "resolved before
-               at its wounds, no carry-over)    other weapons" ordering is moot (model picked pre-rolls).
   Impact(X)    X dice on charge contact, each    "Not fatigued" gate (W7) — fatigue is absent
                2+ a hit, resolved through        (ApplyFatigueStage is a stub), so Impact always rolls
                save+wound before normal swings   even on a charge that should be fatigued.
@@ -1610,11 +1636,6 @@ Limited, Strider, Hero, Transport).
                enemies shooting it from >9"      action-restriction enforcement (shared with Immobile,
                take -2 to hit (Subject)          not yet live). The defensive -2 facet (W12) is now
                                                 DONE (cont. 27).
-  Indirect     -1 to hit after moving (W10)     Fire at non-LoS targets as if in LoS /
-                                                ignore cover (W9) — arguably the rule's
-                                                headline use; currently absent. (Also see
-                                                line ~598: charge sets HasMoved, so an
-                                                Indirect carrier wrongly takes -1 in melee.)
   Deadly(X)    wounds x X, confined per-clump    Only the defender's free CHOICE of which models
                to a single model with no          absorb clumps (to minimise casualties) is deferred —
                carry-over of overkill (W16);      the same tough-aware allocation-order choice as

@@ -652,6 +652,15 @@ public class GuiDefineMovementResolver
             return v;
         }
 
+        // #042 Indirect/Takedown/Blast: per-weapon sight overrides from the request, so the post-move
+        // targeting overlay reflects weapons that ignore line of sight (a target behind terrain is still
+        // shootable) or cover (no +1, no dashed "cover" line). Keyed by weapon name (unit-scoped today).
+        var sightByWeapon = new Dictionary<string, (bool ignoresLoS, bool ignoresCover)>();
+        foreach (var profile in request.WeaponSightProfiles)
+            sightByWeapon[profile.Weapon.Name] = (profile.IgnoresTerrain, profile.IgnoresCover);
+        bool WeaponIgnoresLoS(IWeapon w) => sightByWeapon.TryGetValue(w.Name, out var s) && s.ignoresLoS;
+        bool WeaponIgnoresCover(IWeapon w) => sightByWeapon.TryGetValue(w.Name, out var s) && s.ignoresCover;
+
         // 1) Per-enemy-unit aggregate text: shooting weapon counts (green) + charger count (yellow), combined.
         foreach (IUnit enemyUnit in _tableState.Units.Objects)
         {
@@ -670,13 +679,15 @@ public class GuiDefineMovementResolver
                     foreach (var w in ourModel.Weapons)
                     {
                         if (!w.IsRanged()) continue;
+                        bool ignoresLoS = WeaponIgnoresLoS(w);
                         bool inRange = false;
                         foreach (var em in aliveEnemies)
                         {
                             float b2b = DistanceUtilities.GetBaseToBaseDistanceInches_2D(
                                 from, em.Position, ourModel.BaseRadiusInches, em.BaseRadiusInches);
                             if (b2b > w.RangeInches) continue;
-                            if (!LoSCommitted(ourModel, from, em, enemyUnit)) continue;
+                            // Indirect/Takedown ignore line of sight, so only range gates them.
+                            if (!ignoresLoS && !LoSCommitted(ourModel, from, em, enemyUnit)) continue;
                             inRange = true; break;
                         }
                         if (inRange)
@@ -800,6 +811,8 @@ public class GuiDefineMovementResolver
             var unitBlockers = blockersByEnemyUnit[enemyUnit];
             foreach (var w in selRanged)
             {
+                bool ignoresLoS = WeaponIgnoresLoS(w);
+                bool ignoresCover = WeaponIgnoresCover(w);
                 IModel? nearestClear   = null; float nearestClearB2B   = float.MaxValue;
                 IModel? nearestInRange = null; float nearestInRangeB2B = float.MaxValue;
                 ESightLineEffect nearestClearEffect = ESightLineEffect.Clear;
@@ -810,6 +823,10 @@ public class GuiDefineMovementResolver
                     if (b2b > w.RangeInches) continue;
                     if (b2b < nearestInRangeB2B) { nearestInRangeB2B = b2b; nearestInRange = em; }
                     var effect = LineOfSightUtilities.EvaluateSightLine(selPos, em.Position, unitBlockers);
+                    // #042 Indirect/Takedown ignore LoS (a blocked line still hits); Blast/Indirect/Takedown
+                    // ignore cover (no dashed cover line). Normalise the effect so the shot draws as clear.
+                    if (ignoresLoS && effect == ESightLineEffect.Blocking) effect = ESightLineEffect.Clear;
+                    if (ignoresCover && effect == ESightLineEffect.Cover) effect = ESightLineEffect.Clear;
                     if (effect != ESightLineEffect.Blocking)
                     {
                         if (b2b < nearestClearB2B) { nearestClearB2B = b2b; nearestClear = em; nearestClearEffect = effect; }

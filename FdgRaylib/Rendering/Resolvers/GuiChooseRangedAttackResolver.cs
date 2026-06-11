@@ -252,7 +252,9 @@ public class GuiChooseRangedAttackResolver
                 else
                 {
                     sub = $"{ts.modelsThatCanShoot.Count}/{ts.TargetUnit.GetValue().ModelBindings.Count} in range";
-                    if (ts.HasCover) sub += ", Cover (+1 Def)";
+                    // #042 Blast/Indirect/Takedown: a weapon that ignores cover negates the +1.
+                    if (ts.HasCover) sub += wo.IgnoresCover ? ", Cover (ignored)" : ", Cover (+1 Def)";
+                    if (wo.IgnoresTerrain) sub += ", ignores LoS";
                     colSub = ImGui.ColorConvertFloat4ToU32(new Vector4(0.40f, 0.85f, 0.40f, 1f));
                 }
                 dl.AddText(rMin + new Vector2(4, ImGui.GetTextLineHeight() + 4), colSub, sub);
@@ -298,8 +300,18 @@ public class GuiChooseRangedAttackResolver
             }
             if (ts.HasCover)
             {
-                ImGui.PushStyleColor(ImGuiCol.Text, new Vector4(0.85f, 0.75f, 0.30f, 1f));
-                ImGui.TextUnformatted("Cover  +1 to defense roll");
+                // #042 Blast/Indirect/Takedown: show cover as negated when the weapon ignores it.
+                ImGui.PushStyleColor(ImGuiCol.Text, wo.IgnoresCover
+                    ? new Vector4(0.45f, 0.80f, 0.45f, 1f) : new Vector4(0.85f, 0.75f, 0.30f, 1f));
+                ImGui.TextUnformatted(wo.IgnoresCover
+                    ? "Cover ignored by this weapon" : "Cover  +1 to defense roll");
+                ImGui.PopStyleColor();
+            }
+            if (wo.IgnoresTerrain)
+            {
+                // #042 Indirect/Takedown: this weapon can fire at targets out of line of sight.
+                ImGui.PushStyleColor(ImGuiCol.Text, new Vector4(0.45f, 0.80f, 0.45f, 1f));
+                ImGui.TextUnformatted("Ignores line of sight (Indirect)");
                 ImGui.PopStyleColor();
             }
         }
