@@ -1331,6 +1331,21 @@ INTEGRATION PROGRESS (2026-06-11, cont. 28) — two companion facets closed: Cou
     set); the Counter clause on the Impact row removed. Live core-combat depth unchanged in count; two
     deferred facets retired.
 
+INTEGRATION PROGRESS (2026-06-11, cont. 29) — Deadly's no-carry-over confinement live. Suite 333/0.
+  * Deadly(X) no longer multiplies a flat pool that spills across the unit. AssignWoundsStage now confines
+    each failed save to a CLUMP of X wounds that lands on one model with overkill lost (new ConfineToClumps,
+    gated on NetMultiplier>1). Faithful consequences: the multiplier is WASTED vs single-wound models (a
+    1-wound model absorbs 1 of the X — Deadly's whole point is anti-Tough), and against Tough models a
+    clump deals min(X, capacity) with the killing clump's excess discarded rather than carrying to the next
+    model. Walks the defender's living models in list order (matches AutoFill); single-wound is order-
+    irrelevant (the common case + the headline fix over the old total*X over-kill).
+  * Updated the existing behavior test (Deadly(3) vs 1-wound models now = 1 wound, not 3) and added two:
+    a clump deals the full X to a Tough(5) model (3, not 1); two clumps kill a Tough(5) model for 5 with the
+    overkill NOT carried to the second model (naive total*X would be 6). The queue-level MultiplyWounds test
+    in SpecialRuleTests is unaffected (it asserts the op, not execution).
+  * DEFERRED (Appendix C, now overlapping Tough's W18 row): only the defender's free CHOICE of which models
+    absorb clumps to minimise casualties — the tough-aware allocation-order nuance — remains.
+
 [x] SUPPRESSION vs. PER-RULE LOG (DONE 2026-06-07; see INTEGRATION PROGRESS cont. 6).
     Was: the per-rule game-log line emitted at QUEUE TIME, before the suppression first-pass,
     so a suppressed rule would print a phantom "X added -1 to hit". FIXED by moving log emission
@@ -1600,10 +1615,11 @@ Limited, Strider, Hero, Transport).
                                                 headline use; currently absent. (Also see
                                                 line ~598: charge sets HasMoved, so an
                                                 Indirect carrier wrongly takes -1 in melee.)
-  Deadly(X)    wounds x X (multiplier live)     Single-model targeting + no carry-over of
-                                                excess wounds to another model (W16). The
-                                                AssignWounds allocation nuance is Phase-8
-                                                (see line ~687).
+  Deadly(X)    wounds x X, confined per-clump    Only the defender's free CHOICE of which models
+               to a single model with no          absorb clumps (to minimise casualties) is deferred —
+               carry-over of overkill (W16);      the same tough-aware allocation-order choice as
+               multiplier wasted vs 1-wound       Tough's W18 row below. ConfineToClumps fills models in
+               models, kills Tough by clumping    list order; faithful for single-wound (order-irrelevant).
   Tough(X)     sets model max wounds (W2)       Wound-assignment ORDER (most-wounded tough
                                                 first; heroes last) not enforced (W18). Its
                                                 heroes-last half also needs Hero (see ~806).
