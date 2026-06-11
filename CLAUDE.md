@@ -4,7 +4,16 @@ A Raylib-based client for **Future of Dark Grimness** — a tabletop wargame rul
 
 ## Git Conventions
 
-- Do not include Claude, AI, or co-author attributions in commit messages.
+- Do not include Claude, AI, or co-author attributions in commit messages. Keep messages brief.
+- **Submodule-first commit cadence.** When engine changes are authorized (the `FutureOfDarkGrimness` submodule), commit the submodule first, then bump the superproject submodule pointer together with any app-side changes in a second commit.
+- **Verify before committing — never commit red.** Run `dotnet test FutureOfDarkGrimness/FutureOfDarkGrimness.csproj` green, and for app-side changes a full `dotnet build`. When a change touches a playable path, also run a headless smoke (`printf "2\n2\n" | dotnet run --project FdgRaylib/FdgRaylib.csproj -- --headless`) and confirm it exits 0 with the expected log line.
+- **Re-verify assumptions before shared/irreversible operations.** Inspect git state before merging to or pushing a shared branch; if a stated premise turns out false (e.g. "master is synced"), surface it before proceeding rather than pressing on.
+
+## Working Conventions
+
+- **One vertical slice at a time.** Implement → add an integration test mirroring the nearest existing `*RuleIntegrationTests` → verify (above) → commit → update the canonical running record (the work item's dated notes / partial-facet ledger). Don't batch unrelated facets into a single change.
+- **Never silently cut scope.** When deferring a facet or edge case, say so explicitly and record it in the canonical ledger at the same time — don't drop it quietly.
+- **Surface design forks before building anything non-trivial.** Present the options with tradeoffs and a recommendation, and get sign-off before committing to UI or architecture decisions.
 
 ## Work Items
 
