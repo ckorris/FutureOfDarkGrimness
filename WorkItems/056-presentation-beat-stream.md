@@ -1,4 +1,8 @@
-# 052 — Presentation beat stream (engine-owned pacing for lifelike play)
+# 056 — Presentation beat stream (engine-owned pacing for lifelike play)
+
+> Renumbered from #052 on 2026-06-11 (number was reused; save/load keeps 052 — see the
+> reconciliation note in `WorkItemsList.md`). The `052-presentation-beat-stream` branch
+> name and `#052` strings in older commits/notes predate the renumber.
 
 **Status**: in-progress
 **Related**: engine submodule branch `052-presentation-beat-stream`

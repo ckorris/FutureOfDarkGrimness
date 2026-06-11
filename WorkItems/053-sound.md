@@ -1,11 +1,11 @@
 # 053 — Sound cues on the presentation beat stream
 
 **Status**: done (pipeline + placeholder; real assets pending)
-**Related**: builds on #052 (presentation beat stream)
+**Related**: builds on #056 (presentation beat stream)
 
 ## Goal
 Make combat audible: play audio cues for presentation beats (gunshot, clang, death thud, dice
-clatter, banner sting, …) riding the **existing** beat stream from #052. App-side, like the visual
+clatter, banner sting, …) riding the **existing** beat stream from #056. App-side, like the visual
 overlays — no engine change expected (the engine already emits the semantic beats; the app maps
 beat → sound, exactly as a 3D client would with its own sounds).
 
@@ -65,5 +65,5 @@ Caveat: not yet heard on a machine with audio (user away from their box). One cu
 play a single shot sound for now). Real assets + per-volley layering are the obvious follow-ups.
 
 ## Notes
-- 2026-06-08: Created as the next slice after #052's visuals. Resolved the asset question
+- 2026-06-08: Created as the next slice after #056's visuals. Resolved the asset question
   (placeholder-first) and built the full pipeline same day — see Outcome.
