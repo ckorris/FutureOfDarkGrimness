@@ -208,7 +208,7 @@ public class GuiDefineMovementResolver
 
         // 3b) Targeting overlay (toggle, on by default) — combines ranged + melee
         if (_showTargeting)
-            DrawTargeting(dl, screenW, request, pt, paths, ghostPos, ghostExtraDist);
+            DrawTargeting(dl, screenW, screenH, request, pt, paths, ghostPos, ghostExtraDist);
 
         // 4) Mouse / keyboard input
         if (overTable && !io.WantCaptureMouse)
@@ -583,7 +583,7 @@ public class GuiDefineMovementResolver
         dl.AddLine(new Vector2(bx - px * tick, by - py * tick), new Vector2(bx + px * tick, by + py * tick), CohesionLineCol, 1f);
     }
 
-    private void DrawTargeting(ImDrawListPtr dl, int screenW,
+    private void DrawTargeting(ImDrawListPtr dl, int screenW, int screenH,
         DefineMovementPathRequest request,
         PathTemplate pt,
         IReadOnlyDictionary<IModel, IReadOnlyList<Position>> paths,
@@ -655,11 +655,15 @@ public class GuiDefineMovementResolver
         // #042 Indirect/Takedown/Blast: per-weapon sight overrides from the request, so the post-move
         // targeting overlay reflects weapons that ignore line of sight (a target behind terrain is still
         // shootable) or cover (no +1, no dashed "cover" line). Keyed by weapon name (unit-scoped today).
-        var sightByWeapon = new Dictionary<string, (bool ignoresLoS, bool ignoresCover)>();
+        var sightByWeapon = new Dictionary<string, (bool ignoresLoS, bool ignoresCover, string? losRule, string? coverRule)>();
         foreach (var profile in request.WeaponSightProfiles)
-            sightByWeapon[profile.Weapon.Name] = (profile.IgnoresTerrain, profile.IgnoresCover);
+            sightByWeapon[profile.Weapon.Name] = (profile.IgnoresTerrain, profile.IgnoresCover,
+                profile.LineOfSightIgnoreRule, profile.CoverIgnoreRule);
         bool WeaponIgnoresLoS(IWeapon w) => sightByWeapon.TryGetValue(w.Name, out var s) && s.ignoresLoS;
         bool WeaponIgnoresCover(IWeapon w) => sightByWeapon.TryGetValue(w.Name, out var s) && s.ignoresCover;
+        // #052: the alias-aware attribution suffix for a weapon, e.g. " (Indirect ignores line of sight)".
+        string WeaponSightSuffix(IWeapon w) => sightByWeapon.TryGetValue(w.Name, out var s)
+            ? SightRuleLabel.Parenthetical(s.coverRule, s.losRule) : string.Empty;
 
         // 1) Per-enemy-unit aggregate text: shooting weapon counts (green) + charger count (yellow), combined.
         foreach (IUnit enemyUnit in _tableState.Units.Objects)
@@ -884,7 +888,11 @@ public class GuiDefineMovementResolver
             var sizes = new Vector2[n];
             for (int i = 0; i < n; i++)
             {
-                labels[i] = inCover ? $"{weapons[i].Name} (cover)" : weapons[i].Name;
+                // #052: name the rule behind any cover/LoS-ignore inline, e.g.
+                // "Huge Gun (Indirect ignores line of sight)". A cover-ignoring weapon is never "inCover"
+                // (normalised above), so the two cover notes can't collide.
+                string coverTag = inCover ? " (cover)" : string.Empty;
+                labels[i] = $"{weapons[i].Name}{coverTag}{WeaponSightSuffix(weapons[i])}";
                 sizes[i] = ImGui.CalcTextSize(labels[i]);
                 if (sizes[i].X > blockW) blockW = sizes[i].X;
             }
@@ -892,7 +900,11 @@ public class GuiDefineMovementResolver
             float xLeftAnchor  = mx + margin;
             float xRightAnchor = mx - margin - blockW;
             float xAnchor = xLeftAnchor + blockW <= screenW - 4f ? xLeftAnchor : xRightAnchor;
+            // #052: attribution makes labels much longer — clamp the block to the screen so it can't run
+            // off either edge (the anchor flip handles the common case; this is the hard backstop).
+            xAnchor = Math.Clamp(xAnchor, 4f, MathF.Max(4f, screenW - blockW - 4f));
             float yTop = my - blockH * 0.5f;
+            yTop = Math.Clamp(yTop, 4f, MathF.Max(4f, screenH - blockH - 4f));
             for (int i = 0; i < n; i++)
                 dl.AddText(new Vector2(xAnchor, yTop + i * lineH), thisTextCol, labels[i]);
         }
