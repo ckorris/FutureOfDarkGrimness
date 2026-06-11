@@ -1411,7 +1411,12 @@ PARALLEL / DOWNSTREAM
        Attack / wound-application still to expose (Reactivate/Strafing/Impact next).
 
 [ ] Future: JSON/YAML data loader + schema validation. Wait until C# model
-       is settled by Phases 6 and 7 against real rules.
+       is settled by Phases 6 and 7 against real rules. ALSO gated on #027
+       (weapon-scoped rules): the army/rule schema must know rules can attach
+       to WEAPONS, not just units, before it's committed — otherwise the loader
+       and army creator bake in a unit-only model that forces a save-format
+       migration once weapon-scoping lands. Settle #027's attachment model first.
+       (Decided 2026-06-11; see WorkItemsList #027 sequencing note.)
 
 [ ] Future: networking sync — hash rule registry at lobby-ready, reject on mismatch.
 
@@ -1422,8 +1427,10 @@ PARALLEL / DOWNSTREAM
 NOTES
 -----
 
-- Don't write the JSON/YAML loader until Phase 7 is done. Definitions are
-  inline-constructed C# objects in tests until the model is proven.
+- Don't write the JSON/YAML loader until Phase 7 is done AND #027's weapon-
+  attachment model is settled (the schema must allow rules on weapons, not just
+  units — see the PARALLEL/DOWNSTREAM note above). Definitions are inline-
+  constructed C# objects in tests until the model is proven.
 - The engine refactor (042) is parallel work, not a prerequisite for Phases 1–6.
   Most rule tests assert that the right operation is queued, not that the
   operation actually executes against the engine.
