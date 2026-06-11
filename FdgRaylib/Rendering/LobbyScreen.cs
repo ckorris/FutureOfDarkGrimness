@@ -6,6 +6,7 @@ using FDG.Network.Messages;
 using FDG.Players;
 using FDG.SaveLoad;
 using FdgRaylib.Cli;
+using FdgRaylib.Rendering.Presentation;
 using FdgRaylib.Rendering.Resolvers;
 using ImGuiNET;
 using Newtonsoft.Json;
@@ -17,7 +18,7 @@ namespace FdgRaylib.Rendering;
 public class LobbyScreen : IAppScreen
 {
     public Action? OnBack;
-    public Action<ITableState, Func<PlayerID, Color>, GameLog?, GuiResolverOverlay, GuiOutstandingTaskDisplay>? OnGameLaunched;
+    public Action<ITableState, Func<PlayerID, Color>, GameLog?, GuiResolverOverlay, GuiOutstandingTaskDisplay, PresentationPlayer, Func<string?>?>? OnGameLaunched;
 
     private ILobbyViewModel? _viewModel;
     private string _chatInput = "";
@@ -225,17 +226,32 @@ public class LobbyScreen : IAppScreen
                 if (overPoints) ImGui.PopStyleColor();
 
                 ImGui.TableNextColumn();
-                bool canModify = _viewModel.CheckCanModifyPlayerIDInfo(info.PlayerID);
-                ImGui.BeginDisabled(!canModify);
-                if (ImGui.SmallButton($"Load Army##{i}"))
-                    TryLoadArmyForPlayer(info.PlayerID);
-                ImGui.EndDisabled();
+                if (_viewModel.IsResumeMode)
+                {
+                    // Re-crew a saved slot. Host only; Local/AI today (networked client assignment TBD).
+                    ImGui.BeginDisabled(!_viewModel.HasHostPrivileges);
+                    if (ImGui.SmallButton($"Local##{i}"))
+                        _viewModel.SetSavedSlotPlayerType(info.PlayerID, EPlayerType.Local);
+                    ImGui.SameLine();
+                    if (ImGui.SmallButton($"AI##{i}"))
+                        _viewModel.SetSavedSlotPlayerType(info.PlayerID, EPlayerType.AI);
+                    ImGui.EndDisabled();
+                }
+                else
+                {
+                    bool canModify = _viewModel.CheckCanModifyPlayerIDInfo(info.PlayerID);
+                    ImGui.BeginDisabled(!canModify);
+                    if (ImGui.SmallButton($"Load Army##{i}"))
+                        TryLoadArmyForPlayer(info.PlayerID);
+                    ImGui.EndDisabled();
+                }
             }
 
             ImGui.EndTable();
         }
 
-        if (_viewModel.HasHostPrivileges)
+        // Slots are fixed when resuming a saved game, so no add/remove there.
+        if (_viewModel.HasHostPrivileges && !_viewModel.IsResumeMode)
         {
             ImGui.Spacing();
             if (ImGui.Button("Add Local Player"))
@@ -298,12 +314,12 @@ public class LobbyScreen : IAppScreen
         // Reserve space for the inline error line below the button when present.
         float errorLineH = _lastLaunchError != null ? ImGui.GetTextLineHeightWithSpacing() + 4f : 0f;
         Vector2 buttonSize = new Vector2(avail.X, MathF.Max(0f, avail.Y - errorLineH));
-        if (ImGui.Button("LAUNCH", buttonSize))
+        bool resume = _viewModel.IsResumeMode;
+        if (ImGui.Button(resume ? "RESUME" : "LAUNCH", buttonSize))
         {
-            if (!_viewModel.TryLaunchGame(out string? fail))
-                _lastLaunchError = fail ?? "Launch failed.";
-            else
-                _lastLaunchError = null;
+            string? fail;
+            bool started = resume ? _viewModel.TryResumeGame(out fail) : _viewModel.TryLaunchGame(out fail);
+            _lastLaunchError = started ? null : (fail ?? "Launch failed.");
         }
 
         if (_lastLaunchError != null)
@@ -370,14 +386,20 @@ public class LobbyScreen : IAppScreen
         var (resolvers, overlay) = ResolverRegistryFactory.BuildGui(game.TableState);
 
         var taskDisplay = new GuiOutstandingTaskDisplay();
-        game.AssignInterfaces(logUI, new CliPlayerMessageUI(), resolvers, new CliTempVisualDrawer(), outstandingTaskDisplay: taskDisplay);
+        var presentationPlayer = new PresentationPlayer();
+        game.AssignInterfaces(logUI, new CliPlayerMessageUI(), resolvers,
+            presentationSink: presentationPlayer,
+            outstandingTaskDisplay: taskDisplay);
 
         var colors  = new Dictionary<PlayerID, Color>();
         var players = _viewModel?.PlayerInfos ?? [];
         for (int i = 0; i < players.Count; i++)
             colors[players[i].PlayerID] = PlayerPalette[i % PlayerPalette.Length];
 
-        OnGameLaunched?.Invoke(game.TableState, pid => colors.GetValueOrDefault(pid, Color.White), log, overlay, taskDisplay);
+        // Host-only save hook (work item #054 will add client-initiated saving).
+        Func<string?>? saveGame = _viewModel != null && _viewModel.CanSaveGame ? _viewModel.SaveGameToJson : null;
+
+        OnGameLaunched?.Invoke(game.TableState, pid => colors.GetValueOrDefault(pid, Color.White), log, overlay, taskDisplay, presentationPlayer, saveGame);
     }
 
     private static void DrawIntField(string label, int current, Action<int> setter)

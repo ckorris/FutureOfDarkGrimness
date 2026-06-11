@@ -1,6 +1,8 @@
 using System.Collections.Concurrent;
 using System.Numerics;
 using FDG;
+using FdgRaylib.Audio;
+using FdgRaylib.Rendering.Presentation;
 using FdgRaylib.Rendering.Resolvers;
 using ImGuiNET;
 using Raylib_cs;
@@ -36,6 +38,8 @@ public class RaylibRenderer
     private GameLog? _log;
     private GuiResolverOverlay? _resolverOverlay;
     private GuiOutstandingTaskDisplay? _taskDisplay;
+    private PresentationPlayer? _presentationPlayer;
+    private AudioManager? _audio;
     private readonly TableTooltipOverlay _tooltipOverlay = new();
     private readonly TableHitTester      _hitTester      = new();
     private bool _inGame = false;
@@ -57,14 +61,26 @@ public class RaylibRenderer
 
     public void TransitionToGame(ITableState tableState, Func<PlayerID, Color> colorForPlayer,
         GameLog? log, GuiResolverOverlay? resolverOverlay = null,
-        GuiOutstandingTaskDisplay? taskDisplay = null)
+        GuiOutstandingTaskDisplay? taskDisplay = null,
+        PresentationPlayer? presentationPlayer = null,
+        Func<string?>? saveGameToJson = null)
     {
-        _tableState      = tableState;
-        _colorForPlayer  = colorForPlayer;
-        _log             = log;
-        _resolverOverlay = resolverOverlay;
-        _taskDisplay     = taskDisplay;
-        _tooltipOverlay.Attach(tableState, colorForPlayer);
+        _tableState         = tableState;
+        _colorForPlayer     = colorForPlayer;
+        _log                = log;
+        _resolverOverlay    = resolverOverlay;
+        _taskDisplay        = taskDisplay;
+        _presentationPlayer = presentationPlayer;
+        _tooltipOverlay.Attach(tableState, colorForPlayer, saveGameToJson);
+
+        // Play a sound cue the moment each beat becomes active, in lockstep with its visual. Audio is
+        // GUI-only and may be unavailable (then AudioManager no-ops), so this is best-effort.
+        if (_presentationPlayer != null && _audio != null)
+            _presentationPlayer.BeatStarted += beat =>
+            {
+                string? cue = PresentationSoundCues.CueFor(beat);
+                if (cue != null) _audio.Play(cue);
+            };
 
         tableState.Models.OnObjectCreated += SubscribeToModel;
         foreach (var model in tableState.Models.Objects)
@@ -113,6 +129,11 @@ public class RaylibRenderer
     private void SubscribeToModel(IModel model)
     {
         model.OnPositionChanged += (_, _) => OnModelPlaced(model);
+
+        // A model restored from a save already has its position set, so no OnPositionChanged will
+        // fire to register it for drawing — seed it now. (0,0,0) means unplaced, so skip those.
+        if (model.Position.x != 0f || model.Position.z != 0f)
+            OnModelPlaced(model);
     }
 
     private void OnModelPlaced(IModel model)
@@ -137,6 +158,11 @@ public class RaylibRenderer
 
         rlImGui.Setup(true);
 
+        // App-wide audio device + presentation cue bank (placeholder until real assets land in
+        // Assets/Sounds/). No-ops gracefully if no audio device is available.
+        _audio = new AudioManager();
+        PresentationSoundCues.LoadInto(_audio);
+
         // Replace the default 13px bitmap font with DejaVuSans TTF.
         // Must clear the atlas first — Setup already added the pixel font at index 0;
         // adding without clearing would leave it as the default and push ours to index 1.
@@ -160,11 +186,37 @@ public class RaylibRenderer
 
             if (_inGame)
             {
+                _presentationPlayer?.Update(Raylib.GetFrameTime());
+
                 var layout = ComputeLayout(screenW, screenH);
                 DrawTable(layout);
                 DrawTerrain(layout);
                 DrawObjectives(layout);
                 DrawModels(layout);
+
+                if (_presentationPlayer != null &&
+                    _presentationPlayer.TryGetActiveAttack(out var attackBeat, out var attackProgress))
+                {
+                    AttackOverlay.Draw(attackBeat, attackProgress, layout.Scale, layout.OriginX, layout.OriginY, TableHIn);
+                }
+
+                if (_presentationPlayer != null &&
+                    _presentationPlayer.TryGetActiveSave(out var saveBeat, out var saveProgress))
+                {
+                    SaveOverlay.Draw(saveBeat, saveProgress, layout.Scale, layout.OriginX, layout.OriginY, TableHIn);
+                }
+
+                if (_presentationPlayer != null &&
+                    _presentationPlayer.TryGetActiveDice(out var diceBeat, out var diceProgress))
+                {
+                    DiceOverlay.Draw(diceBeat, diceProgress, layout.LogX, screenH);
+                }
+
+                if (_presentationPlayer != null &&
+                    _presentationPlayer.TryGetActiveBanner(out var bannerBeat, out var bannerProgress))
+                {
+                    BannerOverlay.Draw(bannerBeat, bannerProgress, layout.LogX, screenH);
+                }
 
                 rlImGui.Begin();
                 _hitTester.Update(_tableState!, layout.Scale, layout.OriginX, layout.OriginY, TableHIn);
@@ -173,7 +225,10 @@ public class RaylibRenderer
                 _tooltipOverlay.UpdateLayout(layout.Scale, layout.OriginX, layout.OriginY, TableHIn);
                 _tooltipOverlay.Draw(screenW, screenH, _hitTester, _resolverOverlay?.ActiveInteractionHandler);
                 _resolverOverlay?.UpdateLayout(layout.Scale, layout.OriginX, layout.OriginY, TableHIn);
-                if (!_resolverOverlayFaulted)
+                // Hold interactive prompts until the animation queue drains, so the player always
+                // sees movement / shots land before being asked to react.
+                bool animating = _presentationPlayer?.IsAnimating ?? false;
+                if (!_resolverOverlayFaulted && !animating)
                 {
                     try
                     {
@@ -182,8 +237,9 @@ public class RaylibRenderer
                     catch (Exception ex)
                     {
                         _resolverOverlayFaulted = true;
-                        _log?.Add($"[RESOLVER ERROR] {ex.GetType().Name}: {ex.Message}");
-                        _log?.Add(ex.StackTrace ?? "(no stack trace)");
+                        var errColor = new TextColor(255, 120, 120, 255);
+                        _log?.Add($"[RESOLVER ERROR] {ex.GetType().Name}: {ex.Message}", errColor);
+                        _log?.Add(ex.StackTrace ?? "(no stack trace)", errColor);
                     }
                 }
                 rlImGui.End();
@@ -199,6 +255,7 @@ public class RaylibRenderer
         }
 
         rlImGui.Shutdown();
+        _audio?.Dispose();
         Raylib.CloseWindow();
     }
 
@@ -280,15 +337,26 @@ public class RaylibRenderer
     {
         foreach (var (model, color) in _placedModels)
         {
-            if (!model.GetIsAlive()) continue;
+            // The presentation player decides position/visibility/effects: gliding mid-move,
+            // tinted while dying (red, fading) or hurt (orange), hidden once dead, else authoritative.
+            ModelDrawState draw = _presentationPlayer?.GetModelDrawState(model)
+                ?? (model.GetIsAlive()
+                    ? new ModelDrawState(true, model.Position, 1f, null)
+                    : ModelDrawState.Hidden);
 
-            var pos = model.Position;
-            int cx = l.OriginX + (int)(pos.x * l.Scale);
-            int cy = l.OriginY + (int)((TableHIn - pos.z) * l.Scale);
+            if (!draw.Visible) continue;
+
+            int cx = l.OriginX + (int)(draw.Position.x * l.Scale);
+            int cy = l.OriginY + (int)((TableHIn - draw.Position.z) * l.Scale);
             float radius = model.BaseRadiusInches * l.Scale;
 
-            Raylib.DrawCircle(cx, cy, radius, color);
-            Raylib.DrawCircleLines(cx, cy, radius, Color.Black);
+            Color baseColor = draw.Tint is { } tint ? new Color(tint.R, tint.G, tint.B, (byte)255) : color;
+            byte a = (byte)Math.Clamp(draw.Alpha * 255f, 0f, 255f);
+            Color fill    = new(baseColor.R, baseColor.G, baseColor.B, a);
+            Color outline = new((byte)0, (byte)0, (byte)0, a);
+
+            Raylib.DrawCircle(cx, cy, radius, fill);
+            Raylib.DrawCircleLines(cx, cy, radius, outline);
         }
     }
 
@@ -306,8 +374,13 @@ public class RaylibRenderer
         ImGui.BeginChild("scrolling", Vector2.Zero, ImGuiChildFlags.None,
             ImGuiWindowFlags.HorizontalScrollbar);
 
-        foreach (var msg in messages)
-            ImGui.TextWrapped(msg);
+        foreach (var entry in messages)
+        {
+            var c = entry.Color;
+            ImGui.PushStyleColor(ImGuiCol.Text, new Vector4(c.R / 255f, c.G / 255f, c.B / 255f, c.A / 255f));
+            ImGui.TextWrapped(entry.Message);
+            ImGui.PopStyleColor();
+        }
 
         if (hasNew && _autoScroll)
             ImGui.SetScrollHereY(1.0f);

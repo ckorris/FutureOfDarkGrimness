@@ -8,6 +8,7 @@ public class MainMenuScreen : IAppScreen
     public Action? OnHostClicked;
     public Action? OnClientClicked;
     public Action? OnArmyBuilderClicked;
+    public Action? OnLoadGameClicked;
     public Action? OnQuitClicked;
 
     private bool _modalOpen = false;
@@ -53,7 +54,8 @@ public class MainMenuScreen : IAppScreen
         DrawButton("Host",         OnHostClicked,        0);
         DrawButton("Client",       OnClientClicked,      1);
         DrawButton("Army Builder", OnArmyBuilderClicked, 2);
-        DrawButton("Quit",         OnQuitClicked,        3);
+        DrawButton("Load Game",    OnLoadGameClicked,    3);
+        DrawButton("Quit",         OnQuitClicked,        4);
         ImGui.EndDisabled();
 
         ImGui.End();

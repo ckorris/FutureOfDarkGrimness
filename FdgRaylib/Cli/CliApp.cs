@@ -75,7 +75,7 @@ public class CliApp
             logMessageUI:          logUI,
             playerMessageUI:       new CliPlayerMessageUI(),
             stageResolverRegistry: resolverRegistry,
-            tempVisualDrawer:      new CliTempVisualDrawer(),
+            presentationSink:      null, // headless: beats emitted but not rendered
             outstandingTaskDisplay: null);
 
         var humanController = new LocalPlayerController(playerSlots[0].Name, playerSlots[0].PlayerID, _localGame);
@@ -95,7 +95,7 @@ public class CliApp
         var server = new FDGServer(_gameDataStore!, _messageBus!, gameSettings, playerSlots);
         server.OnGameEnded += result =>
         {
-            logUI.DisplayLogMessage($"Game ended: {result}");
+            logUI.DisplayLogMessage($"Game ended: {result}", TextColor.White);
             gameEnded.TrySetResult();
         };
 
