@@ -1303,6 +1303,34 @@ INTEGRATION PROGRESS (2026-06-11, cont. 27) — Artillery's defensive facet (W12
   * APPENDIX C: Artillery's deferred-facet row trimmed to just the Hold-only action restriction (W5),
     which still awaits the shared action-restriction enforcement (also blocks Immobile).
 
+INTEGRATION PROGRESS (2026-06-11, cont. 28) — two companion facets closed: Counter's impact reduction
+  and Ambush's no-seize-the-round-it-arrives. Both rules now FULLY implemented. Suite 331/0; headless exit 0.
+  * COUNTER "-1 impact die per Counter model" (W8). The charged unit's Counter now reduces the charger's
+    Impact dice by one per living Counter model. Implemented as a defender-seat HookEntry on Counter at
+    Melee_OnChargeContact (the same when the charger's Impact(X) fires) emitting a NEGATIVE
+    ChargeImpactHits that folds into the SAME ImpactSink — so ResolveImpactHitsStage rolls the NET dice
+    with no new sink/op. New Effect.ReduceImpactDicePerModel resolves the bearer's living-model count at
+    Apply time (Counter is unit-wide, so every living model is a "Counter model") and emits
+    ChargeImpactHits(-count); reuses the existing operation + AddDice. ResolveImpactHitsStage now evaluates
+    the charge-contact when for BOTH combatants ((attacker,Actor),(defender,Subject)); the existing
+    TotalDice<=0 skip naturally handles a reduction that meets or exceeds the impact dice. 3 tests in
+    ImpactRuleIntegrationTests (2 Counter models cut Impact(3)->1 wound; 3 models cancel it entirely; a
+    Counter defender vs a no-Impact charger is a clean skip). Headless: "Counter rolled -1 impact dice" ->
+    Warriors' Impact(2) became 1 die live.
+  * AMBUSH "can't seize/contest the round it arrives" (W4). New engine-known TokenType.ArrivedFromReserve:
+    StartOfRoundExtraActionStage stamps it (RoundEnd clear) on each unit as it arrives from reserve;
+    ReconcileObjectivesStage's PlayersNearObjective skips models whose unit carries it, so the newcomer
+    counts toward neither seizure NOR contest. ORDERING FIX: the stage's Round_OnRoundEnd token sweep
+    (once-per-round cost gates) MOVED from the top of Enter to AFTER the objective check, so the arrival
+    marker survives the check it gates and is cleared the same round-end — i.e. the exclusion lasts exactly
+    one round. (Moving the sweep is behavior-preserving for cost markers; nothing between the two points
+    read them.) 3 tests in ObjectiveOwnershipTests (arrived unit alone doesn't seize; doesn't contest so an
+    enemy seizes uncontested; marker clears after the check so it seizes the next round). Headless:
+    Infiltrators arrived from Ambush, game ran to a winner.
+  * APPENDIX C: Counter and Ambush rows removed (now fully implemented, added to the "fully implemented"
+    set); the Counter clause on the Impact row removed. Live core-combat depth unchanged in count; two
+    deferred facets retired.
+
 [x] SUPPRESSION vs. PER-RULE LOG (DONE 2026-06-07; see INTEGRATION PROGRESS cont. 6).
     Was: the per-rule game-log line emitted at QUEUE TIME, before the suppression first-pass,
     so a suppressed rule would print a phantom "X added -1 to hit". FIXED by moving log emission
@@ -1551,7 +1579,7 @@ is the single at-a-glance "implemented vs deferred facets" ledger — previously
 gaps were scattered across the arch doc, this checklist, and a few catalog XML
 comments (and several were unrecorded). Rules NOT in this table are either fully
 implemented (Stealth, Reliable, Fast, Slow, Surge, Relentless, Regeneration, Bane,
-Scout, Thrust, Blast, Furious) or not implemented at all (the 10 listed in the "not yet implemented"
+Scout, Thrust, Blast, Furious, Counter, Ambush) or not implemented at all (the 10 listed in the "not yet implemented"
 set — Aircraft, Caster, Fear, Fearless, Flying, Immobile,
 Limited, Strider, Hero, Transport).
 
@@ -1562,11 +1590,7 @@ Limited, Strider, Hero, Transport).
                at its wounds, no carry-over)    other weapons" ordering is moot (model picked pre-rolls).
   Impact(X)    X dice on charge contact, each    "Not fatigued" gate (W7) — fatigue is absent
                2+ a hit, resolved through        (ApplyFatigueStage is a stub), so Impact always rolls
-               save+wound before normal swings   even on a charge that should be fatigued. Counter's
-                                                 "-1 impact roll per Counter model" facet also deferred.
-  Counter      charged unit strikes first        "-1 impact roll per Counter model" companion facet
-               (attacker/defender roles          (W8) — the charger's Impact dice are not reduced by
-               swapped for the melee)            the number of Counter models in the charged unit.
+               save+wound before normal swings   even on a charge that should be fatigued.
   Artillery    +1 to hit beyond 9" (Actor) +    Hold-only action restriction (W5) — needs the
                enemies shooting it from >9"      action-restriction enforcement (shared with Immobile,
                take -2 to hit (Subject)          not yet live). The defensive -2 facet (W12) is now
@@ -1588,9 +1612,6 @@ Limited, Strider, Hero, Transport).
                                                 effect (noted in catalog XML comment).
   Rending      whole-attack AP-4 when ANY hit   True PER-HIT AP (only the 6s get AP) —
                rolled a 6                        simplified to whole-attack (catalog comment).
-  Ambush       reserve + round-2+ arrival,      Cannot seize/contest objectives the round
-               placed >9" from enemies          it arrives (W4) — needs "arrived this round"
-                                                tracking in ReconcileObjectivesStage.
   Martial      once-per-game second activation   Offered ONLY while the player still has a pending
   Prowess      of an already-activated unit      normal activation that turn — if the bearer is the
                (re-added to the unactivated      player's LAST unit, TryAdvanceToNextPlayer ends their
