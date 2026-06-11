@@ -106,16 +106,29 @@ public static class ArmyLoader
                     PointCost = 120,
                     SpecialRules = new List<SpecialRuleEntry>
                     {
-                        new SpecialRuleEntry_Core("Surge"),
                         new SpecialRuleEntry_Core("Scout"),
-                        new SpecialRuleEntry_CoreNumeric("Blast", 3),
-                        new SpecialRuleEntry_Core("Counter"),
                         new SpecialRuleEntry_Core("Martial Prowess"),
                     },
                     Weapons = new List<WeaponFileEntry>
                     {
-                        new WeaponFileEntry { Name = "Heavy Rifle", RangeInches = 36, Attacks = 1 },
-                        new WeaponFileEntry { Name = "Fists", RangeInches = 0, Attacks = 1 }
+                        //#027: Surge/Blast/Counter are weapon rules — they live on the weapon entries now.
+                        new WeaponFileEntry
+                        {
+                            Name = "Heavy Rifle", RangeInches = 36, Attacks = 1,
+                            SpecialRules = new List<SpecialRuleEntry>
+                            {
+                                new SpecialRuleEntry_Core("Surge"),
+                                new SpecialRuleEntry_CoreNumeric("Blast", 3),
+                            }
+                        },
+                        new WeaponFileEntry
+                        {
+                            Name = "Fists", RangeInches = 0, Attacks = 1,
+                            SpecialRules = new List<SpecialRuleEntry>
+                            {
+                                new SpecialRuleEntry_Core("Counter"),
+                            }
+                        }
                     }
                 },
                 new UnitFileEntry
@@ -128,11 +141,18 @@ public static class ArmyLoader
                     SpecialRules = new List<SpecialRuleEntry>
                     {
                         new SpecialRuleEntry_Core("Ambush"),
-                        new SpecialRuleEntry_Core("Takedown"),
                     },
                     Weapons = new List<WeaponFileEntry>
                     {
-                        new WeaponFileEntry { Name = "Rifle", RangeInches = 24, Attacks = 1 }
+                        //#027: Takedown is a weapon rule — it lives on the weapon entry now.
+                        new WeaponFileEntry
+                        {
+                            Name = "Rifle", RangeInches = 24, Attacks = 1,
+                            SpecialRules = new List<SpecialRuleEntry>
+                            {
+                                new SpecialRuleEntry_Core("Takedown"),
+                            }
+                        }
                     }
                 }
             }
