@@ -84,7 +84,8 @@ public class GuiPlaceObjectsResolver<T>
         string? overlap = inZone ? CheckOverlap(candidate, currentRadius) : null;
         bool inCohesion = _placed.Count == 0 || IsInCohesionWithPlaced(candidate, currentRadius);
         bool farFromEnemies = minEnemyDist <= 0f || !TooCloseToEnemy(candidate, enemies, minEnemyDist);
-        bool valid = inZone && overlap == null && inCohesion && farFromEnemies;
+        bool notOnTerrain = !OnImpassibleTerrain(candidate, currentRadius);
+        bool valid = inZone && overlap == null && inCohesion && farFromEnemies && notOnTerrain;
 
         if (overTable) DrawGhost(dl, io.MousePos, currentRadius * _scale, valid);
 
@@ -108,6 +109,11 @@ public class GuiPlaceObjectsResolver<T>
             else if (!farFromEnemies)
             {
                 _errorMessage = $"Too close to an enemy - must be over {minEnemyDist:F0}\" from enemy units.";
+                _errorExpiry  = ImGui.GetTime() + 2.5;
+            }
+            else if (!notOnTerrain)
+            {
+                _errorMessage = "On impassible terrain - the model's base would overlap a building or blocker.";
                 _errorExpiry  = ImGui.GetTime() + 2.5;
             }
             else
@@ -264,6 +270,7 @@ public class GuiPlaceObjectsResolver<T>
                 {
                     var c = new Position(x, z);
                     if (CheckOverlap(c, r) != null) continue;
+                    if (OnImpassibleTerrain(c, r)) continue;
                     if (minEnemyDist > 0f && TooCloseToEnemy(c, enemies, minEnemyDist)) continue;
                     if (!IsInCohesionWithPlaced(c, r)) continue;
                     result = c; return true;
@@ -299,6 +306,10 @@ public class GuiPlaceObjectsResolver<T>
             if (Dist(p, e) < minDist) return true;
         return false;
     }
+
+    // True if a model placed here would overlap impassible terrain (a model occupies its base disc).
+    private bool OnImpassibleTerrain(Position candidate, float radius) =>
+        PlacementUtilities.OverlapsImpassibleTerrain(candidate, radius, _tableState.Terrain.Objects);
 
     /// <summary>Returns null if free; otherwise a brief description of the conflict.</summary>
     private string? CheckOverlap(Position newPos, float newRadius)

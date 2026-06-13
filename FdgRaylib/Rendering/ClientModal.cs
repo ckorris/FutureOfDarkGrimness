@@ -2,7 +2,6 @@ using System.Net;
 using System.Numerics;
 using FDG.Network.Connection;
 using FDG.Network.Connection.Lobby;
-using FutureOfDarkGrimness.Network.Connection.Lobby;
 using ImGuiNET;
 
 namespace FdgRaylib.Rendering;
