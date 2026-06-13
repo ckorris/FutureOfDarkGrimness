@@ -29,6 +29,16 @@ difficult, and dangerous variants. Resolver layer needs no changes.
 - Branched `050-movement-base-radius` on both repos off synced master (`af3f5bd` engine / `90ac830` app).
 - Implemented the swept-disc overload across `CircularZone`, `RectangularZone`, `CompositeZone`,
   `RotatedZoneWrapper`, `TerrainData`; wired the three `MovementUtilities` validators to pass
-  `move.Model.BaseRadiusInches`.
+  `move.Model.BaseRadiusInches`. Submodule `57e667b`, superproject bump `896303d`. Suite 421/0.
+- **AI resolver follow-up (same day).** `AiDefineMovementResolver` had the matching blind spot: its
+  terrain pre-check used the zero-width overload on the *unit-centroid* path only, never called
+  `ValidatePaths`, and `DefinePathStage` *throws* (no retry) on an invalid move — so #050 made the
+  validator stricter than the AI's own pre-filter, a latent crash near terrain in GUI games (headless
+  default games place no terrain — `MapSetupStage` is stubbed — so the smoke can't exercise it). The
+  human GUI resolver was already safe (its Done-gating calls the same `ValidatePaths`). Fixed with
+  **both**: (A) base-radius-inflated centroid pre-filter, and (B) validate the actual candidate against
+  `MovementUtilities.ValidatePaths` and back the step off (halving, ≤6×) until it passes, standing still
+  as a last resort. New `AiDefineMovementResolverTests` (clip-would-be-invalid → valid; clear-lane →
+  still advances). Suite 423/0.
 </content>
 </invoke>
