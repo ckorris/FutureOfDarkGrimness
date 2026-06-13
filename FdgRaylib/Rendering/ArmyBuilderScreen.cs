@@ -18,20 +18,31 @@ public class ArmyBuilderScreen : IAppScreen
         $"Army List (*{ArmyListFile.EXTENSION_WITH_PERIOD})",
         new[] { $"*{ArmyListFile.EXTENSION_WITH_PERIOD}" });
 
-    private static readonly string[] CoreNames =
-        SpecialRuleRegistry.CoreRules.Select(r => r.PrintableName).ToArray();
-    private static readonly string[] NumericNames =
-        SpecialRuleRegistry.NumericRules.Select(r => r.Name).ToArray();
-    private static readonly string[] AllNames =
-        CoreNames.Concat(NumericNames)
-                 .OrderBy(n => n, StringComparer.OrdinalIgnoreCase)
-                 .ToArray();
-    private static readonly HashSet<string> NumericNameSet =
-        new(NumericNames, StringComparer.Ordinal);
+    // The picker is derived from the engine catalog plus this army's embedded rules (#059 workstream 6),
+    // refreshed each frame in Draw() so loading an army with embedded rules surfaces them immediately.
+    private string[] _allNames = Array.Empty<string>();
+    private HashSet<string> _numericNames = new(StringComparer.Ordinal);
     private static readonly Dictionary<string, (int sel, int val)> _addRuleState = new();
+
+    private void RefreshRuleNames()
+    {
+        IReadOnlyList<SpecialRuleRegistry.PickerEntry> entries =
+            SpecialRuleRegistry.GetPickerEntries(_army.RuleDefinitions);
+        _allNames = entries.Select(e => e.Name).ToArray();
+        _numericNames = entries.Where(e => e.IsNumeric).Select(e => e.Name)
+            .ToHashSet(StringComparer.Ordinal);
+    }
+
+    // A loaded army may reference a rule the picker no longer offers (e.g. an unimplemented one saved
+    // earlier). Keep it visible/selected in that entry's combo so opening the army doesn't silently
+    // relabel it; new additions still come only from the offered list.
+    private string[] ComboNames(string current) =>
+        Array.IndexOf(_allNames, current) >= 0 ? _allNames : _allNames.Append(current).ToArray();
 
     public void Draw(int screenW, int screenH)
     {
+        RefreshRuleNames();
+
         ImGui.SetNextWindowPos(Vector2.Zero, ImGuiCond.Always);
         ImGui.SetNextWindowSize(new Vector2(screenW, screenH), ImGuiCond.Always);
         ImGui.Begin("Army Builder",
@@ -157,7 +168,7 @@ public class ArmyBuilderScreen : IAppScreen
         }
     }
 
-    private static void DrawUnitFields(UnitFileEntry unit, int idx)
+    private void DrawUnitFields(UnitFileEntry unit, int idx)
     {
         EditString($"Name##un{idx}", () => unit.Name, s => unit.Name = s, 48);
 
@@ -210,7 +221,7 @@ public class ArmyBuilderScreen : IAppScreen
         }
     }
 
-    private static void DrawWeaponFields(WeaponFileEntry weapon, int ui, int wi)
+    private void DrawWeaponFields(WeaponFileEntry weapon, int ui, int wi)
     {
         string name = weapon.Name;
         if (ImGui.InputText($"Name##wn{ui}_{wi}", ref name, 32))
@@ -235,7 +246,7 @@ public class ArmyBuilderScreen : IAppScreen
         DrawSpecialRuleList(weapon.SpecialRules, $"w{ui}_{wi}");
     }
 
-    private static void DrawSpecialRuleList(List<SpecialRuleEntry> rules, string id)
+    private void DrawSpecialRuleList(List<SpecialRuleEntry> rules, string id)
     {
         if (!ImGui.CollapsingHeader($"Special Rules##sr_{id}", ImGuiTreeNodeFlags.DefaultOpen))
             return;
@@ -257,9 +268,12 @@ public class ArmyBuilderScreen : IAppScreen
                 _addRuleState, popupId, out _);
             if (state.sel == 0 && state.val == 0) state = (0, 1);
 
-            ImGui.Combo("Rule", ref state.sel, AllNames, AllNames.Length);
+            if (_allNames.Length == 0) { ImGui.EndPopup(); return; }
+            if (state.sel >= _allNames.Length) state.sel = 0;
 
-            bool isNumeric = NumericNameSet.Contains(AllNames[state.sel]);
+            ImGui.Combo("Rule", ref state.sel, _allNames, _allNames.Length);
+
+            bool isNumeric = _numericNames.Contains(_allNames[state.sel]);
             if (isNumeric)
             {
                 ImGui.SameLine();
@@ -271,16 +285,16 @@ public class ArmyBuilderScreen : IAppScreen
             if (ImGui.Button("Add"))
             {
                 rules.Add(isNumeric
-                    ? new SpecialRuleEntry_CoreNumeric(AllNames[state.sel], state.val)
-                    : new SpecialRuleEntry_Core(AllNames[state.sel]));
+                    ? new SpecialRuleEntry_CoreNumeric(_allNames[state.sel], state.val)
+                    : new SpecialRuleEntry_Core(_allNames[state.sel]));
                 ImGui.CloseCurrentPopup();
             }
             ImGui.SameLine();
             if (ImGui.Button("Add Alias"))
             {
                 SpecialRuleEntry inner = isNumeric
-                    ? new SpecialRuleEntry_CoreNumeric(AllNames[state.sel], state.val)
-                    : new SpecialRuleEntry_Core(AllNames[state.sel]);
+                    ? new SpecialRuleEntry_CoreNumeric(_allNames[state.sel], state.val)
+                    : new SpecialRuleEntry_Core(_allNames[state.sel]);
                 rules.Add(new SpecialRuleEntry_Alias("New Alias", inner));
                 ImGui.CloseCurrentPopup();
             }
@@ -289,25 +303,27 @@ public class ArmyBuilderScreen : IAppScreen
         }
     }
 
-    private static void DrawRuleLine(List<SpecialRuleEntry> list, int idx)
+    private void DrawRuleLine(List<SpecialRuleEntry> list, int idx)
     {
         SpecialRuleEntry current = list[idx];
 
         if (current is SpecialRuleEntry_Core core)
         {
-            int sel = Math.Max(0, Array.IndexOf(AllNames, core.PrintableName));
-            if (ImGui.Combo("##rule", ref sel, AllNames, AllNames.Length))
-                list[idx] = NumericNameSet.Contains(AllNames[sel])
-                    ? new SpecialRuleEntry_CoreNumeric(AllNames[sel], 1)
-                    : new SpecialRuleEntry_Core(AllNames[sel]);
+            string[] names = ComboNames(core.PrintableName);
+            int sel = Math.Max(0, Array.IndexOf(names, core.PrintableName));
+            if (ImGui.Combo("##rule", ref sel, names, names.Length))
+                list[idx] = _numericNames.Contains(names[sel])
+                    ? new SpecialRuleEntry_CoreNumeric(names[sel], 1)
+                    : new SpecialRuleEntry_Core(names[sel]);
         }
         else if (current is SpecialRuleEntry_CoreNumeric num)
         {
-            int sel = Math.Max(0, Array.IndexOf(AllNames, num.Name));
-            if (ImGui.Combo("##rule", ref sel, AllNames, AllNames.Length))
-                list[idx] = NumericNameSet.Contains(AllNames[sel])
-                    ? new SpecialRuleEntry_CoreNumeric(AllNames[sel], num.NumericValue)
-                    : new SpecialRuleEntry_Core(AllNames[sel]);
+            string[] names = ComboNames(num.Name);
+            int sel = Math.Max(0, Array.IndexOf(names, num.Name));
+            if (ImGui.Combo("##rule", ref sel, names, names.Length))
+                list[idx] = _numericNames.Contains(names[sel])
+                    ? new SpecialRuleEntry_CoreNumeric(names[sel], num.NumericValue)
+                    : new SpecialRuleEntry_Core(names[sel]);
 
             if (list[idx] is SpecialRuleEntry_CoreNumeric n2)
             {
@@ -341,25 +357,27 @@ public class ArmyBuilderScreen : IAppScreen
             list.RemoveAt(idx);
     }
 
-    private static void DrawRuleLineInner(ref SpecialRuleEntry rule, float comboWidth, float numWidth)
+    private void DrawRuleLineInner(ref SpecialRuleEntry rule, float comboWidth, float numWidth)
     {
         if (rule is SpecialRuleEntry_Core c)
         {
-            int sel = Math.Max(0, Array.IndexOf(AllNames, c.PrintableName));
+            string[] names = ComboNames(c.PrintableName);
+            int sel = Math.Max(0, Array.IndexOf(names, c.PrintableName));
             ImGui.SetNextItemWidth(comboWidth);
-            if (ImGui.Combo("##inner", ref sel, AllNames, AllNames.Length))
-                rule = NumericNameSet.Contains(AllNames[sel])
-                    ? new SpecialRuleEntry_CoreNumeric(AllNames[sel], 1)
-                    : new SpecialRuleEntry_Core(AllNames[sel]);
+            if (ImGui.Combo("##inner", ref sel, names, names.Length))
+                rule = _numericNames.Contains(names[sel])
+                    ? new SpecialRuleEntry_CoreNumeric(names[sel], 1)
+                    : new SpecialRuleEntry_Core(names[sel]);
         }
         else if (rule is SpecialRuleEntry_CoreNumeric n)
         {
-            int sel = Math.Max(0, Array.IndexOf(AllNames, n.Name));
+            string[] names = ComboNames(n.Name);
+            int sel = Math.Max(0, Array.IndexOf(names, n.Name));
             ImGui.SetNextItemWidth(comboWidth);
-            if (ImGui.Combo("##inner", ref sel, AllNames, AllNames.Length))
-                rule = NumericNameSet.Contains(AllNames[sel])
-                    ? new SpecialRuleEntry_CoreNumeric(AllNames[sel], n.NumericValue)
-                    : new SpecialRuleEntry_Core(AllNames[sel]);
+            if (ImGui.Combo("##inner", ref sel, names, names.Length))
+                rule = _numericNames.Contains(names[sel])
+                    ? new SpecialRuleEntry_CoreNumeric(names[sel], n.NumericValue)
+                    : new SpecialRuleEntry_Core(names[sel]);
 
             if (rule is SpecialRuleEntry_CoreNumeric n2)
             {
