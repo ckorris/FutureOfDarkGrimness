@@ -149,13 +149,6 @@ public class TableTooltipOverlay
             ImGui.Unindent();
         }
 
-        var rules = unit.SpecialRules;
-        if (rules.Count > 0)
-        {
-            ImGui.Spacing();
-            ImGui.TextUnformatted("Special: " + string.Join(", ", rules.Select(r => r.GetType().Name)));
-        }
-
         // Contextual line from the active resolver
         string? hoverLabel = interactionHandler?.GetHoverLabel(unit, model);
         if (hoverLabel != null)
