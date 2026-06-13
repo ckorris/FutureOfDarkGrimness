@@ -12,6 +12,9 @@ public class PlaceObjectsResolver<T> : IStageResolver<PlaceObjectsRequest<T>, Li
     private readonly Dictionary<PlayerID, int> _deployCountPerPlayer = new();
     private const float ZRowOffset = 2f; // inches between successive unit rows
 
+    // Snapshot of impassible terrain for the current Resolve call; models can't be placed overlapping it.
+    private IReadOnlyList<ITerrain> _impassibleTerrain = Array.Empty<ITerrain>();
+
     public PlaceObjectsResolver(ITableState? tableState = null)
     {
         _tableState = tableState;
@@ -21,6 +24,10 @@ public class PlaceObjectsResolver<T> : IStageResolver<PlaceObjectsRequest<T>, Li
     {
         var zone = request.DeploymentZone.GetValue();
         int total = request.ModelsToPlace.Count;
+
+        _impassibleTerrain = _tableState?.Terrain.Objects
+            .Where(t => t.TerrainType.HasFlag(ETerrainType.Impassible))
+            .ToList() ?? (IReadOnlyList<ITerrain>)Array.Empty<ITerrain>();
 
         float minEnemyDist = request.MinDistanceFromEnemiesInches;
         var enemies = minEnemyDist > 0f ? GetEnemyPositions(request.TargetPlayerID) : new List<Position>();
@@ -93,6 +100,12 @@ public class PlaceObjectsResolver<T> : IStageResolver<PlaceObjectsRequest<T>, Li
                         continue;
                     }
 
+                    if (PlacementUtilities.OverlapsImpassibleTerrain(newPos, r, _impassibleTerrain))
+                    {
+                        Console.WriteLine("    ! On impassible terrain — the model's base would overlap a building or blocker.");
+                        continue;
+                    }
+
                     placed.Add(new PlacedObjectEntry<T>(binding, newPos));
                     break;
                 }
@@ -122,6 +135,7 @@ public class PlaceObjectsResolver<T> : IStageResolver<PlaceObjectsRequest<T>, Li
                     var candidate = new Position(x, z);
                     if (CheckOverlap(candidate, r, placedSoFar) != null) continue;
                     if (CheckOverlapWithExisting(candidate, r, existing) != null) continue;
+                    if (PlacementUtilities.OverlapsImpassibleTerrain(candidate, r, _impassibleTerrain)) continue;
                     if (TooCloseToEnemy(candidate, enemies, minEnemyDist)) continue;
                     if (placedSoFar.Count > 0 && !IsInCohesion(candidate, r, placedSoFar)) continue;
                     return candidate;
@@ -137,6 +151,7 @@ public class PlaceObjectsResolver<T> : IStageResolver<PlaceObjectsRequest<T>, Li
             var candidate = new Position(x, cz);
             if (CheckOverlap(candidate, r, placedSoFar) != null) continue;
             if (CheckOverlapWithExisting(candidate, r, existing) != null) continue;
+            if (PlacementUtilities.OverlapsImpassibleTerrain(candidate, r, _impassibleTerrain)) continue;
             if (placedSoFar.Count > 0 && !IsInCohesion(candidate, r, placedSoFar)) continue;
             return candidate;
         }

@@ -20,7 +20,6 @@ Numbers are permanent and never reused. If an item is split, its line stays and 
 
 ## Deployment
 
-- [ ] 048 — Block deployment of models into impassible terrain (auto-placement and GUI both need intersection check; observed: AI placed model inside building flush against deployment zone edge) ([WorkItems/048](WorkItems/048-deployment-into-impassible.md))
 - [ ] 006 — Hero joins unit + takes morale on behalf of unit
 - [ ] 007 — Resolve `DeployAllUnitsStage.Enter` `NotImplementedException` and "actually move the models" TODO
 
@@ -33,7 +32,7 @@ Numbers are permanent and never reused. If an item is split, its line stays and 
 ## Movement
 
 - [ ] 011 — `MovementUtilities.ValidateMovingThroughEnemyUnits` (currently empty)
-- [ ] 050 — Movement validation ignores model base radius for terrain footprints. `MovementUtilities.ValidateMovingThroughImpassibleTerrain` (and the difficult/dangerous variants) test a zero-width center-to-center line against terrain footprints, so a model can park with its center just outside an impassable shape while its base overlaps it. Fix: inflate the terrain footprint by the model's `BaseRadiusInches` (Minkowski expansion) or use swept-disc distance, in `MovementUtilities`. Resolver layer needs no changes. Pre-existing — surfaced more by #002's richer terrain. (Reassigned from 046, whose number was reused for the line-of-sight cluster.)
+- [ ] 050 — Movement validation ignores model base radius for terrain footprints. `MovementUtilities.ValidateMovingThroughImpassibleTerrain` (and the difficult/dangerous variants) test a zero-width center-to-center line against terrain footprints, so a model can park with its center just outside an impassable shape while its base overlaps it. Fix: inflate the terrain footprint by the model's `BaseRadiusInches` (Minkowski expansion) or use swept-disc distance, in `MovementUtilities`. Resolver layer needs no changes. Pre-existing — surfaced more by #002's richer terrain. (Reassigned from 046, whose number was reused for the line-of-sight cluster.) ([WorkItems/050](WorkItems/050-movement-base-radius.md))
 
 ## Shooting
 
@@ -140,7 +139,6 @@ From `Audit-6-10-2026.md` (section references therein). High-priority items are 
 
 ### Cleanup & object model (second batch, added 2026-06-10)
 
-- [ ] 079 — csproj dependency cleanup (audit §1): drop `System.Drawing.Common` (Windows-only on .NET 8 — throws at runtime on Linux if ever exercised; `SixLabors.ImageSharp` is already referenced and covers the need) and delete the commented-out duplicate ImageSharp line with its "TODO: Put this back".
 - [ ] 080 — GameModel cleanup (audit §13.22–23): `FDGGame_AsLocal` creates an `OutstandingTaskLister`, discards it, then creates another (its own TODO admits it; `FDGGame_AsClient` has the same shape) — create once and pass through. Remove `FDGServer.TEST_SINGLE_TURN` (compile-time debug flag routing to a private test harness) or promote it to a `GameSettings` debug option.
 - [ ] 081 — `ModelData` visuals & `UnitData.Models` allocation (audit §3): `ModelData.MeshProvider`/`MaterialProvider` construct new provider objects on every property access — move visual lookup behind an app-side resolver keyed by `ModelID` (engine shouldn't own mesh selection), or at minimum cache the providers. `UnitData.Models` materializes a new `List<IModel>` per access (`RemainingWounds` makes wound math O(models²) with allocations) — expose the bindings or cache with invalidation.
 - [ ] 082 — AI & player-controller lifecycle nits (audit §10): `AiYesNoResolver` answers `true` to every yes/no in the game, current and future — route yes/no requests through an intent tag so AI defaults are explicit per question. `LocalPlayerController`'s two-phase UI subscription has a race window (null-check then deferred event subscription) — make subscription idempotent and re-run on assignment. `NetworkPlayerController.IsReady` is set from bus dispatch without idempotency — duplicate ready messages double-fire `OnReadyStateChanged`.
@@ -151,6 +149,7 @@ From `Audit-6-10-2026.md` (section references therein). High-priority items are 
 
 Implemented and merged to master; engine test suite green. Held open only until the behavior is confirmed by hand in the running app — tick and move to `## Done` once verified.
 
+- [ ] 048 — Block deployment of models into impassible terrain: shared `PlacementUtilities.OverlapsImpassibleTerrain` (base-radius disc-vs-zone, built on #050's swept-disc overload) wired into the AI, CLI, and GUI place resolvers. Engine + AI + CLI unit-tested (`AiPlaceObjectsResolverTests.DoesNotPlaceModelsOnImpassibleTerrain`); GUI block (red ghost + click toast) needs a hand-eyeball. ([WorkItems/048](WorkItems/048-deployment-into-impassible.md))
 - [ ] 041 — Factor line of sight into movement resolver's ranged-targeting overlay: both the per-enemy-unit weapon list and the per-model fire lines now require LoS (terrain + model-base blockers), with a red block-stub when no model in the unit is visible. ([WorkItems/041](WorkItems/041-movement-resolver-ranged-los.md)) — commit `ec2f552`
 - [ ] 045 — Cover indication in targeting overlay and shot UI: fire lines through cover render dashed yellow; shot picker spells out "Cover (+1 Def)". Presentation-only, no engine change. ([WorkItems/045](WorkItems/045-cover-indication.md)) — commit `cc341b0`
 - [ ] 046 — `GetFirstBlockingHit` engine API: returns the closest `Blocking` terrain entry point along an (attacker, target) segment so overlays can draw a stub + marker; `IZone.GetFirstSegmentEntry` on circle/rect. 6 new `LineOfSightTests` cases, suite 135/135. ([WorkItems/046](WorkItems/046-los-first-blocking-hit.md)) — commit `d9e60fb`
@@ -162,6 +161,7 @@ Implemented and merged to master; engine test suite green. Held open only until 
 
 ## Done
 
+- [x] 079 — csproj dependency cleanup: dropped `System.Drawing.Common` (Windows-only GDI+; only `System.Drawing.Color` was used and it ships in the base-framework `System.Drawing.Primitives`) and deleted the dead duplicate ImageSharp comment. Engine suite 424/424, build clean, headless smoke exits 0. Submodule `2b14fd9`. ([WorkItems/079](WorkItems/079-csproj-dependency-cleanup.md))
 - [x] 060 — Stage-resolution cleanup (audit §5): dead `StageResolverRegistry._gameDataStore` field (commit `b0aebc9`), "Remove client" → "Remote client" exception text, and the commented-out PlayerID filters in `RequestMessageSender` — engine commit `5822954`, bump `d40f132`. Suite 416/0.
 - [x] 025 — `AssignWoundsResults.AutoFill` bug — **stale, closed 2026-06-13**: verified the described `modelWoundsRemaining always 0` bug no longer exists. `AutoFill()` was rewritten to fill via `TryAddWounds` and throws if it cannot place every wound (`AssignWoundsResults.cs:96`); the AI wound resolver relies on it and the suite is green (416/0). Remaining wound-assignment gaps stay tracked as #023/#024.
 - [x] 001 — D3+2 objective placement: interactive alternating-team placement w/ validator + AI strategy + debug auto-place toggle ([WorkItems/001](WorkItems/001-objective-placement.md))
