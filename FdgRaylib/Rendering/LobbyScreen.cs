@@ -9,7 +9,8 @@ using FdgRaylib.Cli;
 using FdgRaylib.Rendering.Presentation;
 using FdgRaylib.Rendering.Resolvers;
 using ImGuiNET;
-using Newtonsoft.Json;
+using System.Text.Json;
+using FDG.Rules.Serialization;
 using Raylib_cs;
 using TinyDialogsNet;
 
@@ -34,11 +35,6 @@ public class LobbyScreen : IAppScreen
         new[] { $"*{TerrainLayoutFile.EXTENSION_WITH_PERIOD}" });
 
     private string? _lastLaunchError;
-
-    private static readonly JsonSerializerSettings JsonSettings = new()
-    {
-        TypeNameHandling = TypeNameHandling.Auto,
-    };
 
     private static readonly Color[] PlayerPalette =
         { Color.Blue, Color.Red, Color.Green, Color.Yellow };
@@ -373,7 +369,7 @@ public class LobbyScreen : IAppScreen
         string path = paths?.FirstOrDefault() ?? "";
         if (!File.Exists(path)) return;
 
-        var loaded = JsonConvert.DeserializeObject<ArmyListFile>(File.ReadAllText(path), JsonSettings);
+        var loaded = JsonSerializer.Deserialize<ArmyListFile>(File.ReadAllText(path), RuleJson.Options);
         if (loaded is null) return;
 
         _viewModel!.UpdateArmyListFile(playerID, loaded);

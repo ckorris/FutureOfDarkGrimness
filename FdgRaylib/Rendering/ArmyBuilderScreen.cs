@@ -1,8 +1,9 @@
 using System.Numerics;
 using System.Runtime.InteropServices;
+using System.Text.Json;
+using FDG.Rules.Serialization;
 using FDG.SaveLoad;
 using ImGuiNET;
-using Newtonsoft.Json;
 using TinyDialogsNet;
 
 namespace FdgRaylib.Rendering;
@@ -16,12 +17,6 @@ public class ArmyBuilderScreen : IAppScreen
     private static readonly FileFilter ArmyFilter = new(
         $"Army List (*{ArmyListFile.EXTENSION_WITH_PERIOD})",
         new[] { $"*{ArmyListFile.EXTENSION_WITH_PERIOD}" });
-
-    private static readonly JsonSerializerSettings JsonSettings = new()
-    {
-        TypeNameHandling = TypeNameHandling.Auto,
-        Formatting = Formatting.Indented,
-    };
 
     private static readonly string[] CoreNames =
         SpecialRuleRegistry.CoreRules.Select(r => r.PrintableName).ToArray();
@@ -60,7 +55,7 @@ public class ArmyBuilderScreen : IAppScreen
         if (Path.GetExtension(path) != ArmyListFile.EXTENSION_WITH_PERIOD)
             path = Path.ChangeExtension(path, ArmyListFile.EXTENSION_WITH_PERIOD);
 
-        File.WriteAllText(path, JsonConvert.SerializeObject(_army, JsonSettings));
+        File.WriteAllText(path, JsonSerializer.Serialize(_army, RuleJson.Options));
     }
 
     private void Load()
@@ -71,7 +66,7 @@ public class ArmyBuilderScreen : IAppScreen
         string path = paths?.FirstOrDefault() ?? "";
         if (!File.Exists(path)) return;
 
-        var loaded = JsonConvert.DeserializeObject<ArmyListFile>(File.ReadAllText(path), JsonSettings);
+        var loaded = JsonSerializer.Deserialize<ArmyListFile>(File.ReadAllText(path), RuleJson.Options);
         if (loaded is null) return;
 
         _army.Units.Clear();

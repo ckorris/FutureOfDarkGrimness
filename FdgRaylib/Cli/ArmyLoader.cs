@@ -1,15 +1,11 @@
+using System.Text.Json;
+using FDG.Rules.Serialization;
 using FDG.SaveLoad;
-using Newtonsoft.Json;
 
 namespace FdgRaylib.Cli;
 
 public static class ArmyLoader
 {
-    private static readonly JsonSerializerSettings _settings = new JsonSerializerSettings
-    {
-        TypeNameHandling = TypeNameHandling.Auto,
-    };
-
     public static ArmyListFile PromptForArmy(string playerLabel)
     {
         Console.WriteLine($"{playerLabel} — choose army:");
@@ -53,7 +49,7 @@ public static class ArmyLoader
             try
             {
                 string json = File.ReadAllText(path);
-                var army = JsonConvert.DeserializeObject<ArmyListFile>(json, _settings);
+                var army = JsonSerializer.Deserialize<ArmyListFile>(json, RuleJson.Options);
                 if (army == null) throw new InvalidOperationException("Deserialized army was null.");
                 Console.WriteLine($"Loaded '{army.Name}' ({army.TotalPoints} pts, {army.Units.Count} units).");
                 return army;
