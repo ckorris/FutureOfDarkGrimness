@@ -18,7 +18,6 @@ Numbers are permanent and never reused. If an item is split, its line stays and 
 
 ## Deployment
 
-- [ ] 048 — Block deployment of models into impassible terrain (auto-placement and GUI both need intersection check; observed: AI placed model inside building flush against deployment zone edge) ([WorkItems/048](WorkItems/048-deployment-into-impassible.md))
 - [ ] 006 — Hero joins unit + takes morale on behalf of unit
 - [ ] 007 — Resolve `DeployAllUnitsStage.Enter` `NotImplementedException` and "actually move the models" TODO
 
@@ -101,6 +100,7 @@ These are umbrellas; will fragment per-rule when picked up.
 
 Implemented and merged to master; engine test suite green. Held open only until the behavior is confirmed by hand in the running app — tick and move to `## Done` once verified.
 
+- [ ] 048 — Block deployment of models into impassible terrain: shared `PlacementUtilities.OverlapsImpassibleTerrain` (base-radius disc-vs-zone, built on #050's swept-disc overload) wired into the AI, CLI, and GUI place resolvers. Engine + AI + CLI unit-tested (`AiPlaceObjectsResolverTests.DoesNotPlaceModelsOnImpassibleTerrain`); GUI block (red ghost + click toast) needs a hand-eyeball. ([WorkItems/048](WorkItems/048-deployment-into-impassible.md))
 - [ ] 041 — Factor line of sight into movement resolver's ranged-targeting overlay: both the per-enemy-unit weapon list and the per-model fire lines now require LoS (terrain + model-base blockers), with a red block-stub when no model in the unit is visible. ([WorkItems/041](WorkItems/041-movement-resolver-ranged-los.md)) — commit `ec2f552`
 - [ ] 045 — Cover indication in targeting overlay and shot UI: fire lines through cover render dashed yellow; shot picker spells out "Cover (+1 Def)". Presentation-only, no engine change. ([WorkItems/045](WorkItems/045-cover-indication.md)) — commit `cc341b0`
 - [ ] 046 — `GetFirstBlockingHit` engine API: returns the closest `Blocking` terrain entry point along an (attacker, target) segment so overlays can draw a stub + marker; `IZone.GetFirstSegmentEntry` on circle/rect. 6 new `LineOfSightTests` cases, suite 135/135. ([WorkItems/046](WorkItems/046-los-first-blocking-hit.md)) — commit `d9e60fb`
