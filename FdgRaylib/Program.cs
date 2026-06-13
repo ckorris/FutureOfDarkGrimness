@@ -2,6 +2,7 @@ using FdgRaylib.Cli;
 using FdgRaylib.Rendering;
 using FDG.Data;
 using FDG.Network.Connection;
+using FDG.Network.Connection.Lobby;
 using FDG.SaveLoad;
 using TinyDialogsNet;
 
