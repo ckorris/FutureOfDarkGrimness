@@ -77,6 +77,7 @@ Recommended before locking the design: skim 2–3 more armies in different flavo
 
 ## Notes
 
+- 2026-06-13: **JSON loader broken out to #059.** Its serialization foundation landed on master (engine `5154c5a`+`af3f5bd`): the full `SpecialRuleDefinition` tree (Condition/Effect/ValueSource/RerollCondition/TokenClearTrigger/DiceExpression/Cost) round-trips through System.Text.Json as clean `kind`-tagged JSON, with a reflection guard against tag drift and a corpus test round-tripping all ~27 `CoreRuleCatalog` rules. This realizes the design's "rules authored as data records (JSON)" goal at the *definition* level. File→registry loading + validate-at-load continue under #059. Library choice (STJ for rules, Newtonsoft retained for message/save) tracked in #058. See `WorkItems/059-json-rule-loader.md`.
 - 2026-05-11: Initial design conversation complete. Two armies sampled and validated.
 - 2026-05-11: Existing `ISpecialRule_Combat` / `ICombatEffect<TResult>` partial implementation has the right shape for combat hooks (Rending demonstrates the sink-mutation pattern). Should be salvageable, but the surface needs to grow to non-combat hooks and the rule definitions need to move from C# classes to data records.
 - 2026-05-11: Effect-output model: **queue of typed `RuleOperation` records returned by effects, applied by the engine**. Not in-place mutation. Tests assert on the returned queue. Mutation tests couple to context internals; queue tests are structural and survive refactors.
