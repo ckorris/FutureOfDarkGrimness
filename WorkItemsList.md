@@ -31,7 +31,7 @@ Numbers are permanent and never reused. If an item is split, its line stays and 
 ## Movement
 
 - [ ] 011 — `MovementUtilities.ValidateMovingThroughEnemyUnits` (currently empty)
-- [ ] 050 — Movement validation ignores model base radius for terrain footprints. `MovementUtilities.ValidateMovingThroughImpassibleTerrain` (and the difficult/dangerous variants) test a zero-width center-to-center line against terrain footprints, so a model can park with its center just outside an impassable shape while its base overlaps it. Fix: inflate the terrain footprint by the model's `BaseRadiusInches` (Minkowski expansion) or use swept-disc distance, in `MovementUtilities`. Resolver layer needs no changes. Pre-existing — surfaced more by #002's richer terrain. (Reassigned from 046, whose number was reused for the line-of-sight cluster.)
+- [ ] 050 — Movement validation ignores model base radius for terrain footprints. `MovementUtilities.ValidateMovingThroughImpassibleTerrain` (and the difficult/dangerous variants) test a zero-width center-to-center line against terrain footprints, so a model can park with its center just outside an impassable shape while its base overlaps it. Fix: inflate the terrain footprint by the model's `BaseRadiusInches` (Minkowski expansion) or use swept-disc distance, in `MovementUtilities`. Resolver layer needs no changes. Pre-existing — surfaced more by #002's richer terrain. (Reassigned from 046, whose number was reused for the line-of-sight cluster.) ([WorkItems/050](WorkItems/050-movement-base-radius.md))
 
 ## Shooting
 
