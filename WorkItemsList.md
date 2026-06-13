@@ -49,7 +49,6 @@ Numbers are permanent and never reused. If an item is split, its line stays and 
 
 - [ ] 023 — Tough wound-priority (continue wounding same Tough model until killed; heroes last)
 - [ ] 024 — Validate wound splits in `AssignWoundsResults` (currently allows illegal splits)
-- [ ] 025 — Fix or remove `AssignWoundsResults.AutoFill` bug (`modelWoundsRemaining` always 0)
 
 ## Special rules — framework
 
@@ -112,6 +111,7 @@ Implemented and merged to master; engine test suite green. Held open only until 
 
 ## Done
 
+- [x] 025 — `AssignWoundsResults.AutoFill` bug — **stale, closed 2026-06-13**: verified the described `modelWoundsRemaining always 0` bug no longer exists. `AutoFill()` was rewritten to fill via `TryAddWounds` and throws if it cannot place every wound (`AssignWoundsResults.cs:96`); the AI wound resolver relies on it and the suite is green (416/0). Remaining wound-assignment gaps stay tracked as #023/#024.
 - [x] 001 — D3+2 objective placement: interactive alternating-team placement w/ validator + AI strategy + debug auto-place toggle ([WorkItems/001](WorkItems/001-objective-placement.md))
 - [x] 012 — Decouple Advance / Rush / Charge distances: engine splits `MaxRushDistance` from `MaxChargeDistance`, `PathTemplate` carries all three explicitly (no more hardcoded half), `ValidatePaths` gains a "beyond Rush ⇒ a model must end in melee" check + Pass-gating; GUI movement resolver gains a three-band (Advance/Rush/Charge) ring preview + Done gating. Tests added (`ChargeReachValidationTests`, `ChooseActionPassDisableTests`). Engine `a967fa1`, GUI `3a6f189`.
 - [x] 013 — Weapon-group target selection (up to 2 targets per shoot action): already implemented via `GameWideConstants.MAX_TARGETED_UNITS_PER_SHOOT_ACTION` + `attackedDefenderRefs` tracking in `ChooseRangedAttackStage`; item was stale
