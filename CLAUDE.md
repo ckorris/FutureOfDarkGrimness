@@ -154,20 +154,20 @@ Resolvers that need to interact with the table canvas (movement, placement) addi
 
 ## Known stubs in the engine
 
-The engine has substantial gaps. Don't assume rules are enforced just because a stage exists. Surveyed Apr 2026:
+The engine has substantial gaps. Don't assume rules are enforced just because a stage exists. Surveyed Apr 2026 (setup, melee pile-in, and wound auto-fill re-verified 2026-06-14):
 
-**Setup gaps**
-- `MapSetupStage` children (`RollForObjectiveCountStage`, `PlaceObjectivesStage`, `RollForFirstObjectivePlacementStage`) — files exist but D3+2 objective placement and terrain placement aren't implemented yet
-- `ReconcileObjectivesStage` and `VictoryCalculationStage` themselves are implemented (seizure + objective tally → real winner) — but they operate on whatever objectives `MapSetupStage` produces, which is currently nothing
+**Setup is implemented** (was stubbed at the Apr 2026 survey)
+- `MapSetupStage` runs the full sequence: `RollForObjectiveCountStage` rolls D3+2 (3–5 objectives), `RollForFirstObjectivePlacementStage` + `PlaceObjectivesStage`/`PlaceOneObjectiveStage` alternate players placing real `ObjectiveData` (player request, or a debug auto-placer behind `AutoPlaceObjectivesDebug`), and `RollForFirstTerrainPlacementStage` + `PlaceTerrainStage` place terrain (AutoFromLayout / LoadFromFile / Alternating modes).
+- `ReconcileObjectivesStage` and `VictoryCalculationStage` (seizure + objective tally → real winner) operate on the objectives `MapSetupStage` actually produces.
 
 **Movement validation is partial**
 - `MovementUtilities.ValidateMovingThroughImpassibleTerrain` — implemented; blocks moves whose path intersects any `Impassible`-flagged terrain piece
 - `MovementUtilities.ValidateMovingThroughEnemyUnits` — empty (TODO)
 - LoS is fully implemented: `ChooseRangedAttackStage` and `OcclusionCheckStage` call `LineOfSightUtilities.HasLineOfSight` with terrain + model-base circular blockers (excluding the attacking and defending unit's own models)
 
-**Melee is barely implemented**
+**Melee — partial** (much of the flow works: strike order, swing, strike-back, winner determination, consolidate; the gap below remains)
 - `DetermineInRangeAttackersStage` / `DetermineInRangeDefendersStage` — skip range checks; any model can fight
-- `PileInStage` — no-op
+- `PileInStage` — implemented (moves defenders toward the charger via `PileInUtilities.ComputePileInMoves`); no longer a no-op
 
 **Fatigue & morale absent**
 - `ApplyFatigueStage` — logs and exits
@@ -182,8 +182,7 @@ The engine has substantial gaps. Don't assume rules are enforced just because a 
 
 **Half-built**
 - `RangedContext.SetAttackWeapon` and friends — `NotImplementedException` on multiple paths
-- `AssignWoundsResults` — no priority for "tough" models, wound-split validation missing
-- `AssignWoundsResults.AutoFill()` has a bug (`modelWoundsRemaining` always 0); the GUI/CLI wound resolvers fill manually instead
+- `AssignWoundsResults` — no priority for "tough" models, wound-split validation missing (`AutoFill()` itself was rewritten and works: it loops `TryAddWounds` and throws if it can't place every wound)
 
 ## Key Files
 

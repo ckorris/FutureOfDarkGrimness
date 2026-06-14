@@ -8,6 +8,13 @@ namespace FdgRaylib.Cli.Resolvers;
 
 public class ConsolidationMoveResolver : IStageResolver<ConsolidationMoveRequest, List<ModelMoveEntry>>
 {
+    private readonly ITableState? _tableState;
+
+    // tableState lets the resolver enemy-check the entered offset (#090) so it never returns a move the
+    // authoritative ConsolidateStage would reject. Null-safe: with no table state it falls back to the
+    // distance-cap-only check.
+    public ConsolidationMoveResolver(ITableState? tableState = null) => _tableState = tableState;
+
     public Task<List<ModelMoveEntry>> Resolve(ConsolidationMoveRequest request)
     {
         var unit = request.UnitDataBinding.GetValue();
@@ -43,8 +50,39 @@ public class ConsolidationMoveResolver : IStageResolver<ConsolidationMoveRequest
                 var m = mb.GetValue();
                 return new ModelMoveEntry(mb, new List<Position> { new Position(m.Position.x + dx, m.Position.z + dz) });
             }).ToList();
+
+            // Enemy-check the move (move-through / standoff) against the same validator ConsolidateStage runs,
+            // so an offset that crosses or stacks on an enemy is rejected here rather than throwing downstream.
+            if (_tableState != null && !MovementUtilities.ValidatePaths(entries, request.MaxDistanceInches,
+                    GetEnemyFootprints(request), request.CanMoveThroughEnemies,
+                    _tableState.Terrain.Objects, out var errors))
+            {
+                Console.WriteLine($"    Invalid: {string.Join(", ", errors.Select(e => e.ToString()))}. Try again.");
+                continue;
+            }
+
             return Task.FromResult(entries);
         }
+    }
+
+    private List<EnemyModelFootprint> GetEnemyFootprints(ConsolidationMoveRequest request)
+    {
+        var footprints = new List<EnemyModelFootprint>();
+        if (_tableState == null) return footprints;
+        int unitKey = 0;
+        foreach (var u in _tableState.Units.Objects)
+        {
+            if (u.PlayerID == request.TargetPlayerID) continue;
+            bool anyLiving = false;
+            foreach (var m in u.Models)
+                if (m.GetIsAlive())
+                {
+                    footprints.Add(new EnemyModelFootprint(m.Position, m.BaseRadiusInches, unitKey));
+                    anyLiving = true;
+                }
+            if (anyLiving) unitKey++;
+        }
+        return footprints;
     }
 
     private static List<ModelMoveEntry> StayInPlace(List<DataBinding<ModelData>> aliveModels) =>

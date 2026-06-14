@@ -17,7 +17,7 @@ public static class ResolverRegistryFactory
             .RegisterResolver(new ChooseDeploymentZoneResolver())
             .RegisterResolver(new ChooseRangedAttackResolver())
             .RegisterResolver(new DefineMovementPathResolver(tableState))
-            .RegisterResolver(new ConsolidationMoveResolver())
+            .RegisterResolver(new ConsolidationMoveResolver(tableState))
             .RegisterResolver(new AssignWoundsResolver())
             .RegisterResolver(new SelectionResolver<UnitData>())
             .RegisterResolver(new SelectionResolver<ModelData>())
@@ -32,6 +32,10 @@ public static class ResolverRegistryFactory
     {
         var overlay = new GuiResolverOverlay();
 
+        // Shared Group/Single preference: one instance so flipping the mode in deployment carries
+        // to movement and vice-versa, remembered for the whole game.
+        var formationMode = new FormationModeState();
+
         var yesNo         = new GuiYesNoResolver();
         var selectUnit    = new GuiSelectionResolver<UnitData>();
         var selectModel   = new GuiSelectionResolver<ModelData>();
@@ -41,9 +45,9 @@ public static class ResolverRegistryFactory
         var deployZone    = new GuiChooseDeploymentZoneResolver();
         var rangedAttack  = new GuiChooseRangedAttackResolver(tableState);
         var assignWounds  = new GuiAssignWoundsResolver();
-        var movement      = new GuiDefineMovementResolver(tableState);
+        var movement      = new GuiDefineMovementResolver(tableState, formationMode);
         var consolidate   = new GuiConsolidationMoveResolver(tableState);
-        var placeObjects  = new GuiPlaceObjectsResolver<ModelData>(tableState);
+        var placeObjects  = new GuiPlaceObjectsResolver<ModelData>(tableState, formationMode);
         var placeObjective = new GuiPlaceObjectiveResolver(tableState);
         var placeTerrain   = new GuiPlaceOneTerrainResolver(tableState);
         overlay.Register(yesNo);

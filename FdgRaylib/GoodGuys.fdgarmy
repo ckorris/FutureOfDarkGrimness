@@ -1,0 +1,85 @@
+{
+  "name": "Good guys",
+  "faction": "People Who Fight",
+  "pointsLimit": 250,
+  "units": [
+    {
+      "name": "Neighborly Knights",
+      "modelCount": 5,
+      "quality": 3,
+      "defense": 4,
+      "specialRules": [
+        {
+          "kind": "core",
+          "name": "Fast"
+        },
+        {
+          "kind": "core",
+          "name": "Stealth"
+        }
+      ],
+      "weapons": [
+        {
+          "name": "Happy Hammer",
+          "quantity": 4,
+          "rangeInches": 0,
+          "attacks": 1,
+          "armorPenetration": 1,
+          "specialRules": [
+            {
+              "kind": "core",
+              "name": "Rending"
+            }
+          ]
+        },
+        {
+          "name": "Generous Greatsword",
+          "quantity": 1,
+          "rangeInches": 0,
+          "attacks": 2,
+          "armorPenetration": 1,
+          "specialRules": [
+            {
+              "kind": "coreNumeric",
+              "name": "Blast",
+              "numericValue": 1
+            }
+          ]
+        }
+      ],
+      "pointCost": 150
+    },
+    {
+      "name": "Righteous Riflemen",
+      "modelCount": 5,
+      "quality": 3,
+      "defense": 4,
+      "specialRules": [],
+      "weapons": [
+        {
+          "name": "Beautiful Boomstick",
+          "quantity": 2,
+          "rangeInches": 24,
+          "attacks": 2,
+          "armorPenetration": 0,
+          "specialRules": [
+            {
+              "kind": "core",
+              "name": "Rending"
+            }
+          ]
+        },
+        {
+          "name": "Friendly Flintlock",
+          "quantity": 3,
+          "rangeInches": 18,
+          "attacks": 1,
+          "armorPenetration": 1,
+          "specialRules": []
+        }
+      ],
+      "pointCost": 100
+    }
+  ],
+  "ruleDefinitions": []
+}

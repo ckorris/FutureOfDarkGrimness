@@ -249,7 +249,10 @@ public class GuiConsolidationMoveResolver
         float btnW    = (panelW - pad - spacing * 2) / 3f;
 
         var results = pt.GetResultsAsList();
-        bool engineValid = MovementUtilities.ValidatePaths(results, request.MaxDistanceInches, terrain, out var engineErrors);
+        // #090: enemy-check the consolidation preview so it matches the authoritative ConsolidateStage check.
+        var enemyFootprints = GetEnemyFootprintsForRequest(request);
+        bool engineValid = MovementUtilities.ValidatePaths(results, request.MaxDistanceInches,
+            enemyFootprints, request.CanMoveThroughEnemies, terrain, out var engineErrors);
         var finals = BuildFinalPositions(pt.CurrentPaths, null, null);
         var cohesion = CheckCohesion(finals);
 
@@ -344,6 +347,27 @@ public class GuiConsolidationMoveResolver
             list.Add((m, p));
         }
         return list;
+    }
+
+    // Living enemy model footprints, tagged per-unit. Mirrors MovementUtilities.GetEnemyModelFootprints
+    // but reads from ITableState (the resolver's view). #090.
+    private List<EnemyModelFootprint> GetEnemyFootprintsForRequest(ConsolidationMoveRequest request)
+    {
+        var footprints = new List<EnemyModelFootprint>();
+        int unitKey = 0;
+        foreach (var u in _tableState.Units.Objects)
+        {
+            if (u.PlayerID == request.TargetPlayerID) continue;
+            bool anyLiving = false;
+            foreach (var m in u.Models)
+                if (m.GetIsAlive())
+                {
+                    footprints.Add(new EnemyModelFootprint(m.Position, m.BaseRadiusInches, unitKey));
+                    anyLiving = true;
+                }
+            if (anyLiving) unitKey++;
+        }
+        return footprints;
     }
 
     private readonly struct CohesionViolations

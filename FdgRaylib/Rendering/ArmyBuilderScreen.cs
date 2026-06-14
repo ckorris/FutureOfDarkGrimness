@@ -13,7 +13,10 @@ public class ArmyBuilderScreen : IAppScreen
 {
     public Action? OnBack;
 
-    private readonly ArmyListFile _army = new();
+    // Test-army-friendly default points; matched by the "start fresh" reset below.
+    private const int DefaultPointsLimit = 1000;
+
+    private readonly ArmyListFile _army = new() { PointsLimit = DefaultPointsLimit };
 
     private static readonly FileFilter ArmyFilter = new(
         $"Army List (*{ArmyListFile.EXTENSION_WITH_PERIOD})",
@@ -126,7 +129,7 @@ public class ArmyBuilderScreen : IAppScreen
                 _army.Units.Clear();
                 _army.Name    = "";
                 _army.Faction = "";
-                _army.PointsLimit = 0;
+                _army.PointsLimit = DefaultPointsLimit;
                 ImGui.CloseCurrentPopup();
             }
             ImGui.SameLine();
@@ -232,7 +235,7 @@ public class ArmyBuilderScreen : IAppScreen
             }
 
             if (ImGui.SmallButton($"Add Weapon##addw{idx}"))
-                unit.Weapons.Add(new WeaponFileEntry());
+                unit.Weapons.Add(new WeaponFileEntry { Attacks = 1 });
         }
     }
 
@@ -409,7 +412,10 @@ public class ArmyBuilderScreen : IAppScreen
     private void DrawAddUnitButton()
     {
         if (ImGui.Button("Add Unit"))
-            _army.Units.Add(new UnitFileEntry { Name = "New Unit", ModelCount = 1 });
+            _army.Units.Add(new UnitFileEntry
+            {
+                Name = "New Unit", ModelCount = 1, Quality = 4, Defense = 4, PointCost = 100,
+            });
     }
 
     private static void EditString(string label, Func<string> getter, Action<string> setter,

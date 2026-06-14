@@ -12,6 +12,7 @@ public class GuiPlaceObjectsResolver<T>
       IEnemyExclusionProvider
 {
     private readonly ITableState _tableState;
+    private readonly FormationModeState _formationMode;
     private readonly object _lock = new();
 
     // Layout — main thread only
@@ -24,10 +25,21 @@ public class GuiPlaceObjectsResolver<T>
     private TaskCompletionSource<List<PlacedObjectEntry<T>>>? _tcs;
     private readonly List<PlacedObjectEntry<T>> _placed = new();
 
+    // Index into _placed of the model currently being re-placed by drag (single mode); null = none.
+    private int? _dragIndex;
+    // Group-mode pending rotation (radians) about the formation centroid; reset on drop and on Resolve.
+    private float _groupRotationDeploy;
+
+    private static readonly float GroupRotationStep = MathF.PI / 12f; // 15° per wheel notch / key press
+
     private string? _errorMessage;
     private double  _errorExpiry;
 
-    public GuiPlaceObjectsResolver(ITableState tableState) => _tableState = tableState;
+    public GuiPlaceObjectsResolver(ITableState tableState, FormationModeState formationMode)
+    {
+        _tableState = tableState;
+        _formationMode = formationMode;
+    }
 
     public void UpdateLayout(float scale, int originX, int originY, float tableH)
     {
@@ -43,6 +55,8 @@ public class GuiPlaceObjectsResolver<T>
         {
             _tcs = tcs;
             _placed.Clear();
+            _dragIndex = null;
+            _groupRotationDeploy = 0f;
             _errorMessage = null;
             _request = request;
         }
@@ -70,68 +84,215 @@ public class GuiPlaceObjectsResolver<T>
         float minEnemyDist = request.MinDistanceFromEnemiesInches;
         var enemies = minEnemyDist > 0f ? GetEnemyPositions(request.TargetPlayerID) : _noEnemies;
 
-        DrawZone(dl, zone);
-        DrawPlacedSoFar(dl);
-
-        var currentBinding = request.ModelsToPlace[_placed.Count];
-        float currentRadius = GetBaseRadius(currentBinding.GetValue());
-
-        var (mouseInX, mouseInZ) = PixelToInches(io.MousePos.X, io.MousePos.Y);
+        bool group = _formationMode.IsGroup;
         bool overTable = IsOverTable(io.MousePos.X, io.MousePos.Y);
+        bool wantInput = !io.WantCaptureMouse && !io.WantCaptureKeyboard;
 
-        var candidate = new Position(mouseInX, mouseInZ);
-        bool inZone   = mouseInX >= zone.Left  + currentRadius && mouseInX <= zone.Right - currentRadius &&
-                        mouseInZ >= zone.Bottom + currentRadius && mouseInZ <= zone.Top   - currentRadius;
-        string? overlap = inZone ? CheckOverlap(candidate, currentRadius) : null;
-        bool inCohesion = _placed.Count == 0 || IsInCohesionWithPlaced(candidate, currentRadius);
-        bool farFromEnemies = minEnemyDist <= 0f || !TooCloseToEnemy(candidate, enemies, minEnemyDist);
-        bool notOnTerrain = !OnImpassibleTerrain(candidate, currentRadius);
-        bool valid = inZone && overlap == null && inCohesion && farFromEnemies && notOnTerrain;
+        DrawZone(dl, zone);
+        DrawPlacedSoFar(dl, _dragIndex ?? -1);
 
-        if (overTable) DrawGhost(dl, io.MousePos, currentRadius * _scale, valid);
-
-        if (overTable && !io.WantCaptureMouse && ImGui.IsMouseClicked(ImGuiMouseButton.Left))
+        // G toggles Group/Single for the rest of the game (shared with movement).
+        if (wantInput && ImGui.IsKeyPressed(ImGuiKey.G))
         {
-            if (!inZone)
-            {
-                _errorMessage = "Outside deployment zone.";
-                _errorExpiry  = ImGui.GetTime() + 2.0;
-            }
-            else if (overlap != null)
-            {
-                _errorMessage = $"Bases overlap ({overlap}).";
-                _errorExpiry  = ImGui.GetTime() + 2.0;
-            }
-            else if (!inCohesion)
-            {
-                _errorMessage = $"Outside cohesion - must be within {GameWideConstants.MAX_MODEL_DISTANCE_FROM_ANY_OTHER_MODEL_INCHES}\" base-to-base of a placed model.";
-                _errorExpiry  = ImGui.GetTime() + 2.5;
-            }
-            else if (!farFromEnemies)
-            {
-                _errorMessage = $"Too close to an enemy - must be over {minEnemyDist:F0}\" from enemy units.";
-                _errorExpiry  = ImGui.GetTime() + 2.5;
-            }
-            else if (!notOnTerrain)
-            {
-                _errorMessage = "On impassible terrain - the model's base would overlap a building or blocker.";
-                _errorExpiry  = ImGui.GetTime() + 2.5;
-            }
-            else
-            {
-                _placed.Add(new PlacedObjectEntry<T>(currentBinding, candidate));
-                _errorMessage = null;
-                if (_placed.Count >= request.ModelsToPlace.Count)
-                {
-                    Complete(tcs, new List<PlacedObjectEntry<T>>(_placed));
-                    return;
-                }
-            }
+            _formationMode.Toggle();
+            _dragIndex = null;
         }
+
+        // The group follow-formation ghost only shows before the first drop. Once anything is on the
+        // table, both modes switch to per-model editing (drag a placed model, or place a missing one),
+        // so clicks no longer re-drop the whole unit. Use Restart to re-form from scratch.
+        if (group && _placed.Count == 0)
+            DrawGroupDeploy(dl, io, request, zone, enemies, minEnemyDist, overTable, wantInput);
+        else
+            DrawSingleDeploy(dl, io, request, zone, enemies, minEnemyDist, overTable);
 
         if (_errorMessage != null && ImGui.GetTime() > _errorExpiry) _errorMessage = null;
 
         DrawInfoPanel(screenW, request, tcs);
+    }
+
+    /// <summary>
+    /// Single mode: click an empty spot to place the next model (original behaviour); click an already
+    /// placed model to pick it up and re-drop it elsewhere (drag-edit, used to fine-tune after a group
+    /// drop). Completion is via the Done button — no auto-finish on the last model.
+    /// </summary>
+    private void DrawSingleDeploy(ImDrawListPtr dl, ImGuiIOPtr io, PlaceObjectsRequest<T> request,
+        RectangularZone zone, List<Position> enemies, float minEnemyDist, bool overTable)
+    {
+        var (mouseInX, mouseInZ) = PixelToInches(io.MousePos.X, io.MousePos.Y);
+        bool clicked = overTable && !io.WantCaptureMouse && ImGui.IsMouseClicked(ImGuiMouseButton.Left);
+
+        // Re-placing an existing model.
+        if (_dragIndex.HasValue)
+        {
+            int k = _dragIndex.Value;
+            var binding = _placed[k].Binding;
+            float r = GetBaseRadius(binding.GetValue());
+            var cand = new Position(mouseInX, mouseInZ);
+            bool valid = IsPlacementValid(cand, r, zone, enemies, minEnemyDist, k, out string? why);
+            if (overTable) DrawGhost(dl, io.MousePos, r * _scale, valid);
+            if (clicked)
+            {
+                if (valid) { _placed[k] = new PlacedObjectEntry<T>(binding, cand); _dragIndex = null; _errorMessage = null; }
+                else { _errorMessage = why; _errorExpiry = ImGui.GetTime() + 2.5; }
+            }
+            return;
+        }
+
+        // Not dragging: a click on a placed model picks it up.
+        int hitIdx = HitTestPlaced(mouseInX, mouseInZ);
+        if (clicked && hitIdx >= 0)
+        {
+            _dragIndex = hitIdx;
+            _errorMessage = null;
+            return;
+        }
+
+        // All placed and nothing picked up: wait for Done (or a pick-up).
+        if (_placed.Count >= request.ModelsToPlace.Count) return;
+
+        // Place the next model.
+        var currentBinding = request.ModelsToPlace[_placed.Count];
+        float curR = GetBaseRadius(currentBinding.GetValue());
+        var candidate = new Position(mouseInX, mouseInZ);
+        bool ok = IsPlacementValid(candidate, curR, zone, enemies, minEnemyDist, -1, out string? reason);
+        if (overTable) DrawGhost(dl, io.MousePos, curR * _scale, ok);
+        if (clicked)
+        {
+            if (ok) { _placed.Add(new PlacedObjectEntry<T>(currentBinding, candidate)); _errorMessage = null; }
+            else { _errorMessage = reason; _errorExpiry = ImGui.GetTime() + 2.5; }
+        }
+    }
+
+    /// <summary>
+    /// Group mode: the whole unit is laid out as a forward line (wrapping to two balanced rows when it
+    /// would break the max-pairwise cohesion span), rotatable with the wheel / R, its centroid following
+    /// the cursor. A left-click drops every model at once (replacing any prior placement); red ghosts mean
+    /// at least one model is in an illegal spot and the click is a no-op.
+    /// </summary>
+    private void DrawGroupDeploy(ImDrawListPtr dl, ImGuiIOPtr io, PlaceObjectsRequest<T> request,
+        RectangularZone zone, List<Position> enemies, float minEnemyDist, bool overTable, bool wantInput)
+    {
+        var models = request.ModelsToPlace;
+        int n = models.Count;
+
+        // Rotation input: wheel both ways; R clockwise, Shift+R counter-clockwise.
+        if (wantInput)
+        {
+            if (io.MouseWheel != 0f)
+                _groupRotationDeploy += io.MouseWheel > 0f ? GroupRotationStep : -GroupRotationStep;
+            if (ImGui.IsKeyPressed(ImGuiKey.R))
+            {
+                bool shift = ImGui.IsKeyDown(ImGuiKey.LeftShift) || ImGui.IsKeyDown(ImGuiKey.RightShift);
+                _groupRotationDeploy += shift ? GroupRotationStep : -GroupRotationStep;
+            }
+        }
+
+        var radii = new float[n];
+        for (int i = 0; i < n; i++) radii[i] = GetBaseRadius(models[i].GetValue());
+
+        // Forward = toward table centre: longer/front row sits on that side.
+        float forwardSign = (zone.Bottom + zone.Top) * 0.5f < _tableH * 0.5f ? 1f : -1f;
+        var offsets = GroupFormationUtilities.ComputeDeploymentOffsets(
+            radii, 0.1f, GameWideConstants.MAX_MODEL_DISTANCE_FROM_ALL_OTHER_MODELS_INCHES, forwardSign);
+
+        // Centroid follows the cursor (over table); otherwise preview at the zone's forward-centre.
+        Position centroid;
+        if (overTable && !io.WantCaptureMouse)
+        {
+            var (mx, mz) = PixelToInches(io.MousePos.X, io.MousePos.Y);
+            centroid = new Position(mx, mz);
+        }
+        else
+        {
+            float cz = forwardSign > 0f ? zone.Top - 3f : zone.Bottom + 3f;
+            centroid = new Position((zone.Left + zone.Right) * 0.5f, cz);
+        }
+
+        float cos = MathF.Cos(_groupRotationDeploy), sin = MathF.Sin(_groupRotationDeploy);
+        var positions = new Position[n];
+        bool allValid = true;
+        for (int i = 0; i < n; i++)
+        {
+            float dx = offsets[i].dx, dz = offsets[i].dz;
+            float rx = dx * cos - dz * sin, rz = dx * sin + dz * cos;
+            positions[i] = new Position(centroid.x + rx, centroid.z + rz);
+            bool valid = IsGroupSlotValid(positions[i], radii[i], zone, enemies, minEnemyDist);
+            DrawGhost(dl, ToPixelVec(positions[i]), radii[i] * _scale, valid);
+            if (!valid) allValid = false;
+        }
+
+        if (overTable && !io.WantCaptureMouse && ImGui.IsMouseClicked(ImGuiMouseButton.Left))
+        {
+            if (allValid)
+            {
+                _placed.Clear();
+                for (int i = 0; i < n; i++) _placed.Add(new PlacedObjectEntry<T>(models[i], positions[i]));
+                _groupRotationDeploy = 0f;
+                _errorMessage = null;
+            }
+            else
+            {
+                _errorMessage = "Some models are in an invalid spot - rotate or reposition the formation.";
+                _errorExpiry = ImGui.GetTime() + 2.5;
+            }
+        }
+    }
+
+    private Vector2 ToPixelVec(Position p)
+    {
+        var (px, py) = InchesToPixel(p.x, p.z);
+        return new Vector2(px, py);
+    }
+
+    /// <summary>Index of the placed model whose base contains the given table point, or -1.</summary>
+    private int HitTestPlaced(float x, float z)
+    {
+        for (int i = 0; i < _placed.Count; i++)
+        {
+            float r = GetBaseRadius(_placed[i].Binding.GetValue());
+            float dx = x - _placed[i].Position.x, dz = z - _placed[i].Position.z;
+            if (dx * dx + dz * dz <= r * r) return i;
+        }
+        return -1;
+    }
+
+    /// <summary>Full single-placement validity for a candidate, ignoring placed model <paramref name="excludeIndex"/>.</summary>
+    private bool IsPlacementValid(Position cand, float r, RectangularZone zone, List<Position> enemies,
+        float minEnemyDist, int excludeIndex, out string? reason)
+    {
+        if (!(cand.x >= zone.Left + r && cand.x <= zone.Right - r &&
+              cand.z >= zone.Bottom + r && cand.z <= zone.Top - r))
+        { reason = "Outside deployment zone."; return false; }
+
+        string? overlap = CheckOverlap(cand, r, excludeIndex);
+        if (overlap != null) { reason = $"Bases overlap ({overlap})."; return false; }
+
+        if (!IsInCohesion(cand, r, excludeIndex))
+        { reason = $"Outside cohesion - must be within {GameWideConstants.MAX_MODEL_DISTANCE_FROM_ANY_OTHER_MODEL_INCHES}\" base-to-base of a placed model."; return false; }
+
+        if (minEnemyDist > 0f && TooCloseToEnemy(cand, enemies, minEnemyDist))
+        { reason = $"Too close to an enemy - must be over {minEnemyDist:F0}\" from enemy units."; return false; }
+
+        if (OnImpassibleTerrain(cand, r))
+        { reason = "On impassible terrain - the model's base would overlap a building or blocker."; return false; }
+
+        reason = null;
+        return true;
+    }
+
+    /// <summary>Validity for a model in a dropped group: zone containment, no overlap with on-table
+    /// occupants or terrain, and enemy spacing. Intra-formation overlap/cohesion are guaranteed by the
+    /// layout, so they aren't re-checked here.</summary>
+    private bool IsGroupSlotValid(Position cand, float r, RectangularZone zone, List<Position> enemies, float minEnemyDist)
+    {
+        if (!(cand.x >= zone.Left + r && cand.x <= zone.Right - r &&
+              cand.z >= zone.Bottom + r && cand.z <= zone.Top - r)) return false;
+        foreach (var (pos, radius) in GetTableOccupants())
+            if (Overlaps(cand, r, pos, radius)) return false;
+        if (minEnemyDist > 0f && TooCloseToEnemy(cand, enemies, minEnemyDist)) return false;
+        if (OnImpassibleTerrain(cand, r)) return false;
+        return true;
     }
 
     private void DrawZone(ImDrawListPtr dl, IZone zone)
@@ -141,12 +302,14 @@ public class GuiPlaceObjectsResolver<T>
         ZoneRenderer.DrawFilled(zone, dl, _scale, _originX, _originY, _tableH, fill, outline);
     }
 
-    private void DrawPlacedSoFar(ImDrawListPtr dl)
+    private void DrawPlacedSoFar(ImDrawListPtr dl, int skipIndex)
     {
         uint fill    = ImGui.ColorConvertFloat4ToU32(new Vector4(0.40f, 0.95f, 1.00f, 0.90f));
         uint outline = ImGui.ColorConvertFloat4ToU32(new Vector4(1f, 1f, 1f, 1f));
-        foreach (var entry in _placed)
+        for (int i = 0; i < _placed.Count; i++)
         {
+            if (i == skipIndex) continue; // hidden while being dragged
+            var entry = _placed[i];
             var (px, py) = InchesToPixel(entry.Position.x, entry.Position.z);
             float r = GetBaseRadius(entry.Binding.GetValue()) * _scale;
             dl.AddCircleFilled(new Vector2(px, py), r, fill);
@@ -168,8 +331,10 @@ public class GuiPlaceObjectsResolver<T>
         TaskCompletionSource<List<PlacedObjectEntry<T>>> tcs)
     {
         int total = request.ModelsToPlace.Count;
-        float panelW = MathF.Min(screenW * 0.42f, 500f);
-        float panelH = 120f;
+        bool group = _formationMode.IsGroup;
+        bool dropping = group && _placed.Count == 0; // showing the whole-unit ghost
+        float panelW = MathF.Min(screenW * 0.5f, 580f);
+        float panelH = 212f;
         ImGui.SetNextWindowPos(new Vector2((screenW - panelW) * 0.5f, 16f), ImGuiCond.Always);
         ImGui.SetNextWindowSize(new Vector2(panelW, panelH), ImGuiCond.Always);
         ImGui.PushStyleColor(ImGuiCol.WindowBg, new Vector4(0.10f, 0.10f, 0.15f, 0.92f));
@@ -182,6 +347,12 @@ public class GuiPlaceObjectsResolver<T>
         ImGui.SameLine();
         ImGui.TextDisabled($"  zone X {request.DeploymentZone.GetValue().Left:F0}-{request.DeploymentZone.GetValue().Right:F0}\"");
 
+        if (ImGui.Button(group ? "Mode: Group (G)" : "Mode: Single (G)"))
+        {
+            _formationMode.Toggle();
+            _dragIndex = null;
+        }
+
         ImGui.Spacing();
         if (_errorMessage != null)
         {
@@ -191,40 +362,62 @@ public class GuiPlaceObjectsResolver<T>
         }
         else
         {
-            ImGui.TextDisabled("Click inside the blue zone to place each model.");
+            string hint =
+                dropping              ? "Position the unit in the blue zone. Wheel / R rotate. Click drops the whole unit." :
+                _dragIndex.HasValue   ? "Click to drop the picked-up model." :
+                _placed.Count < total ? "Click empty space to place the next model, or click a placed model to move it." :
+                                        "Click any placed model to pick it up and move it.";
+            ImGui.PushStyleColor(ImGuiCol.Text, new Vector4(0.6f, 0.6f, 0.6f, 1f));
+            ImGui.TextWrapped(hint);
+            ImGui.PopStyleColor();
         }
 
         ImGui.Spacing();
         float btnW = (panelW - ImGui.GetStyle().ItemSpacing.X * 2 - ImGui.GetStyle().WindowPadding.X * 2) / 3f;
+        float fullW = panelW - ImGui.GetStyle().WindowPadding.X * 2;
 
         ImGui.BeginDisabled(_placed.Count == 0);
         if (ImGui.Button("Undo", new Vector2(btnW, 28f)))
         {
             _placed.RemoveAt(_placed.Count - 1);
+            _dragIndex = null;
             _errorMessage = null;
         }
         ImGui.EndDisabled();
 
         ImGui.SameLine();
-        if (ImGui.Button("Auto-place rest", new Vector2(btnW, 28f)))
+        ImGui.BeginDisabled(_placed.Count >= total);
+        if (ImGui.Button("Auto-place", new Vector2(btnW, 28f)))
         {
-            if (AutoPlaceRemaining(request))
-                Complete(tcs, new List<PlacedObjectEntry<T>>(_placed));
+            if (AutoPlaceRemaining(request)) _errorMessage = null;
             else
             {
                 _errorMessage = "Could not auto-place all remaining models - zone too crowded.";
                 _errorExpiry  = ImGui.GetTime() + 3.0;
             }
         }
+        ImGui.EndDisabled();
 
         ImGui.SameLine();
         ImGui.BeginDisabled(_placed.Count == 0);
         if (ImGui.Button("Restart", new Vector2(btnW, 28f)))
         {
             _placed.Clear();
+            _dragIndex = null;
             _errorMessage = null;
         }
         ImGui.EndDisabled();
+
+        bool canDone = _placed.Count == total && !_dragIndex.HasValue;
+        ImGui.BeginDisabled(!canDone);
+        bool donePressed = ImGui.Button("Done", new Vector2(fullW, 28f));
+        ImGui.EndDisabled();
+        if (canDone && donePressed)
+        {
+            Complete(tcs, new List<PlacedObjectEntry<T>>(_placed));
+            ImGui.End();
+            return;
+        }
 
         ImGui.End();
     }
@@ -273,7 +466,7 @@ public class GuiPlaceObjectsResolver<T>
                     if (CheckOverlap(c, r) != null) continue;
                     if (OnImpassibleTerrain(c, r)) continue;
                     if (minEnemyDist > 0f && TooCloseToEnemy(c, enemies, minEnemyDist)) continue;
-                    if (!IsInCohesionWithPlaced(c, r)) continue;
+                    if (!IsInCohesion(c, r, -1)) continue;
                     result = c; return true;
                 }
             }
@@ -332,11 +525,14 @@ public class GuiPlaceObjectsResolver<T>
     private bool OnImpassibleTerrain(Position candidate, float radius) =>
         PlacementUtilities.OverlapsImpassibleTerrain(candidate, radius, _tableState.Terrain.Objects);
 
-    /// <summary>Returns null if free; otherwise a brief description of the conflict.</summary>
-    private string? CheckOverlap(Position newPos, float newRadius)
+    /// <summary>Returns null if free; otherwise a brief description of the conflict. Ignores the placed
+    /// model at <paramref name="excludeIndex"/> (the one being re-placed by drag).</summary>
+    private string? CheckOverlap(Position newPos, float newRadius, int excludeIndex = -1)
     {
-        foreach (var entry in _placed)
+        for (int i = 0; i < _placed.Count; i++)
         {
+            if (i == excludeIndex) continue;
+            var entry = _placed[i];
             float er = GetBaseRadius(entry.Binding.GetValue());
             if (Overlaps(newPos, newRadius, entry.Position, er))
                 return $"need {newRadius + er:F2}\", got {Dist(newPos, entry.Position):F2}\"";
@@ -387,16 +583,21 @@ public class GuiPlaceObjectsResolver<T>
 
     private static float GetBaseRadius(T value) => value is ModelData m ? m.BaseRadiusInches : 0.75f;
 
-    private bool IsInCohesionWithPlaced(Position candidate, float candidateRadius)
+    /// <summary>True if the candidate is within nearest-neighbour cohesion of at least one other placed
+    /// model, ignoring <paramref name="excludeIndex"/>. Vacuously true when there are no other models.</summary>
+    private bool IsInCohesion(Position candidate, float candidateRadius, int excludeIndex)
     {
-        if (_placed.Count == 0) return true;
-        foreach (var entry in _placed)
+        bool anyOther = false;
+        for (int i = 0; i < _placed.Count; i++)
         {
+            if (i == excludeIndex) continue;
+            anyOther = true;
+            var entry = _placed[i];
             float er = GetBaseRadius(entry.Binding.GetValue());
             float b2b = Dist(candidate, entry.Position) - candidateRadius - er;
             if (b2b <= GameWideConstants.MAX_MODEL_DISTANCE_FROM_ANY_OTHER_MODEL_INCHES)
                 return true;
         }
-        return false;
+        return !anyOther;
     }
 }
