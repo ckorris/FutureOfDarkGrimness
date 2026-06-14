@@ -44,6 +44,7 @@ Numbers are permanent and never reused. If an item is split, its line stays and 
 - [ ] 017 — In-range attacker/defender determination (2" horizontal, 4" vertical) — replace current "everyone fights" behavior
 - [ ] 020 — Fatigue: per-unit/per-round flag — hit on unmodified 6s after first melee attack this round. May not need to be a stage; current `ApplyFatigueStage` may be deletable.
 - [ ] 021 — Morale roll modifiers + Fear/Fearless effects in `DetermineMeleeWinnerStage` and `RollForMoraleStage`
+- [~] 089 — Morale core: failed-test outcome (Shaken / Rout at half strength) + shared `IsAtHalfStrength` predicate; wires the melee `OnMoraleFailed` path. Underpins #006/#008/#009/#020/#021. ([WorkItems/089](WorkItems/089-morale-core.md))
 - [ ] 022 — Vertical melee range handling (`ChooseMeleeDefenderStage` TODO)
 
 ## Wound assignment
