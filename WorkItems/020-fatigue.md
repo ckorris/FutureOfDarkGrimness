@@ -1,10 +1,10 @@
 # 020 — Fatigue (melee: hit on unmodified 6s after charging / striking back)
 
 **Status**: in-progress
-**Related**: continuation of the morale epic on branch `089-morale-core` (both repos). Builds on #089 (Shaken token) — Shaken units always count as fatigued in melee. Built on #042 token + clear-trigger architecture.
+**Related**: continuation of the morale epic on branch `089-morale-core` (both repos). Builds on #091 (Shaken token, formerly #089) — Shaken units always count as fatigued in melee. Built on #042 token + clear-trigger architecture.
 
 ## Goal
-A unit that **charges** or **strikes back** in melee becomes **Fatigued** for the rest of the round; while Fatigued it hits only on **unmodified 6s** in melee. **Shaken** units (#089) always count as fatigued in melee. The `Fatigued` token clears at end of round (`TokenClearTrigger.RoundEnd`, swept by `ReconcileObjectivesStage` at the `Round_OnRoundEnd` hook — same machinery as other per-round bookkeeping). "Done" = (a) the token is applied to the units that fought in a melee, after the swings resolve; (b) the melee hit threshold is forced to 6 for a Fatigued/Shaken attacker; (c) tests. Explicitly **out of scope** (record any deferral here): morale roll modifiers / Fear / Fearless (#021); whether a Shaken unit is *eligible* to strike back (OfferStrikeBack eligibility — unchanged here).
+A unit that **charges** or **strikes back** in melee becomes **Fatigued** for the rest of the round; while Fatigued it hits only on **unmodified 6s** in melee. **Shaken** units (#091) always count as fatigued in melee. The `Fatigued` token clears at end of round (`TokenClearTrigger.RoundEnd`, swept by `ReconcileObjectivesStage` at the `Round_OnRoundEnd` hook — same machinery as other per-round bookkeeping). "Done" = (a) the token is applied to the units that fought in a melee, after the swings resolve; (b) the melee hit threshold is forced to 6 for a Fatigued/Shaken attacker; (c) tests. Explicitly **out of scope** (record any deferral here): morale roll modifiers / Fear / Fearless (#021); whether a Shaken unit is *eligible* to strike back (OfferStrikeBack eligibility — unchanged here).
 
 ## Notes
 - 2026-06-14: Item opened as the next slice of the morale epic. Reconnaissance complete (melee stage tree, hit-roll path, token API).

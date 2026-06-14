@@ -6,6 +6,8 @@ See `WorkItems/README.md` for the per-item file template. Per-item working notes
 
 Numbers are permanent and never reused. If an item is split, its line stays and points at the new numbers.
 
+> **2026-06-14 — reconciliation 4.** The morale epic (Shaken/Rout, fatigue, Fear/Fearless, decisive rolls) was built on a local master that had fallen behind origin/master, which had meanwhile assigned **089** and **090** to other already-merged work (089 = AI charge-to-contact; 090 = enemy-check consolidation/executor). Per the never-reuse rule the morale items yield: **morale-core 089→091** and **decisive-rolls 090→092** (`WorkItems/091-morale-core.md` / `WorkItems/092-decisive-rolls.md`; index + cross-references updated). The branch name `089-morale-core` and the slice commit messages predate the renumber and keep #089/#090. The shared-number items #008/#009/#020/#021 kept their numbers (same meaning on both sides).
+>
 > **2026-06-13 — reconciliation 3.** The 2026-06-10 audit follow-ups (`Audit-6-10-2026.md`) were authored on a local branch that numbered its four HIGH-priority stage-machine/networking items **055–058**; by the time they were folded into this index, origin/master had already assigned 055–058 to other work (rule attribution, presentation beat stream, contexts refactor, STJ migration). Per the never-reuse rule the audit squatters yield: **055→083, 056→084, 057→085, 058→086** (internal cross-references updated). The remaining audit items (**059–070, 073–082**) kept their numbers, which were free on master. Audit item **060**'s dead-field cleanup landed the same day (commit `b0aebc9`); the rest of #060 remains open. (The same local branch had also renumbered the presentation beat stream / sound to 071/072 — those are *not* carried here, since master already settled them as #056/#053 in reconciliation 2.)
 >
 > **2026-06-11 — reconciliation 2.** The never-reuse rule was violated again on master: **052** meant both *save/load* and the *presentation beat stream*, and **053** meant both the *contexts-into-store refactor* and *sound cues* (a new pre-push hook now blocks duplicates). Resolved by the same detail-file/cross-reference precedent as #055's renumber: **save/load keeps 052** (the #039/#054/#057 "follow-up to #052" references all mean it; merge commit `b7acb76` names it) and **sound keeps 053** (owns `053-sound.md`). The presentation beat stream is now **056** (`WorkItems/056-presentation-beat-stream.md`, renamed) and the contexts refactor is now **057**. Branch names / old commit messages containing `052-presentation-beat-stream` and `#053` predate the renumber.
@@ -25,8 +27,8 @@ Numbers are permanent and never reused. If an item is split, its line stays and 
 
 ## Activation flow
 
-- [~] 008 — Shaken unit activation behavior (idle, can't seize/contest, clears at end of activation) — implemented on branch `089-morale-core` (slice 2, engine `797cf9c`); pending merge + GUI verification. ([WorkItems/089](WorkItems/089-morale-core.md))
-- [~] 009 — General half-strength morale test outside melee — scope-complete on branch `089-morale-core` (slice 3, engine `ff59994`+`ff28ccb`): both non-melee wound sources wired (shooting via `ResolveRangedMoraleStage`, dangerous terrain via `ApplyNonMovementTerrainEffectsStage`) through shared `MoraleUtilities.ResolveWoundDrivenMorale`; reduced-to-half → test → Rout on fail. Pending merge + GUI verification. ([WorkItems/089](WorkItems/089-morale-core.md))
+- [~] 008 — Shaken unit activation behavior (idle, can't seize/contest, clears at end of activation) — implemented on branch `089-morale-core` (slice 2, engine `797cf9c`); pending merge + GUI verification. ([WorkItems/091](WorkItems/091-morale-core.md))
+- [~] 009 — General half-strength morale test outside melee — scope-complete on branch `089-morale-core` (slice 3, engine `ff59994`+`ff28ccb`): both non-melee wound sources wired (shooting via `ResolveRangedMoraleStage`, dangerous terrain via `ApplyNonMovementTerrainEffectsStage`) through shared `MoraleUtilities.ResolveWoundDrivenMorale`; reduced-to-half → test → Rout on fail. Pending merge + GUI verification. ([WorkItems/091](WorkItems/091-morale-core.md))
 - [ ] 010 — Custom actions branch in `ChooseActionStage` (currently hardcoded `false`)
 
 ## Movement
@@ -42,7 +44,7 @@ _(No open items — #011 and #050 are done; see ## Done.)_
 
 - [~] 020 — Fatigue: per-unit/per-round flag — hit on unmodified 6s after charging / striking back this round; Shaken counts as fatigued. On branch `089-morale-core`. ([WorkItems/020](WorkItems/020-fatigue.md))
 - [~] 021 — Morale roll modifiers + Fear/Fearless in `DetermineMeleeWinnerStage` and `RollForMoraleStage`. Fear + Fearless + modifier plumbing done (complete on branch `021-morale-rules`, unmerged). ([WorkItems/021](WorkItems/021-fear-fearless.md))
-- [~] 089 — Morale core: failed-test outcome (Shaken / Rout at half strength) + shared `IsAtHalfStrength` predicate; wires the melee `OnMoraleFailed` path. Underpins #006/#008/#009/#020/#021. ([WorkItems/089](WorkItems/089-morale-core.md))
+- [~] 091 — Morale core (formerly #089): failed-test outcome (Shaken / Rout at half strength) + shared `IsAtHalfStrength` predicate; wires the melee `OnMoraleFailed` path. Underpins #006/#008/#009/#020/#021. ([WorkItems/091](WorkItems/091-morale-core.md))
 - [ ] 022 — Vertical melee range handling (`ChooseMeleeDefenderStage` TODO)
 
 ## Wound assignment
@@ -79,7 +81,7 @@ These are umbrellas; will fragment per-rule when picked up.
 
 ## Networking & infrastructure
 
-- [~] 090 — Decisive dice rolls: `IDiceRoller.RollDecisive` so single binary rolls (morale, dangerous terrain, objective count) resolve a real outcome under the probabilistic roller instead of an auto-failing expected value. Prereq for #021. On branch `021-morale-rules`. ([WorkItems/090](WorkItems/090-decisive-rolls.md))
+- [~] 092 — Decisive dice rolls (formerly #090): `IDiceRoller.RollDecisive` so single binary rolls (morale, dangerous terrain, objective count) resolve a real outcome under the probabilistic roller instead of an auto-failing expected value. Prereq for #021. On branch `021-morale-rules`. ([WorkItems/092](WorkItems/092-decisive-rolls.md))
 - [ ] 036 — Server readiness handshake (`FDGServer.cs:148` TODO — wait for all clients ready)
 - [ ] 037 — Replace non-concurrent collections in `FDGHost` (`FDGHost.cs:75, :130` TODOs)
 - [ ] 038 — Resolve `LobbyViewModel_Host` `NotImplementedException` paths (`:288, :400`)

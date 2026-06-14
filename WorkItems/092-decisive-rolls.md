@@ -1,7 +1,9 @@
-# 090 — Decisive dice rolls (single binary rolls work under the probabilistic roller)
+# 092 — Decisive dice rolls (single binary rolls work under the probabilistic roller)
 
-**Status**: in-progress
-**Related**: prerequisite for #021 (morale modifiers + Fear/Fearless). Corrects existing #089 morale behavior under the probabilistic roller. On branch `021-morale-rules` (both repos).
+> _Renumbered from #090 on 2026-06-14 — collided with origin/master's established #090 (enemy-check consolidation/executor). Per the never-reuse rule the decisive-rolls item yields the number; the slice commit messages predate the renumber and keep #090._
+
+**Status**: complete (merged to master)
+**Related**: prerequisite for #021 (morale modifiers + Fear/Fearless). Corrects existing #091 morale behavior under the probabilistic roller. On branch `021-morale-rules` (both repos).
 
 ## Goal
 `ProbabilisticDiceRoller` spreads a roll across faces as an expected value — correct for **aggregate** rolls (many attacks → smooth, deterministic hit counts) but ruinous for a **single decisive** roll: a morale die read as "0.5 of a success" can never clear the `>= 1` pass bar, so under the probabilistic roller *every* meaningful morale test auto-fails (and dangerous-terrain / objective-count rolls misbehave the same way). Add a first-class **decisive roll** that resolves one concrete face under any roller, and route the singleton rolls through it. "Done" = `IDiceRoller.RollDecisive`; morale, dangerous terrain, and objective count use it; a regression test proves probabilistic morale is a real binary outcome again. Default play (Realistic) is unaffected.

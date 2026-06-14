@@ -1,6 +1,8 @@
-# 089 — Morale core mechanics (failed-test outcome: Shaken / Rout)
+# 091 — Morale core mechanics (failed-test outcome: Shaken / Rout)
 
-**Status**: in-progress
+> _Renumbered from #089 on 2026-06-14 — collided with origin/master's established #089 (AI charge-to-contact). Per the never-reuse rule the morale item yields the number. The branch name `089-morale-core` and the slice commit messages predate the renumber and keep #089._
+
+**Status**: complete (merged to master)
 **Related**: underpins #006 (hero takes morale for unit), #008 (Shaken activation behavior), #009 (end-of-activation / ranged half-strength trigger), #020 (fatigue), #021 (morale modifiers + Fear/Fearless). Built on #042 token + hook architecture. Commits (branch `089-morale-core`, both repos): slice 1 engine `c99e20f` / bump `37efde9`; slice 2 engine `797cf9c`+`32d70d2` / bumps `cb21e86`+`269d7b1`; slice 3 engine `ff59994`+`ff28ccb` / bumps `0ef443b`+`335f9af`.
 
 ## Goal
@@ -29,7 +31,7 @@ Make a failed morale test *do something*. When a unit fails a morale test it bec
 - **Recover-vs-keep is decided by an explicit activation-start snapshot, not action flags or round number** (revised after review). The rule turns on "was the unit Shaken when its activation *began*": a unit Shaken at start idles+recovers; a unit that becomes Shaken mid-activation keeps the token for next time. `UnitActionContext.Reset` (runs once per activation, has the unit in hand) snapshots `StartedActivationShaken = HasToken(Shaken)`; `ChooseActionStage` gates on that. Two alternatives were rejected: (1) the original `!HasMoved && !HasAttacked` guard — it only *correlates* with activation-start state because today's sole mid-activation Shaken sources (charge→lose, move→dangerous terrain) happen to set a flag; brittle coupling. (2) Stamping the round number on the token and comparing to the current round — too coarse: a unit can become Shaken as a *defender* (enemy charges it, it loses) **before** it has activated this round, then must idle on its same-round activation; round granularity can't distinguish "Shaken before vs. after my activation within round N," so it would wrongly skip that idle.
 
 ## Next steps (resume pointer)
-State as of 2026-06-14: branch `089-morale-core` in **both** repos, all green (engine suite 496/0, app builds, headless smoke exits 0). Only `imgui.ini` is dirty (pre-existing UI noise, do not commit). **Not yet merged to master.** Done on branch: #089 (Shaken/Rout core), #008 (Shaken activation behavior), #009 (wound-driven half-strength trigger: shooting + dangerous terrain). Remaining morale facets: **#020 fatigue**, #021 (modifiers + Fear/Fearless + hook firing), #006 (hero-on-behalf).
+State as of 2026-06-14: branch `089-morale-core` in **both** repos, all green (engine suite 496/0, app builds, headless smoke exits 0). Only `imgui.ini` is dirty (pre-existing UI noise, do not commit). **Not yet merged to master.** Done on branch: #091 (Shaken/Rout core), #008 (Shaken activation behavior), #009 (wound-driven half-strength trigger: shooting + dangerous terrain). Remaining morale facets: **#020 fatigue**, #021 (modifiers + Fear/Fearless + hook firing), #006 (hero-on-behalf).
 
 Shared infra to reuse: `MoraleUtilities` (`TakeMoraleTest`, `Rout`, `ApplyShaken`, `ApplyFailedMoraleOutcome`, `ResolveWoundDrivenMorale`, `CrossedIntoHalfStrength`); `IUnitExtensions.GetIsAtHalfStrength`; `UnitActionContext.StartedActivationShaken`.
 

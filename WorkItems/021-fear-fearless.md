@@ -1,7 +1,7 @@
 # 021 — Fear & Fearless (morale-impacting special rules)
 
 **Status**: complete (on branch, unmerged)
-**Related**: continuation of the morale work. Depends on #090 (decisive rolls — a correct morale roll for Fearless to ride on). Built on #042 rule-dispatch architecture. On branch `021-morale-rules` (both repos).
+**Related**: continuation of the morale work. Depends on #092 (decisive rolls, formerly #090 — a correct morale roll for Fearless to ride on). Built on #042 rule-dispatch architecture. On branch `021-morale-rules` (both repos).
 
 ## Goal
 Wire the two dormant morale-impacting special rules whose dispatch is already proven by `SpecialRuleTests` but which no stage consumes:
@@ -12,7 +12,7 @@ Wire the two dormant morale-impacting special rules whose dispatch is already pr
 
 ## Decisions
 - **Fear sums per side via two Actor-seat evaluations.** Fear's default seat is Actor and its bonus adds to *its own* wounds-dealt, so `DetermineMeleeWinnerStage` evaluates `Melee_OnMeleeResolution` once per unit (each as Actor) and folds each side's `ExtraMeleeWoundCount` (already resolved to an int by the dispatcher) into that side's total. Two single-participant calls attribute the bonus cleanly; the shared `MeleeResolutionContext(attacker, defender)` is reused for both.
-- **Fearless reuses the decisive-roll path** (#090): the fresh second-chance die is a single decisive roll, 4+ = pass.
+- **Fearless reuses the decisive-roll path** (#092): the fresh second-chance die is a single decisive roll, 4+ = pass.
 - **The morale test is centralized in `MoraleUtilities.TakeMoraleTest`, so Fearless and modifiers apply to *every* morale path, not just melee.** The wound-driven path (shooting, dangerous terrain) routes through the same shared test, so a Fearless unit reduced to half strength gets its second chance against the Rout too — avoiding a silent gap where Fearless would work in melee but not vs. shooting. `RollForMoraleStage` is now a thin router over the shared test; it returns a small `MoraleTestOutcome` (passed / post-modifier rollNeeded / passed-via-reroll) purely so callers can log precisely.
 
 ## Notes
