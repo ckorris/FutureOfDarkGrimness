@@ -26,7 +26,7 @@ Numbers are permanent and never reused. If an item is split, its line stays and 
 ## Activation flow
 
 - [~] 008 — Shaken unit activation behavior (idle, can't seize/contest, clears at end of activation) — implemented on branch `089-morale-core` (slice 2, engine `797cf9c`); pending merge + GUI verification. ([WorkItems/089](WorkItems/089-morale-core.md))
-- [~] 009 — General half-strength morale test outside melee — done for shooting (`ResolveRangedMoraleStage`: reduced-to-half → test → Rout on fail) on branch `089-morale-core` (slice 3, engine `ff59994`); pending merge + GUI verification. DEFERRED: dangerous-terrain / end-of-activation wound sources (only ranged fire wired so far). ([WorkItems/089](WorkItems/089-morale-core.md))
+- [~] 009 — General half-strength morale test outside melee — scope-complete on branch `089-morale-core` (slice 3, engine `ff59994`+`ff28ccb`): both non-melee wound sources wired (shooting via `ResolveRangedMoraleStage`, dangerous terrain via `ApplyNonMovementTerrainEffectsStage`) through shared `MoraleUtilities.ResolveWoundDrivenMorale`; reduced-to-half → test → Rout on fail. Pending merge + GUI verification. ([WorkItems/089](WorkItems/089-morale-core.md))
 - [ ] 010 — Custom actions branch in `ChooseActionStage` (currently hardcoded `false`)
 
 ## Movement
