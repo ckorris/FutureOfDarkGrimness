@@ -4,3 +4,6 @@ obj/
 .vs/
 .idea/
 *.DotSettings.user
+
+# Runtime ImGui window-layout state
+imgui.ini
