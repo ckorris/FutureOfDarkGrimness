@@ -1,7 +1,7 @@
 # 089 — Morale core mechanics (failed-test outcome: Shaken / Rout)
 
 **Status**: in-progress
-**Related**: underpins #006 (hero takes morale for unit), #008 (Shaken activation behavior), #009 (end-of-activation / ranged half-strength trigger), #020 (fatigue), #021 (morale modifiers + Fear/Fearless). Built on #042 token + hook architecture.
+**Related**: underpins #006 (hero takes morale for unit), #008 (Shaken activation behavior), #009 (end-of-activation / ranged half-strength trigger), #020 (fatigue), #021 (morale modifiers + Fear/Fearless). Built on #042 token + hook architecture. Commits: slice 1 engine `c99e20f` / bump `37efde9`; slice 2 engine `797cf9c` / bump `cb21e86`.
 
 ## Goal
 Make a failed morale test *do something*. When a unit fails a morale test it becomes **Shaken**, or is **Routed** (removed from play) if it is at half strength or less. This item delivers the core outcome machinery and the shared half-strength predicate that every other morale facet depends on. "Done" = the melee `OnMoraleFailed` path applies Shaken (or Rout) to the correct unit, gated on a correct half-strength check, with tests. Explicitly **out of scope** for this item (each is its own facet): Shaken activation behavior/clearing (#008), the wound-driven half-strength *trigger* from shooting and end-of-activation (#009), fatigue (#020), morale roll modifiers / Fear / Fearless / hook firing (#021), hero-on-behalf (#006), and presentation beats for a routed unit.

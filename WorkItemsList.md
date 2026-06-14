@@ -25,7 +25,7 @@ Numbers are permanent and never reused. If an item is split, its line stays and 
 
 ## Activation flow
 
-- [ ] 008 — Shaken unit activation behavior (idle, can't seize/contest, clears at end of activation)
+- [~] 008 — Shaken unit activation behavior (idle, can't seize/contest, clears at end of activation) — implemented on branch `089-morale-core` (slice 2, engine `797cf9c`); pending merge + GUI verification. ([WorkItems/089](WorkItems/089-morale-core.md))
 - [ ] 009 — General end-of-activation morale test (half-size trigger outside melee)
 - [ ] 010 — Custom actions branch in `ChooseActionStage` (currently hardcoded `false`)
 
