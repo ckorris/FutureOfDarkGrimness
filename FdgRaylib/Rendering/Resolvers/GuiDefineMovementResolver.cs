@@ -309,7 +309,7 @@ public class GuiDefineMovementResolver
         var enemyFootprints = GetEnemyFootprintsForRequest(request);
         bool engineValid = MovementUtilities.ValidatePaths(results,
             request.MaxRushDistance, request.MaxDistanceInches,
-            enemyFootprints, terrain, out var engineErrors);
+            enemyFootprints, request.CanMoveThroughEnemies, terrain, out var engineErrors);
         var finals = BuildFinalPositions(pt.CurrentPaths, null, null);
         var cohesion = CheckCohesion(finals);
 
