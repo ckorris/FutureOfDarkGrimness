@@ -1,0 +1,21 @@
+# 020 — Fatigue (melee: hit on unmodified 6s after charging / striking back)
+
+**Status**: in-progress
+**Related**: continuation of the morale epic on branch `089-morale-core` (both repos). Builds on #089 (Shaken token) — Shaken units always count as fatigued in melee. Built on #042 token + clear-trigger architecture.
+
+## Goal
+A unit that **charges** or **strikes back** in melee becomes **Fatigued** for the rest of the round; while Fatigued it hits only on **unmodified 6s** in melee. **Shaken** units (#089) always count as fatigued in melee. The `Fatigued` token clears at end of round (`TokenClearTrigger.RoundEnd`, swept by `ReconcileObjectivesStage` at the `Round_OnRoundEnd` hook — same machinery as other per-round bookkeeping). "Done" = (a) the token is applied to the units that fought in a melee, after the swings resolve; (b) the melee hit threshold is forced to 6 for a Fatigued/Shaken attacker; (c) tests. Explicitly **out of scope** (record any deferral here): morale roll modifiers / Fear / Fearless (#021); whether a Shaken unit is *eligible* to strike back (OfferStrikeBack eligibility — unchanged here).
+
+## Notes
+- 2026-06-14: Item opened as the next slice of the morale epic. Reconnaissance complete (melee stage tree, hit-roll path, token API).
+  - **Apply point**: `ApplyFatigueStage` (was a no-op stub) runs once at the end of every melee, after all swings — the correct moment, since the current melee must use full Quality and only *later* melees that round are penalized. It fatigues: the unit that swung (`AttackingUnit`), the charger (an immutable `ChargingUnit` capture that survives `SwapCombatRoles`), and the defender iff it struck back (`DefenderStruckBack` flag, set in `StrikeBackStage`). Application is idempotent so the overlaps between these three are harmless.
+  - **Effect point**: `DetermineHitRollNeededStage` — after the normal threshold math, if the attack is melee and the attacker counts as fatigued (Fatigued or Shaken token), the threshold is overridden to 6 (not a stacking modifier, since the rule ignores all modifiers — "unmodified 6"). The shared `RollToHitStage` then admits only natural 6s.
+  - **Why `ChargingUnit` + `DefenderStruckBack` instead of just `AttackingUnit`**: `DetermineStrikeOrderStage` (Counter, #042) calls `SwapCombatRoles`, which makes the *defender* the `AttackingUnit` and never swaps back. So at `ApplyFatigueStage` the bindings can't by themselves tell you who charged. The immutable charger capture + strike-back flag make all paths (normal, Counter, strike-back) fatigue exactly the units that fought.
+
+## Decisions
+- **Threshold override, not a roll modifier.** "Hit only on unmodified 6s" means modifiers are ignored entirely, so `DetermineHitRollNeededStage` sets `HitRollNeeded = 6` after the modifier math rather than adding +N to the sink. The d6 comparison in `RollToHitStage` then naturally admits only natural 6s.
+- **`FatigueUtilities`, mirroring `MoraleUtilities`.** `ApplyFatigued(IUnit)` (idempotent token add, `RoundEnd` clear) and `CountsAsFatiguedInMelee(IUnit)` (Fatigued OR Shaken). Keeps the Shaken-counts-as-fatigued rule in one place and the stages thin.
+- **Fatigue is applied after the melee, by design.** The token is added at `ApplyFatigueStage` (end of melee), so the swings that just happened were full-Quality and only subsequent melee that round is penalized. A unit that was *already* Fatigued (a second charge/strike in the round) reads the token at its hit roll and hits on 6s.
+
+## Outcome
+_(open)_
