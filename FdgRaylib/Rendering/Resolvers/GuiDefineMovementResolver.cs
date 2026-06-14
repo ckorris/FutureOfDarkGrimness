@@ -306,10 +306,10 @@ public class GuiDefineMovementResolver
         float btnW    = (panelW - pad - spacing * 3) / 4f;
 
         var results = pt.GetResultsAsList();
-        var enemyPositions = GetEnemyPositionsForRequest(request);
+        var enemyFootprints = GetEnemyFootprintsForRequest(request);
         bool engineValid = MovementUtilities.ValidatePaths(results,
             request.MaxRushDistance, request.MaxDistanceInches,
-            enemyPositions, terrain, out var engineErrors);
+            enemyFootprints, terrain, out var engineErrors);
         var finals = BuildFinalPositions(pt.CurrentPaths, null, null);
         var cohesion = CheckCohesion(finals);
 
@@ -435,16 +435,23 @@ public class GuiDefineMovementResolver
         return s;
     }
 
-    private List<Position> GetEnemyPositionsForRequest(DefineMovementPathRequest request)
+    private List<EnemyModelFootprint> GetEnemyFootprintsForRequest(DefineMovementPathRequest request)
     {
-        var positions = new List<Position>();
+        var footprints = new List<EnemyModelFootprint>();
+        int unitKey = 0;
         foreach (var u in _tableState.Units.Objects)
         {
             if (u.PlayerID == request.TargetPlayerID) continue;
+            bool anyLiving = false;
             foreach (var m in u.Models)
-                if (m.GetIsAlive()) positions.Add(m.Position);
+                if (m.GetIsAlive())
+                {
+                    footprints.Add(new EnemyModelFootprint(m.Position, m.BaseRadiusInches, unitKey));
+                    anyLiving = true;
+                }
+            if (anyLiving) unitKey++;
         }
-        return positions;
+        return footprints;
     }
 
     private bool WouldOverlapAnyModel(Position ghostPos, IModel ghostModel,
