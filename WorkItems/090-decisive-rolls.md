@@ -15,4 +15,4 @@
 - **Probabilistic mode loses strict reproducibility for decisive rolls — intentionally.** The probabilistic roller is otherwise deterministic; `RollDecisive` deliberately introduces real randomness because a single binary consequence (Shaken/Rout, a terrain wound) cannot be averaged. The rejected alternative ("pass if P ≥ 0.5") stays deterministic but makes morale a fixed function of Quality (a 4+ unit never routs, a 5+ always does), which removes the tension a different way.
 
 ## Outcome
-_(open)_
+2026-06-14: Complete on branch `021-morale-rules`. Engine `4459070` / superproject bump `bb6403f`. Engine suite **509/0** (+5 `DecisiveRollTests`); app build clean; headless smoke exits 0 with morale resolving normally under the default (Realistic) roller. `IDiceRoller.RollDecisive` added; morale / dangerous terrain / objective count routed through it; probabilistic-mode morale is a real ~50% binary outcome again. Foundation for #021 (a correct morale roll for Fear/Fearless to ride on). **Not yet merged to master.**
