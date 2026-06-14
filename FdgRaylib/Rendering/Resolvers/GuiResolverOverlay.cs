@@ -31,6 +31,21 @@ public class GuiResolverOverlay
         }
     }
 
+    /// <summary>
+    /// The currently active resolver's enemy-exclusion zone (Ambush reserve placement), if it opts in.
+    /// Null when no resolver is pending or the active one imposes no enemy-distance constraint.
+    /// </summary>
+    public IEnemyExclusionProvider? ActiveEnemyExclusion
+    {
+        get
+        {
+            foreach (IGuiResolver r in _resolvers)
+                if (r.HasPendingRequest)
+                    return r as IEnemyExclusionProvider;
+            return null;
+        }
+    }
+
     public void Draw(int screenW, int screenH)
     {
         foreach (IGuiResolver r in _resolvers)

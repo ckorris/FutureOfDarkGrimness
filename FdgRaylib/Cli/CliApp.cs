@@ -78,13 +78,15 @@ public class CliApp
             presentationSink:      null, // headless: beats emitted but not rendered
             outstandingTaskDisplay: null);
 
-        var humanController = new LocalPlayerController(playerSlots[0].Name, playerSlots[0].PlayerID, _localGame);
+        // Name the controllers explicitly: reading playerSlots[i].Name here returns the "[Empty]"
+        // placeholder, since the controller that supplies the real name isn't assigned yet.
+        var humanController = new LocalPlayerController("Player 1", playerSlots[0].PlayerID, _localGame);
         playerSlots[0].AssignPlayerController(humanController);
 
         // Player 2 — computer (solo-rules AI)
         _aiGame = new FDGGame_AsLocal(_gameDataStore!, _messageBus!);
         var aiController = AiResolverRegistryFactory.CreateSoloRulesController(
-            playerSlots[1].Name, playerSlots[1].PlayerID, _aiGame);
+            "Player 2 (AI)", playerSlots[1].PlayerID, _aiGame);
         playerSlots[1].AssignPlayerController(aiController);
 
         var gameSettings = GameSettings.GetDefault();

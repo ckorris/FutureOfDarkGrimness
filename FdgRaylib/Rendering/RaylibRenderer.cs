@@ -46,6 +46,16 @@ public class RaylibRenderer
     private bool _closeRequested = false;
     private bool _resolverOverlayFaulted = false;
 
+    // Offscreen target for the Ambush enemy-exclusion blob: discs are painted opaque here (so overlaps
+    // overwrite instead of stacking alpha), then composited once at a uniform light alpha. Lazily sized
+    // to the window and recreated on resize; unloaded on shutdown.
+    private RenderTexture2D _exclusionRT;
+    private bool _exclusionRTReady;
+    private int  _exclusionRTW, _exclusionRTH;
+    // Opaque while painting the union; the final on-table alpha comes from the composite tint below.
+    private static readonly Color ExclusionFill = new(235, 95, 95, 255);
+    private const byte ExclusionCompositeAlpha = 70;
+
     public RaylibRenderer()
     {
         _currentScreen = MainMenu;
@@ -192,6 +202,7 @@ public class RaylibRenderer
                 DrawTable(layout);
                 DrawTerrain(layout);
                 DrawObjectives(layout);
+                DrawAmbushExclusion(layout, screenW, screenH);
                 DrawModels(layout);
 
                 if (_presentationPlayer != null &&
@@ -255,6 +266,7 @@ public class RaylibRenderer
         }
 
         rlImGui.Shutdown();
+        if (_exclusionRTReady) Raylib.UnloadRenderTexture(_exclusionRT);
         _audio?.Dispose();
         Raylib.CloseWindow();
     }
@@ -331,6 +343,52 @@ public class RaylibRenderer
             int textW    = Raylib.MeasureText(label, fontSize);
             Raylib.DrawText(label, cx - textW / 2, cy - fontSize / 2, fontSize, Color.White);
         }
+    }
+
+    // Draws the Ambush no-go region: a single blended blob covering everywhere within the exclusion
+    // radius of an enemy model. Each enemy disc is painted OPAQUE into an offscreen texture so overlaps
+    // overwrite rather than stack, then the whole union is composited once at a uniform light alpha —
+    // five clustered models read as one clean blob instead of a mess of darker overlapping rings.
+    private void DrawAmbushExclusion(Layout l, int screenW, int screenH)
+    {
+        IEnemyExclusionProvider? provider = _resolverOverlay?.ActiveEnemyExclusion;
+        if (provider == null) return;
+        if (!provider.TryGetEnemyExclusion(out IReadOnlyList<Position> centers, out float radiusInches)
+            || centers.Count == 0)
+        {
+            return;
+        }
+
+        EnsureExclusionTexture(screenW, screenH);
+
+        float radiusPx = radiusInches * l.Scale;
+
+        Raylib.BeginTextureMode(_exclusionRT);
+        Raylib.ClearBackground(new Color(0, 0, 0, 0));
+        foreach (Position c in centers)
+        {
+            float px = l.OriginX + c.x * l.Scale;
+            float py = l.OriginY + (TableHIn - c.z) * l.Scale;
+            Raylib.DrawCircleV(new Vector2(px, py), radiusPx, ExclusionFill);
+        }
+        Raylib.EndTextureMode();
+
+        // Composite the opaque union once. Render-texture contents are y-flipped, hence the negative
+        // source height. The tint must be WHITE (it multiplies the texture's colour, so a coloured tint
+        // would shift the hue) — only its alpha scales, making the whole blob uniformly translucent.
+        var src = new Rectangle(0, 0, _exclusionRT.Texture.Width, -_exclusionRT.Texture.Height);
+        Raylib.DrawTextureRec(_exclusionRT.Texture, src, Vector2.Zero,
+            new Color((byte)255, (byte)255, (byte)255, ExclusionCompositeAlpha));
+    }
+
+    private void EnsureExclusionTexture(int w, int h)
+    {
+        if (_exclusionRTReady && _exclusionRTW == w && _exclusionRTH == h) return;
+        if (_exclusionRTReady) Raylib.UnloadRenderTexture(_exclusionRT);
+        _exclusionRT = Raylib.LoadRenderTexture(w, h);
+        _exclusionRTW = w;
+        _exclusionRTH = h;
+        _exclusionRTReady = true;
     }
 
     private void DrawModels(Layout l)

@@ -8,7 +8,8 @@ using ImGuiNET;
 namespace FdgRaylib.Rendering.Resolvers;
 
 public class GuiPlaceObjectsResolver<T>
-    : IStageResolver<PlaceObjectsRequest<T>, List<PlacedObjectEntry<T>>>, IGuiResolver, IGuiCanvasOverlay
+    : IStageResolver<PlaceObjectsRequest<T>, List<PlacedObjectEntry<T>>>, IGuiResolver, IGuiCanvasOverlay,
+      IEnemyExclusionProvider
 {
     private readonly ITableState _tableState;
     private readonly object _lock = new();
@@ -282,6 +283,26 @@ public class GuiPlaceObjectsResolver<T>
     }
 
     private static readonly List<Position> _noEnemies = new();
+
+    // IEnemyExclusionProvider: surfaces the live enemy centres + radius while an Ambush-style placement
+    // (MinDistanceFromEnemiesInches > 0) is pending, so the renderer can draw the no-go blob. The engine
+    // thread is blocked awaiting this resolution during placement, so reading table state here is safe.
+    public bool TryGetEnemyExclusion(out IReadOnlyList<Position> enemyCenters, out float radiusInches)
+    {
+        PlaceObjectsRequest<T>? request;
+        lock (_lock) request = _request;
+
+        if (request == null || request.MinDistanceFromEnemiesInches <= 0f)
+        {
+            enemyCenters = _noEnemies;
+            radiusInches = 0f;
+            return false;
+        }
+
+        enemyCenters = GetEnemyPositions(request.TargetPlayerID);
+        radiusInches = request.MinDistanceFromEnemiesInches;
+        return true;
+    }
 
     private List<Position> GetEnemyPositions(PlayerID self)
     {
