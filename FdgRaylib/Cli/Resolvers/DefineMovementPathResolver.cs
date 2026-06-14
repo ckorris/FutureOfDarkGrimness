@@ -90,48 +90,42 @@ public class DefineMovementPathResolver : IStageResolver<DefineMovementPathReque
         if (living.Count == 0)
             return StayInPlace(request);
 
-        // Find live enemy model positions via ITableState.
-        List<Position> enemyPositions = new();
-        if (_tableState != null)
-        {
-            foreach (var u in _tableState.Units.Objects)
-            {
-                if (u.PlayerID == request.TargetPlayerID) continue;
-                foreach (var m in u.Models)
-                    if (m.GetIsAlive()) enemyPositions.Add(m.Position);
-            }
-        }
+        // Live enemy footprints (centre + radius) via ITableState.
+        var footprints = GetEnemyFootprints(request);
 
         // Compute the living models' centre.
         float cx = living.Average(mb => mb.GetValue().Position.x);
         float cz = living.Average(mb => mb.GetValue().Position.z);
 
         // No enemy to advance on — re-form in place (closes any casualty hole so the move is legal).
-        if (enemyPositions.Count == 0)
+        if (footprints.Count == 0)
             return CohesiveFormation.PackGrid(living, cx, cz);
 
-        Position nearest = enemyPositions
-            .OrderBy(p => (p.x - cx) * (p.x - cx) + (p.z - cz) * (p.z - cz))
+        EnemyModelFootprint nearest = footprints
+            .OrderBy(f => (f.Center.x - cx) * (f.Center.x - cx) + (f.Center.z - cz) * (f.Center.z - cz))
             .First();
 
-        float dx = nearest.x - cx;
-        float dz = nearest.z - cz;
+        float dx = nearest.Center.x - cx;
+        float dz = nearest.Center.z - cz;
         float dist = MathF.Sqrt(dx * dx + dz * dz);
 
         if (dist < 0.01f)
             return CohesiveFormation.PackGrid(living, cx, cz);
 
-        // Advance up to MaxAdvanceDistance (tiny margin so float rounding can't disqualify shooting),
-        // clamped so the re-pack keeps every model within the movement budget.
-        float step = Math.Min(request.MaxAdvanceDistance - 0.001f, Math.Max(0f, dist - 1f));
+        // Auto-advance is a non-charge move: close toward the enemy but hold at the 1" standoff (base-to-base),
+        // not on top of it — "1" short of centre" is actually base overlap. Tiny advance margin so float
+        // rounding can't disqualify a follow-up shot; clamped so the re-pack keeps every model in budget.
+        float leadRadius = living.Max(mb => mb.GetValue().BaseRadiusInches);
+        float targetGap = GameWideConstants.ENEMY_STANDOFF_DISTANCE_INCHES + 0.05f;
+        float step = Math.Min(request.MaxAdvanceDistance - 0.001f,
+            Math.Max(0f, dist - (leadRadius + nearest.BaseRadiusInches) - targetGap));
         step = CohesiveFormation.ClampRepackStep(living, cx, cz, step, request.MaxDistanceInches);
         float ndx = dx / dist;
         float ndz = dz / dist;
 
-        // The move-through / standoff validator (#011) can reject an advance that ends too near an enemy,
-        // and DefinePathStage throws (no retry) on an invalid move. Back the step off until the engine
-        // accepts the candidate — reforming in place as a last resort — so EOF auto-play never crashes.
-        var footprints = GetEnemyFootprints(request);
+        // The move-through / standoff validator (#011) can still reject an advance that ends too near an
+        // enemy (e.g. packing offset), and DefinePathStage throws (no retry). Back the step off until the
+        // engine accepts the candidate — reforming in place as a last resort — so EOF auto-play never crashes.
         var terrain = _tableState?.Terrain.Objects;
 
         var candidate = CohesiveFormation.PackGrid(living, cx + ndx * step, cz + ndz * step);
@@ -149,7 +143,19 @@ public class DefineMovementPathResolver : IStageResolver<DefineMovementPathReque
             attempts++;
         }
         if (!valid)
+        {
+            // Reform in place to close casualty gaps...
             candidate = CohesiveFormation.PackGrid(living, cx, cz);
+            valid = MovementUtilities.ValidatePaths(candidate, request.MaxRushDistance,
+                request.MaxDistanceInches, footprints, terrain, out _);
+
+            // ...but a unit intermingled with enemies can't re-pack without a model crossing an enemy base;
+            // hold exact positions then (zero-length paths can't move through anything).
+            if (!valid)
+                candidate = living
+                    .Select(mb => new ModelMoveEntry(mb, new List<Position> { mb.GetValue().Position }))
+                    .ToList();
+        }
 
         Console.WriteLine("  [auto] advancing toward nearest enemy");
         return candidate;
