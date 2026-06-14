@@ -17,7 +17,7 @@ public static class ResolverRegistryFactory
             .RegisterResolver(new ChooseDeploymentZoneResolver())
             .RegisterResolver(new ChooseRangedAttackResolver())
             .RegisterResolver(new DefineMovementPathResolver(tableState))
-            .RegisterResolver(new ConsolidationMoveResolver())
+            .RegisterResolver(new ConsolidationMoveResolver(tableState))
             .RegisterResolver(new AssignWoundsResolver())
             .RegisterResolver(new SelectionResolver<UnitData>())
             .RegisterResolver(new SelectionResolver<ModelData>())
