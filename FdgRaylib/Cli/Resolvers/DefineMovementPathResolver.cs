@@ -69,7 +69,8 @@ public class DefineMovementPathResolver : IStageResolver<DefineMovementPathReque
             if (eof)
                 return Task.FromResult(AutoAdvance(request));
 
-            if (MovementUtilities.ValidatePaths(entries, request.MaxDistanceInches, out var errors))
+            if (MovementUtilities.ValidatePaths(entries, request.MaxRushDistance, request.MaxDistanceInches,
+                    GetEnemyFootprints(request), _tableState?.Terrain.Objects, out var errors))
                 return Task.FromResult(entries);
 
             Console.WriteLine();
@@ -127,9 +128,54 @@ public class DefineMovementPathResolver : IStageResolver<DefineMovementPathReque
         float ndx = dx / dist;
         float ndz = dz / dist;
 
-        Console.WriteLine($"  [auto] advancing {step:F1}\" toward nearest enemy");
+        // The move-through / standoff validator (#011) can reject an advance that ends too near an enemy,
+        // and DefinePathStage throws (no retry) on an invalid move. Back the step off until the engine
+        // accepts the candidate — reforming in place as a last resort — so EOF auto-play never crashes.
+        var footprints = GetEnemyFootprints(request);
+        var terrain = _tableState?.Terrain.Objects;
 
-        return CohesiveFormation.PackGrid(living, cx + ndx * step, cz + ndz * step);
+        var candidate = CohesiveFormation.PackGrid(living, cx + ndx * step, cz + ndz * step);
+        bool valid = MovementUtilities.ValidatePaths(candidate, request.MaxRushDistance,
+            request.MaxDistanceInches, footprints, terrain, out _);
+        int attempts = 0;
+        while (!valid && attempts < 6)
+        {
+            step *= 0.5f;
+            candidate = step < 0.05f
+                ? CohesiveFormation.PackGrid(living, cx, cz)
+                : CohesiveFormation.PackGrid(living, cx + ndx * step, cz + ndz * step);
+            valid = MovementUtilities.ValidatePaths(candidate, request.MaxRushDistance,
+                request.MaxDistanceInches, footprints, terrain, out _);
+            attempts++;
+        }
+        if (!valid)
+            candidate = CohesiveFormation.PackGrid(living, cx, cz);
+
+        Console.WriteLine("  [auto] advancing toward nearest enemy");
+        return candidate;
+    }
+
+    // Living enemy model footprints (centre + radius), tagged with a per-unit key, for the move-through /
+    // standoff validator. Empty when there's no table state (the resolver can run detached in tests).
+    private List<EnemyModelFootprint> GetEnemyFootprints(DefineMovementPathRequest request)
+    {
+        var footprints = new List<EnemyModelFootprint>();
+        if (_tableState == null) return footprints;
+
+        int unitKey = 0;
+        foreach (var u in _tableState.Units.Objects)
+        {
+            if (u.PlayerID == request.TargetPlayerID) continue;
+            bool anyLiving = false;
+            foreach (var m in u.Models)
+                if (m.GetIsAlive())
+                {
+                    footprints.Add(new EnemyModelFootprint(m.Position, m.BaseRadiusInches, unitKey));
+                    anyLiving = true;
+                }
+            if (anyLiving) unitKey++;
+        }
+        return footprints;
     }
 
     private static List<ModelMoveEntry> StayInPlace(DefineMovementPathRequest request)
