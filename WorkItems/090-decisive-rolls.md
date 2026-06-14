@@ -1,0 +1,18 @@
+# 090 — Decisive dice rolls (single binary rolls work under the probabilistic roller)
+
+**Status**: in-progress
+**Related**: prerequisite for #021 (morale modifiers + Fear/Fearless). Corrects existing #089 morale behavior under the probabilistic roller. On branch `021-morale-rules` (both repos).
+
+## Goal
+`ProbabilisticDiceRoller` spreads a roll across faces as an expected value — correct for **aggregate** rolls (many attacks → smooth, deterministic hit counts) but ruinous for a **single decisive** roll: a morale die read as "0.5 of a success" can never clear the `>= 1` pass bar, so under the probabilistic roller *every* meaningful morale test auto-fails (and dangerous-terrain / objective-count rolls misbehave the same way). Add a first-class **decisive roll** that resolves one concrete face under any roller, and route the singleton rolls through it. "Done" = `IDiceRoller.RollDecisive`; morale, dangerous terrain, and objective count use it; a regression test proves probabilistic morale is a real binary outcome again. Default play (Realistic) is unaffected.
+
+## Notes
+- 2026-06-14: Implemented. `IDiceRoller.RollDecisive(int sideCount)` added as a **default interface method** returning `Roll(sideCount, 1)` — already concrete for every *realized* roller (Realistic, Fixed, the Impact/Strafing test doubles), so none of them needed edits. `ProbabilisticDiceRoller` overrides it to draw one real face via `System.Random` instead of the per-face spread. A `RollDecisive()` no-arg extension defaults to d6, mirroring the existing `Roll(rollCount)` extension. Routed four call sites: `RollForMoraleStage`, `MoraleUtilities.TakeMoraleTest`, `MovementExecutor.ApplyDangerousTerrainEffects` (dangerous terrain), `RollForObjectiveCountStage`. New `DecisiveRollTests` (5): documents the spread-auto-fail bug, proves decisive rolls are one concrete face (both rollers), proves probabilistic morale is now a real ~50% binary outcome (200-draw band, never flakes), and proves the default path keeps `FixedDiceRoller` deterministic for tests.
+
+## Decisions
+- **Decisive-roll abstraction, not a morale-only override.** The bug is a whole class — any single consequential die misbehaves in probabilistic mode — so the fix lives on the roller contract (`RollDecisive`) and covers morale, dangerous terrain, and objective count in one pass, rather than type-sniffing the roller inside the morale stages.
+- **Default interface method.** A decisive roll is just a single realized `Roll` for every roller whose `Roll` is already concrete; only the probabilistic roller (which fakes a distribution) overrides. The DIM encodes exactly that, keeping the diff to two files plus the call sites and leaving all test doubles untouched.
+- **Probabilistic mode loses strict reproducibility for decisive rolls — intentionally.** The probabilistic roller is otherwise deterministic; `RollDecisive` deliberately introduces real randomness because a single binary consequence (Shaken/Rout, a terrain wound) cannot be averaged. The rejected alternative ("pass if P ≥ 0.5") stays deterministic but makes morale a fixed function of Quality (a 4+ unit never routs, a 5+ always does), which removes the tension a different way.
+
+## Outcome
+_(open)_

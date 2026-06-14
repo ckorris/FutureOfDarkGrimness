@@ -81,6 +81,7 @@ These are umbrellas; will fragment per-rule when picked up.
 
 ## Networking & infrastructure
 
+- [~] 090 — Decisive dice rolls: `IDiceRoller.RollDecisive` so single binary rolls (morale, dangerous terrain, objective count) resolve a real outcome under the probabilistic roller instead of an auto-failing expected value. Prereq for #021. On branch `021-morale-rules`. ([WorkItems/090](WorkItems/090-decisive-rolls.md))
 - [ ] 036 — Server readiness handshake (`FDGServer.cs:148` TODO — wait for all clients ready)
 - [ ] 037 — Replace non-concurrent collections in `FDGHost` (`FDGHost.cs:75, :130` TODOs)
 - [ ] 038 — Resolve `LobbyViewModel_Host` `NotImplementedException` paths (`:288, :400`)
