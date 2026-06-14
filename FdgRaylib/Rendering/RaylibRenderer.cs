@@ -20,6 +20,8 @@ public class RaylibRenderer
     private const float TableHIn      = GameWideConstants.DEFAULT_TABLE_HEIGHT_INCHES;
     private const int   LogPanelWidth = 350;
     private const int   MinMargin     = 20;
+    // Global multiplier applied to ImGui fonts + style sizes to enlarge the whole UI.
+    private const float UiScale       = 1.4f;
 
     private static readonly Color TableColor  = new(40, 100, 40, 255);
     private static readonly Color TableBorder = new(20, 60, 20, 255);
@@ -167,6 +169,8 @@ public class RaylibRenderer
         Raylib.SetWindowSize(initW, initH);
 
         rlImGui.Setup(true);
+        // Enlarge every widget's padding/spacing/frame sizes (fonts are scaled at load below).
+        ImGui.GetStyle().ScaleAllSizes(UiScale);
 
         // App-wide audio device + presentation cue bank (placeholder until real assets land in
         // Assets/Sounds/). No-ops gracefully if no audio device is available.
@@ -181,8 +185,8 @@ public class RaylibRenderer
         {
             var fonts = ImGui.GetIO().Fonts;
             fonts.Clear();
-            BodyFont  = fonts.AddFontFromFileTTF(fontPath, 18f);
-            LargeFont = fonts.AddFontFromFileTTF(fontPath, 32f);
+            BodyFont  = fonts.AddFontFromFileTTF(fontPath, 18f * UiScale);
+            LargeFont = fonts.AddFontFromFileTTF(fontPath, 32f * UiScale);
             rlImGui.ReloadFonts();
         }
 
