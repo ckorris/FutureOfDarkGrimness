@@ -1,0 +1,54 @@
+{
+  "name": " ScoutAmbushTest",
+  "faction": "whatever",
+  "pointsLimit": 200,
+  "units": [
+    {
+      "name": "Scouter",
+      "modelCount": 5,
+      "quality": 4,
+      "defense": 3,
+      "specialRules": [
+        {
+          "kind": "core",
+          "name": "Scout"
+        }
+      ],
+      "weapons": [
+        {
+          "name": "Shooter",
+          "quantity": 5,
+          "rangeInches": 36,
+          "attacks": 1,
+          "armorPenetration": 0,
+          "specialRules": []
+        }
+      ],
+      "pointCost": 100
+    },
+    {
+      "name": "Ambusher",
+      "modelCount": 5,
+      "quality": 4,
+      "defense": 3,
+      "specialRules": [
+        {
+          "kind": "core",
+          "name": "Ambush"
+        }
+      ],
+      "weapons": [
+        {
+          "name": "hahaha",
+          "quantity": 5,
+          "rangeInches": 30,
+          "attacks": 1,
+          "armorPenetration": 0,
+          "specialRules": []
+        }
+      ],
+      "pointCost": 100
+    }
+  ],
+  "ruleDefinitions": []
+}
