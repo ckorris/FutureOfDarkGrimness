@@ -1,6 +1,7 @@
 using System.Numerics;
 using System.Runtime.InteropServices;
 using System.Text.Json;
+using FDG.Rules.Dispatch;
 using FDG.Rules.Foundation;
 using FDG.Rules.Serialization;
 using FDG.SaveLoad;
@@ -206,7 +207,14 @@ public class ArmyBuilderScreen : IAppScreen
         if (ImGui.InputInt($"Points##pc{idx}", ref pointCost))
             unit.PointCost = pointCost;
 
+        DrawJoinedByHint(unit);
+
         DrawSpecialRuleList(unit.SpecialRules, $"unit{idx}", ERuleScope.Unit);
+
+        // #006: the Hero join target is only meaningful for a unit carrying the Hero rule, so the field
+        // appears right under Special Rules once that rule is present (no separate "is a hero" toggle).
+        if (UnitHasHero(unit))
+            DrawHeroJoinField(unit, idx);
 
         if (ImGui.CollapsingHeader($"Weapons##wp{idx}", ImGuiTreeNodeFlags.DefaultOpen))
         {
@@ -406,6 +414,124 @@ public class ArmyBuilderScreen : IAppScreen
                 if (ImGui.InputInt("##innum", ref v) && v > 0)
                     rule = n2 with { NumericValue = v };
             }
+        }
+    }
+
+    // ---- #006 Hero join wiring ----------------------------------------------------------------
+    // Ids/JoinsUnitId stay invisible plumbing: the user picks a host by name from a filtered combo, and
+    // the builder generates the host's Id on demand and mirrors the engine's eligibility so it can't
+    // author a join that silently deploys solo at game time.
+
+    private static readonly Vector4 WarnColor = new(1f, 0.55f, 0.15f, 1f);
+    private static readonly Vector4 HintColor = new(0.6f, 0.6f, 0.6f, 1f);
+
+    private void DrawHeroJoinField(UnitFileEntry hero, int idx)
+    {
+        // Hosts a hero may join: a different multi-model unit in this army that isn't itself a Hero.
+        List<UnitFileEntry> hosts = _army.Units
+            .Where(u => !ReferenceEquals(u, hero) && u.ModelCount > 1 && !UnitHasHero(u))
+            .ToList();
+
+        // The currently-referenced target (if any), regardless of whether it is still eligible — kept
+        // visible so editing the host (e.g. dropping it to one model) surfaces a warning instead of
+        // silently clearing the link.
+        UnitFileEntry? target = string.IsNullOrEmpty(hero.JoinsUnitId)
+            ? null
+            : _army.Units.FirstOrDefault(u => !ReferenceEquals(u, hero) && u.Id == hero.JoinsUnitId);
+
+        bool targetIneligible = target != null && !hosts.Contains(target);
+        if (targetIneligible)
+            hosts.Add(target!);
+
+        string[] options = new string[hosts.Count + 1];
+        options[0] = "(none – deploys solo)";
+        for (int i = 0; i < hosts.Count; ++i)
+            options[i + 1] = ReferenceEquals(hosts[i], target) && targetIneligible
+                ? $"{hosts[i].Name} (ineligible)"
+                : hosts[i].Name;
+
+        int sel = target == null ? 0 : hosts.IndexOf(target) + 1;
+
+        ImGui.SetNextItemWidth(240);
+        if (ImGui.Combo($"Joins unit##join{idx}", ref sel, options, options.Length))
+        {
+            if (sel == 0)
+                hero.JoinsUnitId = null;
+            else
+                hero.JoinsUnitId = EnsureId(hosts[sel - 1]);
+        }
+
+        if (hero.ModelCount != 1)
+            Warn("A Hero must be a single-model unit to join a unit.");
+
+        if (TryGetToughValue(hero, out int tough) && tough > HeroJoinResolver.MaxHeroToughForJoin)
+            Warn($"A Hero with Tough({tough}) can't join a unit (max Tough({HeroJoinResolver.MaxHeroToughForJoin})).");
+
+        if (!string.IsNullOrEmpty(hero.JoinsUnitId) && target == null)
+            Warn("Join target was deleted; this hero will deploy on its own.");
+
+        if (targetIneligible)
+            Warn("Join target is no longer eligible (must be a multi-model unit without another Hero).");
+    }
+
+    // Host-side breadcrumb: shows which hero(es) have selected this unit as their join target.
+    private void DrawJoinedByHint(UnitFileEntry unit)
+    {
+        if (string.IsNullOrEmpty(unit.Id))
+            return;
+
+        List<string> joiners = _army.Units
+            .Where(h => !ReferenceEquals(h, unit) && UnitHasHero(h) && h.JoinsUnitId == unit.Id)
+            .Select(h => h.Name)
+            .ToList();
+
+        if (joiners.Count > 0)
+            ImGui.TextColored(HintColor, $"Joined by: {string.Join(", ", joiners)}");
+    }
+
+    private string EnsureId(UnitFileEntry host)
+    {
+        if (string.IsNullOrEmpty(host.Id))
+            host.Id = Guid.NewGuid().ToString("N");
+        return host.Id;
+    }
+
+    private static void Warn(string message) => ImGui.TextColored(WarnColor, $"! {message}");
+
+    private static bool UnitHasHero(UnitFileEntry unit) => unit.SpecialRules.Any(RuleEntryIsHero);
+
+    private static bool RuleEntryIsHero(SpecialRuleEntry entry) => entry switch
+    {
+        SpecialRuleEntry_Core core => string.Equals(core.Name, "Hero", StringComparison.Ordinal),
+        SpecialRuleEntry_CoreNumeric num => string.Equals(num.Name, "Hero", StringComparison.Ordinal),
+        SpecialRuleEntry_Alias alias => RuleEntryIsHero(alias.AliasedRule),
+        _ => false,
+    };
+
+    private static bool TryGetToughValue(UnitFileEntry unit, out int value)
+    {
+        foreach (SpecialRuleEntry entry in unit.SpecialRules)
+        {
+            if (TryGetNumericRule(entry, "Tough", out value))
+                return true;
+        }
+
+        value = 0;
+        return false;
+    }
+
+    private static bool TryGetNumericRule(SpecialRuleEntry entry, string ruleName, out int value)
+    {
+        switch (entry)
+        {
+            case SpecialRuleEntry_CoreNumeric num when string.Equals(num.Name, ruleName, StringComparison.Ordinal):
+                value = num.NumericValue;
+                return true;
+            case SpecialRuleEntry_Alias alias:
+                return TryGetNumericRule(alias.AliasedRule, ruleName, out value);
+            default:
+                value = 0;
+                return false;
         }
     }
 
