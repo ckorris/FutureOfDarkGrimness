@@ -48,7 +48,7 @@ _(No open items — #011 and #050 are done; see ## Done.)_
 
 ## Wound assignment
 
-- [ ] 023 — Tough wound-priority (continue wounding same Tough model until killed; heroes last)
+- [~] 023 — Tough wound-priority (continue wounding same Tough model until killed; heroes last) — core ordering rule implemented on branch `UITweaks-6-15-2026` (engine pre-assignment + prompt suppression, GUI/CLI reflect it); **"heroes last" deferred** (needs #031). ([WorkItems/023](WorkItems/023-tough-wound-priority.md))
 - [ ] 024 — Validate wound splits in `AssignWoundsResults` (currently allows illegal splits)
 
 ## Special rules — framework
