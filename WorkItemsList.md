@@ -22,7 +22,7 @@ Numbers are permanent and never reused. If an item is split, its line stays and 
 
 ## Deployment
 
-- [ ] 006 — Hero joins unit + takes morale on behalf of unit
+- [~] 006 — Hero joins unit + takes morale on behalf of unit. Approach: merge hero model into host unit + `HeroAttachment` metadata (decided with forks). Slice A (join primitive + eligibility, army-file `Id`/`JoinsUnitId`, hero-aware Tough) on branch `006-hero` (engine `a17b535`). Remaining slices: wound-last, morale-Q, last-model Defense, attack-Q. ([WorkItems/006](WorkItems/006-hero.md))
 - [ ] 007 — Resolve `DeployAllUnitsStage.Enter` `NotImplementedException` and "actually move the models" TODO
 
 ## Activation flow
