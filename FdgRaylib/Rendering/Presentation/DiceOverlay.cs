@@ -76,7 +76,7 @@ public static class DiceOverlay
         int panelW = innerW + PanelPad * 2;
         int panelH = PanelPad * 2 + HeaderSize + RowGap + (diceH > 0 ? diceH + RowGap : 0) + ResultSize;
         int panelX = (areaWidth - panelW) / 2;
-        int panelY = screenH - panelH - 24;
+        int panelY = (int)((screenH - panelH) * 0.45f); // near center, slightly above the middle
 
         Raylib.DrawRectangleRounded(new Rectangle(panelX, panelY, panelW, panelH), 0.18f, 6, Panel);
 
@@ -127,7 +127,7 @@ public static class DiceOverlay
         int panelW = innerW + PanelPad * 2;
         int panelH = PanelPad * 2 + HeaderSize + RowGap + barH + RowGap + ResultSize;
         int panelX = (areaWidth - panelW) / 2;
-        int panelY = screenH - panelH - 24;
+        int panelY = (int)((screenH - panelH) * 0.45f); // near center, slightly above the middle
 
         Raylib.DrawRectangleRounded(new Rectangle(panelX, panelY, panelW, panelH), 0.18f, 6, Panel);
 
