@@ -20,8 +20,10 @@ public class RaylibRenderer
     private const float TableHIn      = GameWideConstants.DEFAULT_TABLE_HEIGHT_INCHES;
     private const int   LogPanelWidth = 350;
     private const int   MinMargin     = 20;
-    // Global multiplier applied to ImGui fonts + style sizes to enlarge the whole UI.
-    private const float UiScale       = 1.4f;
+    // Anchor for the resolution-derived UI scale (see ComputeUiScale): the multiplier that was tuned
+    // by hand on a 4K (2160p) desktop. Smaller displays scale down from here, larger ones cap here.
+    private const float ReferenceUiScale  = 1.4f;
+    private const float ReferenceHeightPx = 2160f;
 
     private static readonly Color TableColor  = new(40, 100, 40, 255);
     private static readonly Color TableBorder = new(20, 60, 20, 255);
@@ -155,6 +157,24 @@ public class RaylibRenderer
             _placedModels[model] = _colorForPlayer!(unit.PlayerID);
     }
 
+    /// <summary>
+    /// UI scale derived from the display height so the interface isn't oversized on a 1080p laptop yet
+    /// stays exactly as tuned on a 4K desktop. Anchored at <see cref="ReferenceUiScale"/> for a 2160p
+    /// display, scaled proportionally below that, and clamped: floored at 1.0 so small screens stay
+    /// readable, capped at the reference so &gt;4K doesn't balloon.
+    ///
+    /// TODO: only verified on a 1080p laptop and a 4K desktop. Test on more monitors (1440p, ultrawide,
+    /// and displays with fractional OS scaling) and tune the anchor/floor if the UI feels off. Also note
+    /// this is computed once at startup from the monitor — it doesn't re-derive on window resize / monitor
+    /// move (fonts are baked at load).
+    /// </summary>
+    internal static float ComputeUiScale(int monitorHeightPx)
+    {
+        if (monitorHeightPx <= 0) return ReferenceUiScale; // unknown display — keep the tuned default
+        float scaled = monitorHeightPx / ReferenceHeightPx * ReferenceUiScale;
+        return Math.Clamp(scaled, 1.0f, ReferenceUiScale);
+    }
+
     public void Run()
     {
         Raylib.SetConfigFlags(ConfigFlags.ResizableWindow);
@@ -168,9 +188,11 @@ public class RaylibRenderer
         int initH     = Math.Min(720  * 2, monitorH);
         Raylib.SetWindowSize(initW, initH);
 
+        float uiScale = ComputeUiScale(monitorH);
+
         rlImGui.Setup(true);
         // Enlarge every widget's padding/spacing/frame sizes (fonts are scaled at load below).
-        ImGui.GetStyle().ScaleAllSizes(UiScale);
+        ImGui.GetStyle().ScaleAllSizes(uiScale);
 
         // App-wide audio device + presentation cue bank (placeholder until real assets land in
         // Assets/Sounds/). No-ops gracefully if no audio device is available.
@@ -185,8 +207,8 @@ public class RaylibRenderer
         {
             var fonts = ImGui.GetIO().Fonts;
             fonts.Clear();
-            BodyFont  = fonts.AddFontFromFileTTF(fontPath, 18f * UiScale);
-            LargeFont = fonts.AddFontFromFileTTF(fontPath, 32f * UiScale);
+            BodyFont  = fonts.AddFontFromFileTTF(fontPath, 18f * uiScale);
+            LargeFont = fonts.AddFontFromFileTTF(fontPath, 32f * uiScale);
             rlImGui.ReloadFonts();
         }
 
