@@ -33,6 +33,7 @@ public static class PresentationSoundCues
         SaveBeat           => Save,
         ModelWoundedBeat   => Wound,
         ModelDiedBeat      => Death,
+        UnitRoutedBeat     => Death,
         BannerBeat         => Banner,
         UnitMovedBeat      => Move,
         _                  => null,

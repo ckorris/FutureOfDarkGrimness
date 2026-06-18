@@ -92,6 +92,10 @@ public class PresentationPlayer : IPresentationSink
                 case ModelDiedBeat died:
                     _deaths[died.Model.ID] = new DeathState(died.Position);
                     break;
+                case UnitRoutedBeat routed:
+                    foreach (RoutedModel rm in routed.Models)
+                        _deaths[rm.Model.ID] = new DeathState(rm.Position);
+                    break;
                 case ModelWoundedBeat wounded:
                     _wounded.Add(wounded.Model.ID);
                     break;
@@ -146,6 +150,11 @@ public class PresentationPlayer : IPresentationSink
                 if (_deaths.TryGetValue(died.Model.ID, out var death))
                     death.SetProgress(t);
                 break;
+            case UnitRoutedBeat routed:
+                foreach (RoutedModel rm in routed.Models)
+                    if (_deaths.TryGetValue(rm.Model.ID, out var routDeath))
+                        routDeath.SetProgress(t); // all routed models fade together
+                break;
             case DiceRolledBeat dice:
                 _activeDice = dice;
                 _diceProgress = t;
@@ -179,6 +188,11 @@ public class PresentationPlayer : IPresentationSink
             case ModelDiedBeat died:
                 if (_deaths.TryGetValue(died.Model.ID, out var death))
                     death.Done = true; // stays hidden from here on
+                break;
+            case UnitRoutedBeat routed:
+                foreach (RoutedModel rm in routed.Models)
+                    if (_deaths.TryGetValue(rm.Model.ID, out var routDeath))
+                        routDeath.Done = true;
                 break;
             case DiceRolledBeat:
                 _activeDice = null;
