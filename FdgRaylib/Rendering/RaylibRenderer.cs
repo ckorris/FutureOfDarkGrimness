@@ -250,6 +250,12 @@ public class RaylibRenderer
                 }
 
                 if (_presentationPlayer != null &&
+                    _presentationPlayer.TryGetActiveRollOff(out var rollOffBeat, out var rollOffProgress))
+                {
+                    DiceOverlay.DrawRollOff(rollOffBeat, rollOffProgress, layout.LogX, screenH);
+                }
+
+                if (_presentationPlayer != null &&
                     _presentationPlayer.TryGetActiveBanner(out var bannerBeat, out var bannerProgress))
                 {
                     BannerOverlay.Draw(bannerBeat, bannerProgress, layout.LogX, screenH);

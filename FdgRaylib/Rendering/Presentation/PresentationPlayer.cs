@@ -45,6 +45,10 @@ public class PresentationPlayer : IPresentationSink
     private BannerBeat? _activeBanner;
     private float _bannerProgress;
 
+    // Screen-space roll-off (labelled name+die stack) for the currently-active RollOffBeat (null when none).
+    private RollOffBeat? _activeRollOff;
+    private float _rollOffProgress;
+
     // World-space attack (tracers / clash) for the currently-active AttackBeat (null when none).
     private AttackBeat? _activeAttack;
     private float _attackProgress;
@@ -163,6 +167,10 @@ public class PresentationPlayer : IPresentationSink
                 _activeBanner = banner;
                 _bannerProgress = t;
                 break;
+            case RollOffBeat rollOff:
+                _activeRollOff = rollOff;
+                _rollOffProgress = t;
+                break;
             case AttackBeat attack:
                 _activeAttack = attack;
                 _attackProgress = t;
@@ -200,6 +208,9 @@ public class PresentationPlayer : IPresentationSink
             case BannerBeat:
                 _activeBanner = null;
                 break;
+            case RollOffBeat:
+                _activeRollOff = null;
+                break;
             case AttackBeat:
                 _activeAttack = null;
                 break;
@@ -231,6 +242,17 @@ public class PresentationPlayer : IPresentationSink
             beat = _activeBanner!;
             progress = _bannerProgress;
             return _activeBanner != null;
+        }
+    }
+
+    /// <summary>The roll-off being shown this frame, if any, with its 0..1 progress.</summary>
+    public bool TryGetActiveRollOff(out RollOffBeat beat, out float progress)
+    {
+        lock (_lock)
+        {
+            beat = _activeRollOff!;
+            progress = _rollOffProgress;
+            return _activeRollOff != null;
         }
     }
 

@@ -37,6 +37,7 @@ public static class DiceOverlay
     private static readonly Color Header  = new(235, 235, 235, 255);
     private static readonly Color Result  = new(255, 225, 150, 255); // gold — the settled "what it means"
     private static readonly Color Hint    = new(170, 170, 175, 255); // dim — the "needs X+" while rolling
+    private static readonly Color Tie     = new(228, 200, 60, 255);  // yellow — tied for the win (re-rolls)
 
     public static void Draw(DiceRolledBeat beat, float progress, int areaWidth, int screenH)
     {
@@ -143,6 +144,68 @@ public static class DiceOverlay
         y += barH + RowGap;
 
         DrawCentered(result, areaWidth, y, ResultSize, Result);
+    }
+
+    /// <summary>
+    /// Draws a <see cref="RollOffBeat"/> as a labelled stack — each competitor's name on the left, its
+    /// die on the right — so it's clear who's rolling against whom. The sole highest roller's die turns
+    /// green (Won); a shared highest turns yellow (TiedForWin) and the engine emits a fresh beat for the
+    /// run-off. Dice tumble for the first fraction of the beat, then settle to the rolled face + colour.
+    /// </summary>
+    public static void DrawRollOff(RollOffBeat beat, float progress, int areaWidth, int screenH)
+    {
+        if (beat.Entries == null || beat.Entries.Count == 0) return;
+
+        bool settled = progress >= FlickerEnd;
+        const int nameFont = 22;
+        const int dieSize  = 44;
+        const int rowGap   = 10;
+        const int colGap   = 18;
+
+        int nameColW = 0;
+        foreach (RollOffEntry e in beat.Entries)
+            nameColW = Math.Max(nameColW, Raylib.MeasureText(e.Name, nameFont));
+
+        int rowsH  = beat.Entries.Count * dieSize + (beat.Entries.Count - 1) * rowGap;
+        int innerW = Math.Max(Raylib.MeasureText(beat.Label, HeaderSize), nameColW + colGap + dieSize);
+        int panelW = innerW + PanelPad * 2;
+        int panelH = PanelPad * 2 + HeaderSize + RowGap + rowsH;
+        int panelX = (areaWidth - panelW) / 2;
+        int panelY = (int)((screenH - panelH) * 0.45f);
+
+        Raylib.DrawRectangleRounded(new Rectangle(panelX, panelY, panelW, panelH), 0.12f, 6, Panel);
+        DrawCentered(beat.Label, areaWidth, panelY + PanelPad, HeaderSize, Header);
+
+        int rowTop = panelY + PanelPad + HeaderSize + RowGap;
+        int nameX  = panelX + PanelPad;
+        int dieX   = panelX + PanelPad + nameColW + colGap;
+        for (int i = 0; i < beat.Entries.Count; i++)
+        {
+            RollOffEntry e = beat.Entries[i];
+            int rowY = rowTop + i * (dieSize + rowGap);
+            Raylib.DrawText(e.Name, nameX, rowY + (dieSize - nameFont) / 2, nameFont, Header);
+
+            int face;
+            Color fill, pip;
+            if (settled)
+            {
+                face = e.Roll;
+                fill = e.Result switch
+                {
+                    ERollOffResult.Won        => Success,
+                    ERollOffResult.TiedForWin => Tie,
+                    _                         => Fail,
+                };
+                pip = Color.White;
+            }
+            else
+            {
+                face = Raylib.GetRandomValue(1, 6);
+                fill = Rolling;
+                pip  = new Color((byte)30, (byte)30, (byte)30, (byte)255);
+            }
+            DrawDie(dieX, rowY, dieSize, face, fill, pip);
+        }
     }
 
     // The result line: while the dice tumble, what's needed; once settled, the stage-supplied summary

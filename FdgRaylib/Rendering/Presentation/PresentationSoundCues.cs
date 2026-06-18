@@ -30,6 +30,7 @@ public static class PresentationSoundCues
     {
         AttackBeat a       => a.IsMelee ? Melee : Gunshot,
         DiceRolledBeat     => Dice,
+        RollOffBeat        => Dice,
         SaveBeat           => Save,
         ModelWoundedBeat   => Wound,
         ModelDiedBeat      => Death,
