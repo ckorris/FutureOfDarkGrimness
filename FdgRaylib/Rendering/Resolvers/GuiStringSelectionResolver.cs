@@ -36,14 +36,46 @@ public class GuiStringSelectionResolver : IStageResolver<StringSelectionRequest,
 
         int validCount   = request.ValidOptions.Count;
         int invalidCount = request.InvalidOptions.Count;
-        // Taller rows when options carry descriptions (e.g. the spell menu), so the subtext fits under each.
         bool hasDescriptions = request.OptionDescriptions != null && request.OptionDescriptions.Count > 0;
-        float rowH   = hasDescriptions ? 58f : 32f;
-        float btnH   = hasDescriptions ? 28f : rowH - 4f;
-        float pad    = 16f;
-        float instrH = 48f;
-        float dw = MathF.Min(screenW * 0.45f, 560f);
-        float dh = MathF.Min(instrH + pad + (validCount + invalidCount) * rowH + pad * 2, screenH * 0.80f);
+
+        const float pad = 16f;
+        const float btnH = 28f;
+        const float descScale = 0.82f;   // descriptions render smaller than the option label
+        const float descIndent = 10f;
+        const float gapAfterBtn = 6f;
+        const float gapAfterDesc = 8f;
+        const float invalidRowH = 32f;
+
+        float dw = MathF.Min(screenW * 0.5f, 620f);
+        float btnW = dw - pad * 2;
+
+        // Measure heights up front so the dialog is sized to its content and a wrapped description can never
+        // overflow into the next row. CalcTextSize ignores SetWindowFontScale, so measure the description at
+        // the scaled-equivalent wrap width and scale the resulting height back down.
+        float instrH = ImGui.CalcTextSize(request.Instructions, false, dw - pad * 2).Y + 8f;
+
+        float descWrapMeasure = (btnW - descIndent) / descScale;
+        float[] rowHeights = new float[validCount];
+        string?[] descs = new string?[validCount];
+        float validHeight = 0f;
+        for (int i = 0; i < validCount; i++)
+        {
+            string opt = request.ValidOptions[i];
+            float h = btnH + gapAfterBtn;
+            if (hasDescriptions
+                && request.OptionDescriptions!.TryGetValue(opt, out string? d)
+                && !string.IsNullOrEmpty(d))
+            {
+                descs[i] = d;
+                float descH = ImGui.CalcTextSize(d, false, descWrapMeasure).Y * descScale;
+                h = btnH + 2f + descH + gapAfterDesc;
+            }
+            rowHeights[i] = h;
+            validHeight += h;
+        }
+
+        float contentH = pad + instrH + 4f + validHeight + invalidCount * invalidRowH + pad;
+        float dh = MathF.Min(contentH, screenH * 0.85f);
         float dx = (screenW - dw) * 0.5f;
         float dy = (screenH - dh) * 0.5f;
 
@@ -60,43 +92,40 @@ public class GuiStringSelectionResolver : IStageResolver<StringSelectionRequest,
         ImGui.TextUnformatted(request.Instructions);
         ImGui.PopTextWrapPos();
 
-        float btnW  = dw - pad * 2;
-        float listY = pad + instrH;
+        float y = pad + instrH + 4f;
         for (int i = 0; i < validCount; i++)
         {
             string opt = request.ValidOptions[i];
-            float rowY = listY + i * rowH;
-            ImGui.SetCursorPos(new Vector2(pad, rowY));
+            ImGui.SetCursorPos(new Vector2(pad, y));
             if (ImGui.Button($"{opt}##{i}", new Vector2(btnW, btnH)))
                 Complete(tcs, opt);
 
             // Optional subtext under the option (e.g. a spell's effect summary): smaller and dimmed.
-            if (hasDescriptions
-                && request.OptionDescriptions!.TryGetValue(opt, out string? desc)
-                && !string.IsNullOrEmpty(desc))
+            if (descs[i] != null)
             {
-                ImGui.SetCursorPos(new Vector2(pad + 10f, rowY + btnH + 2f));
+                ImGui.SetCursorPos(new Vector2(pad + descIndent, y + btnH + 2f));
                 ImGui.PushStyleColor(ImGuiCol.Text, new Vector4(0.62f, 0.66f, 0.74f, 1f));
-                ImGui.SetWindowFontScale(0.82f);
+                ImGui.SetWindowFontScale(descScale);
                 ImGui.PushTextWrapPos(dw - pad);
-                ImGui.TextUnformatted(desc);
+                ImGui.TextUnformatted(descs[i]!);
                 ImGui.PopTextWrapPos();
                 ImGui.SetWindowFontScale(1f);
                 ImGui.PopStyleColor();
             }
+            y += rowHeights[i];
         }
 
         if (invalidCount > 0)
         {
-            float invalidStart = listY + validCount * rowH;
             ImGui.PushStyleColor(ImGuiCol.Text, new Vector4(0.5f, 0.5f, 0.5f, 1f));
             for (int i = 0; i < invalidCount; i++)
             {
                 var opt = request.InvalidOptions[i];
-                ImGui.SetCursorPos(new Vector2(pad, invalidStart + i * rowH));
+                ImGui.SetCursorPos(new Vector2(pad, y));
                 ImGui.BeginDisabled(true);
-                ImGui.Button($"{opt.Option} ({opt.Reason})##{validCount + i}", new Vector2(btnW, rowH - 4f));
+                ImGui.Button($"{opt.Option} ({opt.Reason})##{validCount + i}", new Vector2(btnW, btnH));
                 ImGui.EndDisabled();
+                y += invalidRowH;
             }
             ImGui.PopStyleColor();
         }
