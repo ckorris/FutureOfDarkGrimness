@@ -22,7 +22,8 @@ public class PlaceObjectsResolver<T> : IStageResolver<PlaceObjectsRequest<T>, Li
 
     public Task<List<PlacedObjectEntry<T>>> Resolve(PlaceObjectsRequest<T> request)
     {
-        var zone = request.DeploymentZone.GetValue();
+        var zone = request.DeploymentZone;
+        ZoneBounds bounds = zone.Bounds;
         int total = request.ModelsToPlace.Count;
 
         _impassibleTerrain = _tableState?.Terrain.Objects
@@ -41,13 +42,13 @@ public class PlaceObjectsResolver<T> : IStageResolver<PlaceObjectsRequest<T>, Li
             .Max();
         float autoSpacing = maxRadius * 2 + 0.1f;
 
-        float zoneCz = (zone.Bottom + zone.Top) / 2f;
-        float cz = Math.Clamp(zoneCz + deployIndex * ZRowOffset, zone.Bottom, zone.Top);
+        float zoneCz = bounds.CenterZ;
+        float cz = Math.Clamp(zoneCz + deployIndex * ZRowOffset, bounds.Bottom, bounds.Top);
         float xStagger = (deployIndex % 2) * autoSpacing / 2f;
 
         Console.WriteLine();
         Console.WriteLine($"--- Deploy: place {total} model{(total != 1 ? "s" : "")} ---");
-        Console.WriteLine($"  Zone X: {zone.Left:F1}\" to {zone.Right:F1}\"  |  Zone Z: {zone.Bottom:F1}\" to {zone.Top:F1}\"");
+        Console.WriteLine($"  Zone X: {bounds.Left:F1}\" to {bounds.Right:F1}\"  |  Zone Z: {bounds.Bottom:F1}\" to {bounds.Top:F1}\"");
         Console.WriteLine("  Enter position as 'x z' (inches). Bases must not overlap.");
         Console.WriteLine();
 
@@ -73,13 +74,13 @@ public class PlaceObjectsResolver<T> : IStageResolver<PlaceObjectsRequest<T>, Li
                 string[] parts = raw.Trim().Split(' ', StringSplitOptions.RemoveEmptyEntries);
                 if (parts.Length >= 2 && float.TryParse(parts[0], out float x) && float.TryParse(parts[1], out float z))
                 {
-                    if (x < zone.Left || x > zone.Right || z < zone.Bottom || z > zone.Top)
+                    var newPos = new Position(x, z);
+                    if (!zone.IsPointWithinZone(newPos))
                     {
-                        Console.WriteLine($"    ! Outside zone — X must be {zone.Left:F1}\"–{zone.Right:F1}\", Z must be {zone.Bottom:F1}\"–{zone.Top:F1}\".");
+                        Console.WriteLine($"    ! Outside the placement zone (bounds X {bounds.Left:F1}\"–{bounds.Right:F1}\", Z {bounds.Bottom:F1}\"–{bounds.Top:F1}\").");
                         continue;
                     }
 
-                    var newPos = new Position(x, z);
                     string? overlap = CheckOverlap(newPos, r, placed)
                         ?? CheckOverlapWithExisting(newPos, r, GetTableOccupants());
                     if (overlap != null)
@@ -120,19 +121,21 @@ public class PlaceObjectsResolver<T> : IStageResolver<PlaceObjectsRequest<T>, Li
     // Scans the zone left-to-right at zone-center Z to find the first free spot,
     // skipping over models already on the table from previous deployment requests.
     // Each deployment row is staggered by half a step on X to avoid vertical alignment.
-    private Position FindAutoPosition(float r, float step, RectangularZone zone, float cz,
+    private Position FindAutoPosition(float r, float step, IBoundedZone zone, float cz,
         float xStagger, List<PlacedObjectEntry<T>> placedSoFar, List<Position> enemies, float minEnemyDist)
     {
         var existing = GetTableOccupants().ToList();
+        ZoneBounds b = zone.Bounds;
 
         // With an enemy-distance constraint (Ambush), scan Z rows too, not just the center row.
         if (minEnemyDist > 0f)
         {
-            for (float z = zone.Bottom + r; z <= zone.Top - r; z += step)
+            for (float z = b.Bottom + r; z <= b.Top - r; z += step)
             {
-                for (float x = zone.Left + r; x <= zone.Right - r; x += step)
+                for (float x = b.Left + r; x <= b.Right - r; x += step)
                 {
                     var candidate = new Position(x, z);
+                    if (!zone.IsPointWithinZone(candidate)) continue; // outside the true shape (e.g. a circle's corners)
                     if (CheckOverlap(candidate, r, placedSoFar) != null) continue;
                     if (CheckOverlapWithExisting(candidate, r, existing) != null) continue;
                     if (PlacementUtilities.OverlapsImpassibleTerrain(candidate, r, _impassibleTerrain)) continue;
@@ -141,14 +144,15 @@ public class PlaceObjectsResolver<T> : IStageResolver<PlaceObjectsRequest<T>, Li
                     return candidate;
                 }
             }
-            return new Position(Math.Clamp((zone.Left + zone.Right) / 2f, zone.Left + r, zone.Right - r),
-                Math.Clamp((zone.Bottom + zone.Top) / 2f, zone.Bottom + r, zone.Top - r));
+            return new Position(Math.Clamp(b.CenterX, b.Left + r, b.Right - r),
+                Math.Clamp(b.CenterZ, b.Bottom + r, b.Top - r));
         }
 
-        float xStart = zone.Left + r + xStagger;
-        for (float x = xStart; x <= zone.Right - r; x += step)
+        float xStart = b.Left + r + xStagger;
+        for (float x = xStart; x <= b.Right - r; x += step)
         {
             var candidate = new Position(x, cz);
+            if (!zone.IsPointWithinZone(candidate)) continue;
             if (CheckOverlap(candidate, r, placedSoFar) != null) continue;
             if (CheckOverlapWithExisting(candidate, r, existing) != null) continue;
             if (PlacementUtilities.OverlapsImpassibleTerrain(candidate, r, _impassibleTerrain)) continue;
@@ -157,7 +161,7 @@ public class PlaceObjectsResolver<T> : IStageResolver<PlaceObjectsRequest<T>, Li
         }
 
         // Fallback: best effort at zone center (shouldn't happen on a 72" table)
-        return new Position(Math.Clamp((zone.Left + zone.Right) / 2f, zone.Left + r, zone.Right - r), cz);
+        return new Position(Math.Clamp(b.CenterX, b.Left + r, b.Right - r), cz);
     }
 
     private List<Position> GetEnemyPositions(PlayerID self)
