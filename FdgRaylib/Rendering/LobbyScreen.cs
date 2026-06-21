@@ -20,6 +20,7 @@ public class LobbyScreen : IAppScreen
 {
     public Action? OnBack;
     public Action<ITableState, Func<PlayerID, Color>, GameLog?, GuiResolverOverlay, GuiOutstandingTaskDisplay, PresentationPlayer, Func<string?>?>? OnGameLaunched;
+    public Action<string>? OnGameEnded;
 
     private ILobbyViewModel? _viewModel;
     private string _chatInput = "";
@@ -46,6 +47,8 @@ public class LobbyScreen : IAppScreen
         _chatInput = "";
         _pendingGame = null;
         viewModel.OnLaunched += game => _pendingGame = game;
+        // Fires on the engine thread; the renderer just records it and reacts on the main thread.
+        viewModel.OnGameEnded += result => OnGameEnded?.Invoke(result);
     }
 
     public void Draw(int screenW, int screenH)

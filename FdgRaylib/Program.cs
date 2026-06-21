@@ -117,6 +117,8 @@ else
     renderer.LobbyScreen.OnGameLaunched = (tableState, colorFunc, log, overlay, taskDisplay, presentationPlayer, saveGame) =>
         renderer.TransitionToGame(tableState, colorFunc, log, overlay, taskDisplay, presentationPlayer, saveGame);
 
+    renderer.LobbyScreen.OnGameEnded = result => renderer.ShowGameOver(result);
+
     // ── Local play (Host with no network players) also still works via CliApp ─
     // The old "Host" path now goes through the lobby. CliApp is only used
     // in headless mode above.
