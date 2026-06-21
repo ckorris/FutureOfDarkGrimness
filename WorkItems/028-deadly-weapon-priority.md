@@ -1,6 +1,6 @@
 # 028 — Deadly weapon priority (resolve first; wounds don't carry across models)
 
-**Status**: in-progress — implemented on branch `028-deadly-weapon-priority` (both repos), engine green 633/0, headless smoke exit 0. Not yet merged to master.
+**Status**: merged to master 2026-06-21 (submodule `4a12af2`, merge `3b81e2e`; superproject merge `ba4773f`) — engine 633/0, headless exit 0. Awaiting GUI hand-verify (needs a Deadly-armed weapon to observe the gray-out).
 **Related**: #042 (rule dispatch / Deadly wound-mult), #027 (weapon-scoped rules), #032 (Deadly impl umbrella), #024 (wound-split validation)
 **Branch** (both repos): `028-deadly-weapon-priority` — submodule + superproject branched from master.
 
@@ -25,4 +25,4 @@ The Deadly(X) rule has two halves. "Done" = both enforced:
 - **Ranged gates conditionally, melee unconditionally.** Ranged only gates when a Deadly weapon can actually reach something (range/LoS), so a useless Deadly weapon doesn't soft-lock the picker; melee has no reach gating in the picker so any available Deadly weapon gates.
 
 ## Outcome
-_(pending merge + GUI hand-verify)_
+Merged to master 2026-06-21. The ordering half of Deadly shipped: a shared capability-based `WoundPriorityQueries.MustResolveFirst` drives Deadly-first gating in both the ranged and melee weapon pickers (non-Deadly weapons grayed out with a reason until Deadly weapons are spent), reusing the existing `UnselectableReason`/`InvalidOption` markers all six resolvers already honor — no app-side change. The wound-no-carry-over half was pre-existing (`AssignWoundsStage.ConfineToClumps`). 6 new tests; suite 633/0. **Deferred:** nothing cut from this item; broader Deadly interactions (e.g. #028's sibling rules) stay under the #032 weapon-rules umbrella. Held in *Awaiting verification* only until the gray-out is eyeballed in the GUI with a Deadly-armed army.
