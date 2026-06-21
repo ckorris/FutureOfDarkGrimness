@@ -46,6 +46,10 @@ spells + conferred rules) left to #034.
   subtext), and rendering in `GuiStringSelectionResolver` (smaller + dimmed) and the CLI
   `StringSelectionResolver`. Suite 636/0; headless shows the subtext + live token count; default-army
   action menu unaffected (regression smoke exit 0). User-requested follow-up to the framework.
+  **Polish (engine `067eded`, app `7b566b0`):** the default ImGui font has no em-dash (rendered as
+  `?`), so the prompt + `SpellText` use an ASCII `" - "` separator and `Describe` is sentence-cased
+  ("Grants …"); `GuiStringSelectionResolver` now measures text (`CalcTextSize`) to size the dialog and
+  each option row, so a wrapped description no longer overflows into the next option.
 - 2026-06-21: **Slice 3 done — framework complete** (engine `cc04efd`, bump pending). Spell-effect
   execution: `CastSpellStage` is now a `ParentStage` (mirrors `StrafingStage`); on a successful cast it
   applies **buff/debuff** spells (`Effect.AddRule` etc.) by granting a `RuleGrant` token to each target
