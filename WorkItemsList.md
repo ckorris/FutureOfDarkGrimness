@@ -77,7 +77,7 @@ These are umbrellas; will fragment per-rule when picked up.
 
 ## Transport
 
-- [ ] 035 — Transport(X) system: embark/disembark via move actions, deploy with units inside, dangerous terrain test on destruction
+- [~] 035 — Transport(X) system: embark/disembark via move actions, deploy with units inside, dangerous terrain test on destruction. **Core rule** (engine subsystem under a thin `CoreRuleCatalog` marker, capacity = `Arg(0)`); occupancy lives in a cross-unit `EmbarkedIn` token (no bespoke `UnitData` field); embarked = off-table/reserve-style; load chosen at deployment (not the army creator); spillout is mid-combat. Slice A (foundation) underway TDD-first: stubbed `TransportUtilities` + `EmbarkedIn` token + `Transport` marker, `TransportUtilitiesTests` authored red ahead of implementation. ([WorkItems/035](WorkItems/035-transport.md))
 
 ## Networking & infrastructure
 
