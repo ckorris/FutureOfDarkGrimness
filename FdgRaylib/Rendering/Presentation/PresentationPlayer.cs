@@ -45,6 +45,10 @@ public class PresentationPlayer : IPresentationSink
     private BannerBeat? _activeBanner;
     private float _bannerProgress;
 
+    // Screen-space roll-off (labelled name+die stack) for the currently-active RollOffBeat (null when none).
+    private RollOffBeat? _activeRollOff;
+    private float _rollOffProgress;
+
     // World-space attack (tracers / clash) for the currently-active AttackBeat (null when none).
     private AttackBeat? _activeAttack;
     private float _attackProgress;
@@ -91,6 +95,10 @@ public class PresentationPlayer : IPresentationSink
                     break;
                 case ModelDiedBeat died:
                     _deaths[died.Model.ID] = new DeathState(died.Position);
+                    break;
+                case UnitRoutedBeat routed:
+                    foreach (RoutedModel rm in routed.Models)
+                        _deaths[rm.Model.ID] = new DeathState(rm.Position);
                     break;
                 case ModelWoundedBeat wounded:
                     _wounded.Add(wounded.Model.ID);
@@ -146,6 +154,11 @@ public class PresentationPlayer : IPresentationSink
                 if (_deaths.TryGetValue(died.Model.ID, out var death))
                     death.SetProgress(t);
                 break;
+            case UnitRoutedBeat routed:
+                foreach (RoutedModel rm in routed.Models)
+                    if (_deaths.TryGetValue(rm.Model.ID, out var routDeath))
+                        routDeath.SetProgress(t); // all routed models fade together
+                break;
             case DiceRolledBeat dice:
                 _activeDice = dice;
                 _diceProgress = t;
@@ -153,6 +166,10 @@ public class PresentationPlayer : IPresentationSink
             case BannerBeat banner:
                 _activeBanner = banner;
                 _bannerProgress = t;
+                break;
+            case RollOffBeat rollOff:
+                _activeRollOff = rollOff;
+                _rollOffProgress = t;
                 break;
             case AttackBeat attack:
                 _activeAttack = attack;
@@ -180,11 +197,19 @@ public class PresentationPlayer : IPresentationSink
                 if (_deaths.TryGetValue(died.Model.ID, out var death))
                     death.Done = true; // stays hidden from here on
                 break;
+            case UnitRoutedBeat routed:
+                foreach (RoutedModel rm in routed.Models)
+                    if (_deaths.TryGetValue(rm.Model.ID, out var routDeath))
+                        routDeath.Done = true;
+                break;
             case DiceRolledBeat:
                 _activeDice = null;
                 break;
             case BannerBeat:
                 _activeBanner = null;
+                break;
+            case RollOffBeat:
+                _activeRollOff = null;
                 break;
             case AttackBeat:
                 _activeAttack = null;
@@ -217,6 +242,17 @@ public class PresentationPlayer : IPresentationSink
             beat = _activeBanner!;
             progress = _bannerProgress;
             return _activeBanner != null;
+        }
+    }
+
+    /// <summary>The roll-off being shown this frame, if any, with its 0..1 progress.</summary>
+    public bool TryGetActiveRollOff(out RollOffBeat beat, out float progress)
+    {
+        lock (_lock)
+        {
+            beat = _activeRollOff!;
+            progress = _rollOffProgress;
+            return _activeRollOff != null;
         }
     }
 

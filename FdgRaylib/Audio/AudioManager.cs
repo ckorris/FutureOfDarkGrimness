@@ -12,23 +12,19 @@ namespace FdgRaylib.Audio;
 /// to use even when no audio device is available, in which case every operation no-ops.
 ///
 /// <para>
-/// Missing asset files fall back to a built-in in-memory placeholder tone, so the whole cue pipeline
-/// is audible end-to-end before any real assets exist — drop a real file at the mapped path later and
-/// it takes over with no code change.
+/// Two ways to register a cue: <see cref="Load"/> a real asset file, or <see cref="LoadSynthesized"/>
+/// an in-memory PCM clip (e.g. a <see cref="ToneSynth"/> placeholder). Callers typically try the file
+/// first and fall back to a synthesized clip, so the whole cue pipeline is audible end-to-end before any
+/// real assets exist — drop a real file at the mapped path later and it takes over with no code change.
 /// </para>
 ///
-/// <para>Not thread-safe: call <see cref="Load"/>/<see cref="Play"/>/<see cref="Dispose"/> from the
-/// render (main) thread only, where Raylib audio calls are valid.</para>
+/// <para>Not thread-safe: call <see cref="Load"/>/<see cref="LoadSynthesized"/>/<see cref="Play"/>/
+/// <see cref="Dispose"/> from the render (main) thread only, where Raylib audio calls are valid.</para>
 /// </summary>
 public sealed class AudioManager : IDisposable
 {
     private readonly Dictionary<string, Sound> _sounds = new();
-    private readonly HashSet<string> _placeholderKeys = new();
     private readonly bool _enabled;
-
-    private Wave _placeholderWave;
-    private Sound _placeholder;
-    private readonly bool _hasPlaceholder;
 
     /// <summary>True once the audio device initialized successfully; false makes every op a no-op.</summary>
     public bool Enabled => _enabled;
@@ -37,24 +33,31 @@ public sealed class AudioManager : IDisposable
     {
         Raylib.InitAudioDevice();
         _enabled = Raylib.IsAudioDeviceReady();
-        if (!_enabled) return;
-
-        _placeholderWave = GeneratePlaceholderWave();
-        _placeholder = Raylib.LoadSoundFromWave(_placeholderWave);
-        _hasPlaceholder = true;
     }
 
     /// <summary>
-    /// Registers a sound under <paramref name="key"/>. Loads the file at <paramref name="path"/> if it
-    /// exists; otherwise the key resolves to the built-in placeholder so the cue still fires.
+    /// Registers the asset file at <paramref name="path"/> under <paramref name="key"/>. Returns true if
+    /// the file existed and loaded; false (no registration) if it was missing or audio is unavailable, so
+    /// the caller can supply a synthesized fallback via <see cref="LoadSynthesized"/>.
     /// </summary>
-    public void Load(string key, string path)
+    public bool Load(string key, string path)
+    {
+        if (!_enabled || !File.Exists(path)) return false;
+        _sounds[key] = Raylib.LoadSound(path);
+        return true;
+    }
+
+    /// <summary>
+    /// Registers an in-memory 16-bit mono PCM clip under <paramref name="key"/> (used for the generated
+    /// placeholder cues). The wave is uploaded to the audio device and freed immediately afterward.
+    /// </summary>
+    public void LoadSynthesized(string key, short[] samples, int sampleRate)
     {
         if (!_enabled) return;
-        if (File.Exists(path))
-            _sounds[key] = Raylib.LoadSound(path);
-        else if (_hasPlaceholder)
-            _placeholderKeys.Add(key);
+        byte[] wav = BuildPcmWav(samples, sampleRate, channels: 1);
+        Wave wave = LoadWaveBytes(".wav", wav);
+        _sounds[key] = Raylib.LoadSoundFromWave(wave);
+        Raylib.UnloadWave(wave);
     }
 
     /// <summary>Plays the sound registered under <paramref name="key"/> (no-op if unknown/disabled).</summary>
@@ -63,8 +66,6 @@ public sealed class AudioManager : IDisposable
         if (!_enabled) return;
         if (_sounds.TryGetValue(key, out var sound))
             Raylib.PlaySound(sound);
-        else if (_hasPlaceholder && _placeholderKeys.Contains(key))
-            Raylib.PlaySound(_placeholder);
     }
 
     public void Dispose()
@@ -73,34 +74,7 @@ public sealed class AudioManager : IDisposable
         foreach (var sound in _sounds.Values)
             Raylib.UnloadSound(sound);
         _sounds.Clear();
-        if (_hasPlaceholder)
-        {
-            Raylib.UnloadSound(_placeholder);
-            Raylib.UnloadWave(_placeholderWave);
-        }
         Raylib.CloseAudioDevice();
-    }
-
-    // A short, soft percussive blip (sine with exponential decay) used for any cue whose real asset
-    // file is missing. Built as an in-memory WAV so no binary placeholder needs to ship.
-    private static Wave GeneratePlaceholderWave()
-    {
-        const int sampleRate = 22050;
-        const float seconds = 0.10f;
-        const float freq = 600f;
-        int count = (int)(sampleRate * seconds);
-
-        var samples = new short[count];
-        for (int i = 0; i < count; i++)
-        {
-            float t = (float)i / sampleRate;
-            float env = MathF.Exp(-22f * t);                  // fast decay → "click", not a tone
-            float s = MathF.Sin(2f * MathF.PI * freq * t) * env * 0.35f;
-            samples[i] = (short)Math.Clamp(s * short.MaxValue, short.MinValue, short.MaxValue);
-        }
-
-        byte[] wav = BuildPcmWav(samples, sampleRate, channels: 1);
-        return LoadWaveBytes(".wav", wav);
     }
 
     // LoadWaveFromMemory in this binding is pointer-only; pin a null-terminated type string and the

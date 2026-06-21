@@ -22,8 +22,10 @@ public class AssignWoundsResolver : IStageResolver<AssignWoundsRequest, AssignWo
             for (int i = 0; i < models.Count; i++)
             {
                 var m = models[i].Model.GetValue();
-                float remaining = m.TotalWounds - m.WoundsDealt;
-                Console.WriteLine($"  [{i + 1}] Model (wounds remaining: {remaining:F0})");
+                float pending   = models[i].Wounds;
+                float remaining = m.TotalWounds - m.WoundsDealt - pending;
+                string assigned = pending > 0 ? $", {pending:F0} already assigned" : "";
+                Console.WriteLine($"  [{i + 1}] Model (wounds remaining: {remaining:F0}{assigned})");
             }
 
             Console.Write("  Choice: ");

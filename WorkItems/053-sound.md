@@ -65,5 +65,18 @@ Caveat: not yet heard on a machine with audio (user away from their box). One cu
 play a single shot sound for now). Real assets + per-volley layering are the obvious follow-ups.
 
 ## Notes
+- 2026-06-15: **Per-cue synthesized placeholders** (branch `UITweaks-6-15-2026`). Replaced the single
+  shared blip with a distinct generated voice per beat, since real assets are still a way off. New
+  `FdgRaylib/Audio/ToneSynth.cs` (pure DSP: `Tone` with linear pitch glide + exp decay, `Noise` with
+  explicit seed for reproducibility, `Concat`/`Silence`). `AudioManager` lost its built-in placeholder;
+  `Load` now returns bool (false when the file is missing) and a new `LoadSynthesized(key, samples,
+  rate)` registers an in-memory clip. `PresentationSoundCues.PlaceholderSamples(cue)` holds the recipes:
+  gunshot = fast square crack + noise burst; melee = noise transient + descending triangle ring; dice =
+  four noise ticks with gaps; save = soft sine ping; wound = low quick sine thud; death = long
+  descending triangle; banner = rising two-note sine sting (C5→G5); move = soft short blip. Real `.wav`
+  files still override by filename (drop-in, no code change). Added `SoundCueSynthesisTests` (4) —
+  ToneSynth length/range/determinism + every cue audible and pairwise-distinct (needed
+  `InternalsVisibleTo FdgRaylib.Tests`). App tests 14 green, engine untouched, build clean. Still one
+  cue per beat (no per-volley layering); still not heard on an audio device.
 - 2026-06-08: Created as the next slice after #056's visuals. Resolved the asset question
   (placeholder-first) and built the full pipeline same day — see Outcome.
