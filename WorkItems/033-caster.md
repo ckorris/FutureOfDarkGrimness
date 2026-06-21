@@ -38,6 +38,16 @@ spells + conferred rules) left to #034.
 - **Spell-authoring UI** (army builder) — tracks with #087.
 
 ## Notes
+- 2026-06-21: **Slice 2 done** (engine `78189c9`, bump pending). Cast action + control flow:
+  `ChooseActionStage.GetCanCast`/`ToCast` surface a first-class **Cast** for a unit carrying Caster(X)
+  with an affordable spell (mirrors `GetCanShoot`); "Cast" reserved in the #010 collision guard only
+  for casters (a non-caster custom action may still be named "Cast"). New `CastSpellStage`: pick spell
+  (`StringSelectionRequest` + Cancel) → build eligible targets from the spell's `TargetSelector`
+  (affinity + range + LoS, reusing the `ChooseRangedAttackStage` per-model filters) → pick target(s) up
+  to `MaxCount` (`SelectionRequest<UnitData>`) → spend `Threshold` tokens on the attempt → 4+
+  `RollDecisive` → loop back **layered** (no HasMoved/HasAttacked; can cast again until tokens run out).
+  Effect application stubbed (logged) pending slice 3. Tests: Cast surfaces+routes; tokens spent +
+  layered loop-back. Suite 632/0.
 - 2026-06-21: **Slice 1 done** (engine `f361f57`, bump pending). Army-wide spell list:
   `SpellDefinition(Name, Threshold, TargetSelector, Effect)` embedded in `ArmyListFile.Spells` (STJ
   kind-schema). `ArmyListSpellResolution.ResolveSpells` (called from `FDGServer.CreateArmyDataFromArmyFile`,
