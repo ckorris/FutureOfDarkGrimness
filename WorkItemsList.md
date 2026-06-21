@@ -67,7 +67,7 @@ These are umbrellas; will fragment per-rule when picked up.
 
 ## Casting
 
-- [ ] 033 — Caster(X) subsystem: spell tokens per round, casting attempts (4+), friendly Caster ±1 assist within 18"
+- [~] 033 — Caster(X) subsystem: spell tokens per round, casting attempts (4+), friendly Caster ±1 assist within 18". **In progress** on branch `033-caster` (framework-first; army-wide JSON spell list + "Cast" action over the #010 seam; ±1 assist + full content deferred). See [WorkItems/033](WorkItems/033-caster.md).
 - [ ] 034 — Spell content (initial set per faction)
 
 ## Transport
