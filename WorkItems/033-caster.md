@@ -38,6 +38,21 @@ spells + conferred rules) left to #034.
 - **Spell-authoring UI** (army builder) — tracks with #087.
 
 ## Notes
+- 2026-06-21: **Slice 1 done** (engine `f361f57`, bump pending). Army-wide spell list:
+  `SpellDefinition(Name, Threshold, TargetSelector, Effect)` embedded in `ArmyListFile.Spells` (STJ
+  kind-schema). `ArmyListSpellResolution.ResolveSpells` (called from `FDGServer.CreateArmyDataFromArmyFile`,
+  resolver live) pre-resolves each damage spell's `WithRules` → weapon-scoped `ResolvedRule`s on a
+  `RuntimeSpell`, stored `[JsonIgnore]` on `ArmyData` (host-side; client gets options in the request).
+  `SpecialRuleEntryParser` parses "Name"/"Name(N)". `Effect.DealHits`/`InvokeDealHits` gained an
+  `ArmorPenetration` field (AP is a weapon stat, default 0). **Refinement vs plan**: WithRules resolved
+  at load (the resolver isn't reachable from a stage — confirmed `GameContext` exposes no resolver), so
+  `RuntimeSpell` carries pre-resolved rules rather than the cast stage resolving at cast time. Suite 630/0.
+- 2026-06-21: **Slice 0 done** (engine `af34606`, bump `ec5bc8b`). Caster(X) token economy:
+  `Caster` added to `CoreRuleCatalog` (Round_OnRoundStart → GrantToken SpellTokens=Arg(0), ManualOnly
+  so tokens carry over); `StartOfRoundExtraActionStage.GrantSpellTokens()` fires the round-start hook
+  for every living unit each round (incl. round 1; resume path skips it, no double-grant) and clamps
+  to `GameWideConstants.MAX_SPELL_TOKENS` (6). `CasterRuleIntegrationTests` (grant / carry-over+cap /
+  non-Caster). Fixed `SpecialRuleRegistryTests` (Caster was its "unimplemented" example). Suite 627/0.
 - 2026-06-21: Item opened. Branch `033-caster` cut in both repos off master (#010 `d56167b` in
   history). Plan approved. Spell content confirmed against three army-forge books (High Elf Fleets,
   Battle Brothers, Wormhole Daemons of Lust) via API `army-books/<id>?gameSystem=2`: each has 6
