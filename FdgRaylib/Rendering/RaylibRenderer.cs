@@ -49,6 +49,9 @@ public class RaylibRenderer
     private bool _inGame = false;
     private bool _closeRequested = false;
     private bool _resolverOverlayFaulted = false;
+    // Set from the engine thread when the game ends (see ShowGameOver); read on the main thread to draw
+    // the game-over overlay. Non-null = game finished, result string to display.
+    private volatile string? _gameOverResult = null;
 
     // Offscreen target for the Ambush enemy-exclusion blob: discs are painted opaque here (so overlaps
     // overwrite instead of stacking alpha), then composited once at a uniform light alpha. Lazily sized
@@ -140,6 +143,45 @@ public class RaylibRenderer
 
     public void RequestClose() => _closeRequested = true;
 
+    /// <summary>
+    /// Records that the game has finished so the next frame can draw the game-over overlay. Called from
+    /// the engine thread (via the lobby's <c>OnGameEnded</c>), so it only stores the result — the actual
+    /// teardown + navigation happens on the main thread when the player clicks "Return to Main Menu".
+    /// </summary>
+    public void ShowGameOver(string result) => _gameOverResult = result;
+
+    /// <summary>
+    /// Tears down all in-game state so the renderer can return to the screen stack and a later launch
+    /// starts clean. Unsubscribes the table-state event handlers wired in <see cref="TransitionToGame"/>
+    /// and drops every per-game reference. Runs on the main thread.
+    /// </summary>
+    private void ExitGame()
+    {
+        if (_tableState != null)
+        {
+            _tableState.Models.OnObjectCreated      -= SubscribeToModel;
+            _tableState.Terrain.OnObjectCreated     -= AddTerrain;
+            _tableState.Terrain.OnObjectRemoved     -= RemoveTerrain;
+            _tableState.Objectives.OnObjectCreated  -= AddObjective;
+            _tableState.Objectives.OnObjectRemoved  -= RemoveObjective;
+        }
+
+        _placedModels.Clear();
+        lock (_terrainLock)    _terrain.Clear();
+        lock (_objectivesLock) _objectives.Clear();
+
+        _tableState            = null;
+        _colorForPlayer        = null;
+        _log                   = null;
+        _resolverOverlay       = null;
+        _taskDisplay           = null;
+        _presentationPlayer    = null;
+        _resolverOverlayFaulted = false;
+        _lastLogCount          = 0;
+        _gameOverResult        = null;
+        _inGame                = false;
+    }
+
     private void SubscribeToModel(IModel model)
     {
         model.OnPositionChanged += (_, _) => OnModelPlaced(model);
@@ -152,9 +194,13 @@ public class RaylibRenderer
 
     private void OnModelPlaced(IModel model)
     {
-        var unit = _tableState!.Units.Objects.FirstOrDefault(u => u.Models.Contains(model));
+        // A per-model OnPositionChanged subscription (wired via a lambda we can't unsubscribe) may fire
+        // after ExitGame has dropped the table state. Nothing to draw once the game is gone.
+        if (_tableState == null || _colorForPlayer == null) return;
+
+        var unit = _tableState.Units.Objects.FirstOrDefault(u => u.Models.Contains(model));
         if (unit != null)
-            _placedModels[model] = _colorForPlayer!(unit.PlayerID);
+            _placedModels[model] = _colorForPlayer(unit.PlayerID);
     }
 
     /// <summary>
@@ -285,6 +331,7 @@ public class RaylibRenderer
                         _log?.Add(ex.StackTrace ?? "(no stack trace)", errColor);
                     }
                 }
+                DrawGameOverOverlay(screenW, screenH);
                 rlImGui.End();
             }
             else
@@ -448,6 +495,41 @@ public class RaylibRenderer
             Raylib.DrawCircle(cx, cy, radius, fill);
             Raylib.DrawCircleLines(cx, cy, radius, outline);
         }
+    }
+
+    // Centered "Game Over" card shown once the game ends. The board stays visible behind it; the player
+    // must click through to leave (no auto-return), at which point we tear down and return to the menu.
+    private void DrawGameOverOverlay(int screenW, int screenH)
+    {
+        string? result = _gameOverResult;
+        if (result == null) return;
+
+        var size = new Vector2(Math.Min(460f, screenW * 0.8f), 200f);
+        ImGui.SetNextWindowPos(new Vector2((screenW - size.X) / 2f, (screenH - size.Y) / 2f), ImGuiCond.Always);
+        ImGui.SetNextWindowSize(size, ImGuiCond.Always);
+        ImGui.Begin("Game Over##overlay",
+            ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoCollapse |
+            ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoSavedSettings);
+
+        ImGui.PushFont(LargeFont);
+        ImGui.TextUnformatted("Game Over");
+        ImGui.PopFont();
+
+        ImGui.Spacing();
+        ImGui.TextWrapped(result);
+        ImGui.Spacing();
+        ImGui.Spacing();
+
+        float btnH = 44f;
+        // Pin the button to the bottom of the card.
+        ImGui.SetCursorPosY(size.Y - btnH - ImGui.GetStyle().WindowPadding.Y);
+        if (ImGui.Button("Return to Main Menu", new Vector2(ImGui.GetContentRegionAvail().X, btnH)))
+        {
+            ExitGame();
+            NavigateTo(MainMenu);
+        }
+
+        ImGui.End();
     }
 
     private void DrawLogPanel(Layout l)
