@@ -26,11 +26,13 @@ public class GuiOutstandingTaskDisplay : IOutstandingListDisplay
         float w = MathF.Max(200f, screenW * 0.22f);
         float x = (screenW - w) * 0.5f;
 
-        ImGui.SetNextWindowPos(new Vector2(x, 8f), ImGuiCond.Always);
+        // FirstUseEver (not Always) seeds the centered position once, then lets the player drag it
+        // wherever they like and stay there.
+        ImGui.SetNextWindowPos(new Vector2(x, 8f), ImGuiCond.FirstUseEver);
         ImGui.SetNextWindowSizeConstraints(new Vector2(w, 0), new Vector2(w, screenH * 0.4f));
         ImGui.SetNextWindowBgAlpha(0.75f);
         ImGui.Begin("Outstanding Tasks",
-            ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoCollapse |
+            ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoCollapse |
             ImGuiWindowFlags.NoScrollbar | ImGuiWindowFlags.AlwaysAutoResize |
             ImGuiWindowFlags.NoFocusOnAppearing | ImGuiWindowFlags.NoNav);
 

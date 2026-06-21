@@ -143,9 +143,11 @@ public class GuiAssignWoundsResolver
             uint mainCol = ImGui.GetColorU32(canTake ? ImGuiCol.Text : ImGuiCol.TextDisabled);
             uint wCol    = canTake ? WeaponTextCol : ImGui.GetColorU32(ImGuiCol.TextDisabled);
             string assignedNote = pw.Wounds > 0f ? $"   ({pw.Wounds:F0} assigned)" : "";
+            // Show remaining/total only for multi-wound models; single-wound models need no counter.
+            string woundText = total > 1f ? $"   -   ({remaining:F0}/{total:F0})" : "";
             float tx = origin.X + 8f;
             float ty = origin.Y + btnPadY;
-            dl.AddText(new Vector2(tx, ty), mainCol, $"Model {i + 1}   -   {remaining:F0} wounds remaining{assignedNote}");
+            dl.AddText(new Vector2(tx, ty), mainCol, $"Model {i + 1}{woundText}{assignedNote}");
             float wy = ty + mainLineH;
             foreach (string line in weaponLines[i])
             {
@@ -239,7 +241,9 @@ public class GuiAssignWoundsResolver
         float remaining = modelData.TotalWounds - modelData.WoundsDealt - pw.Wounds;
 
         var sb = new StringBuilder();
-        sb.AppendLine($"This model - {remaining:F0} wounds remaining");
+        // Show remaining/total only for multi-wound models; single-wound models need no counter.
+        if (modelData.TotalWounds > 1f)
+            sb.AppendLine($"This model - ({remaining:F0}/{modelData.TotalWounds:F0})");
         if (pw.Wounds > 0f)
             sb.AppendLine($"({pw.Wounds:F0} already assigned)");
         sb.AppendLine("Weapons:");
