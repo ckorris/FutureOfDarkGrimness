@@ -72,7 +72,7 @@ These are umbrellas; will fragment per-rule when picked up.
 
 ## Transport
 
-- [~] 035 — Transport(X) system: embark/disembark via move actions, deploy with units inside, dangerous terrain test on destruction. **Core rule** (engine subsystem under a thin `CoreRuleCatalog` marker, capacity = `Arg(0)`); occupancy lives in a cross-unit `EmbarkedIn` token (no bespoke `UnitData` field); embarked = off-table/reserve-style; load chosen at deployment (not the army creator); spillout is mid-combat. **Slice A (foundation: `TransportUtilities` + `EmbarkedIn` token + `Transport` marker) and slice B (deploy-time embark via `ChooseDeployActionStage`) done** (43 + 5 tests). Slice C (disembark) designed; D (mid-game embark) + E (mid-combat spillout) remain. ([WorkItems/035](WorkItems/035-transport.md))
+- [~] 035 — Transport(X) system: embark/disembark via move actions, deploy with units inside, dangerous terrain test on destruction. **Core rule** (engine subsystem under a thin `CoreRuleCatalog` marker, capacity = `Arg(0)`); occupancy lives in a cross-unit `EmbarkedIn` token (no bespoke `UnitData` field); embarked = off-table/reserve-style; load chosen at deployment (not the army creator); spillout is mid-combat. **Slices A–D done**: A (foundation: `TransportUtilities` + `EmbarkedIn` token + `Transport` marker), B (deploy-time embark via `ChooseDeployActionStage`), C (disembark via `DisembarkStage`, exact circular zone), D (mid-game embark via `EmbarkStage`). `Transport` registered in the army builder. Only **E (mid-combat destruction spillout)** remains. ([WorkItems/035](WorkItems/035-transport.md))
 
 ## Networking & infrastructure
 
