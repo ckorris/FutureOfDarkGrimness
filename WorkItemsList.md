@@ -26,8 +26,6 @@ Numbers are permanent and never reused. If an item is split, its line stays and 
 
 ## Activation flow
 
-- [~] 008 — Shaken unit activation behavior (idle, can't seize/contest, clears at end of activation) — implemented on branch `089-morale-core` (slice 2, engine `797cf9c`); pending merge + GUI verification. ([WorkItems/091](WorkItems/091-morale-core.md))
-- [~] 009 — General half-strength morale test outside melee — scope-complete on branch `089-morale-core` (slice 3, engine `ff59994`+`ff28ccb`): both non-melee wound sources wired (shooting via `ResolveRangedMoraleStage`, dangerous terrain via `ApplyNonMovementTerrainEffectsStage`) through shared `MoraleUtilities.ResolveWoundDrivenMorale`; reduced-to-half → test → Rout on fail. Pending merge + GUI verification. ([WorkItems/091](WorkItems/091-morale-core.md))
 - [ ] 010 — Custom actions branch in `ChooseActionStage` (currently hardcoded `false`)
 
 ## Movement
@@ -41,9 +39,6 @@ _(No open items — #011 and #050 are done; see ## Done.)_
 
 ## Melee
 
-- [~] 020 — Fatigue: per-unit/per-round flag — hit on unmodified 6s after charging / striking back this round; Shaken counts as fatigued. On branch `089-morale-core`. ([WorkItems/020](WorkItems/020-fatigue.md))
-- [~] 021 — Morale roll modifiers + Fear/Fearless in `DetermineMeleeWinnerStage` and `RollForMoraleStage`. Fear + Fearless + modifier plumbing done (complete on branch `021-morale-rules`, unmerged). ([WorkItems/021](WorkItems/021-fear-fearless.md))
-- [~] 091 — Morale core (formerly #089): failed-test outcome (Shaken / Rout at half strength) + shared `IsAtHalfStrength` predicate; wires the melee `OnMoraleFailed` path. Underpins #006/#008/#009/#020/#021. ([WorkItems/091](WorkItems/091-morale-core.md))
 - [ ] 022 — Vertical melee range handling (`ChooseMeleeDefenderStage` TODO)
 
 ## Wound assignment
@@ -81,7 +76,6 @@ These are umbrellas; will fragment per-rule when picked up.
 
 ## Networking & infrastructure
 
-- [~] 092 — Decisive dice rolls (formerly #090): `IDiceRoller.RollDecisive` so single binary rolls (morale, dangerous terrain, objective count) resolve a real outcome under the probabilistic roller instead of an auto-failing expected value. Prereq for #021. On branch `021-morale-rules`. ([WorkItems/092](WorkItems/092-decisive-rolls.md))
 - [ ] 036 — Server readiness handshake (`FDGServer.cs:148` TODO — wait for all clients ready)
 - [ ] 037 — Replace non-concurrent collections in `FDGHost` (`FDGHost.cs:75, :130` TODOs)
 - [ ] 038 — Resolve `LobbyViewModel_Host` `NotImplementedException` paths (`:288, :400`)
@@ -149,6 +143,14 @@ From `Audit-6-10-2026.md` (section references therein). High-priority items are 
 
 Implemented and merged to master; engine test suite green. Held open only until the behavior is confirmed by hand in the running app — tick and move to `## Done` once verified.
 
+> **2026-06-21 — morale epic reconciled.** Items 008/009/020/021/091/092 were marked `[~]` "on branch / pending merge / unmerged" in their topical sections (Activation flow / Melee / Networking), but all nine underlying engine commits have since merged to submodule master (via the `089-morale-core` → `021-morale-rules` line, tip `2c7d342`, now in master's history) and are ancestors of the superproject-pinned commit `f467933`. Moved here; the only remaining step is GUI hand-verification.
+
+- [~] 091 — Morale core (formerly #089): failed-test outcome (Shaken / Rout at half strength) + shared `IsAtHalfStrength` predicate; wires the melee `OnMoraleFailed` path. Underpins #006/#008/#009/#020/#021. Engine `c99e20f`. ([WorkItems/091](WorkItems/091-morale-core.md))
+- [~] 008 — Shaken unit activation behavior (idle, can't seize/contest, clears at end of activation). Engine `797cf9c` + `32d70d2` (recovery decided from an explicit activation-start snapshot). ([WorkItems/091](WorkItems/091-morale-core.md))
+- [~] 009 — General half-strength morale test outside melee: both non-melee wound sources wired (shooting via `ResolveRangedMoraleStage`, dangerous terrain via `ApplyNonMovementTerrainEffectsStage`) through shared `MoraleUtilities.ResolveWoundDrivenMorale`; reduced-to-half → test → Rout on fail. Engine `ff59994` + `ff28ccb`. ([WorkItems/091](WorkItems/091-morale-core.md))
+- [~] 020 — Fatigue: per-unit/per-round flag — hit on unmodified 6s after charging / striking back this round; Shaken counts as fatigued. Engine `07ffdb9`. ([WorkItems/020](WorkItems/020-fatigue.md))
+- [~] 021 — Morale roll modifiers + Fear/Fearless in `DetermineMeleeWinnerStage` and `RollForMoraleStage`. Fear(X) counts as +X wounds for the who-won-melee check; Fearless + modifier plumbing. Engine `d75c1a3` + `f73ef5c`. ([WorkItems/021](WorkItems/021-fear-fearless.md))
+- [~] 092 — Decisive dice rolls (formerly #090): `IDiceRoller.RollDecisive` so single binary rolls (morale, dangerous terrain, objective count) resolve a real outcome under the probabilistic roller instead of an auto-failing expected value. Prereq for #021. Engine `4459070`. ([WorkItems/092](WorkItems/092-decisive-rolls.md))
 - [x] 046 — `GetFirstBlockingHit` engine API: returns the closest `Blocking` terrain entry point along an (attacker, target) segment so overlays can draw a stub + marker; `IZone.GetFirstSegmentEntry` on circle/rect. 6 new `LineOfSightTests` cases, suite 135/135. ([WorkItems/046](WorkItems/046-los-first-blocking-hit.md)) — commit `d9e60fb`
 - [ ] 027 — Weapon-scoped special rules: engine-complete 2026-06-11 (branch `027-weapon-special-rules`, both repos; suite 396/0, headless-verified). Weapons carry #042 `ResolvedRule`s resolved from `WeaponFileEntry.SpecialRules` at army load with `SpecialRuleDefinition.Scope` enforcement (misattached rules warn + skip); dispatch is per-weapon through the fire pipeline + defender melee weapons (Counter) + `SightRuleQueries`; legacy `ISpecialRule_Weapon` deleted. **JSON loader / army creator no longer gated.** Verify in GUI: per-weapon rule labels in the shot picker / movement targeting overlay (the test army's Heavy Rifle carries Surge + Blast(3), Fists carry Counter, Infiltrators' Rifle carries Takedown — labels should show on those weapons only), and a melee charge into Heavy Gunners should show Counter striking first. ([WorkItems/027](WorkItems/027-weapon-special-rules.md))
 ---
