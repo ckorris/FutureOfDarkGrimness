@@ -48,9 +48,20 @@ public class ArmyBuilderScreen : IAppScreen
     private bool IsNumericFor(ERuleScope scope, string name) =>
         _numericByScope.TryGetValue(scope, out HashSet<string>? n) && n.Contains(name);
 
-    // Width for the small rule-value field (e.g. Tough N). Scales with the font so the number stays
-    // readable at any UI scale — at a fixed 60px the ± step buttons (now dropped) left no room for digits.
-    private static float NumericFieldWidth() => ImGui.GetFontSize() * 3.2f;
+    // New numeric rules (e.g. Tough N) start at 3, and their ± steppers move in 3s.
+    private const int DefaultRuleValue = 3;
+    private const int RuleValueStep    = 3;
+
+    // Width for the small rule-value field (e.g. Tough N): room for the digits PLUS both ± step buttons
+    // (each a square of frame height) and their inner spacing, so neither the number nor the steppers
+    // get clipped at any UI scale. At the old fixed 60px the buttons ate the whole width.
+    private static float NumericFieldWidth()
+    {
+        ImGuiStylePtr style = ImGui.GetStyle();
+        float buttons = 2f * (ImGui.GetFrameHeight() + style.ItemInnerSpacing.X);
+        float digits  = ImGui.GetFontSize() * 2.5f;
+        return digits + buttons;
+    }
 
     // A loaded army may reference a rule the picker no longer offers at this scope (e.g. an unimplemented
     // one, or one saved at the wrong scope earlier). Keep it visible/selected in that entry's combo so
@@ -288,7 +299,7 @@ public class ArmyBuilderScreen : IAppScreen
         {
             ref var state = ref CollectionsMarshal.GetValueRefOrAddDefault(
                 _addRuleState, popupId, out _);
-            if (state.sel == 0 && state.val == 0) state = (0, 1);
+            if (state.sel == 0 && state.val == 0) state = (0, DefaultRuleValue);
 
             string[] names = NamesFor(scope);
             if (names.Length == 0) { ImGui.EndPopup(); return; }
@@ -301,7 +312,7 @@ public class ArmyBuilderScreen : IAppScreen
             {
                 ImGui.SameLine();
                 ImGui.SetNextItemWidth(NumericFieldWidth());
-                ImGui.InputInt("##val", ref state.val, 0, 0); // step 0 drops the ± buttons that hid the digits
+                ImGui.InputInt("##val", ref state.val, RuleValueStep, RuleValueStep * 3);
                 if (state.val < 1) state.val = 1;
             }
 
@@ -336,7 +347,7 @@ public class ArmyBuilderScreen : IAppScreen
             int sel = Math.Max(0, Array.IndexOf(names, core.PrintableName));
             if (ImGui.Combo("##rule", ref sel, names, names.Length))
                 list[idx] = IsNumericFor(scope, names[sel])
-                    ? new SpecialRuleEntry_CoreNumeric(names[sel], 1)
+                    ? new SpecialRuleEntry_CoreNumeric(names[sel], DefaultRuleValue)
                     : new SpecialRuleEntry_Core(names[sel]);
         }
         else if (current is SpecialRuleEntry_CoreNumeric num)
@@ -353,7 +364,7 @@ public class ArmyBuilderScreen : IAppScreen
                 int v = n2.NumericValue;
                 ImGui.SameLine();
                 ImGui.SetNextItemWidth(NumericFieldWidth());
-                if (ImGui.InputInt("##val", ref v, 0, 0) && v > 0) // step 0 drops the ± buttons
+                if (ImGui.InputInt("##val", ref v, RuleValueStep, RuleValueStep * 3) && v > 0)
                     list[idx] = n2 with { NumericValue = v };
             }
         }
@@ -389,7 +400,7 @@ public class ArmyBuilderScreen : IAppScreen
             ImGui.SetNextItemWidth(comboWidth);
             if (ImGui.Combo("##inner", ref sel, names, names.Length))
                 rule = IsNumericFor(scope, names[sel])
-                    ? new SpecialRuleEntry_CoreNumeric(names[sel], 1)
+                    ? new SpecialRuleEntry_CoreNumeric(names[sel], DefaultRuleValue)
                     : new SpecialRuleEntry_Core(names[sel]);
         }
         else if (rule is SpecialRuleEntry_CoreNumeric n)
@@ -407,7 +418,7 @@ public class ArmyBuilderScreen : IAppScreen
                 int v = n2.NumericValue;
                 ImGui.SameLine(0, 4);
                 ImGui.SetNextItemWidth(numWidth);
-                if (ImGui.InputInt("##innum", ref v, 0, 0) && v > 0) // step 0 drops the ± buttons
+                if (ImGui.InputInt("##innum", ref v, RuleValueStep, RuleValueStep * 3) && v > 0)
                     rule = n2 with { NumericValue = v };
             }
         }
