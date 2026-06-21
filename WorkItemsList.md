@@ -22,7 +22,7 @@ Numbers are permanent and never reused. If an item is split, its line stays and 
 
 ## Deployment
 
-- [~] 006 — Hero joins unit + takes morale on behalf of unit. Approach: merge hero model into host unit + `HeroAttachment` metadata (decided with forks). Slices A–E done on branch `006-hero` (join + eligibility + army-file `Id`/`JoinsUnitId` + hero-aware Tough + wound-last + morale-Q + last-model Defense + attack-Q). Slice F (per-model combat-rule carriage — `IModel.RuleDefinitions` + model-aware hit dispatch; Furious/Relentless/Thrust on the hero) in progress on `006-hero-slice-f`. ([WorkItems/006](WorkItems/006-hero.md))
+- [~] 006 — Hero joins unit + takes morale on behalf of unit. Approach: merge hero model into host unit + `HeroAttachment` metadata (decided with forks). Slices A–E done on branch `006-hero` (join + eligibility + army-file `Id`/`JoinsUnitId` + hero-aware Tough + wound-last + morale-Q + last-model Defense + attack-Q). Slice F (per-model combat-rule carriage — `IModel.RuleDefinitions` + model-aware hit dispatch; Furious/Relentless/Thrust on the hero) done on `006-hero-slice-f`. All build slices A–F complete (engine green); pending GUI hand-verification of the army-builder join picker + deferred corners → #093. ([WorkItems/006](WorkItems/006-hero.md))
 
 ## Activation flow
 

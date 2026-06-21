@@ -23,5 +23,11 @@ The user flagged (2026-06-15) that doing per-model as hero-shaped exceptions ris
 - **Defensive / morale "all models have this rule" rules** (Stealth, Regeneration, Fearless): rule text gates on *every* model having it. With mixed-rule units this needs an explicit all-models check rather than "the unit has the rule." Audit these once models can carry rules independently.
 - **Unit-wide stat/rule read sites not yet audited**: any place that reads `unit.Quality`/`unit.Defense`/`unit.RuleDefinitions` assuming homogeneity. Catalogue them; route through the per-model-aware accessors.
 
+## Deferred corners #006 punts here (cont.)
+- **Impact(X) per-model** (a joined hero with Impact): fires on `Melee_OnChargeContact`, which is not weapon-batched and has no "firing model" concept, so it can't ride slice F's weapon-batch-owner dispatch. Needs a relevant-model resolution for charge-contact hooks (which models with the rule are in contact). Confirmed during slice F.
+- **Dispatcher dedup keyed by `UnitID`, not `ModelID`** (`RuleEvaluator.DedupState`): argument-less rules fire at most once *per unit*. Fine while only one model (the hero) carries per-model rules, but a genuinely mixed unit (two models with the same argless rule) would wrongly collapse to one. Re-key to `ModelID` when per-model becomes general.
+- **`ERuleScope.Model` as an authoring level**: slice F deliberately does NOT add it (the merge moves rules onto a model in engine code, bypassing army-load scope validation). If models ever become army-file authoring targets, scope needs a Model level + loader support.
+
 ## Notes
+- 2026-06-19: Slice F (building now) lands the first real per-model carriage — `IModel.RuleDefinitions` + a model-aware `RuleEvaluator.EvaluateAll` overload on the hit hooks. Built general (not hero-only): the seam to generalize from. Recorded the corners it punts above.
 - 2026-06-15: Opened at the user's request while building #006. Captures the per-model generalization so the hero-shaped exceptions don't silently become the de facto (inconsistent) model. Pick up after #006's slices land, when the per-model seam (`ModelData.RuleDefinitions`, model-aware dispatch, `HeroStatRules`) actually exists to generalize from.
