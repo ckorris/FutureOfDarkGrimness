@@ -38,6 +38,23 @@ spells + conferred rules) left to #034.
 - **Spell-authoring UI** (army builder) — tracks with #087.
 
 ## Notes
+- 2026-06-21: **Slice 3 done — framework complete** (engine `cc04efd`, bump pending). Spell-effect
+  execution: `CastSpellStage` is now a `ParentStage` (mirrors `StrafingStage`); on a successful cast it
+  applies **buff/debuff** spells (`Effect.AddRule` etc.) by granting a `RuleGrant` token to each target
+  (polymorphic `Effect.Apply` + `OperationApplier`), and resolves **damage** spells (`Effect.DealHits`)
+  through the shared save→wound→assign→apply child pipeline against the target as a synthetic AP-carrying
+  attack, with the spell's pre-resolved weapon rules attached. Extracted `SpellTargeting` (shared by
+  `GetCanCast` + the cast stage): Cast is offered, and a spell listed, only when it has a legal target —
+  **this fixed an infinite cast loop** (no-target spell re-picked → stack overflow) that the headless
+  caster smoke caught. Committed `armies/example-caster.fdgarmy` (Caster(3) + damage + buff spell),
+  pinned by `ExampleArmyFileTests`. Tests: buff grants the RuleGrant token; AP(3) damage kills a 1-wound
+  target through the real pipeline. **Suite 635/0; headless caster game exits 0** — round-start grant
+  fires each round, Haste buffs 2 friendly units, Fire Bolt deals damage, failed casts still spend
+  tokens, game completes 4 rounds.
+  **Deferred (recorded):** ±1 friendly-Caster assist (next tracked slice); multi-target damage (only
+  target[0] hit — Strafing has the same single-target limit); single-model targeting ("unit of [1]");
+  pre-save weapon rules on spell hits (Blast hit-multiply / Surge) — the synthetic pipeline starts at the
+  save stage, so only AP + save/wound-phase rules (Bane/Deadly/Regeneration) fire.
 - 2026-06-21: **Slice 2 done** (engine `78189c9`, bump pending). Cast action + control flow:
   `ChooseActionStage.GetCanCast`/`ToCast` surface a first-class **Cast** for a unit carrying Caster(X)
   with an affordable spell (mirrors `GetCanShoot`); "Cast" reserved in the #010 collision guard only
