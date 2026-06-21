@@ -11,6 +11,21 @@ must press the button — no auto-return.
 
 ## Notes
 
+- 2026-06-21 (cont.): Networked client done — the deferral is closed.
+  - New `GameEndedMessage` (internal, `Network/Messages/LobbyMessages/`) carries the result string.
+  - **Host** broadcasts it on game-end: `server.OnGameEnded` now routes through
+    `LobbyViewModel_Host.HandleServerGameEnded`, which raises the local `OnGameEnded` (host front end)
+    *and* `_messageBus.SendCommandToAllAsync(new GameEndedMessage(result))` for remote clients. The host
+    doesn't register a handler for it (no double-fire — it already has the direct server callback); the
+    wire message is purely for clients, which have no FDGServer.
+  - **Client** registers `OnGameEndedMessageReceived` in its ctor (alongside `LaunchGameMessage`) and
+    raises its `OnGameEnded`. No app changes needed — `LobbyScreen.OnGameEnded` → `ShowGameOver` already
+    drives the same return-to-menu flow for both sides. Fires on the network read-loop thread (safe:
+    `ShowGameOver` only stores a volatile string).
+  - Tests: `GameEndedMessageTests` (serialize→deserialize round-trip preserves Result; dispatch reaches
+    a registered handler) — the new message's wire contract. Suite 602→604/0. Build clean, headless 0.
+  - Still needs a two-instance GUI hand-verification (host + networked client both return to menu).
+
 - 2026-06-21: Implemented host/local path.
   - **Detection gap found**: the GUI never received a game-end signal. Game-end flows
     `GameContext.NotifyGameEnded` → `FDGServer.OnGameEnded`; `CliApp` subscribes to that for headless,
@@ -38,10 +53,11 @@ must press the button — no auto-return.
   existing `CliApp` path and is the only clean signal.
 - **No auto-return.** Per the user: the player must click to leave so they can read the result / inspect
   the final board.
-- **Networked client deferred.** A non-host client has no clean game-end signal — it only sees the
-  replicated banner beat, not `FDGServer.OnGameEnded`. Returning a networked client to the menu needs a
-  new game-ended network message (host broadcast on `NotifyGameEnded`). Explicitly out of scope this
-  round; the client's `OnGameEnded` is declared (interface requirement) but never raised.
+- **Networked client (done 2026-06-21).** Initially deferred, then built the same day at the user's
+  request. A non-host client has no `FDGServer`, so the host broadcasts a `GameEndedMessage` (mirroring
+  the existing `LaunchGameMessage` pattern) and the client raises its `OnGameEnded` from the handler.
+  Chose a dedicated wire message over reusing the "wins!" banner beat for the same reason as the host
+  signal — string-matching presentation text is fragile.
 
 ## Outcome
 _(written when closed)_
