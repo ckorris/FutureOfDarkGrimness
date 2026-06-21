@@ -11,7 +11,15 @@ public class StringSelectionResolver : IStageResolver<StringSelectionRequest, st
         Console.WriteLine(request.Instructions);
 
         for (int i = 0; i < request.ValidOptions.Count; i++)
-            Console.WriteLine($"  [{i + 1}] {request.ValidOptions[i]}");
+        {
+            string opt = request.ValidOptions[i];
+            Console.WriteLine($"  [{i + 1}] {opt}");
+            if (request.OptionDescriptions != null
+                && request.OptionDescriptions.TryGetValue(opt, out string? desc))
+            {
+                Console.WriteLine($"        {desc}");
+            }
+        }
 
         if (request.InvalidOptions.Count > 0)
         {

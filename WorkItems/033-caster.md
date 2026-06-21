@@ -38,6 +38,14 @@ spells + conferred rules) left to #034.
 - **Spell-authoring UI** (army builder) — tracks with #087.
 
 ## Notes
+- 2026-06-21: **Slice 4 — spell-menu UX** (engine `aa57cf8`, app + bump pending). The spell picker now
+  shows, under each spell, a one-line effect summary ("grants Furious (next time) — up to 2 friendly
+  units within 12\"") and puts the caster's current token count in the prompt ("Choose a spell to cast —
+  Magus has 3 spell tokens"). Added optional `StringSelectionRequest.OptionDescriptions` (null for the
+  action menu / custom actions), `SpellText.Describe` (engine-side, so CLI + GUI render identical
+  subtext), and rendering in `GuiStringSelectionResolver` (smaller + dimmed) and the CLI
+  `StringSelectionResolver`. Suite 636/0; headless shows the subtext + live token count; default-army
+  action menu unaffected (regression smoke exit 0). User-requested follow-up to the framework.
 - 2026-06-21: **Slice 3 done — framework complete** (engine `cc04efd`, bump pending). Spell-effect
   execution: `CastSpellStage` is now a `ParentStage` (mirrors `StrafingStage`); on a successful cast it
   applies **buff/debuff** spells (`Effect.AddRule` etc.) by granting a `RuleGrant` token to each target

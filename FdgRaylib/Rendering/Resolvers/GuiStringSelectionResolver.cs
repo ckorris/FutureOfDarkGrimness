@@ -36,7 +36,10 @@ public class GuiStringSelectionResolver : IStageResolver<StringSelectionRequest,
 
         int validCount   = request.ValidOptions.Count;
         int invalidCount = request.InvalidOptions.Count;
-        float rowH   = 32f;
+        // Taller rows when options carry descriptions (e.g. the spell menu), so the subtext fits under each.
+        bool hasDescriptions = request.OptionDescriptions != null && request.OptionDescriptions.Count > 0;
+        float rowH   = hasDescriptions ? 58f : 32f;
+        float btnH   = hasDescriptions ? 28f : rowH - 4f;
         float pad    = 16f;
         float instrH = 48f;
         float dw = MathF.Min(screenW * 0.45f, 560f);
@@ -62,9 +65,25 @@ public class GuiStringSelectionResolver : IStageResolver<StringSelectionRequest,
         for (int i = 0; i < validCount; i++)
         {
             string opt = request.ValidOptions[i];
-            ImGui.SetCursorPos(new Vector2(pad, listY + i * rowH));
-            if (ImGui.Button($"{opt}##{i}", new Vector2(btnW, rowH - 4f)))
+            float rowY = listY + i * rowH;
+            ImGui.SetCursorPos(new Vector2(pad, rowY));
+            if (ImGui.Button($"{opt}##{i}", new Vector2(btnW, btnH)))
                 Complete(tcs, opt);
+
+            // Optional subtext under the option (e.g. a spell's effect summary): smaller and dimmed.
+            if (hasDescriptions
+                && request.OptionDescriptions!.TryGetValue(opt, out string? desc)
+                && !string.IsNullOrEmpty(desc))
+            {
+                ImGui.SetCursorPos(new Vector2(pad + 10f, rowY + btnH + 2f));
+                ImGui.PushStyleColor(ImGuiCol.Text, new Vector4(0.62f, 0.66f, 0.74f, 1f));
+                ImGui.SetWindowFontScale(0.82f);
+                ImGui.PushTextWrapPos(dw - pad);
+                ImGui.TextUnformatted(desc);
+                ImGui.PopTextWrapPos();
+                ImGui.SetWindowFontScale(1f);
+                ImGui.PopStyleColor();
+            }
         }
 
         if (invalidCount > 0)
