@@ -1,7 +1,7 @@
 # 040 — Post-game navigation back to main menu (GUI)
 
-**Status**: in-progress (awaiting GUI hand-verification)
-**Related**: branch `040-postgame-nav`
+**Status**: done
+**Related**: branch `040-postgame-nav` (merged); submodule `eced7a8`, superproject `16b5c8c`
 
 ## Goal
 When a GUI game finishes, the player should be able to return to the main menu instead of being
@@ -67,4 +67,13 @@ must press the button — no auto-return.
   signal — string-matching presentation text is fragile.
 
 ## Outcome
-_(written when closed)_
+Shipped a post-game "Game Over" overlay that returns the player to the main menu. On game-end a
+centered card shows the winner's display name with a **Return to Main Menu** button (no auto-return);
+clicking it runs `ExitGame()` teardown and navigates back. The game-end signal is surfaced via
+`ILobbyViewModel.OnGameEnded` — the host forwards `FDGServer.OnGameEnded`, and a non-host networked
+client raises it from a new broadcast `GameEndedMessage` — both routed through
+`RaylibRenderer.ShowGameOver`. `VictoryCalculationStage` was fixed to report the winner's
+`IPlayerSlotInfo.Name` (the result string previously leaked the raw PlayerID GUID). Covered by
+`GameEndedMessageTests` and updated `VictoryCalculationStageTests`. GUI hand-verified 2026-06-21 and
+merged to master (submodule `eced7a8`, superproject `16b5c8c`). No deferrals — host/local and
+networked client are both complete.
