@@ -36,8 +36,8 @@ _(No open items — #011 and #050 are done; see ## Done.)_
 
 ## Shooting
 
-- [ ] 015 — Attack-count modifiers in shooting flow (`RollToHitStage` TODO)
-- [ ] 016 — Hit→wound effect propagation (`DetermineSaveRollsNeededStage` TODO)
+- [~] 015 — Attack-count modifiers in shooting flow (`RollToHitStage` TODO) — seam built on branch `015-016-shooting-roll-seams`: attack count relocated into the renamed `DetermineHitRollStage` (+`AttackCount` on the result); engine green, uncommitted. Modifier *producer* deferred (no rule needs it yet). ([WorkItems/015-016](WorkItems/015-016-shooting-roll-seams.md))
+- [~] 016 — Hit→wound effect propagation (`DetermineSaveRollsNeededStage` TODO) — per-hit `SuccessfulHitInfo.SaveModifier` applied per group, stacking with the unit-wide carry; on branch `015-016-shooting-roll-seams`, engine green, uncommitted. Rending→per-hit migration deferred. ([WorkItems/015-016](WorkItems/015-016-shooting-roll-seams.md))
 
 ## Melee
 
