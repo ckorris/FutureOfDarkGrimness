@@ -48,6 +48,10 @@ public class ArmyBuilderScreen : IAppScreen
     private bool IsNumericFor(ERuleScope scope, string name) =>
         _numericByScope.TryGetValue(scope, out HashSet<string>? n) && n.Contains(name);
 
+    // Width for the small rule-value field (e.g. Tough N). Scales with the font so the number stays
+    // readable at any UI scale — at a fixed 60px the ± step buttons (now dropped) left no room for digits.
+    private static float NumericFieldWidth() => ImGui.GetFontSize() * 3.2f;
+
     // A loaded army may reference a rule the picker no longer offers at this scope (e.g. an unimplemented
     // one, or one saved at the wrong scope earlier). Keep it visible/selected in that entry's combo so
     // opening the army doesn't silently relabel it; new additions still come only from the offered list.
@@ -296,8 +300,8 @@ public class ArmyBuilderScreen : IAppScreen
             if (isNumeric)
             {
                 ImGui.SameLine();
-                ImGui.SetNextItemWidth(60);
-                ImGui.InputInt("##val", ref state.val);
+                ImGui.SetNextItemWidth(NumericFieldWidth());
+                ImGui.InputInt("##val", ref state.val, 0, 0); // step 0 drops the ± buttons that hid the digits
                 if (state.val < 1) state.val = 1;
             }
 
@@ -348,8 +352,8 @@ public class ArmyBuilderScreen : IAppScreen
             {
                 int v = n2.NumericValue;
                 ImGui.SameLine();
-                ImGui.SetNextItemWidth(60);
-                if (ImGui.InputInt("##val", ref v) && v > 0)
+                ImGui.SetNextItemWidth(NumericFieldWidth());
+                if (ImGui.InputInt("##val", ref v, 0, 0) && v > 0) // step 0 drops the ± buttons
                     list[idx] = n2 with { NumericValue = v };
             }
         }
@@ -358,7 +362,7 @@ public class ArmyBuilderScreen : IAppScreen
             float avail      = ImGui.GetContentRegionAvail().X;
             float aliasWidth = MathF.Min(200, avail * 0.35f);
             float comboWidth = MathF.Min(180, avail * 0.35f);
-            float numWidth   = 60f;
+            float numWidth   = NumericFieldWidth();
 
             ImGui.SetNextItemWidth(aliasWidth);
             string label = alias.Name;
@@ -403,7 +407,7 @@ public class ArmyBuilderScreen : IAppScreen
                 int v = n2.NumericValue;
                 ImGui.SameLine(0, 4);
                 ImGui.SetNextItemWidth(numWidth);
-                if (ImGui.InputInt("##innum", ref v) && v > 0)
+                if (ImGui.InputInt("##innum", ref v, 0, 0) && v > 0) // step 0 drops the ± buttons
                     rule = n2 with { NumericValue = v };
             }
         }

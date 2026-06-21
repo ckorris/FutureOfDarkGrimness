@@ -50,6 +50,10 @@ Solid unit tests required throughout (user ask). Key targets:
 
 ## Notes
 
+- 2026-06-21: **Testing-feedback fixes, round 2** (same branch). Two more from continued play testing:
+  (1) **Army-builder rule-value field was unreadable** — the small numeric input (e.g. Tough N) was a fixed 60px `InputInt`, whose ± step buttons ate the whole width and left no room for the digits, in both the Add-Rule popup and the rule line under a unit (and the alias inner). All three now drop the step buttons (`InputInt(..., 0, 0)`) and size to `ImGui.GetFontSize() * 3.2f` via a shared `NumericFieldWidth()` so the number stays readable at any UI scale. App-only.
+  (2) **No roll-to-save beat on a whiff** — `RollToHitStage` always emits one hit group per volley (even a complete miss), so a missed volley reached `RollToSaveStage` as a group with zero save dice and played a hollow "0 saved, 0 wounds" animation. The stage now skips the beat when `saveRolls.HitCount == 0`; groups with hits still narrate. Engine `1e0a092` + new `SaveBeatOnWhiffTests` (whiff → no beat / hit → beat; built on real `DiceResults` because `FixedDiceResults.TotalRolls` is hard-coded to 1 and can't model an empty group).
+  Engine **574 green**, full build clean, headless smoke exit 0.
 - 2026-06-21: **Testing-feedback fixes** (branch `015-016-shooting-roll-seams`, piggybacked on the #015/#016 work). Four fixes from a play test:
   (1) **Assign-Wounds counter** — `GuiAssignWoundsResolver` (button line + hover tooltip) now shows `(remaining/total)` and **only for multi-wound models**; single-wound models show no counter (was always "{n} wounds remaining", noisy on the common 1-wound case). App-only.
   (2) **Outstanding Tasks window is draggable** — `GuiOutstandingTaskDisplay` seeds its centered position with `FirstUseEver` instead of re-pinning every frame with `Always`, and drops the `NoMove` flag. App-only.
