@@ -11,6 +11,13 @@ must press the button — no auto-return.
 
 ## Notes
 
+- 2026-06-21 (cont. 2): GUI hand-verified — overlay + return-to-menu work. One fix from the run: the
+  result string showed the winner's raw PlayerID GUID ("Player <guid> wins!"). `VictoryCalculationStage`
+  was building the `NotifyGameEnded` string from `winner.ID` even though the `Announce` banner one line
+  above already resolved the player's display `Name`. Aligned `NotifyGameEnded` to use `winnerName` (the
+  `IPlayerSlotInfo.Name`, falling back to "A player" — never a GUID). Updated `VictoryCalculationStageTests`
+  to register a named player and assert the name, plus a fallback case. Suite 604→605/0.
+
 - 2026-06-21 (cont.): Networked client done — the deferral is closed.
   - New `GameEndedMessage` (internal, `Network/Messages/LobbyMessages/`) carries the result string.
   - **Host** broadcasts it on game-end: `server.OnGameEnded` now routes through
