@@ -127,7 +127,9 @@ public class GuiAssignWoundsResolver
             float total    = modelData.TotalWounds;
             float dealt    = modelData.WoundsDealt;
             float remaining = total - dealt - pw.Wounds;
-            bool canTake   = remaining > 0;
+            // #006: assignability is capacity AND ordering — a joined hero is grayed until the rest of the
+            // unit is dead. Same predicate the engine's TryAddWounds uses, so the button never lies.
+            bool canTake   = results.CanAssignWoundTo(pw);
 
             float avail = ImGui.GetContentRegionAvail().X;
             Vector2 origin = ImGui.GetCursorScreenPos();
@@ -183,18 +185,18 @@ public class GuiAssignWoundsResolver
         DrawMapHighlight();
     }
 
-    /// <summary>Dims every model on the table that can no longer take wounds (already killed in this
-    /// pending assignment, including the locked Tough pre-assignments) so the player can see at a glance
-    /// which figures are still valid targets — mirroring the disabled dialog buttons.</summary>
+    /// <summary>Dims every model on the table that can't be assigned a wound right now — those already
+    /// killed in this pending assignment (incl. locked Tough pre-assignments) AND a joined hero while the
+    /// rest of the unit still has room (#006, wounds-last) — so the player can see at a glance which figures
+    /// are valid targets, mirroring the disabled dialog buttons.</summary>
     private void DrawInvalidTargets(AssignWoundsResults results)
     {
         var bg = ImGui.GetBackgroundDrawList();
         foreach (PendingWounds pw in results.PendingWounds)
         {
-            var md = pw.Model.GetValue();
-            float remaining = md.TotalWounds - md.WoundsDealt - pw.Wounds;
-            if (remaining > 0f) continue; // still a valid target
+            if (results.CanAssignWoundTo(pw)) continue; // still a valid target
 
+            var md = pw.Model.GetValue();
             var p = md.Position;
             if (p.x == 0f && p.z == 0f) continue;
 
@@ -249,7 +251,12 @@ public class GuiAssignWoundsResolver
         sb.AppendLine("Weapons:");
         foreach (string line in WeaponLines(modelData))
             sb.AppendLine($"  {line}");
-        sb.Append(remaining > 0 ? "Click to assign wounds (fills this model)" : "(no longer a valid target)");
+        if (results.CanAssignWoundTo(pw))
+            sb.Append("Click to assign wounds (fills this model)");
+        else if (remaining > 0f)
+            sb.Append("(a hero is assigned wounds last — not yet a valid target)");
+        else
+            sb.Append("(no longer a valid target)");
         return sb.ToString();
     }
 
