@@ -43,8 +43,9 @@ should resolve without prompting the player.
 - **Multiple already-wounded models, pool too small to finish all** — they fill in unit-list order; the
   defender doesn't get to choose which wounded model absorbs the shortfall (a legal sub-choice). Rare;
   documented by `Construct_MultipleWoundedModels_FillInListOrder`.
-- **Illegal wound-split validation** (assign → unassign → reassign) stays under #024; currently
-  unreachable because nothing calls `TryRemoveWounds`.
+- **Illegal wound-split validation** (assign → unassign → reassign) was under #024 — **done 2026-06-21**:
+  the split was latent (only `TryRemoveWounds` could reach it, and it had no callers), now closed by a
+  finish-before-next guard in `TryAddWounds` + removal of `TryRemoveWounds`. See `WorkItems/024`.
 
 ## Outcome
 _(open)_
