@@ -35,7 +35,45 @@ spells + conferred rules) left to #034.
   Psy-Destruction): reuses the Takedown `IndividualTargetResult` + a `SelectionRequest<ModelData>`
   pick. Small follow-on; lands with #034's single-model damage spells.
 - **#034** — full per-army spell content + conferred-rule implementations.
-- **Spell-authoring UI** (army builder) — tracks with #087.
+- **Spell-authoring UI** (army builder) — basic editor shipped (see Notes); richer custom-rule authoring
+  still tracks with #087.
+
+## Spell-primitive coverage survey (2026-06-21)
+
+Surveyed the full GDF army spell corpus (~282 castable spells across 47 armies; local copyrighted
+reference, not reproduced here) against the framework's two effect primitives. **~63% (~179 spells) are
+already expressible**: ~65 are single-enemy-unit damage (`Effect.DealHits`) and ~114 are keyword grants to
+friendly/enemy unit(s) (`Effect.AddRule`). The remaining **~37% (~103 spells) need new primitives**, ranked
+by how many spells each unlocks:
+
+1. **Pre-save hit-stage rules on dealt hits (~36 spells)** — highest leverage. Spells that deal hits "with
+   Blast" or "extra/converted hits on an unmodified 6" fit the DealHits *shape*, but the synthetic-hit
+   pipeline starts at the save stage, so those pre-save rules silently no-op. Fix: run the hit-complete
+   evaluation (the existing hit-multiplier / extra-hit sinks) over the seeded synthetic hits before the
+   save flow (or pre-fold Blast / extra-hit into the seeded hit count).
+2. **Numeric stat-modifier effect (~23 spells)** — a third effect primitive applying a signed delta to a
+   named stat (to-hit/Quality, Defense, morale, casting, weapon AP, range, move) for a duration. Distinct
+   from `AddRule` (which carries no number); most deltas can ride the existing roll-modifier sink.
+3. **Single-model damage target (~22 spells)** — resolve DealHits against one chosen model ("as a unit of
+   [1]") via the existing Takedown `IndividualTargetResult` + a `SelectionRequest<ModelData>` pick. (Already
+   in Deferred above; the survey quantifies it.)
+4. **Multi-unit damage (~19 spells)** — run the DealHits pipeline against EACH selected unit. The target
+   selector already supports up-to-N; `CastSpellStage` currently runs the damage pipeline once (target[0]),
+   so it needs looping per target. (Already deferred; quantified here.)
+5. **Conditional / triggered effect (~4 spells)** — run a test (e.g. a morale test) and branch the effect
+   on the outcome.
+6. **Forced enemy movement (~1 spell)** — reposition an enemy unit (`InvokeTriggeredMove` exists as an
+   executable op but isn't wired into the cast path). Lowest priority.
+
+**Not needed at the spell level:** no castable spell requires Heal, Summon/spawn, terrain/objective,
+random-branch, or token-manipulation primitives (those mechanics live only in unit special rules, never in
+the six castable spells). A handful of "counts as in dangerous/difficult terrain" spells are currently
+treated as `AddRule` keyword grants — a judgment call; if terrain-status wants its own primitive they'd
+move into the list above.
+
+**Caveat on the ~114 `AddRule` spells:** they're *authorable* today, but most confer army-specific keywords
+(faction "Boost" rules, Evasive, Quick Shot, etc.) that aren't implemented yet — implementing those
+conferred rules is #034 content, separate from the effect primitives above.
 
 ## Notes
 - 2026-06-21: **Spell-authoring UI (Army Builder)** — app-only. New "Spells" section in
