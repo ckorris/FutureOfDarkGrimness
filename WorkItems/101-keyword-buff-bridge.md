@@ -76,8 +76,19 @@ Pointers so this can resume without re-deriving them:
   tested (the RuleGrant token lands); #101 adds the "…and it fires, then clears" assertion.
 
 ## Notes
+- 2026-06-22: **Reconciled with master's #100 — adopted its bridge, kept this branch's fixes.** While
+  this branch built #101, origin/master's **#100** independently shipped the same granted-rule read-back
+  + FirstTrigger consume + the same `TokenContainer` payload-merge fix (engine `4fb6159`/`b97fa7a`).
+  Merging master in: this branch's redundant bridge commits (the `8bdd4a6`/`1f0717f` below) were **dropped
+  in favour of master's #100 bridge**, and three fixes were folded onto it (engine `9375321`):
+  (1) FirstTrigger grants consume **directly in the evaluator** (master's `ConsumeRuleGrant` op silently
+  no-op'd at the hit/save/melee hooks — they run sinks, not `OperationApplier` — exactly where most "once"
+  buffs apply); (2) consume is **occurrence-based** (spent when the rule's hook+seat fires, regardless of
+  condition/survival — the user's chosen semantic); (3) `TokenClearService` made payload-precise. The
+  dropped-commit notes below are kept as the record of the parallel build. Item stays open for Aura +
+  resume-path; suite 761/0, full solution builds, headless exits 0.
 - 2026-06-22: **AddRule dispatch bridge DONE** (resolver fork = option (a), per the user). Two engine
-  commits (bump pending):
+  commits (SUPERSEDED — see the reconciliation note above; these commits are not in the merged history):
   - `8bdd4a6` — **token payload is part of entry identity.** `TokenContainer.AddToken` merged by
     type+owner only, silently keeping the first token's payload, so two different granted rules from one
     owner collapsed and lost a name. Payload is now in the merge key; added `RemoveTokensWithPayload`

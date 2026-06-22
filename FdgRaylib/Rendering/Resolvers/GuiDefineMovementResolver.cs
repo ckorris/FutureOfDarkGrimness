@@ -327,7 +327,24 @@ public class GuiDefineMovementResolver
             budgets.Add(cap - pt.GetTotalDistanceMoved(m) - GroupMoveSafetyMargin);
         }
 
-        Position pivot = GroupFormationUtilities.Centroid(lastPositions);
+        // #094: if the unit is out of coherency (e.g. a model died mid-unit), re-form the group ghost into a
+        // legal shape by contracting toward the centroid the least amount needed, so one click moves them
+        // into coherency. The rigid transform then rides on this repaired base, but the per-model budget is
+        // still measured from each model's REAL start (lastPositions), so the cohesion correction plus the
+        // move can never push any model past its cap. Coherent units skip this and keep the pure rigid path.
+        var startPairs = new List<(IModel model, Position pos)>(models.Count);
+        for (int i = 0; i < models.Count; i++) startPairs.Add((models[i], lastPositions[i]));
+        IReadOnlyList<Position> basePositions = lastPositions;
+        if (CheckCohesion(startPairs).Any)
+        {
+            var radii = models.Select(m => m.BaseRadiusInches).ToList();
+            basePositions = GroupFormationUtilities.RepairCoherencyByContraction(
+                lastPositions, radii,
+                GameWideConstants.MAX_MODEL_DISTANCE_FROM_ANY_OTHER_MODEL_INCHES,
+                GameWideConstants.MAX_MODEL_DISTANCE_FROM_ALL_OTHER_MODELS_INCHES);
+        }
+
+        Position pivot = GroupFormationUtilities.Centroid(basePositions);
         float cos = MathF.Cos(_groupRotation), sin = MathF.Sin(_groupRotation);
 
         // Desired translation moves the centroid under the cursor (none when the mouse is off-table).
@@ -339,7 +356,7 @@ public class GuiDefineMovementResolver
             desiredTz = mz - pivot.z;
         }
 
-        var plan = GroupFormationUtilities.PlanGroupMove(lastPositions, budgets, pivot, cos, sin, desiredTx, desiredTz);
+        var plan = GroupFormationUtilities.PlanGroupMove(basePositions, lastPositions, budgets, pivot, cos, sin, desiredTx, desiredTz);
         var newPositions = plan.NewPositions;
 
         // Publish the live phantom positions so the targeting overlay can draw ghost-aware fire lines

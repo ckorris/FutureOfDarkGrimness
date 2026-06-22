@@ -1,7 +1,11 @@
-# 094 — Friendly-Caster ±1 cast assist
+# 103 — Friendly-Caster ±1 cast assist
 
 **Status**: todo
 **Related**: #033 (Caster framework — spun off from its last tracked slice), #034 (spell content)
+
+> **Renumbered 2026-06-22.** Opened as #094, but origin/master had already assigned #094 to *group-move
+> coherency repair* (and a separate parallel item to #095). Per the never-reuse rule this item yields and
+> takes #103. Earlier commit messages / the pushed branch reference "#094" — they predate the renumber.
 
 ## Goal
 When a Caster declares a spell + target(s), other friendly Caster units within 18" may spend their own

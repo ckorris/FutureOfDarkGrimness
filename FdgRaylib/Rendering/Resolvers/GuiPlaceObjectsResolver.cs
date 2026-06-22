@@ -79,7 +79,7 @@ public class GuiPlaceObjectsResolver<T>
 
         var io   = ImGui.GetIO();
         var dl   = ImGui.GetBackgroundDrawList();
-        var zone = request.DeploymentZone.GetValue();
+        var zone = request.DeploymentZone;
 
         float minEnemyDist = request.MinDistanceFromEnemiesInches;
         var enemies = minEnemyDist > 0f ? GetEnemyPositions(request.TargetPlayerID) : _noEnemies;
@@ -117,7 +117,7 @@ public class GuiPlaceObjectsResolver<T>
     /// drop). Completion is via the Done button — no auto-finish on the last model.
     /// </summary>
     private void DrawSingleDeploy(ImDrawListPtr dl, ImGuiIOPtr io, PlaceObjectsRequest<T> request,
-        RectangularZone zone, List<Position> enemies, float minEnemyDist, bool overTable)
+        IBoundedZone zone, List<Position> enemies, float minEnemyDist, bool overTable)
     {
         var (mouseInX, mouseInZ) = PixelToInches(io.MousePos.X, io.MousePos.Y);
         bool clicked = overTable && !io.WantCaptureMouse && ImGui.IsMouseClicked(ImGuiMouseButton.Left);
@@ -171,7 +171,7 @@ public class GuiPlaceObjectsResolver<T>
     /// at least one model is in an illegal spot and the click is a no-op.
     /// </summary>
     private void DrawGroupDeploy(ImDrawListPtr dl, ImGuiIOPtr io, PlaceObjectsRequest<T> request,
-        RectangularZone zone, List<Position> enemies, float minEnemyDist, bool overTable, bool wantInput)
+        IBoundedZone zone, List<Position> enemies, float minEnemyDist, bool overTable, bool wantInput)
     {
         var models = request.ModelsToPlace;
         int n = models.Count;
@@ -192,7 +192,7 @@ public class GuiPlaceObjectsResolver<T>
         for (int i = 0; i < n; i++) radii[i] = GetBaseRadius(models[i].GetValue());
 
         // Forward = toward table centre: longer/front row sits on that side.
-        float forwardSign = (zone.Bottom + zone.Top) * 0.5f < _tableH * 0.5f ? 1f : -1f;
+        float forwardSign = zone.Bounds.CenterZ < _tableH * 0.5f ? 1f : -1f;
         var offsets = GroupFormationUtilities.ComputeDeploymentOffsets(
             radii, 0.1f, GameWideConstants.MAX_MODEL_DISTANCE_FROM_ALL_OTHER_MODELS_INCHES, forwardSign);
 
@@ -205,8 +205,9 @@ public class GuiPlaceObjectsResolver<T>
         }
         else
         {
-            float cz = forwardSign > 0f ? zone.Top - 3f : zone.Bottom + 3f;
-            centroid = new Position((zone.Left + zone.Right) * 0.5f, cz);
+            ZoneBounds b = zone.Bounds;
+            float cz = forwardSign > 0f ? b.Top - 3f : b.Bottom + 3f;
+            centroid = new Position(b.CenterX, cz);
         }
 
         float cos = MathF.Cos(_groupRotationDeploy), sin = MathF.Sin(_groupRotationDeploy);
@@ -258,11 +259,10 @@ public class GuiPlaceObjectsResolver<T>
     }
 
     /// <summary>Full single-placement validity for a candidate, ignoring placed model <paramref name="excludeIndex"/>.</summary>
-    private bool IsPlacementValid(Position cand, float r, RectangularZone zone, List<Position> enemies,
+    private bool IsPlacementValid(Position cand, float r, IBoundedZone zone, List<Position> enemies,
         float minEnemyDist, int excludeIndex, out string? reason)
     {
-        if (!(cand.x >= zone.Left + r && cand.x <= zone.Right - r &&
-              cand.z >= zone.Bottom + r && cand.z <= zone.Top - r))
+        if (!IsBaseWithinZone(cand, r, zone))
         { reason = "Outside deployment zone."; return false; }
 
         string? overlap = CheckOverlap(cand, r, excludeIndex);
@@ -284,15 +284,25 @@ public class GuiPlaceObjectsResolver<T>
     /// <summary>Validity for a model in a dropped group: zone containment, no overlap with on-table
     /// occupants or terrain, and enemy spacing. Intra-formation overlap/cohesion are guaranteed by the
     /// layout, so they aren't re-checked here.</summary>
-    private bool IsGroupSlotValid(Position cand, float r, RectangularZone zone, List<Position> enemies, float minEnemyDist)
+    private bool IsGroupSlotValid(Position cand, float r, IBoundedZone zone, List<Position> enemies, float minEnemyDist)
     {
-        if (!(cand.x >= zone.Left + r && cand.x <= zone.Right - r &&
-              cand.z >= zone.Bottom + r && cand.z <= zone.Top - r)) return false;
+        if (!IsBaseWithinZone(cand, r, zone)) return false;
         foreach (var (pos, radius) in GetTableOccupants())
             if (Overlaps(cand, r, pos, radius)) return false;
         if (minEnemyDist > 0f && TooCloseToEnemy(cand, enemies, minEnemyDist)) return false;
         if (OnImpassibleTerrain(cand, r)) return false;
         return true;
+    }
+
+    // A model's base is within the zone if its centre keeps the base inside the bounding box (inset by the
+    // base radius) AND the centre is inside the zone's true shape — so a circular zone constrains placement
+    // to the real circle, not its bounding square, while a rectangle keeps its base-fully-inside behaviour.
+    private static bool IsBaseWithinZone(Position cand, float r, IBoundedZone zone)
+    {
+        ZoneBounds b = zone.Bounds;
+        return cand.x >= b.Left + r && cand.x <= b.Right - r
+            && cand.z >= b.Bottom + r && cand.z <= b.Top - r
+            && zone.IsPointWithinZone(cand);
     }
 
     private void DrawZone(ImDrawListPtr dl, IZone zone)
@@ -345,7 +355,7 @@ public class GuiPlaceObjectsResolver<T>
 
         ImGui.TextUnformatted($"Deploy: {_placed.Count} / {total} models placed");
         ImGui.SameLine();
-        ImGui.TextDisabled($"  zone X {request.DeploymentZone.GetValue().Left:F0}-{request.DeploymentZone.GetValue().Right:F0}\"");
+        ImGui.TextDisabled($"  zone X {request.DeploymentZone.Bounds.Left:F0}-{request.DeploymentZone.Bounds.Right:F0}\"");
 
         if (ImGui.Button(group ? "Mode: Group (G)" : "Mode: Single (G)"))
         {
@@ -425,12 +435,12 @@ public class GuiPlaceObjectsResolver<T>
     /// <summary>Tries to place all remaining models into free spots; returns false if any can't fit.</summary>
     private bool AutoPlaceRemaining(PlaceObjectsRequest<T> request)
     {
-        var zone = request.DeploymentZone.GetValue();
+        var zone = request.DeploymentZone;
         float maxRadius = request.ModelsToPlace
             .Select(b => GetBaseRadius(b.GetValue()))
             .DefaultIfEmpty(0.75f).Max();
         float step = maxRadius * 2 + 0.1f;
-        float startCz = (zone.Bottom + zone.Top) / 2f;
+        float startCz = zone.Bounds.CenterZ;
 
         float minEnemyDist = request.MinDistanceFromEnemiesInches;
         var enemies = minEnemyDist > 0f ? GetEnemyPositions(request.TargetPlayerID) : _noEnemies;
@@ -447,22 +457,24 @@ public class GuiPlaceObjectsResolver<T>
         return true;
     }
 
-    private bool TryFindAutoPosition(float r, float step, RectangularZone zone, float startCz,
+    private bool TryFindAutoPosition(float r, float step, IBoundedZone zone, float startCz,
         List<Position> enemies, float minEnemyDist, out Position result)
     {
         // Sweep rows out from zone centre: 0, +step, -step, +2*step, -2*step, ...
-        int maxRows = (int)((zone.Top - zone.Bottom) / step) + 1;
+        ZoneBounds b = zone.Bounds;
+        int maxRows = (int)((b.Top - b.Bottom) / step) + 1;
         for (int rowOffset = 0; rowOffset <= maxRows; rowOffset++)
         {
             int signCount = rowOffset == 0 ? 1 : 2;
             for (int s = 0; s < signCount; s++)
             {
                 float z = startCz + (s == 0 ? rowOffset : -rowOffset) * step;
-                if (z < zone.Bottom + r || z > zone.Top - r) continue;
+                if (z < b.Bottom + r || z > b.Top - r) continue;
 
-                for (float x = zone.Left + r; x <= zone.Right - r; x += step * 0.5f)
+                for (float x = b.Left + r; x <= b.Right - r; x += step * 0.5f)
                 {
                     var c = new Position(x, z);
+                    if (!zone.IsPointWithinZone(c)) continue; // outside the true shape (e.g. a circle's corners)
                     if (CheckOverlap(c, r) != null) continue;
                     if (OnImpassibleTerrain(c, r)) continue;
                     if (minEnemyDist > 0f && TooCloseToEnemy(c, enemies, minEnemyDist)) continue;

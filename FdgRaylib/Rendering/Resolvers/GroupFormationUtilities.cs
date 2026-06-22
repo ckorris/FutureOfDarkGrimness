@@ -62,10 +62,23 @@ public static class GroupFormationUtilities
     public static GroupMoveResult PlanGroupMove(
         IReadOnlyList<Position> lastPositions, IReadOnlyList<float> budgets,
         Position pivot, float cos, float sin, float desiredTx, float desiredTz)
+        => PlanGroupMove(lastPositions, lastPositions, budgets, pivot, cos, sin, desiredTx, desiredTz);
+
+    /// <summary>
+    /// As the 7-arg overload, but the rigid transform is applied to <paramref name="basePositions"/> (which
+    /// may be a coherency-repaired shape) while each model's budget is measured against its real start in
+    /// <paramref name="originPositions"/>. So a model's total straight-line travel — the cohesion correction
+    /// (base − origin) plus the rigid move — is what must stay within budget. When the two arrays are the
+    /// same reference the result is identical to the rigid-only path. Both arrays share the input order.
+    /// </summary>
+    public static GroupMoveResult PlanGroupMove(
+        IReadOnlyList<Position> basePositions, IReadOnlyList<Position> originPositions,
+        IReadOnlyList<float> budgets,
+        Position pivot, float cos, float sin, float desiredTx, float desiredTz)
     {
-        int n = lastPositions.Count;
-        // Rotation-only displacement A_i for each model, and the largest translation scale s in [0,1]
-        // such that |A_i + s*T| <= budget_i for all i. Per model this is a quadratic in s:
+        int n = basePositions.Count;
+        // Combined rotation+repair displacement A_i = rotate(base_i) - origin_i, and the largest translation
+        // scale s in [0,1] such that |A_i + s*T| <= budget_i for all i. Per model this is a quadratic in s:
         //   (T.T) s^2 + 2(A.T) s + (A.A - b^2) <= 0.
         float wTerm = desiredTx * desiredTx + desiredTz * desiredTz;
         const float Eps = 1e-9f;
@@ -75,9 +88,9 @@ public static class GroupFormationUtilities
 
         for (int i = 0; i < n; i++)
         {
-            Position rotated = RigidTransform(lastPositions[i], pivot, cos, sin, 0f, 0f);
-            float ax = rotated.x - lastPositions[i].x;
-            float az = rotated.z - lastPositions[i].z;
+            Position rotated = RigidTransform(basePositions[i], pivot, cos, sin, 0f, 0f);
+            float ax = rotated.x - originPositions[i].x;
+            float az = rotated.z - originPositions[i].z;
 
             float b = MathF.Max(0f, budgets[i]);
             float c = ax * ax + az * az - b * b;
@@ -104,9 +117,144 @@ public static class GroupFormationUtilities
         // Final positions: rotated about pivot, then translated by the scaled amount.
         var result = new Position[n];
         for (int i = 0; i < n; i++)
-            result[i] = RigidTransform(lastPositions[i], pivot, cos, sin, tx, tz);
+            result[i] = RigidTransform(basePositions[i], pivot, cos, sin, tx, tz);
 
         return new GroupMoveResult(result, scale, withinBudget);
+    }
+
+    // The repair targets a hair inside the limits so the caller's exact-constant cohesion check (no margin)
+    // reliably agrees the repaired shape is legal.
+    private const float CoherencyRepairMargin = 0.02f;
+    private const float RelaxDamping  = 0.5f;  // fraction of each step's correction applied per iteration
+    private const int   RelaxMaxIters = 600;
+
+    /// <summary>
+    /// Returns coherency-repaired positions by iterative relaxation: every iteration, each link that is too
+    /// long pulls BOTH of its endpoints toward each other (the 1" nearest-neighbour rule per model, plus the
+    /// 9" rule on the farthest pair). The correction ripples down the chain, so the displacement needed to
+    /// reabsorb a straggler is SHARED across several models instead of dumped on one — which minimises the
+    /// largest single move and therefore preserves the most group-drag distance (the group step is bottlenecked
+    /// by whichever model spent the most of its budget repairing). Models that are already in cohesion barely
+    /// move; the motion grades down with distance from the break. A light separation sweep keeps bases from
+    /// stacking. Order matches the inputs; operates on the x/z plane. An already-coherent unit is returned
+    /// unchanged (the loop exits on the first check).
+    /// </summary>
+    public static Position[] RepairCoherencyByContraction(
+        IReadOnlyList<Position> positions, IReadOnlyList<float> radii,
+        float maxNearestB2B, float maxFarthestB2B)
+    {
+        int n = positions.Count;
+        var work = new Position[n];
+        for (int i = 0; i < n; i++) work[i] = positions[i];
+        if (n <= 1) return work;
+
+        float nearTarget = maxNearestB2B - CoherencyRepairMargin;
+        float farTarget  = maxFarthestB2B - CoherencyRepairMargin;
+
+        for (int iter = 0; iter < RelaxMaxIters; iter++)
+        {
+            if (IsCoherent(work, radii, nearTarget, farTarget)) break;
+
+            var dx = new float[n];
+            var dz = new float[n];
+
+            // 1" nearest-neighbour rule: each over-long link shares its excess 50/50 between both ends.
+            for (int i = 0; i < n; i++)
+            {
+                int j = NearestOther(work, radii, i);
+                if (j < 0) continue;
+                float b2b = Position.GetDistance2D(work[i], work[j]) - radii[i] - radii[j];
+                if (b2b <= nearTarget) continue;
+                AddPull(dx, dz, work, i, j, 0.5f * (b2b - nearTarget));
+            }
+
+            // 9" all-pairs rule: pull the farthest pair together (again shared between both ends).
+            var (a, b, far) = FarthestPair(work, radii);
+            if (far > farTarget)
+                AddPull(dx, dz, work, a, b, 0.5f * (far - farTarget));
+
+            for (int i = 0; i < n; i++)
+                work[i] = new Position(work[i].x + RelaxDamping * dx[i], work[i].z + RelaxDamping * dz[i]);
+
+            SeparateOverlaps(work, radii); // keep bases from stacking as they gather
+        }
+        return work;
+    }
+
+    /// <summary>Adds, to the displacement accumulators, a pull of <paramref name="amount"/>" that moves
+    /// model <paramref name="i"/> toward model <paramref name="j"/> and an equal-and-opposite pull moving
+    /// <paramref name="j"/> toward <paramref name="i"/> — sharing a link's correction between both ends.</summary>
+    private static void AddPull(float[] dx, float[] dz, Position[] pos, int i, int j, float amount)
+    {
+        float vx = pos[j].x - pos[i].x, vz = pos[j].z - pos[i].z;
+        float len = MathF.Sqrt(vx * vx + vz * vz);
+        if (len < 1e-6f) return;
+        float ux = vx / len, uz = vz / len;
+        dx[i] += amount * ux; dz[i] += amount * uz;
+        dx[j] -= amount * ux; dz[j] -= amount * uz;
+    }
+
+    /// <summary>True when every model is within <paramref name="nearTarget"/>" of its nearest neighbour and
+    /// no pair exceeds <paramref name="farTarget"/>" (all base-to-base).</summary>
+    private static bool IsCoherent(Position[] pos, IReadOnlyList<float> radii, float nearTarget, float farTarget)
+    {
+        int n = pos.Length;
+        for (int i = 0; i < n; i++)
+        {
+            int j = NearestOther(pos, radii, i);
+            if (j < 0) continue;
+            if (Position.GetDistance2D(pos[i], pos[j]) - radii[i] - radii[j] > nearTarget) return false;
+        }
+        return FarthestPair(pos, radii).far <= farTarget;
+    }
+
+    /// <summary>Index of the model nearest <paramref name="i"/> (base-to-base), or -1 if it is the only one.</summary>
+    private static int NearestOther(Position[] pos, IReadOnlyList<float> radii, int i)
+    {
+        int best = -1; float nearest = float.PositiveInfinity;
+        for (int j = 0; j < pos.Length; j++)
+        {
+            if (j == i) continue;
+            float b2b = Position.GetDistance2D(pos[i], pos[j]) - radii[i] - radii[j];
+            if (b2b < nearest) { nearest = b2b; best = j; }
+        }
+        return best;
+    }
+
+    /// <summary>The pair of models farthest apart (base-to-base), as (indexA, indexB, b2b).</summary>
+    private static (int a, int b, float far) FarthestPair(Position[] pos, IReadOnlyList<float> radii)
+    {
+        int ba = 0, bb = 0; float far = float.NegativeInfinity;
+        for (int i = 0; i < pos.Length; i++)
+            for (int j = i + 1; j < pos.Length; j++)
+            {
+                float b2b = Position.GetDistance2D(pos[i], pos[j]) - radii[i] - radii[j];
+                if (b2b > far) { far = b2b; ba = i; bb = j; }
+            }
+        return (ba, bb, far);
+    }
+
+    /// <summary>One sweep that pushes any overlapping pair (base-to-base &lt; 0) apart by half the penetration
+    /// each. Bases touching (0") is legal, so this only fires on genuine overlap; combined with the gather it
+    /// keeps the relaxed formation overlap-free.</summary>
+    private static void SeparateOverlaps(Position[] pos, IReadOnlyList<float> radii)
+    {
+        int n = pos.Length;
+        for (int i = 0; i < n; i++)
+            for (int j = i + 1; j < n; j++)
+            {
+                float vx = pos[j].x - pos[i].x, vz = pos[j].z - pos[i].z;
+                float len = MathF.Sqrt(vx * vx + vz * vz);
+                float minDist = radii[i] + radii[j];
+                if (len >= minDist) continue;
+                float pen = minDist - len;
+                float ux, uz;
+                if (len < 1e-6f) { ux = 1f; uz = 0f; }    // coincident — separate along an arbitrary axis
+                else             { ux = vx / len; uz = vz / len; }
+                float half = 0.5f * pen;
+                pos[i] = new Position(pos[i].x - half * ux, pos[i].z - half * uz);
+                pos[j] = new Position(pos[j].x + half * ux, pos[j].z + half * uz);
+            }
     }
 
     /// <summary>
