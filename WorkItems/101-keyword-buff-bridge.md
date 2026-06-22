@@ -1,6 +1,6 @@
 # 101 — Keyword-buff bridge: make granted rules fire during dispatch
 
-**Status**: todo
+**Status**: in progress — AddRule dispatch bridge done (2026-06-22); Aura + resume-path resolver remain
 **Related**: #033 (Caster framework; the buff archetype), #034 (spell content), #042 (rule dispatch / token system)
 
 > **Renumbered 2026-06-22.** Opened as #095, but #095 was already assigned to other work on a parallel
@@ -76,10 +76,40 @@ Pointers so this can resume without re-deriving them:
   tested (the RuleGrant token lands); #101 adds the "…and it fires, then clears" assertion.
 
 ## Notes
+- 2026-06-22: **AddRule dispatch bridge DONE** (resolver fork = option (a), per the user). Two engine
+  commits (bump pending):
+  - `8bdd4a6` — **token payload is part of entry identity.** `TokenContainer.AddToken` merged by
+    type+owner only, silently keeping the first token's payload, so two different granted rules from one
+    owner collapsed and lost a name. Payload is now in the merge key; added `RemoveTokensWithPayload`
+    (interface + impl); `TokenClearService` clears expired tokens payload-precisely. No-payload tokens are
+    unchanged (Equals(null,null)). This also retires the stat-modifier merge edge noted in #033 Slice B.
+  - `1f0717f` — **project + consume granted rules in `RuleEvaluator`.** Optional `IRuleResolver` injected;
+    `CollectTagged` projects each `RuleGrant` token by resolving its name → `ResolvedRule` and firing it
+    like an innate rule (condition-gated, deduped vs innate copies). **R2 consumption**: a `NextTrigger`
+    grant is removed when its rule's hook+seat next fires on a real `EvaluateAll`, regardless of condition
+    or outcome (wasting a one-shot buff by forcing the situation is a valid tactic — user's call). Read-only
+    `EvaluateAllNamed`/single-unit `Evaluate` project but never consume; duration grants left to
+    `TokenClearService`. Resolver threaded `FDGServer` (fresh-game) → `GameContext` → `RuleEvaluator`.
+    Tests in `GrantedRuleProjectionTests` (probe rule = Reliable). Suite 648/0; app builds; headless 0.
+  - **Scope landed:** any rule that exists in the resolver (core catalog + #059 army-embedded) now fires
+    when granted. So buff spells naming an already-implemented rule (Furious, Stealth, …) work now.
+  - **Remaining (recorded, not cut):**
+    1. **Aura** (`Effect.Aura`, unit-wide grant) — not yet projected; its per-model expansion is still
+       deferred. Same projection seam should serve it.
+    2. **Resume path** — `FDGServer` resume ctor builds no resolver (and master's #095 rule-rehydration
+       isn't in this branch yet), so granted-rule projection is **inert on resumed games**. Reconcile when
+       `033-caster` merges master.
+    3. **Single-unit `Evaluate` hooks** don't consume `NextTrigger` grants (niche activation/deployment
+       hooks; no corpus buff targets them). A grant whose ONLY hook is such a path would fire un-consumed.
+    4. **Conferred-rule content** — the ~114 corpus spells name rules many of which aren't implemented
+       (Evasive, Quick Shot, faction Boosts, …); those are #034. This item makes the *mechanism* work; a
+       granted-but-unimplemented name resolves to nothing and is skipped (army-load's skip-and-warn).
 - 2026-06-21: Opened. The #033 survey classified ~114 spells as `AddRule`-expressible (the buff/debuff
   half); they're authorable today but inert until this lands. The conferred rules many of them name
   (Evasive, Quick Shot, faction "Boost" rules, …) are themselves unimplemented — that's #034 content, a
   separate axis from this dispatch bridge.
 
 ## Outcome
-(pending)
+(partial) The AddRule keyword-buff dispatch bridge works end-to-end: granted rules fire and one-shot
+grants consume correctly, with a payload-precise token container underneath. Aura projection and the
+resume-path resolver remain; conferred-rule *implementations* are #034.
