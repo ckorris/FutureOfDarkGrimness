@@ -1,7 +1,9 @@
-# 094 — Special rules not re-attached on save/load resume (HIGH PRIORITY)
+# 095 — Special rules not re-attached on save/load resume (HIGH PRIORITY)
 
 **Status**: todo
 **Related**: #052 (save/load — this is a gap in it), #042 (rule framework), #035 (Transport — disembark + capacity depend on this surviving a resume)
+
+> **Renumbered 094→095 (2026-06-21).** Filed as #094 this session, but origin/master had meanwhile assigned #094 to "group-move coherency repair" (merged). Per the never-reuse rule the unmerged item yields; this is now #095. The `035-transport.md` cross-references were updated; commit messages that say "#094" predate the renumber.
 
 ## Goal
 After loading a mid-game save, every unit's `RuleDefinitions` is **empty**, so all runtime special-rule behavior is silently lost on resume. Fix the resume path so a resumed game behaves identically to the game that was saved — every unit (and weapon, and per-model hero) carries the same `#042` rules it had before the save.
