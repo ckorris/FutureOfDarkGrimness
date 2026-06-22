@@ -48,6 +48,33 @@ the keyword-buff bridge is the separate, larger piece.
 - **Aura** (`Effect.Aura`) grants unit-wide; today its per-model expansion is also deferred — fold in here
   or keep separate.
 
+## Concrete seams (carried from #033 primitive work — 2026-06-22)
+Pointers so this can resume without re-deriving them:
+- **Injection point**: `Rules/Dispatch/RuleEvaluator.cs` — `CollectTagged(unit, seat, weapon, models, …)` →
+  `CollectFromRules(rules, unit, carryingWeapon, seat, …)` per source. Project granted rules here: read the
+  unit's `RuleGrant` tokens (`unit.Tokens.GetAllTokens(TokenType.RuleGrant)`, payload
+  `TokenPayload.RuleGrant(RuleName, Lifetime)`), resolve each name → `ResolvedRule`, and run them through
+  `CollectFromRules`. The seat for a granted rule = the bearer's seat in the event.
+- **The stat-modifier half already built** (the pattern to mirror/unify): `Rules/Dispatch/GrantedRollModifiers.cs`
+  `ConsumeNet(IUnit, ERollKind)` reads per-roll-kind token types (`TokenType.HitRollModifier`/`SaveRollModifier`/
+  `MoraleRollModifier`, Foundation), sums `TokenPayload.StatModifier(Delta)`, and **removes FirstTrigger tokens
+  at the read site**. It's consumed in `DetermineHitRollStage` (attacker/Hit), `DetermineSaveRollsNeededStage`
+  (defender/Save), `MoraleUtilities.TakeMoraleTest` (Morale) — i.e. FirstTrigger is decremented where the
+  modifier is *used*, not in the evaluator. The keyword bridge can follow this "consume on use" model, or
+  unify both onto one granted-effect store.
+- **Resolver access** (the fork-(a)/(b) crux): `GameContext` exposes `RuleEvaluator` but **no resolver**. The
+  resolver is `CoreRuleCatalog.CreateResolver()` + `ArmyListRuleResolution.RegisterEmbeddedDefinitions`, built in
+  `FDGServer.CreateArmies` and discarded. Precedent for fork (b): #033 Slice 1 pre-resolved spell `WithRules`
+  names → `ResolvedRule` at army load (`SaveLoad/ArmyListSpellResolution.ResolveSpells`, stored on `ArmyData`).
+  `Effect.AddRule.Apply` runs at cast time with no resolver, so pre-resolving the granted rule needs the
+  resolver threaded into the grant path — vs fork (a), exposing the resolver on `GameContext`/`RuleEvaluator`.
+- **Lifetimes**: `Effect.ClearTriggerFor(ELifetime)` (in `Rules/Definitions/Effect.cs`) maps NextTrigger→
+  FirstTrigger, ThisActivation→ActivationEnd, ThisRound→RoundEnd, etc. `TokenClearService` sweeps the
+  duration triggers; only `FirstTrigger` needs read-site consumption (the gap).
+- **Test harness**: `Tests/CasterRuleIntegrationTests.cs` + `FixedFaceDiceRoller` (honors rollCount, unlike
+  `FixedDiceRoller`) + `TriggeredMoveTestContext(store, requester, diceRoller?)`. The buff *grant* is already
+  tested (the RuleGrant token lands); #101 adds the "…and it fires, then clears" assertion.
+
 ## Notes
 - 2026-06-21: Opened. The #033 survey classified ~114 spells as `AddRule`-expressible (the buff/debuff
   half); they're authorable today but inert until this lands. The conferred rules many of them name
