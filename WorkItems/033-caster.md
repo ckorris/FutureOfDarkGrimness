@@ -76,6 +76,15 @@ move into the list above.
 conferred rules is #034 content, separate from the effect primitives above.
 
 ## Notes
+- 2026-06-21: **Primitive 1 — pre-save hit rules on spell damage done** (engine `b8fef9c`, bump pending).
+  `CastSpellStage` now rolls the spell's hits as real dice and runs the hit-complete fold
+  (HitInjection/HitMultiplier/save-mod sinks) before the save pipeline — reusing RollToHitStage's
+  machinery — so **Blast multiplies, "on an unmodified 6" rules add hits, and Rending promotes AP** on
+  spell hits (the old cosmetic all-on-6 seed skipped that phase). Faces don't gate the hits (all
+  automatic); they only feed on-6 rules. Test: Blast(3) turns 2 hits → 6, wiping a 6-model unit. Added
+  `FixedFaceDiceRoller` test double (honors rollCount; `FixedDiceRoller.TotalRolls` is always 1, which
+  collapses multi-hit save rolls) + an optional dice-roller arg on `TriggeredMoveTestContext`. Unlocks
+  ~36 corpus spells (per the survey). Suite 637/0; headless caster game exits 0.
 - 2026-06-21: **Spell-authoring UI (Army Builder)** — app-only. New "Spells" section in
   `ArmyBuilderScreen`: add/edit/remove army-wide spells (name, tokens-to-cast, target range / max-count /
   affinity [Enemy/Friendly/Any/Self] / requires-LoS, and effect = **Damage** {hits, AP, weapon-rules} or
