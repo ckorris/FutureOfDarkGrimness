@@ -104,7 +104,62 @@ Rules already expressible on the above but not yet in the catalog (pure data, no
 5. **#23 casting** — turns 282 spells into mostly data once the above primitives exist.
 6. Then the Tier-C one-offs (#6–#22) as their armies come up.
 
+## Part 1 #2 — Design: cross-unit pre-attack targeting (for red-line)
+
+The gateway for the largest rule family — Buffs, Marks, Debuffs, Mend, Re-Position, and pre-attack
+offensive abilities ("before attacking, pick one friendly/enemy unit within N…"). Also completes the
+*buff* half of slice 1 (the `NextTrigger` grants). Forks settled 2026-06-22:
+
+1. **A dedicated pre-attack stage** (not the #010 custom-action branch). It's a reusable template —
+   "fire a hook → offer its abilities → resolve targets → apply" — that other dormant hooks (#5) can copy.
+2. **Target selection reuses `SelectionRequest<IUnit>`** with affinity/range/LoS filtering, so the
+   existing CLI/GUI/AI resolvers for it come (nearly) free.
+3. **`FirstTrigger` buff lifetime = consume-on-fire (Option A):** the buff is spent exactly when its
+   granted effect actually applies, and persists if it never triggers — faithful to "next time the effect
+   would apply," and self-contained (no dependency on the deferred post-attack hooks).
+4. **AI: a simple default** target policy (buffs → self/nearest friendly; debuffs/marks → nearest enemy),
+   always producing a legal answer per the #066 AI contract.
+
+### Flow
+A new `PreAttackStage` runs once the unit has chosen an attack action, before targets/weapons resolve
+(matching `Activation_OnPreAttack`). It builds `PreAttackContext(actingUnit, actionType)`, calls
+`RuleEvaluator.GatherOffers` → affordable `AbilityOffer`s, asks the acting player which (if any) to use
+(once-per-activation gated by the existing `AbilityUsed:` marker), then for each accepted ability resolves
+its `TargetSelector` and calls `RuleEvaluator.ResolveAbility(offer, chosenTargets)` → ops (cost-consume +
+effect), which the stage applies. **Open: exact insertion point** — confirm where `ChooseActionStage`
+routes into shoot/melee and whether one PreAttackStage serves both (the hook is action-agnostic).
+
+### TargetSelector resolution (new — never read today)
+A `PreAttackTargeting.EligibleTargets(actingUnit, selector, tableState)` helper: filter by
+`ETargetAffinity` (Self / Friend = same team / Foe = enemy team), by `RangeInches` (unit-to-unit
+distance), and by `RequireLineOfSight`. Present the eligible set via `SelectionRequest<IUnit>` honouring
+`MinCount`/`MaxCount`. (A "which pre-attack ability?" prompt rides `StringSelectionRequest` when a unit
+offers more than one.)
+
+### FirstTrigger consume-on-fire (Option A) mechanics
+Thread the source token into the synthesized granted `ResolvedRule` in `CollectGrantedRules`. In
+`CollectSurviving` (post-suppression, so only *surviving* effects count), for each granted rule that came
+from a `FirstTrigger`/`NextTrigger` token and produced ≥1 surviving op, emit one `RemoveTokens` op for that
+token. The stage applies it alongside the effect ops — so the buff dies the moment it helps, in the buffed
+unit's own attack resolution. Known minor nuance: consumed on the first sub-roll it applies to (a two-melee-
+weapon unit gets it on the first weapon only); A→A′ (whole-action scope) is an additive change if ever needed.
+
+### Slice plan
+- **2a** — `PreAttackStage` + `PreAttackContext` firing + `GatherOffers`; resolve a SELF-targeted ability
+  (e.g. a self-buff) end-to-end. Proves the stage fires and applies. (Confirm insertion point here.)
+- **2b** — `TargetSelector` affinity/range/LoS resolution + cross-unit `SelectionRequest<IUnit>` (CLI/GUI).
+  Proves "pick a friendly unit within 12, grant X."
+- **2c** — FirstTrigger consume-on-fire (Option A).
+- **2d** — `AiPreAttackResolver` simple policy.
+- **2e** — wire representative rules (a Buff, a Mark/Debuff, **Mend** via the deferred-from-#4 `Heal`
+  consumer) + integration tests mirroring the nearest `*RuleIntegrationTests`.
+
+### Risks / open
+Insertion point + shoot-vs-melee sharing (2a); `Heal` consumer lands here (deferred from #4-Heal); spans
+both repos (engine stage + app-side resolver tweaks for the ability prompt).
+
 ## Notes
+- 2026-06-22: **#2 design written for red-line** (above): dedicated pre-attack stage, `SelectionRequest<IUnit>` targeting, Option-A buff consumption, simple AI; slice plan 2a–2e. Awaiting sign-off before building. All four forks settled with the user.
 - 2026-06-22: **Slices 2 & 3 done** — Part 1 #3 (stub conditions, engine `e5d3c23`) and #4-Shred (engine `9ae84dd`). Suite 715/0; full build clean; headless smoke exit 0. **Explicitly deferred** the rest of Part 1 (recorded in the catalog above, not silently cut): #4 RangeModifier/Strider (invasive multi-site / movement-subsystem), #4 Heal/Mend (dead until #2's pre-attack targeting), #4 StatModifier/RestrictActions (pair with the marker/action families), and all of #5 (dormant hooks need paired consumer rules — land them with those rules). Net: the three clean, high-value seam-finishes shipped (grant read-back, conditions, Shred); the remainder are genuinely larger or #2-coupled. Paused here for the #2 design discussion as planned.
 - 2026-06-22: **Slice 1 — granted-rule read-back done** (engine `4fb6159`, on branch `100-special-rule-primitives`). Closed the `RuleGrant` write→read loop in `RuleEvaluator` (`CollectGrantedRules`); shared resolver threaded through `FDGServer`/`GameContext`; new `GrantedRuleReadbackTests` (read-back fires, control, null-resolver + unknown-name safe, argless dedup, aura end-to-end). Suite 705/0, full build clean, headless smoke exit 0. Inert in live play until aura rules are authored (no `RuleGrant` tokens exist yet) — verified the headless game is unchanged. Confirmed `033-caster` (parallel) resolves spells through its own `CastSpellStage`, not granted-rule read-back, so no overlap. Branched off submodule `a0ab822` / superproject `b5e71aa` (latest master at start).
 - 2026-06-22: Created from the first-five-armies primitive audit (see session "ExtractSpecialRulesAndSpells"). Numbered **100** at the user's request to stay clear of branches that may have claimed 095–099 elsewhere — confirm no collision at merge per the never-reuse rule.
