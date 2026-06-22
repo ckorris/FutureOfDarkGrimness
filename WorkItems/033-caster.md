@@ -30,11 +30,18 @@ spells + conferred rules) left to #034.
   Shooter/Highborn+Lustbound Boost/Unstoppable-when-shooting) under #034.
 
 ## Deferred (recorded — not silently cut)
-- **±1 friendly-Caster assist within 18"** — spun off to its own item **#094** (2026-06-21).
+- **±1 friendly-Caster assist within 18"** — spun off to its own item **#103** (filed as #094; renumbered
+  2026-06-22 when it collided with master's group-move #094). See `WorkItems/103-caster-assist.md`.
 - **Single-model targeting** ("resolved as if the target was a unit of [1]" — Total Seizure,
   Psy-Destruction): reuses the Takedown `IndividualTargetResult` + a `SelectionRequest<ModelData>`
   pick. Small follow-on; lands with #034's single-model damage spells.
-- **#034** — full per-army spell content + conferred-rule implementations.
+- **#034** — full per-army spell content + conferred-rule implementations. **Scoping steer (2026-06-22):**
+  the collision-free spell-side work lives in `CastSpellStage`, untouched by other branches — the
+  spell-targeting primitives above (single-model #3, multi-unit #4 in the survey), then authoring the
+  per-army spell JSON (copyrighted reference — author locally, never commit it). The *general* conferred-
+  rule catalog the spells grant (Evasive, Crack, Lacerate, …) is the active **#100** branch's territory;
+  coordinate before adding catalog rules here, to avoid repeating the #100/#101 parallel-build collision
+  that was reconciled 2026-06-22 (see `WorkItemsList.md` reconciliation 6).
 - **Spell-authoring UI** (army builder) — basic editor shipped (see Notes); richer custom-rule authoring
   still tracks with #087.
 
