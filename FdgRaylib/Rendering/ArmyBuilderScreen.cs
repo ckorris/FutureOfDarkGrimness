@@ -600,7 +600,11 @@ public class ArmyBuilderScreen : IAppScreen
         { ETargetAffinity.Foe, ETargetAffinity.Friend, ETargetAffinity.Any, ETargetAffinity.Self };
     private static readonly string[] SpellAffinityNames = { "Enemy", "Friendly", "Any", "Self" };
 
-    private static readonly string[] SpellEffectKindNames = { "Damage (deal hits)", "Buff (grant rule)" };
+    private static readonly string[] SpellEffectKindNames =
+        { "Damage (deal hits)", "Buff (grant rule)", "Stat modifier (roll bonus)" };
+
+    private static readonly ERollKind[] SpellRollKinds = { ERollKind.Hit, ERollKind.Save, ERollKind.Morale };
+    private static readonly string[] SpellRollKindNames = { "To-hit", "Defense (save)", "Morale" };
 
     private static readonly ELifetime[] BuffScopes =
         { ELifetime.NextTrigger, ELifetime.ThisActivation, ELifetime.ThisRound };
@@ -687,15 +691,13 @@ public class ArmyBuilderScreen : IAppScreen
 
     private Effect DrawEffectFields(Effect effect, int idx)
     {
-        int kindSel = effect is Effect.AddRule ? 1 : 0;
+        int currentKind = EffectKindIndex(effect);
+        int kindSel = currentKind;
         ImGui.SetNextItemWidth(200);
-        if (ImGui.Combo($"Effect##sek{idx}", ref kindSel, SpellEffectKindNames, SpellEffectKindNames.Length))
+        if (ImGui.Combo($"Effect##sek{idx}", ref kindSel, SpellEffectKindNames, SpellEffectKindNames.Length)
+            && kindSel != currentKind)
         {
-            bool wantBuff = kindSel == 1;
-            if (wantBuff != (effect is Effect.AddRule))
-                effect = wantBuff
-                    ? new Effect.AddRule("Furious", ELifetime.NextTrigger)
-                    : new Effect.DealHits(1, Array.Empty<string>(), 0);
+            effect = DefaultEffectForKind(kindSel);
         }
 
         if (effect is Effect.DealHits dh)
@@ -730,8 +732,42 @@ public class ArmyBuilderScreen : IAppScreen
             return ar;
         }
 
+        if (effect is Effect.StatModifier sm)
+        {
+            int rollSel = Math.Max(0, Array.IndexOf(SpellRollKinds, sm.Roll));
+            ImGui.SetNextItemWidth(150);
+            if (ImGui.Combo($"Roll##smr{idx}", ref rollSel, SpellRollKindNames, SpellRollKindNames.Length))
+                sm = sm with { Roll = SpellRollKinds[rollSel] };
+
+            int delta = sm.Delta;
+            ImGui.SetNextItemWidth(NumericFieldWidth());
+            if (ImGui.InputInt($"Modifier (+/-)##smd{idx}", ref delta))
+                sm = sm with { Delta = delta };
+
+            int scopeSel = Math.Max(0, Array.IndexOf(BuffScopes, sm.LifetimeScope));
+            ImGui.SetNextItemWidth(180);
+            if (ImGui.Combo($"Duration##sms{idx}", ref scopeSel, BuffScopeNames, BuffScopeNames.Length))
+                sm = sm with { LifetimeScope = BuffScopes[scopeSel] };
+
+            return sm;
+        }
+
         return effect;
     }
+
+    private static int EffectKindIndex(Effect effect) => effect switch
+    {
+        Effect.AddRule => 1,
+        Effect.StatModifier => 2,
+        _ => 0, // DealHits (and anything else) → Damage
+    };
+
+    private static Effect DefaultEffectForKind(int kind) => kind switch
+    {
+        1 => new Effect.AddRule("Furious", ELifetime.NextTrigger),
+        2 => new Effect.StatModifier(ERollKind.Hit, 1, ELifetime.NextTrigger),
+        _ => new Effect.DealHits(1, Array.Empty<string>(), 0),
+    };
 
     // Picks the weapon rules a damage spell's hits carry from the weapon-scoped catalog (so names are valid),
     // storing each as a "Name" or "Name(N)" string the engine parses back at load. Avoids a free-text field,

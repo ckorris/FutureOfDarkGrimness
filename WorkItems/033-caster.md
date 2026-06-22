@@ -85,8 +85,12 @@ conferred rules is #034 content, separate from the effect primitives above.
   `RuleOperation.ApplyStatModifier`. Tests: grant+consume a +1 hit buff; duration grant persists. Unlocks
   ~23 corpus spells. Suite 639/0. **Edge (recorded):** two grants of the SAME roll kind from the same
   owner merge in the container (delta×count assumes equal deltas) — rare; the robust fix is the granted-
-  effect store noted in #101. **Not yet in the Army-Builder spell editor** (Damage/Buff kinds only) — a
-  third "Stat modifier" effect-kind option is a small app-side follow-up; JSON-authorable now.
+  effect store noted in #101.
+- 2026-06-22: **Stat-modifier in the Army-Builder spell editor.** The spell editor's effect-kind dropdown
+  gained a third option, **Stat modifier** (roll: To-hit / Defense / Morale, a +/- modifier, and a
+  duration), authoring `Effect.StatModifier`. `SpellText.Describe` renders it (e.g. "+1 to hit rolls (next
+  time)") in the cast menu and the editor's live preview. So all three effect kinds (Damage / Buff / Stat
+  modifier) are now GUI-authorable. Engine `096d003`; app build clean; suite 639/0.
 - 2026-06-21: **Primitive 1 — pre-save hit rules on spell damage done** (engine `b8fef9c`, bump pending).
   `CastSpellStage` now rolls the spell's hits as real dice and runs the hit-complete fold
   (HitInjection/HitMultiplier/save-mod sinks) before the save pipeline — reusing RollToHitStage's
