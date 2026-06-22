@@ -30,7 +30,7 @@ _(No open items — #010 is done; #008/#009 moved to Awaiting verification — s
 
 ## Movement
 
-_(No open items — #011 and #050 are done; see ## Done.)_
+- [~] 094 — Group-move coherency repair: in the GUI movement resolver's Group mode, a unit that starts out of coherency (e.g. a model died mid-unit) now re-forms its group ghost into a legal shape by pulling each straggler toward the rest of the unit's centre the least amount needed, so one click moves them into coherency. Per-model move caps (Advance/Rush/Charge + the Shift/shoot Advance cap) are enforced on each model's **total** travel (repair nudge + rigid move) via a new `PlanGroupMove` origin-anchored overload. App-side only (engine cohesion check is unreachable; resolver owns it). Suite 25/0, build clean, headless exit 0. **Awaiting GUI hand-verification.** ([WorkItems/094](WorkItems/094-group-move-cohesion-repair.md))
 
 ## Shooting
 
