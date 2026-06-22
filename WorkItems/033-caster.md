@@ -1,7 +1,7 @@
 # 033 — Caster(X) subsystem (framework)
 
 **Status**: in-progress
-**Related**: #010 (custom-action seam — the runway), #042 (rule architecture), #059 (per-army STJ embedding), #034 (spell content — separate), #093 (per-model activated abilities while joined)
+**Related**: #010 (custom-action seam — the runway), #042 (rule architecture), #059 (per-army STJ embedding), #034 (spell content — separate), #094 (friendly-Caster ±1 assist — spun off from this item), #093 (per-model activated abilities while joined)
 
 ## Goal
 The Caster framework: per-round spell-token economy (Caster(X) grants X tokens/round, cap 6, carry
@@ -30,7 +30,7 @@ spells + conferred rules) left to #034.
   Shooter/Highborn+Lustbound Boost/Unstoppable-when-shooting) under #034.
 
 ## Deferred (recorded — not silently cut)
-- **±1 friendly-Caster assist within 18"** (own slice in #033).
+- **±1 friendly-Caster assist within 18"** — spun off to its own item **#094** (2026-06-21).
 - **Single-model targeting** ("resolved as if the target was a unit of [1]" — Total Seizure,
   Psy-Destruction): reuses the Takedown `IndividualTargetResult` + a `SelectionRequest<ModelData>`
   pick. Small follow-on; lands with #034's single-model damage spells.

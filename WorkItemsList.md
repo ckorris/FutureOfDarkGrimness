@@ -67,8 +67,9 @@ These are umbrellas; will fragment per-rule when picked up.
 
 ## Casting
 
-- [~] 033 — Caster(X) subsystem: spell tokens per round, casting attempts (4+), friendly Caster ±1 assist within 18". **Framework done** on branch `033-caster` (slices 0–3, suite 635/0, headless-verified): per-round token economy (cap 6), army-wide JSON `spells` list, first-class "Cast" action → `CastSpellStage` (pick spell → target in range/LoS → 4+ roll → effect), damage via the synthetic-hit pipeline + buff via RuleGrant tokens. **Remaining in #033: ±1 friendly-Caster assist** (next tracked slice). Full per-army content + conferred rules = #034. See [WorkItems/033](WorkItems/033-caster.md).
+- [~] 033 — Caster(X) subsystem: spell tokens per round, casting attempts (4+). **Done** on branch `033-caster` (slices 0–4 + spell-authoring UI, suite 636/0, headless-verified): per-round token economy (cap 6), army-wide JSON `spells` list, first-class "Cast" action → `CastSpellStage` (pick spell → target in range/LoS → 4+ roll → effect), damage via the synthetic-hit pipeline + buff via RuleGrant tokens, spell-menu descriptions + token count, and an Army-Builder spell editor. The friendly-Caster ±1 assist was spun off to **#094**; full per-army content + conferred rules = #034. (GUI hand-verification pending.) See [WorkItems/033](WorkItems/033-caster.md).
 - [ ] 034 — Spell content (initial set per faction)
+- [ ] 094 — Friendly-Caster ±1 cast assist: other friendly Casters within 18" may spend their own tokens to modify a cast roll by ±1 each, before it resolves. Spun off from #033's last tracked slice; slots into `CastSpellStage` at the (already-marked) pre-roll point via the defined-but-unwired `Casting_OnSpellAssistOffered` hook. ([WorkItems/094](WorkItems/094-caster-assist.md))
 
 ## Transport
 
