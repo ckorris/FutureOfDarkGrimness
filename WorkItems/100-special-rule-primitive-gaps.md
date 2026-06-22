@@ -150,10 +150,16 @@ weapon unit gets it on the first weapon only); A→A′ (whole-action scope) is 
   shoot); layered (no HasMoved/HasAttacked). **Insertion point confirmed.** Surprise: two sibling instances
   of one stage type collided on the parent's transition key (`StageBase.Name => GetType().Name`), so `Name`
   is now `virtual` and `PreAttackStage` overrides it per action type. 3 tests; suite 718/0; headless exit 0.
-- **2b** — `TargetSelector` affinity/range/LoS resolution + cross-unit `SelectionRequest<IUnit>` (CLI/GUI).
-  Proves "pick a friendly unit within 12, grant X."
-- **2c** — FirstTrigger consume-on-fire (Option A).
-- **2d** — `AiPreAttackResolver` simple policy.
+- **2b** — ✅ **DONE (engine `ae7a3bb`).** `PreAttackTargeting.EligibleTargets` (the first code to read a
+  `TargetSelector`: affinity/range/LoS/required-token, off-battlefield excluded) + cross-unit selection via
+  `CancellableSelectionRequest<UnitData>` (MinCount..MaxCount, cancel-before-min aborts). An ability is
+  offered only when it has enough valid targets. "Pick a friendly unit within 12, grant X" works.
+- **2c** — ✅ **DONE (engine `b97fa7a`).** FirstTrigger consume-on-fire (Option A): the evaluator emits a
+  `ConsumeRuleGrant` for a granted FirstTrigger rule whose effect survives, applied via the new
+  `RemoveTokensWithPayload`. **Also fixed a latent slice-1 bug:** `TokenContainer.AddToken` merged by
+  type+owner only, collapsing distinct `RuleGrant` payloads into one count (dropping all but the first
+  grant); the merge is now payload-aware so multiple grants coexist.
+- **2d** — `AiPreAttackResolver` simple policy. _(next)_
 - **2e** — wire representative rules (a Buff, a Mark/Debuff, **Mend** via the deferred-from-#4 `Heal`
   consumer) + integration tests mirroring the nearest `*RuleIntegrationTests`.
 
@@ -162,6 +168,7 @@ Insertion point + shoot-vs-melee sharing (2a); `Heal` consumer lands here (defer
 both repos (engine stage + app-side resolver tweaks for the ability prompt).
 
 ## Notes
+- 2026-06-22: **#2 slices 2b + 2c done** (engine `ae7a3bb`, `b97fa7a`). 2b: cross-unit targeting — `PreAttackTargeting.EligibleTargets` reads the `TargetSelector` (affinity/range/LoS/token), selection via `CancellableSelectionRequest<UnitData>`; "pick a friendly unit within 12, grant X" works end-to-end. 2c: FirstTrigger consume-on-fire (Option A) + a latent slice-1 token-merge bug fixed (distinct grant payloads were collapsing). Suite 724/0, headless exit 0. Remaining #2: **2d** (AI policy — note the existing AI resolvers already answer the StringSelection + CancellableSelection generically, so this is mostly "make the default sensible / skip"), **2e** (wire representative rules incl. Mend via the deferred `Heal` consumer + integration tests).
 - 2026-06-22: **#2 slice 2a done** (engine `0956527`) — dedicated `PreAttackStage` live in the activation flow, insertion point confirmed (between `ChooseActionStage` and the shoot/melee stages, layered). Made `StageBase.Name` virtual so the two sibling instances (one per attack edge) don't collide on the transition key. Self-targeted abilities resolve; cross-unit targeting is 2b. Suite 718/0, headless exit 0. User greenlit #2 in full ("make it so").
 - 2026-06-22: **#2 design written for red-line** (above): dedicated pre-attack stage, `SelectionRequest<IUnit>` targeting, Option-A buff consumption, simple AI; slice plan 2a–2e. Awaiting sign-off before building. All four forks settled with the user.
 - 2026-06-22: **Slices 2 & 3 done** — Part 1 #3 (stub conditions, engine `e5d3c23`) and #4-Shred (engine `9ae84dd`). Suite 715/0; full build clean; headless smoke exit 0. **Explicitly deferred** the rest of Part 1 (recorded in the catalog above, not silently cut): #4 RangeModifier/Strider (invasive multi-site / movement-subsystem), #4 Heal/Mend (dead until #2's pre-attack targeting), #4 StatModifier/RestrictActions (pair with the marker/action families), and all of #5 (dormant hooks need paired consumer rules — land them with those rules). Net: the three clean, high-value seam-finishes shipped (grant read-back, conditions, Shred); the remainder are genuinely larger or #2-coupled. Paused here for the #2 design discussion as planned.
