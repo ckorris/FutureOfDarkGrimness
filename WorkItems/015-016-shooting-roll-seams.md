@@ -1,9 +1,12 @@
 # 015 / 016 — Attack-count & hit→save effect seams in the shooting/melee roll pipeline
 
-**Status**: committed on branch `015-016-shooting-roll-seams` (engine green 569/0, build clean, headless smoke exit 0) — **not yet merged to master**
+**Status**: DONE — merged to master 2026-06-21 (engine `36e3631`/`1b16dc6` in master pin `5efe827`; suite 627/0; headless smoke exit 0)
 **Related**: #042 (rule dispatch), #032 (weapon rules), #030/#051 (combat-modifier rules), #028 (Deadly)
 **Branch** (both repos): `015-016-shooting-roll-seams` — submodule branched from `14890d5`, superproject from `master`.
 **Commits**: engine `36e3631` (#015), `1b16dc6` (#016); superproject bump — see git log.
+
+## 2026-06-21 — merged to master / closed
+Confirmed both facet commits are ancestors of submodule master and of the superproject's pinned submodule pointer (`5efe827`): `36e3631` (#015) and `1b16dc6` (#016) both report `IN pinned`. The `origin/015-016-shooting-roll-seams` ref is stale (predates the master merges) — disregard it. Re-verified on master: code present (`DetermineHitRollStage` + `DetermineHitRollResults.AttackCount`; `SuccessfulHitInfo.SaveModifier`), engine suite **627/0**, headless smoke **exit 0** with `Rolled … out of N total attacks` confirming `AttackCount` flows live. Index lines flipped from `[~]` (stale "uncommitted") to `[x]` under ## Done. No "Awaiting verification" hold — both are seams with integration-test coverage and no live consumer yet, so there is no new in-app behavior to hand-verify.
 
 ## 2026-06-21 — finished close-out
 Headless smoke passed (exit 0, full 4-round game to tie; `Rolled … out of 1 total attacks` confirms `AttackCount` flows). Engine committed submodule-first as two facet commits (above), then superproject bump. Untracked `FutureOfDarkGrimness/ExampleArmies/` deliberately left uncommitted (unrelated). Merge to master is a separate step, not yet done.
