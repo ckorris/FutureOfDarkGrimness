@@ -33,6 +33,11 @@ public class ArmyBuilderScreen : IAppScreen
     private readonly Dictionary<ERuleScope, HashSet<string>> _numericByScope = new();
     private static readonly Dictionary<string, (int sel, int val)> _addRuleState = new();
 
+    // Rules a buff spell (Effect.AddRule) may grant: any non-numeric rule from either scope. AddRule carries
+    // no numeric argument, so numeric rules (Tough(X)/Blast(X)/…) can't be granted meaningfully and are
+    // excluded. Recomputed each frame in RefreshRuleNames so embedded rules surface too.
+    private string[] _grantableRuleNames = Array.Empty<string>();
+
     private void RefreshRuleNames()
     {
         foreach (ERuleScope scope in new[] { ERuleScope.Unit, ERuleScope.Weapon })
@@ -43,6 +48,13 @@ public class ArmyBuilderScreen : IAppScreen
             _numericByScope[scope] = entries.Where(e => e.IsNumeric).Select(e => e.Name)
                 .ToHashSet(StringComparer.Ordinal);
         }
+
+        SortedSet<string> grantable = new(StringComparer.Ordinal);
+        foreach (ERuleScope scope in new[] { ERuleScope.Unit, ERuleScope.Weapon })
+            foreach (string name in NamesFor(scope))
+                if (!IsNumericFor(scope, name))
+                    grantable.Add(name);
+        _grantableRuleNames = grantable.ToArray();
     }
 
     private string[] NamesFor(ERuleScope scope) =>
@@ -74,6 +86,13 @@ public class ArmyBuilderScreen : IAppScreen
         string[] names = NamesFor(scope);
         return Array.IndexOf(names, current) >= 0 ? names : names.Append(current).ToArray();
     }
+
+    // Like ComboNames, but over the grantable-rule set (buff spells). Keeps a loaded spell's current rule
+    // visible even if the catalog no longer offers it, so opening an army never silently relabels it.
+    private string[] GrantableComboNames(string current) =>
+        Array.IndexOf(_grantableRuleNames, current) >= 0
+            ? _grantableRuleNames
+            : _grantableRuleNames.Append(current).ToArray();
 
     public void Draw(int screenW, int screenH)
     {
@@ -697,9 +716,11 @@ public class ArmyBuilderScreen : IAppScreen
 
         if (effect is Effect.AddRule ar)
         {
-            string ruleName = ar.RuleName;
-            if (ImGui.InputText($"Grants rule##sgr{idx}", ref ruleName, 48))
-                ar = ar with { RuleName = ruleName };
+            string[] names = GrantableComboNames(ar.RuleName);
+            int ruleSel = Math.Max(0, Array.IndexOf(names, ar.RuleName));
+            ImGui.SetNextItemWidth(200);
+            if (ImGui.Combo($"Grants rule##sgr{idx}", ref ruleSel, names, names.Length))
+                ar = ar with { RuleName = names[ruleSel] };
 
             int scopeSel = Math.Max(0, Array.IndexOf(BuffScopes, ar.Scope));
             ImGui.SetNextItemWidth(180);
