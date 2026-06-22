@@ -1,7 +1,11 @@
-# 095 — Keyword-buff bridge: make granted rules fire during dispatch
+# 101 — Keyword-buff bridge: make granted rules fire during dispatch
 
 **Status**: todo
 **Related**: #033 (Caster framework; the buff archetype), #034 (spell content), #042 (rule dispatch / token system)
+
+> **Renumbered 2026-06-22.** Opened as #095, but #095 was already assigned to other work on a parallel
+> instance; per the never-reuse rule this item yields and takes #101. The commit `ada5536` and the pushed
+> `033-caster` branch reference "#095" — they predate the renumber.
 
 ## Goal
 Make `Effect.AddRule` (and `Effect.Aura`) grants actually take effect. Today a granted rule is stored as
