@@ -38,6 +38,16 @@ spells + conferred rules) left to #034.
 - **Spell-authoring UI** (army builder) — tracks with #087.
 
 ## Notes
+- 2026-06-21: **Spell-authoring UI (Army Builder)** — app-only. New "Spells" section in
+  `ArmyBuilderScreen`: add/edit/remove army-wide spells (name, tokens-to-cast, target range / max-count /
+  affinity [Enemy/Friendly/Any/Self] / requires-LoS, and effect = **Damage** {hits, AP, weapon-rules} or
+  **Buff** {grants rule, duration}). Weapon-rules use a catalog-backed picker (weapon-scoped, numeric like
+  Blast(3) supported) rather than a free-text field; a live `SpellText.Describe` preview shows the exact
+  cast-menu subtext. Fixed a pre-existing `ArmyBuilderScreen.Load`/New bug that dropped embedded
+  `RuleDefinitions` (and would have dropped `Spells`) on load/new — both now round-trip. Spells persist via
+  the existing `Save` (STJ `RuleJson.Options`). App build clean. **GUI hand-verification pending** (can't
+  render ImGui headlessly). Partly realizes what #087 anticipated for spell authoring; defined per-army
+  spell *content* is still #034.
 - 2026-06-21: **Slice 4 — spell-menu UX** (engine `aa57cf8`, app + bump pending). The spell picker now
   shows, under each spell, a one-line effect summary ("grants Furious (next time) — up to 2 friendly
   units within 12\"") and puts the caster's current token count in the prompt ("Choose a spell to cast —

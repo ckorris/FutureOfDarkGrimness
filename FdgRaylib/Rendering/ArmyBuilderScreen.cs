@@ -1,10 +1,12 @@
 using System.Numerics;
 using System.Runtime.InteropServices;
 using System.Text.Json;
+using FDG.Rules.Definitions;
 using FDG.Rules.Dispatch;
 using FDG.Rules.Foundation;
 using FDG.Rules.Serialization;
 using FDG.SaveLoad;
+using FDG.Stages;
 using ImGuiNET;
 using TinyDialogsNet;
 
@@ -88,6 +90,8 @@ public class ArmyBuilderScreen : IAppScreen
         DrawUnits();
         ImGui.Separator();
         DrawAddUnitButton();
+        ImGui.Separator();
+        DrawSpells();
 
         ImGui.End();
     }
@@ -115,10 +119,16 @@ public class ArmyBuilderScreen : IAppScreen
         if (loaded is null) return;
 
         _army.Units.Clear();
+        _army.RuleDefinitions.Clear();
+        _army.Spells.Clear();
         _army.Name     = loaded.Name;
         _army.Faction  = loaded.Faction;
         _army.PointsLimit = loaded.PointsLimit;
         _army.Units.AddRange(loaded.Units);
+        // Carry the army's embedded rule definitions and spell list too, so loading then saving
+        // round-trips them (without these, a loaded caster army would lose its spells on save).
+        _army.RuleDefinitions.AddRange(loaded.RuleDefinitions);
+        _army.Spells.AddRange(loaded.Spells);
     }
 
     private void DrawToolbar()
@@ -143,6 +153,8 @@ public class ArmyBuilderScreen : IAppScreen
             if (ImGui.Button("Yes", new Vector2(100, 0)))
             {
                 _army.Units.Clear();
+                _army.RuleDefinitions.Clear();
+                _army.Spells.Clear();
                 _army.Name    = "";
                 _army.Faction = "";
                 _army.PointsLimit = DefaultPointsLimit;
@@ -557,6 +569,186 @@ public class ArmyBuilderScreen : IAppScreen
             {
                 Name = "New Unit", ModelCount = 1, Quality = 4, Defense = 4, PointCost = 100,
             });
+    }
+
+    // ---- #033 Spell authoring ---------------------------------------------------------------------
+    // Army-wide spell list, castable by any unit with Caster(X). SpellDefinition / TargetSelector / Effect
+    // are immutable records, so each field edit rebuilds the record — the same pattern the special-rule
+    // editor above uses. Combos that don't map 1:1 to an enum (affinity, buff duration) use a parallel
+    // value array so the displayed order is independent of the enum's.
+
+    private static readonly ETargetAffinity[] SpellAffinities =
+        { ETargetAffinity.Foe, ETargetAffinity.Friend, ETargetAffinity.Any, ETargetAffinity.Self };
+    private static readonly string[] SpellAffinityNames = { "Enemy", "Friendly", "Any", "Self" };
+
+    private static readonly string[] SpellEffectKindNames = { "Damage (deal hits)", "Buff (grant rule)" };
+
+    private static readonly ELifetime[] BuffScopes =
+        { ELifetime.NextTrigger, ELifetime.ThisActivation, ELifetime.ThisRound };
+    private static readonly string[] BuffScopeNames = { "Once (next time)", "This activation", "This round" };
+
+    private void DrawSpells()
+    {
+        if (!ImGui.CollapsingHeader("Spells##armyspells", ImGuiTreeNodeFlags.DefaultOpen))
+            return;
+
+        ImGui.TextColored(HintColor, "Army-wide spells, castable by any unit with the Caster(X) rule.");
+
+        for (int s = 0; s < _army.Spells.Count; ++s)
+        {
+            SpellDefinition spell = _army.Spells[s];
+            ImGui.PushID($"spell{s}");
+
+            bool open = ImGui.TreeNodeEx("spell", ImGuiTreeNodeFlags.None, $"{spell.Name} ({spell.Threshold})");
+            ImGui.SameLine();
+            if (ImGui.SmallButton("X##delspell"))
+            {
+                _army.Spells.RemoveAt(s--);
+                ImGui.PopID();
+                continue;
+            }
+
+            if (open)
+            {
+                _army.Spells[s] = DrawSpellFields(spell, s);
+                ImGui.TreePop();
+            }
+
+            ImGui.PopID();
+        }
+
+        if (ImGui.Button("Add Spell"))
+            _army.Spells.Add(new SpellDefinition("New Spell", 1,
+                new TargetSelector(18f, 1, 1, ETargetAffinity.Foe, RequireLineOfSight: true),
+                new Effect.DealHits(1, Array.Empty<string>(), 0)));
+    }
+
+    private SpellDefinition DrawSpellFields(SpellDefinition spell, int idx)
+    {
+        string name = spell.Name;
+        if (ImGui.InputText($"Name##sn{idx}", ref name, 48))
+            spell = spell with { Name = name };
+
+        int threshold = spell.Threshold;
+        if (ImGui.InputInt($"Tokens to cast##stk{idx}", ref threshold))
+            spell = spell with { Threshold = Math.Max(1, threshold) };
+
+        spell = spell with { Target = DrawTargetFields(spell.Target, idx) };
+        spell = spell with { Effect = DrawEffectFields(spell.Effect, idx) };
+
+        // Live preview of exactly the subtext the cast menu will show.
+        ImGui.TextColored(HintColor, SpellText.Describe(spell));
+        return spell;
+    }
+
+    private TargetSelector DrawTargetFields(TargetSelector target, int idx)
+    {
+        int range = (int)target.RangeInches;
+        if (ImGui.InputInt($"Range\"##sr{idx}", ref range))
+            target = target with { RangeInches = Math.Max(0, range) };
+
+        int affinitySel = Math.Max(0, Array.IndexOf(SpellAffinities, target.TargetAffinity));
+        ImGui.SetNextItemWidth(150);
+        if (ImGui.Combo($"Targets##sa{idx}", ref affinitySel, SpellAffinityNames, SpellAffinityNames.Length))
+            target = target with { TargetAffinity = SpellAffinities[affinitySel] };
+
+        int maxCount = target.MaxCount;
+        if (ImGui.InputInt($"Max targets##smc{idx}", ref maxCount))
+        {
+            maxCount = Math.Max(1, maxCount);
+            target = target with { MaxCount = maxCount, MinCount = Math.Min(target.MinCount, maxCount) };
+        }
+
+        bool los = target.RequireLineOfSight;
+        if (ImGui.Checkbox($"Requires line of sight##sl{idx}", ref los))
+            target = target with { RequireLineOfSight = los };
+
+        return target;
+    }
+
+    private Effect DrawEffectFields(Effect effect, int idx)
+    {
+        int kindSel = effect is Effect.AddRule ? 1 : 0;
+        ImGui.SetNextItemWidth(200);
+        if (ImGui.Combo($"Effect##sek{idx}", ref kindSel, SpellEffectKindNames, SpellEffectKindNames.Length))
+        {
+            bool wantBuff = kindSel == 1;
+            if (wantBuff != (effect is Effect.AddRule))
+                effect = wantBuff
+                    ? new Effect.AddRule("Furious", ELifetime.NextTrigger)
+                    : new Effect.DealHits(1, Array.Empty<string>(), 0);
+        }
+
+        if (effect is Effect.DealHits dh)
+        {
+            int count = dh.Count;
+            if (ImGui.InputInt($"Hits##sdc{idx}", ref count))
+                dh = dh with { Count = Math.Max(1, count) };
+
+            int ap = dh.ArmorPenetration;
+            if (ImGui.InputInt($"AP##sap{idx}", ref ap))
+                dh = dh with { ArmorPenetration = Math.Max(0, ap) };
+
+            List<string> withRules = dh.WithRules.ToList();
+            ImGui.TextColored(HintColor, "Weapon rules on each hit (e.g. Bane, Blast):");
+            DrawWithRulesEditor(withRules, idx);
+            return dh with { WithRules = withRules };
+        }
+
+        if (effect is Effect.AddRule ar)
+        {
+            string ruleName = ar.RuleName;
+            if (ImGui.InputText($"Grants rule##sgr{idx}", ref ruleName, 48))
+                ar = ar with { RuleName = ruleName };
+
+            int scopeSel = Math.Max(0, Array.IndexOf(BuffScopes, ar.Scope));
+            ImGui.SetNextItemWidth(180);
+            if (ImGui.Combo($"Duration##ssc{idx}", ref scopeSel, BuffScopeNames, BuffScopeNames.Length))
+                ar = ar with { Scope = BuffScopes[scopeSel] };
+
+            return ar;
+        }
+
+        return effect;
+    }
+
+    // Picks the weapon rules a damage spell's hits carry from the weapon-scoped catalog (so names are valid),
+    // storing each as a "Name" or "Name(N)" string the engine parses back at load. Avoids a free-text field,
+    // which would fight the user as the displayed value is re-derived from the list each frame.
+    private void DrawWithRulesEditor(List<string> rules, int idx)
+    {
+        for (int r = 0; r < rules.Count; ++r)
+        {
+            ImGui.PushID($"wr{idx}_{r}");
+            ImGui.TextUnformatted($"- {rules[r]}");
+            ImGui.SameLine();
+            if (ImGui.SmallButton("X")) rules.RemoveAt(r--);
+            ImGui.PopID();
+        }
+
+        string[] names = NamesFor(ERuleScope.Weapon);
+        if (names.Length == 0) return;
+
+        string key = $"spellrules{idx}";
+        ref var state = ref CollectionsMarshal.GetValueRefOrAddDefault(_addRuleState, key, out _);
+        if (state.sel == 0 && state.val == 0) state = (0, DefaultRuleValue);
+        if (state.sel >= names.Length) state.sel = 0;
+
+        ImGui.SetNextItemWidth(180);
+        ImGui.Combo($"##wraddc{idx}", ref state.sel, names, names.Length);
+
+        bool isNumeric = IsNumericFor(ERuleScope.Weapon, names[state.sel]);
+        if (isNumeric)
+        {
+            ImGui.SameLine();
+            ImGui.SetNextItemWidth(NumericFieldWidth());
+            ImGui.InputInt($"##wraddv{idx}", ref state.val, RuleValueStep, RuleValueStep * 3);
+            if (state.val < 1) state.val = 1;
+        }
+
+        ImGui.SameLine();
+        if (ImGui.SmallButton($"Add rule##wradd{idx}"))
+            rules.Add(isNumeric ? $"{names[state.sel]}({state.val})" : names[state.sel]);
     }
 
     private static void EditString(string label, Func<string> getter, Action<string> setter,
