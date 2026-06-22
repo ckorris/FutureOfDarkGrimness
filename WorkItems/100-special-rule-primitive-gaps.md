@@ -39,7 +39,7 @@ Rules already expressible on the above but not yet in the catalog (pure data, no
    - `AddExtraWound` → **Shred** — ✅ **DONE — slice 3 (engine `9ae84dd`).** New `IHasUnmodifiedSaveRolls` capability + `WoundInjectionSink` (wound-side mirror of `HitInjectionSink`); `InsertExtraWounds` is now a `SinkOperation`; `AssignWoundsStage` folds it after Deadly, before Regeneration. Registered in `CoreRuleCatalog`.
    - `RangeModifier` → **Increased Shooting Range / Ranged Shrouding / Darkborn**. **DEFERRED** — range feeds target-eligibility / LoS / charge-reach across several stages, so this is an invasive multi-site slice, not a one-seam finish. Best done as its own slice (or with #029). The op exists; the read sites don't honour it.
    - `IgnoreTerrainEffects` → **Strider / Flying**. **DEFERRED** — needs the movement difficult-terrain validator/cost to honour the flag (precedent: `MovementRuleQueries.CanMoveThroughEnemies`). Self-contained but lives in the movement subsystem (#029); pair it there.
-   - `Heal` → **Mend**. **DEFERRED to #2** — Mend's only trigger is a pre-attack activated ability (pick a friendly model within 3″), so a `Heal` consumer would be dead code until cross-unit pre-attack targeting (#2) exists. Wire it as part of #2.
+   - `Heal` → **Mend**. ✅ **DONE — landed with #2 slice 2e (engine `37a26c4`).** Mend is a catalog rule now; the `InvokeHeal` consumer lives in `OperationApplier`.
    - `StatModifier` (persistent stat change) and `RestrictActions` (Hold-only) — **DEFERRED**; lower-value and coupled to the marker/growth (#13) and action-restriction families respectively. Pair with those.
 
 5. **Fire the dormant hooks.** **DEFERRED — not one-line seam finishes.** Each hook needs a stage to dispatch it *and* a paired consumer rule to be worth firing (e.g. `OnActivationStart` is only useful with the Versatile activation-choice ability; `OnPostShoot`/`OnPostMelee` with the Hit-&-Run optional-move resolver; `OnUnitDestroyed`/`OnRoundStart` with the marker-growth family #13). Better landed *with* the rules that consume them than as bare hook-firings. Catalogued here so they're not lost:
@@ -159,15 +159,25 @@ weapon unit gets it on the first weapon only); A→A′ (whole-action scope) is 
   `RemoveTokensWithPayload`. **Also fixed a latent slice-1 bug:** `TokenContainer.AddToken` merged by
   type+owner only, collapsing distinct `RuleGrant` payloads into one count (dropping all but the first
   grant); the merge is now payload-aware so multiple grants coexist.
-- **2d** — `AiPreAttackResolver` simple policy. _(next)_
-- **2e** — wire representative rules (a Buff, a Mark/Debuff, **Mend** via the deferred-from-#4 `Heal`
-  consumer) + integration tests mirroring the nearest `*RuleIntegrationTests`.
+- **2d** — ✅ **DONE (engine `47dcf17`).** `AiStringSelectionResolver` skips the pre-attack menu (picks
+  Done) — a conservative, always-legal default (the AI doesn't yet reason about buffs), so it never fires
+  abilities blindly or issues a pre-attack target request. A real "buff self / mark nearest" policy is a
+  future refinement.
+- **2e** — ✅ **DONE (engine `37a26c4`).** Authored **Furious Buff** (grant Furious to a friendly — read back
+  + consumed on fire) and **Mend** (heal a friendly D3) as catalog rules, wiring the previously-dead
+  `Effect.Heal` consumer into `OperationApplier` (clamped to wounds taken). **This closes the #4-Heal item
+  deferred earlier.** A true Mark/Debuff (deferred-debuff #6) and offensive pre-attack (dice-pool #10) are
+  their own primitives, not part of the #2 targeting stack. 2 integration tests.
+
+**#2 COMPLETE (2a–2e).** The whole "before attacking, pick a friendly/enemy unit within N, grant/heal X"
+family is now authorable and works end-to-end (offer → target → resolve → grant/heal → consume-on-fire).
 
 ### Risks / open
 Insertion point + shoot-vs-melee sharing (2a); `Heal` consumer lands here (deferred from #4-Heal); spans
 both repos (engine stage + app-side resolver tweaks for the ability prompt).
 
 ## Notes
+- 2026-06-22: **#2 COMPLETE** — slices 2d + 2e done (engine `47dcf17`, `37a26c4`). 2d: AI skips the pre-attack menu (conservative default). 2e: authored Furious Buff + Mend catalog rules; wired the deferred `Effect.Heal` consumer (closes #4-Heal). The full "before attacking, pick a friendly/enemy unit within N, grant/heal X" family works end-to-end. Suite 727/0, headless exit 0. A true Mark/Debuff (deferred-debuff #6) and offensive pre-attack (dice-pool #10) remain their own future primitives. **Net for the session: Part 1 #1/#3/#4-Shred/#4-Heal done; #2 fully done; #5 and the remaining #4/Part-2/Part-3 primitives catalogued for later.**
 - 2026-06-22: **#2 slices 2b + 2c done** (engine `ae7a3bb`, `b97fa7a`). 2b: cross-unit targeting — `PreAttackTargeting.EligibleTargets` reads the `TargetSelector` (affinity/range/LoS/token), selection via `CancellableSelectionRequest<UnitData>`; "pick a friendly unit within 12, grant X" works end-to-end. 2c: FirstTrigger consume-on-fire (Option A) + a latent slice-1 token-merge bug fixed (distinct grant payloads were collapsing). Suite 724/0, headless exit 0. Remaining #2: **2d** (AI policy — note the existing AI resolvers already answer the StringSelection + CancellableSelection generically, so this is mostly "make the default sensible / skip"), **2e** (wire representative rules incl. Mend via the deferred `Heal` consumer + integration tests).
 - 2026-06-22: **#2 slice 2a done** (engine `0956527`) — dedicated `PreAttackStage` live in the activation flow, insertion point confirmed (between `ChooseActionStage` and the shoot/melee stages, layered). Made `StageBase.Name` virtual so the two sibling instances (one per attack edge) don't collide on the transition key. Self-targeted abilities resolve; cross-unit targeting is 2b. Suite 718/0, headless exit 0. User greenlit #2 in full ("make it so").
 - 2026-06-22: **#2 design written for red-line** (above): dedicated pre-attack stage, `SelectionRequest<IUnit>` targeting, Option-A buff consumption, simple AI; slice plan 2a–2e. Awaiting sign-off before building. All four forks settled with the user.
