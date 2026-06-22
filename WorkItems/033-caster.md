@@ -46,14 +46,12 @@ already expressible**: ~65 are single-enemy-unit damage (`Effect.DealHits`) and 
 friendly/enemy unit(s) (`Effect.AddRule`). The remaining **~37% (~103 spells) need new primitives**, ranked
 by how many spells each unlocks:
 
-1. **Pre-save hit-stage rules on dealt hits (~36 spells)** — highest leverage. Spells that deal hits "with
-   Blast" or "extra/converted hits on an unmodified 6" fit the DealHits *shape*, but the synthetic-hit
-   pipeline starts at the save stage, so those pre-save rules silently no-op. Fix: run the hit-complete
-   evaluation (the existing hit-multiplier / extra-hit sinks) over the seeded synthetic hits before the
-   save flow (or pre-fold Blast / extra-hit into the seeded hit count).
-2. **Numeric stat-modifier effect (~23 spells)** — a third effect primitive applying a signed delta to a
-   named stat (to-hit/Quality, Defense, morale, casting, weapon AP, range, move) for a duration. Distinct
-   from `AddRule` (which carries no number); most deltas can ride the existing roll-modifier sink.
+1. **Pre-save hit-stage rules on dealt hits (~36 spells)** — ✅ **DONE** (primitive 1, engine `b8fef9c`).
+   `CastSpellStage` rolls the hits as real dice and runs the hit-complete fold before the save flow, so
+   Blast multiplies and on-6 rules fire on spell hits.
+2. **Numeric stat-modifier effect (~23 spells)** — ✅ **DONE** (primitive 2, engine `3d02665`).
+   `Effect.StatModifier(ERollKind, Delta, Lifetime)` grants a roll modifier (Hit/Save/Morale) read at the
+   roll stages. (Casting/AP/range/move stat kinds aren't covered — they'd need their own sinks; rare.)
 3. **Single-model damage target (~22 spells)** — resolve DealHits against one chosen model ("as a unit of
    [1]") via the existing Takedown `IndividualTargetResult` + a `SelectionRequest<ModelData>` pick. (Already
    in Deferred above; the survey quantifies it.)
@@ -76,6 +74,19 @@ move into the list above.
 conferred rules is #034 content, separate from the effect primitives above.
 
 ## Notes
+- 2026-06-21: **Primitive 2 — numeric stat-modifier spell effect done** (engine `3d02665`, bump pending).
+  `Effect.StatModifier` repurposed (its dead `EStatKind` decl) to `(ERollKind Roll, int Delta, ELifetime)`:
+  grants the target a signed modifier to a roll (Hit/Save/Morale) for a duration — "+1 to hit / -1 to
+  defense / -1 to morale". Roll kind encoded in the token TYPE (HitRollModifier/SaveRollModifier/
+  MoraleRollModifier — Foundation strings, so rolls don't merge and Tokens needn't reference ERollKind);
+  `TokenPayload.StatModifier(Delta)` carries the value. `GrantedRollModifiers.ConsumeNet` folds the
+  bearer's grants into the hit/save/morale stages' existing modifier math (same sign), consuming
+  FirstTrigger ("next time") grants on use; duration grants swept by `TokenClearService`. Removed dead
+  `RuleOperation.ApplyStatModifier`. Tests: grant+consume a +1 hit buff; duration grant persists. Unlocks
+  ~23 corpus spells. Suite 639/0. **Edge (recorded):** two grants of the SAME roll kind from the same
+  owner merge in the container (delta×count assumes equal deltas) — rare; the robust fix is the granted-
+  effect store noted in #095. **Not yet in the Army-Builder spell editor** (Damage/Buff kinds only) — a
+  third "Stat modifier" effect-kind option is a small app-side follow-up; JSON-authorable now.
 - 2026-06-21: **Primitive 1 — pre-save hit rules on spell damage done** (engine `b8fef9c`, bump pending).
   `CastSpellStage` now rolls the spell's hits as real dice and runs the hit-complete fold
   (HitInjection/HitMultiplier/save-mod sinks) before the save pipeline — reusing RollToHitStage's
