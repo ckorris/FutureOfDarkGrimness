@@ -1,6 +1,6 @@
 # 034 — Spell content + the primitives & conferred rules it needs
 
-**Status**: in-progress — single-model damage primitive done (2026-06-25)
+**Status**: in-progress — single-model (#3) + multi-unit (#4) damage primitives done (2026-06-25)
 **Related**: #033 (Caster framework — the runway), #100 (conferred-rule catalog — coordinate), #101 (granted-rule/aura dispatch), #087 (custom-rule authoring), #059 (per-army STJ embedding)
 
 ## Goal
@@ -13,8 +13,8 @@ real army's spell list needs to work end-to-end.
    by other branches). From the #033 survey, ranked by spells unlocked:
    - **#3 single-model damage (~22 spells)** — ✅ **DONE 2026-06-25** (this branch). Resolve a damage spell
      against one chosen model "as a unit of [1]".
-   - **#4 multi-unit damage (~19 spells)** — run the damage child pipeline once per selected unit (today
-     `CastSpellStage` hits only `targets[0]`). Needs the `ParentStage` to drive N sequential children.
+   - **#4 multi-unit damage (~19 spells)** — ✅ **DONE 2026-06-25** (this branch). Damage runs the
+     save→wound pipeline once per selected unit via the looped child `ResolveSpellDamageStage`.
    - #5 conditional/triggered (~4), #6 forced enemy movement (~1) — low priority.
 2. **Conferred-rule implementations** (Evasive, Crack, Shatter, Lacerate, Quick Shot, Melee Evasion,
    Unwieldy, Unpredictable Shooter, faction "Boost" rules, Unstoppable-when-shooting, …). **#100's
@@ -34,10 +34,19 @@ real army's spell list needs to work end-to-end.
 - **Army-Builder spell-editor toggle for `SingleModel`** — the engine primitive + JSON field exist, but the
   GUI editor doesn't yet expose the flag (author single-model spells via JSON for now). App-side + needs
   GUI hand-verification; fold into a later app slice.
-- **Multi-unit damage (#4)** — next primitive slice (see Scope).
-- Conditional/triggered (#5) and forced-movement (#6) primitives.
+- Conditional/triggered (#5) and forced-movement (#6) primitives — the remaining (low-priority) primitives.
 
 ## Notes
+- 2026-06-25: **Multi-unit damage primitive (#4) done** (engine, branch `034-spell-content`).
+  Restructured `CastSpellStage` to the `ShootStage`/`FireStage` idiom (chosen over a contained
+  swappable-metadata wrapper, which was judged a moderate hack — it subverts the context-identity model and
+  needs a downcast): a `SpellDamageRunContext` holds the chosen targets + a cursor; the new looped child
+  `ResolveSpellDamageStage` builds a fresh `CombatMetadata` per target in its `GetNewChildContext` (pops the
+  next target, rolls its hits through the hit-complete fold), and `DetermineMoreSpellTargetsStage` loops it
+  until every target is resolved. A damage spell with `MaxCount > 1` now hits every selected unit (each with
+  its own AP/Blast/save resolution) instead of only `targets[0]`. Single-model (#3) and buff paths preserved
+  unchanged; all 14 prior caster tests stayed green. New `CastSpellStage_MultiUnitDamageSpell_HitsEveryTarget`;
+  suite 775/0, build clean, headless exit 0. Unlocks ~19 corpus spells once authored locally.
 - 2026-06-25: **Single-model damage primitive (#3) done** (engine, branch `034-spell-content`).
   `TargetSelector.SingleModel` flags the targeting mode; `CastSpellStage` picks a living model in the target
   unit (mandatory `SelectionRequest<ModelData>`, mirroring Takedown's `BuildTargetListStage`) and seeds an
