@@ -1,6 +1,6 @@
 # 101 — Keyword-buff bridge: make granted rules fire during dispatch
 
-**Status**: in progress — AddRule dispatch bridge done (2026-06-22); Aura + resume-path resolver remain
+**Status**: mechanism complete — bridge + Aura + resume-path resolver DONE (2026-06-25); only the niche single-unit-`Evaluate` NextTrigger consume remains (no corpus consumer); conferred-rule content = #034
 **Related**: #033 (Caster framework; the buff archetype), #034 (spell content), #042 (rule dispatch / token system)
 
 > **Renumbered 2026-06-22.** Opened as #095, but #095 was already assigned to other work on a parallel
@@ -76,6 +76,26 @@ Pointers so this can resume without re-deriving them:
   tested (the RuleGrant token lands); #101 adds the "…and it fires, then clears" assertion.
 
 ## Notes
+- 2026-06-25: **Aura projection + resume-path resolver DONE.** Two engine commits on `033-caster`:
+  - `9781b01` — **apply aura grants at unit creation.** `UnitCreationRules.Apply` now runs
+    `OperationApplier.ApplyTokenOperations` over the `Lifecycle_OnUnitCreated` queue, so `Effect.Aura`'s
+    `GrantTokenToUnit` actually lands — it was produced then dropped (only the `MaxWoundsSink` was folded),
+    leaving auras inert in live games. The granted rule then projects unit-wide via the existing read-back
+    (`CollectGrantedRules`). Unit-scoped, no radius (per the user: GDF auras apply only to the bearer's own
+    unit; there is no set-distance passive buff). `AuraRuleIntegrationTests` drives the REAL creation pass
+    (no manual token add — the distinction from `GrantedRuleReadbackTests`, which seeds the token by hand).
+  - `852a99e` — **rebuild the resolver on resume.** Discovered while scoping: granted-rule tokens (auras /
+    buffs) DO round-trip in the save — the token container is `[JsonProperty]`; only the public accessor is
+    `[JsonIgnore]` — so the original "tokens don't persist, re-grant on resume" plan was wrong. The real gap
+    was that the resume `FDGServer` ctor left `_ruleResolver` null (`CreateArmies`, which builds it, runs
+    only for a new game), so the surviving tokens were inert. Extracted `BuildRuleResolver`, called on both
+    paths. **No re-grant pass** — re-applying creation rules would double the grants (and reset Tough
+    wounds, the reason resume skips that pass). Two new `RuleRehydrationOnResumeTests`: RuleGrant payload
+    survives + projects with the resolver; inert without it (the gap closed). Suite 766/0, build clean,
+    headless exit 0.
+  - **Remaining:** only the niche single-unit `Evaluate` NextTrigger consume (the activation/deployment
+    hooks `EvaluateAll` doesn't run the consume pass on — no corpus buff targets them today), and the
+    conferred-rule *implementations* themselves = #034.
 - 2026-06-22: **Reconciled with master's #100 — adopted its bridge, kept this branch's fixes.** While
   this branch built #101, origin/master's **#100** independently shipped the same granted-rule read-back
   + FirstTrigger consume + the same `TokenContainer` payload-merge fix (engine `4fb6159`/`b97fa7a`).
@@ -121,6 +141,9 @@ Pointers so this can resume without re-deriving them:
   separate axis from this dispatch bridge.
 
 ## Outcome
-(partial) The AddRule keyword-buff dispatch bridge works end-to-end: granted rules fire and one-shot
-grants consume correctly, with a payload-precise token container underneath. Aura projection and the
-resume-path resolver remain; conferred-rule *implementations* are #034.
+(mechanism complete) The keyword-buff/aura dispatch mechanism works end-to-end: `Effect.AddRule` and
+`Effect.Aura` grants fire — auras land at unit creation and project unit-wide (unit-scoped, no radius, per
+GDF); one-shot grants consume correctly — over a payload-precise token container, and the grants survive a
+save/load resume (the tokens round-trip; the resume path now rebuilds the resolver that reads them back).
+Remaining: the niche single-unit `Evaluate` NextTrigger consume (no corpus consumer today); conferred-rule
+*implementations* are #034.
