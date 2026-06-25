@@ -22,7 +22,7 @@ Numbers are permanent and never reused. If an item is split, its line stays and 
 
 ## Setup & map
 
-- [ ] 003 — Force organization validation (optional rule: hero/unit/copy/cost caps)
+_(No open items — #003 moved to Awaiting verification.)_
 
 ## Deployment
 
@@ -154,6 +154,7 @@ Implemented and merged to master; engine test suite green. Held open only until 
 
 > **2026-06-21 — morale epic reconciled.** Items 008/009/020/021/091/092 were marked `[~]` "on branch / pending merge / unmerged" in their topical sections (Activation flow / Melee / Networking), but all nine underlying engine commits have since merged to submodule master (via the `089-morale-core` → `021-morale-rules` line, tip `2c7d342`, now in master's history) and are ancestors of the superproject-pinned commit `f467933`. Moved here; the only remaining step is GUI hand-verification.
 
+- [~] 003 — Force organization validation. **Implemented 2026-06-25.** Advisory-only warnings (never blocks) against the four GDF caps via a pure engine `ForceOrgValidator.Validate(ArmyListFile)`: cost (>PointsLimit), hero (>1 per 500 pts), copy (>3 same-named), unit (army with 0 non-Hero units). Rendered inline in the Army Builder header via the existing amber `Warn()` helper; `UnitHasHero` collapsed onto the shared `ForceOrgValidator.IsHero`. 11 new tests (`ForceOrgValidatorTests`); suite 779/0; full build clean. **Verify in GUI:** open the Army Builder, build an army over its points limit / with 3+ heroes / 4+ of one unit / only heroes — confirm amber warnings appear under "Current total" and that Save + launching a game still work (no block). ([WorkItems/003](WorkItems/003-force-org-validation.md))
 - [~] 028 — Deadly weapon priority (resolve first; wounds don't carry across models). Merged to master 2026-06-21 (submodule merge `3b81e2e`, superproject `ba4773f`). The wound-no-carry-over half was already done (`AssignWoundsStage.ConfineToClumps`); this slice added the **ordering** half — `WoundPriorityQueries.MustResolveFirst` (capability-based, not name-matched) gates non-Deadly weapons in both the ranged and melee pickers until Deadly weapons are spent, via the existing `UnselectableReason`/`InvalidOption` markers all six resolvers already honor (no app-side change). 6 new tests; suite 633/0. **Verify in GUI:** give a weapon the Deadly rule in the Army Builder, start a game, and confirm non-Deadly weapons gray out ("Must fire Deadly weapons first.") until the Deadly weapon is fired. ([WorkItems/028](WorkItems/028-deadly-weapon-priority.md))
 - [~] 091 — Morale core (formerly #089): failed-test outcome (Shaken / Rout at half strength) + shared `IsAtHalfStrength` predicate; wires the melee `OnMoraleFailed` path. Underpins #006/#008/#009/#020/#021. Engine `c99e20f`. ([WorkItems/091](WorkItems/091-morale-core.md))
 - [~] 008 — Shaken unit activation behavior (idle, can't seize/contest, clears at end of activation). Engine `797cf9c` + `32d70d2` (recovery decided from an explicit activation-start snapshot). ([WorkItems/091](WorkItems/091-morale-core.md))

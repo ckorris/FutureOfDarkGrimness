@@ -204,6 +204,11 @@ public class ArmyBuilderScreen : IAppScreen
             _army.PointsLimit = limit;
 
         ImGui.Text($"Current total: {_army.TotalPoints} pts");
+
+        // #003: advisory force-organization warnings — surfaced inline but never blocking. The player
+        // can still save and launch an over-cap army; this just flags it.
+        foreach (string warning in ForceOrgValidator.Validate(_army))
+            Warn(warning);
     }
 
     private void DrawUnits()
@@ -544,15 +549,8 @@ public class ArmyBuilderScreen : IAppScreen
 
     private static void Warn(string message) => ImGui.TextColored(WarnColor, $"! {message}");
 
-    private static bool UnitHasHero(UnitFileEntry unit) => unit.SpecialRules.Any(RuleEntryIsHero);
-
-    private static bool RuleEntryIsHero(SpecialRuleEntry entry) => entry switch
-    {
-        SpecialRuleEntry_Core core => string.Equals(core.Name, "Hero", StringComparison.Ordinal),
-        SpecialRuleEntry_CoreNumeric num => string.Equals(num.Name, "Hero", StringComparison.Ordinal),
-        SpecialRuleEntry_Alias alias => RuleEntryIsHero(alias.AliasedRule),
-        _ => false,
-    };
+    // #003: one definition of "is this army-file unit a Hero", shared with ForceOrgValidator.
+    private static bool UnitHasHero(UnitFileEntry unit) => ForceOrgValidator.IsHero(unit);
 
     private static bool TryGetToughValue(UnitFileEntry unit, out int value)
     {
