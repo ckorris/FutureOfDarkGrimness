@@ -11,6 +11,12 @@ public class LocalMessageBus : IMessageBusHost, IMessageBusClient
 {
     private readonly Dictionary<Type, List<Delegate>> _handlers = new();
 
+    // In-process single-machine play has no real connections, so a client never "disconnects" here.
+    // Implemented to satisfy IMessageBusHost (#076); never raised.
+#pragma warning disable CS0067
+    public event Action<ConnectionID>? OnClientDisconnected;
+#pragma warning restore CS0067
+
     public void RegisterForMessageEvent<T>(Action<T> onMessageReceived)
     {
         if (!_handlers.TryGetValue(typeof(T), out var list))
