@@ -114,8 +114,8 @@ else
     renderer.LobbyScreen.OnBack = () =>
         renderer.NavigateTo(renderer.MainMenu);
 
-    renderer.LobbyScreen.OnGameLaunched = (tableState, colorFunc, log, overlay, taskDisplay, presentationPlayer, saveGame) =>
-        renderer.TransitionToGame(tableState, colorFunc, log, overlay, taskDisplay, presentationPlayer, saveGame);
+    renderer.LobbyScreen.OnGameLaunched = (tableState, colorFunc, log, overlay, taskDisplay, presentationPlayer, saveGame, chatUI) =>
+        renderer.TransitionToGame(tableState, colorFunc, log, overlay, taskDisplay, presentationPlayer, saveGame, chatUI);
 
     renderer.LobbyScreen.OnGameEnded = result => renderer.ShowGameOver(result);
 

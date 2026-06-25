@@ -19,7 +19,7 @@ namespace FdgRaylib.Rendering;
 public class LobbyScreen : IAppScreen
 {
     public Action? OnBack;
-    public Action<ITableState, Func<PlayerID, Color>, GameLog?, GuiResolverOverlay, GuiOutstandingTaskDisplay, PresentationPlayer, Func<string?>?>? OnGameLaunched;
+    public Action<ITableState, Func<PlayerID, Color>, GameLog?, GuiResolverOverlay, GuiOutstandingTaskDisplay, PresentationPlayer, Func<string?>?, GuiPlayerMessageUI>? OnGameLaunched;
     public Action<string>? OnGameEnded;
 
     private ILobbyViewModel? _viewModel;
@@ -386,7 +386,8 @@ public class LobbyScreen : IAppScreen
 
         var taskDisplay = new GuiOutstandingTaskDisplay();
         var presentationPlayer = new PresentationPlayer();
-        game.AssignInterfaces(logUI, new CliPlayerMessageUI(), resolvers,
+        var playerMessageUI = new GuiPlayerMessageUI(log);
+        game.AssignInterfaces(logUI, playerMessageUI, resolvers,
             presentationSink: presentationPlayer,
             outstandingTaskDisplay: taskDisplay);
 
@@ -398,7 +399,7 @@ public class LobbyScreen : IAppScreen
         // Host-only save hook (work item #054 will add client-initiated saving).
         Func<string?>? saveGame = _viewModel != null && _viewModel.CanSaveGame ? _viewModel.SaveGameToJson : null;
 
-        OnGameLaunched?.Invoke(game.TableState, pid => colors.GetValueOrDefault(pid, Color.White), log, overlay, taskDisplay, presentationPlayer, saveGame);
+        OnGameLaunched?.Invoke(game.TableState, pid => colors.GetValueOrDefault(pid, Color.White), log, overlay, taskDisplay, presentationPlayer, saveGame, playerMessageUI);
     }
 
     private static void DrawIntField(string label, int current, Action<int> setter)
