@@ -546,7 +546,8 @@ public class RaylibRenderer
     private void DrawChatInput(Layout l)
     {
         const float height = 34f;
-        ImGui.SetNextWindowPos(new Vector2(0, l.ScreenH - height), ImGuiCond.Always);
+        // Lifted half its own height off the very bottom so it doesn't sit under the OS task bar (#105).
+        ImGui.SetNextWindowPos(new Vector2(0, l.ScreenH - height * 1.5f), ImGuiCond.Always);
         ImGui.SetNextWindowSize(new Vector2(l.LogX, height), ImGuiCond.Always);
         ImGui.Begin("Chat",
             ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoCollapse |
