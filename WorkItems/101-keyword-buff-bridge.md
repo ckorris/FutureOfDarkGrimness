@@ -1,6 +1,6 @@
 # 101 — Keyword-buff bridge: make granted rules fire during dispatch
 
-**Status**: mechanism complete — bridge + Aura + resume-path resolver DONE (2026-06-25); only the niche single-unit-`Evaluate` NextTrigger consume remains (no corpus consumer); conferred-rule content = #034
+**Status**: DONE (2026-06-25) — bridge + Aura + resume-path resolver complete; the one no-consumer edge (single-unit-`Evaluate` NextTrigger consume) spun off to #104; conferred-rule content = #034
 **Related**: #033 (Caster framework; the buff archetype), #034 (spell content), #042 (rule dispatch / token system)
 
 > **Renumbered 2026-06-22.** Opened as #095, but #095 was already assigned to other work on a parallel
@@ -93,9 +93,10 @@ Pointers so this can resume without re-deriving them:
     wounds, the reason resume skips that pass). Two new `RuleRehydrationOnResumeTests`: RuleGrant payload
     survives + projects with the resolver; inert without it (the gap closed). Suite 766/0, build clean,
     headless exit 0.
-  - **Remaining:** only the niche single-unit `Evaluate` NextTrigger consume (the activation/deployment
-    hooks `EvaluateAll` doesn't run the consume pass on — no corpus buff targets them today), and the
-    conferred-rule *implementations* themselves = #034.
+  - **Spun off:** the niche single-unit `Evaluate` NextTrigger consume (the activation/deployment hooks
+    `EvaluateAll` doesn't run the consume pass on — no corpus buff targets them today) is now **#104**, with
+    a comment at the `Evaluate` seam pointing there. Conferred-rule *implementations* remain = #034. With
+    both moved out, #101's dispatch mechanism is closed.
 - 2026-06-22: **Reconciled with master's #100 — adopted its bridge, kept this branch's fixes.** While
   this branch built #101, origin/master's **#100** independently shipped the same granted-rule read-back
   + FirstTrigger consume + the same `TokenContainer` payload-merge fix (engine `4fb6159`/`b97fa7a`).
@@ -145,5 +146,6 @@ Pointers so this can resume without re-deriving them:
 `Effect.Aura` grants fire — auras land at unit creation and project unit-wide (unit-scoped, no radius, per
 GDF); one-shot grants consume correctly — over a payload-precise token container, and the grants survive a
 save/load resume (the tokens round-trip; the resume path now rebuilds the resolver that reads them back).
-Remaining: the niche single-unit `Evaluate` NextTrigger consume (no corpus consumer today); conferred-rule
-*implementations* are #034.
+Auras are unit-scoped with no radius, per GDF. The one no-consumer edge — the single-unit `Evaluate`
+NextTrigger consume — is spun off to #104 (build when a rule needs it); conferred-rule *implementations*
+are #034.
