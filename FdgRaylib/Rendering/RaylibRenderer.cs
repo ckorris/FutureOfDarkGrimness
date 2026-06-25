@@ -40,6 +40,8 @@ public class RaylibRenderer
     private ITableState? _tableState;
     private Func<PlayerID, Color>? _colorForPlayer;
     private GameLog? _log;
+    private GuiPlayerMessageUI? _playerMessageUI;  // in-game chat sink + send hook (#077)
+    private string _chatInput = "";
     private GuiResolverOverlay? _resolverOverlay;
     private GuiOutstandingTaskDisplay? _taskDisplay;
     private PresentationPlayer? _presentationPlayer;
@@ -80,7 +82,8 @@ public class RaylibRenderer
         GameLog? log, GuiResolverOverlay? resolverOverlay = null,
         GuiOutstandingTaskDisplay? taskDisplay = null,
         PresentationPlayer? presentationPlayer = null,
-        Func<string?>? saveGameToJson = null)
+        Func<string?>? saveGameToJson = null,
+        GuiPlayerMessageUI? playerMessageUI = null)
     {
         _tableState         = tableState;
         _colorForPlayer     = colorForPlayer;
@@ -88,6 +91,7 @@ public class RaylibRenderer
         _resolverOverlay    = resolverOverlay;
         _taskDisplay        = taskDisplay;
         _presentationPlayer = presentationPlayer;
+        _playerMessageUI    = playerMessageUI;
         _tooltipOverlay.Attach(tableState, colorForPlayer, saveGameToJson);
 
         // Play a sound cue the moment each beat becomes active, in lockstep with its visual. Audio is
@@ -173,6 +177,8 @@ public class RaylibRenderer
         _tableState            = null;
         _colorForPlayer        = null;
         _log                   = null;
+        _playerMessageUI       = null;
+        _chatInput             = "";
         _resolverOverlay       = null;
         _taskDisplay           = null;
         _presentationPlayer    = null;
@@ -310,6 +316,7 @@ public class RaylibRenderer
                 rlImGui.Begin();
                 _hitTester.Update(_tableState!, layout.Scale, layout.OriginX, layout.OriginY, TableHIn);
                 if (_log != null) DrawLogPanel(layout);
+                if (_playerMessageUI != null) DrawChatInput(layout);
                 _taskDisplay?.Draw(screenW, screenH);
                 _tooltipOverlay.UpdateLayout(layout.Scale, layout.OriginX, layout.OriginY, TableHIn);
                 _tooltipOverlay.Draw(screenW, screenH, _hitTester, _resolverOverlay?.ActiveInteractionHandler);
@@ -527,6 +534,30 @@ public class RaylibRenderer
         {
             ExitGame();
             NavigateTo(MainMenu);
+        }
+
+        ImGui.End();
+    }
+
+    // A thin chat bar across the bottom of the main game area (left of the log panel). Submitting a line
+    // routes it through GuiPlayerMessageUI → the engine relay, which echoes it back into the side log
+    // (where received chat from other players also appears). Not auto-focused, so game hotkeys keep
+    // working until the player clicks into it. (#077 in-game chat)
+    private void DrawChatInput(Layout l)
+    {
+        const float height = 34f;
+        ImGui.SetNextWindowPos(new Vector2(0, l.ScreenH - height), ImGuiCond.Always);
+        ImGui.SetNextWindowSize(new Vector2(l.LogX, height), ImGuiCond.Always);
+        ImGui.Begin("Chat",
+            ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoCollapse |
+            ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoScrollbar);
+
+        ImGui.SetNextItemWidth(-1f);
+        if (ImGui.InputTextWithHint("##gamechat", "Chat… (Enter to send)", ref _chatInput, 512,
+                ImGuiInputTextFlags.EnterReturnsTrue))
+        {
+            _playerMessageUI!.Submit(_chatInput);
+            _chatInput = "";
         }
 
         ImGui.End();
