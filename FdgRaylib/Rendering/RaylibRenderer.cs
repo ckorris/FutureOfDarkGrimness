@@ -492,15 +492,13 @@ public class RaylibRenderer
 
             int cx = l.OriginX + (int)(draw.Position.x * l.Scale);
             int cy = l.OriginY + (int)((TableHIn - draw.Position.z) * l.Scale);
-            float radius = model.BaseRadiusInches * l.Scale;
 
             Color baseColor = draw.Tint is { } tint ? new Color(tint.R, tint.G, tint.B, (byte)255) : color;
             byte a = (byte)Math.Clamp(draw.Alpha * 255f, 0f, 255f);
             Color fill    = new(baseColor.R, baseColor.G, baseColor.B, a);
             Color outline = new((byte)0, (byte)0, (byte)0, a);
 
-            Raylib.DrawCircle(cx, cy, radius, fill);
-            Raylib.DrawCircleLines(cx, cy, radius, outline);
+            ModelBaseRenderer.DrawFilledRaylib(model.BaseShape, cx, cy, l.Scale, fill, outline);
         }
     }
 

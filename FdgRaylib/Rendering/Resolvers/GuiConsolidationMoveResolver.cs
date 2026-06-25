@@ -90,11 +90,10 @@ public class GuiConsolidationMoveResolver
             var pathPoints = kvp.Value;
             var start = model.Position;
             var (sx, sy) = InchesToPixel(start.x, start.z);
-            float r = model.BaseRadiusInches * _scale;
 
             uint outline = ReferenceEquals(model, _selectedModel) ? SelectionOutline : ModelOutline;
             float thick  = ReferenceEquals(model, _selectedModel) ? 2.5f : 1.5f;
-            dl.AddCircle(new Vector2(sx, sy), r, outline, 32, thick);
+            ModelBaseRenderer.DrawOutlineImGui(dl, model.BaseShape, new Vector2(sx, sy), _scale, outline, thick);
 
             if (pathPoints.Count > 0)
             {
@@ -109,8 +108,7 @@ public class GuiConsolidationMoveResolver
                 }
                 var last = pathPoints[^1];
                 var (lx, ly) = InchesToPixel(last.x, last.z);
-                dl.AddCircleFilled(new Vector2(lx, ly), r, FinalGhostCol);
-                dl.AddCircle(new Vector2(lx, ly), r, outline, 32, thick);
+                ModelBaseRenderer.DrawFilledImGui(dl, model.BaseShape, new Vector2(lx, ly), _scale, FinalGhostCol, outline, thick);
             }
         }
 
@@ -159,9 +157,8 @@ public class GuiConsolidationMoveResolver
             var (gx, gy)   = InchesToPixel(nx, nz);
             dl.AddLine(new Vector2(apx, apy), new Vector2(gx, gy), MoveColor, 2f);
 
-            float r = _selectedModel.BaseRadiusInches * _scale;
-            dl.AddCircleFilled(new Vector2(gx, gy), r, ghostOverlaps ? OverlapFill : GhostFill);
-            dl.AddCircle(new Vector2(gx, gy), r, GhostOutline, 32, 1.5f);
+            ModelBaseRenderer.DrawFilledImGui(dl, _selectedModel.BaseShape, new Vector2(gx, gy), _scale,
+                ghostOverlaps ? OverlapFill : GhostFill, GhostOutline);
 
             var finalsWithGhost = BuildFinalPositions(paths, _selectedModel, ghostPos);
             DrawCohesionIndicators(dl, finalsWithGhost, _selectedModel);
@@ -180,8 +177,7 @@ public class GuiConsolidationMoveResolver
                     float dx = mx - model.Position.x;
                     float dz = mz - model.Position.z;
                     float d2 = dx * dx + dz * dz;
-                    float rr = model.BaseRadiusInches * model.BaseRadiusInches;
-                    if (d2 <= rr && d2 < bestDist) { hit = model; bestDist = d2; }
+                    if (model.BaseShape.ContainsLocalPoint(dx, dz) && d2 < bestDist) { hit = model; bestDist = d2; }
                 }
                 if (hit != null) _selectedModel = hit;
             }

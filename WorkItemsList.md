@@ -36,6 +36,11 @@ _(No open items — #010 is done; #008/#009 moved to Awaiting verification — s
 
 - [~] 094 — Group-move coherency repair: in the GUI movement resolver's Group mode, a unit that starts out of coherency (e.g. a model died mid-unit) now re-forms its group ghost into a legal shape by pulling each straggler toward the rest of the unit's centre the least amount needed, so one click moves them into coherency. Per-model move caps (Advance/Rush/Charge + the Shift/shoot Advance cap) are enforced on each model's **total** travel (repair nudge + rigid move) via a new `PlanGroupMove` origin-anchored overload. App-side only (engine cohesion check is unreachable; resolver owns it). Suite 25/0, build clean, headless exit 0. **Awaiting GUI hand-verification.** ([WorkItems/094](WorkItems/094-group-move-cohesion-repair.md))
 
+## Model bases & geometry
+
+- [~] 149 — Configurable model base size + shapes: make a model's base settable per unit in the army creator (defaulting to today's 28mm circle), affecting both geometry (distance/movement/collision) and rendering. Dropdown picks the shape; circle takes a diameter, rectangle takes width×height (inches). Abstract `IBaseShape` (Circle/Rectangle now, more later) with a `BoundingRadiusInches` seam so existing radius call sites keep working. Decisions (with the user): shape-aware **model-to-model** collision now, bounding-circle for the hard paths (→ #150); per-unit scope; inches input; no base facing yet. ([WorkItems/149](WorkItems/149-base-shapes.md))
+- [ ] 150 — Base-shape geometry: replace remaining bounding-radius approximations (the deferred half of #149). Make swept-path-vs-terrain, pile-in, move-through-enemy, LoS blockers, and objective seizure use the true base shape instead of the circumscribing circle; likely needs base facing/rotation for rectangles. ([WorkItems/150](WorkItems/150-base-shape-bounding-radius-remnants.md))
+
 ## Shooting
 
 _(No open items — #015 and #016 are done; see ## Done.)_

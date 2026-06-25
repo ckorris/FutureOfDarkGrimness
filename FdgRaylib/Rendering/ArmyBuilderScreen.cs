@@ -258,6 +258,8 @@ public class ArmyBuilderScreen : IAppScreen
         if (ImGui.InputInt($"Points##pc{idx}", ref pointCost))
             unit.PointCost = pointCost;
 
+        DrawBaseShapeFields(unit, idx);
+
         DrawJoinedByHint(unit);
 
         DrawSpecialRuleList(unit.SpecialRules, $"unit{idx}", ERuleScope.Unit);
@@ -295,6 +297,37 @@ public class ArmyBuilderScreen : IAppScreen
 
             if (ImGui.SmallButton($"Add Weapon##addw{idx}"))
                 unit.Weapons.Add(new WeaponFileEntry { Attacks = 1 });
+        }
+    }
+
+    private static readonly string[] BaseShapeNames = { "Circle", "Rectangle" };
+
+    // #149: per-unit base footprint. A dropdown picks the shape; a circle takes a diameter, a rectangle a
+    // width × height — all in inches (consistent with weapon ranges). Defaults live on BaseFileEntry, so
+    // switching to Rectangle reveals the 25×50mm cavalry default already filled in.
+    private void DrawBaseShapeFields(UnitFileEntry unit, int idx)
+    {
+        BaseFileEntry baseEntry = unit.Base ??= new BaseFileEntry();
+
+        int shapeSel = (int)baseEntry.Shape;
+        if (ImGui.Combo($"Base##bshape{idx}", ref shapeSel, BaseShapeNames, BaseShapeNames.Length))
+            baseEntry.Shape = (EBaseShapeKind)shapeSel;
+
+        if (baseEntry.Shape == EBaseShapeKind.Rectangle)
+        {
+            float width = baseEntry.WidthInches;
+            if (ImGui.InputFloat($"Width (in)##bw{idx}", ref width, 0.1f, 0.5f))
+                baseEntry.WidthInches = MathF.Max(0.01f, width);
+
+            float height = baseEntry.HeightInches;
+            if (ImGui.InputFloat($"Height (in)##bh{idx}", ref height, 0.1f, 0.5f))
+                baseEntry.HeightInches = MathF.Max(0.01f, height);
+        }
+        else
+        {
+            float diameter = baseEntry.DiameterInches;
+            if (ImGui.InputFloat($"Diameter (in)##bdia{idx}", ref diameter, 0.1f, 0.5f))
+                baseEntry.DiameterInches = MathF.Max(0.01f, diameter);
         }
     }
 

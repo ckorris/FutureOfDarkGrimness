@@ -125,12 +125,11 @@ public class GuiDefineMovementResolver
             var pathPoints = kvp.Value;
             var start = model.Position;
             var (sx, sy) = InchesToPixel(start.x, start.z);
-            float r = model.BaseRadiusInches * _scale;
 
-            // Start circle (real model position)
+            // Start base outline (real model position) — drawn as the model's true shape (#149)
             uint outline = ReferenceEquals(model, _selectedModel) ? SelectionOutline : ModelOutline;
             float thick  = ReferenceEquals(model, _selectedModel) ? 2.5f : 1.5f;
-            dl.AddCircle(new Vector2(sx, sy), r, outline, 32, thick);
+            ModelBaseRenderer.DrawOutlineImGui(dl, model.BaseShape, new Vector2(sx, sy), _scale, outline, thick);
 
             // Path lines
             if (pathPoints.Count > 0)
@@ -148,11 +147,10 @@ public class GuiDefineMovementResolver
                     prev = cur;
                 }
 
-                // Final position ghost circle
+                // Final position ghost (true shape)
                 var last = pathPoints[^1];
                 var (lx, ly) = InchesToPixel(last.x, last.z);
-                dl.AddCircleFilled(new Vector2(lx, ly), r, FinalGhostCol);
-                dl.AddCircle(new Vector2(lx, ly), r, outline, 32, thick);
+                ModelBaseRenderer.DrawFilledImGui(dl, model.BaseShape, new Vector2(lx, ly), _scale, FinalGhostCol, outline, thick);
             }
         }
 
@@ -211,11 +209,9 @@ public class GuiDefineMovementResolver
             var (gx, gy) = InchesToPixel(nx, nz);
             dl.AddLine(new Vector2(ax, ay), new Vector2(gx, gy), LineColorFor(ghostBand), 2f);
 
-            // Ghost base circle
-            float r = _selectedModel.BaseRadiusInches * _scale;
+            // Ghost base (true shape)
             uint fill = ghostOverlaps ? OverlapFill : FillColorFor(ghostBand);
-            dl.AddCircleFilled(new Vector2(gx, gy), r, fill);
-            dl.AddCircle(new Vector2(gx, gy), r, GhostOutline, 32, 1.5f);
+            ModelBaseRenderer.DrawFilledImGui(dl, _selectedModel.BaseShape, new Vector2(gx, gy), _scale, fill, GhostOutline);
 
             // Cohesion warnings: indicators reflect would-be positions if user committed here
             var finalsWithGhost = BuildFinalPositions(paths, _selectedModel, ghostPos);
@@ -245,8 +241,7 @@ public class GuiDefineMovementResolver
                     float dx = mx - model.Position.x;
                     float dz = mz - model.Position.z;
                     float d2 = dx * dx + dz * dz;
-                    float rr = model.BaseRadiusInches * model.BaseRadiusInches;
-                    if (d2 <= rr && d2 < bestDist) { hit = model; bestDist = d2; }
+                    if (model.BaseShape.ContainsLocalPoint(dx, dz) && d2 < bestDist) { hit = model; bestDist = d2; }
                 }
                 if (hit != null) _selectedModel = hit;
             }
@@ -390,9 +385,7 @@ public class GuiDefineMovementResolver
             var (sx, sy) = InchesToPixel(lastPositions[i].x, lastPositions[i].z);
             var (nx, ny) = InchesToPixel(newPositions[i].x, newPositions[i].z);
             dl.AddLine(new Vector2(sx, sy), new Vector2(nx, ny), lineCol, 2f);
-            float r = models[i].BaseRadiusInches * _scale;
-            dl.AddCircleFilled(new Vector2(nx, ny), r, fill);
-            dl.AddCircle(new Vector2(nx, ny), r, GhostOutline, 32, 1.5f);
+            ModelBaseRenderer.DrawFilledImGui(dl, models[i].BaseShape, new Vector2(nx, ny), _scale, fill, GhostOutline);
         }
 
         // Commit on left-click when every phantom is legal and something actually moves.

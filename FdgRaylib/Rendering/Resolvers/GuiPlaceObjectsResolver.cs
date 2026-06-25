@@ -130,7 +130,7 @@ public class GuiPlaceObjectsResolver<T>
             float r = GetBaseRadius(binding.GetValue());
             var cand = new Position(mouseInX, mouseInZ);
             bool valid = IsPlacementValid(cand, r, zone, enemies, minEnemyDist, k, out string? why);
-            if (overTable) DrawGhost(dl, io.MousePos, r * _scale, valid);
+            if (overTable) DrawGhost(dl, GetBaseShape(binding.GetValue()), io.MousePos, _scale, valid);
             if (clicked)
             {
                 if (valid) { _placed[k] = new PlacedObjectEntry<T>(binding, cand); _dragIndex = null; _errorMessage = null; }
@@ -156,7 +156,7 @@ public class GuiPlaceObjectsResolver<T>
         float curR = GetBaseRadius(currentBinding.GetValue());
         var candidate = new Position(mouseInX, mouseInZ);
         bool ok = IsPlacementValid(candidate, curR, zone, enemies, minEnemyDist, -1, out string? reason);
-        if (overTable) DrawGhost(dl, io.MousePos, curR * _scale, ok);
+        if (overTable) DrawGhost(dl, GetBaseShape(currentBinding.GetValue()), io.MousePos, _scale, ok);
         if (clicked)
         {
             if (ok) { _placed.Add(new PlacedObjectEntry<T>(currentBinding, candidate)); _errorMessage = null; }
@@ -219,7 +219,7 @@ public class GuiPlaceObjectsResolver<T>
             float rx = dx * cos - dz * sin, rz = dx * sin + dz * cos;
             positions[i] = new Position(centroid.x + rx, centroid.z + rz);
             bool valid = IsGroupSlotValid(positions[i], radii[i], zone, enemies, minEnemyDist);
-            DrawGhost(dl, ToPixelVec(positions[i]), radii[i] * _scale, valid);
+            DrawGhost(dl, GetBaseShape(models[i].GetValue()), ToPixelVec(positions[i]), _scale, valid);
             if (!valid) allValid = false;
         }
 
@@ -251,9 +251,8 @@ public class GuiPlaceObjectsResolver<T>
     {
         for (int i = 0; i < _placed.Count; i++)
         {
-            float r = GetBaseRadius(_placed[i].Binding.GetValue());
             float dx = x - _placed[i].Position.x, dz = z - _placed[i].Position.z;
-            if (dx * dx + dz * dz <= r * r) return i;
+            if (GetBaseShape(_placed[i].Binding.GetValue()).ContainsLocalPoint(dx, dz)) return i;
         }
         return -1;
     }
@@ -321,20 +320,17 @@ public class GuiPlaceObjectsResolver<T>
             if (i == skipIndex) continue; // hidden while being dragged
             var entry = _placed[i];
             var (px, py) = InchesToPixel(entry.Position.x, entry.Position.z);
-            float r = GetBaseRadius(entry.Binding.GetValue()) * _scale;
-            dl.AddCircleFilled(new Vector2(px, py), r, fill);
-            dl.AddCircle(new Vector2(px, py), r, outline, 32, 1f);
+            ModelBaseRenderer.DrawFilledImGui(dl, GetBaseShape(entry.Binding.GetValue()), new Vector2(px, py), _scale, fill, outline, 1f);
         }
     }
 
-    private static void DrawGhost(ImDrawListPtr dl, Vector2 center, float radiusPx, bool valid)
+    private static void DrawGhost(ImDrawListPtr dl, IBaseShape shape, Vector2 center, float scale, bool valid)
     {
         uint fill = valid
             ? ImGui.ColorConvertFloat4ToU32(new Vector4(0.20f, 1.00f, 0.20f, 0.50f))
             : ImGui.ColorConvertFloat4ToU32(new Vector4(1.00f, 0.20f, 0.20f, 0.50f));
         uint outline = ImGui.ColorConvertFloat4ToU32(new Vector4(1f, 1f, 1f, 0.80f));
-        dl.AddCircleFilled(center, radiusPx, fill);
-        dl.AddCircle(center, radiusPx, outline, 32, 1f);
+        ModelBaseRenderer.DrawFilledImGui(dl, shape, center, scale, fill, outline, 1f);
     }
 
     private void DrawInfoPanel(int screenW, PlaceObjectsRequest<T> request,
@@ -594,6 +590,10 @@ public class GuiPlaceObjectsResolver<T>
     }
 
     private static float GetBaseRadius(T value) => value is ModelData m ? m.BaseRadiusInches : 0.75f;
+
+    // The base shape for rendering / hit-testing (#149). Non-model T (e.g. objectives) → a default circle,
+    // matching GetBaseRadius's 0.75" fallback. (Placement SPACING still uses the radius — see #150.)
+    private static IBaseShape GetBaseShape(T value) => value is ModelData m ? m.BaseShape : new CircleBase(0.75f);
 
     /// <summary>True if the candidate is within nearest-neighbour cohesion of at least one other placed
     /// model, ignoring <paramref name="excludeIndex"/>. Vacuously true when there are no other models.</summary>
