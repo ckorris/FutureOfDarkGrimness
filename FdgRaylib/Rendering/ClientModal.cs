@@ -19,6 +19,9 @@ public class ClientModal : IAppScreen
     private const float DialogWidthFraction  = 0.30f;
     private const float DialogHeightFraction = 0.38f;
 
+    // How long to wait for the host's accept/reject handshake before giving up (#075).
+    private const double JoinTimeoutSeconds = 8.0;
+
     public void Draw(int screenW, int screenH)
     {
         // Dark translucent backdrop
@@ -124,25 +127,50 @@ public class ClientModal : IAppScreen
         _status = "Attempting to connect...";
 
         FDGClient client = new();
-        bool connected;
         try
         {
-            connected = await client.ConnectAsync(ip).ConfigureAwait(false);
+            bool connected = await client.ConnectAsync(ip).ConfigureAwait(false);
+            if (!connected)
+            {
+                _status = "Failed to connect.";
+                return;
+            }
+
+            // Joining the lobby is a two-step handshake (#075): the client greets with its protocol
+            // version + store type-map fingerprint, and the host either assigns a PlayerID (accept) or
+            // returns a readable rejection (incompatible build). Wait for that outcome here so a rejection
+            // surfaces in this modal instead of half-joining the lobby.
+            _status = "Joining lobby...";
+            var viewModel = new LobbyViewModel_Client(_yourName, client);
+
+            Task<string?> joinTask = viewModel.JoinResultTask;
+            Task winner = await Task.WhenAny(joinTask, Task.Delay(TimeSpan.FromSeconds(JoinTimeoutSeconds)))
+                .ConfigureAwait(false);
+
+            if (winner != joinTask)
+            {
+                _status = "Timed out waiting for the server to accept the join.";
+                viewModel.Dispose();
+                client.Disconnect();
+                return;
+            }
+
+            string? rejectReason = await joinTask.ConfigureAwait(false);
+            if (rejectReason != null)
+            {
+                _status = rejectReason;
+                viewModel.Dispose();
+                client.Disconnect();
+                return;
+            }
+
+            Reset();
+            OnConnected?.Invoke(viewModel);
         }
         finally
         {
             _isConnecting = false;
         }
-
-        if (!connected)
-        {
-            _status = "Failed to connect.";
-            return;
-        }
-
-        var viewModel = new LobbyViewModel_Client(_yourName, client);
-        Reset();
-        OnConnected?.Invoke(viewModel);
     }
 
     private void Reset()
