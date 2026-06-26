@@ -11,7 +11,7 @@ namespace FdgRaylib.Rendering;
 
 /// <summary>
 /// Draws hover tooltips and toggleable unit-name labels on the table canvas.
-/// Press L (or click the bottom-left button) to toggle name labels.
+/// Press L (or click the top-left button) to toggle name labels.
 ///
 /// Reads hit-test results from TableHitTester (shared with resolvers) and checks
 /// the active resolver's ICanvasInteractionHandler to append contextual hover text
@@ -77,10 +77,8 @@ public class TableTooltipOverlay
         if (_showLabels)
             DrawUnitLabels();
 
-        // Toolbar button — anchored to bottom-left
-        float btnH   = ImGui.GetFontSize() + ImGui.GetStyle().FramePadding.Y * 2;
-        float winPad = ImGui.GetStyle().WindowPadding.Y;
-        ImGui.SetNextWindowPos(new Vector2(8, screenH - btnH - winPad * 2 - 8), ImGuiCond.Always);
+        // Toolbar buttons — anchored top-left, stacked vertically.
+        ImGui.SetNextWindowPos(new Vector2(8, 8), ImGuiCond.Always);
         ImGui.SetNextWindowBgAlpha(0.70f);
         ImGui.Begin("##tabletools",
             ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoCollapse |
@@ -93,7 +91,6 @@ public class TableTooltipOverlay
 
         if (_saveGameToJson != null)
         {
-            ImGui.SameLine();
             if (ImGui.Button("Save Game"))
                 HandleSaveGame();
         }

@@ -317,7 +317,8 @@ public class RaylibRenderer
                 _hitTester.Update(_tableState!, layout.Scale, layout.OriginX, layout.OriginY, TableHIn);
                 if (_log != null) DrawLogPanel(layout);
                 if (_playerMessageUI != null) DrawChatInput(layout);
-                _taskDisplay?.Draw(screenW, screenH);
+                // Outstanding Tasks window hidden per user request; re-enable by restoring this draw call.
+                // _taskDisplay?.Draw(screenW, screenH);
                 _tooltipOverlay.UpdateLayout(layout.Scale, layout.OriginX, layout.OriginY, TableHIn);
                 _tooltipOverlay.Draw(screenW, screenH, _hitTester, _resolverOverlay?.ActiveInteractionHandler);
                 _resolverOverlay?.UpdateLayout(layout.Scale, layout.OriginX, layout.OriginY, TableHIn);
