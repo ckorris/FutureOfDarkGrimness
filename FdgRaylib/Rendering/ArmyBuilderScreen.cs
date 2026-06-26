@@ -38,6 +38,17 @@ public class ArmyBuilderScreen : IAppScreen
     // excluded. Recomputed each frame in RefreshRuleNames so embedded rules surface too.
     private string[] _grantableRuleNames = Array.Empty<string>();
 
+    // Inches⇄millimetre conversion for the base-size editor: the .fdgarmy stores inches (#149), but bases are
+    // authored in mm, so the UI shows/edits mm and converts on the way in/out. Save format is unchanged.
+    private const float MmPerInch = 25.4f;
+
+    // "Unfold on create": when a unit/weapon/spell is added (or a unit duplicated), its collapsible node is
+    // forced open the next frame it draws. Units & weapons key off their per-process StableID; spells have no
+    // stable identity (immutable records), so the newly-added one is always the last in the list.
+    private int? _pendingOpenUnitId;
+    private int? _pendingOpenWeaponId;
+    private bool _pendingOpenSpell;
+
     private void RefreshRuleNames()
     {
         foreach (ERuleScope scope in new[] { ERuleScope.Unit, ERuleScope.Weapon })
@@ -213,16 +224,30 @@ public class ArmyBuilderScreen : IAppScreen
 
     private void DrawUnits()
     {
+        // Duplicate is deferred to after the loop so the insert can't shift the index we're iterating.
+        int? duplicateIdx = null;
+
         for (int u = 0; u < _army.Units.Count; ++u)
         {
             UnitFileEntry unit = _army.Units[u];
             ImGui.PushID(unit.StableID);
 
-            bool open = ImGui.TreeNodeEx("unit", ImGuiTreeNodeFlags.None,
-                $"{unit.Name}, {unit.PointCost} pts.");
-            ImGui.SameLine();
-            if (ImGui.SmallButton($"X##delunit{u}"))
+            DrawUnitSummary(unit);
+
+            if (_pendingOpenUnitId == unit.StableID)
             {
+                ImGui.SetNextItemOpen(true, ImGuiCond.Always);
+                _pendingOpenUnitId = null;
+            }
+
+            bool open = ImGui.TreeNodeEx("unit", ImGuiTreeNodeFlags.None, "Edit");
+            ImGui.SameLine();
+            if (ImGui.SmallButton("Duplicate"))
+                duplicateIdx = u;
+            ImGui.SameLine();
+            if (ImGui.SmallButton("X##delunit"))
+            {
+                if (open) ImGui.TreePop();
                 _army.Units.RemoveAt(u--);
                 ImGui.PopID();
                 continue;
@@ -235,7 +260,77 @@ public class ArmyBuilderScreen : IAppScreen
             }
 
             ImGui.PopID();
+            ImGui.Spacing();
         }
+
+        if (duplicateIdx is int di)
+            DuplicateUnit(di);
+    }
+
+    // Read-only profile shown above every unit (#106), regardless of whether the editor is expanded:
+    //   Name [models] - Qua X+ Def Y+                                   N pts
+    //     <each weapon, army-book style>
+    //     <comma-joined special rules>
+    private void DrawUnitSummary(UnitFileEntry unit)
+    {
+        ImGui.TextUnformatted(UnitStatLine(unit));
+
+        string pts = $"{unit.PointCost} pts";
+        ImGui.SameLine();
+        float ptsWidth = ImGui.CalcTextSize(pts).X;
+        float avail = ImGui.GetContentRegionAvail().X;
+        if (avail > ptsWidth)                                     // right-align; never push left into the name
+            ImGui.SetCursorPosX(ImGui.GetCursorPosX() + (avail - ptsWidth));
+        ImGui.TextDisabled(pts);
+
+        ImGui.Indent();
+        foreach (WeaponFileEntry weapon in unit.Weapons)
+            TextColoredUnformatted(HintColor, WeaponSummary(weapon));
+        if (unit.SpecialRules.Count > 0)
+            TextColoredUnformatted(HintColor,
+                string.Join(", ", unit.SpecialRules.Select(r => r.PrintableName)));
+        ImGui.Unindent();
+    }
+
+    // "Name [models] - Qua X+ Def Y+" — the read-only stat line above each unit (Quality/Defense are roll
+    // targets, hence the trailing '+'). Points are rendered separately so they can be right-aligned.
+    internal static string UnitStatLine(UnitFileEntry unit) =>
+        $"{unit.Name} [{unit.ModelCount}] - Qua {unit.Quality}+ Def {unit.Defense}+";
+
+    // Army-book style weapon line: "4x Heavy Serrated Blade (24", A6, AP(4), Reliable)". Range is shown only
+    // for ranged weapons (>0); AP only when non-zero; the special-rule names come from PrintableName.
+    internal static string WeaponSummary(WeaponFileEntry weapon)
+    {
+        List<string> parts = new();
+        if (weapon.RangeInches > 0) parts.Add($"{weapon.RangeInches}\"");
+        parts.Add($"A{weapon.Attacks}");
+        if (weapon.ArmorPenetration != 0) parts.Add($"AP({weapon.ArmorPenetration})");
+        foreach (SpecialRuleEntry rule in weapon.SpecialRules)
+            parts.Add(rule.PrintableName);
+        return $"{weapon.Quantity}x {weapon.Name} ({string.Join(", ", parts)})";
+    }
+
+    // Deep-copies a unit through the same STJ pipeline used for save/load (so its polymorphic special rules,
+    // weapons and base all clone independently), dropping the cross-file Id so a Hero's join target can't
+    // resolve to two units. Returns null only if STJ round-trips to null (shouldn't happen for a real unit).
+    internal static UnitFileEntry? CloneUnit(UnitFileEntry source)
+    {
+        string json = JsonSerializer.Serialize(source, RuleJson.Options);
+        UnitFileEntry? copy = JsonSerializer.Deserialize<UnitFileEntry>(json, RuleJson.Options);
+        if (copy is null) return null;
+
+        copy.Id = null;
+        return copy;
+    }
+
+    // Inserts a clone of the unit at idx right after it, and unfolds the copy.
+    private void DuplicateUnit(int idx)
+    {
+        UnitFileEntry? copy = CloneUnit(_army.Units[idx]);
+        if (copy is null) return;
+
+        _army.Units.Insert(idx + 1, copy);
+        _pendingOpenUnitId = copy.StableID;
     }
 
     private void DrawUnitFields(UnitFileEntry unit, int idx)
@@ -276,11 +371,18 @@ public class ArmyBuilderScreen : IAppScreen
                 WeaponFileEntry weapon = unit.Weapons[w];
                 ImGui.PushID(weapon.StableID);
 
+                if (_pendingOpenWeaponId == weapon.StableID)
+                {
+                    ImGui.SetNextItemOpen(true, ImGuiCond.Always);
+                    _pendingOpenWeaponId = null;
+                }
+
                 bool weaponOpen = ImGui.TreeNodeEx("weapon", ImGuiTreeNodeFlags.None,
                     $"{weapon.Quantity}x {weapon.Name}");
                 ImGui.SameLine();
                 if (ImGui.SmallButton($"X##delw{idx}_{w}"))
                 {
+                    if (weaponOpen) ImGui.TreePop();
                     unit.Weapons.RemoveAt(w--);
                     ImGui.PopID();
                     continue;
@@ -296,15 +398,20 @@ public class ArmyBuilderScreen : IAppScreen
             }
 
             if (ImGui.SmallButton($"Add Weapon##addw{idx}"))
-                unit.Weapons.Add(new WeaponFileEntry { Attacks = 1 });
+            {
+                WeaponFileEntry weapon = new() { Attacks = 1 };
+                unit.Weapons.Add(weapon);
+                _pendingOpenWeaponId = weapon.StableID;
+            }
         }
     }
 
     private static readonly string[] BaseShapeNames = { "Circle", "Rectangle" };
 
     // #149: per-unit base footprint. A dropdown picks the shape; a circle takes a diameter, a rectangle a
-    // width × height — all in inches (consistent with weapon ranges). Defaults live on BaseFileEntry, so
-    // switching to Rectangle reveals the 25×50mm cavalry default already filled in.
+    // width × height. Dimensions are authored in MILLIMETRES (the unit bases come in — 25/28/40/50mm) and
+    // converted to the inches BaseFileEntry persists, so the .fdgarmy format is unchanged. Defaults live on
+    // BaseFileEntry, so switching to Rectangle reveals the 25×50mm cavalry default already filled in.
     private void DrawBaseShapeFields(UnitFileEntry unit, int idx)
     {
         BaseFileEntry baseEntry = unit.Base ??= new BaseFileEntry();
@@ -315,19 +422,19 @@ public class ArmyBuilderScreen : IAppScreen
 
         if (baseEntry.Shape == EBaseShapeKind.Rectangle)
         {
-            float width = baseEntry.WidthInches;
-            if (ImGui.InputFloat($"Width (in)##bw{idx}", ref width, 0.1f, 0.5f))
-                baseEntry.WidthInches = MathF.Max(0.01f, width);
+            float widthMm = baseEntry.WidthInches * MmPerInch;
+            if (ImGui.InputFloat($"Width (mm)##bw{idx}", ref widthMm, 1f, 5f, "%.1f"))
+                baseEntry.WidthInches = MathF.Max(0.1f, widthMm) / MmPerInch;
 
-            float height = baseEntry.HeightInches;
-            if (ImGui.InputFloat($"Height (in)##bh{idx}", ref height, 0.1f, 0.5f))
-                baseEntry.HeightInches = MathF.Max(0.01f, height);
+            float heightMm = baseEntry.HeightInches * MmPerInch;
+            if (ImGui.InputFloat($"Height (mm)##bh{idx}", ref heightMm, 1f, 5f, "%.1f"))
+                baseEntry.HeightInches = MathF.Max(0.1f, heightMm) / MmPerInch;
         }
         else
         {
-            float diameter = baseEntry.DiameterInches;
-            if (ImGui.InputFloat($"Diameter (in)##bdia{idx}", ref diameter, 0.1f, 0.5f))
-                baseEntry.DiameterInches = MathF.Max(0.01f, diameter);
+            float diameterMm = baseEntry.DiameterInches * MmPerInch;
+            if (ImGui.InputFloat($"Diameter (mm)##bdia{idx}", ref diameterMm, 1f, 5f, "%.1f"))
+                baseEntry.DiameterInches = MathF.Max(0.1f, diameterMm) / MmPerInch;
         }
     }
 
@@ -615,10 +722,14 @@ public class ArmyBuilderScreen : IAppScreen
     private void DrawAddUnitButton()
     {
         if (ImGui.Button("Add Unit"))
-            _army.Units.Add(new UnitFileEntry
+        {
+            UnitFileEntry unit = new()
             {
                 Name = "New Unit", ModelCount = 1, Quality = 4, Defense = 4, PointCost = 100,
-            });
+            };
+            _army.Units.Add(unit);
+            _pendingOpenUnitId = unit.StableID;
+        }
     }
 
     // ---- #033 Spell authoring ---------------------------------------------------------------------
@@ -653,10 +764,17 @@ public class ArmyBuilderScreen : IAppScreen
             SpellDefinition spell = _army.Spells[s];
             ImGui.PushID($"spell{s}");
 
+            if (_pendingOpenSpell && s == _army.Spells.Count - 1)
+            {
+                ImGui.SetNextItemOpen(true, ImGuiCond.Always);
+                _pendingOpenSpell = false;
+            }
+
             bool open = ImGui.TreeNodeEx("spell", ImGuiTreeNodeFlags.None, $"{spell.Name} ({spell.Threshold})");
             ImGui.SameLine();
             if (ImGui.SmallButton("X##delspell"))
             {
+                if (open) ImGui.TreePop();
                 _army.Spells.RemoveAt(s--);
                 ImGui.PopID();
                 continue;
@@ -672,9 +790,12 @@ public class ArmyBuilderScreen : IAppScreen
         }
 
         if (ImGui.Button("Add Spell"))
+        {
             _army.Spells.Add(new SpellDefinition("New Spell", 1,
                 new TargetSelector(18f, 1, 1, ETargetAffinity.Foe, RequireLineOfSight: true),
                 new Effect.DealHits(1, Array.Empty<string>(), 0)));
+            _pendingOpenSpell = true;
+        }
     }
 
     private SpellDefinition DrawSpellFields(SpellDefinition spell, int idx)
@@ -837,6 +958,15 @@ public class ArmyBuilderScreen : IAppScreen
         ImGui.SameLine();
         if (ImGui.SmallButton($"Add rule##wradd{idx}"))
             rules.Add(isNumeric ? $"{names[state.sel]}({state.val})" : names[state.sel]);
+    }
+
+    // Coloured text that is NOT treated as a printf format string, so user-authored names containing '%'
+    // (weapon names, rule aliases) render verbatim rather than being mangled by ImGui's TextColored.
+    private static void TextColoredUnformatted(Vector4 color, string text)
+    {
+        ImGui.PushStyleColor(ImGuiCol.Text, color);
+        ImGui.TextUnformatted(text);
+        ImGui.PopStyleColor();
     }
 
     private static void EditString(string label, Func<string> getter, Action<string> setter,
