@@ -1,0 +1,219 @@
+{
+  "name": "Nasty Bois",
+  "faction": "Havoc Brothers",
+  "pointsLimit": 1100,
+  "units": [
+    {
+      "name": "Havoc Destroyer Champion",
+      "id": null,
+      "joinsUnitId": "73b4ca8c955940b0ad3c7d66b89b3bb2",
+      "modelCount": 1,
+      "base": {
+        "shape": "Circle",
+        "diameterInches": 1.202,
+        "widthInches": 0.984252,
+        "heightInches": 1.968504
+      },
+      "quality": 3,
+      "defense": 3,
+      "specialRules": [
+        {
+          "kind": "core",
+          "name": "Hero"
+        },
+        {
+          "kind": "coreNumeric",
+          "name": "Tough",
+          "numericValue": 6
+        }
+      ],
+      "weapons": [
+        {
+          "name": "Champion Heavy Rifle",
+          "quantity": 1,
+          "rangeInches": 24,
+          "attacks": 2,
+          "armorPenetration": 1,
+          "specialRules": []
+        },
+        {
+          "name": "CCW",
+          "quantity": 1,
+          "rangeInches": 0,
+          "attacks": 4,
+          "armorPenetration": 0,
+          "specialRules": []
+        }
+      ],
+      "pointCost": 145
+    },
+    {
+      "name": "Havoc Brothers",
+      "id": "73b4ca8c955940b0ad3c7d66b89b3bb2",
+      "joinsUnitId": null,
+      "modelCount": 10,
+      "base": {
+        "shape": "Circle",
+        "diameterInches": 1.1023622,
+        "widthInches": 0.984252,
+        "heightInches": 1.968504
+      },
+      "quality": 3,
+      "defense": 3,
+      "specialRules": [],
+      "weapons": [
+        {
+          "name": "Heavy Rifle",
+          "quantity": 10,
+          "rangeInches": 24,
+          "attacks": 1,
+          "armorPenetration": 1,
+          "specialRules": []
+        },
+        {
+          "name": "CCW",
+          "quantity": 10,
+          "rangeInches": 0,
+          "attacks": 1,
+          "armorPenetration": 0,
+          "specialRules": []
+        }
+      ],
+      "pointCost": 320
+    },
+    {
+      "name": "Havoc Bikers",
+      "id": null,
+      "joinsUnitId": null,
+      "modelCount": 3,
+      "base": {
+        "shape": "Rectangle",
+        "diameterInches": 1.1023622,
+        "widthInches": 1.37795,
+        "heightInches": 2.36
+      },
+      "quality": 3,
+      "defense": 3,
+      "specialRules": [
+        {
+          "kind": "core",
+          "name": "Fast"
+        },
+        {
+          "kind": "coreNumeric",
+          "name": "Tough",
+          "numericValue": 3
+        }
+      ],
+      "weapons": [
+        {
+          "name": "Twin Heavy Rifle",
+          "quantity": 3,
+          "rangeInches": 24,
+          "attacks": 2,
+          "armorPenetration": 1,
+          "specialRules": []
+        },
+        {
+          "name": "Heavy Pistol",
+          "quantity": 3,
+          "rangeInches": 12,
+          "attacks": 1,
+          "armorPenetration": 1,
+          "specialRules": []
+        },
+        {
+          "name": "CCW",
+          "quantity": 3,
+          "rangeInches": 0,
+          "attacks": 2,
+          "armorPenetration": 0,
+          "specialRules": []
+        }
+      ],
+      "pointCost": 290
+    },
+    {
+      "name": "Havoc APC",
+      "id": null,
+      "joinsUnitId": null,
+      "modelCount": 1,
+      "base": {
+        "shape": "Rectangle",
+        "diameterInches": 1.1023622,
+        "widthInches": 3,
+        "heightInches": 5
+      },
+      "quality": 3,
+      "defense": 2,
+      "specialRules": [
+        {
+          "kind": "core",
+          "name": "Fast"
+        },
+        {
+          "kind": "coreNumeric",
+          "name": "Transport",
+          "numericValue": 11
+        },
+        {
+          "kind": "coreNumeric",
+          "name": "Impact",
+          "numericValue": 3
+        },
+        {
+          "kind": "coreNumeric",
+          "name": "Tough",
+          "numericValue": 6
+        }
+      ],
+      "weapons": [
+        {
+          "name": "Storm Rifle",
+          "quantity": 1,
+          "rangeInches": 24,
+          "attacks": 3,
+          "armorPenetration": 1,
+          "specialRules": []
+        }
+      ],
+      "pointCost": 205
+    },
+    {
+      "name": "Cultists",
+      "id": null,
+      "joinsUnitId": null,
+      "modelCount": 10,
+      "base": {
+        "shape": "Circle",
+        "diameterInches": 0.984252,
+        "widthInches": 0.984252,
+        "heightInches": 1.968504
+      },
+      "quality": 5,
+      "defense": 5,
+      "specialRules": [],
+      "weapons": [
+        {
+          "name": "Rifle",
+          "quantity": 10,
+          "rangeInches": 24,
+          "attacks": 1,
+          "armorPenetration": 0,
+          "specialRules": []
+        },
+        {
+          "name": "CCW",
+          "quantity": 10,
+          "rangeInches": 0,
+          "attacks": 1,
+          "armorPenetration": 0,
+          "specialRules": []
+        }
+      ],
+      "pointCost": 100
+    }
+  ],
+  "ruleDefinitions": [],
+  "spells": []
+}

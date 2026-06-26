@@ -1,0 +1,212 @@
+{
+  "name": "Bugg Buddies",
+  "faction": "Alien Hives",
+  "pointsLimit": 1100,
+  "units": [
+    {
+      "name": "Hive Lord",
+      "id": null,
+      "joinsUnitId": null,
+      "modelCount": 1,
+      "base": {
+        "shape": "Circle",
+        "diameterInches": 2.75,
+        "widthInches": 0.984252,
+        "heightInches": 1.968504
+      },
+      "quality": 3,
+      "defense": 2,
+      "specialRules": [
+        {
+          "kind": "core",
+          "name": "Hero"
+        },
+        {
+          "kind": "coreNumeric",
+          "name": "Tough",
+          "numericValue": 12
+        },
+        {
+          "kind": "coreNumeric",
+          "name": "Fear",
+          "numericValue": 2
+        },
+        {
+          "kind": "core",
+          "name": "Fearless"
+        }
+      ],
+      "weapons": [
+        {
+          "name": "Heavy Razor Claws",
+          "quantity": 2,
+          "rangeInches": 0,
+          "attacks": 3,
+          "armorPenetration": 1,
+          "specialRules": []
+        },
+        {
+          "name": "Stomp",
+          "quantity": 1,
+          "rangeInches": 0,
+          "attacks": 4,
+          "armorPenetration": 1,
+          "specialRules": []
+        },
+        {
+          "name": "Heavy Serrated Blade",
+          "quantity": 1,
+          "rangeInches": 0,
+          "attacks": 6,
+          "armorPenetration": 4,
+          "specialRules": [
+            {
+              "kind": "core",
+              "name": "Reliable"
+            }
+          ]
+        }
+      ],
+      "pointCost": 360
+    },
+    {
+      "name": "Assault Grunts",
+      "id": null,
+      "joinsUnitId": null,
+      "modelCount": 10,
+      "base": {
+        "shape": "Circle",
+        "diameterInches": 0.984,
+        "widthInches": 0.984252,
+        "heightInches": 1.968504
+      },
+      "quality": 5,
+      "defense": 5,
+      "specialRules": [],
+      "weapons": [
+        {
+          "name": "Razor Claws",
+          "quantity": 10,
+          "rangeInches": 0,
+          "attacks": 2,
+          "armorPenetration": 0,
+          "specialRules": []
+        }
+      ],
+      "pointCost": 105
+    },
+    {
+      "name": "Assault Grunts",
+      "id": null,
+      "joinsUnitId": null,
+      "modelCount": 10,
+      "base": {
+        "shape": "Circle",
+        "diameterInches": 0.984,
+        "widthInches": 0.984252,
+        "heightInches": 1.968504
+      },
+      "quality": 5,
+      "defense": 5,
+      "specialRules": [],
+      "weapons": [
+        {
+          "name": "Razor Claws",
+          "quantity": 10,
+          "rangeInches": 0,
+          "attacks": 2,
+          "armorPenetration": 0,
+          "specialRules": []
+        }
+      ],
+      "pointCost": 105
+    },
+    {
+      "name": "Hive Guardians",
+      "id": null,
+      "joinsUnitId": null,
+      "modelCount": 3,
+      "base": {
+        "shape": "Circle",
+        "diameterInches": 1.5748,
+        "widthInches": 0.984252,
+        "heightInches": 1.968504
+      },
+      "quality": 3,
+      "defense": 4,
+      "specialRules": [
+        {
+          "kind": "coreNumeric",
+          "name": "Tough",
+          "numericValue": 3
+        },
+        {
+          "kind": "core",
+          "name": "Relentless"
+        }
+      ],
+      "weapons": [
+        {
+          "name": "Razor Claws",
+          "quantity": 6,
+          "rangeInches": 0,
+          "attacks": 2,
+          "armorPenetration": 0,
+          "specialRules": []
+        }
+      ],
+      "pointCost": 155
+    },
+    {
+      "name": "Carnivo-Rex",
+      "id": null,
+      "joinsUnitId": null,
+      "modelCount": 1,
+      "base": {
+        "shape": "Circle",
+        "diameterInches": 2.5,
+        "widthInches": 0.984252,
+        "heightInches": 1.968504
+      },
+      "quality": 4,
+      "defense": 2,
+      "specialRules": [
+        {
+          "kind": "coreNumeric",
+          "name": "Tough",
+          "numericValue": 12
+        },
+        {
+          "kind": "coreNumeric",
+          "name": "Fear",
+          "numericValue": 2
+        },
+        {
+          "kind": "core",
+          "name": "Fearless"
+        }
+      ],
+      "weapons": [
+        {
+          "name": "Heavy Razor Claws",
+          "quantity": 3,
+          "rangeInches": 0,
+          "attacks": 3,
+          "armorPenetration": 1,
+          "specialRules": []
+        },
+        {
+          "name": "Stomp",
+          "quantity": 1,
+          "rangeInches": 0,
+          "attacks": 4,
+          "armorPenetration": 1,
+          "specialRules": []
+        }
+      ],
+      "pointCost": 295
+    }
+  ],
+  "ruleDefinitions": [],
+  "spells": []
+}

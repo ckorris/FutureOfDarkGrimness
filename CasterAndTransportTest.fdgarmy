@@ -1,0 +1,222 @@
+{
+  "name": "Caster And Transport Test",
+  "faction": "Peeps",
+  "pointsLimit": 1000,
+  "units": [
+    {
+      "name": "Wizbo the Wizard",
+      "id": null,
+      "joinsUnitId": "84ef80da60994cea8dd5b94928f82590",
+      "modelCount": 1,
+      "base": {
+        "shape": "Circle",
+        "diameterInches": 1.3,
+        "widthInches": 0.984252,
+        "heightInches": 1.968504
+      },
+      "quality": 4,
+      "defense": 4,
+      "specialRules": [
+        {
+          "kind": "core",
+          "name": "Hero"
+        },
+        {
+          "kind": "coreNumeric",
+          "name": "Tough",
+          "numericValue": 3
+        },
+        {
+          "kind": "coreNumeric",
+          "name": "Caster",
+          "numericValue": 3
+        }
+      ],
+      "weapons": [
+        {
+          "name": "Wizard Staff",
+          "quantity": 1,
+          "rangeInches": 0,
+          "attacks": 2,
+          "armorPenetration": 1,
+          "specialRules": []
+        }
+      ],
+      "pointCost": 100
+    },
+    {
+      "name": "Regular Dudes",
+      "id": "84ef80da60994cea8dd5b94928f82590",
+      "joinsUnitId": null,
+      "modelCount": 5,
+      "base": {
+        "shape": "Circle",
+        "diameterInches": 1.1023622,
+        "widthInches": 0.984252,
+        "heightInches": 1.968504
+      },
+      "quality": 4,
+      "defense": 4,
+      "specialRules": [],
+      "weapons": [
+        {
+          "name": "Guns of Shooting",
+          "quantity": 5,
+          "rangeInches": 24,
+          "attacks": 2,
+          "armorPenetration": 0,
+          "specialRules": []
+        }
+      ],
+      "pointCost": 100
+    },
+    {
+      "name": "Knights",
+      "id": null,
+      "joinsUnitId": null,
+      "modelCount": 3,
+      "base": {
+        "shape": "Circle",
+        "diameterInches": 1.5,
+        "widthInches": 0.984252,
+        "heightInches": 1.968504
+      },
+      "quality": 3,
+      "defense": 4,
+      "specialRules": [
+        {
+          "kind": "coreNumeric",
+          "name": "Tough",
+          "numericValue": 3
+        }
+      ],
+      "weapons": [
+        {
+          "name": "Really Long Stick",
+          "quantity": 5,
+          "rangeInches": 0,
+          "attacks": 1,
+          "armorPenetration": 2,
+          "specialRules": [
+            {
+              "kind": "core",
+              "name": "Counter"
+            }
+          ]
+        }
+      ],
+      "pointCost": 100
+    },
+    {
+      "name": "2008 Ford Escape",
+      "id": null,
+      "joinsUnitId": null,
+      "modelCount": 1,
+      "base": {
+        "shape": "Rectangle",
+        "diameterInches": 1.1023622,
+        "widthInches": 3,
+        "heightInches": 5
+      },
+      "quality": 4,
+      "defense": 2,
+      "specialRules": [
+        {
+          "kind": "coreNumeric",
+          "name": "Tough",
+          "numericValue": 6
+        },
+        {
+          "kind": "coreNumeric",
+          "name": "Transport",
+          "numericValue": 6
+        },
+        {
+          "kind": "coreNumeric",
+          "name": "Impact",
+          "numericValue": 6
+        }
+      ],
+      "weapons": [],
+      "pointCost": 100
+    }
+  ],
+  "ruleDefinitions": [],
+  "spells": [
+    {
+      "name": "Crunch",
+      "threshold": 1,
+      "target": {
+        "rangeInches": 18,
+        "minCount": 1,
+        "maxCount": 1,
+        "targetAffinity": "Foe",
+        "requireLineOfSight": true,
+        "requiredToken": null,
+        "singleModel": false
+      },
+      "effect": {
+        "kind": "dealHits",
+        "count": 2,
+        "withRules": [],
+        "armorPenetration": 1
+      }
+    },
+    {
+      "name": "Fastify",
+      "threshold": 1,
+      "target": {
+        "rangeInches": 18,
+        "minCount": 1,
+        "maxCount": 1,
+        "targetAffinity": "Friend",
+        "requireLineOfSight": false,
+        "requiredToken": null,
+        "singleModel": false
+      },
+      "effect": {
+        "kind": "addRule",
+        "ruleName": "Very Fast",
+        "scope": "NextTrigger"
+      }
+    },
+    {
+      "name": "Blind",
+      "threshold": 2,
+      "target": {
+        "rangeInches": 18,
+        "minCount": 1,
+        "maxCount": 1,
+        "targetAffinity": "Foe",
+        "requireLineOfSight": true,
+        "requiredToken": null,
+        "singleModel": false
+      },
+      "effect": {
+        "kind": "statModifier",
+        "roll": "Hit",
+        "delta": -1,
+        "lifetimeScope": "NextTrigger"
+      }
+    },
+    {
+      "name": "New Spell",
+      "threshold": 1,
+      "target": {
+        "rangeInches": 18,
+        "minCount": 1,
+        "maxCount": 1,
+        "targetAffinity": "Foe",
+        "requireLineOfSight": true,
+        "requiredToken": null,
+        "singleModel": false
+      },
+      "effect": {
+        "kind": "dealHits",
+        "count": 1,
+        "withRules": [],
+        "armorPenetration": 0
+      }
+    }
+  ]
+}
