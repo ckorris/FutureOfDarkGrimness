@@ -38,6 +38,13 @@ Originally spun off from the #015/#016 close-out as its own #093 ("combat-kind c
 **Pointers:** Conditions live under `Rules/Dispatch/` (`CoreRuleCatalog.cs`, `RuleEvaluator`); mirror an existing context-evaluated condition. The combat-kind flag is already on the contexts — a read of existing state, not new plumbing. Migrate Indirect's `Not(IsMelee)` first as the proof-of-path. Relevant to #015 (attack-count mods are often shooting-only, e.g. Rapid Fire) and #016 (per-hit save effects may be combat-kind-specific).
 
 ## Notes
+- 2026-06-28: **Combat-kind condition extended to the save context** (engine `7b12055`, on branch
+  `100-conferred-rules-data`). The folded-in combat-kind condition (`IsMelee` / `Not(IsMelee)`) previously
+  worked only at the hit hooks (`HitRollModifierContext`/`HitRollCompleteContext` implement `IHasCombatKind`).
+  `SaveRollCompleteContext` now also carries `IsMelee` (implements `IHasCombatKind`), threaded from
+  `AssignWoundsStage`'s metadata, so save-side rules can gate on combat kind. Proven by three #100 "when
+  shooting" rules (Unstoppable/Shred/Bane, base effect + `Not(IsMelee)`) + 6 gate tests. The wound-apply
+  context (`PreApplyWoundContext`) still lacks it — thread there too when a wound-stage rule needs combat-kind.
 - 2026-06-25: **Joined-Caster corner fixed** (point fix, not the general mechanism). Hands-on testing surfaced that a Caster hero joined to a unit (Wizbo → Regular Dudes) never got the Cast action: the hero-merge moves Caster onto the hero MODEL, but (1) the round-start token grant used the single-participant `RuleEvaluator.Evaluate(unit, models: null)` so the host unit got no spell tokens, and (2) `ChooseActionStage.IsCaster` only checked unit rules. Fix: `Evaluate` gained an optional `models` param and `StartOfRoundExtraActionStage.GrantSpellTokens` now passes `unit.Models` (a model-Caster's grant targets the host unit); `IsCaster` also checks model rules. Solo casters unaffected. Engine `64b775c`; suite 838/0. The broader per-model activated-ability framework (Vanguard, etc.) and the `ModelID`-keyed dedup remain open here.
 - 2026-06-21: Folded the combat-kind-condition follow-up (above) into this item; removed its separate `093-combat-kind-condition.md` and re-pointed the #015/#016 ledger here.
 - 2026-06-19: Slice F (building now) lands the first real per-model carriage — `IModel.RuleDefinitions` + a model-aware `RuleEvaluator.EvaluateAll` overload on the hit hooks. Built general (not hero-only): the seam to generalize from. Recorded the corners it punts above.

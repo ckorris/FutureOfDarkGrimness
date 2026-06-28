@@ -178,6 +178,15 @@ Insertion point + shoot-vs-melee sharing (2a); `Heal` consumer lands here (defer
 both repos (engine stage + app-side resolver tweaks for the ability prompt).
 
 ## Notes
+- 2026-06-28: **Combat-kind-scoped grants — slice 4: "when shooting" save-side rules** (engine `7b12055`).
+  Extended #093's combat-kind condition to the **save context**: `SaveRollCompleteContext` now carries
+  `IsMelee` (implements `IHasCombatKind`), threaded from `AssignWoundsStage`'s metadata — the mirror of the
+  hit-side threading — so `Not(IsMelee)` gates at the save hook. On that, authored **Unstoppable when
+  shooting**, **Shred when shooting**, **Bane when shooting** (each = the base effect + `Not(IsMelee)`).
+  Registered in `All`; 6 gate tests (shooting fires / melee doesn't) across the wound-ignore, Shred, and Bane
+  fixtures. Suite 870/0, build clean, headless exit 0. Unlocks the biggest #034 skip bucket (Unstoppable ×12
+  / Shred ×6 / Bane ×3 = ~21 grant spells). The "in melee" mirror is the same with `Condition.IsMelee()`;
+  hit-side combat-kind variants (Rending/Crack in melee) already work via the hit context. See #093.
 - 2026-06-28: **Pure-data conferred rules — slice 3: combat reuse-rules (pure-data set COMPLETE)** (engine
   `adfb8c1`). Three rules reusing existing machinery: **Lacerate** (Bane's Defense-6 save-reroll, minus the
   Regeneration-ignore), **Crack** (Rending's AP-on-unmodified-6 at AP(+2) = -2 to save), **Counter-Attack**
