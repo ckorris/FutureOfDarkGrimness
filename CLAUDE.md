@@ -169,10 +169,10 @@ The engine has substantial gaps. Don't assume rules are enforced just because a 
 - `DetermineInRangeAttackersStage` / `DetermineInRangeDefendersStage` — skip range checks; any model can fight
 - `PileInStage` — implemented (moves defenders toward the charger via `PileInUtilities.ComputePileInMoves`); no longer a no-op
 
-**Fatigue & morale absent**
-- `ApplyFatigueStage` — logs and exits
-- `AssignMeleeMoralePenaltyStage` — no-op (waits on fatigue)
-- `RollForMoraleStage` — modifiers TODO
+**Fatigue & morale implemented** (was absent at the Apr 2026 survey; #020 fatigue + #091 morale-core landed since — re-verified 2026-06-28)
+- `ApplyFatigueStage` — applies `FatigueUtilities.ApplyFatigued` to units that fought (charge/strike-back/swing); a Fatigued (or Shaken) unit hits only on unmodified 6s in melee (`DetermineHitRollStage`)
+- `AssignMeleeMoralePenaltyStage` — real: Shaken, or Rout (lethal-wounds-to-all, since there's no whole-unit removal primitive) when the loser is at half strength
+- `RollForMoraleStage` — runs `MoraleUtilities.TakeMoraleTest` (rule-aware: folds `Morale_OnPreMoraleTest` modifiers, Fearless re-roll). The test is invocable on demand — #034's conditional spells (`Effect.MoraleTestThen`) call it to branch on pass/fail
 
 **Round/turn machinery placeholders**
 - `ReconcileNewRoundStage` — transitions with no work
