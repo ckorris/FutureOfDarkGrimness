@@ -178,6 +178,15 @@ Insertion point + shoot-vs-melee sharing (2a); `Heal` consumer lands here (defer
 both repos (engine stage + app-side resolver tweaks for the ability prompt).
 
 ## Notes
+- 2026-06-28: **Pure-data conferred rules — slice 3: combat reuse-rules (pure-data set COMPLETE)** (engine
+  `adfb8c1`). Three rules reusing existing machinery: **Lacerate** (Bane's Defense-6 save-reroll, minus the
+  Regeneration-ignore), **Crack** (Rending's AP-on-unmodified-6 at AP(+2) = -2 to save), **Counter-Attack**
+  (Counter's strikes-first-when-charged facet alone, unit-scoped). Tests added to the Bane/Rending/Counter
+  fixtures. Suite 864/0, build clean, headless exit 0. **The "expressible today" pure-data list (line 24) is
+  now authored** (12 rules across slices 1–3). What remains in Part 2 needs new bits, not pure data:
+  Guarded/Reinforced (charge-start distance), Fortified/Reinforced (AP-reduction-with-floor), Resistance
+  (spell-source wound condition), the faction "Boost" rules (author each effect on #100 #3's conditions),
+  and the combat-kind-scoped grants (#093).
 - 2026-06-28: **Pure-data conferred rules — slice 2: movement self-modifiers** (engine `7593de4`). Five
   `MovementBonus` rules mirroring Fast/Slow: **Agile** (+1 Advance, +2 Rush/Charge), **Quick** (+2 all),
   **Rapid Advance** (+4 Advance), **Rapid Rush** (+6 Rush), **Rapid Charge** (+4 Charge). Registered in
