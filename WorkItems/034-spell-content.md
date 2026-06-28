@@ -45,6 +45,25 @@ real army's spell list needs to work end-to-end.
   explicitly NOT needed — no castable spell requires them (see #033 survey "Not needed at the spell level").
 
 ## Notes
+- 2026-06-28: **Part 2 scoped (coordinating with #100) + collision found + a safe non-engine win taken.**
+  Cross-referenced the 139 skipped spells against #100's primitive catalog:
+  - **⚠️ COLLISION — #034 Part 1 already built two #100 catalog primitives** (the parallel-build hazard the
+    ledger keeps flagging): **#034 #5's `Effect.ApplyFatigue` == #100 #9** ("apply fatigue to a target —
+    Terrifying Fury") and **#034 #6's caster-directed `Effect.TriggeredMove` == #100 #18** ("move-the-target
+    — Deep Hypnosis"). Recorded in #100's ledger too; **#100 must adopt these, not re-build them**, and the
+    merge must reconcile (both built on the same engine master, so the effect/op names should line up).
+  - **Conferred-rule authoring (Part 2 proper) is #100's catalog territory** — the 139 skips map to: ~28
+    combat-kind-scoped grants ("X when shooting/in melee") → **#093** combat-kind condition (+#100 #1);
+    Evasive/Melee Evasion/self-modifiers (~25) → #100 "pure data" catalog rules; faction "Boost" rules (~20)
+    → #100 #3 (conditions done, effects to author); the rest → Tier-C #100 primitives (#5/#6/#10/#13/#14/#15/
+    #20/#23/#102). Per the 034 "coordinate before adding catalog rules here" rule, **none of these were built
+    on this branch.**
+  - **Safe non-engine win taken now:** the generator over-skipped *every* "gets X once". Refined it to emit a
+    plain grant of an already-implemented rule (Furious/Fearless/Stealth/Regeneration/Relentless/Surge) as
+    `Effect.AddRule` — works today via #100 #1 (granted-rule read-back, present on this branch). +7 spells
+    (143 emitted, 139 skipped). Combat-kind-scoped grants stay skipped (the scope word keeps them from
+    matching). Verified: Blood Brothers' Furious-grant spell loads + offers up-to-2 friendly targets + casts
+    (headless exit 0). Local content only — never committed.
 - 2026-06-28: **Part 3 partially authored (implemented-effect subset) — local-only, never committed.** A
   generator (`gen_spell_armies.py`, kept beside its output) parses the off-repo corpus
   (`/home/chris/Projects/GDF Armies/Special Rules and Spells by Army.md`) and emits one `<Faction> -

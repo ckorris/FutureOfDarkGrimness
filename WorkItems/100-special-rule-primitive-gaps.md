@@ -58,7 +58,7 @@ Rules already expressible on the above but not yet in the catalog (pure data, no
 
 8. **Apply terrain state to a target** — force a target to take a Dangerous-terrain test, or count as standing in Dangerous/Difficult terrain. Builds on the existing terrain-effect stage (`ApplyNonMovementTerrainEffectsStage`). Unlocks **Dangerous Terrain Debuff, Difficult Terrain Debuff** and the Plague "Aura of Pestilence"-style spells.
 
-9. **Apply fatigue to a target** — a rule/spell makes a chosen unit fatigued. Fatigue state exists (#020); applying it as an effect is new. Unlocks **Fatigue Debuff** and War Disciples' Terrifying Fury.
+9. **Apply fatigue to a target** — ✅ **BUILT ON #034** (`Effect.ApplyFatigue`, engine `60d8ae9`) — adopt, don't re-build. A rule/spell makes a chosen unit fatigued. Fatigue state exists (#020); applying it as an effect is new. Unlocks **Fatigue Debuff** and War Disciples' Terrifying Fury.
 
 10. **Dice-pool → hits / auto-wounds** — "roll N dice, each ≥X scores a hit (or an auto-wound) on a target." Generalizes the live `DealHits` to dice-driven counts and to wounds-without-to-hit. Unlocks **Ravage, Breath Attack, Crossing Attack**, the Wormhole **Storm of Change/Lust/Plague/War** rules, and underpins #11.
 
@@ -76,7 +76,7 @@ Rules already expressible on the above but not yet in the catalog (pure data, no
 
 17. **Place / restore a unit mid-game** — create a new unit or restore destroyed models. **Spawn, Reinforcement, Reanimation, Split.** (Touches deployment + table-state lifecycle.)
 
-18. **Move-the-target** — force a chosen enemy unit to move a set distance/direction. **Mind Control**; Soul-Snatcher Cults' Deep Hypnosis.
+18. **Move-the-target** — ✅ **BUILT ON #034** (caster-directed `Effect.TriggeredMove`, engine `0e707b7`) — adopt, don't re-build. Force a chosen enemy unit to move a set distance/direction. **Mind Control**; Soul-Snatcher Cults' Deep Hypnosis.
 
 19. **Reactivate-another-unit** — generalize the live self-`Reactivate` to activate a *chosen* friendly unit (the effect's doc already anticipates this). **Coordinate.**
 
@@ -178,6 +178,14 @@ Insertion point + shoot-vs-melee sharing (2a); `Heal` consumer lands here (defer
 both repos (engine stage + app-side resolver tweaks for the ability prompt).
 
 ## Notes
+- 2026-06-28: **⚠️ Two catalog primitives were built on the `034-spell-content` branch — adopt them, do NOT
+  re-build (parallel-build collision).** #034's spell-primitive work implemented: **#9 (apply fatigue to a
+  target)** as `Effect.ApplyFatigue` → `IOperationServices.ApplyFatigue` → `FatigueUtilities.ApplyFatigued`
+  (engine `60d8ae9`); and **#18 (move-the-target)** as a caster-directed `Effect.TriggeredMove` — `MoveUnit`
+  gained a controller param so the request routes to the rule's bearer, not the victim (engine `0e707b7`).
+  Both were built on the same engine master this branch sits on, so the effect/op names should line up at
+  merge — reconcile rather than duplicate. #034 also reuses #100 #1 (granted-rule read-back) to author plain
+  "gains rule X" spell buffs. See `WorkItems/034-spell-content.md` (2026-06-28 notes).
 - 2026-06-22: **RestrictActions / Immobile done** (engine `1912b5d`) — `ChooseActionStage` honours `RestrictActions` ops, graying out disallowed actions; Immobile authored. Picked as the cleanest *contained* remaining Part-1 item (the others — RangeModifier, Strider — thread the `canMoveThroughEnemies`-style flag through ~14 files incl. core movement validation across both repos, too invasive to take on unsupervised; left for their own scoped efforts). Suite 729/0, headless exit 0.
 - 2026-06-22: **#2 COMPLETE** — slices 2d + 2e done (engine `47dcf17`, `37a26c4`). 2d: AI skips the pre-attack menu (conservative default). 2e: authored Furious Buff + Mend catalog rules; wired the deferred `Effect.Heal` consumer (closes #4-Heal). The full "before attacking, pick a friendly/enemy unit within N, grant/heal X" family works end-to-end. Suite 727/0, headless exit 0. A true Mark/Debuff (deferred-debuff #6) and offensive pre-attack (dice-pool #10) remain their own future primitives. **Net for the session: Part 1 #1/#3/#4-Shred/#4-Heal done; #2 fully done; #5 and the remaining #4/Part-2/Part-3 primitives catalogued for later.**
 - 2026-06-22: **#2 slices 2b + 2c done** (engine `ae7a3bb`, `b97fa7a`). 2b: cross-unit targeting — `PreAttackTargeting.EligibleTargets` reads the `TargetSelector` (affinity/range/LoS/token), selection via `CancellableSelectionRequest<UnitData>`; "pick a friendly unit within 12, grant X" works end-to-end. 2c: FirstTrigger consume-on-fire (Option A) + a latent slice-1 token-merge bug fixed (distinct grant payloads were collapsing). Suite 724/0, headless exit 0. Remaining #2: **2d** (AI policy — note the existing AI resolvers already answer the StringSelection + CancellableSelection generically, so this is mostly "make the default sensible / skip"), **2e** (wire representative rules incl. Mend via the deferred `Heal` consumer + integration tests).
