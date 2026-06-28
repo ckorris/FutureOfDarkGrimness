@@ -178,6 +178,19 @@ Insertion point + shoot-vs-melee sharing (2a); `Heal` consumer lands here (defer
 both repos (engine stage + app-side resolver tweaks for the ability prompt).
 
 ## Notes
+- 2026-06-28: **Pure-data conferred rules — slice 1: hit-roll modifiers** (engine `643633a`, branch
+  `100-conferred-rules-data`, fresh off master since `100-special-rule-primitives` is stale/already-merged).
+  Authored four Tier-A rules from the "expressible today" list (line 24) against existing primitives, no
+  engine work: **Evasive** (-1 to hit vs the bearer, all attacks, Subject seat), **Melee Evasion** (same,
+  `IsMelee`-gated), **Precise** (+1 to hit, Actor), **Good Shot** (+1 to hit shooting-only, `Not(IsMelee)`).
+  All ride the shared `Shooting_OnHitRollModifier` sink (which `DetermineHitRollStage` fires for melee +
+  shooting alike). Registered in `CoreRuleCatalog.All`; 7 new `HitRollRuleIntegrationTests`. Suite 856/0,
+  build clean, headless exit 0. Unlocks the units carrying these + the spells that grant them (Evasive ×12 /
+  Melee Evasion ×6 in #034's skip list). **Next pure-data slices:** Lacerate/Crack (reroll/AP-on-6, mirror
+  Bane/Rending), the movement family (Agile/Quick/Rapid Advance/Rush/Charge — `MovementBonus`), Precise/Good
+  Shot done. Deferred (not pure data — need new bits): Guarded/Reinforced (">9\" when charged" = charge-start
+  distance, not current), Fortified/Reinforced (AP-reduction-with-floor), Resistance (ignore-wound with a
+  spell-source distinction).
 - 2026-06-28: **⚠️ Two catalog primitives were built on the `034-spell-content` branch — adopt them, do NOT
   re-build (parallel-build collision).** #034's spell-primitive work implemented: **#9 (apply fatigue to a
   target)** as `Effect.ApplyFatigue` → `IOperationServices.ApplyFatigue` → `FatigueUtilities.ApplyFatigued`
