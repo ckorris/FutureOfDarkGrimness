@@ -1,6 +1,6 @@
 # 034 — Spell content + the primitives & conferred rules it needs
 
-**Status**: in-progress — single-model (#3) + multi-unit (#4) damage primitives done (2026-06-25); forced-enemy-movement (#6) done (2026-06-28); #5 conditional/triggered next
+**Status**: in-progress — **Part 1 (spell-targeting primitives) COMPLETE 2026-06-28**: single-model (#3) + multi-unit (#4) damage (2026-06-25), forced-enemy-movement (#6) + conditional/triggered (#5) (2026-06-28). Remaining: Part 2 (conferred rules, #100's catalog) + Part 3 (per-faction spell JSON, copyrighted/local)
 **Related**: #033 (Caster framework — the runway), #100 (conferred-rule catalog — coordinate), #101 (granted-rule/aura dispatch), #087 (custom-rule authoring), #059 (per-army STJ embedding)
 
 ## Goal
@@ -18,7 +18,10 @@ real army's spell list needs to work end-to-end.
    - **#6 forced enemy movement (~1 spell)** — ✅ **DONE 2026-06-28** (this branch). `Effect.TriggeredMove`
      wired into `CastSpellStage`'s non-damage path via `OperationExecutor`; the move request routes to the
      rule's **bearer** (the caster), so a "reposition an enemy unit" spell is caster-directed, not victim-chosen.
-   - #5 conditional/triggered (~4) — low priority, **next** (pending corpus characterization).
+   - **#5 conditional/triggered (~4 spells)** — ✅ **DONE 2026-06-28** (this branch). `Effect.MoraleTestThen(OnFailure)`:
+     `CastSpellStage` runs a per-target morale test and applies the on-fail effect only on a fail. Covers
+     Deep Hypnosis (on fail → caster moves the enemy, reusing #6's `TriggeredMove`) and Terrifying Fury
+     (on fail → new `Effect.ApplyFatigue` via `FatigueUtilities`). **Part 1 is now complete.**
 2. **Conferred-rule implementations** (Evasive, Crack, Shatter, Lacerate, Quick Shot, Melee Evasion,
    Unwieldy, Unpredictable Shooter, faction "Boost" rules, Unstoppable-when-shooting, …). **#100's
    territory** — the general conferred-rule catalog is built there. **Coordinate before adding catalog
@@ -37,11 +40,26 @@ real army's spell list needs to work end-to-end.
 - **Army-Builder spell-editor toggle for `SingleModel`** — the engine primitive + JSON field exist, but the
   GUI editor doesn't yet expose the flag (author single-model spells via JSON for now). App-side + needs
   GUI hand-verification; fold into a later app slice.
-- Conditional/triggered (#5) — the last remaining (low-priority) primitive; picked up 2026-06-28, design
-  pending characterization of the ~4 spells from the off-repo corpus
-  (`/home/chris/Projects/GDF Armies/Special Rules And Spells by Army.md`, copyrighted — read for shape, never commit).
+- **Part 1 spell-targeting primitives are all done** (#3/#4/#5/#6). The remaining low-priority primitives the
+  #033 survey listed beyond Part 1 (Heal/Summon/terrain-status/random-branch at the spell level) are
+  explicitly NOT needed — no castable spell requires them (see #033 survey "Not needed at the spell level").
 
 ## Notes
+- 2026-06-28: **Conditional/triggered primitive (#5) done — Part 1 complete** (engine `034-spell-content`,
+  commit `60d8ae9`). Characterized the ~4 spells from the off-repo corpus
+  (`/home/chris/Projects/GDF Armies/Special Rules and Spells by Army.md`, copyrighted — read for shape, never
+  committed): 2 distinct spells, one shape — *pick enemy unit(s); each takes a morale test; on a fail, apply
+  effect E*. Deep Hypnosis (E = caster moves it ≤6") and Terrifying Fury ×3 armies (E = becomes Fatigued).
+  Built `Effect.MoraleTestThen(Effect OnFailure)` (stage-enacted in `CastSpellStage` because the test is async
+  + rolls live state — `MoraleUtilities.TakeMoraleTest` per target, on-fail effect applied via a shared
+  `ApplyEffectToTarget` seam) + `Effect.ApplyFatigue` (executable op → `IOperationServices.ApplyFatigue` →
+  `FatigueUtilities.ApplyFatigued`, the one fatigue authority). On-fail `TriggeredMove` reuses #6's
+  caster-directed move. `SpellText` describes both. 3 new tests (fail→move, fail→fatigue, pass→no-effect;
+  Quality-6 target + fixed face 4/6 gives deterministic cast-passes-morale-fails / both-pass control). Suite
+  844/0, build clean, headless exit 0. Stated-not-cut: an on-fail `DealHits` would need the child pipeline
+  (no corpus conditional spell deals damage on fail). Note: CLAUDE.md's "morale/fatigue absent" stub note is
+  stale — both are live (`MoraleUtilities`/`FatigueUtilities`, #091/#020). Unlocks ~4 corpus spell occurrences
+  once authored locally.
 - 2026-06-28: **Forced enemy movement primitive (#6) done** (engine `034-spell-content`, commit `0e707b7`).
   The cast path's non-damage branch (renamed `ApplyTokenEffect` → `ApplyNonDamageEffect`) now also runs
   `OperationExecutor.Execute`, so an imperative `Effect.TriggeredMove` fires (token ops and executable ops are
