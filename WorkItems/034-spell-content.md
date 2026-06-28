@@ -1,6 +1,6 @@
 # 034 — Spell content + the primitives & conferred rules it needs
 
-**Status**: in-progress — single-model (#3) + multi-unit (#4) damage primitives done (2026-06-25)
+**Status**: in-progress — single-model (#3) + multi-unit (#4) damage primitives done (2026-06-25); forced-enemy-movement (#6) done (2026-06-28); #5 conditional/triggered next
 **Related**: #033 (Caster framework — the runway), #100 (conferred-rule catalog — coordinate), #101 (granted-rule/aura dispatch), #087 (custom-rule authoring), #059 (per-army STJ embedding)
 
 ## Goal
@@ -15,7 +15,10 @@ real army's spell list needs to work end-to-end.
      against one chosen model "as a unit of [1]".
    - **#4 multi-unit damage (~19 spells)** — ✅ **DONE 2026-06-25** (this branch). Damage runs the
      save→wound pipeline once per selected unit via the looped child `ResolveSpellDamageStage`.
-   - #5 conditional/triggered (~4), #6 forced enemy movement (~1) — low priority.
+   - **#6 forced enemy movement (~1 spell)** — ✅ **DONE 2026-06-28** (this branch). `Effect.TriggeredMove`
+     wired into `CastSpellStage`'s non-damage path via `OperationExecutor`; the move request routes to the
+     rule's **bearer** (the caster), so a "reposition an enemy unit" spell is caster-directed, not victim-chosen.
+   - #5 conditional/triggered (~4) — low priority, **next** (pending corpus characterization).
 2. **Conferred-rule implementations** (Evasive, Crack, Shatter, Lacerate, Quick Shot, Melee Evasion,
    Unwieldy, Unpredictable Shooter, faction "Boost" rules, Unstoppable-when-shooting, …). **#100's
    territory** — the general conferred-rule catalog is built there. **Coordinate before adding catalog
@@ -34,9 +37,23 @@ real army's spell list needs to work end-to-end.
 - **Army-Builder spell-editor toggle for `SingleModel`** — the engine primitive + JSON field exist, but the
   GUI editor doesn't yet expose the flag (author single-model spells via JSON for now). App-side + needs
   GUI hand-verification; fold into a later app slice.
-- Conditional/triggered (#5) and forced-movement (#6) primitives — the remaining (low-priority) primitives.
+- Conditional/triggered (#5) — the last remaining (low-priority) primitive; picked up 2026-06-28, design
+  pending characterization of the ~4 spells from the off-repo corpus
+  (`/home/chris/Projects/GDF Armies/Special Rules And Spells by Army.md`, copyrighted — read for shape, never commit).
 
 ## Notes
+- 2026-06-28: **Forced enemy movement primitive (#6) done** (engine `034-spell-content`, commit `0e707b7`).
+  The cast path's non-damage branch (renamed `ApplyTokenEffect` → `ApplyNonDamageEffect`) now also runs
+  `OperationExecutor.Execute`, so an imperative `Effect.TriggeredMove` fires (token ops and executable ops are
+  disjoint `OfType` filters, so buff/debuff spells are unaffected). `Effect.TriggeredMove.Apply` stamps the
+  move's controller as the rule's **bearer's** player → a self-move (Vanguard/Harassing) is unchanged
+  (bearer == moved unit), while a cross-unit spell is **caster-directed** (`MoveUnit` gained an optional
+  `controller`, threaded through `InvokeTriggeredMove`; `GameOperationServices` routes the
+  `DefineMovementPathRequest` to `controller ?? unit.PlayerID`). `SpellText` describes it in the menu. New
+  `CastSpellStage_ForcedMoveSpell_CasterDirectsEnemyMove` (asserts the enemy is displaced AND the request's
+  `TargetPlayerID` is the caster). Suite 841/0, build clean, headless exit 0. **GUI hand-verification pending**
+  — the caster's movement resolver renders an enemy-owned unit as the mover; eyeball for rendering quirks
+  (engine + headless path is correct). Unlocks ~1 corpus spell once authored locally.
 - 2026-06-25: **Multi-unit damage primitive (#4) done** (engine, branch `034-spell-content`).
   Restructured `CastSpellStage` to the `ShootStage`/`FireStage` idiom (chosen over a contained
   swappable-metadata wrapper, which was judged a moderate hack — it subverts the context-identity model and
