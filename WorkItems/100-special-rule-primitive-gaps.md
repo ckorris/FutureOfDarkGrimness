@@ -178,6 +178,12 @@ Insertion point + shoot-vs-melee sharing (2a); `Heal` consumer lands here (defer
 both repos (engine stage + app-side resolver tweaks for the ability prompt).
 
 ## Notes
+- 2026-06-28: **Pure-data conferred rules — slice 2: movement self-modifiers** (engine `7593de4`). Five
+  `MovementBonus` rules mirroring Fast/Slow: **Agile** (+1 Advance, +2 Rush/Charge), **Quick** (+2 all),
+  **Rapid Advance** (+4 Advance), **Rapid Rush** (+6 Rush), **Rapid Charge** (+4 Charge). Registered in
+  `All`; 5 `MovementRuleIntegrationTests`. Suite 861/0, build clean, headless exit 0. Remaining clean
+  pure-data: Lacerate (reroll Defense 6s — mirror Bane), Crack (AP(+2) on unmodified 6 to hit — mirror
+  Rending), Counter-Attack (Strikes-first-when-charged — mirror Counter's StrikeFirst facet).
 - 2026-06-28: **Pure-data conferred rules — slice 1: hit-roll modifiers** (engine `643633a`, branch
   `100-conferred-rules-data`, fresh off master since `100-special-rule-primitives` is stale/already-merged).
   Authored four Tier-A rules from the "expressible today" list (line 24) against existing primitives, no
