@@ -1,6 +1,6 @@
 # 034 — Spell content + the primitives & conferred rules it needs
 
-**Status**: in-progress — **Part 1 (spell-targeting primitives) COMPLETE 2026-06-28**: single-model (#3) + multi-unit (#4) damage (2026-06-25), forced-enemy-movement (#6) + conditional/triggered (#5) (2026-06-28). Remaining: Part 2 (conferred rules, #100's catalog) + Part 3 (per-faction spell JSON, copyrighted/local)
+**Status**: in-progress — **Part 1 (spell-targeting primitives) COMPLETE 2026-06-28**: single-model (#3) + multi-unit (#4) damage (2026-06-25), forced-enemy-movement (#6) + conditional/triggered (#5) (2026-06-28). **Part 3 partially authored 2026-06-28** (implemented-effect subset, local-only). Remaining: Part 2 (conferred rules, #100's catalog) + the rest of Part 3 (keyword-buff spells, blocked on Part 2)
 **Related**: #033 (Caster framework — the runway), #100 (conferred-rule catalog — coordinate), #101 (granted-rule/aura dispatch), #087 (custom-rule authoring), #059 (per-army STJ embedding)
 
 ## Goal
@@ -45,6 +45,18 @@ real army's spell list needs to work end-to-end.
   explicitly NOT needed — no castable spell requires them (see #033 survey "Not needed at the spell level").
 
 ## Notes
+- 2026-06-28: **Part 3 partially authored (implemented-effect subset) — local-only, never committed.** A
+  generator (`gen_spell_armies.py`, kept beside its output) parses the off-repo corpus
+  (`/home/chris/Projects/GDF Armies/Special Rules and Spells by Army.md`) and emits one `<Faction> -
+  Spells.fdgarmy` per faction into `/home/chris/Projects/GDF Armies/generated-spell-armies/` (outside the
+  repo by design — the real content is never committed). Only spells whose effect the engine implements are
+  emitted; everything else is logged to `_skipped.md` with a reason. This pass: **47 faction files, 136
+  spells emitted** (121 damage incl. single-model/multi-unit, 11 numeric stat-modifier, 4 conditional
+  morale-test), **146 skipped** — almost all "target gains keyword X" buffs blocked on Part 2 (#100). Damage
+  spells carrying an unimplemented weapon rule keep the (working) damage and drop the rule (noted). Verified:
+  a generated file loads in the headless app (`Loaded 'Soul-Snatcher Cults (spells)'`), spells appear in the
+  cast menu, and casting runs the real pipeline (exit 0). Re-run the generator after Part 2 to absorb the
+  keyword-buff spells.
 - 2026-06-28: **Conditional/triggered primitive (#5) done — Part 1 complete** (engine `034-spell-content`,
   commit `60d8ae9`). Characterized the ~4 spells from the off-repo corpus
   (`/home/chris/Projects/GDF Armies/Special Rules and Spells by Army.md`, copyrighted — read for shape, never
