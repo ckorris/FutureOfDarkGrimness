@@ -178,6 +178,16 @@ Insertion point + shoot-vs-melee sharing (2a); `Heal` consumer lands here (defer
 both repos (engine stage + app-side resolver tweaks for the ability prompt).
 
 ## Notes
+- 2026-06-28: **Case-sensitive resolution — FIXED (resolver now case-insensitive).** Resolved the latent
+  finding below the user's way (case-insensitivity, not renaming): `RuleResolver._rules` is now an
+  `OrdinalIgnoreCase` dictionary, so "Bane when Shooting" (corpus) resolves to the registered "Bane when
+  shooting" and vice versa — and registration rejects case-only duplicates, keeping register/resolve
+  semantics aligned. Also made the two name-matching `Condition`s (`UnitHasRule` / `TargetHasRule`)
+  case-insensitive for consistency, so "has Bane when Shooting" matches the lowercase-registered rule.
+  Test `Resolver_IsCaseInsensitive_CorpusCasingResolvesToCatalogRule`. The aura grant strings were left as
+  the exact registered names (still correct under the new comparer). Suite 886/0, app build clean, headless
+  exit 0. This is the higher-leverage fix — every #034 corpus reference that differs only by case now
+  resolves, not just the three "when shooting" rules.
 - 2026-06-28: **Aura cluster — CATALOGED (17 new auras, pure data).** Generalized `Effect.Aura` (proven by
   the post-combat-move auras) across every base rule already in `All`. Surveyed the corpus (uniform wording
   "this model and its unit get X", NO ranged auras → all map to `Effect.Aura`); intersected the ~89 distinct
