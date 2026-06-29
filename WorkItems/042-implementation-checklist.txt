@@ -1424,6 +1424,17 @@ INTEGRATION PROGRESS (2026-06-28, cont. 33) — post-combat-move Boost + Aura va
     #100 #1 read-back and fires at the post-combat hooks. NB UnitHasRule (unit-level) stands in for the
     corpus's "most MODELS have X" (per-model majority is #093).
 
+INTEGRATION PROGRESS (2026-06-28, cont. 34) — Aura cluster generalized (All now 78 rules). Suite 885/0.
+  * 17 new "X Aura" rules via a UnitAura(name, grantedRule) factory — every base already in All:
+    Regeneration / Furious / Stealth / Scout / Relentless / Ambush / Counter-Attack / Evasive / Fast /
+    Fearless / Melee Evasion / Rapid Advance / Rapid Charge / Rapid Rush + Bane/Shred/Unstoppable-when-
+    Shooting. The 4 post-combat auras fold into the same factory. All map to Effect.Aura (corpus auras are
+    uniformly unit-wide, no ranged ones). Catalog-integrity test asserts every Effect.Aura grants a
+    resolver-known name (case-sensitive). Deferred: auras whose base isn't cataloged yet (Courage, Melee
+    Shrouding, the "in melee" mirrors, …).
+  * FLAGGED (not fixed): 3 rules are registered lowercase ("Bane when shooting" …) but the corpus writes
+    "Bane when Shooting"; the case-sensitive resolver drops a direct corpus reference. See WorkItems/100.
+
 [x] SUPPRESSION vs. PER-RULE LOG (DONE 2026-06-07; see INTEGRATION PROGRESS cont. 6).
     Was: the per-rule game-log line emitted at QUEUE TIME, before the suppression first-pass,
     so a suppressed rule would print a phantom "X added -1 to hit". FIXED by moving log emission

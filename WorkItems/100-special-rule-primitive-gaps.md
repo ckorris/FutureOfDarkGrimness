@@ -178,6 +178,29 @@ Insertion point + shoot-vs-melee sharing (2a); `Heal` consumer lands here (defer
 both repos (engine stage + app-side resolver tweaks for the ability prompt).
 
 ## Notes
+- 2026-06-28: **Aura cluster — CATALOGED (17 new auras, pure data).** Generalized `Effect.Aura` (proven by
+  the post-combat-move auras) across every base rule already in `All`. Surveyed the corpus (uniform wording
+  "this model and its unit get X", NO ranged auras → all map to `Effect.Aura`); intersected the ~89 distinct
+  corpus aura names with the catalog. Added a private **`UnitAura(name, grantedRule)` factory** (Effect.Aura
+  at `Lifecycle_OnUnitCreated`, `UntilEndOfGame`) and folded the 4 existing post-combat auras into it for
+  one uniform aura section. New auras: Regeneration, Furious, Stealth, Scout, Relentless, Ambush,
+  Counter-Attack, Evasive, Fast, Fearless, Melee Evasion, Rapid Advance, Rapid Charge, Rapid Rush, +
+  Bane/Shred/Unstoppable-when-Shooting. `All` 61 → 78; all pickable in the Army Creator. One
+  **catalog-integrity test** (`EveryCatalogAura_GrantsAResolvableRule`) iterates `All` and asserts every
+  `Effect.Aura` grants a resolver-known name — covers all 21 auras + any future one, and caught nothing
+  (casing correct). Suite 885/0, app build clean, headless exit 0. **Deliberately deferred** (base rule not
+  yet cataloged, so the aura would grant an unresolvable name): Courage, Melee Shrouding, Versatile Reach,
+  Resistance, the "in melee" combat-kind mirrors (Bane/Rending/Shred/Unstoppable in Melee), Bounding,
+  Teleport, etc. — each needs its base rule first.
+- 2026-06-28: **Latent finding — case-sensitive rule resolution vs corpus casing.** `RuleResolver` is an
+  ordinal (case-sensitive) dictionary, but three #093 rules are registered lowercase — "Bane when shooting",
+  "Shred when shooting", "Unstoppable when shooting" — while the corpus writes them "Bane when **S**hooting"
+  etc. So a corpus army list / spell that references the rule by its book name resolves to **nothing**
+  (skip-and-warn), silently dropping the rule. Not introduced here and the new auras dodge it (they grant
+  the exact lowercase registered name, verified by the integrity test). Recommended fix (its own small,
+  deliberate slice): rename those 3 base rules to the corpus casing ("…when Shooting") + update the 3 aura
+  grant strings to match + grep for any other by-name resolution of the lowercase form. Flagged for sign-off
+  rather than folded in, to keep the aura cluster scope clean.
 - 2026-06-28: **Post-combat-move Boost + Aura variants — BUILT (6 rules, mostly data + one gate tweak).**
   Cataloged the corpus's variant rules on the existing family:
   - **Boosts** (Harassing Boost, Guerrilla Boost): "if the unit has the base rule, move 6\" instead of 3\"."
