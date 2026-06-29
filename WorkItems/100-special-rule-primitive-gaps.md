@@ -68,7 +68,7 @@ Rules already expressible on the above but not yet in the catalog (pure data, no
 
 13. **Marker-scaled magnitude** — a `ValueSource.TokenCount` and an effect whose magnitude scales with a marker count; combined with the round/destroy triggers (#5) this gives the **growth/frenzy** family (Piercing/Precision/Defensive Growth, Piercing/Precision Frenzy, Fortified Growth).
 
-14. **Enemy marker-tag + spend-for-bonus** — tag a target with X markers, then let friendly attackers spend the target's markers for +AP / +hit. **Piercing Tag, Precision Tag, Piercing/Precision Target, Precision Spotter, Piercing Spotter.**
+14. **Enemy marker-tag.** Two variants: (a) **rule-conferring mark** ("mark an enemy → the next friendly to attack it gets rule X, then spent") — ✅ **BUILT** (`Effect.MarkTarget`, engine `5ef5443`; the "X against once" spell family); (b) **spend-for-bonus markers** — tag a target with X markers, then let friendly attackers spend them for +AP/+hit (**Precision Spotter, Piercing Spotter, Piercing/Precision Tag/Target**) — still open (needs a count-and-spend mechanic, not the one-shot rule transfer).
 
 15. **Randomized-branch effect** — "roll 1 die: 1-3 → effect A, 4-6 → effect B," applied to all models with the rule for the attack. **Unpredictable / Unpredictable Fighter / Unpredictable Shooter** (and their Marks via #2/#6).
 
@@ -178,6 +178,20 @@ Insertion point + shoot-vs-melee sharing (2a); `Heal` consumer lands here (defer
 both repos (engine stage + app-side resolver tweaks for the ability prompt).
 
 ## Notes
+- 2026-06-28: **#14 enemy mark/tag primitive — slice 5** (engine `5ef5443`). Implements the "pick an enemy,
+  the next friendly to attack it gets rule X (then it's used up)" spell family. `Effect.MarkTarget(rule)`
+  drops a `TokenType.Mark` (rule-name payload) on the picked enemy via the normal cast path. The FIRST
+  attack into a marked enemy CLAIMS it at `DetermineHitRollStage` (the shared first rule-eval point of every
+  shoot/melee attack): the marked rule transfers to the attacker as a one-attack grant the read-back applies
+  across the attack's hooks, and the mark is removed — **spent by the attack itself, dice-independent**
+  (the corrected semantics, after the user flagged that consume-on-fire was wrong: a no-6 Furious attack
+  must still spend the mark). Closed a **latent gap** found en route — `AttackEnd`-lifetime tokens were
+  never swept (`TokenClearService.ClearsAtHook` had no case); added `ClearAttackEndTokens`, retired lazily
+  at the attacker's next claim. `TestGameContext` gained an optional resolver; end-to-end claim+consume
+  test (mark→Precise→threshold 3, second attack→4). Suite 872/0, build clean, headless exit 0. Deferred:
+  Indirect-as-a-mark (its LoS-ignore is needed at the occlusion check, *before* the claim seam) — one niche
+  spell, stays skipped. Unlocks ~20 mark spells (Unstoppable-when-shooting ×12, Relentless ×3, etc.) once
+  authored. **The marked rule must exist in the catalog** — most do now (slices 1–4); the rest are data.
 - 2026-06-28: **Combat-kind-scoped grants — slice 4: "when shooting" save-side rules** (engine `7b12055`).
   Extended #093's combat-kind condition to the **save context**: `SaveRollCompleteContext` now carries
   `IsMelee` (implements `IHasCombatKind`), threaded from `AssignWoundsStage`'s metadata — the mirror of the
