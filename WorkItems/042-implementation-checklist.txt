@@ -1435,6 +1435,15 @@ INTEGRATION PROGRESS (2026-06-28, cont. 34) — Aura cluster generalized (All no
   * FLAGGED (not fixed): 3 rules are registered lowercase ("Bane when shooting" …) but the corpus writes
     "Bane when Shooting"; the case-sensitive resolver drops a direct corpus reference. See WorkItems/100.
 
+INTEGRATION PROGRESS (2026-06-28, cont. 35) — case-insensitive resolution + next aura wave. All now 88.
+  Suite 889/0; headless exit 0.
+  * RuleResolver is now an OrdinalIgnoreCase dictionary (UnitHasRule/TargetHasRule conditions too) — fixes
+    the cont. 34 casing flag: "Bane when Shooting" resolves to the registered "Bane when shooting", and any
+    corpus reference differing only by case now resolves.
+  * 10 new rules unlocking the auras whose base wasn't cataloged: Courage (+1 morale at
+    Morale_OnPreMoraleTest) and the "in melee" mirrors Bane/Rending/Shred/Unstoppable in melee (the exact
+    flip of the when-shooting trio, Condition.IsMelee()), plus their 5 auras via UnitAura.
+
 [x] SUPPRESSION vs. PER-RULE LOG (DONE 2026-06-07; see INTEGRATION PROGRESS cont. 6).
     Was: the per-rule game-log line emitted at QUEUE TIME, before the suppression first-pass,
     so a suppressed rule would print a phantom "X added -1 to hit". FIXED by moving log emission

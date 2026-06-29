@@ -178,6 +178,19 @@ Insertion point + shoot-vs-melee sharing (2a); `Heal` consumer lands here (defer
 both repos (engine stage + app-side resolver tweaks for the ability prompt).
 
 ## Notes
+- 2026-06-28: **Next aura wave — Courage + the "in melee" mirrors + their auras (10 rules).** Unlocked the
+  high-frequency auras whose base wasn't cataloged. Base rules: **Courage** (+1 to morale tests — the rule
+  the Fearless doc anticipated, `RollModifier(Morale,+1)` at `Morale_OnPreMoraleTest`, folds easier); and
+  the **"in melee" combat-kind mirrors** **Bane / Rending / Shred / Unstoppable in melee** — the exact flip
+  of the when-shooting trio (same effect at the shared save/hit hooks, `Condition.IsMelee()` instead of
+  `Not(IsMelee)`; Rending mirrors base Rending — AP-on-6 + Regen-ignore — with an added melee gate). Then
+  the 5 auras (Courage Aura, Bane/Rending/Shred/Unstoppable in Melee Aura) via the `UnitAura` factory. The
+  corpus only *names* these via the aura/buff (e.g. Courage Aura inlines "+1 morale"; "Bane in Melee Aura"
+  grants "Bane in melee"), so cataloging the base is what makes the grant resolve. `All` 78 → 88. Tests:
+  `Courage_LowersTheMoraleThreshold` (real catalog rule), `BaneInMeleeAttacker_Melee_RerollsSavedSixes` +
+  `…_Shooting_DoesNotReroll` (representative in-melee gate; the other 3 mirrors share the tested IsMelee
+  pattern + their shooting twins), and the aura-integrity test auto-covers the 5 new auras. Suite 889/0,
+  app build clean, headless exit 0.
 - 2026-06-28: **Case-sensitive resolution — FIXED (resolver now case-insensitive).** Resolved the latent
   finding below the user's way (case-insensitivity, not renaming): `RuleResolver._rules` is now an
   `OrdinalIgnoreCase` dictionary, so "Bane when Shooting" (corpus) resolves to the registered "Bane when
