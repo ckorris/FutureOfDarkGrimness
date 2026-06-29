@@ -178,6 +178,23 @@ Insertion point + shoot-vs-melee sharing (2a); `Heal` consumer lands here (defer
 both repos (engine stage + app-side resolver tweaks for the ability prompt).
 
 ## Notes
+- 2026-06-28: **Hit & Run / post-melee move (#5) — BUILT (melee seam; completes the post-combat seam).**
+  Lit the dormant `Melee_OnPostMelee` hook, the twin of the shooting seam below. New per-action context
+  `PostMeleeActionContext(IUnit Unit)` (Hook ⇒ `Melee_OnPostMelee`) + new `PostMeleeStage`, inserted into
+  `MeleeStage` after `ConsolidateStage`: `consolidate.OnConsolidated` → `postMelee` → `meleeFinishedEvent`.
+  The `BackToChooseAction` exit (no melee occurred) still routes straight to `meleeFinishedEvent`, bypassing
+  the move — correct. Extended **Harassing** with a second `HookEntry(Melee_OnPostMelee, Always,
+  TriggeredMove(3", optional))`; it now fires on both shooting AND melee. Same `EvaluateAll((unit, Actor))`
+  → `OperationExecutor` chain. Test `Harassing_AtPostMeleeHook_RepositionsTheUnit` added. Suite 875/0, app
+  build clean, headless exit 0. **Seat decision (settled, revisitable):** only the **charged/attacked**
+  unit is offered the move — matches the `Melee_OnPostMelee` doc ("Harassing's move *from being
+  attacked*"), not the charger. `PostMeleeStage.ResolveAttackedUnit` picks the participant that is NOT
+  `ChargingUnit` (immutable through a Counter `SwapCombatRoles`, so swap-robust), guarded on `GetIsAlive()`
+  (the charged unit can be wiped out by the melee → nothing to move). If a future "Hit & Run after charging"
+  flavour is wanted, fire for both participants instead. **Now resolved (was deferred):** Harassing's melee
+  half. **Still data-once-cataloged:** Hit & Run Fighter (melee-only), Hit & Run (both), Guerrilla — same
+  `TriggeredMove` shape, just need catalog entries. The post-combat-move seam (#5 dormant hooks) is now
+  **fully live on both shooting and melee.**
 - 2026-06-28: **Hit & Run / post-shoot move (#5) — BUILT (shooting seam).** Lit the dormant
   `Shooting_OnPostShoot` hook. New per-action context `PostShootActionContext(IUnit Unit)` (Hook ⇒
   `Shooting_OnPostShoot`), distinct from the dormant per-shot `PostShootContext` — fired ONCE per shoot
