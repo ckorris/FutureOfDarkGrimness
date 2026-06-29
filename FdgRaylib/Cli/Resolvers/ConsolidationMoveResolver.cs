@@ -54,7 +54,7 @@ public class ConsolidationMoveResolver : IStageResolver<ConsolidationMoveRequest
             // Enemy-check the move (move-through / standoff) against the same validator ConsolidateStage runs,
             // so an offset that crosses or stacks on an enemy is rejected here rather than throwing downstream.
             if (_tableState != null && !MovementUtilities.ValidatePaths(entries, request.MaxDistanceInches,
-                    GetEnemyFootprints(request), request.CanMoveThroughEnemies,
+                    GetEnemyFootprints(request), request.CanMoveThroughEnemies, request.IgnoresDifficultTerrain,
                     _tableState.Terrain.Objects, out var errors))
             {
                 Console.WriteLine($"    Invalid: {string.Join(", ", errors.Select(e => e.ToString()))}. Try again.");

@@ -1474,6 +1474,20 @@ INTEGRATION PROGRESS (2026-06-28, cont. 38) — Fortified: AP-reduction-with-flo
     pipeline refactor, deferred). The defensive aura family (Resistance/Protected/Piercing*/Shielded/
     Fortified) is now complete.
 
+INTEGRATION PROGRESS (2026-06-29, cont. 39) — Strider (#102 first slice): difficult-terrain cap waiver. All → 101.
+  Suite 905/0; full build clean; headless exit 0. (Tracked canonically in WorkItems/102; logged here for roster.)
+  * Wires the long-declared-but-unconsumed Effect.IgnoreTerrainEffects → RuleOperation.IgnoreTerrainEffects.
+    New MovementRuleQueries.IgnoresDifficultTerrain (reads it via the new MoveThroughTerrainContext at the
+    pre-existing Movement_OnMoveThroughTerrain hook) — exact parallel of #090's CanMoveThroughEnemies. New
+    ignoresDifficultTerrain param threaded through ValidateMovingThroughDifficultTerrain (early-return skip) +
+    the 3 terrain-aware ValidatePaths overloads; IgnoresDifficultTerrain flag on the two move requests;
+    computed+passed at 4 engine sites + read+passed at 6 resolver sites (both repos). Catalogued Strider —
+    which ALSO fixes its absence from the Army Creator picker (picker derives from CoreRuleCatalog.All).
+  * Scope: waives ONLY the difficult-terrain move cap. Dangerous-terrain tests + enemy move-through block
+    untouched; Flying's "ignore all terrain + move through units" stays #029 (can reuse the same effect once
+    those consumers honour it). RangeModifier family (Increased Shooting Range / Ranged Shrouding / Darkborn)
+    is the remaining half of #102, not started.
+
 [x] SUPPRESSION vs. PER-RULE LOG (DONE 2026-06-07; see INTEGRATION PROGRESS cont. 6).
     Was: the per-rule game-log line emitted at QUEUE TIME, before the suppression first-pass,
     so a suppressed rule would print a phantom "X added -1 to hit". FIXED by moving log emission

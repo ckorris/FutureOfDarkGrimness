@@ -70,7 +70,8 @@ public class DefineMovementPathResolver : IStageResolver<DefineMovementPathReque
                 return Task.FromResult(AutoAdvance(request));
 
             if (MovementUtilities.ValidatePaths(entries, request.MaxRushDistance, request.MaxDistanceInches,
-                    GetEnemyFootprints(request), request.CanMoveThroughEnemies, _tableState?.Terrain.Objects, out var errors))
+                    GetEnemyFootprints(request), request.CanMoveThroughEnemies, request.IgnoresDifficultTerrain,
+                    _tableState?.Terrain.Objects, out var errors))
                 return Task.FromResult(entries);
 
             Console.WriteLine();
@@ -130,7 +131,7 @@ public class DefineMovementPathResolver : IStageResolver<DefineMovementPathReque
 
         var candidate = CohesiveFormation.PackGrid(living, cx + ndx * step, cz + ndz * step);
         bool valid = MovementUtilities.ValidatePaths(candidate, request.MaxRushDistance,
-            request.MaxDistanceInches, footprints, request.CanMoveThroughEnemies, terrain, out _);
+            request.MaxDistanceInches, footprints, request.CanMoveThroughEnemies, request.IgnoresDifficultTerrain, terrain, out _);
         int attempts = 0;
         while (!valid && attempts < 6)
         {
@@ -139,7 +140,7 @@ public class DefineMovementPathResolver : IStageResolver<DefineMovementPathReque
                 ? CohesiveFormation.PackGrid(living, cx, cz)
                 : CohesiveFormation.PackGrid(living, cx + ndx * step, cz + ndz * step);
             valid = MovementUtilities.ValidatePaths(candidate, request.MaxRushDistance,
-                request.MaxDistanceInches, footprints, request.CanMoveThroughEnemies, terrain, out _);
+                request.MaxDistanceInches, footprints, request.CanMoveThroughEnemies, request.IgnoresDifficultTerrain, terrain, out _);
             attempts++;
         }
         if (!valid)
@@ -147,7 +148,7 @@ public class DefineMovementPathResolver : IStageResolver<DefineMovementPathReque
             // Reform in place to close casualty gaps...
             candidate = CohesiveFormation.PackGrid(living, cx, cz);
             valid = MovementUtilities.ValidatePaths(candidate, request.MaxRushDistance,
-                request.MaxDistanceInches, footprints, request.CanMoveThroughEnemies, terrain, out _);
+                request.MaxDistanceInches, footprints, request.CanMoveThroughEnemies, request.IgnoresDifficultTerrain, terrain, out _);
 
             // ...but a unit intermingled with enemies can't re-pack without a model crossing an enemy base;
             // hold exact positions then (zero-length paths can't move through anything).
