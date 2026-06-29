@@ -1454,6 +1454,15 @@ INTEGRATION PROGRESS (2026-06-28, cont. 36) — aura wave 3: defensive wound-ign
     primitives), Steadfast/No-Retreat/Reanimation (round-start/morale machinery), Quick Shot/Swift (action
     permission), and the aura-only rules with no corpus base def (Precision Fighter/Shooter, …).
 
+INTEGRATION PROGRESS (2026-06-28, cont. 37) — Shielded seam: defender as Subject at hit-complete. All → 98.
+  Suite 896/0; headless exit 0.
+  * RollToHitStage's hit-complete EvaluateAll now passes (defender, ERuleSeat.Subject) alongside the
+    attacker (Actor) — mirror of DetermineHitRollStage — so a defender's defensive save modifier folds into
+    RollToHitResults.SaveModifier next to the attacker's AP. No existing Subject-seat rule at that hook, so
+    nothing dormant activates (suite unchanged). Shared by shooting + the melee swing.
+  * On the seam: Shielded (RollModifier(Save,+1) Subject) + Shielded Aura. Fortified still deferred (needs
+    an AP-reduction-with-floor primitive).
+
 [x] SUPPRESSION vs. PER-RULE LOG (DONE 2026-06-07; see INTEGRATION PROGRESS cont. 6).
     Was: the per-rule game-log line emitted at QUEUE TIME, before the suppression first-pass,
     so a suppressed rule would print a phantom "X added -1 to hit". FIXED by moving log emission

@@ -178,6 +178,19 @@ Insertion point + shoot-vs-melee sharing (2a); `Heal` consumer lands here (defer
 both repos (engine stage + app-side resolver tweaks for the ability prompt).
 
 ## Notes
+- 2026-06-28: **Shielded — BUILT (the defender-Subject-at-hit-complete seam + rule + aura).** Closed the
+  seam flagged as deferred in aura wave 3. `RollToHitStage`'s hit-complete `EvaluateAll` now passes the
+  **defender as a `ERuleSeat.Subject` participant** alongside the attacker (Actor) — the mirror of how
+  `DetermineHitRollStage` already evaluates both seats for hit modifiers — so a defender's defensive save
+  modifier folds into `RollToHitResults.SaveModifier` next to the attacker's AP (a +1 defense and a -N AP
+  net correctly). Verified safe first: no existing rule is Subject-seat at `Shooting_OnHitRollComplete`, so
+  nothing dormant activates; the full suite is unchanged. The stage is shared by shooting AND the melee
+  swing (`FireStage` + `SwingMeleeWeaponStage` both add `RollToHitStage`), so Shielded covers both. On the
+  seam: **Shielded** = `RollModifier(Save, +1)` Subject at hit-complete + **Shielded Aura**. `All` 96 → 98.
+  Tests: defender +1 save modifier (shooting + melee). Suite 896/0, app build clean, headless exit 0.
+  Note: the corpus's "not from spells" facet is approximate — spell hits inject past this hook, so they
+  aren't modified here anyway. **Fortified still deferred** (needs an AP-reduction-with-floor primitive,
+  distinct from a flat save bonus).
 - 2026-06-28: **Aura wave 3 — defensive wound-ignore + AP rules + auras (8 rules).** Surveyed the
   remaining un-cataloged aura bases by frequency and cataloged the ones that map to existing primitives:
   **Resistance** & **Protected** (each "wound ignored on 6+" = `IgnoreWoundOnRoll(6)`, Subject — Regeneration
