@@ -178,6 +178,24 @@ Insertion point + shoot-vs-melee sharing (2a); `Heal` consumer lands here (defer
 both repos (engine stage + app-side resolver tweaks for the ability prompt).
 
 ## Notes
+- 2026-06-28: **Post-combat-move family — CATALOGED (pure data on the live seam).** Added four rules to
+  `CoreRuleCatalog.All`, all the same `TriggeredMove(3", optional)` shape as Harassing, differing only in
+  which post-combat hook(s) they carry: **Hit & Run Shooter** (`Shooting_OnPostShoot`), **Hit & Run
+  Fighter** (`Melee_OnPostMelee`), **Hit & Run** (both), **Guerrilla** (both). Grounded against the
+  off-repo corpus (`Special Rules and Spells by Army.md`) — Harassing / Hit & Run / Guerrilla are
+  mechanically identical, faction-renamed. Now pickable in the Army Creator (picker derives from `All`).
+  4 hook-correctness tests (each fires at its hook, not the other) in `TriggeredMoveRuleIntegrationTests`.
+  Suite 879/0, app build clean, headless exit 0. **DEFERRED FACET — "once per round" gate (whole family,
+  incl. shipped Harassing):** the corpus wording is "*once per round*, units … may move after shooting or
+  being in melee." None of these rules gate that — they fire once per shoot ACTION and once per resolved
+  melee. Shooting is fine in practice (a unit shoots once/round), but **a unit charged by several enemies
+  in a round can move after each melee**, and a both-hooks rule can move after shooting *and* after melee
+  the same round. Faithful fix needs a per-round "already used the post-combat move" marker
+  (`RoundEnd`-clear token set on fire + checked before offering) — a small NEW primitive (a once-per-round
+  passive gate), not pure data, so it's its own slice. **Also still separate (need more than data):** the
+  *Boost* variants ("if most models have the base rule, move 6\" instead of 3\"" — a conditional
+  replacement/upgrade) and the *Aura* variants ("this model and its unit get X" — an `Effect.Aura` grant,
+  authorable on #100 #1's read-back but not yet cataloged).
 - 2026-06-28: **Hit & Run / post-melee move (#5) — BUILT (melee seam; completes the post-combat seam).**
   Lit the dormant `Melee_OnPostMelee` hook, the twin of the shooting seam below. New per-action context
   `PostMeleeActionContext(IUnit Unit)` (Hook ⇒ `Melee_OnPostMelee`) + new `PostMeleeStage`, inserted into
