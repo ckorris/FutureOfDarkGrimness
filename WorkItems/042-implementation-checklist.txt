@@ -1414,6 +1414,16 @@ INTEGRATION PROGRESS (2026-06-28, cont. 32) — post-combat-move family's "once 
   * Closes the Appendix-C deferred facet added the same day (row removed). Minor known edge: a unit
     carrying two separate family rules (Shooter + Fighter) shares the one budget rather than one each.
 
+INTEGRATION PROGRESS (2026-06-28, cont. 33) — post-combat-move Boost + Aura variants (All now 61 rules).
+  Suite 884/0; headless exit 0.
+  * Boosts (Harassing Boost, Guerrilla Boost): 6" instead of 3" gated on UnitHasRule(base). Realized by a
+    PostCombatMoveGate tweak — coalesce the hook's InvokeTriggeredMove ops to ONE move at the MAX budget
+    (also fixes a latent double-move when a unit stacks family rules).
+  * Auras (Hit & Run Shooter/Fighter Aura, Harassing/Guerrilla Boost Aura): Effect.Aura("<base>") at
+    Lifecycle_OnUnitCreated — first production uses of Effect.Aura; granted rule projects unit-wide via the
+    #100 #1 read-back and fires at the post-combat hooks. NB UnitHasRule (unit-level) stands in for the
+    corpus's "most MODELS have X" (per-model majority is #093).
+
 [x] SUPPRESSION vs. PER-RULE LOG (DONE 2026-06-07; see INTEGRATION PROGRESS cont. 6).
     Was: the per-rule game-log line emitted at QUEUE TIME, before the suppression first-pass,
     so a suppressed rule would print a phantom "X added -1 to hit". FIXED by moving log emission

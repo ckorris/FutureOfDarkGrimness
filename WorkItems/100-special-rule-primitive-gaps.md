@@ -178,6 +178,27 @@ Insertion point + shoot-vs-melee sharing (2a); `Heal` consumer lands here (defer
 both repos (engine stage + app-side resolver tweaks for the ability prompt).
 
 ## Notes
+- 2026-06-28: **Post-combat-move Boost + Aura variants — BUILT (6 rules, mostly data + one gate tweak).**
+  Cataloged the corpus's variant rules on the existing family:
+  - **Boosts** (Harassing Boost, Guerrilla Boost): "if the unit has the base rule, move 6\" instead of 3\"."
+    Each is a post-combat-move rule emitting `TriggeredMove(6")` at both hooks, gated
+    `Condition.UnitHasRule("Harassing"/"Guerrilla")`. The "instead of 3\"" is realized by a small
+    **`PostCombatMoveGate` change: coalesce all the hook's `InvokeTriggeredMove` ops into ONE move at the
+    MAX budget** — so base-3" + boost-6" → a single 6" move. (Bonus: this also fixes a latent double-move
+    if a unit ever stacks two family rules — previously each emitted its own move request.)
+  - **Auras** (Hit & Run Shooter Aura, Hit & Run Fighter Aura, Harassing Boost Aura, Guerrilla Boost Aura):
+    "this model and its unit get X." Authored as `Effect.Aura("<base>")` at `Lifecycle_OnUnitCreated`
+    (first production uses of `Effect.Aura`); the grant projects unit-wide via the #100 #1 read-back
+    (`CollectGrantedRules`), so the granted family rule fires at the post-combat hooks for the whole unit.
+    Each granted rule is already cataloged, so the resolver resolves it by name.
+  All 6 registered in `All` (now pickable in the Army Creator). 3 tests: Boost upgrades to 6" (coalesced,
+  single move), Boost inert without the base rule (UnitHasRule gate fails), Aura grants unit-wide + fires
+  at the right hook only. Suite 884/0, app build clean, headless exit 0. **Two judgment calls (noted):**
+  (1) coalesce-to-MAX for "instead of" rather than a suppression/replacement primitive — cleaner and fixes
+  the latent double-move; (2) `UnitHasRule` (unit-level) for the corpus's "most MODELS have X" — the
+  architecture's designated gate; true per-model majority is a #093 nuance, consistent with treating
+  "all-models-have-X" rules as unit-level elsewhere. The post-combat-move family (base + once-per-round +
+  Boost + Aura) is now complete.
 - 2026-06-28: **Post-combat-move "once per round" gate — BUILT (closes the family's deferred facet).**
   New `TokenType.PostCombatMoveUsed` (RoundEnd clear, swept by the round-end pass like Fatigue) + a shared
   `PostCombatMoveGate.OfferIfAvailable(ctx, unit, ops)` helper that both `PostShootStage` and
