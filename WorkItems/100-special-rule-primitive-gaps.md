@@ -178,7 +178,35 @@ Insertion point + shoot-vs-melee sharing (2a); `Heal` consumer lands here (defer
 both repos (engine stage + app-side resolver tweaks for the ability prompt).
 
 ## Notes
-- 2026-06-28: **Hit & Run / post-combat move (#5) — DESIGN NOTES for next session (NOT built; entangled).**
+- 2026-06-28: **Hit & Run / post-shoot move (#5) — BUILT (shooting seam).** Lit the dormant
+  `Shooting_OnPostShoot` hook. New per-action context `PostShootActionContext(IUnit Unit)` (Hook ⇒
+  `Shooting_OnPostShoot`), distinct from the dormant per-shot `PostShootContext` — fired ONCE per shoot
+  action by a new `PostShootStage`. `PostShootStage` calls `EvaluateAll((unit, ERuleSeat.Actor))` →
+  `OperationApplier.ApplyTokenOperations` + `OperationExecutor.Execute(…, new GameOperationServices(…))`
+  (the `DeployUnitStage` chain). Wired into `ShootStage` as the **shared convergence point**: BOTH shoot
+  exits — `DetermineCanKeepShootingStage.ToFinishShooting` ("fired all weapons") and
+  `ChooseRangedAttackStage.OnNoValidShots` ("no further valid shots") — now route through `PostShootStage`
+  before `OnFinishedShooting`, so the move is offered exactly once per action regardless of exit. First rule:
+  **Harassing** = passive `HookEntry(Shooting_OnPostShoot, Always, TriggeredMove(3", IsOptional:true))`,
+  registered in `All`. Reuses the live `Effect.TriggeredMove` → `MoveUnit` self-move (player declines via a
+  zero move). Tests: `Harassing_AtPostShootHook_RepositionsTheUnit` + `NoPostShootRule…ProducesNoOperation`
+  added to `TriggeredMoveRuleIntegrationTests`. Suite 874/0, app build clean, headless exit 0.
+  **Forks settled:** (1) per-action context — built `PostShootActionContext`, NOT reused per-shot; (2) melee
+  seam — DEFERRED (see below); (3) move lifetime — `ThisAttack`/optional, no once-per-activation gate.
+  **Deferred (explicit, not silently cut):**
+  - **Melee half** — Harassing's "after being attacked in melee" move (`Melee_OnPostMelee`) is NOT wired;
+    the rule fires on the shooting seam only. Needs a melee post-combat seam (the dormant `Melee_OnPostMelee`
+    = 103, fired after strike + strike-back + morale + consolidate). Follow-up slice.
+  - **Other family members** — Hit & Run Fighter (melee-only), Hit & Run (both), Guerrilla: blocked on the
+    melee seam / are data once it lands.
+  - **Per-shot Limited fire** — still dormant; left untouched. If ever wired it must use a per-shot/per-weapon
+    hook, NOT `Shooting_OnPostShoot` (else a post-shoot HookEntry like Harassing would fire per shot).
+  - **Known minor over-trigger:** a Harassing unit that takes the Shoot action but has zero valid shots
+    reaches `OnNoValidShots` → still offered the optional 3" move. Harmless (optional; only affects units
+    carrying a post-shoot rule) and arguably unreachable if Shoot is gated on a valid target; chosen over
+    under-firing the legit "fired some weapons, then ran out of targets" mid-sequence case.
+- 2026-06-28: **Hit & Run / post-combat move (#5) — DESIGN NOTES (superseded by the BUILT entry above for the
+  shooting seam; melee seam still pending).**
   Picked it up as a "fire a dormant hook + run the live `TriggeredMove`" reuse; it needs real design. Findings:
   - **Hooks exist but are DORMANT.** `EHookID.Shooting_OnPostShoot` (=80) and `Melee_OnPostMelee` (=103) are
     defined but never fired in production (referenced only in tests + a `TokenClearTrigger` that clears at
