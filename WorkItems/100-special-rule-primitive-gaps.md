@@ -178,6 +178,20 @@ Insertion point + shoot-vs-melee sharing (2a); `Heal` consumer lands here (defer
 both repos (engine stage + app-side resolver tweaks for the ability prompt).
 
 ## Notes
+- 2026-06-28: **Post-combat-move "once per round" gate — BUILT (closes the family's deferred facet).**
+  New `TokenType.PostCombatMoveUsed` (RoundEnd clear, swept by the round-end pass like Fatigue) + a shared
+  `PostCombatMoveGate.OfferIfAvailable(ctx, unit, ops)` helper that both `PostShootStage` and
+  `PostMeleeStage` now route through instead of running the move ops directly. The gate: no-op if the unit
+  has no post-combat-move rule (empty ops); skips if `PostCombatMoveUsed` is already present; otherwise
+  enacts the move and — **only if the unit actually repositioned** (model positions compared before/after,
+  so a declined zero-distance move keeps the budget) — sets the marker. **One shared budget across
+  shooting and melee** (matches "once per round after shooting OR melee"). Tests:
+  `PostCombatMove_OncePerRound_SharedAcrossShootAndMelee` (move after shooting spends it; a later
+  post-melee trigger is gated) + `PostCombatMove_DeclinedMove_KeepsBudget`. Suite 881/0, app build clean,
+  headless exit 0. **Minor known edge (noted, not a headline gap):** a unit carrying TWO separate family
+  rules (e.g. Hit & Run Shooter + Hit & Run Fighter) shares the one budget rather than getting one each —
+  faithful for the common single-rule case; revisit only if a unit in the corpus stacks them. The
+  post-combat-move family is now faithfully once-per-round; Appendix C row removed.
 - 2026-06-28: **Post-combat-move family — CATALOGED (pure data on the live seam).** Added four rules to
   `CoreRuleCatalog.All`, all the same `TriggeredMove(3", optional)` shape as Harassing, differing only in
   which post-combat hook(s) they carry: **Hit & Run Shooter** (`Shooting_OnPostShoot`), **Hit & Run

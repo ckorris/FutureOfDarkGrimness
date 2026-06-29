@@ -1404,6 +1404,16 @@ INTEGRATION PROGRESS (2026-06-28, cont. 31) — CATCH-UP: the roster drifted out
   * AUTHORITATIVE SET: CoreRuleCatalog.All is the source of truth for "what's pickable/implemented"; this
     checklist's prose roster is a periodic snapshot and will drift again — prefer All when in doubt.
 
+INTEGRATION PROGRESS (2026-06-28, cont. 32) — post-combat-move family's "once per round" gate live.
+  Suite 881/0; headless exit 0.
+  * NEW VOCAB: TokenType.PostCombatMoveUsed (RoundEnd clear, swept by the round-end pass like Fatigue)
+    + a shared PostCombatMoveGate helper both PostShootStage and PostMeleeStage route their hook ops
+    through. The gate enacts the move and sets the marker ONLY when the unit actually repositions (model
+    positions compared before/after, so a declined zero move keeps the budget); skips while the marker is
+    present. One shared budget across shooting and melee.
+  * Closes the Appendix-C deferred facet added the same day (row removed). Minor known edge: a unit
+    carrying two separate family rules (Shooter + Fighter) shares the one budget rather than one each.
+
 [x] SUPPRESSION vs. PER-RULE LOG (DONE 2026-06-07; see INTEGRATION PROGRESS cont. 6).
     Was: the per-rule game-log line emitted at QUEUE TIME, before the suppression first-pass,
     so a suppressed rule would print a phantom "X added -1 to hit". FIXED by moving log emission
@@ -1696,15 +1706,6 @@ Fearless, Immobile, Hero, Transport have since gone live; see cont. 31).
                resolved through save+wound            none — AP/Blast-carrying spell hits pending).
                (OncePerActivation, resets each
                activation via the token-clear pass)
-  Post-combat  move up to 3" after shooting       "ONCE PER ROUND" gate not enforced (W: corpus reads
-  -move family and/or being in melee, optional,   "once per round"). These fire once per shoot ACTION
-  (Harassing,  via the TriggeredMove seam         and once per resolved melee, with no per-round marker:
-  Hit & Run,   (PostShootStage / PostMeleeStage)  a unit charged several times in a round can move after
-  Guerrilla,                                      EACH melee, and a both-hooks rule can move after
-  H&R Shooter,                                    shooting AND melee the same round. Faithful fix = a
-  H&R Fighter)                                    per-round "already moved" token (RoundEnd-clear, set on
-                                                  fire + checked before offering) — a small NEW
-                                                  once-per-round passive primitive, not pure data.
 
   Maintenance: when a deferred facet ships, delete its row (or move the rule out of
   this table). When a NEW rule goes live with a known gap, add a row here at the same
