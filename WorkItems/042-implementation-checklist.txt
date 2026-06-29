@@ -1375,6 +1375,35 @@ INTEGRATION PROGRESS (2026-06-11, cont. 30) — Indirect + Takedown "ignore LoS 
     target's cover" live.
   * Takedown and Indirect are now FULLY implemented (both rows removed from Appendix C).
 
+INTEGRATION PROGRESS (2026-06-28, cont. 31) — CATCH-UP: the roster drifted out of date between cont. 30
+  (2026-06-11) and now. CoreRuleCatalog.All grew from ~35 to 55 player-facing rules across #100 (primitive
+  gaps), #093 (combat-kind), #091 (morale-core), #020 (fatigue), #006 (Hero), #035 (Transport), and
+  #033/#034 (casting + spell content). This entry brings the tracker current; per-slice detail lives in
+  those work items + WorkItems/100-special-rule-primitive-gaps.md's Notes. Suite 879/0; headless exit 0.
+  * NOW LIVE since cont. 30 (added to All, effect wired through real stages):
+    - Accuracy: Evasive, Melee Evasion, Precise, Good Shot (hit-roll modifiers, Subject/Actor seats).
+    - Movement: Agile, Quick, Rapid Advance, Rapid Rush, Rapid Charge (movement-bonus sink); Immobile
+      (RestrictActions, #100).
+    - Wound/damage: Crack (Rending's AP-on-6 as -2 save), Lacerate (Bane's save-reroll), Shred
+      (wound injection), + the "when shooting" combat-kind variants Unstoppable / Shred / Bane-when-
+      Shooting (#093 save-context combat-kind gate).
+    - Melee: Counter-Attack (Counter's strike-first facet alone, unit-scoped).
+    - Morale: Fear, Fearless (real — #091; MoraleUtilities.TakeMoraleTest is rule-aware, Fearless re-roll).
+    - Buff/heal: Furious Buff, Mend (pre-attack target buff / heal, #100 #2 cross-unit targeting).
+    - Structural: Hero (#006 per-model stats + rules), Transport (#035 embark/disembark/spillout),
+      Caster (#033 spell subsystem — Cast action, token economy, CastSpellStage).
+    - Post-combat move (this session, #5 dormant-hook seam): Harassing, Hit & Run, Hit & Run Shooter,
+      Hit & Run Fighter, Guerrilla — TriggeredMove(3") at the now-live Shooting_OnPostShoot /
+      Melee_OnPostMelee hooks (see Appendix C for the "once per round" gap).
+  * NEW SEAMS lit since cont. 30: the post-combat-move hooks (PostShootStage / PostMeleeStage); the
+    cross-unit MARK primitive (Effect.MarkTarget -> claim at DetermineHitRollStage); combat-kind threaded
+    into the save context; and the #034 Part-1 spell effects (conditional MoraleTestThen, forced enemy
+    TriggeredMove, ApplyFatigue).
+  * APPENDIX C updated below: the "not yet implemented" set shrinks from 10 to 4 (Aircraft, Flying,
+    Limited, Strider — the rest now live), and the post-combat-move family's "once per round" gap is a row.
+  * AUTHORITATIVE SET: CoreRuleCatalog.All is the source of truth for "what's pickable/implemented"; this
+    checklist's prose roster is a periodic snapshot and will drift again — prefer All when in doubt.
+
 [x] SUPPRESSION vs. PER-RULE LOG (DONE 2026-06-07; see INTEGRATION PROGRESS cont. 6).
     Was: the per-rule game-log line emitted at QUEUE TIME, before the suppression first-pass,
     so a suppressed rule would print a phantom "X added -1 to hit". FIXED by moving log emission
@@ -1629,10 +1658,11 @@ W-mapping for the authoritative full behavior) is not yet implemented. This tabl
 is the single at-a-glance "implemented vs deferred facets" ledger — previously the
 gaps were scattered across the arch doc, this checklist, and a few catalog XML
 comments (and several were unrecorded). Rules NOT in this table are either fully
-implemented (Stealth, Reliable, Fast, Slow, Surge, Relentless, Regeneration, Bane,
-Scout, Thrust, Blast, Furious, Counter, Ambush, Takedown, Indirect) or not implemented at all (the 10 listed in the "not yet implemented"
-set — Aircraft, Caster, Fear, Fearless, Flying, Immobile,
-Limited, Strider, Hero, Transport).
+implemented (most of CoreRuleCatalog.All — 55 rules as of cont. 31; the original
+core set was Stealth, Reliable, Fast, Slow, Surge, Relentless, Regeneration, Bane,
+Scout, Thrust, Blast, Furious, Counter, Ambush, Takedown, Indirect) or not
+implemented at all — now just 4: Aircraft, Flying, Limited, Strider (Caster, Fear,
+Fearless, Immobile, Hero, Transport have since gone live; see cont. 31).
 
   Rule         Live facet                       Deferred facet (NOT yet done)
   ----         ----------                        -----------------------------
@@ -1666,6 +1696,15 @@ Limited, Strider, Hero, Transport).
                resolved through save+wound            none — AP/Blast-carrying spell hits pending).
                (OncePerActivation, resets each
                activation via the token-clear pass)
+  Post-combat  move up to 3" after shooting       "ONCE PER ROUND" gate not enforced (W: corpus reads
+  -move family and/or being in melee, optional,   "once per round"). These fire once per shoot ACTION
+  (Harassing,  via the TriggeredMove seam         and once per resolved melee, with no per-round marker:
+  Hit & Run,   (PostShootStage / PostMeleeStage)  a unit charged several times in a round can move after
+  Guerrilla,                                      EACH melee, and a both-hooks rule can move after
+  H&R Shooter,                                    shooting AND melee the same round. Faithful fix = a
+  H&R Fighter)                                    per-round "already moved" token (RoundEnd-clear, set on
+                                                  fire + checked before offering) — a small NEW
+                                                  once-per-round passive primitive, not pure data.
 
   Maintenance: when a deferred facet ships, delete its row (or move the rule out of
   this table). When a NEW rule goes live with a known gap, add a row here at the same
