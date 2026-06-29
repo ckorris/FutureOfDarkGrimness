@@ -178,6 +178,36 @@ Insertion point + shoot-vs-melee sharing (2a); `Heal` consumer lands here (defer
 both repos (engine stage + app-side resolver tweaks for the ability prompt).
 
 ## Notes
+- 2026-06-28: **Hit & Run / post-combat move (#5) — DESIGN NOTES for next session (NOT built; entangled).**
+  Picked it up as a "fire a dormant hook + run the live `TriggeredMove`" reuse; it needs real design. Findings:
+  - **Hooks exist but are DORMANT.** `EHookID.Shooting_OnPostShoot` (=80) and `Melee_OnPostMelee` (=103) are
+    defined but never fired in production (referenced only in tests + a `TokenClearTrigger` that clears at
+    `OnPostShoot`). "The trigger is missing" — must be fired.
+  - **`PostShootContext` exists but is the WRONG shape.** It's `(IUnit Attacker, IUnit Target)` — per-SHOT,
+    built for Limited (mark the weapon used vs a target); used only at `Tests/SpecialRuleTests.cs:960`. Hit &
+    Run needs a per-ACTION fire (once after the unit's whole shooting action). Firing the move off a per-shot
+    hook would **double-fire** (once per target). → Build a separate minimal **per-action** context, e.g.
+    `PostShootActionContext(IUnit Unit)` mirroring `PreMoraleTestContext`, distinct from the per-shot one.
+  - **Shooting seam.** `ShootStage.cs`: `DetermineCanKeepShootingStage.ToFinishShooting` binds to
+    `onFinishedShootingEvent`. Insert a new child `PostShootStage` between them. It fires the per-action hook,
+    runs `GameContext.RuleEvaluator.EvaluateAll(ctx, (unit, ERuleSeat.Actor, null))` → ops, then
+    `await OperationExecutor.Execute(ops, new GameOperationServices(GameContext))` (the `DeployUnitStage`
+    pattern). Acting unit = `ICombatActionContext.AttackingUnit`. Hit & Run is PASSIVE (a `HookEntry`, not an
+    `ActivatedAbility`) → use `EvaluateAll`, not `GatherOffers`.
+  - **Melee seam.** `Melee_OnPostMelee` after the melee fully resolves (strike + strike-back); find the melee
+    completion point. Deferrable — do shooting first, note melee as a follow-up (don't silently cut it).
+  - **Reused primitives (all live).** `Effect.TriggeredMove(MaxInches, IsOptional)` → `InvokeTriggeredMove` →
+    `GameOperationServices.MoveUnit` (raises `DefineMovementPathRequest` to the unit's owner — correct for a
+    self-move). Use `IsOptional: true` (player may decline the ~3" move). Test pattern:
+    `TriggeredMoveRuleIntegrationTests.Vanguard_ThroughSeam` + a `CannedMovePathRequester`.
+  - **Rules to author** (in `CoreRuleCatalog.All`): Hit & Run Shooter = `HookEntry(Shooting_OnPostShoot,
+    Always, TriggeredMove(3, IsOptional:true), …)`; Hit & Run Fighter = melee; Hit & Run = both; Harassing /
+    Guerrilla = same move-after-attack family.
+  - **Watch:** `TokenClearTrigger` clears at `Shooting_OnPostShoot` (`Rules/Foundation/TokenClearTrigger.cs:62`,
+    Limited's "used this shoot" marker). The per-action Hit & Run fire must stay DISTINCT from any future
+    per-shot Limited fire so they don't cross-trigger.
+  - **Forks to settle first:** per-action context (recommended) vs reuse per-shot; melee seam; the move's
+    lifetime/once-per-activation; whether to wire the per-shot Limited fire too (separate effort — leave dormant).
 - 2026-06-28: **#14 enemy mark/tag primitive — slice 5** (engine `5ef5443`). Implements the "pick an enemy,
   the next friendly to attack it gets rule X (then it's used up)" spell family. `Effect.MarkTarget(rule)`
   drops a `TokenType.Mark` (rule-name payload) on the picked enemy via the normal cast path. The FIRST
