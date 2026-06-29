@@ -1474,6 +1474,15 @@ INTEGRATION PROGRESS (2026-06-28, cont. 38) — Fortified: AP-reduction-with-flo
     pipeline refactor, deferred). The defensive aura family (Resistance/Protected/Piercing*/Shielded/
     Fortified) is now complete.
 
+INTEGRATION PROGRESS (2026-06-29, cont. 41) — RangeModifier floor + offensive Darkborn (#102 facets 1+2). All → 106.
+  Suite 912/0; full build clean; headless exit 0. (Canonical record: WorkItems/102; logged here for roster.)
+  * RangeModifier effect/op gained a MinResultInches floor; RangeRuleQueries.EffectiveRangeDelta → EffectiveRange
+    (folds delta + floor, returns final range = max(maxFloor, base + Σdelta)). Ranged Shrouding now floored at 6".
+  * Darkborn (offensive) catalogued: +3 range (RangeModifier, Actor) + +3 charge (MovementBonus(Charge), Actor,
+    gated to Charge) — the charge half reuses the live Fast/Agile/RapidCharge move-distance seam, no new primitive.
+  * Defensive Darkborn deferred: its enemy charge debuff needs a per-target charge-distance mechanism the engine
+    lacks (MovementActionContext folds only the mover's Actor-seat rules). See WorkItems/102.
+
 INTEGRATION PROGRESS (2026-06-29, cont. 40) — RangeModifier family (#102 second slice). All → 105.
   Suite 909/0; full build clean; headless exit 0. (Canonical record: WorkItems/102; logged here for roster.)
   * Consumes the long-declared Effect.RangeModifier → RuleOperation.ApplyRangeModifier. New Shooting_OnRangeCheck

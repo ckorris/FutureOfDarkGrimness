@@ -1,6 +1,6 @@
 # 102 — Movement & range modifier validation threading (Strider, RangeModifier family)
 
-**Status**: core complete (2026-06-29) — Strider + the two clean RangeModifier rules (Increased Shooting Range, Ranged Shrouding) landed. Deferred remainders: Darkborn (range + charge-move bundle → needs a charge-distance primitive), the "to a min. 6\"" floor variant, and the *movement-overlay* shooting-range preview.
+**Status**: nearly complete (2026-06-29) — Strider, Increased Shooting Range, Ranged Shrouding (now with the −6 "min 6\"" floor), and **offensive Darkborn** (+3 range / +3 charge) all landed. Remaining: the *movement-overlay* shooting-range preview (next slice) and **defensive Darkborn** (Subject-seat enemy −range/−charge — its charge debuff needs a per-target charge-distance mechanic the engine lacks; genuinely a separate item).
 **Related**: #100 (deferred from here — the invasive Part-1 #4 items), #029 (movement-modifier rules umbrella — Strider/Aircraft/Flying live there), #027 (weapon-scoped rules)
 
 ## Goal
@@ -27,6 +27,25 @@ Strider would parallel this exactly: add `MovementRuleQueries.IgnoresDifficultTe
 **Where is Difficult terrain authoritatively validated?** `PathTemplate.Validate` calls the **no-terrain** `ValidatePaths` overload (`terrain: null`), so it does NOT enforce the Difficult cap — that enforcement appears to live in the **resolvers'** own `ValidatePaths(…, terrain, …)` calls (the gray-out/preview), with the engine trusting the submitted path. If so, Strider only needs to be honoured in the resolver previews + wherever the engine re-validates; if the engine has an authoritative terrain check elsewhere, that's the must-wire point. Confirm this before wiring, or Strider risks being cosmetic (preview-only) or inconsistent.
 
 ## Notes
+- 2026-06-29: **Range floor + offensive Darkborn DONE** (engine-only). Closes two of the three deferred facets.
+  - **Floor:** `Effect.RangeModifier` / `RuleOperation.ApplyRangeModifier` gained `MinResultInches` (0 = none).
+    `RangeRuleQueries.EffectiveRangeDelta` became `EffectiveRange` — returns the final range
+    `max(maxFloorAmongOps, weapon.RangeInches + Σdelta)`. Ranged Shrouding now carries the "−6 to a min. of 6\""
+    floor (adopts the floored corpus reading; differs from the unfloored printing only when post-reduction range
+    would dip below 6", i.e. base < 12"). ChooseRangedAttackStage now calls `EffectiveRange` directly.
+  - **Darkborn (offensive):** catalogued as +3" range (`RangeModifier(+3)`, Actor, at `Shooting_OnRangeCheck`) +
+    +3" charge move (`MovementBonus(EActionType.Charge, +3)`, Actor, gated `Condition.ActionTypeIs(Charge)`).
+    **Key reuse:** the charge half needed NO new primitive — the move-distance seam Fast/Agile/RapidCharge use
+    (`MovementBonus` → `MovementModifierSink` → `MovementActionContext.Max*Distance`) already folds Actor-seat
+    Charge bonuses live. All → 106. Tests: floor (9" weapon → 6, 24" → 18), Darkborn range (+3) and charge (+3
+    via a real `MovementActionContext`, Advance/Rush untouched). Engine 912/0, full build, headless exit 0.
+  - **Defensive Darkborn still deferred** (the corpus's other same-named rule: enemies get −4 range floor 6 AND
+    −2 charge floor 6, both Subject). The range half is now expressible (RangeModifier −4 floor 6, Subject), but
+    the **charge** half can't be wired: it reduces the CHARGER's distance based on the charge TARGET's rules,
+    and the live charge computation (`MovementActionContext`) only folds the mover's own (Actor) rules — there's
+    no per-target charge-distance path (the `Movement_OnChargeDeclared` Subject seam exists but isn't fired
+    live). That's a distinct mechanic (target-specific charge budget); recommend its own item rather than
+    forcing it here.
 - 2026-06-29: **RangeModifier slice DONE** (engine-only; branch `102-movement-range-validation`). Consumes the
   long-declared `Effect.RangeModifier` → `RuleOperation.ApplyRangeModifier`. New `Shooting_OnRangeCheck` hook
   (EHookID 81) + `RangeModifierContext` + `RangeRuleQueries.EffectiveRangeDelta(attacker, weapon, defender,
