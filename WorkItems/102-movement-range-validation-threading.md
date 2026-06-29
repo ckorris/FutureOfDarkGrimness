@@ -1,6 +1,6 @@
 # 102 — Movement & range modifier validation threading (Strider, RangeModifier family)
 
-**Status**: nearly complete (2026-06-29) — Strider, Increased Shooting Range, Ranged Shrouding (now with the −6 "min 6\"" floor), and **offensive Darkborn** (+3 range / +3 charge) all landed. Remaining: the *movement-overlay* shooting-range preview (next slice) and **defensive Darkborn** (Subject-seat enemy −range/−charge — its charge debuff needs a per-target charge-distance mechanic the engine lacks; genuinely a separate item).
+**Status**: DONE (2026-06-29) for its whole original scope — Strider; Increased Shooting Range; Ranged Shrouding (with the −6 "min 6\"" floor); offensive Darkborn (+3 range / +3 charge); and the movement-overlay shooting-range preview. The one residual is **defensive Darkborn** (the corpus's other same-named rule: enemies get −range/−charge vs this unit) — its charge debuff needs a per-target charge-distance mechanic the engine doesn't have, so it's split out as a follow-up rather than counted against this item. See Outcome.
 **Related**: #100 (deferred from here — the invasive Part-1 #4 items), #029 (movement-modifier rules umbrella — Strider/Aircraft/Flying live there), #027 (weapon-scoped rules)
 
 ## Goal
@@ -27,6 +27,19 @@ Strider would parallel this exactly: add `MovementRuleQueries.IgnoresDifficultTe
 **Where is Difficult terrain authoritatively validated?** `PathTemplate.Validate` calls the **no-terrain** `ValidatePaths` overload (`terrain: null`), so it does NOT enforce the Difficult cap — that enforcement appears to live in the **resolvers'** own `ValidatePaths(…, terrain, …)` calls (the gray-out/preview), with the engine trusting the submitted path. If so, Strider only needs to be honoured in the resolver previews + wherever the engine re-validates; if the engine has an authoritative terrain check elsewhere, that's the must-wire point. Confirm this before wiring, or Strider risks being cosmetic (preview-only) or inconsistent.
 
 ## Notes
+- 2026-06-29: **Move-overlay shooting-range preview DONE** (engine + app) — the last of the three deferred
+  facets. `DefineMovementPathRequest` now carries `WeaponRangeOverrides` (a serializable list of
+  `(weaponName, enemy UnitID, effectiveRange)`), computed in `DefinePathStage.BuildRangeOverrides` via
+  `RangeRuleQueries.EffectiveRange` for each of the mover's distinct ranged weapons × each on-table enemy
+  unit — emitting only pairs that differ from the weapon's base range (empty when no range rule is in play).
+  `GuiDefineMovementResolver`'s "Show targeting" overlay builds a `(weaponName, UnitID) → range` lookup and
+  both of its range gates now use `EffectiveWeaponRange(w, enemyUnit)` instead of raw `w.RangeInches`, so the
+  post-move shooting preview reflects Increased Shooting Range (own +6 widens reach) and Ranged Shrouding (a
+  shrouded enemy is harder to reach) — in step with the authoritative ChooseRangedAttackStage. Engine-side
+  evaluation only (the resolver holds no RuleEvaluator); precompute-on-request mirrors the WeaponSightProfile
+  pattern. `GameOperationServices`' triggered-move request leaves the list empty (its preview keeps base
+  range — a rare path). Round-trip test guards the new field over JSON/network. Engine 913/0, full build,
+  headless exit 0.
 - 2026-06-29: **Range floor + offensive Darkborn DONE** (engine-only). Closes two of the three deferred facets.
   - **Floor:** `Effect.RangeModifier` / `RuleOperation.ApplyRangeModifier` gained `MinResultInches` (0 = none).
     `RangeRuleQueries.EffectiveRangeDelta` became `EffectiveRange` — returns the final range
@@ -130,4 +143,27 @@ Strider would parallel this exactly: add `MovementRuleQueries.IgnoresDifficultTe
   `terrain: null`, so it just hardcodes `false` (the difficult check is a no-op there regardless).
 
 ## Outcome
-_(written when closed)_
+Closed 2026-06-29. The whole original scope is implemented, catalogued, tested, and merged to master:
+
+- **Strider** — waives the difficult-terrain move cap; `MovementRuleQueries.IgnoresDifficultTerrain` threaded
+  through `ValidatePaths` across both repos. Also fixed its Army-Creator-picker absence.
+- **Increased Shooting Range** (+6, Actor) and **Ranged Shrouding** (−6 with a "min 6\"" floor, Subject) — a new
+  `Shooting_OnRangeCheck` hook + `RangeRuleQueries.EffectiveRange` folded into `ChooseRangedAttackStage`'s
+  authoritative target-eligibility check; both with auras.
+- **Offensive Darkborn** (+3 range, +3 charge) — range via the RangeModifier primitive, charge via the existing
+  live `MovementBonus(Charge)` move-distance seam (no new primitive needed).
+- **Move-overlay shooting preview** — `DefineMovementPathRequest.WeaponRangeOverrides` precomputed in
+  `DefinePathStage`, read by the "Show targeting" overlay so the post-move shooting preview matches the engine.
+
+`CoreRuleCatalog.All` 100 → 106 over the item. Net new primitives: `Shooting_OnRangeCheck` hook + `RangeModifierContext`
++ `RangeRuleQueries`; `Effect/RuleOperation.RangeModifier.MinResultInches` floor; `MoveThroughTerrainContext` +
+`IgnoresDifficultTerrain`; the `ignoresDifficultTerrain` validation flag; `WeaponRangeOverride` on the move request.
+
+**Follow-up (NOT in this item):** **defensive Darkborn** — the corpus's other same-named rule, where *enemies*
+get −range/−charge vs the bearer (both Subject seat). Its range half is now expressible (`RangeModifier(−4, floor
+6)`, Subject), but its **charge** half can't be wired today: it reduces the *charger's* distance based on the
+charge *target's* rules, and the live charge computation (`MovementActionContext.AccumulateMovementRules`) only
+folds the mover's own (Actor) rules — there is no per-target charge-distance path (the `Movement_OnChargeDeclared`
+Subject seam exists in tests but isn't fired in live play). That's a distinct mechanic (a target-specific charge
+budget, or applying the debuff after charge-target selection) and belongs in its own item (movement-modifier /
+#029 territory), not forced in here. Same shape would unblock Aircraft's "−12\" to enemies targeting it" range/charge facets.

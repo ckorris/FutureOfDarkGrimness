@@ -1474,6 +1474,16 @@ INTEGRATION PROGRESS (2026-06-28, cont. 38) — Fortified: AP-reduction-with-flo
     pipeline refactor, deferred). The defensive aura family (Resistance/Protected/Piercing*/Shielded/
     Fortified) is now complete.
 
+INTEGRATION PROGRESS (2026-06-29, cont. 42) — move-overlay shooting-range preview (#102 facet 3 — item DONE). All 106.
+  Suite 913/0; full build clean; headless exit 0. (Canonical record: WorkItems/102; logged here for roster.)
+  * DefineMovementPathRequest carries WeaponRangeOverrides (weaponName + enemy UnitID -> effective range),
+    precomputed in DefinePathStage via RangeRuleQueries.EffectiveRange (mover's ranged weapons x on-table enemies,
+    only differing pairs). GuiDefineMovementResolver's "Show targeting" gates now use it instead of raw RangeInches,
+    so the post-move shooting preview reflects Increased Shooting Range / Ranged Shrouding. JSON round-trip tested.
+  * #102 closed: Strider + Increased Shooting Range + Ranged Shrouding (floored) + offensive Darkborn + this
+    preview all shipped. Sole follow-up = DEFENSIVE Darkborn (enemy -range/-charge, Subject) — its charge debuff
+    needs a per-target charge-distance mechanic (its own item; would also unblock Aircraft's -12" facets).
+
 INTEGRATION PROGRESS (2026-06-29, cont. 41) — RangeModifier floor + offensive Darkborn (#102 facets 1+2). All → 106.
   Suite 912/0; full build clean; headless exit 0. (Canonical record: WorkItems/102; logged here for roster.)
   * RangeModifier effect/op gained a MinResultInches floor; RangeRuleQueries.EffectiveRangeDelta → EffectiveRange

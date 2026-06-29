@@ -865,6 +865,16 @@ public class GuiDefineMovementResolver
         string WeaponSightSuffix(IWeapon w) => sightByWeapon.TryGetValue(w.Name, out var s)
             ? SightRuleLabel.Parenthetical(s.coverRule, s.losRule) : string.Empty;
 
+        // #102: per-(weapon, enemy-unit) effective shooting range from the request, for when a range-modifier
+        // rule changes it (Increased Shooting Range widens the mover's reach; Ranged Shrouding narrows it for
+        // that enemy). Falls back to the weapon's base range — keeps this post-move preview in step with the
+        // authoritative ChooseRangedAttackStage range check.
+        var rangeOverrideByWeaponAndEnemy = new Dictionary<(string, UnitID), float>();
+        foreach (var ov in request.WeaponRangeOverrides)
+            rangeOverrideByWeaponAndEnemy[(ov.WeaponName, ov.EnemyUnitId)] = ov.EffectiveRangeInches;
+        float EffectiveWeaponRange(IWeapon w, IUnit enemyUnit) =>
+            rangeOverrideByWeaponAndEnemy.TryGetValue((w.Name, enemyUnit.ID), out float r) ? r : w.RangeInches;
+
         // 1) Per-enemy-unit aggregate text: shooting weapon counts (green) + charger count (yellow), combined.
         foreach (IUnit enemyUnit in _tableState.Units.Objects)
         {
@@ -889,7 +899,7 @@ public class GuiDefineMovementResolver
                         {
                             float b2b = DistanceUtilities.GetBaseToBaseDistanceInches_2D(
                                 from, em.Position, ourModel.BaseRadiusInches, em.BaseRadiusInches);
-                            if (b2b > w.RangeInches) continue;
+                            if (b2b > EffectiveWeaponRange(w, enemyUnit)) continue;
                             // Indirect/Takedown ignore line of sight, so only range gates them.
                             if (!ignoresLoS && !LoSCommitted(ourModel, from, em, enemyUnit)) continue;
                             inRange = true; break;
@@ -1040,7 +1050,7 @@ public class GuiDefineMovementResolver
                     {
                         float b2b = DistanceUtilities.GetBaseToBaseDistanceInches_2D(
                             selPos, em.Position, attacker.BaseRadiusInches, em.BaseRadiusInches);
-                        if (b2b > w.RangeInches) continue;
+                        if (b2b > EffectiveWeaponRange(w, enemyUnit)) continue;
                         if (b2b < nearestInRangeB2B) { nearestInRangeB2B = b2b; nearestInRange = em; }
                         var effect = LineOfSightUtilities.EvaluateSightLine(selPos, em.Position, unitBlockers);
                         // #042 Indirect/Takedown ignore LoS (a blocked line still hits); Blast/Indirect/Takedown
