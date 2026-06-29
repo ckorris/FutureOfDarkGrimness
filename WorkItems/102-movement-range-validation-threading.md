@@ -1,6 +1,6 @@
 # 102 — Movement & range modifier validation threading (Strider, RangeModifier family)
 
-**Status**: in progress — Strider (difficult-terrain cap waiver) landed 2026-06-29; RangeModifier family still open
+**Status**: core complete (2026-06-29) — Strider + the two clean RangeModifier rules (Increased Shooting Range, Ranged Shrouding) landed. Deferred remainders: Darkborn (range + charge-move bundle → needs a charge-distance primitive), the "to a min. 6\"" floor variant, and the *movement-overlay* shooting-range preview.
 **Related**: #100 (deferred from here — the invasive Part-1 #4 items), #029 (movement-modifier rules umbrella — Strider/Aircraft/Flying live there), #027 (weapon-scoped rules)
 
 ## Goal
@@ -27,6 +27,34 @@ Strider would parallel this exactly: add `MovementRuleQueries.IgnoresDifficultTe
 **Where is Difficult terrain authoritatively validated?** `PathTemplate.Validate` calls the **no-terrain** `ValidatePaths` overload (`terrain: null`), so it does NOT enforce the Difficult cap — that enforcement appears to live in the **resolvers'** own `ValidatePaths(…, terrain, …)` calls (the gray-out/preview), with the engine trusting the submitted path. If so, Strider only needs to be honoured in the resolver previews + wherever the engine re-validates; if the engine has an authoritative terrain check elsewhere, that's the must-wire point. Confirm this before wiring, or Strider risks being cosmetic (preview-only) or inconsistent.
 
 ## Notes
+- 2026-06-29: **RangeModifier slice DONE** (engine-only; branch `102-movement-range-validation`). Consumes the
+  long-declared `Effect.RangeModifier` → `RuleOperation.ApplyRangeModifier`. New `Shooting_OnRangeCheck` hook
+  (EHookID 81) + `RangeModifierContext` + `RangeRuleQueries.EffectiveRangeDelta(attacker, weapon, defender,
+  evaluator)` — a non-logging two-participant read folding the attacker's own range buffs (Actor seat) and the
+  defender's range debuffs (Subject seat), mirroring `SightRuleQueries`. Threaded into the AUTHORITATIVE gate:
+  `ChooseRangedAttackStage.BuildAttacksForEnemyUnit` computes the per-weapon effective range (`max(0,
+  weapon.RangeInches + delta)`, cached per weapon name since it's model-independent) and passes it through
+  `CanWeaponShootAtUnit` → `IsTargetWithinRange`. That single point covers all three ChooseRangedAttack
+  resolvers (GUI/CLI/AI) — they read `modelsThatCanShoot` rather than recomputing range — and the
+  `HasAnyFireableTarget` gray-out. Catalogued **Increased Shooting Range** (+6, Actor) + aura and **Ranged
+  Shrouding** (−6, Subject) + aura; All → 105. Updated the `RangeModifier`/`ApplyRangeModifier` doc comments
+  (were Aircraft/Subject-only) to describe both seats. Tests: new `RangeModifierRuleIntegrationTests` (out-of-
+  range target brought in by Increased Shooting Range; in-range target pushed out by a defender's Ranged
+  Shrouding; the query fold +6/−6/net-0; catalogued+resolvable). Verified: engine 909/0, full build, headless
+  exit 0.
+  - **Deferred (recorded, not silently cut):**
+    - **Darkborn** — bundles a range modifier (defensive −4 floor 6, or offensive +3 depending on army) WITH a
+      charge-move-distance modifier ("−2\" movement to charge" / "+3\" charge move"). The range half fits this
+      primitive, but the charge-move half needs a charge-distance-modifier primitive that doesn't exist yet
+      (#029 movement-modifier territory). Left whole so it lands faithfully later, not half-wired.
+    - **"to a min. of 6\"" floor variant** — some armies floor the reduced range at 6"; the canonical Ranged
+      Shrouding is a flat −6 (the floor is an army-specific variant, like Fortified's). Not modelled; the only
+      floor applied is `max(0, …)`.
+    - **Movement-overlay shooting preview** — `GuiDefineMovementResolver`'s "Show targeting" recomputes raw
+      `weapon.RangeInches` (lines ~892/1043) to show "what could I shoot after moving". It still uses base
+      range, so it under-/over-reports for a unit with these rules. Actual shooting is unaffected
+      (ChooseRangedAttackStage is authoritative). A full fix needs a per-enemy defender eval the attacker-only
+      `WeaponSightProfile` can't carry — deferred.
 - 2026-06-29: **Strider slice DONE** (branch `102-movement-range-validation`, both repos). Settled the open
   question first (see Decisions): the Difficult cap IS authoritatively enforced at the stage level
   (`DefinePathStage`/`ConsolidateStage`/`MovementExecutor` all pass real terrain to `ValidatePaths`), so
@@ -55,6 +83,17 @@ Strider would parallel this exactly: add `MovementRuleQueries.IgnoresDifficultTe
 - 2026-06-22: Opened to hold the invasive movement/range-modifier work deferred out of #100 (where #1, #3, #4-Shred/Heal/RestrictActions, and all of #2 landed). Number **102** chosen at the user's request — free on `origin/master` (top item there is 098); confirm no collision at merge per the never-reuse rule (another in-flight branch could have claimed it). Engine effects (`IgnoreTerrainEffects`, `RangeModifier`) are already declared with `.Apply`; the work is the consumer + the cross-repo flag threading, not new effect types.
 
 ## Decisions
+- 2026-06-29: **RangeModifier — threaded at the single authoritative gate, not every resolver.** Unlike Strider
+  (whose enemy/terrain validation is duplicated across engine stages + every GUI/CLI/AI move resolver), shooting
+  range is decided in exactly ONE place — `ChooseRangedAttackStage`'s target enumeration — and the three
+  ChooseRangedAttack resolvers consume its `modelsThatCanShoot` set rather than recomputing. So threading the
+  delta there covers actual play and all three resolvers at once. The only independent recompute (the *movement*
+  overlay's shooting preview) is a planning nicety, deferred (see Notes).
+- 2026-06-29: **Seat carries direction.** `Effect.RangeModifier(Delta)` is direction-agnostic; the HookEntry's
+  seat decides whose range. Actor = the bearer's own weapons (+, Increased Shooting Range); Subject = enemies
+  shooting the bearer (−, Ranged Shrouding / Aircraft). One two-participant `EvaluateAllNamed` (attacker Actor +
+  weapon, defender Subject) sums both into one delta — symmetric with how the save pipeline folds an attacker's
+  AP and a defender's Shielded bonus.
 - 2026-06-29: **Open question resolved — the Difficult cap is authoritatively enforced at the STAGE level,
   not just in resolver previews.** Mapped every `ValidatePaths` call site across both repos: `DefinePathStage`,
   `ConsolidateStage`, and `MovementExecutor.TryMove` all pass real terrain (`context.RelevantTerrain` /

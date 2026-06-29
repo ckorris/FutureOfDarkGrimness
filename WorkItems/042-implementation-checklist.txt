@@ -1474,6 +1474,20 @@ INTEGRATION PROGRESS (2026-06-28, cont. 38) — Fortified: AP-reduction-with-flo
     pipeline refactor, deferred). The defensive aura family (Resistance/Protected/Piercing*/Shielded/
     Fortified) is now complete.
 
+INTEGRATION PROGRESS (2026-06-29, cont. 40) — RangeModifier family (#102 second slice). All → 105.
+  Suite 909/0; full build clean; headless exit 0. (Canonical record: WorkItems/102; logged here for roster.)
+  * Consumes the long-declared Effect.RangeModifier → RuleOperation.ApplyRangeModifier. New Shooting_OnRangeCheck
+    hook (81) + RangeModifierContext + RangeRuleQueries.EffectiveRangeDelta — a two-participant non-logging read
+    folding the attacker's own +range (Actor seat) and the defender's -range (Subject seat). Threaded into the
+    single authoritative gate: ChooseRangedAttackStage.BuildAttacksForEnemyUnit computes per-weapon effective
+    range = max(0, RangeInches + delta) (cached, model-independent) → CanWeaponShootAtUnit → IsTargetWithinRange.
+    All three ChooseRangedAttack resolvers read modelsThatCanShoot, so one point covers them + the gray-out.
+  * Catalogued Increased Shooting Range (+6, Actor) + aura, Ranged Shrouding (-6, Subject) + aura. Seat carries
+    direction; effect/op docs updated from Aircraft/Subject-only to both seats.
+  * Deferred (see WorkItems/102): Darkborn (range + charge-move bundle → needs a charge-distance primitive),
+    the "min 6\"" floor variant, and the movement-overlay shooting preview (planning nicety; real shooting is
+    authoritative regardless).
+
 INTEGRATION PROGRESS (2026-06-29, cont. 39) — Strider (#102 first slice): difficult-terrain cap waiver. All → 101.
   Suite 905/0; full build clean; headless exit 0. (Tracked canonically in WorkItems/102; logged here for roster.)
   * Wires the long-declared-but-unconsumed Effect.IgnoreTerrainEffects → RuleOperation.IgnoreTerrainEffects.
