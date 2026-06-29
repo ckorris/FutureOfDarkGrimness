@@ -1444,6 +1444,16 @@ INTEGRATION PROGRESS (2026-06-28, cont. 35) — case-insensitive resolution + ne
     Morale_OnPreMoraleTest) and the "in melee" mirrors Bane/Rending/Shred/Unstoppable in melee (the exact
     flip of the when-shooting trio, Condition.IsMelee()), plus their 5 auras via UnitAura.
 
+INTEGRATION PROGRESS (2026-06-28, cont. 36) — aura wave 3: defensive wound-ignore + AP rules. All now 96.
+  Suite 894/0; headless exit 0.
+  * Resistance + Protected (wound ignored on 6+ = IgnoreWoundOnRoll(6), Subject — Regeneration at a higher
+    threshold); Piercing Assault (AP+1 charging = Thrust's AP facet alone); Piercing Hunter (AP+1 shooting
+    >9", DistanceGreaterThan gate) + their 4 auras. All reuse existing primitives.
+  * Deferred (need machinery, see WorkItems/100): Shielded/Fortified (defender-Subject-at-hit-complete seam
+    + AP-reduction primitive), Shrouding/Increased-Range (#102), Versatile/Unpredictable (choice/dice-branch
+    primitives), Steadfast/No-Retreat/Reanimation (round-start/morale machinery), Quick Shot/Swift (action
+    permission), and the aura-only rules with no corpus base def (Precision Fighter/Shooter, …).
+
 [x] SUPPRESSION vs. PER-RULE LOG (DONE 2026-06-07; see INTEGRATION PROGRESS cont. 6).
     Was: the per-rule game-log line emitted at QUEUE TIME, before the suppression first-pass,
     so a suppressed rule would print a phantom "X added -1 to hit". FIXED by moving log emission

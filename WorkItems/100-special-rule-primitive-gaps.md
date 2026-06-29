@@ -178,6 +178,27 @@ Insertion point + shoot-vs-melee sharing (2a); `Heal` consumer lands here (defer
 both repos (engine stage + app-side resolver tweaks for the ability prompt).
 
 ## Notes
+- 2026-06-28: **Aura wave 3 — defensive wound-ignore + AP rules + auras (8 rules).** Surveyed the
+  remaining un-cataloged aura bases by frequency and cataloged the ones that map to existing primitives:
+  **Resistance** & **Protected** (each "wound ignored on 6+" = `IgnoreWoundOnRoll(6)`, Subject — Regeneration
+  at a higher threshold; mechanically identical to each other), **Piercing Assault** ("AP(+1) when charging"
+  = Thrust's AP facet alone, `RollModifier(Save,-1)` gated `And(IsMelee,IsCharging)`), **Piercing Hunter**
+  ("AP(+1) shooting >9"" = same AP shape gated `DistanceGreaterThan(9)`, like Artillery). + their 4 auras
+  via `UnitAura`. `All` 88 → 96. Tests: Resistance threshold (ignores 6s only → 2.5/3), Piercing
+  Assault/Hunter save-modifier gates (charge / distance), aura-integrity auto-covers the 4 auras. Suite
+  894/0, app build clean, headless exit 0.
+  **Deliberately deferred** (need machinery, not data — recorded so they're not silently dropped):
+  - **Shielded** (+1 defense) / **Fortified** (incoming AP-1, min 0): the hit-complete save-modifier eval
+    passes ONLY the attacker (Actor) participant, so a *defender* save bonus needs the defender threaded as
+    a Subject participant there — a seam (like #093's threading). Fortified additionally needs an
+    AP-reduction-with-floor primitive (not a flat save bonus). Own slice.
+  - **Melee/Ranged Shrouding, Increased Shooting Range**: movement/charge/range *validation* threading → #102.
+  - **Versatile Reach / Versatile Defense**: pick-one-of-two-effects-per-activation → an activated-ability
+    choice primitive. **Unpredictable Fighter/Shooter**: roll-a-die-then-branch primitive. **Steadfast /
+    No Retreat / Reanimation**: round-start / morale-recovery machinery. **Quick Shot / Swift**:
+    action-permission (changes action legality, not a modifier). **Precision Fighter/Shooter, Piercing
+    Fighter, Rending when Shooting, Thrust in Melee**: corpus gives no standalone base definition (aura/grant
+    only) — would be guessing semantics, so left until grounded.
 - 2026-06-28: **Next aura wave — Courage + the "in melee" mirrors + their auras (10 rules).** Unlocked the
   high-frequency auras whose base wasn't cataloged. Base rules: **Courage** (+1 to morale tests — the rule
   the Fearless doc anticipated, `RollModifier(Morale,+1)` at `Morale_OnPreMoraleTest`, folds easier); and
