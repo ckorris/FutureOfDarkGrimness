@@ -1463,6 +1463,17 @@ INTEGRATION PROGRESS (2026-06-28, cont. 37) — Shielded seam: defender as Subje
   * On the seam: Shielded (RollModifier(Save,+1) Subject) + Shielded Aura. Fortified still deferred (needs
     an AP-reduction-with-floor primitive).
 
+INTEGRATION PROGRESS (2026-06-28, cont. 38) — Fortified: AP-reduction-with-floor primitive. All → 100.
+  Suite 899/0; headless exit 0.
+  * New Effect.ReduceArmorPenetration(Amount) → RuleOperation.ReduceArmorPenetration (plain op). A defender
+    (Subject) rule at Shooting_OnHitRollComplete (on the Shielded seam) emits it; RollToHitStage sums into
+    RollToHitResults.ArmorPenetrationReduction; DetermineSaveRollsNeededStage clamps weapon AP:
+    ap = max(0, weaponAP - reduction). The floor is what separates Fortified from Shielded — it does nothing
+    vs an AP(0) hit. Rule Fortified + Fortified Aura. Tests assert AP(2)→5, AP(0)→4 (floor), baseline 6.
+  * Scope: clamps the WEAPON AP only; rule-granted AP rides SaveModifier (de-conflating that is a save-
+    pipeline refactor, deferred). The defensive aura family (Resistance/Protected/Piercing*/Shielded/
+    Fortified) is now complete.
+
 [x] SUPPRESSION vs. PER-RULE LOG (DONE 2026-06-07; see INTEGRATION PROGRESS cont. 6).
     Was: the per-rule game-log line emitted at QUEUE TIME, before the suppression first-pass,
     so a suppressed rule would print a phantom "X added -1 to hit". FIXED by moving log emission

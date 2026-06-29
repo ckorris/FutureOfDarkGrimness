@@ -178,6 +178,20 @@ Insertion point + shoot-vs-melee sharing (2a); `Heal` consumer lands here (defer
 both repos (engine stage + app-side resolver tweaks for the ability prompt).
 
 ## Notes
+- 2026-06-28: **Fortified — BUILT (new AP-reduction-with-floor primitive + rule + aura).** Closed the last
+  deferred item from the defensive family. New `Effect.ReduceArmorPenetration(Amount)` →
+  `RuleOperation.ReduceArmorPenetration` (plain op): a defender (Subject) rule at
+  `Shooting_OnHitRollComplete` (riding the Shielded seam) emits it; `RollToHitStage` sums the ops into a new
+  `RollToHitResults.ArmorPenetrationReduction`, and `DetermineSaveRollsNeededStage` clamps the weapon AP:
+  `ap = max(0, weaponAP - reduction)`. **The floor is what distinguishes Fortified from Shielded** — it
+  cancels existing penetration but does NOTHING against an AP(0) hit (a flat +1 save would still help).
+  Rule **Fortified** (`ReduceArmorPenetration(1)`, Subject) + **Fortified Aura**. `All` 98 → 100. Tests
+  (`FortifiedRuleIntegrationTests`, full RollToHit→SaveNeeded pipeline): AP(2)→threshold 5 (cancels 1),
+  AP(0)→threshold 4 (floor holds, no change), no-Fortified AP(2)→6 (baseline). Suite 899/0, app build clean,
+  headless exit 0. **Scope note:** the clamp is on the WEAPON's AP only — rule-granted AP (Rending/Thrust)
+  rides the save modifier and isn't reduced. Reducing total AP correctly would need de-conflating attacker
+  AP from defender save-bonuses in `SaveModifier` (a save-pipeline refactor); the weapon-AP clamp is the
+  faithful common case and is documented in the catalog + effect XML.
 - 2026-06-28: **Shielded — BUILT (the defender-Subject-at-hit-complete seam + rule + aura).** Closed the
   seam flagged as deferred in aura wave 3. `RollToHitStage`'s hit-complete `EvaluateAll` now passes the
   **defender as a `ERuleSeat.Subject` participant** alongside the attacker (Actor) — the mirror of how
