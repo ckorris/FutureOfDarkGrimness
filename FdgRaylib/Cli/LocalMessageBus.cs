@@ -67,6 +67,13 @@ public class LocalMessageBus : IMessageBusHost, IMessageBusClient
         return Task.CompletedTask;
     }
 
+    public Task SendCommandToLocalAsync<TMessage>(TMessage message)
+    {
+        // Single-machine play is all in-process anyway, so local delivery is just a dispatch.
+        Dispatch(message);
+        return Task.CompletedTask;
+    }
+
     public void Dispose() { }
 
     private void Dispatch<TMessage>(TMessage message)
