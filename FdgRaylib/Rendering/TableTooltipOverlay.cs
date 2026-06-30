@@ -2,6 +2,8 @@ using System.Numerics;
 using FDG;
 using FDG.Players;
 using FDG.SaveLoad;
+using FDG.Rules.Dispatch;
+using FDG.Rules.Foundation;
 using FdgRaylib.Rendering.Resolvers;
 using ImGuiNET;
 using Raylib_cs;
@@ -27,6 +29,11 @@ public class TableTooltipOverlay
     private float _tableH;
 
     private bool _showLabels = true;
+    private bool _showAllTokens; // dev toggle (T): reveal Invisible bookkeeping tokens
+
+    // Built from the core catalog so granted-rule tokens get the right valence + description. Custom
+    // army-embedded rules (#059) aren't in here and fall back to Neutral/no-description.
+    private readonly IRuleResolver _ruleResolver = CoreRuleCatalog.CreateResolver();
 
     // Non-null only on the host (work item #054 will add client-initiated saving); returns the
     // serialized game to write to a .fdgsave file.
@@ -59,6 +66,9 @@ public class TableTooltipOverlay
         if (ImGui.IsKeyPressed(ImGuiKey.L) && !ImGui.GetIO().WantCaptureKeyboard)
             _showLabels = !_showLabels;
 
+        if (ImGui.IsKeyPressed(ImGuiKey.T) && !ImGui.GetIO().WantCaptureKeyboard)
+            _showAllTokens = !_showAllTokens;
+
         var hoveredUnit    = hitTester.HoveredUnit;
         var hoveredModel   = hitTester.HoveredModel;
         var hoveredTerrain = hitTester.HoveredTerrain;
@@ -73,9 +83,9 @@ public class TableTooltipOverlay
         else if (hoveredTerrain != null)
             DrawTerrainTooltip(hoveredTerrain);
 
-        // Draw unit name labels
-        if (_showLabels)
-            DrawUnitLabels();
+        // Unit name labels + token chips. Chips show regardless of the label toggle (status at a glance);
+        // only the name text is gated on _showLabels.
+        DrawUnitOverlays();
 
         // Toolbar buttons — anchored top-left, stacked vertically.
         ImGui.SetNextWindowPos(new Vector2(8, 8), ImGuiCond.Always);
@@ -88,6 +98,9 @@ public class TableTooltipOverlay
         string btnLabel = _showLabels ? "Labels: ON" : "Labels: OFF";
         if (ImGui.Button(btnLabel))
             _showLabels = !_showLabels;
+
+        if (ImGui.Button(_showAllTokens ? "Tokens: ALL" : "Tokens: std"))
+            _showAllTokens = !_showAllTokens;
 
         if (_saveGameToJson != null)
         {
@@ -112,7 +125,7 @@ public class TableTooltipOverlay
         File.WriteAllText(path, json);
     }
 
-    private static void DrawUnitTooltip(IUnit unit, IModel model,
+    private void DrawUnitTooltip(IUnit unit, IModel model,
         ICanvasInteractionHandler? interactionHandler)
     {
         ImGui.BeginTooltip();
@@ -142,6 +155,27 @@ public class TableTooltipOverlay
                 string range = w.RangeInches > 0 ? $"{w.RangeInches}\"" : "Melee";
                 string ap    = w.ArmorPenetration > 0 ? $" AP{w.ArmorPenetration}" : "";
                 ImGui.TextUnformatted($"{w.Name}  A{w.Attacks}  {range}{ap}");
+            }
+            ImGui.Unindent();
+        }
+
+        var tokenInfos = TokenChipRenderer.ResolveVisible(unit.Tokens, _ruleResolver, false, _showAllTokens);
+        if (tokenInfos.Count > 0)
+        {
+            ImGui.Spacing();
+            ImGui.TextUnformatted("Tokens:");
+            ImGui.Indent();
+            foreach (var ti in tokenInfos)
+            {
+                ImGui.TextColored(ValenceTint(ti.Valence), ti.Name);
+                if (!string.IsNullOrEmpty(ti.Description))
+                {
+                    ImGui.Indent();
+                    ImGui.PushTextWrapPos(ImGui.GetCursorPosX() + 300f);
+                    ImGui.TextWrapped(ti.Description);
+                    ImGui.PopTextWrapPos();
+                    ImGui.Unindent();
+                }
             }
             ImGui.Unindent();
         }
@@ -178,7 +212,7 @@ public class TableTooltipOverlay
         ImGui.EndTooltip();
     }
 
-    private void DrawUnitLabels()
+    private void DrawUnitOverlays()
     {
         var drawList = ImGui.GetBackgroundDrawList();
         uint shadow = ImGui.ColorConvertFloat4ToU32(new Vector4(0, 0, 0, 0.75f));
@@ -188,7 +222,7 @@ public class TableTooltipOverlay
         {
             float sumX = 0, sumY = 0;
             int   count = 0;
-            float minRadius = float.MaxValue;
+            float minRadiusPx = float.MaxValue;
 
             foreach (var model in unit.Models)
             {
@@ -196,23 +230,52 @@ public class TableTooltipOverlay
                 var pos = model.Position;
                 if (pos.x == 0f && pos.z == 0f) continue;
 
-                sumX += _originX + pos.x * _scale;
-                sumY += _originY + (_tableH - pos.z) * _scale;
-                minRadius = MathF.Min(minRadius, model.BaseRadiusInches * _scale);
+                float mx = _originX + pos.x * _scale;
+                float my = _originY + (_tableH - pos.z) * _scale;
+                float mr = model.BaseRadiusInches * _scale;
+
+                sumX += mx;
+                sumY += my;
+                minRadiusPx = MathF.Min(minRadiusPx, mr);
                 count++;
+
+                // Model-scoped tokens sit just above each model (usually none).
+                var modelChips = TokenChipRenderer.ResolveVisible(model.Tokens, _ruleResolver, true, _showAllTokens);
+                if (modelChips.Count > 0)
+                    TokenChipRenderer.DrawChipRow(drawList, modelChips, mx,
+                        my - mr - 3f - TokenChipRenderer.RowHeight(modelChips));
             }
 
             if (count == 0) continue;
 
             float cx = sumX / count;
             float cy = sumY / count;
+            float modelsTop = cy - minRadiusPx;
 
-            Vector2 textSize = ImGui.CalcTextSize(unit.Name);
-            float labelX = cx - textSize.X * 0.5f;
-            float labelY = cy - minRadius - textSize.Y - 4f;
+            // Unit-scoped tokens sit just above the unit, under its name.
+            var unitChips = TokenChipRenderer.ResolveVisible(unit.Tokens, _ruleResolver, false, _showAllTokens);
+            float chipH = TokenChipRenderer.RowHeight(unitChips);
+            float chipTopY = modelsTop - 3f - chipH;
+            if (unitChips.Count > 0)
+                TokenChipRenderer.DrawChipRow(drawList, unitChips, cx, chipTopY);
 
-            drawList.AddText(new Vector2(labelX + 1, labelY + 1), shadow, unit.Name);
-            drawList.AddText(new Vector2(labelX,     labelY),     white,  unit.Name);
+            if (_showLabels)
+            {
+                Vector2 textSize = ImGui.CalcTextSize(unit.Name);
+                float nameBottom = unitChips.Count > 0 ? chipTopY : modelsTop - 3f;
+                float labelX = cx - textSize.X * 0.5f;
+                float labelY = nameBottom - textSize.Y - 2f;
+
+                drawList.AddText(new Vector2(labelX + 1, labelY + 1), shadow, unit.Name);
+                drawList.AddText(new Vector2(labelX,     labelY),     white,  unit.Name);
+            }
         }
     }
+
+    private static Vector4 ValenceTint(EValence v) => v switch
+    {
+        EValence.Positive => new Vector4(0.55f, 0.90f, 0.60f, 1f),
+        EValence.Negative => new Vector4(0.95f, 0.55f, 0.50f, 1f),
+        _                 => new Vector4(0.82f, 0.82f, 0.88f, 1f),
+    };
 }
