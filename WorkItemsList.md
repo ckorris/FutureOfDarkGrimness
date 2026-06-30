@@ -65,17 +65,10 @@ _(No open items — #023 and #024 are done; see ## Done.)_
 
 ## Special rules — implementations
 
-These are umbrellas; will fragment per-rule when picked up. Reconciled against the GF **Core Rules v3.5.1**
-special-rules reference (2026-06-30): of the 33 core rules, **32 are implemented** — only **Limited** (#032) is
-unbuilt. The v3.5.1 renames retired the old gaps (Lance/Lock-On/Poison/Sniper/Entrenched are no longer core);
-everything v3.5.1 lists is built except Limited. See the Done section for #030/#031/#051.
-
-- [ ] 032 — Weapon rules. **AP, Rending, Blast, Reliable, Indirect, Takedown, Unstoppable, Bane all DONE** via the #042 catalog (catalogued + integration-tested). **Remaining: `Limited` only** — "may only be used once per game" — the one v3.5.1 core special rule still unimplemented. **Design locked (2026-06-30):**
-  - **Marker rule, not hooks.** `Limited` is a weapon-scoped marker (catalogued, `ERuleScope.Weapon`), read via a `LimitedRules.IsLimited(weapon)` helper — the Aircraft/Transport marker+helper shape. (A full per-weapon-fired rule hook+context would be far more machinery than the rule warrants.)
-  - **Spent-state lives on the MODEL, not the weapon or unit.** Weapons have no token container; **models do** (`ModelData._tokens` / `IModel.Tokens`, serialized). So a `LimitedSpent` token sits on the firing model's own container, payload = weapon name (Weapon has only a `Name`, no ID — disambiguates a model carrying two different Limited weapons), `ManualOnly` clear so it survives the round-end sweep and lasts the whole game. Count = times fired.
-  - **Variant B (spent-on-fire).** No token at start. After `FireStage` (where the fired weapon + firing models are known), each model that fired a Limited weapon increments its `LimitedSpent` token for that name. At the offer seam (`ChooseRangedAttackStage.BuildWeaponOptions`, the same `UnselectableReason` path Deadly uses) a Limited weapon is excluded once every living model carrying it has reached its `Limited(X)` count (X=1 today).
-  - **Why model-bound:** the spent-state rides the model, so it's automatically correct under casualties and generalizes cleanly to **`Limited(X>1)`** (each surviving model tracks its own remaining uses). NOTE: all same-name weapons in a unit must fire together (a game rule), so a unit's copies always spend in one firing — the model-binding is for clean data + `Limited(X)`, **not** per-model independent firing (which the rules don't permit).
-  - Standalone (no other core rule shares this machinery); fragment into its own numbered item file on pickup. ([no item file yet])
+These are umbrellas; fragmented per-rule as picked up. Reconciled against the GF **Core Rules v3.5.1**
+special-rules reference (2026-06-30): **all 33 core rules are now implemented** (the last gap, Limited, landed
+2026-06-30 — see Done #032). The v3.5.1 renames retired the old apparent gaps (Lance/Lock-On/Poison/Sniper/
+Entrenched are no longer core). See the Done section for #030/#031/#032/#051.
 
 ## Casting
 
@@ -170,6 +163,8 @@ Implemented and merged to master; engine test suite green. Held open only until 
 ---
 
 ## Done
+
+- [x] 032 — Weapon rules (AP, Rending, Blast, Reliable, Indirect, Takedown, Unstoppable, Bane, **Limited**). **Done 2026-06-30.** AP/Rending/Blast/Reliable/Indirect/Takedown/Unstoppable/Bane landed via #042; **Limited** ("once per game") completed this item — **and with it all 33 GF v3.5.1 core special rules are implemented.** Limited = a weapon-scoped marker rule (`CoreRuleCatalog.Limited`, no hooks) read via `LimitedRules`. Spent-state is a per-MODEL `LimitedSpent` token (new `TokenType` + `TokenPayload.WeaponName`) keyed by weapon name, so two carriers spend independently, a model can hold two different Limited weapons, and casualties drop the mark; `ManualOnly` clear → lasts the game; count = times fired (Limited(X)-ready). `ChooseRangedAttackStage` marks it spent on its carriers when chosen (commit-to-fire), excludes it at the offer seam once every living carrier has fired (mirrors Deadly gating), and grays Shoot when the only ranged weapon is a spent Limited one. Engine-only (no app change). `All` → 112. Tests: `LimitedRulesTests` + 2 `ChooseRangedAttackStage` integration tests; suite 945/0, full build, headless 0. NOTE: same-name weapons fire together (a game rule), so a unit's copies spend in one firing — the model-binding is for clean casualty handling + Limited(X), not per-model independent firing.
 
 - [x] 030 — Combat-modifier rules: Furious, Impact, Counter, Thrust, Surge, Relentless. **Done** (landed via the #042 catalog; verified against GF Core Rules v3.5.1 on 2026-06-30). All six catalogued + integration-tested. Counter carries **both** v3.5.1 facets (StrikeFirst when charged + `ReduceImpactDicePerModel`). The Furious "only when charging" gate (was #051) is in place.
 - [x] 051 — Furious charge gate. **Done** (verified 2026-06-30). Furious's hook now gates on `Condition.IsCharging()` (And(IsMelee, IsCharging, UnmodifiedRollEquals(6))), so the extra-hit-on-6 fires only on a melee **charge**, matching the v3.5.1 text — no longer over-applying to any melee attack. (The `IsCharging` condition + melee charge-state threading landed with the melee subsystem since this was deferred.)
