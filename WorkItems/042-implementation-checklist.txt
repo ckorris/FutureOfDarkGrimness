@@ -1474,6 +1474,17 @@ INTEGRATION PROGRESS (2026-06-28, cont. 38) — Fortified: AP-reduction-with-flo
     pipeline refactor, deferred). The defensive aura family (Resistance/Protected/Piercing*/Shielded/
     Fortified) is now complete.
 
+INTEGRATION PROGRESS (2026-06-30, cont. 43) — per-target charge debuff + Melee Shrouding (#029). All → 108.
+  Suite 917/0; full build clean; headless exit 0. (Canonical record: WorkItems/029; logged here for roster.)
+  * Lights up the dormant Movement_OnChargeDeclared hook / ChargeDeclaredContext. New
+    MovementRuleQueries.EffectiveChargeDistanceAgainst folds the target's Subject-seat MovementBonus(Charge) +
+    a new MovementBonus.MinResultInches floor (Actor-seat Fast/Slow sink path ignores the floor). DefinePathStage
+    reduces the charge budget to the worst case among in-reach enemies — one scalar, so preview/validation/AI all
+    shrink. Rule: Melee Shrouding (-3 charge, floor 6, Subject) + aura — the charge twin of Ranged Shrouding.
+  * Worst-case (not per-target) by user sign-off: charge is geometric (target picked after the move), budget is a
+    single scalar; never allows an illegal over-charge, occasionally shortens a charge toward a normal enemy when
+    a shrouding one is also in range. Same mechanism unblocks defensive Darkborn's -2 charge + Aircraft facets.
+
 INTEGRATION PROGRESS (2026-06-29, cont. 42) — move-overlay shooting-range preview (#102 facet 3 — item DONE). All 106.
   Suite 913/0; full build clean; headless exit 0. (Canonical record: WorkItems/102; logged here for roster.)
   * DefineMovementPathRequest carries WeaponRangeOverrides (weaponName + enemy UnitID -> effective range),
