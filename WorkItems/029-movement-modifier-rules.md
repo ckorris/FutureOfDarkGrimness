@@ -1,10 +1,8 @@
 # 029 — Movement-modifier rules (Fast/Slow/…, Strider, Aircraft, Flying) + target-perspective charge debuffs
 
-**Status**: in progress — Fast/Slow/VeryFast (#042 catalog), Immobile (#100), Strider (#102), the per-target
-charge-debuff mechanic + **Melee Shrouding**, **Darkborn (Defensive)**, **Flying** (full), and **Aircraft** all
-done. Aircraft's can't-seize-objectives, can't-be-charged, and deploy-first facets landed 2026-06-30. **Remaining:
-only Aircraft's FORCED-MOVEMENT mode** (Advance-only straight-line 30–36" no-turning + off-table redeployment) —
-a large new sub-system (no facing model; constrained-move resolvers; off-table + redeploy); pending a design call.
+**Status**: DONE (2026-06-30). Fast/Slow/VeryFast (#042), Immobile (#100), Strider (#102), the per-target
+charge-debuff mechanic + Melee Shrouding, Darkborn (Off/Def), Flying (full), and **Aircraft (all facets,
+including the forced-movement mode)** are implemented, catalogued, and tested. See Outcome.
 **Related**: #102 (range-modifier threading — the shooting twin of this; Ranged Shrouding ↔ Melee Shrouding),
 #093 (per-model "all models have this rule" gating), #027 (weapon-scoped rules).
 
@@ -15,6 +13,31 @@ The harder pieces are the **target-perspective** debuffs — "enemies get −N m
 (Melee Shrouding, defensive Darkborn) — and the bundle rules Aircraft / Flying.
 
 ## Notes
+- 2026-06-30: **Aircraft forced-movement mode DONE — #029 COMPLETE** (branch `029-aircraft-forced-movement`).
+  Corrected my earlier overstatement: a heading is a SEPARATE additive field, not a refactor of everything that
+  reads Position (user caught this). The real work was the movement machinery, not the storage.
+  - **Heading:** `UnitData.AircraftHeading` (`Float2?`, JsonProperty, additive). Set lazily on first move toward
+    the table centre (`ForcedAircraftMove.EnsureHeading`) and never recomputed while on the table ("doesn't
+    turn"); cleared when it flies off so it re-aims when re-placed.
+  - **Advance-only:** Aircraft rule gains `RestrictActions([Advance])` at `Activation_OnActionChoice` (the
+    Immobile mechanism). Shooting after the Advance is unaffected (Shoot is a sub-step, not an EActionType).
+  - **Forced move:** `DefinePathStage.Enter` branches on `IsAircraft` BEFORE the free-form path request — it asks
+    the distance via a `StringSelectionRequest` (30/33/36"; reuses the existing string resolvers, AI/EOF → 30"),
+    builds a rigid straight-line translation along the heading (`ForcedAircraftMove.BuildPaths`), and either
+    submits it (on-table) or — if it would cross a table edge (`WouldLeaveTable`) — sets the models to origin,
+    adds `TokenType.OffTableFromForcedMove`, and clears the heading. No path-UI; no ValidatePaths (Aircraft
+    ignore terrain + units).
+  - **Off-table → reserve → redeploy:** holding the models at origin makes the unit off-battlefield (reserve-like:
+    no shooting targets, no objective contest), so the activation naturally peters out. `StartOfRoundExtraActionStage`
+    (round 2+) redeploys any `OffTableFromForcedMove`-tokened unit via the existing reserve placement flow, clears
+    the token, and marks it `ArrivedFromReserve` (can't seize the round it returns).
+  - Tests: `ForcedAircraftMoveTests` (heading toward centre + idempotent/no-turn; rigid paths; off-table bounds;
+    + DefinePathStage integration for the off-table leave-play and the on-table straight move). Engine 938/0,
+    full build, headless exit 0. No app changes (the distance prompt + redeploy reuse existing request types).
+  - Simplifications (recorded): the heading auto-aims toward centre (no player heading-pick UI), the redeploy zone
+    is the whole table ("any edge" relaxed to "anywhere"), and the off-table-ends-activation is achieved by the
+    unit becoming a reserve rather than an explicit activation-abort. Each is a faithful approximation; a fuller
+    version (player-chosen heading, edge-only redeploy strip) is a refinement, not a gap.
 - 2026-06-30: **Aircraft facets — can't-seize-objectives, can't-be-charged, deploy-first DONE** (branch
   `029-aircraft-deferred-facets`). New `AircraftRules.IsAircraft(unit)` helper (a plain RuleDefinitions name
   check, the `TransportUtilities.IsTransport` pattern, since these gates run in stage code with no RuleEvaluator).
@@ -95,23 +118,26 @@ The harder pieces are the **target-perspective** debuffs — "enemies get −N m
   half-rule labelled "Aircraft" is a known limitation, accepted to make the buildable facets available now.
 
 ## Outcome
-_(written when closed — only Aircraft's forced-movement mode remains; see below)_
+Closed 2026-06-30. All of #029's movement-modifier rules are implemented, catalogued, and tested:
+- **Self move-distance** (Actor `MovementBonus`): Fast/Slow/VeryFast/Agile/Quick/Rapid* (#042), Immobile (#100,
+  RestrictActions), and offensive Darkborn's +3 charge (#102).
+- **Terrain ignore**: Strider (difficult cap, #102) and **Flying** (all terrain via `ETerrainIgnoreScope` +
+  the threaded impassible flag + Dangerous-roll skip, and move-through-units).
+- **Target-perspective debuffs**: the per-target charge-distance mechanism (`Movement_OnChargeDeclared` +
+  `EffectiveChargeDistanceAgainst`, worst-case in DefinePathStage) powering **Melee Shrouding** and **Darkborn
+  (Defensive)**; range debuffs ride #102's Subject `RangeModifier`.
+- **Aircraft** (all facets): −12 range / −1 hit to attackers + terrain/unit ignore; can't seize objectives;
+  can't be charged/contacted; deploys first; and the **forced straight-line movement mode** (Advance-only +
+  heading field + off-table → reserve → edge redeploy).
 
-### Follow-up still open — Aircraft's forced-movement mode (LARGE; pending a design call)
-Everything else on #029 is done. The sole remainder is Aircraft's movement behaviour: **may only Advance, moving
-in a straight line 30–36" with no turning; direction can't change while on the table; if it leaves the table its
-activation ends and it redeploys on any table edge next round.** This is a large new sub-system, NOT a clean
-hook:
-- **No facing/direction model exists** — `ModelData`/`IModel` carry only a `Position` (no heading). True
-  "can't turn while on the table" needs either a facing field (a ~50-file refactor across everything that reads
-  Position) or a per-unit "current heading" stored on a token + validated at activation.
-- **The move resolvers are free-form** — GUI/CLI/AI all pick a destination within a distance budget. A forced
-  straight-line fixed-distance move needs new request fields (forced direction + distance) and constrained
-  resolver logic (or a fully auto-resolved move with no player path choice).
-- **Off-table + redeploy** — bounds are known (`GameWideConstants.DEFAULT_TABLE_WIDTH/HEIGHT_INCHES`) but there's
-  no automated off-table detection; redeploy could reuse the Ambush/`PlaceDeferredUnitsStage` pattern (place from
-  a table edge at round start) + a token marking the unit as off-table.
-- **Advance-only** is the one easy part (`Effect.RestrictActions([Advance])`, as Immobile uses) — but shipping it
-  ALONE is a regression (an Aircraft would crawl ~6" instead of flying 30"+), so it can't land without the rest.
-Reasonable as its own work item, or a faithful-simplified version (auto straight-line move + heading token +
-edge-redeploy) on sign-off. Until then, the catalogued Aircraft moves like a normal unit (loudly documented).
+Net new machinery this item introduced: `ETerrainIgnoreScope` + `IgnoresAllTerrain` + the impassible flag;
+`Movement_OnChargeDeclared` lit up + `MovementBonus.MinResultInches` floor + `EffectiveChargeDistanceAgainst`;
+`EnemyModelFootprint.Uncontactable`; `AircraftRules.IsAircraft`; `UnitData.AircraftHeading` + `ForcedAircraftMove`
++ `TokenType.OffTableFromForcedMove`. `CoreRuleCatalog.All` grew to 111 rules.
+
+### Faithful simplifications (recorded, not silent gaps)
+- Aircraft heading auto-aims toward the table centre (no player heading-pick UI); redeploy uses the whole-table
+  zone ("any edge" relaxed); off-table-ends-activation is realised by the unit becoming a reserve (it has nothing
+  to do off-table) rather than an explicit activation-abort. Per-model gating ("where ALL MODELS have this rule")
+  is approximated unit-level for the Shrouding/Darkborn family (#093). Each is a faithful approximation; a fuller
+  version (player-chosen heading, edge-only redeploy strip, per-model gating) is a refinement, not a missing facet.

@@ -1474,6 +1474,16 @@ INTEGRATION PROGRESS (2026-06-28, cont. 38) — Fortified: AP-reduction-with-flo
     pipeline refactor, deferred). The defensive aura family (Resistance/Protected/Piercing*/Shielded/
     Fortified) is now complete.
 
+INTEGRATION PROGRESS (2026-06-30, cont. 46) — Aircraft forced-movement mode (#029 DONE). Suite 938/0; build; hl 0.
+  (No new rules; All stays 111. Canonical record: WorkItems/029.) Closes #029 entirely.
+  * UnitData.AircraftHeading (Float2?, additive) — a heading, set lazily toward table centre, never turned.
+    Aircraft rule gains RestrictActions([Advance]). DefinePathStage branches IsAircraft to a forced straight-line
+    move (distance via StringSelectionRequest, reusing existing string resolvers) along the heading; if it crosses
+    a table edge it leaves play (models to origin + TokenType.OffTableFromForcedMove), redeployed from an edge at
+    round start by StartOfRoundExtraActionStage (reuses the reserve-placement flow). No app changes.
+  * Simplifications (faithful, recorded in WorkItems/029): heading auto-aims to centre; redeploy zone = whole
+    table; off-table-ends-activation realised via the reserve state. #029's whole rule roster is now complete.
+
 INTEGRATION PROGRESS (2026-06-30, cont. 45) — Aircraft stage gates (#029). Suite 932/0; full build; headless 0.
   (No new rules; All stays 111. Canonical record: WorkItems/029.) New AircraftRules.IsAircraft helper.
   * Can't seize objectives: ReconcileObjectivesStage skips Aircraft models. Can't be charged: EnemyModelFootprint
