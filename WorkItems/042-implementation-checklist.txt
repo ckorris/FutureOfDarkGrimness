@@ -1474,6 +1474,15 @@ INTEGRATION PROGRESS (2026-06-28, cont. 38) — Fortified: AP-reduction-with-flo
     pipeline refactor, deferred). The defensive aura family (Resistance/Protected/Piercing*/Shielded/
     Fortified) is now complete.
 
+INTEGRATION PROGRESS (2026-06-30, cont. 45) — Aircraft stage gates (#029). Suite 932/0; full build; headless 0.
+  (No new rules; All stays 111. Canonical record: WorkItems/029.) New AircraftRules.IsAircraft helper.
+  * Can't seize objectives: ReconcileObjectivesStage skips Aircraft models. Can't be charged: EnemyModelFootprint
+    Uncontactable tag (engine + all 6 resolver footprint builders) — a move can't end within the standoff of an
+    uncontactable enemy (passes under it OK); excluded from ValidateChargeReach/GetCanCharge/ChooseMeleeDefender.
+    Deploy first: ChooseUnitToDeployStage offers only Aircraft while any remain undeployed.
+  * STILL DEFERRED: Aircraft's forced straight-line movement mode (needs a facing notion + constrained resolvers
+    — a large sub-system; pending a design call). See WorkItems/029.
+
 INTEGRATION PROGRESS (2026-06-30, cont. 44) — Darkborn split + Flying + Aircraft (partial) (#029). All → 111.
   Suite 926/0; full build clean; headless exit 0. (Canonical record: WorkItems/029; logged here for roster.)
   * Darkborn split into "Darkborn (Offensive)" / "Darkborn (Defensive)" (disambiguate the corpus's two same-named

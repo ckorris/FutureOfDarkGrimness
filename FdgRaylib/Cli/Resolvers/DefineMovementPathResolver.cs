@@ -173,11 +173,12 @@ public class DefineMovementPathResolver : IStageResolver<DefineMovementPathReque
         foreach (var u in _tableState.Units.Objects)
         {
             if (u.PlayerID == request.TargetPlayerID) continue;
+            bool uncontactable = FDG.Rules.Dispatch.AircraftRules.IsAircraft(u); // #029
             bool anyLiving = false;
             foreach (var m in u.Models)
                 if (m.GetIsAlive())
                 {
-                    footprints.Add(new EnemyModelFootprint(m.Position, m.BaseRadiusInches, unitKey));
+                    footprints.Add(new EnemyModelFootprint(m.Position, m.BaseRadiusInches, unitKey, uncontactable));
                     anyLiving = true;
                 }
             if (anyLiving) unitKey++;

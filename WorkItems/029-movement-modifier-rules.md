@@ -1,10 +1,10 @@
 # 029 — Movement-modifier rules (Fast/Slow/…, Strider, Aircraft, Flying) + target-perspective charge debuffs
 
 **Status**: in progress — Fast/Slow/VeryFast (#042 catalog), Immobile (#100), Strider (#102), the per-target
-charge-debuff mechanic + **Melee Shrouding**, **Darkborn (Defensive)**, **Flying** (full — ignore all terrain +
-move through units), and **Aircraft (partial)** all done (2026-06-30). Remaining: Aircraft's DEFERRED facets
-(forced straight-line movement mode, can't-be-charged, can't-seize-objectives, deploy-first) — each needs new
-machinery.
+charge-debuff mechanic + **Melee Shrouding**, **Darkborn (Defensive)**, **Flying** (full), and **Aircraft** all
+done. Aircraft's can't-seize-objectives, can't-be-charged, and deploy-first facets landed 2026-06-30. **Remaining:
+only Aircraft's FORCED-MOVEMENT mode** (Advance-only straight-line 30–36" no-turning + off-table redeployment) —
+a large new sub-system (no facing model; constrained-move resolvers; off-table + redeploy); pending a design call.
 **Related**: #102 (range-modifier threading — the shooting twin of this; Ranged Shrouding ↔ Melee Shrouding),
 #093 (per-model "all models have this rule" gating), #027 (weapon-scoped rules).
 
@@ -15,6 +15,23 @@ The harder pieces are the **target-perspective** debuffs — "enemies get −N m
 (Melee Shrouding, defensive Darkborn) — and the bundle rules Aircraft / Flying.
 
 ## Notes
+- 2026-06-30: **Aircraft facets — can't-seize-objectives, can't-be-charged, deploy-first DONE** (branch
+  `029-aircraft-deferred-facets`). New `AircraftRules.IsAircraft(unit)` helper (a plain RuleDefinitions name
+  check, the `TransportUtilities.IsTransport` pattern, since these gates run in stage code with no RuleEvaluator).
+  - **Can't seize objectives:** `ReconcileObjectivesStage.PlayersNearObjective` skips Aircraft units' models, so
+    they count toward neither seizing nor contesting.
+  - **Can't be charged / moved into contact:** `EnemyModelFootprint` gained an `Uncontactable` tag (optional, so
+    the ~15 test sites are untouched), set in `GetEnemyModelFootprints` AND all six move-resolver footprint
+    builders (so preview = authoritative). In `ValidateMovingThroughEnemyUnits`, a move may not close to within
+    the standoff distance of an uncontactable enemy (covers the base-contact zone AND the standoff band) — but
+    units may still pass UNDER it (the through-check is skipped). Also excluded from `ValidateChargeReach`,
+    `GetCanCharge`, and `ChooseMeleeDefenderStage` (never a valid melee defender). The over-restriction is tiny:
+    you simply can't END within 1" of an Aircraft.
+  - **Deploy first:** `ChooseUnitToDeployStage` offers only Aircraft while the player has any undeployed Aircraft;
+    the rest are grayed ("Aircraft deploy first") — enforced per player (deployment alternates players, so it's
+    "each player's Aircraft before their own others"). The stage already had a placeholder comment for this.
+  - Tests added to `ObjectiveOwnershipTests`, `MoveThroughEnemyValidationTests`, `AmbushDeploymentChoiceTests`.
+    Engine 932/0, full build, headless exit 0.
 - 2026-06-30: **Darkborn (Off/Def) + Flying + Aircraft (partial) DONE** (branch `029-flying-aircraft-darkborn`).
   - **Darkborn split:** the corpus uses "Darkborn" for two different rules. Renamed the existing own-buff rule
     to **Darkborn (Offensive)** and added **Darkborn (Defensive)** (enemies −4 range floor 6 Subject, −2 charge
@@ -78,15 +95,23 @@ The harder pieces are the **target-perspective** debuffs — "enemies get −N m
   half-rule labelled "Aircraft" is a known limitation, accepted to make the buildable facets available now.
 
 ## Outcome
-_(written when closed — Aircraft's deferred facets remain; see below)_
+_(written when closed — only Aircraft's forced-movement mode remains; see below)_
 
-### Follow-ups still open — Aircraft's deferred facets (each its own mechanic)
-- **Forced movement mode** — Aircraft may only Advance, moving in a straight line 30–36" with no turning; if it
-  leaves the table its activation ends and it redeploys on any table edge next round. A whole custom movement
-  mode (current movement is free-form path within a budget).
-- **Can't be charged** ("can't be moved in contact with") — a Subject-seat "no enemy may end a charge in contact
-  with me" gate in the charge/melee-eligibility path.
-- **Can't seize objectives** — exclude the unit in `ReconcileObjectivesStage`.
-- **Must deploy before all other units** — a deployment-priority/ordering hook.
-These would also complete other core movement rules (e.g. anything sharing the forced-move or charge-immunity
-shape). The defensive-shooting + terrain facets are done and shared with Flying / Darkborn (Defensive).
+### Follow-up still open — Aircraft's forced-movement mode (LARGE; pending a design call)
+Everything else on #029 is done. The sole remainder is Aircraft's movement behaviour: **may only Advance, moving
+in a straight line 30–36" with no turning; direction can't change while on the table; if it leaves the table its
+activation ends and it redeploys on any table edge next round.** This is a large new sub-system, NOT a clean
+hook:
+- **No facing/direction model exists** — `ModelData`/`IModel` carry only a `Position` (no heading). True
+  "can't turn while on the table" needs either a facing field (a ~50-file refactor across everything that reads
+  Position) or a per-unit "current heading" stored on a token + validated at activation.
+- **The move resolvers are free-form** — GUI/CLI/AI all pick a destination within a distance budget. A forced
+  straight-line fixed-distance move needs new request fields (forced direction + distance) and constrained
+  resolver logic (or a fully auto-resolved move with no player path choice).
+- **Off-table + redeploy** — bounds are known (`GameWideConstants.DEFAULT_TABLE_WIDTH/HEIGHT_INCHES`) but there's
+  no automated off-table detection; redeploy could reuse the Ambush/`PlaceDeferredUnitsStage` pattern (place from
+  a table edge at round start) + a token marking the unit as off-table.
+- **Advance-only** is the one easy part (`Effect.RestrictActions([Advance])`, as Immobile uses) — but shipping it
+  ALONE is a regression (an Aircraft would crawl ~6" instead of flying 30"+), so it can't land without the rest.
+Reasonable as its own work item, or a faithful-simplified version (auto straight-line move + heading token +
+edge-redeploy) on sign-off. Until then, the catalogued Aircraft moves like a normal unit (loudly documented).
