@@ -69,8 +69,11 @@ Builtin entries:
 | `SaveRollModifier` | from sign(Δ) | Normal | per grant | — |
 | `MoraleRollModifier` | from sign(Δ) | Normal | per grant | — |
 | `RuleGrant` | from granted rule | Normal | per grant | — |
+| `Mark` | Negative (fixed; NOT the granted rule's) | Normal | ManualOnly | — |
 | `ArrivedFromReserve` | Neutral | Invisible | RoundEnd | — |
 | `EmbarkedIn` | Neutral | Invisible | ManualOnly | — |
+| `PostCombatMoveUsed` | Neutral | Invisible | RoundEnd | — |
+| `OffTableFromForcedMove` | Neutral | Invisible | ManualOnly | — |
 | `AbilityUsed:*` (prefix) | Neutral | Invisible | per cost | — |
 
 ### Resolution chains (engine helpers — keep all game logic out of the GUI)
@@ -121,6 +124,8 @@ App calls `TokenDisplay.Resolve(token, …)` per token on a unit/model and rende
 
 ## Notes
 
+- 2026-06-30: **Step 1 built, verified, committed (local branches `151-token-display-metadata` in both repos — NOT pushed).** Submodule `af361e3`, superproject `e788f22`. Added `EValence`/`ETokenProminence`/`ETokenColor`/`ETokenShape` (Foundation), `TokenDefinition` + `TokenDefinitionCatalog` (+ `Create` factory) + `TokenDisplayInfo` (Tokens), `TokenDisplay` valence/identity resolution + `Describe*` synthesis (Dispatch), and `SpecialRuleDefinition.Valence`. Catalog covers 12 builtin types — including the three newer ones present at the pin (`Mark`, `PostCombatMoveUsed`, `OffTableFromForcedMove`). **`Mark` is fixed-Negative (bearer-relative)** even though it carries a positive-for-attacker `RuleGrant` payload — its catalog valence wins over the payload (regression-tested). Routed **7 fixed-singleton creation sites** through `Create` (behavior-preserving; retired the duplicated `Shaken`/`ManualOnly` and `ArrivedFromReserve`/`RoundEnd` literals). 17 new `TokenDisplayTests`; **engine suite 956/0**, full app build clean, headless smoke exit 0.
+  - **Deferred (recorded, not silently cut):** (1) **Bulk valence annotation of the core rules** in `CoreRuleCatalog` (~47 corpus rules) is a separate content pass — Step 1 adds the `Valence` field + the granted-rule resolution mechanism (tested via a local `RuleResolver`) but sets no core-rule valences, so granted-rule chips read Neutral in-game until that pass lands. (2) **Step 2 (GUI rendering)** — chip row + first-class status tier, palette, hash→color/shape, badges, hover, dev show-all toggle, bespoke icons — to be opened as its own numbered item.
 - 2026-06-30: Spec updated to Option B (catalog = single source of truth for token types, with the type-vs-instance carve-out) per user sign-off. Proceeding to implement Step 1; submodule desync to be resolved first (branch + ff to pinned `7bac353`, leave `README-WIP.md`).
 - 2026-06-30: Item opened and branch `151-token-display-metadata` created (superproject). Wrote the Step 1 spec after a design discussion (token inventory comb-through → category axes → valence feasibility). Submodule desynced from the superproject pin; left untouched pending the engine-code phase. No code yet; awaiting sign-off (since granted).
 
