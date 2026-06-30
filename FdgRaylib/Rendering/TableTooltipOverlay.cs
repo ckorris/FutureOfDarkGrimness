@@ -159,6 +159,32 @@ public class TableTooltipOverlay
             ImGui.Unindent();
         }
 
+        // Innate special rules from the army list (the live #042 ResolvedRules). Skip the engine-internal
+        // Disembark/Embark abilities that are attached to every unit — they aren't player-facing rules.
+        var rules = unit.RuleDefinitions
+            .Where(r => r.Definition.Name != CoreRuleCatalog.DisembarkRuleName
+                     && r.Definition.Name != CoreRuleCatalog.EmbarkRuleName)
+            .ToList();
+        if (rules.Count > 0)
+        {
+            ImGui.Spacing();
+            ImGui.TextUnformatted("Special Rules:");
+            ImGui.Indent();
+            foreach (var rule in rules)
+            {
+                ImGui.TextUnformatted(RuleDisplayName(rule));
+                if (!string.IsNullOrEmpty(rule.Definition.Description))
+                {
+                    ImGui.Indent();
+                    ImGui.PushTextWrapPos(ImGui.GetCursorPosX() + 300f);
+                    ImGui.TextDisabled(rule.Definition.Description);
+                    ImGui.PopTextWrapPos();
+                    ImGui.Unindent();
+                }
+            }
+            ImGui.Unindent();
+        }
+
         var tokenInfos = TokenChipRenderer.ResolveVisible(unit.Tokens, _ruleResolver, false, _showAllTokens);
         if (tokenInfos.Count > 0)
         {
@@ -278,4 +304,11 @@ public class TableTooltipOverlay
         EValence.Negative => new Vector4(0.95f, 0.55f, 0.50f, 1f),
         _                 => new Vector4(0.82f, 0.82f, 0.88f, 1f),
     };
+
+    // "Tough" + [Int(3)] -> "Tough(3)"; no-arg rules keep their bare name.
+    private static string RuleDisplayName(ResolvedRule rule)
+    {
+        var ints = rule.Arguments.OfType<RuleArgument.Int>().Select(a => a.Value.ToString()).ToList();
+        return ints.Count > 0 ? $"{rule.RequestedName}({string.Join(", ", ints)})" : rule.RequestedName;
+    }
 }
