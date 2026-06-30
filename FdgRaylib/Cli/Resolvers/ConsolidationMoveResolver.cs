@@ -55,7 +55,7 @@ public class ConsolidationMoveResolver : IStageResolver<ConsolidationMoveRequest
             // so an offset that crosses or stacks on an enemy is rejected here rather than throwing downstream.
             if (_tableState != null && !MovementUtilities.ValidatePaths(entries, request.MaxDistanceInches,
                     GetEnemyFootprints(request), request.CanMoveThroughEnemies, request.IgnoresDifficultTerrain,
-                    _tableState.Terrain.Objects, out var errors))
+                    request.IgnoresImpassibleTerrain, _tableState.Terrain.Objects, out var errors))
             {
                 Console.WriteLine($"    Invalid: {string.Join(", ", errors.Select(e => e.ToString()))}. Try again.");
                 continue;

@@ -1474,6 +1474,19 @@ INTEGRATION PROGRESS (2026-06-28, cont. 38) — Fortified: AP-reduction-with-flo
     pipeline refactor, deferred). The defensive aura family (Resistance/Protected/Piercing*/Shielded/
     Fortified) is now complete.
 
+INTEGRATION PROGRESS (2026-06-30, cont. 44) — Darkborn split + Flying + Aircraft (partial) (#029). All → 111.
+  Suite 926/0; full build clean; headless exit 0. (Canonical record: WorkItems/029; logged here for roster.)
+  * Darkborn split into "Darkborn (Offensive)" / "Darkborn (Defensive)" (disambiguate the corpus's two same-named
+    rules); Defensive = -4 range floor 6 + -2 charge floor 6, both Subject (reuses #102 range + #029 charge).
+  * Flying (full): ETerrainIgnoreScope on IgnoreTerrainEffects (DifficultOnly=Strider, AllTerrain=Flying);
+    IgnoresAllTerrain query; new ignoresImpassibleTerrain flag threaded through ValidatePaths + both move requests
+    + every GUI/CLI/AI resolver; Dangerous-roll skip in MovementExecutor/ApplyNonMovementTerrainEffectsStage;
+    Flying = IgnoreTerrainEffects(AllTerrain) + IgnoreEnemyMovementBlock.
+  * Aircraft (partial): enemies get -12 range (Subject RangeModifier, immune to <=12" weapons) + -1 to hit
+    (Subject RollModifier(Hit), the Stealth mechanism w/o the distance gate) + Flying's terrain/unit ignore.
+    DEFERRED (loudly doc'd): forced straight-line movement mode, can't-be-charged, can't-seize-objectives,
+    deploy-first. See WorkItems/029.
+
 INTEGRATION PROGRESS (2026-06-30, cont. 43) — per-target charge debuff + Melee Shrouding (#029). All → 108.
   Suite 917/0; full build clean; headless exit 0. (Canonical record: WorkItems/029; logged here for roster.)
   * Lights up the dormant Movement_OnChargeDeclared hook / ChargeDeclaredContext. New
