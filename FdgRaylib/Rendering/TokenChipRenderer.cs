@@ -98,8 +98,8 @@ public static class TokenChipRenderer
 
     // --- Canvas drawing --------------------------------------------------------------------------------
 
-    private const float NormalRadius = 7f;
-    private const float FirstClassRadius = 10f;
+    private const float NormalRadius = 9f;
+    private const float FirstClassRadius = 14f;
     private const float Gap = 4f;
 
     /// <summary>

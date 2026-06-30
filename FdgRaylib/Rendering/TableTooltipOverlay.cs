@@ -318,10 +318,7 @@ public class TableTooltipOverlay
         _                 => new Vector4(0.82f, 0.82f, 0.88f, 1f),
     };
 
-    // "Tough" + [Int(3)] -> "Tough(3)"; no-arg rules keep their bare name.
-    private static string RuleDisplayName(ResolvedRule rule)
-    {
-        var ints = rule.Arguments.OfType<RuleArgument.Int>().Select(a => a.Value.ToString()).ToList();
-        return ints.Count > 0 ? $"{rule.RequestedName}({string.Join(", ", ints)})" : rule.RequestedName;
-    }
+    // The resolved RequestedName already carries any numeric args (army-load formats it "Tough(2)"), so
+    // it's used as-is; re-appending Arguments would double them into "Tough(2)(2)".
+    private static string RuleDisplayName(ResolvedRule rule) => rule.RequestedName;
 }
