@@ -249,6 +249,7 @@ public class TableTooltipOverlay
             float sumX = 0, sumY = 0;
             int   count = 0;
             float minRadiusPx = float.MaxValue;
+            float maxBottomY = float.MinValue, minLeftX = float.MaxValue, maxRightX = float.MinValue;
 
             foreach (var model in unit.Models)
             {
@@ -263,6 +264,9 @@ public class TableTooltipOverlay
                 sumX += mx;
                 sumY += my;
                 minRadiusPx = MathF.Min(minRadiusPx, mr);
+                maxBottomY  = MathF.Max(maxBottomY, my + mr);
+                minLeftX    = MathF.Min(minLeftX, mx - mr);
+                maxRightX   = MathF.Max(maxRightX, mx + mr);
                 count++;
 
                 // Model-scoped tokens sit just above each model (usually none).
@@ -277,6 +281,11 @@ public class TableTooltipOverlay
             float cx = sumX / count;
             float cy = sumY / count;
             float modelsTop = cy - minRadiusPx;
+
+            // Health bar below a damaged unit (#152) — hidden at full strength.
+            var (remainingW, maxW) = HealthBarRenderer.Compute(unit);
+            if (HealthBarRenderer.ShouldShow(remainingW, maxW))
+                HealthBarRenderer.Draw(drawList, cx, maxBottomY + 3f, maxRightX - minLeftX, remainingW, maxW);
 
             // Unit-scoped tokens sit just above the unit, under its name.
             var unitChips = TokenChipRenderer.ResolveVisible(unit.Tokens, _ruleResolver, false, _showAllTokens);
