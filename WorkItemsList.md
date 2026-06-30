@@ -65,12 +65,12 @@ _(No open items — #023 and #024 are done; see ## Done.)_
 
 ## Special rules — implementations
 
-These are umbrellas; will fragment per-rule when picked up.
+These are umbrellas; will fragment per-rule when picked up. Reconciled against the GF **Core Rules v3.5.1**
+special-rules reference (2026-06-30): of the 33 core rules, **32 are implemented** — only **Limited** (#032) is
+unbuilt. The v3.5.1 renames retired the old gaps (Lance/Lock-On/Poison/Sniper/Entrenched are no longer core);
+everything v3.5.1 lists is built except Limited. See the Done section for #030/#031/#051.
 
-- [ ] 030 — Combat-modifier rules: Furious, Impact, Counter, Thrust, Surge, Relentless
-- [ ] 051 — Furious charge gate: extra-hits-on-6 should fire only when the bearer is in melee **AND charging**. The combat-kind (melee) gate shipped with the #042 extra-hit slice; the "charging" condition was deferred — it needs charge/action state threaded into the hit-roll-complete context (same shape as the `AttackerMoved` threading). Until then Furious over-applies to *any* melee attack, not just charges. Hold until the melee subsystem (#017/#020) is fleshed out — charge-precision on a stubby melee engine is premature. (Spun off from the #042 extra-hit slice, 2026-06-07.)
-- [ ] 031 — Defense/unit rules: Tough, Regeneration, Stealth, Fear, Fearless, Hero, Scout, Ambush
-- [ ] 032 — Weapon rules: AP, Rending, Blast, Reliable, Indirect, Takedown, Limited, Unstoppable, Bane
+- [ ] 032 — Weapon rules. **AP, Rending, Blast, Reliable, Indirect, Takedown, Unstoppable, Bane all DONE** via the #042 catalog (catalogued + integration-tested). **Remaining: `Limited` only** — "may only be used once per game" — the one v3.5.1 core special rule still unimplemented. Needs a once-per-game weapon-usage mechanic the engine lacks: a per-weapon "used this game" flag that persists for the whole game (NOT a per-activation/round token — it must survive round-end token sweeps), set when the weapon fires, and checked in the shooting **and** melee weapon-selection paths so a spent Limited weapon is no longer offered. Standalone — no other core rule shares this machinery, so it groups with nothing; fragment into its own numbered item on pickup. ([no item file yet])
 
 ## Casting
 
@@ -165,6 +165,10 @@ Implemented and merged to master; engine test suite green. Held open only until 
 ---
 
 ## Done
+
+- [x] 030 — Combat-modifier rules: Furious, Impact, Counter, Thrust, Surge, Relentless. **Done** (landed via the #042 catalog; verified against GF Core Rules v3.5.1 on 2026-06-30). All six catalogued + integration-tested. Counter carries **both** v3.5.1 facets (StrikeFirst when charged + `ReduceImpactDicePerModel`). The Furious "only when charging" gate (was #051) is in place.
+- [x] 051 — Furious charge gate. **Done** (verified 2026-06-30). Furious's hook now gates on `Condition.IsCharging()` (And(IsMelee, IsCharging, UnmodifiedRollEquals(6))), so the extra-hit-on-6 fires only on a melee **charge**, matching the v3.5.1 text — no longer over-applying to any melee attack. (The `IsCharging` condition + melee charge-state threading landed with the melee subsystem since this was deferred.)
+- [x] 031 — Defense/unit rules: Tough, Regeneration, Stealth, Fear, Fearless, Hero, Scout, Ambush. **Done** (landed via #042 catalog + #006 Hero-join + #091 morale-core; verified against v3.5.1 on 2026-06-30). All catalogued/built and integration-tested.
 
 - [x] 029 — Movement-modifier rules: Fast, Slow, VeryFast, Immobile, Strider, Aircraft, Flying. **Done 2026-06-30.** All implemented/catalogued/tested: self move-distance (Fast/Slow/… #042, Immobile #100); terrain ignore (**Strider** #102, **Flying** full — `ETerrainIgnoreScope` + impassible flag + Dangerous-roll skip + move-through-units); target-perspective debuffs (per-target charge mechanic via `Movement_OnChargeDeclared`/`EffectiveChargeDistanceAgainst`, powering **Melee Shrouding** + **Darkborn (Off/Def)**); and **Aircraft** all facets (−12 range/−1 hit, terrain/unit ignore, can't-seize, can't-be-charged, deploy-first, and the forced straight-line movement mode: `AircraftHeading` + Advance-only + off-table→reserve→edge-redeploy). `All` → 111. Faithful simplifications (heading auto-aim, whole-table redeploy, reserve-as-activation-end, unit-level per-model gating) recorded in the item. ([WorkItems/029](WorkItems/029-movement-modifier-rules.md))
 

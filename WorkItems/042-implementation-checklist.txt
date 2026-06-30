@@ -1474,6 +1474,11 @@ INTEGRATION PROGRESS (2026-06-28, cont. 38) — Fortified: AP-reduction-with-flo
     pipeline refactor, deferred). The defensive aura family (Resistance/Protected/Piercing*/Shielded/
     Fortified) is now complete.
 
+RECONCILIATION (2026-06-30) — vs GF Core Rules v3.5.1 special-rules reference (33 core rules). 32/33 implemented;
+  only LIMITED ("once per game") unbuilt — tracked under #032. v3.5.1 renames retired the prior gaps (Lance,
+  Lock-On, Poison, Sniper, Entrenched are no longer core). Counter has both v3.5.1 facets; Furious gates on
+  IsCharging (#051 done). Done-umbrellas #030/#031/#051 moved to WorkItemsList Done. (No catalog change; All 111.)
+
 INTEGRATION PROGRESS (2026-06-30, cont. 46) — Aircraft forced-movement mode (#029 DONE). Suite 938/0; build; hl 0.
   (No new rules; All stays 111. Canonical record: WorkItems/029.) Closes #029 entirely.
   * UnitData.AircraftHeading (Float2?, additive) — a heading, set lazily toward table centre, never turned.
