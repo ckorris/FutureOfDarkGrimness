@@ -15,7 +15,7 @@ public static class HealthBarRenderer
     // Float slack so noise (and exactly-full) never flickers a sliver of bar onto a healthy unit.
     public const float Epsilon = 0.001f;
 
-    private const float Height = 5f;
+    public const float Height = 5f;
     private const float MinWidth = 22f;
 
     /// <summary>
@@ -41,11 +41,16 @@ public static class HealthBarRenderer
     public static float Fraction(float remaining, float max) =>
         max <= 0f ? 0f : Math.Clamp(remaining / max, 0f, 1f);
 
-    /// <summary>Green when healthy → yellow → red when low.</summary>
+    /// <summary>
+    /// Green above half strength, snapping to yellow at exactly 50% and ramping to red toward 0. Half
+    /// strength is the morale cliff — a failed test routs/destroys a unit at ≤50% wounds (the engine's
+    /// <c>IsAtHalfStrength</c> is <c>remaining*2 &lt;= max</c>) — so the colour changes AT that threshold
+    /// rather than easing through it, making the dangerous half-strength state read at a glance.
+    /// </summary>
     public static (byte r, byte g, byte b) FillColor(float fraction) =>
-        fraction >= 0.5f
-            ? Lerp((230, 200, 60), (70, 200, 90), (fraction - 0.5f) / 0.5f)   // yellow → green
-            : Lerp((220, 60, 60), (230, 200, 60), fraction / 0.5f);           // red → yellow
+        fraction > 0.5f
+            ? ((byte)70, (byte)200, (byte)90)                        // green: above half strength
+            : Lerp((220, 60, 60), (230, 200, 60), fraction / 0.5f);  // red (0%) → yellow (50%)
 
     public static void Draw(ImDrawListPtr dl, float centerX, float topY, float width, float remaining, float max)
     {

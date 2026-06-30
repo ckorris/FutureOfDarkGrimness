@@ -21,6 +21,7 @@ A small health bar on each damaged unit on the table canvas so "who's hurt" read
 
 ## Notes
 
+- 2026-06-30: Tweaks (user) — bar moved **above** the unit name (was below the footprint), and the colour now **snaps green→yellow at exactly 50%** (flat green above half, yellow→red at/below) instead of easing through it, so the half-strength morale cliff (`IsAtHalfStrength` = `remaining*2 <= max`) reads at a glance. +1 test (`FillColor_SnapsToYellowAtHalfStrength`); app suite 49/0, build clean, headless exit 0.
 - 2026-06-30: **Built — awaiting GUI hand-verification.** `HealthBarRenderer` (pure: overkill-clamped float remaining/max from `unit.Models`; `ShouldShow` hides at full within an epsilon; `Fraction` clamps to [0,1]; green→yellow→red `FillColor`) drawn under each damaged unit in `TableTooltipOverlay.DrawUnitOverlays` (bar width = the unit's footprint span, min 22px; centred below the lowest model). Always shown when damaged (not gated on the `L` label toggle). 4 new `HealthBarRendererTests` (hide-at-full incl. float-epsilon + Tough/decimal cases, fraction clamp incl. overkill→0, color ramp endpoints); app suite **48/0**, build clean, headless exit 0. **Verify in GUI:** damage a unit (incl. a Tough monster taking a non-lethal wound) → a bar appears under it and drains; full-strength units show none.
 - 2026-06-30: Opened at the user's request after the #151 visuals; branch `152-health-bars` (superproject, stacked on `151-token-display-metadata` so both visual slices are testable together until 151 merges). App-side only — no submodule change.
 

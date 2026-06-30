@@ -249,7 +249,7 @@ public class TableTooltipOverlay
             float sumX = 0, sumY = 0;
             int   count = 0;
             float minRadiusPx = float.MaxValue;
-            float maxBottomY = float.MinValue, minLeftX = float.MaxValue, maxRightX = float.MinValue;
+            float minLeftX = float.MaxValue, maxRightX = float.MinValue;
 
             foreach (var model in unit.Models)
             {
@@ -264,7 +264,6 @@ public class TableTooltipOverlay
                 sumX += mx;
                 sumY += my;
                 minRadiusPx = MathF.Min(minRadiusPx, mr);
-                maxBottomY  = MathF.Max(maxBottomY, my + mr);
                 minLeftX    = MathF.Min(minLeftX, mx - mr);
                 maxRightX   = MathF.Max(maxRightX, mx + mr);
                 count++;
@@ -282,11 +281,6 @@ public class TableTooltipOverlay
             float cy = sumY / count;
             float modelsTop = cy - minRadiusPx;
 
-            // Health bar below a damaged unit (#152) — hidden at full strength.
-            var (remainingW, maxW) = HealthBarRenderer.Compute(unit);
-            if (HealthBarRenderer.ShouldShow(remainingW, maxW))
-                HealthBarRenderer.Draw(drawList, cx, maxBottomY + 3f, maxRightX - minLeftX, remainingW, maxW);
-
             // Unit-scoped tokens sit just above the unit, under its name.
             var unitChips = TokenChipRenderer.ResolveVisible(unit.Tokens, _ruleResolver, false, _showAllTokens);
             float chipH = TokenChipRenderer.RowHeight(unitChips);
@@ -294,16 +288,26 @@ public class TableTooltipOverlay
             if (unitChips.Count > 0)
                 TokenChipRenderer.DrawChipRow(drawList, unitChips, cx, chipTopY);
 
+            // Top of the name/chips stack — the health bar sits above it.
+            float stackTopY = unitChips.Count > 0 ? chipTopY : modelsTop - 3f;
+
             if (_showLabels)
             {
                 Vector2 textSize = ImGui.CalcTextSize(unit.Name);
-                float nameBottom = unitChips.Count > 0 ? chipTopY : modelsTop - 3f;
                 float labelX = cx - textSize.X * 0.5f;
-                float labelY = nameBottom - textSize.Y - 2f;
+                float labelY = stackTopY - textSize.Y - 2f;
 
                 drawList.AddText(new Vector2(labelX + 1, labelY + 1), shadow, unit.Name);
                 drawList.AddText(new Vector2(labelX,     labelY),     white,  unit.Name);
+
+                stackTopY = labelY;
             }
+
+            // Health bar above the name (#152) — hidden at full strength.
+            var (remainingW, maxW) = HealthBarRenderer.Compute(unit);
+            if (HealthBarRenderer.ShouldShow(remainingW, maxW))
+                HealthBarRenderer.Draw(drawList, cx, stackTopY - 3f - HealthBarRenderer.Height,
+                    maxRightX - minLeftX, remainingW, maxW);
         }
     }
 

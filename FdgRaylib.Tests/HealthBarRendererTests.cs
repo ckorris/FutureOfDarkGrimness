@@ -41,4 +41,14 @@ public class HealthBarRendererTests
         Assert.That(HealthBarRenderer.FillColor(0.5f), Is.EqualTo(((byte)230, (byte)200, (byte)60)), "half = yellow");
         Assert.That(HealthBarRenderer.FillColor(0f), Is.EqualTo(((byte)220, (byte)60, (byte)60)), "empty = red");
     }
+
+    [Test]
+    public void FillColor_SnapsToYellowAtHalfStrength()
+    {
+        // The morale cliff is at <=50%, so the colour changes AT 50% rather than easing through it:
+        // flat green above half, yellow the instant it reaches half.
+        Assert.That(HealthBarRenderer.FillColor(0.75f), Is.EqualTo(((byte)70, (byte)200, (byte)90)), "above half = flat green");
+        Assert.That(HealthBarRenderer.FillColor(0.5001f), Is.EqualTo(((byte)70, (byte)200, (byte)90)), "just above half = still green");
+        Assert.That(HealthBarRenderer.FillColor(0.5f), Is.EqualTo(((byte)230, (byte)200, (byte)60)), "at half = yellow");
+    }
 }
