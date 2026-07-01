@@ -28,15 +28,52 @@ public class ArmyForgeScreen : IAppScreen
         $"FDG Army (*{ArmyListFile.EXTENSION_WITH_PERIOD})",
         new[] { $"*{ArmyListFile.EXTENSION_WITH_PERIOD}" });
 
-    private BookFile _book = DemoBook.Build();
-    private BuilderList _list = new() { PointsLimit = DefaultPointsLimit };
+    private readonly List<BookFile> _library;
+    private readonly string[] _libraryNames;
+    private int _bookIndex;
+    private BookFile _book;
+    private BuilderList _list;
     private string? _selectedRosterId;
     private int? _selectedListIndex;
     private string? _statusHint;
 
     public ArmyForgeScreen()
     {
-        _list.BookName = _book.Name;
+        _library = LoadLibrary();
+        _libraryNames = _library.Select(b => b.Name).ToArray();
+        _bookIndex = 0;
+        _book = _library[0];
+        _list = new BuilderList { PointsLimit = DefaultPointsLimit, BookName = _book.Name };
+    }
+
+    // The hand-authored demo book plus every .fdgbook bundled under Assets/Books/ (the imported OPR snapshots).
+    private static List<BookFile> LoadLibrary()
+    {
+        var books = new List<BookFile> { DemoBook.Build() };
+        string dir = Path.Combine(AppContext.BaseDirectory, "Assets", "Books");
+        if (Directory.Exists(dir))
+        {
+            foreach (string path in Directory.EnumerateFiles(dir, "*" + BookFile.EXTENSION_WITH_PERIOD).OrderBy(p => p))
+            {
+                try
+                {
+                    BookFile? book = JsonSerializer.Deserialize<BookFile>(File.ReadAllText(path), RuleJson.Options);
+                    if (book is not null) books.Add(book);
+                }
+                catch { /* skip a malformed book rather than crash the screen */ }
+            }
+        }
+        return books;
+    }
+
+    private void SwitchBook(int index)
+    {
+        if (index < 0 || index >= _library.Count) return;
+        _bookIndex = index;
+        _book = _library[index];
+        _list = new BuilderList { PointsLimit = _list.PointsLimit, BookName = _book.Name };
+        _selectedListIndex = null;
+        _selectedRosterId = null;
     }
 
     // ── List-mutation seams (unit-tested without ImGui) ─────────────────────────────────────────────────
@@ -100,7 +137,12 @@ public class ArmyForgeScreen : IAppScreen
         ImGui.SameLine();
         if (ImGui.Button("Load")) Load();
         ImGui.SameLine();
-        ImGui.Text($"Army Forge  —  {_book.Name}");
+        ImGui.Text("Army Forge  —");
+        ImGui.SameLine();
+        ImGui.SetNextItemWidth(220f);
+        int bi = _bookIndex;
+        if (ImGui.Combo("##forge-book", ref bi, _libraryNames, _libraryNames.Length))
+            SwitchBook(bi);
         if (_statusHint is not null)
         {
             ImGui.SameLine();
@@ -155,6 +197,15 @@ public class ArmyForgeScreen : IAppScreen
         if (ImGui.Button("+ Add to list") && _selectedRosterId is not null)
             AddToList(_selectedRosterId);
         ImGui.EndDisabled();
+
+        if (!string.IsNullOrEmpty(_book.Source))
+        {
+            ImGui.Spacing();
+            ImGui.Separator();
+            ImGui.PushTextWrapPos(0f);
+            ImGui.TextDisabled($"Data: {_book.Source} ({_book.License})");
+            ImGui.PopTextWrapPos();
+        }
     }
 
     private void DrawListPane(BuiltArmyFile compiled)
