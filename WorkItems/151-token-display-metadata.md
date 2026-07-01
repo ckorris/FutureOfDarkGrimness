@@ -1,6 +1,6 @@
 # 151 — Token display metadata + visual taxonomy
 
-**Status**: in-progress
+**Status**: done
 **Related**: token system (`Rules/Tokens/`, `Rules/Foundation/TokenType.cs`), #096 (transport visuals — owns `EmbarkedIn`), #087 (custom rule authoring — future author of token display metadata), #053 (placeholder-asset precedent), #033/#034 (spell tokens / casting)
 
 ## Goal
@@ -134,4 +134,4 @@ App calls `TokenDisplay.Resolve(token, …)` per token on a unit/model and rende
 
 ## Outcome
 
-(TBD)
+Both steps shipped and merged to master 2026-06-30 (engine `fa71404`, superproject `3967981`), GUI hand-verified by the user. Engine: `TokenDefinitionCatalog` as the single source of truth for token types, `EValence`/`ETokenProminence`/`ETokenColor`/`ETokenShape`, `Valence`+`Description` on every core rule, and `TokenDisplay.Resolve` → `TokenDisplayInfo`. App: `TokenChipRenderer` (curated per-valence palette, stable FNV hash → color/shape, authored overrides) + `TableTooltipOverlay` (chips under unit names / over models, tooltip token + special-rules lists, `T` show-all toggle). Merged cleanly over #032/#088; the catalog-completeness guard caught #032's Limited rule missing a description (added it). Fixed post-verification: em-dash → ASCII (missing font glyph), `Tough(2)(2)` name doubling, bigger first-class chip icons. **Deferred:** self-describing custom-rule token metadata (#087), per-chip hover, a strict two-tier layout for a future unit panel, and wiring the live game resolver in place of `CoreRuleCatalog`.

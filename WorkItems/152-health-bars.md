@@ -1,6 +1,6 @@
 # 152 — Unit health bars on the table
 
-**Status**: in-progress
+**Status**: done
 **Related**: #151 (token chips / `TableTooltipOverlay` — same per-unit canvas overlay it slots into), #056 (presentation beats)
 
 ## Goal
@@ -27,4 +27,4 @@ A small health bar on each damaged unit on the table canvas so "who's hurt" read
 
 ## Outcome
 
-(TBD)
+Shipped and merged to master 2026-06-30 (superproject `3967981`), GUI hand-verified. `HealthBarRenderer` computes overkill-clamped granular float remaining/max from `unit.Models`, hides at full strength within an epsilon, and snaps green→yellow at exactly the 50% half-strength morale cliff; drawn above each damaged unit in `TableTooltipOverlay.DrawUnitOverlays`. 5 `HealthBarRendererTests` pin the hide-at-full/epsilon, fraction clamp (incl. overkill→0), and colour threshold. Possible follow-up: per-model bars for big multi-wound (`Tough`) monsters.
