@@ -162,4 +162,27 @@ public class ArmyForgeScreenTests
 
         Assert.That(screen.Compile().Units.Single().PointCost, Is.EqualTo(165)); // 120 + 15×3 (all 3 swapped)
     }
+
+    // ── P4: validation surfaced through the screen ──────────────────────────────────────────────────────
+
+    [Test]
+    public void Issues_EmptyForLegalList()
+    {
+        var screen = new ArmyForgeScreen();
+        screen.AddToList("warriors");
+        screen.AddToList("gunners");
+        Assert.That(screen.Issues(), Is.Empty);
+    }
+
+    [Test]
+    public void Issues_FlagsOverMaxModels()
+    {
+        var screen = new ArmyForgeScreen();
+        screen.AddToList("warriors");
+        BuilderUnit bu = screen.List.Units[0];
+        RosterUnit warriors = DemoBook.Build().Units.Single(u => u.Id == "warriors");
+        ArmyForgeScreen.SetChoice(bu, warriors.Sections.Single(s => s.Id == "warriors-reinforce"), "add-warrior", 10);
+
+        Assert.That(screen.Issues().Any(i => i.Severity == ListIssueSeverity.Error), Is.True);
+    }
 }

@@ -24,6 +24,11 @@ public class ArmyForgeScreen : IAppScreen
 
     private const int DefaultPointsLimit = 1000;
 
+    private static readonly Vector4 RedText    = new(0.90f, 0.40f, 0.40f, 1f);
+    private static readonly Vector4 YellowText = new(0.90f, 0.80f, 0.35f, 1f);
+    private static readonly Vector4 GreenText  = new(0.45f, 0.85f, 0.45f, 1f);
+    private static readonly Vector4 WhiteText  = new(1f, 1f, 1f, 1f);
+
     private static readonly FileFilter ArmyFilter = new(
         $"FDG Army (*{ArmyListFile.EXTENSION_WITH_PERIOD})",
         new[] { $"*{ArmyListFile.EXTENSION_WITH_PERIOD}" });
@@ -97,6 +102,8 @@ public class ArmyForgeScreen : IAppScreen
 
     internal BuiltArmyFile Compile() => ListCompiler.Compile(_book, _list);
 
+    internal IReadOnlyList<ListIssue> Issues() => ListValidator.Validate(_book, _list, Compile());
+
     /// <summary>Reopen a saved army into an editable session. Succeeds only if the file carries the embedded
     /// book + selections (a Forge-authored .fdgarmy); a hand-authored army returns false (it still plays, it
     /// just isn't catalog-editable).</summary>
@@ -114,22 +121,23 @@ public class ArmyForgeScreen : IAppScreen
 
     public void Draw(int screenW, int screenH)
     {
-        // Recompile every frame — cheap, and keeps points/stat panes always in sync with the list.
+        // Recompile + revalidate every frame — cheap, and keeps points/panes/legality in sync with the list.
         BuiltArmyFile compiled = Compile();
+        IReadOnlyList<ListIssue> issues = ListValidator.Validate(_book, _list, compiled);
 
         ImGui.SetNextWindowPos(Vector2.Zero, ImGuiCond.Always);
         ImGui.SetNextWindowSize(new Vector2(screenW, screenH), ImGuiCond.Always);
         ImGui.Begin("Army Forge",
             ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoCollapse);
 
-        DrawToolbar(compiled);
+        DrawToolbar(compiled, issues);
         ImGui.Separator();
-        DrawPanes(compiled);
+        DrawPanes(compiled, issues);
 
         ImGui.End();
     }
 
-    private void DrawToolbar(BuiltArmyFile compiled)
+    private void DrawToolbar(BuiltArmyFile compiled, IReadOnlyList<ListIssue> issues)
     {
         if (ImGui.Button("Back")) OnBack?.Invoke();
         ImGui.SameLine();
@@ -149,15 +157,22 @@ public class ArmyForgeScreen : IAppScreen
             ImGui.TextDisabled(_statusHint);
         }
 
+        // Legality badge.
+        int errors = issues.Count(i => i.Severity == ListIssueSeverity.Error);
+        int warnings = issues.Count(i => i.Severity == ListIssueSeverity.Warning);
+        ImGui.SameLine();
+        if (errors > 0) ImGui.TextColored(RedText, $"[{errors} error{(errors == 1 ? "" : "s")}]");
+        else if (warnings > 0) ImGui.TextColored(YellowText, $"[{warnings} warning{(warnings == 1 ? "" : "s")}]");
+        else ImGui.TextColored(GreenText, "[Legal]");
+
         string header = PointsHeader(compiled.TotalPoints, _list.PointsLimit);
         float headerW = ImGui.CalcTextSize(header).X;
         ImGui.SameLine();
         ImGui.SetCursorPosX(ImGui.GetWindowWidth() - ImGui.GetStyle().WindowPadding.X - headerW);
-        bool over = compiled.TotalPoints > _list.PointsLimit;
-        ImGui.TextColored(over ? new Vector4(0.90f, 0.40f, 0.40f, 1f) : new Vector4(1f, 1f, 1f, 1f), header);
+        ImGui.TextColored(compiled.TotalPoints > _list.PointsLimit ? RedText : WhiteText, header);
     }
 
-    private void DrawPanes(BuiltArmyFile compiled)
+    private void DrawPanes(BuiltArmyFile compiled, IReadOnlyList<ListIssue> issues)
     {
         Vector2 avail = ImGui.GetContentRegionAvail();
         float spacing = ImGui.GetStyle().ItemSpacing.X;
@@ -170,7 +185,7 @@ public class ArmyForgeScreen : IAppScreen
 
         ImGui.SameLine(0, spacing);
         ImGui.BeginChild("##forge-list", new Vector2(listW, avail.Y), ImGuiChildFlags.Borders);
-        DrawListPane(compiled);
+        DrawListPane(compiled, issues);
         ImGui.EndChild();
 
         ImGui.SameLine(0, spacing);
@@ -208,7 +223,7 @@ public class ArmyForgeScreen : IAppScreen
         }
     }
 
-    private void DrawListPane(BuiltArmyFile compiled)
+    private void DrawListPane(BuiltArmyFile compiled, IReadOnlyList<ListIssue> issues)
     {
         ImGui.TextDisabled("LIST");
         ImGui.Separator();
@@ -222,6 +237,12 @@ public class ArmyForgeScreen : IAppScreen
         for (int i = 0; i < _list.Units.Count && i < compiled.Units.Count; i++)
         {
             UnitFileEntry unit = compiled.Units[i];
+            if (issues.Any(x => x.UnitIndex == i && x.Severity == ListIssueSeverity.Error))
+            {
+                ImGui.TextColored(RedText, "!");
+                ImGui.SameLine();
+            }
+
             bool selected = _selectedListIndex == i;
             if (ImGui.Selectable($"{unit.Name} [{unit.ModelCount}]##li{i}", selected))
                 _selectedListIndex = i;
@@ -233,6 +254,16 @@ public class ArmyForgeScreen : IAppScreen
             if (ImGui.SmallButton($"x##rm{i}")) removeIndex = i;
         }
         if (removeIndex >= 0) RemoveFromList(removeIndex);
+
+        if (issues.Count > 0)
+        {
+            ImGui.Spacing();
+            ImGui.Separator();
+            ImGui.PushTextWrapPos(0f);
+            foreach (ListIssue issue in issues)
+                ImGui.TextColored(issue.Severity == ListIssueSeverity.Error ? RedText : YellowText, issue.Message);
+            ImGui.PopTextWrapPos();
+        }
     }
 
     private void DrawConfigPane(BuiltArmyFile compiled)
@@ -285,7 +316,7 @@ public class ArmyForgeScreen : IAppScreen
         {
             ImGui.TextUnformatted(section.Label);
             ImGui.Indent();
-            if (IsCounted(section))
+            if (section.IsCounted)
             {
                 int max = MaxCount(section, roster, compiledUnit);
                 foreach (UpgradeOption option in section.Options)
@@ -383,10 +414,6 @@ public class ArmyForgeScreen : IAppScreen
 
     // ── Choice-mutation seams (unit-tested without ImGui) ───────────────────────────────────────────────
 
-    /// <summary>Counted sections use a numeric stepper (Count is meaningful); the rest use on/off toggles.</summary>
-    internal static bool IsCounted(UpgradeSection s) =>
-        s.Variant == UpgradeVariant.AddModels || s.Affects == UpgradeAffects.Any;
-
     internal static int ChoiceCount(BuilderUnit unit, string sectionId, string optionId) =>
         unit.Choices.FirstOrDefault(c => c.SectionId == sectionId && c.OptionId == optionId)?.Count ?? 0;
 
@@ -398,7 +425,7 @@ public class ArmyForgeScreen : IAppScreen
     /// caps are deferred — no demo/OPR section needs them yet.)</summary>
     internal static void SetChoice(BuilderUnit unit, UpgradeSection section, string optionId, int count)
     {
-        bool singleSelect = !IsCounted(section) && section.MaxPicks <= 1;
+        bool singleSelect = !section.IsCounted && section.MaxPicks <= 1;
         if (singleSelect)
             unit.Choices.RemoveAll(c => c.SectionId == section.Id);
         else
