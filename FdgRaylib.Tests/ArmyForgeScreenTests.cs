@@ -1,5 +1,8 @@
 using System.Linq;
+using System.Text.Json;
 using FDG.ArmyBuilding;
+using FDG.Rules.Serialization;
+using FDG.SaveLoad;
 using FdgRaylib.Rendering;
 using NUnit.Framework;
 
@@ -41,5 +44,62 @@ public class ArmyForgeScreenTests
         RosterUnit warriors = book.Units.Single(u => u.Id == "warriors");
         Assert.That(warriors.Sections.Select(s => s.Variant),
             Does.Contain(UpgradeVariant.Replace).And.Contain(UpgradeVariant.AddModels).And.Contain(UpgradeVariant.Upgrade));
+    }
+
+    // ── P2: list building ───────────────────────────────────────────────────────────────────────────────
+
+    [Test]
+    public void AddToList_ThenCompile_SumsBasePoints()
+    {
+        var screen = new ArmyForgeScreen();
+        screen.AddToList("warriors");
+        screen.AddToList("gunners");
+
+        BuiltArmyFile army = screen.Compile();
+        Assert.That(army.Units.Select(u => u.Name), Is.EqualTo(new[] { "Vanguard Warriors", "Heavy Gunners" }));
+        Assert.That(army.TotalPoints, Is.EqualTo(185)); // 65 + 120 base, no options chosen yet
+    }
+
+    [Test]
+    public void RemoveFromList_DropsThatUnit()
+    {
+        var screen = new ArmyForgeScreen();
+        screen.AddToList("warriors");
+        screen.AddToList("gunners");
+        screen.RemoveFromList(0);
+
+        Assert.That(screen.Compile().Units.Single().Name, Is.EqualTo("Heavy Gunners"));
+    }
+
+    [Test]
+    public void AddToList_UnknownRosterId_IsIgnored()
+    {
+        var screen = new ArmyForgeScreen();
+        screen.AddToList("does-not-exist");
+        Assert.That(screen.List.Units, Is.Empty);
+    }
+
+    [Test]
+    public void SaveLoadRoundTrip_RestoresEditableList()
+    {
+        var a = new ArmyForgeScreen();
+        a.AddToList("warriors");
+        a.AddToList("gunners");
+
+        // Exactly what Save writes (derived type → embed included).
+        string json = JsonSerializer.Serialize(a.Compile(), RuleJson.Options);
+        BuiltArmyFile loaded = JsonSerializer.Deserialize<BuiltArmyFile>(json, RuleJson.Options)!;
+
+        var b = new ArmyForgeScreen();
+        Assert.That(b.AdoptLoaded(loaded), Is.True);
+        Assert.That(b.List.Units.Select(u => u.RosterUnitId), Is.EqualTo(new[] { "warriors", "gunners" }));
+        Assert.That(b.Compile().TotalPoints, Is.EqualTo(185));
+    }
+
+    [Test]
+    public void AdoptLoaded_PlainArmy_ReturnsFalse()
+    {
+        // A hand-authored .fdgarmy (no embedded book/selections) can't be catalog-edited.
+        Assert.That(new ArmyForgeScreen().AdoptLoaded(new BuiltArmyFile()), Is.False);
     }
 }
