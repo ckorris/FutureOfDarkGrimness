@@ -50,6 +50,9 @@ else
     renderer.MainMenu.OnArmyBuilderClicked = () =>
         renderer.NavigateTo(renderer.ArmyBuilder);
 
+    renderer.MainMenu.OnArmyForgeClicked = () =>
+        renderer.NavigateTo(renderer.ArmyForge);
+
     renderer.MainMenu.OnClientClicked = () =>
         renderer.NavigateTo(renderer.ClientModal);
 
@@ -88,6 +91,10 @@ else
 
     // ── Army Builder ───────────────────────────────────────────────────────────
     renderer.ArmyBuilder.OnBack = () =>
+        renderer.NavigateTo(renderer.MainMenu);
+
+    // ── Army Forge (#153) ────────────────────────────────────────────────────────
+    renderer.ArmyForge.OnBack = () =>
         renderer.NavigateTo(renderer.MainMenu);
 
     // ── Host Modal ─────────────────────────────────────────────────────────────
