@@ -189,7 +189,7 @@ public class ArmyForgeScreen : IAppScreen
         // A selected list unit takes precedence (show its compiled stats); otherwise preview the roster pick.
         if (_selectedListIndex is int idx && idx >= 0 && idx < compiled.Units.Count)
         {
-            DrawCompiledUnit(compiled.Units[idx], _list.Units[idx].RosterUnitId);
+            DrawCompiledUnit(idx, compiled);
             return;
         }
         if (Selected is RosterUnit roster)
@@ -200,8 +200,11 @@ public class ArmyForgeScreen : IAppScreen
         ImGui.TextDisabled("Select a unit from your list, or add one from the roster.");
     }
 
-    private void DrawCompiledUnit(UnitFileEntry unit, string rosterId)
+    private void DrawCompiledUnit(int idx, BuiltArmyFile compiled)
     {
+        UnitFileEntry unit = compiled.Units[idx];
+        BuilderUnit bu = _list.Units[idx];
+
         ImGui.TextUnformatted(ArmyBuilderScreen.UnitStatLine(unit));
         ImGui.SameLine();
         ImGui.TextDisabled($"({unit.PointCost} pts)");
@@ -214,21 +217,51 @@ public class ArmyForgeScreen : IAppScreen
             ImGui.TextDisabled(string.Join(", ", unit.SpecialRules.Select(r => r.PrintableName)));
         ImGui.Unindent();
 
-        // The unit's upgrade options — read-only until P3 wires selection.
-        RosterUnit? roster = _book.Units.FirstOrDefault(u => u.Id == rosterId);
-        if (roster is null || roster.Sections.Count == 0) return;
+        RosterUnit? roster = _book.Units.FirstOrDefault(u => u.Id == bu.RosterUnitId);
+        if (roster is not null)
+            DrawUpgradeEditors(bu, roster, unit);
+    }
+
+    // Interactive upgrade sections: mutate the BuilderUnit's choices; the per-frame recompile re-costs live.
+    private static void DrawUpgradeEditors(BuilderUnit bu, RosterUnit roster, UnitFileEntry compiledUnit)
+    {
+        if (roster.Sections.Count == 0) return;
         ImGui.Spacing();
-        ImGui.TextDisabled("UPGRADES  (editing coming next slice)");
+        ImGui.TextDisabled("UPGRADES");
         ImGui.Separator();
+
         foreach (UpgradeSection section in roster.Sections)
         {
             ImGui.TextUnformatted(section.Label);
             ImGui.Indent();
-            foreach (UpgradeOption option in section.Options)
-                ImGui.TextDisabled(OptionSummary(option));
+            if (IsCounted(section))
+            {
+                int max = MaxCount(section, roster, compiledUnit);
+                foreach (UpgradeOption option in section.Options)
+                {
+                    int v = ChoiceCount(bu, section.Id, option.Id);
+                    ImGui.SetNextItemWidth(90f);
+                    if (ImGui.InputInt($"{OptionSummary(option)}##{section.Id}-{option.Id}", ref v, 1))
+                        SetChoice(bu, section, option.Id, Math.Clamp(v, 0, max));
+                }
+            }
+            else
+            {
+                foreach (UpgradeOption option in section.Options)
+                {
+                    bool chosen = IsChosen(bu, section.Id, option.Id);
+                    if (ImGui.Checkbox($"{OptionSummary(option)}##{section.Id}-{option.Id}", ref chosen))
+                        SetChoice(bu, section, option.Id, chosen ? 1 : 0);
+                }
+            }
             ImGui.Unindent();
         }
     }
+
+    private static int MaxCount(UpgradeSection s, RosterUnit roster, UnitFileEntry compiledUnit) =>
+        s.Variant == UpgradeVariant.AddModels ? Math.Max(0, roster.MaxModels - roster.BaseModelCount)
+        : s.Affects == UpgradeAffects.Any ? compiledUnit.ModelCount
+        : 1;
 
     private static void DrawRosterPreview(RosterUnit unit)
     {
@@ -296,4 +329,31 @@ public class ArmyForgeScreen : IAppScreen
 
     internal static string OptionSummary(UpgradeOption o) =>
         o.Cost == 0 ? o.Label : $"{o.Label}  (+{o.Cost} pts)";
+
+    // ── Choice-mutation seams (unit-tested without ImGui) ───────────────────────────────────────────────
+
+    /// <summary>Counted sections use a numeric stepper (Count is meaningful); the rest use on/off toggles.</summary>
+    internal static bool IsCounted(UpgradeSection s) =>
+        s.Variant == UpgradeVariant.AddModels || s.Affects == UpgradeAffects.Any;
+
+    internal static int ChoiceCount(BuilderUnit unit, string sectionId, string optionId) =>
+        unit.Choices.FirstOrDefault(c => c.SectionId == sectionId && c.OptionId == optionId)?.Count ?? 0;
+
+    internal static bool IsChosen(BuilderUnit unit, string sectionId, string optionId) =>
+        ChoiceCount(unit, sectionId, optionId) > 0;
+
+    /// <summary>Set (count &gt; 0) or clear (count == 0) an option. A single-select section (toggle with
+    /// MaxPicks ≤ 1) is mutually exclusive — choosing one clears the section's other pick. (MaxPicks &gt; 1
+    /// caps are deferred — no demo/OPR section needs them yet.)</summary>
+    internal static void SetChoice(BuilderUnit unit, UpgradeSection section, string optionId, int count)
+    {
+        bool singleSelect = !IsCounted(section) && section.MaxPicks <= 1;
+        if (singleSelect)
+            unit.Choices.RemoveAll(c => c.SectionId == section.Id);
+        else
+            unit.Choices.RemoveAll(c => c.SectionId == section.Id && c.OptionId == optionId);
+
+        if (count > 0)
+            unit.Choices.Add(new UpgradeChoice { SectionId = section.Id, OptionId = optionId, Count = count });
+    }
 }

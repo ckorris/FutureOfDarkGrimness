@@ -102,4 +102,64 @@ public class ArmyForgeScreenTests
         // A hand-authored .fdgarmy (no embedded book/selections) can't be catalog-edited.
         Assert.That(new ArmyForgeScreen().AdoptLoaded(new BuiltArmyFile()), Is.False);
     }
+
+    // ── P3: interactive upgrade choices ─────────────────────────────────────────────────────────────────
+
+    [Test]
+    public void SetChoice_SingleSelectSection_IsMutuallyExclusive()
+    {
+        var unit = new BuilderUnit { RosterUnitId = "x" };
+        var section = new UpgradeSection { Id = "s", MaxPicks = 1, Options = { new() { Id = "a" }, new() { Id = "b" } } };
+
+        ArmyForgeScreen.SetChoice(unit, section, "a", 1);
+        Assert.That(ArmyForgeScreen.IsChosen(unit, "s", "a"), Is.True);
+
+        ArmyForgeScreen.SetChoice(unit, section, "b", 1);   // picking b clears a
+        Assert.That(ArmyForgeScreen.IsChosen(unit, "s", "a"), Is.False);
+        Assert.That(ArmyForgeScreen.IsChosen(unit, "s", "b"), Is.True);
+        Assert.That(unit.Choices, Has.Count.EqualTo(1));
+
+        ArmyForgeScreen.SetChoice(unit, section, "b", 0);   // unticking clears it
+        Assert.That(unit.Choices, Is.Empty);
+    }
+
+    [Test]
+    public void SetChoice_CountedSection_StoresCount()
+    {
+        var unit = new BuilderUnit();
+        var section = new UpgradeSection { Id = "r", Variant = UpgradeVariant.AddModels, Options = { new() { Id = "add" } } };
+
+        ArmyForgeScreen.SetChoice(unit, section, "add", 3);
+        Assert.That(ArmyForgeScreen.ChoiceCount(unit, "r", "add"), Is.EqualTo(3));
+    }
+
+    [Test]
+    public void UpgradeChoices_ThenCompile_MatchTheCompilersCost_Warriors()
+    {
+        var screen = new ArmyForgeScreen();
+        screen.AddToList("warriors");
+        BuilderUnit bu = screen.List.Units[0];
+
+        RosterUnit warriors = DemoBook.Build().Units.Single(u => u.Id == "warriors");
+        ArmyForgeScreen.SetChoice(bu, warriors.Sections.Single(s => s.Id == "warriors-special"), "plasma", 1);
+        ArmyForgeScreen.SetChoice(bu, warriors.Sections.Single(s => s.Id == "warriors-reinforce"), "add-warrior", 2);
+        ArmyForgeScreen.SetChoice(bu, warriors.Sections.Single(s => s.Id == "warriors-banner"), "war-banner", 1);
+
+        UnitFileEntry compiled = screen.Compile().Units.Single();
+        Assert.That(compiled.ModelCount, Is.EqualTo(7));
+        Assert.That(compiled.PointCost, Is.EqualTo(106)); // 65 + 5 + 13×2 + 10
+    }
+
+    [Test]
+    public void UpgradeChoices_ReplaceAll_ThenCompile_Gunners()
+    {
+        var screen = new ArmyForgeScreen();
+        screen.AddToList("gunners");
+        BuilderUnit bu = screen.List.Units[0];
+
+        RosterUnit gunners = DemoBook.Build().Units.Single(u => u.Id == "gunners");
+        ArmyForgeScreen.SetChoice(bu, gunners.Sections.Single(s => s.Id == "gunners-missiles"), "missile", 1);
+
+        Assert.That(screen.Compile().Units.Single().PointCost, Is.EqualTo(165)); // 120 + 15×3 (all 3 swapped)
+    }
 }
