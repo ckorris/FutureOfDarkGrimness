@@ -1,0 +1,183 @@
+{
+  "name": "Token Test Army",
+  "faction": "Testers",
+  "pointsLimit": 2000,
+  "units": [
+    {
+      "name": "Aura Bearers",
+      "id": null,
+      "joinsUnitId": null,
+      "modelCount": 5,
+      "base": {
+        "shape": "Circle",
+        "diameterInches": 1.1023622,
+        "widthInches": 0.984252,
+        "heightInches": 1.968504
+      },
+      "quality": 4,
+      "defense": 4,
+      "specialRules": [
+        { "kind": "core", "name": "Regeneration Aura" },
+        { "kind": "core", "name": "Furious Aura" },
+        { "kind": "core", "name": "Stealth Aura" },
+        { "kind": "core", "name": "Courage Aura" },
+        { "kind": "core", "name": "Shielded Aura" },
+        { "kind": "coreNumeric", "name": "Tough", "numericValue": 2 }
+      ],
+      "weapons": [
+        {
+          "name": "Glowing Blade",
+          "quantity": 5,
+          "rangeInches": 0,
+          "attacks": 2,
+          "armorPenetration": 1,
+          "specialRules": []
+        }
+      ],
+      "pointCost": 250
+    },
+    {
+      "name": "War Mage",
+      "id": null,
+      "joinsUnitId": null,
+      "modelCount": 1,
+      "base": {
+        "shape": "Circle",
+        "diameterInches": 1.3,
+        "widthInches": 0.984252,
+        "heightInches": 1.968504
+      },
+      "quality": 4,
+      "defense": 4,
+      "specialRules": [
+        { "kind": "coreNumeric", "name": "Caster", "numericValue": 3 },
+        { "kind": "coreNumeric", "name": "Tough", "numericValue": 3 }
+      ],
+      "weapons": [
+        {
+          "name": "Staff",
+          "quantity": 1,
+          "rangeInches": 18,
+          "attacks": 2,
+          "armorPenetration": 0,
+          "specialRules": []
+        }
+      ],
+      "pointCost": 200
+    },
+    {
+      "name": "Big Beast",
+      "id": null,
+      "joinsUnitId": null,
+      "modelCount": 1,
+      "base": {
+        "shape": "Circle",
+        "diameterInches": 2.0,
+        "widthInches": 0.984252,
+        "heightInches": 1.968504
+      },
+      "quality": 3,
+      "defense": 3,
+      "specialRules": [
+        { "kind": "coreNumeric", "name": "Tough", "numericValue": 8 },
+        { "kind": "core", "name": "Relentless Aura" }
+      ],
+      "weapons": [
+        {
+          "name": "Huge Claws",
+          "quantity": 1,
+          "rangeInches": 0,
+          "attacks": 4,
+          "armorPenetration": 2,
+          "specialRules": []
+        }
+      ],
+      "pointCost": 300
+    },
+    {
+      "name": "Grunts",
+      "id": null,
+      "joinsUnitId": null,
+      "modelCount": 5,
+      "base": {
+        "shape": "Circle",
+        "diameterInches": 1.1023622,
+        "widthInches": 0.984252,
+        "heightInches": 1.968504
+      },
+      "quality": 5,
+      "defense": 5,
+      "specialRules": [],
+      "weapons": [
+        {
+          "name": "Rifle",
+          "quantity": 5,
+          "rangeInches": 24,
+          "attacks": 1,
+          "armorPenetration": 0,
+          "specialRules": []
+        }
+      ],
+      "pointCost": 100
+    }
+  ],
+  "ruleDefinitions": [],
+  "spells": [
+    {
+      "name": "Bless (gives Furious)",
+      "threshold": 1,
+      "target": {
+        "rangeInches": 18,
+        "minCount": 1,
+        "maxCount": 1,
+        "targetAffinity": "Friend",
+        "requireLineOfSight": false,
+        "requiredToken": null,
+        "singleModel": false
+      },
+      "effect": { "kind": "addRule", "ruleName": "Furious", "scope": "ThisRound" }
+    },
+    {
+      "name": "Hex (-1 to Hit)",
+      "threshold": 1,
+      "target": {
+        "rangeInches": 18,
+        "minCount": 1,
+        "maxCount": 1,
+        "targetAffinity": "Foe",
+        "requireLineOfSight": true,
+        "requiredToken": null,
+        "singleModel": false
+      },
+      "effect": { "kind": "statModifier", "roll": "Hit", "delta": -1, "lifetimeScope": "ThisRound" }
+    },
+    {
+      "name": "Sap Defense (-1 Defense)",
+      "threshold": 1,
+      "target": {
+        "rangeInches": 18,
+        "minCount": 1,
+        "maxCount": 1,
+        "targetAffinity": "Foe",
+        "requireLineOfSight": true,
+        "requiredToken": null,
+        "singleModel": false
+      },
+      "effect": { "kind": "statModifier", "roll": "Save", "delta": -1, "lifetimeScope": "ThisRound" }
+    },
+    {
+      "name": "Zap",
+      "threshold": 1,
+      "target": {
+        "rangeInches": 18,
+        "minCount": 1,
+        "maxCount": 1,
+        "targetAffinity": "Foe",
+        "requireLineOfSight": true,
+        "requiredToken": null,
+        "singleModel": false
+      },
+      "effect": { "kind": "dealHits", "count": 3, "withRules": [], "armorPenetration": 1 }
+    }
+  ]
+}
