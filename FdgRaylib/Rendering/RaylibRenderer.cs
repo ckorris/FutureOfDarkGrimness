@@ -500,6 +500,8 @@ public class RaylibRenderer
             Color outline = new((byte)0, (byte)0, (byte)0, a);
 
             ModelBaseRenderer.DrawFilledRaylib(model.BaseShape, cx, cy, l.Scale, fill, outline, model.Facing);
+            ModelBaseRenderer.DrawHeadingRaylib(model.BaseShape, cx, cy, l.Scale, model.Facing,
+                new Color((byte)255, (byte)255, (byte)255, a));
         }
     }
 

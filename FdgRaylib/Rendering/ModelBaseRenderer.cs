@@ -77,6 +77,54 @@ public static class ModelBaseRenderer
         dl.AddCircle(center, pr, outline, CircleSegments, thickness);
     }
 
+    // Heading marker (#150): a small triangle at the model's front, pointing along its Facing. Drawn just
+    // outside the base edge in the facing direction. Sizes are in inches so the marker scales with zoom.
+    private const float HeadingFrontGapInches = 0.05f;
+    private const float HeadingLengthInches = 0.28f;
+    private const float HeadingHalfWidthInches = 0.16f;
+
+    /// <summary> Heading triangle on the Raylib canvas, centred on the model at pixel (cx, cy). </summary>
+    public static void DrawHeadingRaylib(IBaseShape shape, float cx, float cy, float scale, Float2 facing, Color color)
+    {
+        if (!HeadingPoints(shape, new Vector2(cx, cy), scale, facing, out Vector2 apex, out Vector2 b1, out Vector2 b2))
+            return;
+        Raylib.DrawTriangle(apex, b1, b2, color); // raylib 2D doesn't backface-cull, so winding is irrelevant
+    }
+
+    /// <summary> Heading triangle on an ImGui draw list, centred on the model at pixel <paramref name="center"/>. </summary>
+    public static void DrawHeadingImGui(ImDrawListPtr dl, IBaseShape shape, Vector2 center, float scale, Float2 facing, uint color)
+    {
+        if (!HeadingPoints(shape, center, scale, facing, out Vector2 apex, out Vector2 b1, out Vector2 b2))
+            return;
+        dl.AddTriangleFilled(apex, b1, b2, color);
+    }
+
+    // The three pixel corners of the heading triangle: apex out front along facing, base across it at the edge.
+    private static bool HeadingPoints(IBaseShape shape, Vector2 center, float scale, Float2 facing,
+        out Vector2 apex, out Vector2 b1, out Vector2 b2)
+    {
+        apex = b1 = b2 = default;
+        Float2 f = Forward(facing);
+        // Screen-space facing: table Z maps to screen −y.
+        float fx = f.X, fy = -f.Y;
+        float len = MathF.Sqrt(fx * fx + fy * fy);
+        if (len < 1e-6f) return false;
+        fx /= len; fy /= len;
+        float px = -fy, py = fx; // perpendicular
+
+        // Distance from centre to the front edge along facing: a rectangle's half-height (facing runs along
+        // its local +Z), a circle's radius.
+        float frontIn = shape is RectangleBase r ? r.HeightInches * 0.5f : shape.BoundingRadiusInches;
+        float baseX = center.X + fx * (frontIn + HeadingFrontGapInches) * scale;
+        float baseY = center.Y + fy * (frontIn + HeadingFrontGapInches) * scale;
+        float triLen = HeadingLengthInches * scale, triHalf = HeadingHalfWidthInches * scale;
+
+        apex = new Vector2(baseX + fx * triLen, baseY + fy * triLen);
+        b1 = new Vector2(baseX + px * triHalf, baseY + py * triHalf);
+        b2 = new Vector2(baseX - px * triHalf, baseY - py * triHalf);
+        return true;
+    }
+
     // Treats a zero (unset) facing as forward (+Z), so callers without a meaningful facing get the axis-aligned box.
     private static Float2 Forward(Float2 facing) =>
         facing.X == 0f && facing.Y == 0f ? new Float2(0f, 1f) : facing;

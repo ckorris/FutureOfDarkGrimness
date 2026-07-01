@@ -29,8 +29,17 @@ public class GuiPlaceObjectsResolver<T>
     private int? _dragIndex;
     // Group-mode pending rotation (radians) about the formation centroid; reset on drop and on Resolve.
     private float _groupRotationDeploy;
+    // Single-mode pending facing rotation (radians) applied to the model being placed / dragged (#150).
+    private float _singleRotationDeploy;
 
     private static readonly float GroupRotationStep = MathF.PI / 12f; // 15° per wheel notch / key press
+
+    // A yaw facing (unit normal) = the default forward (+Z) rotated by `radians`, matching the position
+    // rotation matrix (rx = dx·cos − dz·sin, rz = dx·sin + dz·cos) applied to (0,1).
+    private static Float2 RotateFacing(float radians) => new Float2(-MathF.Sin(radians), MathF.Cos(radians));
+
+    // The inverse: the rotation (radians) that RotateFacing would need to produce this facing.
+    private static float FacingToRadians(Float2 f) => MathF.Atan2(-f.X, f.Y);
 
     private string? _errorMessage;
     private double  _errorExpiry;
@@ -57,6 +66,7 @@ public class GuiPlaceObjectsResolver<T>
             _placed.Clear();
             _dragIndex = null;
             _groupRotationDeploy = 0f;
+            _singleRotationDeploy = 0f;
             _errorMessage = null;
             _request = request;
         }
@@ -122,6 +132,19 @@ public class GuiPlaceObjectsResolver<T>
         var (mouseInX, mouseInZ) = PixelToInches(io.MousePos.X, io.MousePos.Y);
         bool clicked = overTable && !io.WantCaptureMouse && ImGui.IsMouseClicked(ImGuiMouseButton.Left);
 
+        // Rotation input rotates the facing of the one model being placed / dragged (#150); the pending
+        // rotation persists across placements (place several facing the same way) and resets on Resolve.
+        if (!io.WantCaptureMouse && !io.WantCaptureKeyboard)
+        {
+            if (io.MouseWheel != 0f) _singleRotationDeploy += io.MouseWheel > 0f ? GroupRotationStep : -GroupRotationStep;
+            if (ImGui.IsKeyPressed(ImGuiKey.R))
+            {
+                bool shift = ImGui.IsKeyDown(ImGuiKey.LeftShift) || ImGui.IsKeyDown(ImGuiKey.RightShift);
+                _singleRotationDeploy += shift ? GroupRotationStep : -GroupRotationStep;
+            }
+        }
+        Float2 facing = RotateFacing(_singleRotationDeploy);
+
         // Re-placing an existing model.
         if (_dragIndex.HasValue)
         {
@@ -130,20 +153,21 @@ public class GuiPlaceObjectsResolver<T>
             float r = GetBaseRadius(binding.GetValue());
             var cand = new Position(mouseInX, mouseInZ);
             bool valid = IsPlacementValid(cand, r, zone, enemies, minEnemyDist, k, out string? why);
-            if (overTable) DrawGhost(dl, GetBaseShape(binding.GetValue()), io.MousePos, _scale, valid);
+            if (overTable) DrawGhost(dl, GetBaseShape(binding.GetValue()), io.MousePos, _scale, valid, facing);
             if (clicked)
             {
-                if (valid) { _placed[k] = new PlacedObjectEntry<T>(binding, cand); _dragIndex = null; _errorMessage = null; }
+                if (valid) { _placed[k] = new PlacedObjectEntry<T>(binding, cand, facing); _dragIndex = null; _errorMessage = null; }
                 else { _errorMessage = why; _errorExpiry = ImGui.GetTime() + 2.5; }
             }
             return;
         }
 
-        // Not dragging: a click on a placed model picks it up.
+        // Not dragging: a click on a placed model picks it up (and syncs the rotation to its facing).
         int hitIdx = HitTestPlaced(mouseInX, mouseInZ);
         if (clicked && hitIdx >= 0)
         {
             _dragIndex = hitIdx;
+            _singleRotationDeploy = _placed[hitIdx].Facing is Float2 pf ? FacingToRadians(pf) : 0f;
             _errorMessage = null;
             return;
         }
@@ -156,10 +180,10 @@ public class GuiPlaceObjectsResolver<T>
         float curR = GetBaseRadius(currentBinding.GetValue());
         var candidate = new Position(mouseInX, mouseInZ);
         bool ok = IsPlacementValid(candidate, curR, zone, enemies, minEnemyDist, -1, out string? reason);
-        if (overTable) DrawGhost(dl, GetBaseShape(currentBinding.GetValue()), io.MousePos, _scale, ok);
+        if (overTable) DrawGhost(dl, GetBaseShape(currentBinding.GetValue()), io.MousePos, _scale, ok, facing);
         if (clicked)
         {
-            if (ok) { _placed.Add(new PlacedObjectEntry<T>(currentBinding, candidate)); _errorMessage = null; }
+            if (ok) { _placed.Add(new PlacedObjectEntry<T>(currentBinding, candidate, facing)); _errorMessage = null; }
             else { _errorMessage = reason; _errorExpiry = ImGui.GetTime() + 2.5; }
         }
     }
@@ -211,6 +235,7 @@ public class GuiPlaceObjectsResolver<T>
         }
 
         float cos = MathF.Cos(_groupRotationDeploy), sin = MathF.Sin(_groupRotationDeploy);
+        Float2 groupFacing = RotateFacing(_groupRotationDeploy); // all models face the rotated direction (#150)
         var positions = new Position[n];
         bool allValid = true;
         for (int i = 0; i < n; i++)
@@ -219,7 +244,7 @@ public class GuiPlaceObjectsResolver<T>
             float rx = dx * cos - dz * sin, rz = dx * sin + dz * cos;
             positions[i] = new Position(centroid.x + rx, centroid.z + rz);
             bool valid = IsGroupSlotValid(positions[i], radii[i], zone, enemies, minEnemyDist);
-            DrawGhost(dl, GetBaseShape(models[i].GetValue()), ToPixelVec(positions[i]), _scale, valid);
+            DrawGhost(dl, GetBaseShape(models[i].GetValue()), ToPixelVec(positions[i]), _scale, valid, groupFacing);
             if (!valid) allValid = false;
         }
 
@@ -228,7 +253,7 @@ public class GuiPlaceObjectsResolver<T>
             if (allValid)
             {
                 _placed.Clear();
-                for (int i = 0; i < n; i++) _placed.Add(new PlacedObjectEntry<T>(models[i], positions[i]));
+                for (int i = 0; i < n; i++) _placed.Add(new PlacedObjectEntry<T>(models[i], positions[i], groupFacing));
                 _groupRotationDeploy = 0f;
                 _errorMessage = null;
             }
@@ -320,17 +345,21 @@ public class GuiPlaceObjectsResolver<T>
             if (i == skipIndex) continue; // hidden while being dragged
             var entry = _placed[i];
             var (px, py) = InchesToPixel(entry.Position.x, entry.Position.z);
-            ModelBaseRenderer.DrawFilledImGui(dl, GetBaseShape(entry.Binding.GetValue()), new Vector2(px, py), _scale, fill, outline, 1f);
+            var shape = GetBaseShape(entry.Binding.GetValue());
+            Float2 facing = entry.Facing ?? new Float2(0f, 1f);
+            ModelBaseRenderer.DrawFilledImGui(dl, shape, new Vector2(px, py), _scale, fill, outline, 1f, facing);
+            ModelBaseRenderer.DrawHeadingImGui(dl, shape, new Vector2(px, py), _scale, facing, outline);
         }
     }
 
-    private static void DrawGhost(ImDrawListPtr dl, IBaseShape shape, Vector2 center, float scale, bool valid)
+    private static void DrawGhost(ImDrawListPtr dl, IBaseShape shape, Vector2 center, float scale, bool valid, Float2 facing)
     {
         uint fill = valid
             ? ImGui.ColorConvertFloat4ToU32(new Vector4(0.20f, 1.00f, 0.20f, 0.50f))
             : ImGui.ColorConvertFloat4ToU32(new Vector4(1.00f, 0.20f, 0.20f, 0.50f));
         uint outline = ImGui.ColorConvertFloat4ToU32(new Vector4(1f, 1f, 1f, 0.80f));
-        ModelBaseRenderer.DrawFilledImGui(dl, shape, center, scale, fill, outline, 1f);
+        ModelBaseRenderer.DrawFilledImGui(dl, shape, center, scale, fill, outline, 1f, facing);
+        ModelBaseRenderer.DrawHeadingImGui(dl, shape, center, scale, facing, outline);
     }
 
     private void DrawInfoPanel(int screenW, PlaceObjectsRequest<T> request,
