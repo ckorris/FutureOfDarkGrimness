@@ -28,12 +28,9 @@ public class GuiDefineMovementResolver
     // group ghost is drawn; null otherwise.
     private Dictionary<IModel, Position>? _groupGhostPositions;
 
-    // Per-model manual facing override (#150): a model the player rotated by hand in single mode locks to this
-    // facing for its whole path instead of following its direction of travel. Cleared each Resolve.
-    private readonly Dictionary<IModel, Float2> _manualFacings = new();
-
-    // A yaw facing (unit normal) = the default forward (+Z) rotated by `radians` (matches the position rotation).
-    private static Float2 RotateFacing(float radians) => new Float2(-MathF.Sin(radians), MathF.Cos(radians));
+    // Per-model manual rotation offset (radians) (#150): a model the player rotated by hand in single mode
+    // faces its direction of travel rotated by this offset (not a fixed lock). Cleared each Resolve.
+    private readonly Dictionary<IModel, float> _manualOffsets = new();
 
     // Rotates an existing facing (unit normal) by `radians`, same matrix as the rigid position rotation.
     private static Float2 RotateFloat2(Float2 f, float radians)
@@ -123,7 +120,7 @@ public class GuiDefineMovementResolver
             _groupRotation = 0f;
             _groupFacingAngle = 0f;
             _groupGhostPositions = null;
-            _manualFacings.Clear();
+            _manualOffsets.Clear();
         }
         return tcs.Task;
     }
@@ -180,9 +177,8 @@ public class GuiDefineMovementResolver
                 var last = pathPoints[^1];
                 var (lx, ly) = InchesToPixel(last.x, last.z);
                 Position beforeLast = pathPoints.Count >= 2 ? pathPoints[pathPoints.Count - 2] : start;
-                Float2 finalFacing = _manualFacings.TryGetValue(model, out var lockedF) ? lockedF
-                    : (_formationMode.IsGroup && _groupFacingAngle != 0f) ? RotateFacing(_groupFacingAngle)
-                    : TravelFacing(beforeLast, last, model.Facing);
+                float finalOffset = _formationMode.IsGroup ? _groupFacingAngle : _manualOffsets.GetValueOrDefault(model);
+                Float2 finalFacing = RotateFloat2(TravelFacing(beforeLast, last, model.Facing), finalOffset);
                 ModelBaseRenderer.DrawFilledImGui(dl, model.BaseShape, new Vector2(lx, ly), _scale, FinalGhostCol, outline, thick, finalFacing);
                 ModelBaseRenderer.DrawHeadingImGui(dl, model.BaseShape, new Vector2(lx, ly), _scale, finalFacing, outline);
             }
@@ -246,8 +242,8 @@ public class GuiDefineMovementResolver
             // Ghost base (true shape) + heading (#150): a hand-rotated model keeps its locked facing, otherwise
             // it faces the direction of travel from its anchor to the ghost.
             uint fill = ghostOverlaps ? OverlapFill : FillColorFor(ghostBand);
-            Float2 ghostFacing = _manualFacings.TryGetValue(_selectedModel, out var selFacing)
-                ? selFacing : TravelFacing(anchor, ghostPos.Value, _selectedModel.Facing);
+            Float2 ghostFacing = RotateFloat2(TravelFacing(anchor, ghostPos.Value, _selectedModel.Facing),
+                _manualOffsets.GetValueOrDefault(_selectedModel));
             ModelBaseRenderer.DrawFilledImGui(dl, _selectedModel.BaseShape, new Vector2(gx, gy), _scale, fill, GhostOutline, 1.5f, ghostFacing);
             ModelBaseRenderer.DrawHeadingImGui(dl, _selectedModel.BaseShape, new Vector2(gx, gy), _scale, ghostFacing, GhostOutline);
 
@@ -301,12 +297,12 @@ public class GuiDefineMovementResolver
                 pt.RemoveLastStep(_selectedModel);
         }
 
-        // R / Shift+R rotates the selected model's facing, locking it (overriding travel direction) (#150).
+        // R / Shift+R rotates the selected model's facing — an offset from its direction of travel (#150).
         if (!group && wantInput && _selectedModel != null && ImGui.IsKeyPressed(ImGuiKey.R))
         {
             bool shift = ImGui.IsKeyDown(ImGuiKey.LeftShift) || ImGui.IsKeyDown(ImGuiKey.RightShift);
-            Float2 cur = _manualFacings.TryGetValue(_selectedModel, out var mf) ? mf : _selectedModel.Facing;
-            _manualFacings[_selectedModel] = RotateFloat2(cur, shift ? GroupRotationStep : -GroupRotationStep);
+            _manualOffsets[_selectedModel] = _manualOffsets.GetValueOrDefault(_selectedModel)
+                + (shift ? GroupRotationStep : -GroupRotationStep);
         }
 
         // Spacebar cycles to next model in the unit's list (single mode)
@@ -435,10 +431,9 @@ public class GuiDefineMovementResolver
             var (sx, sy) = InchesToPixel(lastPositions[i].x, lastPositions[i].z);
             var (nx, ny) = InchesToPixel(newPositions[i].x, newPositions[i].z);
             dl.AddLine(new Vector2(sx, sy), new Vector2(nx, ny), lineCol, 2f);
-            // Heading (#150): the accumulated group rotation, else the direction of travel of this step.
-            Float2 groupFacing = _groupFacingAngle != 0f
-                ? RotateFacing(_groupFacingAngle)
-                : TravelFacing(lastPositions[i], newPositions[i], models[i].Facing);
+            // Heading (#150): the step's direction of travel, rotated by the accumulated group offset.
+            Float2 groupFacing = RotateFloat2(
+                TravelFacing(lastPositions[i], newPositions[i], models[i].Facing), _groupFacingAngle);
             ModelBaseRenderer.DrawFilledImGui(dl, models[i].BaseShape, new Vector2(nx, ny), _scale, fill, GhostOutline, 1.5f, groupFacing);
             ModelBaseRenderer.DrawHeadingImGui(dl, models[i].BaseShape, new Vector2(nx, ny), _scale, groupFacing, GhostOutline);
         }
@@ -533,20 +528,20 @@ public class GuiDefineMovementResolver
 
         // Facing overrides (#150): a group rotation faces the whole unit that way; single-mode hand-rotations
         // lock per model. Otherwise each waypoint follows its direction of travel (see PathTemplate).
-        Dictionary<IModel, Float2>? facingOverrides = null;
+        Dictionary<IModel, float>? facingOffsets = null;
         if (group)
         {
             if (_groupFacingAngle != 0f)
             {
-                facingOverrides = new Dictionary<IModel, Float2>();
-                foreach (IModel m in pt.CurrentPaths.Keys) facingOverrides[m] = RotateFacing(_groupFacingAngle);
+                facingOffsets = new Dictionary<IModel, float>();
+                foreach (IModel m in pt.CurrentPaths.Keys) facingOffsets[m] = _groupFacingAngle;
             }
         }
-        else if (_manualFacings.Count > 0)
+        else if (_manualOffsets.Count > 0)
         {
-            facingOverrides = _manualFacings;
+            facingOffsets = _manualOffsets;
         }
-        var results = pt.GetResultsAsList(facingOverrides, travelDirectionFacing: true);
+        var results = pt.GetResultsAsList(facingOffsets, travelDirectionFacing: true);
         var enemyFootprints = GetEnemyFootprintsForRequest(request);
         bool engineValid = MovementUtilities.ValidatePaths(results,
             request.MaxRushDistance, request.MaxDistanceInches,
