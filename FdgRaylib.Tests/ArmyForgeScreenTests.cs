@@ -1,5 +1,5 @@
 using System.Linq;
-using FdgRaylib.ArmyBuilding;
+using FDG.ArmyBuilding;
 using FdgRaylib.Rendering;
 using NUnit.Framework;
 
