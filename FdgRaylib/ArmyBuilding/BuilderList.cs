@@ -10,6 +10,9 @@ namespace FdgRaylib.ArmyBuilding
     /// <summary>A list under construction: a sequence of unit instances and their upgrade choices.</summary>
     public class BuilderList
     {
+        /// <summary>The army's display name (user-chosen). Compiled into <c>ArmyListFile.Name</c>.</summary>
+        public string Name { get; set; } = string.Empty;
+
         /// <summary>Provenance — the name of the book this list was built from (the full book is embedded
         /// alongside in <c>BuiltArmyFile</c>; this is just a human-facing label / sanity check).</summary>
         public string BookName { get; set; } = string.Empty;
