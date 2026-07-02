@@ -88,7 +88,10 @@ public static class ModelBaseRenderer
     {
         if (!HeadingPoints(shape, new Vector2(cx, cy), scale, facing, out Vector2 apex, out Vector2 b1, out Vector2 b2))
             return;
-        Raylib.DrawTriangle(apex, b1, b2, color); // raylib 2D doesn't backface-cull, so winding is irrelevant
+        // Raylib's DrawTriangle backface-culls and our winding depends on the facing, so draw both orderings —
+        // the front-facing one renders, the other is culled (no double-blend).
+        Raylib.DrawTriangle(apex, b1, b2, color);
+        Raylib.DrawTriangle(apex, b2, b1, color);
     }
 
     /// <summary> Heading triangle on an ImGui draw list, centred on the model at pixel <paramref name="center"/>. </summary>

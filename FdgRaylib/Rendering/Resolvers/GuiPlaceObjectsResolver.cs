@@ -589,7 +589,8 @@ public class GuiPlaceObjectsResolver<T>
             var pos = model.Position;
             // Default-constructed Position is (0,0,0); models there haven't been placed yet.
             if (pos.x == 0f && pos.z == 0f) continue;
-            yield return (pos, model.BaseRadiusInches);
+            // Circumscribing radius so a placed rectangle's whole footprint is avoided at any facing (#150).
+            yield return (pos, CircumRadius(model.BaseShape));
         }
     }
 
@@ -618,10 +619,20 @@ public class GuiPlaceObjectsResolver<T>
         return MathF.Sqrt(dx * dx + dz * dz);
     }
 
-    private static float GetBaseRadius(T value) => value is ModelData m ? m.BaseRadiusInches : 0.75f;
+    // The radius used for placement spacing / overlap / zone containment (#150): the CIRCUMSCRIBING circle, so a
+    // rotatable rectangle is kept non-overlapping and fully inside the zone at ANY facing (its true footprint
+    // fits inside this circle). Conservative — a touch of wasted space — but never lets bases overlap or a
+    // corner poke out of the zone. (NOT IModel.BaseRadiusInches, which #149 made the smaller inscribed circle.)
+    private static float GetBaseRadius(T value) => value is ModelData m ? CircumRadius(m.BaseShape) : 0.75f;
 
-    // The base shape for rendering / hit-testing (#149). Non-model T (e.g. objectives) → a default circle,
-    // matching GetBaseRadius's 0.75" fallback. (Placement SPACING still uses the radius — see #150.)
+    private static float CircumRadius(IBaseShape shape) => shape switch
+    {
+        RectangleBase r => 0.5f * MathF.Sqrt(r.WidthInches * r.WidthInches + r.HeightInches * r.HeightInches),
+        CircleBase c => c.RadiusInches,
+        _ => shape.BoundingRadiusInches,
+    };
+
+    // The base shape for rendering / hit-testing (#149). Non-model T (e.g. objectives) → a default circle.
     private static IBaseShape GetBaseShape(T value) => value is ModelData m ? m.BaseShape : new CircleBase(0.75f);
 
     /// <summary>True if the candidate is within nearest-neighbour cohesion of at least one other placed
