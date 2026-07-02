@@ -41,6 +41,7 @@ public class ArmyForgeScreen : IAppScreen
     private string? _selectedRosterId;
     private int? _selectedListIndex;
     private string? _statusHint;
+    private int? _pendingBookIndex;
 
     public ArmyForgeScreen()
     {
@@ -79,6 +80,29 @@ public class ArmyForgeScreen : IAppScreen
         _list = new BuilderList { PointsLimit = _list.PointsLimit, BookName = _book.Name };
         _selectedListIndex = null;
         _selectedRosterId = null;
+    }
+
+    // A book switch would discard the current list (its units reference the old book), so confirm first.
+    private void DrawSwitchBookConfirm()
+    {
+        bool open = true;
+        if (!ImGui.BeginPopupModal("Switch book?", ref open, ImGuiWindowFlags.AlwaysAutoResize)) return;
+
+        ImGui.TextUnformatted("Switching books will clear your current list. Continue?");
+        ImGui.Spacing();
+        if (ImGui.Button("Switch", new Vector2(120, 0)))
+        {
+            if (_pendingBookIndex is int idx) SwitchBook(idx);
+            _pendingBookIndex = null;
+            ImGui.CloseCurrentPopup();
+        }
+        ImGui.SameLine();
+        if (ImGui.Button("Cancel", new Vector2(120, 0)))
+        {
+            _pendingBookIndex = null;
+            ImGui.CloseCurrentPopup();
+        }
+        ImGui.EndPopup();
     }
 
     // ── List-mutation seams (unit-tested without ImGui) ─────────────────────────────────────────────────
@@ -149,8 +173,12 @@ public class ArmyForgeScreen : IAppScreen
         ImGui.SameLine();
         ImGui.SetNextItemWidth(220f);
         int bi = _bookIndex;
-        if (ImGui.Combo("##forge-book", ref bi, _libraryNames, _libraryNames.Length))
-            SwitchBook(bi);
+        if (ImGui.Combo("##forge-book", ref bi, _libraryNames, _libraryNames.Length) && bi != _bookIndex)
+        {
+            if (_list.Units.Count == 0) SwitchBook(bi);
+            else { _pendingBookIndex = bi; ImGui.OpenPopup("Switch book?"); }
+        }
+        DrawSwitchBookConfirm();
         if (_statusHint is not null)
         {
             ImGui.SameLine();
@@ -201,10 +229,16 @@ public class ArmyForgeScreen : IAppScreen
         foreach (RosterUnit unit in _book.Units)
         {
             bool selected = unit.Id == _selectedRosterId;
-            if (ImGui.Selectable($"{unit.Name}##roster-{unit.Id}", selected))
+            if (ImGui.Selectable($"{unit.Name}##roster-{unit.Id}", selected, ImGuiSelectableFlags.AllowDoubleClick))
+            {
                 _selectedRosterId = unit.Id;
+                if (ImGui.IsMouseDoubleClicked(ImGuiMouseButton.Left)) AddToList(unit.Id);
+            }
             ImGui.SameLine(ImGui.GetContentRegionAvail().X - ImGui.CalcTextSize($"{unit.BasePointCost}").X);
             ImGui.TextDisabled($"{unit.BasePointCost}");
+            ImGui.Indent();
+            ImGui.TextDisabled($"Qua {unit.Quality}+ Def {unit.Defense}+");
+            ImGui.Unindent();
         }
 
         ImGui.Separator();
@@ -244,6 +278,7 @@ public class ArmyForgeScreen : IAppScreen
             }
 
             bool selected = _selectedListIndex == i;
+            ImGui.SetNextItemAllowOverlap(); // else the full-width Selectable swallows the remove button's click
             if (ImGui.Selectable($"{unit.Name} [{unit.ModelCount}]##li{i}", selected))
                 _selectedListIndex = i;
 
@@ -252,6 +287,15 @@ public class ArmyForgeScreen : IAppScreen
             ImGui.TextDisabled(pts);
             ImGui.SameLine();
             if (ImGui.SmallButton($"x##rm{i}")) removeIndex = i;
+
+            ImGui.Indent();
+            ImGui.TextDisabled($"Qua {unit.Quality}+ Def {unit.Defense}+");
+            foreach (WeaponFileEntry weapon in unit.Weapons)
+                ImGui.TextDisabled(ArmyBuilderScreen.WeaponSummary(weapon));
+            if (unit.SpecialRules.Count > 0)
+                ImGui.TextDisabled(string.Join(", ", unit.SpecialRules.Select(r => r.PrintableName)));
+            ImGui.Unindent();
+            ImGui.Separator();
         }
         if (removeIndex >= 0) RemoveFromList(removeIndex);
 
