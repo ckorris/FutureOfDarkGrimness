@@ -78,7 +78,7 @@
       "items": [],
       "sections": [
         {
-          "id": "I-viU2f",
+          "id": "Qk9jsdY",
           "label": "Replace any Heavy Razor Claw",
           "variant": "Replace",
           "affects": "Any",
@@ -208,7 +208,7 @@
           ]
         },
         {
-          "id": "HHG-Qm7",
+          "id": "hV5kZK2",
           "label": "Replace Shredder Cannon",
           "variant": "Replace",
           "affects": "One",
@@ -445,7 +445,7 @@
           ]
         },
         {
-          "id": "pUzyhDN",
+          "id": "KpqeX39",
           "label": "Upgrade with",
           "variant": "Upgrade",
           "affects": "One",
@@ -481,7 +481,7 @@
           ]
         },
         {
-          "id": "zw1RO-L",
+          "id": "UO0yWMV",
           "label": "Upgrade with one",
           "variant": "Upgrade",
           "affects": "One",
@@ -638,7 +638,7 @@
       "items": [],
       "sections": [
         {
-          "id": "qXHMhtz",
+          "id": "BHAKGI-",
           "label": "Replace one Heavy Razor Claws",
           "variant": "Replace",
           "affects": "One",
@@ -792,7 +792,7 @@
           ]
         },
         {
-          "id": "yQA4oik",
+          "id": "JoVX653",
           "label": "Upgrade with",
           "variant": "Upgrade",
           "affects": "One",
@@ -828,7 +828,7 @@
           ]
         },
         {
-          "id": "MXrBXmF",
+          "id": "hpcLJ7_",
           "label": "Replace any Heavy Razor Claw",
           "variant": "Replace",
           "affects": "Any",
@@ -958,7 +958,7 @@
           ]
         },
         {
-          "id": "UQYSDHB",
+          "id": "SllbJOw",
           "label": "Upgrade with one",
           "variant": "Upgrade",
           "affects": "One",
@@ -1135,7 +1135,7 @@
       ],
       "sections": [
         {
-          "id": "WnqFNYC",
+          "id": "IVzApTG",
           "label": "Upgrade with one",
           "variant": "Upgrade",
           "affects": "One",
@@ -1228,7 +1228,7 @@
           ]
         },
         {
-          "id": "OpMtnvl",
+          "id": "lU70hjD",
           "label": "Replace Adrenaline Fueled",
           "variant": "Replace",
           "affects": "One",
@@ -1310,7 +1310,7 @@
       "items": [],
       "sections": [
         {
-          "id": "PYyczEe",
+          "id": "Nl6kUQ2",
           "label": "Replace Razor Claw",
           "variant": "Replace",
           "affects": "One",
@@ -1413,7 +1413,7 @@
           ]
         },
         {
-          "id": "UUnvwg0",
+          "id": "73qBT7W",
           "label": "Upgrade with one",
           "variant": "Upgrade",
           "affects": "One",
@@ -1479,7 +1479,7 @@
           ]
         },
         {
-          "id": "7RW2iCW",
+          "id": "a82nb0M",
           "label": "Upgrade with one",
           "variant": "Upgrade",
           "affects": "One",
@@ -1535,7 +1535,7 @@
           ]
         },
         {
-          "id": "zCskVqJ",
+          "id": "kuVQ9De",
           "label": "Upgrade with one",
           "variant": "Upgrade",
           "affects": "One",
@@ -1607,7 +1607,7 @@
           ]
         },
         {
-          "id": "6Iqk4e3",
+          "id": "LjNX_IC",
           "label": "Upgrade with one",
           "variant": "Upgrade",
           "affects": "One",
@@ -1738,7 +1738,7 @@
       "items": [],
       "sections": [
         {
-          "id": "sspOXPQ",
+          "id": "C7bswdZ",
           "label": "Upgrade all models with one",
           "variant": "Upgrade",
           "affects": "All",
@@ -1810,7 +1810,7 @@
           ]
         },
         {
-          "id": "iLNIOfz",
+          "id": "C3Hbvva",
           "label": "Replace up to two Razor Claws",
           "variant": "Replace",
           "affects": "Any",
@@ -1960,7 +1960,7 @@
       "items": [],
       "sections": [
         {
-          "id": "sspOXPQ",
+          "id": "C7bswdZ",
           "label": "Upgrade all models with one",
           "variant": "Upgrade",
           "affects": "All",
@@ -2032,7 +2032,7 @@
           ]
         },
         {
-          "id": "NEsbtYF",
+          "id": "CeFRvEK",
           "label": "Replace all Bio-Spiners",
           "variant": "Replace",
           "affects": "All",
@@ -2082,7 +2082,7 @@
           ]
         },
         {
-          "id": "VZKi5Ns",
+          "id": "iFgNPL6",
           "label": "Replace up to two Bio-Spiners",
           "variant": "Replace",
           "affects": "Any",
@@ -2264,7 +2264,7 @@
       "items": [],
       "sections": [
         {
-          "id": "sspOXPQ",
+          "id": "C7bswdZ",
           "label": "Upgrade all models with one",
           "variant": "Upgrade",
           "affects": "All",
@@ -2336,7 +2336,7 @@
           ]
         },
         {
-          "id": "txZ8xLl",
+          "id": "L4Fraa9",
           "label": "Upgrade one model with",
           "variant": "Upgrade",
           "affects": "One",
@@ -2415,7 +2415,7 @@
       "items": [],
       "sections": [
         {
-          "id": "NEsbtYF",
+          "id": "CeFRvEK",
           "label": "Replace all Bio-Spiners",
           "variant": "Replace",
           "affects": "All",
@@ -2465,7 +2465,7 @@
           ]
         },
         {
-          "id": "VZKi5Ns",
+          "id": "iFgNPL6",
           "label": "Replace up to two Bio-Spiners",
           "variant": "Replace",
           "affects": "Any",
@@ -2599,7 +2599,7 @@
           ]
         },
         {
-          "id": "wEwV4WV",
+          "id": "UlAD3nU",
           "label": "Upgrade all models with one",
           "variant": "Upgrade",
           "affects": "All",
@@ -2756,7 +2756,7 @@
       "items": [],
       "sections": [
         {
-          "id": "sspOXPQ",
+          "id": "C7bswdZ",
           "label": "Upgrade all models with one",
           "variant": "Upgrade",
           "affects": "All",
@@ -2828,7 +2828,7 @@
           ]
         },
         {
-          "id": "tFkbaWS",
+          "id": "qnFJ1oC",
           "label": "Replace all Bio-Cannons",
           "variant": "Replace",
           "affects": "All",
@@ -2924,7 +2924,7 @@
       ],
       "sections": [
         {
-          "id": "FfaOMph",
+          "id": "XA_oLCR",
           "label": "Replace all Adrenaline Fueleds",
           "variant": "Replace",
           "affects": "All",
@@ -2958,7 +2958,7 @@
           ]
         },
         {
-          "id": "FqsKAGd",
+          "id": "4KFtt7-",
           "label": "Upgrade one model with",
           "variant": "Upgrade",
           "affects": "One",
@@ -3040,7 +3040,7 @@
       "items": [],
       "sections": [
         {
-          "id": "0tSvgRe",
+          "id": "w9sXkz3",
           "label": "Upgrade all models with",
           "variant": "Upgrade",
           "affects": "All",
@@ -3110,7 +3110,7 @@
       "items": [],
       "sections": [
         {
-          "id": "GCROfJU",
+          "id": "wae2LVF",
           "label": "Replace any Razor Claws",
           "variant": "Replace",
           "affects": "Any",
@@ -3192,7 +3192,7 @@
           ]
         },
         {
-          "id": "kkxFg7N",
+          "id": "0tS0IWj",
           "label": "Replace one Razor Claws",
           "variant": "Replace",
           "affects": "One",
@@ -3254,7 +3254,7 @@
           ]
         },
         {
-          "id": "GefTvz3",
+          "id": "mToJsNU",
           "label": "Any model may replace one Razor Claws",
           "variant": "Replace",
           "affects": "One",
@@ -3263,7 +3263,7 @@
           ],
           "maxApplications": 0,
           "minPicks": 0,
-          "maxPicks": 1,
+          "maxPicks": 3,
           "options": [
             {
               "id": "A23zi",
@@ -3328,7 +3328,7 @@
           ]
         },
         {
-          "id": "pwZVKn2",
+          "id": "47AZYzY",
           "label": "Replace one Ravager Gun",
           "variant": "Replace",
           "affects": "One",
@@ -3440,7 +3440,7 @@
           ]
         },
         {
-          "id": "T8j2cWy",
+          "id": "zehmFfx",
           "label": "Upgrade all models with",
           "variant": "Upgrade",
           "affects": "All",
@@ -3531,7 +3531,7 @@
       ],
       "sections": [
         {
-          "id": "GCROfJU",
+          "id": "wae2LVF",
           "label": "Replace any Razor Claws",
           "variant": "Replace",
           "affects": "Any",
@@ -3613,7 +3613,7 @@
           ]
         },
         {
-          "id": "kkxFg7N",
+          "id": "0tS0IWj",
           "label": "Replace one Razor Claws",
           "variant": "Replace",
           "affects": "One",
@@ -3675,7 +3675,7 @@
           ]
         },
         {
-          "id": "UNs-F2A",
+          "id": "faEH-0N",
           "label": "Replace all Adrenaline Fueleds",
           "variant": "Replace",
           "affects": "All",
@@ -3776,7 +3776,7 @@
       "items": [],
       "sections": [
         {
-          "id": "muL_ZST",
+          "id": "tKMTMOO",
           "label": "Replace all Poison Spurts and Toxin Claws",
           "variant": "Replace",
           "affects": "All",
@@ -3818,7 +3818,7 @@
           ]
         },
         {
-          "id": "MsKWo82",
+          "id": "TFwEKWG",
           "label": "Upgrade one model with",
           "variant": "Upgrade",
           "affects": "One",
@@ -3894,7 +3894,7 @@
       "items": [],
       "sections": [
         {
-          "id": "GCROfJU",
+          "id": "wae2LVF",
           "label": "Replace any Razor Claws",
           "variant": "Replace",
           "affects": "Any",
@@ -3976,7 +3976,7 @@
           ]
         },
         {
-          "id": "kkxFg7N",
+          "id": "0tS0IWj",
           "label": "Replace one Razor Claws",
           "variant": "Replace",
           "affects": "One",
@@ -4038,7 +4038,7 @@
           ]
         },
         {
-          "id": "WP66HqB",
+          "id": "3kGvMKm",
           "label": "Any model may replace one Razor Claws",
           "variant": "Replace",
           "affects": "One",
@@ -4047,7 +4047,7 @@
           ],
           "maxApplications": 0,
           "minPicks": 0,
-          "maxPicks": 1,
+          "maxPicks": 3,
           "options": [
             {
               "id": "5_QlW",
@@ -4174,7 +4174,7 @@
       "items": [],
       "sections": [
         {
-          "id": "GCROfJU",
+          "id": "wae2LVF",
           "label": "Replace any Razor Claws",
           "variant": "Replace",
           "affects": "Any",
@@ -4256,7 +4256,7 @@
           ]
         },
         {
-          "id": "kkxFg7N",
+          "id": "0tS0IWj",
           "label": "Replace one Razor Claws",
           "variant": "Replace",
           "affects": "One",
@@ -4527,7 +4527,7 @@
       "items": [],
       "sections": [
         {
-          "id": "4QkSg-h",
+          "id": "hgJO-rQ",
           "label": "Upgrade with one",
           "variant": "Upgrade",
           "affects": "One",
@@ -4580,7 +4580,7 @@
           ]
         },
         {
-          "id": "MXrBXmF",
+          "id": "hpcLJ7_",
           "label": "Replace any Heavy Razor Claw",
           "variant": "Replace",
           "affects": "Any",
@@ -4785,7 +4785,7 @@
       "items": [],
       "sections": [
         {
-          "id": "QTWBVYi",
+          "id": "lOXIKYT",
           "label": "Replace Spore Gun",
           "variant": "Replace",
           "affects": "One",
@@ -4891,7 +4891,7 @@
       "items": [],
       "sections": [
         {
-          "id": "mrtOmEF",
+          "id": "8G5WWjt",
           "label": "Replace Heavy Psy-Torrent",
           "variant": "Replace",
           "affects": "One",
@@ -5023,7 +5023,7 @@
       "items": [],
       "sections": [
         {
-          "id": "h5LU8aF",
+          "id": "m5Lwr3z",
           "label": "Upgrade with",
           "variant": "Upgrade",
           "affects": "One",
@@ -5112,7 +5112,7 @@
       "items": [],
       "sections": [
         {
-          "id": "0IFV6W_",
+          "id": "P6YticO",
           "label": "Replace 3x Heavy Razor Claws",
           "variant": "Replace",
           "affects": "One",
@@ -5248,7 +5248,7 @@
           ]
         },
         {
-          "id": "m5v72f-",
+          "id": "1L74AwY",
           "label": "Replace one Heavy Razor Claw",
           "variant": "Replace",
           "affects": "One",
@@ -5282,7 +5282,7 @@
           ]
         },
         {
-          "id": "p80PP_0",
+          "id": "Djp5qec",
           "label": "Replace any Heavy Razor Claws",
           "variant": "Replace",
           "affects": "Any",
@@ -5500,7 +5500,7 @@
       "items": [],
       "sections": [
         {
-          "id": "YmynB7o",
+          "id": "ikJTLeI",
           "label": "Upgrade with one",
           "variant": "Upgrade",
           "affects": "One",
@@ -5644,7 +5644,7 @@
       "items": [],
       "sections": [
         {
-          "id": "mrtOmEF",
+          "id": "8G5WWjt",
           "label": "Replace Heavy Psy-Torrent",
           "variant": "Replace",
           "affects": "One",
@@ -5705,7 +5705,7 @@
           ]
         },
         {
-          "id": "z5EvV7U",
+          "id": "02mFZv_",
           "label": "Replace Heavy Psy-Torrent",
           "variant": "Replace",
           "affects": "One",
@@ -5816,7 +5816,7 @@
       ],
       "sections": [
         {
-          "id": "p80PP_0",
+          "id": "Djp5qec",
           "label": "Replace any Heavy Razor Claws",
           "variant": "Replace",
           "affects": "Any",
@@ -5946,7 +5946,7 @@
           ]
         },
         {
-          "id": "Rq49AGE",
+          "id": "NDDHaIV",
           "label": "Replace 3x Heavy Razor Claw",
           "variant": "Replace",
           "affects": "One",
@@ -6005,7 +6005,7 @@
           ]
         },
         {
-          "id": "W8GOlPZ",
+          "id": "m-CUCud",
           "label": "Replace Deep Deployment",
           "variant": "Replace",
           "affects": "One",
@@ -6040,7 +6040,7 @@
           ]
         },
         {
-          "id": "jRhzItq",
+          "id": "fet4U8D",
           "label": "Upgrade with one",
           "variant": "Upgrade",
           "affects": "One",
@@ -6171,7 +6171,7 @@
       "items": [],
       "sections": [
         {
-          "id": "eR7qFBb",
+          "id": "MOhaioK",
           "label": "Replace Bio-Pod",
           "variant": "Replace",
           "affects": "One",
@@ -6227,7 +6227,7 @@
           ]
         },
         {
-          "id": "Qqb5Aob",
+          "id": "tunSugF",
           "label": "Replace any Stinger Launcher",
           "variant": "Replace",
           "affects": "Any",
@@ -6363,7 +6363,7 @@
       "items": [],
       "sections": [
         {
-          "id": "Ufpl_m5",
+          "id": "yZSRknM",
           "label": "Upgrade with one",
           "variant": "Upgrade",
           "affects": "One",
@@ -6435,7 +6435,7 @@
           ]
         },
         {
-          "id": "Qqb5Aob",
+          "id": "tunSugF",
           "label": "Replace any Stinger Launcher",
           "variant": "Replace",
           "affects": "Any",
@@ -6576,7 +6576,7 @@
       "items": [],
       "sections": [
         {
-          "id": "p80PP_0",
+          "id": "Djp5qec",
           "label": "Replace any Heavy Razor Claws",
           "variant": "Replace",
           "affects": "Any",
@@ -6777,7 +6777,7 @@
       "items": [],
       "sections": [
         {
-          "id": "AnWXFCw",
+          "id": "2kWLAcy",
           "label": "Replace Shredder Bio-Artillery",
           "variant": "Replace",
           "affects": "One",
@@ -6928,7 +6928,7 @@
       "items": [],
       "sections": [
         {
-          "id": "7zyZ1MI",
+          "id": "vitinoU",
           "label": "Upgrade with one",
           "variant": "Upgrade",
           "affects": "One",
@@ -7039,7 +7039,7 @@
           ]
         },
         {
-          "id": "h5LU8aF",
+          "id": "m5Lwr3z",
           "label": "Upgrade with",
           "variant": "Upgrade",
           "affects": "One",
@@ -7130,7 +7130,7 @@
       ],
       "sections": [
         {
-          "id": "7zyZ1MI",
+          "id": "vitinoU",
           "label": "Upgrade with one",
           "variant": "Upgrade",
           "affects": "One",
@@ -7241,7 +7241,7 @@
           ]
         },
         {
-          "id": "sZPHYFx",
+          "id": "fwk8K2A",
           "label": "Replace Spore Carrier",
           "variant": "Replace",
           "affects": "One",
@@ -7307,7 +7307,7 @@
           ]
         },
         {
-          "id": "h5LU8aF",
+          "id": "m5Lwr3z",
           "label": "Upgrade with",
           "variant": "Upgrade",
           "affects": "One",
@@ -7410,7 +7410,7 @@
       "items": [],
       "sections": [
         {
-          "id": "PWSuYMU",
+          "id": "B8U3MB7",
           "label": "Replace Caustic Cannon",
           "variant": "Replace",
           "affects": "One",
@@ -7476,7 +7476,7 @@
           ]
         },
         {
-          "id": "cpst-Ez",
+          "id": "uhA9-op",
           "label": "Replace Stinger Spitter",
           "variant": "Replace",
           "affects": "One",
@@ -7647,7 +7647,7 @@
       ],
       "sections": [
         {
-          "id": "fmp6ccJ",
+          "id": "YznzgiR",
           "label": "Replace Titanic Heavy Claws",
           "variant": "Replace",
           "affects": "One",
@@ -7698,7 +7698,7 @@
           ]
         },
         {
-          "id": "W-uCryx",
+          "id": "0o0FKPk",
           "label": "Replace Warrior Emissary",
           "variant": "Replace",
           "affects": "One",
