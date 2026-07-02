@@ -250,7 +250,13 @@ public class GuiPlaceObjectsResolver<T>
 
         if (overTable && !io.WantCaptureMouse && ImGui.IsMouseClicked(ImGuiMouseButton.Left))
         {
-            if (allValid)
+            // #029: an edge-constrained placement (Aircraft redeploy) must have at least one base touching a
+            // table edge — the formation's leading row, in practice.
+            bool touchOk = !request.MustTouchTableEdge;
+            for (int i = 0; i < n && !touchOk; i++)
+                touchOk = PlacementUtilities.TouchesZoneEdge(positions[i], GetBaseRadius(models[i].GetValue()), zone.Bounds);
+
+            if (allValid && touchOk)
             {
                 _placed.Clear();
                 for (int i = 0; i < n; i++) _placed.Add(new PlacedObjectEntry<T>(models[i], positions[i], groupFacing));
@@ -259,7 +265,9 @@ public class GuiPlaceObjectsResolver<T>
             }
             else
             {
-                _errorMessage = "Some models are in an invalid spot - rotate or reposition the formation.";
+                _errorMessage = allValid
+                    ? "Must come on touching a table edge - move the formation to an edge."
+                    : "Some models are in an invalid spot - rotate or reposition the formation.";
                 _errorExpiry = ImGui.GetTime() + 2.5;
             }
         }
@@ -407,6 +415,19 @@ public class GuiPlaceObjectsResolver<T>
             ImGui.PopStyleColor();
         }
 
+        // #029: edge-constrained placement (Aircraft redeploy) — surface the touch requirement live.
+        if (request.MustTouchTableEdge)
+        {
+            bool touching = PlacedTouchesEdge(request);
+            ImGui.PushStyleColor(ImGuiCol.Text, touching
+                ? new Vector4(0.5f, 0.9f, 0.5f, 1f)
+                : new Vector4(0.95f, 0.75f, 0.3f, 1f));
+            ImGui.TextWrapped(touching
+                ? "Touching a table edge."
+                : "Must come on touching a table edge.");
+            ImGui.PopStyleColor();
+        }
+
         ImGui.Spacing();
         float btnW = (panelW - ImGui.GetStyle().ItemSpacing.X * 2 - ImGui.GetStyle().WindowPadding.X * 2) / 3f;
         float fullW = panelW - ImGui.GetStyle().WindowPadding.X * 2;
@@ -443,7 +464,8 @@ public class GuiPlaceObjectsResolver<T>
         }
         ImGui.EndDisabled();
 
-        bool canDone = _placed.Count == total && !_dragIndex.HasValue;
+        bool canDone = _placed.Count == total && !_dragIndex.HasValue
+            && (!request.MustTouchTableEdge || PlacedTouchesEdge(request));
         ImGui.BeginDisabled(!canDone);
         bool donePressed = ImGui.Button("Done", new Vector2(fullW, 28f));
         ImGui.EndDisabled();
@@ -590,8 +612,19 @@ public class GuiPlaceObjectsResolver<T>
             // Default-constructed Position is (0,0,0); models there haven't been placed yet.
             if (pos.x == 0f && pos.z == 0f) continue;
             // Circumscribing radius so a placed rectangle's whole footprint is avoided at any facing (#150).
-            yield return (pos, CircumRadius(model.BaseShape));
+            yield return (pos, model.BaseShape.CircumscribedRadiusInches);
         }
+    }
+
+    // #029: at least one placed model's base touches an edge of the placement zone (the whole table for the
+    // Aircraft redeploy). Unit-level — the back rows of a formation naturally sit off the edge.
+    private bool PlacedTouchesEdge(PlaceObjectsRequest<T> request)
+    {
+        foreach (var entry in _placed)
+            if (PlacementUtilities.TouchesZoneEdge(entry.Position,
+                    GetBaseRadius(entry.Binding.GetValue()), request.DeploymentZone.Bounds))
+                return true;
+        return false;
     }
 
     private void Complete(TaskCompletionSource<List<PlacedObjectEntry<T>>> tcs, List<PlacedObjectEntry<T>> entries)
@@ -623,14 +656,7 @@ public class GuiPlaceObjectsResolver<T>
     // rotatable rectangle is kept non-overlapping and fully inside the zone at ANY facing (its true footprint
     // fits inside this circle). Conservative — a touch of wasted space — but never lets bases overlap or a
     // corner poke out of the zone. (NOT IModel.BaseRadiusInches, which #149 made the smaller inscribed circle.)
-    private static float GetBaseRadius(T value) => value is ModelData m ? CircumRadius(m.BaseShape) : 0.75f;
-
-    private static float CircumRadius(IBaseShape shape) => shape switch
-    {
-        RectangleBase r => 0.5f * MathF.Sqrt(r.WidthInches * r.WidthInches + r.HeightInches * r.HeightInches),
-        CircleBase c => c.RadiusInches,
-        _ => shape.BoundingRadiusInches,
-    };
+    private static float GetBaseRadius(T value) => value is ModelData m ? m.BaseShape.CircumscribedRadiusInches : 0.75f;
 
     // The base shape for rendering / hit-testing (#149). Non-model T (e.g. objectives) → a default circle.
     private static IBaseShape GetBaseShape(T value) => value is ModelData m ? m.BaseShape : new CircleBase(0.75f);

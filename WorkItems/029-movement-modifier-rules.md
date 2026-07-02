@@ -13,6 +13,30 @@ The harder pieces are the **target-perspective** debuffs — "enemies get −N m
 (Melee Shrouding, defensive Darkborn) — and the bundle rules Aircraft / Flying.
 
 ## Notes
+- 2026-07-01: **Aircraft UX pass (hand-verification findings + user-requested rework).** Rule text verified
+  against the OPR wiki: *"Aircraft may only use Advance actions, moving in a straight line by 30"-36" without
+  turning. If it moves off-table, its activation ends, and it must be deployed on any table edge at the
+  beginning of the next round"* — direction changes only when re-placed. Changes (engine `86a6b34`/`8111b05`/
+  `00a88cb`, + app):
+  - **Shoot-after-move fixed** (`86a6b34`): the forced 30–36" Advance is exempt from the advance-and-shoot
+    distance gate — Aircraft may shoot after it. Counter-gate: a flown-off unit can't shoot or charge
+    (`OffTableFromForcedMove` gates in `ChooseActionStage`), so flying off truly ends the activation.
+  - **Heading = deploy facing** (`8111b05`): `GetHeading` (was `EnsureHeading`) reads the shared model facing
+    placed at deploy/redeploy; the auto-aim toward table centre + `AircraftHeadingSet` token are GONE (this was
+    the visible "turn on activation" the user caught). Divergent per-model facings assert.
+  - **Continuous, visual move** (`8111b05` + app): new `AircraftAdvanceRequest` (heading, 30–36" band) →
+    `AircraftAdvanceResult` (distance, fliesOffTable) replaces the 30/33/36 string menu. GUI
+    `GuiAircraftAdvanceResolver`: mouse projected onto the segment 30–36" ahead, ghost bases + heading
+    triangles, click commits, fly-off Yes/No modal when the spot crosses the bounds. CLI prompts a distance
+    (EOF → 30, EOF-confirm → fly off); AI picks the shortest on-table distance else confirms the mandatory
+    fly-off. Geometry is authoritative over the resolver's flag.
+  - **Edge redeploy** (`00a88cb`): `PlaceObjectsRequest.MustTouchTableEdge` + `PlacementUtilities.TouchesZoneEdge`
+    (circumscribed radius + 0.5" tolerance; unit-level — ≥1 model touches). The redeploy passes it (task
+    "Aircraft Redeploy"); GUI gates group-drop + Done with a live hint; CLI auto-scans the edges and enforces
+    on the last model; AI pins a block axis to the nearest-to-lane edge and faces the models inward (facing =
+    heading, so it doesn't fly straight back off). Retires the "any edge relaxed to anywhere" simplification.
+  - Suite 969/0, both builds clean, headless smokes exit 0 (the aircraft army exercised the whole flow:
+    deploy-first → prompt → fly-off confirm → leave-play). GUI hand-verification pending.
 - 2026-06-30: **Aircraft forced-movement mode DONE — #029 COMPLETE** (branch `029-aircraft-forced-movement`).
   Corrected my earlier overstatement: a heading is a SEPARATE additive field, not a refactor of everything that
   reads Position (user caught this). The real work was the movement machinery, not the storage.

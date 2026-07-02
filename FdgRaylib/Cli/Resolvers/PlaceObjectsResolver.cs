@@ -50,6 +50,8 @@ public class PlaceObjectsResolver<T> : IStageResolver<PlaceObjectsRequest<T>, Li
         Console.WriteLine($"--- Deploy: place {total} model{(total != 1 ? "s" : "")} ---");
         Console.WriteLine($"  Zone X: {bounds.Left:F1}\" to {bounds.Right:F1}\"  |  Zone Z: {bounds.Bottom:F1}\" to {bounds.Top:F1}\"");
         Console.WriteLine("  Enter position as 'x z' (inches). Bases must not overlap.");
+        if (request.MustTouchTableEdge)
+            Console.WriteLine("  At least one model must touch a table edge (Aircraft redeploy).");
         Console.WriteLine();
 
         var placed = new List<PlacedObjectEntry<T>>();
@@ -65,7 +67,8 @@ public class PlaceObjectsResolver<T> : IStageResolver<PlaceObjectsRequest<T>, Li
                 string? raw = Console.ReadLine();
                 if (raw == null)
                 {
-                    var pos = FindAutoPosition(r, autoSpacing, zone, cz, xStagger, placed, enemies, minEnemyDist);
+                    var pos = FindAutoPosition(r, autoSpacing, zone, cz, xStagger, placed, enemies, minEnemyDist,
+                        request.MustTouchTableEdge);
                     Console.WriteLine($"    (EOF — auto-placing at {pos.x:F1}\", {pos.z:F1}\")");
                     placed.Add(new PlacedObjectEntry<T>(binding, pos));
                     break;
@@ -107,6 +110,15 @@ public class PlaceObjectsResolver<T> : IStageResolver<PlaceObjectsRequest<T>, Li
                         continue;
                     }
 
+                    // #029: by the last model, at least one of the unit's bases must touch a table edge.
+                    if (request.MustTouchTableEdge && i == total - 1
+                        && !PlacementUtilities.TouchesZoneEdge(newPos, r, bounds)
+                        && !placed.Any(p => PlacementUtilities.TouchesZoneEdge(p.Position, GetBaseRadius(p.Binding.GetValue()), bounds)))
+                    {
+                        Console.WriteLine("    ! At least one model must touch a table edge.");
+                        continue;
+                    }
+
                     placed.Add(new PlacedObjectEntry<T>(binding, newPos));
                     break;
                 }
@@ -122,10 +134,40 @@ public class PlaceObjectsResolver<T> : IStageResolver<PlaceObjectsRequest<T>, Li
     // skipping over models already on the table from previous deployment requests.
     // Each deployment row is staggered by half a step on X to avoid vertical alignment.
     private Position FindAutoPosition(float r, float step, IBoundedZone zone, float cz,
-        float xStagger, List<PlacedObjectEntry<T>> placedSoFar, List<Position> enemies, float minEnemyDist)
+        float xStagger, List<PlacedObjectEntry<T>> placedSoFar, List<Position> enemies, float minEnemyDist,
+        bool mustTouchEdge = false)
     {
         var existing = GetTableOccupants().ToList();
         ZoneBounds b = zone.Bounds;
+
+        // #029 edge redeploy: scan along the zone edges (bottom, top, left, right) so every auto-placed base
+        // touches an edge; cohesion then strings the unit along it.
+        if (mustTouchEdge)
+        {
+            foreach (var (isRow, fixedCoord) in new[]
+                     { (true, b.Bottom + r), (true, b.Top - r), (false, b.Left + r), (false, b.Right - r) })
+            {
+                if (isRow)
+                {
+                    for (float x = b.Left + r; x <= b.Right - r; x += step)
+                    {
+                        var candidate = new Position(x, fixedCoord);
+                        if (IsAutoCandidateFree(candidate, r, zone, placedSoFar, existing, enemies, minEnemyDist))
+                            return candidate;
+                    }
+                }
+                else
+                {
+                    for (float z = b.Bottom + r; z <= b.Top - r; z += step)
+                    {
+                        var candidate = new Position(fixedCoord, z);
+                        if (IsAutoCandidateFree(candidate, r, zone, placedSoFar, existing, enemies, minEnemyDist))
+                            return candidate;
+                    }
+                }
+            }
+            return new Position(Math.Clamp(b.CenterX, b.Left + r, b.Right - r), b.Bottom + r);
+        }
 
         // With an enemy-distance constraint (Ambush), scan Z rows too, not just the center row.
         if (minEnemyDist > 0f)
@@ -162,6 +204,20 @@ public class PlaceObjectsResolver<T> : IStageResolver<PlaceObjectsRequest<T>, Li
 
         // Fallback: best effort at zone center (shouldn't happen on a 72" table)
         return new Position(Math.Clamp(b.CenterX, b.Left + r, b.Right - r), cz);
+    }
+
+    // The auto-placement legality filter, shared by the edge scan and the row scans.
+    private bool IsAutoCandidateFree(Position candidate, float r, IBoundedZone zone,
+        List<PlacedObjectEntry<T>> placedSoFar, List<(Position pos, float radius)> existing,
+        List<Position> enemies, float minEnemyDist)
+    {
+        if (!zone.IsPointWithinZone(candidate)) return false;
+        if (CheckOverlap(candidate, r, placedSoFar) != null) return false;
+        if (CheckOverlapWithExisting(candidate, r, existing) != null) return false;
+        if (PlacementUtilities.OverlapsImpassibleTerrain(candidate, r, _impassibleTerrain)) return false;
+        if (minEnemyDist > 0f && TooCloseToEnemy(candidate, enemies, minEnemyDist)) return false;
+        if (placedSoFar.Count > 0 && !IsInCohesion(candidate, r, placedSoFar)) return false;
+        return true;
     }
 
     private List<Position> GetEnemyPositions(PlayerID self)

@@ -24,6 +24,14 @@ The bounding-circle remnants to address (catalogued during #149 — exact list f
 - **2026-06-30 — no `AircraftHeading`-style unit fields going forward** (user: "I definitely don't like AircraftHeading"). Orientation is per-model; unit-level direction is a derived query over the models.
 
 ## Notes
+- **2026-07-01 — shape-owned geometry API (user architecture ask).** Engine `b2a42a8`. All single-shape
+  questions are now polymorphic on `IBaseShape` — new members `CircumscribedRadiusInches`,
+  `DistanceToLocalPoint(dx,dz)`, `ToZone(centre, facing)` — so no switch on shape type exists outside the
+  shape files: `SurfaceDistanceToPoint2D` lost its switch (rotate-to-local + delegate), the `BaseAsZone`
+  helper was deleted (LoS blockers / Strafing trigger / pile-in call `shape.ToZone`), the deploy resolver's
+  `CircumRadius` switch became the interface property, and `WouldLeaveTable` uses the circumscribed radius
+  (rotation-safe edge check). The remaining **pairwise** shape-vs-shape switch (double dispatch) stays
+  centralized in `BaseShapeGeometry`/`SweptBaseGeometry` and is tracked as **#153** (support-function/GJK seam).
 - **2026-06-30 — Slice 1a (per-model Facing field) DONE.** Engine `6dae70c`. `IModel.Facing`/`SetFacing`/`OnFacingChanged`; `ModelData.FacingBinding` (`DataBinding<Float2>`, default +Z) threaded through all constructors; `Float2` registered in the store (appended last). Round-trip tests across 6 files thread the new binding through (each model now round-trips wounds+position+**facing**); new `BaseShapeTests.Facing_DefaultsToForward_UpdatesAndSurvivesRoundTrip`. Suite 948/0, build clean.
 - **2026-06-30 — Slice 1b (Aircraft onto per-model facing) DONE.** Engine `780c715`. Retired `UnitData.AircraftHeading`; `ForcedAircraftMove.EnsureHeading` reads/writes model `Facing` gated by the new `AircraftHeadingSet` token; `DefinePathStage` off-table clears the token; `CoreRuleCatalog` doc updated; `ForcedAircraftMoveTests` rewritten to the token+facing model. Suite 948/0, build clean, headless exit 0 (full game).
 - **2026-06-30 — Slice 1c (renderer base rotation) DONE.** App-side. `ModelBaseRenderer` draws a `RectangleBase` oriented by `IModel.Facing` (rotation `sin=−facing.X, cos=−facing.Y` since table Z → screen −y; Raylib fill via `DrawRectanglePro`, ImGui via `AddQuad`, outline via matching corners); a zero/unset facing renders the axis-aligned box (unchanged). The live table render (`RaylibRenderer`) passes `model.Facing`; the interactive overlay resolvers stay on the default-forward facing (they only ever draw default-faced non-aircraft models — aircraft use the auto forced-move, not the GUI movement/placement resolvers), to be threaded if/when models gain gameplay turning. Build clean, headless exit 0. Visual hand-verification pending (no window in headless), like #149 slice E.
