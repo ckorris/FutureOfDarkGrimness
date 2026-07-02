@@ -69,7 +69,7 @@ public class DefineMovementPathResolver : IStageResolver<DefineMovementPathReque
             if (eof)
                 return Task.FromResult(AutoAdvance(request));
 
-            if (MovementUtilities.ValidatePaths(entries, request.MaxRushDistance, request.MaxDistanceInches,
+            if (MovementUtilities.ValidatePaths(entries, BudgetFor(request),
                     GetEnemyFootprints(request), request.CanMoveThroughEnemies, request.IgnoresDifficultTerrain,
                     request.IgnoresImpassibleTerrain, _tableState?.Terrain.Objects, out var errors))
                 return Task.FromResult(entries);
@@ -130,8 +130,8 @@ public class DefineMovementPathResolver : IStageResolver<DefineMovementPathReque
         var terrain = _tableState?.Terrain.Objects;
 
         var candidate = CohesiveFormation.PackGrid(living, cx + ndx * step, cz + ndz * step);
-        bool valid = MovementUtilities.ValidatePaths(candidate, request.MaxRushDistance,
-            request.MaxDistanceInches, footprints, request.CanMoveThroughEnemies, request.IgnoresDifficultTerrain, request.IgnoresImpassibleTerrain, terrain, out _);
+        bool valid = MovementUtilities.ValidatePaths(candidate, BudgetFor(request),
+            footprints, request.CanMoveThroughEnemies, request.IgnoresDifficultTerrain, request.IgnoresImpassibleTerrain, terrain, out _);
         int attempts = 0;
         while (!valid && attempts < 6)
         {
@@ -161,6 +161,15 @@ public class DefineMovementPathResolver : IStageResolver<DefineMovementPathReque
         Console.WriteLine("  [auto] advancing toward nearest enemy");
         return candidate;
     }
+
+    // #093: cap each model against its OWN budget (a joined hero's Fast/Slow) so the CLI's validation agrees
+    // with the authoritative per-model stage check. A unit with no per-model rules gets the unit scalars.
+    private static Func<ModelMoveEntry, ModelMoveBudget> BudgetFor(DefineMovementPathRequest request)
+        => entry =>
+        {
+            var (_, rush, maxDist) = request.BudgetFor(entry.Model.GetValue().ID);
+            return new ModelMoveBudget(rush, maxDist);
+        };
 
     // Living enemy model footprints (centre + radius), tagged with a per-unit key, for the move-through /
     // standoff validator. Empty when there's no table state (the resolver can run detached in tests).

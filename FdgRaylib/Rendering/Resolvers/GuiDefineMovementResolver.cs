@@ -116,6 +116,11 @@ public class GuiDefineMovementResolver
         float maxAdvance = request.MaxAdvanceDistance;
         float maxRush    = request.MaxRushDistance;
         float maxCharge  = request.MaxDistanceInches;
+        // #093: single mode operates on the selected model, so the ghost/clamp/range-rings/bands use ITS own
+        // budget — a joined hero with Fast shows bigger rings and can be placed further than its unitmates.
+        // Group mode keeps the unit scalars here and applies each model's own budget in DrawGroupGhostAndInput.
+        if (!_formationMode.IsGroup && _selectedModel != null)
+            (maxAdvance, maxRush, maxCharge) = request.BudgetFor(_selectedModel.ID);
         bool  hasChargeBand = maxCharge > maxRush + 0.0001f;
 
         // 1) Draw each model's start circle + committed path lines + final ghost circle
@@ -313,12 +318,15 @@ public class GuiDefineMovementResolver
 
         var lastPositions = new List<Position>(models.Count);
         var budgets = new List<float>(models.Count);
-        float cap = advanceOnly ? maxAdvance : maxCharge;
         foreach (var m in models)
         {
             lastPositions.Add(pt.GetModelLastPathPosition(m));
-            // Land just shy of the cap so a model that travels its full allowance still classifies as
-            // Advance (not Rush) and clears the engine's shoot-after-advance gate — matches single mode.
+            // #093: each model's own cap (a joined hero's Fast/Slow), so the group step is bottlenecked by
+            // whichever model has the least remaining budget. Land just shy of the cap so a model that
+            // travels its full allowance still classifies as Advance (not Rush) and clears the engine's
+            // shoot-after-advance gate — matches single mode.
+            var (mAdvance, _, mCharge) = request.BudgetFor(m.ID);
+            float cap = advanceOnly ? mAdvance : mCharge;
             budgets.Add(cap - pt.GetTotalDistanceMoved(m) - GroupMoveSafetyMargin);
         }
 
@@ -478,8 +486,10 @@ public class GuiDefineMovementResolver
 
         var results = pt.GetResultsAsList();
         var enemyFootprints = GetEnemyFootprintsForRequest(request);
+        // #093: validate each model against its OWN budget so Done gates exactly as the authoritative stage.
         bool engineValid = MovementUtilities.ValidatePaths(results,
-            request.MaxRushDistance, request.MaxDistanceInches,
+            entry => { var (_, rush, maxDist) = request.BudgetFor(entry.Model.GetValue().ID);
+                       return new ModelMoveBudget(rush, maxDist); },
             enemyFootprints, request.CanMoveThroughEnemies, request.IgnoresDifficultTerrain, request.IgnoresImpassibleTerrain, terrain, out var engineErrors);
         var finals = BuildFinalPositions(pt.CurrentPaths, null, null);
         var cohesion = CheckCohesion(finals);
