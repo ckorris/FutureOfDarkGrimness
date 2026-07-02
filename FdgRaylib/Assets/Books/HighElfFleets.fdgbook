@@ -6818,7 +6818,204 @@
       "sections": []
     }
   ],
-  "ruleDefinitions": [],
+  "ruleDefinitions": [
+    {
+      "name": "Highborn",
+      "passive": [
+        {
+          "hookID": "Movement_OnMoveActionDeclared",
+          "condition": {
+            "kind": "actionTypeIs",
+            "actionType": "Advance"
+          },
+          "effect": {
+            "kind": "movementBonus",
+            "actionType": "Advance",
+            "distanceInches": 2,
+            "minResultInches": 0
+          },
+          "lifetime": "ThisActivation",
+          "seat": "Actor"
+        },
+        {
+          "hookID": "Movement_OnMoveActionDeclared",
+          "condition": {
+            "kind": "actionTypeIs",
+            "actionType": "Rush"
+          },
+          "effect": {
+            "kind": "movementBonus",
+            "actionType": "Rush",
+            "distanceInches": 2,
+            "minResultInches": 0
+          },
+          "lifetime": "ThisActivation",
+          "seat": "Actor"
+        },
+        {
+          "hookID": "Movement_OnMoveActionDeclared",
+          "condition": {
+            "kind": "actionTypeIs",
+            "actionType": "Charge"
+          },
+          "effect": {
+            "kind": "movementBonus",
+            "actionType": "Charge",
+            "distanceInches": 2,
+            "minResultInches": 0
+          },
+          "lifetime": "ThisActivation",
+          "seat": "Actor"
+        }
+      ],
+      "activated": [],
+      "scope": "Unit",
+      "engineArgumentCount": 0,
+      "valence": "Positive",
+      "description": "Moves \u002B2\u0022 when using Advance, and \u002B2\u0022 when using Rush/Charge."
+    },
+    {
+      "name": "Highborn Boost",
+      "passive": [
+        {
+          "hookID": "Movement_OnMoveActionDeclared",
+          "condition": {
+            "kind": "and",
+            "left": {
+              "kind": "actionTypeIs",
+              "actionType": "Advance"
+            },
+            "right": {
+              "kind": "unitHasRule",
+              "ruleName": "Highborn"
+            }
+          },
+          "effect": {
+            "kind": "movementBonus",
+            "actionType": "Advance",
+            "distanceInches": 2,
+            "minResultInches": 0
+          },
+          "lifetime": "ThisActivation",
+          "seat": "Actor"
+        },
+        {
+          "hookID": "Movement_OnMoveActionDeclared",
+          "condition": {
+            "kind": "and",
+            "left": {
+              "kind": "actionTypeIs",
+              "actionType": "Rush"
+            },
+            "right": {
+              "kind": "unitHasRule",
+              "ruleName": "Highborn"
+            }
+          },
+          "effect": {
+            "kind": "movementBonus",
+            "actionType": "Rush",
+            "distanceInches": 2,
+            "minResultInches": 0
+          },
+          "lifetime": "ThisActivation",
+          "seat": "Actor"
+        },
+        {
+          "hookID": "Movement_OnMoveActionDeclared",
+          "condition": {
+            "kind": "and",
+            "left": {
+              "kind": "actionTypeIs",
+              "actionType": "Charge"
+            },
+            "right": {
+              "kind": "unitHasRule",
+              "ruleName": "Highborn"
+            }
+          },
+          "effect": {
+            "kind": "movementBonus",
+            "actionType": "Charge",
+            "distanceInches": 2,
+            "minResultInches": 0
+          },
+          "lifetime": "ThisActivation",
+          "seat": "Actor"
+        }
+      ],
+      "activated": [],
+      "scope": "Unit",
+      "engineArgumentCount": 0,
+      "valence": "Positive",
+      "description": "If this unit has Highborn, it moves \u002B4\u0022 on Advance and \u002B4\u0022 on Rush/Charge from Highborn (instead of only \u002B2\u0022 and \u002B2\u0022)."
+    },
+    {
+      "name": "Highborn Boost Aura",
+      "passive": [
+        {
+          "hookID": "Lifecycle_OnUnitCreated",
+          "condition": {
+            "kind": "always"
+          },
+          "effect": {
+            "kind": "aura",
+            "ruleName": "Highborn Boost"
+          },
+          "lifetime": "UntilEndOfGame",
+          "seat": "Actor"
+        }
+      ],
+      "activated": [],
+      "scope": "Unit",
+      "engineArgumentCount": 0,
+      "valence": "Positive",
+      "description": "This model and its whole unit gain Highborn Boost."
+    },
+    {
+      "name": "Re-Position Artillery",
+      "passive": [],
+      "activated": [
+        {
+          "triggerHook": "Activation_OnPreAttack",
+          "cost": {
+            "kind": "oncePerActivation"
+          },
+          "targetSelector": {
+            "rangeInches": 6,
+            "minCount": 1,
+            "maxCount": 1,
+            "targetAffinity": "Friend",
+            "requireLineOfSight": false,
+            "requiredToken": null,
+            "singleModel": false,
+            "requiredRule": "Artillery"
+          },
+          "effect": {
+            "kind": "triggeredMove",
+            "maxInches": 9,
+            "isOptional": true
+          },
+          "availableWhen": {
+            "kind": "always"
+          }
+        }
+      ],
+      "scope": "Unit",
+      "engineArgumentCount": 0,
+      "valence": "Positive",
+      "description": "Once per activation, before attacking, pick one friendly unit within 6\u0022 with Artillery, which may immediately move by up to 9\u0022."
+    },
+    {
+      "name": "Unique",
+      "passive": [],
+      "activated": [],
+      "scope": "Unit",
+      "engineArgumentCount": 0,
+      "valence": "Neutral",
+      "description": "Your army may only include one copy of this unit."
+    }
+  ],
   "spells": [
     {
       "name": "Creator of Illusions",
@@ -6830,7 +7027,8 @@
         "targetAffinity": "Foe",
         "requireLineOfSight": false,
         "requiredToken": null,
-        "singleModel": false
+        "singleModel": false,
+        "requiredRule": null
       },
       "effect": {
         "kind": "addRule",
@@ -6848,7 +7046,8 @@
         "targetAffinity": "Foe",
         "requireLineOfSight": true,
         "requiredToken": null,
-        "singleModel": false
+        "singleModel": false,
+        "requiredRule": null
       },
       "effect": {
         "kind": "dealHits",
@@ -6869,7 +7068,8 @@
         "targetAffinity": "Friend",
         "requireLineOfSight": false,
         "requiredToken": null,
-        "singleModel": false
+        "singleModel": false,
+        "requiredRule": null
       },
       "effect": {
         "kind": "addRule",
@@ -6887,7 +7087,8 @@
         "targetAffinity": "Foe",
         "requireLineOfSight": true,
         "requiredToken": null,
-        "singleModel": true
+        "singleModel": true,
+        "requiredRule": null
       },
       "effect": {
         "kind": "dealHits",
@@ -6906,7 +7107,8 @@
         "targetAffinity": "Friend",
         "requireLineOfSight": false,
         "requiredToken": null,
-        "singleModel": false
+        "singleModel": false,
+        "requiredRule": null
       },
       "effect": {
         "kind": "addRule",
@@ -6924,7 +7126,8 @@
         "targetAffinity": "Foe",
         "requireLineOfSight": true,
         "requiredToken": null,
-        "singleModel": false
+        "singleModel": false,
+        "requiredRule": null
       },
       "effect": {
         "kind": "dealHits",

@@ -35,8 +35,9 @@ int slowIdx = Array.IndexOf(args, "--slow");
 if (slowIdx >= 0)
     slowDelayMs = slowIdx + 1 < args.Length && int.TryParse(args[slowIdx + 1], out int ms) ? ms : 1500;
 
-// --import-opr <in.json> <out.fdgbook>  (#153 P0b): one-time OnePageRules Army Forge JSON → .fdgbook snapshot,
-// via the engine importer. Data is OPR's, used under CC-BY-SA (stamped on the book).
+// --import-opr <in.json> <out.fdgbook> [supplement.json]  (#153 P0b): one-time OnePageRules Army Forge
+// JSON → .fdgbook snapshot, via the engine importer. Data is OPR's, used under CC-BY-SA (stamped on the
+// book). The optional supplement embeds curated rule definitions the book references (see --apply-rules).
 int importIdx = Array.IndexOf(args, "--import-opr");
 if (importIdx >= 0 && importIdx + 2 < args.Length)
 {
@@ -46,9 +47,47 @@ if (importIdx >= 0 && importIdx + 2 < args.Length)
         source: "OnePageRules — Army Forge (army-forge.onepagerules.com)",
         license: "CC-BY-SA 4.0",
         warn: msg => Console.WriteLine($"  {msg}"));
+    if (importIdx + 3 < args.Length && !args[importIdx + 3].StartsWith("--"))
+    {
+        var supplement = BookRuleSupplement.LoadDefinitions(File.ReadAllText(args[importIdx + 3]));
+        var embedded = BookRuleSupplement.Apply(book, supplement, msg => Console.WriteLine($"  {msg}"));
+        Console.WriteLine($"  supplement: embedded {embedded.Count} rule definitions ({string.Join(", ", embedded)})");
+    }
     Directory.CreateDirectory(Path.GetDirectoryName(Path.GetFullPath(outPath))!);
     File.WriteAllText(outPath, JsonSerializer.Serialize(book, RuleJson.Options));
     Console.WriteLine($"Imported '{book.Name}' {book.Version}: {book.Units.Count} units, {book.Spells.Count} spells → {outPath}");
+    return;
+}
+
+// --apply-rules <book.fdgbook> <supplement.json>  (#153): merge curated rule definitions into an existing
+// book snapshot in place — the definitions the book references (plus what those grant) embed into the
+// book's ruleDefinitions, replace-by-name, so re-applying after editing the supplement is idempotent.
+// Validation is hard-fail; an invalid supplement leaves the book untouched.
+int applyIdx = Array.IndexOf(args, "--apply-rules");
+if (applyIdx >= 0 && applyIdx + 2 < args.Length)
+{
+    string bookPath = args[applyIdx + 1];
+    BookFile book = JsonSerializer.Deserialize<BookFile>(File.ReadAllText(bookPath), RuleJson.Options)!;
+    var supplement = BookRuleSupplement.LoadDefinitions(File.ReadAllText(args[applyIdx + 2]));
+    var embedded = BookRuleSupplement.Apply(book, supplement, msg => Console.WriteLine($"  {msg}"));
+    File.WriteAllText(bookPath, JsonSerializer.Serialize(book, RuleJson.Options));
+    Console.WriteLine($"'{book.Name}': embedded {embedded.Count} rule definitions " +
+        $"({string.Join(", ", embedded)}) → {bookPath}");
+    return;
+}
+
+// --validate-rules <supplement.json>  (#153): authoring aid — strict-parse the supplement and validate
+// every definition (hook/capability fit, granted names resolve, no duplicates) without touching a book.
+int validateIdx = Array.IndexOf(args, "--validate-rules");
+if (validateIdx >= 0 && validateIdx + 1 < args.Length)
+{
+    var supplement = BookRuleSupplement.LoadDefinitions(File.ReadAllText(args[validateIdx + 1]));
+    var problems = BookRuleSupplement.ValidateAll(supplement);
+    foreach (string problem in problems)
+        Console.WriteLine($"  {problem}");
+    Console.WriteLine(problems.Count == 0
+        ? $"OK: {supplement.Count} definitions, no problems."
+        : $"{problems.Count} problem(s) in {supplement.Count} definitions.");
     return;
 }
 

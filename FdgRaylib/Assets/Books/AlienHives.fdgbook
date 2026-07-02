@@ -8407,7 +8407,269 @@
       "sections": []
     }
   ],
-  "ruleDefinitions": [],
+  "ruleDefinitions": [
+    {
+      "name": "Unique",
+      "passive": [],
+      "activated": [],
+      "scope": "Unit",
+      "engineArgumentCount": 0,
+      "valence": "Neutral",
+      "description": "Your army may only include one copy of this unit."
+    },
+    {
+      "name": "Hive Bond",
+      "passive": [
+        {
+          "hookID": "Morale_OnPreMoraleTest",
+          "condition": {
+            "kind": "always"
+          },
+          "effect": {
+            "kind": "rollModifier",
+            "rollKind": "Morale",
+            "delta": 1
+          },
+          "lifetime": "ThisActivation",
+          "seat": "Actor"
+        }
+      ],
+      "activated": [],
+      "scope": "Unit",
+      "engineArgumentCount": 0,
+      "valence": "Positive",
+      "description": "Units where all models have this rule get \u002B1 to morale test rolls."
+    },
+    {
+      "name": "Hive Bond Boost",
+      "passive": [
+        {
+          "hookID": "Morale_OnPreMoraleTest",
+          "condition": {
+            "kind": "unitHasRule",
+            "ruleName": "Hive Bond"
+          },
+          "effect": {
+            "kind": "rollModifier",
+            "rollKind": "Morale",
+            "delta": 1
+          },
+          "lifetime": "ThisActivation",
+          "seat": "Actor"
+        }
+      ],
+      "activated": [],
+      "scope": "Unit",
+      "engineArgumentCount": 0,
+      "valence": "Positive",
+      "description": "If this unit has Hive Bond, it gets \u002B2 to morale test rolls from Hive Bond (instead of only \u002B1)."
+    },
+    {
+      "name": "Hive Bond Boost Aura",
+      "passive": [
+        {
+          "hookID": "Lifecycle_OnUnitCreated",
+          "condition": {
+            "kind": "always"
+          },
+          "effect": {
+            "kind": "aura",
+            "ruleName": "Hive Bond Boost"
+          },
+          "lifetime": "UntilEndOfGame",
+          "seat": "Actor"
+        }
+      ],
+      "activated": [],
+      "scope": "Unit",
+      "engineArgumentCount": 0,
+      "valence": "Positive",
+      "description": "This model and its whole unit gain Hive Bond Boost."
+    },
+    {
+      "name": "Destructive",
+      "passive": [
+        {
+          "hookID": "Shooting_OnHitRollComplete",
+          "condition": {
+            "kind": "unmodifiedRollEquals",
+            "dieValue": 6
+          },
+          "effect": {
+            "kind": "rollModifier",
+            "rollKind": "Save",
+            "delta": -4
+          },
+          "lifetime": "ThisAttack",
+          "seat": "Actor"
+        }
+      ],
+      "activated": [],
+      "scope": "Weapon",
+      "engineArgumentCount": 0,
+      "valence": "Positive",
+      "description": "An unmodified 6 to hit gives the attack AP(\u002B4)."
+    },
+    {
+      "name": "Predator Fighter",
+      "passive": [
+        {
+          "hookID": "Shooting_OnHitRollComplete",
+          "condition": {
+            "kind": "and",
+            "left": {
+              "kind": "isMelee"
+            },
+            "right": {
+              "kind": "unmodifiedRollEquals",
+              "dieValue": 6
+            }
+          },
+          "effect": {
+            "kind": "addExtraHit",
+            "onRollValue": 6,
+            "count": 1
+          },
+          "lifetime": "ThisAttack",
+          "seat": "Actor"
+        }
+      ],
+      "activated": [],
+      "scope": "Unit",
+      "engineArgumentCount": 0,
+      "valence": "Positive",
+      "description": "Each unmodified 6 to hit in melee scores an extra hit."
+    },
+    {
+      "name": "Infiltrate",
+      "passive": [
+        {
+          "hookID": "Deployment_OnPreDeploymentSelect",
+          "condition": {
+            "kind": "always"
+          },
+          "effect": {
+            "kind": "deferDeployment",
+            "timing": "LaterRound",
+            "placementRangeInches": 3
+          },
+          "lifetime": "UntilEndOfGame",
+          "seat": "Actor"
+        }
+      ],
+      "activated": [],
+      "scope": "Unit",
+      "engineArgumentCount": 0,
+      "valence": "Positive",
+      "description": "Kept in reserve; may arrive from round 2 onward, placed anywhere over 3\u0022 from enemy units."
+    },
+    {
+      "name": "Breath Attack",
+      "passive": [],
+      "activated": [
+        {
+          "triggerHook": "Activation_OnPreAttack",
+          "cost": {
+            "kind": "oncePerActivation"
+          },
+          "targetSelector": {
+            "rangeInches": 6,
+            "minCount": 1,
+            "maxCount": 1,
+            "targetAffinity": "Foe",
+            "requireLineOfSight": true,
+            "requiredToken": null,
+            "singleModel": false,
+            "requiredRule": null
+          },
+          "effect": {
+            "kind": "dealHits",
+            "count": 1,
+            "withRules": [
+              "Blast(3)"
+            ],
+            "armorPenetration": 1
+          },
+          "availableWhen": {
+            "kind": "always"
+          }
+        }
+      ],
+      "scope": "Unit",
+      "engineArgumentCount": 0,
+      "valence": "Positive",
+      "description": "Once per activation, before attacking, one enemy unit within 6\u0022 in line of sight takes 1 hit with Blast(3) and AP(1)."
+    },
+    {
+      "name": "Precision Debuff",
+      "passive": [],
+      "activated": [
+        {
+          "triggerHook": "Activation_OnPreAttack",
+          "cost": {
+            "kind": "oncePerActivation"
+          },
+          "targetSelector": {
+            "rangeInches": 18,
+            "minCount": 1,
+            "maxCount": 1,
+            "targetAffinity": "Foe",
+            "requireLineOfSight": true,
+            "requiredToken": null,
+            "singleModel": false,
+            "requiredRule": null
+          },
+          "effect": {
+            "kind": "statModifier",
+            "roll": "Hit",
+            "delta": -1,
+            "lifetimeScope": "NextTrigger"
+          },
+          "availableWhen": {
+            "kind": "always"
+          }
+        }
+      ],
+      "scope": "Unit",
+      "engineArgumentCount": 0,
+      "valence": "Positive",
+      "description": "Once per activation, before attacking, pick one enemy unit within 18\u0022 in line of sight, which gets -1 to hit rolls when attacking once (next time the effect would apply)."
+    },
+    {
+      "name": "Stealth Buff",
+      "passive": [],
+      "activated": [
+        {
+          "triggerHook": "Activation_OnPreAttack",
+          "cost": {
+            "kind": "oncePerActivation"
+          },
+          "targetSelector": {
+            "rangeInches": 12,
+            "minCount": 1,
+            "maxCount": 1,
+            "targetAffinity": "Friend",
+            "requireLineOfSight": false,
+            "requiredToken": null,
+            "singleModel": false,
+            "requiredRule": null
+          },
+          "effect": {
+            "kind": "addRule",
+            "ruleName": "Stealth",
+            "scope": "NextTrigger"
+          },
+          "availableWhen": {
+            "kind": "always"
+          }
+        }
+      ],
+      "scope": "Unit",
+      "engineArgumentCount": 0,
+      "valence": "Positive",
+      "description": "Once per activation, before attacking, pick one friendly unit within 12\u0022, which gets Stealth once (next time the effect would apply)."
+    }
+  ],
   "spells": [
     {
       "name": "Animate Spirit",
@@ -8419,7 +8681,8 @@
         "targetAffinity": "Friend",
         "requireLineOfSight": false,
         "requiredToken": null,
-        "singleModel": false
+        "singleModel": false,
+        "requiredRule": null
       },
       "effect": {
         "kind": "addRule",
@@ -8437,7 +8700,8 @@
         "targetAffinity": "Foe",
         "requireLineOfSight": true,
         "requiredToken": null,
-        "singleModel": false
+        "singleModel": false,
+        "requiredRule": null
       },
       "effect": {
         "kind": "dealHits",
@@ -8458,7 +8722,8 @@
         "targetAffinity": "Friend",
         "requireLineOfSight": false,
         "requiredToken": null,
-        "singleModel": false
+        "singleModel": false,
+        "requiredRule": null
       },
       "effect": {
         "kind": "addRule",
@@ -8476,7 +8741,8 @@
         "targetAffinity": "Foe",
         "requireLineOfSight": true,
         "requiredToken": null,
-        "singleModel": false
+        "singleModel": false,
+        "requiredRule": null
       },
       "effect": {
         "kind": "dealHits",
@@ -8495,7 +8761,8 @@
         "targetAffinity": "Foe",
         "requireLineOfSight": false,
         "requiredToken": null,
-        "singleModel": false
+        "singleModel": false,
+        "requiredRule": null
       },
       "effect": {
         "kind": "markTarget",
@@ -8512,7 +8779,8 @@
         "targetAffinity": "Foe",
         "requireLineOfSight": true,
         "requiredToken": null,
-        "singleModel": true
+        "singleModel": true,
+        "requiredRule": null
       },
       "effect": {
         "kind": "dealHits",
