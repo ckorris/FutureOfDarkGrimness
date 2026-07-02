@@ -358,36 +358,69 @@ public class ArmyForgeScreen : IAppScreen
 
         foreach (UpgradeSection section in roster.Sections)
         {
+            bool isReplace = section.Variant == UpgradeVariant.Replace;
+            int available = isReplace ? ListCompiler.AvailableTargets(compiledUnit.Weapons, section.Targets) : int.MaxValue;
+
             ImGui.TextUnformatted(section.Label);
+            if (isReplace && available == 0)
+            {
+                ImGui.SameLine();
+                ImGui.TextDisabled("(none to replace)");
+            }
             ImGui.Indent();
-            if (section.IsCounted)
+
+            if (section.IsCounted) // "any"/"up to N" or add-models → a stepper
             {
                 int max = MaxCount(section, roster, compiledUnit);
                 foreach (UpgradeOption option in section.Options)
                 {
                     int v = ChoiceCount(bu, section.Id, option.Id);
+                    ImGui.BeginDisabled(isReplace && available == 0 && v == 0);
                     ImGui.SetNextItemWidth(90f);
                     if (ImGui.InputInt($"{OptionSummary(option)}##{section.Id}-{option.Id}", ref v, 1))
                         SetChoice(bu, section, option.Id, Math.Clamp(v, 0, max));
+                    ImGui.EndDisabled();
                 }
             }
-            else
+            else if (section.MaxPicks <= 1 && section.Options.Count >= 2) // pick one of several → radios
+            {
+                bool noneChosen = !section.Options.Any(o => IsChosen(bu, section.Id, o.Id));
+                if (ImGui.RadioButton($"— none —##{section.Id}-none", noneChosen))
+                    SetChoice(bu, section, string.Empty, 0);
+                foreach (UpgradeOption option in section.Options)
+                {
+                    bool chosen = IsChosen(bu, section.Id, option.Id);
+                    ImGui.BeginDisabled(isReplace && available == 0 && !chosen);
+                    if (ImGui.RadioButton($"{OptionSummary(option)}##{section.Id}-{option.Id}", chosen))
+                        SetChoice(bu, section, option.Id, 1);
+                    ImGui.EndDisabled();
+                }
+            }
+            else // single option (binary) or multi-select → checkboxes
             {
                 foreach (UpgradeOption option in section.Options)
                 {
                     bool chosen = IsChosen(bu, section.Id, option.Id);
+                    ImGui.BeginDisabled(isReplace && available == 0 && !chosen);
                     if (ImGui.Checkbox($"{OptionSummary(option)}##{section.Id}-{option.Id}", ref chosen))
                         SetChoice(bu, section, option.Id, chosen ? 1 : 0);
+                    ImGui.EndDisabled();
                 }
             }
             ImGui.Unindent();
         }
     }
 
-    private static int MaxCount(UpgradeSection s, RosterUnit roster, UnitFileEntry compiledUnit) =>
-        s.Variant == UpgradeVariant.AddModels ? Math.Max(0, roster.MaxModels - roster.BaseModelCount)
-        : s.Affects == UpgradeAffects.Any ? compiledUnit.ModelCount
-        : 1;
+    private static int MaxCount(UpgradeSection s, RosterUnit roster, UnitFileEntry compiledUnit)
+    {
+        if (s.Variant == UpgradeVariant.AddModels)
+            return Math.Max(0, roster.MaxModels - roster.BaseModelCount);
+        int hardBound = s.MaxApplications > 0 ? s.MaxApplications : int.MaxValue;
+        int poolBound = s.Variant == UpgradeVariant.Replace
+            ? ListCompiler.AvailableTargets(compiledUnit.Weapons, s.Targets)
+            : compiledUnit.ModelCount;
+        return Math.Min(hardBound, poolBound);
+    }
 
     private static void DrawRosterPreview(RosterUnit unit)
     {

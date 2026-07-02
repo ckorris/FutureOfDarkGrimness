@@ -84,6 +84,7 @@
           "targets": [
             "Heavy Razor Claw"
           ],
+          "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
@@ -208,6 +209,7 @@
           "targets": [
             "Shredder Cannon"
           ],
+          "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
@@ -433,6 +435,7 @@
           "variant": "Upgrade",
           "affects": "One",
           "targets": [],
+          "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
@@ -461,6 +464,7 @@
           "variant": "Upgrade",
           "affects": "One",
           "targets": [],
+          "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
@@ -579,10 +583,11 @@
           "id": "qXHMhtz",
           "label": "Replace one Heavy Razor Claws",
           "variant": "Replace",
-          "affects": "Any",
+          "affects": "One",
           "targets": [
             "Heavy Razor Claws"
           ],
+          "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
@@ -728,6 +733,7 @@
           "variant": "Upgrade",
           "affects": "One",
           "targets": [],
+          "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
@@ -758,6 +764,7 @@
           "targets": [
             "Heavy Razor Claw"
           ],
+          "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
@@ -880,6 +887,7 @@
           "variant": "Upgrade",
           "affects": "One",
           "targets": [],
+          "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
@@ -1009,6 +1017,7 @@
           "variant": "Upgrade",
           "affects": "One",
           "targets": [],
+          "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
@@ -1075,6 +1084,7 @@
           "targets": [
             "Adrenaline Fueled"
           ],
+          "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
@@ -1148,6 +1158,7 @@
           "targets": [
             "Razor Claw"
           ],
+          "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
@@ -1244,6 +1255,7 @@
           "variant": "Upgrade",
           "affects": "One",
           "targets": [],
+          "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
@@ -1306,6 +1318,7 @@
           "variant": "Upgrade",
           "affects": "One",
           "targets": [],
+          "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
@@ -1347,6 +1360,7 @@
           "variant": "Upgrade",
           "affects": "One",
           "targets": [],
+          "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
@@ -1397,6 +1411,7 @@
           "variant": "Upgrade",
           "affects": "One",
           "targets": [],
+          "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
@@ -1498,6 +1513,7 @@
           "variant": "Upgrade",
           "affects": "All",
           "targets": [],
+          "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
@@ -1550,6 +1566,7 @@
           "targets": [
             "Razor Claws"
           ],
+          "maxApplications": 2,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
@@ -1692,6 +1709,7 @@
           "variant": "Upgrade",
           "affects": "All",
           "targets": [],
+          "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
@@ -1744,6 +1762,7 @@
           "targets": [
             "Bio-Spiners"
           ],
+          "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
@@ -1791,6 +1810,7 @@
           "targets": [
             "Bio-Spiners"
           ],
+          "maxApplications": 2,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
@@ -1964,6 +1984,7 @@
           "variant": "Upgrade",
           "affects": "All",
           "targets": [],
+          "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
@@ -2012,8 +2033,9 @@
           "id": "txZ8xLl",
           "label": "Upgrade one model with",
           "variant": "Upgrade",
-          "affects": "Any",
+          "affects": "One",
           "targets": [],
+          "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
@@ -2086,6 +2108,7 @@
           "targets": [
             "Bio-Spiners"
           ],
+          "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
@@ -2133,6 +2156,7 @@
           "targets": [
             "Bio-Spiners"
           ],
+          "maxApplications": 2,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
@@ -2259,6 +2283,7 @@
           "variant": "Upgrade",
           "affects": "All",
           "targets": [],
+          "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
@@ -2386,6 +2411,7 @@
           "variant": "Upgrade",
           "affects": "All",
           "targets": [],
+          "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
@@ -2438,6 +2464,7 @@
           "targets": [
             "Bio-Cannons"
           ],
+          "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
@@ -2520,6 +2547,7 @@
           "targets": [
             "Adrenaline Fueleds"
           ],
+          "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
@@ -2542,8 +2570,9 @@
           "id": "FqsKAGd",
           "label": "Upgrade one model with",
           "variant": "Upgrade",
-          "affects": "Any",
+          "affects": "One",
           "targets": [],
+          "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
@@ -2617,6 +2646,7 @@
           "variant": "Upgrade",
           "affects": "All",
           "targets": [],
+          "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
@@ -2686,6 +2716,7 @@
           "targets": [
             "Razor Claws"
           ],
+          "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
@@ -2760,10 +2791,11 @@
           "id": "kkxFg7N",
           "label": "Replace one Razor Claws",
           "variant": "Replace",
-          "affects": "Any",
+          "affects": "One",
           "targets": [
             "Razor Claws"
           ],
+          "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
@@ -2819,10 +2851,11 @@
           "id": "GefTvz3",
           "label": "Any model may replace one Razor Claws",
           "variant": "Replace",
-          "affects": "Any",
+          "affects": "One",
           "targets": [
             "Razor Claws"
           ],
+          "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
@@ -2889,10 +2922,11 @@
           "id": "pwZVKn2",
           "label": "Replace one Ravager Gun",
           "variant": "Replace",
-          "affects": "Any",
+          "affects": "One",
           "targets": [
             "Ravager Gun"
           ],
+          "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
@@ -2998,6 +3032,7 @@
           "variant": "Upgrade",
           "affects": "All",
           "targets": [],
+          "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
@@ -3071,6 +3106,7 @@
           "targets": [
             "Razor Claws"
           ],
+          "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
@@ -3145,10 +3181,11 @@
           "id": "kkxFg7N",
           "label": "Replace one Razor Claws",
           "variant": "Replace",
-          "affects": "Any",
+          "affects": "One",
           "targets": [
             "Razor Claws"
           ],
+          "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
@@ -3208,6 +3245,7 @@
           "targets": [
             "Adrenaline Fueleds"
           ],
+          "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
@@ -3301,6 +3339,7 @@
             "Poison Spurts",
             "Toxin Claws"
           ],
+          "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
@@ -3336,8 +3375,9 @@
           "id": "MsKWo82",
           "label": "Upgrade one model with",
           "variant": "Upgrade",
-          "affects": "Any",
+          "affects": "One",
           "targets": [],
+          "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
@@ -3407,6 +3447,7 @@
           "targets": [
             "Razor Claws"
           ],
+          "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
@@ -3481,10 +3522,11 @@
           "id": "kkxFg7N",
           "label": "Replace one Razor Claws",
           "variant": "Replace",
-          "affects": "Any",
+          "affects": "One",
           "targets": [
             "Razor Claws"
           ],
+          "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
@@ -3540,10 +3582,11 @@
           "id": "WP66HqB",
           "label": "Any model may replace one Razor Claws",
           "variant": "Replace",
-          "affects": "Any",
+          "affects": "One",
           "targets": [
             "Razor Claws"
           ],
+          "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
@@ -3675,6 +3718,7 @@
           "targets": [
             "Razor Claws"
           ],
+          "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
@@ -3749,10 +3793,11 @@
           "id": "kkxFg7N",
           "label": "Replace one Razor Claws",
           "variant": "Replace",
-          "affects": "Any",
+          "affects": "One",
           "targets": [
             "Razor Claws"
           ],
+          "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
@@ -4015,6 +4060,7 @@
           "variant": "Upgrade",
           "affects": "One",
           "targets": [],
+          "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
@@ -4055,6 +4101,7 @@
           "targets": [
             "Heavy Razor Claw"
           ],
+          "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
@@ -4253,6 +4300,7 @@
           "targets": [
             "Spore Gun"
           ],
+          "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
@@ -4350,6 +4398,7 @@
           "targets": [
             "Heavy Psy-Torrent"
           ],
+          "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
@@ -4476,6 +4525,7 @@
           "variant": "Upgrade",
           "affects": "One",
           "targets": [],
+          "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
@@ -4558,6 +4608,7 @@
           "targets": [
             "3x Heavy Razor Claws"
           ],
+          "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
@@ -4684,10 +4735,11 @@
           "id": "m5v72f-",
           "label": "Replace one Heavy Razor Claw",
           "variant": "Replace",
-          "affects": "Any",
+          "affects": "One",
           "targets": [
             "Heavy Razor Claw"
           ],
+          "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
@@ -4714,6 +4766,7 @@
           "targets": [
             "Heavy Razor Claws"
           ],
+          "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
@@ -4923,6 +4976,7 @@
           "variant": "Upgrade",
           "affects": "One",
           "targets": [],
+          "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
@@ -5059,6 +5113,7 @@
           "targets": [
             "Heavy Psy-Torrent"
           ],
+          "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
@@ -5117,6 +5172,7 @@
           "targets": [
             "Heavy Psy-Torrent"
           ],
+          "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
@@ -5208,6 +5264,7 @@
           "targets": [
             "Heavy Razor Claws"
           ],
+          "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
@@ -5332,6 +5389,7 @@
           "targets": [
             "3x Heavy Razor Claw"
           ],
+          "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
@@ -5389,6 +5447,7 @@
           "targets": [
             "Deep Deployment"
           ],
+          "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
@@ -5414,6 +5473,7 @@
           "variant": "Upgrade",
           "affects": "One",
           "targets": [],
+          "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
@@ -5531,6 +5591,7 @@
           "targets": [
             "Bio-Pod"
           ],
+          "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
@@ -5584,6 +5645,7 @@
           "targets": [
             "Stinger Launcher"
           ],
+          "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
@@ -5714,6 +5776,7 @@
           "variant": "Upgrade",
           "affects": "One",
           "targets": [],
+          "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
@@ -5766,6 +5829,7 @@
           "targets": [
             "Stinger Launcher"
           ],
+          "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
@@ -5903,6 +5967,7 @@
           "targets": [
             "Heavy Razor Claws"
           ],
+          "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
@@ -6097,6 +6162,7 @@
           "targets": [
             "Shredder Bio-Artillery"
           ],
+          "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
@@ -6241,6 +6307,7 @@
           "variant": "Upgrade",
           "affects": "One",
           "targets": [],
+          "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
@@ -6347,6 +6414,7 @@
           "variant": "Upgrade",
           "affects": "One",
           "targets": [],
+          "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
@@ -6418,6 +6486,7 @@
           "variant": "Upgrade",
           "affects": "One",
           "targets": [],
+          "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
@@ -6526,6 +6595,7 @@
           "targets": [
             "Spore Carrier"
           ],
+          "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
@@ -6581,6 +6651,7 @@
           "variant": "Upgrade",
           "affects": "One",
           "targets": [],
+          "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
@@ -6677,6 +6748,7 @@
           "targets": [
             "Caustic Cannon"
           ],
+          "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
@@ -6740,6 +6812,7 @@
           "targets": [
             "Stinger Spitter"
           ],
+          "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
@@ -6893,6 +6966,7 @@
           "targets": [
             "Titanic Heavy Claws"
           ],
+          "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
@@ -6942,6 +7016,7 @@
           "targets": [
             "Warrior Emissary"
           ],
+          "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [

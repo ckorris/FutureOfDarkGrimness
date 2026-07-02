@@ -55,6 +55,7 @@
             "CCW",
             "Combat Shield"
           ],
+          "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
@@ -98,6 +99,7 @@
           "targets": [
             "Master Shard Pistol"
           ],
+          "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
@@ -315,6 +317,7 @@
           "targets": [
             "CCW"
           ],
+          "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
@@ -437,6 +440,7 @@
           "variant": "Upgrade",
           "affects": "One",
           "targets": [],
+          "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
@@ -461,6 +465,7 @@
           "variant": "Upgrade",
           "affects": "One",
           "targets": [],
+          "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
@@ -599,6 +604,7 @@
           "variant": "Upgrade",
           "affects": "One",
           "targets": [],
+          "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
@@ -736,6 +742,7 @@
             "CCW",
             "Combat Shield"
           ],
+          "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
@@ -779,6 +786,7 @@
           "targets": [
             "Master Shard Pistol"
           ],
+          "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
@@ -996,6 +1004,7 @@
           "targets": [
             "CCW"
           ],
+          "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
@@ -1118,6 +1127,7 @@
           "variant": "Upgrade",
           "affects": "One",
           "targets": [],
+          "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
@@ -1142,6 +1152,7 @@
           "variant": "Upgrade",
           "affects": "One",
           "targets": [],
+          "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
@@ -1223,6 +1234,7 @@
           "variant": "Upgrade",
           "affects": "One",
           "targets": [],
+          "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
@@ -1384,6 +1396,7 @@
           "targets": [
             "Energy Sword"
           ],
+          "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
@@ -1412,6 +1425,7 @@
           "variant": "Upgrade",
           "affects": "All",
           "targets": [],
+          "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
@@ -1504,10 +1518,11 @@
           "id": "qhlt229",
           "label": "Replace one Shardgun",
           "variant": "Replace",
-          "affects": "Any",
+          "affects": "One",
           "targets": [
             "Shardgun"
           ],
+          "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
@@ -1679,10 +1694,11 @@
           "id": "41LW8Xh",
           "label": "Replace one Shard Pistol",
           "variant": "Replace",
-          "affects": "Any",
+          "affects": "One",
           "targets": [
             "Shard Pistol"
           ],
+          "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
@@ -1742,10 +1758,11 @@
           "id": "-tXVdbS",
           "label": "Replace one CCW",
           "variant": "Replace",
-          "affects": "Any",
+          "affects": "One",
           "targets": [
             "CCW"
           ],
+          "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
@@ -1777,8 +1794,9 @@
           "id": "-3l0P34",
           "label": "Upgrade one model with",
           "variant": "Upgrade",
-          "affects": "Any",
+          "affects": "One",
           "targets": [],
+          "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
@@ -1849,6 +1867,7 @@
             "Energy Swords",
             "Combat Shields"
           ],
+          "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
@@ -1888,10 +1907,11 @@
           "id": "J_FDxR7",
           "label": "Replace one Shard Carbine",
           "variant": "Replace",
-          "affects": "Any",
+          "affects": "One",
           "targets": [
             "Shard Carbine"
           ],
+          "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
@@ -1923,11 +1943,12 @@
           "id": "8Nwcgdn",
           "label": "Replace one Energy Sword and Combat Shield",
           "variant": "Replace",
-          "affects": "Any",
+          "affects": "One",
           "targets": [
             "Energy Sword",
             "Combat Shield"
           ],
+          "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
@@ -2022,6 +2043,7 @@
           "targets": [
             "Shard Pistol"
           ],
+          "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
@@ -2044,8 +2066,9 @@
           "id": "vY6dR69",
           "label": "Upgrade one model with",
           "variant": "Upgrade",
-          "affects": "Any",
+          "affects": "One",
           "targets": [],
+          "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
@@ -2123,6 +2146,7 @@
             "Laser Pistols",
             "CCWS"
           ],
+          "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
@@ -2157,11 +2181,12 @@
           "id": "lQOH7rc",
           "label": "Replace one Laser Pistol and CCW",
           "variant": "Replace",
-          "affects": "Any",
+          "affects": "One",
           "targets": [
             "Laser Pistol",
             "CCW"
           ],
+          "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
@@ -2236,10 +2261,11 @@
           "id": "cEQaDHe",
           "label": "Replace one Laser Pistol",
           "variant": "Replace",
-          "affects": "Any",
+          "affects": "One",
           "targets": [
             "Laser Pistol"
           ],
+          "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
@@ -2290,6 +2316,7 @@
           "variant": "Upgrade",
           "affects": "All",
           "targets": [],
+          "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
@@ -2313,8 +2340,9 @@
           "id": "f-oamDW",
           "label": "Upgrade one model with",
           "variant": "Upgrade",
-          "affects": "Any",
+          "affects": "One",
           "targets": [],
+          "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
@@ -2397,11 +2425,12 @@
           "id": "IgR4EHb",
           "label": "Replace one Shard Pistol and Energy Sword",
           "variant": "Replace",
-          "affects": "Any",
+          "affects": "One",
           "targets": [
             "Shard Pistol",
             "Energy Sword"
           ],
+          "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
@@ -2502,6 +2531,7 @@
           "targets": [
             "Sgt. Energy Sword"
           ],
+          "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
@@ -2534,8 +2564,9 @@
           "id": "3RoOq3n",
           "label": "Upgrade one model with",
           "variant": "Upgrade",
-          "affects": "Any",
+          "affects": "One",
           "targets": [],
+          "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
@@ -2623,11 +2654,12 @@
           "id": "G8D22dN",
           "label": "Replace one Shard Pistol and Stinger Blade",
           "variant": "Replace",
-          "affects": "Any",
+          "affects": "One",
           "targets": [
             "Shard Pistol",
             "Stinger Blade"
           ],
+          "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
@@ -2702,6 +2734,7 @@
           "targets": [
             "Sgt. Shard Pistol"
           ],
+          "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
@@ -2737,6 +2770,7 @@
           "targets": [
             "Sgt. Stinger Blade"
           ],
+          "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
@@ -2827,10 +2861,11 @@
           "id": "lv8hfeF",
           "label": "Replace one Web Spinner",
           "variant": "Replace",
-          "affects": "Any",
+          "affects": "One",
           "targets": [
             "Web Spinner"
           ],
+          "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
@@ -2874,10 +2909,11 @@
           "id": "c0Oi5aU",
           "label": "Replace one CCW",
           "variant": "Replace",
-          "affects": "Any",
+          "affects": "One",
           "targets": [
             "CCW"
           ],
+          "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
@@ -2965,6 +3001,7 @@
           "targets": [
             "Heavy Flamers"
           ],
+          "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
@@ -2997,10 +3034,11 @@
           "id": "DBz6bEV",
           "label": "Replace one Heavy Flamer",
           "variant": "Replace",
-          "affects": "Any",
+          "affects": "One",
           "targets": [
             "Heavy Flamer"
           ],
+          "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
@@ -3096,8 +3134,9 @@
           "id": "tvvQswO",
           "label": "Upgrade one model with",
           "variant": "Upgrade",
-          "affects": "Any",
+          "affects": "One",
           "targets": [],
+          "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
@@ -3175,6 +3214,7 @@
           "targets": [
             "Surge Rocket"
           ],
+          "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
@@ -3207,10 +3247,11 @@
           "id": "GmCYt5K",
           "label": "Replace one Surge Rocket",
           "variant": "Replace",
-          "affects": "Any",
+          "affects": "One",
           "targets": [
             "Surge Rocket"
           ],
+          "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
@@ -3269,8 +3310,9 @@
           "id": "aX8xz5n",
           "label": "Upgrade one model with",
           "variant": "Upgrade",
-          "affects": "Any",
+          "affects": "One",
           "targets": [],
+          "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
@@ -3358,6 +3400,7 @@
           "targets": [
             "Distortion Guns"
           ],
+          "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
@@ -3442,6 +3485,7 @@
             "Killing Axes",
             "Combat Shields"
           ],
+          "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
@@ -3477,6 +3521,7 @@
           "targets": [
             "Killing Axe"
           ],
+          "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
@@ -3600,6 +3645,7 @@
           "variant": "Upgrade",
           "affects": "Any",
           "targets": [],
+          "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
@@ -3640,6 +3686,7 @@
             "Mounted Shardgun",
             "Sniper Rifle"
           ],
+          "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
@@ -3688,8 +3735,9 @@
           "id": "GGYCeLw",
           "label": "Upgrade one model with one",
           "variant": "Upgrade",
-          "affects": "Any",
+          "affects": "One",
           "targets": [],
+          "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
@@ -3808,6 +3856,7 @@
             "Shard Pistols",
             "CCWs"
           ],
+          "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
@@ -3839,10 +3888,11 @@
           "id": "u6CWMcp",
           "label": "Replace one Energy Lance",
           "variant": "Replace",
-          "affects": "Any",
+          "affects": "One",
           "targets": [
             "Energy Lance"
           ],
+          "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
@@ -3914,8 +3964,9 @@
           "id": "izJeUjg",
           "label": "Upgrade one model with one",
           "variant": "Upgrade",
-          "affects": "Any",
+          "affects": "One",
           "targets": [],
+          "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
@@ -4017,6 +4068,7 @@
           "targets": [
             "Mounted Shardgun"
           ],
+          "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
@@ -4050,6 +4102,7 @@
           "variant": "Upgrade",
           "affects": "One",
           "targets": [],
+          "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
@@ -4085,6 +4138,7 @@
           "targets": [
             "Shard Cannon"
           ],
+          "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
@@ -4185,6 +4239,7 @@
           "variant": "Upgrade",
           "affects": "One",
           "targets": [],
+          "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
@@ -4281,6 +4336,7 @@
           "targets": [
             "Mounted Shardgun"
           ],
+          "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
@@ -4316,6 +4372,7 @@
           "targets": [
             "2x Rapid Shard Cannon"
           ],
+          "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
@@ -4379,6 +4436,7 @@
           "targets": [
             "Rapid Shard Cannon"
           ],
+          "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
@@ -4479,6 +4537,7 @@
           "variant": "Upgrade",
           "affects": "One",
           "targets": [],
+          "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
@@ -4575,6 +4634,7 @@
           "targets": [
             "Shard Cannon"
           ],
+          "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
@@ -4677,6 +4737,7 @@
           "targets": [
             "Mounted Shardgun"
           ],
+          "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
@@ -4710,6 +4771,7 @@
           "variant": "Upgrade",
           "affects": "One",
           "targets": [],
+          "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
@@ -4790,6 +4852,7 @@
           "variant": "Upgrade",
           "affects": "One",
           "targets": [],
+          "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
@@ -4816,6 +4879,7 @@
           "targets": [
             "Rapid Shard Cannon"
           ],
+          "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
@@ -4994,6 +5058,7 @@
             "Great Axe",
             "Great Shield"
           ],
+          "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
@@ -5123,6 +5188,7 @@
           "targets": [
             "Shardgun"
           ],
+          "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
@@ -5161,6 +5227,7 @@
           "variant": "Upgrade",
           "affects": "One",
           "targets": [],
+          "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
@@ -5283,6 +5350,7 @@
           "variant": "Upgrade",
           "affects": "One",
           "targets": [],
+          "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
@@ -5384,6 +5452,7 @@
           "targets": [
             "Dual Titan Claw"
           ],
+          "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
@@ -5448,6 +5517,7 @@
           "targets": [
             "Titan Axe"
           ],
+          "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
@@ -5521,6 +5591,7 @@
           "variant": "Upgrade",
           "affects": "One",
           "targets": [],
+          "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
@@ -5593,6 +5664,7 @@
           "variant": "Upgrade",
           "affects": "One",
           "targets": [],
+          "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
@@ -5684,6 +5756,7 @@
           "targets": [
             "Oracle Avatar"
           ],
+          "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
@@ -5718,6 +5791,7 @@
           "variant": "Upgrade",
           "affects": "One",
           "targets": [],
+          "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
@@ -5858,6 +5932,7 @@
           "targets": [
             "Twin Shatter Cannon"
           ],
+          "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
@@ -5951,6 +6026,7 @@
           "targets": [
             "Burst Mortar"
           ],
+          "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
@@ -6011,6 +6087,7 @@
           "variant": "Upgrade",
           "affects": "One",
           "targets": [],
+          "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 1,
           "options": [
