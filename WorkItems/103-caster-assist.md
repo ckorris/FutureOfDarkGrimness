@@ -91,6 +91,10 @@ the (now complete) core casting framework.
     +1, **orange** for an enemy −1 — labels the assister's token count, and offers a 0..N picker. CLI
     (`CastAssistResolver`, EOF→0) + AI (`AiCastAssistResolver`, always 0) resolvers added; the old
     `DECLINE_ASSIST_CHOICE` sentinel + AiStringSelection branch removed. Engine `0f9f8f8`.
+  - **Text beats for each contribution.** When a Caster actually spends tokens, `CollectCastAssist` now
+    fires an on-screen banner via `context.Announce` (banner + log) — "`<Caster> assists/hinders <caster>'s
+    cast of <spell> (+N/-N)`", blue for a friendly boost, orange for an enemy disruption. Declines are
+    silent. Engine `c6a3c70`.
   - Test aid `CasterCovenTest.fdgarmy` (3 standalone Casters + cheap spells) added earlier for verification.
   - Full build clean, engine suite 950/0, headless smoke exit 0. **Awaiting GUI hand-verification** of the
     polish (canvas click-to-select + blue/orange assist viz).
