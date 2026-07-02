@@ -328,8 +328,9 @@ public class ArmyForgeScreen : IAppScreen
 
     private void DrawCompiledUnit(int idx, BuiltArmyFile compiled)
     {
-        UnitFileEntry unit = compiled.Units[idx];
         BuilderUnit bu = _list.Units[idx];
+        // Recompile this unit with its wargear-item detail (names survive) for display + target availability.
+        (UnitFileEntry unit, List<ItemEntry> items) = ListCompiler.CompileUnitDetailed(_book, bu);
 
         ImGui.TextUnformatted(ArmyBuilderScreen.UnitStatLine(unit));
         ImGui.SameLine();
@@ -339,17 +340,19 @@ public class ArmyForgeScreen : IAppScreen
         ImGui.Indent();
         foreach (WeaponFileEntry weapon in unit.Weapons)
             ImGui.TextDisabled(ArmyBuilderScreen.WeaponSummary(weapon));
+        foreach (ItemEntry item in items)
+            ImGui.TextDisabled(ItemSummary(item));
         if (unit.SpecialRules.Count > 0)
             ImGui.TextDisabled(string.Join(", ", unit.SpecialRules.Select(r => r.PrintableName)));
         ImGui.Unindent();
 
         RosterUnit? roster = _book.Units.FirstOrDefault(u => u.Id == bu.RosterUnitId);
         if (roster is not null)
-            DrawUpgradeEditors(bu, roster, unit);
+            DrawUpgradeEditors(bu, roster, unit, items);
     }
 
     // Interactive upgrade sections: mutate the BuilderUnit's choices; the per-frame recompile re-costs live.
-    private static void DrawUpgradeEditors(BuilderUnit bu, RosterUnit roster, UnitFileEntry compiledUnit)
+    private static void DrawUpgradeEditors(BuilderUnit bu, RosterUnit roster, UnitFileEntry compiledUnit, List<ItemEntry> items)
     {
         if (roster.Sections.Count == 0) return;
         ImGui.Spacing();
@@ -359,7 +362,9 @@ public class ArmyForgeScreen : IAppScreen
         foreach (UpgradeSection section in roster.Sections)
         {
             bool isReplace = section.Variant == UpgradeVariant.Replace;
-            int available = isReplace ? ListCompiler.AvailableTargets(compiledUnit.Weapons, section.Targets) : int.MaxValue;
+            int available = isReplace
+                ? ListCompiler.AvailableApplications(compiledUnit.Weapons, items, section.Targets)
+                : int.MaxValue;
 
             ImGui.TextUnformatted(section.Label);
             if (isReplace && available == 0)
@@ -371,10 +376,18 @@ public class ArmyForgeScreen : IAppScreen
 
             if (section.IsCounted) // "any"/"up to N" or add-models → a stepper
             {
-                int max = MaxCount(section, roster, compiledUnit);
+                int hardBound = section.MaxApplications > 0 ? section.MaxApplications : int.MaxValue;
                 foreach (UpgradeOption option in section.Options)
                 {
                     int v = ChoiceCount(bu, section.Id, option.Id);
+                    // `available` is measured on the FINAL compiled state (this option's picks already
+                    // consumed), so the option's own count comes back into its budget.
+                    int poolBound = section.Variant == UpgradeVariant.AddModels
+                        ? Math.Max(0, roster.MaxModels - roster.BaseModelCount)
+                        : isReplace ? available + v
+                        : compiledUnit.ModelCount;
+                    int max = Math.Min(hardBound, poolBound);
+
                     ImGui.BeginDisabled(isReplace && available == 0 && v == 0);
                     ImGui.SetNextItemWidth(90f);
                     if (ImGui.InputInt($"{OptionSummary(option)}##{section.Id}-{option.Id}", ref v, 1))
@@ -411,17 +424,6 @@ public class ArmyForgeScreen : IAppScreen
         }
     }
 
-    private static int MaxCount(UpgradeSection s, RosterUnit roster, UnitFileEntry compiledUnit)
-    {
-        if (s.Variant == UpgradeVariant.AddModels)
-            return Math.Max(0, roster.MaxModels - roster.BaseModelCount);
-        int hardBound = s.MaxApplications > 0 ? s.MaxApplications : int.MaxValue;
-        int poolBound = s.Variant == UpgradeVariant.Replace
-            ? ListCompiler.AvailableTargets(compiledUnit.Weapons, s.Targets)
-            : compiledUnit.ModelCount;
-        return Math.Min(hardBound, poolBound);
-    }
-
     private static void DrawRosterPreview(RosterUnit unit)
     {
         ImGui.TextUnformatted(RosterStatLine(unit));
@@ -429,6 +431,8 @@ public class ArmyForgeScreen : IAppScreen
         ImGui.Indent();
         foreach (WeaponFileEntry weapon in unit.Weapons)
             ImGui.TextDisabled(ArmyBuilderScreen.WeaponSummary(weapon));
+        foreach (ItemEntry item in unit.Items)
+            ImGui.TextDisabled(ItemSummary(item));
         if (unit.Rules.Count > 0)
             ImGui.TextDisabled(string.Join(", ", unit.Rules.Select(r => r.PrintableName)));
         ImGui.Unindent();
@@ -488,6 +492,12 @@ public class ArmyForgeScreen : IAppScreen
 
     internal static string OptionSummary(UpgradeOption o) =>
         o.Cost == 0 ? o.Label : $"{o.Label}  (+{o.Cost} pts)";
+
+    // Wargear line in the same style as WeaponSummary: "5x Combat Shield (Shield Wall)".
+    internal static string ItemSummary(ItemEntry i) =>
+        i.Rules.Count == 0
+            ? $"{i.Quantity}x {i.Name}"
+            : $"{i.Quantity}x {i.Name} ({string.Join(", ", i.Rules.Select(r => r.PrintableName))})";
 
     // ── Choice-mutation seams (unit-tested without ImGui) ───────────────────────────────────────────────
 

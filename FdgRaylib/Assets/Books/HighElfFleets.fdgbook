@@ -45,6 +45,18 @@
           "name": "Highborn"
         }
       ],
+      "items": [
+        {
+          "name": "Combat Shield",
+          "quantity": 1,
+          "rules": [
+            {
+              "kind": "core",
+              "name": "Shielded"
+            }
+          ]
+        }
+      ],
       "sections": [
         {
           "id": "sfgaSJs",
@@ -87,6 +99,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             }
           ]
@@ -118,6 +131,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             },
             {
@@ -140,6 +154,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             },
             {
@@ -157,6 +172,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             },
             {
@@ -184,6 +200,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             },
             {
@@ -207,6 +224,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             },
             {
@@ -224,6 +242,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             },
             {
@@ -245,10 +264,17 @@
                   ]
                 }
               ],
-              "rulesGained": [
+              "rulesGained": [],
+              "itemsGained": [
                 {
-                  "kind": "core",
-                  "name": "Relentless"
+                  "name": "Vanquisher Leader",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Relentless"
+                    }
+                  ]
                 }
               ],
               "modelsGained": 0
@@ -277,6 +303,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             },
             {
@@ -299,10 +326,17 @@
                   ]
                 }
               ],
-              "rulesGained": [
+              "rulesGained": [],
+              "itemsGained": [
                 {
-                  "kind": "core",
-                  "name": "Relentless"
+                  "name": "Vanquisher Leader",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Relentless"
+                    }
+                  ]
                 }
               ],
               "modelsGained": 0
@@ -342,6 +376,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             },
             {
@@ -364,6 +399,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             },
             {
@@ -387,6 +423,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             },
             {
@@ -404,6 +441,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             },
             {
@@ -430,6 +468,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             }
           ]
@@ -449,10 +488,17 @@
               "label": "Shield Projector (Stealth Aura)",
               "cost": 0,
               "weaponsGained": [],
-              "rulesGained": [
+              "rulesGained": [],
+              "itemsGained": [
                 {
-                  "kind": "core",
-                  "name": "Stealth Aura"
+                  "name": "Shield Projector",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Stealth Aura"
+                    }
+                  ]
                 }
               ],
               "modelsGained": 0
@@ -474,10 +520,17 @@
               "label": "Retributor Leader (Fearless)",
               "cost": 0,
               "weaponsGained": [],
-              "rulesGained": [
+              "rulesGained": [],
+              "itemsGained": [
                 {
-                  "kind": "core",
-                  "name": "Fearless"
+                  "name": "Retributor Leader",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Fearless"
+                    }
+                  ]
                 }
               ],
               "modelsGained": 0
@@ -487,14 +540,21 @@
               "label": "Stinger Leader (Scout, Stealth)",
               "cost": 15,
               "weaponsGained": [],
-              "rulesGained": [
+              "rulesGained": [],
+              "itemsGained": [
                 {
-                  "kind": "core",
-                  "name": "Scout"
-                },
-                {
-                  "kind": "core",
-                  "name": "Stealth"
+                  "name": "Stinger Leader",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Scout"
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Stealth"
+                    }
+                  ]
                 }
               ],
               "modelsGained": 0
@@ -504,19 +564,26 @@
               "label": "Revenant Leader (Agile, Fear(1), Strider)",
               "cost": 25,
               "weaponsGained": [],
-              "rulesGained": [
+              "rulesGained": [],
+              "itemsGained": [
                 {
-                  "kind": "core",
-                  "name": "Agile"
-                },
-                {
-                  "kind": "coreNumeric",
-                  "name": "Fear",
-                  "numericValue": 1
-                },
-                {
-                  "kind": "core",
-                  "name": "Strider"
+                  "name": "Revenant Leader",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Agile"
+                    },
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Fear",
+                      "numericValue": 1
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Strider"
+                    }
+                  ]
                 }
               ],
               "modelsGained": 0
@@ -526,19 +593,26 @@
               "label": "Glider Leader (Ambush, Crossing Attack(1), Flying)",
               "cost": 15,
               "weaponsGained": [],
-              "rulesGained": [
+              "rulesGained": [],
+              "itemsGained": [
                 {
-                  "kind": "core",
-                  "name": "Ambush"
-                },
-                {
-                  "kind": "coreNumeric",
-                  "name": "Crossing Attack",
-                  "numericValue": 1
-                },
-                {
-                  "kind": "core",
-                  "name": "Flying"
+                  "name": "Glider Leader",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Ambush"
+                    },
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Crossing Attack",
+                      "numericValue": 1
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Flying"
+                    }
+                  ]
                 }
               ],
               "modelsGained": 0
@@ -548,14 +622,21 @@
               "label": "Shifter Leader (Ambush, Teleport)",
               "cost": 25,
               "weaponsGained": [],
-              "rulesGained": [
+              "rulesGained": [],
+              "itemsGained": [
                 {
-                  "kind": "core",
-                  "name": "Ambush"
-                },
-                {
-                  "kind": "core",
-                  "name": "Teleport"
+                  "name": "Shifter Leader",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Ambush"
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Teleport"
+                    }
+                  ]
                 }
               ],
               "modelsGained": 0
@@ -579,19 +660,26 @@
                   ]
                 }
               ],
-              "rulesGained": [
+              "rulesGained": [],
+              "itemsGained": [
                 {
-                  "kind": "core",
-                  "name": "Strider"
-                },
-                {
-                  "kind": "coreNumeric",
-                  "name": "Tough",
-                  "numericValue": 3
-                },
-                {
-                  "kind": "core",
-                  "name": "Fast"
+                  "name": "Jetbike",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Strider"
+                    },
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Tough",
+                      "numericValue": 3
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Fast"
+                    }
+                  ]
                 }
               ],
               "modelsGained": 0
@@ -613,10 +701,17 @@
               "label": "High Avenger (Hit \u0026 Run Shooter Aura)",
               "cost": 0,
               "weaponsGained": [],
-              "rulesGained": [
+              "rulesGained": [],
+              "itemsGained": [
                 {
-                  "kind": "core",
-                  "name": "Hit \u0026 Run Shooter Aura"
+                  "name": "High Avenger",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Hit \u0026 Run Shooter Aura"
+                    }
+                  ]
                 }
               ],
               "modelsGained": 0
@@ -626,10 +721,17 @@
               "label": "Ancient Commander (Highborn Boost Aura)",
               "cost": 0,
               "weaponsGained": [],
-              "rulesGained": [
+              "rulesGained": [],
+              "itemsGained": [
                 {
-                  "kind": "core",
-                  "name": "Highborn Boost Aura"
+                  "name": "Ancient Commander",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Highborn Boost Aura"
+                    }
+                  ]
                 }
               ],
               "modelsGained": 0
@@ -639,10 +741,17 @@
               "label": "Elemental Hexer (Shred in Melee Aura)",
               "cost": 0,
               "weaponsGained": [],
-              "rulesGained": [
+              "rulesGained": [],
+              "itemsGained": [
                 {
-                  "kind": "core",
-                  "name": "Shred in Melee Aura"
+                  "name": "Elemental Hexer",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Shred in Melee Aura"
+                    }
+                  ]
                 }
               ],
               "modelsGained": 0
@@ -652,10 +761,17 @@
               "label": "Guardian Cleric (Resistance Aura)",
               "cost": 0,
               "weaponsGained": [],
-              "rulesGained": [
+              "rulesGained": [],
+              "itemsGained": [
                 {
-                  "kind": "core",
-                  "name": "Resistance Aura"
+                  "name": "Guardian Cleric",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Resistance Aura"
+                    }
+                  ]
                 }
               ],
               "modelsGained": 0
@@ -665,11 +781,18 @@
               "label": "High Oracle (Caster(2))",
               "cost": 40,
               "weaponsGained": [],
-              "rulesGained": [
+              "rulesGained": [],
+              "itemsGained": [
                 {
-                  "kind": "coreNumeric",
-                  "name": "Caster",
-                  "numericValue": 2
+                  "name": "High Oracle",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Caster",
+                      "numericValue": 2
+                    }
+                  ]
                 }
               ],
               "modelsGained": 0
@@ -679,11 +802,18 @@
               "label": "Master High Oracle (Caster(3))",
               "cost": 60,
               "weaponsGained": [],
-              "rulesGained": [
+              "rulesGained": [],
+              "itemsGained": [
                 {
-                  "kind": "coreNumeric",
-                  "name": "Caster",
-                  "numericValue": 3
+                  "name": "Master High Oracle",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Caster",
+                      "numericValue": 3
+                    }
+                  ]
                 }
               ],
               "modelsGained": 0
@@ -732,6 +862,18 @@
           "name": "Highborn"
         }
       ],
+      "items": [
+        {
+          "name": "Combat Shield",
+          "quantity": 1,
+          "rules": [
+            {
+              "kind": "core",
+              "name": "Shielded"
+            }
+          ]
+        }
+      ],
       "sections": [
         {
           "id": "sfgaSJs",
@@ -774,6 +916,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             }
           ]
@@ -805,6 +948,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             },
             {
@@ -827,6 +971,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             },
             {
@@ -844,6 +989,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             },
             {
@@ -871,6 +1017,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             },
             {
@@ -894,6 +1041,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             },
             {
@@ -911,6 +1059,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             },
             {
@@ -932,10 +1081,17 @@
                   ]
                 }
               ],
-              "rulesGained": [
+              "rulesGained": [],
+              "itemsGained": [
                 {
-                  "kind": "core",
-                  "name": "Relentless"
+                  "name": "Vanquisher Leader",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Relentless"
+                    }
+                  ]
                 }
               ],
               "modelsGained": 0
@@ -964,6 +1120,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             },
             {
@@ -986,10 +1143,17 @@
                   ]
                 }
               ],
-              "rulesGained": [
+              "rulesGained": [],
+              "itemsGained": [
                 {
-                  "kind": "core",
-                  "name": "Relentless"
+                  "name": "Vanquisher Leader",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Relentless"
+                    }
+                  ]
                 }
               ],
               "modelsGained": 0
@@ -1029,6 +1193,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             },
             {
@@ -1051,6 +1216,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             },
             {
@@ -1074,6 +1240,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             },
             {
@@ -1091,6 +1258,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             },
             {
@@ -1117,6 +1285,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             }
           ]
@@ -1136,10 +1305,17 @@
               "label": "Shield Projector (Stealth Aura)",
               "cost": 0,
               "weaponsGained": [],
-              "rulesGained": [
+              "rulesGained": [],
+              "itemsGained": [
                 {
-                  "kind": "core",
-                  "name": "Stealth Aura"
+                  "name": "Shield Projector",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Stealth Aura"
+                    }
+                  ]
                 }
               ],
               "modelsGained": 0
@@ -1161,10 +1337,17 @@
               "label": "Striker Leader (Scout)",
               "cost": 0,
               "weaponsGained": [],
-              "rulesGained": [
+              "rulesGained": [],
+              "itemsGained": [
                 {
-                  "kind": "core",
-                  "name": "Scout"
+                  "name": "Striker Leader",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Scout"
+                    }
+                  ]
                 }
               ],
               "modelsGained": 0
@@ -1174,18 +1357,25 @@
               "label": "Sniper Leader (Scout, Stealth, Strider)",
               "cost": 0,
               "weaponsGained": [],
-              "rulesGained": [
+              "rulesGained": [],
+              "itemsGained": [
                 {
-                  "kind": "core",
-                  "name": "Scout"
-                },
-                {
-                  "kind": "core",
-                  "name": "Stealth"
-                },
-                {
-                  "kind": "core",
-                  "name": "Strider"
+                  "name": "Sniper Leader",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Scout"
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Stealth"
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Strider"
+                    }
+                  ]
                 }
               ],
               "modelsGained": 0
@@ -1209,19 +1399,26 @@
                   ]
                 }
               ],
-              "rulesGained": [
+              "rulesGained": [],
+              "itemsGained": [
                 {
-                  "kind": "core",
-                  "name": "Strider"
-                },
-                {
-                  "kind": "coreNumeric",
-                  "name": "Tough",
-                  "numericValue": 3
-                },
-                {
-                  "kind": "core",
-                  "name": "Fast"
+                  "name": "Jetbike",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Strider"
+                    },
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Tough",
+                      "numericValue": 3
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Fast"
+                    }
+                  ]
                 }
               ],
               "modelsGained": 0
@@ -1243,10 +1440,17 @@
               "label": "Psy-Artillerist (Re-Position Artillery)",
               "cost": 0,
               "weaponsGained": [],
-              "rulesGained": [
+              "rulesGained": [],
+              "itemsGained": [
                 {
-                  "kind": "core",
-                  "name": "Re-Position Artillery"
+                  "name": "Psy-Artillerist",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Re-Position Artillery"
+                    }
+                  ]
                 }
               ],
               "modelsGained": 0
@@ -1256,10 +1460,17 @@
               "label": "Acolyte Psy-Seer (Spell Conduit)",
               "cost": 0,
               "weaponsGained": [],
-              "rulesGained": [
+              "rulesGained": [],
+              "itemsGained": [
                 {
-                  "kind": "core",
-                  "name": "Spell Conduit"
+                  "name": "Acolyte Psy-Seer",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Spell Conduit"
+                    }
+                  ]
                 }
               ],
               "modelsGained": 0
@@ -1269,10 +1480,17 @@
               "label": "High Avenger (Hit \u0026 Run Shooter Aura)",
               "cost": 0,
               "weaponsGained": [],
-              "rulesGained": [
+              "rulesGained": [],
+              "itemsGained": [
                 {
-                  "kind": "core",
-                  "name": "Hit \u0026 Run Shooter Aura"
+                  "name": "High Avenger",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Hit \u0026 Run Shooter Aura"
+                    }
+                  ]
                 }
               ],
               "modelsGained": 0
@@ -1282,10 +1500,17 @@
               "label": "Elemental Hexer (Shred in Melee Aura)",
               "cost": 0,
               "weaponsGained": [],
-              "rulesGained": [
+              "rulesGained": [],
+              "itemsGained": [
                 {
-                  "kind": "core",
-                  "name": "Shred in Melee Aura"
+                  "name": "Elemental Hexer",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Shred in Melee Aura"
+                    }
+                  ]
                 }
               ],
               "modelsGained": 0
@@ -1295,10 +1520,17 @@
               "label": "Guardian Cleric (Resistance Aura)",
               "cost": 0,
               "weaponsGained": [],
-              "rulesGained": [
+              "rulesGained": [],
+              "itemsGained": [
                 {
-                  "kind": "core",
-                  "name": "Resistance Aura"
+                  "name": "Guardian Cleric",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Resistance Aura"
+                    }
+                  ]
                 }
               ],
               "modelsGained": 0
@@ -1308,10 +1540,17 @@
               "label": "Psy-Weaver (Increased Shooting Range Aura)",
               "cost": 0,
               "weaponsGained": [],
-              "rulesGained": [
+              "rulesGained": [],
+              "itemsGained": [
                 {
-                  "kind": "core",
-                  "name": "Increased Shooting Range Aura"
+                  "name": "Psy-Weaver",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Increased Shooting Range Aura"
+                    }
+                  ]
                 }
               ],
               "modelsGained": 0
@@ -1321,11 +1560,18 @@
               "label": "High Oracle (Caster(2))",
               "cost": 40,
               "weaponsGained": [],
-              "rulesGained": [
+              "rulesGained": [],
+              "itemsGained": [
                 {
-                  "kind": "coreNumeric",
-                  "name": "Caster",
-                  "numericValue": 2
+                  "name": "High Oracle",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Caster",
+                      "numericValue": 2
+                    }
+                  ]
                 }
               ],
               "modelsGained": 0
@@ -1387,6 +1633,7 @@
           "name": "Highborn"
         }
       ],
+      "items": [],
       "sections": [
         {
           "id": "Exrni-x",
@@ -1415,6 +1662,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             }
           ]
@@ -1448,19 +1696,26 @@
                   ]
                 }
               ],
-              "rulesGained": [
+              "rulesGained": [],
+              "itemsGained": [
                 {
-                  "kind": "core",
-                  "name": "Strider"
-                },
-                {
-                  "kind": "coreNumeric",
-                  "name": "Tough",
-                  "numericValue": 3
-                },
-                {
-                  "kind": "core",
-                  "name": "Fast"
+                  "name": "Jetbike",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Strider"
+                    },
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Tough",
+                      "numericValue": 3
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Fast"
+                    }
+                  ]
                 }
               ],
               "modelsGained": 0
@@ -1513,6 +1768,7 @@
           "name": "Highborn"
         }
       ],
+      "items": [],
       "sections": [
         {
           "id": "qhlt229",
@@ -1546,6 +1802,13 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Gun Platform",
+                  "quantity": 1,
+                  "rules": []
+                }
+              ],
               "modelsGained": 0
             },
             {
@@ -1573,6 +1836,13 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Gun Platform",
+                  "quantity": 1,
+                  "rules": []
+                }
+              ],
               "modelsGained": 0
             },
             {
@@ -1590,6 +1860,13 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Gun Platform",
+                  "quantity": 1,
+                  "rules": []
+                }
+              ],
               "modelsGained": 0
             },
             {
@@ -1613,6 +1890,13 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Gun Platform",
+                  "quantity": 1,
+                  "rules": []
+                }
+              ],
               "modelsGained": 0
             },
             {
@@ -1635,6 +1919,13 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Gun Platform",
+                  "quantity": 1,
+                  "rules": []
+                }
+              ],
               "modelsGained": 0
             }
           ]
@@ -1689,6 +1980,7 @@
           "name": "Highborn"
         }
       ],
+      "items": [],
       "sections": [
         {
           "id": "41LW8Xh",
@@ -1727,6 +2019,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             },
             {
@@ -1750,6 +2043,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             }
           ]
@@ -1786,6 +2080,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             }
           ]
@@ -1805,10 +2100,17 @@
               "label": "Hologram Platform (Stealth Aura)",
               "cost": 10,
               "weaponsGained": [],
-              "rulesGained": [
+              "rulesGained": [],
+              "itemsGained": [
                 {
-                  "kind": "core",
-                  "name": "Stealth Aura"
+                  "name": "Hologram Platform",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Stealth Aura"
+                    }
+                  ]
                 }
               ],
               "modelsGained": 0
@@ -1857,6 +2159,18 @@
           "name": "Fearless"
         }
       ],
+      "items": [
+        {
+          "name": "Combat Shield",
+          "quantity": 5,
+          "rules": [
+            {
+              "kind": "core",
+              "name": "Shielded"
+            }
+          ]
+        }
+      ],
       "sections": [
         {
           "id": "UfPZSpb",
@@ -1899,6 +2213,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             }
           ]
@@ -1935,6 +2250,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             }
           ]
@@ -1985,10 +2301,17 @@
                   ]
                 }
               ],
-              "rulesGained": [
+              "rulesGained": [],
+              "itemsGained": [
                 {
-                  "kind": "core",
-                  "name": "Shielded"
+                  "name": "Sgt. Armor",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Shielded"
+                    }
+                  ]
                 }
               ],
               "modelsGained": 0
@@ -2025,10 +2348,17 @@
                   ]
                 }
               ],
-              "rulesGained": [
+              "rulesGained": [],
+              "itemsGained": [
                 {
-                  "kind": "core",
-                  "name": "Shielded"
+                  "name": "Sgt. Armor",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Shielded"
+                    }
+                  ]
                 }
               ],
               "modelsGained": 0
@@ -2052,10 +2382,17 @@
               "label": "Flicker Shield (Regeneration Aura)",
               "cost": 0,
               "weaponsGained": [],
-              "rulesGained": [
+              "rulesGained": [],
+              "itemsGained": [
                 {
-                  "kind": "core",
-                  "name": "Regeneration Aura"
+                  "name": "Flicker Shield",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Regeneration Aura"
+                    }
+                  ]
                 }
               ],
               "modelsGained": 0
@@ -2077,10 +2414,17 @@
               "label": "Psy-Marker (Piercing Spotter)",
               "cost": 0,
               "weaponsGained": [],
-              "rulesGained": [
+              "rulesGained": [],
+              "itemsGained": [
                 {
-                  "kind": "core",
-                  "name": "Piercing Spotter"
+                  "name": "Psy-Marker",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Piercing Spotter"
+                    }
+                  ]
                 }
               ],
               "modelsGained": 0
@@ -2136,6 +2480,7 @@
           "name": "Highborn"
         }
       ],
+      "items": [],
       "sections": [
         {
           "id": "SqonwPQ",
@@ -2173,6 +2518,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             }
           ]
@@ -2218,6 +2564,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             },
             {
@@ -2253,6 +2600,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             }
           ]
@@ -2284,6 +2632,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             },
             {
@@ -2306,6 +2655,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             }
           ]
@@ -2325,11 +2675,18 @@
               "label": "Grenade Packs (Crossing Attack(1))",
               "cost": 0,
               "weaponsGained": [],
-              "rulesGained": [
+              "rulesGained": [],
+              "itemsGained": [
                 {
-                  "kind": "coreNumeric",
-                  "name": "Crossing Attack",
-                  "numericValue": 1
+                  "name": "Grenade Packs",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Crossing Attack",
+                      "numericValue": 1
+                    }
+                  ]
                 }
               ],
               "modelsGained": 0
@@ -2351,10 +2708,17 @@
               "label": "Psy-Marker (Piercing Spotter)",
               "cost": 0,
               "weaponsGained": [],
-              "rulesGained": [
+              "rulesGained": [],
+              "itemsGained": [
                 {
-                  "kind": "core",
-                  "name": "Piercing Spotter"
+                  "name": "Psy-Marker",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Piercing Spotter"
+                    }
+                  ]
                 }
               ],
               "modelsGained": 0
@@ -2420,6 +2784,7 @@
           "name": "Strider"
         }
       ],
+      "items": [],
       "sections": [
         {
           "id": "IgR4EHb",
@@ -2467,6 +2832,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             },
             {
@@ -2489,6 +2855,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             },
             {
@@ -2519,6 +2886,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             }
           ]
@@ -2556,6 +2924,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             }
           ]
@@ -2575,11 +2944,18 @@
               "label": "Banshee Howl (Fear(2))",
               "cost": 20,
               "weaponsGained": [],
-              "rulesGained": [
+              "rulesGained": [],
+              "itemsGained": [
                 {
-                  "kind": "coreNumeric",
-                  "name": "Fear",
-                  "numericValue": 2
+                  "name": "Banshee Howl",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Fear",
+                      "numericValue": 2
+                    }
+                  ]
                 }
               ],
               "modelsGained": 0
@@ -2649,6 +3025,7 @@
           "name": "Stealth"
         }
       ],
+      "items": [],
       "sections": [
         {
           "id": "G8D22dN",
@@ -2700,6 +3077,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             },
             {
@@ -2722,6 +3100,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             }
           ]
@@ -2758,6 +3137,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             }
           ]
@@ -2803,6 +3183,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             }
           ]
@@ -2856,6 +3237,7 @@
           "name": "Highborn"
         }
       ],
+      "items": [],
       "sections": [
         {
           "id": "lv8hfeF",
@@ -2884,6 +3266,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             },
             {
@@ -2901,6 +3284,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             }
           ]
@@ -2937,6 +3321,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             }
           ]
@@ -2992,6 +3377,7 @@
           "name": "Highborn"
         }
       ],
+      "items": [],
       "sections": [
         {
           "id": "i0rBlyO",
@@ -3026,6 +3412,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             }
           ]
@@ -3063,6 +3450,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             }
           ]
@@ -3129,6 +3517,7 @@
           "name": "Highborn"
         }
       ],
+      "items": [],
       "sections": [
         {
           "id": "tvvQswO",
@@ -3145,10 +3534,17 @@
               "label": "Psy-Marker (Piercing Spotter)",
               "cost": 0,
               "weaponsGained": [],
-              "rulesGained": [
+              "rulesGained": [],
+              "itemsGained": [
                 {
-                  "kind": "core",
-                  "name": "Piercing Spotter"
+                  "name": "Psy-Marker",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Piercing Spotter"
+                    }
+                  ]
                 }
               ],
               "modelsGained": 0
@@ -3205,6 +3601,7 @@
           "name": "Highborn"
         }
       ],
+      "items": [],
       "sections": [
         {
           "id": "sbcBJAp",
@@ -3239,6 +3636,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             }
           ]
@@ -3275,6 +3673,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             },
             {
@@ -3302,6 +3701,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             }
           ]
@@ -3321,10 +3721,17 @@
               "label": "Psy-Marker (Piercing Spotter)",
               "cost": 0,
               "weaponsGained": [],
-              "rulesGained": [
+              "rulesGained": [],
+              "itemsGained": [
                 {
-                  "kind": "core",
-                  "name": "Piercing Spotter"
+                  "name": "Psy-Marker",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Piercing Spotter"
+                    }
+                  ]
                 }
               ],
               "modelsGained": 0
@@ -3391,6 +3798,7 @@
           "name": "Highborn"
         }
       ],
+      "items": [],
       "sections": [
         {
           "id": "-Cl-G4r",
@@ -3419,6 +3827,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             }
           ]
@@ -3475,6 +3884,18 @@
           "name": "Highborn"
         }
       ],
+      "items": [
+        {
+          "name": "Combat Shield",
+          "quantity": 3,
+          "rules": [
+            {
+              "kind": "core",
+              "name": "Shielded"
+            }
+          ]
+        }
+      ],
       "sections": [
         {
           "id": "v8vdE0-",
@@ -3509,6 +3930,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             }
           ]
@@ -3545,6 +3967,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             },
             {
@@ -3562,6 +3985,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             }
           ]
@@ -3638,6 +4062,7 @@
           "name": "Highborn"
         }
       ],
+      "items": [],
       "sections": [
         {
           "id": "xVFEy1m",
@@ -3673,6 +4098,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             }
           ]
@@ -3710,6 +4136,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             },
             {
@@ -3727,6 +4154,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             }
           ]
@@ -3746,10 +4174,17 @@
               "label": "Hologram Field (Stealth Aura)",
               "cost": 25,
               "weaponsGained": [],
-              "rulesGained": [
+              "rulesGained": [],
+              "itemsGained": [
                 {
-                  "kind": "core",
-                  "name": "Stealth Aura"
+                  "name": "Hologram Field",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Stealth Aura"
+                    }
+                  ]
                 }
               ],
               "modelsGained": 0
@@ -3759,10 +4194,17 @@
               "label": "Flicker Shield (Regeneration Aura)",
               "cost": 0,
               "weaponsGained": [],
-              "rulesGained": [
+              "rulesGained": [],
+              "itemsGained": [
                 {
-                  "kind": "core",
-                  "name": "Regeneration Aura"
+                  "name": "Flicker Shield",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Regeneration Aura"
+                    }
+                  ]
                 }
               ],
               "modelsGained": 0
@@ -3846,6 +4288,7 @@
           "name": "Highborn"
         }
       ],
+      "items": [],
       "sections": [
         {
           "id": "TFZY-hb",
@@ -3880,6 +4323,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             }
           ]
@@ -3911,6 +4355,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             },
             {
@@ -3934,6 +4379,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             },
             {
@@ -3956,6 +4402,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             }
           ]
@@ -3975,10 +4422,17 @@
               "label": "Hologram Field (Stealth Aura)",
               "cost": 0,
               "weaponsGained": [],
-              "rulesGained": [
+              "rulesGained": [],
+              "itemsGained": [
                 {
-                  "kind": "core",
-                  "name": "Stealth Aura"
+                  "name": "Hologram Field",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Stealth Aura"
+                    }
+                  ]
                 }
               ],
               "modelsGained": 0
@@ -3988,10 +4442,17 @@
               "label": "Master-Crafted Engines (Scout Aura)",
               "cost": 0,
               "weaponsGained": [],
-              "rulesGained": [
+              "rulesGained": [],
+              "itemsGained": [
                 {
-                  "kind": "core",
-                  "name": "Scout Aura"
+                  "name": "Master-Crafted Engines",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Scout Aura"
+                    }
+                  ]
                 }
               ],
               "modelsGained": 0
@@ -4059,6 +4520,7 @@
           "name": "Highborn"
         }
       ],
+      "items": [],
       "sections": [
         {
           "id": "Lb6r_BI",
@@ -4092,6 +4554,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             }
           ]
@@ -4126,6 +4589,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             }
           ]
@@ -4167,6 +4631,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             },
             {
@@ -4184,6 +4649,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             },
             {
@@ -4206,6 +4672,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             },
             {
@@ -4229,6 +4696,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             }
           ]
@@ -4248,10 +4716,17 @@
               "label": "Hologram Field (Stealth)",
               "cost": 65,
               "weaponsGained": [],
-              "rulesGained": [
+              "rulesGained": [],
+              "itemsGained": [
                 {
-                  "kind": "core",
-                  "name": "Stealth"
+                  "name": "Hologram Field",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Stealth"
+                    }
+                  ]
                 }
               ],
               "modelsGained": 0
@@ -4327,6 +4802,7 @@
           "name": "Highborn"
         }
       ],
+      "items": [],
       "sections": [
         {
           "id": "Lb6r_BI",
@@ -4360,6 +4836,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             }
           ]
@@ -4397,6 +4874,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             },
             {
@@ -4424,6 +4902,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             }
           ]
@@ -4465,6 +4944,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             },
             {
@@ -4482,6 +4962,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             },
             {
@@ -4504,6 +4985,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             },
             {
@@ -4527,6 +5009,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             }
           ]
@@ -4546,10 +5029,17 @@
               "label": "Hologram Field (Stealth)",
               "cost": 65,
               "weaponsGained": [],
-              "rulesGained": [
+              "rulesGained": [],
+              "itemsGained": [
                 {
-                  "kind": "core",
-                  "name": "Stealth"
+                  "name": "Hologram Field",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Stealth"
+                    }
+                  ]
                 }
               ],
               "modelsGained": 0
@@ -4625,6 +5115,7 @@
           "name": "Highborn"
         }
       ],
+      "items": [],
       "sections": [
         {
           "id": "zwtMUFJ",
@@ -4663,6 +5154,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             },
             {
@@ -4680,6 +5172,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             },
             {
@@ -4702,6 +5195,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             },
             {
@@ -4725,6 +5219,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             }
           ]
@@ -4761,6 +5256,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             }
           ]
@@ -4780,10 +5276,17 @@
               "label": "Hologram Field (Stealth)",
               "cost": 65,
               "weaponsGained": [],
-              "rulesGained": [
+              "rulesGained": [],
+              "itemsGained": [
                 {
-                  "kind": "core",
-                  "name": "Stealth"
+                  "name": "Hologram Field",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Stealth"
+                    }
+                  ]
                 }
               ],
               "modelsGained": 0
@@ -4845,6 +5348,7 @@
           "name": "Highborn"
         }
       ],
+      "items": [],
       "sections": [
         {
           "id": "srJ6X1f",
@@ -4861,10 +5365,17 @@
               "label": "Hologram Field (Stealth)",
               "cost": 65,
               "weaponsGained": [],
-              "rulesGained": [
+              "rulesGained": [],
+              "itemsGained": [
                 {
-                  "kind": "core",
-                  "name": "Stealth"
+                  "name": "Hologram Field",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Stealth"
+                    }
+                  ]
                 }
               ],
               "modelsGained": 0
@@ -4908,6 +5419,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             },
             {
@@ -4925,6 +5437,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             },
             {
@@ -4947,6 +5460,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             },
             {
@@ -4970,6 +5484,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             }
           ]
@@ -5048,6 +5563,18 @@
           "name": "Highborn"
         }
       ],
+      "items": [
+        {
+          "name": "Great Shield",
+          "quantity": 1,
+          "rules": [
+            {
+              "kind": "core",
+              "name": "Fortified"
+            }
+          ]
+        }
+      ],
       "sections": [
         {
           "id": "dHT8gvG",
@@ -5082,6 +5609,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             },
             {
@@ -5103,10 +5631,17 @@
                   ]
                 }
               ],
-              "rulesGained": [
+              "rulesGained": [],
+              "itemsGained": [
                 {
-                  "kind": "core",
-                  "name": "Fortified"
+                  "name": "Great Shield",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Fortified"
+                    }
+                  ]
                 }
               ],
               "modelsGained": 0
@@ -5132,6 +5667,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             },
             {
@@ -5148,10 +5684,17 @@
                   "specialRules": []
                 }
               ],
-              "rulesGained": [
+              "rulesGained": [],
+              "itemsGained": [
                 {
-                  "kind": "core",
-                  "name": "Fortified"
+                  "name": "Great Shield",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Fortified"
+                    }
+                  ]
                 }
               ],
               "modelsGained": 0
@@ -5176,6 +5719,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             }
           ]
@@ -5217,6 +5761,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             }
           ]
@@ -5251,6 +5796,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             },
             {
@@ -5278,6 +5824,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             },
             {
@@ -5295,6 +5842,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             },
             {
@@ -5317,6 +5865,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             },
             {
@@ -5340,6 +5889,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             }
           ]
@@ -5359,10 +5909,17 @@
               "label": "Elemental Curse (Unwieldy Debuff)",
               "cost": 0,
               "weaponsGained": [],
-              "rulesGained": [
+              "rulesGained": [],
+              "itemsGained": [
                 {
-                  "kind": "core",
-                  "name": "Unwieldy Debuff"
+                  "name": "Elemental Curse",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Unwieldy Debuff"
+                    }
+                  ]
                 }
               ],
               "modelsGained": 0
@@ -5372,11 +5929,18 @@
               "label": "Elemental Seer (Caster(2))",
               "cost": 40,
               "weaponsGained": [],
-              "rulesGained": [
+              "rulesGained": [],
+              "itemsGained": [
                 {
-                  "kind": "coreNumeric",
-                  "name": "Caster",
-                  "numericValue": 2
+                  "name": "Elemental Seer",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Caster",
+                      "numericValue": 2
+                    }
+                  ]
                 }
               ],
               "modelsGained": 0
@@ -5443,6 +6007,7 @@
           "name": "Highborn"
         }
       ],
+      "items": [],
       "sections": [
         {
           "id": "Ibezht3",
@@ -5476,10 +6041,17 @@
                   ]
                 }
               ],
-              "rulesGained": [
+              "rulesGained": [],
+              "itemsGained": [
                 {
-                  "kind": "core",
-                  "name": "Fortified"
+                  "name": "Titan Shield",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Fortified"
+                    }
+                  ]
                 }
               ],
               "modelsGained": 0
@@ -5505,6 +6077,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             }
           ]
@@ -5541,6 +6114,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             },
             {
@@ -5558,6 +6132,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             },
             {
@@ -5581,6 +6156,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             }
           ]
@@ -5615,6 +6191,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             },
             {
@@ -5632,6 +6209,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             },
             {
@@ -5654,6 +6232,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             }
           ]
@@ -5673,10 +6252,17 @@
               "label": "Elemental Curse (Unwieldy Debuff)",
               "cost": 0,
               "weaponsGained": [],
-              "rulesGained": [
+              "rulesGained": [],
+              "itemsGained": [
                 {
-                  "kind": "core",
-                  "name": "Unwieldy Debuff"
+                  "name": "Elemental Curse",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Unwieldy Debuff"
+                    }
+                  ]
                 }
               ],
               "modelsGained": 0
@@ -5747,6 +6333,19 @@
           "name": "Highborn"
         }
       ],
+      "items": [
+        {
+          "name": "Oracle Avatar",
+          "quantity": 1,
+          "rules": [
+            {
+              "kind": "coreNumeric",
+              "name": "Caster",
+              "numericValue": 4
+            }
+          ]
+        }
+      ],
       "sections": [
         {
           "id": "OrFNMoK",
@@ -5781,6 +6380,13 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Great Avatar",
+                  "quantity": 1,
+                  "rules": []
+                }
+              ],
               "modelsGained": 0
             }
           ]
@@ -5800,10 +6406,17 @@
               "label": "Elemental Curse (Unwieldy Debuff)",
               "cost": 0,
               "weaponsGained": [],
-              "rulesGained": [
+              "rulesGained": [],
+              "itemsGained": [
                 {
-                  "kind": "core",
-                  "name": "Unwieldy Debuff"
+                  "name": "Elemental Curse",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Unwieldy Debuff"
+                    }
+                  ]
                 }
               ],
               "modelsGained": 0
@@ -5863,6 +6476,7 @@
           "name": "Highborn"
         }
       ],
+      "items": [],
       "sections": []
     },
     {
@@ -5923,6 +6537,7 @@
           "name": "Highborn"
         }
       ],
+      "items": [],
       "sections": [
         {
           "id": "_s2Jauo",
@@ -5957,6 +6572,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             }
           ]
@@ -6017,6 +6633,7 @@
           "numericValue": 3
         }
       ],
+      "items": [],
       "sections": [
         {
           "id": "pvnnA5z",
@@ -6055,6 +6672,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             },
             {
@@ -6077,6 +6695,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             }
           ]
@@ -6096,10 +6715,17 @@
               "label": "Hologram Field (Stealth)",
               "cost": 65,
               "weaponsGained": [],
-              "rulesGained": [
+              "rulesGained": [],
+              "itemsGained": [
                 {
-                  "kind": "core",
-                  "name": "Stealth"
+                  "name": "Hologram Field",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Stealth"
+                    }
+                  ]
                 }
               ],
               "modelsGained": 0
@@ -6188,6 +6814,7 @@
           "name": "Highborn"
         }
       ],
+      "items": [],
       "sections": []
     }
   ],

@@ -73,6 +73,15 @@ if (b2aIdx >= 0 && b2aIdx + 2 < args.Length)
     return;
 }
 
+// --army <path> (#153): non-interactive headless smoke — both players load <path>, then EOF defaults take
+// over (exactly what the old `printf "1\n<path>\n..." |` pipe idiom did, minus the pipe).
+int armyIdx = Array.IndexOf(args, "--army");
+if (headless && armyIdx >= 0 && armyIdx + 1 < args.Length)
+{
+    string armyPath = args[armyIdx + 1];
+    Console.SetIn(new StringReader($"1\n{armyPath}\n1\n{armyPath}\n"));
+}
+
 var app = new CliApp(headless, slowDelayMs);
 
 if (headless)

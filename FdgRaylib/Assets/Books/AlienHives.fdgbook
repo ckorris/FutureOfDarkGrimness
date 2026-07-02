@@ -75,6 +75,7 @@
           "numericValue": 12
         }
       ],
+      "items": [],
       "sections": [
         {
           "id": "I-viU2f",
@@ -109,6 +110,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             },
             {
@@ -132,6 +134,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             },
             {
@@ -154,6 +157,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             },
             {
@@ -180,6 +184,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             },
             {
@@ -197,6 +202,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             }
           ]
@@ -228,6 +234,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             },
             {
@@ -251,6 +258,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             },
             {
@@ -274,6 +282,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             },
             {
@@ -301,6 +310,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             },
             {
@@ -328,6 +338,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             },
             {
@@ -350,6 +361,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             },
             {
@@ -376,6 +388,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             },
             {
@@ -403,6 +416,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             },
             {
@@ -425,6 +439,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             }
           ]
@@ -444,14 +459,21 @@
               "label": "Wings (Ambush, Flying)",
               "cost": 65,
               "weaponsGained": [],
-              "rulesGained": [
+              "rulesGained": [],
+              "itemsGained": [
                 {
-                  "kind": "core",
-                  "name": "Ambush"
-                },
-                {
-                  "kind": "core",
-                  "name": "Flying"
+                  "name": "Wings",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Ambush"
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Flying"
+                    }
+                  ]
                 }
               ],
               "modelsGained": 0
@@ -473,10 +495,17 @@
               "label": "Combat Bio-Engineer (Furious)",
               "cost": 0,
               "weaponsGained": [],
-              "rulesGained": [
+              "rulesGained": [],
+              "itemsGained": [
                 {
-                  "kind": "core",
-                  "name": "Furious"
+                  "name": "Combat Bio-Engineer",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Furious"
+                    }
+                  ]
                 }
               ],
               "modelsGained": 0
@@ -486,10 +515,17 @@
               "label": "Bio-Tech Master (Increased Shooting Range)",
               "cost": 0,
               "weaponsGained": [],
-              "rulesGained": [
+              "rulesGained": [],
+              "itemsGained": [
                 {
-                  "kind": "core",
-                  "name": "Increased Shooting Range"
+                  "name": "Bio-Tech Master",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Increased Shooting Range"
+                    }
+                  ]
                 }
               ],
               "modelsGained": 0
@@ -499,10 +535,17 @@
               "label": "Brood Leader (Rapid Charge)",
               "cost": 0,
               "weaponsGained": [],
-              "rulesGained": [
+              "rulesGained": [],
+              "itemsGained": [
                 {
-                  "kind": "core",
-                  "name": "Rapid Charge"
+                  "name": "Brood Leader",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Rapid Charge"
+                    }
+                  ]
                 }
               ],
               "modelsGained": 0
@@ -512,10 +555,17 @@
               "label": "Hive Protector (Regeneration)",
               "cost": 0,
               "weaponsGained": [],
-              "rulesGained": [
+              "rulesGained": [],
+              "itemsGained": [
                 {
-                  "kind": "core",
-                  "name": "Regeneration"
+                  "name": "Hive Protector",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Regeneration"
+                    }
+                  ]
                 }
               ],
               "modelsGained": 0
@@ -525,11 +575,18 @@
               "label": "Psychic Synapses (Caster(3))",
               "cost": 0,
               "weaponsGained": [],
-              "rulesGained": [
+              "rulesGained": [],
+              "itemsGained": [
                 {
-                  "kind": "coreNumeric",
-                  "name": "Caster",
-                  "numericValue": 3
+                  "name": "Psychic Synapses",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Caster",
+                      "numericValue": 3
+                    }
+                  ]
                 }
               ],
               "modelsGained": 0
@@ -578,6 +635,7 @@
           "name": "Hive Bond"
         }
       ],
+      "items": [],
       "sections": [
         {
           "id": "qXHMhtz",
@@ -611,6 +669,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             },
             {
@@ -634,6 +693,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             },
             {
@@ -651,6 +711,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             },
             {
@@ -673,6 +734,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             },
             {
@@ -696,6 +758,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             },
             {
@@ -723,6 +786,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             }
           ]
@@ -742,14 +806,21 @@
               "label": "Wings (Ambush, Flying)",
               "cost": 25,
               "weaponsGained": [],
-              "rulesGained": [
+              "rulesGained": [],
+              "itemsGained": [
                 {
-                  "kind": "core",
-                  "name": "Ambush"
-                },
-                {
-                  "kind": "core",
-                  "name": "Flying"
+                  "name": "Wings",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Ambush"
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Flying"
+                    }
+                  ]
                 }
               ],
               "modelsGained": 0
@@ -789,6 +860,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             },
             {
@@ -812,6 +884,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             },
             {
@@ -829,6 +902,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             },
             {
@@ -851,6 +925,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             },
             {
@@ -877,6 +952,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             }
           ]
@@ -896,10 +972,17 @@
               "label": "Pheromone Host (Hive Bond Boost Aura)",
               "cost": 0,
               "weaponsGained": [],
-              "rulesGained": [
+              "rulesGained": [],
+              "itemsGained": [
                 {
-                  "kind": "core",
-                  "name": "Hive Bond Boost Aura"
+                  "name": "Pheromone Host",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Hive Bond Boost Aura"
+                    }
+                  ]
                 }
               ],
               "modelsGained": 0
@@ -909,10 +992,17 @@
               "label": "Combat Bio-Engineer (Furious Aura)",
               "cost": 0,
               "weaponsGained": [],
-              "rulesGained": [
+              "rulesGained": [],
+              "itemsGained": [
                 {
-                  "kind": "core",
-                  "name": "Furious Aura"
+                  "name": "Combat Bio-Engineer",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Furious Aura"
+                    }
+                  ]
                 }
               ],
               "modelsGained": 0
@@ -922,10 +1012,17 @@
               "label": "Brood Leader (Rapid Charge Aura)",
               "cost": 0,
               "weaponsGained": [],
-              "rulesGained": [
+              "rulesGained": [],
+              "itemsGained": [
                 {
-                  "kind": "core",
-                  "name": "Rapid Charge Aura"
+                  "name": "Brood Leader",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Rapid Charge Aura"
+                    }
+                  ]
                 }
               ],
               "modelsGained": 0
@@ -935,10 +1032,17 @@
               "label": "Bio-Tech Master (Increased Shooting Range Aura)",
               "cost": 0,
               "weaponsGained": [],
-              "rulesGained": [
+              "rulesGained": [],
+              "itemsGained": [
                 {
-                  "kind": "core",
-                  "name": "Increased Shooting Range Aura"
+                  "name": "Bio-Tech Master",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Increased Shooting Range Aura"
+                    }
+                  ]
                 }
               ],
               "modelsGained": 0
@@ -948,11 +1052,18 @@
               "label": "Psychic Synapses (Caster(2))",
               "cost": 0,
               "weaponsGained": [],
-              "rulesGained": [
+              "rulesGained": [],
+              "itemsGained": [
                 {
-                  "kind": "coreNumeric",
-                  "name": "Caster",
-                  "numericValue": 2
+                  "name": "Psychic Synapses",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Caster",
+                      "numericValue": 2
+                    }
+                  ]
                 }
               ],
               "modelsGained": 0
@@ -1010,6 +1121,18 @@
           "name": "Hive Bond"
         }
       ],
+      "items": [
+        {
+          "name": "Adrenaline Fueled",
+          "quantity": 1,
+          "rules": [
+            {
+              "kind": "core",
+              "name": "Fast"
+            }
+          ]
+        }
+      ],
       "sections": [
         {
           "id": "WnqFNYC",
@@ -1026,10 +1149,17 @@
               "label": "Combat Bio-Engineer (Furious Aura)",
               "cost": 0,
               "weaponsGained": [],
-              "rulesGained": [
+              "rulesGained": [],
+              "itemsGained": [
                 {
-                  "kind": "core",
-                  "name": "Furious Aura"
+                  "name": "Combat Bio-Engineer",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Furious Aura"
+                    }
+                  ]
                 }
               ],
               "modelsGained": 0
@@ -1039,10 +1169,17 @@
               "label": "Brood Leader (Rapid Charge Aura)",
               "cost": 0,
               "weaponsGained": [],
-              "rulesGained": [
+              "rulesGained": [],
+              "itemsGained": [
                 {
-                  "kind": "core",
-                  "name": "Rapid Charge Aura"
+                  "name": "Brood Leader",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Rapid Charge Aura"
+                    }
+                  ]
                 }
               ],
               "modelsGained": 0
@@ -1052,10 +1189,17 @@
               "label": "Hive Protector (Regeneration Aura)",
               "cost": 0,
               "weaponsGained": [],
-              "rulesGained": [
+              "rulesGained": [],
+              "itemsGained": [
                 {
-                  "kind": "core",
-                  "name": "Regeneration Aura"
+                  "name": "Hive Protector",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Regeneration Aura"
+                    }
+                  ]
                 }
               ],
               "modelsGained": 0
@@ -1065,11 +1209,18 @@
               "label": "Psychic Synapses (Caster(2))",
               "cost": 0,
               "weaponsGained": [],
-              "rulesGained": [
+              "rulesGained": [],
+              "itemsGained": [
                 {
-                  "kind": "coreNumeric",
-                  "name": "Caster",
-                  "numericValue": 2
+                  "name": "Psychic Synapses",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Caster",
+                      "numericValue": 2
+                    }
+                  ]
                 }
               ],
               "modelsGained": 0
@@ -1093,10 +1244,17 @@
               "label": "Patient Stalker (Scout)",
               "cost": 0,
               "weaponsGained": [],
-              "rulesGained": [
+              "rulesGained": [],
+              "itemsGained": [
                 {
-                  "kind": "core",
-                  "name": "Scout"
+                  "name": "Patient Stalker",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Scout"
+                    }
+                  ]
                 }
               ],
               "modelsGained": 0
@@ -1149,6 +1307,7 @@
           "name": "Hive Bond"
         }
       ],
+      "items": [],
       "sections": [
         {
           "id": "PYyczEe",
@@ -1183,6 +1342,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             },
             {
@@ -1206,6 +1366,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             },
             {
@@ -1228,6 +1389,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             },
             {
@@ -1245,6 +1407,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             }
           ]
@@ -1274,6 +1437,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             },
             {
@@ -1291,6 +1455,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             },
             {
@@ -1308,6 +1473,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             }
           ]
@@ -1327,14 +1493,21 @@
               "label": "Winged Breed (Ambush, Flying)",
               "cost": 0,
               "weaponsGained": [],
-              "rulesGained": [
+              "rulesGained": [],
+              "itemsGained": [
                 {
-                  "kind": "core",
-                  "name": "Ambush"
-                },
-                {
-                  "kind": "core",
-                  "name": "Flying"
+                  "name": "Winged Breed",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Ambush"
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Flying"
+                    }
+                  ]
                 }
               ],
               "modelsGained": 0
@@ -1344,10 +1517,17 @@
               "label": "Psycho Breed (Resistance)",
               "cost": 0,
               "weaponsGained": [],
-              "rulesGained": [
+              "rulesGained": [],
+              "itemsGained": [
                 {
-                  "kind": "core",
-                  "name": "Resistance"
+                  "name": "Psycho Breed",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Resistance"
+                    }
+                  ]
                 }
               ],
               "modelsGained": 0
@@ -1369,10 +1549,17 @@
               "label": "Toxin Cysts (Bane in Melee)",
               "cost": 0,
               "weaponsGained": [],
-              "rulesGained": [
+              "rulesGained": [],
+              "itemsGained": [
                 {
-                  "kind": "core",
-                  "name": "Bane in Melee"
+                  "name": "Toxin Cysts",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Bane in Melee"
+                    }
+                  ]
                 }
               ],
               "modelsGained": 0
@@ -1382,10 +1569,17 @@
               "label": "Combat Mutations (Piercing Growth)",
               "cost": 0,
               "weaponsGained": [],
-              "rulesGained": [
+              "rulesGained": [],
+              "itemsGained": [
                 {
-                  "kind": "core",
-                  "name": "Piercing Growth"
+                  "name": "Combat Mutations",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Piercing Growth"
+                    }
+                  ]
                 }
               ],
               "modelsGained": 0
@@ -1395,10 +1589,17 @@
               "label": "Adrenaline Fueled (Fast)",
               "cost": 0,
               "weaponsGained": [],
-              "rulesGained": [
+              "rulesGained": [],
+              "itemsGained": [
                 {
-                  "kind": "core",
-                  "name": "Fast"
+                  "name": "Adrenaline Fueled",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Fast"
+                    }
+                  ]
                 }
               ],
               "modelsGained": 0
@@ -1420,10 +1621,17 @@
               "label": "Combat Bio-Engineer (Furious Aura)",
               "cost": 0,
               "weaponsGained": [],
-              "rulesGained": [
+              "rulesGained": [],
+              "itemsGained": [
                 {
-                  "kind": "core",
-                  "name": "Furious Aura"
+                  "name": "Combat Bio-Engineer",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Furious Aura"
+                    }
+                  ]
                 }
               ],
               "modelsGained": 0
@@ -1433,10 +1641,17 @@
               "label": "Brood Leader (Rapid Charge Aura)",
               "cost": 0,
               "weaponsGained": [],
-              "rulesGained": [
+              "rulesGained": [],
+              "itemsGained": [
                 {
-                  "kind": "core",
-                  "name": "Rapid Charge Aura"
+                  "name": "Brood Leader",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Rapid Charge Aura"
+                    }
+                  ]
                 }
               ],
               "modelsGained": 0
@@ -1446,10 +1661,17 @@
               "label": "Hive Protector (Regeneration Aura)",
               "cost": 0,
               "weaponsGained": [],
-              "rulesGained": [
+              "rulesGained": [],
+              "itemsGained": [
                 {
-                  "kind": "core",
-                  "name": "Regeneration Aura"
+                  "name": "Hive Protector",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Regeneration Aura"
+                    }
+                  ]
                 }
               ],
               "modelsGained": 0
@@ -1459,10 +1681,17 @@
               "label": "Bio-Tech Master (Increased Shooting Range Aura)",
               "cost": 0,
               "weaponsGained": [],
-              "rulesGained": [
+              "rulesGained": [],
+              "itemsGained": [
                 {
-                  "kind": "core",
-                  "name": "Increased Shooting Range Aura"
+                  "name": "Bio-Tech Master",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Increased Shooting Range Aura"
+                    }
+                  ]
                 }
               ],
               "modelsGained": 0
@@ -1506,6 +1735,7 @@
           "name": "Hive Bond"
         }
       ],
+      "items": [],
       "sections": [
         {
           "id": "sspOXPQ",
@@ -1522,10 +1752,17 @@
               "label": "Adrenaline Fueled (Fast)",
               "cost": 0,
               "weaponsGained": [],
-              "rulesGained": [
+              "rulesGained": [],
+              "itemsGained": [
                 {
-                  "kind": "core",
-                  "name": "Fast"
+                  "name": "Adrenaline Fueled",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Fast"
+                    }
+                  ]
                 }
               ],
               "modelsGained": 0
@@ -1535,10 +1772,17 @@
               "label": "Toxic Cysts (Bane in Melee)",
               "cost": 5,
               "weaponsGained": [],
-              "rulesGained": [
+              "rulesGained": [],
+              "itemsGained": [
                 {
-                  "kind": "core",
-                  "name": "Bane in Melee"
+                  "name": "Toxic Cysts",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Bane in Melee"
+                    }
+                  ]
                 }
               ],
               "modelsGained": 0
@@ -1548,10 +1792,17 @@
               "label": "Combat Mutations (Piercing Growth)",
               "cost": 0,
               "weaponsGained": [],
-              "rulesGained": [
+              "rulesGained": [],
+              "itemsGained": [
                 {
-                  "kind": "core",
-                  "name": "Piercing Growth"
+                  "name": "Combat Mutations",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Piercing Growth"
+                    }
+                  ]
                 }
               ],
               "modelsGained": 0
@@ -1591,6 +1842,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             },
             {
@@ -1614,6 +1866,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             },
             {
@@ -1636,6 +1889,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             },
             {
@@ -1653,6 +1907,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             }
           ]
@@ -1702,6 +1957,7 @@
           "name": "Hive Bond"
         }
       ],
+      "items": [],
       "sections": [
         {
           "id": "sspOXPQ",
@@ -1718,10 +1974,17 @@
               "label": "Adrenaline Fueled (Fast)",
               "cost": 0,
               "weaponsGained": [],
-              "rulesGained": [
+              "rulesGained": [],
+              "itemsGained": [
                 {
-                  "kind": "core",
-                  "name": "Fast"
+                  "name": "Adrenaline Fueled",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Fast"
+                    }
+                  ]
                 }
               ],
               "modelsGained": 0
@@ -1731,10 +1994,17 @@
               "label": "Toxic Cysts (Bane in Melee)",
               "cost": 5,
               "weaponsGained": [],
-              "rulesGained": [
+              "rulesGained": [],
+              "itemsGained": [
                 {
-                  "kind": "core",
-                  "name": "Bane in Melee"
+                  "name": "Toxic Cysts",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Bane in Melee"
+                    }
+                  ]
                 }
               ],
               "modelsGained": 0
@@ -1744,10 +2014,17 @@
               "label": "Combat Mutations (Piercing Growth)",
               "cost": 0,
               "weaponsGained": [],
-              "rulesGained": [
+              "rulesGained": [],
+              "itemsGained": [
                 {
-                  "kind": "core",
-                  "name": "Piercing Growth"
+                  "name": "Combat Mutations",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Piercing Growth"
+                    }
+                  ]
                 }
               ],
               "modelsGained": 0
@@ -1781,6 +2058,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             },
             {
@@ -1798,6 +2076,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             }
           ]
@@ -1829,6 +2108,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             },
             {
@@ -1852,6 +2132,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             },
             {
@@ -1874,6 +2155,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             },
             {
@@ -1901,6 +2183,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             },
             {
@@ -1927,6 +2210,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             }
           ]
@@ -1977,6 +2261,7 @@
           "name": "Hive Bond"
         }
       ],
+      "items": [],
       "sections": [
         {
           "id": "sspOXPQ",
@@ -1993,10 +2278,17 @@
               "label": "Adrenaline Fueled (Fast)",
               "cost": 0,
               "weaponsGained": [],
-              "rulesGained": [
+              "rulesGained": [],
+              "itemsGained": [
                 {
-                  "kind": "core",
-                  "name": "Fast"
+                  "name": "Adrenaline Fueled",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Fast"
+                    }
+                  ]
                 }
               ],
               "modelsGained": 0
@@ -2006,10 +2298,17 @@
               "label": "Toxic Cysts (Bane in Melee)",
               "cost": 5,
               "weaponsGained": [],
-              "rulesGained": [
+              "rulesGained": [],
+              "itemsGained": [
                 {
-                  "kind": "core",
-                  "name": "Bane in Melee"
+                  "name": "Toxic Cysts",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Bane in Melee"
+                    }
+                  ]
                 }
               ],
               "modelsGained": 0
@@ -2019,10 +2318,17 @@
               "label": "Combat Mutations (Piercing Growth)",
               "cost": 0,
               "weaponsGained": [],
-              "rulesGained": [
+              "rulesGained": [],
+              "itemsGained": [
                 {
-                  "kind": "core",
-                  "name": "Piercing Growth"
+                  "name": "Combat Mutations",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Piercing Growth"
+                    }
+                  ]
                 }
               ],
               "modelsGained": 0
@@ -2044,10 +2350,17 @@
               "label": "Synaptic Relay (Spell Conduit)",
               "cost": 0,
               "weaponsGained": [],
-              "rulesGained": [
+              "rulesGained": [],
+              "itemsGained": [
                 {
-                  "kind": "core",
-                  "name": "Spell Conduit"
+                  "name": "Synaptic Relay",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Spell Conduit"
+                    }
+                  ]
                 }
               ],
               "modelsGained": 0
@@ -2099,6 +2412,7 @@
           "name": "Hive Bond"
         }
       ],
+      "items": [],
       "sections": [
         {
           "id": "NEsbtYF",
@@ -2127,6 +2441,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             },
             {
@@ -2144,6 +2459,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             }
           ]
@@ -2175,6 +2491,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             },
             {
@@ -2198,6 +2515,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             },
             {
@@ -2220,6 +2538,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             },
             {
@@ -2247,6 +2566,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             },
             {
@@ -2273,6 +2593,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             }
           ]
@@ -2292,10 +2613,17 @@
               "label": "Toxic Cysts (Bane in Melee)",
               "cost": 5,
               "weaponsGained": [],
-              "rulesGained": [
+              "rulesGained": [],
+              "itemsGained": [
                 {
-                  "kind": "core",
-                  "name": "Bane in Melee"
+                  "name": "Toxic Cysts",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Bane in Melee"
+                    }
+                  ]
                 }
               ],
               "modelsGained": 0
@@ -2305,10 +2633,17 @@
               "label": "Adrenaline Fueled (Fast)",
               "cost": 0,
               "weaponsGained": [],
-              "rulesGained": [
+              "rulesGained": [],
+              "itemsGained": [
                 {
-                  "kind": "core",
-                  "name": "Fast"
+                  "name": "Adrenaline Fueled",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Fast"
+                    }
+                  ]
                 }
               ],
               "modelsGained": 0
@@ -2318,10 +2653,17 @@
               "label": "Aerial Drop (Ambush)",
               "cost": 0,
               "weaponsGained": [],
-              "rulesGained": [
+              "rulesGained": [],
+              "itemsGained": [
                 {
-                  "kind": "core",
-                  "name": "Ambush"
+                  "name": "Aerial Drop",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Ambush"
+                    }
+                  ]
                 }
               ],
               "modelsGained": 0
@@ -2331,10 +2673,17 @@
               "label": "Combat Mutations (Piercing Growth)",
               "cost": 0,
               "weaponsGained": [],
-              "rulesGained": [
+              "rulesGained": [],
+              "itemsGained": [
                 {
-                  "kind": "core",
-                  "name": "Piercing Growth"
+                  "name": "Combat Mutations",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Piercing Growth"
+                    }
+                  ]
                 }
               ],
               "modelsGained": 0
@@ -2404,6 +2753,7 @@
           "name": "Hive Bond"
         }
       ],
+      "items": [],
       "sections": [
         {
           "id": "sspOXPQ",
@@ -2420,10 +2770,17 @@
               "label": "Adrenaline Fueled (Fast)",
               "cost": 0,
               "weaponsGained": [],
-              "rulesGained": [
+              "rulesGained": [],
+              "itemsGained": [
                 {
-                  "kind": "core",
-                  "name": "Fast"
+                  "name": "Adrenaline Fueled",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Fast"
+                    }
+                  ]
                 }
               ],
               "modelsGained": 0
@@ -2433,10 +2790,17 @@
               "label": "Toxic Cysts (Bane in Melee)",
               "cost": 5,
               "weaponsGained": [],
-              "rulesGained": [
+              "rulesGained": [],
+              "itemsGained": [
                 {
-                  "kind": "core",
-                  "name": "Bane in Melee"
+                  "name": "Toxic Cysts",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Bane in Melee"
+                    }
+                  ]
                 }
               ],
               "modelsGained": 0
@@ -2446,10 +2810,17 @@
               "label": "Combat Mutations (Piercing Growth)",
               "cost": 0,
               "weaponsGained": [],
-              "rulesGained": [
+              "rulesGained": [],
+              "itemsGained": [
                 {
-                  "kind": "core",
-                  "name": "Piercing Growth"
+                  "name": "Combat Mutations",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Piercing Growth"
+                    }
+                  ]
                 }
               ],
               "modelsGained": 0
@@ -2492,6 +2863,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             }
           ]
@@ -2538,6 +2910,18 @@
           "name": "Hive Bond"
         }
       ],
+      "items": [
+        {
+          "name": "Adrenaline Fueled",
+          "quantity": 5,
+          "rules": [
+            {
+              "kind": "core",
+              "name": "Fast"
+            }
+          ]
+        }
+      ],
       "sections": [
         {
           "id": "FfaOMph",
@@ -2556,10 +2940,17 @@
               "label": "Patient Stalker (Scout)",
               "cost": 0,
               "weaponsGained": [],
-              "rulesGained": [
+              "rulesGained": [],
+              "itemsGained": [
                 {
-                  "kind": "core",
-                  "name": "Scout"
+                  "name": "Patient Stalker",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Scout"
+                    }
+                  ]
                 }
               ],
               "modelsGained": 0
@@ -2581,11 +2972,18 @@
               "label": "Mind Snatcher (Caster(1))",
               "cost": 20,
               "weaponsGained": [],
-              "rulesGained": [
+              "rulesGained": [],
+              "itemsGained": [
                 {
-                  "kind": "coreNumeric",
-                  "name": "Caster",
-                  "numericValue": 1
+                  "name": "Mind Snatcher",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Caster",
+                      "numericValue": 1
+                    }
+                  ]
                 }
               ],
               "modelsGained": 0
@@ -2639,6 +3037,7 @@
           "name": "Hive Bond"
         }
       ],
+      "items": [],
       "sections": [
         {
           "id": "0tSvgRe",
@@ -2665,6 +3064,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             }
           ]
@@ -2707,6 +3107,7 @@
           "name": "Hive Bond"
         }
       ],
+      "items": [],
       "sections": [
         {
           "id": "GCROfJU",
@@ -2740,6 +3141,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             },
             {
@@ -2766,6 +3168,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             },
             {
@@ -2783,6 +3186,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             }
           ]
@@ -2820,6 +3224,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             },
             {
@@ -2843,6 +3248,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             }
           ]
@@ -2874,6 +3280,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             },
             {
@@ -2897,6 +3304,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             },
             {
@@ -2914,6 +3322,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             }
           ]
@@ -2950,6 +3359,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             },
             {
@@ -2972,6 +3382,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             },
             {
@@ -2995,6 +3406,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             },
             {
@@ -3022,6 +3434,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             }
           ]
@@ -3041,14 +3454,21 @@
               "label": "Wings (Ambush, Flying)",
               "cost": 35,
               "weaponsGained": [],
-              "rulesGained": [
+              "rulesGained": [],
+              "itemsGained": [
                 {
-                  "kind": "core",
-                  "name": "Ambush"
-                },
-                {
-                  "kind": "core",
-                  "name": "Flying"
+                  "name": "Wings",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Ambush"
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Flying"
+                    }
+                  ]
                 }
               ],
               "modelsGained": 0
@@ -3097,6 +3517,18 @@
           "name": "Hive Bond"
         }
       ],
+      "items": [
+        {
+          "name": "Adrenaline Fueled",
+          "quantity": 3,
+          "rules": [
+            {
+              "kind": "core",
+              "name": "Fast"
+            }
+          ]
+        }
+      ],
       "sections": [
         {
           "id": "GCROfJU",
@@ -3130,6 +3562,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             },
             {
@@ -3156,6 +3589,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             },
             {
@@ -3173,6 +3607,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             }
           ]
@@ -3210,6 +3645,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             },
             {
@@ -3233,6 +3669,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             }
           ]
@@ -3254,10 +3691,17 @@
               "label": "Burrowing Strike (Ambush)",
               "cost": 20,
               "weaponsGained": [],
-              "rulesGained": [
+              "rulesGained": [],
+              "itemsGained": [
                 {
-                  "kind": "core",
-                  "name": "Ambush"
+                  "name": "Burrowing Strike",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Ambush"
+                    }
+                  ]
                 }
               ],
               "modelsGained": 0
@@ -3329,6 +3773,7 @@
           "name": "Hive Bond"
         }
       ],
+      "items": [],
       "sections": [
         {
           "id": "muL_ZST",
@@ -3367,6 +3812,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             }
           ]
@@ -3386,10 +3832,17 @@
               "label": "Shrouding Mist (Stealth Buff)",
               "cost": 0,
               "weaponsGained": [],
-              "rulesGained": [
+              "rulesGained": [],
+              "itemsGained": [
                 {
-                  "kind": "core",
-                  "name": "Stealth Buff"
+                  "name": "Shrouding Mist",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Stealth Buff"
+                    }
+                  ]
                 }
               ],
               "modelsGained": 0
@@ -3438,6 +3891,7 @@
           "name": "Hive Bond"
         }
       ],
+      "items": [],
       "sections": [
         {
           "id": "GCROfJU",
@@ -3471,6 +3925,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             },
             {
@@ -3497,6 +3952,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             },
             {
@@ -3514,6 +3970,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             }
           ]
@@ -3551,6 +4008,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             },
             {
@@ -3574,6 +4032,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             }
           ]
@@ -3610,6 +4069,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             },
             {
@@ -3633,6 +4093,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             },
             {
@@ -3655,6 +4116,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             }
           ]
@@ -3709,6 +4171,7 @@
           "name": "Scout"
         }
       ],
+      "items": [],
       "sections": [
         {
           "id": "GCROfJU",
@@ -3742,6 +4205,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             },
             {
@@ -3768,6 +4232,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             },
             {
@@ -3785,6 +4250,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             }
           ]
@@ -3822,6 +4288,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             },
             {
@@ -3845,6 +4312,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             }
           ]
@@ -3909,6 +4377,7 @@
           "name": "Hive Bond"
         }
       ],
+      "items": [],
       "sections": []
     },
     {
@@ -3951,6 +4420,7 @@
           "name": "Slow"
         }
       ],
+      "items": [],
       "sections": []
     },
     {
@@ -3998,6 +4468,7 @@
           "name": "Slow"
         }
       ],
+      "items": [],
       "sections": []
     },
     {
@@ -4053,6 +4524,7 @@
           "name": "Infiltrate"
         }
       ],
+      "items": [],
       "sections": [
         {
           "id": "4QkSg-h",
@@ -4069,10 +4541,17 @@
               "label": "Silent Assassin (Takedown Strike)",
               "cost": 0,
               "weaponsGained": [],
-              "rulesGained": [
+              "rulesGained": [],
+              "itemsGained": [
                 {
-                  "kind": "core",
-                  "name": "Takedown Strike"
+                  "name": "Silent Assassin",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Takedown Strike"
+                    }
+                  ]
                 }
               ],
               "modelsGained": 0
@@ -4082,11 +4561,18 @@
               "label": "Mind Hunter (Caster(2))",
               "cost": 40,
               "weaponsGained": [],
-              "rulesGained": [
+              "rulesGained": [],
+              "itemsGained": [
                 {
-                  "kind": "coreNumeric",
-                  "name": "Caster",
-                  "numericValue": 2
+                  "name": "Mind Hunter",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Caster",
+                      "numericValue": 2
+                    }
+                  ]
                 }
               ],
               "modelsGained": 0
@@ -4126,6 +4612,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             },
             {
@@ -4149,6 +4636,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             },
             {
@@ -4166,6 +4654,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             },
             {
@@ -4188,6 +4677,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             },
             {
@@ -4214,6 +4704,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             }
           ]
@@ -4291,6 +4782,7 @@
           "name": "Hive Bond"
         }
       ],
+      "items": [],
       "sections": [
         {
           "id": "QTWBVYi",
@@ -4309,10 +4801,17 @@
               "label": "Spore Carrier (Spawn(Spores [5]))",
               "cost": 0,
               "weaponsGained": [],
-              "rulesGained": [
+              "rulesGained": [],
+              "itemsGained": [
                 {
-                  "kind": "core",
-                  "name": "Spawn"
+                  "name": "Spore Carrier",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Spawn"
+                    }
+                  ]
                 }
               ],
               "modelsGained": 0
@@ -4389,6 +4888,7 @@
           "name": "Hive Bond"
         }
       ],
+      "items": [],
       "sections": [
         {
           "id": "mrtOmEF",
@@ -4423,6 +4923,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             },
             {
@@ -4445,6 +4946,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             }
           ]
@@ -4518,6 +5020,7 @@
           "name": "Hive Bond"
         }
       ],
+      "items": [],
       "sections": [
         {
           "id": "h5LU8aF",
@@ -4534,10 +5037,17 @@
               "label": "Battle Pheromones (Unpredictable Fighter Mark)",
               "cost": 0,
               "weaponsGained": [],
-              "rulesGained": [
+              "rulesGained": [],
+              "itemsGained": [
                 {
-                  "kind": "core",
-                  "name": "Unpredictable Fighter Mark"
+                  "name": "Battle Pheromones",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Unpredictable Fighter Mark"
+                    }
+                  ]
                 }
               ],
               "modelsGained": 0
@@ -4599,6 +5109,7 @@
           "name": "Fearless"
         }
       ],
+      "items": [],
       "sections": [
         {
           "id": "0IFV6W_",
@@ -4632,6 +5143,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             },
             {
@@ -4655,6 +5167,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             },
             {
@@ -4678,6 +5191,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             },
             {
@@ -4700,6 +5214,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             },
             {
@@ -4727,6 +5242,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             }
           ]
@@ -4748,10 +5264,17 @@
               "label": "Killing Scream (Breath Attack)",
               "cost": 0,
               "weaponsGained": [],
-              "rulesGained": [
+              "rulesGained": [],
+              "itemsGained": [
                 {
-                  "kind": "core",
-                  "name": "Breath Attack"
+                  "name": "Killing Scream",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Breath Attack"
+                    }
+                  ]
                 }
               ],
               "modelsGained": 0
@@ -4791,6 +5314,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             },
             {
@@ -4814,6 +5338,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             },
             {
@@ -4836,6 +5361,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             },
             {
@@ -4862,6 +5388,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             },
             {
@@ -4879,6 +5406,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             }
           ]
@@ -4969,6 +5497,7 @@
           "name": "Fearless"
         }
       ],
+      "items": [],
       "sections": [
         {
           "id": "YmynB7o",
@@ -5005,6 +5534,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             },
             {
@@ -5012,10 +5542,17 @@
               "label": "Shrouding Mist (Stealth Buff)",
               "cost": 0,
               "weaponsGained": [],
-              "rulesGained": [
+              "rulesGained": [],
+              "itemsGained": [
                 {
-                  "kind": "core",
-                  "name": "Stealth Buff"
+                  "name": "Shrouding Mist",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Stealth Buff"
+                    }
+                  ]
                 }
               ],
               "modelsGained": 0
@@ -5104,6 +5641,7 @@
           "name": "Fearless"
         }
       ],
+      "items": [],
       "sections": [
         {
           "id": "mrtOmEF",
@@ -5138,6 +5676,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             },
             {
@@ -5160,6 +5699,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             }
           ]
@@ -5190,10 +5730,17 @@
                   "specialRules": []
                 }
               ],
-              "rulesGained": [
+              "rulesGained": [],
+              "itemsGained": [
                 {
-                  "kind": "core",
-                  "name": "Regenerative Strength"
+                  "name": "Psy-Frenzy",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Regenerative Strength"
+                    }
+                  ]
                 }
               ],
               "modelsGained": 0
@@ -5255,6 +5802,18 @@
           "name": "Fearless"
         }
       ],
+      "items": [
+        {
+          "name": "Deep Deployment",
+          "quantity": 1,
+          "rules": [
+            {
+              "kind": "core",
+              "name": "Ambush"
+            }
+          ]
+        }
+      ],
       "sections": [
         {
           "id": "p80PP_0",
@@ -5289,6 +5848,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             },
             {
@@ -5312,6 +5872,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             },
             {
@@ -5334,6 +5895,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             },
             {
@@ -5360,6 +5922,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             },
             {
@@ -5377,6 +5940,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             }
           ]
@@ -5435,6 +5999,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             }
           ]
@@ -5456,11 +6021,18 @@
               "label": "Burrow Attack (Surprise Attack(5))",
               "cost": 0,
               "weaponsGained": [],
-              "rulesGained": [
+              "rulesGained": [],
+              "itemsGained": [
                 {
-                  "kind": "coreNumeric",
-                  "name": "Surprise Attack",
-                  "numericValue": 5
+                  "name": "Burrow Attack",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Surprise Attack",
+                      "numericValue": 5
+                    }
+                  ]
                 }
               ],
               "modelsGained": 0
@@ -5482,14 +6054,21 @@
               "label": "Venom Burrower (Regeneration, Stealth Buff)",
               "cost": 0,
               "weaponsGained": [],
-              "rulesGained": [
+              "rulesGained": [],
+              "itemsGained": [
                 {
-                  "kind": "core",
-                  "name": "Regeneration"
-                },
-                {
-                  "kind": "core",
-                  "name": "Stealth Buff"
+                  "name": "Venom Burrower",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Regeneration"
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Stealth Buff"
+                    }
+                  ]
                 }
               ],
               "modelsGained": 0
@@ -5499,15 +6078,22 @@
               "label": "Synapse Burrower (Caster(3), Resistance)",
               "cost": 0,
               "weaponsGained": [],
-              "rulesGained": [
+              "rulesGained": [],
+              "itemsGained": [
                 {
-                  "kind": "coreNumeric",
-                  "name": "Caster",
-                  "numericValue": 3
-                },
-                {
-                  "kind": "core",
-                  "name": "Resistance"
+                  "name": "Synapse Burrower",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Caster",
+                      "numericValue": 3
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Resistance"
+                    }
+                  ]
                 }
               ],
               "modelsGained": 0
@@ -5582,6 +6168,7 @@
           "name": "Fearless"
         }
       ],
+      "items": [],
       "sections": [
         {
           "id": "eR7qFBb",
@@ -5610,6 +6197,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             },
             {
@@ -5633,6 +6221,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             }
           ]
@@ -5670,6 +6259,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             },
             {
@@ -5697,6 +6287,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             }
           ]
@@ -5769,6 +6360,7 @@
           "name": "Fearless"
         }
       ],
+      "items": [],
       "sections": [
         {
           "id": "Ufpl_m5",
@@ -5785,10 +6377,17 @@
               "label": "Swarm Brood (Spawn(Hive Swarms [3]))",
               "cost": 0,
               "weaponsGained": [],
-              "rulesGained": [
+              "rulesGained": [],
+              "itemsGained": [
                 {
-                  "kind": "core",
-                  "name": "Spawn"
+                  "name": "Swarm Brood",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Spawn"
+                    }
+                  ]
                 }
               ],
               "modelsGained": 0
@@ -5798,10 +6397,17 @@
               "label": "Assault Brood (Spawn(Assault Grunts [10]))",
               "cost": 0,
               "weaponsGained": [],
-              "rulesGained": [
+              "rulesGained": [],
+              "itemsGained": [
                 {
-                  "kind": "core",
-                  "name": "Spawn"
+                  "name": "Assault Brood",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Spawn"
+                    }
+                  ]
                 }
               ],
               "modelsGained": 0
@@ -5811,10 +6417,17 @@
               "label": "Shooter Brood (Spawn(Shooter Grunts [10]))",
               "cost": 0,
               "weaponsGained": [],
-              "rulesGained": [
+              "rulesGained": [],
+              "itemsGained": [
                 {
-                  "kind": "core",
-                  "name": "Spawn"
+                  "name": "Shooter Brood",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Spawn"
+                    }
+                  ]
                 }
               ],
               "modelsGained": 0
@@ -5854,6 +6467,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             },
             {
@@ -5881,6 +6495,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             }
           ]
@@ -5958,6 +6573,7 @@
           "name": "Fearless"
         }
       ],
+      "items": [],
       "sections": [
         {
           "id": "p80PP_0",
@@ -5992,6 +6608,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             },
             {
@@ -6015,6 +6632,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             },
             {
@@ -6037,6 +6655,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             },
             {
@@ -6063,6 +6682,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             },
             {
@@ -6080,6 +6700,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             }
           ]
@@ -6153,6 +6774,7 @@
           "name": "Fearless"
         }
       ],
+      "items": [],
       "sections": [
         {
           "id": "AnWXFCw",
@@ -6191,6 +6813,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             },
             {
@@ -6218,6 +6841,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             },
             {
@@ -6245,6 +6869,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             }
           ]
@@ -6300,6 +6925,7 @@
           "name": "Hive Bond"
         }
       ],
+      "items": [],
       "sections": [
         {
           "id": "7zyZ1MI",
@@ -6331,6 +6957,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             },
             {
@@ -6354,6 +6981,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             },
             {
@@ -6377,6 +7005,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             },
             {
@@ -6404,6 +7033,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             }
           ]
@@ -6423,10 +7053,17 @@
               "label": "Battle Pheromones (Unpredictable Fighter Mark)",
               "cost": 0,
               "weaponsGained": [],
-              "rulesGained": [
+              "rulesGained": [],
+              "itemsGained": [
                 {
-                  "kind": "core",
-                  "name": "Unpredictable Fighter Mark"
+                  "name": "Battle Pheromones",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Unpredictable Fighter Mark"
+                    }
+                  ]
                 }
               ],
               "modelsGained": 0
@@ -6479,6 +7116,18 @@
           "numericValue": 6
         }
       ],
+      "items": [
+        {
+          "name": "Spore Carrier",
+          "quantity": 1,
+          "rules": [
+            {
+              "kind": "core",
+              "name": "Spawn"
+            }
+          ]
+        }
+      ],
       "sections": [
         {
           "id": "7zyZ1MI",
@@ -6510,6 +7159,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             },
             {
@@ -6533,6 +7183,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             },
             {
@@ -6556,6 +7207,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             },
             {
@@ -6583,6 +7235,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             }
           ]
@@ -6628,6 +7281,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             },
             {
@@ -6635,10 +7289,17 @@
               "label": "Massive Spore Carrier (Spawn(Massive Spores [3]))",
               "cost": 0,
               "weaponsGained": [],
-              "rulesGained": [
+              "rulesGained": [],
+              "itemsGained": [
                 {
-                  "kind": "core",
-                  "name": "Spawn"
+                  "name": "Massive Spore Carrier",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Spawn"
+                    }
+                  ]
                 }
               ],
               "modelsGained": 0
@@ -6660,10 +7321,17 @@
               "label": "Battle Pheromones (Unpredictable Fighter Mark)",
               "cost": 0,
               "weaponsGained": [],
-              "rulesGained": [
+              "rulesGained": [],
+              "itemsGained": [
                 {
-                  "kind": "core",
-                  "name": "Unpredictable Fighter Mark"
+                  "name": "Battle Pheromones",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Unpredictable Fighter Mark"
+                    }
+                  ]
                 }
               ],
               "modelsGained": 0
@@ -6739,6 +7407,7 @@
           "name": "Fearless"
         }
       ],
+      "items": [],
       "sections": [
         {
           "id": "PWSuYMU",
@@ -6773,6 +7442,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             },
             {
@@ -6800,6 +7470,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             }
           ]
@@ -6836,6 +7507,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             },
             {
@@ -6867,6 +7539,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             },
             {
@@ -6880,6 +7553,7 @@
                   "name": "Spawn"
                 }
               ],
+              "itemsGained": [],
               "modelsGained": 0
             },
             {
@@ -6893,6 +7567,7 @@
                   "name": "Spawn"
                 }
               ],
+              "itemsGained": [],
               "modelsGained": 0
             }
           ]
@@ -6957,6 +7632,19 @@
           "numericValue": 18
         }
       ],
+      "items": [
+        {
+          "name": "Warrior Emissary",
+          "quantity": 1,
+          "rules": [
+            {
+              "kind": "coreNumeric",
+              "name": "Ravage",
+              "numericValue": 12
+            }
+          ]
+        }
+      ],
       "sections": [
         {
           "id": "fmp6ccJ",
@@ -7004,6 +7692,7 @@
                 }
               ],
               "rulesGained": [],
+              "itemsGained": [],
               "modelsGained": 0
             }
           ]
@@ -7025,11 +7714,18 @@
               "label": "Psychic Emissary (Caster(4))",
               "cost": 0,
               "weaponsGained": [],
-              "rulesGained": [
+              "rulesGained": [],
+              "itemsGained": [
                 {
-                  "kind": "coreNumeric",
-                  "name": "Caster",
-                  "numericValue": 4
+                  "name": "Psychic Emissary",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Caster",
+                      "numericValue": 4
+                    }
+                  ]
                 }
               ],
               "modelsGained": 0
@@ -7039,16 +7735,23 @@
               "label": "Carrier Titan (Tough(6), Transport(21))",
               "cost": 0,
               "weaponsGained": [],
-              "rulesGained": [
+              "rulesGained": [],
+              "itemsGained": [
                 {
-                  "kind": "coreNumeric",
-                  "name": "Tough",
-                  "numericValue": 6
-                },
-                {
-                  "kind": "coreNumeric",
-                  "name": "Transport",
-                  "numericValue": 21
+                  "name": "Carrier Titan",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Tough",
+                      "numericValue": 6
+                    },
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Transport",
+                      "numericValue": 21
+                    }
+                  ]
                 }
               ],
               "modelsGained": 0
@@ -7058,15 +7761,22 @@
               "label": "Winged Titan (Flying, Tough(6))",
               "cost": 0,
               "weaponsGained": [],
-              "rulesGained": [
+              "rulesGained": [],
+              "itemsGained": [
                 {
-                  "kind": "core",
-                  "name": "Flying"
-                },
-                {
-                  "kind": "coreNumeric",
-                  "name": "Tough",
-                  "numericValue": 6
+                  "name": "Winged Titan",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Flying"
+                    },
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Tough",
+                      "numericValue": 6
+                    }
+                  ]
                 }
               ],
               "modelsGained": 0
@@ -7095,11 +7805,18 @@
                   ]
                 }
               ],
-              "rulesGained": [
+              "rulesGained": [],
+              "itemsGained": [
                 {
-                  "kind": "coreNumeric",
-                  "name": "Tough",
-                  "numericValue": 3
+                  "name": "Devourer Titan",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Tough",
+                      "numericValue": 3
+                    }
+                  ]
                 }
               ],
               "modelsGained": 0
@@ -7127,11 +7844,18 @@
                   ]
                 }
               ],
-              "rulesGained": [
+              "rulesGained": [],
+              "itemsGained": [
                 {
-                  "kind": "coreNumeric",
-                  "name": "Tough",
-                  "numericValue": 6
+                  "name": "Grasping Titan",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Tough",
+                      "numericValue": 6
+                    }
+                  ]
                 }
               ],
               "modelsGained": 0
@@ -7216,6 +7940,33 @@
         {
           "kind": "core",
           "name": "Flying"
+        }
+      ],
+      "items": [
+        {
+          "name": "Blood Pheromones",
+          "quantity": 1,
+          "rules": [
+            {
+              "kind": "core",
+              "name": "Furious Buff"
+            }
+          ]
+        },
+        {
+          "name": "Shield of Vengeance",
+          "quantity": 1,
+          "rules": [
+            {
+              "kind": "core",
+              "name": "Fortified"
+            },
+            {
+              "kind": "coreNumeric",
+              "name": "Retaliate",
+              "numericValue": 1
+            }
+          ]
         }
       ],
       "sections": []
@@ -7304,6 +8055,29 @@
           "name": "Hero"
         }
       ],
+      "items": [
+        {
+          "name": "Bio-Smoke Pustules",
+          "quantity": 1,
+          "rules": [
+            {
+              "kind": "core",
+              "name": "Stealth Buff"
+            }
+          ]
+        },
+        {
+          "name": "Shadow Synapses",
+          "quantity": 1,
+          "rules": [
+            {
+              "kind": "coreNumeric",
+              "name": "Caster",
+              "numericValue": 1
+            }
+          ]
+        }
+      ],
       "sections": []
     },
     {
@@ -7361,6 +8135,18 @@
         {
           "kind": "core",
           "name": "Hive Bond"
+        }
+      ],
+      "items": [
+        {
+          "name": "Molded by War",
+          "quantity": 1,
+          "rules": [
+            {
+              "kind": "core",
+              "name": "Predator Fighter"
+            }
+          ]
         }
       ],
       "sections": []
@@ -7436,6 +8222,29 @@
           "name": "Unique"
         }
       ],
+      "items": [
+        {
+          "name": "Mutated Bulk",
+          "quantity": 1,
+          "rules": [
+            {
+              "kind": "core",
+              "name": "Regeneration"
+            }
+          ]
+        },
+        {
+          "name": "Kh\u012Bkh\u012B",
+          "quantity": 1,
+          "rules": [
+            {
+              "kind": "coreNumeric",
+              "name": "Piercing Tag",
+              "numericValue": 1
+            }
+          ]
+        }
+      ],
       "sections": []
     },
     {
@@ -7489,6 +8298,28 @@
         {
           "kind": "core",
           "name": "Unique"
+        }
+      ],
+      "items": [
+        {
+          "name": "Pacification Spores",
+          "quantity": 1,
+          "rules": [
+            {
+              "kind": "core",
+              "name": "Precision Debuff"
+            }
+          ]
+        },
+        {
+          "name": "Steady Vanguard",
+          "quantity": 1,
+          "rules": [
+            {
+              "kind": "core",
+              "name": "Scout"
+            }
+          ]
         }
       ],
       "sections": []
@@ -7549,6 +8380,28 @@
         {
           "kind": "core",
           "name": "Hive Bond"
+        }
+      ],
+      "items": [
+        {
+          "name": "For the Hive!",
+          "quantity": 1,
+          "rules": [
+            {
+              "kind": "core",
+              "name": "Furious Aura"
+            }
+          ]
+        },
+        {
+          "name": "Adrenaline Fueled",
+          "quantity": 1,
+          "rules": [
+            {
+              "kind": "core",
+              "name": "Fast"
+            }
+          ]
         }
       ],
       "sections": []
