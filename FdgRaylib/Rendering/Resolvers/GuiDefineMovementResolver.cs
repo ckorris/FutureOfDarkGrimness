@@ -232,18 +232,20 @@ public class GuiDefineMovementResolver
             float cumWithGhost = totalSoFar + allowed;
             MoveBand ghostBand = ClassifyBand(cumWithGhost, maxAdvance, maxRush, hasChargeBand);
             ghostExtraDist = allowed;
-            ghostOverlaps  = WouldOverlapAnyModel(ghostPos.Value, _selectedModel, request, paths);
+            // Ghost heading (#150): a hand-rotated model keeps its locked facing, otherwise it faces the
+            // direction of travel from its anchor to the ghost. Computed before the overlap test so that test
+            // measures the same oriented footprint the ghost draws.
+            Float2 ghostFacing = RotateFloat2(TravelFacing(anchor, ghostPos.Value, _selectedModel.Facing),
+                _manualOffsets.GetValueOrDefault(_selectedModel));
+            ghostOverlaps  = WouldOverlapAnyModel(ghostPos.Value, ghostFacing, _selectedModel, request, paths);
 
             // Preview line from anchor to ghost
             var (ax, ay) = InchesToPixel(anchor.x, anchor.z);
             var (gx, gy) = InchesToPixel(nx, nz);
             dl.AddLine(new Vector2(ax, ay), new Vector2(gx, gy), LineColorFor(ghostBand), 2f);
 
-            // Ghost base (true shape) + heading (#150): a hand-rotated model keeps its locked facing, otherwise
-            // it faces the direction of travel from its anchor to the ghost.
+            // Ghost base (true shape) + heading.
             uint fill = ghostOverlaps ? OverlapFill : FillColorFor(ghostBand);
-            Float2 ghostFacing = RotateFloat2(TravelFacing(anchor, ghostPos.Value, _selectedModel.Facing),
-                _manualOffsets.GetValueOrDefault(_selectedModel));
             ModelBaseRenderer.DrawFilledImGui(dl, _selectedModel.BaseShape, new Vector2(gx, gy), _scale, fill, GhostOutline, 1.5f, ghostFacing);
             ModelBaseRenderer.DrawHeadingImGui(dl, _selectedModel.BaseShape, new Vector2(gx, gy), _scale, ghostFacing, GhostOutline);
 
@@ -378,7 +380,9 @@ public class GuiDefineMovementResolver
         IReadOnlyList<Position> basePositions = lastPositions;
         if (CheckCohesion(startPairs).Any)
         {
-            var radii = models.Select(m => m.BaseRadiusInches).ToList();
+            // Circumscribing radii: the layout/repair packs by a conservative bounding circle so rectangular
+            // bases don't overlap (the authoritative move is re-validated shape-aware by the server). #150.
+            var radii = models.Select(m => m.BaseShape.CircumscribedRadiusInches).ToList();
             basePositions = GroupFormationUtilities.RepairCoherencyByContraction(
                 lastPositions, radii,
                 GameWideConstants.MAX_MODEL_DISTANCE_FROM_ANY_OTHER_MODEL_INCHES,
@@ -409,10 +413,15 @@ public class GuiDefineMovementResolver
         IUnit ownUnit = request.UnitDataBinding.GetValue();
         bool allValid = plan.WithinBudget;
         var blocked = new bool[models.Count];
+        // Each phantom's live facing (its travel direction rotated by the accumulated group offset), computed
+        // once so the overlap check measures the same oriented footprint the ghost draws (#150).
+        var groupFacings = new Float2[models.Count];
         bool anyMovement = false;
         for (int i = 0; i < models.Count; i++)
         {
-            blocked[i] = GroupPositionBlocked(newPositions[i], models[i].BaseRadiusInches, ownUnit);
+            groupFacings[i] = RotateFloat2(
+                TravelFacing(lastPositions[i], newPositions[i], models[i].Facing), _groupFacingAngle);
+            blocked[i] = GroupPositionBlocked(newPositions[i], models[i].BaseShape, groupFacings[i], ownUnit);
             if (blocked[i]) allValid = false;
             if (Position.GetDistance2D(lastPositions[i], newPositions[i]) > 0.001f) anyMovement = true;
         }
@@ -431,9 +440,8 @@ public class GuiDefineMovementResolver
             var (sx, sy) = InchesToPixel(lastPositions[i].x, lastPositions[i].z);
             var (nx, ny) = InchesToPixel(newPositions[i].x, newPositions[i].z);
             dl.AddLine(new Vector2(sx, sy), new Vector2(nx, ny), lineCol, 2f);
-            // Heading (#150): the step's direction of travel, rotated by the accumulated group offset.
-            Float2 groupFacing = RotateFloat2(
-                TravelFacing(lastPositions[i], newPositions[i], models[i].Facing), _groupFacingAngle);
+            // Heading (#150): the step's direction of travel, rotated by the accumulated group offset (computed above).
+            Float2 groupFacing = groupFacings[i];
             ModelBaseRenderer.DrawFilledImGui(dl, models[i].BaseShape, new Vector2(nx, ny), _scale, fill, GhostOutline, 1.5f, groupFacing);
             ModelBaseRenderer.DrawHeadingImGui(dl, models[i].BaseShape, new Vector2(nx, ny), _scale, groupFacing, GhostOutline);
         }
@@ -448,10 +456,11 @@ public class GuiDefineMovementResolver
         }
     }
 
-    /// <summary>True if a base of <paramref name="radius"/> at <paramref name="p"/> would overlap a
-    /// live model of another unit or sit on impassible terrain. Same-unit models are ignored — the
-    /// group moves rigidly, so internal spacing is preserved.</summary>
-    private bool GroupPositionBlocked(Position p, float radius, IUnit ownUnit)
+    /// <summary>True if <paramref name="shape"/> at <paramref name="p"/> facing <paramref name="facing"/>
+    /// would overlap a live model of another unit or sit on impassible terrain — measured by the true
+    /// oriented footprints (#150), not a bounding circle. Same-unit models are ignored (the group moves
+    /// rigidly, so internal spacing is preserved).</summary>
+    private bool GroupPositionBlocked(Position p, IBaseShape shape, Float2 facing, IUnit ownUnit)
     {
         foreach (var unit in _tableState.Units.Objects)
         {
@@ -461,11 +470,10 @@ public class GuiDefineMovementResolver
                 if (!m.GetIsAlive()) continue;
                 var mp = m.Position;
                 if (mp.x == 0f && mp.z == 0f) continue;
-                float dx = p.x - mp.x, dz = p.z - mp.z;
-                if (MathF.Sqrt(dx * dx + dz * dz) + 0.001f < radius + m.BaseRadiusInches) return true;
+                if (BaseShapeGeometry.AreColliding(shape, p, facing, m.BaseShape, mp, m.Facing)) return true;
             }
         }
-        return PlacementUtilities.OverlapsImpassibleTerrain(p, radius, _tableState.Terrain.Objects);
+        return PlacementUtilities.OverlapsImpassibleTerrain(p, shape, facing, _tableState.Terrain.Objects);
     }
 
     private void DrawInfoPanel(int screenW, DefineMovementPathRequest request, PathTemplate pt,
@@ -689,7 +697,7 @@ public class GuiDefineMovementResolver
             foreach (var m in u.Models)
                 if (m.GetIsAlive())
                 {
-                    footprints.Add(new EnemyModelFootprint(m.Position, m.BaseRadiusInches, unitKey, uncontactable));
+                        footprints.Add(new EnemyModelFootprint(m.Position, m.BaseRadiusInches, unitKey, uncontactable, m.BaseShape, m.Facing));
                     anyLiving = true;
                 }
             if (anyLiving) unitKey++;
@@ -697,12 +705,11 @@ public class GuiDefineMovementResolver
         return footprints;
     }
 
-    private bool WouldOverlapAnyModel(Position ghostPos, IModel ghostModel,
+    private bool WouldOverlapAnyModel(Position ghostPos, Float2 ghostFacing, IModel ghostModel,
         DefineMovementPathRequest request,
         IReadOnlyDictionary<IModel, IReadOnlyList<Position>> paths)
     {
         var ownUnit = request.UnitDataBinding.GetValue();
-        float gr = ghostModel.BaseRadiusInches;
         foreach (var unit in _tableState.Units.Objects)
         {
             bool isOwnUnit = unit == ownUnit;
@@ -716,10 +723,9 @@ public class GuiDefineMovementResolver
                 if (isOwnUnit && paths.TryGetValue(m, out var path) && path.Count > 0)
                     p = path[^1];
 
-                float dx = ghostPos.x - p.x;
-                float dz = ghostPos.z - p.z;
-                float horiz = MathF.Sqrt(dx * dx + dz * dz);
-                if (horiz + 0.001f < gr + m.BaseRadiusInches) return true;
+                // True oriented footprints (#150), not a bounding circle.
+                if (BaseShapeGeometry.AreColliding(ghostModel.BaseShape, ghostPos, ghostFacing, m.BaseShape, p, m.Facing))
+                    return true;
             }
         }
         return false;
@@ -769,9 +775,13 @@ public class GuiDefineMovementResolver
             for (int j = 0; j < finals.Count; j++)
             {
                 if (i == j) continue;
+                // Shape- and facing-aware (#150) so the cohesion readout matches the server's measurement; a
+                // model's current facing stands in for its projected end facing (this drives a display/repair
+                // hint the server re-validates).
                 float d = DistanceUtilities.GetBaseToBaseDistanceInches_3D(
                     finals[i].pos, finals[j].pos,
-                    finals[i].model.BaseRadiusInches, finals[j].model.BaseRadiusInches);
+                    finals[i].model.BaseShape, finals[i].model.Facing,
+                    finals[j].model.BaseShape, finals[j].model.Facing);
                 if (d < nearestDist) { nearestDist = d; nearestIdx = j; }
                 if (i < j && (!farPair.HasValue || d > farPair.Value.Item5))
                     farPair = (finals[i].model, finals[j].model, finals[i].pos, finals[j].pos, d);
@@ -964,7 +974,7 @@ public class GuiDefineMovementResolver
                         foreach (var em in aliveEnemies)
                         {
                             float b2b = DistanceUtilities.GetBaseToBaseDistanceInches_2D(
-                                from, em.Position, ourModel.BaseRadiusInches, em.BaseRadiusInches);
+                                from, em.Position, ourModel.BaseShape, ourModel.Facing, em.BaseShape, em.Facing);
                             if (b2b > EffectiveWeaponRange(w, enemyUnit)) continue;
                             // Indirect/Takedown ignore line of sight, so only range gates them.
                             if (!ignoresLoS && !LoSCommitted(ourModel, from, em, enemyUnit)) continue;
@@ -988,7 +998,7 @@ public class GuiDefineMovementResolver
                 foreach (var em in aliveEnemies)
                 {
                     float b2b = DistanceUtilities.GetBaseToBaseDistanceInches_2D(
-                        from, em.Position, ourModel.BaseRadiusInches, em.BaseRadiusInches);
+                        from, em.Position, ourModel.BaseShape, ourModel.Facing, em.BaseShape, em.Facing);
                     if (b2b <= meleeRange) { chargers++; break; }
                 }
             }
@@ -1041,7 +1051,7 @@ public class GuiDefineMovementResolver
                 {
                     if (!em.GetIsAlive()) continue;
                     float b2b = DistanceUtilities.GetBaseToBaseDistanceInches_2D(
-                        ghostPos.Value, em.Position, _selectedModel.BaseRadiusInches, em.BaseRadiusInches);
+                        ghostPos.Value, em.Position, _selectedModel.BaseShape, _selectedModel.Facing, em.BaseShape, em.Facing);
                     if (b2b > meleeRange) continue;
                     if (b2b < nearestB2B) { nearestB2B = b2b; nearestChargeTarget = em; }
                 }
@@ -1115,7 +1125,7 @@ public class GuiDefineMovementResolver
                     foreach (var em in aliveEnemies)
                     {
                         float b2b = DistanceUtilities.GetBaseToBaseDistanceInches_2D(
-                            selPos, em.Position, attacker.BaseRadiusInches, em.BaseRadiusInches);
+                            selPos, em.Position, attacker.BaseShape, attacker.Facing, em.BaseShape, em.Facing);
                         if (b2b > EffectiveWeaponRange(w, enemyUnit)) continue;
                         if (b2b < nearestInRangeB2B) { nearestInRangeB2B = b2b; nearestInRange = em; }
                         var effect = LineOfSightUtilities.EvaluateSightLine(selPos, em.Position, unitBlockers);

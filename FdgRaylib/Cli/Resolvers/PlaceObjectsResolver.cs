@@ -258,7 +258,9 @@ public class PlaceObjectsResolver<T> : IStageResolver<PlaceObjectsRequest<T>, Li
             var pos = model.Position;
             // Default-constructed Position is (0,0,0); models there haven't been placed yet.
             if (pos.x == 0f && pos.z == 0f) continue;
-            yield return (pos, model.BaseRadiusInches);
+            // Circumscribing radius so an existing rectangular base is bounded conservatively (matches the
+            // placing model's GetBaseRadius), keeping deploy spacing overlap-free for any base shape. #150.
+            yield return (pos, model.BaseShape.CircumscribedRadiusInches);
         }
     }
 
@@ -293,8 +295,11 @@ public class PlaceObjectsResolver<T> : IStageResolver<PlaceObjectsRequest<T>, Li
         return (float)Math.Sqrt(dx * dx + dz * dz);
     }
 
+    // Circumscribing radius so rectangular bases don't overlap when auto-placed and so they stay in the zone
+    // for any facing — a conservative layout bound matching the AI and GUI deploy resolvers (#150). The
+    // inscribed BaseRadiusInches under-bounded a rectangle and let adjacent bases overlap.
     private static float GetBaseRadius(T value) =>
-        value is ModelData m ? m.BaseRadiusInches : 0.75f;
+        value is ModelData m ? m.BaseShape.CircumscribedRadiusInches : 0.75f;
 
     private static bool IsInCohesion(Position candidate, float radius, List<PlacedObjectEntry<T>> placed)
     {
