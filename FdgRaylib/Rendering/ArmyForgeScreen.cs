@@ -346,10 +346,75 @@ public class ArmyForgeScreen : IAppScreen
             ImGui.TextDisabled(string.Join(", ", unit.SpecialRules.Select(r => r.PrintableName)));
         ImGui.Unindent();
 
+        DrawHeroJoin(idx, unit, compiled);
+
         RosterUnit? roster = _book.Units.FirstOrDefault(u => u.Id == bu.RosterUnitId);
         if (roster is not null)
             DrawUpgradeEditors(bu, roster, unit, items);
     }
+
+    // #006 hero-join, Forge-side: same semantics as the freeform builder's picker — hosts are other
+    // multi-model, non-Hero units in the list; the link is by author-stable BuilderUnit.Id (generated on
+    // demand); eligibility problems surface through ListValidator's issues, not silent no-ops.
+    private void DrawHeroJoin(int idx, UnitFileEntry compiledUnit, BuiltArmyFile compiled)
+    {
+        BuilderUnit bu = _list.Units[idx];
+
+        if (ForceOrgValidator.IsHero(compiledUnit))
+        {
+            List<int> hosts = HostCandidates(idx, compiled);
+            string[] options = new string[hosts.Count + 1];
+            options[0] = "(none - deploys solo)";
+            for (int i = 0; i < hosts.Count; i++)
+                options[i + 1] = ListRowLabel(hosts[i], compiled);
+
+            int sel = 0;
+            if (!string.IsNullOrEmpty(bu.JoinsUnitId))
+                sel = hosts.FindIndex(h => _list.Units[h].Id == bu.JoinsUnitId) + 1; // -1+1 = 0 when stale
+
+            ImGui.Spacing();
+            ImGui.SetNextItemWidth(240f);
+            if (ImGui.Combo($"Joins unit##join{idx}", ref sel, options, options.Length))
+                bu.JoinsUnitId = sel == 0 ? null : EnsureId(_list.Units[hosts[sel - 1]]);
+
+            if (!string.IsNullOrEmpty(bu.JoinsUnitId) && sel == 0)
+                ImGui.TextColored(YellowText, "! Join target missing or ineligible (see issues) - deploys solo.");
+        }
+        else if (!string.IsNullOrEmpty(bu.Id))
+        {
+            // Host-side breadcrumb: which hero(es) picked this unit.
+            List<string> joiners = _list.Units
+                .Where(h => !ReferenceEquals(h, bu) && h.JoinsUnitId == bu.Id)
+                .Select(h => compiled.Units[_list.Units.IndexOf(h)].Name)
+                .ToList();
+            if (joiners.Count > 0)
+                ImGui.TextDisabled($"Joined by: {string.Join(", ", joiners)}");
+        }
+    }
+
+    /// <summary>List indices of units a hero at <paramref name="heroIdx"/> may join: other multi-model,
+    /// non-Hero units (mirrors the #006 eligibility the engine enforces at setup).</summary>
+    internal List<int> HostCandidates(int heroIdx, BuiltArmyFile compiled)
+    {
+        var hosts = new List<int>();
+        for (int i = 0; i < compiled.Units.Count; i++)
+            if (i != heroIdx && compiled.Units[i].ModelCount > 1 && !ForceOrgValidator.IsHero(compiled.Units[i]))
+                hosts.Add(i);
+        return hosts;
+    }
+
+    // Disambiguates duplicate squads in combos: "Retributors [5]", "Retributors [5] #2", ...
+    private string ListRowLabel(int idx, BuiltArmyFile compiled)
+    {
+        UnitFileEntry unit = compiled.Units[idx];
+        int nth = 0;
+        for (int i = 0; i <= idx; i++)
+            if (compiled.Units[i].Name == unit.Name) nth++;
+        return nth > 1 ? $"{unit.Name} [{unit.ModelCount}] #{nth}" : $"{unit.Name} [{unit.ModelCount}]";
+    }
+
+    internal static string EnsureId(BuilderUnit unit) =>
+        unit.Id ??= Guid.NewGuid().ToString("N");
 
     // Interactive upgrade sections: mutate the BuilderUnit's choices; the per-frame recompile re-costs live.
     private static void DrawUpgradeEditors(BuilderUnit bu, RosterUnit roster, UnitFileEntry compiledUnit, List<ItemEntry> items)

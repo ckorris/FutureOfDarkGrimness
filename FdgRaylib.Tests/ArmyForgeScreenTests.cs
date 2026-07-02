@@ -163,6 +163,27 @@ public class ArmyForgeScreenTests
         Assert.That(screen.Compile().Units.Single().PointCost, Is.EqualTo(165)); // 120 + 15×3 (all 3 swapped)
     }
 
+    // ── #006 hero-join seams ────────────────────────────────────────────────────────────────────────────
+
+    [Test]
+    public void EnsureId_GeneratesOnce_ThenStable()
+    {
+        var bu = new BuilderUnit();
+        string id = ArmyForgeScreen.EnsureId(bu);
+        Assert.That(id, Is.Not.Empty);
+        Assert.That(ArmyForgeScreen.EnsureId(bu), Is.EqualTo(id));
+    }
+
+    [Test]
+    public void HostCandidates_ExcludesSelf()
+    {
+        var screen = new ArmyForgeScreen();
+        screen.AddToList("warriors");
+        screen.AddToList("gunners");
+        var hosts = screen.HostCandidates(0, screen.Compile());
+        Assert.That(hosts, Is.EqualTo(new[] { 1 }));
+    }
+
     // ── P4: validation surfaced through the screen ──────────────────────────────────────────────────────
 
     [Test]
