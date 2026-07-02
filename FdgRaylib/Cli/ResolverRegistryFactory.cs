@@ -14,6 +14,7 @@ public static class ResolverRegistryFactory
         return new StageResolverRegistry()
             .RegisterResolver(new YesNoResolver())
             .RegisterResolver(new StringSelectionResolver())
+            .RegisterResolver(new CastAssistResolver())
             .RegisterResolver(new ChooseDeploymentZoneResolver())
             .RegisterResolver(new ChooseRangedAttackResolver())
             .RegisterResolver(new DefineMovementPathResolver(tableState))
@@ -37,11 +38,12 @@ public static class ResolverRegistryFactory
         var formationMode = new FormationModeState();
 
         var yesNo         = new GuiYesNoResolver();
-        var selectUnit    = new GuiSelectionResolver<UnitData>();
+        var selectUnit    = new GuiUnitSelectionResolver();   // canvas click-to-select (spell targets, melee defender)
         var selectModel   = new GuiSelectionResolver<ModelData>();
         var selectZone    = new GuiSelectionResolver<RectangularZone>();
-        var cancelSelectUnit = new GuiCancellableSelectionResolver<UnitData>();
+        var cancelSelectUnit = new GuiCancellableUnitSelectionResolver();   // canvas click-to-select (#100 pre-attack targeting)
         var strSel        = new GuiStringSelectionResolver();
+        var castAssist    = new GuiCastAssistResolver();
         var deployZone    = new GuiChooseDeploymentZoneResolver();
         var rangedAttack  = new GuiChooseRangedAttackResolver(tableState);
         var assignWounds  = new GuiAssignWoundsResolver();
@@ -56,6 +58,7 @@ public static class ResolverRegistryFactory
         overlay.Register(selectZone);
         overlay.Register(cancelSelectUnit);
         overlay.Register(strSel);
+        overlay.Register(castAssist);
         overlay.Register(deployZone);
         overlay.Register(rangedAttack);
         overlay.Register(assignWounds);
@@ -72,6 +75,7 @@ public static class ResolverRegistryFactory
             .RegisterResolver(selectZone)                                    // GUI
             .RegisterResolver(cancelSelectUnit)                              // GUI
             .RegisterResolver(strSel)                                        // GUI
+            .RegisterResolver(castAssist)                                    // GUI
             .RegisterResolver(deployZone)                                    // GUI
             .RegisterResolver(rangedAttack)                                  // GUI
             .RegisterResolver(assignWounds)                                  // GUI

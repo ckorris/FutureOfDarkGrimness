@@ -8,9 +8,9 @@ namespace FdgRaylib.Rendering.Resolvers;
 
 public class GuiSelectionResolver<T> : IStageResolver<SelectionRequest<T>, DataBinding<T>>, IGuiResolver
 {
-    private readonly object _lock = new();
-    private SelectionRequest<T>? _request;
-    private TaskCompletionSource<DataBinding<T>>? _tcs;
+    protected readonly object _lock = new();
+    protected SelectionRequest<T>? _request;
+    protected TaskCompletionSource<DataBinding<T>>? _tcs;
 
     public bool HasPendingRequest { get { lock (_lock) return _request != null; } }
 
@@ -25,7 +25,7 @@ public class GuiSelectionResolver<T> : IStageResolver<SelectionRequest<T>, DataB
         return tcs.Task;
     }
 
-    public void Draw(int screenW, int screenH)
+    public virtual void Draw(int screenW, int screenH)
     {
         SelectionRequest<T>? request;
         TaskCompletionSource<DataBinding<T>>? tcs;
@@ -109,7 +109,7 @@ public class GuiSelectionResolver<T> : IStageResolver<SelectionRequest<T>, DataB
         ImGui.End();
     }
 
-    private void Complete(TaskCompletionSource<DataBinding<T>> tcs, DataBinding<T> option)
+    protected void Complete(TaskCompletionSource<DataBinding<T>> tcs, DataBinding<T> option)
     {
         lock (_lock) { _request = null; _tcs = null; }
         tcs.SetResult(option);

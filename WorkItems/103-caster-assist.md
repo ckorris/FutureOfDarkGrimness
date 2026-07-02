@@ -74,6 +74,26 @@ the (now complete) core casting framework.
   hinder an enemy's) is a future refinement.
 
 ## Notes
+- 2026-07-01: **Hand-verify feedback + GUI polish** (branch `103-caster-assist`, both repos). After the user
+  hand-verified round 1 (all prompts appeared, net math correct) three gaps surfaced; addressed:
+  - **Cast roll was invisible.** The cast log now spells out the die + the assist math, e.g. `Sorcerer cast
+    Bless — rolled 4, needed 3+ (base 4+, net +1 assist); spent 1 token` (+ each assist prompt shows the
+    assister's token count). Engine `a64bc27`. A *visual* die (tumbling dice on canvas) stays out of scope —
+    that's #056 (presentation beat stream).
+  - **Click-to-target on the canvas** (like shooting). Made every `SelectionRequest<UnitData>` and the #100
+    `CancellableSelectionRequest<UnitData>` canvas-clickable via the shared `ICanvasInteractionHandler` seam +
+    `TableHitTester`: new `GuiUnitSelectionResolver` / `GuiCancellableUnitSelectionResolver` ring the valid
+    units and select on click (dialog stays as fallback + Back). Covers spell targets, melee defender, and
+    pre-attack targeting (the user chose "all unit picks"). App-side only.
+  - **Assist highlight + line + token count.** Replaced the generic `StringSelectionRequest` assist prompt
+    with a dedicated `CastAssistRequest` (carries both units + friendly flag + tokens) so the GUI can draw:
+    new `GuiCastAssistResolver` rings the assister and draws a line to the caster — **blue** for a friendly
+    +1, **orange** for an enemy −1 — labels the assister's token count, and offers a 0..N picker. CLI
+    (`CastAssistResolver`, EOF→0) + AI (`AiCastAssistResolver`, always 0) resolvers added; the old
+    `DECLINE_ASSIST_CHOICE` sentinel + AiStringSelection branch removed. Engine `0f9f8f8`.
+  - Test aid `CasterCovenTest.fdgarmy` (3 standalone Casters + cheap spells) added earlier for verification.
+  - Full build clean, engine suite 950/0, headless smoke exit 0. **Awaiting GUI hand-verification** of the
+    polish (canvas click-to-select + blue/orange assist viz).
 - 2026-06-30: **Built** on branch `103-caster-assist` (both repos). Assist window inserted in
   `CastSpellStage.Enter` after the caster commits the cast cost and before the roll: `CollectCastAssist`
   finds eligible Casters (`FindEligibleAssisters` — living, on-battlefield, ≥1 SpellToken, within
