@@ -158,7 +158,7 @@ public class GuiPlaceObjectsResolver<T>
             var binding = _placed[k].Binding;
             float r = GetBaseRadius(binding.GetValue());
             var cand = new Position(mouseInX, mouseInZ);
-            bool valid = IsPlacementValid(cand, r, zone, enemies, minEnemyDist, k, out string? why);
+            bool valid = IsPlacementValid(cand, r, GetBaseShape(binding.GetValue()), facing, zone, enemies, minEnemyDist, k, out string? why);
             if (overTable) DrawGhost(dl, GetBaseShape(binding.GetValue()), io.MousePos, _scale, valid, facing);
             if (clicked)
             {
@@ -188,7 +188,7 @@ public class GuiPlaceObjectsResolver<T>
         var currentBinding = request.ModelsToPlace[_placed.Count];
         float curR = GetBaseRadius(currentBinding.GetValue());
         var candidate = new Position(mouseInX, mouseInZ);
-        bool ok = IsPlacementValid(candidate, curR, zone, enemies, minEnemyDist, -1, out string? reason);
+        bool ok = IsPlacementValid(candidate, curR, GetBaseShape(currentBinding.GetValue()), facing, zone, enemies, minEnemyDist, -1, out string? reason);
         if (overTable) DrawGhost(dl, GetBaseShape(currentBinding.GetValue()), io.MousePos, _scale, ok, facing);
         if (clicked)
         {
@@ -221,13 +221,22 @@ public class GuiPlaceObjectsResolver<T>
             }
         }
 
+        // Per-axis half-extents at the un-rotated deploy facing so the formation layout packs a wide rectangle
+        // tight on both axes (#150); the circumscribing radius is still used for overlap/zone checks.
         var radii = new float[n];
-        for (int i = 0; i < n; i++) radii[i] = GetBaseRadius(models[i].GetValue());
+        var halfXs = new float[n];
+        var halfZs = new float[n];
+        Float2 baseFacing = PlacementUtilities.DefaultDeployFacing(zone.Bounds, _tableH);
+        for (int i = 0; i < n; i++)
+        {
+            radii[i] = GetBaseRadius(models[i].GetValue());
+            (halfXs[i], halfZs[i]) = HalfExtents(models[i].GetValue(), baseFacing);
+        }
 
         // Forward = toward table centre: longer/front row sits on that side.
         float forwardSign = zone.Bounds.CenterZ < _tableH * 0.5f ? 1f : -1f;
         var offsets = GroupFormationUtilities.ComputeDeploymentOffsets(
-            radii, 0.1f, GameWideConstants.MAX_MODEL_DISTANCE_FROM_ALL_OTHER_MODELS_INCHES, forwardSign);
+            halfXs, halfZs, 0.1f, GameWideConstants.MAX_MODEL_DISTANCE_FROM_ALL_OTHER_MODELS_INCHES, forwardSign);
 
         // Centroid follows the cursor (over table); otherwise preview at the zone's forward-centre.
         Position centroid;
@@ -254,7 +263,7 @@ public class GuiPlaceObjectsResolver<T>
             float dx = offsets[i].dx, dz = offsets[i].dz;
             float rx = dx * cos - dz * sin, rz = dx * sin + dz * cos;
             positions[i] = new Position(centroid.x + rx, centroid.z + rz);
-            bool valid = IsGroupSlotValid(positions[i], radii[i], zone, enemies, minEnemyDist);
+            bool valid = IsGroupSlotValid(positions[i], radii[i], GetBaseShape(models[i].GetValue()), groupFacing, zone, enemies, minEnemyDist);
             DrawGhost(dl, GetBaseShape(models[i].GetValue()), ToPixelVec(positions[i]), _scale, valid, groupFacing);
             if (!valid) allValid = false;
         }
@@ -301,23 +310,26 @@ public class GuiPlaceObjectsResolver<T>
         return -1;
     }
 
-    /// <summary>Full single-placement validity for a candidate, ignoring placed model <paramref name="excludeIndex"/>.</summary>
-    private bool IsPlacementValid(Position cand, float r, IBoundedZone zone, List<Position> enemies,
-        float minEnemyDist, int excludeIndex, out string? reason)
+    /// <summary>Full single-placement validity for a candidate, ignoring placed model <paramref name="excludeIndex"/>.
+    /// Overlap, cohesion and terrain use the true oriented footprint (#150), not a bounding circle — so tight,
+    /// legal packings of elongated rectangles aren't falsely rejected. <paramref name="r"/> (circumscribing)
+    /// still bounds the zone/table containment (rotation-safe).</summary>
+    private bool IsPlacementValid(Position cand, float r, IBaseShape shape, Float2 facing, IBoundedZone zone,
+        List<Position> enemies, float minEnemyDist, int excludeIndex, out string? reason)
     {
         if (!IsBaseWithinZone(cand, r, zone))
         { reason = "Outside deployment zone."; return false; }
 
-        string? overlap = CheckOverlap(cand, r, excludeIndex);
+        string? overlap = CheckOverlap(cand, shape, facing, excludeIndex);
         if (overlap != null) { reason = $"Bases overlap ({overlap})."; return false; }
 
-        if (!IsInCohesion(cand, r, excludeIndex))
+        if (!IsInCohesion(cand, shape, facing, excludeIndex))
         { reason = $"Outside cohesion - must be within {GameWideConstants.MAX_MODEL_DISTANCE_FROM_ANY_OTHER_MODEL_INCHES}\" base-to-base of a placed model."; return false; }
 
         if (minEnemyDist > 0f && TooCloseToEnemy(cand, enemies, minEnemyDist))
         { reason = $"Too close to an enemy - must be over {minEnemyDist:F0}\" from enemy units."; return false; }
 
-        if (OnImpassibleTerrain(cand, r))
+        if (PlacementUtilities.OverlapsImpassibleTerrain(cand, shape, facing, _tableState.Terrain.Objects))
         { reason = "On impassible terrain - the model's base would overlap a building or blocker."; return false; }
 
         reason = null;
@@ -327,26 +339,22 @@ public class GuiPlaceObjectsResolver<T>
     /// <summary>Validity for a model in a dropped group: zone containment, no overlap with on-table
     /// occupants or terrain, and enemy spacing. Intra-formation overlap/cohesion are guaranteed by the
     /// layout, so they aren't re-checked here.</summary>
-    private bool IsGroupSlotValid(Position cand, float r, IBoundedZone zone, List<Position> enemies, float minEnemyDist)
+    private bool IsGroupSlotValid(Position cand, float r, IBaseShape shape, Float2 facing, IBoundedZone zone,
+        List<Position> enemies, float minEnemyDist)
     {
         if (!IsBaseWithinZone(cand, r, zone)) return false;
-        foreach (var (pos, radius) in GetTableOccupants())
-            if (Overlaps(cand, r, pos, radius)) return false;
+        foreach (var (pos, oShape, oFacing) in GetTableOccupants())
+            if (BaseShapeGeometry.AreColliding(shape, cand, facing, oShape, pos, oFacing)) return false;
         if (minEnemyDist > 0f && TooCloseToEnemy(cand, enemies, minEnemyDist)) return false;
-        if (OnImpassibleTerrain(cand, r)) return false;
+        if (PlacementUtilities.OverlapsImpassibleTerrain(cand, shape, facing, _tableState.Terrain.Objects)) return false;
         return true;
     }
 
-    // A model's base is within the zone if its centre keeps the base inside the bounding box (inset by the
-    // base radius) AND the centre is inside the zone's true shape — so a circular zone constrains placement
-    // to the real circle, not its bounding square, while a rectangle keeps its base-fully-inside behaviour.
+    // A model's base is within the zone if its footprint stays inside the bounding box (inset by the base
+    // radius) AND its centre is inside the zone's true shape. Shared with the CLI/AI deploy resolvers so all
+    // three enforce the same "base fully in zone / on the table" rule (#150 follow-up).
     private static bool IsBaseWithinZone(Position cand, float r, IBoundedZone zone)
-    {
-        ZoneBounds b = zone.Bounds;
-        return cand.x >= b.Left + r && cand.x <= b.Right - r
-            && cand.z >= b.Bottom + r && cand.z <= b.Top - r
-            && zone.IsPointWithinZone(cand);
-    }
+        => PlacementUtilities.IsBaseWithinZone(cand, r, zone);
 
     private void DrawZone(ImDrawListPtr dl, IZone zone)
     {
@@ -494,10 +502,19 @@ public class GuiPlaceObjectsResolver<T>
     private bool AutoPlaceRemaining(PlaceObjectsRequest<T> request)
     {
         var zone = request.DeploymentZone;
-        float maxRadius = request.ModelsToPlace
-            .Select(b => GetBaseRadius(b.GetValue()))
-            .DefaultIfEmpty(0.75f).Max();
-        float step = maxRadius * 2 + 0.1f;
+        Float2 deployFacing = PlacementUtilities.DefaultDeployFacing(zone.Bounds, _tableH);
+
+        // Per-axis step so a wide rectangle packs tight rows (not one long row), + a column cap so the unit
+        // stays a compact block inside the 9" all-pairs rule (#150).
+        float stepX = 2f * 0.1f, stepZ = 2f * 0.1f;
+        foreach (var b0 in request.ModelsToPlace)
+        {
+            var (hx, hz) = HalfExtents(b0.GetValue(), deployFacing);
+            stepX = MathF.Max(stepX, 2f * hx + 0.1f);
+            stepZ = MathF.Max(stepZ, 2f * hz + 0.1f);
+        }
+        int total = request.ModelsToPlace.Count;
+        int targetCols = Math.Max(1, (int)MathF.Ceiling(MathF.Sqrt(total)));
         float startCz = zone.Bounds.CenterZ;
 
         float minEnemyDist = request.MinDistanceFromEnemiesInches;
@@ -507,36 +524,38 @@ public class GuiPlaceObjectsResolver<T>
         {
             var binding = request.ModelsToPlace[i];
             float r = GetBaseRadius(binding.GetValue());
-
-            if (!TryFindAutoPosition(r, step, zone, startCz, enemies, minEnemyDist, out Position pos))
+            IBaseShape shape = GetBaseShape(binding.GetValue());
+            if (!TryFindAutoPosition(r, shape, deployFacing, stepX, stepZ, targetCols, zone, startCz, enemies, minEnemyDist, out Position pos))
                 return false;
-            _placed.Add(new PlacedObjectEntry<T>(binding, pos));
+            _placed.Add(new PlacedObjectEntry<T>(binding, pos, deployFacing));
         }
         return true;
     }
 
-    private bool TryFindAutoPosition(float r, float step, IBoundedZone zone, float startCz,
-        List<Position> enemies, float minEnemyDist, out Position result)
+    private bool TryFindAutoPosition(float r, IBaseShape shape, Float2 facing, float stepX, float stepZ, int targetCols,
+        IBoundedZone zone, float startCz, List<Position> enemies, float minEnemyDist, out Position result)
     {
-        // Sweep rows out from zone centre: 0, +step, -step, +2*step, -2*step, ...
+        // Fill a compact ~targetCols-wide block, anchored at the first placed model, scanning Z rows outward.
         ZoneBounds b = zone.Bounds;
-        int maxRows = (int)((b.Top - b.Bottom) / step) + 1;
+        float xStart = _placed.Count > 0 ? _placed[0].Position.x : b.Left + r;
+        float rowXEnd = MathF.Min(b.Right - r, xStart + (targetCols - 1) * stepX + 0.001f);
+        int maxRows = (int)((b.Top - b.Bottom) / stepZ) + 1;
         for (int rowOffset = 0; rowOffset <= maxRows; rowOffset++)
         {
             int signCount = rowOffset == 0 ? 1 : 2;
             for (int s = 0; s < signCount; s++)
             {
-                float z = startCz + (s == 0 ? rowOffset : -rowOffset) * step;
+                float z = startCz + (s == 0 ? rowOffset : -rowOffset) * stepZ;
                 if (z < b.Bottom + r || z > b.Top - r) continue;
 
-                for (float x = b.Left + r; x <= b.Right - r; x += step * 0.5f)
+                for (float x = xStart; x <= rowXEnd; x += stepX)
                 {
                     var c = new Position(x, z);
-                    if (!zone.IsPointWithinZone(c)) continue; // outside the true shape (e.g. a circle's corners)
-                    if (CheckOverlap(c, r) != null) continue;
-                    if (OnImpassibleTerrain(c, r)) continue;
+                    if (!PlacementUtilities.IsBaseWithinZone(c, r, zone)) continue;
+                    if (CheckOverlap(c, shape, facing) != null) continue;
+                    if (PlacementUtilities.OverlapsImpassibleTerrain(c, shape, facing, _tableState.Terrain.Objects)) continue;
                     if (minEnemyDist > 0f && TooCloseToEnemy(c, enemies, minEnemyDist)) continue;
-                    if (!IsInCohesion(c, r, -1)) continue;
+                    if (!IsInCohesion(c, shape, facing, -1)) continue;
                     result = c; return true;
                 }
             }
@@ -591,39 +610,34 @@ public class GuiPlaceObjectsResolver<T>
         return false;
     }
 
-    // True if a model placed here would overlap impassible terrain (a model occupies its base disc).
-    private bool OnImpassibleTerrain(Position candidate, float radius) =>
-        PlacementUtilities.OverlapsImpassibleTerrain(candidate, radius, _tableState.Terrain.Objects);
-
     /// <summary>Returns null if free; otherwise a brief description of the conflict. Ignores the placed
-    /// model at <paramref name="excludeIndex"/> (the one being re-placed by drag).</summary>
-    private string? CheckOverlap(Position newPos, float newRadius, int excludeIndex = -1)
+    /// model at <paramref name="excludeIndex"/> (the one being re-placed by drag). True-shape overlap (#150):
+    /// two bases overlap iff their real oriented footprints intersect, not their circumscribing circles.</summary>
+    private string? CheckOverlap(Position newPos, IBaseShape newShape, Float2 newFacing, int excludeIndex = -1)
     {
         for (int i = 0; i < _placed.Count; i++)
         {
             if (i == excludeIndex) continue;
             var entry = _placed[i];
-            float er = GetBaseRadius(entry.Binding.GetValue());
-            if (Overlaps(newPos, newRadius, entry.Position, er))
-                return $"need {newRadius + er:F2}\", got {Dist(newPos, entry.Position):F2}\"";
+            IBaseShape es = GetBaseShape(entry.Binding.GetValue());
+            Float2 ef = entry.Facing ?? new Float2(0f, 1f);
+            if (BaseShapeGeometry.AreColliding(newShape, newPos, newFacing, es, entry.Position, ef))
+                return $"gap {BaseShapeGeometry.SurfaceGap2D(newShape, newPos, newFacing, es, entry.Position, ef):F2}\"";
         }
-        foreach (var (pos, radius) in GetTableOccupants())
-        {
-            if (Overlaps(newPos, newRadius, pos, radius))
-                return $"need {newRadius + radius:F2}\", got {Dist(newPos, pos):F2}\"";
-        }
+        foreach (var (pos, shape, facing) in GetTableOccupants())
+            if (BaseShapeGeometry.AreColliding(newShape, newPos, newFacing, shape, pos, facing))
+                return $"gap {BaseShapeGeometry.SurfaceGap2D(newShape, newPos, newFacing, shape, pos, facing):F2}\"";
         return null;
     }
 
-    private IEnumerable<(Position pos, float radius)> GetTableOccupants()
+    private IEnumerable<(Position pos, IBaseShape shape, Float2 facing)> GetTableOccupants()
     {
         foreach (var model in _tableState.Models.Objects)
         {
             var pos = model.Position;
             // Default-constructed Position is (0,0,0); models there haven't been placed yet.
             if (pos.x == 0f && pos.z == 0f) continue;
-            // Circumscribing radius so a placed rectangle's whole footprint is avoided at any facing (#150).
-            yield return (pos, model.BaseShape.CircumscribedRadiusInches);
+            yield return (pos, model.BaseShape, model.Facing);
         }
     }
 
@@ -655,8 +669,6 @@ public class GuiPlaceObjectsResolver<T>
         px <= _originX + GameWideConstants.DEFAULT_TABLE_WIDTH_INCHES * _scale &&
         py <= _originY + _tableH * _scale;
 
-    private static bool Overlaps(Position a, float ra, Position b, float rb) => Dist(a, b) < ra + rb;
-
     private static float Dist(Position a, Position b)
     {
         float dx = a.x - b.x, dz = a.z - b.z;
@@ -672,9 +684,14 @@ public class GuiPlaceObjectsResolver<T>
     // The base shape for rendering / hit-testing (#149). Non-model T (e.g. objectives) → a default circle.
     private static IBaseShape GetBaseShape(T value) => value is ModelData m ? m.BaseShape : new CircleBase(0.75f);
 
+    // Per-axis footprint half-extents at the deploy facing, for the auto-placement grid step (#150).
+    private static (float hx, float hz) HalfExtents(T value, Float2 facing) =>
+        value is ModelData m ? BaseShapeGeometry.FootprintHalfExtents(m.BaseShape, facing) : (0.75f, 0.75f);
+
     /// <summary>True if the candidate is within nearest-neighbour cohesion of at least one other placed
-    /// model, ignoring <paramref name="excludeIndex"/>. Vacuously true when there are no other models.</summary>
-    private bool IsInCohesion(Position candidate, float candidateRadius, int excludeIndex)
+    /// model, ignoring <paramref name="excludeIndex"/>. Vacuously true when there are no other models. Uses the
+    /// true oriented footprint gap (#150) so the readout matches the server's shape-aware coherency check.</summary>
+    private bool IsInCohesion(Position candidate, IBaseShape shape, Float2 facing, int excludeIndex)
     {
         bool anyOther = false;
         for (int i = 0; i < _placed.Count; i++)
@@ -682,8 +699,9 @@ public class GuiPlaceObjectsResolver<T>
             if (i == excludeIndex) continue;
             anyOther = true;
             var entry = _placed[i];
-            float er = GetBaseRadius(entry.Binding.GetValue());
-            float b2b = Dist(candidate, entry.Position) - candidateRadius - er;
+            IBaseShape es = GetBaseShape(entry.Binding.GetValue());
+            Float2 ef = entry.Facing ?? new Float2(0f, 1f);
+            float b2b = BaseShapeGeometry.SurfaceGap2D(shape, candidate, facing, es, entry.Position, ef);
             if (b2b <= GameWideConstants.MAX_MODEL_DISTANCE_FROM_ANY_OTHER_MODEL_INCHES)
                 return true;
         }

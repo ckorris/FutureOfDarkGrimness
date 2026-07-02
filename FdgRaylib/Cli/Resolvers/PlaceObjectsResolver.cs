@@ -59,6 +59,17 @@ public class PlaceObjectsResolver<T> : IStageResolver<PlaceObjectsRequest<T>, Li
         Float2 defaultFacing = PlacementUtilities.DefaultDeployFacing(
             bounds, GameWideConstants.DEFAULT_TABLE_HEIGHT_INCHES);
 
+        // Per-axis auto-placement steps (#150): a single (circumscribing) step over-spaces a wide rectangle's
+        // short axis, forcing it into one long row that breaks the 9" all-pairs cohesion rule. Column step from
+        // the widest base's X extent, row step from the tallest base's Z extent, each + 0.1" base-to-base.
+        float autoStepX = 2f * 0.1f, autoStepZ = 2f * 0.1f;
+        foreach (var b in request.ModelsToPlace)
+        {
+            var (hx, hz) = GetHalfExtents(b.GetValue(), defaultFacing);
+            autoStepX = MathF.Max(autoStepX, 2f * hx + 0.1f);
+            autoStepZ = MathF.Max(autoStepZ, 2f * hz + 0.1f);
+        }
+
         var placed = new List<PlacedObjectEntry<T>>();
         for (int i = 0; i < request.ModelsToPlace.Count; i++)
         {
@@ -72,8 +83,8 @@ public class PlaceObjectsResolver<T> : IStageResolver<PlaceObjectsRequest<T>, Li
                 string? raw = Console.ReadLine();
                 if (raw == null)
                 {
-                    var pos = FindAutoPosition(r, autoSpacing, zone, cz, xStagger, placed, enemies, minEnemyDist,
-                        request.MustTouchTableEdge);
+                    var pos = FindAutoPosition(r, ShapeOf(binding.GetValue()), defaultFacing, autoStepX, autoStepZ, zone, cz, xStagger, placed, enemies, minEnemyDist,
+                        total, request.MustTouchTableEdge);
                     Console.WriteLine($"    (EOF — auto-placing at {pos.x:F1}\", {pos.z:F1}\")");
                     placed.Add(new PlacedObjectEntry<T>(binding, pos, defaultFacing));
                     break;
@@ -83,14 +94,16 @@ public class PlaceObjectsResolver<T> : IStageResolver<PlaceObjectsRequest<T>, Li
                 if (parts.Length >= 2 && float.TryParse(parts[0], out float x) && float.TryParse(parts[1], out float z))
                 {
                     var newPos = new Position(x, z);
-                    if (!zone.IsPointWithinZone(newPos))
+                    // The whole base (not just its centre) must stay inside the zone — and since deployment
+                    // zones sit flush with the table edge, this also keeps the base on the table.
+                    if (!PlacementUtilities.IsBaseWithinZone(newPos, r, zone))
                     {
-                        Console.WriteLine($"    ! Outside the placement zone (bounds X {bounds.Left:F1}\"–{bounds.Right:F1}\", Z {bounds.Bottom:F1}\"–{bounds.Top:F1}\").");
+                        Console.WriteLine($"    ! Base would extend outside the placement zone / off the table (keep the centre ≥ {r:F1}\" inside bounds X {bounds.Left:F1}\"–{bounds.Right:F1}\", Z {bounds.Bottom:F1}\"–{bounds.Top:F1}\").");
                         continue;
                     }
 
-                    string? overlap = CheckOverlap(newPos, r, placed)
-                        ?? CheckOverlapWithExisting(newPos, r, GetTableOccupants());
+                    string? overlap = CheckOverlap(newPos, ShapeOf(binding.GetValue()), defaultFacing, placed)
+                        ?? CheckOverlapWithExisting(newPos, ShapeOf(binding.GetValue()), defaultFacing, GetTableOccupants());
                     if (overlap != null)
                     {
                         Console.WriteLine($"    ! Bases would overlap ({overlap}).");
@@ -135,15 +148,19 @@ public class PlaceObjectsResolver<T> : IStageResolver<PlaceObjectsRequest<T>, Li
         return Task.FromResult(placed);
     }
 
-    // Scans the zone left-to-right at zone-center Z to find the first free spot,
-    // skipping over models already on the table from previous deployment requests.
-    // Each deployment row is staggered by half a step on X to avoid vertical alignment.
-    private Position FindAutoPosition(float r, float step, IBoundedZone zone, float cz,
+    // Finds the next free auto-placement slot, scanning a compact grid (per-axis step so a wide rectangle
+    // forms tight rows instead of one long row that breaks the 9" all-pairs cohesion rule — #150). Skips over
+    // models already on the table from previous deployment requests.
+    private Position FindAutoPosition(float r, IBaseShape shape, Float2 facing, float stepX, float stepZ, IBoundedZone zone, float cz,
         float xStagger, List<PlacedObjectEntry<T>> placedSoFar, List<Position> enemies, float minEnemyDist,
-        bool mustTouchEdge = false)
+        int unitTotal, bool mustTouchEdge = false)
     {
         var existing = GetTableOccupants().ToList();
         ZoneBounds b = zone.Bounds;
+
+        // Cap columns at ~√N so the unit wraps into a square-ish block instead of one long row (which would
+        // break the 9" all-pairs cohesion rule on a wide zone). Matches the grid packers' column count. #150.
+        int targetCols = Math.Max(1, (int)MathF.Ceiling(MathF.Sqrt(Math.Max(1, unitTotal))));
 
         // #029 edge redeploy: scan along the zone edges (bottom, top, left, right) so every auto-placed base
         // touches an edge; cohesion then strings the unit along it.
@@ -154,72 +171,97 @@ public class PlaceObjectsResolver<T> : IStageResolver<PlaceObjectsRequest<T>, Li
             {
                 if (isRow)
                 {
-                    for (float x = b.Left + r; x <= b.Right - r; x += step)
+                    for (float x = b.Left + r; x <= b.Right - r; x += stepX)
                     {
                         var candidate = new Position(x, fixedCoord);
-                        if (IsAutoCandidateFree(candidate, r, zone, placedSoFar, existing, enemies, minEnemyDist))
+                        if (IsAutoCandidateFree(candidate, r, shape, facing, zone, placedSoFar, existing, enemies, minEnemyDist))
                             return candidate;
                     }
                 }
                 else
                 {
-                    for (float z = b.Bottom + r; z <= b.Top - r; z += step)
+                    for (float z = b.Bottom + r; z <= b.Top - r; z += stepZ)
                     {
                         var candidate = new Position(fixedCoord, z);
-                        if (IsAutoCandidateFree(candidate, r, zone, placedSoFar, existing, enemies, minEnemyDist))
+                        if (IsAutoCandidateFree(candidate, r, shape, facing, zone, placedSoFar, existing, enemies, minEnemyDist))
                             return candidate;
                     }
                 }
             }
-            return new Position(Math.Clamp(b.CenterX, b.Left + r, b.Right - r), b.Bottom + r);
+            return CohesiveFallback(placedSoFar, b, r, b.Bottom + r);
         }
 
-        // With an enemy-distance constraint (Ambush), scan Z rows too, not just the center row.
+        // With an enemy-distance constraint (Ambush), scan the whole zone bottom-to-top, but keep each unit's
+        // block ~targetCols wide (anchored at the first placed model) so it stays inside the 9" all-pairs rule.
         if (minEnemyDist > 0f)
         {
-            for (float z = b.Bottom + r; z <= b.Top - r; z += step)
+            float ambushXStart = placedSoFar.Count > 0 ? placedSoFar[0].Position.x : b.Left + r;
+            float ambushXEnd = MathF.Min(b.Right - r, ambushXStart + (targetCols - 1) * stepX + 0.001f);
+            for (float z = b.Bottom + r; z <= b.Top - r; z += stepZ)
+                for (float x = b.Left + r; x <= b.Right - r; x += stepX)
+                {
+                    if (placedSoFar.Count > 0 && x > ambushXEnd) break; // wrap to the next row
+                    var candidate = new Position(x, z);
+                    if (IsAutoCandidateFree(candidate, r, shape, facing, zone, placedSoFar, existing, enemies, minEnemyDist))
+                        return candidate;
+                }
+            return CohesiveFallback(placedSoFar, b, r, b.CenterZ);
+        }
+
+        // Normal deploy: fill a compact block — scan Z rows outward from cz (per-axis step), and X within each
+        // row, returning the first free, cohesive slot. Per-axis rows keep a wide unit inside the 9" all-pairs
+        // rule instead of stringing it along one over-long row.
+        // Anchor the block at the first placed model so successive models fill the SAME ~targetCols-wide block,
+        // wrapping to a new row once the row is full — keeping the unit compact (inside the 9" all-pairs rule).
+        float xStart = placedSoFar.Count > 0 ? placedSoFar[0].Position.x : b.Left + r + xStagger;
+        float rowXEnd = MathF.Min(b.Right - r, xStart + (targetCols - 1) * stepX + 0.001f);
+        int maxRows = (int)((b.Top - b.Bottom) / stepZ) + 1;
+        for (int rowOffset = 0; rowOffset <= maxRows; rowOffset++)
+        {
+            int signCount = rowOffset == 0 ? 1 : 2;
+            for (int s = 0; s < signCount; s++)
             {
-                for (float x = b.Left + r; x <= b.Right - r; x += step)
+                float z = cz + (s == 0 ? rowOffset : -rowOffset) * stepZ;
+                if (z < b.Bottom + r || z > b.Top - r) continue;
+                for (float x = xStart; x <= rowXEnd; x += stepX)
                 {
                     var candidate = new Position(x, z);
-                    if (!zone.IsPointWithinZone(candidate)) continue; // outside the true shape (e.g. a circle's corners)
-                    if (CheckOverlap(candidate, r, placedSoFar) != null) continue;
-                    if (CheckOverlapWithExisting(candidate, r, existing) != null) continue;
-                    if (PlacementUtilities.OverlapsImpassibleTerrain(candidate, r, _impassibleTerrain)) continue;
-                    if (TooCloseToEnemy(candidate, enemies, minEnemyDist)) continue;
-                    if (placedSoFar.Count > 0 && !IsInCohesion(candidate, r, placedSoFar)) continue;
-                    return candidate;
+                    if (IsAutoCandidateFree(candidate, r, shape, facing, zone, placedSoFar, existing, enemies, minEnemyDist))
+                        return candidate;
                 }
             }
-            return new Position(Math.Clamp(b.CenterX, b.Left + r, b.Right - r),
-                Math.Clamp(b.CenterZ, b.Bottom + r, b.Top - r));
         }
 
-        float xStart = b.Left + r + xStagger;
-        for (float x = xStart; x <= b.Right - r; x += step)
-        {
-            var candidate = new Position(x, cz);
-            if (!zone.IsPointWithinZone(candidate)) continue;
-            if (CheckOverlap(candidate, r, placedSoFar) != null) continue;
-            if (CheckOverlapWithExisting(candidate, r, existing) != null) continue;
-            if (PlacementUtilities.OverlapsImpassibleTerrain(candidate, r, _impassibleTerrain)) continue;
-            if (placedSoFar.Count > 0 && !IsInCohesion(candidate, r, placedSoFar)) continue;
-            return candidate;
-        }
+        // Block full (terrain / a cramped or split zone): fall back to ANY free, cohesive, in-bounds spot in the
+        // whole zone — the block-column cap is dropped so the unit stays connected even in an awkward zone.
+        for (float z = b.Bottom + r; z <= b.Top - r; z += stepZ)
+            for (float x = b.Left + r; x <= b.Right - r; x += stepX)
+            {
+                var candidate = new Position(x, z);
+                if (IsAutoCandidateFree(candidate, r, shape, facing, zone, placedSoFar, existing, enemies, minEnemyDist))
+                    return candidate;
+            }
 
-        // Fallback: best effort at zone center (shouldn't happen on a 72" table)
-        return new Position(Math.Clamp(b.CenterX, b.Left + r, b.Right - r), cz);
+        return CohesiveFallback(placedSoFar, b, r, cz);
     }
 
+    // Last-resort auto-placement: sit on the last placed model (base-to-base 0 → always within cohesion) so EOF
+    // auto-play never emits an out-of-cohesion deploy that would crash the unit's first move; movement then
+    // re-packs them apart. With nothing placed yet, best-effort at the zone centre.
+    private static Position CohesiveFallback(List<PlacedObjectEntry<T>> placedSoFar, ZoneBounds b, float r, float cz) =>
+        placedSoFar.Count > 0
+            ? placedSoFar[placedSoFar.Count - 1].Position
+            : new Position(Math.Clamp(b.CenterX, b.Left + r, b.Right - r), Math.Clamp(cz, b.Bottom + r, b.Top - r));
+
     // The auto-placement legality filter, shared by the edge scan and the row scans.
-    private bool IsAutoCandidateFree(Position candidate, float r, IBoundedZone zone,
-        List<PlacedObjectEntry<T>> placedSoFar, List<(Position pos, float radius)> existing,
+    private bool IsAutoCandidateFree(Position candidate, float r, IBaseShape shape, Float2 facing, IBoundedZone zone,
+        List<PlacedObjectEntry<T>> placedSoFar, List<(Position pos, IBaseShape shape, Float2 facing)> existing,
         List<Position> enemies, float minEnemyDist)
     {
-        if (!zone.IsPointWithinZone(candidate)) return false;
-        if (CheckOverlap(candidate, r, placedSoFar) != null) return false;
-        if (CheckOverlapWithExisting(candidate, r, existing) != null) return false;
-        if (PlacementUtilities.OverlapsImpassibleTerrain(candidate, r, _impassibleTerrain)) return false;
+        if (!PlacementUtilities.IsBaseWithinZone(candidate, r, zone)) return false; // whole base in zone / on table
+        if (CheckOverlap(candidate, shape, facing, placedSoFar) != null) return false;
+        if (CheckOverlapWithExisting(candidate, shape, facing, existing) != null) return false;
+        if (PlacementUtilities.OverlapsImpassibleTerrain(candidate, shape, facing, _impassibleTerrain)) return false;
         if (minEnemyDist > 0f && TooCloseToEnemy(candidate, enemies, minEnemyDist)) return false;
         if (placedSoFar.Count > 0 && !IsInCohesion(candidate, r, placedSoFar)) return false;
         return true;
@@ -250,7 +292,7 @@ public class PlaceObjectsResolver<T> : IStageResolver<PlaceObjectsRequest<T>, Li
         return false;
     }
 
-    private IEnumerable<(Position pos, float radius)> GetTableOccupants()
+    private IEnumerable<(Position pos, IBaseShape shape, Float2 facing)> GetTableOccupants()
     {
         if (_tableState == null) yield break;
         foreach (var model in _tableState.Models.Objects)
@@ -258,36 +300,33 @@ public class PlaceObjectsResolver<T> : IStageResolver<PlaceObjectsRequest<T>, Li
             var pos = model.Position;
             // Default-constructed Position is (0,0,0); models there haven't been placed yet.
             if (pos.x == 0f && pos.z == 0f) continue;
-            // Circumscribing radius so an existing rectangular base is bounded conservatively (matches the
-            // placing model's GetBaseRadius), keeping deploy spacing overlap-free for any base shape. #150.
-            yield return (pos, model.BaseShape.CircumscribedRadiusInches);
+            yield return (pos, model.BaseShape, model.Facing);
         }
     }
 
-    private static string? CheckOverlap(Position newPos, float newRadius, List<PlacedObjectEntry<T>> placed)
+    // True-shape overlap (#150): two bases overlap iff their real oriented footprints intersect — NOT their
+    // circumscribing circles, which would falsely reject a tight, legal packing of elongated rectangles (two
+    // 1×3 bases 0.1" apart on the long edge read as "overlapping" by a 1.58" bounding circle).
+    private static string? CheckOverlap(Position newPos, IBaseShape newShape, Float2 newFacing, List<PlacedObjectEntry<T>> placed)
     {
         foreach (var entry in placed)
         {
-            float er = GetBaseRadius(entry.Binding.GetValue());
-            if (Overlaps(newPos, newRadius, entry.Position, er))
-                return $"needs {newRadius + er:F2}\" center-to-center, got {Dist(newPos, entry.Position):F2}\"";
+            IBaseShape es = ShapeOf(entry.Binding.GetValue());
+            Float2 ef = entry.Facing ?? new Float2(0f, 1f);
+            if (BaseShapeGeometry.AreColliding(newShape, newPos, newFacing, es, entry.Position, ef))
+                return $"bases overlap (gap {BaseShapeGeometry.SurfaceGap2D(newShape, newPos, newFacing, es, entry.Position, ef):F2}\")";
         }
         return null;
     }
 
-    private static string? CheckOverlapWithExisting(Position newPos, float newRadius,
-        IEnumerable<(Position pos, float radius)> existing)
+    private static string? CheckOverlapWithExisting(Position newPos, IBaseShape newShape, Float2 newFacing,
+        IEnumerable<(Position pos, IBaseShape shape, Float2 facing)> existing)
     {
-        foreach (var (pos, radius) in existing)
-        {
-            if (Overlaps(newPos, newRadius, pos, radius))
-                return $"needs {newRadius + radius:F2}\" center-to-center, got {Dist(newPos, pos):F2}\"";
-        }
+        foreach (var (pos, shape, facing) in existing)
+            if (BaseShapeGeometry.AreColliding(newShape, newPos, newFacing, shape, pos, facing))
+                return $"bases overlap (gap {BaseShapeGeometry.SurfaceGap2D(newShape, newPos, newFacing, shape, pos, facing):F2}\")";
         return null;
     }
-
-    private static bool Overlaps(Position a, float ra, Position b, float rb) =>
-        Dist(a, b) < ra + rb;
 
     private static float Dist(Position a, Position b)
     {
@@ -300,6 +339,13 @@ public class PlaceObjectsResolver<T> : IStageResolver<PlaceObjectsRequest<T>, Li
     // inscribed BaseRadiusInches under-bounded a rectangle and let adjacent bases overlap.
     private static float GetBaseRadius(T value) =>
         value is ModelData m ? m.BaseShape.CircumscribedRadiusInches : 0.75f;
+
+    // Per-axis footprint half-extents at the deploy facing, for the auto-placement grid step (#150) — a wide
+    // rectangle packs tight rows on its short axis instead of one long row that breaks the 9" cohesion rule.
+    private static (float hx, float hz) GetHalfExtents(T value, Float2 facing) =>
+        value is ModelData m ? BaseShapeGeometry.FootprintHalfExtents(m.BaseShape, facing) : (0.75f, 0.75f);
+
+    private static IBaseShape ShapeOf(T value) => value is ModelData m ? m.BaseShape : new CircleBase(0.75f);
 
     private static bool IsInCohesion(Position candidate, float radius, List<PlacedObjectEntry<T>> placed)
     {
