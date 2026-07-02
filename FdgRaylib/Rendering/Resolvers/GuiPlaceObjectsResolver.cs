@@ -34,11 +34,16 @@ public class GuiPlaceObjectsResolver<T>
 
     private static readonly float GroupRotationStep = MathF.PI / 12f; // 15° per wheel notch / key press
 
-    // A yaw facing (unit normal) = the default forward (+Z) rotated by `radians`, matching the position
-    // rotation matrix (rx = dx·cos − dz·sin, rz = dx·sin + dz·cos) applied to (0,1).
-    private static Float2 RotateFacing(float radians) => new Float2(-MathF.Sin(radians), MathF.Cos(radians));
+    // Rotates a facing (unit normal) by `radians`, matching the position rotation matrix
+    // (rx = dx·cos − dz·sin, rz = dx·sin + dz·cos). The deploy rotation applies relative to the zone's
+    // default facing (toward the table centre — see PlacementUtilities.DefaultDeployFacing).
+    private static Float2 RotateFloat2(Float2 f, float radians)
+    {
+        float cos = MathF.Cos(radians), sin = MathF.Sin(radians);
+        return new Float2(f.X * cos - f.Y * sin, f.X * sin + f.Y * cos);
+    }
 
-    // The inverse: the rotation (radians) that RotateFacing would need to produce this facing.
+    // The rotation (radians) that would take the default forward (0,1) to this facing.
     private static float FacingToRadians(Float2 f) => MathF.Atan2(-f.X, f.Y);
 
     private string? _errorMessage;
@@ -143,7 +148,8 @@ public class GuiPlaceObjectsResolver<T>
                 _singleRotationDeploy += shift ? GroupRotationStep : -GroupRotationStep;
             }
         }
-        Float2 facing = RotateFacing(_singleRotationDeploy);
+        Float2 facing = RotateFloat2(
+            PlacementUtilities.DefaultDeployFacing(zone.Bounds, _tableH), _singleRotationDeploy);
 
         // Re-placing an existing model.
         if (_dragIndex.HasValue)
@@ -162,12 +168,15 @@ public class GuiPlaceObjectsResolver<T>
             return;
         }
 
-        // Not dragging: a click on a placed model picks it up (and syncs the rotation to its facing).
+        // Not dragging: a click on a placed model picks it up (and syncs the rotation to its facing,
+        // relative to the zone's default facing).
         int hitIdx = HitTestPlaced(mouseInX, mouseInZ);
         if (clicked && hitIdx >= 0)
         {
             _dragIndex = hitIdx;
-            _singleRotationDeploy = _placed[hitIdx].Facing is Float2 pf ? FacingToRadians(pf) : 0f;
+            _singleRotationDeploy = _placed[hitIdx].Facing is Float2 pf
+                ? FacingToRadians(pf) - FacingToRadians(PlacementUtilities.DefaultDeployFacing(zone.Bounds, _tableH))
+                : 0f;
             _errorMessage = null;
             return;
         }
@@ -235,7 +244,9 @@ public class GuiPlaceObjectsResolver<T>
         }
 
         float cos = MathF.Cos(_groupRotationDeploy), sin = MathF.Sin(_groupRotationDeploy);
-        Float2 groupFacing = RotateFacing(_groupRotationDeploy); // all models face the rotated direction (#150)
+        // All models face the rotated direction (#150), starting from the zone's default (toward table centre).
+        Float2 groupFacing = RotateFloat2(
+            PlacementUtilities.DefaultDeployFacing(zone.Bounds, _tableH), _groupRotationDeploy);
         var positions = new Position[n];
         bool allValid = true;
         for (int i = 0; i < n; i++)

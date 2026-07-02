@@ -54,6 +54,11 @@ public class PlaceObjectsResolver<T> : IStageResolver<PlaceObjectsRequest<T>, Li
             Console.WriteLine("  At least one model must touch a table edge (Aircraft redeploy).");
         Console.WriteLine();
 
+        // Default facing: toward the table centre (a top-zone unit faces down) — matters for Aircraft,
+        // whose heading IS this facing (#150).
+        Float2 defaultFacing = PlacementUtilities.DefaultDeployFacing(
+            bounds, GameWideConstants.DEFAULT_TABLE_HEIGHT_INCHES);
+
         var placed = new List<PlacedObjectEntry<T>>();
         for (int i = 0; i < request.ModelsToPlace.Count; i++)
         {
@@ -70,7 +75,7 @@ public class PlaceObjectsResolver<T> : IStageResolver<PlaceObjectsRequest<T>, Li
                     var pos = FindAutoPosition(r, autoSpacing, zone, cz, xStagger, placed, enemies, minEnemyDist,
                         request.MustTouchTableEdge);
                     Console.WriteLine($"    (EOF — auto-placing at {pos.x:F1}\", {pos.z:F1}\")");
-                    placed.Add(new PlacedObjectEntry<T>(binding, pos));
+                    placed.Add(new PlacedObjectEntry<T>(binding, pos, defaultFacing));
                     break;
                 }
 
@@ -119,7 +124,7 @@ public class PlaceObjectsResolver<T> : IStageResolver<PlaceObjectsRequest<T>, Li
                         continue;
                     }
 
-                    placed.Add(new PlacedObjectEntry<T>(binding, newPos));
+                    placed.Add(new PlacedObjectEntry<T>(binding, newPos, defaultFacing));
                     break;
                 }
 
