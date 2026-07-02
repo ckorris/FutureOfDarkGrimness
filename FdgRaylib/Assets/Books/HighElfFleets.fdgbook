@@ -6819,5 +6819,121 @@
     }
   ],
   "ruleDefinitions": [],
-  "spells": []
+  "spells": [
+    {
+      "name": "Creator of Illusions",
+      "threshold": 1,
+      "target": {
+        "rangeInches": 18,
+        "minCount": 1,
+        "maxCount": 1,
+        "targetAffinity": "Foe",
+        "requireLineOfSight": false,
+        "requiredToken": null,
+        "singleModel": false
+      },
+      "effect": {
+        "kind": "addRule",
+        "ruleName": "Unwieldy in melee",
+        "scope": "NextTrigger"
+      }
+    },
+    {
+      "name": "Elemental Seeker",
+      "threshold": 1,
+      "target": {
+        "rangeInches": 18,
+        "minCount": 1,
+        "maxCount": 1,
+        "targetAffinity": "Foe",
+        "requireLineOfSight": true,
+        "requiredToken": null,
+        "singleModel": false
+      },
+      "effect": {
+        "kind": "dealHits",
+        "count": 1,
+        "withRules": [
+          "Blast(3)"
+        ],
+        "armorPenetration": 0
+      }
+    },
+    {
+      "name": "Hidden Spirits",
+      "threshold": 2,
+      "target": {
+        "rangeInches": 12,
+        "minCount": 1,
+        "maxCount": 2,
+        "targetAffinity": "Friend",
+        "requireLineOfSight": false,
+        "requiredToken": null,
+        "singleModel": false
+      },
+      "effect": {
+        "kind": "addRule",
+        "ruleName": "Unpredictable Shooter",
+        "scope": "NextTrigger"
+      }
+    },
+    {
+      "name": "Psy-Destruction",
+      "threshold": 2,
+      "target": {
+        "rangeInches": 24,
+        "minCount": 1,
+        "maxCount": 1,
+        "targetAffinity": "Foe",
+        "requireLineOfSight": true,
+        "requiredToken": null,
+        "singleModel": true
+      },
+      "effect": {
+        "kind": "dealHits",
+        "count": 2,
+        "withRules": [],
+        "armorPenetration": 4
+      }
+    },
+    {
+      "name": "Blessing of Souls",
+      "threshold": 3,
+      "target": {
+        "rangeInches": 12,
+        "minCount": 1,
+        "maxCount": 3,
+        "targetAffinity": "Friend",
+        "requireLineOfSight": false,
+        "requiredToken": null,
+        "singleModel": false
+      },
+      "effect": {
+        "kind": "addRule",
+        "ruleName": "Highborn Boost",
+        "scope": "NextTrigger"
+      }
+    },
+    {
+      "name": "Shattering Curse",
+      "threshold": 3,
+      "target": {
+        "rangeInches": 12,
+        "minCount": 1,
+        "maxCount": 1,
+        "targetAffinity": "Foe",
+        "requireLineOfSight": true,
+        "requiredToken": null,
+        "singleModel": false
+      },
+      "effect": {
+        "kind": "dealHits",
+        "count": 6,
+        "withRules": [
+          "Crack"
+        ],
+        "armorPenetration": 1
+      }
+    }
+  ]
 }

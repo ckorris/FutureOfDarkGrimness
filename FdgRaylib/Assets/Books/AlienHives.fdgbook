@@ -8408,5 +8408,118 @@
     }
   ],
   "ruleDefinitions": [],
-  "spells": []
+  "spells": [
+    {
+      "name": "Animate Spirit",
+      "threshold": 1,
+      "target": {
+        "rangeInches": 12,
+        "minCount": 1,
+        "maxCount": 1,
+        "targetAffinity": "Friend",
+        "requireLineOfSight": false,
+        "requiredToken": null,
+        "singleModel": false
+      },
+      "effect": {
+        "kind": "addRule",
+        "ruleName": "Hit \u0026 Run Fighter",
+        "scope": "NextTrigger"
+      }
+    },
+    {
+      "name": "Overwhelming Strike",
+      "threshold": 1,
+      "target": {
+        "rangeInches": 12,
+        "minCount": 1,
+        "maxCount": 1,
+        "targetAffinity": "Foe",
+        "requireLineOfSight": true,
+        "requiredToken": null,
+        "singleModel": false
+      },
+      "effect": {
+        "kind": "dealHits",
+        "count": 2,
+        "withRules": [
+          "Destructive"
+        ],
+        "armorPenetration": 1
+      }
+    },
+    {
+      "name": "Infuse Bloodthirst",
+      "threshold": 2,
+      "target": {
+        "rangeInches": 12,
+        "minCount": 1,
+        "maxCount": 2,
+        "targetAffinity": "Friend",
+        "requireLineOfSight": false,
+        "requiredToken": null,
+        "singleModel": false
+      },
+      "effect": {
+        "kind": "addRule",
+        "ruleName": "Hive Bond Boost",
+        "scope": "NextTrigger"
+      }
+    },
+    {
+      "name": "Psychic Blast",
+      "threshold": 2,
+      "target": {
+        "rangeInches": 12,
+        "minCount": 1,
+        "maxCount": 1,
+        "targetAffinity": "Foe",
+        "requireLineOfSight": true,
+        "requiredToken": null,
+        "singleModel": false
+      },
+      "effect": {
+        "kind": "dealHits",
+        "count": 4,
+        "withRules": [],
+        "armorPenetration": 2
+      }
+    },
+    {
+      "name": "Terror Seeker",
+      "threshold": 3,
+      "target": {
+        "rangeInches": 18,
+        "minCount": 1,
+        "maxCount": 3,
+        "targetAffinity": "Foe",
+        "requireLineOfSight": false,
+        "requiredToken": null,
+        "singleModel": false
+      },
+      "effect": {
+        "kind": "markTarget",
+        "ruleName": "Unpredictable Fighter"
+      }
+    },
+    {
+      "name": "Hive Shriek",
+      "threshold": 3,
+      "target": {
+        "rangeInches": 18,
+        "minCount": 1,
+        "maxCount": 1,
+        "targetAffinity": "Foe",
+        "requireLineOfSight": true,
+        "requiredToken": null,
+        "singleModel": true
+      },
+      "effect": {
+        "kind": "dealHits",
+        "count": 6,
+        "withRules": [],
+        "armorPenetration": 1
+      }
+    }
+  ]
 }

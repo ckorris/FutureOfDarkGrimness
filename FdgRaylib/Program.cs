@@ -44,10 +44,11 @@ if (importIdx >= 0 && importIdx + 2 < args.Length)
     string outPath = args[importIdx + 2];
     BookFile book = OprBookImporter.Import(File.ReadAllText(inJson),
         source: "OnePageRules — Army Forge (army-forge.onepagerules.com)",
-        license: "CC-BY-SA 4.0");
+        license: "CC-BY-SA 4.0",
+        warn: msg => Console.WriteLine($"  {msg}"));
     Directory.CreateDirectory(Path.GetDirectoryName(Path.GetFullPath(outPath))!);
     File.WriteAllText(outPath, JsonSerializer.Serialize(book, RuleJson.Options));
-    Console.WriteLine($"Imported '{book.Name}' {book.Version}: {book.Units.Count} units → {outPath}");
+    Console.WriteLine($"Imported '{book.Name}' {book.Version}: {book.Units.Count} units, {book.Spells.Count} spells → {outPath}");
     return;
 }
 

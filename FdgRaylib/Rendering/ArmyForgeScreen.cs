@@ -247,6 +247,17 @@ public class ArmyForgeScreen : IAppScreen
             AddToList(_selectedRosterId);
         ImGui.EndDisabled();
 
+        if (_book.Spells.Count > 0)
+        {
+            ImGui.Spacing();
+            ImGui.Separator();
+            ImGui.TextDisabled("SPELLS");
+            ImGui.PushTextWrapPos(0f);
+            foreach (FDG.Rules.Definitions.SpellDefinition spell in _book.Spells)
+                ImGui.TextDisabled($"{spell.Name} ({spell.Threshold}): {FDG.Stages.SpellText.Describe(spell)}");
+            ImGui.PopTextWrapPos();
+        }
+
         if (!string.IsNullOrEmpty(_book.Source))
         {
             ImGui.Spacing();
