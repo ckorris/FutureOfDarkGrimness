@@ -95,6 +95,10 @@ the (now complete) core casting framework.
     fires an on-screen banner via `context.Announce` (banner + log) — "`<Caster> assists/hinders <caster>'s
     cast of <spell> (+N/-N)`", blue for a friendly boost, orange for an enemy disruption. Declines are
     silent. Engine `c6a3c70`.
+  - **Cast result as a text beat + ASCII log fix.** The cast result also rides `context.Announce` now: blue
+    on a successful cast, red on a failure. Replaced the em-dash separators in the cast-result lines (and a
+    pre-existing conditional-spell log line) with ASCII — the log font has no em-dash glyph (#151). Engine
+    `09463e7`.
   - Test aid `CasterCovenTest.fdgarmy` (3 standalone Casters + cheap spells) added earlier for verification.
   - Full build clean, engine suite 950/0, headless smoke exit 0. **Awaiting GUI hand-verification** of the
     polish (canvas click-to-select + blue/orange assist viz).
