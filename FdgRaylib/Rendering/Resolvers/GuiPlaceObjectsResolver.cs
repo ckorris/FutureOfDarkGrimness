@@ -317,7 +317,7 @@ public class GuiPlaceObjectsResolver<T>
     private bool IsPlacementValid(Position cand, float r, IBaseShape shape, Float2 facing, IBoundedZone zone,
         List<Position> enemies, float minEnemyDist, int excludeIndex, out string? reason)
     {
-        if (!IsBaseWithinZone(cand, r, zone))
+        if (!PlacementUtilities.IsBaseWithinZone(cand, shape, facing, zone))
         { reason = "Outside deployment zone."; return false; }
 
         string? overlap = CheckOverlap(cand, shape, facing, excludeIndex);
@@ -342,19 +342,13 @@ public class GuiPlaceObjectsResolver<T>
     private bool IsGroupSlotValid(Position cand, float r, IBaseShape shape, Float2 facing, IBoundedZone zone,
         List<Position> enemies, float minEnemyDist)
     {
-        if (!IsBaseWithinZone(cand, r, zone)) return false;
+        if (!PlacementUtilities.IsBaseWithinZone(cand, shape, facing, zone)) return false;
         foreach (var (pos, oShape, oFacing) in GetTableOccupants())
             if (BaseShapeGeometry.AreColliding(shape, cand, facing, oShape, pos, oFacing)) return false;
         if (minEnemyDist > 0f && TooCloseToEnemy(cand, enemies, minEnemyDist)) return false;
         if (PlacementUtilities.OverlapsImpassibleTerrain(cand, shape, facing, _tableState.Terrain.Objects)) return false;
         return true;
     }
-
-    // A model's base is within the zone if its footprint stays inside the bounding box (inset by the base
-    // radius) AND its centre is inside the zone's true shape. Shared with the CLI/AI deploy resolvers so all
-    // three enforce the same "base fully in zone / on the table" rule (#150 follow-up).
-    private static bool IsBaseWithinZone(Position cand, float r, IBoundedZone zone)
-        => PlacementUtilities.IsBaseWithinZone(cand, r, zone);
 
     private void DrawZone(ImDrawListPtr dl, IZone zone)
     {
@@ -551,7 +545,7 @@ public class GuiPlaceObjectsResolver<T>
                 for (float x = xStart; x <= rowXEnd; x += stepX)
                 {
                     var c = new Position(x, z);
-                    if (!PlacementUtilities.IsBaseWithinZone(c, r, zone)) continue;
+                    if (!PlacementUtilities.IsBaseWithinZone(c, shape, facing, zone)) continue;
                     if (CheckOverlap(c, shape, facing) != null) continue;
                     if (PlacementUtilities.OverlapsImpassibleTerrain(c, shape, facing, _tableState.Terrain.Objects)) continue;
                     if (minEnemyDist > 0f && TooCloseToEnemy(c, enemies, minEnemyDist)) continue;

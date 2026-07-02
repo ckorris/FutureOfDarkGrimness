@@ -94,9 +94,9 @@ public class PlaceObjectsResolver<T> : IStageResolver<PlaceObjectsRequest<T>, Li
                 if (parts.Length >= 2 && float.TryParse(parts[0], out float x) && float.TryParse(parts[1], out float z))
                 {
                     var newPos = new Position(x, z);
-                    // The whole base (not just its centre) must stay inside the zone — and since deployment
-                    // zones sit flush with the table edge, this also keeps the base on the table.
-                    if (!PlacementUtilities.IsBaseWithinZone(newPos, r, zone))
+                    // The whole base (its true oriented footprint, not just its centre) must stay inside the
+                    // zone — and since deployment zones sit flush with the table edge, this keeps it on the table.
+                    if (!PlacementUtilities.IsBaseWithinZone(newPos, ShapeOf(binding.GetValue()), defaultFacing, zone))
                     {
                         Console.WriteLine($"    ! Base would extend outside the placement zone / off the table (keep the centre ≥ {r:F1}\" inside bounds X {bounds.Left:F1}\"–{bounds.Right:F1}\", Z {bounds.Bottom:F1}\"–{bounds.Top:F1}\").");
                         continue;
@@ -258,7 +258,7 @@ public class PlaceObjectsResolver<T> : IStageResolver<PlaceObjectsRequest<T>, Li
         List<PlacedObjectEntry<T>> placedSoFar, List<(Position pos, IBaseShape shape, Float2 facing)> existing,
         List<Position> enemies, float minEnemyDist)
     {
-        if (!PlacementUtilities.IsBaseWithinZone(candidate, r, zone)) return false; // whole base in zone / on table
+        if (!PlacementUtilities.IsBaseWithinZone(candidate, shape, facing, zone)) return false; // whole base in zone / on table
         if (CheckOverlap(candidate, shape, facing, placedSoFar) != null) return false;
         if (CheckOverlapWithExisting(candidate, shape, facing, existing) != null) return false;
         if (PlacementUtilities.OverlapsImpassibleTerrain(candidate, shape, facing, _impassibleTerrain)) return false;
