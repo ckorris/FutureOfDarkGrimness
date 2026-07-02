@@ -146,7 +146,10 @@ public class ArmyForgeScreen : IAppScreen
     public void Draw(int screenW, int screenH)
     {
         // Recompile + revalidate every frame — cheap, and keeps points/panes/legality in sync with the list.
+        // `compiled` is the play-time output (#107 combined pairs merged) for Save/points; `rows` is the
+        // row-aligned unmerged view every per-row pane indexes with list positions.
         BuiltArmyFile compiled = Compile();
+        List<UnitFileEntry> rows = ListCompiler.CompileRows(_book, _list);
         IReadOnlyList<ListIssue> issues = ListValidator.Validate(_book, _list, compiled);
 
         ImGui.SetNextWindowPos(Vector2.Zero, ImGuiCond.Always);
@@ -156,7 +159,7 @@ public class ArmyForgeScreen : IAppScreen
 
         DrawToolbar(compiled, issues);
         ImGui.Separator();
-        DrawPanes(compiled, issues);
+        DrawPanes(compiled, rows, issues);
 
         ImGui.End();
     }
@@ -200,7 +203,7 @@ public class ArmyForgeScreen : IAppScreen
         ImGui.TextColored(compiled.TotalPoints > _list.PointsLimit ? RedText : WhiteText, header);
     }
 
-    private void DrawPanes(BuiltArmyFile compiled, IReadOnlyList<ListIssue> issues)
+    private void DrawPanes(BuiltArmyFile compiled, IReadOnlyList<UnitFileEntry> rows, IReadOnlyList<ListIssue> issues)
     {
         Vector2 avail = ImGui.GetContentRegionAvail();
         float spacing = ImGui.GetStyle().ItemSpacing.X;
@@ -213,12 +216,12 @@ public class ArmyForgeScreen : IAppScreen
 
         ImGui.SameLine(0, spacing);
         ImGui.BeginChild("##forge-list", new Vector2(listW, avail.Y), ImGuiChildFlags.Borders);
-        DrawListPane(compiled, issues);
+        DrawListPane(rows, issues);
         ImGui.EndChild();
 
         ImGui.SameLine(0, spacing);
         ImGui.BeginChild("##forge-config", new Vector2(0, avail.Y), ImGuiChildFlags.Borders);
-        DrawConfigPane(compiled);
+        DrawConfigPane(rows);
         ImGui.EndChild();
     }
 
@@ -268,7 +271,7 @@ public class ArmyForgeScreen : IAppScreen
         }
     }
 
-    private void DrawListPane(BuiltArmyFile compiled, IReadOnlyList<ListIssue> issues)
+    private void DrawListPane(IReadOnlyList<UnitFileEntry> rows, IReadOnlyList<ListIssue> issues)
     {
         ImGui.TextDisabled("LIST");
         ImGui.Separator();
@@ -279,9 +282,9 @@ public class ArmyForgeScreen : IAppScreen
         }
 
         int removeIndex = -1;
-        for (int i = 0; i < _list.Units.Count && i < compiled.Units.Count; i++)
+        for (int i = 0; i < _list.Units.Count && i < rows.Count; i++)
         {
-            UnitFileEntry unit = compiled.Units[i];
+            UnitFileEntry unit = rows[i];
             if (issues.Any(x => x.UnitIndex == i && x.Severity == ListIssueSeverity.Error))
             {
                 ImGui.TextColored(RedText, "!");
@@ -321,12 +324,12 @@ public class ArmyForgeScreen : IAppScreen
         }
     }
 
-    private void DrawConfigPane(BuiltArmyFile compiled)
+    private void DrawConfigPane(IReadOnlyList<UnitFileEntry> rows)
     {
         // A selected list unit takes precedence (show its compiled stats); otherwise preview the roster pick.
-        if (_selectedListIndex is int idx && idx >= 0 && idx < compiled.Units.Count)
+        if (_selectedListIndex is int idx && idx >= 0 && idx < rows.Count)
         {
-            DrawCompiledUnit(idx, compiled);
+            DrawCompiledUnit(idx, rows);
             return;
         }
         if (Selected is RosterUnit roster)
@@ -337,7 +340,7 @@ public class ArmyForgeScreen : IAppScreen
         ImGui.TextDisabled("Select a unit from your list, or add one from the roster.");
     }
 
-    private void DrawCompiledUnit(int idx, BuiltArmyFile compiled)
+    private void DrawCompiledUnit(int idx, IReadOnlyList<UnitFileEntry> rows)
     {
         BuilderUnit bu = _list.Units[idx];
         // Recompile this unit with its wargear-item detail (names survive) for display + target availability.
@@ -357,7 +360,8 @@ public class ArmyForgeScreen : IAppScreen
             ImGui.TextDisabled(string.Join(", ", unit.SpecialRules.Select(r => r.PrintableName)));
         ImGui.Unindent();
 
-        DrawHeroJoin(idx, unit, compiled);
+        DrawHeroJoin(idx, unit, rows);
+        DrawCombine(idx, unit, rows);
 
         RosterUnit? roster = _book.Units.FirstOrDefault(u => u.Id == bu.RosterUnitId);
         if (roster is not null)
@@ -367,17 +371,17 @@ public class ArmyForgeScreen : IAppScreen
     // #006 hero-join, Forge-side: same semantics as the freeform builder's picker — hosts are other
     // multi-model, non-Hero units in the list; the link is by author-stable BuilderUnit.Id (generated on
     // demand); eligibility problems surface through ListValidator's issues, not silent no-ops.
-    private void DrawHeroJoin(int idx, UnitFileEntry compiledUnit, BuiltArmyFile compiled)
+    private void DrawHeroJoin(int idx, UnitFileEntry compiledUnit, IReadOnlyList<UnitFileEntry> rows)
     {
         BuilderUnit bu = _list.Units[idx];
 
         if (ForceOrgValidator.IsHero(compiledUnit))
         {
-            List<int> hosts = HostCandidates(idx, compiled);
+            List<int> hosts = HostCandidates(idx, rows);
             string[] options = new string[hosts.Count + 1];
             options[0] = "(none - deploys solo)";
             for (int i = 0; i < hosts.Count; i++)
-                options[i + 1] = ListRowLabel(hosts[i], compiled);
+                options[i + 1] = ListRowLabel(hosts[i], rows);
 
             int sel = 0;
             if (!string.IsNullOrEmpty(bu.JoinsUnitId))
@@ -396,31 +400,91 @@ public class ArmyForgeScreen : IAppScreen
             // Host-side breadcrumb: which hero(es) picked this unit.
             List<string> joiners = _list.Units
                 .Where(h => !ReferenceEquals(h, bu) && h.JoinsUnitId == bu.Id)
-                .Select(h => compiled.Units[_list.Units.IndexOf(h)].Name)
+                .Select(h => rows[_list.Units.IndexOf(h)].Name)
                 .ToList();
             if (joiners.Count > 0)
                 ImGui.TextDisabled($"Joined by: {string.Join(", ", joiners)}");
         }
     }
 
+    // #107 combined squads (decision 8): two copies of the same multi-model unit link into one big unit
+    // at play time. The link is authored on the SECOND copy (CombinedWithId → partner's Id), mirroring the
+    // hero-join combo; illegal shapes (chains, third copies, single-model) surface via ListValidator.
+    private void DrawCombine(int idx, UnitFileEntry compiledUnit, IReadOnlyList<UnitFileEntry> rows)
+    {
+        BuilderUnit bu = _list.Units[idx];
+        if (compiledUnit.ModelCount <= 1 || ForceOrgValidator.IsHero(compiledUnit)) return;
+
+        // Partner-side breadcrumb: another copy links to this row.
+        if (!string.IsNullOrEmpty(bu.Id))
+        {
+            List<string> partners = _list.Units
+                .Where(other => !ReferenceEquals(other, bu) && other.CombinedWithId == bu.Id)
+                .Select(other => ListRowLabel(_list.Units.IndexOf(other), rows))
+                .ToList();
+            if (partners.Count > 0)
+            {
+                ImGui.TextDisabled($"Combined with: {string.Join(", ", partners)}");
+                return; // the target of a combine doesn't also offer its own combo
+            }
+        }
+
+        List<int> candidates = CombineCandidates(idx);
+        if (candidates.Count == 0 && string.IsNullOrEmpty(bu.CombinedWithId)) return;
+
+        string[] options = new string[candidates.Count + 1];
+        options[0] = "(not combined)";
+        for (int i = 0; i < candidates.Count; i++)
+            options[i + 1] = ListRowLabel(candidates[i], rows);
+
+        int sel = 0;
+        if (!string.IsNullOrEmpty(bu.CombinedWithId))
+            sel = candidates.FindIndex(c => _list.Units[c].Id == bu.CombinedWithId) + 1; // -1+1 = 0 when stale
+
+        ImGui.SetNextItemWidth(240f);
+        if (ImGui.Combo($"Combine with##combine{idx}", ref sel, options, options.Length))
+            bu.CombinedWithId = sel == 0 ? null : EnsureId(_list.Units[candidates[sel - 1]]);
+
+        if (!string.IsNullOrEmpty(bu.CombinedWithId) && sel == 0)
+            ImGui.TextColored(YellowText, "! Combine target missing or ineligible (see issues) - stays separate.");
+    }
+
+    /// <summary>List indices this row may combine with: other copies of the SAME roster unit that are not
+    /// themselves already combined into something (no chains, no third copies).</summary>
+    internal List<int> CombineCandidates(int idx)
+    {
+        BuilderUnit bu = _list.Units[idx];
+        var candidates = new List<int>();
+        for (int i = 0; i < _list.Units.Count; i++)
+        {
+            BuilderUnit other = _list.Units[i];
+            if (i == idx || other.RosterUnitId != bu.RosterUnitId) continue;
+            if (!string.IsNullOrEmpty(other.CombinedWithId)) continue; // already linked elsewhere
+            if (!string.IsNullOrEmpty(other.Id) && _list.Units.Any(third =>
+                !ReferenceEquals(third, bu) && third.CombinedWithId == other.Id)) continue; // already a target
+            candidates.Add(i);
+        }
+        return candidates;
+    }
+
     /// <summary>List indices of units a hero at <paramref name="heroIdx"/> may join: other multi-model,
     /// non-Hero units (mirrors the #006 eligibility the engine enforces at setup).</summary>
-    internal List<int> HostCandidates(int heroIdx, BuiltArmyFile compiled)
+    internal List<int> HostCandidates(int heroIdx, IReadOnlyList<UnitFileEntry> rows)
     {
         var hosts = new List<int>();
-        for (int i = 0; i < compiled.Units.Count; i++)
-            if (i != heroIdx && compiled.Units[i].ModelCount > 1 && !ForceOrgValidator.IsHero(compiled.Units[i]))
+        for (int i = 0; i < rows.Count; i++)
+            if (i != heroIdx && rows[i].ModelCount > 1 && !ForceOrgValidator.IsHero(rows[i]))
                 hosts.Add(i);
         return hosts;
     }
 
     // Disambiguates duplicate squads in combos: "Retributors [5]", "Retributors [5] #2", ...
-    private string ListRowLabel(int idx, BuiltArmyFile compiled)
+    private string ListRowLabel(int idx, IReadOnlyList<UnitFileEntry> rows)
     {
-        UnitFileEntry unit = compiled.Units[idx];
+        UnitFileEntry unit = rows[idx];
         int nth = 0;
         for (int i = 0; i <= idx; i++)
-            if (compiled.Units[i].Name == unit.Name) nth++;
+            if (rows[i].Name == unit.Name) nth++;
         return nth > 1 ? $"{unit.Name} [{unit.ModelCount}] #{nth}" : $"{unit.Name} [{unit.ModelCount}]";
     }
 

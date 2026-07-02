@@ -180,8 +180,45 @@ public class ArmyForgeScreenTests
         var screen = new ArmyForgeScreen();
         screen.AddToList("warriors");
         screen.AddToList("gunners");
-        var hosts = screen.HostCandidates(0, screen.Compile());
+        var hosts = screen.HostCandidates(0, screen.Compile().Units);
         Assert.That(hosts, Is.EqualTo(new[] { 1 }));
+    }
+
+    // ── #107 combined squads ────────────────────────────────────────────────────────────────────────────
+
+    [Test]
+    public void CombineCandidates_OnlySameRosterCopies_NotAlreadyLinked()
+    {
+        var screen = new ArmyForgeScreen();
+        screen.AddToList("warriors"); // 0 — the row asking
+        screen.AddToList("warriors"); // 1 — free copy: candidate
+        screen.AddToList("warriors"); // 2 — will link to 1: not a candidate (and makes 1 a target)
+        screen.AddToList("gunners");  // 3 — different roster: not a candidate
+
+        Assert.That(screen.CombineCandidates(0), Is.EqualTo(new[] { 1, 2 }),
+            "before any links, both other copies are candidates");
+
+        // Link 2 → 1: now 2 is linked elsewhere and 1 is already a target.
+        var list = screen.Compile().Selections!;
+        list.Units[2].CombinedWithId = ArmyForgeScreen.EnsureId(list.Units[1]);
+
+        Assert.That(screen.CombineCandidates(0), Is.Empty);
+    }
+
+    [Test]
+    public void CombinedPair_SavesAsOneMergedUnit()
+    {
+        var screen = new ArmyForgeScreen();
+        screen.AddToList("warriors");
+        screen.AddToList("warriors");
+        var list = screen.Compile().Selections!;
+        list.Units[1].CombinedWithId = ArmyForgeScreen.EnsureId(list.Units[0]);
+
+        BuiltArmyFile army = screen.Compile();
+
+        Assert.That(army.Units, Has.Count.EqualTo(1));
+        Assert.That(army.Units[0].ModelCount, Is.EqualTo(10));
+        Assert.That(army.Units[0].Name, Does.Contain("Combined"));
     }
 
     // ── P4: validation surfaced through the screen ──────────────────────────────────────────────────────
