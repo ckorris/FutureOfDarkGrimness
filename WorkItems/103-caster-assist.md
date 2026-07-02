@@ -1,6 +1,6 @@
 # 103 — Caster cast assist (friendly +1 / enemy −1)
 
-**Status**: done 2026-06-30 (awaiting GUI hand-verification)
+**Status**: DONE — GUI hand-verified + merged to master 2026-07-02 (engine `baefb44` / superproject `c83e422`)
 **Related**: #033 (Caster framework — spun off from its last tracked slice), #034 (spell content)
 
 > **Renumbered 2026-06-22.** Opened as #094, but origin/master had already assigned #094 to *group-move
@@ -117,8 +117,15 @@ the (now complete) core casting framework.
   + spell-authoring UI) is on branch `033-caster`.
 
 ## Outcome
-Built end-to-end (engine only): friendly Casters within 18" add +1 per token and enemy Casters subtract 1
-per token to a cast roll, before it resolves; the net modifier shifts the 4+ threshold (clamped [1,6]) and
-assist tokens are spent regardless of the outcome. Proven by three integration tests and green across the
-suite/build/headless smoke. **Awaiting GUI hand-verification** of a real two-Caster game (friendly assist
-dialog + networked enemy-hinder open-information flow).
+Built end-to-end: friendly Casters within 18" add +1 per token and enemy Casters subtract 1 per token to a
+cast roll, before it resolves; the net modifier shifts the 4+ threshold (clamped [1,6]) and assist tokens
+are spent regardless of the outcome. GUI layered on after round-1 hand-verify: canvas click-to-target for
+all unit picks, a dedicated `CastAssistRequest` + `GuiCastAssistResolver` (blue friendly / orange enemy
+highlight + line + token count), and assist/result **text beats** (blue assist, orange hinder, blue/red
+cast result) with an em-dash→ASCII log fix.
+
+**GUI hand-verified by the user and merged to master 2026-07-02.** Merged submodule-first: engine
+`103-caster-assist` → engine master (`baefb44`, clean — zero file overlap with the meanwhile-merged
+#151/#152), then superproject → master (`c83e422`, submodule pointer resolved to `baefb44`; `WorkItemsList.md`
+auto-merged). Post-merge green: engine suite 972/0, app suite 49/0, full build clean, headless exit 0.
+Deferreds carried forward (alternating token bidding, smarter AI assist policy) remain open above.
