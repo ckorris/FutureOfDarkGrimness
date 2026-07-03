@@ -210,25 +210,6 @@ public class ArmyForgeScreenTests
     // ── #107 combined squads ────────────────────────────────────────────────────────────────────────────
 
     [Test]
-    public void CombineCandidates_OnlySameRosterCopies_NotAlreadyLinked()
-    {
-        var screen = new ArmyForgeScreen(DemoBook.Build());
-        screen.AddToList("warriors"); // 0 — the row asking
-        screen.AddToList("warriors"); // 1 — free copy: candidate
-        screen.AddToList("warriors"); // 2 — will link to 1: not a candidate (and makes 1 a target)
-        screen.AddToList("gunners");  // 3 — different roster: not a candidate
-
-        Assert.That(screen.CombineCandidates(0), Is.EqualTo(new[] { 1, 2 }),
-            "before any links, both other copies are candidates");
-
-        // Link 2 → 1: now 2 is linked elsewhere and 1 is already a target.
-        var list = screen.Compile().Selections!;
-        list.Units[2].CombinedWithId = ArmyForgeScreen.EnsureId(list.Units[1]);
-
-        Assert.That(screen.CombineCandidates(0), Is.Empty);
-    }
-
-    [Test]
     public void CombinedPair_SavesAsOneMergedUnit()
     {
         var screen = new ArmyForgeScreen(DemoBook.Build());
@@ -243,6 +224,161 @@ public class ArmyForgeScreenTests
         Assert.That(army.Units[0].ModelCount, Is.EqualTo(10));
         Assert.That(army.Units[0].Name, Does.Contain("Combined"));
     }
+
+    [Test]
+    public void CombinedCheckbox_On_SpawnsLinkedCopy_MergingToOneUnit()
+    {
+        var screen = new ArmyForgeScreen(DemoBook.Build());
+        screen.AddToList("warriors"); // 0
+        Assert.That(screen.IsCombined(0), Is.False);
+
+        screen.SetCombined(0, true);
+
+        Assert.That(screen.List.Units, Has.Count.EqualTo(2), "checking Combined spawns a second copy");
+        BuilderUnit copy = screen.List.Units[1];
+        Assert.That(copy.RosterUnitId, Is.EqualTo("warriors"));
+        Assert.That(copy.CombinedWithId, Is.EqualTo(screen.List.Units[0].Id).And.Not.Null,
+            "the spawned copy links to the base");
+        Assert.That(screen.CombinePartnerIndex(0), Is.EqualTo(1));
+        Assert.That(screen.CombinePartnerIndex(1), Is.EqualTo(0), "either half resolves to the other");
+
+        BuiltArmyFile army = screen.Compile();
+        Assert.That(army.Units, Has.Count.EqualTo(1));
+        Assert.That(army.Units[0].ModelCount, Is.EqualTo(10), "the pair merged into one 10-model unit");
+    }
+
+    [Test]
+    public void CombinedCheckbox_Off_RemovesSpawnedCopy()
+    {
+        var screen = new ArmyForgeScreen(DemoBook.Build());
+        screen.AddToList("warriors");
+        screen.SetCombined(0, true);
+        Assert.That(screen.List.Units, Has.Count.EqualTo(2));
+
+        screen.SetCombined(0, false); // toggle off from the base
+
+        Assert.That(screen.List.Units, Has.Count.EqualTo(1), "the spawned copy is removed");
+        Assert.That(screen.List.Units[0].CombinedWithId, Is.Null);
+        Assert.That(screen.IsCombined(0), Is.False);
+    }
+
+    [Test]
+    public void RemovingOneHalf_UncombinesTheSurvivor_NoWarning()
+    {
+        var screen = new ArmyForgeScreen(DemoBook.Build());
+        screen.AddToList("warriors"); // 0 base
+        screen.SetCombined(0, true);  // 1 spawned copy links to 0
+
+        screen.RemoveFromList(0);     // remove the BASE
+
+        Assert.That(screen.List.Units, Has.Count.EqualTo(1));
+        Assert.That(screen.List.Units[0].CombinedWithId, Is.Null, "the survivor's dangling link is cleared");
+        Assert.That(screen.Issues(), Is.Empty, "no dangling-combine warning left behind");
+    }
+
+    [Test]
+    public void SetCombined_IsNoOp_OnSingleModelHero()
+    {
+        var screen = new ArmyForgeScreen(HeroBook());
+        screen.AddToList("hero");
+
+        screen.SetCombined(0, true); // ineligible: a single-model Hero can't be combined
+
+        Assert.That(screen.List.Units, Has.Count.EqualTo(1));
+        Assert.That(screen.IsCombined(0), Is.False);
+    }
+
+    [Test]
+    public void SetCombined_On_WhenAlreadyCombined_DoesNotSpawnAThird()
+    {
+        var screen = new ArmyForgeScreen(DemoBook.Build());
+        screen.AddToList("warriors");
+        screen.SetCombined(0, true);
+        Assert.That(screen.List.Units, Has.Count.EqualTo(2));
+
+        screen.SetCombined(0, true); // already a pair — no third copy
+
+        Assert.That(screen.List.Units, Has.Count.EqualTo(2));
+    }
+
+    [Test]
+    public void CombinedSpawn_SeedsWholeUnitUpgrade_AndPaysForBoth()
+    {
+        // gunners-missiles is Affects=All ("Replace all Heavy Rifles with Missile Launchers").
+        UpgradeSection allSection = GunnersAllSection();
+
+        var screen = new ArmyForgeScreen(DemoBook.Build());
+        screen.AddToList("gunners");
+        ArmyForgeScreen.SetChoice(screen.List.Units[0], allSection, "missile", 1); // upgrade the base first
+
+        screen.SetCombined(0, true); // spawn — should seed the All-scope pick onto the copy
+
+        Assert.That(ArmyForgeScreen.IsChosen(screen.List.Units[1], "gunners-missiles", "missile"), Is.True,
+            "the whole-unit upgrade is mirrored onto the spawned copy");
+
+        // "Pay for both": the merged unit costs exactly twice one upgraded copy.
+        var reference = new ArmyForgeScreen(DemoBook.Build());
+        reference.AddToList("gunners");
+        ArmyForgeScreen.SetChoice(reference.List.Units[0], allSection, "missile", 1);
+        int oneUpgraded = reference.Compile().Units[0].PointCost;
+
+        Assert.That(screen.Compile().Units[0].PointCost, Is.EqualTo(2 * oneUpgraded));
+    }
+
+    [Test]
+    public void ApplyChoice_MirrorsWholeUnitEdit_BothWays()
+    {
+        UpgradeSection allSection = GunnersAllSection();
+
+        var screen = new ArmyForgeScreen(DemoBook.Build());
+        screen.AddToList("gunners");
+        screen.SetCombined(0, true);
+        BuilderUnit a = screen.List.Units[0], b = screen.List.Units[1];
+
+        ArmyForgeScreen.ApplyChoice(a, b, allSection, "missile", 1); // edit copy A
+        Assert.That(ArmyForgeScreen.IsChosen(a, "gunners-missiles", "missile"), Is.True);
+        Assert.That(ArmyForgeScreen.IsChosen(b, "gunners-missiles", "missile"), Is.True, "edit mirrored to partner");
+
+        ArmyForgeScreen.ApplyChoice(a, b, allSection, string.Empty, 0); // clear on A
+        Assert.That(ArmyForgeScreen.IsChosen(b, "gunners-missiles", "missile"), Is.False, "clearing mirrors too");
+    }
+
+    [Test]
+    public void ApplyChoice_PerModelUpgrade_StaysIndependentPerCopy()
+    {
+        // warriors-special is Affects=One ("Upgrade one Rifle to a Plasma Rifle") - NOT shared.
+        UpgradeSection oneSection = DemoBook.Build().Units.Single(u => u.Id == "warriors")
+            .Sections.Single(s => s.Id == "warriors-special");
+
+        var screen = new ArmyForgeScreen(DemoBook.Build());
+        screen.AddToList("warriors");
+        screen.SetCombined(0, true);
+        BuilderUnit a = screen.List.Units[0], b = screen.List.Units[1];
+
+        ArmyForgeScreen.ApplyChoice(a, b, oneSection, "plasma", 1);
+
+        Assert.That(ArmyForgeScreen.IsChosen(a, "warriors-special", "plasma"), Is.True);
+        Assert.That(ArmyForgeScreen.IsChosen(b, "warriors-special", "plasma"), Is.False,
+            "per-model (Affects=One) upgrades stay independent per copy");
+    }
+
+    private static UpgradeSection GunnersAllSection() => DemoBook.Build().Units
+        .Single(u => u.Id == "gunners").Sections.Single(s => s.Id == "gunners-missiles");
+
+    // A single-model Hero: ineligible for combining (exercises the CanCombine multi-model + non-Hero gate).
+    private static BookFile HeroBook() => new()
+    {
+        Name = "Hero Test",
+        Units =
+        {
+            new RosterUnit
+            {
+                Id = "hero", Name = "Warlord",
+                Quality = 3, Defense = 3, BaseModelCount = 1, MinModels = 1, MaxModels = 1, BasePointCost = 80,
+                Rules = { new SpecialRuleEntry_Core("Hero") },
+            },
+        },
+    };
 
     // ── P4: validation surfaced through the screen ──────────────────────────────────────────────────────
 

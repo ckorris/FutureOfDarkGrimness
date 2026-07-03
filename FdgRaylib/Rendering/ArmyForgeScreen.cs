@@ -28,6 +28,7 @@ public class ArmyForgeScreen : IAppScreen
     private static readonly Vector4 YellowText = new(0.90f, 0.80f, 0.35f, 1f);
     private static readonly Vector4 GreenText  = new(0.45f, 0.85f, 0.45f, 1f);
     private static readonly Vector4 WhiteText  = new(1f, 1f, 1f, 1f);
+    private static readonly Vector4 CyanText   = new(0.45f, 0.80f, 0.90f, 1f);
 
     private static readonly FileFilter ArmyFilter = new(
         $"FDG Army (*{ArmyListFile.EXTENSION_WITH_PERIOD})",
@@ -134,7 +135,16 @@ public class ArmyForgeScreen : IAppScreen
     internal void RemoveFromList(int index)
     {
         if (index < 0 || index >= _list.Units.Count) return;
+        string? removedId = _list.Units[index].Id;
         _list.Units.RemoveAt(index);
+        // Clear any dangling link to the removed unit so a surviving combine/join partner stays a clean,
+        // warning-free independent unit (e.g. removing one half of a combined pair un-combines the other).
+        if (!string.IsNullOrEmpty(removedId))
+            foreach (BuilderUnit u in _list.Units)
+            {
+                if (u.CombinedWithId == removedId) u.CombinedWithId = null;
+                if (u.JoinsUnitId == removedId) u.JoinsUnitId = null;
+            }
         _selectedListIndex = _list.Units.Count == 0 ? null : Math.Min(_selectedListIndex ?? 0, _list.Units.Count - 1);
     }
 
@@ -230,7 +240,7 @@ public class ArmyForgeScreen : IAppScreen
 
         ImGui.SameLine(0, spacing);
         ImGui.BeginChild("##forge-list", new Vector2(listW, avail.Y), ImGuiChildFlags.Borders);
-        DrawListPane(rows, issues);
+        DrawListPane(rows, issues, compiled.Units.Count);
         ImGui.EndChild();
 
         ImGui.SameLine(0, spacing);
@@ -285,9 +295,9 @@ public class ArmyForgeScreen : IAppScreen
         }
     }
 
-    private void DrawListPane(IReadOnlyList<UnitFileEntry> rows, IReadOnlyList<ListIssue> issues)
+    private void DrawListPane(IReadOnlyList<UnitFileEntry> rows, IReadOnlyList<ListIssue> issues, int unitCount)
     {
-        ImGui.TextDisabled("LIST");
+        ImGui.TextDisabled($"LIST  [{unitCount} unit{(unitCount == 1 ? "" : "s")}]");
         ImGui.Separator();
         if (_list.Units.Count == 0)
         {
@@ -296,43 +306,38 @@ public class ArmyForgeScreen : IAppScreen
         }
 
         int removeIndex = -1;
+        var rendered = new bool[_list.Units.Count];
         for (int i = 0; i < _list.Units.Count && i < rows.Count; i++)
         {
-            UnitFileEntry unit = rows[i];
-            bool selected = _selectedListIndex == i;
-
-            // Full-row hit target: an invisible Selectable spanning the row's whole block (name + stat
-            // lines), drawn FIRST with AllowOverlap so the remove button and the overlaid text on top of it
-            // still receive their own clicks. Clicking anywhere else in the rectangle selects the unit.
-            float lineH = ImGui.GetTextLineHeightWithSpacing();
-            int lines = 2 + unit.Weapons.Count + (unit.SpecialRules.Count > 0 ? 1 : 0);
-            Vector2 rowStart = ImGui.GetCursorPos();
-            ImGui.SetNextItemAllowOverlap();
-            if (ImGui.Selectable($"##li{i}", selected, ImGuiSelectableFlags.None, new Vector2(0, lines * lineH)))
-                _selectedListIndex = i;
-            ImGui.SetCursorPos(rowStart);
-
-            if (issues.Any(x => x.UnitIndex == i && x.Severity == ListIssueSeverity.Error))
+            if (rendered[i]) continue;
+            int partner = CombinePartnerIndex(i);
+            if (partner >= 0 && partner < rows.Count)
             {
-                ImGui.TextColored(RedText, "!");
+                // Combined pair: one grouped card (link tag + summed [size]/pts), then both editable sub-rows.
+                int baseIdx = string.IsNullOrEmpty(_list.Units[i].CombinedWithId) ? i : partner;
+                int copyIdx = baseIdx == i ? partner : i;
+                int totalModels = rows[baseIdx].ModelCount + rows[copyIdx].ModelCount;
+                int totalPts = rows[baseIdx].PointCost + rows[copyIdx].PointCost;
+
+                ImGui.TextColored(CyanText, "[Combined]");
                 ImGui.SameLine();
+                ImGui.TextUnformatted($"{rows[baseIdx].Name} [{totalModels}]");
+                string gpts = $"{totalPts}";
+                ImGui.SameLine(ImGui.GetContentRegionAvail().X - ImGui.CalcTextSize(gpts).X);
+                ImGui.TextDisabled(gpts);
+
+                ImGui.Indent();
+                DrawListRow(baseIdx, rows, issues, ref removeIndex);
+                DrawListRow(copyIdx, rows, issues, ref removeIndex);
+                ImGui.Unindent();
+                ImGui.Separator();
+                rendered[baseIdx] = rendered[copyIdx] = true;
             }
-            ImGui.TextUnformatted($"{unit.Name} [{unit.ModelCount}]");
-
-            string pts = $"{unit.PointCost}";
-            ImGui.SameLine(ImGui.GetContentRegionAvail().X - ImGui.CalcTextSize(pts).X - 30f);
-            ImGui.TextDisabled(pts);
-            ImGui.SameLine();
-            if (ImGui.SmallButton($"x##rm{i}")) removeIndex = i;
-
-            ImGui.Indent();
-            ImGui.TextDisabled($"Qua {unit.Quality}+ Def {unit.Defense}+");
-            foreach (WeaponFileEntry weapon in unit.Weapons)
-                ImGui.TextDisabled(ArmyBuilderScreen.WeaponSummary(weapon));
-            if (unit.SpecialRules.Count > 0)
-                ImGui.TextDisabled(string.Join(", ", unit.SpecialRules.Select(r => r.PrintableName)));
-            ImGui.Unindent();
-            ImGui.Separator();
+            else
+            {
+                DrawListRow(i, rows, issues, ref removeIndex);
+                rendered[i] = true;
+            }
         }
         if (removeIndex >= 0) RemoveFromList(removeIndex);
 
@@ -345,6 +350,47 @@ public class ArmyForgeScreen : IAppScreen
                 ImGui.TextColored(issue.Severity == ListIssueSeverity.Error ? RedText : YellowText, issue.Message);
             ImGui.PopTextWrapPos();
         }
+    }
+
+    // One list-pane unit block: full-row select target + name/[size]/pts/remove + stat lines. Shared by
+    // standalone units and the sub-rows of a combined pair (which DrawListPane draws indented under a header).
+    private void DrawListRow(int i, IReadOnlyList<UnitFileEntry> rows, IReadOnlyList<ListIssue> issues, ref int removeIndex)
+    {
+        UnitFileEntry unit = rows[i];
+        bool selected = _selectedListIndex == i;
+
+        // Full-row hit target: an invisible Selectable spanning the row's whole block (name + stat lines),
+        // drawn FIRST with AllowOverlap so the remove button and the overlaid text on top of it still receive
+        // their own clicks. Clicking anywhere else in the rectangle selects the unit.
+        float lineH = ImGui.GetTextLineHeightWithSpacing();
+        int lines = 2 + unit.Weapons.Count + (unit.SpecialRules.Count > 0 ? 1 : 0);
+        Vector2 rowStart = ImGui.GetCursorPos();
+        ImGui.SetNextItemAllowOverlap();
+        if (ImGui.Selectable($"##li{i}", selected, ImGuiSelectableFlags.None, new Vector2(0, lines * lineH)))
+            _selectedListIndex = i;
+        ImGui.SetCursorPos(rowStart);
+
+        if (issues.Any(x => x.UnitIndex == i && x.Severity == ListIssueSeverity.Error))
+        {
+            ImGui.TextColored(RedText, "!");
+            ImGui.SameLine();
+        }
+        ImGui.TextUnformatted($"{unit.Name} [{unit.ModelCount}]");
+
+        string pts = $"{unit.PointCost}";
+        ImGui.SameLine(ImGui.GetContentRegionAvail().X - ImGui.CalcTextSize(pts).X - 30f);
+        ImGui.TextDisabled(pts);
+        ImGui.SameLine();
+        if (ImGui.SmallButton($"x##rm{i}")) removeIndex = i;
+
+        ImGui.Indent();
+        ImGui.TextDisabled($"Qua {unit.Quality}+ Def {unit.Defense}+");
+        foreach (WeaponFileEntry weapon in unit.Weapons)
+            ImGui.TextDisabled(ArmyBuilderScreen.WeaponSummary(weapon));
+        if (unit.SpecialRules.Count > 0)
+            ImGui.TextDisabled(string.Join(", ", unit.SpecialRules.Select(r => r.PrintableName)));
+        ImGui.Unindent();
+        ImGui.Separator();
     }
 
     private void DrawConfigPane(IReadOnlyList<UnitFileEntry> rows)
@@ -384,11 +430,16 @@ public class ArmyForgeScreen : IAppScreen
         ImGui.Unindent();
 
         DrawHeroJoin(idx, unit, rows);
-        DrawCombine(idx, unit, rows);
+        DrawCombinedCheckbox(idx, unit);
 
         RosterUnit? roster = _book.Units.FirstOrDefault(u => u.Id == bu.RosterUnitId);
         if (roster is not null)
-            DrawUpgradeEditors(_book, bu, roster, unit, items);
+        {
+            // When combined, the partner copy is the mirror target for whole-unit (Affects=All) upgrades.
+            int partnerIdx = CombinePartnerIndex(idx);
+            BuilderUnit? mirror = partnerIdx >= 0 ? _list.Units[partnerIdx] : null;
+            DrawUpgradeEditors(_book, bu, roster, unit, items, mirror);
+        }
     }
 
     // #006 hero-join, Forge-side: same semantics as the freeform builder's picker — hosts are other
@@ -430,64 +481,76 @@ public class ArmyForgeScreen : IAppScreen
         }
     }
 
-    // #107 combined squads (decision 8): two copies of the same multi-model unit link into one big unit
-    // at play time. The link is authored on the SECOND copy (CombinedWithId → partner's Id), mirroring the
-    // hero-join combo; illegal shapes (chains, third copies, single-model) surface via ListValidator.
-    private void DrawCombine(int idx, UnitFileEntry compiledUnit, IReadOnlyList<UnitFileEntry> rows)
+    // #107 combined squads: the "Combined Unit" checkbox (OPR Army Forge style). Checking it SPAWNS a second
+    // identical copy grouped under this unit; the pair merges into one big play-time unit (models/cost summed).
+    // Only shown on a multi-model, non-Hero unit. Whole-unit ("Replace all") upgrades mirror across both
+    // copies; per-model options stay independent (see DrawUpgradeEditors).
+    private void DrawCombinedCheckbox(int idx, UnitFileEntry compiledUnit)
     {
-        BuilderUnit bu = _list.Units[idx];
         if (compiledUnit.ModelCount <= 1 || ForceOrgValidator.IsHero(compiledUnit)) return;
-
-        // Partner-side breadcrumb: another copy links to this row.
-        if (!string.IsNullOrEmpty(bu.Id))
-        {
-            List<string> partners = _list.Units
-                .Where(other => !ReferenceEquals(other, bu) && other.CombinedWithId == bu.Id)
-                .Select(other => ListRowLabel(_list.Units.IndexOf(other), rows))
-                .ToList();
-            if (partners.Count > 0)
-            {
-                ImGui.TextDisabled($"Combined with: {string.Join(", ", partners)}");
-                return; // the target of a combine doesn't also offer its own combo
-            }
-        }
-
-        List<int> candidates = CombineCandidates(idx);
-        if (candidates.Count == 0 && string.IsNullOrEmpty(bu.CombinedWithId)) return;
-
-        string[] options = new string[candidates.Count + 1];
-        options[0] = "(not combined)";
-        for (int i = 0; i < candidates.Count; i++)
-            options[i + 1] = ListRowLabel(candidates[i], rows);
-
-        int sel = 0;
-        if (!string.IsNullOrEmpty(bu.CombinedWithId))
-            sel = candidates.FindIndex(c => _list.Units[c].Id == bu.CombinedWithId) + 1; // -1+1 = 0 when stale
-
-        ImGui.SetNextItemWidth(240f);
-        if (ImGui.Combo($"Combine with##combine{idx}", ref sel, options, options.Length))
-            bu.CombinedWithId = sel == 0 ? null : EnsureId(_list.Units[candidates[sel - 1]]);
-
-        if (!string.IsNullOrEmpty(bu.CombinedWithId) && sel == 0)
-            ImGui.TextColored(YellowText, "! Combine target missing or ineligible (see issues) - stays separate.");
+        ImGui.Spacing();
+        bool combined = IsCombined(idx);
+        if (ImGui.Checkbox($"Combined Unit##combine{idx}", ref combined))
+            SetCombined(idx, combined);
     }
 
-    /// <summary>List indices this row may combine with: other copies of the SAME roster unit that are not
-    /// themselves already combined into something (no chains, no third copies).</summary>
-    internal List<int> CombineCandidates(int idx)
+    /// <summary>The list index of <paramref name="idx"/>'s combine partner (a valid same-roster pair), or -1.
+    /// The link is authored on the spawned copy (<see cref="BuilderUnit.CombinedWithId"/> -> base Id); either
+    /// half resolves to the other. Mirrors the validity condition the compiler uses to merge.</summary>
+    internal int CombinePartnerIndex(int idx)
     {
+        if (idx < 0 || idx >= _list.Units.Count) return -1;
         BuilderUnit bu = _list.Units[idx];
-        var candidates = new List<int>();
         for (int i = 0; i < _list.Units.Count; i++)
         {
+            if (i == idx) continue;
             BuilderUnit other = _list.Units[i];
-            if (i == idx || other.RosterUnitId != bu.RosterUnitId) continue;
-            if (!string.IsNullOrEmpty(other.CombinedWithId)) continue; // already linked elsewhere
-            if (!string.IsNullOrEmpty(other.Id) && _list.Units.Any(third =>
-                !ReferenceEquals(third, bu) && third.CombinedWithId == other.Id)) continue; // already a target
-            candidates.Add(i);
+            if (other.RosterUnitId != bu.RosterUnitId) continue;
+            bool buLinksOther = !string.IsNullOrEmpty(bu.CombinedWithId) && bu.CombinedWithId == other.Id;
+            bool otherLinksBu = !string.IsNullOrEmpty(other.CombinedWithId) && other.CombinedWithId == bu.Id;
+            if (buLinksOther || otherLinksBu) return i;
         }
-        return candidates;
+        return -1;
+    }
+
+    internal bool IsCombined(int idx) => CombinePartnerIndex(idx) >= 0;
+
+    /// <summary>The "Combined Unit" toggle. ON spawns a second identical copy right after this one, linked so
+    /// the compiler merges them; OFF removes the spawned copy, leaving this one a normal unit. Only acts on an
+    /// eligible (multi-model, non-Hero) unit; a no-op when already in the requested state.</summary>
+    internal void SetCombined(int idx, bool on)
+    {
+        if (idx < 0 || idx >= _list.Units.Count) return;
+        int partner = CombinePartnerIndex(idx);
+        if (on)
+        {
+            if (partner >= 0 || !CanCombine(idx)) return;
+            BuilderUnit bu = _list.Units[idx];
+            var copy = new BuilderUnit
+            {
+                RosterUnitId = bu.RosterUnitId,
+                ModelCount = bu.ModelCount,
+                CombinedWithId = EnsureId(bu),
+            };
+            SeedMirroredChoices(bu, copy); // whole-unit (Affects=All) picks start mirrored on the new copy
+            _list.Units.Insert(idx + 1, copy);
+            _selectedListIndex = idx; // keep viewing the base copy
+        }
+        else
+        {
+            if (partner < 0) return;
+            // Remove the SPAWNED copy (the one carrying the link); the base survives as a normal unit.
+            int spawned = !string.IsNullOrEmpty(_list.Units[idx].CombinedWithId) ? idx : partner;
+            RemoveFromList(spawned);
+        }
+    }
+
+    /// <summary>A unit may be combined only if it is multi-model and not a Hero (mirrors the OPR eligibility
+    /// the compiler/validator assume).</summary>
+    private bool CanCombine(int idx)
+    {
+        (UnitFileEntry unit, _) = ListCompiler.CompileUnitDetailed(_book, _list.Units[idx]);
+        return unit.ModelCount > 1 && !ForceOrgValidator.IsHero(unit);
     }
 
     /// <summary>List indices of units a hero at <paramref name="heroIdx"/> may join: other multi-model,
@@ -515,8 +578,11 @@ public class ArmyForgeScreen : IAppScreen
         unit.Id ??= Guid.NewGuid().ToString("N");
 
     // Interactive upgrade sections: mutate the BuilderUnit's choices; the per-frame recompile re-costs live.
+    // When <paramref name="mirror"/> is non-null this unit is combined, and whole-unit (Affects=All) sections
+    // are shared: any edit to one is copied to the partner copy (marked "[linked]"), so a "Replace all X" swap
+    // applies to both halves and is paid on both. Per-model/one/any sections stay independent per copy.
     private static void DrawUpgradeEditors(BookFile book, BuilderUnit bu, RosterUnit roster,
-        UnitFileEntry compiledUnit, List<ItemEntry> items)
+        UnitFileEntry compiledUnit, List<ItemEntry> items, BuilderUnit? mirror = null)
     {
         if (roster.Sections.Count == 0) return;
         ImGui.Spacing();
@@ -526,6 +592,7 @@ public class ArmyForgeScreen : IAppScreen
         foreach (UpgradeSection section in roster.Sections)
         {
             bool isReplace = section.Variant == UpgradeVariant.Replace;
+            bool linked = mirror != null && section.Affects == UpgradeAffects.All;
             int available = isReplace
                 ? ListCompiler.AvailableApplications(compiledUnit.Weapons, items, section.Targets)
                 : int.MaxValue;
@@ -536,6 +603,11 @@ public class ArmyForgeScreen : IAppScreen
             int switchAvailable = isReplace ? AvailableExcludingSection(book, bu, section) : int.MaxValue;
 
             ImGui.TextUnformatted(section.Label);
+            if (linked)
+            {
+                ImGui.SameLine();
+                ImGui.TextColored(CyanText, "[linked]");
+            }
             if (isReplace && switchAvailable == 0)
             {
                 ImGui.SameLine();
@@ -563,13 +635,13 @@ public class ArmyForgeScreen : IAppScreen
             {
                 bool noneChosen = !section.Options.Any(o => IsChosen(bu, section.Id, o.Id));
                 if (ImGui.RadioButton($"- none -##{section.Id}-none", noneChosen))
-                    SetChoice(bu, section, string.Empty, 0);
+                    ApplyChoice(bu, mirror, section, string.Empty, 0);
                 foreach (UpgradeOption option in section.Options)
                 {
                     bool chosen = IsChosen(bu, section.Id, option.Id);
                     ImGui.BeginDisabled(isReplace && switchAvailable == 0 && !chosen);
                     if (ImGui.RadioButton($"{OptionSummary(option)}##{section.Id}-{option.Id}", chosen))
-                        SetChoice(bu, section, option.Id, 1);
+                        ApplyChoice(bu, mirror, section, option.Id, 1);
                     ImGui.EndDisabled();
                 }
             }
@@ -580,7 +652,7 @@ public class ArmyForgeScreen : IAppScreen
                     bool chosen = IsChosen(bu, section.Id, option.Id);
                     ImGui.BeginDisabled(isReplace && available == 0 && !chosen);
                     if (ImGui.Checkbox($"{OptionSummary(option)}##{section.Id}-{option.Id}", ref chosen))
-                        SetChoice(bu, section, option.Id, chosen ? 1 : 0);
+                        ApplyChoice(bu, mirror, section, option.Id, chosen ? 1 : 0);
                     ImGui.EndDisabled();
                 }
             }
@@ -727,5 +799,35 @@ public class ArmyForgeScreen : IAppScreen
 
         if (count > 0)
             unit.Choices.Add(new UpgradeChoice { SectionId = section.Id, OptionId = optionId, Count = count });
+    }
+
+    /// <summary>Apply a choice to <paramref name="unit"/>, then — for a shared whole-unit (Affects=All)
+    /// section of a combined pair — mirror the section's whole resulting choice set onto <paramref
+    /// name="mirror"/>, so both halves carry the same "Replace all X" swap (and each pays for it).</summary>
+    internal static void ApplyChoice(BuilderUnit unit, BuilderUnit? mirror, UpgradeSection section, string optionId, int count)
+    {
+        SetChoice(unit, section, optionId, count);
+        if (mirror != null && section.Affects == UpgradeAffects.All)
+            MirrorSection(unit, mirror, section.Id);
+    }
+
+    /// <summary>Replace <paramref name="to"/>'s choices for one section with a clone of <paramref name="from"/>'s
+    /// — a full resync (robust to multi-select and prior divergence), not a per-toggle echo.</summary>
+    private static void MirrorSection(BuilderUnit from, BuilderUnit to, string sectionId)
+    {
+        to.Choices.RemoveAll(c => c.SectionId == sectionId);
+        to.Choices.AddRange(from.Choices
+            .Where(c => c.SectionId == sectionId)
+            .Select(c => new UpgradeChoice { SectionId = c.SectionId, OptionId = c.OptionId, Count = c.Count }));
+    }
+
+    /// <summary>Seed a freshly spawned combined copy with the base's whole-unit (Affects=All) choices, so the
+    /// pair starts already mirrored rather than only syncing on the next edit.</summary>
+    private void SeedMirroredChoices(BuilderUnit from, BuilderUnit to)
+    {
+        RosterUnit? roster = _book.Units.FirstOrDefault(u => u.Id == from.RosterUnitId);
+        if (roster is null) return;
+        foreach (UpgradeSection s in roster.Sections.Where(s => s.Affects == UpgradeAffects.All))
+            MirrorSection(from, to, s.Id);
     }
 }
