@@ -9,9 +9,9 @@ namespace FdgRaylib.Rendering.Resolvers;
 public class GuiCancellableSelectionResolver<T>
     : IStageResolver<CancellableSelectionRequest<T>, CancellableResult<DataBinding<T>>>, IGuiResolver
 {
-    private readonly object _lock = new();
-    private CancellableSelectionRequest<T>? _request;
-    private TaskCompletionSource<CancellableResult<DataBinding<T>>>? _tcs;
+    protected readonly object _lock = new();
+    protected CancellableSelectionRequest<T>? _request;
+    protected TaskCompletionSource<CancellableResult<DataBinding<T>>>? _tcs;
 
     public bool HasPendingRequest { get { lock (_lock) return _request != null; } }
 
@@ -26,7 +26,7 @@ public class GuiCancellableSelectionResolver<T>
         return tcs.Task;
     }
 
-    public void Draw(int screenW, int screenH)
+    public virtual void Draw(int screenW, int screenH)
     {
         CancellableSelectionRequest<T>? request;
         TaskCompletionSource<CancellableResult<DataBinding<T>>>? tcs;
@@ -101,7 +101,7 @@ public class GuiCancellableSelectionResolver<T>
         ImGui.End();
     }
 
-    private void Complete(TaskCompletionSource<CancellableResult<DataBinding<T>>> tcs,
+    protected void Complete(TaskCompletionSource<CancellableResult<DataBinding<T>>> tcs,
         CancellableResult<DataBinding<T>> result)
     {
         lock (_lock) { _request = null; _tcs = null; }

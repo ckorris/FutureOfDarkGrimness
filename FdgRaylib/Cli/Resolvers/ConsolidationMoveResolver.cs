@@ -78,7 +78,7 @@ public class ConsolidationMoveResolver : IStageResolver<ConsolidationMoveRequest
             foreach (var m in u.Models)
                 if (m.GetIsAlive())
                 {
-                    footprints.Add(new EnemyModelFootprint(m.Position, m.BaseRadiusInches, unitKey, uncontactable));
+                    footprints.Add(new EnemyModelFootprint(m.Position, m.BaseRadiusInches, unitKey, uncontactable, m.BaseShape, m.Facing));
                     anyLiving = true;
                 }
             if (anyLiving) unitKey++;

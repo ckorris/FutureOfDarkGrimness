@@ -90,7 +90,7 @@ public class GroupFormationUtilitiesTests
     public void Deployment_SmallUnit_StaysSingleRow()
     {
         var radii = new[] { 0.5f, 0.5f, 0.5f };
-        var offsets = GroupFormationUtilities.ComputeDeploymentOffsets(radii, 0.1f, 9f, 1f);
+        var offsets = GroupFormationUtilities.ComputeDeploymentOffsets(radii, radii, 0.1f, 9f, 1f);
 
         foreach (var o in offsets) Assert.That(o.dz, Is.EqualTo(0f).Within(Tol), "single row z");
         // Centred on the centroid.
@@ -101,7 +101,7 @@ public class GroupFormationUtilitiesTests
     public void Deployment_WideUnit_WrapsToTwoBalancedRows()
     {
         var radii = Enumerable.Repeat(0.5f, 12).ToArray(); // ~12" span > 9" → wraps
-        var offsets = GroupFormationUtilities.ComputeDeploymentOffsets(radii, 0.1f, 9f, 1f);
+        var offsets = GroupFormationUtilities.ComputeDeploymentOffsets(radii, radii, 0.1f, 9f, 1f);
 
         var zs = offsets.Select(o => o.dz).Distinct().OrderBy(z => z).ToList();
         Assert.That(zs.Count, Is.EqualTo(2), "exactly two rows");
@@ -117,7 +117,7 @@ public class GroupFormationUtilitiesTests
     {
         var radii = Enumerable.Repeat(0.5f, 13).ToArray();
         // forwardZSign = +1 → the longer (7-model) row should sit on the +z (forward) side.
-        var offsets = GroupFormationUtilities.ComputeDeploymentOffsets(radii, 0.1f, 9f, 1f);
+        var offsets = GroupFormationUtilities.ComputeDeploymentOffsets(radii, radii, 0.1f, 9f, 1f);
 
         float frontZ = offsets.Max(o => o.dz);
         int frontCount = offsets.Count(o => o.dz > offsets.Min(o2 => o2.dz) + Tol);
@@ -129,7 +129,7 @@ public class GroupFormationUtilitiesTests
     public void Deployment_ForwardSignFlipsRowSide()
     {
         var radii = Enumerable.Repeat(0.5f, 13).ToArray();
-        var back = GroupFormationUtilities.ComputeDeploymentOffsets(radii, 0.1f, 9f, -1f);
+        var back = GroupFormationUtilities.ComputeDeploymentOffsets(radii, radii, 0.1f, 9f, -1f);
         // With forwardZSign = -1, the longer 7-model row sits on the -z side.
         Assert.That(back.Count(o => o.dz < 0f), Is.EqualTo(7), "longer row toward -z when forward is -z");
     }
