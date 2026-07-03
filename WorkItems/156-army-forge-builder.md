@@ -1,4 +1,6 @@
-# 153 — Army-Forge-style catalog army builder
+# 156 — Army-Forge-style catalog army builder
+
+> Renumbered from #153 → #156 on 2026-07-02 (reconciliation 8, see `WorkItemsList.md`): master's #150 base-shape pass had already assigned #153 = "Shape-owned pairwise geometry" (merged, Done). Commit messages and the git branch name `153-army-forge-builder` predate the renumber and are left as-is.
 
 **Status**: blocked (proposal only — awaiting a go decision; OPR-data path additionally gated on OnePageRules clearance)
 **Related**: #106 (army builder authoring UX), #107 (combined squads), #003 (force-org validation), #059 (embedded rule definitions), #033/#034 (spells), `ArmyBuilderScreen`, `.fdgarmy` / `ArmyListFile`
