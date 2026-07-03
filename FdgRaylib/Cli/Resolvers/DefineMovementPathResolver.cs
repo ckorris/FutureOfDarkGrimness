@@ -139,16 +139,16 @@ public class DefineMovementPathResolver : IStageResolver<DefineMovementPathReque
             candidate = step < 0.05f
                 ? CohesiveFormation.PackGrid(living, cx, cz)
                 : CohesiveFormation.PackGrid(living, cx + ndx * step, cz + ndz * step);
-            valid = MovementUtilities.ValidatePaths(candidate, request.MaxRushDistance,
-                request.MaxDistanceInches, footprints, request.CanMoveThroughEnemies, request.IgnoresDifficultTerrain, request.IgnoresImpassibleTerrain, terrain, out _);
+            valid = MovementUtilities.ValidatePaths(candidate, BudgetFor(request),
+            footprints, request.CanMoveThroughEnemies, request.IgnoresDifficultTerrain, request.IgnoresImpassibleTerrain, terrain, out _);
             attempts++;
         }
         if (!valid)
         {
             // Reform in place to close casualty gaps...
             candidate = CohesiveFormation.PackGrid(living, cx, cz);
-            valid = MovementUtilities.ValidatePaths(candidate, request.MaxRushDistance,
-                request.MaxDistanceInches, footprints, request.CanMoveThroughEnemies, request.IgnoresDifficultTerrain, request.IgnoresImpassibleTerrain, terrain, out _);
+            valid = MovementUtilities.ValidatePaths(candidate, BudgetFor(request),
+            footprints, request.CanMoveThroughEnemies, request.IgnoresDifficultTerrain, request.IgnoresImpassibleTerrain, terrain, out _);
 
             // ...but a unit intermingled with enemies can't re-pack without a model crossing an enemy base;
             // hold exact positions then (zero-length paths can't move through anything).
@@ -187,7 +187,7 @@ public class DefineMovementPathResolver : IStageResolver<DefineMovementPathReque
             foreach (var m in u.Models)
                 if (m.GetIsAlive())
                 {
-                    footprints.Add(new EnemyModelFootprint(m.Position, m.BaseRadiusInches, unitKey, uncontactable));
+                    footprints.Add(new EnemyModelFootprint(m.Position, m.BaseRadiusInches, unitKey, uncontactable, m.BaseShape, m.Facing));
                     anyLiving = true;
                 }
             if (anyLiving) unitKey++;

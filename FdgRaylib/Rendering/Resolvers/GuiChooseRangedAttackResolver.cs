@@ -409,7 +409,7 @@ public class GuiChooseRangedAttackResolver
             dl.AddLine(new Vector2(ax, ay), new Vector2(tx, ty), colorCan, 1.5f);
 
             float distInches = DistanceUtilities.GetBaseToBaseDistanceInches_3D(
-                attacker.Position, nearest.Position, attacker.BaseRadiusInches, nearest.BaseRadiusInches);
+                attacker.Position, nearest.Position, attacker.BaseShape, attacker.Facing, nearest.BaseShape, nearest.Facing);
             string distText = $"{distInches:F1}\"";
             var textSize = ImGui.CalcTextSize(distText);
             var mid = new Vector2((ax + tx) * 0.5f - textSize.X * 0.5f,
@@ -428,7 +428,7 @@ public class GuiChooseRangedAttackResolver
         {
             var m  = mb.GetValue();
             float d = DistanceUtilities.GetBaseToBaseDistanceInches_3D(
-                from.Position, m.Position, from.BaseRadiusInches, m.BaseRadiusInches);
+                from.Position, m.Position, from.BaseShape, from.Facing, m.BaseShape, m.Facing);
             if (d < bestDist) { bestDist = d; best = m; }
         }
         return best;

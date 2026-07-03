@@ -147,11 +147,12 @@ public class GuiConsolidationMoveResolver
             if (dist < 0.0001f) { nx = anchor.x; nz = anchor.z; }
             else                { nx = anchor.x + dx / dist * allowed; nz = anchor.z + dz / dist * allowed; }
 
-            // Clamp so the model's base stays inside the table.
-            (nx, nz) = ClampToTable(nx, nz, _selectedModel.BaseRadiusInches);
+            // Clamp so the model's base stays inside the table (circumscribing radius: rotation-safe).
+            (nx, nz) = ClampToTable(nx, nz, _selectedModel.BaseShape.CircumscribedRadiusInches);
             ghostPos = new Position(nx, nz);
 
-            ghostOverlaps = WouldOverlapAnyModel(ghostPos.Value, _selectedModel, request, paths);
+            // Consolidation slides without rotating, so the ghost keeps the model's facing.
+            ghostOverlaps = WouldOverlapAnyModel(ghostPos.Value, _selectedModel.Facing, _selectedModel, request, paths);
 
             var (apx, apy) = InchesToPixel(anchor.x, anchor.z);
             var (gx, gy)   = InchesToPixel(nx, nz);
@@ -301,12 +302,11 @@ public class GuiConsolidationMoveResolver
         ImGui.End();
     }
 
-    private bool WouldOverlapAnyModel(Position ghostPos, IModel ghostModel,
+    private bool WouldOverlapAnyModel(Position ghostPos, Float2 ghostFacing, IModel ghostModel,
         ConsolidationMoveRequest request,
         IReadOnlyDictionary<IModel, IReadOnlyList<Position>> paths)
     {
         var ownUnit = request.UnitDataBinding.GetValue();
-        float gr = ghostModel.BaseRadiusInches;
         foreach (var unit in _tableState.Units.Objects)
         {
             bool isOwnUnit = unit == ownUnit;
@@ -319,10 +319,9 @@ public class GuiConsolidationMoveResolver
                 if (isOwnUnit && paths.TryGetValue(m, out var path) && path.Count > 0)
                     p = path[^1];
 
-                float dx = ghostPos.x - p.x;
-                float dz = ghostPos.z - p.z;
-                float horiz = MathF.Sqrt(dx * dx + dz * dz);
-                if (horiz + 0.001f < gr + m.BaseRadiusInches) return true;
+                // True oriented footprints (#150), not a bounding circle.
+                if (BaseShapeGeometry.AreColliding(ghostModel.BaseShape, ghostPos, ghostFacing, m.BaseShape, p, m.Facing))
+                    return true;
             }
         }
         return false;
@@ -359,7 +358,7 @@ public class GuiConsolidationMoveResolver
             foreach (var m in u.Models)
                 if (m.GetIsAlive())
                 {
-                    footprints.Add(new EnemyModelFootprint(m.Position, m.BaseRadiusInches, unitKey, uncontactable));
+                    footprints.Add(new EnemyModelFootprint(m.Position, m.BaseRadiusInches, unitKey, uncontactable, m.BaseShape, m.Facing));
                     anyLiving = true;
                 }
             if (anyLiving) unitKey++;
@@ -392,9 +391,11 @@ public class GuiConsolidationMoveResolver
             for (int j = 0; j < finals.Count; j++)
             {
                 if (i == j) continue;
+                // Shape- and facing-aware (#150) so the cohesion readout matches the server's measurement.
                 float d = DistanceUtilities.GetBaseToBaseDistanceInches_3D(
                     finals[i].pos, finals[j].pos,
-                    finals[i].model.BaseRadiusInches, finals[j].model.BaseRadiusInches);
+                    finals[i].model.BaseShape, finals[i].model.Facing,
+                    finals[j].model.BaseShape, finals[j].model.Facing);
                 if (d < nearestDist) { nearestDist = d; nearestIdx = j; }
                 if (i < j && (!farPair.HasValue || d > farPair.Value.Item5))
                     farPair = (finals[i].model, finals[j].model, finals[i].pos, finals[j].pos, d);

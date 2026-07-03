@@ -18,6 +18,7 @@ public static class ResolverRegistryFactory
             .RegisterResolver(new ChooseDeploymentZoneResolver())
             .RegisterResolver(new ChooseRangedAttackResolver())
             .RegisterResolver(new DefineMovementPathResolver(tableState))
+            .RegisterResolver(new AircraftAdvanceResolver())
             .RegisterResolver(new ConsolidationMoveResolver(tableState))
             .RegisterResolver(new AssignWoundsResolver())
             .RegisterResolver(new SelectionResolver<UnitData>())
@@ -48,6 +49,7 @@ public static class ResolverRegistryFactory
         var rangedAttack  = new GuiChooseRangedAttackResolver(tableState);
         var assignWounds  = new GuiAssignWoundsResolver();
         var movement      = new GuiDefineMovementResolver(tableState, formationMode);
+        var aircraftMove  = new GuiAircraftAdvanceResolver();
         var consolidate   = new GuiConsolidationMoveResolver(tableState);
         var placeObjects  = new GuiPlaceObjectsResolver<ModelData>(tableState, formationMode);
         var placeObjective = new GuiPlaceObjectiveResolver(tableState);
@@ -63,6 +65,7 @@ public static class ResolverRegistryFactory
         overlay.Register(rangedAttack);
         overlay.Register(assignWounds);
         overlay.Register(movement);
+        overlay.Register(aircraftMove);
         overlay.Register(consolidate);
         overlay.Register(placeObjects);
         overlay.Register(placeObjective);
@@ -80,6 +83,7 @@ public static class ResolverRegistryFactory
             .RegisterResolver(rangedAttack)                                  // GUI
             .RegisterResolver(assignWounds)                                  // GUI
             .RegisterResolver(movement)                                      // GUI
+            .RegisterResolver(aircraftMove)                                  // GUI
             .RegisterResolver(consolidate)                                   // GUI
             .RegisterResolver(placeObjects)                                  // GUI
             .RegisterResolver(placeObjective)                                // GUI

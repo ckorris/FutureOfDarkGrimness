@@ -261,31 +261,34 @@ public static class GroupFormationUtilities
     /// Lays a unit out for group deployment: a single horizontal row (bases ~<paramref name="gap"/>"
     /// apart) when that fits within <paramref name="maxPairwiseInches"/>, otherwise two balanced rows
     /// with the longer row on the forward side (toward table centre, per <paramref name="forwardZSign"/>).
-    /// Returns each model's offset from the formation centroid in table axes (x = row direction,
-    /// z = depth), before any user rotation/translation; order matches <paramref name="radii"/>.
+    /// Per-axis extents (#150): row spacing uses each base's X half-extent (<paramref name="halfXs"/>) and the
+    /// two-row separation uses the Z half-extent (<paramref name="halfZs"/>), so a wide rectangle packs tight on
+    /// both axes — a single radius would over-space the short axis, breaking cohesion. Returns each model's
+    /// offset from the formation centroid in formation-local axes (x = row direction, z = depth), before any user
+    /// rotation/translation; order matches the inputs.
     /// </summary>
     public static (float dx, float dz)[] ComputeDeploymentOffsets(
-        IReadOnlyList<float> radii, float gap, float maxPairwiseInches, float forwardZSign)
+        IReadOnlyList<float> halfXs, IReadOnlyList<float> halfZs, float gap, float maxPairwiseInches, float forwardZSign)
     {
-        int n = radii.Count;
+        int n = halfXs.Count;
         var offsets = new (float dx, float dz)[n];
         if (n == 0) return offsets;
         if (n == 1) { offsets[0] = (0f, 0f); return offsets; }
 
-        if (RowBaseToBaseSpan(radii, 0, n, gap) <= maxPairwiseInches)
+        if (RowBaseToBaseSpan(halfXs, 0, n, gap) <= maxPairwiseInches)
         {
-            LayoutRowX(radii, 0, n, gap, 0f, offsets);
+            LayoutRowX(halfXs, 0, n, gap, 0f, offsets);
             Recenter(offsets);
             return offsets;
         }
 
         int frontCount = (n + 1) / 2; // longer row goes forward (toward table centre) when odd
-        float frontMaxR = MaxRadius(radii, 0, frontCount);
-        float backMaxR  = MaxRadius(radii, frontCount, n);
-        float rowSep = frontMaxR + gap + backMaxR;
+        float frontMaxHZ = MaxRadius(halfZs, 0, frontCount);
+        float backMaxHZ  = MaxRadius(halfZs, frontCount, n);
+        float rowSep = frontMaxHZ + gap + backMaxHZ;
         float fz = (forwardZSign >= 0f ? 0.5f : -0.5f) * rowSep;
-        LayoutRowX(radii, 0, frontCount, gap, fz, offsets);
-        LayoutRowX(radii, frontCount, n, gap, -fz, offsets);
+        LayoutRowX(halfXs, 0, frontCount, gap, fz, offsets);
+        LayoutRowX(halfXs, frontCount, n, gap, -fz, offsets);
         Recenter(offsets);
         return offsets;
     }
