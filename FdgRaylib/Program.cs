@@ -44,7 +44,7 @@ if (importIdx >= 0 && importIdx + 2 < args.Length)
     string inJson = args[importIdx + 1];
     string outPath = args[importIdx + 2];
     BookFile book = OprBookImporter.Import(File.ReadAllText(inJson),
-        source: "OnePageRules — Army Forge (army-forge.onepagerules.com)",
+        source: "OnePageRules - Army Forge (army-forge.onepagerules.com)",
         license: "CC-BY-SA 4.0",
         warn: msg => Console.WriteLine($"  {msg}"));
     if (importIdx + 3 < args.Length && !args[importIdx + 3].StartsWith("--"))
@@ -55,7 +55,7 @@ if (importIdx >= 0 && importIdx + 2 < args.Length)
     }
     Directory.CreateDirectory(Path.GetDirectoryName(Path.GetFullPath(outPath))!);
     File.WriteAllText(outPath, JsonSerializer.Serialize(book, RuleJson.Options));
-    Console.WriteLine($"Imported '{book.Name}' {book.Version}: {book.Units.Count} units, {book.Spells.Count} spells → {outPath}");
+    Console.WriteLine($"Imported '{book.Name}' {book.Version}: {book.Units.Count} units, {book.Spells.Count} spells -> {outPath}");
     return;
 }
 
@@ -72,7 +72,7 @@ if (applyIdx >= 0 && applyIdx + 2 < args.Length)
     var embedded = BookRuleSupplement.Apply(book, supplement, msg => Console.WriteLine($"  {msg}"));
     File.WriteAllText(bookPath, JsonSerializer.Serialize(book, RuleJson.Options));
     Console.WriteLine($"'{book.Name}': embedded {embedded.Count} rule definitions " +
-        $"({string.Join(", ", embedded)}) → {bookPath}");
+        $"({string.Join(", ", embedded)}) -> {bookPath}");
     return;
 }
 
@@ -109,7 +109,7 @@ if (b2aIdx >= 0 && b2aIdx + 2 < args.Length)
     BuiltArmyFile all = ListCompiler.Compile(book, Base());               // proves every unit compiles
     BuiltArmyFile small = ListCompiler.Compile(book, Base(take: 4));      // small, playable for a smoke
     File.WriteAllText(args[b2aIdx + 2], JsonSerializer.Serialize(small, RuleJson.Options));
-    Console.WriteLine($"'{book.Name}': all {all.Units.Count} units compiled ({all.TotalPoints} pts); wrote {small.Units.Count}-unit army → {args[b2aIdx + 2]}");
+    Console.WriteLine($"'{book.Name}': all {all.Units.Count} units compiled ({all.TotalPoints} pts); wrote {small.Units.Count}-unit army -> {args[b2aIdx + 2]}");
     return;
 }
 

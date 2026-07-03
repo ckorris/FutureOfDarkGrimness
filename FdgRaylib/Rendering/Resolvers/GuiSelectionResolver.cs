@@ -42,13 +42,27 @@ public class GuiSelectionResolver<T> : IStageResolver<SelectionRequest<T>, DataB
 
         int validCount   = request.ValidOptions.Count;
         int invalidCount = request.InvalidOptions.Count;
-        int totalRows    = validCount + invalidCount;
         float rowH   = 32f;
         float pad    = 16f;
         float instrH = 48f;
         float backH  = request.AllowCancel ? rowH + pad : 0f; // extra height for Back button, if shown
+
+        // Valid options may carry multi-line labels (OptionLabel override, e.g. model stats) — size each
+        // row to its line count. Single-line labels keep the classic 32px row.
+        float lineH = ImGui.GetTextLineHeight();
+        string[] labels = new string[validCount];
+        float[] rowHeights = new float[validCount];
+        float validH = 0f;
+        for (int i = 0; i < validCount; i++)
+        {
+            labels[i] = OptionLabel(request.ValidOptions[i]);
+            int lineCount = 1 + labels[i].Count(c => c == '\n');
+            rowHeights[i] = lineCount == 1 ? rowH : lineH * lineCount + 14f;
+            validH += rowHeights[i];
+        }
+
         float dw = MathF.Min(screenW * 0.45f, 560f);
-        float dh = MathF.Min(instrH + pad + totalRows * rowH + backH + pad * 2, screenH * 0.80f);
+        float dh = MathF.Min(instrH + pad + validH + invalidCount * rowH + backH + pad * 2, screenH * 0.80f);
         float dx = (screenW - dw) * 0.5f;
         float dy = (screenH - dh) * 0.5f;
 
@@ -69,26 +83,30 @@ public class GuiSelectionResolver<T> : IStageResolver<SelectionRequest<T>, DataB
         // Valid options
         float listY = pad + instrH;
         float btnW  = dw - pad * 2;
+        float y = listY;
         for (int i = 0; i < validCount; i++)
         {
             var opt = request.ValidOptions[i];
-            ImGui.SetCursorPos(new Vector2(pad, listY + i * rowH));
-            if (ImGui.Button(opt.Name + $"##{i}", new Vector2(btnW, rowH - 4f)))
+            ImGui.SetCursorPos(new Vector2(pad, y));
+            if (ImGui.Button(labels[i] + $"##{i}", new Vector2(btnW, rowHeights[i] - 4f)))
                 Complete(tcs, opt.Option);
+            else if (ImGui.IsItemHovered())
+                OnValidOptionHovered(opt);
+            y += rowHeights[i];
         }
 
         // Invalid options (grayed out)
         if (invalidCount > 0)
         {
-            float invalidStart = listY + validCount * rowH;
             ImGui.PushStyleColor(ImGuiCol.Text, new Vector4(0.5f, 0.5f, 0.5f, 1f));
             for (int i = 0; i < invalidCount; i++)
             {
                 var opt = request.InvalidOptions[i];
-                ImGui.SetCursorPos(new Vector2(pad, invalidStart + i * rowH));
+                ImGui.SetCursorPos(new Vector2(pad, y));
                 ImGui.BeginDisabled(true);
                 ImGui.Button($"{opt.Name} ({opt.Reason})##{validCount + i}", new Vector2(btnW, rowH - 4f));
                 ImGui.EndDisabled();
+                y += rowH;
             }
             ImGui.PopStyleColor();
         }
@@ -97,8 +115,7 @@ public class GuiSelectionResolver<T> : IStageResolver<SelectionRequest<T>, DataB
         // have no back-destination, and a null reply from Back crashes the networked reply path.
         if (request.AllowCancel)
         {
-            float backY = listY + totalRows * rowH + pad;
-            ImGui.SetCursorPos(new Vector2(pad, backY));
+            ImGui.SetCursorPos(new Vector2(pad, y + pad));
             ImGui.PushStyleColor(ImGuiCol.Button, new Vector4(0.25f, 0.25f, 0.30f, 1f));
             if (ImGui.Button("Back##back", new Vector2(btnW, rowH - 4f)))
                 Complete(tcs, null!);
@@ -108,6 +125,14 @@ public class GuiSelectionResolver<T> : IStageResolver<SelectionRequest<T>, DataB
         ImGui.EndChild();
         ImGui.End();
     }
+
+    /// <summary>The text on a valid option's dialog button. Override to enrich (may be multi-line — rows
+    /// auto-size). Game-facing: ASCII only (see CLAUDE.md).</summary>
+    protected virtual string OptionLabel(SelectionRequest<T>.ValidOption opt) => opt.Name;
+
+    /// <summary>Called while a valid option's dialog button is hovered — lets subclasses highlight the
+    /// corresponding object on the table canvas.</summary>
+    protected virtual void OnValidOptionHovered(SelectionRequest<T>.ValidOption opt) { }
 
     protected void Complete(TaskCompletionSource<DataBinding<T>> tcs, DataBinding<T> option)
     {

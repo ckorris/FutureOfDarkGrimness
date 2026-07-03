@@ -635,7 +635,7 @@ public class ArmyBuilderScreen : IAppScreen
             hosts.Add(target!);
 
         string[] options = new string[hosts.Count + 1];
-        options[0] = "(none – deploys solo)";
+        options[0] = "(none - deploys solo)";
         for (int i = 0; i < hosts.Count; ++i)
             options[i + 1] = ReferenceEquals(hosts[i], target) && targetIneligible
                 ? $"{hosts[i].Name} (ineligible)"

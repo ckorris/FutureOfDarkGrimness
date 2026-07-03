@@ -23,7 +23,7 @@ public class ConsolidationMoveResolver : IStageResolver<ConsolidationMoveRequest
         while (true)
         {
             Console.WriteLine();
-            Console.WriteLine($"--- Consolidate: {unit.Name} ({request.Reason}, ≤ {request.MaxDistanceInches:F1}\") ---");
+            Console.WriteLine($"--- Consolidate: {unit.Name} ({request.Reason}, <= {request.MaxDistanceInches:F1}\") ---");
             Console.WriteLine($"  Enter a unit-wide offset as 'dx dz' in inches (e.g. '0 -1'), or press Enter to stay in place.");
 
             string? input = Console.ReadLine()?.Trim();
@@ -34,14 +34,14 @@ public class ConsolidationMoveResolver : IStageResolver<ConsolidationMoveRequest
             string[] parts = input.Split(' ', StringSplitOptions.RemoveEmptyEntries);
             if (parts.Length < 2 || !float.TryParse(parts[0], out float dx) || !float.TryParse(parts[1], out float dz))
             {
-                Console.WriteLine("    Could not parse — try again.");
+                Console.WriteLine("    Could not parse - try again.");
                 continue;
             }
 
             float dist = MathF.Sqrt(dx * dx + dz * dz);
             if (dist > request.MaxDistanceInches + 0.0001f)
             {
-                Console.WriteLine($"    Offset is {dist:F2}\" — exceeds the {request.MaxDistanceInches:F1}\" cap. Try again.");
+                Console.WriteLine($"    Offset is {dist:F2}\" - exceeds the {request.MaxDistanceInches:F1}\" cap. Try again.");
                 continue;
             }
 

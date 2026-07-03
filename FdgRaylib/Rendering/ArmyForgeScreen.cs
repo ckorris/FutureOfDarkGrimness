@@ -52,10 +52,23 @@ public class ArmyForgeScreen : IAppScreen
         _list = new BuilderList { PointsLimit = DefaultPointsLimit, BookName = _book.Name };
     }
 
-    // The hand-authored demo book plus every .fdgbook bundled under Assets/Books/ (the imported OPR snapshots).
+    /// <summary>Test seam: a screen whose library is exactly the given book (the tests use DemoBook, which
+    /// no longer appears in the real dropdown).</summary>
+    internal ArmyForgeScreen(BookFile book)
+    {
+        _library = new List<BookFile> { book };
+        _libraryNames = new[] { book.Name };
+        _bookIndex = 0;
+        _book = book;
+        _list = new BuilderList { PointsLimit = DefaultPointsLimit, BookName = _book.Name };
+    }
+
+    // Every .fdgbook bundled under Assets/Books/ (the imported OPR snapshots). The hand-authored demo book
+    // is deliberately NOT in the dropdown (it confused the list next to real factions — hand-verify round 2);
+    // it remains only as a fallback so the screen still works in an environment with no bundled books.
     private static List<BookFile> LoadLibrary()
     {
-        var books = new List<BookFile> { DemoBook.Build() };
+        var books = new List<BookFile>();
         string dir = Path.Combine(AppContext.BaseDirectory, "Assets", "Books");
         if (Directory.Exists(dir))
         {
@@ -69,6 +82,7 @@ public class ArmyForgeScreen : IAppScreen
                 catch { /* skip a malformed book rather than crash the screen */ }
             }
         }
+        if (books.Count == 0) books.Add(DemoBook.Build());
         return books;
     }
 
@@ -172,7 +186,7 @@ public class ArmyForgeScreen : IAppScreen
         ImGui.SameLine();
         if (ImGui.Button("Load")) Load();
         ImGui.SameLine();
-        ImGui.Text("Army Forge  —");
+        ImGui.Text("Army Forge  -");
         ImGui.SameLine();
         ImGui.SetNextItemWidth(220f);
         int bi = _bookIndex;
@@ -285,16 +299,25 @@ public class ArmyForgeScreen : IAppScreen
         for (int i = 0; i < _list.Units.Count && i < rows.Count; i++)
         {
             UnitFileEntry unit = rows[i];
+            bool selected = _selectedListIndex == i;
+
+            // Full-row hit target: an invisible Selectable spanning the row's whole block (name + stat
+            // lines), drawn FIRST with AllowOverlap so the remove button and the overlaid text on top of it
+            // still receive their own clicks. Clicking anywhere else in the rectangle selects the unit.
+            float lineH = ImGui.GetTextLineHeightWithSpacing();
+            int lines = 2 + unit.Weapons.Count + (unit.SpecialRules.Count > 0 ? 1 : 0);
+            Vector2 rowStart = ImGui.GetCursorPos();
+            ImGui.SetNextItemAllowOverlap();
+            if (ImGui.Selectable($"##li{i}", selected, ImGuiSelectableFlags.None, new Vector2(0, lines * lineH)))
+                _selectedListIndex = i;
+            ImGui.SetCursorPos(rowStart);
+
             if (issues.Any(x => x.UnitIndex == i && x.Severity == ListIssueSeverity.Error))
             {
                 ImGui.TextColored(RedText, "!");
                 ImGui.SameLine();
             }
-
-            bool selected = _selectedListIndex == i;
-            ImGui.SetNextItemAllowOverlap(); // else the full-width Selectable swallows the remove button's click
-            if (ImGui.Selectable($"{unit.Name} [{unit.ModelCount}]##li{i}", selected))
-                _selectedListIndex = i;
+            ImGui.TextUnformatted($"{unit.Name} [{unit.ModelCount}]");
 
             string pts = $"{unit.PointCost}";
             ImGui.SameLine(ImGui.GetContentRegionAvail().X - ImGui.CalcTextSize(pts).X - 30f);
@@ -365,7 +388,7 @@ public class ArmyForgeScreen : IAppScreen
 
         RosterUnit? roster = _book.Units.FirstOrDefault(u => u.Id == bu.RosterUnitId);
         if (roster is not null)
-            DrawUpgradeEditors(bu, roster, unit, items);
+            DrawUpgradeEditors(_book, bu, roster, unit, items);
     }
 
     // #006 hero-join, Forge-side: same semantics as the freeform builder's picker — hosts are other
@@ -492,7 +515,8 @@ public class ArmyForgeScreen : IAppScreen
         unit.Id ??= Guid.NewGuid().ToString("N");
 
     // Interactive upgrade sections: mutate the BuilderUnit's choices; the per-frame recompile re-costs live.
-    private static void DrawUpgradeEditors(BuilderUnit bu, RosterUnit roster, UnitFileEntry compiledUnit, List<ItemEntry> items)
+    private static void DrawUpgradeEditors(BookFile book, BuilderUnit bu, RosterUnit roster,
+        UnitFileEntry compiledUnit, List<ItemEntry> items)
     {
         if (roster.Sections.Count == 0) return;
         ImGui.Spacing();
@@ -505,9 +529,14 @@ public class ArmyForgeScreen : IAppScreen
             int available = isReplace
                 ? ListCompiler.AvailableApplications(compiledUnit.Weapons, items, section.Targets)
                 : int.MaxValue;
+            // Availability ignoring this section's OWN pick: a mutually-exclusive (radio) pick returns its
+            // replaced target to the pool the moment you switch away, so other options must not gray out
+            // just because the current pick consumed the target (hand-verify round 2). Also drives the
+            // header: "(none to replace)" only when there's no target even without this section's choice.
+            int switchAvailable = isReplace ? AvailableExcludingSection(book, bu, section) : int.MaxValue;
 
             ImGui.TextUnformatted(section.Label);
-            if (isReplace && available == 0)
+            if (isReplace && switchAvailable == 0)
             {
                 ImGui.SameLine();
                 ImGui.TextDisabled("(none to replace)");
@@ -527,23 +556,18 @@ public class ArmyForgeScreen : IAppScreen
                         : isReplace ? available + v
                         : compiledUnit.ModelCount;
                     int max = Math.Min(hardBound, poolBound);
-
-                    ImGui.BeginDisabled(isReplace && available == 0 && v == 0);
-                    ImGui.SetNextItemWidth(90f);
-                    if (ImGui.InputInt($"{OptionSummary(option)}##{section.Id}-{option.Id}", ref v, 1))
-                        SetChoice(bu, section, option.Id, Math.Clamp(v, 0, max));
-                    ImGui.EndDisabled();
+                    DrawStepper(bu, section, option, v, max);
                 }
             }
             else if (section.MaxPicks <= 1 && section.Options.Count >= 2) // pick one of several → radios
             {
                 bool noneChosen = !section.Options.Any(o => IsChosen(bu, section.Id, o.Id));
-                if (ImGui.RadioButton($"— none —##{section.Id}-none", noneChosen))
+                if (ImGui.RadioButton($"- none -##{section.Id}-none", noneChosen))
                     SetChoice(bu, section, string.Empty, 0);
                 foreach (UpgradeOption option in section.Options)
                 {
                     bool chosen = IsChosen(bu, section.Id, option.Id);
-                    ImGui.BeginDisabled(isReplace && available == 0 && !chosen);
+                    ImGui.BeginDisabled(isReplace && switchAvailable == 0 && !chosen);
                     if (ImGui.RadioButton($"{OptionSummary(option)}##{section.Id}-{option.Id}", chosen))
                         SetChoice(bu, section, option.Id, 1);
                     ImGui.EndDisabled();
@@ -562,6 +586,49 @@ public class ArmyForgeScreen : IAppScreen
             }
             ImGui.Unindent();
         }
+    }
+
+    // Counted-section control: [-] [count] [+] label. The buttons gray individually at their bound (- at 0,
+    // + at max) and the type-in box has no internal step buttons (step 0), so it's wide enough for the number.
+    private static void DrawStepper(BuilderUnit bu, UpgradeSection section, UpgradeOption option, int v, int max)
+    {
+        string id = $"{section.Id}-{option.Id}";
+        float frameH = ImGui.GetFrameHeight();
+
+        ImGui.BeginDisabled(v <= 0);
+        if (ImGui.Button($"-##{id}-dec", new Vector2(frameH, frameH)))
+            SetChoice(bu, section, option.Id, v - 1);
+        ImGui.EndDisabled();
+        ImGui.SameLine();
+
+        int typed = v;
+        ImGui.SetNextItemWidth(ImGui.GetFontSize() * 2.5f);
+        ImGui.BeginDisabled(max == 0 && v == 0);
+        if (ImGui.InputInt($"##{id}-val", ref typed, 0))
+            SetChoice(bu, section, option.Id, Math.Clamp(typed, 0, max));
+        ImGui.EndDisabled();
+        ImGui.SameLine();
+
+        ImGui.BeginDisabled(v >= max);
+        if (ImGui.Button($"+##{id}-inc", new Vector2(frameH, frameH)))
+            SetChoice(bu, section, option.Id, v + 1);
+        ImGui.EndDisabled();
+        ImGui.SameLine();
+        ImGui.TextUnformatted(OptionSummary(option));
+    }
+
+    /// <summary>Replace-target availability computed WITHOUT this section's own choices — the pool an
+    /// option could draw on if the section's current pick were released (radio switching, header text).</summary>
+    internal static int AvailableExcludingSection(BookFile book, BuilderUnit bu, UpgradeSection section)
+    {
+        var without = new BuilderUnit
+        {
+            RosterUnitId = bu.RosterUnitId,
+            ModelCount = bu.ModelCount,
+            Choices = bu.Choices.Where(c => c.SectionId != section.Id).ToList(),
+        };
+        (UnitFileEntry unit, List<ItemEntry> items) = ListCompiler.CompileUnitDetailed(book, without);
+        return ListCompiler.AvailableApplications(unit.Weapons, items, section.Targets);
     }
 
     private static void DrawRosterPreview(RosterUnit unit)
@@ -620,7 +687,7 @@ public class ArmyForgeScreen : IAppScreen
         if (loaded is null) return;
         _statusHint = AdoptLoaded(loaded)
             ? $"Loaded {Path.GetFileName(path)}"
-            : "That .fdgarmy has no embedded book — open it in the Army Builder instead.";
+            : "That .fdgarmy has no embedded book - open it in the Army Builder instead.";
     }
 
     // ── Pure formatting seams (unit-tested; ImGui itself is hand-verified) ──────────────────────────────

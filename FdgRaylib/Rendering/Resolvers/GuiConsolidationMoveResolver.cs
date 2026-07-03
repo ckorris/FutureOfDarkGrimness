@@ -223,8 +223,8 @@ public class GuiConsolidationMoveResolver
 
         string unitName = request.UnitDataBinding.GetValue().Name;
         string header = request.Reason == EConsolidationReason.Wipeout
-            ? $"Consolidate: {unitName} — wiped out, up to {request.MaxDistanceInches:F1}\""
-            : $"Disengage: {unitName} — up to {request.MaxDistanceInches:F1}\"";
+            ? $"Consolidate: {unitName} - wiped out, up to {request.MaxDistanceInches:F1}\""
+            : $"Disengage: {unitName} - up to {request.MaxDistanceInches:F1}\"";
         ImGui.TextUnformatted(header);
 
         if (_selectedModel != null)

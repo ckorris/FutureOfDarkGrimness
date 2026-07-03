@@ -47,7 +47,8 @@ _(No open items — #010 is done; #008/#009 moved to Awaiting verification — s
 
 ## Shooting
 
-_(No open items — #015 and #016 are done; see ## Done.)_
+- [ ] 157 — Takedown: one target pick covers every Takedown shot in the activation. Observed in GUI hand-verify 2026-07-03 (user, #156 round 2): with three units carrying Takedown, only ONE "choose the target model" pick was offered and it governed all the shots. Each Takedown attack should get its own model pick (OPR: the rule re-scopes *that* attack to a chosen model, per attack), so shots can be spread across different models. Engine-side: `BuildTargetListStage.MaybePickIndividualTarget` runs once per combat metadata and stashes a single `IndividualTargetResult`; the fix likely needs a per-weapon-attack (or at least per-attacking-unit) pick. ([WorkItems/157](WorkItems/157-takedown-per-shot-picks.md) — detail file created when work starts)
+- [ ] 158 — Choose-shooting-target resolver: dead models offered as targets + stale rings. Observed in GUI hand-verify 2026-07-03 (user, #156 round 2): the ranged-attack chooser (a) listed an attack against a model that was already dead, and (b) drew its circular canvas highlights at the LAST positions of all models, dead AND alive — i.e. the ring overlay neither filters `GetIsAlive()` nor reads live `Position` at draw time. App-side `GuiChooseRangedAttackResolver` (and possibly the engine's target-list building for (a) — `ChooseRangedAttackStage` target enumeration). Fix: exclude dead models from both the option list and the rings, and draw rings from live positions each frame like `GuiUnitSelectionResolver` does. ([WorkItems/158](WorkItems/158-shooting-target-dead-models.md) — detail file created when work starts)
 
 ## Melee
 

@@ -556,7 +556,7 @@ public class RaylibRenderer
             ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoScrollbar);
 
         ImGui.SetNextItemWidth(-1f);
-        if (ImGui.InputTextWithHint("##gamechat", "Chat… (Enter to send)", ref _chatInput, 512,
+        if (ImGui.InputTextWithHint("##gamechat", "Chat... (Enter to send)", ref _chatInput, 512,
                 ImGuiInputTextFlags.EnterReturnsTrue))
         {
             _playerMessageUI!.Submit(_chatInput);

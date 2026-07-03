@@ -51,7 +51,7 @@ public class ArmyForgeScreenTests
     [Test]
     public void AddToList_ThenCompile_SumsBasePoints()
     {
-        var screen = new ArmyForgeScreen();
+        var screen = new ArmyForgeScreen(DemoBook.Build());
         screen.AddToList("warriors");
         screen.AddToList("gunners");
 
@@ -63,7 +63,7 @@ public class ArmyForgeScreenTests
     [Test]
     public void RemoveFromList_DropsThatUnit()
     {
-        var screen = new ArmyForgeScreen();
+        var screen = new ArmyForgeScreen(DemoBook.Build());
         screen.AddToList("warriors");
         screen.AddToList("gunners");
         screen.RemoveFromList(0);
@@ -74,7 +74,7 @@ public class ArmyForgeScreenTests
     [Test]
     public void AddToList_UnknownRosterId_IsIgnored()
     {
-        var screen = new ArmyForgeScreen();
+        var screen = new ArmyForgeScreen(DemoBook.Build());
         screen.AddToList("does-not-exist");
         Assert.That(screen.List.Units, Is.Empty);
     }
@@ -82,7 +82,7 @@ public class ArmyForgeScreenTests
     [Test]
     public void SaveLoadRoundTrip_RestoresEditableList()
     {
-        var a = new ArmyForgeScreen();
+        var a = new ArmyForgeScreen(DemoBook.Build());
         a.AddToList("warriors");
         a.AddToList("gunners");
 
@@ -90,7 +90,7 @@ public class ArmyForgeScreenTests
         string json = JsonSerializer.Serialize(a.Compile(), RuleJson.Options);
         BuiltArmyFile loaded = JsonSerializer.Deserialize<BuiltArmyFile>(json, RuleJson.Options)!;
 
-        var b = new ArmyForgeScreen();
+        var b = new ArmyForgeScreen(DemoBook.Build());
         Assert.That(b.AdoptLoaded(loaded), Is.True);
         Assert.That(b.List.Units.Select(u => u.RosterUnitId), Is.EqualTo(new[] { "warriors", "gunners" }));
         Assert.That(b.Compile().TotalPoints, Is.EqualTo(185));
@@ -100,7 +100,7 @@ public class ArmyForgeScreenTests
     public void AdoptLoaded_PlainArmy_ReturnsFalse()
     {
         // A hand-authored .fdgarmy (no embedded book/selections) can't be catalog-edited.
-        Assert.That(new ArmyForgeScreen().AdoptLoaded(new BuiltArmyFile()), Is.False);
+        Assert.That(new ArmyForgeScreen(DemoBook.Build()).AdoptLoaded(new BuiltArmyFile()), Is.False);
     }
 
     // ── P3: interactive upgrade choices ─────────────────────────────────────────────────────────────────
@@ -136,7 +136,7 @@ public class ArmyForgeScreenTests
     [Test]
     public void UpgradeChoices_ThenCompile_MatchTheCompilersCost_Warriors()
     {
-        var screen = new ArmyForgeScreen();
+        var screen = new ArmyForgeScreen(DemoBook.Build());
         screen.AddToList("warriors");
         BuilderUnit bu = screen.List.Units[0];
 
@@ -153,7 +153,7 @@ public class ArmyForgeScreenTests
     [Test]
     public void UpgradeChoices_ReplaceAll_ThenCompile_Gunners()
     {
-        var screen = new ArmyForgeScreen();
+        var screen = new ArmyForgeScreen(DemoBook.Build());
         screen.AddToList("gunners");
         BuilderUnit bu = screen.List.Units[0];
 
@@ -161,6 +161,29 @@ public class ArmyForgeScreenTests
         ArmyForgeScreen.SetChoice(bu, gunners.Sections.Single(s => s.Id == "gunners-missiles"), "missile", 1);
 
         Assert.That(screen.Compile().Units.Single().PointCost, Is.EqualTo(165)); // 120 + 15×3 (all 3 swapped)
+    }
+
+    [Test]
+    public void AvailableExcludingSection_IgnoresOwnPick_SoRadiosCanSwitch()
+    {
+        // Hand-verify round 2: with a replace option picked, the compiled unit no longer has the target
+        // weapon, so availability measured on the final state is 0 — which wrongly grayed out the section's
+        // OTHER options (switching a mutually-exclusive pick implicitly returns the target to the pool).
+        // The exclusion seam must report the pool as if this section had no pick.
+        BookFile book = DemoBook.Build();
+        var screen = new ArmyForgeScreen(book);
+        screen.AddToList("gunners");
+        BuilderUnit bu = screen.List.Units[0];
+        UpgradeSection missiles = book.Units.Single(u => u.Id == "gunners").Sections
+            .Single(s => s.Id == "gunners-missiles");
+
+        ArmyForgeScreen.SetChoice(bu, missiles, "missile", 1); // all 3 Heavy Rifles replaced
+
+        (UnitFileEntry compiled, var items) = ListCompiler.CompileUnitDetailed(book, bu);
+        Assert.That(ListCompiler.AvailableApplications(compiled.Weapons, items, missiles.Targets), Is.Zero,
+            "final compiled state has no Heavy Rifle left");
+        Assert.That(ArmyForgeScreen.AvailableExcludingSection(book, bu, missiles), Is.EqualTo(3),
+            "excluding the section's own pick, the full pool is switchable");
     }
 
     // ── #006 hero-join seams ────────────────────────────────────────────────────────────────────────────
@@ -177,7 +200,7 @@ public class ArmyForgeScreenTests
     [Test]
     public void HostCandidates_ExcludesSelf()
     {
-        var screen = new ArmyForgeScreen();
+        var screen = new ArmyForgeScreen(DemoBook.Build());
         screen.AddToList("warriors");
         screen.AddToList("gunners");
         var hosts = screen.HostCandidates(0, screen.Compile().Units);
@@ -189,7 +212,7 @@ public class ArmyForgeScreenTests
     [Test]
     public void CombineCandidates_OnlySameRosterCopies_NotAlreadyLinked()
     {
-        var screen = new ArmyForgeScreen();
+        var screen = new ArmyForgeScreen(DemoBook.Build());
         screen.AddToList("warriors"); // 0 — the row asking
         screen.AddToList("warriors"); // 1 — free copy: candidate
         screen.AddToList("warriors"); // 2 — will link to 1: not a candidate (and makes 1 a target)
@@ -208,7 +231,7 @@ public class ArmyForgeScreenTests
     [Test]
     public void CombinedPair_SavesAsOneMergedUnit()
     {
-        var screen = new ArmyForgeScreen();
+        var screen = new ArmyForgeScreen(DemoBook.Build());
         screen.AddToList("warriors");
         screen.AddToList("warriors");
         var list = screen.Compile().Selections!;
@@ -226,7 +249,7 @@ public class ArmyForgeScreenTests
     [Test]
     public void Issues_EmptyForLegalList()
     {
-        var screen = new ArmyForgeScreen();
+        var screen = new ArmyForgeScreen(DemoBook.Build());
         screen.AddToList("warriors");
         screen.AddToList("gunners");
         Assert.That(screen.Issues(), Is.Empty);
@@ -235,7 +258,7 @@ public class ArmyForgeScreenTests
     [Test]
     public void Issues_FlagsOverMaxModels()
     {
-        var screen = new ArmyForgeScreen();
+        var screen = new ArmyForgeScreen(DemoBook.Build());
         screen.AddToList("warriors");
         BuilderUnit bu = screen.List.Units[0];
         RosterUnit warriors = DemoBook.Build().Units.Single(u => u.Id == "warriors");

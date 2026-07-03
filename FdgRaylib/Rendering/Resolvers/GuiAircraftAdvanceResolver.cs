@@ -128,7 +128,7 @@ public class GuiAircraftAdvanceResolver
             ImGui.SetNextWindowPos(center, ImGuiCond.Appearing, new Vector2(0.5f, 0.5f));
             if (ImGui.BeginPopupModal("Fly off the table?", ImGuiWindowFlags.AlwaysAutoResize))
             {
-                ImGui.TextWrapped($"{unit.Name} would cross the table edge and leave play — its activation ends " +
+                ImGui.TextWrapped($"{unit.Name} would cross the table edge and leave play - its activation ends " +
                     "(no shooting), and it flies back on from a table edge at the start of the next round.");
                 ImGui.Spacing();
                 if (ImGui.Button("Yes, fly off", new Vector2(140f, 28f)))
@@ -159,7 +159,7 @@ public class GuiAircraftAdvanceResolver
         ImGui.Begin("Aircraft Move", ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoCollapse);
 
         ImGui.TextUnformatted($"{request.UnitDataBinding.GetValue().Name} flies straight ahead.");
-        ImGui.TextUnformatted($"Distance: {_currentDistance:0.0}\"  ({request.MinDistanceInches:0.#}–{request.MaxDistanceInches:0.#}\")");
+        ImGui.TextUnformatted($"Distance: {_currentDistance:0.0}\"  ({request.MinDistanceInches:0.#}-{request.MaxDistanceInches:0.#}\")");
 
         ImGui.Spacing();
         ImGui.PushStyleColor(ImGuiCol.Text, leaves ? new Vector4(1f, 0.5f, 0.4f, 1f) : new Vector4(0.6f, 0.6f, 0.6f, 1f));

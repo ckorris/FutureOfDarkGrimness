@@ -17,8 +17,10 @@ public interface ICanvasInteractionHandler
 {
     /// <summary>
     /// Called each frame while the cursor is over a unit model.
-    /// Return a non-null string to append a line to the tooltip — e.g. "✓ Valid target"
-    /// or "✗ Out of range (24\")".  Return null to show no extra line.
+    /// Return a non-null string to append a line to the tooltip — e.g. "Click to select Model 2"
+    /// or "Invalid: Out of range (24\")".  Return null to show no extra line.
+    /// Game-facing labels must be ASCII-only (see CLAUDE.md) — the font atlas has no glyphs
+    /// beyond Latin-1, so em-dashes/arrows/check marks render as '?'.
     /// </summary>
     string? GetHoverLabel(IUnit unit, IModel model);
 

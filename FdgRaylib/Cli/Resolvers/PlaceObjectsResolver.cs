@@ -85,7 +85,7 @@ public class PlaceObjectsResolver<T> : IStageResolver<PlaceObjectsRequest<T>, Li
                 {
                     var pos = FindAutoPosition(r, ShapeOf(binding.GetValue()), defaultFacing, autoStepX, autoStepZ, zone, cz, xStagger, placed, enemies, minEnemyDist,
                         total, request.MustTouchTableEdge);
-                    Console.WriteLine($"    (EOF — auto-placing at {pos.x:F1}\", {pos.z:F1}\")");
+                    Console.WriteLine($"    (EOF - auto-placing at {pos.x:F1}\", {pos.z:F1}\")");
                     placed.Add(new PlacedObjectEntry<T>(binding, pos, defaultFacing));
                     break;
                 }
@@ -98,7 +98,7 @@ public class PlaceObjectsResolver<T> : IStageResolver<PlaceObjectsRequest<T>, Li
                     // zone — and since deployment zones sit flush with the table edge, this keeps it on the table.
                     if (!PlacementUtilities.IsBaseWithinZone(newPos, ShapeOf(binding.GetValue()), defaultFacing, zone))
                     {
-                        Console.WriteLine($"    ! Base would extend outside the placement zone / off the table (keep the centre ≥ {r:F1}\" inside bounds X {bounds.Left:F1}\"–{bounds.Right:F1}\", Z {bounds.Bottom:F1}\"–{bounds.Top:F1}\").");
+                        Console.WriteLine($"    ! Base would extend outside the placement zone / off the table (keep the centre >= {r:F1}\" inside bounds X {bounds.Left:F1}\"-{bounds.Right:F1}\", Z {bounds.Bottom:F1}\"-{bounds.Top:F1}\").");
                         continue;
                     }
 
@@ -112,19 +112,19 @@ public class PlaceObjectsResolver<T> : IStageResolver<PlaceObjectsRequest<T>, Li
 
                     if (placed.Count > 0 && !IsInCohesion(newPos, r, placed))
                     {
-                        Console.WriteLine($"    ! Outside cohesion — must be within {GameWideConstants.MAX_MODEL_DISTANCE_FROM_ANY_OTHER_MODEL_INCHES}\" base-to-base of a placed model.");
+                        Console.WriteLine($"    ! Outside cohesion - must be within {GameWideConstants.MAX_MODEL_DISTANCE_FROM_ANY_OTHER_MODEL_INCHES}\" base-to-base of a placed model.");
                         continue;
                     }
 
                     if (TooCloseToEnemy(newPos, enemies, minEnemyDist))
                     {
-                        Console.WriteLine($"    ! Too close to an enemy — must be over {minEnemyDist:F0}\" from enemy units.");
+                        Console.WriteLine($"    ! Too close to an enemy - must be over {minEnemyDist:F0}\" from enemy units.");
                         continue;
                     }
 
                     if (PlacementUtilities.OverlapsImpassibleTerrain(newPos, r, _impassibleTerrain))
                     {
-                        Console.WriteLine("    ! On impassible terrain — the model's base would overlap a building or blocker.");
+                        Console.WriteLine("    ! On impassible terrain - the model's base would overlap a building or blocker.");
                         continue;
                     }
 
@@ -141,7 +141,7 @@ public class PlaceObjectsResolver<T> : IStageResolver<PlaceObjectsRequest<T>, Li
                     break;
                 }
 
-                Console.WriteLine("    Could not parse — enter 'x z' (e.g. '10 5').");
+                Console.WriteLine("    Could not parse - enter 'x z' (e.g. '10 5').");
             }
         }
 

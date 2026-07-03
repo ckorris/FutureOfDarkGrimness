@@ -2,7 +2,7 @@
   "name": "Alien Hives",
   "faction": "Alien Hives",
   "version": "OPR v3.5.3",
-  "source": "OnePageRules \u2014 Army Forge (army-forge.onepagerules.com)",
+  "source": "OnePageRules - Army Forge (army-forge.onepagerules.com)",
   "license": "CC-BY-SA 4.0",
   "units": [
     {
@@ -8234,7 +8234,7 @@
           ]
         },
         {
-          "name": "Kh\u012Bkh\u012B",
+          "name": "Khikhi",
           "quantity": 1,
           "rules": [
             {
