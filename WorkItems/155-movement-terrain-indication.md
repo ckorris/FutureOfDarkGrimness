@@ -1,6 +1,6 @@
 # 155 — Movement GUI: flag difficult/dangerous terrain a move will cross
 
-**Status**: in-progress (shipped + committed; pending user visual confirmation of the overlay)
+**Status**: done (GUI-verified by user 2026-07-03; merged to master)
 **Related**: #093 (per-model budgets), #150 (base shapes / swept geometry), engine #153 counts-as-in-terrain grant (not exposed on request — see Notes)
 
 ## Goal
@@ -36,3 +36,5 @@ When defining a move in the GUI (single-model ghost or group ghost) or previewin
   - **Utilities live engine-side** (user explicitly authorized submodule changes): entry-distance-along-segment and the difficult-cap clamp go in the engine (near `SweptBaseGeometry` / `MovementUtilities`), with engine tests; the GUI resolver only calls them. Submodule-first commit cadence applies.
 
 ## Outcome
+
+Shipped and GUI-verified by the user on 2026-07-03, merged to master. The movement overlay now makes both terrain hazards visible before committing a move. **Difficult terrain is enforced** in the preview: the single-model ghost and every group phantom clamp so a move that would exceed the 6" difficult cap can never be drawn — it either caps at 6" while crossing (dotted-gray lines + "moving through" panel warning) or stops just short of the edge when the model can no longer afford to enter ("stopped at the terrain edge" warning). **Dangerous terrain is advisory**: a doubled red `!` badge beside each crossing model, its whole path drawn solid red, and a panel line. A parallel **enemy/other-unit clamp** stops the ghost just short of first base contact instead of only flagging overlap (skipped for `CanMoveThroughEnemies` fly-over units; contact still leaves a charger in melee range). Engine utilities (per the user's steer): `SweptBaseGeometry.MaxTravelBeforeZoneIntersection`, `BaseShapeGeometry.MaxTravelBeforeBaseCollision`, `MovementUtilities.ClampTravelForDifficultTerrain{,Detailed}` with `EDifficultClampKind`. The one engine gap deferred: the #153 "counts as being in Dangerous Terrain" one-shot grant isn't on `DefineMovementPathRequest`, so the advisory badge can't reflect it without a request-shape change — recorded, not silently cut.
