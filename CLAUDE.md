@@ -14,6 +14,7 @@ A Raylib-based client for **Future of Dark Grimness** — a tabletop wargame rul
 - **One vertical slice at a time.** Implement → add an integration test mirroring the nearest existing `*RuleIntegrationTests` → verify (above) → commit → update the canonical running record (the work item's dated notes / partial-facet ledger). Don't batch unrelated facets into a single change.
 - **Never silently cut scope.** When deferring a facet or edge case, say so explicitly and record it in the canonical ledger at the same time — don't drop it quietly.
 - **Surface design forks before building anything non-trivial.** Present the options with tradeoffs and a recommendation, and get sign-off before committing to UI or architecture decisions.
+- **Game text is ASCII-only.** The ImGui font atlas bakes only Basic Latin + Latin-1 glyphs, so anything beyond U+00FF (em/en dashes `—` `–`, arrows `→`, ellipsis `…`, `≤` `≥` `−` `✓` `✗`, accented letters like `ī`) renders as `?` in-game. No such characters in any user-facing string: log lines, banners, request instructions/labels, UI text, rule/spell descriptions, or book/army data. Use `-`, `->`, `...`, `<=`, `>=`, `x` instead. `OprBookImporter.AsciiFold` scrubs imported OPR text; hand-authored strings must be born ASCII. (Comments and docs are exempt.)
 
 ## Work Items
 

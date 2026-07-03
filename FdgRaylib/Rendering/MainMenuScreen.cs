@@ -8,6 +8,7 @@ public class MainMenuScreen : IAppScreen
     public Action? OnHostClicked;
     public Action? OnClientClicked;
     public Action? OnArmyBuilderClicked;
+    public Action? OnArmyForgeClicked;
     public Action? OnLoadGameClicked;
     public Action? OnQuitClicked;
 
@@ -27,7 +28,7 @@ public class MainMenuScreen : IAppScreen
 
         float btnW        = screenW * 0.40f;
         float btnH        = screenH * 0.08f;
-        float gapY        = screenH * 0.04f;
+        float gapY        = screenH * 0.03f;
         float titleScale  = screenH * 0.001f * 4f;
         float btnFontScale = btnH / 26f;
 
@@ -39,7 +40,7 @@ public class MainMenuScreen : IAppScreen
         ImGui.SetWindowFontScale(1.0f);
 
         float centerX = (screenW - btnW) * 0.5f;
-        float startY  = screenH * 0.32f;
+        float startY  = screenH * 0.28f;
 
         void DrawButton(string label, Action? action, int order)
         {
@@ -54,8 +55,9 @@ public class MainMenuScreen : IAppScreen
         DrawButton("Host",         OnHostClicked,        0);
         DrawButton("Client",       OnClientClicked,      1);
         DrawButton("Army Builder", OnArmyBuilderClicked, 2);
-        DrawButton("Load Game",    OnLoadGameClicked,    3);
-        DrawButton("Quit",         OnQuitClicked,        4);
+        DrawButton("Army Forge",   OnArmyForgeClicked,   3);
+        DrawButton("Load Game",    OnLoadGameClicked,    4);
+        DrawButton("Quit",         OnQuitClicked,        5);
         ImGui.EndDisabled();
 
         ImGui.End();

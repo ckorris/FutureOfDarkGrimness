@@ -40,7 +40,7 @@ public static class ResolverRegistryFactory
 
         var yesNo         = new GuiYesNoResolver();
         var selectUnit    = new GuiUnitSelectionResolver();   // canvas click-to-select (spell targets, melee defender)
-        var selectModel   = new GuiSelectionResolver<ModelData>();
+        var selectModel   = new GuiModelSelectionResolver();     // canvas click-to-select + stats (Takedown, single-model spells)
         var selectZone    = new GuiSelectionResolver<RectangularZone>();
         var cancelSelectUnit = new GuiCancellableUnitSelectionResolver();   // canvas click-to-select (#100 pre-attack targeting)
         var strSel        = new GuiStringSelectionResolver();

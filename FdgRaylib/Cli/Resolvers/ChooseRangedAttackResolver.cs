@@ -29,9 +29,10 @@ public class ChooseRangedAttackResolver : IStageResolver<ChooseRangedAttackReque
                 int canShoot = targetStats.modelsThatCanShoot.Count;
                 int cannotShoot = targetStats.modelsWithWeaponThatCannotShoot.Count;
                 var targetUnit = targetStats.TargetUnit.GetValue();
-                int targetModels = targetUnit.ModelBindings.Count;
+                // #158: count the target's LIVING models — dead ones aren't shootable.
+                int targetModels = targetUnit.ModelBindings.Count(mb => mb.GetValue().GetIsAlive());
 
-                string label = $"{weaponStats}  →  {targetUnit.Name} ({targetModels} models, {canShoot} shooters in range";
+                string label = $"{weaponStats}  ->  {targetUnit.Name} ({targetModels} models, {canShoot} shooters in range";
                 if (cannotShoot > 0)
                     label += $", {cannotShoot} out of range";
                 // #042 Blast/Indirect/Takedown: when the weapon ignores cover the +1 doesn't apply, so show

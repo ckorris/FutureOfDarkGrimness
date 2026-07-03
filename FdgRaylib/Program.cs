@@ -1,8 +1,11 @@
+using System.Text.Json;
 using FdgRaylib.Cli;
 using FdgRaylib.Rendering;
+using FDG.ArmyBuilding;
 using FDG.Data;
 using FDG.Network.Connection;
 using FDG.Network.Connection.Lobby;
+using FDG.Rules.Serialization;
 using FDG.SaveLoad;
 using TinyDialogsNet;
 
@@ -32,6 +35,93 @@ int slowIdx = Array.IndexOf(args, "--slow");
 if (slowIdx >= 0)
     slowDelayMs = slowIdx + 1 < args.Length && int.TryParse(args[slowIdx + 1], out int ms) ? ms : 1500;
 
+// --import-opr <in.json> <out.fdgbook> [supplement.json]  (#153 P0b): one-time OnePageRules Army Forge
+// JSON → .fdgbook snapshot, via the engine importer. Data is OPR's, used under CC-BY-SA (stamped on the
+// book). The optional supplement embeds curated rule definitions the book references (see --apply-rules).
+int importIdx = Array.IndexOf(args, "--import-opr");
+if (importIdx >= 0 && importIdx + 2 < args.Length)
+{
+    string inJson = args[importIdx + 1];
+    string outPath = args[importIdx + 2];
+    BookFile book = OprBookImporter.Import(File.ReadAllText(inJson),
+        source: "OnePageRules - Army Forge (army-forge.onepagerules.com)",
+        license: "CC-BY-SA 4.0",
+        warn: msg => Console.WriteLine($"  {msg}"));
+    if (importIdx + 3 < args.Length && !args[importIdx + 3].StartsWith("--"))
+    {
+        var supplement = BookRuleSupplement.LoadDefinitions(File.ReadAllText(args[importIdx + 3]));
+        var embedded = BookRuleSupplement.Apply(book, supplement, msg => Console.WriteLine($"  {msg}"));
+        Console.WriteLine($"  supplement: embedded {embedded.Count} rule definitions ({string.Join(", ", embedded)})");
+    }
+    Directory.CreateDirectory(Path.GetDirectoryName(Path.GetFullPath(outPath))!);
+    File.WriteAllText(outPath, JsonSerializer.Serialize(book, RuleJson.Options));
+    Console.WriteLine($"Imported '{book.Name}' {book.Version}: {book.Units.Count} units, {book.Spells.Count} spells -> {outPath}");
+    return;
+}
+
+// --apply-rules <book.fdgbook> <supplement.json>  (#153): merge curated rule definitions into an existing
+// book snapshot in place — the definitions the book references (plus what those grant) embed into the
+// book's ruleDefinitions, replace-by-name, so re-applying after editing the supplement is idempotent.
+// Validation is hard-fail; an invalid supplement leaves the book untouched.
+int applyIdx = Array.IndexOf(args, "--apply-rules");
+if (applyIdx >= 0 && applyIdx + 2 < args.Length)
+{
+    string bookPath = args[applyIdx + 1];
+    BookFile book = JsonSerializer.Deserialize<BookFile>(File.ReadAllText(bookPath), RuleJson.Options)!;
+    var supplement = BookRuleSupplement.LoadDefinitions(File.ReadAllText(args[applyIdx + 2]));
+    var embedded = BookRuleSupplement.Apply(book, supplement, msg => Console.WriteLine($"  {msg}"));
+    File.WriteAllText(bookPath, JsonSerializer.Serialize(book, RuleJson.Options));
+    Console.WriteLine($"'{book.Name}': embedded {embedded.Count} rule definitions " +
+        $"({string.Join(", ", embedded)}) -> {bookPath}");
+    return;
+}
+
+// --validate-rules <supplement.json>  (#153): authoring aid — strict-parse the supplement and validate
+// every definition (hook/capability fit, granted names resolve, no duplicates) without touching a book.
+int validateIdx = Array.IndexOf(args, "--validate-rules");
+if (validateIdx >= 0 && validateIdx + 1 < args.Length)
+{
+    var supplement = BookRuleSupplement.LoadDefinitions(File.ReadAllText(args[validateIdx + 1]));
+    var problems = BookRuleSupplement.ValidateAll(supplement);
+    foreach (string problem in problems)
+        Console.WriteLine($"  {problem}");
+    Console.WriteLine(problems.Count == 0
+        ? $"OK: {supplement.Count} definitions, no problems."
+        : $"{problems.Count} problem(s) in {supplement.Count} definitions.");
+    return;
+}
+
+// --book-to-army <book.fdgbook> <out.fdgarmy>  (#153): dev/verify — compile every unit of a book at base size,
+// proving the whole book compiles; writes a small (first-few-units) playable army for a headless smoke.
+int b2aIdx = Array.IndexOf(args, "--book-to-army");
+if (b2aIdx >= 0 && b2aIdx + 2 < args.Length)
+{
+    BookFile book = JsonSerializer.Deserialize<BookFile>(File.ReadAllText(args[b2aIdx + 1]), RuleJson.Options)!;
+
+    BuilderList Base(IEnumerable<FDG.SaveLoad.UnitFileEntry>? _ = null, int take = int.MaxValue)
+    {
+        var list = new BuilderList { Name = book.Name, BookName = book.Name, PointsLimit = 100000 };
+        foreach (RosterUnit u in book.Units.Take(take))
+            list.Units.Add(new BuilderUnit { RosterUnitId = u.Id, ModelCount = u.BaseModelCount });
+        return list;
+    }
+
+    BuiltArmyFile all = ListCompiler.Compile(book, Base());               // proves every unit compiles
+    BuiltArmyFile small = ListCompiler.Compile(book, Base(take: 4));      // small, playable for a smoke
+    File.WriteAllText(args[b2aIdx + 2], JsonSerializer.Serialize(small, RuleJson.Options));
+    Console.WriteLine($"'{book.Name}': all {all.Units.Count} units compiled ({all.TotalPoints} pts); wrote {small.Units.Count}-unit army -> {args[b2aIdx + 2]}");
+    return;
+}
+
+// --army <path> (#153): non-interactive headless smoke — both players load <path>, then EOF defaults take
+// over (exactly what the old `printf "1\n<path>\n..." |` pipe idiom did, minus the pipe).
+int armyIdx = Array.IndexOf(args, "--army");
+if (headless && armyIdx >= 0 && armyIdx + 1 < args.Length)
+{
+    string armyPath = args[armyIdx + 1];
+    Console.SetIn(new StringReader($"1\n{armyPath}\n1\n{armyPath}\n"));
+}
+
 var app = new CliApp(headless, slowDelayMs);
 
 if (headless)
@@ -49,6 +139,9 @@ else
 
     renderer.MainMenu.OnArmyBuilderClicked = () =>
         renderer.NavigateTo(renderer.ArmyBuilder);
+
+    renderer.MainMenu.OnArmyForgeClicked = () =>
+        renderer.NavigateTo(renderer.ArmyForge);
 
     renderer.MainMenu.OnClientClicked = () =>
         renderer.NavigateTo(renderer.ClientModal);
@@ -88,6 +181,10 @@ else
 
     // ── Army Builder ───────────────────────────────────────────────────────────
     renderer.ArmyBuilder.OnBack = () =>
+        renderer.NavigateTo(renderer.MainMenu);
+
+    // ── Army Forge (#153) ────────────────────────────────────────────────────────
+    renderer.ArmyForge.OnBack = () =>
         renderer.NavigateTo(renderer.MainMenu);
 
     // ── Host Modal ─────────────────────────────────────────────────────────────

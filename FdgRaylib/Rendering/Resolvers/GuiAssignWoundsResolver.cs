@@ -254,7 +254,7 @@ public class GuiAssignWoundsResolver
         if (results.CanAssignWoundTo(pw))
             sb.Append("Click to assign wounds (fills this model)");
         else if (remaining > 0f)
-            sb.Append("(a hero is assigned wounds last — not yet a valid target)");
+            sb.Append("(a hero is assigned wounds last - not yet a valid target)");
         else
             sb.Append("(no longer a valid target)");
         return sb.ToString();
@@ -276,8 +276,9 @@ public class GuiAssignWoundsResolver
             Complete(tcs, results);
     }
 
-    /// <summary>Distinct weapon groups for a model, e.g. "2x Rifle (24\")", "Heavy Rifle (30\")".</summary>
-    private static List<string> WeaponLines(IModel model)
+    /// <summary>Distinct weapon groups for a model, e.g. "2x Rifle (24\")", "Heavy Rifle (30\")".
+    /// Shared with <see cref="GuiModelSelectionResolver"/> (model-pick stats).</summary>
+    internal static List<string> WeaponLines(IModel model)
     {
         var lines = new List<string>();
         foreach (var grp in model.Weapons.GroupBy(w => w.Name))

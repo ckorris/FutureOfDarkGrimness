@@ -8,7 +8,7 @@ public static class ArmyLoader
 {
     public static ArmyListFile PromptForArmy(string playerLabel)
     {
-        Console.WriteLine($"{playerLabel} — choose army:");
+        Console.WriteLine($"{playerLabel} - choose army:");
         Console.WriteLine("  [1] Load from .fdgarmy file");
         Console.WriteLine("  [2] Use built-in test army");
 
@@ -18,7 +18,7 @@ public static class ArmyLoader
             string? input = Console.ReadLine()?.Trim();
             if (input == null)
             {
-                Console.WriteLine("(EOF — using built-in test army)");
+                Console.WriteLine("(EOF - using built-in test army)");
                 return MakeTestArmy(playerLabel);
             }
             if (input == "1") return LoadFromFile();

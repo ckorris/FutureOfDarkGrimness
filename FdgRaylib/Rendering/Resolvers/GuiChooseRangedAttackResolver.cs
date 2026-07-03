@@ -251,7 +251,9 @@ public class GuiChooseRangedAttackResolver
                 }
                 else
                 {
-                    sub = $"{ts.modelsThatCanShoot.Count}/{ts.TargetUnit.GetValue().ModelBindings.Count} in range";
+                    // #158: the denominator is the target's LIVING models — dead ones aren't shootable.
+                    int livingTargets = ts.TargetUnit.GetValue().ModelBindings.Count(mb => mb.GetValue().GetIsAlive());
+                    sub = $"{ts.modelsThatCanShoot.Count}/{livingTargets} in range";
                     // #042 Blast/Indirect/Takedown: a weapon that ignores cover negates the +1.
                     if (ts.HasCover) sub += wo.IgnoresCover ? ", Cover (ignored)" : ", Cover (+1 Def)";
                     if (wo.IgnoresTerrain) sub += ", ignores LoS";
@@ -388,6 +390,10 @@ public class GuiChooseRangedAttackResolver
         foreach (var mb in targetUnit.ModelBindings)
         {
             var m = mb.GetValue();
+            // #158: no target rings on corpses (they'd sit at the model's death position) or on
+            // never-placed models (they'd ring the table origin).
+            if (!m.GetIsAlive()) continue;
+            if (m.Position.x == 0f && m.Position.z == 0f) continue;
             var (tx, ty) = InchesToPixel(m.Position.x, m.Position.z);
             dl.AddCircle(new Vector2(tx, ty), m.BaseRadiusInches * _scale + 3f, colorTarget, 32, 2f);
         }
@@ -420,13 +426,18 @@ public class GuiChooseRangedAttackResolver
         }
     }
 
-    private static ModelData? NearestModel(ModelData from, IReadOnlyList<DataBinding<ModelData>> candidates)
+    // Internal for tests. #158: only LIVING, placed models are candidates — a just-killed model is often
+    // the nearest (you shot it last volley), and aiming the shooter line at its corpse read as
+    // "shooting at a dead model".
+    internal static ModelData? NearestModel(ModelData from, IReadOnlyList<DataBinding<ModelData>> candidates)
     {
         ModelData? best = null;
         float bestDist = float.PositiveInfinity;
         foreach (var mb in candidates)
         {
             var m  = mb.GetValue();
+            if (!m.GetIsAlive()) continue;
+            if (m.Position.x == 0f && m.Position.z == 0f) continue;
             float d = DistanceUtilities.GetBaseToBaseDistanceInches_3D(
                 from.Position, m.Position, from.BaseShape, from.Facing, m.BaseShape, m.Facing);
             if (d < bestDist) { bestDist = d; best = m; }

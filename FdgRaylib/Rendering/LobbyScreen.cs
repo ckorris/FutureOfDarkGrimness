@@ -36,6 +36,7 @@ public class LobbyScreen : IAppScreen
         new[] { $"*{TerrainLayoutFile.EXTENSION_WITH_PERIOD}" });
 
     private string? _lastLaunchError;
+    private IReadOnlyList<string> _launchProblems = Array.Empty<string>();
 
     private static readonly Color[] PlayerPalette =
         { Color.Blue, Color.Red, Color.Green, Color.Yellow };
@@ -316,10 +317,24 @@ public class LobbyScreen : IAppScreen
         bool resume = _viewModel.IsResumeMode;
         if (ImGui.Button(resume ? "RESUME" : "LAUNCH", buttonSize))
         {
-            string? fail;
-            bool started = resume ? _viewModel.TryResumeGame(out fail) : _viewModel.TryLaunchGame(out fail);
-            _lastLaunchError = started ? null : (fail ?? "Launch failed.");
+            // #153 launch gate (decision 9): validation Errors in any loaded army raise a confirm dialog
+            // (warn + host override) instead of launching straight away. Resume skips the gate — the
+            // armies are already in play.
+            IReadOnlyList<string> problems = resume
+                ? Array.Empty<string>()
+                : _viewModel.ValidateArmiesForLaunch();
+            if (problems.Count > 0)
+            {
+                _launchProblems = problems;
+                ImGui.OpenPopup("Launch anyway?");
+            }
+            else
+            {
+                DoLaunch(resume);
+            }
         }
+
+        DrawLaunchConfirm();
 
         if (_lastLaunchError != null)
         {
@@ -329,6 +344,44 @@ public class LobbyScreen : IAppScreen
         }
 
         ImGui.EndDisabled();
+    }
+
+    private void DoLaunch(bool resume)
+    {
+        string? fail;
+        bool started = resume ? _viewModel!.TryResumeGame(out fail) : _viewModel!.TryLaunchGame(out fail);
+        _lastLaunchError = started ? null : (fail ?? "Launch failed.");
+    }
+
+    // #153 launch gate: lists each army's hard legality problems; Cancel is the default action, and
+    // "Launch anyway" is the explicit house-rules override.
+    private void DrawLaunchConfirm()
+    {
+        bool open = true;
+        if (!ImGui.BeginPopupModal("Launch anyway?", ref open, ImGuiWindowFlags.AlwaysAutoResize)) return;
+
+        ImGui.TextUnformatted("Some armies have problems:");
+        ImGui.Spacing();
+        ImGui.PushStyleColor(ImGuiCol.Text, new Vector4(1f, 0.4f, 0.4f, 1f));
+        foreach (string problem in _launchProblems)
+            ImGui.TextWrapped(problem);
+        ImGui.PopStyleColor();
+        ImGui.Spacing();
+
+        // Cancel first and focused — the safe default.
+        if (ImGui.Button("Cancel", new Vector2(140f, 0f)) || ImGui.IsKeyPressed(ImGuiKey.Escape))
+        {
+            ImGui.CloseCurrentPopup();
+        }
+        ImGui.SetItemDefaultFocus();
+        ImGui.SameLine();
+        if (ImGui.Button("Launch anyway", new Vector2(140f, 0f)))
+        {
+            ImGui.CloseCurrentPopup();
+            DoLaunch(resume: false);
+        }
+
+        ImGui.EndPopup();
     }
 
     private static void DrawTerrainCountSlider(int current, Action<int> setter)
@@ -372,7 +425,9 @@ public class LobbyScreen : IAppScreen
         string path = paths?.FirstOrDefault() ?? "";
         if (!File.Exists(path)) return;
 
-        var loaded = JsonSerializer.Deserialize<ArmyListFile>(File.ReadAllText(path), RuleJson.Options);
+        // Deserialize as BuiltArmyFile so a Forge-built army keeps its embedded book + selections — the
+        // #153 launch gate validates them host-side. A hand-authored army just leaves them null.
+        var loaded = JsonSerializer.Deserialize<FDG.ArmyBuilding.BuiltArmyFile>(File.ReadAllText(path), RuleJson.Options);
         if (loaded is null) return;
 
         _viewModel!.UpdateArmyListFile(playerID, loaded);

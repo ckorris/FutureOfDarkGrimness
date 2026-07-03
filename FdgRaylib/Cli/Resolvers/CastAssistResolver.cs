@@ -27,7 +27,7 @@ public class CastAssistResolver : IStageResolver<CastAssistRequest, int>
 
             if (input == null)
             {
-                Console.WriteLine("(EOF — spending none)");
+                Console.WriteLine("(EOF - spending none)");
                 return Task.FromResult(0);
             }
             if (string.IsNullOrEmpty(input)) return Task.FromResult(0);

@@ -15,7 +15,7 @@ public class AircraftAdvanceResolver : IStageResolver<AircraftAdvanceRequest, Ai
     {
         string unitName = request.UnitDataBinding.GetValue().Name;
         Console.WriteLine();
-        Console.WriteLine($"{unitName} (Aircraft) must fly {request.MinDistanceInches:0.#}–{request.MaxDistanceInches:0.#}\" " +
+        Console.WriteLine($"{unitName} (Aircraft) must fly {request.MinDistanceInches:0.#}-{request.MaxDistanceInches:0.#}\" " +
             "straight ahead along its heading.");
 
         while (true)
@@ -32,7 +32,7 @@ public class AircraftAdvanceResolver : IStageResolver<AircraftAdvanceRequest, Ai
             if (!ForcedAircraftMove.WouldLeaveTable(paths))
                 return Task.FromResult(new AircraftAdvanceResult(distance, false));
 
-            Console.Write("That carries it off the table edge — it leaves play and redeploys from an edge next round. Confirm? [Y/n]: ");
+            Console.Write("That carries it off the table edge - it leaves play and redeploys from an edge next round. Confirm? [Y/n]: ");
             string? confirm = Console.ReadLine()?.Trim().ToLower();
             if (confirm == null || confirm == "" || confirm == "y" || confirm == "yes")
                 return Task.FromResult(new AircraftAdvanceResult(distance, true));

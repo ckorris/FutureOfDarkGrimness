@@ -49,7 +49,7 @@ public class GuiUnitSelectionResolver : GuiSelectionResolver<UnitData>, IGuiCanv
         }
         foreach (var opt in request.InvalidOptions)
         {
-            if (opt.Option.GetValue() == unit) return $"✗ {opt.Reason}";
+            if (opt.Option.GetValue() == unit) return $"Invalid: {opt.Reason}";
         }
         return null;
     }

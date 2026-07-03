@@ -24,8 +24,8 @@ public class DefineMovementPathResolver : IStageResolver<DefineMovementPathReque
         {
             Console.WriteLine();
             Console.WriteLine($"--- Move: {unit.Name} ({models.Count} model{(models.Count != 1 ? "s" : "")}) ---");
-            Console.WriteLine($"  Advance (≤ {request.MaxAdvanceDistance:F1}\"): move freely, can still shoot afterward");
-            Console.WriteLine($"  Rush    (≤ {request.MaxDistanceInches:F1}\"): move farther, but cannot shoot this turn");
+            Console.WriteLine($"  Advance (<= {request.MaxAdvanceDistance:F1}\"): move freely, can still shoot afterward");
+            Console.WriteLine($"  Rush    (<= {request.MaxDistanceInches:F1}\"): move farther, but cannot shoot this turn");
             if (models.Count > 1)
             {
                 Console.WriteLine($"  Cohesion: each model must end within {GameWideConstants.MAX_MODEL_DISTANCE_FROM_ANY_OTHER_MODEL_INCHES:F0}\" (base-to-base) of at least one teammate");
@@ -61,7 +61,7 @@ public class DefineMovementPathResolver : IStageResolver<DefineMovementPathReque
                     entries.Add(new ModelMoveEntry(modelBinding, new List<Position> { new Position(x, z) }));
                 else
                 {
-                    Console.WriteLine("    Could not parse — leaving in place.");
+                    Console.WriteLine("    Could not parse - leaving in place.");
                     entries.Add(new ModelMoveEntry(modelBinding, new List<Position> { model.Position }));
                 }
             }
@@ -75,7 +75,7 @@ public class DefineMovementPathResolver : IStageResolver<DefineMovementPathReque
                 return Task.FromResult(entries);
 
             Console.WriteLine();
-            Console.WriteLine("  Movement is invalid — please re-enter all models:");
+            Console.WriteLine("  Movement is invalid - please re-enter all models:");
             foreach (var err in errors)
                 Console.WriteLine($"    ! {MovementUtilities.ErrorReasonToString(err.ErrorReasonType)}");
         }

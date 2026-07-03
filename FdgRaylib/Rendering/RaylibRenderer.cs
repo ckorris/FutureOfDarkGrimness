@@ -31,6 +31,7 @@ public class RaylibRenderer
 
     public MainMenuScreen    MainMenu     { get; } = new();
     public ArmyBuilderScreen ArmyBuilder  { get; } = new();
+    public ArmyForgeScreen   ArmyForge    { get; } = new();
     public HostModal         HostModal    { get; } = new();
     public ClientModal       ClientModal  { get; } = new();
     public LobbyScreen       LobbyScreen  { get; } = new();
@@ -555,7 +556,7 @@ public class RaylibRenderer
             ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoScrollbar);
 
         ImGui.SetNextItemWidth(-1f);
-        if (ImGui.InputTextWithHint("##gamechat", "Chat… (Enter to send)", ref _chatInput, 512,
+        if (ImGui.InputTextWithHint("##gamechat", "Chat... (Enter to send)", ref _chatInput, 512,
                 ImGuiInputTextFlags.EnterReturnsTrue))
         {
             _playerMessageUI!.Submit(_chatInput);
