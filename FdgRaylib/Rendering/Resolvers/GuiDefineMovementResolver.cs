@@ -840,9 +840,12 @@ public class GuiDefineMovementResolver
         IUnit ourUnit = request.UnitDataBinding.GetValue();
         var terrainSnapshot = _tableState.Terrain.Objects.ToList();
         var blockersByEnemyUnit = new Dictionary<IUnit, List<ITerrain>>(ReferenceEqualityComparer.Instance);
+        // Skip enemy units not yet on the table: an Ambush unit sits in reserve at the origin (0,0,0) until
+        // it arrives, so without this the overlay would draw fire lines to the table corner (GetIsOnBattlefield),
+        // and the per-model checks below drop any stray unplaced model for good measure.
         foreach (IUnit enemyUnit in _tableState.Units.Objects)
         {
-            if (enemyUnit.PlayerID == ourPlayerID) continue;
+            if (enemyUnit.PlayerID == ourPlayerID || !enemyUnit.GetIsOnBattlefield()) continue;
             var modelBlockers = LineOfSightUtilities.BuildModelBlockers(_tableState, ourUnit, enemyUnit);
             var combined = new List<ITerrain>(terrainSnapshot.Count + modelBlockers.Count);
             combined.AddRange(terrainSnapshot);
@@ -889,8 +892,9 @@ public class GuiDefineMovementResolver
         // 1) Per-enemy-unit aggregate text: shooting weapon counts (green) + charger count (yellow), combined.
         foreach (IUnit enemyUnit in _tableState.Units.Objects)
         {
-            if (enemyUnit.PlayerID == ourPlayerID) continue;
-            var aliveEnemies = enemyUnit.Models.Where(em => em.GetIsAlive()).ToList();
+            if (enemyUnit.PlayerID == ourPlayerID || !enemyUnit.GetIsOnBattlefield()) continue;
+            var aliveEnemies = enemyUnit.Models
+                .Where(em => em.GetIsAlive() && (em.Position.x != 0f || em.Position.z != 0f)).ToList();
             if (aliveEnemies.Count == 0) continue;
 
             // Shooting weapon counts (group: live phantom; single: committed), only when our unit can shoot.
@@ -981,7 +985,7 @@ public class GuiDefineMovementResolver
             float nearestB2B = float.MaxValue;
             foreach (IUnit enemyUnit in _tableState.Units.Objects)
             {
-                if (enemyUnit.PlayerID == ourPlayerID) continue;
+                if (enemyUnit.PlayerID == ourPlayerID || !enemyUnit.GetIsOnBattlefield()) continue;
                 foreach (var em in enemyUnit.Models)
                 {
                     if (!em.GetIsAlive()) continue;
@@ -1045,8 +1049,9 @@ public class GuiDefineMovementResolver
             var blockedByTarget = new Dictionary<IModel, (List<IWeapon> weapons, IUnit enemyUnit)>();
             foreach (IUnit enemyUnit in _tableState.Units.Objects)
             {
-                if (enemyUnit.PlayerID == ourPlayerID) continue;
-                var aliveEnemies = enemyUnit.Models.Where(em => em.GetIsAlive()).ToList();
+                if (enemyUnit.PlayerID == ourPlayerID || !enemyUnit.GetIsOnBattlefield()) continue;
+                var aliveEnemies = enemyUnit.Models
+                .Where(em => em.GetIsAlive() && (em.Position.x != 0f || em.Position.z != 0f)).ToList();
                 if (aliveEnemies.Count == 0) continue;
 
                 var unitBlockers = blockersByEnemyUnit[enemyUnit];
