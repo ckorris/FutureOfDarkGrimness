@@ -85,6 +85,9 @@ public class GuiDefineMovementResolver
     private static readonly uint OverlapFill     = ImGui.ColorConvertFloat4ToU32(new Vector4(1.00f, 0.25f, 0.25f, 0.55f));
     private static readonly uint ChargeTextCol   = ImGui.ColorConvertFloat4ToU32(new Vector4(1.00f, 0.92f, 0.30f, 1f));
     private static readonly uint ChargeLineCol   = ImGui.ColorConvertFloat4ToU32(new Vector4(1.00f, 0.85f, 0.20f, 0.95f));
+    private static readonly uint DangerBadgeFill    = ImGui.ColorConvertFloat4ToU32(new Vector4(0.85f, 0.15f, 0.15f, 0.90f));
+    private static readonly uint DangerBadgeOutline = ImGui.ColorConvertFloat4ToU32(new Vector4(0.30f, 0.02f, 0.02f, 1f));
+    private static readonly uint DangerBadgeTextCol = ImGui.ColorConvertFloat4ToU32(new Vector4(1f, 1f, 1f, 1f));
 
     public GuiDefineMovementResolver(ITableState tableState, FormationModeState formationMode)
     {
@@ -137,6 +140,24 @@ public class GuiDefineMovementResolver
         var dl       = ImGui.GetBackgroundDrawList();
         var terrain  = _tableState.Terrain.Objects.ToList();
         var paths    = pt.CurrentPaths;
+
+        // #155: per-frame terrain-consequence state. Difficult is ENFORCED (the ghost clamps so the
+        // preview can never propose a move the validator's 6" cap would reject); Dangerous is ADVISORY
+        // (badge + panel line - the roll is a gamble the player may take deliberately). Flying
+        // (IgnoresImpassibleTerrain = the AllTerrain scope) waives Dangerous rolls entirely;
+        // Strider/Flying (IgnoresDifficultTerrain) waive the difficult cap.
+        bool difficultActive = !request.IgnoresDifficultTerrain
+            && terrain.Any(t => t.TerrainType.HasFlag(ETerrainType.Difficult));
+        bool dangerousActive = !request.IgnoresImpassibleTerrain
+            && terrain.Any(t => t.TerrainType.HasFlag(ETerrainType.Dangerous));
+        Dictionary<IModel, DataBinding<ModelData>> bindings = BuildBindingMap(request);
+        var committedCrossedDifficult = new HashSet<IModel>();
+        if (difficultActive)
+            foreach (var kvp in paths)
+                if (kvp.Value.Count > 0 && bindings.TryGetValue(kvp.Key, out var binding)
+                    && MovementUtilities.DoesPathCrossDifficultTerrain(
+                        new ModelMoveEntry(binding, kvp.Value.ToList()), terrain))
+                    committedCrossedDifficult.Add(kvp.Key);
 
         float maxAdvance = request.MaxAdvanceDistance;
         float maxRush    = request.MaxRushDistance;
@@ -201,7 +222,19 @@ public class GuiDefineMovementResolver
 
         // 2) Range rings around selected model's last waypoint (single mode only)
         if (!group && _selectedModel != null)
-            DrawRangeRings(dl, pt, maxAdvance, maxRush, maxCharge, hasChargeBand);
+        {
+            // #155: once the committed path has crossed difficult terrain, the 6" total cap governs
+            // every band - shrink the rings so they show the model's true remaining reach.
+            float ringAdvance = maxAdvance, ringRush = maxRush, ringCharge = maxCharge;
+            if (difficultActive && committedCrossedDifficult.Contains(_selectedModel))
+            {
+                float cap = GameWideConstants.DIFFICULT_TERRAIN_MOVE_CAP_INCHES;
+                ringAdvance = MathF.Min(ringAdvance, cap);
+                ringRush    = MathF.Min(ringRush, cap);
+                ringCharge  = MathF.Min(ringCharge, cap);
+            }
+            DrawRangeRings(dl, pt, ringAdvance, ringRush, ringCharge, ringCharge > ringRush + 0.0001f);
+        }
 
         // 3) Ghost following mouse for selected model (clamped)
         if (!group && _selectedModel != null && overTable && !io.WantCaptureMouse)
@@ -227,6 +260,18 @@ public class GuiDefineMovementResolver
             else
             {
                 allowed = MathF.Max(0f, remaining - 0.001f); // small margin against float drift
+            }
+
+            // #155: difficult terrain enforces its own cap on top of the band cap. Crossing difficult
+            // caps this model's TOTAL move at 6"; when entry is no longer affordable the ghost stops
+            // just short of the terrain edge - the preview can never propose an invalid move.
+            if (difficultActive && allowed > 0.0001f && dist > 0.0001f)
+            {
+                var segStart = new Float2(anchor.x, anchor.z);
+                var segEnd   = new Float2(anchor.x + dx / dist * allowed, anchor.z + dz / dist * allowed);
+                allowed = MovementUtilities.ClampTravelForDifficultTerrain(segStart, segEnd, totalSoFar,
+                    committedCrossedDifficult.Contains(_selectedModel), _selectedModel.BaseShape,
+                    _selectedModel.Facing, terrain, request.IgnoresDifficultTerrain);
             }
 
             float nx, nz;
@@ -262,7 +307,45 @@ public class GuiDefineMovementResolver
         // Group mode: rigidly rotate + translate the whole unit; one left-click commits a group step.
         if (group)
             DrawGroupGhostAndInput(dl, io, request, pt, paths, overTable, wantInput,
-                maxAdvance, maxRush, maxCharge, hasChargeBand, advanceOnly);
+                maxAdvance, maxRush, maxCharge, hasChargeBand, advanceOnly,
+                terrain, difficultActive, committedCrossedDifficult);
+
+        // #155: terrain-consequence pass, ghost-aware (the selected model's live ghost in single mode /
+        // every live phantom in group mode counts as a pending final segment). Draws a warning badge
+        // beside each model whose path would cross Dangerous terrain, and collects the panel facts.
+        int  dangerousCrossers  = 0;
+        bool difficultCapEngaged = false;
+        if (dangerousActive || difficultActive)
+        {
+            foreach (var kvp in paths)
+            {
+                IModel m = kvp.Key;
+                if (!bindings.TryGetValue(m, out var binding)) continue;
+
+                Position pathEnd = kvp.Value.Count > 0 ? kvp.Value[^1] : m.Position;
+                Position? pending = null;
+                if (group && _groupGhostPositions != null && _groupGhostPositions.TryGetValue(m, out var phantom))
+                    pending = phantom;
+                else if (!group && ReferenceEquals(m, _selectedModel) && ghostPos.HasValue)
+                    pending = ghostPos.Value;
+
+                var positions = new List<Position>(kvp.Value);
+                if (pending.HasValue && Position.GetDistance2D(pathEnd, pending.Value) > 0.0001f)
+                    positions.Add(pending.Value);
+                if (positions.Count == 0) continue; // not moving - no roll, no cap
+
+                var entry = new ModelMoveEntry(binding, positions);
+                if (dangerousActive && MovementUtilities.DoesPathCrossDangerousTerrain(entry, terrain))
+                {
+                    dangerousCrossers++;
+                    DrawDangerBadge(dl, positions[^1], m.BaseShape.CircumscribedRadiusInches);
+                }
+                if (difficultActive && !difficultCapEngaged
+                    && (committedCrossedDifficult.Contains(m)
+                        || MovementUtilities.DoesPathCrossDifficultTerrain(entry, terrain)))
+                    difficultCapEngaged = true;
+            }
+        }
 
         // 3b) Targeting overlay (toggle, on by default) — combines ranged + melee
         if (_showTargeting)
@@ -327,7 +410,9 @@ public class GuiDefineMovementResolver
         if (wantInput && ImGui.IsKeyPressed(ImGuiKey.G))
             _formationMode.Toggle();
 
-        DrawInfoPanel(screenW, request, pt, tcs, terrain);
+        bool selectedCapped = difficultActive && _selectedModel != null
+            && committedCrossedDifficult.Contains(_selectedModel);
+        DrawInfoPanel(screenW, request, pt, tcs, terrain, dangerousCrossers, difficultCapEngaged, selectedCapped);
     }
 
     private static readonly float GroupRotationStep = MathF.PI / 12f; // 15° per wheel notch / key press
@@ -343,7 +428,8 @@ public class GuiDefineMovementResolver
         DefineMovementPathRequest request, PathTemplate pt,
         IReadOnlyDictionary<IModel, IReadOnlyList<Position>> paths,
         bool overTable, bool wantInput,
-        float maxAdvance, float maxRush, float maxCharge, bool hasChargeBand, bool advanceOnly)
+        float maxAdvance, float maxRush, float maxCharge, bool hasChargeBand, bool advanceOnly,
+        List<ITerrain> terrain, bool difficultActive, HashSet<IModel> committedCrossedDifficult)
     {
         var models = paths.Keys.ToList();
         if (models.Count == 0) return;
@@ -375,6 +461,12 @@ public class GuiDefineMovementResolver
             // shoot-after-advance gate — matches single mode.
             var (mAdvance, _, mCharge) = request.BudgetFor(m.ID);
             float cap = advanceOnly ? mAdvance : mCharge;
+            // #155: a model whose committed path already crossed difficult terrain has its whole move
+            // capped at 6" total - fold that into its group budget (the clamp margin keeps the plan's
+            // budget-limited steps under what ClampTravelForDifficultTerrain will allow below).
+            if (difficultActive && committedCrossedDifficult.Contains(m))
+                cap = MathF.Min(cap, GameWideConstants.DIFFICULT_TERRAIN_MOVE_CAP_INCHES
+                    - MovementUtilities.DIFFICULT_TERRAIN_CLAMP_MARGIN_INCHES);
             budgets.Add(cap - pt.GetTotalDistanceMoved(m) - GroupMoveSafetyMargin);
         }
 
@@ -410,7 +502,55 @@ public class GuiDefineMovementResolver
         }
 
         var plan = GroupFormationUtilities.PlanGroupMove(basePositions, lastPositions, budgets, pivot, cos, sin, desiredTx, desiredTz);
-        var newPositions = plan.NewPositions;
+        IReadOnlyList<Position> newPositions = plan.NewPositions;
+
+        // #155: the budget solve above can't see terrain. If any phantom's step would violate the
+        // difficult-terrain cap (entering caps that model's total move at 6"; an unaffordable entry
+        // must stop short of the edge), pull the applied translation back further - bisected with the
+        // engine clamp as the feasibility test, so the group preview never proposes a step the
+        // validator would reject. If even the rotation alone is infeasible, the step is invalid
+        // outright (same treatment as an over-budget rotation).
+        bool terrainBlocked = false;
+        if (difficultActive)
+        {
+            float appliedTx = desiredTx * plan.TranslationScale;
+            float appliedTz = desiredTz * plan.TranslationScale;
+
+            Position[] PositionsAt(float s)
+            {
+                var arr = new Position[models.Count];
+                for (int i = 0; i < models.Count; i++)
+                    arr[i] = GroupFormationUtilities.RigidTransform(
+                        basePositions[i], pivot, cos, sin, appliedTx * s, appliedTz * s);
+                return arr;
+            }
+
+            bool Feasible(IReadOnlyList<Position> candidate)
+            {
+                for (int i = 0; i < models.Count; i++)
+                {
+                    Position from = lastPositions[i];
+                    Position to = candidate[i];
+                    float stepDist = Position.GetDistance2D(from, to);
+                    if (stepDist <= 0.0001f) continue;
+                    float allowedDist = MovementUtilities.ClampTravelForDifficultTerrain(
+                        new Float2(from.x, from.z), new Float2(to.x, to.z),
+                        pt.GetTotalDistanceMoved(models[i]), committedCrossedDifficult.Contains(models[i]),
+                        models[i].BaseShape, models[i].Facing, terrain, ignoresDifficultTerrain: false);
+                    if (stepDist > allowedDist + 0.001f) return false;
+                }
+                return true;
+            }
+
+            if (!Feasible(newPositions))
+            {
+                if (!Feasible(PositionsAt(0f)))
+                    terrainBlocked = true;
+                else
+                    newPositions = PositionsAt(
+                        GroupFormationUtilities.LargestFeasibleScale(s => Feasible(PositionsAt(s))));
+            }
+        }
 
         // Publish the live phantom positions so the targeting overlay can draw ghost-aware fire lines
         // for the whole unit (updates as the mouse moves, before any step is committed).
@@ -419,7 +559,7 @@ public class GuiDefineMovementResolver
         _groupGhostPositions = ghostMap;
 
         IUnit ownUnit = request.UnitDataBinding.GetValue();
-        bool allValid = plan.WithinBudget;
+        bool allValid = plan.WithinBudget && !terrainBlocked;
         var blocked = new bool[models.Count];
         // Each phantom's live facing (its travel direction rotated by the accumulated group offset), computed
         // once so the overlap check measures the same oriented footprint the ghost draws (#150).
@@ -441,7 +581,7 @@ public class GuiDefineMovementResolver
             float stepDist = Position.GetDistance2D(lastPositions[i], newPositions[i]);
             float cum = pt.GetTotalDistanceMoved(models[i]) + stepDist;
             MoveBand band = ClassifyBand(cum, maxAdvance, maxRush, hasChargeBand);
-            bool bad = blocked[i] || !plan.WithinBudget;
+            bool bad = blocked[i] || !plan.WithinBudget || terrainBlocked;
             uint fill    = bad ? OverlapFill : FillColorFor(band);
             uint lineCol = bad ? OverlapFill : LineColorFor(band);
 
@@ -485,7 +625,8 @@ public class GuiDefineMovementResolver
     }
 
     private void DrawInfoPanel(int screenW, DefineMovementPathRequest request, PathTemplate pt,
-        TaskCompletionSource<List<ModelMoveEntry>> tcs, List<ITerrain> terrain)
+        TaskCompletionSource<List<ModelMoveEntry>> tcs, List<ITerrain> terrain,
+        int dangerousCrossers, bool difficultCapEngaged, bool selectedCapped)
     {
         float panelW = MathF.Min(screenW * 0.6f, 680f);
         ImGui.SetNextWindowPos(new Vector2((screenW - panelW) * 0.5f, 16f), ImGuiCond.FirstUseEver);
@@ -501,6 +642,23 @@ public class GuiDefineMovementResolver
         ImGui.TextWrapped(FormatDistanceSummary(request));
         ImGui.PopStyleColor();
 
+        // #155: live terrain-consequence warnings (ghost-aware, computed in Draw).
+        if (dangerousCrossers > 0)
+        {
+            ImGui.PushStyleColor(ImGuiCol.Text, new Vector4(1.00f, 0.40f, 0.35f, 1f));
+            ImGui.TextWrapped(dangerousCrossers == 1
+                ? "Dangerous terrain: 1 model's path crosses - it rolls a d6 on commit, a 1 deals 1 wound"
+                : $"Dangerous terrain: {dangerousCrossers} models' paths cross - each rolls a d6 on commit, a 1 deals 1 wound");
+            ImGui.PopStyleColor();
+        }
+        if (difficultCapEngaged)
+        {
+            ImGui.PushStyleColor(ImGuiCol.Text, new Vector4(1.00f, 0.80f, 0.30f, 1f));
+            ImGui.TextWrapped("Difficult terrain: a crossing model's total move is capped at "
+                + $"{FormatInches(GameWideConstants.DIFFICULT_TERRAIN_MOVE_CAP_INCHES)}\" - paths stop at the cap or just short of the terrain");
+            ImGui.PopStyleColor();
+        }
+
         bool group = _formationMode.IsGroup;
 
         ImGui.Spacing();
@@ -515,9 +673,14 @@ public class GuiDefineMovementResolver
         {
             float dist = pt.GetTotalDistanceMoved(_selectedModel);
             bool inRush = dist + 0.0001f >= request.MaxAdvanceDistance;
+            // #155: once this model's committed path crossed difficult terrain, 6" total is its real max.
+            float maxShown = selectedCapped
+                ? MathF.Min(request.MaxDistanceInches, GameWideConstants.DIFFICULT_TERRAIN_MOVE_CAP_INCHES)
+                : request.MaxDistanceInches;
+            string capTag = selectedCapped ? " (difficult terrain cap)" : string.Empty;
             var color = inRush ? new Vector4(1.00f, 0.55f, 0.10f, 1f) : new Vector4(0.25f, 0.95f, 0.25f, 1f);
             ImGui.PushStyleColor(ImGuiCol.Text, color);
-            ImGui.TextUnformatted($"Selected model: {dist:F2}\" / {FormatInches(request.MaxDistanceInches)}\"  ({(inRush ? "RUSH - cannot shoot" : "advance - may shoot")})");
+            ImGui.TextUnformatted($"Selected model: {dist:F2}\" / {FormatInches(maxShown)}\"{capTag}  ({(inRush ? "RUSH - cannot shoot" : "advance - may shoot")})");
             ImGui.PopStyleColor();
             ImGui.TextDisabled("L-click: select   R-click: waypoint   Space: next   Backspace: undo");
         }
@@ -693,6 +856,34 @@ public class GuiDefineMovementResolver
         if (request.MaxDistanceInches > request.MaxRushDistance + 0.0001f)
             s += $"   charge up to {FormatInches(request.MaxDistanceInches)}\"";
         return s;
+    }
+
+    // #155: the terrain checks take ModelMoveEntry (binding + waypoints), but the path template keys by
+    // IModel - map back to each model's binding via the unit.
+    private static Dictionary<IModel, DataBinding<ModelData>> BuildBindingMap(DefineMovementPathRequest request)
+    {
+        var map = new Dictionary<IModel, DataBinding<ModelData>>();
+        foreach (var mb in request.UnitDataBinding.GetValue().ModelBindings)
+            if (mb.GetValue() is IModel m)
+                map[m] = mb;
+        return map;
+    }
+
+    /// <summary>Warning badge (red triangle + '!') beside a model whose path crosses Dangerous terrain
+    /// (#155) - offset up-right of the path's end position so it doesn't cover the ghost base.</summary>
+    private void DrawDangerBadge(ImDrawListPtr dl, Position pathEnd, float baseRadiusInches)
+    {
+        var (px, py) = InchesToPixel(pathEnd.x, pathEnd.z);
+        float off = baseRadiusInches * _scale * 0.7071f;
+        var center = new Vector2(px + off + 8f, py - off - 8f);
+        const float s = 7f;
+        var a = new Vector2(center.X, center.Y - s);
+        var b = new Vector2(center.X - s, center.Y + s * 0.9f);
+        var c = new Vector2(center.X + s, center.Y + s * 0.9f);
+        dl.AddTriangleFilled(a, b, c, DangerBadgeFill);
+        dl.AddTriangle(a, b, c, DangerBadgeOutline, 1.5f);
+        var t = ImGui.CalcTextSize("!");
+        dl.AddText(new Vector2(center.X - t.X * 0.5f, center.Y - t.Y * 0.5f + 2f), DangerBadgeTextCol, "!");
     }
 
     private List<EnemyModelFootprint> GetEnemyFootprintsForRequest(DefineMovementPathRequest request)
@@ -1348,6 +1539,26 @@ public class GuiDefineMovementResolver
         if (dist < 0.01f) return StayInPlace(request);
 
         float step = Math.Min(request.MaxAdvanceDistance - 0.001f, Math.Max(0f, dist - 1f));
+
+        // #155: shrink the shared step so no model's straight path violates the difficult-terrain cap
+        // (the whole unit moves by one delta, so the most-constrained model governs). Without this an
+        // auto-advance across difficult terrain could submit a move the authoritative stage rejects.
+        if (!request.IgnoresDifficultTerrain && step > 0.001f)
+        {
+            var terrain = _tableState.Terrain.Objects.ToList();
+            float ux = dx / dist, uz = dz / dist;
+            foreach (var mb in models)
+            {
+                if (mb.GetValue() is not IModel m || !m.GetIsAlive()) continue;
+                var from = new Float2(m.Position.x, m.Position.z);
+                var to   = new Float2(m.Position.x + ux * step, m.Position.z + uz * step);
+                step = MathF.Min(step, MovementUtilities.ClampTravelForDifficultTerrain(
+                    from, to, traveledBeforeSegmentInches: 0f, pathAlreadyCrossedDifficultTerrain: false,
+                    m.BaseShape, m.Facing, terrain, request.IgnoresDifficultTerrain));
+            }
+            if (step <= 0.001f) return StayInPlace(request);
+        }
+
         float ndx  = dx / dist * step;
         float ndz  = dz / dist * step;
 

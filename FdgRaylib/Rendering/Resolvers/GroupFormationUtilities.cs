@@ -122,6 +122,25 @@ public static class GroupFormationUtilities
         return new GroupMoveResult(result, scale, withinBudget);
     }
 
+    /// <summary>
+    /// Largest s in [0,1] for which <paramref name="feasibleAt"/> holds, found by bisection (#155).
+    /// Assumes s = 0 is feasible (the caller checks that first). Used to pull a group translation back
+    /// until every model's step clears a constraint the closed-form budget solve can't express — e.g.
+    /// the difficult-terrain entry clamp.
+    /// </summary>
+    public static float LargestFeasibleScale(Func<float, bool> feasibleAt, float tolerance = 0.004f)
+    {
+        if (feasibleAt(1f)) return 1f;
+        float lo = 0f, hi = 1f;
+        while (hi - lo > tolerance)
+        {
+            float mid = (lo + hi) * 0.5f;
+            if (feasibleAt(mid)) lo = mid;
+            else hi = mid;
+        }
+        return lo;
+    }
+
     // The repair targets a hair inside the limits so the caller's exact-constant cohesion check (no margin)
     // reliably agrees the repaired shape is legal.
     private const float CoherencyRepairMargin = 0.02f;
