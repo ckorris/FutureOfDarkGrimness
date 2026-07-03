@@ -141,6 +141,11 @@ public class GuiDefineMovementResolver
         float maxAdvance = request.MaxAdvanceDistance;
         float maxRush    = request.MaxRushDistance;
         float maxCharge  = request.MaxDistanceInches;
+        // #093: single mode operates on the selected model, so the ghost/clamp/range-rings/bands use ITS own
+        // budget — a joined hero with Fast shows bigger rings and can be placed further than its unitmates.
+        // Group mode keeps the unit scalars here and applies each model's own budget in DrawGroupGhostAndInput.
+        if (!_formationMode.IsGroup && _selectedModel != null)
+            (maxAdvance, maxRush, maxCharge) = request.BudgetFor(_selectedModel.ID);
         bool  hasChargeBand = maxCharge > maxRush + 0.0001f;
 
         // 1) Draw each model's start circle + committed path lines + final ghost circle
@@ -361,12 +366,15 @@ public class GuiDefineMovementResolver
 
         var lastPositions = new List<Position>(models.Count);
         var budgets = new List<float>(models.Count);
-        float cap = advanceOnly ? maxAdvance : maxCharge;
         foreach (var m in models)
         {
             lastPositions.Add(pt.GetModelLastPathPosition(m));
-            // Land just shy of the cap so a model that travels its full allowance still classifies as
-            // Advance (not Rush) and clears the engine's shoot-after-advance gate — matches single mode.
+            // #093: each model's own cap (a joined hero's Fast/Slow), so the group step is bottlenecked by
+            // whichever model has the least remaining budget. Land just shy of the cap so a model that
+            // travels its full allowance still classifies as Advance (not Rush) and clears the engine's
+            // shoot-after-advance gate — matches single mode.
+            var (mAdvance, _, mCharge) = request.BudgetFor(m.ID);
+            float cap = advanceOnly ? mAdvance : mCharge;
             budgets.Add(cap - pt.GetTotalDistanceMoved(m) - GroupMoveSafetyMargin);
         }
 
@@ -551,8 +559,10 @@ public class GuiDefineMovementResolver
         }
         var results = pt.GetResultsAsList(facingOffsets, travelDirectionFacing: true);
         var enemyFootprints = GetEnemyFootprintsForRequest(request);
+        // #093: validate each model against its OWN budget so Done gates exactly as the authoritative stage.
         bool engineValid = MovementUtilities.ValidatePaths(results,
-            request.MaxRushDistance, request.MaxDistanceInches,
+            entry => { var (_, rush, maxDist) = request.BudgetFor(entry.Model.GetValue().ID);
+                       return new ModelMoveBudget(rush, maxDist); },
             enemyFootprints, request.CanMoveThroughEnemies, request.IgnoresDifficultTerrain, request.IgnoresImpassibleTerrain, terrain, out var engineErrors);
         var finals = BuildFinalPositions(pt.CurrentPaths, null, null);
         var cohesion = CheckCohesion(finals);
@@ -905,9 +915,12 @@ public class GuiDefineMovementResolver
         IUnit ourUnit = request.UnitDataBinding.GetValue();
         var terrainSnapshot = _tableState.Terrain.Objects.ToList();
         var blockersByEnemyUnit = new Dictionary<IUnit, List<ITerrain>>(ReferenceEqualityComparer.Instance);
+        // Skip enemy units not yet on the table: an Ambush unit sits in reserve at the origin (0,0,0) until
+        // it arrives, so without this the overlay would draw fire lines to the table corner (GetIsOnBattlefield),
+        // and the per-model checks below drop any stray unplaced model for good measure.
         foreach (IUnit enemyUnit in _tableState.Units.Objects)
         {
-            if (enemyUnit.PlayerID == ourPlayerID) continue;
+            if (enemyUnit.PlayerID == ourPlayerID || !enemyUnit.GetIsOnBattlefield()) continue;
             var modelBlockers = LineOfSightUtilities.BuildModelBlockers(_tableState, ourUnit, enemyUnit);
             var combined = new List<ITerrain>(terrainSnapshot.Count + modelBlockers.Count);
             combined.AddRange(terrainSnapshot);
@@ -954,8 +967,9 @@ public class GuiDefineMovementResolver
         // 1) Per-enemy-unit aggregate text: shooting weapon counts (green) + charger count (yellow), combined.
         foreach (IUnit enemyUnit in _tableState.Units.Objects)
         {
-            if (enemyUnit.PlayerID == ourPlayerID) continue;
-            var aliveEnemies = enemyUnit.Models.Where(em => em.GetIsAlive()).ToList();
+            if (enemyUnit.PlayerID == ourPlayerID || !enemyUnit.GetIsOnBattlefield()) continue;
+            var aliveEnemies = enemyUnit.Models
+                .Where(em => em.GetIsAlive() && (em.Position.x != 0f || em.Position.z != 0f)).ToList();
             if (aliveEnemies.Count == 0) continue;
 
             // Shooting weapon counts (group: live phantom; single: committed), only when our unit can shoot.
@@ -1046,7 +1060,7 @@ public class GuiDefineMovementResolver
             float nearestB2B = float.MaxValue;
             foreach (IUnit enemyUnit in _tableState.Units.Objects)
             {
-                if (enemyUnit.PlayerID == ourPlayerID) continue;
+                if (enemyUnit.PlayerID == ourPlayerID || !enemyUnit.GetIsOnBattlefield()) continue;
                 foreach (var em in enemyUnit.Models)
                 {
                     if (!em.GetIsAlive()) continue;
@@ -1110,8 +1124,9 @@ public class GuiDefineMovementResolver
             var blockedByTarget = new Dictionary<IModel, (List<IWeapon> weapons, IUnit enemyUnit)>();
             foreach (IUnit enemyUnit in _tableState.Units.Objects)
             {
-                if (enemyUnit.PlayerID == ourPlayerID) continue;
-                var aliveEnemies = enemyUnit.Models.Where(em => em.GetIsAlive()).ToList();
+                if (enemyUnit.PlayerID == ourPlayerID || !enemyUnit.GetIsOnBattlefield()) continue;
+                var aliveEnemies = enemyUnit.Models
+                .Where(em => em.GetIsAlive() && (em.Position.x != 0f || em.Position.z != 0f)).ToList();
                 if (aliveEnemies.Count == 0) continue;
 
                 var unitBlockers = blockersByEnemyUnit[enemyUnit];
