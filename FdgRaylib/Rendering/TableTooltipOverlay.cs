@@ -144,6 +144,28 @@ public class TableTooltipOverlay
         if (unit.GetMobility(out float advance, out float charge))
             ImGui.TextUnformatted($"Advance {advance}\"   Charge {charge}\"");
 
+        // Transport cargo (#096): occupants ride off-table, so the on-table badge only shows "X/Y" spaces;
+        // spell out who's aboard here.
+        if (TransportUtilities.IsTransport(unit))
+        {
+            var allUnits = _tableState!.Units.Objects;
+            var occupants = TransportUtilities.GetOccupants(unit, allUnits).ToList();
+
+            ImGui.Spacing();
+            ImGui.TextUnformatted(TransportBadgeRenderer.FormatAboardHeader(
+                occupants.Count,
+                TransportUtilities.GetOccupiedSpaces(unit, allUnits),
+                TransportUtilities.GetCapacity(unit)));
+            if (occupants.Count > 0)
+            {
+                ImGui.Indent();
+                foreach (var occ in occupants)
+                    ImGui.TextUnformatted(TransportBadgeRenderer.FormatOccupant(
+                        occ.Name, TransportUtilities.GetUnitSpaceCost(occ)));
+                ImGui.Unindent();
+            }
+        }
+
         var weapons = unit.AllWeapons();
         if (weapons.Count > 0)
         {
@@ -243,6 +265,7 @@ public class TableTooltipOverlay
         var drawList = ImGui.GetBackgroundDrawList();
         uint shadow = ImGui.ColorConvertFloat4ToU32(new Vector4(0, 0, 0, 0.75f));
         uint white  = ImGui.ColorConvertFloat4ToU32(new Vector4(1, 1, 1, 1));
+        uint cyan   = ImGui.ColorConvertFloat4ToU32(new Vector4(0.55f, 0.85f, 0.95f, 1)); // #096 occupancy badge
 
         foreach (var unit in _tableState!.Units.Objects)
         {
@@ -301,6 +324,23 @@ public class TableTooltipOverlay
                 drawList.AddText(new Vector2(labelX,     labelY),     white,  unit.Name);
 
                 stackTopY = labelY;
+            }
+
+            // Transport occupancy badge (#096) — "Carrying X/Y" above the name. Shown for any transport
+            // (empty included, so remaining capacity always reads) regardless of the label toggle, like
+            // chips/health — status at a glance. Occupants ride off-table, so this is the only on-table cue.
+            if (TransportUtilities.IsTransport(unit))
+            {
+                string badge = TransportBadgeRenderer.FormatBadge(
+                    TransportUtilities.GetOccupiedSpaces(unit, _tableState!.Units.Objects),
+                    TransportUtilities.GetCapacity(unit));
+
+                Vector2 bSize = ImGui.CalcTextSize(badge);
+                float bx = cx - bSize.X * 0.5f;
+                float by = stackTopY - bSize.Y - 2f;
+                drawList.AddText(new Vector2(bx + 1, by + 1), shadow, badge);
+                drawList.AddText(new Vector2(bx,     by),     cyan,   badge);
+                stackTopY = by;
             }
 
             // Health bar above the name (#152) — hidden at full strength.
