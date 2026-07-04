@@ -29,7 +29,7 @@ public class ConsolidationMoveResolver : IStageResolver<ConsolidationMoveRequest
             string? input = Console.ReadLine()?.Trim();
 
             if (input == null || string.IsNullOrEmpty(input))
-                return Task.FromResult(StayInPlace(aliveModels));
+                return Task.FromResult(AutoConsolidate(request, aliveModels));
 
             string[] parts = input.Split(' ', StringSplitOptions.RemoveEmptyEntries);
             if (parts.Length < 2 || !float.TryParse(parts[0], out float dx) || !float.TryParse(parts[1], out float dz))
@@ -51,9 +51,10 @@ public class ConsolidationMoveResolver : IStageResolver<ConsolidationMoveRequest
                 return new ModelMoveEntry(mb, new List<Position> { new Position(m.Position.x + dx, m.Position.z + dz) });
             }).ToList();
 
-            // Enemy-check the move (move-through / standoff) against the same validator ConsolidateStage runs,
-            // so an offset that crosses or stacks on an enemy is rejected here rather than throwing downstream.
-            if (_tableState != null && !MovementUtilities.ValidatePaths(entries, request.MaxDistanceInches,
+            // Enemy-check the move (move-through / standoff) against the same lenient validator ConsolidateStage
+            // runs (#159), so an offset that crosses or stacks on an enemy is rejected here rather than throwing
+            // downstream — while a hold / re-form of an already-broken unit isn't wrongly blocked.
+            if (_tableState != null && !MovementUtilities.ValidateConsolidationPaths(entries, request.MaxDistanceInches,
                     GetEnemyFootprints(request), request.CanMoveThroughEnemies, request.IgnoresDifficultTerrain,
                     request.IgnoresImpassibleTerrain, _tableState.Terrain.Objects, out var errors))
             {
@@ -63,6 +64,27 @@ public class ConsolidationMoveResolver : IStageResolver<ConsolidationMoveRequest
 
             return Task.FromResult(entries);
         }
+    }
+
+    // EOF / "stay in place": if the unit is out of coherency (a mid-unit casualty left a hole), re-form the
+    // survivors toward their centroid within the cap so the auto-consolidation still pulls them back together
+    // (#159); otherwise just hold. Validated against the same lenient check ConsolidateStage runs, falling back
+    // to a plain hold (always valid) when there's no table state or the re-form is blocked.
+    private List<ModelMoveEntry> AutoConsolidate(ConsolidationMoveRequest request, List<DataBinding<ModelData>> aliveModels)
+    {
+        if (aliveModels.Count <= 1 || CohesiveFormation.IsCohesive(aliveModels))
+            return StayInPlace(aliveModels);
+
+        float cx = aliveModels.Average(mb => mb.GetValue().Position.x);
+        float cz = aliveModels.Average(mb => mb.GetValue().Position.z);
+        var reform = CohesiveFormation.ReformTowardWithinCap(aliveModels, cx, cz, request.MaxDistanceInches - 0.001f);
+
+        if (_tableState == null || MovementUtilities.ValidateConsolidationPaths(reform, request.MaxDistanceInches,
+                GetEnemyFootprints(request), request.CanMoveThroughEnemies, request.IgnoresDifficultTerrain,
+                request.IgnoresImpassibleTerrain, _tableState.Terrain.Objects, out _))
+            return reform;
+
+        return StayInPlace(aliveModels);
     }
 
     private List<EnemyModelFootprint> GetEnemyFootprints(ConsolidationMoveRequest request)
