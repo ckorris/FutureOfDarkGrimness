@@ -29,8 +29,13 @@ public class MainMenuScreen : IAppScreen
         float btnW        = screenW * 0.40f;
         float btnH        = screenH * 0.08f;
         float gapY        = screenH * 0.03f;
-        float titleScale  = screenH * 0.001f * 4f;
-        float btnFontScale = btnH / 26f;
+
+        // Prefer the large baked menu font and scale DOWN from it (crisp); fall back to stretching the
+        // body font if the font atlas didn't load. Factors are chosen to match the previous on-screen sizes.
+        bool  useMenuFont = RaylibRenderer.MenuFontPx > 0f;
+        if (useMenuFont) ImGui.PushFont(RaylibRenderer.MenuFont);
+        float titleScale   = useMenuFont ? (screenH * 0.072f) / RaylibRenderer.MenuFontPx : screenH * 0.004f;
+        float btnFontScale = useMenuFont ? (btnH * 0.55f)     / RaylibRenderer.MenuFontPx : btnH / 26f;
 
         ImGui.SetWindowFontScale(titleScale);
         string title = "FUTURE of DARK GRIMNESS";
@@ -59,6 +64,8 @@ public class MainMenuScreen : IAppScreen
         DrawButton("Load Game",    OnLoadGameClicked,    4);
         DrawButton("Quit",         OnQuitClicked,        5);
         ImGui.EndDisabled();
+
+        if (useMenuFont) ImGui.PopFont();
 
         ImGui.End();
         ImGui.PopStyleColor();

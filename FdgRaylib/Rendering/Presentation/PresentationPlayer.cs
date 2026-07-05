@@ -40,6 +40,12 @@ public class PresentationPlayer : IPresentationSink
     // Screen-space dice display for the currently-active DiceRolledBeat (null when none).
     private DiceRolledBeat? _activeDice;
     private float _diceProgress;
+    // A "held" dice beat parks after its lead-in: it stays displayed (settled) while later action beats
+    // play, then lingers this long with no beat activity before clearing (or until a new dice beat
+    // replaces it). Action beats reset the linger, so held dice survive through the wounds they caused.
+    private bool  _diceHeld;
+    private float _diceLingerSeconds;
+    private const float DiceHoldLingerSeconds = 2.5f;
 
     // Screen-space banner for the currently-active BannerBeat (null when none).
     private BannerBeat? _activeBanner;
@@ -62,6 +68,15 @@ public class PresentationPlayer : IPresentationSink
 
     private static readonly TextColor DeathTint = new(220, 40, 40, 255);  // red, fades out
     private static readonly TextColor HurtTint  = new(255, 170, 60, 255); // orange flinch, no fade
+
+    // Brief "hit-stop" at a melee clash: the whole timeline crawls for a moment so the strike lands with
+    // weight. Fired once per melee AttackBeat, at the clash. The freeze decays in real time while the
+    // beat animation runs slow, so it self-corrects and never desyncs from the engine's pacing.
+    private float _hitStopRemaining;
+    private bool  _hitStopFiredForActive;
+    private const float HitStopDuration  = 0.07f; // real seconds of freeze
+    private const float HitStopTimeScale = 0.12f; // how slow the timeline runs during it
+    private const float HitStopTriggerT  = 0.42f; // beat progress at which the clash lands
 
     /// <summary>True while a beat is in flight or queued — used to gate interactive prompts.</summary>
     public bool IsAnimating
@@ -109,16 +124,37 @@ public class PresentationPlayer : IPresentationSink
 
     // ---------------- render thread ----------------
 
-    public void Update(float dtSeconds)
+    public void Update(float realDt)
     {
         PresentationBeat? started = null;
         lock (_lock)
         {
+            float dtSeconds = realDt;
+            if (_hitStopRemaining > 0f)
+            {
+                _hitStopRemaining -= realDt;      // the freeze decays in real time...
+                dtSeconds *= HitStopTimeScale;    // ...but the timeline crawls while it lasts
+            }
+
+            // A parked (held) dice display lingers independently of the action queue; it clears after
+            // DiceHoldLingerSeconds of no beat activity (Advance resets that timer whenever an action
+            // beat plays) or as soon as a new dice beat replaces it.
+            if (_diceHeld)
+            {
+                _diceLingerSeconds += dtSeconds;
+                if (_diceLingerSeconds >= DiceHoldLingerSeconds)
+                {
+                    _activeDice = null;
+                    _diceHeld = false;
+                }
+            }
+
             if (_active == null && _incoming.Count > 0)
             {
                 _active = _incoming.Dequeue();
                 _elapsedSeconds = 0f;
                 started = _active;
+                _hitStopFiredForActive = false;
             }
             if (_active != null)
             {
@@ -128,7 +164,24 @@ public class PresentationPlayer : IPresentationSink
 
                 Advance(_active, t);
 
-                if (_elapsedSeconds >= dur)
+                // A melee clash fires a one-time hit-stop for weight.
+                if (!_hitStopFiredForActive && _active is AttackBeat { IsMelee: true } && t >= HitStopTriggerT)
+                {
+                    _hitStopRemaining = HitStopDuration;
+                    _hitStopFiredForActive = true;
+                }
+
+                // A held dice beat parks once past its lead-in: keep it displayed (settled) and free the
+                // active slot so following action beats play WHILE it lingers.
+                if (_active is DiceRolledBeat heldDice && heldDice.Held
+                    && _elapsedSeconds >= heldDice.HoldLeadIn.TotalSeconds)
+                {
+                    _diceHeld = true;
+                    _diceLingerSeconds = 0f;
+                    _diceProgress = 1f; // fully settled while parked
+                    _active = null;
+                }
+                else if (_elapsedSeconds >= dur)
                 {
                     Finish(_active);
                     _active = null;
@@ -143,6 +196,10 @@ public class PresentationPlayer : IPresentationSink
 
     private void Advance(PresentationBeat beat, float t)
     {
+        // Any non-dice beat playing keeps a parked dice display alive, so held dice survive through the
+        // wound/death animations that immediately follow them.
+        if (_diceHeld && beat is not DiceRolledBeat) _diceLingerSeconds = 0f;
+
         switch (beat)
         {
             case UnitMovedBeat moved:
@@ -162,6 +219,7 @@ public class PresentationPlayer : IPresentationSink
             case DiceRolledBeat dice:
                 _activeDice = dice;
                 _diceProgress = t;
+                _diceHeld = false; // an actively-animating dice beat is not parked; it replaces any parked one
                 break;
             case BannerBeat banner:
                 _activeBanner = banner;
@@ -204,6 +262,7 @@ public class PresentationPlayer : IPresentationSink
                 break;
             case DiceRolledBeat:
                 _activeDice = null;
+                _diceHeld = false;
                 break;
             case BannerBeat:
                 _activeBanner = null;
@@ -369,13 +428,31 @@ public class PresentationPlayer : IPresentationSink
 
         public Position Position { get; }
         public float Alpha { get; private set; } = 1f;
+        public float Progress { get; private set; }
         public bool Done;
 
         public DeathState(Position position) => Position = position;
 
         public void SetProgress(float t)
         {
+            Progress = t;
             Alpha = t < FlashFraction ? 1f : 1f - (t - FlashFraction) / (1f - FlashFraction);
+        }
+    }
+
+    /// <summary>
+    /// Active death locations + their 0..1 animation progress, for the renderer's dust-puff effect. Only
+    /// deaths still animating (not yet fully hidden) are returned. Snapshot taken under the lock.
+    /// </summary>
+    public IReadOnlyList<(Position pos, float progress)> GetActiveDeathBursts()
+    {
+        lock (_lock)
+        {
+            var bursts = new List<(Position, float)>();
+            foreach (DeathState d in _deaths.Values)
+                if (!d.Done && d.Progress > 0f)
+                    bursts.Add((d.Position, d.Progress));
+            return bursts;
         }
     }
 }

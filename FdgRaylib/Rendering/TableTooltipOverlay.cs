@@ -83,6 +83,11 @@ public class TableTooltipOverlay
         else if (hoveredTerrain != null)
             DrawTerrainTooltip(hoveredTerrain);
 
+        // Range / threat rings for the hovered unit -- a passive hover hint (no input capture), so it
+        // coexists with any active resolver rather than fighting it for the mouse.
+        if (hoveredUnit != null)
+            DrawRangeRings(hoveredUnit);
+
         // Unit name labels + token chips. Chips show regardless of the label toggle (status at a glance);
         // only the name text is gated on _showLabels.
         DrawUnitOverlays();
@@ -99,6 +104,9 @@ public class TableTooltipOverlay
         if (ImGui.Button(btnLabel))
             _showLabels = !_showLabels;
 
+        if (ImGui.Button(RaylibRenderer.ShowGrid ? "Grid: ON" : "Grid: OFF"))
+            RaylibRenderer.ShowGrid = !RaylibRenderer.ShowGrid;
+
         if (ImGui.Button(_showAllTokens ? "Tokens: ALL" : "Tokens: std"))
             _showAllTokens = !_showAllTokens;
 
@@ -107,6 +115,8 @@ public class TableTooltipOverlay
             if (ImGui.Button("Save Game"))
                 HandleSaveGame();
         }
+
+        ImGui.TextDisabled("Ctrl+drag: measure");
 
         ImGui.End();
     }
@@ -350,6 +360,59 @@ public class TableTooltipOverlay
                     maxRightX - minLeftX, remainingW, maxW);
         }
     }
+
+    // Weapon-range and charge-reach rings around the hovered unit, drawn in world space from the unit's
+    // centroid. Outline-only (no fill) so a charge ring inside a range ring doesn't darken the middle.
+    // Reads only live unit state (weapon ranges, mobility) -- no beats, no request context.
+    private static readonly uint ShootRingColor  = U32(0.55f, 0.85f, 0.95f, 0.85f); // cyan  -- shooting threat
+    private static readonly uint ChargeRingColor = U32(0.90f, 0.62f, 0.24f, 0.85f); // amber -- charge reach
+    private static readonly uint RingShadow      = U32(0f, 0f, 0f, 0.65f);
+
+    private void DrawRangeRings(IUnit unit)
+    {
+        // Centroid of the unit's living, placed models (unplaced models sit at the origin).
+        float sumX = 0f, sumZ = 0f;
+        int n = 0;
+        foreach (IModel m in unit.Models)
+        {
+            if (!m.GetIsAlive()) continue;
+            Position p = m.Position;
+            if (p.x == 0f && p.z == 0f) continue;
+            sumX += p.x; sumZ += p.z; n++;
+        }
+        if (n == 0) return;
+
+        float cx = _originX + (sumX / n) * _scale;
+        float cy = _originY + (_tableH - sumZ / n) * _scale;
+        var dl = ImGui.GetBackgroundDrawList();
+
+        // Longest weapon range = the unit's outer shooting envelope (one ring keeps it uncluttered).
+        float maxRange = 0f;
+        foreach (IWeapon w in unit.AllWeapons())
+            if (w.RangeInches > maxRange) maxRange = w.RangeInches;
+        if (maxRange > 0f)
+            DrawRing(dl, cx, cy, maxRange * _scale, ShootRingColor, $"Range {maxRange:0.#}\"");
+
+        // Charge reach.
+        if (unit.GetMobility(out float _, out float charge) && charge > 0f)
+            DrawRing(dl, cx, cy, charge * _scale, ChargeRingColor, $"Charge {charge:0.#}\"");
+    }
+
+    private static void DrawRing(ImDrawListPtr dl, float cx, float cy, float radiusPx, uint color, string label)
+    {
+        if (radiusPx < 2f) return;
+        int segments = 64;
+        dl.AddCircle(new Vector2(cx, cy), radiusPx, color, segments, 2f);
+
+        // Label riding the top of the ring, with a drop shadow so it reads over the table.
+        Vector2 size = ImGui.CalcTextSize(label);
+        var at = new Vector2(cx - size.X * 0.5f, cy - radiusPx - size.Y - 2f);
+        dl.AddText(at + new Vector2(1, 1), RingShadow, label);
+        dl.AddText(at, color, label);
+    }
+
+    private static uint U32(float r, float g, float b, float a) =>
+        ImGui.ColorConvertFloat4ToU32(new Vector4(r, g, b, a));
 
     private static Vector4 ValenceTint(EValence v) => v switch
     {

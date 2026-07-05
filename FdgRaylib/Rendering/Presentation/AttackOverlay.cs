@@ -60,11 +60,47 @@ public static class AttackOverlay
 
     private static void DrawTracer(Vector2 from, Vector2 to, float t, float apScale)
     {
+        // Muzzle flash as the shot leaves the barrel (brightest at t=0, gone by ~0.3).
+        DrawMuzzleFlash(from, t < 0.3f ? 1f - t / 0.3f : 0f, apScale);
+
         Raylib.DrawLineEx(from, to, 1.5f, TracerFaint);              // faint full trajectory
         Vector2 head = Vector2.Lerp(from, to, t);
         Vector2 tail = Vector2.Lerp(from, to, Math.Max(0f, t - 0.12f));
         Raylib.DrawLineEx(tail, head, 3f * apScale, Tracer);        // streak
         Raylib.DrawCircleV(head, 3.5f * apScale, Tracer);           // projectile head
+
+        // Spark burst where the round lands (last stretch of the flight).
+        DrawImpactSpark(to, t > 0.82f ? (t - 0.82f) / 0.18f : 0f, apScale);
+    }
+
+    // A bright, fast-fading burst with a couple of cross spikes -- the shot leaving or landing.
+    private static void DrawMuzzleFlash(Vector2 at, float intensity, float apScale)
+    {
+        if (intensity <= 0f) return;
+        byte a = (byte)Math.Clamp(intensity * 255f, 0f, 255f);
+        var core  = new Color((byte)255, (byte)240, (byte)190, a);
+        var spikeC = new Color((byte)255, (byte)225, (byte)150, (byte)(a * 0.7f));
+        float r = (5f + 3f * apScale) * (0.7f + 0.3f * intensity);
+        Raylib.DrawCircleV(at, r, core);
+        float spike = r * 2.4f;
+        Raylib.DrawLineEx(new Vector2(at.X - spike, at.Y), new Vector2(at.X + spike, at.Y), 2f, spikeC);
+        Raylib.DrawLineEx(new Vector2(at.X, at.Y - spike), new Vector2(at.X, at.Y + spike), 2f, spikeC);
+    }
+
+    // Radial shards flung out from an impact / melee clash point.
+    private static void DrawImpactSpark(Vector2 at, float intensity, float apScale)
+    {
+        if (intensity <= 0f) return;
+        byte a = (byte)Math.Clamp(intensity * 255f, 0f, 255f);
+        var c = new Color((byte)255, (byte)220, (byte)130, a);
+        float reach = (5f + 5f * apScale) * (1.3f - intensity); // spreads as it fades
+        for (int k = 0; k < 5; k++)
+        {
+            float ang = k * (MathF.PI * 2f / 5f) + 0.4f;
+            var dir = new Vector2(MathF.Cos(ang), MathF.Sin(ang));
+            Raylib.DrawLineEx(at + dir * (reach * 0.35f), at + dir * reach, 1.6f, c);
+        }
+        Raylib.DrawCircleV(at, 1.8f * apScale, c);
     }
 
     // A slim blade swung from the attacking model toward the struck model: its base pivots at the
@@ -73,9 +109,9 @@ public static class AttackOverlay
     // "dying" cue.
     private static void DrawMeleeBlade(Vector2 from, Vector2 at, float t, float scale, float apScale)
     {
-        // Reach the target (so the tip strikes it), but never shorter than a readable minimum.
-        float minLen    = Math.Max(16f, scale * 0.5f) * apScale;
-        float len       = Math.Max(minLen, Vector2.Distance(from, at));
+        // Uniform blade length, swung toward the target -- NOT stretched to reach a far model. A distant
+        // defender just gets a swing in its direction (feedback: the reach-to-target scaling read as huge).
+        float len       = Math.Max(16f, scale * 0.5f) * apScale;
         float halfWidth = len * 0.11f;
 
         // Swing arc centered on the direction from the attacker toward the struck model.
@@ -98,6 +134,9 @@ public static class AttackOverlay
         Raylib.DrawTriangle(tip, baseL, baseR, fill);
         Raylib.DrawTriangle(tip, baseR, baseL, fill);
         Raylib.DrawTriangleLines(tip, baseL, baseR, edge);
+
+        // Clash spark where the blade meets the target, brightest at mid-swing.
+        DrawImpactSpark(at, pulse * 0.9f, apScale);
     }
 
     private static Position Nearest(Position from, IReadOnlyList<Position> candidates)

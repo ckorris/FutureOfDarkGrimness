@@ -41,6 +41,9 @@ public class LobbyScreen : IAppScreen
     private static readonly Color[] PlayerPalette =
         { Color.Blue, Color.Red, Color.Green, Color.Yellow };
 
+    // Light-blue accent (matches ImGuiTheme) used to make section/column headers read as headers.
+    private static readonly Vector4 HeaderAccent = new(0.50f, 0.73f, 1.0f, 1f);
+
     public void SetViewModel(ILobbyViewModel viewModel)
     {
         _viewModel?.Dispose();
@@ -105,7 +108,10 @@ public class LobbyScreen : IAppScreen
 
         // ── Header ────────────────────────────────────────────────────────────
         ImGui.SetCursorPos(new Vector2(margin, margin));
-        ImGui.BeginChild("##header", new Vector2(mainW, headerH), ImGuiChildFlags.Borders);
+        // NoScrollbar: the Back button + window padding just overflow headerH, which would otherwise
+        // draw a phantom scrollbar right next to Back.
+        ImGui.BeginChild("##header", new Vector2(mainW, headerH), ImGuiChildFlags.Borders,
+            ImGuiWindowFlags.NoScrollbar | ImGuiWindowFlags.NoScrollWithMouse);
 
         float headerFontH  = headerH * 0.65f;
         float headerScale  = headerFontH / fontSize;
@@ -114,9 +120,8 @@ public class LobbyScreen : IAppScreen
         ImGui.TextUnformatted(_viewModel.ServerName);
         ImGui.SetWindowFontScale(1f);
 
-        float backW = 80f;
+        float backW = ImGui.CalcTextSize("Back").X + 36f; // fit the text at the current scale
         float backH = headerH - 8f;
-        ImGui.SameLine();
         ImGui.SetCursorPos(new Vector2(mainW - backW - 4f, 4f));
         if (ImGui.Button("Back", new Vector2(backW, backH)))
             OnBack?.Invoke();
@@ -143,13 +148,15 @@ public class LobbyScreen : IAppScreen
         // ── Chat Input + Send ─────────────────────────────────────────────────
         // Wrapped in a child so SetWindowFontScale applies locally — matches the chat log + launch button.
         float chatInputY = screenH - margin - chatInputH;
-        float sendBtnW   = 60f;
         ImGui.SetCursorPos(new Vector2(margin, chatInputY));
         ImGui.PushStyleVar(ImGuiStyleVar.WindowPadding, Vector2.Zero);
         ImGui.BeginChild("##chatrow", new Vector2(mainW, chatInputH), ImGuiChildFlags.None,
             ImGuiWindowFlags.NoScrollbar);
         ImGui.PopStyleVar();
         ImGui.SetWindowFontScale(1.5f);
+
+        // Size the Send button to its text at the row's scaled font, so it doesn't clip to "Ser".
+        float sendBtnW = ImGui.CalcTextSize("Send").X + 36f;
 
         // InputText height = font + 2*FramePadding.Y. Recompute padding against the now-scaled font size.
         float scaledFontSize  = ImGui.GetFontSize();
@@ -191,6 +198,11 @@ public class LobbyScreen : IAppScreen
     {
         IReadOnlyList<LobbyPlayerInfoSummary> players = _viewModel!.PlayerInfos;
 
+        // Rows 50% taller: the extra height comes from cell padding (applied top+bottom each row).
+        Vector2 cellPad = ImGui.GetStyle().CellPadding;
+        float rowH = ImGui.GetTextLineHeight() + cellPad.Y * 2f;
+        ImGui.PushStyleVar(ImGuiStyleVar.CellPadding, new Vector2(cellPad.X, cellPad.Y + rowH * 0.25f));
+
         if (ImGui.BeginTable("##ptable", 6,
             ImGuiTableFlags.Borders | ImGuiTableFlags.RowBg | ImGuiTableFlags.SizingStretchProp))
         {
@@ -200,7 +212,9 @@ public class LobbyScreen : IAppScreen
             ImGui.TableSetupColumn("Faction", ImGuiTableColumnFlags.WidthStretch, 0.18f);
             ImGui.TableSetupColumn("Pts",     ImGuiTableColumnFlags.WidthStretch, 0.08f);
             ImGui.TableSetupColumn("Actions", ImGuiTableColumnFlags.WidthStretch, 0.26f);
+            ImGui.PushStyleColor(ImGuiCol.Text, HeaderAccent);
             ImGui.TableHeadersRow();
+            ImGui.PopStyleColor();
 
             for (int i = 0; i < players.Count; i++)
             {
@@ -249,6 +263,8 @@ public class LobbyScreen : IAppScreen
 
             ImGui.EndTable();
         }
+
+        ImGui.PopStyleVar(); // CellPadding (taller rows)
 
         // Slots are fixed when resuming a saved game, so no add/remove there.
         if (_viewModel.HasHostPrivileges && !_viewModel.IsResumeMode)

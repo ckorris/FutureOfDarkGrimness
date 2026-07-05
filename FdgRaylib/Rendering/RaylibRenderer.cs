@@ -15,6 +15,11 @@ public class RaylibRenderer
     // Populated once during Run() after fonts are loaded; null until then.
     public static ImGuiNET.ImFontPtr BodyFont;
     public static ImGuiNET.ImFontPtr LargeFont;
+    // A large atlas for the big menu text. The menu scales DOWN from this (crisp) instead of stretching
+    // the 18px body font up ~5x (which looked aliased at fullscreen). MenuFontPx is the baked size, 0 if
+    // fonts failed to load -- callers fall back to the old body-font scaling in that case.
+    public static ImGuiNET.ImFontPtr MenuFont;
+    public static float MenuFontPx;
 
     private const float TableWIn      = GameWideConstants.DEFAULT_TABLE_WIDTH_INCHES;
     private const float TableHIn      = GameWideConstants.DEFAULT_TABLE_HEIGHT_INCHES;
@@ -28,6 +33,20 @@ public class RaylibRenderer
     private static readonly Color TableColor  = new(40, 100, 40, 255);
     private static readonly Color TableBorder = new(20, 60, 20, 255);
     private static readonly Color Background  = new(30, 30, 30, 255);
+
+    // Table grid: minor lines every 6", major every 12" (matches the game's inch measurements — a
+    // major square is one charge move across). Lines are etched darker than the felt for an engraved
+    // look rather than painted on top. A soft edge vignette adds depth. Everything here is confined to
+    // the table rectangle by construction, so it never bleeds onto terrain/objectives/models drawn after.
+    private const float GridMinorInches = 6f;
+    private const float GridMajorInches = 12f;
+    private static readonly Color GridMinorColor = new(33, 85, 33, 80);
+    private static readonly Color GridMajorColor = new(24, 66, 24, 150);
+    private const int   FeltVignetteAlpha = 55;
+
+    // Toggled from the table toolbar (TableTooltipOverlay) alongside the label toggle. Read by
+    // DrawTableGrid's call site so the grid/felt can be turned off without touching anything else.
+    public static bool ShowGrid = true;
 
     public MainMenuScreen    MainMenu     { get; } = new();
     public ArmyBuilderScreen ArmyBuilder  { get; } = new();
@@ -49,6 +68,7 @@ public class RaylibRenderer
     private AudioManager? _audio;
     private readonly TableTooltipOverlay _tooltipOverlay = new();
     private readonly TableHitTester      _hitTester      = new();
+    private readonly MeasurementOverlay  _measurementOverlay = new();
     private bool _inGame = false;
     private bool _closeRequested = false;
     private bool _resolverOverlayFaulted = false;
@@ -94,6 +114,7 @@ public class RaylibRenderer
         _presentationPlayer = presentationPlayer;
         _playerMessageUI    = playerMessageUI;
         _tooltipOverlay.Attach(tableState, colorForPlayer, saveGameToJson);
+        _measurementOverlay.Attach(tableState);
 
         // Play a sound cue the moment each beat becomes active, in lockstep with its visual. Audio is
         // GUI-only and may be unavailable (then AudioManager no-ops), so this is best-effort.
@@ -171,6 +192,7 @@ public class RaylibRenderer
             _tableState.Objectives.OnObjectRemoved  -= RemoveObjective;
         }
 
+        _measurementOverlay.Reset();
         _placedModels.Clear();
         lock (_terrainLock)    _terrain.Clear();
         lock (_objectivesLock) _objectives.Clear();
@@ -244,6 +266,9 @@ public class RaylibRenderer
         float uiScale = ComputeUiScale(monitorH);
 
         rlImGui.Setup(true);
+        // Apply the app-wide "Dark Grimness" theme BEFORE scaling, so its rounding/border sizes scale
+        // with the display too (colors are unaffected by ScaleAllSizes).
+        ImGuiTheme.Apply();
         // Enlarge every widget's padding/spacing/frame sizes (fonts are scaled at load below).
         ImGui.GetStyle().ScaleAllSizes(uiScale);
 
@@ -262,6 +287,10 @@ public class RaylibRenderer
             fonts.Clear();
             BodyFont  = fonts.AddFontFromFileTTF(fontPath, 18f * uiScale);
             LargeFont = fonts.AddFontFromFileTTF(fontPath, 32f * uiScale);
+            // Baked near the largest on-screen menu text (title ~7% of display height) so the menu never
+            // upscales the atlas. Clamped so it stays a sane texture size on tiny and 4K displays alike.
+            MenuFontPx = Math.Clamp(monitorH * 0.075f, 48f, 220f);
+            MenuFont   = fonts.AddFontFromFileTTF(fontPath, MenuFontPx);
             rlImGui.ReloadFonts();
         }
 
@@ -279,10 +308,14 @@ public class RaylibRenderer
 
                 var layout = ComputeLayout(screenW, screenH);
                 DrawTable(layout);
+                if (ShowGrid)
+                    DrawTableGrid(layout);   // etched grid + felt vignette, under terrain/objectives/models
                 DrawTerrain(layout);
                 DrawObjectives(layout);
                 DrawAmbushExclusion(layout, screenW, screenH);
+                DrawActiveUnitSpotlight(layout);
                 DrawModels(layout);
+                DrawDeathBursts(layout);
 
                 if (_presentationPlayer != null &&
                     _presentationPlayer.TryGetActiveAttack(out var attackBeat, out var attackProgress))
@@ -314,7 +347,13 @@ public class RaylibRenderer
                     BannerOverlay.Draw(bannerBeat, bannerProgress, layout.LogX, screenH);
                 }
 
+                DrawStatusHud(layout);
+
                 rlImGui.Begin();
+                // Runs before the hit tester / resolvers so its Alt-measure WantCaptureMouse override
+                // lands before they read that flag (see MeasurementOverlay).
+                _measurementOverlay.UpdateLayout(layout.Scale, layout.OriginX, layout.OriginY, TableHIn);
+                _measurementOverlay.Draw(screenW, screenH);
                 _hitTester.Update(_tableState!, layout.Scale, layout.OriginX, layout.OriginY, TableHIn);
                 if (_log != null) DrawLogPanel(layout);
                 if (_playerMessageUI != null) DrawChatInput(layout);
@@ -382,6 +421,43 @@ public class RaylibRenderer
         int th = (int)(TableHIn * l.Scale);
         Raylib.DrawRectangle(l.OriginX, l.OriginY, tw, th, TableColor);
         Raylib.DrawRectangleLines(l.OriginX, l.OriginY, tw, th, TableBorder);
+    }
+
+    // Etched inch grid + a soft felt vignette, drawn only within the table rect (so it stays under
+    // terrain/objectives/models, which draw afterward). Interior lines only — the border is the edge.
+    private static void DrawTableGrid(Layout l)
+    {
+        int tw = (int)(TableWIn * l.Scale);
+        int th = (int)(TableHIn * l.Scale);
+        int x0 = l.OriginX, y0 = l.OriginY;
+        int x1 = x0 + tw,   y1 = y0 + th;
+
+        for (float xi = GridMinorInches; xi < TableWIn; xi += GridMinorInches)
+        {
+            int px = x0 + (int)(xi * l.Scale);
+            Raylib.DrawLine(px, y0, px, y1, IsMajorGridLine(xi) ? GridMajorColor : GridMinorColor);
+        }
+        for (float zi = GridMinorInches; zi < TableHIn; zi += GridMinorInches)
+        {
+            int py = y0 + (int)(zi * l.Scale);
+            Raylib.DrawLine(x0, py, x1, py, IsMajorGridLine(zi) ? GridMajorColor : GridMinorColor);
+        }
+
+        // Edge vignette: a dark band fading inward on each side (corners overlap for a little extra
+        // emphasis). Clipped to the table rect.
+        int band = Math.Max(6, (int)(Math.Min(tw, th) * 0.08f));
+        var edge  = new Color((byte)0, (byte)0, (byte)0, (byte)FeltVignetteAlpha);
+        var clear = new Color((byte)0, (byte)0, (byte)0, (byte)0);
+        Raylib.DrawRectangleGradientV(x0, y0, tw, band, edge, clear);            // top
+        Raylib.DrawRectangleGradientV(x0, y1 - band, tw, band, clear, edge);     // bottom
+        Raylib.DrawRectangleGradientH(x0, y0, band, th, edge, clear);            // left
+        Raylib.DrawRectangleGradientH(x1 - band, y0, band, th, clear, edge);     // right
+    }
+
+    private static bool IsMajorGridLine(float inches)
+    {
+        float q = inches / GridMajorInches;
+        return Math.Abs(q - MathF.Round(q)) < 0.01f;
     }
 
     private void DrawTerrain(Layout l)
@@ -479,6 +555,41 @@ public class RaylibRenderer
         _exclusionRTReady = true;
     }
 
+    // #6 -- a soft pulsing halo under each model of the unit currently taking its activation, so whose
+    // turn it is reads at a glance. The activating unit comes from ITableState.Progress (live, replicated
+    // state), and the ring rides the presentation animation position so it stays under a gliding model.
+    private static readonly (byte r, byte g, byte b) SpotlightRGB = (255, 205, 110); // warm highlight
+    private void DrawActiveUnitSpotlight(Layout l)
+    {
+        if (_tableState == null) return;
+        IUnit? active = _tableState.Progress.ActivatingUnit;
+        if (active == null) return;
+
+        float pulse = 0.5f + 0.5f * MathF.Sin((float)Raylib.GetTime() * 3.2f); // 0..1
+        var (r, g, b) = SpotlightRGB;
+        var fill  = new Color(r, g, b, (byte)(28 + 22 * pulse));
+        var ring  = new Color(r, g, b, (byte)(130 + 90 * pulse));
+        var halo  = new Color(r, g, b, (byte)(40 + 30 * pulse));
+
+        foreach (IModel model in active.Models)
+        {
+            // Same position source as DrawModels so the halo tracks gliding/hurt/dying state.
+            ModelDrawState draw = _presentationPlayer?.GetModelDrawState(model)
+                ?? (model.GetIsAlive()
+                    ? new ModelDrawState(true, model.Position, 1f, null)
+                    : ModelDrawState.Hidden);
+            if (!draw.Visible) continue;
+
+            int cx = l.OriginX + (int)(draw.Position.x * l.Scale);
+            int cy = l.OriginY + (int)((TableHIn - draw.Position.z) * l.Scale);
+            float baseR = (model.BaseRadiusInches + 0.18f) * l.Scale; // just outside the base
+
+            Raylib.DrawCircle(cx, cy, baseR, fill);
+            Raylib.DrawCircleLines(cx, cy, baseR, ring);
+            Raylib.DrawCircleLines(cx, cy, baseR + 3f + 6f * pulse, halo); // expanding pulse ring
+        }
+    }
+
     private void DrawModels(Layout l)
     {
         foreach (var (model, color) in _placedModels)
@@ -503,6 +614,55 @@ public class RaylibRenderer
             ModelBaseRenderer.DrawFilledRaylib(model.BaseShape, cx, cy, l.Scale, fill, outline, model.Facing);
             ModelBaseRenderer.DrawHeadingRaylib(model.BaseShape, cx, cy, l.Scale, model.Facing,
                 new Color((byte)255, (byte)255, (byte)255, a));
+        }
+    }
+
+    // Top-center status strip: current round (from ITableState.Progress) + a live objective scoreboard
+    // (one player-colored pip + controlled count per player). Both read as live state each frame -- the
+    // round comes from the replicated GameProgressData, the counts from the objectives' owners.
+    private void DrawStatusHud(Layout l)
+    {
+        if (_tableState == null || _colorForPlayer == null) return;
+
+        // The aggregate progress read model does the work (round, per-player objective counts); the
+        // renderer just maps each player to its table color. RoundCount is null before the main phase.
+        IGameProgress progress = _tableState.Progress;
+
+        var scores = new List<(Color color, int count)>();
+        foreach (PlayerObjectiveScore s in progress.Scores)
+            scores.Add((_colorForPlayer(s.PlayerID), s.ObjectiveCount));
+
+        StatusHudOverlay.Draw(l.LogX, progress.RoundCount, progress.TotalRounds, scores);
+    }
+
+    // A short-lived dust puff where a model died: an expanding, fading gray cloud plus a few debris
+    // specks flung outward, riding the death animation's progress. Drawn over the (red, fading) model.
+    private static readonly (byte r, byte g, byte b) DustRGB = (150, 140, 128);
+    private void DrawDeathBursts(Layout l)
+    {
+        if (_presentationPlayer == null) return;
+        foreach (var (pos, progress) in _presentationPlayer.GetActiveDeathBursts())
+        {
+            int cx = l.OriginX + (int)(pos.x * l.Scale);
+            int cy = l.OriginY + (int)((TableHIn - pos.z) * l.Scale);
+            var (r, g, b) = DustRGB;
+
+            // Central cloud: grows from the base size outward, fades as it expands.
+            float radius = (0.18f + 0.55f * progress) * l.Scale;
+            byte cloudA  = (byte)Math.Clamp((1f - progress) * 130f, 0f, 255f);
+            Raylib.DrawCircleV(new Vector2(cx, cy), radius, new Color(r, g, b, cloudA));
+
+            // Debris specks flung outward on fixed spokes.
+            byte specA = (byte)Math.Clamp((1f - progress) * 200f, 0f, 255f);
+            var spec = new Color(r, g, b, specA);
+            float reach = (0.15f + 0.85f * progress) * l.Scale;
+            for (int k = 0; k < 6; k++)
+            {
+                float ang = k * (MathF.PI * 2f / 6f) + 0.3f;
+                float px = cx + MathF.Cos(ang) * reach;
+                float py = cy + MathF.Sin(ang) * reach;
+                Raylib.DrawCircleV(new Vector2(px, py), MathF.Max(1.2f, 0.05f * l.Scale), spec);
+            }
         }
     }
 
