@@ -451,21 +451,28 @@ public class LobbyScreen : IAppScreen
 
     private void HandleLaunch(IFDGGame game)
     {
+        // Player -> palette colour, by both PlayerID (table models) and display name (chat sender lines).
+        var players = _viewModel?.PlayerInfos ?? [];
+        var colors  = new Dictionary<PlayerID, Color>();
+        var nameColors = new Dictionary<string, TextColor>();
+        for (int i = 0; i < players.Count; i++)
+        {
+            Color c = PlayerPalette[i % PlayerPalette.Length];
+            colors[players[i].PlayerID] = c;
+            nameColors[players[i].PlayerName] = new TextColor(c.R, c.G, c.B, 255);
+        }
+
         var log   = new GameLog();
         var logUI = new GuiLogMessageUI(log);
         var (resolvers, overlay) = ResolverRegistryFactory.BuildGui(game.TableState);
 
         var taskDisplay = new GuiOutstandingTaskDisplay();
         var presentationPlayer = new PresentationPlayer();
-        var playerMessageUI = new GuiPlayerMessageUI(log);
+        var playerMessageUI = new GuiPlayerMessageUI(
+            name => nameColors.TryGetValue(name, out var tc) ? tc : new TextColor(150, 220, 255, 255));
         game.AssignInterfaces(logUI, playerMessageUI, resolvers,
             presentationSink: presentationPlayer,
             outstandingTaskDisplay: taskDisplay);
-
-        var colors  = new Dictionary<PlayerID, Color>();
-        var players = _viewModel?.PlayerInfos ?? [];
-        for (int i = 0; i < players.Count; i++)
-            colors[players[i].PlayerID] = PlayerPalette[i % PlayerPalette.Length];
 
         // Host-only save hook (work item #054 will add client-initiated saving).
         Func<string?>? saveGame = _viewModel != null && _viewModel.CanSaveGame ? _viewModel.SaveGameToJson : null;

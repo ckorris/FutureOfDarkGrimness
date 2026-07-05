@@ -91,7 +91,7 @@ public class GuiAssignWoundsResolver
 
         float dw = MathF.Min(screenW * 0.5f, 560f);
         float dh = MathF.Min(hdrH + pad + listContentH + pad + footH + pad, screenH * 0.82f);
-        float dx = (screenW - dw) * 0.5f;
+        float dx = screenW - dw - 12f;   // right-aligned in the open right-side space (#105)
         float dy = (screenH - dh) * 0.5f;
 
         ImGui.SetCursorPos(new Vector2(dx, dy));

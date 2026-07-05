@@ -1,6 +1,7 @@
 using System.Collections.Concurrent;
 using System.Numerics;
 using FDG;
+using FDG.Players;
 using FdgRaylib.Audio;
 using FdgRaylib.Rendering.Presentation;
 using FdgRaylib.Rendering.Resolvers;
@@ -23,8 +24,8 @@ public class RaylibRenderer
 
     private const float TableWIn      = GameWideConstants.DEFAULT_TABLE_WIDTH_INCHES;
     private const float TableHIn      = GameWideConstants.DEFAULT_TABLE_HEIGHT_INCHES;
-    private const int   LogPanelWidth = 350;
     private const int   MinMargin     = 20;
+    private const float TableZoom     = 1.15f;  // fill more of the available space than a strict fit
     // Anchor for the resolution-derived UI scale (see ComputeUiScale): the multiplier that was tuned
     // by hand on a 4K (2160p) desktop. Smaller displays scale down from here, larger ones cap here.
     private const float ReferenceUiScale  = 1.4f;
@@ -62,6 +63,15 @@ public class RaylibRenderer
     private GameLog? _log;
     private GuiPlayerMessageUI? _playerMessageUI;  // in-game chat sink + send hook (#077)
     private string _chatInput = "";
+
+    // Bottom console (#105): a collapsible, full-width dock. Log and Chat are independent TOGGLES (not
+    // exclusive tabs) -- with both on, their lines are merged into one column in arrival order.
+    private bool _consoleCollapsed = false;
+    private bool _showChat = true;   // Chat source shown (button on the left)
+    private bool _showLog  = true;   // Log source shown
+    private EChatMessageType _chatChannel = EChatMessageType.Global;
+    private bool _chatUnread    = false;  // new chat arrived while Chat is toggled off / console collapsed
+    private int  _lastChatCount = 0;      // for the unread check
     private GuiResolverOverlay? _resolverOverlay;
     private GuiOutstandingTaskDisplay? _taskDisplay;
     private PresentationPlayer? _presentationPlayer;
@@ -97,7 +107,13 @@ public class RaylibRenderer
     private bool _autoScroll = true;
     private int  _lastLogCount = 0;
 
-    private record Layout(float Scale, int OriginX, int OriginY, int LogX, int ScreenH);
+    private record Layout(float Scale, int OriginX, int OriginY, int AreaW, int ScreenH);
+
+    // Bottom-console height: a thin bar (tabs only) when collapsed, ~26% of the window when open.
+    private int ConsoleHeight(int screenH) =>
+        _log == null ? 0
+        : _consoleCollapsed ? Math.Max(34, (int)(screenH * 0.038f))
+                            : Math.Max(170, (int)(screenH * 0.26f));
 
     public void TransitionToGame(ITableState tableState, Func<PlayerID, Color> colorForPlayer,
         GameLog? log, GuiResolverOverlay? resolverOverlay = null,
@@ -202,6 +218,12 @@ public class RaylibRenderer
         _log                   = null;
         _playerMessageUI       = null;
         _chatInput             = "";
+        _consoleCollapsed      = false;
+        _showChat              = true;
+        _showLog               = true;
+        _chatChannel           = EChatMessageType.Global;
+        _chatUnread            = false;
+        _lastChatCount         = 0;
         _resolverOverlay       = null;
         _taskDisplay           = null;
         _presentationPlayer    = null;
@@ -332,19 +354,19 @@ public class RaylibRenderer
                 if (_presentationPlayer != null &&
                     _presentationPlayer.TryGetActiveDice(out var diceBeat, out var diceProgress))
                 {
-                    DiceOverlay.Draw(diceBeat, diceProgress, layout.LogX, screenH);
+                    DiceOverlay.Draw(diceBeat, diceProgress, layout.AreaW, screenH);
                 }
 
                 if (_presentationPlayer != null &&
                     _presentationPlayer.TryGetActiveRollOff(out var rollOffBeat, out var rollOffProgress))
                 {
-                    DiceOverlay.DrawRollOff(rollOffBeat, rollOffProgress, layout.LogX, screenH);
+                    DiceOverlay.DrawRollOff(rollOffBeat, rollOffProgress, layout.AreaW, screenH);
                 }
 
                 if (_presentationPlayer != null &&
                     _presentationPlayer.TryGetActiveBanner(out var bannerBeat, out var bannerProgress))
                 {
-                    BannerOverlay.Draw(bannerBeat, bannerProgress, layout.LogX, screenH);
+                    BannerOverlay.Draw(bannerBeat, bannerProgress, layout.AreaW, screenH);
                 }
 
                 DrawStatusHud(layout);
@@ -355,8 +377,7 @@ public class RaylibRenderer
                 _measurementOverlay.UpdateLayout(layout.Scale, layout.OriginX, layout.OriginY, TableHIn);
                 _measurementOverlay.Draw(screenW, screenH);
                 _hitTester.Update(_tableState!, layout.Scale, layout.OriginX, layout.OriginY, TableHIn);
-                if (_log != null) DrawLogPanel(layout);
-                if (_playerMessageUI != null) DrawChatInput(layout);
+                DrawBottomConsole(layout);
                 // Outstanding Tasks window hidden per user request; re-enable by restoring this draw call.
                 // _taskDisplay?.Draw(screenW, screenH);
                 _tooltipOverlay.UpdateLayout(layout.Scale, layout.OriginX, layout.OriginY, TableHIn);
@@ -400,19 +421,22 @@ public class RaylibRenderer
 
     private Layout ComputeLayout(int screenW, int screenH)
     {
-        int logW       = _log != null ? LogPanelWidth : 0;
-        int tableAreaW = screenW - logW;
+        // Full-width table; the console reserves height at the bottom instead of a right-side strip.
+        int consoleH   = ConsoleHeight(screenH);
+        int tableAreaH = screenH - consoleH;
 
-        float scaleX = (tableAreaW - MinMargin * 2f) / TableWIn;
-        float scaleY = (screenH   - MinMargin * 2f) / TableHIn;
-        float scale  = Math.Max(1f, Math.Min(scaleX, scaleY));
+        float scaleX = (screenW     - MinMargin * 2f) / TableWIn;
+        float scaleY = (tableAreaH  - MinMargin * 2f) / TableHIn;
+        // Nudge the auto-fit up so the board fills more of the (otherwise slack) space. The board is
+        // usually height-bound, so this trades the vertical margin for a bigger table, centered.
+        float scale  = Math.Max(1f, Math.Min(scaleX, scaleY)) * TableZoom;
 
         int tablePixW = (int)(TableWIn * scale);
         int tablePixH = (int)(TableHIn * scale);
-        int originX   = (tableAreaW - tablePixW) / 2;
-        int originY   = (screenH    - tablePixH) / 2;
+        int originX   = (screenW     - tablePixW) / 2;
+        int originY   = (tableAreaH  - tablePixH) / 2;
 
-        return new Layout(scale, originX, originY, tableAreaW, screenH);
+        return new Layout(scale, originX, originY, screenW, screenH);
     }
 
     private static void DrawTable(Layout l)
@@ -632,7 +656,7 @@ public class RaylibRenderer
         foreach (PlayerObjectiveScore s in progress.Scores)
             scores.Add((_colorForPlayer(s.PlayerID), s.ObjectiveCount));
 
-        StatusHudOverlay.Draw(l.LogX, progress.RoundCount, progress.TotalRounds, scores);
+        StatusHudOverlay.Draw(l.AreaW, progress.RoundCount, progress.TotalRounds, scores);
     }
 
     // A short-lived dust puff where a model died: an expanding, fading gray cloud plus a few debris
@@ -701,59 +725,128 @@ public class RaylibRenderer
         ImGui.End();
     }
 
-    // A thin chat bar across the bottom of the main game area (left of the log panel). Submitting a line
-    // routes it through GuiPlayerMessageUI → the engine relay, which echoes it back into the side log
-    // (where received chat from other players also appears). Not auto-focused, so game hotkeys keep
-    // working until the player clicks into it. (#077 in-game chat)
-    private void DrawChatInput(Layout l)
+    // Bottom console (#105): a full-width, collapsible dock. Log and Chat are independent TOGGLES (Chat on
+    // the left); with both on, their lines merge into one column in arrival order (by the shared
+    // LogEntry.Sequence). The engine GameLog is the Log source; the sender-coloured chat store is the Chat
+    // source, which also shows the Global/Team channel toggle + input. Chat flags unread when a message
+    // arrives while Chat is toggled off or the console is collapsed.
+    private void DrawBottomConsole(Layout l)
     {
-        const float height = 34f;
-        // Lifted half its own height off the very bottom so it doesn't sit under the OS task bar (#105).
-        ImGui.SetNextWindowPos(new Vector2(0, l.ScreenH - height * 1.5f), ImGuiCond.Always);
-        ImGui.SetNextWindowSize(new Vector2(l.LogX, height), ImGuiCond.Always);
-        ImGui.Begin("Chat",
-            ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoCollapse |
-            ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoScrollbar);
+        if (_log == null) return;
+        int h = ConsoleHeight(l.ScreenH);
 
-        ImGui.SetNextItemWidth(-1f);
-        if (ImGui.InputTextWithHint("##gamechat", "Chat... (Enter to send)", ref _chatInput, 512,
-                ImGuiInputTextFlags.EnterReturnsTrue))
+        // Unread bookkeeping (every frame, regardless of what's shown).
+        int chatCount = _playerMessageUI?.ChatLog.Count ?? 0;
+        if (chatCount > _lastChatCount && (_consoleCollapsed || !_showChat))
+            _chatUnread = true;
+        _lastChatCount = chatCount;
+
+        ImGui.SetNextWindowPos(new Vector2(0, l.ScreenH - h), ImGuiCond.Always);
+        ImGui.SetNextWindowSize(new Vector2(l.AreaW, h), ImGuiCond.Always);
+        ImGui.Begin("##console",
+            ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoCollapse |
+            ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoBringToFrontOnFocus);
+
+        // Source toggles: Chat (left), then Log.
+        DrawConsoleToggle((_chatUnread ? "Chat *" : "Chat") + "##chattoggle", ref _showChat, isChat: true);
+        ImGui.SameLine();
+        DrawConsoleToggle("Log##logtoggle", ref _showLog, isChat: false);
+
+        // Collapse / expand button, pinned right.
+        const float collapseW = 32f;
+        ImGui.SameLine();
+        ImGui.SetCursorPosX(ImGui.GetWindowWidth() - collapseW - 10f);
+        if (ImGui.Button((_consoleCollapsed ? "+" : "-") + "##consolecollapse", new Vector2(collapseW, 0f)))
+            _consoleCollapsed = !_consoleCollapsed;
+
+        if (!_consoleCollapsed)
         {
-            _playerMessageUI!.Submit(_chatInput);
-            _chatInput = "";
+            ImGui.Separator();
+            DrawConsoleContent();
         }
 
         ImGui.End();
     }
 
-    private void DrawLogPanel(Layout l)
+    // A source toggle, highlighted when on. Turning Chat on clears its unread flag.
+    private void DrawConsoleToggle(string labelWithId, ref bool on, bool isChat)
     {
-        ImGui.SetNextWindowPos(new Vector2(l.LogX, 0), ImGuiCond.Always);
-        ImGui.SetNextWindowSize(new Vector2(LogPanelWidth, l.ScreenH), ImGuiCond.Always);
-        ImGui.Begin("Game Log",
-            ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoCollapse);
+        // Capture the state BEFORE the button: clicking flips `on`, and the pop must match the push
+        // regardless of that flip (else the style stack is left unbalanced -> ImGui asserts/crashes).
+        bool wasOn = on;
+        if (wasOn) ImGui.PushStyleColor(ImGuiCol.Button, ImGui.GetStyle().Colors[(int)ImGuiCol.ButtonActive]);
+        if (ImGui.Button(labelWithId))
+        {
+            on = !on;
+            if (isChat && on) _chatUnread = false;
+        }
+        if (wasOn) ImGui.PopStyleColor();
+    }
 
-        var messages = _log!.Snapshot();
-        bool hasNew = messages.Count > _lastLogCount;
-        _lastLogCount = messages.Count;
+    // Merged scrollback of the enabled sources, plus the chat input row when Chat is on.
+    private void DrawConsoleContent()
+    {
+        if (_showChat) _chatUnread = false; // chat is visible
 
-        ImGui.BeginChild("scrolling", Vector2.Zero, ImGuiChildFlags.None,
+        float inputH = _showChat ? ImGui.GetFrameHeightWithSpacing() : 0f;
+        ImGui.BeginChild("##consolescroll", new Vector2(0, -inputH), ImGuiChildFlags.None,
             ImGuiWindowFlags.HorizontalScrollbar);
 
-        foreach (var entry in messages)
+        List<LogEntry>? logMsgs  = _showLog ? _log!.Snapshot() : null;
+        List<LogEntry>? chatMsgs = (_showChat && _playerMessageUI != null) ? _playerMessageUI.ChatLog.Snapshot() : null;
+        int ln = logMsgs?.Count ?? 0, cn = chatMsgs?.Count ?? 0;
+
+        if (ln == 0 && cn == 0)
         {
-            var c = entry.Color;
-            ImGui.PushStyleColor(ImGuiCol.Text, new Vector4(c.R / 255f, c.G / 255f, c.B / 255f, c.A / 255f));
-            ImGui.TextWrapped(entry.Message);
-            ImGui.PopStyleColor();
+            ImGui.TextDisabled(!_showLog && !_showChat ? "Log and Chat hidden -- toggle one on above."
+                                                       : "No messages yet.");
+        }
+        else
+        {
+            // Merge two arrival-ordered lists by Sequence (two-pointer -- both already sorted).
+            int li = 0, ci = 0;
+            while (li < ln || ci < cn)
+            {
+                bool takeLog = ci >= cn || (li < ln && logMsgs![li].Sequence <= chatMsgs![ci].Sequence);
+                RenderConsoleLine(takeLog ? logMsgs![li++] : chatMsgs![ci++]);
+            }
         }
 
-        if (hasNew && _autoScroll)
-            ImGui.SetScrollHereY(1.0f);
-
+        int total = ln + cn;
+        bool hasNew = total > _lastLogCount;
+        _lastLogCount = total;
+        if (hasNew && _autoScroll) ImGui.SetScrollHereY(1.0f);
         _autoScroll = ImGui.GetScrollY() >= ImGui.GetScrollMaxY() - 4f;
 
         ImGui.EndChild();
-        ImGui.End();
+
+        if (_showChat) DrawChatInputRow();
+    }
+
+    private static void RenderConsoleLine(LogEntry entry)
+    {
+        var c = entry.Color;
+        ImGui.PushStyleColor(ImGuiCol.Text, new Vector4(c.R / 255f, c.G / 255f, c.B / 255f, c.A / 255f));
+        ImGui.TextWrapped(entry.Message);
+        ImGui.PopStyleColor();
+    }
+
+    private void DrawChatInputRow()
+    {
+        bool team = _chatChannel == EChatMessageType.Team;
+        if (team) ImGui.PushStyleColor(ImGuiCol.Button, ImGui.GetStyle().Colors[(int)ImGuiCol.ButtonActive]);
+        if (ImGui.Button((team ? "Team" : "Global") + "##chatchannel", new Vector2(74f, 0f)))
+            _chatChannel = team ? EChatMessageType.Global : EChatMessageType.Team;
+        if (team) ImGui.PopStyleColor();
+        ImGui.SameLine();
+
+        ImGui.SetNextItemWidth(-1f);
+        if (_playerMessageUI != null &&
+            ImGui.InputTextWithHint("##chatinput", "Chat... (Enter to send)", ref _chatInput, 512,
+                ImGuiInputTextFlags.EnterReturnsTrue))
+        {
+            _playerMessageUI.Submit(_chatInput, _chatChannel);
+            _chatInput = "";
+        }
     }
 }

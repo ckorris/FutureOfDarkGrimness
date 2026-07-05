@@ -193,7 +193,7 @@ public class GuiPlaceObjectiveResolver
         // 5-row list. FirstUseEver lets the user drag the window if they want it elsewhere.
         const float PanelDefaultWidth = 360f;
         const float OutstandingTasksClearance = 140f;
-        float defaultX = MathF.Max(8f, (screenW - PanelDefaultWidth) * 0.5f);
+        float defaultX = screenW - PanelDefaultWidth - 12f; // right-aligned in the open right-side space (#105)
         ImGui.SetNextWindowPos(new Vector2(defaultX, OutstandingTasksClearance), ImGuiCond.FirstUseEver);
         ImGui.SetNextWindowSize(new Vector2(PanelDefaultWidth, 0f), ImGuiCond.FirstUseEver);
         ImGui.SetNextWindowBgAlpha(0.92f);

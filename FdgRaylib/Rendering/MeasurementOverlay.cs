@@ -7,9 +7,9 @@ namespace FdgRaylib.Rendering;
 
 /// <summary>
 /// An ad-hoc ruler: hold Ctrl and drag on the table to measure inches between two points, snapping each
-/// end to the nearest model base. Release leaves the ruler on screen (Esc clears it); a fresh Ctrl-drag
-/// replaces it. (Ctrl rather than Alt because most Linux window managers grab Alt+drag to move the
-/// window, so the app never sees the gesture.)
+/// end to the nearest model base. The ruler shows only while Ctrl or the left button is still held --
+/// releasing both makes it vanish. (Ctrl rather than Alt because most Linux window managers grab
+/// Alt+drag to move the window, so the app never sees the gesture.)
 ///
 /// <para><b>Resolver coexistence (Model A).</b> Measuring is a modifier gesture, not a mode, so it shares
 /// no input with resolvers: a plain click still drives whatever resolver is active. The one precedence
@@ -69,36 +69,34 @@ public class MeasurementOverlay
         var io = ImGui.GetIO();
         bool overPanel = io.WantCaptureMouse;          // an ImGui window owns the mouse (measured before our override)
         // Robust modifier read: the legacy io.KeyCtrl isn't populated by every backend, so also check the keys.
-        bool ctrl = io.KeyCtrl || ImGui.IsKeyDown(ImGuiKey.LeftCtrl) || ImGui.IsKeyDown(ImGuiKey.RightCtrl);
+        bool ctrl     = io.KeyCtrl || ImGui.IsKeyDown(ImGuiKey.LeftCtrl) || ImGui.IsKeyDown(ImGuiKey.RightCtrl);
+        bool leftDown = ImGui.IsMouseDown(ImGuiMouseButton.Left);
 
-        // Esc clears a resting ruler (only when one exists and no text field is focused, to avoid stealing Esc).
-        if (_hasRuler && !io.WantCaptureKeyboard && ImGui.IsKeyPressed(ImGuiKey.Escape))
-            Reset();
-
-        if (ctrl && !overPanel)
+        // Begin a measurement on Ctrl+click over the table.
+        if (ctrl && !overPanel && ImGui.IsMouseClicked(ImGuiMouseButton.Left))
         {
-            if (ImGui.IsMouseClicked(ImGuiMouseButton.Left))
-            {
-                _anchor    = Snap(io.MousePos);
-                _cursor    = _anchor;
-                _measuring = true;
-                _hasRuler  = true;
-            }
-            if (_measuring)
-            {
-                _cursor = Snap(io.MousePos);
-                if (ImGui.IsMouseReleased(ImGuiMouseButton.Left))
-                    _measuring = false; // ruler persists
-            }
-
-            // Centralized guard: suppress table clicks this frame so the Ctrl-gesture never doubles as an action.
-            io.WantCaptureMouse = true;
+            _anchor    = Snap(io.MousePos);
+            _cursor    = _anchor;
+            _measuring = true;
+            _hasRuler  = true;
         }
-        else if (_measuring)
+        // Track the moving end while dragging (button held) with Ctrl.
+        else if (_measuring && leftDown && !overPanel)
         {
-            // Alt released mid-drag: stop, but keep the finished ruler visible.
+            _cursor = Snap(io.MousePos);
+        }
+
+        // The ruler lives only while a button is still held; the instant BOTH Ctrl and the left button
+        // are released, it disappears (no lingering / no Esc-to-clear).
+        if (!ctrl && !leftDown)
+        {
             _measuring = false;
+            _hasRuler  = false;
         }
+
+        // Suppress table clicks while the Ctrl gesture is active over the table.
+        if (ctrl && !overPanel)
+            io.WantCaptureMouse = true;
 
         if (_hasRuler)
             DrawRuler();

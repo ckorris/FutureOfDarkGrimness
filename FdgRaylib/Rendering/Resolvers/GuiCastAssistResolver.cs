@@ -99,7 +99,7 @@ public class GuiCastAssistResolver : IStageResolver<CastAssistRequest, int>, IGu
 
         float dw = MathF.Min(screenW * 0.55f, 540f);
         float dh = pad + headerH + buttonCount * (rowH + gap) + pad;
-        float dx = (screenW - dw) * 0.5f;
+        float dx = screenW - dw - 12f;   // right-aligned in the open right-side space (#105)
         float dy = 60f;
 
         ImGui.SetNextWindowPos(Vector2.Zero, ImGuiCond.Always);

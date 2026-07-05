@@ -63,7 +63,7 @@ public class GuiSelectionResolver<T> : IStageResolver<SelectionRequest<T>, DataB
 
         float dw = MathF.Min(screenW * 0.45f, 560f);
         float dh = MathF.Min(instrH + pad + validH + invalidCount * rowH + backH + pad * 2, screenH * 0.80f);
-        float dx = (screenW - dw) * 0.5f;
+        float dx = screenW - dw - 12f;   // right-aligned in the open right-side space (#105)
         float dy = (screenH - dh) * 0.5f;
 
         ImGui.SetCursorPos(new Vector2(dx, dy));

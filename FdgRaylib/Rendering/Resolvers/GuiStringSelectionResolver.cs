@@ -76,7 +76,7 @@ public class GuiStringSelectionResolver : IStageResolver<StringSelectionRequest,
 
         float contentH = pad + instrH + 4f + validHeight + invalidCount * invalidRowH + pad;
         float dh = MathF.Min(contentH, screenH * 0.85f);
-        float dx = (screenW - dw) * 0.5f;
+        float dx = screenW - dw - 12f;   // right-aligned in the open right-side space (#105)
         float dy = (screenH - dh) * 0.5f;
 
         ImGui.SetCursorPos(new Vector2(dx, dy));

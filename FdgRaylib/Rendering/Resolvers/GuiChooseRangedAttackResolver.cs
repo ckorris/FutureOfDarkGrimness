@@ -127,7 +127,7 @@ public class GuiChooseRangedAttackResolver
 
         float dw = MathF.Min(screenW * 0.75f, 920f);
         float dh = MathF.Min(screenH * 0.60f, 440f);
-        ImGui.SetNextWindowPos(new Vector2((screenW - dw) * 0.5f, (screenH - dh) * 0.5f), ImGuiCond.FirstUseEver);
+        ImGui.SetNextWindowPos(new Vector2(screenW - dw - 12f, (screenH - dh) * 0.5f), ImGuiCond.FirstUseEver); // right-aligned (#105)
         ImGui.SetNextWindowSize(new Vector2(dw, dh), ImGuiCond.Always);
         ImGui.PushStyleColor(ImGuiCol.WindowBg, new Vector4(0.13f, 0.13f, 0.18f, 0.97f));
         ImGui.PushStyleVar(ImGuiStyleVar.WindowRounding, 6f);

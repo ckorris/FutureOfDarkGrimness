@@ -720,7 +720,7 @@ public class GuiDefineMovementResolver
         int dangerousCrossers, bool difficultCrossing, bool difficultStopped, bool selectedCapped)
     {
         float panelW = MathF.Min(screenW * 0.6f, 680f);
-        ImGui.SetNextWindowPos(new Vector2((screenW - panelW) * 0.5f, 16f), ImGuiCond.FirstUseEver);
+        ImGui.SetNextWindowPos(new Vector2(screenW - panelW - 12f, 16f), ImGuiCond.FirstUseEver); // right-aligned (#105)
         ImGui.SetNextWindowSizeConstraints(new Vector2(panelW, 0f), new Vector2(panelW, float.MaxValue));
         ImGui.PushStyleColor(ImGuiCol.WindowBg, new Vector4(0.10f, 0.10f, 0.15f, 0.92f));
         ImGui.Begin("##MovementPanel",

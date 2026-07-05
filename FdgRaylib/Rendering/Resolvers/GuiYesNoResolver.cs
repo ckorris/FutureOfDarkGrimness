@@ -41,7 +41,7 @@ public class GuiYesNoResolver : IStageResolver<YesNoRequest, bool>, IGuiResolver
 
         float dw = MathF.Min(screenW * 0.40f, 520f);
         float dh = screenH * 0.22f;
-        float dx = (screenW - dw) * 0.5f;
+        float dx = screenW - dw - 12f;                 // right-aligned in the open right-side space (#105)
         float dy = (screenH - dh) * 0.5f;
 
         ImGui.SetCursorPos(new Vector2(dx, dy));
