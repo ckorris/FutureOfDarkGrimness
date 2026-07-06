@@ -35,6 +35,11 @@ public class TacticalOverlayController
     private ThreatFrontierCache? _threat;
     private System.Action<string>? _warn;
 
+    private readonly FidelitySampler _sampler = new();
+    // The inflated enemy discs from the last threat rebuild, so the sampler's rules-truth predicate can
+    // check point-in-reach without re-deriving reach.
+    private List<ThreatDisc> _lastThreatDiscs = new();
+
     // World<->screen for the current frame, pushed once per frame right after ComputeLayout so both
     // the Raylib-pass draws and the ImGui-pass instruments read the same values (spec: no camera --
     // pan/zoom is just a different Layout, never a rebuild).
@@ -148,6 +153,12 @@ public class TacticalOverlayController
         ImGuiIOPtr io = ImGui.GetIO();
         if (!io.WantCaptureKeyboard && ImGui.IsKeyPressed(TacticalOverlayConfig.ThreatToggleKey))
             _threatToggledOn = !_threatToggledOn;
+
+        if (!io.WantCaptureKeyboard && ImGui.IsKeyPressed(TacticalOverlayConfig.FidelitySamplerKey))
+        {
+            _sampler.Enabled = !_sampler.Enabled;
+            _warn?.Invoke($"[overlay] fidelity sampler {(_sampler.Enabled ? "ON" : "OFF")}");
+        }
     }
 
     /// <summary>
@@ -159,6 +170,85 @@ public class TacticalOverlayController
     {
         if (_tableState == null) return;
         // Pips / readouts / measurement land in P5.
+
+        if (_sampler.Enabled)
+            RunAndDrawFidelitySampler(screenW, screenH);
+    }
+
+    // ---- Fidelity sampler (spec section 6) -------------------------------------------------------
+
+    private void RunAndDrawFidelitySampler(int screenW, int screenH)
+    {
+        if (_threat == null || _probe == null) return;
+
+        // Ensure the masks reflect current state even when the frontier isn't being shown, so the sampler
+        // works as a standalone debug check. Idempotent when the signature is unchanged.
+        RebuildThreatIfNeeded();
+        List<ThreatDisc> discs = _lastThreatDiscs;
+
+        var channels = new List<FidelitySampler.Channel>
+        {
+            new("threat-charge",
+                (x, z) => _threat.SampleChargeInside(x, z),
+                (x, z) => AnyThreatDisc(discs, x, z, charge: true)),
+            new("threat-shoot",
+                (x, z) => _threat.SampleShootInside(x, z),
+                (x, z) => AnyThreatDisc(discs, x, z, charge: false)),
+        };
+
+        FidelitySampler.Report report = _sampler.Run(
+            GameWideConstants.DEFAULT_TABLE_WIDTH_INCHES,
+            GameWideConstants.DEFAULT_TABLE_HEIGHT_INCHES,
+            2f, channels);
+
+        DrawSamplerMarkers(report);
+        DrawSamplerSummary(report, channels.Count, screenW);
+    }
+
+    private static bool AnyThreatDisc(List<ThreatDisc> discs, float x, float z, bool charge)
+    {
+        foreach (ThreatDisc d in discs)
+        {
+            float r = charge ? d.ChargeRadius : d.ShootRadius;
+            if (r <= 0f) continue;
+            float dx = x - d.X, dz = z - d.Z;
+            if (dx * dx + dz * dz <= r * r) return true;
+        }
+        return false;
+    }
+
+    private void DrawSamplerMarkers(FidelitySampler.Report report)
+    {
+        ImDrawListPtr dl = ImGui.GetBackgroundDrawList();
+        uint col = ImGui.ColorConvertFloat4ToU32(new Vector4(1f, 0f, 1f, 0.95f)); // magenta X
+        const float rad = 4f;
+        foreach (FidelitySampler.Mismatch mm in report.Points)
+        {
+            Vector2 c = WorldToScreen(new Float2(mm.X, mm.Z));
+            dl.AddLine(c + new Vector2(-rad, -rad), c + new Vector2(rad, rad), col, 1.5f);
+            dl.AddLine(c + new Vector2(-rad, rad), c + new Vector2(rad, -rad), col, 1.5f);
+        }
+    }
+
+    private void DrawSamplerSummary(FidelitySampler.Report report, int channelCount, int screenW)
+    {
+        ImGui.SetNextWindowPos(new Vector2(screenW - 260f, 8f), ImGuiCond.Always);
+        ImGui.SetNextWindowBgAlpha(0.80f);
+        ImGui.Begin("##fidelity",
+            ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoTitleBar |
+            ImGuiWindowFlags.AlwaysAutoResize | ImGuiWindowFlags.NoFocusOnAppearing | ImGuiWindowFlags.NoNav);
+
+        ImGui.TextUnformatted($"Fidelity sampler (F10)   {report.SampleCount} pts @ 2\"");
+        ImGui.Separator();
+        foreach ((string name, int mismatches) in report.PerChannel)
+        {
+            float pct = report.SampleCount > 0 ? 100f * mismatches / report.SampleCount : 0f;
+            ImGui.TextUnformatted($"{name,-14} {mismatches,4}  ({pct:0.0}%)");
+        }
+        ImGui.Separator();
+        ImGui.TextUnformatted($"overall mismatch: {report.MismatchPercent(channelCount):0.0}%");
+        ImGui.TextDisabled("edge-texel noise is expected");
+        ImGui.End();
     }
 
     // ---- Threat rebuild --------------------------------------------------------------------------
@@ -190,6 +280,7 @@ public class TacticalOverlayController
                 discs.Add(new ThreatDisc(p.x, p.z, chargeR, shootR));
             }
         }
+        _lastThreatDiscs = discs;
 
         var sw = System.Diagnostics.Stopwatch.StartNew();
         // Simplify a hair under a texel so contours stay smooth but vertex counts stay sane for dashing.

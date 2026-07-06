@@ -34,6 +34,19 @@ internal sealed class FieldMask
     public float CellCenterZ(int cy) => (cy + 0.5f) / Tpi;
 
     /// <summary>
+    /// The cell value at a world point (inches), or 0 off-grid. This is what the fidelity sampler reads
+    /// as "the field's claim" -- the ONE place a texel-equivalent is sampled, and only to check it against
+    /// the rules, never to make a player-facing determination (spec section 0 / 6).
+    /// </summary>
+    public byte SampleAt(float xIn, float zIn)
+    {
+        int cx = (int)(xIn * Tpi);
+        int cy = (int)(zIn * Tpi);
+        if (cx < 0 || cx >= W || cy < 0 || cy >= H) return 0;
+        return Cells[cy * W + cx];
+    }
+
+    /// <summary>
     /// Max-blends a filled disc of world radius <paramref name="rIn"/> centred at (<paramref name="cxIn"/>,
     /// <paramref name="czIn"/>) inches into the grid: every cell whose centre falls inside the disc takes
     /// <paramref name="value"/> if it is greater than what's already there. Union of discs = repeated calls

@@ -96,6 +96,45 @@ public class TacticalOverlayGeometryTests
     }
 
     [Test]
+    public void FidelitySampler_CountsMismatchesBetweenClaimAndTruth()
+    {
+        var sampler = new FidelitySampler();
+        // Claim: always inside. Truth: inside a 4" disc at (10,10). Mismatches = samples OUTSIDE the disc.
+        var channels = new List<FidelitySampler.Channel>
+        {
+            new("t", (x, z) => true,
+                     (x, z) => (x - 10f) * (x - 10f) + (z - 10f) * (z - 10f) <= 16f),
+        };
+        FidelitySampler.Report report = sampler.Run(20f, 20f, 1f, channels);
+
+        Assert.That(report.SampleCount, Is.EqualTo(20 * 20), "20x20 area at 1\" spacing");
+        // Disc area ~= pi*16 ~= 50 sq in of 400 -> most samples are outside -> most mismatch.
+        Assert.That(report.PerChannel[0].mismatches, Is.GreaterThan(300));
+        Assert.That(report.MismatchPercent(1), Is.GreaterThan(75f));
+    }
+
+    [Test]
+    public void FidelitySampler_ThreatMaskMatchesDiscTruth_EdgeNoiseOnly()
+    {
+        // The sampler's real job: catch the rasterized mask disagreeing with the rules-truth geometry.
+        // A correctly built mask should match a point-in-disc truth except within an edge texel or two.
+        var cache = new ThreatFrontierCache(200, 200, Tpi);
+        cache.Rebuild(new List<ThreatDisc> { new ThreatDisc(10f, 10f, 4f, 0f) }, simplifyEpsilonInches: 0f);
+
+        var sampler = new FidelitySampler();
+        var channels = new List<FidelitySampler.Channel>
+        {
+            new("charge",
+                (x, z) => cache.SampleChargeInside(x, z),
+                (x, z) => (x - 10f) * (x - 10f) + (z - 10f) * (z - 10f) <= 16f),
+        };
+        FidelitySampler.Report report = sampler.Run(20f, 20f, 0.5f, channels);
+
+        Assert.That(report.MismatchPercent(1), Is.LessThan(3f),
+            "mask should track the disc truth to within edge texels");
+    }
+
+    [Test]
     public void MarchingSquares_Simplify_ReducesVertexCountButKeepsRadius()
     {
         var mask = NewMask();

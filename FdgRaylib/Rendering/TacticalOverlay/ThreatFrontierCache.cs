@@ -51,4 +51,8 @@ internal sealed class ThreatFrontierCache
         ChargePolylines = new List<List<Float2>>();
         ShootPolylines  = new List<List<Float2>>();
     }
+
+    // Fidelity-sampler read hooks: the field's claim of "inside charge/shoot reach" at a world point.
+    public bool SampleChargeInside(float xIn, float zIn) => _chargeMask.SampleAt(xIn, zIn) > 0;
+    public bool SampleShootInside(float xIn, float zIn)  => _shootMask.SampleAt(xIn, zIn) > 0;
 }
