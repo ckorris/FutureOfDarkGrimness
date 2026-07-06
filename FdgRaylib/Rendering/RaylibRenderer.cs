@@ -79,6 +79,7 @@ public class RaylibRenderer
     private readonly TableTooltipOverlay _tooltipOverlay = new();
     private readonly TableHitTester      _hitTester      = new();
     private readonly MeasurementOverlay  _measurementOverlay = new();
+    private readonly TacticalOverlay.TacticalOverlayController _tacticalOverlay = new();
     private bool _inGame = false;
     private bool _closeRequested = false;
     private bool _resolverOverlayFaulted = false;
@@ -131,6 +132,8 @@ public class RaylibRenderer
         _playerMessageUI    = playerMessageUI;
         _tooltipOverlay.Attach(tableState, colorForPlayer, saveGameToJson);
         _measurementOverlay.Attach(tableState);
+        _tacticalOverlay.Attach(tableState);
+        _tacticalOverlay.AttachMovementResolver(resolverOverlay?.MovementResolver);
 
         // Play a sound cue the moment each beat becomes active, in lockstep with its visual. Audio is
         // GUI-only and may be unavailable (then AudioManager no-ops), so this is best-effort.
@@ -209,6 +212,7 @@ public class RaylibRenderer
         }
 
         _measurementOverlay.Reset();
+        _tacticalOverlay.Detach();
         _placedModels.Clear();
         lock (_terrainLock)    _terrain.Clear();
         lock (_objectivesLock) _objectives.Clear();
@@ -329,10 +333,15 @@ public class RaylibRenderer
                 _presentationPlayer?.Update(Raylib.GetFrameTime());
 
                 var layout = ComputeLayout(screenW, screenH);
+                // Push the layout to the tactical overlay once per frame so both its canvas-pass draws
+                // (below) and its ImGui-pass instruments read the same world<->screen mapping.
+                _tacticalOverlay.UpdateLayout(layout.Scale, layout.OriginX, layout.OriginY, TableHIn);
                 DrawTable(layout);
                 if (ShowGrid)
                     DrawTableGrid(layout);   // etched grid + felt vignette, under terrain/objectives/models
+                _tacticalOverlay.DrawField();    // opportunity field: under terrain (spec draw order)
                 DrawTerrain(layout);
+                _tacticalOverlay.DrawContours(); // threat + secondary contours: above terrain, under objectives
                 DrawObjectives(layout);
                 DrawAmbushExclusion(layout, screenW, screenH);
                 DrawActiveUnitSpotlight(layout);
@@ -377,11 +386,17 @@ public class RaylibRenderer
                 _measurementOverlay.UpdateLayout(layout.Scale, layout.OriginX, layout.OriginY, TableHIn);
                 _measurementOverlay.Draw(screenW, screenH);
                 _hitTester.Update(_tableState!, layout.Scale, layout.OriginX, layout.OriginY, TableHIn);
+                // Overlay input (F toggle, hover timing, pins) runs after the hit tester so hover state
+                // is fresh; heavy rebuilds happen in the next frame's DrawField.
+                _tacticalOverlay.UpdateInput(Raylib.GetFrameTime(), _hitTester);
                 DrawBottomConsole(layout);
                 // Outstanding Tasks window hidden per user request; re-enable by restoring this draw call.
                 // _taskDisplay?.Draw(screenW, screenH);
                 _tooltipOverlay.UpdateLayout(layout.Scale, layout.OriginX, layout.OriginY, TableHIn);
                 _tooltipOverlay.Draw(screenW, screenH, _hitTester, _resolverOverlay?.ActiveInteractionHandler);
+                // Instruments sit on the background draw list, above tokens and under ImGui windows --
+                // same layer as the existing ghosts/fire lines they annotate.
+                _tacticalOverlay.DrawInstruments(screenW, screenH);
                 _resolverOverlay?.UpdateLayout(layout.Scale, layout.OriginX, layout.OriginY, TableHIn);
                 // Hold interactive prompts until the animation queue drains, so the player always
                 // sees movement / shots land before being asked to react.

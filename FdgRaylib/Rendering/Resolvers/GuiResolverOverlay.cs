@@ -10,6 +10,21 @@ public class GuiResolverOverlay
 
     public void Register(IGuiResolver resolver) => _resolvers.Add(resolver);
 
+    /// <summary>
+    /// The movement resolver in this overlay, if one is registered (always, in a GUI build). The
+    /// tactical overlay pulls the active move job off it and routes enemy pin-clicks back to it, so
+    /// the renderer wires the two together once at game start.
+    /// </summary>
+    public GuiDefineMovementResolver? MovementResolver
+    {
+        get
+        {
+            foreach (IGuiResolver r in _resolvers)
+                if (r is GuiDefineMovementResolver m) return m;
+            return null;
+        }
+    }
+
     public void UpdateLayout(float scale, int originX, int originY, float tableH)
     {
         foreach (IGuiResolver r in _resolvers)
