@@ -1,6 +1,6 @@
 # 105 — Improve in-game chat + relocate the log panel
 
-**Status**: todo
+**Status**: done
 **Related**: follows #077 (minimal in-game chat shipped on `082-default-answer`); touches the renderer layout (#056 presentation work is adjacent)
 
 ## Goal
@@ -20,6 +20,17 @@
 - The log is a fixed full-height `LogPanelWidth` strip on the right (`RaylibRenderer.DrawLogPanel` + `ComputeLayout` reserving `logW`), and chat is a separate bottom bar. Reconsider holistically: e.g. a collapsible/resizable dock, a tabbed bottom panel combining Log + Chat, or moving the log so it stops permanently eating horizontal table space. Surface 2–3 layout options with mockups and get sign-off before building (per the "surface design forks" convention).
 
 ## Decisions
+
+- **2026-07-05 — Host self-echo de-dup: fix at the source (per-client send), not the display.** Root cause
+  was broader than "self-echo": `NetworkPlayerController.SendPlayerMessage`/`SendLogMessage` broadcast with
+  `SendCommandToAllAsync`, which also dispatches in-process on the host -- so the host displayed *every*
+  line twice (its own `LocalPlayerController` direct display + the loopback), and N network clients sent
+  each line N times. A controller represents ONE client and already holds its `ConnectionID` (as
+  `NetworkedPresentationSink` does), so both methods now use `SendCommandToSingleAsync(msg, ConnectionID)`.
+  Chose fixing the send over filtering at the endpoint because the endpoint can't tell a loopback from a
+  real remote message, and the host's `LocalPlayerController` is the canonical local display. Verified by
+  a new `InGameChatTests` case (send targets the connection, not a broadcast); can't hand-test networked
+  play here. Also fixed the identical latent bug for log messages (same root cause).
 
 - **2026-07-05 — Layout: bottom console.** Chose a collapsible, tabbed (Log | Chat) dock across the
   bottom over the two right-side options (tabbed / split right dock). Rationale: the user wants a
@@ -50,3 +61,18 @@
 - **2026-07-05** — Picked up on branch `105-chat-and-log-layout`. Layout chosen (bottom console; see
   Decisions).
 - **2026-06-25** — Opened. Current state to build on: `FdgRaylib/Rendering/GuiPlayerMessageUI.cs` (chat sink → `GameLog`), `RaylibRenderer.DrawChatInput` (bottom input bar) + `DrawLogPanel`/`ComputeLayout` (right-side log), and the engine relay (`LogAndChatMessageRelayer` / `LogChatMessageEndpoint` / `NetworkPlayerController`) already supports Global+Team. App-side work, except possibly small relay tweaks for the self-echo de-dup.
+
+## Outcome
+
+**Done 2026-07-05.** Chat is now a first-class feature and the log/chat layout is intentional. Shipped:
+a full-width table with a **collapsible bottom console** (`RaylibRenderer.DrawBottomConsole`) whose **Log**
+and **Chat** are independent toggles (Chat on the left) that merge into one arrival-ordered column when both
+are on (shared `LogEntry.Sequence`); chat split into its own store (`GuiPlayerMessageUI.ChatLog`) with
+**sender-palette colours** (name-keyed from the roster) and an unread marker; a **Global/Team channel
+toggle**. The **host self-echo de-dup** was fixed at the source (engine): `NetworkPlayerController` now sends
+per-client via `SendCommandToSingleAsync(ConnectionID)` instead of broadcasting (which had also looped back
+in-process on the host, double-displaying every line and multi-sending with several clients) — same fix
+applied to log messages. Verified: engine 1138/0, app 83/0, full build + headless smoke clean. Deferred as
+optional nice-to-haves (not part of the "done" bar): displayed timestamps and a new-line fade-in. Known
+minor: sender colour is name-keyed, so identical display names would share a colour (PlayerID pass-through
+is the robust upgrade if it ever matters).
