@@ -1,0 +1,18 @@
+# 162 — Tactical overlay (range / threat / eligibility visualization)
+
+**Status**: in-progress
+**Related**: #041, #045, #055 (targeting overlay lineage); design doc `docs/tactical-overlay-plan.md`
+
+## Goal
+A tactical overlay system for movement/target planning: opportunity fields (filled banded regions where a friendly model could stand and shoot a pinned enemy, LoS-shadowed + cover-hatched), threat frontiers (contour lines of what unactivated enemies can reach this round), and per-model instruments (eligibility pips, live distance readout, snap-to-range, live summary counts). Built from the feature spec + `docs/tactical-overlay-plan.md`. Done when the plan's acceptance scenarios (spec section 8) demonstrate in a GUI session and the fidelity sampler reports low, edge-localized mismatch. **Invariant (spec section 0): instruments call the real rules functions, never the field texture.** App-side only; no engine changes planned.
+
+## Notes
+- 2026-07-06: Planning session produced `docs/tactical-overlay-plan.md` (grounded via 4-way codebase recon). Build order P0-P7; conflicts C1-C8 + approximations A1-A3 resolved in the plan.
+- 2026-07-06: **P0 (scaffolding) done.** New module `FdgRaylib/Rendering/TacticalOverlay/` (`TacticalOverlayConfig`, `TacticalOverlayController` skeleton). Controller is a renderer-owned field, Attach/Detach in TransitionToGame/ExitGame, draw slots wired at spec draw-order positions (field under terrain, contours above terrain, instruments on the ImGui background list). `GuiResolverOverlay.MovementResolver` accessor added so the controller and move resolver can be wired together. Build clean, headless smoke exit 0, zero behavior change.
+
+## Decisions
+- **Reference player derived from live state, not plumbed.** "Enemy" = not on the reference player's team; reference player = active move request's `TargetPlayerID`, else `Progress.ActivatingUnit?.PlayerID`. Avoids threading a local-player id through OnGameLaunched/TransitionToGame and works for hotseat + network identically.
+- **Two-pass draw split forced by the Raylib/ImGui layering** (plan C5): field texture + contour polylines draw in the Raylib canvas pass (so they can sit under terrain / under tokens); pips/labels/readouts stay on the ImGui background draw list (above tokens, under windows). One `UpdateLayout` per frame right after ComputeLayout feeds both passes.
+
+## Outcome
+(pending)
