@@ -2,7 +2,7 @@
 
 > _Renumbered from #089 on 2026-06-14 — collided with origin/master's established #089 (AI charge-to-contact). Per the never-reuse rule the morale item yields the number. The branch name `089-morale-core` and the slice commit messages predate the renumber and keep #089._
 
-**Status**: complete (merged to master)
+**Status**: DONE 2026-07-05 — verified in live play (covers #091 core + #008 Shaken-activation + #009 wound-driven trigger). User accepted live-run + test proof in lieu of the GUI banner eyeball. Merged to master.
 **Related**: underpins #006 (hero takes morale for unit), #008 (Shaken activation behavior), #009 (end-of-activation / ranged half-strength trigger), #020 (fatigue), #021 (morale modifiers + Fear/Fearless). Built on #042 token + hook architecture. Commits (branch `089-morale-core`, both repos): slice 1 engine `c99e20f` / bump `37efde9`; slice 2 engine `797cf9c`+`32d70d2` / bumps `cb21e86`+`269d7b1`; slice 3 engine `ff59994`+`ff28ccb` / bumps `0ef443b`+`335f9af`.
 
 ## Goal
@@ -39,4 +39,8 @@ Shared infra to reuse: `MoraleUtilities` (`TakeMoraleTest`, `Rout`, `ApplyShaken
 **#020 fatigue** (next): rule = a unit that charges or strikes back in melee becomes fatigued, and fatigued units hit only on **unmodified 6s** in melee for the rest of the round; **Shaken units always count as fatigued in melee**. Building blocks already present: `TokenType.Fatigued` constant; `TokenClearTrigger.RoundEnd` (auto-cleared by `ReconcileObjectivesStage.ClearForHook(Round_OnRoundEnd)` — verify that hook is what fires at round end); `ApplyFatigueStage` is a no-op stub that runs in the melee tree after *every* melee (win or lose) — the index notes it "may be deletable." Likely work: apply Fatigued in the melee path (charge/strike-back), and modify the **melee** hit-roll threshold to 6 when the attacker is Fatigued or Shaken (melee hit happens via the shared hit-roll stages reading `CombatMetadata._isMelee`). Create `WorkItems/020-fatigue.md` when starting.
 
 ## Outcome
-_(open)_
+2026-07-05: **Verified in live play and ticked to Done** (#091 + #008 + #009, which all live in this file). With the user's sign-off we accepted live-run + test proof in lieu of the ImGui banner/animation eyeball. Method: a hand-authored fixture `VerifyMorale-091-092.fdgarmy` (repo root; a Fear(2) unit, a Fearless unit, and a fragile unit) run on both sides across **11 headless games** (all exit 0, no exceptions), plus the 51-test morale-cluster suite green on this branch.
+- **#091 Shaken/Rout** — both outcome branches fired live across multiple units: 13x `failed its morale test and is now Shaken` and 8x `failed its morale test at half strength and is Routed`.
+- **#008 Shaken activation** — `<unit> is Shaken - staying idle this activation and recovering.` observed for Dreadguard/Zealots/Militia (units Shaken at activation-start force-idle then clear the token).
+- **#009 wound-driven** — `Resolving ranged morale.` runs live each shooting activation; the wound-driven Shaken outcome itself emits only a `BannerBeat` (no text log), so it leans on `ResolveRangedMoraleStageTests` + `DangerousTerrainMoraleTests` (green) for the outcome.
+- **Un-eyeballed (presentation only, headless can't render):** the amber Shaken / red Rout `BannerBeat` on-screen, and the `UnitRoutedBeat` mass-death animation.

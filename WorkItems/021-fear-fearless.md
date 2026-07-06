@@ -1,6 +1,6 @@
 # 021 — Fear & Fearless (morale-impacting special rules)
 
-**Status**: complete (on branch, unmerged)
+**Status**: DONE 2026-07-05 — merged to master + verified in live play. Across 11 headless games (fixture `VerifyMorale-091-092.fdgarmy`) both rules fired live: `Dreadguard counts as +2 wounds in melee (Fear)` folding the who-won-melee check, and `Zealots's Fearless triggered a Morale re-roll` -> `passed the Fearless re-roll (4+)` (plus the fail-through case -> Shaken); `FearRuleIntegrationTests` + `FearlessRuleIntegrationTests` green.
 **Related**: continuation of the morale work. Depends on #092 (decisive rolls, formerly #090 — a correct morale roll for Fearless to ride on). Built on #042 rule-dispatch architecture. On branch `021-morale-rules` (both repos).
 
 ## Goal

@@ -1,6 +1,6 @@
 # 020 — Fatigue (melee: hit on unmodified 6s after charging / striking back)
 
-**Status**: in-progress
+**Status**: DONE 2026-07-05 — merged to master + verified in live play. Across 11 headless games (fixture `VerifyMorale-091-092.fdgarmy`) the apply + effect both fired live: `X is Fatigued`, `X struck back and is Fatigued`, and `X is fatigued - hits only on unmodified 6s in melee`; `FatigueTests` green. Only un-eyeballed bit: the Fatigued token chip render.
 **Related**: continuation of the morale epic on branch `089-morale-core` (both repos). Builds on #091 (Shaken token, formerly #089) — Shaken units always count as fatigued in melee. Built on #042 token + clear-trigger architecture.
 
 ## Goal

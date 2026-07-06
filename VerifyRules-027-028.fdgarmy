@@ -1,0 +1,68 @@
+{
+  "name": "Rules Verify (027/028)",
+  "faction": "Test",
+  "pointsLimit": 500,
+  "units": [
+    {
+      "name": "Blasters",
+      "modelCount": 3,
+      "quality": 4,
+      "defense": 4,
+      "pointCost": 150,
+      "specialRules": [],
+      "weapons": [
+        {
+          "name": "Heavy Rifle",
+          "rangeInches": 48,
+          "attacks": 1,
+          "specialRules": [
+            { "kind": "core", "name": "Surge" },
+            { "kind": "coreNumeric", "name": "Blast", "numericValue": 3 }
+          ]
+        },
+        {
+          "name": "Death Ray",
+          "rangeInches": 48,
+          "attacks": 1,
+          "specialRules": [
+            { "kind": "coreNumeric", "name": "Deadly", "numericValue": 3 }
+          ]
+        },
+        {
+          "name": "Blade",
+          "rangeInches": 0,
+          "attacks": 2,
+          "specialRules": [
+            { "kind": "core", "name": "Counter" }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Snipers",
+      "modelCount": 2,
+      "quality": 4,
+      "defense": 4,
+      "pointCost": 100,
+      "specialRules": [],
+      "weapons": [
+        {
+          "name": "Sniper Rifle",
+          "rangeInches": 48,
+          "attacks": 1,
+          "specialRules": [
+            { "kind": "core", "name": "Takedown" }
+          ]
+        },
+        {
+          "name": "Blade",
+          "rangeInches": 0,
+          "attacks": 2,
+          "specialRules": [
+            { "kind": "core", "name": "Counter" }
+          ]
+        }
+      ]
+    }
+  ]
+}

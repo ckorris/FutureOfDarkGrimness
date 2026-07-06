@@ -1,0 +1,47 @@
+{
+  "name": "Morale Verify (091-092)",
+  "faction": "Test",
+  "pointsLimit": 500,
+  "units": [
+    {
+      "name": "Dreadguard",
+      "modelCount": 4,
+      "quality": 4,
+      "defense": 4,
+      "pointCost": 140,
+      "specialRules": [
+        { "kind": "coreNumeric", "name": "Fear", "numericValue": 2 }
+      ],
+      "weapons": [
+        { "name": "Rifle", "rangeInches": 24, "attacks": 2 },
+        { "name": "Blade", "rangeInches": 0, "attacks": 2 }
+      ]
+    },
+    {
+      "name": "Zealots",
+      "modelCount": 4,
+      "quality": 5,
+      "defense": 4,
+      "pointCost": 120,
+      "specialRules": [
+        { "kind": "core", "name": "Fearless" }
+      ],
+      "weapons": [
+        { "name": "Rifle", "rangeInches": 24, "attacks": 2 },
+        { "name": "Blade", "rangeInches": 0, "attacks": 2 }
+      ]
+    },
+    {
+      "name": "Militia",
+      "modelCount": 4,
+      "quality": 5,
+      "defense": 5,
+      "pointCost": 90,
+      "specialRules": [],
+      "weapons": [
+        { "name": "Rifle", "rangeInches": 24, "attacks": 1 },
+        { "name": "Blade", "rangeInches": 0, "attacks": 1 }
+      ]
+    }
+  ]
+}

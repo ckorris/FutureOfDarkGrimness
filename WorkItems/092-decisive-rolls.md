@@ -2,7 +2,7 @@
 
 > _Renumbered from #090 on 2026-06-14 — collided with origin/master's established #090 (enemy-check consolidation/executor). Per the never-reuse rule the decisive-rolls item yields the number; the slice commit messages predate the renumber and keep #090._
 
-**Status**: complete (merged to master)
+**Status**: DONE 2026-07-05 — merged to master + verified in live play (by proxy; no independent GUI surface). Across 11 headless games under the default Realistic roller the morale cluster produced real varied pass/fail (`Morale test failed/passed (needed 5)`, Fearless rerolls) rather than the universal auto-fail this fix cures; `DecisiveRollTests` green.
 **Related**: prerequisite for #021 (morale modifiers + Fear/Fearless). Corrects existing #091 morale behavior under the probabilistic roller. On branch `021-morale-rules` (both repos).
 
 ## Goal
