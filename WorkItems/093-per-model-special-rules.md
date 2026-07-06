@@ -1,6 +1,6 @@
 # 093 — Per-model special rules: the general reckoning
 
-**Status**: in progress
+**Status**: DONE 2026-07-05 — confirmed merged + green during the ledger audit. All agreed slices were merged to master (both repos) on 2026-07-02 via reconciliation 7; this status line just never flipped. Verified: engine suite 1138/0, `PerModelTest.fdgarmy` headless exit 0 with joined-hero Vanguard firing live. Long-tail corners durably deferred (see below).
 **Related**: #006 (Hero — forced the issue and bakes in the first per-model exceptions), #042 (rule framework — unit/weapon scope), #027 (weapon scope), #023 (Tough wound-priority), #031/#032 (rule implementations)
 
 ## Goal

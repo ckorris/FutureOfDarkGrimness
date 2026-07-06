@@ -4,7 +4,7 @@
 > reconciliation note in `WorkItemsList.md`). The `052-presentation-beat-stream` branch
 > name and `#052` strings in older commits/notes predate the renumber.
 
-**Status**: in-progress
+**Status**: ARCHITECTURE SHIPPED + MERGED (status corrected 2026-07-05, ledger audit — was understated "in-progress"). The beat-stream architecture is live on master (branch `052-presentation-beat-stream` merged): `IPresentationBeat`/`PresentationPlayer`/`context.Present(beat)`/`BannerBeat` across ~28 files, already driving morale banners, transport spillout, etc.; suite 1138/0. Remaining before Done: specific animation polish (gliding movement, tumbling dice) + a hands-on pass.
 **Related**: engine submodule branch `052-presentation-beat-stream`
 
 ## Goal

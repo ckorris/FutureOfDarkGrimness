@@ -1,6 +1,6 @@
 # 059 — JSON rule-definition loader
 
-**Status**: in-progress (serialization foundation landed on master; loader consumption side underway on branch `059-json-rule-loader`)
+**Status**: DONE 2026-07-05 — confirmed complete + merged during the ledger audit. Workstreams 1-6 all shipped on master (branch `059-json-rule-loader` merged 2026-06-13); symbols live (`RuleValidator`/`ArmyListRuleResolution`), suite 1138/0. The one deferred piece (custom-rule authoring + standalone rules files, workstream 8) is separately tracked as the open #087.
 **Related**: #042 (this is the "JSON loader" sub-stream of the special-rules architecture, now broken out), #026 (army-load rule resolution), #027 (weapon-scope), #058 (the eventual all-STJ migration)
 
 ## Goal

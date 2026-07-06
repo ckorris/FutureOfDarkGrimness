@@ -1,6 +1,6 @@
 # 052 — Save / Load a game in progress
 
-**Status**: todo
+**Status**: BUILT + MERGED (status corrected 2026-07-05, ledger audit — was stale "todo"). Core is live on master: `GameProgressData` + `GameSaveSerializer` + 8 passing `GameSaveLoadTests` + lobby re-crew-of-saved-slots + `FDGServer` resume path; engine suite 1138/0. NOT unstarted. Remaining before Done: a real save->resume hands-on verify in the running app (shares the hold with #095).
 **Related**: subsumes #039 (`GameDataStore.CreateFromTypeMap`); touches #036 (server readiness handshake) for client resume
 
 ## Goal
