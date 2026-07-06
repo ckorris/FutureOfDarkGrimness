@@ -40,6 +40,31 @@ public class TacticalOverlayController
     // check point-in-reach without re-deriving reach.
     private List<ThreatDisc> _lastThreatDiscs = new();
 
+    // ---- Opportunity field / pins (P3) -----------------------------------------------------------
+    private FieldMask? _bandMask;
+    private FieldCompositor? _field;
+
+    private sealed class PinnedTarget
+    {
+        public readonly IUnit Unit;
+        public readonly int Accent;   // index into AccentPalette
+        public PinnedTarget(IUnit unit, int accent) { Unit = unit; Accent = accent; }
+    }
+
+    private readonly List<PinnedTarget> _pins = new();
+    private int _focusIndex = -1;                 // index into _pins; -1 when none
+    private DefineMovementPathRequest? _lastSeenRequest; // pins are scoped to one move job
+
+    // Hover preview: an enemy hovered ~150ms with no pins shows a transient dimmed field.
+    private IUnit? _hoverCandidate;
+    private double _hoverElapsed;
+
+    private long _lastFieldSig;
+    private bool _fieldBuiltOnce;
+
+    private readonly record struct BandLabel(Float2 World, string Text, int Accent);
+    private List<BandLabel> _bandLabels = new();
+
     // World<->screen for the current frame, pushed once per frame right after ComputeLayout so both
     // the Raylib-pass draws and the ImGui-pass instruments read the same values (spec: no camera --
     // pan/zoom is just a different Layout, never a rebuild).
@@ -75,10 +100,13 @@ public class TacticalOverlayController
 
         int w = (int)MathF.Ceiling(GameWideConstants.DEFAULT_TABLE_WIDTH_INCHES  * TacticalOverlayConfig.TexelsPerInch);
         int h = (int)MathF.Ceiling(GameWideConstants.DEFAULT_TABLE_HEIGHT_INCHES * TacticalOverlayConfig.TexelsPerInch);
-        _threat = new ThreatFrontierCache(w, h, TacticalOverlayConfig.TexelsPerInch);
+        _threat   = new ThreatFrontierCache(w, h, TacticalOverlayConfig.TexelsPerInch);
+        _bandMask = new FieldMask(w, h, TacticalOverlayConfig.TexelsPerInch);
+        _field    = new FieldCompositor(w, h);
 
         _threatBuiltOnce = false;
         _lastThreatSig   = 0;
+        ClearPins();
     }
 
     /// <summary>
@@ -89,17 +117,23 @@ public class TacticalOverlayController
     public void AttachMovementResolver(GuiDefineMovementResolver? resolver)
     {
         _moveResolver = resolver;
+        resolver?.SetTacticalOverlay(this);
     }
 
     /// <summary>Drops every per-game reference and cached picture. Called from ExitGame.</summary>
     public void Detach()
     {
+        _moveResolver?.SetTacticalOverlay(null);
+        _field?.Dispose();
+        _field        = null;
+        _bandMask     = null;
         _tableState   = null;
         _moveResolver = null;
         _probe        = null;
         _threat       = null;
         _warn         = null;
         _threatToggledOn = false;
+        ClearPins();
     }
 
     public void UpdateLayout(float scale, int originX, int originY, float tableH)
@@ -118,8 +152,18 @@ public class TacticalOverlayController
     /// </summary>
     public void DrawField()
     {
-        if (_tableState == null) return;
-        // Opportunity field lands in P3.
+        if (_tableState == null || _field == null || _bandMask == null || _probe == null) return;
+
+        // The opportunity field exists only during the local player's move job (spec section 3).
+        DefineMovementPathRequest? req = _moveResolver?.ActiveRequest;
+        if (req == null) { _field.Clear(); _bandLabels = new List<BandLabel>(); return; }
+
+        (IUnit? target, int accent, float alphaScale) = ResolveFieldTarget(req);
+        if (target == null) { _field.Clear(); _bandLabels = new List<BandLabel>(); return; }
+
+        RebuildFieldIfNeeded(req, target, accent, alphaScale);
+        _field.Draw(_originX, _originY,
+            GameWideConstants.DEFAULT_TABLE_WIDTH_INCHES, GameWideConstants.DEFAULT_TABLE_HEIGHT_INCHES, _scale);
     }
 
     /// <summary>
@@ -159,6 +203,30 @@ public class TacticalOverlayController
             _sampler.Enabled = !_sampler.Enabled;
             _warn?.Invoke($"[overlay] fidelity sampler {(_sampler.Enabled ? "ON" : "OFF")}");
         }
+
+        // Pins are scoped to one move job -- clear when the job changes or ends.
+        DefineMovementPathRequest? req = _moveResolver?.ActiveRequest;
+        if (!ReferenceEquals(req, _lastSeenRequest))
+        {
+            _lastSeenRequest = req;
+            ClearPins();
+        }
+
+        if (req != null)
+        {
+            // Tab cycles pin focus; Esc clears pins (no move-cancel exists today -- plan C1).
+            if (!io.WantCaptureKeyboard && ImGui.IsKeyPressed(TacticalOverlayConfig.FocusCycleKey))
+                CycleFocus();
+            if (!io.WantCaptureKeyboard && _pins.Count > 0 && ImGui.IsKeyPressed(TacticalOverlayConfig.ClearPinsKey))
+                ClearPins();
+
+            UpdateHover(frameTimeSeconds, hitTester, req);
+        }
+        else
+        {
+            _hoverCandidate = null;
+            _hoverElapsed   = 0;
+        }
     }
 
     /// <summary>
@@ -169,6 +237,8 @@ public class TacticalOverlayController
     public void DrawInstruments(int screenW, int screenH)
     {
         if (_tableState == null) return;
+
+        DrawBandLabels();
         // Pips / readouts / measurement land in P5.
 
         if (_sampler.Enabled)
@@ -367,6 +437,297 @@ public class TacticalOverlayController
                 }
             }
             return h;
+        }
+    }
+
+    // ---- Opportunity field: pins -----------------------------------------------------------------
+
+    /// <summary>
+    /// Routes an enemy click during a move job to pin/unpin (spec section 3): clicking an unpinned enemy
+    /// pins + focuses it, clicking a pinned enemy unpins it. Returns true when it consumed the click, so
+    /// the move resolver doesn't also treat it as a waypoint. No-op outside a move job.
+    /// </summary>
+    public bool TryHandleEnemyClick(IUnit unit, IModel model)
+    {
+        if (_moveResolver?.ActiveRequest == null) return false;
+
+        int existing = _pins.FindIndex(p => ReferenceEquals(p.Unit, unit));
+        if (existing >= 0) Unpin(existing);
+        else               Pin(unit);
+        return true;
+    }
+
+    private void Pin(IUnit unit)
+    {
+        _pins.Add(new PinnedTarget(unit, NextFreeAccent()));
+        _focusIndex = _pins.Count - 1;   // newest pin is focused
+        InvalidateField();
+    }
+
+    private void Unpin(int index)
+    {
+        if (index < 0 || index >= _pins.Count) return;
+        _pins.RemoveAt(index);
+        _focusIndex = _pins.Count == 0
+            ? -1
+            : System.Math.Clamp(_focusIndex >= index ? _focusIndex - 1 : _focusIndex, 0, _pins.Count - 1);
+        InvalidateField();
+    }
+
+    private void ClearPins()
+    {
+        _pins.Clear();
+        _focusIndex     = -1;
+        _hoverCandidate = null;
+        _hoverElapsed   = 0;
+        InvalidateField();
+    }
+
+    private void CycleFocus()
+    {
+        if (_pins.Count == 0) return;
+        _focusIndex = (_focusIndex + 1) % _pins.Count;
+        InvalidateField();
+    }
+
+    private int NextFreeAccent()
+    {
+        int n = TacticalOverlayConfig.AccentPalette.Length;
+        for (int a = 0; a < n; a++)
+            if (!_pins.Any(p => p.Accent == a)) return a;
+        return _pins.Count % n; // more pins than palette entries -> wrap
+    }
+
+    private void InvalidateField() => _fieldBuiltOnce = false;
+
+    /// <summary>Chips row for the move panel (spec section 4). Called from the resolver's DrawInfoPanel,
+    /// so it runs inside that ImGui window.</summary>
+    public void DrawPanelSection()
+    {
+        if (_pins.Count == 0) return;
+
+        ImGui.Separator();
+        ImGui.TextDisabled("Pinned (Tab focus, Esc clears)");
+
+        int unpinTarget = -1, focusTarget = -1;
+        for (int i = 0; i < _pins.Count; i++)
+        {
+            PinnedTarget pin = _pins[i];
+            (byte r, byte g, byte b) = TacticalOverlayConfig.AccentPalette[pin.Accent % TacticalOverlayConfig.AccentPalette.Length];
+            bool focused = i == _focusIndex;
+
+            ImGui.PushStyleColor(ImGuiCol.Text, new Vector4(r / 255f, g / 255f, b / 255f, 1f));
+            if (ImGui.Button($"{(focused ? "> " : "  ")}{pin.Unit.Name}##pinchip{i}"))
+                focusTarget = i;
+            ImGui.PopStyleColor();
+
+            // Chip click focuses; clicking the already-focused chip unpins (spec section 4).
+            if (focused && focusTarget == i) { focusTarget = -1; unpinTarget = i; }
+
+            ImGui.SameLine();
+            if (ImGui.SmallButton($"x##pinx{i}")) unpinTarget = i;
+        }
+
+        if (unpinTarget >= 0)      Unpin(unpinTarget);
+        else if (focusTarget >= 0) { _focusIndex = focusTarget; InvalidateField(); }
+    }
+
+    // ---- Opportunity field: build ----------------------------------------------------------------
+
+    private (IUnit? target, int accent, float alphaScale) ResolveFieldTarget(DefineMovementPathRequest req)
+    {
+        if (_pins.Count > 0 && _focusIndex >= 0 && _focusIndex < _pins.Count)
+            return (_pins[_focusIndex].Unit, _pins[_focusIndex].Accent, 1f);
+
+        if (_hoverCandidate != null && _hoverElapsed >= TacticalOverlayConfig.HoverPreviewDelaySeconds)
+            return (_hoverCandidate, 0, TacticalOverlayConfig.PreviewAlphaScale);
+
+        return (null, 0, 0f);
+    }
+
+    private void RebuildFieldIfNeeded(DefineMovementPathRequest req, IUnit target, int accent, float alphaScale)
+    {
+        IUnit movingUnit = req.UnitDataBinding.GetValue();
+        float shooterRadius = _probe!.ModalBaseRadius(movingUnit);
+        List<BandSpec> bands = BuildBands(req, movingUnit, target);
+
+        long sig = ComputeFieldSignature(movingUnit, target, accent, alphaScale, bands);
+        if (_fieldBuiltOnce && sig == _lastFieldSig) return;
+        _lastFieldSig   = sig;
+        _fieldBuiltOnce = true;
+
+        var targets = new List<FieldTargetModel>();
+        foreach (IModel m in target.Models)
+        {
+            if (!m.GetIsAlive()) continue;
+            Position p = m.Position;
+            if (p.x == 0f && p.z == 0f) continue;
+            targets.Add(new FieldTargetModel(p.x, p.z, m.BaseRadiusInches));
+        }
+
+        if (bands.Count == 0 || targets.Count == 0)
+        {
+            _field!.Clear();
+            _bandLabels = new List<BandLabel>();
+            return;
+        }
+
+        var sw = System.Diagnostics.Stopwatch.StartNew();
+        OpportunityFieldBuilder.Build(_bandMask!, targets, shooterRadius, bands);
+        (byte r, byte g, byte b) accentCol =
+            TacticalOverlayConfig.AccentPalette[accent % TacticalOverlayConfig.AccentPalette.Length];
+        _field!.Compose(_bandMask!, accentCol, alphaScale);
+        _bandLabels = BuildBandLabels(movingUnit, bands, accent);
+        sw.Stop();
+        if (sw.Elapsed.TotalMilliseconds > TacticalOverlayConfig.RebuildBudgetMs)
+            _warn?.Invoke($"[overlay] field rebuild {sw.Elapsed.TotalMilliseconds:0}ms " +
+                          $"(budget {TacticalOverlayConfig.RebuildBudgetMs:0}ms)");
+    }
+
+    // The moving unit's deduplicated effective weapon ranges vs the target, as nested bands: shortest
+    // range gets the highest value (innermost), so max-blend keeps the best band at each texel.
+    private List<BandSpec> BuildBands(DefineMovementPathRequest req, IUnit movingUnit, IUnit target)
+    {
+        var byRange = new Dictionary<float, SortedSet<string>>();
+        foreach (IModel m in movingUnit.Models)
+        {
+            if (!m.GetIsAlive()) continue;
+            foreach (Weapon w in m.Weapons)
+            {
+                if (w.RangeInches <= 0f) continue;
+                float eff = EffectiveRange(req, w.Name, target.ID, w.RangeInches);
+                if (!byRange.TryGetValue(eff, out SortedSet<string>? names))
+                    byRange[eff] = names = new SortedSet<string>();
+                names.Add(w.Name);
+            }
+        }
+        if (byRange.Count == 0) return new List<BandSpec>();
+
+        var ranges = byRange.Keys.ToList();
+        ranges.Sort();                    // ascending
+        int k = ranges.Count;
+        var bands = new List<BandSpec>(k);
+        for (int i = 0; i < k; i++)
+        {
+            float range = ranges[i];
+            byte value  = (byte)(k - i);  // shortest -> highest (inner)
+            string names = string.Join(" / ", byRange[range]);
+            bands.Add(new BandSpec(range, value, $"{range:0.#}\" {names}"));
+        }
+        return bands;
+    }
+
+    private static float EffectiveRange(DefineMovementPathRequest req, string weaponName, UnitID targetId, float baseRange)
+    {
+        foreach (WeaponRangeOverride o in req.WeaponRangeOverrides)
+            if (o.WeaponName == weaponName && o.EnemyUnitId.Equals(targetId))
+                return o.EffectiveRangeInches;
+        return baseRange;
+    }
+
+    // One label pill per band, on that band's outer boundary at the point nearest the moving unit's
+    // centroid (plan decision D4 primary), so it sits on the side the mover approaches from.
+    private List<BandLabel> BuildBandLabels(IUnit movingUnit, List<BandSpec> bands, int accent)
+    {
+        var labels = new List<BandLabel>();
+        Float2 centroid = MovingCentroid(movingUnit);
+
+        foreach (BandSpec band in bands)
+        {
+            List<List<Float2>> boundary =
+                MarchingSquares.Extract(_bandMask!, band.Value, 1f / TacticalOverlayConfig.TexelsPerInch);
+            Float2? best = null;
+            float bestD = float.MaxValue;
+            foreach (List<Float2> poly in boundary)
+                foreach (Float2 v in poly)
+                {
+                    float dx = v.X - centroid.X, dz = v.Y - centroid.Y;
+                    float d = dx * dx + dz * dz;
+                    if (d < bestD) { bestD = d; best = v; }
+                }
+            if (best.HasValue) labels.Add(new BandLabel(best.Value, band.Label, accent));
+        }
+        return labels;
+    }
+
+    private static Float2 MovingCentroid(IUnit unit)
+    {
+        float sx = 0, sz = 0; int n = 0;
+        foreach (IModel m in unit.Models)
+        {
+            if (!m.GetIsAlive()) continue;
+            Position p = m.Position;
+            if (p.x == 0f && p.z == 0f) continue;
+            sx += p.x; sz += p.z; n++;
+        }
+        return n > 0 ? new Float2(sx / n, sz / n) : new Float2(0f, 0f);
+    }
+
+    private long ComputeFieldSignature(IUnit movingUnit, IUnit target, int accent, float alphaScale, List<BandSpec> bands)
+    {
+        unchecked
+        {
+            long h = 1469598103934665603L;
+            void Mix(long v) => h = (h ^ v) * 1099511628211L;
+
+            Mix(movingUnit.ID.GetHashCode());
+            Mix(target.ID.GetHashCode());
+            Mix(accent);
+            Mix((long)(alphaScale * 100f));
+            foreach (BandSpec b in bands) { Mix((long)(b.RangeInches * 100f)); Mix(b.Value); }
+
+            foreach (IModel m in target.Models)
+            {
+                if (!m.GetIsAlive()) continue;
+                Position p = m.Position;
+                if (p.x == 0f && p.z == 0f) continue;
+                Mix((long)(p.x * 4f)); Mix((long)(p.z * 4f));
+            }
+            Float2 c = MovingCentroid(movingUnit);
+            Mix((long)(c.X * 2f)); Mix((long)(c.Y * 2f));
+            return h;
+        }
+    }
+
+    private bool IsEnemyOf(PlayerID refPlayer, IUnit unit)
+    {
+        ITeam? team = _tableState!.Teams.Objects.FirstOrDefault(t => t.IsPlayerOnTeam(refPlayer));
+        return team != null ? !team.IsPlayerOnTeam(unit.PlayerID) : !unit.PlayerID.Equals(refPlayer);
+    }
+
+    private void UpdateHover(double dt, TableHitTester hitTester, DefineMovementPathRequest req)
+    {
+        IUnit? hovered = hitTester.HoveredUnit;
+        // Preview is the pre-pin affordance: only when there are no pins and the hover is an enemy.
+        bool eligible = hovered != null && _pins.Count == 0 && IsEnemyOf(req.TargetPlayerID, hovered);
+        if (eligible)
+        {
+            if (ReferenceEquals(hovered, _hoverCandidate)) _hoverElapsed += dt;
+            else { _hoverCandidate = hovered; _hoverElapsed = 0; }
+        }
+        else
+        {
+            _hoverCandidate = null;
+            _hoverElapsed   = 0;
+        }
+    }
+
+    private void DrawBandLabels()
+    {
+        if (_bandLabels.Count == 0 || _moveResolver?.ActiveRequest == null) return;
+
+        ImDrawListPtr dl = ImGui.GetBackgroundDrawList();
+        uint textCol = ImGui.ColorConvertFloat4ToU32(new Vector4(1f, 1f, 1f, 1f));
+        foreach (BandLabel bl in _bandLabels)
+        {
+            (byte r, byte g, byte b) = TacticalOverlayConfig.AccentPalette[bl.Accent % TacticalOverlayConfig.AccentPalette.Length];
+            uint bgCol = ImGui.ColorConvertFloat4ToU32(new Vector4(r / 255f, g / 255f, b / 255f, 0.88f));
+
+            Vector2 at   = WorldToScreen(bl.World);
+            Vector2 size = ImGui.CalcTextSize(bl.Text);
+            var pad = new Vector2(5f, 2f);
+            dl.AddRectFilled(at - size * 0.5f - pad, at + size * 0.5f + pad, bgCol, 3f);
+            dl.AddText(at - size * 0.5f, textCol, bl.Text);
         }
     }
 

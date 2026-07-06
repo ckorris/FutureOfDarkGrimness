@@ -96,6 +96,26 @@ public class TacticalOverlayGeometryTests
     }
 
     [Test]
+    public void OpportunityField_NestedBands_InnerRangeWinsByMaxBlend()
+    {
+        // 10 tpi over 40"x40". One target at (20,20); two bands: 6" (value 2, inner) and 24" (value 1, outer).
+        var mask = new FieldMask(400, 400, Tpi);
+        var targets = new List<FieldTargetModel> { new FieldTargetModel(20f, 20f, 0.5f) };
+        var bands = new List<BandSpec>
+        {
+            new BandSpec(24f, 1, "24\""), // outer (longer range -> lower value)
+            new BandSpec(6f, 2, "6\""),   // inner (shorter range -> higher value)
+        };
+        OpportunityFieldBuilder.Build(mask, targets, shooterRadius: 0.5f, bands);
+
+        // inner radius = 6 + 0.5 + 0.5 = 7 ; outer radius = 24 + 0.5 + 0.5 = 25
+        Assert.That(mask.SampleAt(20f, 20f), Is.EqualTo(2), "centre is the inner band");
+        Assert.That(mask.SampleAt(25f, 20f), Is.EqualTo(2), "5\" out is still inside the 7\" inner band");
+        Assert.That(mask.SampleAt(30f, 20f), Is.EqualTo(1), "10\" out is between inner and outer -> outer band");
+        Assert.That(mask.SampleAt(1f, 1f),   Is.EqualTo(0), "~27\" out is beyond the 25\" outer band");
+    }
+
+    [Test]
     public void FidelitySampler_CountsMismatchesBetweenClaimAndTruth()
     {
         var sampler = new FidelitySampler();

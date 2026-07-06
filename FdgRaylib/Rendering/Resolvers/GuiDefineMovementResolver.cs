@@ -62,6 +62,15 @@ public class GuiDefineMovementResolver
     private bool _stayInAdvance; // toggle — off by default, reset each Resolve
     private bool _showTargeting = true; // toggle — on by default, persists across Resolve calls (covers both ranged + melee)
 
+    // #162 tactical overlay hook: pin enemy targets on canvas click, draw pin chips in the info panel.
+    // Null in headless / before wiring; every call is null-guarded.
+    private TacticalOverlay.TacticalOverlayController? _tactical;
+    public void SetTacticalOverlay(TacticalOverlay.TacticalOverlayController? tactical) => _tactical = tactical;
+
+    // True for the frame a left-click was consumed as an enemy pin, so neither the single- nor group-mode
+    // click handler also treats it as a model select / waypoint placement.
+    private bool _frameEnemyPinConsumed;
+
     // #155: per-frame difficult-terrain warning state, set where the ghost/phantoms clamp and read by the
     // info panel. Crossing = a model moves through difficult terrain (total move held to 6"); stopped = a
     // model couldn't afford to enter, so it was held at the terrain edge. Reset at the top of each Draw.
@@ -122,6 +131,36 @@ public class GuiDefineMovementResolver
     /// the engine thread.
     /// </summary>
     public DefineMovementPathRequest? ActiveRequest { get { lock (_lock) return _request; } }
+
+    // #162: hit-test enemy models under a click and route to the tactical overlay to pin/unpin. Returns
+    // true when it consumed the click (so the movement handlers skip it). Enemy = not on the mover's team.
+    private bool HandleEnemyPinClick(float mxInches, float mzInches)
+    {
+        if (_tactical == null || _request == null) return false;
+
+        var me = _request.TargetPlayerID;
+        var myTeam = _tableState.Teams.Objects.FirstOrDefault(t => t.IsPlayerOnTeam(me));
+
+        IUnit? hitUnit = null;
+        IModel? hitModel = null;
+        float best = float.MaxValue;
+        foreach (var unit in _tableState.Units.Objects)
+        {
+            bool enemy = myTeam != null ? !myTeam.IsPlayerOnTeam(unit.PlayerID) : !unit.PlayerID.Equals(me);
+            if (!enemy) continue;
+            foreach (var m in unit.Models)
+            {
+                if (!m.GetIsAlive()) continue;
+                var p = m.Position;
+                if (p.x == 0f && p.z == 0f) continue;
+                float dx = mxInches - p.x, dz = mzInches - p.z;
+                float d2 = dx * dx + dz * dz;
+                if (m.BaseShape.ContainsLocalPoint(dx, dz) && d2 < best) { best = d2; hitUnit = unit; hitModel = m; }
+            }
+        }
+
+        return hitUnit != null && _tactical.TryHandleEnemyClick(hitUnit, hitModel!);
+    }
 
     public Task<List<ModelMoveEntry>> Resolve(DefineMovementPathRequest request)
     {
@@ -244,6 +283,15 @@ public class GuiDefineMovementResolver
         bool wantInput = !io.WantCaptureMouse && !io.WantCaptureKeyboard;
         bool advanceOnly = _stayInAdvance || ImGui.IsKeyDown(ImGuiKey.LeftShift) || ImGui.IsKeyDown(ImGuiKey.RightShift);
         bool group = _formationMode.IsGroup;
+
+        // #162: an enemy click pins a target for the tactical overlay. Checked once, before both mode
+        // handlers, and consumed so it doesn't also select a model or drop a waypoint.
+        _frameEnemyPinConsumed = false;
+        if (overTable && !io.WantCaptureMouse && ImGui.IsMouseClicked(ImGuiMouseButton.Left))
+        {
+            var (pinMx, pinMz) = PixelToInches(io.MousePos.X, io.MousePos.Y);
+            if (HandleEnemyPinClick(pinMx, pinMz)) _frameEnemyPinConsumed = true;
+        }
 
         Position? ghostPos = null;
         bool ghostOverlaps = false;
@@ -405,7 +453,7 @@ public class GuiDefineMovementResolver
             // Left-click: if it lands on a model's start circle, select that model; otherwise place a
             // waypoint for the selected model at the clamped ghost position (blocked if it would overlap
             // another model). Left-click places in BOTH single and group mode (consistency).
-            if (ImGui.IsMouseClicked(ImGuiMouseButton.Left))
+            if (!_frameEnemyPinConsumed && ImGui.IsMouseClicked(ImGuiMouseButton.Left))
             {
                 var (mx, mz) = PixelToInches(io.MousePos.X, io.MousePos.Y);
                 IModel? hit = null;
@@ -705,7 +753,7 @@ public class GuiDefineMovementResolver
         }
 
         // Commit on left-click when every phantom is legal and something actually moves.
-        if (overTable && !io.WantCaptureMouse && ImGui.IsMouseClicked(ImGuiMouseButton.Left)
+        if (overTable && !io.WantCaptureMouse && !_frameEnemyPinConsumed && ImGui.IsMouseClicked(ImGuiMouseButton.Left)
             && allValid && anyMovement)
         {
             for (int i = 0; i < models.Count; i++)
@@ -760,6 +808,9 @@ public class GuiDefineMovementResolver
         ImGui.PushStyleColor(ImGuiCol.Text, new Vector4(0.6f, 0.6f, 0.6f, 1f));
         ImGui.TextWrapped(FormatDistanceSummary(request));
         ImGui.PopStyleColor();
+
+        // #162: pinned-target chips (click an enemy on the table to pin its opportunity field).
+        _tactical?.DrawPanelSection();
 
         // #155: live terrain-consequence warnings (ghost-aware, computed in Draw).
         if (dangerousCrossers > 0)
