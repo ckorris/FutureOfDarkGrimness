@@ -5,6 +5,7 @@ using FDG;
 using FDG.Players;
 using FDG.Rules.Foundation;
 using FDG.StageResolution.Requests;
+using FDG.Stages;
 using FdgRaylib.Rendering.Resolvers;
 using ImGuiNET;
 using Raylib_cs;
@@ -42,7 +43,11 @@ public class TacticalOverlayController
 
     // ---- Opportunity field / pins (P3) -----------------------------------------------------------
     private FieldMask? _bandMask;
+    private FieldMask? _shadowMask;   // 1 = no LoS to the target from here (P4)
+    private FieldMask? _coverMask;    // 1 = shot to the target passes through cover (P4)
     private FieldCompositor? _field;
+    private IUnit? _fieldMovingUnit;  // context of the last field build, for the fidelity sampler
+    private IUnit? _fieldTargetUnit;
 
     private sealed class PinnedTarget
     {
@@ -64,6 +69,10 @@ public class TacticalOverlayController
 
     private readonly record struct BandLabel(Float2 World, string Text, int Accent);
     private List<BandLabel> _bandLabels = new();
+
+    // Context of the last field build, so the fidelity sampler can reconstruct the band/LoS/cover truth.
+    private List<BandSpec> _lastFieldBands = new();
+    private float _lastShooterRadius;
 
     // World<->screen for the current frame, pushed once per frame right after ComputeLayout so both
     // the Raylib-pass draws and the ImGui-pass instruments read the same values (spec: no camera --
@@ -100,9 +109,11 @@ public class TacticalOverlayController
 
         int w = (int)MathF.Ceiling(GameWideConstants.DEFAULT_TABLE_WIDTH_INCHES  * TacticalOverlayConfig.TexelsPerInch);
         int h = (int)MathF.Ceiling(GameWideConstants.DEFAULT_TABLE_HEIGHT_INCHES * TacticalOverlayConfig.TexelsPerInch);
-        _threat   = new ThreatFrontierCache(w, h, TacticalOverlayConfig.TexelsPerInch);
-        _bandMask = new FieldMask(w, h, TacticalOverlayConfig.TexelsPerInch);
-        _field    = new FieldCompositor(w, h);
+        _threat     = new ThreatFrontierCache(w, h, TacticalOverlayConfig.TexelsPerInch);
+        _bandMask   = new FieldMask(w, h, TacticalOverlayConfig.TexelsPerInch);
+        _shadowMask = new FieldMask(w, h, TacticalOverlayConfig.TexelsPerInch);
+        _coverMask  = new FieldMask(w, h, TacticalOverlayConfig.TexelsPerInch);
+        _field      = new FieldCompositor(w, h);
 
         _threatBuiltOnce = false;
         _lastThreatSig   = 0;
@@ -265,6 +276,40 @@ public class TacticalOverlayController
                 (x, z) => _threat.SampleShootInside(x, z),
                 (x, z) => AnyThreatDisc(discs, x, z, charge: false)),
         };
+
+        // Opportunity-field channels: only meaningful while a field is drawn (a pin/preview is active).
+        if (_bandMask != null && _shadowMask != null && _coverMask != null &&
+            _fieldTargetUnit != null && _fieldMovingUnit != null && _field.HasContent)
+        {
+            IUnit target = _fieldTargetUnit;
+            float longest = _lastFieldBands.Count > 0 ? _lastFieldBands.Max(b => b.RangeInches) : 0f;
+            List<ITerrain> blockers = _probe.BuildBlockers(_fieldMovingUnit, target);
+
+            bool BandTruth(float x, float z)
+            {
+                if (longest <= 0f) return false;
+                foreach (IModel m in target.Models)
+                {
+                    if (!m.GetIsAlive()) continue;
+                    Position p = m.Position;
+                    if (p.x == 0f && p.z == 0f) continue;
+                    float r = longest + _lastShooterRadius + m.BaseRadiusInches;
+                    float dx = x - p.x, dz = z - p.z;
+                    if (dx * dx + dz * dz <= r * r) return true;
+                }
+                return false;
+            }
+
+            channels.Add(new FidelitySampler.Channel("field-band",
+                (x, z) => _bandMask.SampleAt(x, z) > 0,
+                BandTruth));
+            channels.Add(new FidelitySampler.Channel("field-los",
+                (x, z) => _bandMask.SampleAt(x, z) > 0 && _shadowMask.SampleAt(x, z) == 0,
+                (x, z) => BandTruth(x, z) && _probe.BestSight(new Position(x, z), target, blockers) != ESightLineEffect.Blocking));
+            channels.Add(new FidelitySampler.Channel("field-cover",
+                (x, z) => _bandMask.SampleAt(x, z) > 0 && _shadowMask.SampleAt(x, z) == 0 && _coverMask.SampleAt(x, z) > 0,
+                (x, z) => BandTruth(x, z) && _probe.BestSight(new Position(x, z), target, blockers) == ESightLineEffect.Cover));
+        }
 
         FidelitySampler.Report report = _sampler.Run(
             GameWideConstants.DEFAULT_TABLE_WIDTH_INCHES,
@@ -574,10 +619,15 @@ public class TacticalOverlayController
 
         var sw = System.Diagnostics.Stopwatch.StartNew();
         OpportunityFieldBuilder.Build(_bandMask!, targets, shooterRadius, bands);
+        ComputeVisibility(movingUnit, target);
         (byte r, byte g, byte b) accentCol =
             TacticalOverlayConfig.AccentPalette[accent % TacticalOverlayConfig.AccentPalette.Length];
-        _field!.Compose(_bandMask!, accentCol, alphaScale);
-        _bandLabels = BuildBandLabels(movingUnit, bands, accent);
+        _field!.Compose(_bandMask!, _shadowMask!, _coverMask!, accentCol, alphaScale);
+        _bandLabels        = BuildBandLabels(movingUnit, bands, accent);
+        _fieldMovingUnit   = movingUnit;
+        _fieldTargetUnit   = target;
+        _lastFieldBands    = bands;
+        _lastShooterRadius = shooterRadius;
         sw.Stop();
         if (sw.Elapsed.TotalMilliseconds > TacticalOverlayConfig.RebuildBudgetMs)
             _warn?.Invoke($"[overlay] field rebuild {sw.Elapsed.TotalMilliseconds:0}ms " +
@@ -686,6 +736,35 @@ public class TacticalOverlayController
             Float2 c = MovingCentroid(movingUnit);
             Mix((long)(c.X * 2f)); Mix((long)(c.Y * 2f));
             return h;
+        }
+    }
+
+    // Per band cell, the real EvaluateSightLine to the target (best over its living models): blocked
+    // cells punch a hole (no shot from there), cover cells hatch. Only band cells are walked and each
+    // early-outs on Clear, so a clear board is cheap. Model-base blockers ARE included (matching the
+    // shooting stages), which makes the field's LoS/cover exact -- so the sampler's LoS/cover channels
+    // report ~0 mismatch (only cell-edge quantization). v1 ignores blocker HEIGHT, as the engine does.
+    private void ComputeVisibility(IUnit movingUnit, IUnit target)
+    {
+        _shadowMask!.Clear();
+        _coverMask!.Clear();
+
+        List<ITerrain> blockers = _probe!.BuildBlockers(movingUnit, target);
+        FieldMask band = _bandMask!;
+        int W = band.W, H = band.H;
+
+        for (int cy = 0; cy < H; cy++)
+        {
+            int rowBase = cy * W;
+            float cz = band.CellCenterZ(cy);
+            for (int cx = 0; cx < W; cx++)
+            {
+                if (band.Cells[rowBase + cx] == 0) continue;
+                var from = new Position(band.CellCenterX(cx), cz);
+                ESightLineEffect eff = _probe.BestSight(from, target, blockers);
+                if (eff == ESightLineEffect.Blocking)   _shadowMask.Cells[rowBase + cx] = 1;
+                else if (eff == ESightLineEffect.Cover) _coverMask.Cells[rowBase + cx]  = 1;
+            }
         }
     }
 

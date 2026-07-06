@@ -41,14 +41,23 @@ internal sealed class FieldCompositor : IDisposable
         _dirty = true;
     }
 
-    /// <summary>Rebuilds the pixel buffer from a band mask in the pin's accent, scaled by alpha (preview dims).</summary>
-    public void Compose(FieldMask bands, (byte r, byte g, byte b) accent, float alphaScale)
+    /// <summary>
+    /// Rebuilds the pixel buffer from the band mask in the pin's accent (preview dims via alphaScale).
+    /// <paramref name="shadow"/> cells (no LoS to the target) are punched transparent -- no fill where
+    /// the shot is blocked. <paramref name="cover"/> cells (shot through cover) get diagonal world-space
+    /// hatching. Boundary texels (band-value change) draw near-opaque for crisp nested outlines.
+    /// </summary>
+    public void Compose(FieldMask bands, FieldMask shadow, FieldMask cover,
+        (byte r, byte g, byte b) accent, float alphaScale)
     {
         Array.Clear(_pixels, 0, _pixels.Length);
         _hasContent = false;
 
         int W = _w, H = _h;
-        byte[] cells = bands.Cells;
+        byte[] cells   = bands.Cells;
+        byte[] shadowC = shadow.Cells;
+        byte[] coverC  = cover.Cells;
+        int hatchPeriod = Math.Max(2, (int)(TacticalOverlayConfig.HatchSpacingInches * bands.Tpi));
 
         for (int cy = 0; cy < H; cy++)
         {
@@ -58,6 +67,7 @@ internal sealed class FieldCompositor : IDisposable
             {
                 byte band = cells[inRow + cx];
                 if (band == 0) continue;
+                if (shadowC[inRow + cx] != 0) continue; // blocked -> no fill (spec section 1)
                 _hasContent = true;
 
                 bool boundary =
@@ -69,6 +79,15 @@ internal sealed class FieldCompositor : IDisposable
                 float alpha = boundary
                     ? 0.85f
                     : Math.Min(0.6f, TacticalOverlayConfig.BandFillAlpha + (band - 1) * TacticalOverlayConfig.BandInnerAlphaBoost);
+
+                // Cover hatch: diagonal stripes in image space -> world-space diagonals when drawn.
+                if (!boundary && coverC[inRow + cx] != 0)
+                {
+                    int imageRow = H - 1 - cy;
+                    bool onStripe = ((cx + imageRow) % hatchPeriod) < hatchPeriod / 2;
+                    alpha = onStripe ? Math.Min(0.75f, alpha + 0.28f) : alpha * 0.55f;
+                }
+
                 alpha *= alphaScale;
 
                 int o = (outRow + cx) * 4;
