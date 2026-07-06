@@ -168,6 +168,8 @@ public class GuiConsolidationMoveResolver
         // 4) Input
         if (overTable && !io.WantCaptureMouse)
         {
+            // Left-click: select a model whose start circle is hit; otherwise place a waypoint for the
+            // selected model at the clamped ghost position. Left-click places (consistent with movement).
             if (ImGui.IsMouseClicked(ImGuiMouseButton.Left))
             {
                 var (mx, mz) = PixelToInches(io.MousePos.X, io.MousePos.Y);
@@ -180,14 +182,24 @@ public class GuiConsolidationMoveResolver
                     float d2 = dx * dx + dz * dz;
                     if (model.BaseShape.ContainsLocalPoint(dx, dz) && d2 < bestDist) { hit = model; bestDist = d2; }
                 }
-                if (hit != null) _selectedModel = hit;
+                if (hit != null)
+                {
+                    _selectedModel = hit;
+                }
+                else if (_selectedModel != null && ghostPos.HasValue && !ghostOverlaps)
+                {
+                    float totalSoFar = pt.GetTotalDistanceMoved(_selectedModel);
+                    if (maxDist - totalSoFar > 0.001f)
+                        pt.AddStep(_selectedModel, ghostPos.Value);
+                }
             }
 
-            if (ImGui.IsMouseClicked(ImGuiMouseButton.Right) && _selectedModel != null && ghostPos.HasValue && !ghostOverlaps)
+            // Right-click clears the selected model's last waypoint, if any (same as Backspace; right-click
+            // clears the last path point in ALL modes).
+            if (ImGui.IsMouseClicked(ImGuiMouseButton.Right) && _selectedModel != null
+                && paths.TryGetValue(_selectedModel, out var selList) && selList.Count > 0)
             {
-                float totalSoFar = pt.GetTotalDistanceMoved(_selectedModel);
-                if (maxDist - totalSoFar > 0.001f)
-                    pt.AddStep(_selectedModel, ghostPos.Value);
+                pt.RemoveLastStep(_selectedModel);
             }
         }
 

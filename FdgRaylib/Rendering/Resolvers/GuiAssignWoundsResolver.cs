@@ -201,9 +201,9 @@ public class GuiAssignWoundsResolver
             if (p.x == 0f && p.z == 0f) continue;
 
             var (px, py) = InchesToPixel(p.x, p.z);
-            float r = md.BaseRadiusInches * _scale;
-            bg.AddCircleFilled(new Vector2(px, py), r, InvalidFillCol);
-            bg.AddCircle(new Vector2(px, py), r, InvalidOutlineCol, 32, 1.5f);
+            // Shape-aware dim overlay: matches the true base (rectangle for rectangular bases).
+            ModelBaseRenderer.DrawFilledImGui(bg, md.BaseShape, new Vector2(px, py), _scale,
+                InvalidFillCol, InvalidOutlineCol, 1.5f, md.Facing);
         }
     }
 
@@ -219,10 +219,11 @@ public class GuiAssignWoundsResolver
         if (p.x == 0f && p.z == 0f) return; // never positioned — don't ring the origin
 
         var (px, py) = InchesToPixel(p.x, p.z);
-        float r = model.BaseRadiusInches * _scale;
+        var c = new Vector2(px, py);
         var bg = ImGui.GetBackgroundDrawList();
-        bg.AddCircle(new Vector2(px, py), r + 3f, HighlightCol, 32, 3f);
-        bg.AddCircle(new Vector2(px, py), r + 7f, HighlightHaloCol, 32, 2f);
+        // Shape-aware highlight: matches the true base outline (rectangle for rectangular bases).
+        ModelBaseRenderer.DrawOutlineImGui(bg, model.BaseShape, c, _scale, HighlightCol, 3f, 3f / _scale, model.Facing);
+        ModelBaseRenderer.DrawOutlineImGui(bg, model.BaseShape, c, _scale, HighlightHaloCol, 2f, 7f / _scale, model.Facing);
     }
 
     // ICanvasInteractionHandler — lets the player read each model's weapons by hovering it on the

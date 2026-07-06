@@ -14,6 +14,10 @@ public class GuiSelectionResolver<T> : IStageResolver<SelectionRequest<T>, DataB
 
     public bool HasPendingRequest { get { lock (_lock) return _request != null; } }
 
+    // Detail text (stat/weapon lines under a heading) is lighter + smaller than the heading, mirroring the
+    // wound-assignment dialog so every selector reads the same.
+    private static readonly uint DetailCol = ImGui.ColorConvertFloat4ToU32(new Vector4(0.72f, 0.78f, 0.85f, 1f));
+
     public Task<DataBinding<T>> Resolve(SelectionRequest<T> request)
     {
         var tcs = new TaskCompletionSource<DataBinding<T>>();
@@ -42,26 +46,42 @@ public class GuiSelectionResolver<T> : IStageResolver<SelectionRequest<T>, DataB
 
         int validCount   = request.ValidOptions.Count;
         int invalidCount = request.InvalidOptions.Count;
-        float rowH   = 32f;
-        float pad    = 16f;
-        float instrH = 48f;
-        float backH  = request.AllowCancel ? rowH + pad : 0f; // extra height for Back button, if shown
 
-        // Valid options may carry multi-line labels (OptionLabel override, e.g. model stats) — size each
-        // row to its line count. Single-line labels keep the classic 32px row.
-        float lineH = ImGui.GetTextLineHeight();
-        string[] labels = new string[validCount];
-        float[] rowHeights = new float[validCount];
+        float pad     = 16f;
+        float instrH  = 48f;
+        float rowH    = 32f;   // single-line rows (invalid options, Back)
+        float backH   = request.AllowCancel ? rowH + pad : 0f;
+
+        // Text metrics — a bright heading in the main font size, detail lines smaller + dimmer, matching the
+        // wounds dialog. Detail lines wrap so long weapon lists stack instead of clipping off the edge.
+        float mainSize   = ImGui.GetFontSize();
+        float smallSize  = MathF.Round(mainSize * 0.72f);
+        float smallScale = smallSize / mainSize;
+        float mainLineH  = ImGui.GetTextLineHeight();
+        float smallLineH = smallSize + 2f;
+        const float btnPadY  = 6f;
+        const float textPadX = 10f;
+
+        float dw = MathF.Min(screenW * 0.45f, 560f);
+        float btnW = dw - pad * 2f;
+        float wrapW = btnW - textPadX * 2f;
+
+        // Build heading + wrapped detail lines per valid option, sizing each row to its content.
+        var headings   = new string[validCount];
+        var detailWrap = new List<string>[validCount];
+        var rowHeights = new float[validCount];
         float validH = 0f;
         for (int i = 0; i < validCount; i++)
         {
-            labels[i] = OptionLabel(request.ValidOptions[i]);
-            int lineCount = 1 + labels[i].Count(c => c == '\n');
-            rowHeights[i] = lineCount == 1 ? rowH : lineH * lineCount + 14f;
-            validH += rowHeights[i];
+            var (heading, details) = OptionContent(request.ValidOptions[i]);
+            headings[i]   = heading;
+            detailWrap[i] = new List<string>();
+            foreach (string d in details)
+                detailWrap[i].AddRange(WrapDetail(d, smallScale, wrapW));
+            rowHeights[i] = btnPadY * 2f + mainLineH + detailWrap[i].Count * smallLineH;
+            validH += rowHeights[i] + ImGui.GetStyle().ItemSpacing.Y;
         }
 
-        float dw = MathF.Min(screenW * 0.45f, 560f);
         float dh = MathF.Min(instrH + pad + validH + invalidCount * rowH + backH + pad * 2, screenH * 0.80f);
         float dx = screenW - dw - 12f;   // right-aligned in the open right-side space (#105)
         float dy = (screenH - dh) * 0.5f;
@@ -80,22 +100,39 @@ public class GuiSelectionResolver<T> : IStageResolver<SelectionRequest<T>, DataB
         ImGui.TextUnformatted(request.Instructions);
         ImGui.PopTextWrapPos();
 
-        // Valid options
+        // Valid options — a real button (for click + hover feedback) with a bright heading and smaller,
+        // dimmer wrapped detail lines drawn over it (the wounds-dialog treatment).
+        var dl   = ImGui.GetWindowDrawList();
+        var font = ImGui.GetFont();
+        uint headCol = ImGui.GetColorU32(ImGuiCol.Text);
         float listY = pad + instrH;
-        float btnW  = dw - pad * 2;
         float y = listY;
         for (int i = 0; i < validCount; i++)
         {
             var opt = request.ValidOptions[i];
             ImGui.SetCursorPos(new Vector2(pad, y));
-            if (ImGui.Button(labels[i] + $"##{i}", new Vector2(btnW, rowHeights[i] - 4f)))
-                Complete(tcs, opt.Option);
-            else if (ImGui.IsItemHovered())
-                OnValidOptionHovered(opt);
-            y += rowHeights[i];
+            Vector2 origin = ImGui.GetCursorScreenPos();
+
+            bool clicked = ImGui.Button($"##opt{i}", new Vector2(btnW, rowHeights[i]));
+            bool hovered = ImGui.IsItemHovered();
+
+            float tx = origin.X + textPadX;
+            float ty = origin.Y + btnPadY;
+            dl.AddText(new Vector2(tx, ty), headCol, headings[i]);
+            float wy = ty + mainLineH;
+            foreach (string line in detailWrap[i])
+            {
+                dl.AddText(font, smallSize, new Vector2(tx + 2f, wy), DetailCol, line);
+                wy += smallLineH;
+            }
+
+            if (hovered) OnValidOptionHovered(opt);
+            if (clicked) Complete(tcs, opt.Option);
+
+            y += rowHeights[i] + ImGui.GetStyle().ItemSpacing.Y;
         }
 
-        // Invalid options (grayed out)
+        // Invalid options (grayed out, single line)
         if (invalidCount > 0)
         {
             ImGui.PushStyleColor(ImGuiCol.Text, new Vector4(0.5f, 0.5f, 0.5f, 1f));
@@ -126,13 +163,38 @@ public class GuiSelectionResolver<T> : IStageResolver<SelectionRequest<T>, DataB
         ImGui.End();
     }
 
-    /// <summary>The text on a valid option's dialog button. Override to enrich (may be multi-line — rows
-    /// auto-size). Game-facing: ASCII only (see CLAUDE.md).</summary>
-    protected virtual string OptionLabel(SelectionRequest<T>.ValidOption opt) => opt.Name;
+    /// <summary>A valid option's dialog content: a bright heading plus zero or more smaller, dimmer detail
+    /// lines (stats, weapons) that wrap. Default is just the option name. Override to enrich (e.g. unit/model
+    /// stats). Game-facing: ASCII only (see CLAUDE.md).</summary>
+    protected virtual (string Heading, IReadOnlyList<string> Details) OptionContent(SelectionRequest<T>.ValidOption opt)
+        => (opt.Name, System.Array.Empty<string>());
 
     /// <summary>Called while a valid option's dialog button is hovered — lets subclasses highlight the
     /// corresponding object on the table canvas.</summary>
     protected virtual void OnValidOptionHovered(SelectionRequest<T>.ValidOption opt) { }
+
+    // Word-wrap a detail line to maxWidth. Detail text renders at the smaller size, so widths measured at the
+    // main font size are scaled by smallScale (text width scales ~linearly with font size) — avoids a
+    // dependency on the per-size CalcTextSizeA overload.
+    private static List<string> WrapDetail(string text, float smallScale, float maxWidth)
+    {
+        var lines = new List<string>();
+        if (string.IsNullOrEmpty(text)) { lines.Add(""); return lines; }
+
+        string cur = "";
+        foreach (string word in text.Split(' '))
+        {
+            string test = cur.Length == 0 ? word : cur + " " + word;
+            if (ImGui.CalcTextSize(test).X * smallScale > maxWidth && cur.Length > 0)
+            {
+                lines.Add(cur);
+                cur = word;
+            }
+            else cur = test;
+        }
+        lines.Add(cur);
+        return lines;
+    }
 
     protected void Complete(TaskCompletionSource<DataBinding<T>> tcs, DataBinding<T> option)
     {

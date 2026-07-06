@@ -86,7 +86,7 @@ public class TableTooltipOverlay
         // Range / threat rings for the hovered unit -- a passive hover hint (no input capture), so it
         // coexists with any active resolver rather than fighting it for the mouse.
         if (hoveredUnit != null)
-            DrawRangeRings(hoveredUnit);
+            DrawRangeRings(hoveredUnit, hoveredModel);
 
         // Unit name labels + token chips. Chips show regardless of the label toggle (status at a glance);
         // only the name text is gated on _showLabels.
@@ -140,6 +140,11 @@ public class TableTooltipOverlay
     {
         ImGui.BeginTooltip();
 
+        // Model section first — it sits nearest the cursor, so the hovered model's own weapon(s), its
+        // model-specific special rules, and (if Tough) its remaining wounds read before the whole-unit stats.
+        DrawModelSection(model);
+        ImGui.Separator();
+
         ImGui.PushFont(RaylibRenderer.LargeFont);
         ImGui.TextUnformatted(unit.Name);
         ImGui.PopFont();
@@ -182,11 +187,15 @@ public class TableTooltipOverlay
             ImGui.Spacing();
             ImGui.TextUnformatted("Weapons:");
             ImGui.Indent();
-            foreach (var w in weapons.DistinctBy(w => w.Name))
+            // Total count of each weapon across the whole unit (e.g. "10x Razor Claws"), so the tooltip
+            // shows how many of each the unit fields, not just which distinct types it has.
+            foreach (var grp in weapons.GroupBy(w => w.Name))
             {
+                var w = grp.First();
+                string count = grp.Count() > 1 ? $"{grp.Count()}x " : "";
                 string range = w.RangeInches > 0 ? $"{w.RangeInches}\"" : "Melee";
                 string ap    = w.ArmorPenetration > 0 ? $" AP{w.ArmorPenetration}" : "";
-                ImGui.TextUnformatted($"{w.Name}  A{w.Attacks}  {range}{ap}");
+                ImGui.TextUnformatted($"{count}{w.Name}  A{w.Attacks}  {range}{ap}");
             }
             ImGui.Unindent();
         }
@@ -248,6 +257,34 @@ public class TableTooltipOverlay
         }
 
         ImGui.EndTooltip();
+    }
+
+    // The section for the specific model under the cursor: the weapon(s) IT carries (matters in mixed units
+    // like a joined hero), any rule scoped to just this model (per-model RuleDefinitions — unit-wide rules
+    // show in the unit section below), and, if it is Tough, its own remaining wounds.
+    private void DrawModelSection(IModel model)
+    {
+        ImGui.TextDisabled("This model");
+
+        foreach (var grp in model.Weapons.GroupBy(w => w.Name))
+        {
+            var w = grp.First();
+            string count = grp.Count() > 1 ? $"{grp.Count()}x " : "";
+            string range = w.RangeInches > 0 ? $"{w.RangeInches}\"" : "Melee";
+            string ap    = w.ArmorPenetration > 0 ? $" AP{w.ArmorPenetration}" : "";
+            ImGui.TextUnformatted($"{count}{w.Name}  A{w.Attacks}  {range}{ap}");
+        }
+
+        var modelRules = model.RuleDefinitions
+            .Where(r => r.Definition.Name != CoreRuleCatalog.DisembarkRuleName
+                     && r.Definition.Name != CoreRuleCatalog.EmbarkRuleName)
+            .ToList();
+        foreach (var rule in modelRules)
+            ImGui.TextUnformatted(RuleDisplayName(rule));
+
+        // Tough (multi-wound) models show their own remaining wounds; single-wound models need no counter.
+        if (model.TotalWounds > 1f)
+            ImGui.TextUnformatted($"Wounds: {model.TotalWounds - model.WoundsDealt:0.#}/{model.TotalWounds:0.#}");
     }
 
     private static void DrawTerrainTooltip(ITerrain terrain)
@@ -361,54 +398,85 @@ public class TableTooltipOverlay
         }
     }
 
-    // Weapon-range and charge-reach rings around the hovered unit, drawn in world space from the unit's
-    // centroid. Outline-only (no fill) so a charge ring inside a range ring doesn't darken the middle.
-    // Reads only live unit state (weapon ranges, mobility) -- no beats, no request context.
-    private static readonly uint ShootRingColor  = U32(0.55f, 0.85f, 0.95f, 0.85f); // cyan  -- shooting threat
-    private static readonly uint ChargeRingColor = U32(0.90f, 0.62f, 0.24f, 0.85f); // amber -- charge reach
-    private static readonly uint RingShadow      = U32(0f, 0f, 0f, 0.65f);
+    // Per-model weapon-range and charge-reach rings for the hovered unit, drawn in world space centred on
+    // each model — a unit's true reach is the union of its models' circles, not a single centroid sphere.
+    // The model under the cursor draws solid + thicker + labelled; the others draw dotted + dimmer so you can
+    // read what a specific model can hit while still seeing the whole unit's footprint. Reads only live unit
+    // state (weapon ranges, mobility) -- no beats, no request context.
+    private static readonly uint ShootRingColor     = U32(0.55f, 0.85f, 0.95f, 0.95f); // cyan  -- shooting threat (hovered)
+    private static readonly uint ShootRingColorDim  = U32(0.55f, 0.85f, 0.95f, 0.40f); //         other models (dotted)
+    private static readonly uint ChargeRingColor    = U32(0.90f, 0.62f, 0.24f, 0.95f); // amber -- charge reach (hovered)
+    private static readonly uint ChargeRingColorDim = U32(0.90f, 0.62f, 0.24f, 0.40f); //         other models (dotted)
+    private static readonly uint RingShadow         = U32(0f, 0f, 0f, 0.65f);
 
-    private void DrawRangeRings(IUnit unit)
+    private void DrawRangeRings(IUnit unit, IModel? hoveredModel)
     {
-        // Centroid of the unit's living, placed models (unplaced models sit at the origin).
-        float sumX = 0f, sumZ = 0f;
-        int n = 0;
+        var dl = ImGui.GetBackgroundDrawList();
+
+        // Unit-level charge distance; each model's charge circle is drawn from its own centre (a joined
+        // model with its own budget is a later refinement -- today the unit shares one charge distance).
+        float charge = unit.GetMobility(out float _, out float ch) ? ch : 0f;
+
         foreach (IModel m in unit.Models)
         {
             if (!m.GetIsAlive()) continue;
             Position p = m.Position;
-            if (p.x == 0f && p.z == 0f) continue;
-            sumX += p.x; sumZ += p.z; n++;
+            if (p.x == 0f && p.z == 0f) continue; // unplaced model sits at the origin
+
+            bool hovered = ReferenceEquals(m, hoveredModel);
+            float cx = _originX + p.x * _scale;
+            float cy = _originY + (_tableH - p.z) * _scale;
+
+            // Attack radii: one circle per distinct weapon range this model carries (melee weapons have no
+            // shooting radius -- the charge circle covers that reach).
+            foreach (var grp in m.Weapons.Where(w => w.RangeInches > 0f)
+                                         .GroupBy(w => w.RangeInches)
+                                         .OrderBy(g => g.Key))
+            {
+                string names = string.Join(" / ", grp.Select(w => w.Name).Distinct());
+                DrawModelRing(dl, cx, cy, grp.Key * _scale, ShootRingColor, ShootRingColorDim, hovered,
+                    $"{names} {grp.Key:0.#}\"");
+            }
+
+            if (charge > 0f)
+                DrawModelRing(dl, cx, cy, charge * _scale, ChargeRingColor, ChargeRingColorDim, hovered,
+                    $"Charge {charge:0.#}\"");
         }
-        if (n == 0) return;
-
-        float cx = _originX + (sumX / n) * _scale;
-        float cy = _originY + (_tableH - sumZ / n) * _scale;
-        var dl = ImGui.GetBackgroundDrawList();
-
-        // Longest weapon range = the unit's outer shooting envelope (one ring keeps it uncluttered).
-        float maxRange = 0f;
-        foreach (IWeapon w in unit.AllWeapons())
-            if (w.RangeInches > maxRange) maxRange = w.RangeInches;
-        if (maxRange > 0f)
-            DrawRing(dl, cx, cy, maxRange * _scale, ShootRingColor, $"Range {maxRange:0.#}\"");
-
-        // Charge reach.
-        if (unit.GetMobility(out float _, out float charge) && charge > 0f)
-            DrawRing(dl, cx, cy, charge * _scale, ChargeRingColor, $"Charge {charge:0.#}\"");
     }
 
-    private static void DrawRing(ImDrawListPtr dl, float cx, float cy, float radiusPx, uint color, string label)
+    private static void DrawModelRing(ImDrawListPtr dl, float cx, float cy, float radiusPx,
+        uint solidColor, uint dottedColor, bool hovered, string label)
     {
         if (radiusPx < 2f) return;
-        int segments = 64;
-        dl.AddCircle(new Vector2(cx, cy), radiusPx, color, segments, 2f);
 
-        // Label riding the top of the ring, with a drop shadow so it reads over the table.
+        if (!hovered)
+        {
+            AddDottedCircle(dl, cx, cy, radiusPx, dottedColor, 1.5f);
+            return;
+        }
+
+        dl.AddCircle(new Vector2(cx, cy), radiusPx, solidColor, 64, 2.5f);
+
+        // Label rides the top of the hovered model's ring (dotted rings stay unlabelled to avoid clutter).
         Vector2 size = ImGui.CalcTextSize(label);
         var at = new Vector2(cx - size.X * 0.5f, cy - radiusPx - size.Y - 2f);
         dl.AddText(at + new Vector2(1, 1), RingShadow, label);
-        dl.AddText(at, color, label);
+        dl.AddText(at, solidColor, label);
+    }
+
+    // ImGui has no native dotted circle -- draw dashes as short line segments around the circumference,
+    // rendering every other segment so the gaps read as a dotted outline.
+    private static void AddDottedCircle(ImDrawListPtr dl, float cx, float cy, float radiusPx, uint color, float thickness)
+    {
+        const int segments = 72; // even, so dash/gap pairs stay uniform
+        for (int i = 0; i < segments; i += 2)
+        {
+            float a0 = (i       / (float)segments) * MathF.PI * 2f;
+            float a1 = ((i + 1) / (float)segments) * MathF.PI * 2f;
+            var p0 = new Vector2(cx + MathF.Cos(a0) * radiusPx, cy + MathF.Sin(a0) * radiusPx);
+            var p1 = new Vector2(cx + MathF.Cos(a1) * radiusPx, cy + MathF.Sin(a1) * radiusPx);
+            dl.AddLine(p0, p1, color, thickness);
+        }
     }
 
     private static uint U32(float r, float g, float b, float a) =>

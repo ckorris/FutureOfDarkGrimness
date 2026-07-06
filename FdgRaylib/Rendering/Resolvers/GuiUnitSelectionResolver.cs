@@ -9,10 +9,13 @@ namespace FdgRaylib.Rendering.Resolvers;
 /// <summary>
 /// A <see cref="GuiSelectionResolver{UnitData}"/> that also lets the player click a valid unit directly on
 /// the table canvas — the same interaction the shooting resolver offers — instead of only using the dialog
-/// button list. Used for every SelectionRequest&lt;UnitData&gt;: spell targets (#103) and melee defender
-/// selection. Valid target units are ringed on the canvas; clicking one (via the shared
-/// <see cref="ICanvasInteractionHandler"/> seam driven by <see cref="TableHitTester"/>) selects it. The
-/// dialog stays as a fallback and for the Back button.
+/// button list. Used for every SelectionRequest&lt;UnitData&gt;: choose-unit-to-deploy, choose-unit-to-
+/// activate, spell targets (#103) and melee defender selection. Valid target units are ringed on the canvas;
+/// clicking one (via the shared <see cref="ICanvasInteractionHandler"/> seam driven by
+/// <see cref="TableHitTester"/>) selects it. Each dialog button carries the unit's stats (models, Quality,
+/// Defense, weapons) and hovering a button highlights that unit on the table (and vice versa) — matching the
+/// model picker (<see cref="GuiModelSelectionResolver"/>) and the wound-assignment dialog. The dialog stays
+/// as a fallback and for the Back button. Units not yet on the table (deployment) simply have no rings.
 /// </summary>
 public class GuiUnitSelectionResolver : GuiSelectionResolver<UnitData>, IGuiCanvasOverlay, ICanvasInteractionHandler
 {
@@ -20,9 +23,12 @@ public class GuiUnitSelectionResolver : GuiSelectionResolver<UnitData>, IGuiCanv
     private float _tableH = GameWideConstants.DEFAULT_TABLE_HEIGHT_INCHES;
     private int _originX, _originY;
 
-    // Set by GetHoverLabel (called before Draw each frame) so Draw can emphasise the ring under the cursor;
-    // cleared at the end of Draw so it lasts a single frame.
+    // The unit to emphasise this frame — set by a hovered dialog button (OnValidOptionHovered) OR by the
+    // canvas hover (GetHoverLabel); cleared at the end of Draw so it lasts a single frame. Main-thread only.
     private DataReference? _hoveredValidRef;
+
+    private static readonly uint HoverCol     = ImGui.ColorConvertFloat4ToU32(new Vector4(0.55f, 0.90f, 1.00f, 1.00f));
+    private static readonly uint HoverHaloCol = ImGui.ColorConvertFloat4ToU32(new Vector4(0.55f, 0.90f, 1.00f, 0.45f));
 
     public void UpdateLayout(float scale, int originX, int originY, float tableH)
     {
@@ -32,11 +38,29 @@ public class GuiUnitSelectionResolver : GuiSelectionResolver<UnitData>, IGuiCanv
         _tableH = tableH;
     }
 
+    // Dialog content: a bright heading (unit name) + smaller, dimmer detail lines (models/Quality/Defense,
+    // then weapons) so the pick is informed without hunting the canvas — the same treatment the model picker
+    // and wounds dialog give. Unit-wide special rules are omitted here (they live in the hover tooltip);
+    // opt.Name may already carry a reserve suffix like "(Ambush)", which is kept as the heading.
+    protected override (string Heading, IReadOnlyList<string> Details) OptionContent(
+        SelectionRequest<UnitData>.ValidOption opt)
+    {
+        UnitData unit = opt.Option.GetValue();
+        int liveModels = unit.Models.Count(m => m.GetIsAlive());
+        var weapons = unit.AllWeapons()
+            .DistinctBy(w => w.Name)
+            .Select(w => (w.Name, w.RangeInches))
+            .ToList();
+        return UnitOptionLabel.Build(opt.Name, liveModels, unit.Quality, unit.Defense, weapons);
+    }
+
+    protected override void OnValidOptionHovered(SelectionRequest<UnitData>.ValidOption opt) =>
+        _hoveredValidRef = opt.Option.Reference;
+
     public string? GetHoverLabel(IUnit unit, IModel model)
     {
         SelectionRequest<UnitData>? request;
         lock (_lock) { request = _request; }
-        _hoveredValidRef = null;
         if (request == null) return null;
 
         foreach (var opt in request.ValidOptions)
@@ -73,37 +97,41 @@ public class GuiUnitSelectionResolver : GuiSelectionResolver<UnitData>, IGuiCanv
 
     public override void Draw(int screenW, int screenH)
     {
-        DrawTargetRings();
-        base.Draw(screenW, screenH); // the dialog window, on top of the canvas rings
+        // Only the hovered unit is ringed -- no persistent ring on every valid unit (that was visual noise
+        // during activation, where every one of the player's units is a valid pick). The dialog draws first;
+        // DrawHoverHighlight runs after so a hovered dialog button lands the highlight the same frame.
+        base.Draw(screenW, screenH);
+        DrawHoverHighlight();
         _hoveredValidRef = null;
     }
 
-    // Ring every valid target unit's living models so the clickable targets are obvious; the one under the
-    // cursor rings brighter and thicker.
-    private void DrawTargetRings()
+    // The hovered unit (dialog button or canvas) rings with a halo, connecting the list entry to the figures
+    // on the board — same affordance as the model picker and wounds dialog.
+    private void DrawHoverHighlight()
     {
+        if (_hoveredValidRef == null) return;
+
         SelectionRequest<UnitData>? request;
         lock (_lock) { request = _request; }
         if (request == null) return;
 
         var dl = ImGui.GetBackgroundDrawList();
-        uint colorValid = ImGui.ColorConvertFloat4ToU32(new Vector4(0.30f, 0.80f, 1.00f, 0.75f));
-        uint colorHover = ImGui.ColorConvertFloat4ToU32(new Vector4(0.55f, 0.90f, 1.00f, 1.00f));
-
         foreach (var opt in request.ValidOptions)
         {
-            bool hovered = _hoveredValidRef != null && opt.Option.Reference.Equals(_hoveredValidRef);
-            uint color = hovered ? colorHover : colorValid;
-            float thickness = hovered ? 3f : 2f;
+            if (!opt.Option.Reference.Equals(_hoveredValidRef)) continue;
 
             foreach (IModel model in opt.Option.GetValue().Models)
             {
                 if (!model.GetIsAlive()) continue;
                 var pos = model.Position;
-                if (pos.x == 0f && pos.z == 0f) continue; // not yet placed on the table
+                if (pos.x == 0f && pos.z == 0f) continue;
                 var (px, py) = InchesToPixel(pos.x, pos.z);
-                dl.AddCircle(new Vector2(px, py), model.BaseRadiusInches * _scale + 3f, color, 32, thickness);
+                var c = new Vector2(px, py);
+                // Shape-aware highlight: matches the true base outline (rectangle for rectangular bases).
+                ModelBaseRenderer.DrawOutlineImGui(dl, model.BaseShape, c, _scale, HoverCol, 3f, 3f / _scale, model.Facing);
+                ModelBaseRenderer.DrawOutlineImGui(dl, model.BaseShape, c, _scale, HoverHaloCol, 2f, 7f / _scale, model.Facing);
             }
+            return;
         }
     }
 

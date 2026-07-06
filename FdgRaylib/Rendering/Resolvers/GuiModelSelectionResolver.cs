@@ -35,16 +35,16 @@ public class GuiModelSelectionResolver : GuiSelectionResolver<ModelData>, IGuiCa
         _tableH = tableH;
     }
 
-    // Dialog button text: "Model 2  (2/3 wounds)" + a weapons line, so the choice is informed without
-    // hunting the canvas. Single-wound models skip the counter (same convention as the wounds dialog).
-    protected override string OptionLabel(SelectionRequest<ModelData>.ValidOption opt)
+    // Dialog content: heading "Model 2  (2/3 wounds)" + a weapon line per group beneath it, so the choice is
+    // informed without hunting the canvas. Single-wound models skip the counter (same convention as wounds).
+    protected override (string Heading, IReadOnlyList<string> Details) OptionContent(
+        SelectionRequest<ModelData>.ValidOption opt)
     {
         ModelData model = opt.Option.GetValue();
         string wounds = model.TotalWounds > 1f
             ? $"  ({model.TotalWounds - model.WoundsDealt:F0}/{model.TotalWounds:F0} wounds)"
             : "";
-        string weapons = string.Join(", ", GuiAssignWoundsResolver.WeaponLines(model));
-        return $"{opt.Name}{wounds}\n{weapons}";
+        return ($"{opt.Name}{wounds}", GuiAssignWoundsResolver.WeaponLines(model));
     }
 
     protected override void OnValidOptionHovered(SelectionRequest<ModelData>.ValidOption opt) =>
@@ -113,7 +113,9 @@ public class GuiModelSelectionResolver : GuiSelectionResolver<ModelData>, IGuiCa
             var pos = model.Position;
             if (pos.x == 0f && pos.z == 0f) continue; // not yet placed on the table
             var (px, py) = InchesToPixel(pos.x, pos.z);
-            dl.AddCircle(new Vector2(px, py), model.BaseRadiusInches * _scale + 3f, RingCol, 32, 2f);
+            // Shape-aware ring: matches the true base (rectangle for rectangular bases), inflated 3px.
+            ModelBaseRenderer.DrawOutlineImGui(dl, model.BaseShape, new Vector2(px, py), _scale,
+                RingCol, 2f, 3f / _scale, model.Facing);
         }
     }
 
@@ -127,10 +129,11 @@ public class GuiModelSelectionResolver : GuiSelectionResolver<ModelData>, IGuiCa
         if (pos.x == 0f && pos.z == 0f) return;
 
         var (px, py) = InchesToPixel(pos.x, pos.z);
-        float r = model.BaseRadiusInches * _scale;
+        var c = new Vector2(px, py);
         var dl = ImGui.GetBackgroundDrawList();
-        dl.AddCircle(new Vector2(px, py), r + 3f, HoverCol, 32, 3f);
-        dl.AddCircle(new Vector2(px, py), r + 7f, HoverHaloCol, 32, 2f);
+        // Shape-aware highlight: matches the true base outline (rectangle for rectangular bases).
+        ModelBaseRenderer.DrawOutlineImGui(dl, model.BaseShape, c, _scale, HoverCol, 3f, 3f / _scale, model.Facing);
+        ModelBaseRenderer.DrawOutlineImGui(dl, model.BaseShape, c, _scale, HoverHaloCol, 2f, 7f / _scale, model.Facing);
     }
 
     private (float px, float py) InchesToPixel(float x, float z) =>

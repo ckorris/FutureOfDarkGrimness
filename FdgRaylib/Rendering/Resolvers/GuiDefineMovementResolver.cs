@@ -394,7 +394,9 @@ public class GuiDefineMovementResolver
         // 4) Mouse / keyboard input (single mode — group mode handles its own clicks above)
         if (!group && overTable && !io.WantCaptureMouse)
         {
-            // Left-click selects a model whose start circle is hit
+            // Left-click: if it lands on a model's start circle, select that model; otherwise place a
+            // waypoint for the selected model at the clamped ghost position (blocked if it would overlap
+            // another model). Left-click places in BOTH single and group mode (consistency).
             if (ImGui.IsMouseClicked(ImGuiMouseButton.Left))
             {
                 var (mx, mz) = PixelToInches(io.MousePos.X, io.MousePos.Y);
@@ -407,16 +409,25 @@ public class GuiDefineMovementResolver
                     float d2 = dx * dx + dz * dz;
                     if (model.BaseShape.ContainsLocalPoint(dx, dz) && d2 < bestDist) { hit = model; bestDist = d2; }
                 }
-                if (hit != null) _selectedModel = hit;
+                if (hit != null)
+                {
+                    _selectedModel = hit;
+                }
+                else if (_selectedModel != null && ghostPos.HasValue && !ghostOverlaps)
+                {
+                    float totalSoFar = pt.GetTotalDistanceMoved(_selectedModel);
+                    float cap = advanceOnly ? maxAdvance : maxCharge;
+                    if (cap - totalSoFar > 0.001f)
+                        pt.AddStep(_selectedModel, ghostPos.Value);
+                }
             }
 
-            // Right-click adds a waypoint at clamped ghost position (blocked if it would overlap another model)
-            if (ImGui.IsMouseClicked(ImGuiMouseButton.Right) && _selectedModel != null && ghostPos.HasValue && !ghostOverlaps)
+            // Right-click clears the selected model's last waypoint, if any (same as Backspace; right-click
+            // clears the last path point in ALL modes).
+            if (ImGui.IsMouseClicked(ImGuiMouseButton.Right) && _selectedModel != null
+                && paths.TryGetValue(_selectedModel, out var selList) && selList.Count > 0)
             {
-                float totalSoFar = pt.GetTotalDistanceMoved(_selectedModel);
-                float cap = advanceOnly ? maxAdvance : maxCharge;
-                if (cap - totalSoFar > 0.001f)
-                    pt.AddStep(_selectedModel, ghostPos.Value);
+                pt.RemoveLastStep(_selectedModel);
             }
         }
 
@@ -692,6 +703,15 @@ public class GuiDefineMovementResolver
             for (int i = 0; i < models.Count; i++)
                 pt.AddStep(models[i], newPositions[i]);
             _groupRotation = 0f;
+        }
+
+        // Right-click clears the last group waypoint (one per model), if any — mirrors single mode + Backspace
+        // so right-click clears the last path point in ALL modes.
+        if (overTable && !io.WantCaptureMouse && ImGui.IsMouseClicked(ImGuiMouseButton.Right))
+        {
+            foreach (var m in models)
+                if (paths.TryGetValue(m, out var list) && list.Count > 0)
+                    pt.RemoveLastStep(m);
         }
     }
 

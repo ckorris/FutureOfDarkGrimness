@@ -97,7 +97,9 @@ public class GuiCancellableUnitSelectionResolver
                 var pos = model.Position;
                 if (pos.x == 0f && pos.z == 0f) continue;
                 var (px, py) = InchesToPixel(pos.x, pos.z);
-                dl.AddCircle(new Vector2(px, py), model.BaseRadiusInches * _scale + 3f, color, 32, thickness);
+                // Shape-aware ring: matches the true base (rectangle for rectangular bases), inflated 3px.
+                ModelBaseRenderer.DrawOutlineImGui(dl, model.BaseShape, new Vector2(px, py), _scale,
+                    color, thickness, 3f / _scale, model.Facing);
             }
         }
     }
