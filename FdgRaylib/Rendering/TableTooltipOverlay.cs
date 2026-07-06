@@ -39,6 +39,11 @@ public class TableTooltipOverlay
     // serialized game to write to a .fdgsave file.
     private Func<string?>? _saveGameToJson;
 
+    // The tactical overlay, so the toolbar can expose its Threat toggle (also bound to F). Non-null
+    // once wired in TransitionToGame.
+    private TacticalOverlay.TacticalOverlayController? _tactical;
+    public void AttachTacticalOverlay(TacticalOverlay.TacticalOverlayController tactical) => _tactical = tactical;
+
     private static readonly FileFilter SaveFilter = new(
         $"Saved Game (*{GameSaveFile.EXTENSION_WITH_PERIOD})",
         new[] { $"*{GameSaveFile.EXTENSION_WITH_PERIOD}" });
@@ -109,6 +114,10 @@ public class TableTooltipOverlay
 
         if (ImGui.Button(_showAllTokens ? "Tokens: ALL" : "Tokens: std"))
             _showAllTokens = !_showAllTokens;
+
+        // Threat frontiers inspection toggle (also F). Auto-shown during a move job regardless.
+        if (_tactical != null && ImGui.Button(_tactical.ThreatToggledOn ? "Threat: ON" : "Threat: OFF"))
+            _tactical.ToggleThreat();
 
         if (_saveGameToJson != null)
         {

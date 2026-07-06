@@ -132,8 +132,9 @@ public class RaylibRenderer
         _playerMessageUI    = playerMessageUI;
         _tooltipOverlay.Attach(tableState, colorForPlayer, saveGameToJson);
         _measurementOverlay.Attach(tableState);
-        _tacticalOverlay.Attach(tableState);
+        _tacticalOverlay.Attach(tableState, msg => _log?.Add(msg, new TextColor(255, 180, 90, 255)));
         _tacticalOverlay.AttachMovementResolver(resolverOverlay?.MovementResolver);
+        _tooltipOverlay.AttachTacticalOverlay(_tacticalOverlay);
 
         // Play a sound cue the moment each beat becomes active, in lockstep with its visual. Audio is
         // GUI-only and may be unavailable (then AudioManager no-ops), so this is best-effort.

@@ -115,6 +115,14 @@ public class GuiDefineMovementResolver
 
     public bool HasPendingRequest { get { lock (_lock) return _request != null; } }
 
+    /// <summary>
+    /// The move job currently being resolved, or null when idle. Read by the tactical overlay on the
+    /// main thread (pull model) to auto-show threat frontiers, pick the reference player/radius, and
+    /// scope pins to the job. Lock-guarded like <see cref="HasPendingRequest"/> since Resolve runs on
+    /// the engine thread.
+    /// </summary>
+    public DefineMovementPathRequest? ActiveRequest { get { lock (_lock) return _request; } }
+
     public Task<List<ModelMoveEntry>> Resolve(DefineMovementPathRequest request)
     {
         var tcs = new TaskCompletionSource<List<ModelMoveEntry>>();
