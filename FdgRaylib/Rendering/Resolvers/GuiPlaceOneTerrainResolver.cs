@@ -178,14 +178,8 @@ public class GuiPlaceOneTerrainResolver
     private void DrawInfoPanel(int screenW, int screenH, PlaceOneTerrainRequest request,
         TaskCompletionSource<TerrainPlacementResult> tcs, int? selected, Float2? pending, float rotationDegrees)
     {
-        const float PanelWidth = 280f;
-        ImGui.SetNextWindowPos(new Vector2(screenW - PanelWidth - 12f, 80f), ImGuiCond.FirstUseEver);
-        ImGui.SetNextWindowSize(new Vector2(PanelWidth, 0f), ImGuiCond.FirstUseEver);
-        ImGui.SetNextWindowBgAlpha(0.92f);
-
-        ImGui.Begin("Place Terrain",
-            ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoCollapse |
-            ImGuiWindowFlags.AlwaysAutoResize | ImGuiWindowFlags.NoSavedSettings);
+        float PanelWidth = ResolverPanelLayout.ContentWidth;   // dock into the right-column resolver panel
+        ResolverPanelLayout.BeginDocked("Place Terrain##placeterrainpanel");
 
         int remaining = request.TotalPieces - request.PiecesPlaced;
         ImGui.TextUnformatted($"Pieces remaining: {remaining}");

@@ -25,7 +25,6 @@ public class RaylibRenderer
     private const float TableWIn      = GameWideConstants.DEFAULT_TABLE_WIDTH_INCHES;
     private const float TableHIn      = GameWideConstants.DEFAULT_TABLE_HEIGHT_INCHES;
     private const int   MinMargin     = 20;
-    private const float TableZoom     = 1.15f;  // fill more of the available space than a strict fit
     // Anchor for the resolution-derived UI scale (see ComputeUiScale): the multiplier that was tuned
     // by hand on a 4K (2160p) desktop. Smaller displays scale down from here, larger ones cap here.
     private const float ReferenceUiScale  = 1.4f;
@@ -63,9 +62,8 @@ public class RaylibRenderer
     private GuiPlayerMessageUI? _playerMessageUI;  // in-game chat sink + send hook (#077)
     private string _chatInput = "";
 
-    // Bottom console (#105): a collapsible, full-width dock. Log and Chat are independent TOGGLES (not
-    // exclusive tabs) -- with both on, their lines are merged into one column in arrival order.
-    private bool _consoleCollapsed = false;
+    // Right-column console: Log and Chat are independent TOGGLES (not exclusive tabs) -- with both on,
+    // their lines are merged into one column in arrival order.
     private bool _showChat = true;   // Chat source shown (button on the left)
     private bool _showLog  = true;   // Log source shown
     private EChatMessageType _chatChannel = EChatMessageType.Global;
@@ -115,11 +113,19 @@ public class RaylibRenderer
 
     private record Layout(float Scale, int OriginX, int OriginY, int AreaW, int ScreenH);
 
-    // Bottom-console height: a thin bar (tabs only) when collapsed, ~26% of the window when open.
-    private int ConsoleHeight(int screenH) =>
-        _log == null ? 0
-        : _consoleCollapsed ? Math.Max(34, (int)(screenH * 0.038f))
-                            : Math.Max(170, (int)(screenH * 0.26f));
+    // In-game right column: a fixed-width strip on the right holding the resolver panel (top half) and the
+    // log/chat console (bottom half). Everything left of it is the table viewport. Width is a fraction of
+    // the window, floored so the panels stay usable on narrow windows and capped at half the width.
+    private const float RightColumnFraction = 0.28f;
+    private const int   RightColumnMinPx    = 340;
+    private int RightColumnWidth(int screenW) =>
+        _log == null ? 0 : Math.Clamp((int)(screenW * RightColumnFraction), RightColumnMinPx, screenW / 2);
+
+    // Table view transform (#8): _zoom is a multiplier over the fit-to-viewport scale (1 = ~100% of the
+    // viewport, up to MaxZoom); _pan is a pixel offset from the centered position. Both default to the
+    // plain fit until the player zooms/drags.
+    private float   _zoom = 1f;
+    private Vector2 _pan  = Vector2.Zero;
 
     public void TransitionToGame(ITableState tableState, Func<PlayerID, Color> colorForPlayer,
         GameLog? log, GuiResolverOverlay? resolverOverlay = null,
@@ -224,7 +230,8 @@ public class RaylibRenderer
         _log                   = null;
         _playerMessageUI       = null;
         _chatInput             = "";
-        _consoleCollapsed      = false;
+        _zoom                  = 1f;
+        _pan                   = Vector2.Zero;
         _showChat              = true;
         _showLog               = true;
         _chatChannel           = EChatMessageType.Global;
@@ -377,13 +384,19 @@ public class RaylibRenderer
 
                 DrawStatusHud(layout);
 
+                // Right-column regions: resolver panel (top half) + log/chat console (bottom half).
+                int rightW    = RightColumnWidth(screenW);
+                int rightX    = screenW - rightW;
+                int panelH    = screenH / 2;
+                ResolverPanelLayout.Set(rightX, 0, rightW, panelH);
+
                 rlImGui.Begin();
                 // Runs before the hit tester / resolvers so its Alt-measure WantCaptureMouse override
                 // lands before they read that flag (see MeasurementOverlay).
                 _measurementOverlay.UpdateLayout(layout.Scale, layout.OriginX, layout.OriginY, TableHIn);
                 _measurementOverlay.Draw(screenW, screenH);
                 _hitTester.Update(_tableState!, layout.Scale, layout.OriginX, layout.OriginY, TableHIn);
-                DrawBottomConsole(layout);
+                DrawConsole(rightX, panelH, rightW, screenH - panelH);
                 // Outstanding Tasks window hidden per user request; re-enable by restoring this draw call.
                 // _taskDisplay?.Draw(screenW, screenH);
                 _tooltipOverlay.UpdateLayout(layout.Scale, layout.OriginX, layout.OriginY, TableHIn);
@@ -392,11 +405,13 @@ public class RaylibRenderer
                 // Hold interactive prompts until the animation queue drains, so the player always
                 // sees movement / shots land before being asked to react.
                 bool animating = _presentationPlayer?.IsAnimating ?? false;
+                bool resolverShown = false;
                 if (!_resolverOverlayFaulted && !animating)
                 {
                     try
                     {
                         _resolverOverlay?.Draw(screenW, screenH);
+                        resolverShown = _resolverOverlay?.HasAnyPending ?? false;
                     }
                     catch (Exception ex)
                     {
@@ -406,6 +421,9 @@ public class RaylibRenderer
                         _log?.Add(ex.StackTrace ?? "(no stack trace)", errColor);
                     }
                 }
+                // Fill the resolver panel with an idle placeholder whenever nothing is prompting, so the
+                // top-right region always reads as an intentional panel rather than empty space.
+                if (!resolverShown) DrawIdleResolverPanel();
                 DrawGameOverOverlay(screenW, screenH);
                 rlImGui.End();
             }
@@ -428,22 +446,24 @@ public class RaylibRenderer
 
     private Layout ComputeLayout(int screenW, int screenH)
     {
-        // Full-width table; the console reserves height at the bottom instead of a right-side strip.
-        int consoleH   = ConsoleHeight(screenH);
-        int tableAreaH = screenH - consoleH;
+        // The right column reserves width on the right; the table viewport is everything to its left.
+        int rightW    = RightColumnWidth(screenW);
+        int viewportW = Math.Max(1, screenW - rightW);
 
-        float scaleX = (screenW     - MinMargin * 2f) / TableWIn;
-        float scaleY = (tableAreaH  - MinMargin * 2f) / TableHIn;
-        // Nudge the auto-fit up so the board fills more of the (otherwise slack) space. The board is
-        // usually height-bound, so this trades the vertical margin for a bigger table, centered.
-        float scale  = Math.Max(1f, Math.Min(scaleX, scaleY)) * TableZoom;
+        // Fit-to-viewport scale (the #8 zoom-out clamp: the table fills ~100% of the viewport at _zoom==1).
+        float fitX = (viewportW - MinMargin * 2f) / TableWIn;
+        float fitY = (screenH   - MinMargin * 2f) / TableHIn;
+        float fit  = Math.Max(1f, Math.Min(fitX, fitY));
+        float scale = fit * _zoom;
 
         int tablePixW = (int)(TableWIn * scale);
         int tablePixH = (int)(TableHIn * scale);
-        int originX   = (screenW     - tablePixW) / 2;
-        int originY   = (tableAreaH  - tablePixH) / 2;
+        int originX   = (int)((viewportW - tablePixW) / 2f + _pan.X);
+        int originY   = (int)((screenH   - tablePixH) / 2f + _pan.Y);
 
-        return new Layout(scale, originX, originY, screenW, screenH);
+        // AreaW is the viewport width so centered overlays (status HUD, dice, banners) sit over the table,
+        // not under the right column.
+        return new Layout(scale, originX, originY, viewportW, screenH);
     }
 
     // Thin border thickness (px) framing the table rect.
@@ -753,24 +773,23 @@ public class RaylibRenderer
         ImGui.End();
     }
 
-    // Bottom console (#105): a full-width, collapsible dock. Log and Chat are independent TOGGLES (Chat on
-    // the left); with both on, their lines merge into one column in arrival order (by the shared
-    // LogEntry.Sequence). The engine GameLog is the Log source; the sender-coloured chat store is the Chat
-    // source, which also shows the Global/Team channel toggle + input. Chat flags unread when a message
-    // arrives while Chat is toggled off or the console is collapsed.
-    private void DrawBottomConsole(Layout l)
+    // Log/chat console: fills the bottom half of the in-game right column. Log and Chat are independent
+    // TOGGLES (Chat on the left); with both on, their lines merge into one column in arrival order (by the
+    // shared LogEntry.Sequence). The engine GameLog is the Log source; the sender-coloured chat store is
+    // the Chat source, which also shows the Global/Team channel toggle + input. Chat flags unread when a
+    // message arrives while Chat is toggled off.
+    private void DrawConsole(int x, int y, int w, int h)
     {
         if (_log == null) return;
-        int h = ConsoleHeight(l.ScreenH);
 
         // Unread bookkeeping (every frame, regardless of what's shown).
         int chatCount = _playerMessageUI?.ChatLog.Count ?? 0;
-        if (chatCount > _lastChatCount && (_consoleCollapsed || !_showChat))
+        if (chatCount > _lastChatCount && !_showChat)
             _chatUnread = true;
         _lastChatCount = chatCount;
 
-        ImGui.SetNextWindowPos(new Vector2(0, l.ScreenH - h), ImGuiCond.Always);
-        ImGui.SetNextWindowSize(new Vector2(l.AreaW, h), ImGuiCond.Always);
+        ImGui.SetNextWindowPos(new Vector2(x, y), ImGuiCond.Always);
+        ImGui.SetNextWindowSize(new Vector2(w, h), ImGuiCond.Always);
         ImGui.Begin("##console",
             ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoCollapse |
             ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoBringToFrontOnFocus);
@@ -780,19 +799,23 @@ public class RaylibRenderer
         ImGui.SameLine();
         DrawConsoleToggle("Log##logtoggle", ref _showLog, isChat: false);
 
-        // Collapse / expand button, pinned right.
-        const float collapseW = 32f;
-        ImGui.SameLine();
-        ImGui.SetCursorPosX(ImGui.GetWindowWidth() - collapseW - 10f);
-        if (ImGui.Button((_consoleCollapsed ? "+" : "-") + "##consolecollapse", new Vector2(collapseW, 0f)))
-            _consoleCollapsed = !_consoleCollapsed;
+        ImGui.Separator();
+        DrawConsoleContent();
 
-        if (!_consoleCollapsed)
+        ImGui.End();
+    }
+
+    // Idle placeholder shown in the resolver panel (top-right) when no decision is pending, so the region
+    // always reads as an intentional panel.
+    private void DrawIdleResolverPanel()
+    {
+        if (_log == null) return;
+        if (ResolverPanelLayout.BeginDocked("##idleresolver"))
         {
-            ImGui.Separator();
-            DrawConsoleContent();
+            ImGui.TextDisabled("No decision pending.");
+            ImGui.Spacing();
+            ImGui.TextDisabled("Prompts appear here on your turn.");
         }
-
         ImGui.End();
     }
 

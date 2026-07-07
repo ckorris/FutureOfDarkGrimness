@@ -10,6 +10,17 @@ public class GuiResolverOverlay
 
     public void Register(IGuiResolver resolver) => _resolvers.Add(resolver);
 
+    /// <summary>True while any resolver is waiting on the player — the resolver panel is showing a prompt.</summary>
+    public bool HasAnyPending
+    {
+        get
+        {
+            foreach (IGuiResolver r in _resolvers)
+                if (r.HasPendingRequest) return true;
+            return false;
+        }
+    }
+
     public void UpdateLayout(float scale, int originX, int originY, float tableH)
     {
         foreach (IGuiResolver r in _resolvers)

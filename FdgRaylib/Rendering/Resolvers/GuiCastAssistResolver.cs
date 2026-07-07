@@ -97,10 +97,10 @@ public class GuiCastAssistResolver : IStageResolver<CastAssistRequest, int>, IGu
         int buttonCount = request.AvailableTokens + 1; // "Don't spend" + one per token
         const float rowH = 30f, gap = 4f, pad = 14f, headerH = 46f;
 
-        float dw = MathF.Min(screenW * 0.55f, 540f);
-        float dh = pad + headerH + buttonCount * (rowH + gap) + pad;
-        float dx = screenW - dw - 12f;   // right-aligned in the open right-side space (#105)
-        float dy = 60f;
+        float dw = ResolverPanelLayout.W;   // dock into the right-column resolver panel
+        float dh = ResolverPanelLayout.H;
+        float dx = ResolverPanelLayout.X;
+        float dy = ResolverPanelLayout.Y;
 
         ImGui.SetNextWindowPos(Vector2.Zero, ImGuiCond.Always);
         ImGui.SetNextWindowSize(new Vector2(screenW, screenH), ImGuiCond.Always);
@@ -113,7 +113,7 @@ public class GuiCastAssistResolver : IStageResolver<CastAssistRequest, int>, IGu
         ImGui.PushStyleColor(ImGuiCol.ChildBg, new Vector4(0.15f, 0.15f, 0.20f, 0.97f));
         ImGui.PushStyleVar(ImGuiStyleVar.ChildRounding, 6f);
         ImGui.BeginChild("##CastAssistDialog", new Vector2(dw, dh), ImGuiChildFlags.Borders,
-            ImGuiWindowFlags.NoScrollbar);
+            ImGuiWindowFlags.None);
         ImGui.PopStyleColor();
         ImGui.PopStyleVar();
 

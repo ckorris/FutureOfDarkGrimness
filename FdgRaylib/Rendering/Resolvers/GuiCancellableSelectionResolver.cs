@@ -47,16 +47,16 @@ public class GuiCancellableSelectionResolver<T>
         float pad    = 16f;
         float instrH = 48f;
         float backH  = rowH + pad;
-        float dw = MathF.Min(screenW * 0.45f, 560f);
-        float dh = MathF.Min(instrH + pad + totalRows * rowH + backH + pad * 2, screenH * 0.80f);
-        float dx = screenW - dw - 12f;   // right-aligned in the open right-side space (#105)
-        float dy = (screenH - dh) * 0.5f;
+        float dw = ResolverPanelLayout.W;   // dock into the right-column resolver panel
+        float dh = ResolverPanelLayout.H;
+        float dx = ResolverPanelLayout.X;
+        float dy = ResolverPanelLayout.Y;
 
         ImGui.SetCursorPos(new Vector2(dx, dy));
         ImGui.PushStyleColor(ImGuiCol.ChildBg, new Vector4(0.15f, 0.15f, 0.20f, 0.97f));
         ImGui.PushStyleVar(ImGuiStyleVar.ChildRounding, 6f);
         ImGui.BeginChild("##CancellableSelectionDialog", new Vector2(dw, dh), ImGuiChildFlags.Borders,
-            ImGuiWindowFlags.NoScrollbar);
+            ImGuiWindowFlags.None);
         ImGui.PopStyleColor();
         ImGui.PopStyleVar();
 

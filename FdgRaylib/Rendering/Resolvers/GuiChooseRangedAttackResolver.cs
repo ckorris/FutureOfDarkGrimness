@@ -125,28 +125,30 @@ public class GuiChooseRangedAttackResolver
             ImGuiWindowFlags.NoInputs | ImGuiWindowFlags.NoBackground);
         ImGui.End();
 
-        float dw = MathF.Min(screenW * 0.75f, 920f);
-        float dh = MathF.Min(screenH * 0.60f, 440f);
-        ImGui.SetNextWindowPos(new Vector2(screenW - dw - 12f, (screenH - dh) * 0.5f), ImGuiCond.FirstUseEver); // right-aligned (#105)
-        ImGui.SetNextWindowSize(new Vector2(dw, dh), ImGuiCond.Always);
+        // Docked into the right-column resolver panel. The narrow column can't fit three side-by-side
+        // sub-panels, so Weapon / Target / Details stack top-to-bottom, each an independently scrolling third.
+        ImGui.SetNextWindowPos(new Vector2(ResolverPanelLayout.X, ResolverPanelLayout.Y), ImGuiCond.Always);
+        ImGui.SetNextWindowSize(new Vector2(ResolverPanelLayout.W, ResolverPanelLayout.H), ImGuiCond.Always);
         ImGui.PushStyleColor(ImGuiCol.WindowBg, new Vector4(0.13f, 0.13f, 0.18f, 0.97f));
         ImGui.PushStyleVar(ImGuiStyleVar.WindowRounding, 6f);
         string attackerName = request.AttackingUnit.GetValue().Name;
         ImGui.Begin($"Shoot: {attackerName}##RangedDialog",
-            ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoScrollbar);
+            ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoCollapse |
+            ImGuiWindowFlags.NoBringToFrontOnFocus | ImGuiWindowFlags.NoScrollbar);
         ImGui.PopStyleColor();
         ImGui.PopStyleVar();
 
         float pad       = 8f;
         float rowH      = 36f;
         float footerH   = rowH + pad * 2;
-        float colsH     = ImGui.GetContentRegionAvail().Y - footerH;
-        float colW      = (ImGui.GetContentRegionAvail().X - pad * 2) / 3f;
+        float spacingY  = ImGui.GetStyle().ItemSpacing.Y;
+        // Three stacked sections share the vertical space above the footer (two gaps between them).
+        float sectionH  = (ImGui.GetContentRegionAvail().Y - footerH - spacingY * 2f) / 3f;
 
         (int wIdx, int tIdx) newHovered = (-1, -1);
 
-        // ── Column 1: Weapons ─────────────────────────────────────────────────
-        ImGui.BeginChild("##WeaponCol", new Vector2(colW, colsH), ImGuiChildFlags.Borders);
+        // ── Section 1: Weapons ────────────────────────────────────────────────
+        ImGui.BeginChild("##WeaponCol", new Vector2(0, sectionH), ImGuiChildFlags.Borders);
         ImGui.TextUnformatted("Weapon");
         ImGui.Separator();
         for (int wi = 0; wi < request.WeaponOptions.Count; wi++)
@@ -194,10 +196,8 @@ public class GuiChooseRangedAttackResolver
         }
         ImGui.EndChild();
 
-        ImGui.SameLine(0, pad);
-
-        // ── Column 2: Targets ─────────────────────────────────────────────────
-        ImGui.BeginChild("##TargetCol", new Vector2(colW, colsH), ImGuiChildFlags.Borders);
+        // ── Section 2: Targets ────────────────────────────────────────────────
+        ImGui.BeginChild("##TargetCol", new Vector2(0, sectionH), ImGuiChildFlags.Borders);
         ImGui.TextUnformatted("Target");
         ImGui.Separator();
         if (_selectedWeaponIdx >= 0)
@@ -270,10 +270,8 @@ public class GuiChooseRangedAttackResolver
         }
         ImGui.EndChild();
 
-        ImGui.SameLine(0, pad);
-
-        // ── Column 3: Details ─────────────────────────────────────────────────
-        ImGui.BeginChild("##DetailCol", new Vector2(colW, colsH), ImGuiChildFlags.Borders);
+        // ── Section 3: Details ────────────────────────────────────────────────
+        ImGui.BeginChild("##DetailCol", new Vector2(0, sectionH), ImGuiChildFlags.Borders);
         ImGui.TextUnformatted("Details");
         ImGui.Separator();
         if (_selectedWeaponIdx >= 0 && _selectedTargetTIdx >= 0)

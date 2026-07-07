@@ -129,18 +129,17 @@ public class GuiChooseDeploymentZoneResolver
         int takenCount = unavailable.Count;
         float rowH    = 36f;
         float pad     = 16f;
-        float headerH = 56f;
-        float dw = MathF.Min(screenW * 0.45f, 560f);
-        float dh = MathF.Min(headerH + pad + (availCount + takenCount) * rowH + pad * 2, screenH * 0.80f);
-        float dx = screenW - dw - 12f;   // right-aligned in the open right-side space (#105)
-        float dy = (screenH - dh) * 0.5f;
+        float dw = ResolverPanelLayout.W;   // dock into the right-column resolver panel
+        float dh = ResolverPanelLayout.H;
+        float dx = ResolverPanelLayout.X;
+        float dy = ResolverPanelLayout.Y;
 
         ImGui.SetNextWindowPos(new Vector2(dx, dy), ImGuiCond.Always);
         ImGui.SetNextWindowSize(new Vector2(dw, dh), ImGuiCond.Always);
         ImGui.PushStyleColor(ImGuiCol.WindowBg, new Vector4(0.15f, 0.15f, 0.20f, 0.97f));
         ImGui.Begin("##DeployZoneDialog",
             ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoCollapse |
-            ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoScrollbar);
+            ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoBringToFrontOnFocus);
         ImGui.PopStyleColor();
 
         ImGui.PushTextWrapPos(dw - pad);

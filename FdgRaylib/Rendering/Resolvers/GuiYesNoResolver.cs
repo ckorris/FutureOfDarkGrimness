@@ -39,10 +39,10 @@ public class GuiYesNoResolver : IStageResolver<YesNoRequest, bool>, IGuiResolver
             ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoScrollbar | ImGuiWindowFlags.NoInputs |
             ImGuiWindowFlags.NoBackground);
 
-        float dw = MathF.Min(screenW * 0.40f, 520f);
-        float dh = screenH * 0.22f;
-        float dx = screenW - dw - 12f;                 // right-aligned in the open right-side space (#105)
-        float dy = (screenH - dh) * 0.5f;
+        float dw = ResolverPanelLayout.W;   // dock into the right-column resolver panel
+        float dh = ResolverPanelLayout.H;
+        float dx = ResolverPanelLayout.X;
+        float dy = ResolverPanelLayout.Y;
 
         ImGui.SetCursorPos(new Vector2(dx, dy));
         ImGui.PushStyleColor(ImGuiCol.ChildBg, new Vector4(0.15f, 0.15f, 0.20f, 0.97f));

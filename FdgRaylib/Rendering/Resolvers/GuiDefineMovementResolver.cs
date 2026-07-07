@@ -739,12 +739,13 @@ public class GuiDefineMovementResolver
         TaskCompletionSource<List<ModelMoveEntry>> tcs, List<ITerrain> terrain,
         int dangerousCrossers, bool difficultCrossing, bool difficultStopped, bool selectedCapped)
     {
-        float panelW = MathF.Min(screenW * 0.6f, 680f);
-        ImGui.SetNextWindowPos(new Vector2(screenW - panelW - 12f, 16f), ImGuiCond.FirstUseEver); // right-aligned (#105)
-        ImGui.SetNextWindowSizeConstraints(new Vector2(panelW, 0f), new Vector2(panelW, float.MaxValue));
+        float panelW = ResolverPanelLayout.W;   // dock into the right-column resolver panel
+        ImGui.SetNextWindowPos(new Vector2(ResolverPanelLayout.X, ResolverPanelLayout.Y), ImGuiCond.Always);
+        ImGui.SetNextWindowSize(new Vector2(ResolverPanelLayout.W, ResolverPanelLayout.H), ImGuiCond.Always);
         ImGui.PushStyleColor(ImGuiCol.WindowBg, new Vector4(0.10f, 0.10f, 0.15f, 0.92f));
         ImGui.Begin("##MovementPanel",
-            ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoScrollbar | ImGuiWindowFlags.AlwaysAutoResize);
+            ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoCollapse |
+            ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoBringToFrontOnFocus);
         ImGui.PopStyleColor();
 
         string unitName = request.UnitDataBinding.GetValue().Name;

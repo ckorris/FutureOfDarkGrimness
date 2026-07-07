@@ -62,7 +62,7 @@ public class GuiSelectionResolver<T> : IStageResolver<SelectionRequest<T>, DataB
         const float btnPadY  = 6f;
         const float textPadX = 10f;
 
-        float dw = MathF.Min(screenW * 0.45f, 560f);
+        float dw = ResolverPanelLayout.W;   // dock into the right-column resolver panel (#GreenUIPolish)
         float btnW = dw - pad * 2f;
         float wrapW = btnW - textPadX * 2f;
 
@@ -82,15 +82,15 @@ public class GuiSelectionResolver<T> : IStageResolver<SelectionRequest<T>, DataB
             validH += rowHeights[i] + ImGui.GetStyle().ItemSpacing.Y;
         }
 
-        float dh = MathF.Min(instrH + pad + validH + invalidCount * rowH + backH + pad * 2, screenH * 0.80f);
-        float dx = screenW - dw - 12f;   // right-aligned in the open right-side space (#105)
-        float dy = (screenH - dh) * 0.5f;
+        float dh = ResolverPanelLayout.H;   // fill the panel; content taller than this scrolls
+        float dx = ResolverPanelLayout.X;
+        float dy = ResolverPanelLayout.Y;
 
         ImGui.SetCursorPos(new Vector2(dx, dy));
         ImGui.PushStyleColor(ImGuiCol.ChildBg, new Vector4(0.15f, 0.15f, 0.20f, 0.97f));
         ImGui.PushStyleVar(ImGuiStyleVar.ChildRounding, 6f);
         ImGui.BeginChild("##SelectionDialog", new Vector2(dw, dh), ImGuiChildFlags.Borders,
-            ImGuiWindowFlags.NoScrollbar);
+            ImGuiWindowFlags.None);
         ImGui.PopStyleColor();
         ImGui.PopStyleVar();
 
