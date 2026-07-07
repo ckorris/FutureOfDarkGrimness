@@ -250,7 +250,15 @@ public class TacticalOverlayController
         if (_tableState == null) return;
 
         DrawBandLabels();
-        // Pips / readouts / measurement land in P5.
+
+        DefineMovementPathRequest? req = _moveResolver?.ActiveRequest;
+        if (req != null)
+        {
+            IUnit movingUnit = req.UnitDataBinding.GetValue();
+            DrawPips(req, movingUnit);
+            DrawGhostThreatTint(movingUnit);
+            DrawDistanceReadout(req, movingUnit);
+        }
 
         if (_sampler.Enabled)
             RunAndDrawFidelitySampler(screenW, screenH);
@@ -545,36 +553,114 @@ public class TacticalOverlayController
 
     private void InvalidateField() => _fieldBuiltOnce = false;
 
-    /// <summary>Chips row for the move panel (spec section 4). Called from the resolver's DrawInfoPanel,
-    /// so it runs inside that ImGui window.</summary>
+    /// <summary>Chips row + live eligible-count rows + incoming-threat row for the move panel (spec
+    /// section 4). Called from the resolver's DrawInfoPanel, so it runs inside that ImGui window and reads
+    /// the same-frame ghost snapshot.</summary>
     public void DrawPanelSection()
     {
-        if (_pins.Count == 0) return;
-
-        ImGui.Separator();
-        ImGui.TextDisabled("Pinned (Tab focus, Esc clears)");
-
-        int unpinTarget = -1, focusTarget = -1;
-        for (int i = 0; i < _pins.Count; i++)
+        if (_pins.Count > 0)
         {
-            PinnedTarget pin = _pins[i];
-            (byte r, byte g, byte b) = TacticalOverlayConfig.AccentPalette[pin.Accent % TacticalOverlayConfig.AccentPalette.Length];
-            bool focused = i == _focusIndex;
+            ImGui.Separator();
+            ImGui.TextDisabled("Pinned (Tab focus, Esc clears)");
 
-            ImGui.PushStyleColor(ImGuiCol.Text, new Vector4(r / 255f, g / 255f, b / 255f, 1f));
-            if (ImGui.Button($"{(focused ? "> " : "  ")}{pin.Unit.Name}##pinchip{i}"))
-                focusTarget = i;
-            ImGui.PopStyleColor();
+            int unpinTarget = -1, focusTarget = -1;
+            for (int i = 0; i < _pins.Count; i++)
+            {
+                PinnedTarget pin = _pins[i];
+                (byte r, byte g, byte b) = TacticalOverlayConfig.AccentPalette[pin.Accent % TacticalOverlayConfig.AccentPalette.Length];
+                bool focused = i == _focusIndex;
 
-            // Chip click focuses; clicking the already-focused chip unpins (spec section 4).
-            if (focused && focusTarget == i) { focusTarget = -1; unpinTarget = i; }
+                ImGui.PushStyleColor(ImGuiCol.Text, new Vector4(r / 255f, g / 255f, b / 255f, 1f));
+                if (ImGui.Button($"{(focused ? "> " : "  ")}{pin.Unit.Name}##pinchip{i}"))
+                    focusTarget = i;
+                ImGui.PopStyleColor();
 
-            ImGui.SameLine();
-            if (ImGui.SmallButton($"x##pinx{i}")) unpinTarget = i;
+                // Chip click focuses; clicking the already-focused chip unpins (spec section 4).
+                if (focused && focusTarget == i) { focusTarget = -1; unpinTarget = i; }
+
+                ImGui.SameLine();
+                if (ImGui.SmallButton($"x##pinx{i}")) unpinTarget = i;
+            }
+
+            if (unpinTarget >= 0)      Unpin(unpinTarget);
+            else if (focusTarget >= 0) { _focusIndex = focusTarget; InvalidateField(); }
+
+            DrawCountRows();
         }
 
-        if (unpinTarget >= 0)      Unpin(unpinTarget);
-        else if (focusTarget >= 0) { _focusIndex = focusTarget; InvalidateField(); }
+        DrawThreatRow();
+    }
+
+    // Per pin, per weapon type across the moving unit: eligible-shot count at committed positions -> at the
+    // pending ghost positions ("Rifles vs Grunts: 7->9"). Eligible = a lit or hatched pip (in range with
+    // LoS), computed live via RulesProbe -- never the field texture.
+    private void DrawCountRows()
+    {
+        DefineMovementPathRequest? req = _moveResolver?.ActiveRequest;
+        if (req == null || _probe == null) return;
+        IUnit movingUnit = req.UnitDataBinding.GetValue();
+        IReadOnlyDictionary<IModel, Position> committed = _moveResolver!.CommittedPositions;
+        IReadOnlyDictionary<IModel, Position> ghosts    = _moveResolver.GhostPositions;
+
+        foreach (PinnedTarget pin in _pins)
+        {
+            List<ITerrain> blockers = _probe.BuildBlockers(movingUnit, pin.Unit);
+            (byte r, byte g, byte b) = TacticalOverlayConfig.AccentPalette[pin.Accent % TacticalOverlayConfig.AccentPalette.Length];
+            ImGui.PushStyleColor(ImGuiCol.Text, new Vector4(r / 255f, g / 255f, b / 255f, 1f));
+
+            var weaponNames = new SortedSet<string>();
+            foreach (IModel m in movingUnit.Models)
+                if (m.GetIsAlive())
+                    foreach (Weapon w in m.Weapons)
+                        if (w.RangeInches > 0f) weaponNames.Add(w.Name);
+
+            foreach (string wname in weaponNames)
+            {
+                int before = 0, after = 0;
+                foreach (IModel m in movingUnit.Models)
+                {
+                    if (!m.GetIsAlive()) continue;
+                    Weapon? w = null;
+                    foreach (Weapon cand in m.Weapons)
+                        if (cand.RangeInches > 0f && cand.Name == wname) { w = cand; break; }
+                    if (w == null) continue;
+
+                    float eff = EffectiveRange(req, wname, pin.Unit.ID, w.RangeInches);
+                    Position cp = committed.TryGetValue(m, out Position c) ? c : m.Position;
+                    Position gp = ghosts.TryGetValue(m, out Position g2) ? g2 : m.Position;
+                    if (_probe.EvaluatePip(m, cp, m.Facing, pin.Unit, eff, blockers) != PipState.Dim) before++;
+                    if (_probe.EvaluatePip(m, gp, m.Facing, pin.Unit, eff, blockers) != PipState.Dim) after++;
+                }
+                ImGui.TextUnformatted($"{wname} vs {pin.Unit.Name}: {before}->{after}");
+            }
+            ImGui.PopStyleColor();
+        }
+    }
+
+    private void DrawThreatRow()
+    {
+        DefineMovementPathRequest? req = _moveResolver?.ActiveRequest;
+        if (req == null || _threat == null || _moveResolver == null) return;
+        IUnit movingUnit = req.UnitDataBinding.GetValue();
+        IReadOnlyDictionary<IModel, Position> ghosts = _moveResolver.GhostPositions;
+
+        bool charge = false, shoot = false;
+        foreach (IModel m in movingUnit.Models)
+        {
+            if (!m.GetIsAlive()) continue;
+            Position gp = ghosts.TryGetValue(m, out Position g) ? g : m.Position;
+            if (gp.x == 0f && gp.z == 0f) continue;
+            if (_threat.SampleChargeInside(gp.x, gp.z)) charge = true;
+            if (_threat.SampleShootInside(gp.x, gp.z))  shoot  = true;
+        }
+
+        if (charge || shoot)
+        {
+            (byte r, byte g, byte b) = TacticalOverlayConfig.ThreatColor;
+            ImGui.PushStyleColor(ImGuiCol.Text, new Vector4(r / 255f, g / 255f, b / 255f, 1f));
+            ImGui.TextUnformatted($"! Inside enemy {(charge ? "charge" : "shoot")} reach");
+            ImGui.PopStyleColor();
+        }
     }
 
     // ---- Opportunity field: build ----------------------------------------------------------------
@@ -789,6 +875,162 @@ public class TacticalOverlayController
             _hoverCandidate = null;
             _hoverElapsed   = 0;
         }
+    }
+
+    private static uint U32(float r, float g, float b, float a) =>
+        ImGui.ColorConvertFloat4ToU32(new Vector4(r, g, b, a));
+
+    // Per-model pips along each ghost's lower edge: one per (pin, distinct ranged weapon). Recomputed via
+    // RulesProbe every frame during the drag (spec section 4: correctness over caching).
+    private void DrawPips(DefineMovementPathRequest req, IUnit movingUnit)
+    {
+        if (_pins.Count == 0 || _moveResolver == null || _probe == null) return;
+        IReadOnlyDictionary<IModel, Position> ghosts = _moveResolver.GhostPositions;
+
+        var blockersByPin = new List<List<ITerrain>>();
+        foreach (PinnedTarget pin in _pins) blockersByPin.Add(_probe.BuildBlockers(movingUnit, pin.Unit));
+
+        ImDrawListPtr dl = ImGui.GetBackgroundDrawList();
+        foreach (IModel m in movingUnit.Models)
+        {
+            if (!m.GetIsAlive()) continue;
+            Position gp = ghosts.TryGetValue(m, out Position g) ? g : m.Position;
+            if (gp.x == 0f && gp.z == 0f) continue;
+
+            var weaponGroups = m.Weapons.Where(w => w.RangeInches > 0f).GroupBy(w => w.Name).ToList();
+            if (weaponGroups.Count == 0) continue;
+
+            var pips = new List<(int accent, PipState state)>();
+            for (int pi = 0; pi < _pins.Count; pi++)
+            {
+                PinnedTarget pin = _pins[pi];
+                foreach (var wg in weaponGroups)
+                {
+                    float eff = EffectiveRange(req, wg.Key, pin.Unit.ID, wg.First().RangeInches);
+                    PipState st = _probe.EvaluatePip(m, gp, m.Facing, pin.Unit, eff, blockersByPin[pi]);
+                    pips.Add((pin.Accent, st));
+                }
+            }
+            DrawPipRow(dl, gp, m.BaseRadiusInches, pips);
+        }
+    }
+
+    private void DrawPipRow(ImDrawListPtr dl, Position ghostPos, float baseRadiusIn, List<(int accent, PipState state)> pips)
+    {
+        if (pips.Count == 0) return;
+        Vector2 c = WorldToScreen(new Float2(ghostPos.x, ghostPos.z));
+        float rPx  = TacticalOverlayConfig.PipRadiusPx;
+        float step = rPx * 2f + 2f;
+        float baseY = c.Y + baseRadiusIn * _scale + rPx + 2f;
+        float x0 = c.X - (pips.Count - 1) * step * 0.5f;
+
+        for (int i = 0; i < pips.Count; i++)
+        {
+            (int accent, PipState state) = pips[i];
+            (byte r, byte g, byte b) = TacticalOverlayConfig.AccentPalette[accent % TacticalOverlayConfig.AccentPalette.Length];
+            var pc = new Vector2(x0 + i * step, baseY);
+            uint solid = U32(r / 255f, g / 255f, b / 255f, 1f);
+
+            switch (state)
+            {
+                case PipState.Lit:
+                    dl.AddCircleFilled(pc, rPx, solid);
+                    break;
+                case PipState.Hatched:
+                    dl.AddCircleFilled(pc, rPx, U32(r / 255f, g / 255f, b / 255f, 0.55f));
+                    dl.AddCircle(pc, rPx, solid, 12, 1.5f);
+                    dl.AddLine(pc + new Vector2(-rPx, rPx), pc + new Vector2(rPx, -rPx), U32(0f, 0f, 0f, 0.8f), 1f);
+                    break;
+                default: // Dim
+                    dl.AddCircle(pc, rPx, U32(r / 255f, g / 255f, b / 255f, 0.35f), 12, 1.2f);
+                    break;
+            }
+        }
+    }
+
+    // Red emphasis ring around any ghost sitting inside a threat frontier (spec section 4: ghost outlines
+    // tint red while inside any frontier).
+    private void DrawGhostThreatTint(IUnit movingUnit)
+    {
+        if (_threat == null || _moveResolver == null) return;
+        IReadOnlyDictionary<IModel, Position> ghosts = _moveResolver.GhostPositions;
+
+        ImDrawListPtr dl = ImGui.GetBackgroundDrawList();
+        (byte r, byte g, byte b) = TacticalOverlayConfig.GhostInsideThreatTint;
+        uint col = U32(r / 255f, g / 255f, b / 255f, 0.9f);
+
+        foreach (IModel m in movingUnit.Models)
+        {
+            if (!m.GetIsAlive()) continue;
+            Position gp = ghosts.TryGetValue(m, out Position gpos) ? gpos : m.Position;
+            if (gp.x == 0f && gp.z == 0f) continue;
+            if (_threat.SampleChargeInside(gp.x, gp.z) || _threat.SampleShootInside(gp.x, gp.z))
+            {
+                Vector2 c = WorldToScreen(new Float2(gp.x, gp.z));
+                dl.AddCircle(c, m.BaseRadiusInches * _scale + 2f, col, 24, 2f);
+            }
+        }
+    }
+
+    // Distance readout on the ghost nearest the cursor: base-edge distance to the nearest focused-pin
+    // model. Within 0.5" of a focused-pin band boundary it promotes to a labeled measurement line, so an
+    // edge case is never resolved by squinting at the texture (spec section 4 / invariant).
+    private void DrawDistanceReadout(DefineMovementPathRequest req, IUnit movingUnit)
+    {
+        if (_pins.Count == 0 || _focusIndex < 0 || _focusIndex >= _pins.Count || _moveResolver == null) return;
+        IUnit focus = _pins[_focusIndex].Unit;
+        IReadOnlyDictionary<IModel, Position> ghosts = _moveResolver.GhostPositions;
+        Vector2 mouse = ImGui.GetIO().MousePos;
+
+        IModel? ghostModel = null;
+        Position ghostPos = default;
+        float bestPx = float.MaxValue;
+        foreach (IModel m in movingUnit.Models)
+        {
+            if (!m.GetIsAlive()) continue;
+            Position gp = ghosts.TryGetValue(m, out Position g) ? g : m.Position;
+            if (gp.x == 0f && gp.z == 0f) continue;
+            float d = Vector2.Distance(WorldToScreen(new Float2(gp.x, gp.z)), mouse);
+            if (d < bestPx) { bestPx = d; ghostModel = m; ghostPos = gp; }
+        }
+        if (ghostModel == null) return;
+
+        IModel? nearestTarget = null;
+        float bestDist = float.MaxValue;
+        foreach (IModel tm in focus.Models)
+        {
+            if (!tm.GetIsAlive()) continue;
+            Position tp = tm.Position;
+            if (tp.x == 0f && tp.z == 0f) continue;
+            float d = DistanceUtilities.GetBaseToBaseDistanceInches_3D(
+                ghostPos, tp, ghostModel.BaseShape, ghostModel.Facing, tm.BaseShape, tm.Facing);
+            if (d < bestDist) { bestDist = d; nearestTarget = tm; }
+        }
+        if (nearestTarget == null) return;
+
+        float longest = _lastFieldBands.Count > 0 ? _lastFieldBands.Max(b => b.RangeInches) : 0f;
+        bool inRange = bestDist <= longest;
+        uint col = inRange ? U32(0.4f, 0.95f, 0.4f, 1f) : U32(0.9f, 0.9f, 0.9f, 0.95f);
+
+        float? boundary = null;
+        foreach (BandSpec bnd in _lastFieldBands)
+            if (System.Math.Abs(bestDist - bnd.RangeInches) <= TacticalOverlayConfig.MeasurementPromoteInches)
+            { boundary = bnd.RangeInches; break; }
+
+        ImDrawListPtr dl = ImGui.GetBackgroundDrawList();
+        Vector2 ghostScreen = WorldToScreen(new Float2(ghostPos.x, ghostPos.z));
+        string txt = boundary.HasValue ? $"{bestDist:0.0}\" / {boundary.Value:0}\"" : $"{bestDist:0.0}\"";
+
+        if (boundary.HasValue)
+        {
+            Vector2 targetScreen = WorldToScreen(new Float2(nearestTarget.Position.x, nearestTarget.Position.z));
+            dl.AddLine(ghostScreen, targetScreen, col, 1.5f);
+        }
+
+        Vector2 size = ImGui.CalcTextSize(txt);
+        Vector2 at = ghostScreen + new Vector2(-size.X * 0.5f, -(ghostModel.BaseRadiusInches * _scale) - size.Y - 4f);
+        dl.AddText(at + new Vector2(1, 1), U32(0f, 0f, 0f, 0.8f), txt);
+        dl.AddText(at, col, txt);
     }
 
     private void DrawBandLabels()

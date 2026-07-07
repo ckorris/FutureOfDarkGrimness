@@ -71,6 +71,14 @@ public class GuiDefineMovementResolver
     // click handler also treats it as a model select / waypoint placement.
     private bool _frameEnemyPinConsumed;
 
+    // #162: per-frame planned positions of the moving unit's models, read by the tactical overlay for its
+    // pips / eligible-counts / distance readout. Committed = each model's last waypoint (or start);
+    // Ghost = committed but with the live mouse ghost for the selected model (single) / phantoms (group).
+    private readonly Dictionary<IModel, Position> _committedSnapshot = new();
+    private readonly Dictionary<IModel, Position> _ghostSnapshot = new();
+    public IReadOnlyDictionary<IModel, Position> CommittedPositions => _committedSnapshot;
+    public IReadOnlyDictionary<IModel, Position> GhostPositions => _ghostSnapshot;
+
     // #155: per-frame difficult-terrain warning state, set where the ghost/phantoms clamp and read by the
     // info panel. Crossing = a model moves through difficult terrain (total move held to 6"); stopped = a
     // model couldn't afford to enter, so it was held at the terrain edge. Reset at the top of each Draw.
@@ -446,6 +454,22 @@ public class GuiDefineMovementResolver
         // 3b) Targeting overlay (toggle, on by default) — combines ranged + melee
         if (_showTargeting)
             DrawTargeting(dl, screenW, screenH, request, pt, paths, ghostPos, ghostExtraDist, group);
+
+        // #162: snapshot planned positions for the tactical overlay (pips / counts / distance readout).
+        _committedSnapshot.Clear();
+        _ghostSnapshot.Clear();
+        foreach (var snapModel in paths.Keys)
+        {
+            Position committed = pt.GetModelLastPathPosition(snapModel);
+            _committedSnapshot[snapModel] = committed;
+
+            Position ghost = committed;
+            if (group && _groupGhostPositions != null && _groupGhostPositions.TryGetValue(snapModel, out var ph))
+                ghost = ph;
+            else if (!group && ReferenceEquals(snapModel, _selectedModel) && ghostPos.HasValue)
+                ghost = ghostPos.Value;
+            _ghostSnapshot[snapModel] = ghost;
+        }
 
         // 4) Mouse / keyboard input (single mode — group mode handles its own clicks above)
         if (!group && overTable && !io.WantCaptureMouse)

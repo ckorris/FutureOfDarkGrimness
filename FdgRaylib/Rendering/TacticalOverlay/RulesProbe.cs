@@ -4,6 +4,10 @@ using FDG.Stages;
 
 namespace FdgRaylib.Rendering.TacticalOverlay;
 
+/// <summary>Eligibility of one (model, weapon, pin) shot: lit = in range with clear LoS, hatched = in
+/// range but the shot goes into cover, dim = out of range or no LoS (spec section 4).</summary>
+public enum PipState { Dim, Lit, Hatched }
+
 /// <summary>
 /// The narrow rules adapter (spec section 7). Every authoritative determination the overlay's
 /// instruments make -- eligibility, counts, distances, reach -- flows through here, and this type holds
@@ -84,6 +88,45 @@ public sealed class RulesProbe
             if (best == ESightLineEffect.Clear) break;
         }
         return best;
+    }
+
+    /// <summary>
+    /// The authoritative pip state for a shooter model standing at <paramref name="shooterPos"/> firing a
+    /// weapon of effective range <paramref name="effRange"/> at <paramref name="target"/>. Uses the
+    /// engine's real base-edge 3D distance and <see cref="LineOfSightUtilities.EvaluateSightLine"/> against
+    /// the target's living models -- range to the unit is range to its nearest model (spec section 2), so
+    /// this checks every living target model and reports the best shot available. This is a pip, and a pip
+    /// may never be wrong: it never reads the field texture (spec section 0).
+    /// </summary>
+    public PipState EvaluatePip(IModel shooter, Position shooterPos, Float2 shooterFacing,
+        IUnit target, float effRange, IReadOnlyList<ITerrain> blockers)
+    {
+        ESightLineEffect best = ESightLineEffect.Blocking;
+        bool anyInRange = false;
+
+        foreach (IModel tm in target.Models)
+        {
+            if (!tm.GetIsAlive()) continue;
+            Position tp = tm.Position;
+            if (tp.x == 0f && tp.z == 0f) continue;
+
+            float d = DistanceUtilities.GetBaseToBaseDistanceInches_3D(
+                shooterPos, tp, shooter.BaseShape, shooterFacing, tm.BaseShape, tm.Facing);
+            if (d > effRange) continue;
+
+            anyInRange = true;
+            ESightLineEffect eff = LineOfSightUtilities.EvaluateSightLine(shooterPos, tp, blockers);
+            if (eff < best) best = eff;
+            if (best == ESightLineEffect.Clear) break;
+        }
+
+        if (!anyInRange) return PipState.Dim;                    // out of range
+        return best switch
+        {
+            ESightLineEffect.Clear => PipState.Lit,
+            ESightLineEffect.Cover => PipState.Hatched,
+            _                      => PipState.Dim,              // in range but no LoS
+        };
     }
 
     /// <summary>The most common alive-model base radius in a unit, or a 28mm default for an empty unit.</summary>
