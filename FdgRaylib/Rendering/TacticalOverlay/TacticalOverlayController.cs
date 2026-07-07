@@ -880,6 +880,117 @@ public class TacticalOverlayController
     private static uint U32(float r, float g, float b, float a) =>
         ImGui.ColorConvertFloat4ToU32(new Vector4(r, g, b, a));
 
+    // ---- Snapping (spec section 4) ---------------------------------------------------------------
+
+    /// <summary>
+    /// Magnetically adjusts the point the ghost is following: within 0.4" of a focused-pin band boundary
+    /// it snaps just inside (so the move lands in range), within 0.4" of a threat frontier it snaps just
+    /// outside; band wins if both apply. Alt (held) disables it. Returns the point unchanged when nothing
+    /// is in range. NOTE (deviation): snapping the ghost's input point -- rather than only the committed
+    /// drop -- lets the snapped position flow through the resolver's existing clamp/overlap/budget/cohesion
+    /// validation unchanged, so it can never propose an illegal move (spec: snapped positions must still
+    /// pass placement validation). The tradeoff is the ghost is magnetic on approach, not only on release.
+    /// </summary>
+    public Float2 SnapInputPoint(Float2 intended)
+    {
+        if (_moveResolver?.ActiveRequest == null) return intended;
+        if (ImGui.GetIO().KeyAlt) return intended;
+
+        // Band snap (focused pin) takes precedence over threat snap.
+        if (_pins.Count > 0 && _focusIndex >= 0 && _focusIndex < _pins.Count && _lastFieldBands.Count > 0)
+        {
+            IUnit focus = _pins[_focusIndex].Unit;
+            IModel? nearest = null;
+            float nd2 = float.MaxValue;
+            float ncx = 0, ncz = 0;
+            foreach (IModel m in focus.Models)
+            {
+                if (!m.GetIsAlive()) continue;
+                Position p = m.Position;
+                if (p.x == 0f && p.z == 0f) continue;
+                float dx = intended.X - p.x, dz = intended.Y - p.z;
+                float d2 = dx * dx + dz * dz;
+                if (d2 < nd2) { nd2 = d2; nearest = m; ncx = p.x; ncz = p.z; }
+            }
+
+            if (nearest != null)
+            {
+                float centerDist = MathF.Sqrt(nd2);
+                if (centerDist > 1e-4f)
+                {
+                    float tr = nearest.BaseRadiusInches;
+                    foreach (BandSpec b in _lastFieldBands)
+                    {
+                        // Field bands are circle-approx (center-to-center = range + shooterR + targetR); the
+                        // real base-edge is validated live by the pip + the resolver clamps. Rectangle bases
+                        // may be a texel off here -- acceptable, the pip tells the truth.
+                        float boundaryCenter = b.RangeInches + _lastShooterRadius + tr;
+                        if (MathF.Abs(centerDist - boundaryCenter) <= TacticalOverlayConfig.SnapEpsilonInches)
+                        {
+                            float target = boundaryCenter - TacticalOverlayConfig.SnapInsideMarginInches;
+                            float t = target / centerDist;
+                            return new Float2(ncx + (intended.X - ncx) * t, ncz + (intended.Y - ncz) * t);
+                        }
+                    }
+                }
+            }
+        }
+
+        // Threat snap: nudge just outside the nearest frontier when the point is inside one.
+        if (_threat != null &&
+            (_threat.SampleChargeInside(intended.X, intended.Y) || _threat.SampleShootInside(intended.X, intended.Y)))
+        {
+            if (TryNearestFrontierPoint(intended, out Float2 np, out float dist) &&
+                dist <= TacticalOverlayConfig.SnapEpsilonInches)
+            {
+                float dx = np.X - intended.X, dz = np.Y - intended.Y;
+                float len = MathF.Sqrt(dx * dx + dz * dz);
+                if (len > 1e-4f)
+                {
+                    float m = TacticalOverlayConfig.SnapInsideMarginInches / len;
+                    return new Float2(np.X + dx * m, np.Y + dz * m); // just past the boundary, outward
+                }
+            }
+        }
+
+        return intended;
+    }
+
+    private bool TryNearestFrontierPoint(Float2 p, out Float2 nearest, out float dist)
+    {
+        nearest = default;
+        dist = float.MaxValue;
+        if (_threat == null) return false;
+
+        float bestD = float.MaxValue;
+        Float2 bestP = default;
+
+        void Scan(List<List<Float2>> polys)
+        {
+            foreach (List<Float2> poly in polys)
+                for (int i = 0; i < poly.Count - 1; i++)
+                {
+                    Float2 a = poly[i], b = poly[i + 1];
+                    float abx = b.X - a.X, abz = b.Y - a.Y;
+                    float len2 = abx * abx + abz * abz;
+                    float t = len2 < 1e-9f ? 0f : ((p.X - a.X) * abx + (p.Y - a.Y) * abz) / len2;
+                    t = System.Math.Clamp(t, 0f, 1f);
+                    float px = a.X + t * abx, pz = a.Y + t * abz;
+                    float dx = p.X - px, dz = p.Y - pz;
+                    float d = MathF.Sqrt(dx * dx + dz * dz);
+                    if (d < bestD) { bestD = d; bestP = new Float2(px, pz); }
+                }
+        }
+
+        Scan(_threat.ChargePolylines);
+        Scan(_threat.ShootPolylines);
+
+        if (bestD == float.MaxValue) return false;
+        nearest = bestP;
+        dist = bestD;
+        return true;
+    }
+
     // Per-model pips along each ghost's lower edge: one per (pin, distinct ranged weapon). Recomputed via
     // RulesProbe every frame during the drag (spec section 4: correctness over caching).
     private void DrawPips(DefineMovementPathRequest req, IUnit movingUnit)

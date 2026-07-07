@@ -329,6 +329,15 @@ public class GuiDefineMovementResolver
             float cap        = advanceOnly ? maxAdvance : maxCharge;
             float remaining  = cap - totalSoFar;
             var (mx, mz) = PixelToInches(io.MousePos.X, io.MousePos.Y);
+            // #162: magnetic snap to a focused-pin band boundary / threat frontier (Alt disables). Snapping
+            // the input point here routes the result through the difficult/enemy/budget/overlap clamps below,
+            // so it can never propose an illegal move.
+            if (_tactical != null)
+            {
+                var snapped = _tactical.SnapInputPoint(new Float2(mx, mz));
+                mx = snapped.X;
+                mz = snapped.Y;
+            }
             float dx = mx - anchor.x;
             float dz = mz - anchor.z;
             float dist = MathF.Sqrt(dx * dx + dz * dz);
