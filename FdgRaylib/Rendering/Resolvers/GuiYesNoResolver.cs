@@ -72,7 +72,9 @@ public class GuiYesNoResolver : IStageResolver<YesNoRequest, bool>, IGuiResolver
             Complete(tcs, true);
 
         ImGui.SameLine(0, gap);
-        if (ResolverButtons.Deemphasized("No", new Vector2(btnW, btnH)))
+        bool noPressed  = ResolverButtons.Deemphasized("No  (Esc)", new Vector2(btnW, btnH));
+        bool escPressed = !ImGui.GetIO().WantTextInput && ImGui.IsKeyPressed(ImGuiKey.Escape);
+        if (noPressed || escPressed)
             Complete(tcs, false);
 
         ImGui.EndChild();
