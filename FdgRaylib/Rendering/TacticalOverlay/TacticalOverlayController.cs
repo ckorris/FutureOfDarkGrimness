@@ -74,6 +74,18 @@ public class TacticalOverlayController
     private List<BandSpec> _lastFieldBands = new();
     private float _lastShooterRadius;
 
+    // Per-frame blocker cache: DrawPips and DrawCountRows both need each pin's terrain+model blockers, and
+    // DrawInstruments (which clears this) always runs before DrawPanelSection in the frame, so one build
+    // per pin per frame suffices.
+    private readonly Dictionary<IUnit, List<ITerrain>> _frameBlockers = new();
+
+    private List<ITerrain> BlockersFor(IUnit movingUnit, IUnit pinUnit)
+    {
+        if (!_frameBlockers.TryGetValue(pinUnit, out List<ITerrain>? b))
+            _frameBlockers[pinUnit] = b = _probe!.BuildBlockers(movingUnit, pinUnit);
+        return b;
+    }
+
     // World<->screen for the current frame, pushed once per frame right after ComputeLayout so both
     // the Raylib-pass draws and the ImGui-pass instruments read the same values (spec: no camera --
     // pan/zoom is just a different Layout, never a rebuild).
@@ -299,6 +311,7 @@ public class TacticalOverlayController
     public void DrawInstruments(int screenW, int screenH)
     {
         if (_tableState == null) return;
+        _frameBlockers.Clear();
 
         DrawBandLabels();
 
@@ -583,8 +596,11 @@ public class TacticalOverlayController
                     if (!m.GetIsAlive()) continue;
                     Position p = m.Position;
                     if (p.x == 0f && p.z == 0f) continue;
-                    Mix((long)(p.x * 2f));
-                    Mix((long)(p.z * 2f));
+                    // 0.1" quantization: fine enough that a sub-0.5" enemy shift (pile-in nudge, push) still
+                    // rebuilds the discs that GhostInThreat / SnapInputPoint read, yet coarse enough not to
+                    // thrash on presentation glide.
+                    Mix((long)(p.x * 10f));
+                    Mix((long)(p.z * 10f));
                 }
             }
             return h;
@@ -598,7 +614,7 @@ public class TacticalOverlayController
     /// pins + focuses it, clicking a pinned enemy unpins it. Returns true when it consumed the click, so
     /// the move resolver doesn't also treat it as a waypoint. No-op outside a move job.
     /// </summary>
-    public bool TryHandleEnemyClick(IUnit unit, IModel model)
+    public bool TryHandleEnemyClick(IUnit unit)
     {
         if (_moveResolver?.ActiveRequest == null) return false;
 
@@ -702,7 +718,7 @@ public class TacticalOverlayController
 
         foreach (PinnedTarget pin in _pins)
         {
-            List<ITerrain> blockers = _probe.BuildBlockers(movingUnit, pin.Unit);
+            List<ITerrain> blockers = BlockersFor(movingUnit, pin.Unit);
             (byte r, byte g, byte b) = TacticalOverlayConfig.AccentPalette[pin.Accent % TacticalOverlayConfig.AccentPalette.Length];
             ImGui.PushStyleColor(ImGuiCol.Text, new Vector4(r / 255f, g / 255f, b / 255f, 1f));
 
@@ -964,8 +980,11 @@ public class TacticalOverlayController
                 if (p.x == 0f && p.z == 0f) continue;
                 Mix((long)(p.x * 4f)); Mix((long)(p.z * 4f));
             }
-            Float2 c = MovingCentroid(movingUnit);
-            Mix((long)(c.X * 2f)); Mix((long)(c.Y * 2f));
+            // The field is target-anchored (bands + LoS depend on the target, terrain, and third-party
+            // blockers -- the mover's own models are excluded from blockers). So the mover's position is
+            // deliberately NOT in the signature: it must not trigger the expensive field/visibility rebuild
+            // on every committed step. Only band-label placement uses the centroid, and a label sitting at
+            // its build-time point on the (unchanged) band edge is cosmetic.
             return h;
         }
     }
@@ -980,7 +999,14 @@ public class TacticalOverlayController
         _shadowMask!.Clear();
         _coverMask!.Clear();
 
-        List<ITerrain> blockers = _probe!.BuildBlockers(movingUnit, target);
+        // Only Blocking/Cover pieces affect EvaluateSightLine (model-base blockers are Blocking); drop the
+        // rest so the per-cell loop is cheaper, and skip the whole (expensive, per-texel) pass entirely
+        // when nothing can block or cover -> the masks stay clear = everything lit, no cover.
+        List<ITerrain> relevant = _probe!.BuildBlockers(movingUnit, target)
+            .Where(t => t.TerrainType.HasFlag(ETerrainType.Blocking) || t.TerrainType.HasFlag(ETerrainType.Cover))
+            .ToList();
+        if (relevant.Count == 0) return;
+
         FieldMask band = _bandMask!;
         int W = band.W, H = band.H;
 
@@ -992,7 +1018,7 @@ public class TacticalOverlayController
             {
                 if (band.Cells[rowBase + cx] == 0) continue;
                 var from = new Position(band.CellCenterX(cx), cz);
-                ESightLineEffect eff = _probe.BestSight(from, target, blockers);
+                ESightLineEffect eff = _probe.BestSight(from, target, relevant);
                 if (eff == ESightLineEffect.Blocking)   _shadowMask.Cells[rowBase + cx] = 1;
                 else if (eff == ESightLineEffect.Cover) _coverMask.Cells[rowBase + cx]  = 1;
             }
@@ -1144,13 +1170,16 @@ public class TacticalOverlayController
         IReadOnlyDictionary<IModel, Position> ghosts = _moveResolver.GhostPositions;
 
         var blockersByPin = new List<List<ITerrain>>();
-        foreach (PinnedTarget pin in _pins) blockersByPin.Add(_probe.BuildBlockers(movingUnit, pin.Unit));
+        foreach (PinnedTarget pin in _pins) blockersByPin.Add(BlockersFor(movingUnit, pin.Unit));
 
         ImDrawListPtr dl = ImGui.GetBackgroundDrawList();
         foreach (IModel m in movingUnit.Models)
         {
             if (!m.GetIsAlive()) continue;
-            Position gp = ghosts.TryGetValue(m, out Position g) ? g : m.Position;
+            // Only draw where the resolver has published a ghost this session: on the first frame / while a
+            // presentation animation holds the resolver's Draw, the snapshot is empty -- don't render pips
+            // at the model's start position (they'd disagree with the panel counts).
+            if (!ghosts.TryGetValue(m, out Position gp)) continue;
             if (gp.x == 0f && gp.z == 0f) continue;
 
             var weaponGroups = m.Weapons.Where(w => w.RangeInches > 0f).GroupBy(w => w.Name).ToList();
@@ -1218,7 +1247,7 @@ public class TacticalOverlayController
         foreach (IModel m in movingUnit.Models)
         {
             if (!m.GetIsAlive()) continue;
-            Position gp = ghosts.TryGetValue(m, out Position gpos) ? gpos : m.Position;
+            if (!ghosts.TryGetValue(m, out Position gp)) continue;
             if (gp.x == 0f && gp.z == 0f) continue;
             if (GhostInThreat(gp.x, gp.z, out _, out _))
             {
@@ -1244,7 +1273,7 @@ public class TacticalOverlayController
         foreach (IModel m in movingUnit.Models)
         {
             if (!m.GetIsAlive()) continue;
-            Position gp = ghosts.TryGetValue(m, out Position g) ? g : m.Position;
+            if (!ghosts.TryGetValue(m, out Position gp)) continue;
             if (gp.x == 0f && gp.z == 0f) continue;
             float d = Vector2.Distance(WorldToScreen(new Float2(gp.x, gp.z)), mouse);
             if (d < bestPx) { bestPx = d; ghostModel = m; ghostPos = gp; }

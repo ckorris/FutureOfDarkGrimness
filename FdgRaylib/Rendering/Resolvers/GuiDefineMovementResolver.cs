@@ -142,15 +142,20 @@ public class GuiDefineMovementResolver
 
     // #162: hit-test enemy models under a click and route to the tactical overlay to pin/unpin. Returns
     // true when it consumed the click (so the movement handlers skip it). Enemy = not on the mover's team.
+    // Reads the move request through the lock-guarded ActiveRequest (Resolve writes _request on the engine
+    // thread). Base hit-test mirrors TableHitTester / the resolver's own model-select convention (world
+    // deltas; exact for the default circular bases -- rotated rectangular bases share the codebase's
+    // "axis-aligned, no facing yet" limitation).
     private bool HandleEnemyPinClick(float mxInches, float mzInches)
     {
-        if (_tactical == null || _request == null) return false;
+        if (_tactical == null) return false;
+        DefineMovementPathRequest? req = ActiveRequest;
+        if (req == null) return false;
 
-        var me = _request.TargetPlayerID;
+        var me = req.TargetPlayerID;
         var myTeam = _tableState.Teams.Objects.FirstOrDefault(t => t.IsPlayerOnTeam(me));
 
         IUnit? hitUnit = null;
-        IModel? hitModel = null;
         float best = float.MaxValue;
         foreach (var unit in _tableState.Units.Objects)
         {
@@ -163,11 +168,11 @@ public class GuiDefineMovementResolver
                 if (p.x == 0f && p.z == 0f) continue;
                 float dx = mxInches - p.x, dz = mzInches - p.z;
                 float d2 = dx * dx + dz * dz;
-                if (m.BaseShape.ContainsLocalPoint(dx, dz) && d2 < best) { best = d2; hitUnit = unit; hitModel = m; }
+                if (m.BaseShape.ContainsLocalPoint(dx, dz) && d2 < best) { best = d2; hitUnit = unit; }
             }
         }
 
-        return hitUnit != null && _tactical.TryHandleEnemyClick(hitUnit, hitModel!);
+        return hitUnit != null && _tactical.TryHandleEnemyClick(hitUnit);
     }
 
     public Task<List<ModelMoveEntry>> Resolve(DefineMovementPathRequest request)
