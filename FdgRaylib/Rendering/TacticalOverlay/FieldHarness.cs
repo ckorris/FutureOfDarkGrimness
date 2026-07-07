@@ -115,14 +115,18 @@ internal static class FieldHarness
 
         var shadow = new FieldMask(W, H, Tpi);
         var cover = new FieldMask(W, H, Tpi);
+        var swCpu = System.Diagnostics.Stopwatch.StartNew();
         PolarSightMap.ClassifyInto(band, shadow, cover, maps);
 
         using var cpu = new FieldCompositor(W, H);
         cpu.Compose(band, shadow, cover, accent, alphaScale: 1f);
+        swCpu.Stop();
         byte[] cpuPx = cpu.Pixels;   // straight alpha, row 0 = image top
 
         // ---- GPU render + readback ------------------------------------------------------------------
+        var swGpu = System.Diagnostics.Stopwatch.StartNew();
         gpu.Rebuild(scene.Targets, scene.ShooterRadius, scene.Bands, maps, accent, alphaScale: 1f);
+        swGpu.Stop();   // command submission; readback below forces completion for the diff
         Image img = Raylib.LoadImageFromTexture(gpu.CompositeTexture);
         byte[] gpuPx = ExtractRgba(img, out bool flipRows);
         Raylib.UnloadImage(img);
@@ -160,7 +164,8 @@ internal static class FieldHarness
         bool pass = probesOk && frac <= MaxMismatchFraction;
 
         Console.WriteLine($"[harness] {scene.Name,-14} union {union,8}  mismatch {mism,7} ({frac:P2})  " +
-                          $"orientation {(flipRows ? "flipped" : "direct")}  -> {(pass ? "PASS" : "FAIL")}");
+                          $"cpu {swCpu.Elapsed.TotalMilliseconds,5:0.0}ms  gpu-submit {swGpu.Elapsed.TotalMilliseconds,5:0.0}ms  " +
+                          $"-> {(pass ? "PASS" : "FAIL")}");
 
         WritePng(Path.Combine(outDir, $"{scene.Name}-cpu.png"), cpuPx, premultiply: false);
         WritePng(Path.Combine(outDir, $"{scene.Name}-gpu.png"), gpuPx, premultiply: false, flipRows ? H : 0);
