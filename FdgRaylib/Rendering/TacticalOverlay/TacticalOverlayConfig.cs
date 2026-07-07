@@ -51,7 +51,9 @@ internal static class TacticalOverlayConfig
     // layer, not a green tint) even at low alpha; the RINGS stay pure accent for identity.
     public const float BandFillWhiteMix         = 0.40f;
     public const float BandBoundaryThicknessPx = 1.5f;
-    public const float HatchSpacingInches       = 0.6f; // diagonal world-space cover hatch pitch
+    public const float HatchSpacingInches       = 0.6f; // cover crosshatch pitch (world-space, per direction)
+    public const int   HatchLineWidthTexels     = 2;    // thin lines; crosshatch (both diagonals) so it reads
+                                                        // uniformly regardless of the band edge's angle
     public const float PreviewAlphaScale        = 0.5f; // hover-preview field: reduced opacity, no chip
 
     // --- Instruments ------------------------------------------------------------------------------

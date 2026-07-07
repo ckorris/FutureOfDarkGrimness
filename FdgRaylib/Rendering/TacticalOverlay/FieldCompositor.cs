@@ -88,12 +88,15 @@ internal sealed class FieldCompositor : IDisposable
                     : Math.Min(TacticalOverlayConfig.BandFillAlphaMax,
                                TacticalOverlayConfig.BandFillAlpha + (band - 1) * TacticalOverlayConfig.BandInnerAlphaBoost);
 
-                // Cover hatch: diagonal stripes in image space -> world-space diagonals when drawn.
+                // Cover crosshatch: thin lines in BOTH diagonal directions (a mesh) so it reads the same
+                // against a band edge at any angle. Must match GpuFieldRenderer's shader exactly.
                 if (!boundary && coverC[inRow + cx] != 0)
                 {
                     int imageRow = H - 1 - cy;
-                    bool onStripe = ((cx + imageRow) % hatchPeriod) < hatchPeriod / 2;
-                    alpha = onStripe ? Math.Min(0.75f, alpha + 0.28f) : alpha * 0.55f;
+                    int lw = TacticalOverlayConfig.HatchLineWidthTexels;
+                    int d1 = (cx + imageRow) % hatchPeriod;
+                    int d2 = (((cx - imageRow) % hatchPeriod) + hatchPeriod) % hatchPeriod;
+                    if (d1 < lw || d2 < lw) alpha = Math.Min(0.75f, alpha + 0.28f);
                 }
 
                 alpha *= alphaScale;

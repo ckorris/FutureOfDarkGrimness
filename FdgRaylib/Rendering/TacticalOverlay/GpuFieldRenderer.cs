@@ -41,7 +41,7 @@ internal sealed class GpuFieldRenderer : IDisposable
     private RenderTexture2D _maskRT;
     private RenderTexture2D _compositeRT;
     private Shader _shader;
-    private int _locMask, _locAccent, _locAlphaScale, _locInvSize, _locHatchPeriod, _locHatchThreshold,
+    private int _locMask, _locAccent, _locAlphaScale, _locInvSize, _locHatchPeriod, _locHatchLineWidth,
         _locBandBase, _locBandBoost, _locBandFillMax, _locBoundaryAlpha, _locFillWhiteMix;
     private bool _ready;
     private bool _hasContent;
@@ -65,7 +65,7 @@ uniform vec3 accent;
 uniform float alphaScale;
 uniform vec2 invSize;
 uniform float hatchPeriod;
-uniform float hatchThreshold;   // integer-division half period, matching the CPU's (period / 2)
+uniform float hatchLineWidth;   // crosshatch line thickness in texels, matching FieldCompositor
 uniform float bandBase;
 uniform float bandBoost;
 uniform float bandFillMax;      // fill clamp, = FieldCompositor's BandFillAlphaMax
@@ -101,16 +101,17 @@ void main()
     else
     {
         alpha = min(bandFillMax, bandBase + (b - 1.0) * bandBoost);
-        if (mask.g < 0.004)   // visible only through cover: diagonal hatch
+        if (mask.g < 0.004)   // visible only through cover: crosshatch mesh
         {
             // pix.y here is the TEXTURE-MEMORY row (the composite pass samples with a flipped src
             // rect), which is H-1-imageRow; the CPU hatch uses the image row, so convert -- otherwise
-            // the hatch diagonal mirrors and the pixel diff lights up half the cover region.
+            // the hatch mirrors and the pixel diff lights up half the cover region.
             vec2 size = 1.0 / invSize;
             vec2 pix = floor(fragTexCoord * size);
             float imageRow = size.y - 1.0 - pix.y;
-            float stripe = mod(pix.x + imageRow, hatchPeriod);
-            alpha = (stripe < hatchThreshold) ? min(0.75, alpha + 0.28) : alpha * 0.55;
+            float d1 = mod(pix.x + imageRow, hatchPeriod);   // GLSL mod is always in [0, period)
+            float d2 = mod(pix.x - imageRow, hatchPeriod);
+            if (d1 < hatchLineWidth || d2 < hatchLineWidth) alpha = min(0.75, alpha + 0.28);
         }
     }
 
@@ -154,7 +155,7 @@ void main()
             _locAlphaScale  = Raylib.GetShaderLocation(_shader, "alphaScale");
             _locInvSize     = Raylib.GetShaderLocation(_shader, "invSize");
             _locHatchPeriod = Raylib.GetShaderLocation(_shader, "hatchPeriod");
-            _locHatchThreshold = Raylib.GetShaderLocation(_shader, "hatchThreshold");
+            _locHatchLineWidth = Raylib.GetShaderLocation(_shader, "hatchLineWidth");
             _locBandBase    = Raylib.GetShaderLocation(_shader, "bandBase");
             _locBandBoost   = Raylib.GetShaderLocation(_shader, "bandBoost");
             _locBandFillMax = Raylib.GetShaderLocation(_shader, "bandFillMax");
@@ -266,7 +267,7 @@ void main()
         // Match FieldCompositor exactly: period via int truncation, threshold via int division.
         int hatchPeriod = Math.Max(2, (int)(TacticalOverlayConfig.HatchSpacingInches * _tpi));
         Raylib.SetShaderValue(_shader, _locHatchPeriod, (float)hatchPeriod, ShaderUniformDataType.Float);
-        Raylib.SetShaderValue(_shader, _locHatchThreshold, (float)(hatchPeriod / 2), ShaderUniformDataType.Float);
+        Raylib.SetShaderValue(_shader, _locHatchLineWidth, (float)TacticalOverlayConfig.HatchLineWidthTexels, ShaderUniformDataType.Float);
         Raylib.SetShaderValue(_shader, _locBandBase, TacticalOverlayConfig.BandFillAlpha, ShaderUniformDataType.Float);
         Raylib.SetShaderValue(_shader, _locBandBoost, TacticalOverlayConfig.BandInnerAlphaBoost, ShaderUniformDataType.Float);
         Raylib.SetShaderValue(_shader, _locBandFillMax, TacticalOverlayConfig.BandFillAlphaMax, ShaderUniformDataType.Float);

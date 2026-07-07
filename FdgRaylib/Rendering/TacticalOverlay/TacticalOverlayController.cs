@@ -53,7 +53,9 @@ public class TacticalOverlayController
     private sealed class PinnedTarget
     {
         public readonly IUnit Unit;
-        public readonly int Accent;   // index into AccentPalette
+        // Index into AccentPalette. POSITIONAL: kept equal to the pin's slot in _pins (reindexed on
+        // pin/unpin), so a single pin is always the lead accent and colours don't drift with history.
+        public int Accent;
         public PinnedTarget(IUnit unit, int accent) { Unit = unit; Accent = accent; }
     }
 
@@ -768,8 +770,8 @@ public class TacticalOverlayController
 
     private void Pin(IUnit unit)
     {
-        _pins.Add(new PinnedTarget(unit, NextFreeAccent()));
-        _focusIndex = _pins.Count - 1;   // newest pin is focused
+        _pins.Add(new PinnedTarget(unit, _pins.Count));   // accent = slot; newest is focused
+        _focusIndex = _pins.Count - 1;
         InvalidateField();
     }
 
@@ -777,6 +779,7 @@ public class TacticalOverlayController
     {
         if (index < 0 || index >= _pins.Count) return;
         _pins.RemoveAt(index);
+        for (int i = 0; i < _pins.Count; i++) _pins[i].Accent = i; // keep colours positional
         _focusIndex = _pins.Count == 0
             ? -1
             : System.Math.Clamp(_focusIndex >= index ? _focusIndex - 1 : _focusIndex, 0, _pins.Count - 1);
@@ -797,14 +800,6 @@ public class TacticalOverlayController
         if (_pins.Count == 0) return;
         _focusIndex = (_focusIndex + 1) % _pins.Count;
         InvalidateField();
-    }
-
-    private int NextFreeAccent()
-    {
-        int n = TacticalOverlayConfig.AccentPalette.Length;
-        for (int a = 0; a < n; a++)
-            if (!_pins.Any(p => p.Accent == a)) return a;
-        return _pins.Count % n; // more pins than palette entries -> wrap
     }
 
     private void InvalidateField() => _fieldBuiltOnce = false;

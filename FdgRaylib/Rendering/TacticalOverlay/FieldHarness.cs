@@ -26,9 +26,12 @@ internal static class FieldHarness
     private static readonly int H = (int)MathF.Ceiling(GameWideConstants.DEFAULT_TABLE_HEIGHT_INCHES * Tpi);
 
     // Per-channel byte tolerance (CPU rounds float->byte once; GPU rounds in the raster) and the share
-    // of union pixels allowed to exceed it (disc/fan edge rasterization differences).
+    // of union pixels allowed to exceed it. The residual is EDGE noise -- disc/fan rasterization, the
+    // 2-texel band rings, and the cover crosshatch mesh (which doubles the line-edge count). It stays
+    // well under 2%; a gross divergence (wrong blend, flipped orientation, misplaced pattern) is 10x+
+    // this and still caught.
     private const int ChannelTolerance = 8;
-    private const float MaxMismatchFraction = 0.015f;
+    private const float MaxMismatchFraction = 0.02f;
 
     private sealed record Scene(string Name, List<FieldTargetModel> Targets, List<BandSpec> Bands,
         float ShooterRadius, List<ITerrain> Terrain);
