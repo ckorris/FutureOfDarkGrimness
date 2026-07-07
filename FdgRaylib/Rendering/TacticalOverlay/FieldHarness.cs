@@ -171,6 +171,9 @@ internal static class FieldHarness
         WritePng(Path.Combine(outDir, $"{scene.Name}-gpu.png"), gpuPx, premultiply: false, flipRows ? H : 0);
         if (!pass)
             WritePng(Path.Combine(outDir, $"{scene.Name}-diff.png"), diffPx, premultiply: false);
+        // The real judgement is how the field reads OVER the grass, not on black -- composite the GPU
+        // picture onto the mat colour (with a faint inch grid) for eyeballing.
+        WriteOnMat(Path.Combine(outDir, $"{scene.Name}-onmat.png"), gpuPx, flipRows ? H : 0);
 
         return pass;
 
@@ -200,6 +203,33 @@ internal static class FieldHarness
         return px;
     }
 
+    // Straight-alpha field composited over the mat colour + a faint 6" grid -- what the player sees.
+    private static void WriteOnMat(string path, byte[] rgba, int flipH)
+    {
+        (byte r, byte g, byte b) mat = (40, 100, 40);
+        (byte r, byte g, byte b) grid = (33, 85, 33);
+        int gridStepTexels = (int)MathF.Round(6f * Tpi);
+
+        var buf = new byte[W * H * 4];
+        for (int y = 0; y < H; y++)
+        {
+            int srcY = flipH > 0 ? flipH - 1 - y : y;
+            for (int x = 0; x < W; x++)
+            {
+                bool onGrid = (x % gridStepTexels == 0) || (y % gridStepTexels == 0);
+                (byte br, byte bg, byte bb) = onGrid ? grid : mat;
+
+                int si = (srcY * W + x) * 4, di = (y * W + x) * 4;
+                float a = rgba[si + 3] / 255f;
+                buf[di]     = (byte)(rgba[si]     * a + br * (1f - a));
+                buf[di + 1] = (byte)(rgba[si + 1] * a + bg * (1f - a));
+                buf[di + 2] = (byte)(rgba[si + 2] * a + bb * (1f - a));
+                buf[di + 3] = 255;
+            }
+        }
+        ExportRgba(path, buf);
+    }
+
     private static void WritePng(string path, byte[] rgba, bool premultiply, int flipH = 0)
     {
         var buf = new byte[rgba.Length];
@@ -223,21 +253,22 @@ internal static class FieldHarness
                 buf[di + 3] = a;
             }
         }
+        ExportRgba(path, buf);
+    }
 
-        unsafe
+    private static unsafe void ExportRgba(string path, byte[] buf)
+    {
+        fixed (byte* p = buf)
         {
-            fixed (byte* p = buf)
+            var img = new Image
             {
-                var img = new Image
-                {
-                    Data = p,
-                    Width = W,
-                    Height = H,
-                    Mipmaps = 1,
-                    Format = PixelFormat.UncompressedR8G8B8A8,
-                };
-                Raylib.ExportImage(img, path);
-            }
+                Data = p,
+                Width = W,
+                Height = H,
+                Mipmaps = 1,
+                Format = PixelFormat.UncompressedR8G8B8A8,
+            };
+            Raylib.ExportImage(img, path);
         }
     }
 }

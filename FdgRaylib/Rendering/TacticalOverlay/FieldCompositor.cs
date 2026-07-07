@@ -74,15 +74,19 @@ internal sealed class FieldCompositor : IDisposable
                 if (shadowC[inRow + cx] != 0) continue; // blocked -> no fill (spec section 1)
                 _hasContent = true;
 
+                // 2-texel-bold band-change ring (the line is the information -- playtest feedback): a
+                // fill cell within 2 texels of a different band value in any cardinal direction. Must
+                // match GpuFieldRenderer's neighbour sampling exactly (harness-verified).
                 bool boundary =
-                    (cx == 0     || cells[inRow + cx - 1] != band) ||
-                    (cx == W - 1 || cells[inRow + cx + 1] != band) ||
-                    (cy == 0     || cells[(cy - 1) * W + cx] != band) ||
-                    (cy == H - 1 || cells[(cy + 1) * W + cx] != band);
+                    BandAt(cells, W, H, cx - 1, cy) != band || BandAt(cells, W, H, cx + 1, cy) != band ||
+                    BandAt(cells, W, H, cx, cy - 1) != band || BandAt(cells, W, H, cx, cy + 1) != band ||
+                    BandAt(cells, W, H, cx - 2, cy) != band || BandAt(cells, W, H, cx + 2, cy) != band ||
+                    BandAt(cells, W, H, cx, cy - 2) != band || BandAt(cells, W, H, cx, cy + 2) != band;
 
                 float alpha = boundary
-                    ? 0.85f
-                    : Math.Min(0.6f, TacticalOverlayConfig.BandFillAlpha + (band - 1) * TacticalOverlayConfig.BandInnerAlphaBoost);
+                    ? TacticalOverlayConfig.BandBoundaryAlpha
+                    : Math.Min(TacticalOverlayConfig.BandFillAlphaMax,
+                               TacticalOverlayConfig.BandFillAlpha + (band - 1) * TacticalOverlayConfig.BandInnerAlphaBoost);
 
                 // Cover hatch: diagonal stripes in image space -> world-space diagonals when drawn.
                 if (!boundary && coverC[inRow + cx] != 0)
@@ -94,15 +98,30 @@ internal sealed class FieldCompositor : IDisposable
 
                 alpha *= alphaScale;
 
+                // Rings = pure accent (identity); fill = accent lerped toward white (a luminous glow).
+                byte cr = accent.r, cg = accent.g, cb = accent.b;
+                if (!boundary)
+                {
+                    float m = TacticalOverlayConfig.BandFillWhiteMix;
+                    cr = (byte)(accent.r + (255 - accent.r) * m);
+                    cg = (byte)(accent.g + (255 - accent.g) * m);
+                    cb = (byte)(accent.b + (255 - accent.b) * m);
+                }
+
                 int o = (outRow + cx) * 4;
-                _pixels[o + 0] = accent.r;
-                _pixels[o + 1] = accent.g;
-                _pixels[o + 2] = accent.b;
+                _pixels[o + 0] = cr;
+                _pixels[o + 1] = cg;
+                _pixels[o + 2] = cb;
                 _pixels[o + 3] = (byte)(alpha * 255f);
             }
         }
         _dirty = true;
     }
+
+    // Band value at a cell, or 0 (empty) off-grid -- so a fill cell adjacent to the grid edge reads as a
+    // boundary, harmless since the field never reaches the edge.
+    private static byte BandAt(byte[] cells, int w, int h, int x, int y) =>
+        (x < 0 || x >= w || y < 0 || y >= h) ? (byte)0 : cells[y * w + x];
 
     public void Draw(float originX, float originY, float tableW, float tableH, float scale)
     {

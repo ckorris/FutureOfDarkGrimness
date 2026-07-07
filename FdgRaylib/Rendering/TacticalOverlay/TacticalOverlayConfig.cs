@@ -30,16 +30,26 @@ internal static class TacticalOverlayConfig
     public const float ThreatDashGapPx          = 5f;
 
     // --- Opportunity field accents (pin order, spec section 4) ------------------------------------
-    // Distinct from both players' identity colors and from the threat color.
+    // Distinct from both players' identity colors, from the threat color, AND from the mat green: the
+    // lead accent is a blue-dominant cyan (B > G) so a fill over the grass reads as a projected layer,
+    // not a recolor of it (playtest feedback 2026-07-07). The two grammars only stay separate if the
+    // un-overlaid board reads as ground.
     public static readonly (byte r, byte g, byte b)[] AccentPalette =
     {
-        (0x2A, 0xB7, 0xA9), // teal
+        (0x2A, 0xC0, 0xDC), // cyan  (shifted off the mat green -- B dominant)
         (0xE0, 0xA6, 0x3C), // amber
         (0xC0, 0x5F, 0xA0), // magenta
         (0x6C, 0x8E, 0xE0), // cornflower (4th+ pin, in case more than three are pinned)
     };
-    public const float BandFillAlpha           = 0.30f; // inner bands drawn slightly stronger
-    public const float BandInnerAlphaBoost      = 0.10f; // added per band toward the target
+    // The line is the information, the fill is atmosphere: bands read as concentric BOUNDARY rings over
+    // a light, near-uniform wash -- not as three barely-different fills (playtest feedback 2026-07-07).
+    public const float BandFillAlpha           = 0.14f; // base band fill -- deliberately light
+    public const float BandInnerAlphaBoost      = 0.05f; // subtle inner-depth cue, NOT the band signal
+    public const float BandFillAlphaMax         = 0.30f; // clamp so deep stacks stay a light wash (spec's ~30%)
+    public const float BandBoundaryAlpha        = 0.85f; // the rings carry the band delineation
+    // The FILL lerps toward white -> a luminous cool glow that lifts luminance (reads as a projected
+    // layer, not a green tint) even at low alpha; the RINGS stay pure accent for identity.
+    public const float BandFillWhiteMix         = 0.40f;
     public const float BandBoundaryThicknessPx = 1.5f;
     public const float HatchSpacingInches       = 0.6f; // diagonal world-space cover hatch pitch
     public const float PreviewAlphaScale        = 0.5f; // hover-preview field: reduced opacity, no chip
