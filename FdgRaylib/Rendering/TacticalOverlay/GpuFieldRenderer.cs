@@ -116,21 +116,24 @@ void main()
     }
 
     /// <summary>Creates GPU resources. Call once, after the window exists. False = no usable shader
-    /// (caller should fall back to the CPU path).</summary>
+    /// (caller should fall back to the CPU path); partially-created resources are unloaded.</summary>
     public bool TryInit()
     {
+        bool rtsCreated = false, shaderCreated = false;
         try
         {
             _bandRT      = Raylib.LoadRenderTexture(_w, _h);
             _maskRT      = Raylib.LoadRenderTexture(_w, _h);
             _compositeRT = Raylib.LoadRenderTexture(_w, _h);
+            rtsCreated = true;
             Raylib.SetTextureFilter(_bandRT.Texture, TextureFilter.Point);
             Raylib.SetTextureFilter(_maskRT.Texture, TextureFilter.Point);
             Raylib.SetTextureFilter(_compositeRT.Texture, TextureFilter.Bilinear);
 
             _shader = Raylib.LoadShaderFromMemory(null, CompositeFs);
+            shaderCreated = _shader.Id != 0;
             if (_shader.Id == 0 || _shader.Id == Rlgl.GetShaderIdDefault())
-                return false;
+                throw new InvalidOperationException("composite shader failed to compile");
 
             _locMask        = Raylib.GetShaderLocation(_shader, "maskTex");
             _locAccent      = Raylib.GetShaderLocation(_shader, "accent");
@@ -140,13 +143,21 @@ void main()
             _locHatchThreshold = Raylib.GetShaderLocation(_shader, "hatchThreshold");
             _locBandBase    = Raylib.GetShaderLocation(_shader, "bandBase");
             _locBandBoost   = Raylib.GetShaderLocation(_shader, "bandBoost");
-            if (_locMask < 0) return false;
+            if (_locMask < 0)
+                throw new InvalidOperationException("maskTex uniform missing");
 
             _ready = true;
             return true;
         }
         catch
         {
+            if (shaderCreated && _shader.Id != Rlgl.GetShaderIdDefault()) Raylib.UnloadShader(_shader);
+            if (rtsCreated)
+            {
+                Raylib.UnloadRenderTexture(_bandRT);
+                Raylib.UnloadRenderTexture(_maskRT);
+                Raylib.UnloadRenderTexture(_compositeRT);
+            }
             return false;
         }
     }

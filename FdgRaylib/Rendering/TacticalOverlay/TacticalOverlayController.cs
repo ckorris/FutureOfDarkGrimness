@@ -45,7 +45,8 @@ public class TacticalOverlayController
     private FieldMask? _bandMask;
     private FieldMask? _shadowMask;   // 1 = no LoS to the target from here (P4)
     private FieldMask? _coverMask;    // 1 = shot to the target passes through cover (P4)
-    private FieldCompositor? _field;
+    private FieldCompositor? _field;      // CPU reference renderer (fallback + harness ground truth)
+    private GpuFieldRenderer? _gpuField;  // GPU rasterizer (default path; null if init failed)
     private IUnit? _fieldMovingUnit;  // context of the last field build, for the fidelity sampler
     private IUnit? _fieldTargetUnit;
 
@@ -139,6 +140,15 @@ public class TacticalOverlayController
         _scratchMask = new FieldMask(w, h, TacticalOverlayConfig.TexelsPerInch);
         _field       = new FieldCompositor(w, h);
 
+        // GPU field path (default). Attach runs on the main thread with the window live (TransitionToGame
+        // fires from the render loop), so GL resource creation is safe here. Failure = CPU fallback.
+        _gpuField = new GpuFieldRenderer(w, h, TacticalOverlayConfig.TexelsPerInch);
+        if (!_gpuField.TryInit())
+        {
+            _gpuField = null;
+            _warn?.Invoke("[overlay] GPU field unavailable - using CPU field renderer");
+        }
+
         _threatBuiltOnce = false;
         _lastThreatSig   = 0;
         ClearPins();
@@ -160,6 +170,8 @@ public class TacticalOverlayController
     {
         _moveResolver?.SetTacticalOverlay(null);
         _field?.Dispose();
+        _gpuField?.Dispose();
+        _gpuField     = null;
         _field        = null;
         _bandMask     = null;
         _shadowMask   = null;
@@ -198,14 +210,27 @@ public class TacticalOverlayController
 
         // The opportunity field exists only during the local player's move job (spec section 3).
         DefineMovementPathRequest? req = _moveResolver?.ActiveRequest;
-        if (req == null) { _field.Clear(); _bandLabels = new List<BandLabel>(); _secondaryContours.Clear(); return; }
+        if (req == null) { ClearFieldPictures(); return; }
 
         (IUnit? target, int accent, float alphaScale) = ResolveFieldTarget(req);
-        if (target == null) { _field.Clear(); _bandLabels = new List<BandLabel>(); _secondaryContours.Clear(); return; }
+        if (target == null) { ClearFieldPictures(); return; }
 
         RebuildFieldIfNeeded(req, target, accent, alphaScale);
-        _field.Draw(_originX, _originY,
-            GameWideConstants.DEFAULT_TABLE_WIDTH_INCHES, GameWideConstants.DEFAULT_TABLE_HEIGHT_INCHES, _scale);
+
+        if (_gpuField != null && TacticalOverlayConfig.UseGpuField)
+            _gpuField.DrawComposite(_originX, _originY,
+                GameWideConstants.DEFAULT_TABLE_WIDTH_INCHES, GameWideConstants.DEFAULT_TABLE_HEIGHT_INCHES, _scale);
+        else
+            _field.Draw(_originX, _originY,
+                GameWideConstants.DEFAULT_TABLE_WIDTH_INCHES, GameWideConstants.DEFAULT_TABLE_HEIGHT_INCHES, _scale);
+    }
+
+    private void ClearFieldPictures()
+    {
+        _field?.Clear();
+        _gpuField?.Clear();
+        _bandLabels = new List<BandLabel>();
+        _secondaryContours.Clear();
     }
 
     /// <summary>
@@ -259,6 +284,9 @@ public class TacticalOverlayController
         if (!io.WantCaptureKeyboard && ImGui.IsKeyPressed(TacticalOverlayConfig.FidelitySamplerKey))
         {
             _sampler.Enabled = !_sampler.Enabled;
+            // The sampler's field channels read the CPU masks, which the GPU-default path skips
+            // computing -- force a rebuild so they materialize while sampling.
+            InvalidateField();
             _warn?.Invoke($"[overlay] fidelity sampler {(_sampler.Enabled ? "ON" : "OFF")}");
         }
 
@@ -667,6 +695,9 @@ public class TacticalOverlayController
 
     private void InvalidateField() => _fieldBuiltOnce = false;
 
+    /// <summary>Forces the next DrawField to rebuild (used by the toolbar's GPU/CPU field toggle).</summary>
+    public void InvalidateFieldCache() => InvalidateField();
+
     /// <summary>Chips row + live eligible-count rows + incoming-threat row for the move panel (spec
     /// section 4). Called from the resolver's DrawInfoPanel, so it runs inside that ImGui window and reads
     /// the same-frame ghost snapshot.</summary>
@@ -819,10 +850,20 @@ public class TacticalOverlayController
 
         var sw = System.Diagnostics.Stopwatch.StartNew();
         OpportunityFieldBuilder.Build(_bandMask!, targets, shooterRadius, bands);
-        ComputeVisibility(movingUnit, target);
+        List<PolarSightMap> maps = BuildSightMaps(movingUnit, target);
         (byte r, byte g, byte b) accentCol =
             TacticalOverlayConfig.AccentPalette[accent % TacticalOverlayConfig.AccentPalette.Length];
-        _field!.Compose(_bandMask!, _shadowMask!, _coverMask!, accentCol, alphaScale);
+
+        bool gpuActive = _gpuField != null && TacticalOverlayConfig.UseGpuField;
+        if (gpuActive)
+            _gpuField!.Rebuild(targets, shooterRadius, bands, maps, accentCol, alphaScale);
+        // The CPU masks are needed when the CPU path draws, and by the fidelity sampler's claim
+        // channels; skip the texel loop entirely when neither wants them.
+        if (!gpuActive || _sampler.Enabled)
+            PolarSightMap.ClassifyInto(_bandMask!, _shadowMask!, _coverMask!, maps);
+        if (!gpuActive)
+            _field!.Compose(_bandMask!, _shadowMask!, _coverMask!, accentCol, alphaScale);
+
         _bandLabels        = BuildBandLabels(movingUnit, targets, bands, accent);
         _fieldMovingUnit   = movingUnit;
         _fieldTargetUnit   = target;
@@ -1007,26 +1048,21 @@ public class TacticalOverlayController
         }
     }
 
-    // Per band cell, the sight verdict to the target (best over its living models): blocked cells punch
-    // a hole (no shot from there), cover cells hatch. Perf rework: instead of a real EvaluateSightLine
-    // segment test per texel (~1s with terrain on the table), each target model gets a PolarSightMap --
-    // built from the blocker silhouettes in microseconds -- and a texel costs one atan2 + two compares
-    // per source. Rows run in parallel (disjoint writes into plain byte arrays). The maps mirror the
-    // engine's semantics to within angular quantization; the fidelity sampler referees them against the
-    // REAL EvaluateSightLine (which pips/counts still call). v1 ignores blocker HEIGHT, as the engine does.
-    private void ComputeVisibility(IUnit movingUnit, IUnit target)
+    // One PolarSightMap per living, placed target model, built from the Blocking/Cover-relevant pieces
+    // (terrain + model-base blockers, assembled exactly as the shooting stages do). The maps feed BOTH
+    // renderers: the CPU path classifies texels through PolarSightMap.ClassifyInto (shared with the
+    // harness), the GPU path draws them as lit-region fans. Empty when nothing on the table can block
+    // or cover -> everything lit, no per-texel work at all. The fidelity sampler referees the maps
+    // against the REAL EvaluateSightLine (which pips/counts still call). v1 ignores blocker HEIGHT, as
+    // the engine does.
+    private List<PolarSightMap> BuildSightMaps(IUnit movingUnit, IUnit target)
     {
-        _shadowMask!.Clear();
-        _coverMask!.Clear();
-
-        // Only Blocking/Cover pieces affect EvaluateSightLine (model-base blockers are Blocking); skip
-        // everything when nothing can block or cover -> masks stay clear = everything lit, no cover.
+        var maps = new List<PolarSightMap>();
         List<ITerrain> relevant = _probe!.BuildBlockers(movingUnit, target)
             .Where(t => t.TerrainType.HasFlag(ETerrainType.Blocking) || t.TerrainType.HasFlag(ETerrainType.Cover))
             .ToList();
-        if (relevant.Count == 0) return;
+        if (relevant.Count == 0) return maps;
 
-        var maps = new List<PolarSightMap>();
         foreach (IModel m in target.Models)
         {
             if (!m.GetIsAlive()) continue;
@@ -1034,32 +1070,7 @@ public class TacticalOverlayController
             if (p.x == 0f && p.z == 0f) continue;
             maps.Add(PolarSightMap.Build(p, relevant, TacticalOverlayConfig.PolarBuckets));
         }
-        if (maps.Count == 0) return;
-
-        FieldMask band = _bandMask!;
-        int W = band.W, H = band.H;
-
-        System.Threading.Tasks.Parallel.For(0, H, cy =>
-        {
-            int rowBase = cy * W;
-            float cz = band.CellCenterZ(cy);
-            for (int cx = 0; cx < W; cx++)
-            {
-                if (band.Cells[rowBase + cx] == 0) continue;
-                float x = band.CellCenterX(cx);
-
-                ESightLineEffect best = ESightLineEffect.Blocking;
-                foreach (PolarSightMap map in maps)
-                {
-                    ESightLineEffect eff = map.Evaluate(x, cz);
-                    if (eff < best) best = eff;                    // Clear(0) < Cover(1) < Blocking(2)
-                    if (best == ESightLineEffect.Clear) break;
-                }
-
-                if (best == ESightLineEffect.Blocking)   _shadowMask.Cells[rowBase + cx] = 1;
-                else if (best == ESightLineEffect.Cover) _coverMask.Cells[rowBase + cx]  = 1;
-            }
-        });
+        return maps;
     }
 
     private bool IsEnemyOf(PlayerID refPlayer, IUnit unit)

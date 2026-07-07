@@ -119,6 +119,14 @@ public class TableTooltipOverlay
         if (_tactical != null && ImGui.Button(_tactical.ThreatToggledOn ? "Threat: ON" : "Threat: OFF"))
             _tactical.ToggleThreat();
 
+        // Opportunity-field renderer: GPU rasterizer (default) vs the CPU reference compositor. One
+        // click back to the known-good CPU path if the GPU picture ever looks wrong.
+        if (_tactical != null && ImGui.Button(TacticalOverlay.TacticalOverlayConfig.UseGpuField ? "Field: GPU" : "Field: CPU"))
+        {
+            TacticalOverlay.TacticalOverlayConfig.UseGpuField = !TacticalOverlay.TacticalOverlayConfig.UseGpuField;
+            _tactical.InvalidateFieldCache();
+        }
+
         if (_saveGameToJson != null)
         {
             if (ImGui.Button("Save Game"))

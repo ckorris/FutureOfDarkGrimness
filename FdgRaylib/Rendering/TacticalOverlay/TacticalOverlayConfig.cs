@@ -61,6 +61,11 @@ internal static class TacticalOverlayConfig
     // 30" range -- under half a texel at 12 tpi. Power of two, but nothing relies on that.
     public const int PolarBuckets = 2048;
 
+    // GPU field rasterizer (default, per user 2026-07-07) vs the CPU reference compositor. Runtime
+    // toggle (toolbar "Field" button) so a driver problem is one click from the known-good CPU path;
+    // flipping it invalidates the field cache. Auto-falls back to CPU when GPU init fails.
+    public static bool UseGpuField = true;
+
     // --- Hotkeys ----------------------------------------------------------------------------------
     // T is taken (dev token-reveal in TableTooltipOverlay); F is free. Tab/Alt are free.
     public const ImGuiKey ThreatToggleKey     = ImGuiKey.F;
