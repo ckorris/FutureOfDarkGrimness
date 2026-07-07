@@ -64,8 +64,9 @@ public class RaylibRenderer
 
     // Right-column console: Log and Chat are independent TOGGLES (not exclusive tabs) -- with both on,
     // their lines are merged into one column in arrival order.
-    private bool _showChat = true;   // Chat source shown (button on the left)
-    private bool _showLog  = true;   // Log source shown
+    private bool _showChat  = true;   // Chat source shown (button on the left)
+    private bool _showLog   = true;   // Log source shown
+    private bool _showDebug = false;  // Debug source shown (developer detail; off by default)
     private EChatMessageType _chatChannel = EChatMessageType.Global;
     private bool _chatUnread    = false;  // new chat arrived while Chat is toggled off / console collapsed
     private int  _lastChatCount = 0;      // for the unread check
@@ -245,6 +246,7 @@ public class RaylibRenderer
         _pan                   = Vector2.Zero;
         _showChat              = true;
         _showLog               = true;
+        _showDebug             = false;
         _chatChannel           = EChatMessageType.Global;
         _chatUnread            = false;
         _lastChatCount         = 0;
@@ -853,10 +855,12 @@ public class RaylibRenderer
             ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoCollapse |
             ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoBringToFrontOnFocus);
 
-        // Source toggles: Chat (left), then Log.
+        // Source toggles: Chat (left), then Log, then Debug (developer detail, off by default).
         DrawConsoleToggle((_chatUnread ? "Chat *" : "Chat") + "##chattoggle", ref _showChat, isChat: true);
         ImGui.SameLine();
         DrawConsoleToggle("Log##logtoggle", ref _showLog, isChat: false);
+        ImGui.SameLine();
+        DrawConsoleToggle("Debug##debugtoggle", ref _showDebug, isChat: false);
 
         ImGui.Separator();
         DrawConsoleContent();
@@ -902,14 +906,22 @@ public class RaylibRenderer
         ImGui.BeginChild("##consolescroll", new Vector2(0, -inputH), ImGuiChildFlags.None,
             ImGuiWindowFlags.HorizontalScrollbar);
 
-        List<LogEntry>? logMsgs  = _showLog ? _log!.Snapshot() : null;
+        // The engine log stream carries both normal and Debug-tagged lines; keep whichever categories are
+        // toggled on (Debug is a developer view, off by default).
+        List<LogEntry>? logMsgs = null;
+        if (_showLog || _showDebug)
+        {
+            logMsgs = _log!.Snapshot();
+            logMsgs.RemoveAll(e => e.IsDebug ? !_showDebug : !_showLog);
+        }
         List<LogEntry>? chatMsgs = (_showChat && _playerMessageUI != null) ? _playerMessageUI.ChatLog.Snapshot() : null;
         int ln = logMsgs?.Count ?? 0, cn = chatMsgs?.Count ?? 0;
 
         if (ln == 0 && cn == 0)
         {
-            ImGui.TextDisabled(!_showLog && !_showChat ? "Log and Chat hidden -- toggle one on above."
-                                                       : "No messages yet.");
+            ImGui.TextDisabled(!_showLog && !_showChat && !_showDebug
+                ? "Log, Debug and Chat hidden -- toggle one on above."
+                : "No messages yet.");
         }
         else
         {
