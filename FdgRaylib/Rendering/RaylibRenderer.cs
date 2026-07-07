@@ -602,6 +602,8 @@ public class RaylibRenderer
         {
             (Color fill, Color outline) = TerrainColors.For(terrain.TerrainType);
             ZoneRenderer.DrawFilled(terrain.Shape, l.Scale, l.OriginX, l.OriginY, TableHIn, fill, outline);
+            // Legibility patterns layered on top (hatch=difficult, chevrons=cover, crimson Xs=dangerous).
+            TerrainPatternRenderer.Draw(terrain.Shape, terrain.TerrainType, l.Scale, l.OriginX, l.OriginY, TableHIn);
         }
     }
 
