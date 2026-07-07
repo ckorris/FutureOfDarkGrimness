@@ -199,13 +199,10 @@ public class GuiPlaceObjectiveResolver
             ImGui.TextWrapped($"Place here? (X {pending.Value.x:F1}\", Z {pending.Value.z:F1}\")");
             ImGui.Spacing();
 
-            float btnW = 130f;
-            bool confirmPressed = ImGui.Button("Confirm", new Vector2(btnW, 28f))
-                || ImGui.IsKeyPressed(ImGuiKey.Enter)
-                || ImGui.IsKeyPressed(ImGuiKey.KeypadEnter);
-
+            // Primary: Confirm (accent + Enter). Cancel is de-emphasized.
+            bool confirmPressed = ResolverButtons.Primary("Confirm", new Vector2(190f, 30f));
             ImGui.SameLine();
-            bool cancelPressed = ImGui.Button("Cancel", new Vector2(btnW, 28f));
+            bool cancelPressed = ResolverButtons.Deemphasized("Cancel", new Vector2(120f, 30f));
 
             if (confirmPressed)
             {

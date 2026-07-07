@@ -60,19 +60,19 @@ public class GuiYesNoResolver : IStageResolver<YesNoRequest, bool>, IGuiResolver
         ImGui.TextUnformatted(question);
         ImGui.PopTextWrapPos();
 
-        // Buttons anchored to bottom of dialog
-        float btnW = dw * 0.35f;
+        // Buttons anchored to bottom of dialog. Yes is the primary affirmative (accent + Enter); No recedes.
+        float btnW = dw * 0.42f;
         float btnH = 36f;
-        float gap  = dw * 0.06f;
+        float gap  = dw * 0.04f;
         float firstX = (dw - btnW * 2 - gap) * 0.5f;
         float btnY = dh - pad - btnH;
 
         ImGui.SetCursorPos(new Vector2(firstX, btnY));
-        if (ImGui.Button("Yes", new Vector2(btnW, btnH)))
+        if (ResolverButtons.Primary("Yes", new Vector2(btnW, btnH)))
             Complete(tcs, true);
 
         ImGui.SameLine(0, gap);
-        if (ImGui.Button("No", new Vector2(btnW, btnH)))
+        if (ResolverButtons.Deemphasized("No", new Vector2(btnW, btnH)))
             Complete(tcs, false);
 
         ImGui.EndChild();

@@ -821,7 +821,8 @@ public class GuiDefineMovementResolver
         ImGui.Spacing();
         float spacing = ImGui.GetStyle().ItemSpacing.X;
         float pad     = ImGui.GetStyle().WindowPadding.X * 2;
-        float btnW    = (panelW - pad - spacing) / 2f; // two buttons per row
+        float fullW   = panelW - pad;                  // one button spanning the panel
+        float btnW    = (fullW - spacing) / 2f;        // two buttons per row
 
         // Facing overrides (#150): a group rotation faces the whole unit that way; single-mode hand-rotations
         // lock per model. Otherwise each waypoint follows its direction of travel (see PathTemplate).
@@ -865,31 +866,19 @@ public class GuiDefineMovementResolver
             issues.Add($"Cohesion: two models would be {cohesion.FarthestPair.Value.dist:F2}\" apart (max {FormatInches(GameWideConstants.MAX_MODEL_DISTANCE_FROM_ALL_OTHER_MODELS_INCHES)}\")");
 
         bool canSubmit = issues.Count == 0;
-        if (!canSubmit) ImGui.BeginDisabled();
-        bool donePressed = ImGui.Button("Done", new Vector2(btnW, 28f));
-        if (!canSubmit) ImGui.EndDisabled();
+        // Primary: Done -- larger, accented, commits on click or Enter (gated on a valid move).
+        bool donePressed = ResolverButtons.Primary("Done", new Vector2(fullW, 34f), enabled: canSubmit);
         if (ImGui.IsItemHovered(ImGuiHoveredFlags.AllowWhenDisabled))
-            ImGui.SetTooltip(canSubmit ? "Commit this move and continue." : string.Join("\n", issues));
-        if (canSubmit && donePressed)
+            ImGui.SetTooltip(canSubmit ? "Commit this move and continue. (Enter)" : string.Join("\n", issues));
+        if (donePressed)
         {
             Complete(tcs, results);
             ImGui.End();
             return;
         }
-        ImGui.SameLine();
-        bool clearPressed = ImGui.Button(group ? "Clear all" : "Clear selected", new Vector2(btnW, 28f));
-        if (ImGui.IsItemHovered())
-            ImGui.SetTooltip(group
-                ? "Remove all waypoints from every model in the unit."
-                : "Remove all waypoints from the currently selected model.");
-        if (clearPressed)
-        {
-            if (group) pt.ClearAllSteps();
-            else if (_selectedModel != null) pt.ClearModelSteps(_selectedModel);
-        }
 
-        // Row 2
-        bool skipPressed = ImGui.Button("Skip all", new Vector2(btnW, 28f));
+        // Secondary row: Skip (de-emphasized) + Auto-advance.
+        bool skipPressed = ResolverButtons.Deemphasized("Skip all", new Vector2(btnW, 28f));
         if (ImGui.IsItemHovered())
             ImGui.SetTooltip("Don't move the unit. Every model stays in place.");
         if (skipPressed)
@@ -909,6 +898,19 @@ public class GuiDefineMovementResolver
             Complete(tcs, AutoAdvance(request));
             ImGui.End();
             return;
+        }
+
+        // Destructive: Clear -- set apart below a separator, red-tinted.
+        ImGui.Separator();
+        bool clearPressed = ResolverButtons.Destructive(group ? "Clear all" : "Clear selected", new Vector2(fullW, 26f));
+        if (ImGui.IsItemHovered())
+            ImGui.SetTooltip(group
+                ? "Remove all waypoints from every model in the unit."
+                : "Remove all waypoints from the currently selected model.");
+        if (clearPressed)
+        {
+            if (group) pt.ClearAllSteps();
+            else if (_selectedModel != null) pt.ClearModelSteps(_selectedModel);
         }
 
         ImGui.End();
