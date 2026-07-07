@@ -57,6 +57,10 @@ internal static class TacticalOverlayConfig
     // --- Perf -------------------------------------------------------------------------------------
     public const double RebuildBudgetMs = 30.0; // log a warning past this per rebuild
 
+    // Angle buckets per PolarSightMap. Quantization error <= (pi/N)*distance: at 2048 that's ~0.05" at
+    // 30" range -- under half a texel at 12 tpi. Power of two, but nothing relies on that.
+    public const int PolarBuckets = 2048;
+
     // --- Hotkeys ----------------------------------------------------------------------------------
     // T is taken (dev token-reveal in TableTooltipOverlay); F is free. Tab/Alt are free.
     public const ImGuiKey ThreatToggleKey     = ImGuiKey.F;

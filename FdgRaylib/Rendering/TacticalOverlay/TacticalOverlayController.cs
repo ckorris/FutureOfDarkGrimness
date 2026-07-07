@@ -823,7 +823,7 @@ public class TacticalOverlayController
         (byte r, byte g, byte b) accentCol =
             TacticalOverlayConfig.AccentPalette[accent % TacticalOverlayConfig.AccentPalette.Length];
         _field!.Compose(_bandMask!, _shadowMask!, _coverMask!, accentCol, alphaScale);
-        _bandLabels        = BuildBandLabels(movingUnit, bands, accent);
+        _bandLabels        = BuildBandLabels(movingUnit, targets, bands, accent);
         _fieldMovingUnit   = movingUnit;
         _fieldTargetUnit   = target;
         _lastFieldBands    = bands;
@@ -876,27 +876,45 @@ public class TacticalOverlayController
         return baseRange;
     }
 
-    // One label pill per band, on that band's outer boundary at the point nearest the moving unit's
-    // centroid (plan decision D4 primary), so it sits on the side the mover approaches from.
-    private List<BandLabel> BuildBandLabels(IUnit movingUnit, List<BandSpec> bands, int accent)
+    // One label pill per band, on that band's outer boundary on the side the mover approaches from.
+    // Placement by ray-march (plan decision D4 fallback, adopted for speed): walk from outside the field
+    // toward the target-unit centroid along the mover->target line and mark the first cell that achieves
+    // the band ("within range R" = cell value >= band value, since inner bands hold higher values). A few
+    // hundred mask samples per band vs the old full-grid marching-squares scan. Labels are cosmetic; the
+    // half-texel step is plenty.
+    private List<BandLabel> BuildBandLabels(IUnit movingUnit, List<FieldTargetModel> targets,
+        List<BandSpec> bands, int accent)
     {
         var labels = new List<BandLabel>();
-        Float2 centroid = MovingCentroid(movingUnit);
+        if (targets.Count == 0) return labels;
+
+        float tx = 0f, tz = 0f;
+        foreach (FieldTargetModel t in targets) { tx += t.X; tz += t.Z; }
+        tx /= targets.Count; tz /= targets.Count;
+
+        Float2 mover = MovingCentroid(movingUnit);
+        float dx = mover.X - tx, dz = mover.Y - tz;
+        float len = MathF.Sqrt(dx * dx + dz * dz);
+        if (len < 1e-3f) { dx = 1f; dz = 0f; len = 1f; }   // degenerate: pick +X
+        dx /= len; dz /= len;
+
+        // Start beyond any possible reach (table diagonal) and march inward.
+        float maxReach = MathF.Sqrt(
+            GameWideConstants.DEFAULT_TABLE_WIDTH_INCHES * GameWideConstants.DEFAULT_TABLE_WIDTH_INCHES +
+            GameWideConstants.DEFAULT_TABLE_HEIGHT_INCHES * GameWideConstants.DEFAULT_TABLE_HEIGHT_INCHES);
+        float step = 0.5f / TacticalOverlayConfig.TexelsPerInch;
 
         foreach (BandSpec band in bands)
         {
-            List<List<Float2>> boundary =
-                MarchingSquares.Extract(_bandMask!, band.Value, 1f / TacticalOverlayConfig.TexelsPerInch);
-            Float2? best = null;
-            float bestD = float.MaxValue;
-            foreach (List<Float2> poly in boundary)
-                foreach (Float2 v in poly)
+            for (float t = maxReach; t >= 0f; t -= step)
+            {
+                float x = tx + dx * t, z = tz + dz * t;
+                if (_bandMask!.SampleAt(x, z) >= band.Value)
                 {
-                    float dx = v.X - centroid.X, dz = v.Y - centroid.Y;
-                    float d = dx * dx + dz * dz;
-                    if (d < bestD) { bestD = d; best = v; }
+                    labels.Add(new BandLabel(new Float2(x, z), band.Label, accent));
+                    break;
                 }
-            if (best.HasValue) labels.Add(new BandLabel(best.Value, band.Label, accent));
+            }
         }
         return labels;
     }
@@ -989,40 +1007,59 @@ public class TacticalOverlayController
         }
     }
 
-    // Per band cell, the real EvaluateSightLine to the target (best over its living models): blocked
-    // cells punch a hole (no shot from there), cover cells hatch. Only band cells are walked and each
-    // early-outs on Clear, so a clear board is cheap. Model-base blockers ARE included (matching the
-    // shooting stages), which makes the field's LoS/cover exact -- so the sampler's LoS/cover channels
-    // report ~0 mismatch (only cell-edge quantization). v1 ignores blocker HEIGHT, as the engine does.
+    // Per band cell, the sight verdict to the target (best over its living models): blocked cells punch
+    // a hole (no shot from there), cover cells hatch. Perf rework: instead of a real EvaluateSightLine
+    // segment test per texel (~1s with terrain on the table), each target model gets a PolarSightMap --
+    // built from the blocker silhouettes in microseconds -- and a texel costs one atan2 + two compares
+    // per source. Rows run in parallel (disjoint writes into plain byte arrays). The maps mirror the
+    // engine's semantics to within angular quantization; the fidelity sampler referees them against the
+    // REAL EvaluateSightLine (which pips/counts still call). v1 ignores blocker HEIGHT, as the engine does.
     private void ComputeVisibility(IUnit movingUnit, IUnit target)
     {
         _shadowMask!.Clear();
         _coverMask!.Clear();
 
-        // Only Blocking/Cover pieces affect EvaluateSightLine (model-base blockers are Blocking); drop the
-        // rest so the per-cell loop is cheaper, and skip the whole (expensive, per-texel) pass entirely
-        // when nothing can block or cover -> the masks stay clear = everything lit, no cover.
+        // Only Blocking/Cover pieces affect EvaluateSightLine (model-base blockers are Blocking); skip
+        // everything when nothing can block or cover -> masks stay clear = everything lit, no cover.
         List<ITerrain> relevant = _probe!.BuildBlockers(movingUnit, target)
             .Where(t => t.TerrainType.HasFlag(ETerrainType.Blocking) || t.TerrainType.HasFlag(ETerrainType.Cover))
             .ToList();
         if (relevant.Count == 0) return;
 
+        var maps = new List<PolarSightMap>();
+        foreach (IModel m in target.Models)
+        {
+            if (!m.GetIsAlive()) continue;
+            Position p = m.Position;
+            if (p.x == 0f && p.z == 0f) continue;
+            maps.Add(PolarSightMap.Build(p, relevant, TacticalOverlayConfig.PolarBuckets));
+        }
+        if (maps.Count == 0) return;
+
         FieldMask band = _bandMask!;
         int W = band.W, H = band.H;
 
-        for (int cy = 0; cy < H; cy++)
+        System.Threading.Tasks.Parallel.For(0, H, cy =>
         {
             int rowBase = cy * W;
             float cz = band.CellCenterZ(cy);
             for (int cx = 0; cx < W; cx++)
             {
                 if (band.Cells[rowBase + cx] == 0) continue;
-                var from = new Position(band.CellCenterX(cx), cz);
-                ESightLineEffect eff = _probe.BestSight(from, target, relevant);
-                if (eff == ESightLineEffect.Blocking)   _shadowMask.Cells[rowBase + cx] = 1;
-                else if (eff == ESightLineEffect.Cover) _coverMask.Cells[rowBase + cx]  = 1;
+                float x = band.CellCenterX(cx);
+
+                ESightLineEffect best = ESightLineEffect.Blocking;
+                foreach (PolarSightMap map in maps)
+                {
+                    ESightLineEffect eff = map.Evaluate(x, cz);
+                    if (eff < best) best = eff;                    // Clear(0) < Cover(1) < Blocking(2)
+                    if (best == ESightLineEffect.Clear) break;
+                }
+
+                if (best == ESightLineEffect.Blocking)   _shadowMask.Cells[rowBase + cx] = 1;
+                else if (best == ESightLineEffect.Cover) _coverMask.Cells[rowBase + cx]  = 1;
             }
-        }
+        });
     }
 
     private bool IsEnemyOf(PlayerID refPlayer, IUnit unit)
