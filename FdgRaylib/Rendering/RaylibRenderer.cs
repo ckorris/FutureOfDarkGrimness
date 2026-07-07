@@ -123,9 +123,20 @@ public class RaylibRenderer
 
     // Table view transform (#8): _zoom is a multiplier over the fit-to-viewport scale (1 = ~100% of the
     // viewport, up to MaxZoom); _pan is a pixel offset from the centered position. Both default to the
-    // plain fit until the player zooms/drags.
+    // plain fit until the player zooms (Ctrl+wheel, toward the cursor) or pans (middle-drag).
+    private const float MinZoom = 1f;   // fully zoomed out = table fills the viewport
+    private const float MaxZoom = 3f;   // 300%
     private float   _zoom = 1f;
     private Vector2 _pan  = Vector2.Zero;
+
+    // Fit-to-viewport scale: the largest scale that shows the whole table inside the viewport (with a
+    // margin). _zoom multiplies this; MinZoom==1 means "table fills the viewport".
+    private static float FitScale(int viewportW, int screenH)
+    {
+        float fitX = (viewportW - MinMargin * 2f) / TableWIn;
+        float fitY = (screenH   - MinMargin * 2f) / TableHIn;
+        return Math.Max(1f, Math.Min(fitX, fitY));
+    }
 
     public void TransitionToGame(ITableState tableState, Func<PlayerID, Color> colorForPlayer,
         GameLog? log, GuiResolverOverlay? resolverOverlay = null,
@@ -341,6 +352,7 @@ public class RaylibRenderer
             {
                 _presentationPlayer?.Update(Raylib.GetFrameTime());
 
+                HandleTableViewInput(screenW, screenH);
                 var layout = ComputeLayout(screenW, screenH);
                 DrawTable(layout);
                 if (ShowGrid)
@@ -451,10 +463,7 @@ public class RaylibRenderer
         int viewportW = Math.Max(1, screenW - rightW);
 
         // Fit-to-viewport scale (the #8 zoom-out clamp: the table fills ~100% of the viewport at _zoom==1).
-        float fitX = (viewportW - MinMargin * 2f) / TableWIn;
-        float fitY = (screenH   - MinMargin * 2f) / TableHIn;
-        float fit  = Math.Max(1f, Math.Min(fitX, fitY));
-        float scale = fit * _zoom;
+        float scale = FitScale(viewportW, screenH) * _zoom;
 
         int tablePixW = (int)(TableWIn * scale);
         int tablePixH = (int)(TableHIn * scale);
@@ -464,6 +473,56 @@ public class RaylibRenderer
         // AreaW is the viewport width so centered overlays (status HUD, dice, banners) sit over the table,
         // not under the right column.
         return new Layout(scale, originX, originY, viewportW, screenH);
+    }
+
+    // Ctrl+wheel to zoom toward the cursor (clamped MinZoom..MaxZoom), middle-drag to pan. Runs at the top
+    // of the frame, before ComputeLayout, so this frame renders with the updated transform. Zoom is gated
+    // on the mouse being over the table viewport only (NOT WantCaptureMouse -- the measurement overlay
+    // raises that flag whenever Ctrl is held over the table, which would otherwise veto every zoom); pan
+    // additionally respects WantCaptureMouse so dragging over the toolbar/panels doesn't scroll the board.
+    private void HandleTableViewInput(int screenW, int screenH)
+    {
+        int rightW    = RightColumnWidth(screenW);
+        int viewportW = Math.Max(1, screenW - rightW);
+        float fit     = FitScale(viewportW, screenH);
+
+        float mx = Raylib.GetMouseX(), my = Raylib.GetMouseY();
+        bool overViewport = mx < viewportW && my < screenH;
+
+        // Ctrl + wheel: zoom, keeping the world point under the cursor pinned.
+        bool ctrl   = Raylib.IsKeyDown(KeyboardKey.LeftControl) || Raylib.IsKeyDown(KeyboardKey.RightControl);
+        float wheel = Raylib.GetMouseWheelMove();
+        if (overViewport && ctrl && wheel != 0f)
+        {
+            float scaleOld   = fit * _zoom;
+            float originXOld = (viewportW - TableWIn * scaleOld) / 2f + _pan.X;
+            float originYOld = (screenH   - TableHIn * scaleOld) / 2f + _pan.Y;
+            float worldXin   = (mx - originXOld) / scaleOld;   // inches from table origin under the cursor
+            float worldYin   = (my - originYOld) / scaleOld;
+
+            float newZoom  = Math.Clamp(_zoom * MathF.Pow(1.1f, wheel), MinZoom, MaxZoom);
+            float scaleNew = fit * newZoom;
+            _pan.X = mx - (viewportW - TableWIn * scaleNew) / 2f - worldXin * scaleNew;
+            _pan.Y = my - (screenH   - TableHIn * scaleNew) / 2f - worldYin * scaleNew;
+            _zoom  = newZoom;
+        }
+
+        // Middle-drag: pan (skip when an ImGui window owns the mouse).
+        bool overUi = ImGui.GetIO().WantCaptureMouse;
+        if (overViewport && !overUi && Raylib.IsMouseButtonDown(MouseButton.Middle))
+        {
+            Vector2 d = Raylib.GetMouseDelta();
+            _pan.X += d.X;
+            _pan.Y += d.Y;
+        }
+
+        // Keep the table from being dragged/zoomed off the viewport: pan is bounded by the overflow of the
+        // scaled table past the viewport (zero when fully zoomed out, so there's nothing to pan then).
+        float scale = fit * _zoom;
+        float overflowX = MathF.Max(0f, (TableWIn * scale - viewportW) / 2f);
+        float overflowY = MathF.Max(0f, (TableHIn * scale - screenH)   / 2f);
+        _pan.X = Math.Clamp(_pan.X, -overflowX, overflowX);
+        _pan.Y = Math.Clamp(_pan.Y, -overflowY, overflowY);
     }
 
     // Thin border thickness (px) framing the table rect.

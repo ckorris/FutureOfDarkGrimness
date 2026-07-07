@@ -117,6 +117,8 @@ public class TableTooltipOverlay
         }
 
         ImGui.TextDisabled("Ctrl+drag: measure");
+        ImGui.TextDisabled("Ctrl+wheel: zoom");
+        ImGui.TextDisabled("Middle-drag: pan");
 
         ImGui.End();
     }
