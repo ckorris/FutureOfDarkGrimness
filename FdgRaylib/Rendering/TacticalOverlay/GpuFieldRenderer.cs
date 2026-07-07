@@ -42,7 +42,7 @@ internal sealed class GpuFieldRenderer : IDisposable
     private RenderTexture2D _compositeRT;
     private Shader _shader;
     private int _locMask, _locAccent, _locAlphaScale, _locInvSize, _locHatchPeriod, _locHatchLineWidth,
-        _locBandBase, _locBandBoost, _locBandFillMax, _locBoundaryAlpha, _locFillWhiteMix;
+        _locBandBase, _locBandBoost, _locBandFillMax, _locFillWhiteMix;
     private bool _ready;
     private bool _hasContent;
 
@@ -69,9 +69,10 @@ uniform float hatchLineWidth;   // crosshatch line thickness in texels, matching
 uniform float bandBase;
 uniform float bandBoost;
 uniform float bandFillMax;      // fill clamp, = FieldCompositor's BandFillAlphaMax
-uniform float boundaryAlpha;    // = FieldCompositor's BandBoundaryAlpha
-uniform float fillWhiteMix;     // fill lerps this far toward white; rings stay pure accent
+uniform float fillWhiteMix;     // fill lerps this far toward white (a luminous glow)
 
+// Fill only -- the band boundary RINGS are drawn as vector polylines on top (DrawFieldRings), not baked
+// here, so they stay a consistent thin width at any zoom. Matches FieldCompositor.Compose texel for texel.
 void main()
 {
     float b = texture(texture0, fragTexCoord).r * 255.0;
@@ -80,42 +81,21 @@ void main()
     vec2 mask = texture(maskTex, fragTexCoord).rg;
     if (mask.r < 0.004) { finalColor = vec4(0.0); return; }   // blocked: no fill
 
-    // 2-texel-bold band-change ring; matches FieldCompositor's BandAt neighbour test (harness-verified).
-    // Off-grid samples clamp to a set band value, but the field never reaches the edge so it is moot.
-    float n1 = texture(texture0, fragTexCoord - vec2(invSize.x, 0.0)).r * 255.0;
-    float n2 = texture(texture0, fragTexCoord + vec2(invSize.x, 0.0)).r * 255.0;
-    float n3 = texture(texture0, fragTexCoord - vec2(0.0, invSize.y)).r * 255.0;
-    float n4 = texture(texture0, fragTexCoord + vec2(0.0, invSize.y)).r * 255.0;
-    float n5 = texture(texture0, fragTexCoord - vec2(2.0 * invSize.x, 0.0)).r * 255.0;
-    float n6 = texture(texture0, fragTexCoord + vec2(2.0 * invSize.x, 0.0)).r * 255.0;
-    float n7 = texture(texture0, fragTexCoord - vec2(0.0, 2.0 * invSize.y)).r * 255.0;
-    float n8 = texture(texture0, fragTexCoord + vec2(0.0, 2.0 * invSize.y)).r * 255.0;
-    bool boundary = abs(n1 - b) > 0.5 || abs(n2 - b) > 0.5 || abs(n3 - b) > 0.5 || abs(n4 - b) > 0.5
-                 || abs(n5 - b) > 0.5 || abs(n6 - b) > 0.5 || abs(n7 - b) > 0.5 || abs(n8 - b) > 0.5;
-
-    float alpha;
-    if (boundary)
+    float alpha = min(bandFillMax, bandBase + (b - 1.0) * bandBoost);
+    if (mask.g < 0.004)   // visible only through cover: crosshatch mesh
     {
-        alpha = boundaryAlpha;
-    }
-    else
-    {
-        alpha = min(bandFillMax, bandBase + (b - 1.0) * bandBoost);
-        if (mask.g < 0.004)   // visible only through cover: crosshatch mesh
-        {
-            // pix.y here is the TEXTURE-MEMORY row (the composite pass samples with a flipped src
-            // rect), which is H-1-imageRow; the CPU hatch uses the image row, so convert -- otherwise
-            // the hatch mirrors and the pixel diff lights up half the cover region.
-            vec2 size = 1.0 / invSize;
-            vec2 pix = floor(fragTexCoord * size);
-            float imageRow = size.y - 1.0 - pix.y;
-            float d1 = mod(pix.x + imageRow, hatchPeriod);   // GLSL mod is always in [0, period)
-            float d2 = mod(pix.x - imageRow, hatchPeriod);
-            if (d1 < hatchLineWidth || d2 < hatchLineWidth) alpha = min(0.75, alpha + 0.28);
-        }
+        // pix.y here is the TEXTURE-MEMORY row (the composite pass samples with a flipped src rect),
+        // which is H-1-imageRow; the CPU hatch uses the image row, so convert -- otherwise the hatch
+        // mirrors and the pixel diff lights up half the cover region.
+        vec2 size = 1.0 / invSize;
+        vec2 pix = floor(fragTexCoord * size);
+        float imageRow = size.y - 1.0 - pix.y;
+        float d1 = mod(pix.x + imageRow, hatchPeriod);   // GLSL mod is always in [0, period)
+        float d2 = mod(pix.x - imageRow, hatchPeriod);
+        if (d1 < hatchLineWidth || d2 < hatchLineWidth) alpha = min(0.75, alpha + 0.28);
     }
 
-    vec3 col = boundary ? accent : mix(accent, vec3(1.0), fillWhiteMix);
+    vec3 col = mix(accent, vec3(1.0), fillWhiteMix);
     finalColor = vec4(col, alpha * alphaScale);
 }
 ";
@@ -141,9 +121,7 @@ void main()
             Raylib.SetTextureFilter(_bandRT.Texture, TextureFilter.Point);
             Raylib.SetTextureFilter(_maskRT.Texture, TextureFilter.Point);
             Raylib.SetTextureFilter(_compositeRT.Texture, TextureFilter.Bilinear);
-            // The boundary pass samples bandRT at +-2 texels; clamp so edge offsets don't wrap to garbage
-            // (CPU treats off-grid as empty). Moot for interior fields, correct for edge-clipping ones.
-            Raylib.SetTextureWrap(_bandRT.Texture, TextureWrap.Clamp);
+            Raylib.SetTextureWrap(_bandRT.Texture, TextureWrap.Clamp); // no edge wrap when sampled
 
             _shader = Raylib.LoadShaderFromMemory(null, CompositeFs);
             shaderCreated = _shader.Id != 0;
@@ -159,7 +137,6 @@ void main()
             _locBandBase    = Raylib.GetShaderLocation(_shader, "bandBase");
             _locBandBoost   = Raylib.GetShaderLocation(_shader, "bandBoost");
             _locBandFillMax = Raylib.GetShaderLocation(_shader, "bandFillMax");
-            _locBoundaryAlpha = Raylib.GetShaderLocation(_shader, "boundaryAlpha");
             _locFillWhiteMix = Raylib.GetShaderLocation(_shader, "fillWhiteMix");
             if (_locMask < 0)
                 throw new InvalidOperationException("maskTex uniform missing");
@@ -271,7 +248,6 @@ void main()
         Raylib.SetShaderValue(_shader, _locBandBase, TacticalOverlayConfig.BandFillAlpha, ShaderUniformDataType.Float);
         Raylib.SetShaderValue(_shader, _locBandBoost, TacticalOverlayConfig.BandInnerAlphaBoost, ShaderUniformDataType.Float);
         Raylib.SetShaderValue(_shader, _locBandFillMax, TacticalOverlayConfig.BandFillAlphaMax, ShaderUniformDataType.Float);
-        Raylib.SetShaderValue(_shader, _locBoundaryAlpha, TacticalOverlayConfig.BandBoundaryAlpha, ShaderUniformDataType.Float);
         Raylib.SetShaderValue(_shader, _locFillWhiteMix, TacticalOverlayConfig.BandFillWhiteMix, ShaderUniformDataType.Float);
 
         Raylib.BeginTextureMode(_compositeRT);

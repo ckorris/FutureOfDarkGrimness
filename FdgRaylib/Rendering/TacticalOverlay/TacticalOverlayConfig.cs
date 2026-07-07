@@ -54,7 +54,6 @@ internal static class TacticalOverlayConfig
     public const float HatchSpacingInches       = 0.6f; // cover crosshatch pitch (world-space, per direction)
     public const int   HatchLineWidthTexels     = 2;    // thin lines; crosshatch (both diagonals) so it reads
                                                         // uniformly regardless of the band edge's angle
-    public const float PreviewAlphaScale        = 0.5f; // hover-preview field: reduced opacity, no chip
 
     // --- Instruments ------------------------------------------------------------------------------
     public const float PipRadiusPx              = 3f;   // ~5-6px pip diameter along the ghost's lower edge
@@ -85,9 +84,8 @@ internal static class TacticalOverlayConfig
     public static bool GhostAnchoredField = false;
 
     // --- Hotkeys ----------------------------------------------------------------------------------
-    // T is taken (dev token-reveal in TableTooltipOverlay); F is free. Tab/Alt are free.
+    // T is taken (dev token-reveal in TableTooltipOverlay); F is free. Alt is free.
     public const ImGuiKey ThreatToggleKey     = ImGuiKey.F;
-    public const ImGuiKey FocusCycleKey       = ImGuiKey.Tab;
     public const ImGuiKey ClearPinsKey        = ImGuiKey.Escape;
     public const ImGuiKey FidelitySamplerKey  = ImGuiKey.F10; // debug (spec section 6)
 }

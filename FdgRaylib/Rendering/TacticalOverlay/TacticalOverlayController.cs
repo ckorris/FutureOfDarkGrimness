@@ -126,6 +126,12 @@ public class TacticalOverlayController
     private FieldMask? _scratchMask;
     private readonly List<(int accent, List<List<Float2>> polylines)> _secondaryContours = new();
 
+    // Band boundary rings for the focused field, as VECTOR polylines drawn on top of the fill texture at a
+    // fixed screen thickness -- so the range lines stay consistently thin at any zoom (playtest feedback),
+    // unlike a texture-baked ring that bilinear-stretches into variable chunkiness. Empty in ghost mode
+    // (marching every frame would be too costly; that mode is fill-only).
+    private List<List<Float2>> _fieldRings = new();
+
     public bool ThreatToggledOn => _threatToggledOn;
     public void ToggleThreat() => _threatToggledOn = !_threatToggledOn;
 
@@ -330,6 +336,7 @@ public class TacticalOverlayController
         }
 
         _bandLabels = new List<BandLabel>();                 // labels would ride the cursor; suppressed
+        _fieldRings = new List<List<Float2>>();              // per-frame marching too costly; fill-only here
         _lastFieldBands = perBand.Select(pb => pb.band).ToList();  // distance readout still promotes
         _fieldMasksValid = false;  // ghost-anchored masks must not feed the target-anchored sampler truth
         InvalidateField();  // leaving ghost mode must force a target-anchored rebuild
@@ -344,6 +351,7 @@ public class TacticalOverlayController
         _gpuField?.Clear();
         _bandLabels = new List<BandLabel>();
         _secondaryContours.Clear();
+        _fieldRings = new List<List<Float2>>();
         _fieldMasksValid = false;
     }
 
@@ -364,9 +372,22 @@ public class TacticalOverlayController
             DrawThreatPolylines();
         }
 
-        // Secondary-pin contours ride with the field (move job only).
+        // The focused field's band rings + secondary-pin contours ride with the field (move job only).
         if (moveJobActive)
+        {
+            DrawFieldRings();
             DrawSecondaryContours();
+        }
+    }
+
+    // Band boundary rings for the focused field, as consistent-thickness vector lines in the lead accent.
+    private void DrawFieldRings()
+    {
+        if (_fieldRings.Count == 0) return;
+        (byte r, byte g, byte b) = TacticalOverlayConfig.AccentPalette[0];
+        var col = new Color(r, g, b, (byte)(TacticalOverlayConfig.BandBoundaryAlpha * 255f));
+        foreach (List<Float2> poly in _fieldRings)
+            DrawWorldPolyline(poly, col, TacticalOverlayConfig.BandBoundaryThicknessPx, dashed: false);
     }
 
     private void DrawSecondaryContours()
@@ -414,9 +435,7 @@ public class TacticalOverlayController
 
         if (req != null)
         {
-            // Tab cycles pin focus; Esc clears pins (no move-cancel exists today -- plan C1).
-            if (!io.WantCaptureKeyboard && ImGui.IsKeyPressed(TacticalOverlayConfig.FocusCycleKey))
-                CycleFocus();
+            // Esc clears the pin (single-pin: no focus cycling; no move-cancel exists today -- plan C1).
             if (!io.WantCaptureKeyboard && _pins.Count > 0 && ImGui.IsKeyPressed(TacticalOverlayConfig.ClearPinsKey))
                 ClearPins();
 
@@ -762,10 +781,29 @@ public class TacticalOverlayController
     {
         if (_moveResolver?.ActiveRequest == null) return false;
 
-        int existing = _pins.FindIndex(p => ReferenceEquals(p.Unit, unit));
-        if (existing >= 0) Unpin(existing);
-        else               Pin(unit);
+        // Single pin: clicking the pinned enemy unpins; clicking any other REPLACES it.
+        if (_pins.Count > 0 && ReferenceEquals(_pins[0].Unit, unit))
+        {
+            ClearPins();
+        }
+        else
+        {
+            _pins.Clear();
+            Pin(unit);
+        }
         return true;
+    }
+
+    /// <summary>
+    /// The enemy every instrument (field, rings, pips, counts, distance) currently reflects: the HOVERED
+    /// enemy while one is hovered (so hovering shows its radius regardless of the pin), else the pinned
+    /// enemy. Accent is always the lead cyan -- a single target at a time.
+    /// </summary>
+    private IUnit? ActiveTargetUnit()
+    {
+        if (_hoverCandidate != null && _hoverElapsed >= TacticalOverlayConfig.HoverPreviewDelaySeconds)
+            return _hoverCandidate;
+        return _pins.Count > 0 ? _pins[0].Unit : null;
     }
 
     private void Pin(IUnit unit)
@@ -775,30 +813,12 @@ public class TacticalOverlayController
         InvalidateField();
     }
 
-    private void Unpin(int index)
-    {
-        if (index < 0 || index >= _pins.Count) return;
-        _pins.RemoveAt(index);
-        for (int i = 0; i < _pins.Count; i++) _pins[i].Accent = i; // keep colours positional
-        _focusIndex = _pins.Count == 0
-            ? -1
-            : System.Math.Clamp(_focusIndex >= index ? _focusIndex - 1 : _focusIndex, 0, _pins.Count - 1);
-        InvalidateField();
-    }
-
     private void ClearPins()
     {
         _pins.Clear();
         _focusIndex     = -1;
         _hoverCandidate = null;
         _hoverElapsed   = 0;
-        InvalidateField();
-    }
-
-    private void CycleFocus()
-    {
-        if (_pins.Count == 0) return;
-        _focusIndex = (_focusIndex + 1) % _pins.Count;
         InvalidateField();
     }
 
@@ -815,33 +835,16 @@ public class TacticalOverlayController
         if (_pins.Count > 0)
         {
             ImGui.Separator();
-            ImGui.TextDisabled("Pinned (Tab focus, Esc clears)");
-
-            int unpinTarget = -1, focusTarget = -1;
-            for (int i = 0; i < _pins.Count; i++)
-            {
-                PinnedTarget pin = _pins[i];
-                (byte r, byte g, byte b) = TacticalOverlayConfig.AccentPalette[pin.Accent % TacticalOverlayConfig.AccentPalette.Length];
-                bool focused = i == _focusIndex;
-
-                ImGui.PushStyleColor(ImGuiCol.Text, new Vector4(r / 255f, g / 255f, b / 255f, 1f));
-                if (ImGui.Button($"{(focused ? "> " : "  ")}{pin.Unit.Name}##pinchip{i}"))
-                    focusTarget = i;
-                ImGui.PopStyleColor();
-
-                // Chip click focuses; clicking the already-focused chip unpins (spec section 4).
-                if (focused && focusTarget == i) { focusTarget = -1; unpinTarget = i; }
-
-                ImGui.SameLine();
-                if (ImGui.SmallButton($"x##pinx{i}")) unpinTarget = i;
-            }
-
-            if (unpinTarget >= 0)      Unpin(unpinTarget);
-            else if (focusTarget >= 0) { _focusIndex = focusTarget; InvalidateField(); }
-
-            DrawCountRows();
+            (byte r, byte g, byte b) = TacticalOverlayConfig.AccentPalette[0];
+            ImGui.PushStyleColor(ImGuiCol.Text, new Vector4(r / 255f, g / 255f, b / 255f, 1f));
+            ImGui.TextUnformatted($"Pinned: {_pins[0].Unit.Name}");
+            ImGui.PopStyleColor();
+            ImGui.SameLine();
+            if (ImGui.SmallButton("unpin##pinx")) ClearPins();
         }
 
+        // Counts follow the active target (hovered enemy, else the pin), so they match the field on screen.
+        DrawCountRows();
         DrawThreatRow();
     }
 
@@ -852,43 +855,42 @@ public class TacticalOverlayController
     {
         DefineMovementPathRequest? req = _moveResolver?.ActiveRequest;
         if (req == null || _probe == null) return;
+        IUnit? targetUnit = ActiveTargetUnit();
+        if (targetUnit == null) return;
         IUnit movingUnit = req.UnitDataBinding.GetValue();
         IReadOnlyDictionary<IModel, Position> committed = _moveResolver!.CommittedPositions;
         IReadOnlyDictionary<IModel, Position> ghosts    = _moveResolver.GhostPositions;
 
-        foreach (PinnedTarget pin in _pins)
+        List<ITerrain> blockers = BlockersFor(movingUnit, targetUnit);
+        (byte r, byte g, byte b) = TacticalOverlayConfig.AccentPalette[0];
+        ImGui.PushStyleColor(ImGuiCol.Text, new Vector4(r / 255f, g / 255f, b / 255f, 1f));
+
+        var weaponNames = new SortedSet<string>();
+        foreach (IModel m in movingUnit.Models)
+            if (m.GetIsAlive())
+                foreach (Weapon w in m.Weapons)
+                    if (w.RangeInches > 0f) weaponNames.Add(w.Name);
+
+        foreach (string wname in weaponNames)
         {
-            List<ITerrain> blockers = BlockersFor(movingUnit, pin.Unit);
-            (byte r, byte g, byte b) = TacticalOverlayConfig.AccentPalette[pin.Accent % TacticalOverlayConfig.AccentPalette.Length];
-            ImGui.PushStyleColor(ImGuiCol.Text, new Vector4(r / 255f, g / 255f, b / 255f, 1f));
-
-            var weaponNames = new SortedSet<string>();
+            int before = 0, after = 0;
             foreach (IModel m in movingUnit.Models)
-                if (m.GetIsAlive())
-                    foreach (Weapon w in m.Weapons)
-                        if (w.RangeInches > 0f) weaponNames.Add(w.Name);
-
-            foreach (string wname in weaponNames)
             {
-                int before = 0, after = 0;
-                foreach (IModel m in movingUnit.Models)
-                {
-                    if (!m.GetIsAlive()) continue;
-                    Weapon? w = null;
-                    foreach (Weapon cand in m.Weapons)
-                        if (cand.RangeInches > 0f && cand.Name == wname) { w = cand; break; }
-                    if (w == null) continue;
+                if (!m.GetIsAlive()) continue;
+                Weapon? w = null;
+                foreach (Weapon cand in m.Weapons)
+                    if (cand.RangeInches > 0f && cand.Name == wname) { w = cand; break; }
+                if (w == null) continue;
 
-                    float eff = EffectiveRange(req, wname, pin.Unit.ID, w.RangeInches);
-                    Position cp = committed.TryGetValue(m, out Position c) ? c : m.Position;
-                    Position gp = ghosts.TryGetValue(m, out Position g2) ? g2 : m.Position;
-                    if (_probe.EvaluatePip(m, cp, m.Facing, pin.Unit, eff, blockers) != PipState.Dim) before++;
-                    if (_probe.EvaluatePip(m, gp, m.Facing, pin.Unit, eff, blockers) != PipState.Dim) after++;
-                }
-                ImGui.TextUnformatted($"{wname} vs {pin.Unit.Name}: {before}->{after}");
+                float eff = EffectiveRange(req, wname, targetUnit.ID, w.RangeInches);
+                Position cp = committed.TryGetValue(m, out Position c) ? c : m.Position;
+                Position gp = ghosts.TryGetValue(m, out Position g2) ? g2 : m.Position;
+                if (_probe.EvaluatePip(m, cp, m.Facing, targetUnit, eff, blockers) != PipState.Dim) before++;
+                if (_probe.EvaluatePip(m, gp, m.Facing, targetUnit, eff, blockers) != PipState.Dim) after++;
             }
-            ImGui.PopStyleColor();
+            ImGui.TextUnformatted($"{wname} vs {targetUnit.Name}: {before}->{after}");
         }
+        ImGui.PopStyleColor();
     }
 
     private void DrawThreatRow()
@@ -920,13 +922,10 @@ public class TacticalOverlayController
 
     private (IUnit? target, int accent, float alphaScale) ResolveFieldTarget(DefineMovementPathRequest req)
     {
-        if (_pins.Count > 0 && _focusIndex >= 0 && _focusIndex < _pins.Count)
-            return (_pins[_focusIndex].Unit, _pins[_focusIndex].Accent, 1f);
-
-        if (_hoverCandidate != null && _hoverElapsed >= TacticalOverlayConfig.HoverPreviewDelaySeconds)
-            return (_hoverCandidate, 0, TacticalOverlayConfig.PreviewAlphaScale);
-
-        return (null, 0, 0f);
+        // Hover overrides the pin so you can peek any enemy's radius; both draw at full opacity (the lead
+        // cyan accent). Everything else follows ActiveTargetUnit, which uses the same rule.
+        IUnit? active = ActiveTargetUnit();
+        return active != null ? (active, 0, 1f) : (null, 0, 0f);
     }
 
     private void RebuildFieldIfNeeded(DefineMovementPathRequest req, IUnit target, int accent, float alphaScale)
@@ -951,9 +950,7 @@ public class TacticalOverlayController
 
         if (bands.Count == 0 || targets.Count == 0)
         {
-            _field!.Clear();
-            _bandLabels = new List<BandLabel>();
-            _secondaryContours.Clear();
+            ClearFieldPictures();
             return;
         }
 
@@ -976,6 +973,7 @@ public class TacticalOverlayController
             _field!.Compose(_bandMask!, _shadowMask!, _coverMask!, accentCol, alphaScale);
 
         _bandLabels        = BuildBandLabels(movingUnit, targets, bands, accent);
+        _fieldRings        = BuildFieldRings(bands);
         _fieldMovingUnit   = movingUnit;
         _fieldTargetUnit   = target;
         _lastFieldBands    = bands;
@@ -991,7 +989,8 @@ public class TacticalOverlayController
     // range gets the highest value (innermost), so max-blend keeps the best band at each texel.
     private List<BandSpec> BuildBands(DefineMovementPathRequest req, IUnit movingUnit, IUnit target)
     {
-        var byRange = new Dictionary<float, SortedSet<string>>();
+        // Per effective range, count each weapon name across the unit so the label can show "5x Rifle".
+        var byRange = new Dictionary<float, Dictionary<string, int>>();
         foreach (IModel m in movingUnit.Models)
         {
             if (!m.GetIsAlive()) continue;
@@ -999,9 +998,9 @@ public class TacticalOverlayController
             {
                 if (w.RangeInches <= 0f) continue;
                 float eff = EffectiveRange(req, w.Name, target.ID, w.RangeInches);
-                if (!byRange.TryGetValue(eff, out SortedSet<string>? names))
-                    byRange[eff] = names = new SortedSet<string>();
-                names.Add(w.Name);
+                if (!byRange.TryGetValue(eff, out Dictionary<string, int>? counts))
+                    byRange[eff] = counts = new Dictionary<string, int>();
+                counts[w.Name] = counts.GetValueOrDefault(w.Name) + 1;
             }
         }
         if (byRange.Count == 0) return new List<BandSpec>();
@@ -1014,10 +1013,27 @@ public class TacticalOverlayController
         {
             float range = ranges[i];
             byte value  = (byte)(k - i);  // shortest -> highest (inner)
-            string names = string.Join(" / ", byRange[range]);
+            string names = string.Join(" / ",
+                byRange[range].OrderBy(kv => kv.Key).Select(kv => $"{kv.Value}x {kv.Key}"));
             bands.Add(new BandSpec(range, value, $"{range:0.#}\" {names}"));
         }
         return bands;
+    }
+
+    // The band boundary rings, one boundary per distinct band value (v=1 is the outer edge of the whole
+    // field, v=2..k the internal band transitions). CPU marching squares -> world polylines, drawn as
+    // fixed-thickness vector lines. Only called on a target-mode rebuild (rare), never per frame.
+    private List<List<Float2>> BuildFieldRings(List<BandSpec> bands)
+    {
+        var rings = new List<List<Float2>>();
+        if (_bandMask == null) return rings;
+
+        byte maxV = 0;
+        foreach (BandSpec b in bands) if (b.Value > maxV) maxV = b.Value;
+        float eps = 1f / TacticalOverlayConfig.TexelsPerInch;
+        for (byte v = 1; v <= maxV; v++)
+            rings.AddRange(MarchingSquares.Extract(_bandMask, v, eps));
+        return rings;
     }
 
     private static float EffectiveRange(DefineMovementPathRequest req, string weaponName, UnitID targetId, float baseRange)
@@ -1193,8 +1209,8 @@ public class TacticalOverlayController
     private void UpdateHover(double dt, TableHitTester hitTester, DefineMovementPathRequest req)
     {
         IUnit? hovered = hitTester.HoveredUnit;
-        // Preview is the pre-pin affordance: only when there are no pins and the hover is an enemy.
-        bool eligible = hovered != null && _pins.Count == 0 && IsEnemyOf(req.TargetPlayerID, hovered);
+        // Hover an enemy to see its radius, REGARDLESS of the pin (ActiveTargetUnit lets it override).
+        bool eligible = hovered != null && IsEnemyOf(req.TargetPlayerID, hovered);
         if (eligible)
         {
             if (ReferenceEquals(hovered, _hoverCandidate)) _hoverElapsed += dt;
@@ -1325,11 +1341,11 @@ public class TacticalOverlayController
     // RulesProbe every frame during the drag (spec section 4: correctness over caching).
     private void DrawPips(DefineMovementPathRequest req, IUnit movingUnit)
     {
-        if (_pins.Count == 0 || _moveResolver == null || _probe == null) return;
+        if (_moveResolver == null || _probe == null) return;
+        IUnit? targetUnit = ActiveTargetUnit();
+        if (targetUnit == null) return;
         IReadOnlyDictionary<IModel, Position> ghosts = _moveResolver.GhostPositions;
-
-        var blockersByPin = new List<List<ITerrain>>();
-        foreach (PinnedTarget pin in _pins) blockersByPin.Add(BlockersFor(movingUnit, pin.Unit));
+        List<ITerrain> blockers = BlockersFor(movingUnit, targetUnit);
 
         ImDrawListPtr dl = ImGui.GetBackgroundDrawList();
         foreach (IModel m in movingUnit.Models)
@@ -1345,15 +1361,11 @@ public class TacticalOverlayController
             if (weaponGroups.Count == 0) continue;
 
             var pips = new List<(int accent, PipState state)>();
-            for (int pi = 0; pi < _pins.Count; pi++)
+            foreach (var wg in weaponGroups)
             {
-                PinnedTarget pin = _pins[pi];
-                foreach (var wg in weaponGroups)
-                {
-                    float eff = EffectiveRange(req, wg.Key, pin.Unit.ID, wg.First().RangeInches);
-                    PipState st = _probe.EvaluatePip(m, gp, m.Facing, pin.Unit, eff, blockersByPin[pi]);
-                    pips.Add((pin.Accent, st));
-                }
+                float eff = EffectiveRange(req, wg.Key, targetUnit.ID, wg.First().RangeInches);
+                PipState st = _probe.EvaluatePip(m, gp, m.Facing, targetUnit, eff, blockers);
+                pips.Add((0, st));   // single target -> lead accent
             }
             DrawPipRow(dl, gp, m.BaseRadiusInches, pips);
         }
@@ -1416,13 +1428,14 @@ public class TacticalOverlayController
         }
     }
 
-    // Distance readout on the ghost nearest the cursor: base-edge distance to the nearest focused-pin
-    // model. Within 0.5" of a focused-pin band boundary it promotes to a labeled measurement line, so an
-    // edge case is never resolved by squinting at the texture (spec section 4 / invariant).
+    // Distance readout on the ghost nearest the cursor: base-edge distance to the nearest active-target
+    // model. Within 0.5" of a band boundary it promotes to a labeled measurement line, so an edge case
+    // is never resolved by squinting at the texture (spec section 4 / invariant).
     private void DrawDistanceReadout(DefineMovementPathRequest req, IUnit movingUnit)
     {
-        if (_pins.Count == 0 || _focusIndex < 0 || _focusIndex >= _pins.Count || _moveResolver == null) return;
-        IUnit focus = _pins[_focusIndex].Unit;
+        if (_moveResolver == null) return;
+        IUnit? focus = ActiveTargetUnit();
+        if (focus == null) return;
         IReadOnlyDictionary<IModel, Position> ghosts = _moveResolver.GhostPositions;
         Vector2 mouse = ImGui.GetIO().MousePos;
 
