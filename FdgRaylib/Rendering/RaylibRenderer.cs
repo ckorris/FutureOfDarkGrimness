@@ -31,7 +31,8 @@ public class RaylibRenderer
     private const float ReferenceHeightPx = 2160f;
 
     private static readonly Color TableColor  = new(40, 100, 40, 255);
-    private static readonly Color TableBorder = new(20, 60, 20, 255);
+    // Warm brown so the table edge reads clearly against both the green felt and the dark background.
+    private static readonly Color TableBorder = new(150, 105, 55, 255);
     private static readonly Color Background  = new(30, 30, 30, 255);
 
     // Table grid: minor lines every 6", major every 12" (matches the game's inch measurements — a
@@ -127,6 +128,9 @@ public class RaylibRenderer
     // plain fit until the player zooms (Ctrl+wheel, toward the cursor) or pans (middle-drag).
     private const float MinZoom = 1f;   // fully zoomed out = table fills the viewport
     private const float MaxZoom = 3f;   // 300%
+    // When zoomed in, allow panning this fraction of the table past each edge, so a strip of background
+    // shows and it's clear you've hit the edge. Ignored at min zoom (the table stays locked centered).
+    private const float PanEdgeMarginFraction = 0.05f;
     private float   _zoom = 1f;
     private Vector2 _pan  = Vector2.Zero;
 
@@ -518,17 +522,20 @@ public class RaylibRenderer
             _pan.Y += d.Y;
         }
 
-        // Keep the table from being dragged/zoomed off the viewport: pan is bounded by the overflow of the
-        // scaled table past the viewport (zero when fully zoomed out, so there's nothing to pan then).
+        // Bound the pan by the overflow of the scaled table past the viewport, plus (when zoomed in) a 5%
+        // margin so a strip of background shows past the edge and it reads as the edge. At min zoom there's
+        // no overflow and no margin, so the table stays locked centered.
         float scale = fit * _zoom;
         float overflowX = MathF.Max(0f, (TableWIn * scale - viewportW) / 2f);
         float overflowY = MathF.Max(0f, (TableHIn * scale - screenH)   / 2f);
-        _pan.X = Math.Clamp(_pan.X, -overflowX, overflowX);
-        _pan.Y = Math.Clamp(_pan.Y, -overflowY, overflowY);
+        float marginX = _zoom > MinZoom ? PanEdgeMarginFraction * TableWIn * scale : 0f;
+        float marginY = _zoom > MinZoom ? PanEdgeMarginFraction * TableHIn * scale : 0f;
+        _pan.X = Math.Clamp(_pan.X, -(overflowX + marginX), overflowX + marginX);
+        _pan.Y = Math.Clamp(_pan.Y, -(overflowY + marginY), overflowY + marginY);
     }
 
-    // Thin border thickness (px) framing the table rect.
-    private const float TableBorderThickness = 2f;
+    // Border thickness (px) framing the table rect.
+    private const float TableBorderThickness = 3f;
 
     private void DrawTable(Layout l)
     {
