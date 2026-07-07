@@ -391,6 +391,24 @@ public class TacticalOverlayController
         return false;
     }
 
+    // Exact point-in-reach against the enemy discs (the rules-consistent computation), NOT a sample of the
+    // approximate threat mask -- the "inside a frontier" determination the player acts on (ghost red-tint,
+    // the incoming-threat row, the snap-outside test) must not read the picture (spec section 0).
+    private bool GhostInThreat(float x, float z, out bool charge, out bool shoot)
+    {
+        charge = false;
+        shoot = false;
+        foreach (ThreatDisc d in _lastThreatDiscs)
+        {
+            float dx = x - d.X, dz = z - d.Z;
+            float d2 = dx * dx + dz * dz;
+            if (d2 <= d.ChargeRadius * d.ChargeRadius) charge = true;
+            if (d.ShootRadius > 0f && d2 <= d.ShootRadius * d.ShootRadius) shoot = true;
+            if (charge && shoot) break;
+        }
+        return charge || shoot;
+    }
+
     private void DrawSamplerMarkers(FidelitySampler.Report report)
     {
         ImDrawListPtr dl = ImGui.GetBackgroundDrawList();
@@ -730,8 +748,7 @@ public class TacticalOverlayController
             if (!m.GetIsAlive()) continue;
             Position gp = ghosts.TryGetValue(m, out Position g) ? g : m.Position;
             if (gp.x == 0f && gp.z == 0f) continue;
-            if (_threat.SampleChargeInside(gp.x, gp.z)) charge = true;
-            if (_threat.SampleShootInside(gp.x, gp.z))  shoot  = true;
+            if (GhostInThreat(gp.x, gp.z, out bool c, out bool s)) { charge |= c; shoot |= s; }
         }
 
         if (charge || shoot)
@@ -1064,9 +1081,9 @@ public class TacticalOverlayController
             }
         }
 
-        // Threat snap: nudge just outside the nearest frontier when the point is inside one.
-        if (_threat != null &&
-            (_threat.SampleChargeInside(intended.X, intended.Y) || _threat.SampleShootInside(intended.X, intended.Y)))
+        // Threat snap: nudge just outside the nearest frontier when the point is inside one (exact
+        // point-in-reach, not a mask sample -- this decides where the model lands).
+        if (_threat != null && GhostInThreat(intended.X, intended.Y, out _, out _))
         {
             if (TryNearestFrontierPoint(intended, out Float2 np, out float dist) &&
                 dist <= TacticalOverlayConfig.SnapEpsilonInches)
@@ -1203,7 +1220,7 @@ public class TacticalOverlayController
             if (!m.GetIsAlive()) continue;
             Position gp = ghosts.TryGetValue(m, out Position gpos) ? gpos : m.Position;
             if (gp.x == 0f && gp.z == 0f) continue;
-            if (_threat.SampleChargeInside(gp.x, gp.z) || _threat.SampleShootInside(gp.x, gp.z))
+            if (GhostInThreat(gp.x, gp.z, out _, out _))
             {
                 Vector2 c = WorldToScreen(new Float2(gp.x, gp.z));
                 dl.AddCircle(c, m.BaseRadiusInches * _scale + 2f, col, 24, 2f);
