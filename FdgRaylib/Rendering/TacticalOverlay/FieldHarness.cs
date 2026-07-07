@@ -174,15 +174,24 @@ internal static class FieldHarness
         WritePng(Path.Combine(outDir, $"{scene.Name}-gpu.png"), gpuPx, premultiply: false, flipRows ? H : 0);
         if (!pass)
             WritePng(Path.Combine(outDir, $"{scene.Name}-diff.png"), diffPx, premultiply: false);
-        // The real judgement is how the field reads OVER the grass, not on black -- composite the GPU
-        // picture onto the mat colour (with a faint inch grid), then overlay the vector band rings the
-        // in-game DrawFieldRings draws on top (they aren't baked into the texture), for eyeballing.
-        byte maxV = 0;
-        foreach (BandSpec bs in scene.Bands) if (bs.Value > maxV) maxV = bs.Value;
-        var rings = new List<List<Float2>>();
-        for (byte v = 1; v <= maxV; v++)
-            rings.AddRange(MarchingSquares.Extract(band, v, 1f / Tpi));
-        WriteOnMat(Path.Combine(outDir, $"{scene.Name}-onmat.png"), gpuPx, flipRows ? H : 0, rings);
+        // The real judgement is how the field reads OVER the grass, not on black -- render the ACTUAL GPU
+        // output (DrawComposite fill + DrawRings screen-space rings) over the mat + a faint grid, at 1
+        // texel = 1 px, so the previewed rings ARE the in-game GPU rings.
+        RenderTexture2D scratch = Raylib.LoadRenderTexture(W, H);
+        Raylib.BeginTextureMode(scratch);
+        Raylib.ClearBackground(new Color(40, 100, 40, 255));
+        int gridStep = (int)MathF.Round(6f * Tpi);
+        var gridCol = new Color(33, 85, 33, 255);
+        for (int gx = 0; gx < W; gx += gridStep) Raylib.DrawLine(gx, 0, gx, H, gridCol);
+        for (int gy = 0; gy < H; gy += gridStep) Raylib.DrawLine(0, gy, W, gy, gridCol);
+        gpu.DrawComposite(0, 0, GameWideConstants.DEFAULT_TABLE_WIDTH_INCHES, GameWideConstants.DEFAULT_TABLE_HEIGHT_INCHES, Tpi);
+        gpu.DrawRings(0, 0, GameWideConstants.DEFAULT_TABLE_WIDTH_INCHES, GameWideConstants.DEFAULT_TABLE_HEIGHT_INCHES, Tpi);
+        Raylib.EndTextureMode();
+        Image onmatImg = Raylib.LoadImageFromTexture(scratch.Texture);
+        byte[] onmatPx = ExtractRgba(onmatImg, out _);
+        Raylib.UnloadImage(onmatImg);
+        Raylib.UnloadRenderTexture(scratch);
+        WritePng(Path.Combine(outDir, $"{scene.Name}-onmat.png"), onmatPx, premultiply: false, H);
 
         return pass;
 
@@ -210,64 +219,6 @@ internal static class FieldHarness
 
         flipRows = true;
         return px;
-    }
-
-    // Straight-alpha field composited over the mat colour + a faint 6" grid, then the vector band rings
-    // overlaid -- what the player sees.
-    private static void WriteOnMat(string path, byte[] rgba, int flipH, List<List<Float2>> rings)
-    {
-        (byte r, byte g, byte b) mat = (40, 100, 40);
-        (byte r, byte g, byte b) grid = (33, 85, 33);
-        int gridStepTexels = (int)MathF.Round(6f * Tpi);
-
-        var buf = new byte[W * H * 4];
-        for (int y = 0; y < H; y++)
-        {
-            int srcY = flipH > 0 ? flipH - 1 - y : y;
-            for (int x = 0; x < W; x++)
-            {
-                bool onGrid = (x % gridStepTexels == 0) || (y % gridStepTexels == 0);
-                (byte br, byte bg, byte bb) = onGrid ? grid : mat;
-
-                int si = (srcY * W + x) * 4, di = (y * W + x) * 4;
-                float a = rgba[si + 3] / 255f;
-                buf[di]     = (byte)(rgba[si]     * a + br * (1f - a));
-                buf[di + 1] = (byte)(rgba[si + 1] * a + bg * (1f - a));
-                buf[di + 2] = (byte)(rgba[si + 2] * a + bb * (1f - a));
-                buf[di + 3] = 255;
-            }
-        }
-
-        (byte r, byte g, byte b) ring = TacticalOverlayConfig.AccentPalette[0];
-        foreach (List<Float2> poly in rings)
-            for (int i = 0; i < poly.Count - 1; i++)
-                PlotLine(buf, WorldToImage(poly[i]), WorldToImage(poly[i + 1]), ring);
-
-        ExportRgba(path, buf);
-    }
-
-    private static (int x, int y) WorldToImage(Float2 w) =>
-        ((int)(w.X * Tpi), (int)((GameWideConstants.DEFAULT_TABLE_HEIGHT_INCHES - w.Y) * Tpi));
-
-    // Simple 1px Bresenham line into the RGBA buffer (harness preview only).
-    private static void PlotLine(byte[] buf, (int x, int y) a, (int x, int y) b, (byte r, byte g, byte b) col)
-    {
-        int x0 = a.x, y0 = a.y, x1 = b.x, y1 = b.y;
-        int dx = Math.Abs(x1 - x0), dy = -Math.Abs(y1 - y0);
-        int sx = x0 < x1 ? 1 : -1, sy = y0 < y1 ? 1 : -1;
-        int err = dx + dy;
-        while (true)
-        {
-            if ((uint)x0 < (uint)W && (uint)y0 < (uint)H)
-            {
-                int di = (y0 * W + x0) * 4;
-                buf[di] = col.r; buf[di + 1] = col.g; buf[di + 2] = col.b; buf[di + 3] = 255;
-            }
-            if (x0 == x1 && y0 == y1) break;
-            int e2 = 2 * err;
-            if (e2 >= dy) { err += dy; x0 += sx; }
-            if (e2 <= dx) { err += dx; y0 += sy; }
-        }
     }
 
     private static void WritePng(string path, byte[] rgba, bool premultiply, int flipH = 0)

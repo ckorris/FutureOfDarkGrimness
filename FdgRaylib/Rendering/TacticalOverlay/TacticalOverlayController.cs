@@ -375,7 +375,14 @@ public class TacticalOverlayController
         // The focused field's band rings + secondary-pin contours ride with the field (move job only).
         if (moveJobActive)
         {
-            DrawFieldRings();
+            // GPU draws rings in screen space (constant thin width, both field modes); the CPU vector
+            // rings are the fallback (target mode only) and are empty when the GPU handles them.
+            if (_gpuField != null && TacticalOverlayConfig.UseGpuField && _gpuField.RingsReady)
+                _gpuField.DrawRings(_originX, _originY,
+                    GameWideConstants.DEFAULT_TABLE_WIDTH_INCHES, GameWideConstants.DEFAULT_TABLE_HEIGHT_INCHES, _scale);
+            else
+                DrawFieldRings();
+
             DrawSecondaryContours();
         }
     }
@@ -973,7 +980,8 @@ public class TacticalOverlayController
             _field!.Compose(_bandMask!, _shadowMask!, _coverMask!, accentCol, alphaScale);
 
         _bandLabels        = BuildBandLabels(movingUnit, targets, bands, accent);
-        _fieldRings        = BuildFieldRings(bands);
+        // Skip the CPU marching-squares rings when the GPU draws rings in screen space.
+        _fieldRings        = (gpuActive && _gpuField!.RingsReady) ? new List<List<Float2>>() : BuildFieldRings(bands);
         _fieldMovingUnit   = movingUnit;
         _fieldTargetUnit   = target;
         _lastFieldBands    = bands;

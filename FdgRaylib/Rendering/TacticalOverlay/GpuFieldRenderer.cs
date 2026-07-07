@@ -41,9 +41,12 @@ internal sealed class GpuFieldRenderer : IDisposable
     private RenderTexture2D _maskRT;
     private RenderTexture2D _compositeRT;
     private Shader _shader;
+    private Shader _ringShader;   // draw-time band-ring overlay (screen-space edge detection)
     private int _locMask, _locAccent, _locAlphaScale, _locInvSize, _locHatchPeriod, _locHatchLineWidth,
         _locBandBase, _locBandBoost, _locBandFillMax, _locFillWhiteMix;
+    private int _locRingBand, _locRingStep, _locRingColor, _locRingAlpha;
     private bool _ready;
+    private bool _ringReady;
     private bool _hasContent;
 
     public bool Ready => _ready;
@@ -100,6 +103,37 @@ void main()
 }
 ";
 
+    // Draw-time band-ring overlay: samples the band-value texture at +-(ring half-width in SCREEN pixels)
+    // and lights fragments near a band-value change. Because texelStep is derived from the current zoom,
+    // the ring stays a constant thin width at any scale (the texture-baked ring bilinear-stretched into
+    // chunkiness -- playtest feedback). texture0 = compositeRT (fill); bandTex = bandRT, v-flipped vs the
+    // fill because the composite pass baked it flipped -- edge detection ORs all 4 directions so the flip
+    // is immaterial to the result, it only realigns the centre sample.
+    private const string RingFs = @"
+#version 330
+in vec2 fragTexCoord;
+out vec4 finalColor;
+uniform sampler2D texture0;
+uniform sampler2D bandTex;
+uniform vec2 texelStep;
+uniform vec3 ringColor;
+uniform float ringAlpha;
+
+void main()
+{
+    vec2 buv = vec2(fragTexCoord.x, 1.0 - fragTexCoord.y);
+    float b  = texture(bandTex, buv).r * 255.0;
+    float bl = texture(bandTex, buv - vec2(texelStep.x, 0.0)).r * 255.0;
+    float br = texture(bandTex, buv + vec2(texelStep.x, 0.0)).r * 255.0;
+    float bd = texture(bandTex, buv - vec2(0.0, texelStep.y)).r * 255.0;
+    float bu = texture(bandTex, buv + vec2(0.0, texelStep.y)).r * 255.0;
+    bool edge = abs(bl - b) > 0.5 || abs(br - b) > 0.5 || abs(bd - b) > 0.5 || abs(bu - b) > 0.5;
+    bool near = b >= 0.5 || bl >= 0.5 || br >= 0.5 || bd >= 0.5 || bu >= 0.5;
+    // Ring-ONLY overlay: transparent off the rings, so it can be drawn above terrain (fill stays below).
+    finalColor = (edge && near) ? vec4(ringColor, ringAlpha) : vec4(0.0);
+}
+";
+
     public GpuFieldRenderer(int w, int h, float tpi)
     {
         _w = w;
@@ -140,6 +174,18 @@ void main()
             _locFillWhiteMix = Raylib.GetShaderLocation(_shader, "fillWhiteMix");
             if (_locMask < 0)
                 throw new InvalidOperationException("maskTex uniform missing");
+
+            // Ring overlay shader is optional: on failure the field just draws without GPU rings (the
+            // controller keeps the CPU vector-ring fallback available).
+            _ringShader = Raylib.LoadShaderFromMemory(null, RingFs);
+            if (_ringShader.Id != 0 && _ringShader.Id != Rlgl.GetShaderIdDefault())
+            {
+                _locRingBand  = Raylib.GetShaderLocation(_ringShader, "bandTex");
+                _locRingStep  = Raylib.GetShaderLocation(_ringShader, "texelStep");
+                _locRingColor = Raylib.GetShaderLocation(_ringShader, "ringColor");
+                _locRingAlpha = Raylib.GetShaderLocation(_ringShader, "ringAlpha");
+                _ringReady = _locRingBand >= 0;
+            }
 
             _ready = true;
             return true;
@@ -300,14 +346,43 @@ void main()
     private Vector2 ToTexel(float xIn, float zIn) =>
         new(xIn * _tpi, (GameWideConstants.DEFAULT_TABLE_HEIGHT_INCHES - zIn) * _tpi);
 
-    /// <summary>Per-frame draw of the cached composite through the current layout. The RT is
-    /// straight-alpha, so this is the same default-blend draw the CPU path uses.</summary>
+    /// <summary>True when the GPU draws the band rings itself (the controller then skips CPU vector rings).</summary>
+    public bool RingsReady => _ringReady;
+
+    /// <summary>Per-frame draw of the cached fill composite (straight-alpha) through the current layout.
+    /// Rings are a separate overlay (<see cref="DrawRings"/>) so they can sit above terrain.</summary>
     public void DrawComposite(float originX, float originY, float tableWIn, float tableHIn, float scale)
     {
         if (!_ready || !_hasContent) return;
         var src = new Rectangle(0, 0, _w, -_h);
         var dst = new Rectangle(originX, originY, tableWIn * scale, tableHIn * scale);
         Raylib.DrawTexturePro(_compositeRT.Texture, src, dst, Vector2.Zero, 0f, Color.White);
+    }
+
+    /// <summary>
+    /// Draws ONLY the band rings (transparent elsewhere) via screen-space edge detection on the band
+    /// texture, so the ring stays a thin constant width at any zoom. Call above terrain, after
+    /// DrawComposite. No-op when the ring shader is unavailable (controller uses CPU vector rings then).
+    /// </summary>
+    public void DrawRings(float originX, float originY, float tableWIn, float tableHIn, float scale)
+    {
+        if (!_ready || !_ringReady || !_hasContent) return;
+
+        // Ring half-width in texels, clamped to >= 1 texel so the +-offset always crosses a real (Point-
+        // filtered) band edge -> a thin, ~constant-screen-width ring at any zoom.
+        float hwTexels = MathF.Max(TacticalOverlayConfig.BandBoundaryThicknessPx * 0.5f * _tpi / scale, 1f);
+        var texelStep = new Vector2(hwTexels / _w, hwTexels / _h);
+        (byte rr, byte gg, byte bb) = TacticalOverlayConfig.AccentPalette[0];
+        Raylib.SetShaderValue(_ringShader, _locRingStep, texelStep, ShaderUniformDataType.Vec2);
+        Raylib.SetShaderValue(_ringShader, _locRingColor, new Vector3(rr / 255f, gg / 255f, bb / 255f), ShaderUniformDataType.Vec3);
+        Raylib.SetShaderValue(_ringShader, _locRingAlpha, TacticalOverlayConfig.BandBoundaryAlpha, ShaderUniformDataType.Float);
+
+        var src = new Rectangle(0, 0, _w, -_h);
+        var dst = new Rectangle(originX, originY, tableWIn * scale, tableHIn * scale);
+        Raylib.BeginShaderMode(_ringShader);
+        Raylib.SetShaderValueTexture(_ringShader, _locRingBand, _bandRT.Texture);
+        Raylib.DrawTexturePro(_compositeRT.Texture, src, dst, Vector2.Zero, 0f, Color.White); // quad carrier
+        Raylib.EndShaderMode();
     }
 
     /// <summary>Raw composite texture for the harness readback.</summary>
@@ -318,10 +393,13 @@ void main()
         if (_ready)
         {
             Raylib.UnloadShader(_shader);
+            if (_ringShader.Id != 0 && _ringShader.Id != Rlgl.GetShaderIdDefault())
+                Raylib.UnloadShader(_ringShader);
             Raylib.UnloadRenderTexture(_bandRT);
             Raylib.UnloadRenderTexture(_maskRT);
             Raylib.UnloadRenderTexture(_compositeRT);
             _ready = false;
+            _ringReady = false;
         }
     }
 }
