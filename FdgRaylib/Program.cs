@@ -27,6 +27,13 @@ TaskScheduler.UnobservedTaskException += (_, e) =>
     e.SetObserved();
 };
 
+// --field-harness (#162): offscreen GPU-vs-CPU field pixel diff. Hidden GL window, no game, exits with
+// 0 iff every synthetic scene matches the CPU reference renderer within tolerance.
+if (args.Contains("--field-harness"))
+{
+    Environment.Exit(FdgRaylib.Rendering.TacticalOverlay.FieldHarness.Run());
+}
+
 bool headless = args.Contains("--headless");
 
 // --slow [ms]  — pause N milliseconds before each resolver call (default 1500ms)

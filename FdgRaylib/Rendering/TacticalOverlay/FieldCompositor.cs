@@ -26,6 +26,10 @@ internal sealed class FieldCompositor : IDisposable
 
     public bool HasContent => _hasContent;
 
+    /// <summary>Raw straight-alpha RGBA pixel buffer (row 0 = image top). Read by the GPU-diff harness
+    /// as the reference picture; do not mutate.</summary>
+    public byte[] Pixels => _pixels;
+
     public FieldCompositor(int w, int h)
     {
         _w = w;

@@ -88,6 +88,56 @@ internal sealed class PolarSightMap
         return i;
     }
 
+    // ---- Raw access for the GPU fan renderer / harness ---------------------------------------------
+
+    public int BucketCount => _buckets;
+
+    /// <summary>Nearest Blocking entry distance per bucket (+inf = open). Do not mutate.</summary>
+    public float[] BlockDepthRaw => _blockDepth;
+
+    /// <summary>Nearest Cover entry distance per bucket (+inf = open). Do not mutate.</summary>
+    public float[] CoverDepthRaw => _coverDepth;
+
+    /// <summary>The angle of bucket edge i (bucket i spans [edge i, edge i+1)).</summary>
+    public float BucketEdgeAngle(int i) => i * _bucketWidth - MathF.PI;
+
+    /// <summary>
+    /// Classifies every band cell of <paramref name="band"/> against <paramref name="maps"/> (best sight
+    /// over all sources, engine priority) into the shadow/cover masks. THE shared CPU classification --
+    /// the controller's field rebuild and the GPU-diff harness both call this, so the reference pixels
+    /// the harness diffs against are byte-identical to what the CPU path renders in-game.
+    /// </summary>
+    public static void ClassifyInto(FieldMask band, FieldMask shadow, FieldMask cover,
+        IReadOnlyList<PolarSightMap> maps)
+    {
+        shadow.Clear();
+        cover.Clear();
+        if (maps.Count == 0) return;
+
+        int W = band.W, H = band.H;
+        System.Threading.Tasks.Parallel.For(0, H, cy =>
+        {
+            int rowBase = cy * W;
+            float cz = band.CellCenterZ(cy);
+            for (int cx = 0; cx < W; cx++)
+            {
+                if (band.Cells[rowBase + cx] == 0) continue;
+                float x = band.CellCenterX(cx);
+
+                ESightLineEffect best = ESightLineEffect.Blocking;
+                foreach (PolarSightMap map in maps)
+                {
+                    ESightLineEffect eff = map.Evaluate(x, cz);
+                    if (eff < best) best = eff;                    // Clear(0) < Cover(1) < Blocking(2)
+                    if (best == ESightLineEffect.Clear) break;
+                }
+
+                if (best == ESightLineEffect.Blocking)   shadow.Cells[rowBase + cx] = 1;
+                else if (best == ESightLineEffect.Cover) cover.Cells[rowBase + cx]  = 1;
+            }
+        });
+    }
+
     // Bucket-centre angle for an (unwrapped) bucket ordinal. Only ever fed to cos/sin, which are
     // periodic, so no wrapping needed here.
     private float BucketCenterAngle(int j) => (j + 0.5f) * _bucketWidth - MathF.PI;
