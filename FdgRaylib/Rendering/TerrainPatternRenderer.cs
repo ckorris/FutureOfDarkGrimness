@@ -158,18 +158,41 @@ internal static class TerrainPatternRenderer
         var (minX, minY, maxX, maxY) = WorldBounds(shape);
         Vector2 tl = WorldToScreen(new Float2(minX, maxY), scale, originX, originY, tableH);
         Vector2 br = WorldToScreen(new Float2(maxX, minY), scale, originX, originY, tableH);
+        float w = br.X - tl.X, h = br.Y - tl.Y;
+        if (w <= 0 || h <= 0) return;
 
-        for (float py = tl.Y + DangerGridPx * 0.5f; py < br.Y; py += DangerGridPx)
-        for (float px = tl.X + DangerGridPx * 0.5f; px < br.X; px += DangerGridPx)
+        // Center the grid within the bounds so the Xs sit uniformly (not offset from one corner).
+        int cols = Math.Max(1, (int)(w / DangerGridPx));
+        int rows = Math.Max(1, (int)(h / DangerGridPx));
+        float startX = tl.X + (w - (cols - 1) * DangerGridPx) * 0.5f;
+        float startY = tl.Y + (h - (rows - 1) * DangerGridPx) * 0.5f;
+
+        // A small margin beyond the arm tips accounts for line thickness, so an X only draws when it fully
+        // fits inside the zone -- nothing bleeds past the edge.
+        float reach = DangerArmPx + 1.5f;
+        for (int r = 0; r < rows; r++)
+        for (int c = 0; c < cols; c++)
         {
-            Float2 world = ScreenToWorld(px, py, scale, originX, originY, tableH);
-            if (!shape.IsPointWithinZone(world)) continue;
+            float px = startX + c * DangerGridPx;
+            float py = startY + r * DangerGridPx;
+            if (!ArmTipsInside(shape, px, py, reach, scale, originX, originY, tableH)) continue;
 
             Raylib.DrawLineEx(new Vector2(px - DangerArmPx, py - DangerArmPx),
                               new Vector2(px + DangerArmPx, py + DangerArmPx), 2f, DangerColor);
             Raylib.DrawLineEx(new Vector2(px - DangerArmPx, py + DangerArmPx),
                               new Vector2(px + DangerArmPx, py - DangerArmPx), 2f, DangerColor);
         }
+    }
+
+    // True when all four corners of the X's bounding box are inside the zone. For the convex primitives
+    // (rect/circle) that means the whole X fits; for composites it's a good, slightly-conservative test.
+    private static bool ArmTipsInside(IZone shape, float px, float py, float reach,
+        float scale, int originX, int originY, float tableH)
+    {
+        return shape.IsPointWithinZone(ScreenToWorld(px - reach, py - reach, scale, originX, originY, tableH))
+            && shape.IsPointWithinZone(ScreenToWorld(px + reach, py - reach, scale, originX, originY, tableH))
+            && shape.IsPointWithinZone(ScreenToWorld(px - reach, py + reach, scale, originX, originY, tableH))
+            && shape.IsPointWithinZone(ScreenToWorld(px + reach, py + reach, scale, originX, originY, tableH));
     }
 
     // ---- Cover: inward chevrons along the edge -------------------------------------------------------
