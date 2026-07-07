@@ -7,3 +7,6 @@ obj/
 
 # Runtime ImGui window-layout state
 imgui.ini
+
+# #162 field harness artifacts (written to CWD by --field-harness)
+FieldHarnessOut/
