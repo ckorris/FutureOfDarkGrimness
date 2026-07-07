@@ -97,6 +97,17 @@ public class TacticalOverlayController
     private PlayerID? _lastRefPlayer;
     private float _lastRefRadius = TacticalOverlayConfig.DefaultReferenceRadiusInches;
 
+    // Idle-click isolation (P7): one enemy's frontier brightens while the aggregate dims. Idle only.
+    private IUnit? _isolatedUnit;
+    private List<List<Float2>> _isolatedCharge = new();
+    private List<List<Float2>> _isolatedShoot  = new();
+
+    // Secondary-pin contours (P7): each non-focused pin's longest-range boundary in its accent. Reuses a
+    // scratch mask for the disc-union march (isolation and secondaries never run in the same frame -- one
+    // is idle, the other a move job).
+    private FieldMask? _scratchMask;
+    private readonly List<(int accent, List<List<Float2>> polylines)> _secondaryContours = new();
+
     public bool ThreatToggledOn => _threatToggledOn;
     public void ToggleThreat() => _threatToggledOn = !_threatToggledOn;
 
@@ -110,10 +121,11 @@ public class TacticalOverlayController
         int w = (int)MathF.Ceiling(GameWideConstants.DEFAULT_TABLE_WIDTH_INCHES  * TacticalOverlayConfig.TexelsPerInch);
         int h = (int)MathF.Ceiling(GameWideConstants.DEFAULT_TABLE_HEIGHT_INCHES * TacticalOverlayConfig.TexelsPerInch);
         _threat     = new ThreatFrontierCache(w, h, TacticalOverlayConfig.TexelsPerInch);
-        _bandMask   = new FieldMask(w, h, TacticalOverlayConfig.TexelsPerInch);
-        _shadowMask = new FieldMask(w, h, TacticalOverlayConfig.TexelsPerInch);
-        _coverMask  = new FieldMask(w, h, TacticalOverlayConfig.TexelsPerInch);
-        _field      = new FieldCompositor(w, h);
+        _bandMask    = new FieldMask(w, h, TacticalOverlayConfig.TexelsPerInch);
+        _shadowMask  = new FieldMask(w, h, TacticalOverlayConfig.TexelsPerInch);
+        _coverMask   = new FieldMask(w, h, TacticalOverlayConfig.TexelsPerInch);
+        _scratchMask = new FieldMask(w, h, TacticalOverlayConfig.TexelsPerInch);
+        _field       = new FieldCompositor(w, h);
 
         _threatBuiltOnce = false;
         _lastThreatSig   = 0;
@@ -138,12 +150,19 @@ public class TacticalOverlayController
         _field?.Dispose();
         _field        = null;
         _bandMask     = null;
+        _shadowMask   = null;
+        _coverMask    = null;
+        _scratchMask  = null;
         _tableState   = null;
         _moveResolver = null;
         _probe        = null;
         _threat       = null;
         _warn         = null;
         _threatToggledOn = false;
+        _isolatedUnit = null;
+        _isolatedCharge = new List<List<Float2>>();
+        _isolatedShoot  = new List<List<Float2>>();
+        _secondaryContours.Clear();
         ClearPins();
     }
 
@@ -167,10 +186,10 @@ public class TacticalOverlayController
 
         // The opportunity field exists only during the local player's move job (spec section 3).
         DefineMovementPathRequest? req = _moveResolver?.ActiveRequest;
-        if (req == null) { _field.Clear(); _bandLabels = new List<BandLabel>(); return; }
+        if (req == null) { _field.Clear(); _bandLabels = new List<BandLabel>(); _secondaryContours.Clear(); return; }
 
         (IUnit? target, int accent, float alphaScale) = ResolveFieldTarget(req);
-        if (target == null) { _field.Clear(); _bandLabels = new List<BandLabel>(); return; }
+        if (target == null) { _field.Clear(); _bandLabels = new List<BandLabel>(); _secondaryContours.Clear(); return; }
 
         RebuildFieldIfNeeded(req, target, accent, alphaScale);
         _field.Draw(_originX, _originY,
@@ -187,11 +206,27 @@ public class TacticalOverlayController
         if (_tableState == null || _threat == null || _probe == null) return;
 
         bool moveJobActive = _moveResolver?.ActiveRequest != null;
-        bool visible = moveJobActive || _threatToggledOn;
-        if (!visible) return;
 
-        RebuildThreatIfNeeded();
-        DrawThreatPolylines();
+        if (moveJobActive || _threatToggledOn)
+        {
+            RebuildThreatIfNeeded();
+            DrawThreatPolylines();
+        }
+
+        // Secondary-pin contours ride with the field (move job only).
+        if (moveJobActive)
+            DrawSecondaryContours();
+    }
+
+    private void DrawSecondaryContours()
+    {
+        foreach ((int accent, List<List<Float2>> polylines) in _secondaryContours)
+        {
+            (byte r, byte g, byte b) = TacticalOverlayConfig.AccentPalette[accent % TacticalOverlayConfig.AccentPalette.Length];
+            var col = new Color(r, g, b, (byte)(0.9f * 255f));
+            foreach (List<Float2> poly in polylines)
+                DrawWorldPolyline(poly, col, TacticalOverlayConfig.BandBoundaryThicknessPx, dashed: false);
+        }
     }
 
     // ---- ImGui pass (instruments) ----------------------------------------------------------------
@@ -232,11 +267,27 @@ public class TacticalOverlayController
                 ClearPins();
 
             UpdateHover(frameTimeSeconds, hitTester, req);
+            _isolatedUnit = null; // isolation is idle-only
         }
         else
         {
             _hoverCandidate = null;
             _hoverElapsed   = 0;
+
+            // Idle isolation (spec section 3): click an enemy to isolate its threat frontier, click empty
+            // ground (or the same unit again) to clear. Only meaningful while the frontier is shown (F).
+            if (!_threatToggledOn)
+            {
+                _isolatedUnit = null;
+            }
+            else if (hitTester.Clicked)
+            {
+                IUnit? hovered = hitTester.HoveredUnit;
+                if (hovered != null && _lastRefPlayer.HasValue && IsEnemyOf(_lastRefPlayer.Value, hovered))
+                    _isolatedUnit = ReferenceEquals(_isolatedUnit, hovered) ? null : hovered;
+                else if (hovered == null)
+                    _isolatedUnit = null;
+            }
         }
     }
 
@@ -381,6 +432,9 @@ public class TacticalOverlayController
         (PlayerID? refPlayer, float refRadius, _) = ResolveReference();
         if (refPlayer == null) { _threat!.Clear(); return; }
 
+        bool moveJob = _moveResolver?.ActiveRequest != null;
+        if (moveJob) _isolatedUnit = null; // isolation is an idle-only inspection
+
         List<IUnit> enemies = QualifyingEnemies(refPlayer.Value);
         long sig = ComputeThreatSignature(refPlayer, refRadius, enemies);
         if (_threatBuiltOnce && sig == _lastThreatSig) return;
@@ -389,29 +443,54 @@ public class TacticalOverlayController
 
         var discs = new List<ThreatDisc>();
         foreach (IUnit u in enemies)
-        {
-            (float charge, float shoot) = _probe!.ThreatReach(u);
-            foreach (IModel m in u.Models)
-            {
-                if (!m.GetIsAlive()) continue;
-                Position p = m.Position;
-                if (p.x == 0f && p.z == 0f) continue;
-
-                float er = m.BaseRadiusInches;
-                float chargeR = charge + er + refRadius;
-                float shootR  = shoot > 0f ? shoot + er + refRadius : 0f;
-                discs.Add(new ThreatDisc(p.x, p.z, chargeR, shootR));
-            }
-        }
+            discs.AddRange(BuildUnitDiscs(u, refRadius));
         _lastThreatDiscs = discs;
 
+        float eps = 1f / TacticalOverlayConfig.TexelsPerInch; // simplify a hair under a texel
         var sw = System.Diagnostics.Stopwatch.StartNew();
-        // Simplify a hair under a texel so contours stay smooth but vertex counts stay sane for dashing.
-        _threat!.Rebuild(discs, 1f / TacticalOverlayConfig.TexelsPerInch);
+        _threat!.Rebuild(discs, eps);
+
+        // Idle isolation: also march the one isolated unit's frontier so it can draw bright over the dim
+        // aggregate. Cleared unless a still-qualifying enemy is isolated.
+        if (!moveJob && _isolatedUnit != null && enemies.Any(e => ReferenceEquals(e, _isolatedUnit)))
+            BuildIsolatedFrontier(_isolatedUnit, refRadius, eps);
+        else
+        {
+            _isolatedCharge = new List<List<Float2>>();
+            _isolatedShoot  = new List<List<Float2>>();
+        }
         sw.Stop();
         if (sw.Elapsed.TotalMilliseconds > TacticalOverlayConfig.RebuildBudgetMs)
             _warn?.Invoke($"[overlay] threat rebuild {sw.Elapsed.TotalMilliseconds:0}ms " +
                           $"(budget {TacticalOverlayConfig.RebuildBudgetMs:0}ms, {discs.Count} discs)");
+    }
+
+    private List<ThreatDisc> BuildUnitDiscs(IUnit u, float refRadius)
+    {
+        var discs = new List<ThreatDisc>();
+        (float charge, float shoot) = _probe!.ThreatReach(u);
+        foreach (IModel m in u.Models)
+        {
+            if (!m.GetIsAlive()) continue;
+            Position p = m.Position;
+            if (p.x == 0f && p.z == 0f) continue;
+            float er = m.BaseRadiusInches;
+            discs.Add(new ThreatDisc(p.x, p.z, charge + er + refRadius, shoot > 0f ? shoot + er + refRadius : 0f));
+        }
+        return discs;
+    }
+
+    private void BuildIsolatedFrontier(IUnit unit, float refRadius, float eps)
+    {
+        List<ThreatDisc> discs = BuildUnitDiscs(unit, refRadius);
+
+        _scratchMask!.Clear();
+        foreach (ThreatDisc d in discs) _scratchMask.RasterizeDiscMax(d.X, d.Z, d.ChargeRadius, 1);
+        _isolatedCharge = MarchingSquares.Extract(_scratchMask, 1, eps);
+
+        _scratchMask.Clear();
+        foreach (ThreatDisc d in discs) if (d.ShootRadius > 0f) _scratchMask.RasterizeDiscMax(d.X, d.Z, d.ShootRadius, 1);
+        _isolatedShoot = MarchingSquares.Extract(_scratchMask, 1, eps);
     }
 
     /// <summary>
@@ -476,6 +555,7 @@ public class TacticalOverlayController
             Mix(_tableState!.Progress.RoundCount ?? -1);
             Mix(refPlayer?.GetHashCode() ?? 0);
             Mix((long)(refRadius * 100f));
+            Mix(_isolatedUnit?.ID.GetHashCode() ?? 0);
 
             foreach (IUnit u in enemies)
             {
@@ -700,6 +780,7 @@ public class TacticalOverlayController
         {
             _field!.Clear();
             _bandLabels = new List<BandLabel>();
+            _secondaryContours.Clear();
             return;
         }
 
@@ -714,6 +795,7 @@ public class TacticalOverlayController
         _fieldTargetUnit   = target;
         _lastFieldBands    = bands;
         _lastShooterRadius = shooterRadius;
+        BuildSecondaryContours(req, movingUnit, shooterRadius);
         sw.Stop();
         if (sw.Elapsed.TotalMilliseconds > TacticalOverlayConfig.RebuildBudgetMs)
             _warn?.Invoke($"[overlay] field rebuild {sw.Elapsed.TotalMilliseconds:0}ms " +
@@ -784,6 +866,52 @@ public class TacticalOverlayController
             if (best.HasValue) labels.Add(new BandLabel(best.Value, band.Label, accent));
         }
         return labels;
+    }
+
+    // Each non-focused pin contributes a single boundary contour -- the moving unit's longest-range band
+    // vs that pin -- in its own accent (spec section 3/5). No fill/shadows/hatching.
+    private void BuildSecondaryContours(DefineMovementPathRequest req, IUnit movingUnit, float shooterRadius)
+    {
+        _secondaryContours.Clear();
+        if (_pins.Count <= 1) return;
+
+        float eps = 1f / TacticalOverlayConfig.TexelsPerInch;
+        for (int i = 0; i < _pins.Count; i++)
+        {
+            if (i == _focusIndex) continue;
+            PinnedTarget pin = _pins[i];
+            float longest = LongestEffectiveRange(req, movingUnit, pin.Unit);
+            if (longest <= 0f) continue;
+
+            _scratchMask!.Clear();
+            bool any = false;
+            foreach (IModel m in pin.Unit.Models)
+            {
+                if (!m.GetIsAlive()) continue;
+                Position p = m.Position;
+                if (p.x == 0f && p.z == 0f) continue;
+                _scratchMask.RasterizeDiscMax(p.x, p.z, longest + shooterRadius + m.BaseRadiusInches, 1);
+                any = true;
+            }
+            if (!any) continue;
+            _secondaryContours.Add((pin.Accent, MarchingSquares.Extract(_scratchMask, 1, eps)));
+        }
+    }
+
+    private float LongestEffectiveRange(DefineMovementPathRequest req, IUnit movingUnit, IUnit target)
+    {
+        float longest = 0f;
+        foreach (IModel m in movingUnit.Models)
+        {
+            if (!m.GetIsAlive()) continue;
+            foreach (Weapon w in m.Weapons)
+            {
+                if (w.RangeInches <= 0f) continue;
+                float eff = EffectiveRange(req, w.Name, target.ID, w.RangeInches);
+                if (eff > longest) longest = eff;
+            }
+        }
+        return longest;
     }
 
     private static Float2 MovingCentroid(IUnit unit)
@@ -1168,12 +1296,24 @@ public class TacticalOverlayController
     private void DrawThreatPolylines()
     {
         (byte r, byte g, byte b) = TacticalOverlayConfig.ThreatColor;
-        var col = new Color(r, g, b, (byte)(TacticalOverlayConfig.ThreatContourAlpha * 255f));
+        bool isolating = _isolatedUnit != null && (_isolatedCharge.Count > 0 || _isolatedShoot.Count > 0);
+        float aggAlpha = isolating ? TacticalOverlayConfig.ThreatDimmedAlpha : TacticalOverlayConfig.ThreatContourAlpha;
+        var agg = new Color(r, g, b, (byte)(aggAlpha * 255f));
+        float th = TacticalOverlayConfig.ThreatContourThicknessPx;
 
         foreach (List<Float2> poly in _threat!.ChargePolylines)
-            DrawWorldPolyline(poly, col, TacticalOverlayConfig.ThreatContourThicknessPx, dashed: false);
+            DrawWorldPolyline(poly, agg, th, dashed: false);
         foreach (List<Float2> poly in _threat.ShootPolylines)
-            DrawWorldPolyline(poly, col, TacticalOverlayConfig.ThreatContourThicknessPx, dashed: true);
+            DrawWorldPolyline(poly, agg, th, dashed: true);
+
+        if (isolating)
+        {
+            var bright = new Color(r, g, b, (byte)(TacticalOverlayConfig.ThreatIsolatedAlpha * 255f));
+            foreach (List<Float2> poly in _isolatedCharge)
+                DrawWorldPolyline(poly, bright, th + 0.5f, dashed: false);
+            foreach (List<Float2> poly in _isolatedShoot)
+                DrawWorldPolyline(poly, bright, th + 0.5f, dashed: true);
+        }
     }
 
     private Vector2 WorldToScreen(Float2 w) =>
