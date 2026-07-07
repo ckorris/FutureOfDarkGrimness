@@ -164,32 +164,56 @@ void main()
 
     public void Clear() => _hasContent = false;
 
+    /// <summary>One filled disc of a band region, radius fully inflated by the caller.</summary>
+    public readonly record struct BandDisc(float X, float Z, float RadiusInches);
+
     /// <summary>
-    /// Rebuilds all three RTs from field geometry + polar maps. GPU-cheap (a few hundred triangles +
-    /// one fullscreen quad); called only when the field's rebuild signature changes -- or every frame in
-    /// ghost-anchored mode, which is the point of this renderer.
+    /// Target-anchored rebuild: every band ring is (range + shooter radius + that target's radius)
+    /// around every target model -- the standard pinned-field shape.
     /// </summary>
     public void Rebuild(IReadOnlyList<FieldTargetModel> targets, float shooterRadius,
         IReadOnlyList<BandSpec> bands, IReadOnlyList<PolarSightMap> maps,
         (byte r, byte g, byte b) accent, float alphaScale)
     {
+        var perBand = new List<(BandSpec band, List<BandDisc> discs)>(bands.Count);
+        foreach (BandSpec band in bands)
+        {
+            var discs = new List<BandDisc>(targets.Count);
+            foreach (FieldTargetModel t in targets)
+                discs.Add(new BandDisc(t.X, t.Z, band.RangeInches + shooterRadius + t.Radius));
+            perBand.Add((band, discs));
+        }
+        RebuildDiscs(perBand, maps, accent, alphaScale);
+    }
+
+    /// <summary>
+    /// Rebuilds all three RTs from precomputed per-band discs + polar maps. GPU-cheap (a few hundred
+    /// triangles + one fullscreen quad); called when the field's rebuild signature changes -- or every
+    /// frame in ghost-anchored mode, which is the point of this renderer.
+    /// </summary>
+    public void RebuildDiscs(IReadOnlyList<(BandSpec band, List<BandDisc> discs)> perBand,
+        IReadOnlyList<PolarSightMap> maps, (byte r, byte g, byte b) accent, float alphaScale)
+    {
         if (!_ready) return;
-        if (targets.Count == 0 || bands.Count == 0) { _hasContent = false; return; }
+        bool any = false;
+        foreach ((_, List<BandDisc> discs) in perBand)
+            if (discs.Count > 0) { any = true; break; }
+        if (!any) { _hasContent = false; return; }
         _hasContent = true;
 
         // ---- Pass 1: band values (opaque overwrite, ascending band value = descending range) --------
-        var ordered = new List<BandSpec>(bands);
-        ordered.Sort((a, b) => a.Value.CompareTo(b.Value));
+        var ordered = new List<(BandSpec band, List<BandDisc> discs)>(perBand);
+        ordered.Sort((a, b) => a.band.Value.CompareTo(b.band.Value));
 
         Raylib.BeginTextureMode(_bandRT);
         Raylib.ClearBackground(new Color(0, 0, 0, 0));
-        foreach (BandSpec band in ordered)
+        foreach ((BandSpec band, List<BandDisc> discs) in ordered)
         {
             var col = new Color((byte)band.Value, (byte)0, (byte)0, (byte)255);
-            foreach (FieldTargetModel t in targets)
+            foreach (BandDisc d in discs)
             {
-                float rTex = (band.RangeInches + shooterRadius + t.Radius) * _tpi;
-                Vector2 c = ToTexel(t.X, t.Z);
+                float rTex = d.RadiusInches * _tpi;
+                Vector2 c = ToTexel(d.X, d.Z);
                 int segments = Math.Clamp((int)(rTex * 0.5f), 64, 256);
                 Raylib.DrawCircleSector(c, rTex, 0f, 360f, segments, col);
             }

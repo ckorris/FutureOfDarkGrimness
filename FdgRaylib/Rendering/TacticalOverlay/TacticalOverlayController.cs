@@ -67,6 +67,9 @@ public class TacticalOverlayController
 
     private long _lastFieldSig;
     private bool _fieldBuiltOnce;
+    // True when _shadowMask/_coverMask hold a CURRENT target-anchored classification (ClassifyInto ran
+    // for the live pin) -- the precondition for the sampler's field channels. False in ghost mode.
+    private bool _fieldMasksValid;
 
     private readonly record struct BandLabel(Float2 World, string Text, int Accent);
     private List<BandLabel> _bandLabels = new();
@@ -212,10 +215,17 @@ public class TacticalOverlayController
         DefineMovementPathRequest? req = _moveResolver?.ActiveRequest;
         if (req == null) { ClearFieldPictures(); return; }
 
-        (IUnit? target, int accent, float alphaScale) = ResolveFieldTarget(req);
-        if (target == null) { ClearFieldPictures(); return; }
-
-        RebuildFieldIfNeeded(req, target, accent, alphaScale);
+        if (TacticalOverlayConfig.GhostAnchoredField)
+        {
+            // Ghost-anchored: rebuilt every frame, tracking the pending positions. No signature.
+            RebuildGhostField(req);
+        }
+        else
+        {
+            (IUnit? target, int accent, float alphaScale) = ResolveFieldTarget(req);
+            if (target == null) { ClearFieldPictures(); return; }
+            RebuildFieldIfNeeded(req, target, accent, alphaScale);
+        }
 
         if (_gpuField != null && TacticalOverlayConfig.UseGpuField)
             _gpuField.DrawComposite(_originX, _originY,
@@ -225,12 +235,114 @@ public class TacticalOverlayController
                 GameWideConstants.DEFAULT_TABLE_WIDTH_INCHES, GameWideConstants.DEFAULT_TABLE_HEIGHT_INCHES, _scale);
     }
 
+    // ---- Ghost-anchored field (H4): "what can I hit from here", per frame --------------------------
+
+    // Approximations, deliberate and documented: the reach discs inflate by each model's own base
+    // radius plus the DEFAULT 28mm target radius (there is no specific target); LoS blockers exclude
+    // only the mover's team (a real shot at unit X would also ignore X's own models). Pips stay the
+    // per-target truth. Band labels are suppressed (they'd ride the cursor); pins keep chips/counts and
+    // their secondary contours.
+    private void RebuildGhostField(DefineMovementPathRequest req)
+    {
+        IUnit movingUnit = req.UnitDataBinding.GetValue();
+        IReadOnlyDictionary<IModel, Position> ghosts = _moveResolver!.GhostPositions;
+
+        // Distinct effective ranges -> nested bands (vs the focused pin if any, else raw ranges).
+        IUnit? rangeTarget = _pins.Count > 0 && _focusIndex >= 0 && _focusIndex < _pins.Count
+            ? _pins[_focusIndex].Unit : null;
+        var byRange = new Dictionary<float, List<GpuFieldRenderer.BandDisc>>();
+        var sources = new List<Position>();
+
+        foreach (IModel m in movingUnit.Models)
+        {
+            if (!m.GetIsAlive()) continue;
+            if (!ghosts.TryGetValue(m, out Position gp)) continue;
+            if (gp.x == 0f && gp.z == 0f) continue;
+            sources.Add(gp);
+
+            foreach (Weapon w in m.Weapons)
+            {
+                if (w.RangeInches <= 0f) continue;
+                float eff = rangeTarget != null
+                    ? EffectiveRange(req, w.Name, rangeTarget.ID, w.RangeInches)
+                    : w.RangeInches;
+                if (!byRange.TryGetValue(eff, out List<GpuFieldRenderer.BandDisc>? discs))
+                    byRange[eff] = discs = new List<GpuFieldRenderer.BandDisc>();
+                discs.Add(new GpuFieldRenderer.BandDisc(gp.x, gp.z,
+                    eff + m.BaseRadiusInches + TacticalOverlayConfig.DefaultReferenceRadiusInches));
+            }
+        }
+
+        if (byRange.Count == 0 || sources.Count == 0) { ClearFieldPictures(); return; }
+
+        var ranges = byRange.Keys.ToList();
+        ranges.Sort();
+        var perBand = new List<(BandSpec band, List<GpuFieldRenderer.BandDisc> discs)>(ranges.Count);
+        for (int i = 0; i < ranges.Count; i++)
+        {
+            var band = new BandSpec(ranges[i], (byte)(ranges.Count - i), $"{ranges[i]:0.#}\"");
+            perBand.Add((band, byRange[ranges[i]]));
+        }
+
+        // LoS maps from the ghost positions; blockers exclude only the mover's team (see note above).
+        List<ITerrain> relevant = _probe!.BuildBlockers(movingUnit, movingUnit)
+            .Where(t => t.TerrainType.HasFlag(ETerrainType.Blocking) || t.TerrainType.HasFlag(ETerrainType.Cover))
+            .ToList();
+        var maps = new List<PolarSightMap>();
+        if (relevant.Count > 0)
+            foreach (Position s in sources)
+                maps.Add(PolarSightMap.Build(s, relevant, TacticalOverlayConfig.PolarBuckets));
+
+        (byte r, byte g, byte b) accentCol = _pins.Count > 0 && _focusIndex >= 0
+            ? TacticalOverlayConfig.AccentPalette[_pins[_focusIndex].Accent % TacticalOverlayConfig.AccentPalette.Length]
+            : TacticalOverlayConfig.AccentPalette[0];
+
+        var sw = System.Diagnostics.Stopwatch.StartNew();
+        bool gpuActive = _gpuField != null && TacticalOverlayConfig.UseGpuField;
+        if (gpuActive)
+        {
+            _gpuField!.RebuildDiscs(perBand, maps, accentCol, 1f);
+        }
+        else
+        {
+            // CPU fallback: functional but per-frame heavy (classify + compose + upload); the GPU path
+            // is the intended engine for this mode.
+            _bandMask!.Clear();
+            var orderedCpu = new List<(BandSpec band, List<GpuFieldRenderer.BandDisc> discs)>(perBand);
+            orderedCpu.Sort((a, b) => a.band.Value.CompareTo(b.band.Value));
+            foreach ((BandSpec band, List<GpuFieldRenderer.BandDisc> discs) in orderedCpu)
+                foreach (GpuFieldRenderer.BandDisc d in discs)
+                    _bandMask.RasterizeDiscMax(d.X, d.Z, d.RadiusInches, band.Value);
+            PolarSightMap.ClassifyInto(_bandMask, _shadowMask!, _coverMask!, maps);
+            _field!.Compose(_bandMask, _shadowMask!, _coverMask!, accentCol, 1f);
+        }
+        sw.Stop();
+
+        // Per-frame mode: throttle the budget warning so a slow fallback doesn't spam the log.
+        if (sw.Elapsed.TotalMilliseconds > TacticalOverlayConfig.RebuildBudgetMs &&
+            Environment.TickCount64 - _lastGhostWarnMs > 5000)
+        {
+            _lastGhostWarnMs = Environment.TickCount64;
+            _warn?.Invoke($"[overlay] ghost field rebuild {sw.Elapsed.TotalMilliseconds:0}ms/frame " +
+                          $"(budget {TacticalOverlayConfig.RebuildBudgetMs:0}ms) - consider Field: GPU");
+        }
+
+        _bandLabels = new List<BandLabel>();                 // labels would ride the cursor; suppressed
+        _lastFieldBands = perBand.Select(pb => pb.band).ToList();  // distance readout still promotes
+        _fieldMasksValid = false;  // ghost-anchored masks must not feed the target-anchored sampler truth
+        InvalidateField();  // leaving ghost mode must force a target-anchored rebuild
+        BuildSecondaryContours(req, movingUnit, _probe.ModalBaseRadius(movingUnit));
+    }
+
+    private long _lastGhostWarnMs;
+
     private void ClearFieldPictures()
     {
         _field?.Clear();
         _gpuField?.Clear();
         _bandLabels = new List<BandLabel>();
         _secondaryContours.Clear();
+        _fieldMasksValid = false;
     }
 
     /// <summary>
@@ -377,9 +489,11 @@ public class TacticalOverlayController
                 (x, z) => AnyThreatDisc(discs, x, z, charge: false)),
         };
 
-        // Opportunity-field channels: only meaningful while a field is drawn (a pin/preview is active).
+        // Opportunity-field channels: only when the CPU masks hold a current TARGET-ANCHORED
+        // classification (ghost mode's truth is different geometry; GPU-only frames skip the masks).
         if (_bandMask != null && _shadowMask != null && _coverMask != null &&
-            _fieldTargetUnit != null && _fieldMovingUnit != null && _field.HasContent)
+            _fieldTargetUnit != null && _fieldMovingUnit != null &&
+            _fieldMasksValid && !TacticalOverlayConfig.GhostAnchoredField)
         {
             IUnit target = _fieldTargetUnit;
             float longest = _lastFieldBands.Count > 0 ? _lastFieldBands.Max(b => b.RangeInches) : 0f;
@@ -859,8 +973,10 @@ public class TacticalOverlayController
             _gpuField!.Rebuild(targets, shooterRadius, bands, maps, accentCol, alphaScale);
         // The CPU masks are needed when the CPU path draws, and by the fidelity sampler's claim
         // channels; skip the texel loop entirely when neither wants them.
-        if (!gpuActive || _sampler.Enabled)
+        bool classify = !gpuActive || _sampler.Enabled;
+        if (classify)
             PolarSightMap.ClassifyInto(_bandMask!, _shadowMask!, _coverMask!, maps);
+        _fieldMasksValid = classify;
         if (!gpuActive)
             _field!.Compose(_bandMask!, _shadowMask!, _coverMask!, accentCol, alphaScale);
 

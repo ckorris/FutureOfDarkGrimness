@@ -127,6 +127,14 @@ public class TableTooltipOverlay
             _tactical.InvalidateFieldCache();
         }
 
+        // Field anchor: Target = "where can I stand to shoot the pin" (classic), Ghost = "what can I
+        // hit from my pending position", live per frame (H4, feel-check pending).
+        if (_tactical != null && ImGui.Button(TacticalOverlay.TacticalOverlayConfig.GhostAnchoredField ? "Anchor: Ghost" : "Anchor: Target"))
+        {
+            TacticalOverlay.TacticalOverlayConfig.GhostAnchoredField = !TacticalOverlay.TacticalOverlayConfig.GhostAnchoredField;
+            _tactical.InvalidateFieldCache();
+        }
+
         if (_saveGameToJson != null)
         {
             if (ImGui.Button("Save Game"))

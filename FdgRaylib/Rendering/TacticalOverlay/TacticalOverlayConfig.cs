@@ -66,6 +66,12 @@ internal static class TacticalOverlayConfig
     // flipping it invalidates the field cache. Auto-falls back to CPU when GPU init fails.
     public static bool UseGpuField = true;
 
+    // Ghost-anchored field (H4, default OFF pending user feel-check): instead of the pinned target's
+    // "where can I stand to shoot it" bands, the field anchors on the moving unit's ghosts and shows
+    // "what can I hit from here" -- per-model weapon-range bands from the pending positions, LoS from
+    // the ghosts, rebuilt EVERY FRAME (the GPU path makes that ~free). Toolbar "Anchor" button.
+    public static bool GhostAnchoredField = false;
+
     // --- Hotkeys ----------------------------------------------------------------------------------
     // T is taken (dev token-reveal in TableTooltipOverlay); F is free. Tab/Alt are free.
     public const ImGuiKey ThreatToggleKey     = ImGuiKey.F;
