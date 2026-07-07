@@ -37,13 +37,12 @@ public class RaylibRenderer
 
     // Table grid: minor lines every 6", major every 12" (matches the game's inch measurements — a
     // major square is one charge move across). Lines are etched darker than the felt for an engraved
-    // look rather than painted on top. A soft edge vignette adds depth. Everything here is confined to
-    // the table rectangle by construction, so it never bleeds onto terrain/objectives/models drawn after.
+    // look rather than painted on top. Everything here is confined to the table rectangle by
+    // construction, so it never bleeds onto terrain/objectives/models drawn after.
     private const float GridMinorInches = 6f;
     private const float GridMajorInches = 12f;
     private static readonly Color GridMinorColor = new(33, 85, 33, 80);
     private static readonly Color GridMajorColor = new(24, 66, 24, 150);
-    private const int   FeltVignetteAlpha = 55;
 
     // Toggled from the table toolbar (TableTooltipOverlay) alongside the label toggle. Read by
     // DrawTableGrid's call site so the grid/felt can be turned off without touching anything else.
@@ -95,6 +94,13 @@ public class RaylibRenderer
     // Opaque while painting the union; the final on-table alpha comes from the composite tint below.
     private static readonly Color ExclusionFill = new(235, 95, 95, 255);
     private const byte ExclusionCompositeAlpha = 70;
+
+    // Subtle grass mottling over the felt: a small tileable Perlin-noise texture generated once, then
+    // tiled across the table rect (repeat wrap) and composited additively at a low green tint so it reads
+    // as faint grassy flecks rather than flat felt. Lazily generated on first draw; unloaded on shutdown.
+    private Texture2D _grassTex;
+    private bool      _grassReady;
+    private static readonly Color GrassTint = new(22, 44, 22, 60);
 
     public RaylibRenderer()
     {
@@ -415,6 +421,7 @@ public class RaylibRenderer
 
         rlImGui.Shutdown();
         if (_exclusionRTReady) Raylib.UnloadRenderTexture(_exclusionRT);
+        if (_grassReady) Raylib.UnloadTexture(_grassTex);
         _audio?.Dispose();
         Raylib.CloseWindow();
     }
@@ -439,12 +446,43 @@ public class RaylibRenderer
         return new Layout(scale, originX, originY, screenW, screenH);
     }
 
-    private static void DrawTable(Layout l)
+    // Thin border thickness (px) framing the table rect.
+    private const float TableBorderThickness = 2f;
+
+    private void DrawTable(Layout l)
     {
         int tw = (int)(TableWIn * l.Scale);
         int th = (int)(TableHIn * l.Scale);
         Raylib.DrawRectangle(l.OriginX, l.OriginY, tw, th, TableColor);
-        Raylib.DrawRectangleLines(l.OriginX, l.OriginY, tw, th, TableBorder);
+        DrawGrassTexture(l, tw, th);
+        // A thin, defined frame around the felt (replaces the old edge vignette / "satin" sheen).
+        Raylib.DrawRectangleLinesEx(new Rectangle(l.OriginX, l.OriginY, tw, th),
+            TableBorderThickness, TableBorder);
+    }
+
+    // Tiles the grass-noise texture across the table at a constant on-screen density (source rect larger
+    // than the texture, repeat wrap) and blends it additively so only the lighter flecks show through.
+    private void DrawGrassTexture(Layout l, int tw, int th)
+    {
+        EnsureGrassTexture();
+        var src = new Rectangle(0, 0, tw, th);
+        var dst = new Rectangle(l.OriginX, l.OriginY, tw, th);
+        Raylib.BeginBlendMode(BlendMode.Additive);
+        Raylib.DrawTexturePro(_grassTex, src, dst, Vector2.Zero, 0f, GrassTint);
+        Raylib.EndBlendMode();
+    }
+
+    private void EnsureGrassTexture()
+    {
+        if (_grassReady) return;
+        // 128px Perlin patch; fine scale for a close, organic grain. Bilinear + repeat so it tiles
+        // seamlessly and stays smooth when stretched.
+        Image img = Raylib.GenImagePerlinNoise(128, 128, 0, 0, 5f);
+        _grassTex = Raylib.LoadTextureFromImage(img);
+        Raylib.UnloadImage(img);
+        Raylib.SetTextureFilter(_grassTex, TextureFilter.Bilinear);
+        Raylib.SetTextureWrap(_grassTex, TextureWrap.Repeat);
+        _grassReady = true;
     }
 
     // Etched inch grid + a soft felt vignette, drawn only within the table rect (so it stays under
@@ -466,16 +504,6 @@ public class RaylibRenderer
             int py = y0 + (int)(zi * l.Scale);
             Raylib.DrawLine(x0, py, x1, py, IsMajorGridLine(zi) ? GridMajorColor : GridMinorColor);
         }
-
-        // Edge vignette: a dark band fading inward on each side (corners overlap for a little extra
-        // emphasis). Clipped to the table rect.
-        int band = Math.Max(6, (int)(Math.Min(tw, th) * 0.08f));
-        var edge  = new Color((byte)0, (byte)0, (byte)0, (byte)FeltVignetteAlpha);
-        var clear = new Color((byte)0, (byte)0, (byte)0, (byte)0);
-        Raylib.DrawRectangleGradientV(x0, y0, tw, band, edge, clear);            // top
-        Raylib.DrawRectangleGradientV(x0, y1 - band, tw, band, clear, edge);     // bottom
-        Raylib.DrawRectangleGradientH(x0, y0, band, th, edge, clear);            // left
-        Raylib.DrawRectangleGradientH(x1 - band, y0, band, th, clear, edge);     // right
     }
 
     private static bool IsMajorGridLine(float inches)
