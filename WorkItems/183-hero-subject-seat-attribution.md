@@ -213,6 +213,23 @@ tests. The risk is concentrated in test design, not mechanism — all primitives
 
 ## Notes
 
+- 2026-07-08 (slice 2 DONE, engine commit): **Subject-seat model visibility (the hero-side fix).**
+  Threaded the defender's living models (`HeroStatRules.LivingModels`, the Subject counterpart to
+  `LivingWeaponBatchOwners`) with `EModelRuleScope.AnyOwner` at all 8 live Subject dispatch sites -
+  `RangeRuleQueries`, `DetermineHitRollStage`, `RollToHitStage`, `AssignWoundsStage`,
+  `MovementRuleQueries`, `DetermineStrikeOrderStage`+`ResolveImpactHitsStage` (via the shared
+  `SubjectWithMeleeWeapons`, widened to 5-tuples with models on the weaponless participant), and
+  `ResolveSpellDamageStage`; site 9 (`UnitDestructionNotifier`, unit already dead) passes the full
+  model list. So a joined hero's relocated defensive rule is now COLLECTED and evaluated at the Subject
+  seat (its all-models gate then governs whether it applies), instead of silently vanishing. Non-hero
+  units are unaffected (no model carries per-model rules -> the union adds nothing). `HeroJoinResolver`
+  doc comment updated. Tests: new `HeroSubjectRuleIntegrationTests` (6) - through the real
+  `RollToHitStage` reading the folded `SaveModifier` from a hero-carried Shielded: baseline non-hero,
+  dormant-while-grunts-live, **fires-when-sole-survivor (the wiring proof - impossible under
+  models:null)**, host-has/hero-lacks suppressed, both-carry fires once (dedup); plus a trace test
+  (direct evaluator + capturing output) proving the relocated rule is narrated by the #163 trace
+  ("condition AllModelsHaveThisRule not met") rather than silently dropped. Verify: engine **1308/1308**,
+  full build clean, headless smoke exit 0. Remaining: slice 3 (close-out).
 - 2026-07-08 (slice 1 DONE, engine commit): **gates + validator (the host-side fix).** Added
   `Condition.AllModelsHaveThisRule` to all 15 Subject-seat entries across the 12 unit-scoped defensive
   rules (Evasive, Melee Evasion, Artillery-Subject, Aircraft x2, Resistance x2, Protected, Shielded,
