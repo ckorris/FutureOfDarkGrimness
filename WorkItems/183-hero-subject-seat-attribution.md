@@ -213,6 +213,25 @@ tests. The risk is concentrated in test design, not mechanism — all primitives
 
 ## Notes
 
+- 2026-07-08 (slice 1 DONE, engine commit): **gates + validator (the host-side fix).** Added
+  `Condition.AllModelsHaveThisRule` to all 15 Subject-seat entries across the 12 unit-scoped defensive
+  rules (Evasive, Melee Evasion, Artillery-Subject, Aircraft x2, Resistance x2, Protected, Shielded,
+  Fortified, Ranged Shrouding, Darkborn-Defensive x2, Melee Shrouding, Counter-Attack); bare `Always`
+  became the bare gate, real conditions became `And(existing, gate)`. New `RuleValidator` check
+  (`CheckAllModelsGate`): a unit-scoped rule with a Subject-seat entry at a defensive attack hook must
+  gate on `AllModelsHaveThisRule` (conjunctive-position check; weapon-scoped Counter exempt via the
+  scope filter; Actor-seat buffs exempt). The check flows through army-load, supplement validate/apply,
+  OPR import, AND the catalog/supplement fire-lint (all call `RuleValidator.Validate`), so the catalog
+  is self-tested clean and any future ungated Subject rule is rejected at load. `RuleViolation`
+  generalized to carry an optional `Detail` (capability violations keep `MissingCapability`; the gate
+  violation sets `Detail`) with a `Describe()` renderer; the 3 formatters route through it. Verified no
+  OPR-synthesized rule (all Actor-seat) or supplement rule (zero Subject entries) is newly rejected.
+  Tests: `RuleValidatorTests` +3 (ungated-flagged, weapon-exempt, actor-exempt) and 2 fixtures
+  re-gated; `EmbeddedRuleValidationTests` fixture re-gated; `AllModelsRuleGateIntegrationTests` +6
+  (one per effect class: hit-mod/wound-ignore/save-mod/range-mod/charge-mod/strike-first, each proving
+  homogeneous-fires + hero-lacks-suppressed). Stale "approximated as unit-level (#093)" scope comments
+  on the Shrouding/Darkborn rules updated to name the gate. Verify: engine **1302/1302**, full build
+  clean, headless smoke exit 0. Remaining: slice 2 (hero-side model visibility), slice 3 (close-out).
 - 2026-07-08 (latest): Full sign-off received; the two discovered corners were fixed immediately at
   the user's request (engine commit — gate/grants fix + Resistance spell facet, 5 new tests; suite
   1293/1293, build clean, headless smoke exit 0). Slices 1-3 remain for implementation (planned on
