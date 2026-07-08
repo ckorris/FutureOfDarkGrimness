@@ -1,0 +1,56 @@
+{
+  "name": "Transport Rout Test - Owner (signal army)",
+  "faction": "",
+  "pointsLimit": 0,
+  "units": [
+    {
+      "name": "Rhino",
+      "modelCount": 1,
+      "quality": 6,
+      "defense": 5,
+      "specialRules": [
+        {
+          "kind": "coreNumeric",
+          "name": "Tough",
+          "numericValue": 12
+        },
+        {
+          "kind": "coreNumeric",
+          "name": "Transport",
+          "numericValue": 6
+        }
+      ],
+      "weapons": [
+        {
+          "name": "Hull Ram",
+          "quantity": 1,
+          "rangeInches": 0,
+          "attacks": 1,
+          "armorPenetration": 0,
+          "specialRules": []
+        }
+      ],
+      "pointCost": 0
+    },
+    {
+      "name": "Riders",
+      "modelCount": 3,
+      "quality": 4,
+      "defense": 4,
+      "specialRules": [],
+      "weapons": [
+        {
+          "name": "Rifle",
+          "quantity": 1,
+          "rangeInches": 24,
+          "attacks": 1,
+          "armorPenetration": 0,
+          "specialRules": []
+        }
+      ],
+      "pointCost": 0
+    }
+  ],
+  "ruleDefinitions": [],
+  "spells": []
+}
