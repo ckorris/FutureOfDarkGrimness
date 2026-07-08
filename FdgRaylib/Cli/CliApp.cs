@@ -105,6 +105,43 @@ public class CliApp
         await gameEnded.Task;
     }
 
+    /// <summary>
+    /// #167 --scenario: resumes an already-populated store (a compiled scenario or a loaded save)
+    /// headless, lobby-free: slot 0 drives via the CLI resolvers, every other saved slot is AI.
+    /// </summary>
+    public async Task RunScenarioAsync(GameDataStore loadedStore)
+    {
+        Console.WriteLine("=== FDG Raylib - scenario ===");
+
+        var parts = ScenarioLauncher.BuildResume(loadedStore);
+        _messageBus = parts.Bus;
+        _gameDataStore = parts.Store;
+        _localGame = parts.HumanGame;
+
+        ILogMessageUI logUI = new CliLogMessageUI();
+        IStageResolverRegistry resolverRegistry = BuildResolverRegistry();
+        if (_slowDelayMs > 0)
+            resolverRegistry = new SlowModeResolverRegistry(resolverRegistry, _slowDelayMs);
+
+        _localGame.AssignInterfaces(
+            logMessageUI:          logUI,
+            playerMessageUI:       new CliPlayerMessageUI(),
+            stageResolverRegistry: resolverRegistry,
+            presentationSink:      null,
+            outstandingTaskDisplay: null);
+
+        var gameEnded = new TaskCompletionSource();
+        var server = new FDGServer(parts.Store, parts.Bus, parts.Slots); // resume constructor
+        server.OnGameEnded += result =>
+        {
+            logUI.DisplayLogMessage($"Game ended: {result}", TextColor.White);
+            gameEnded.TrySetResult();
+        };
+
+        Console.WriteLine("Scenario resumed.");
+        await gameEnded.Task;
+    }
+
     private PlayerSlot[] CreatePlayerSlots()
     {
         var player1ID = new PlayerID(Guid.NewGuid());

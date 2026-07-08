@@ -58,6 +58,11 @@ dotnet run --project FdgRaylib/FdgRaylib.csproj -- --slow 2000
 # the Debug log channel. In the GUI the console's Debug toggle flips the same switch at runtime.
 dotnet run --project FdgRaylib/FdgRaylib.csproj -- --headless --trace-rules
 
+# Scenario tools (#167, see Scenarios/README.md): compile a scenario JSON to a resumable save,
+# or launch one directly - no main menu, no lobby (slot 0 = you, other slots AI). Works headless too.
+dotnet run --project FdgRaylib/FdgRaylib.csproj -- --make-scenario Scenarios/example-shootout.json out.fdgsave
+dotnet run --project FdgRaylib/FdgRaylib.csproj -- --scenario Scenarios/example-shootout.json
+
 # Run engine tests
 dotnet test FutureOfDarkGrimness/FutureOfDarkGrimness.csproj
 ```

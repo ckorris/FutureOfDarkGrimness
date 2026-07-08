@@ -1,10 +1,13 @@
 using System.Text.Json;
 using FdgRaylib.Cli;
 using FdgRaylib.Rendering;
+using FDG;
 using FDG.ArmyBuilding;
 using FDG.Data;
+using FDG.GameModel;
 using FDG.Network.Connection;
 using FDG.Network.Connection.Lobby;
+using FDG.Presentation;
 using FDG.Rules.Serialization;
 using FDG.SaveLoad;
 using TinyDialogsNet;
@@ -128,6 +131,35 @@ if (b2aIdx >= 0 && b2aIdx + 2 < args.Length)
     return;
 }
 
+// --make-scenario <scenario.json> <out.fdgsave>  (#167 T1): compile a compact scenario JSON (armies,
+// placements, wounds/tokens, whose activation it is) into a resumable save positioned at the start of
+// the active player's activation. Author a rule test in ~20 lines of JSON instead of playing to it.
+int makeScenarioIdx = Array.IndexOf(args, "--make-scenario");
+if (makeScenarioIdx >= 0 && makeScenarioIdx + 2 < args.Length)
+{
+    string outPath = args[makeScenarioIdx + 2];
+    try
+    {
+        string saveJson = ScenarioCompiler.CompileFileToSaveJson(args[makeScenarioIdx + 1]);
+        string? outDir = Path.GetDirectoryName(Path.GetFullPath(outPath));
+        if (!string.IsNullOrEmpty(outDir)) Directory.CreateDirectory(outDir);
+        File.WriteAllText(outPath, saveJson);
+        Console.WriteLine($"Compiled scenario '{args[makeScenarioIdx + 1]}' -> {outPath}");
+    }
+    catch (ScenarioCompileException ex)
+    {
+        Console.WriteLine($"Scenario error: {ex.Message}");
+        Environment.Exit(1);
+    }
+    return;
+}
+
+// --scenario <file.json|file.fdgsave>  (#167): launch straight into a scenario, skipping the main menu
+// AND the lobby — slot 0 is the local player, every other slot is AI. A .json compiles in-memory first;
+// a .fdgsave (from --make-scenario or an in-game save) loads directly. Works headless and in the GUI.
+int scenarioIdx = Array.IndexOf(args, "--scenario");
+string? scenarioPath = scenarioIdx >= 0 && scenarioIdx + 1 < args.Length ? args[scenarioIdx + 1] : null;
+
 // --army <path> (#153): non-interactive headless smoke — both players load <path>, then EOF defaults take
 // over (exactly what the old `printf "1\n<path>\n..." |` pipe idiom did, minus the pipe).
 int armyIdx = Array.IndexOf(args, "--army");
@@ -141,6 +173,20 @@ var app = new CliApp(headless, slowDelayMs);
 
 if (headless)
 {
+    if (scenarioPath != null)
+    {
+        try
+        {
+            await app.RunScenarioAsync(ScenarioLauncher.LoadStore(scenarioPath));
+        }
+        catch (ScenarioCompileException ex)
+        {
+            Console.WriteLine($"Scenario error: {ex.Message}");
+            Environment.Exit(1);
+        }
+        return;
+    }
+
     app.Prepare();
     await app.RunAsync();
 }
@@ -234,6 +280,36 @@ else
     // ── Local play (Host with no network players) also still works via CliApp ─
     // The old "Host" path now goes through the lobby. CliApp is only used
     // in headless mode above.
+
+    // ── --scenario (#167): straight into the game, no menu, no lobby ──────────
+    // TransitionToGame only sets state + store subscriptions (no GPU resources), so it is safe to
+    // call before Run() opens the window. Slot 0 = local player, other slots AI; the engine waits
+    // on the resolver registry (assigned in GameGuiWiring.Launch) before requesting decisions.
+    if (scenarioPath != null)
+    {
+        try
+        {
+            GameDataStore scenarioStore = ScenarioLauncher.LoadStore(scenarioPath);
+            var parts = ScenarioLauncher.BuildResume(scenarioStore);
+
+            var players = new List<(PlayerID ID, string Name)>();
+            for (int i = 0; i < parts.SavedInfos.Count; i++)
+                players.Add((parts.SavedInfos[i].PlayerID, i == 0 ? "Player 1" : $"Player {i + 1} (AI)"));
+
+            GameGuiWiring.Launch(parts.HumanGame, players,
+                saveGameToJson: () => GameSaveSerializer.Save(parts.Store),
+                onLaunched: renderer.TransitionToGame);
+
+            var scenarioServer = new FDGServer(parts.Store, parts.Bus, parts.Slots,
+                new RealtimePresentationClock());
+            scenarioServer.OnGameEnded += result => renderer.ShowGameOver(result);
+        }
+        catch (ScenarioCompileException ex)
+        {
+            Console.WriteLine($"Scenario error: {ex.Message}");
+            Environment.Exit(1);
+        }
+    }
 
     try
     {

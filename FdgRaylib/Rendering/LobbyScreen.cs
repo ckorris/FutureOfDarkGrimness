@@ -38,12 +38,6 @@ public class LobbyScreen : IAppScreen
     private string? _lastLaunchError;
     private IReadOnlyList<string> _launchProblems = Array.Empty<string>();
 
-    // Orange / Purple as the two default team colours (was Blue / Red). Purple isn't a Raylib built-in,
-    // so it's spelled out; Green/Yellow round out the palette for 3-4 player games.
-    private static readonly Color TeamPurple = new(150, 70, 200, 255);
-    private static readonly Color[] PlayerPalette =
-        { Color.Orange, TeamPurple, Color.Green, Color.Yellow };
-
     // Light-blue accent (matches ImGuiTheme) used to make section/column headers read as headers.
     private static readonly Vector4 HeaderAccent = new(0.50f, 0.73f, 1.0f, 1f);
 
@@ -454,33 +448,16 @@ public class LobbyScreen : IAppScreen
 
     private void HandleLaunch(IFDGGame game)
     {
-        // Player -> palette colour, by both PlayerID (table models) and display name (chat sender lines).
-        var players = _viewModel?.PlayerInfos ?? [];
-        var colors  = new Dictionary<PlayerID, Color>();
-        var nameColors = new Dictionary<string, TextColor>();
-        for (int i = 0; i < players.Count; i++)
-        {
-            Color c = PlayerPalette[i % PlayerPalette.Length];
-            colors[players[i].PlayerID] = c;
-            nameColors[players[i].PlayerName] = new TextColor(c.R, c.G, c.B, 255);
-        }
-
-        var log   = new GameLog();
-        var logUI = new GuiLogMessageUI(log);
-        var (resolvers, overlay) = ResolverRegistryFactory.BuildGui(game.TableState);
-
-        var taskDisplay = new GuiOutstandingTaskDisplay();
-        var presentationPlayer = new PresentationPlayer();
-        var playerMessageUI = new GuiPlayerMessageUI(
-            name => nameColors.TryGetValue(name, out var tc) ? tc : new TextColor(150, 220, 255, 255));
-        game.AssignInterfaces(logUI, playerMessageUI, resolvers,
-            presentationSink: presentationPlayer,
-            outstandingTaskDisplay: taskDisplay);
+        var players = (_viewModel?.PlayerInfos ?? [])
+            .Select(info => (info.PlayerID, info.PlayerName)).ToList();
 
         // Host-only save hook (work item #054 will add client-initiated saving).
         Func<string?>? saveGame = _viewModel != null && _viewModel.CanSaveGame ? _viewModel.SaveGameToJson : null;
 
-        OnGameLaunched?.Invoke(game.TableState, pid => colors.GetValueOrDefault(pid, Color.White), log, overlay, taskDisplay, presentationPlayer, saveGame, playerMessageUI);
+        // Shared with the --scenario direct launch (#167); the wiring lives in GameGuiWiring.
+        GameGuiWiring.Launch(game, players, saveGame,
+            (tableState, colorForPlayer, log, overlay, taskDisplay, presentationPlayer, save, playerMessageUI) =>
+                OnGameLaunched?.Invoke(tableState, colorForPlayer, log, overlay, taskDisplay, presentationPlayer, save, playerMessageUI));
     }
 
     private static void DrawIntField(string label, int current, Action<int> setter)
