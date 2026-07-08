@@ -1,6 +1,28 @@
 # 183 — Hero-join Subject-seat rule attribution
 
-**Status**: open — plan written 2026-07-08, **awaiting design sign-off** (options + recommendation below)
+**Status**: DONE 2026-07-08 (Option C, slices 1-3 shipped; engine + superproject committed, local)
+
+## Outcome
+**DONE 2026-07-08.** Closed audit item 17 (§3 + §8), both directions of the attribution gap, with one
+mechanism. **Slice 1** (engine `b271541`): `Condition.AllModelsHaveThisRule` added to all 15 Subject-seat
+entries across the 12 unit-scoped defensive rules (Evasive, Melee Evasion, Artillery, Aircraft x2,
+Resistance x2, Protected, Shielded, Fortified, Ranged Shrouding, Darkborn-Defensive x2, Melee Shrouding,
+Counter-Attack), plus a `RuleValidator` check that enforces the gate for any unit-scoped Subject-seat
+defensive rule (flows through army-load, supplement validate/apply, OPR import, and the catalog/supplement
+fire-lint) so the catalog is self-tested clean and future ungated rules are rejected at load. **Slice 2**
+(engine `c926946`): every Subject-seat dispatch site threads the defender's living models
+(`HeroStatRules.LivingModels`, AnyOwner), so a joined hero's relocated defensive rule is collected,
+evaluated, and #163-traceable instead of silently vanishing; the gate governs whether it applies (only
+when every living model has it — the sole-survivor case fires, matching last-model-Defense). Non-hero units
+unaffected. **Slice 3**: this close-out (audit cross-off, ledger, archive). Also shipped ahead of the
+slices (engine `4c2b86a`): the grants-cover-the-joined-hero gate fix and Resistance's spell facet (2+ vs
+spells). Verify at each slice: engine green (1302 -> 1308), full build clean, headless smoke exit 0.
+Deferred, filed separately: weapon-scoped Counter strike sequencing (**#184**); Fear/Fearless asymmetry
+stays audit item 24 / **#175** (Fear is Actor-seat morale, needs a rulebook check — NOT closed by this
+item). Follow-up cleanup surfaced during implementation: the evaluator's participant tuples want a
+`RuleParticipant` struct (**#185**).
+
+**Status (historical)**: open — plan written 2026-07-08, **awaiting design sign-off** (options + recommendation below)
 **Related**: #006 (Hero merge), #093 (per-model dispatch — built the primitives this plan reuses), #175 (Fear/Fearless rulebook check — same ruling principle), #166a (fire-lint), #163 (rule trace), Audit-2026-07-06 §3 + §8 Bug 17 (this item) and Bug 24 (the host-side asymmetry this plan also fixes)
 **All work is engine-side (submodule)** — authorized by this item once signed off.
 
