@@ -20,8 +20,10 @@ public class GameLog
 
     public void Add(string message, TextColor color, bool isDebug = false)
     {
-        long seq = Interlocked.Increment(ref _globalSequence);
-        lock (_lock) _messages.Add(new LogEntry(message, color, seq, isDebug));
+        // The sequence assignment and the append must be atomic together, or two concurrent callers
+        // (engine thread + main-thread crash handler both call Add) can interleave so a lower sequence
+        // number lands in this instance's list after a higher one, breaking the merge's sort assumption.
+        lock (_lock) _messages.Add(new LogEntry(message, color, Interlocked.Increment(ref _globalSequence), isDebug));
     }
 
     public List<LogEntry> Snapshot()

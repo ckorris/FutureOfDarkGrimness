@@ -7,6 +7,7 @@ namespace FdgRaylib.Rendering;
 public class GuiLogMessageUI : ILogMessageUI
 {
     private readonly GameLog _log;
+    private readonly object _lastMessageLock = new();
     private string? _lastMessage;
     private string? _lastDebugMessage;
 
@@ -17,8 +18,11 @@ public class GuiLogMessageUI : ILogMessageUI
 
     public void DisplayLogMessage(string message, TextColor color)
     {
-        if (message == _lastMessage) return;
-        _lastMessage = message;
+        lock (_lastMessageLock)
+        {
+            if (message == _lastMessage) return;
+            _lastMessage = message;
+        }
         Console.WriteLine($"[LOG] {message}");
         _log.Add(message, color);
     }

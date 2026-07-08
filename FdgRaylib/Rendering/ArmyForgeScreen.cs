@@ -162,6 +162,8 @@ public class ArmyForgeScreen : IAppScreen
         _list = loaded.Selections;
         _selectedListIndex = _list.Units.Count == 0 ? null : 0;
         _selectedRosterId = null;
+        int idx = Array.IndexOf(_libraryNames, _book.Name);
+        if (idx >= 0) _bookIndex = idx;
         return true;
     }
 
@@ -541,7 +543,11 @@ public class ArmyForgeScreen : IAppScreen
             if (partner < 0) return;
             // Remove the SPAWNED copy (the one carrying the link); the base survives as a normal unit.
             int spawned = !string.IsNullOrEmpty(_list.Units[idx].CombinedWithId) ? idx : partner;
+            int survivor = spawned == idx ? partner : idx;
             RemoveFromList(spawned);
+            // RemoveFromList's generic clamp doesn't know which row survived — point the selection at the
+            // surviving partner explicitly (its index shifts down by one if it sat after the removed row).
+            _selectedListIndex = survivor > spawned ? survivor - 1 : survivor;
         }
     }
 

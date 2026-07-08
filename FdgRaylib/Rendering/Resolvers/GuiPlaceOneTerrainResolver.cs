@@ -189,8 +189,8 @@ public class GuiPlaceOneTerrainResolver
         if (pending.HasValue && selected.HasValue)
         {
             ImGui.TextWrapped($"Place {DescribeTemplate(request.Pool[selected.Value])} here?");
-            ImGui.TextDisabled($"Center: ({pending.Value.X:F1}\", {pending.Value.Y:F1}\")  Rotation: {rotationDegrees:F0}°");
-            ImGui.TextDisabled("Press R to rotate 45°.");
+            ImGui.TextDisabled($"Center: ({pending.Value.X:F1}\", {pending.Value.Y:F1}\")  Rotation: {rotationDegrees:F0} deg");
+            ImGui.TextDisabled("Press R to rotate 45 deg.");
             ImGui.Spacing();
 
             // Primary: Confirm (accent + Enter). Cancel is de-emphasized.
@@ -206,7 +206,7 @@ public class GuiPlaceOneTerrainResolver
         else if (selected.HasValue)
         {
             ImGui.TextWrapped($"Placing: {DescribeTemplate(request.Pool[selected.Value])}");
-            ImGui.TextDisabled($"Rotation: {rotationDegrees:F0}° (R = rotate 45°)");
+            ImGui.TextDisabled($"Rotation: {rotationDegrees:F0} deg (R = rotate 45 deg)");
             ImGui.TextDisabled("Hover to preview. Left-click to place. Right-click or Esc to switch template.");
         }
         else
