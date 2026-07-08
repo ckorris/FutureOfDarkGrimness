@@ -14,6 +14,12 @@ graceful exit 0, so don't rely on the exit code).
 
 ## Notes
 
+- 2026-07-08 (drive-by observation during #169 verification): a plain headless smoke (the built-in
+  two-unit EOF default army, NOT the HEF repro army) ended once in 4 runs with the `DefinePathStage`
+  "Breaks cohesion: further than 1 inches" game error (graceful exit 0; 3/3 clean ties on rerun).
+  Engine was at `0de69be` + the #169 spillout change (no transports in that army, so unrelated).
+  The 0/24 repro tally therefore has a counterexample - the residual is live, and reproducible even
+  on the default army. Worth re-running the repro loop when this item's hand-verification happens.
 - 2026-07-04: **Deeper cause fixed — melee no longer stacks a model inside an enemy base.** (Was flagged
   out-of-scope on 2026-07-03; the user asked to close it.)
   - The geometry fix stopped the *crash*, but instrumentation showed the *overlap itself* still happened in
