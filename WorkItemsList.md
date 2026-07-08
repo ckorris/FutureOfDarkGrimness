@@ -75,7 +75,7 @@ From `SpecialRulesAudit.md` (15 fixes already landed; plan detail, file paths, a
 - [ ] 163 — Rule-trace log channel: verbosity toggle logging every hook evaluation (fired/suppressed) at the `RuleEvaluator` choke points — the audit's best-leverage manual-testing tool.
 - [ ] 164 — `DealHits.WithRules` resolver seam so Blast(3) multiplies pre-attack/Strafing hits (Breath Attack residual).
 - [ ] 165 — Dangerous-terrain deaths don't reach `UnitDestructionNotifier`: widen `ApplyDangerousTerrainEffects` to carry the moving unit; also decide/record rout kill-attribution.
-- [ ] 166 — Test-suite upgrades umbrella: catalog-wide "every rule fires" lint, `RuleInteractionTests` for the ~10 real pairings, `SaveLoadRoundTrip` harness helper, probabilistic-dice variants, one wire-crossing rule request, real Tough in `ToughWoundOrderingRuleIntegrationTests`.
+- [ ] 166 — Test-suite upgrades umbrella: fire-lint DONE 2026-07-08 (`RuleFireLint` over catalog + supplement); remaining: `RuleInteractionTests`, `SaveLoadRoundTrip` helper, probabilistic-dice variants, wire-crossing request, real Tough ordering test. [Notes](WorkItems/166-test-suite-upgrades.md)
 - [ ] 167 — Human-testing workflow tools umbrella: seeded dice, `--make-scenario` save compiler, `--gen-ledger` manual-test ledger, OPR import reconciliation report.
 
 ## 2026-07-07 audit follow-ups
