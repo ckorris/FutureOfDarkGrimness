@@ -54,6 +54,10 @@ printf "2\n2\n" | dotnet run --project FdgRaylib/FdgRaylib.csproj -- --headless
 # Slow mode: pause N ms before each resolver call (default 1500ms if no value given)
 dotnet run --project FdgRaylib/FdgRaylib.csproj -- --slow 2000
 
+# Rule tracing: narrate every rule hook evaluation (fired / condition failed / suppressed) via
+# the Debug log channel. In the GUI the console's Debug toggle flips the same switch at runtime.
+dotnet run --project FdgRaylib/FdgRaylib.csproj -- --headless --trace-rules
+
 # Run engine tests
 dotnet test FutureOfDarkGrimness/FutureOfDarkGrimness.csproj
 ```

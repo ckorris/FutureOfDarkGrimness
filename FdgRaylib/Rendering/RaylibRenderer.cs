@@ -888,7 +888,16 @@ public class RaylibRenderer
         ImGui.SameLine();
         DrawConsoleToggle("Log##logtoggle", ref _showLog, isChat: false);
         ImGui.SameLine();
+        bool debugWasOn = _showDebug;
         DrawConsoleToggle("Debug##debugtoggle", ref _showDebug, isChat: false);
+        if (_showDebug != debugWasOn)
+        {
+            // #163 — the Debug view doubles as the rule-trace switch: evaluations run host-side, so on
+            // the host this starts/stops trace generation (a client's toggle only controls its local
+            // view of relayed lines). Assign only on change so a --trace-rules launch isn't clobbered
+            // while the view happens to be closed.
+            FDG.Rules.Dispatch.RuleTrace.Enabled = _showDebug;
+        }
 
         ImGui.Separator();
         DrawConsoleContent();

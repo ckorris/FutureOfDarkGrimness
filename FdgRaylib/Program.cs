@@ -36,6 +36,14 @@ if (args.Contains("--field-harness"))
 
 bool headless = args.Contains("--headless");
 
+// --trace-rules (#163): narrate every live rule hook evaluation (fired / condition failed / suppressed /
+// ability offered) through the Debug log channel — printed as [LOG] lines headless, shown in the GUI
+// console's Debug view. The GUI Debug toggle flips the same switch at runtime.
+if (args.Contains("--trace-rules"))
+{
+    FDG.Rules.Dispatch.RuleTrace.Enabled = true;
+}
+
 // --slow [ms]  — pause N milliseconds before each resolver call (default 1500ms)
 int slowDelayMs = 0;
 int slowIdx = Array.IndexOf(args, "--slow");

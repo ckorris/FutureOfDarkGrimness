@@ -72,7 +72,6 @@ From `Audit-6-10-2026.md`; `Audit-6-10-2026-Followup-2026-07-06.md` is the statu
 From `SpecialRulesAudit.md` (15 fixes already landed; plan detail, file paths, and approach live in its section 5).
 
 - [ ] 168 — Surface rule-load diagnostics in the UI: subscribe the engine `RuleDiagnostics` channel app-side; warn once per army load in the game log + an army-builder pane ("N rules on this list are not implemented: ...").
-- [ ] 163 — Rule-trace log channel: verbosity toggle logging every hook evaluation (fired/suppressed) at the `RuleEvaluator` choke points — the audit's best-leverage manual-testing tool.
 - [ ] 164 — `DealHits.WithRules` resolver seam so Blast(3) multiplies pre-attack/Strafing hits (Breath Attack residual).
 - [ ] 165 — Dangerous-terrain deaths don't reach `UnitDestructionNotifier`: widen `ApplyDangerousTerrainEffects` to carry the moving unit; also decide/record rout kill-attribution.
 - [ ] 166 — Test-suite upgrades umbrella: fire-lint DONE 2026-07-08 (`RuleFireLint` over catalog + supplement); remaining: `RuleInteractionTests`, `SaveLoadRoundTrip` helper, probabilistic-dice variants, wire-crossing request, real Tough ordering test. [Notes](WorkItems/166-test-suite-upgrades.md)
