@@ -82,6 +82,14 @@ public class RaylibRenderer
     private bool _inGame = false;
     private bool _closeRequested = false;
     private bool _resolverOverlayFaulted = false;
+
+    /// <summary>
+    /// Runs once inside <see cref="Run"/>, right after the window + ImGui exist and before the first
+    /// frame. The no-lobby <c>--scenario</c> launch (#167) hooks its game wiring here: TransitionToGame
+    /// attaches the tactical overlay, which creates GL resources (#162) and therefore needs a live
+    /// window - calling it before Run() segfaults inside raylib (null GL function pointers).
+    /// </summary>
+    public Action? OnWindowReady;
     // Set from the engine thread when the game ends (see ShowGameOver); read on the main thread to draw
     // the game-over overlay. Non-null = game finished, result string to display.
     private volatile string? _gameOverResult = null;
@@ -352,6 +360,8 @@ public class RaylibRenderer
             MenuFont   = fonts.AddFontFromFileTTF(fontPath, MenuFontPx);
             rlImGui.ReloadFonts();
         }
+
+        OnWindowReady?.Invoke();
 
         while (!Raylib.WindowShouldClose() && !_closeRequested)
         {

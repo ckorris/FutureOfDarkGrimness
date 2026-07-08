@@ -282,9 +282,11 @@ else
     // in headless mode above.
 
     // ── --scenario (#167): straight into the game, no menu, no lobby ──────────
-    // TransitionToGame only sets state + store subscriptions (no GPU resources), so it is safe to
-    // call before Run() opens the window. Slot 0 = local player, other slots AI; the engine waits
-    // on the resolver registry (assigned in GameGuiWiring.Launch) before requesting decisions.
+    // Load/compile eagerly so a bad scenario fails fast with a message and no window. The game
+    // wiring is deferred to OnWindowReady (first thing inside Run(), window + ImGui live):
+    // TransitionToGame attaches the tactical overlay, which creates GL resources (#162) and
+    // segfaults before InitWindow. Slot 0 = local player, other slots AI; the engine waits on
+    // the resolver registry (assigned in GameGuiWiring.Launch) before requesting decisions.
     if (scenarioPath != null)
     {
         try
@@ -296,13 +298,16 @@ else
             for (int i = 0; i < parts.SavedInfos.Count; i++)
                 players.Add((parts.SavedInfos[i].PlayerID, i == 0 ? "Player 1" : $"Player {i + 1} (AI)"));
 
-            GameGuiWiring.Launch(parts.HumanGame, players,
-                saveGameToJson: () => GameSaveSerializer.Save(parts.Store),
-                onLaunched: renderer.TransitionToGame);
+            renderer.OnWindowReady = () =>
+            {
+                GameGuiWiring.Launch(parts.HumanGame, players,
+                    saveGameToJson: () => GameSaveSerializer.Save(parts.Store),
+                    onLaunched: renderer.TransitionToGame);
 
-            var scenarioServer = new FDGServer(parts.Store, parts.Bus, parts.Slots,
-                new RealtimePresentationClock());
-            scenarioServer.OnGameEnded += result => renderer.ShowGameOver(result);
+                var scenarioServer = new FDGServer(parts.Store, parts.Bus, parts.Slots,
+                    new RealtimePresentationClock());
+                scenarioServer.OnGameEnded += result => renderer.ShowGameOver(result);
+            };
         }
         catch (ScenarioCompileException ex)
         {
