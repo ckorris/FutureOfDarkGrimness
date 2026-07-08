@@ -37,6 +37,35 @@ Written when the item closes. One paragraph: what shipped, what was deferred, li
 
 - **Append, don't overwrite.** Add new dated entries to Notes; don't rewrite history.
 - **Notes rot; decisions don't.** Keep them separated.
-- **When closing**: write a brief Outcome, set Status to `done`, and mark `[x]` in `../WorkItemsList.md`. Move the line to the `## Done` section of the index.
+- **Keep the index lean.** An entry in `../WorkItemsList.md` is at most ~3 lines: number, title, one-sentence scope/status, link. Running notes, commit hashes, root-cause narratives, and test tallies go in the detail file — if an index line grows past that, move the overflow here the same day.
+- **When closing**: write a brief Outcome, set Status to `done`, mark the index line `[x]`, and move it to `Archive.md` (in this directory). Completed items never stay in the index.
 - **Splits**: if an item turns out to be too big, leave its line in the index pointing at the new numbers it was split into. Don't delete.
 - **Cross-references** to commits/PRs/other items go in the header `Related:` line.
+- **Number collisions** (parallel sessions claiming the same number): see `Reconciliations.md` for the log and the standing precedent (the unmerged local item yields and takes a fresh number).
+
+## Pre-push hook
+
+A per-clone hook blocks pushing duplicate work-item numbers across the index and the archive.
+It is not version-controlled; install it in a new clone as `.git/hooks/pre-push` (chmod +x):
+
+```sh
+#!/bin/sh
+# pre-push: refuse to push if work-item numbers are duplicated across
+# WorkItemsList.md and WorkItems/Archive.md. Override: git push --no-verify
+root=$(git rev-parse --show-toplevel 2>/dev/null) || exit 0
+index="$root/WorkItemsList.md"
+archive="$root/WorkItems/Archive.md"
+[ -f "$index" ] || exit 0
+files="$index"
+[ -f "$archive" ] && files="$files $archive"
+dupes=$(cat $files | grep -oE '^- \[.\] [0-9]+' | grep -oE '[0-9]+' | sort | uniq -d)
+if [ -n "$dupes" ]; then
+  echo "" >&2
+  echo "X pre-push blocked: duplicate work-item numbers in index/archive:" >&2
+  for n in $dupes; do echo "    #$n" >&2; done
+  echo "  Renumber the collision (numbers are never reused), or override with: git push --no-verify" >&2
+  echo "" >&2
+  exit 1
+fi
+exit 0
+```
