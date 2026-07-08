@@ -468,6 +468,10 @@ public class RaylibRenderer
             {
                 rlImGui.Begin();
                 _currentScreen.Draw(screenW, screenH);
+                // A networked client can lose the host while still in the lobby (before any game exists);
+                // its lobby view-model raises the same game-ended signal, so draw the overlay here too so
+                // that pre-launch case isn't silently stuck (QF8). No-op when nothing has ended.
+                DrawGameOverOverlay(screenW, screenH);
                 rlImGui.End();
             }
 

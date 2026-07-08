@@ -42,6 +42,14 @@ All 33 GF v3.5.1 core special rules are implemented (verified 2026-06-30; see ar
 
 ## Networking & infrastructure
 
+Internet-play readiness pass (QF1-10) landed 2026-07-08 — password gate, keepalive/NoDelay, single-buffer
+frames, targeted PlayerID assignment, greeting-timeout eviction, post-launch join gate, client host-loss
+detection, host-IP display, DNS host entry. See `NetworkingHandoff-2026-07-08.md`. Remainders below.
+
+- [ ] 186 — Harden network deserialization: allowlist binder for the wire path (no `DefaultSerializationBinder` fallback from untrusted `$type`); saves keep the permissive fallback. ([WorkItems/186](WorkItems/186-network-deserialization-hardening.md))
+- [ ] 187 — Disconnect recovery: auto-save on `PlayerDisconnectedException` game-end + live-test #052's networked resume-rejoin. ([WorkItems/187](WorkItems/187-disconnect-recovery.md))
+- [ ] 188 — Multi-remote-client support: live-test 3+ players / 2+ remote clients (QF5 enabled it; roster/team/routing edge cases). ([WorkItems/188](WorkItems/188-multi-remote-client.md))
+- [ ] 189 — Broadcast gating (roster-only, not every connection) + configurable listen/connect port. ([WorkItems/189](WorkItems/189-broadcast-gating-configurable-port.md))
 - [ ] 058 — (low) Migrate message/save serialization off Newtonsoft onto System.Text.Json; pure consolidation. ([WorkItems/058](WorkItems/058-stj-migration.md))
 - [ ] 057 — (low) Make state-machine contexts store-backed/serializable so #052's `GameProgressData` mirror can be deleted; deferred for risk.
 - [ ] 054 — (low) Client-initiated save: host produces the `.fdgsave` on the client's behalf. Follow-up to #052.

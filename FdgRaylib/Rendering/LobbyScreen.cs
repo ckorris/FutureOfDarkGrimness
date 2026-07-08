@@ -9,6 +9,10 @@ using FdgRaylib.Cli;
 using FdgRaylib.Rendering.Presentation;
 using FdgRaylib.Rendering.Resolvers;
 using ImGuiNET;
+using System.Net;
+using System.Net.Http;
+using System.Net.NetworkInformation;
+using System.Net.Sockets;
 using System.Text.Json;
 using FDG.Rules.Serialization;
 using Raylib_cs;
@@ -37,6 +41,13 @@ public class LobbyScreen : IAppScreen
 
     private string? _lastLaunchError;
     private IReadOnlyList<string> _launchProblems = Array.Empty<string>();
+
+    // Host connection info shown so the host knows what address to share (QF9). The port mirrors
+    // CommandProtocol.TEMP_PORT (internal to the engine assembly, so it's restated here).
+    private const int ListenPort = 6389;
+    private string? _lanAddresses;                 // computed once, lazily
+    private volatile string _publicAddress = "checking...";
+    private bool _publicFetchStarted;
 
     // Light-blue accent (matches ImGuiTheme) used to make section/column headers read as headers.
     private static readonly Vector4 HeaderAccent = new(0.50f, 0.73f, 1.0f, 1f);
@@ -291,10 +302,20 @@ public class LobbyScreen : IAppScreen
     private void DrawSettings(float panelW)
     {
         bool isHost = _viewModel!.HasHostPrivileges;
-        ImGui.BeginDisabled(!isHost);
 
         float innerPad = 8f;
         ImGui.SetCursorPos(new Vector2(innerPad, innerPad));
+
+        // Host-only: what address to give players. Drawn outside the disabled block so the copy buttons work.
+        if (isHost)
+        {
+            DrawHostConnectionInfo(panelW - innerPad * 2);
+            ImGui.Spacing();
+            ImGui.Separator();
+            ImGui.Spacing();
+        }
+
+        ImGui.BeginDisabled(!isHost);
         ImGui.PushItemWidth(panelW - innerPad * 2);
 
         DrawIntField("Army Points",    _viewModel.ArmyPoints,    _viewModel.SetArmyPoints);
@@ -316,6 +337,77 @@ public class LobbyScreen : IAppScreen
 
         ImGui.PopItemWidth();
         ImGui.EndDisabled();
+    }
+
+    // Shows the addresses a remote player would type into "Host Address", plus the listen port (QF9). LAN
+    // is computed once; the public IP is fetched once in the background and filled in when it returns.
+    private void DrawHostConnectionInfo(float contentW)
+    {
+        if (!_publicFetchStarted)
+        {
+            _publicFetchStarted = true;
+            _lanAddresses = ComputeLanAddresses();
+            StartPublicIpFetch();
+        }
+
+        ImGui.PushStyleColor(ImGuiCol.Text, HeaderAccent);
+        ImGui.TextUnformatted("Connection (share with players)");
+        ImGui.PopStyleColor();
+
+        string lan = _lanAddresses ?? "unavailable";
+        ImGui.TextUnformatted($"LAN:    {lan}");
+        ImGui.SameLine();
+        if (ImGui.SmallButton("Copy##lanip")) ImGui.SetClipboardText(lan);
+
+        string pub = _publicAddress;
+        ImGui.TextUnformatted($"Public: {pub}");
+        ImGui.SameLine();
+        if (ImGui.SmallButton("Copy##pubip")) ImGui.SetClipboardText(pub);
+
+        ImGui.TextUnformatted($"Port:   {ListenPort}");
+    }
+
+    // Up, non-loopback IPv4 unicast addresses - the LAN addresses a same-network player can reach.
+    private static string ComputeLanAddresses()
+    {
+        var addresses = new List<string>();
+        try
+        {
+            foreach (NetworkInterface ni in NetworkInterface.GetAllNetworkInterfaces())
+            {
+                if (ni.OperationalStatus != OperationalStatus.Up) continue;
+                if (ni.NetworkInterfaceType == NetworkInterfaceType.Loopback) continue;
+
+                foreach (UnicastIPAddressInformation ua in ni.GetIPProperties().UnicastAddresses)
+                {
+                    if (ua.Address.AddressFamily != AddressFamily.InterNetwork) continue;
+                    if (IPAddress.IsLoopback(ua.Address)) continue;
+                    addresses.Add(ua.Address.ToString());
+                }
+            }
+        }
+        catch
+        {
+            // Interface enumeration can throw on some platforms/permissions; fall through to "unavailable".
+        }
+
+        return addresses.Count > 0 ? string.Join(", ", addresses.Distinct()) : "unavailable";
+    }
+
+    // One-shot best-effort public-IP lookup. async void is deliberate: it's a fire-and-forget UI fetch with
+    // its own try/catch, and _publicAddress is volatile so the main thread picks up the result next frame.
+    private async void StartPublicIpFetch()
+    {
+        try
+        {
+            using var http = new HttpClient { Timeout = TimeSpan.FromSeconds(5) };
+            string ip = (await http.GetStringAsync("https://api.ipify.org").ConfigureAwait(false)).Trim();
+            _publicAddress = string.IsNullOrWhiteSpace(ip) ? "unavailable" : ip;
+        }
+        catch
+        {
+            _publicAddress = "unavailable";
+        }
     }
 
     private void DrawLaunch(float panelW, float panelH)
