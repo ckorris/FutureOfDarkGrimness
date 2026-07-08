@@ -6,6 +6,7 @@ and **never reused**, even across deletions; a split item's line stays and point
 - Per-item working memory: `WorkItems/NNN-slug.md`, created when work starts. Template + conventions: `WorkItems/README.md`.
 - Completed / closed items: `WorkItems/Archive.md` (entries moved there verbatim).
 - Number-collision log: `WorkItems/Reconciliations.md` — read before filing new numbers on a branch that has drifted from origin/master. A per-clone pre-push hook blocks duplicate numbers across this file and the archive.
+- Cross-session priority handoff: `WorkItems/FableWindowPlan.md` — what shipped during the 2026-07 Fable window and the agreed order for what's next (top item: #169 design fork, sign-off before building).
 
 **Keep this index lean — every work session reads it whole.** An entry is at most ~3 lines: number,
 title, one-sentence scope/status, link. Running notes, commit hashes, root-cause narratives, and test
