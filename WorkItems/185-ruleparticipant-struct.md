@@ -1,5 +1,26 @@
 # 185 — Replace RuleEvaluator participant tuples with a `RuleParticipant` struct
 
+**Status**: DONE 2026-07-08 (engine `a08d301`, local)
+
+## Outcome
+Implemented exactly per spec. Added `Rules/Dispatch/RuleParticipant.cs` (readonly struct, `Actor`/`Subject`
+factories with defaulted `weapon`/`models`/`modelScope`). Collapsed `RuleEvaluator.EvaluateAll` /
+`EvaluateAllNamed` from 6 overloads + 2 private shims (`WithoutWeapons`, `WithModels`) to 2 methods each
+taking `params RuleParticipant[]`; `CollectSurviving`'s participant loop is now field access
+(`p.Unit`/`p.Seat`/...). The `#163` trace line needed no change — its named-tuple property access compiled
+identically against the struct's identically-named properties, confirming the "keep byte-for-byte" note.
+Net diff: -86 lines across 30 files (97 insertions, 183 deletions) + 1 new file. Migrated every
+multi-participant call site (9 production dispatch-query/stage files beyond the #183 clusters -
+`ChooseUnitToDeployStage`, `ChooseActionStage`, `DetermineMeleeWinnerStage`, `PostMeleeStage`,
+`MoraleUtilities`, `IMovementActionContext`, `BuildTargetListStage`, `PostShootStage`, `SightRuleQueries`,
+`WoundPriorityQueries`, `UnitCreationRules` - the spec's site list wasn't exhaustive, the compiler found the
+rest) plus 10 test files, including collapsing `TestRuleHarness`'s own two `EvaluateAll` tuple overloads to
+one `RuleParticipant[]` form. Verify: engine suite **1308/1308** (identical count to pre-refactor - the
+single-participant `Evaluate` was untouched, confirming pure behavior preservation), full build clean (0
+errors), headless smoke exit 0. Ledger note: the single-participant `RuleEvaluator.Evaluate` and
+`ConsumeOneShotGrants` (still `(IUnit, ERuleSeat)[]`) were deliberately left alone per the spec's scope.
+
+## Notes (historical)
 **Status**: open — spec ready, mechanical refactor (surfaced during #183)
 **Related**: #093 (added the 5-field model-aware form), #027 (added the weapon form), #183 (widened many call sites to 5-tuples)
 **All work is engine-side (submodule)** — treat as authorized when this item is picked up (it only touches the rule-dispatch API and its call sites).
