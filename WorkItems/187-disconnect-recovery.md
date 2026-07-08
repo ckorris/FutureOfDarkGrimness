@@ -12,6 +12,13 @@ live-tested") is exercised end-to-end: host loads the recovery save, the dropped
 their saved slot, and play continues.
 
 ## Notes
+- 2026-07-08: **Slice 1 (graceful player-left messaging) done.** Closing a client mid-game surfaced as a
+  "Game error: PlayerDisconnectedException ..." Game Over popup + a console stack trace - reads like a crash
+  when a player simply left. `FDGServer.LaunchStateMachineOnceReady` now catches
+  `PlayerDisconnectedException` ahead of the generic handler and ends with a plain "<name> left the game.
+  The game has ended." (name via `DescribePlayerLeft`, generic "A player" fallback if the slot is gone); no
+  scary console dump. Tests in `DisconnectLifecycleTests`. This is presentation only - the *recovery* work
+  (auto-save + rejoin) below is still open.
 - 2026-07-08: Filed. QF8 makes the *client* leave cleanly on host loss; this item is the *recovery* half
   (don't lose the game to a 20s wifi blip). The resume machinery exists but its networked path is untested.
 
