@@ -135,11 +135,23 @@ public class TacticalOverlayController
     public bool ThreatToggledOn => _threatToggledOn;
     public void ToggleThreat() => _threatToggledOn = !_threatToggledOn;
 
+    // Maps a unit to its team color (fill/rings/labels/pips), so the field reads as the SELECTED unit's
+    // own threat -- red when an enemy is picked ("where I'm in danger"), the mover's color in Self mode.
+    private Func<PlayerID, (byte r, byte g, byte b)>? _teamColor;
+    private (byte r, byte g, byte b) TeamAccent(IUnit unit) =>
+        _teamColor?.Invoke(unit.PlayerID) ?? TacticalOverlayConfig.AccentPalette[0];
+
+    // The current field's accent color (the selected unit's team color); labels and pips read it so all
+    // of the field's marks share one identity.
+    private (byte r, byte g, byte b) _fieldAccentCol = TacticalOverlayConfig.AccentPalette[0];
+
     /// <summary>Wires the live game world. Called from RaylibRenderer.TransitionToGame.</summary>
-    public void Attach(ITableState tableState, System.Action<string>? warn = null)
+    public void Attach(ITableState tableState, System.Action<string>? warn = null,
+        Func<PlayerID, (byte r, byte g, byte b)>? teamColor = null)
     {
         _tableState = tableState;
         _warn       = warn;
+        _teamColor  = teamColor;
         _probe      = new RulesProbe(tableState);
 
         int w = (int)MathF.Ceiling(GameWideConstants.DEFAULT_TABLE_WIDTH_INCHES  * TacticalOverlayConfig.TexelsPerInch);
@@ -259,6 +271,7 @@ public class TacticalOverlayController
         IUnit? rangeTarget = _pins.Count > 0 && _focusIndex >= 0 && _focusIndex < _pins.Count
             ? _pins[_focusIndex].Unit : null;
         var byRange = new Dictionary<float, List<GpuFieldRenderer.BandDisc>>();
+        var byRangeNames = new Dictionary<float, Dictionary<string, int>>();   // for band labels ("4x Rifle")
         var sources = new List<Position>();
 
         foreach (IModel m in movingUnit.Models)
@@ -278,6 +291,9 @@ public class TacticalOverlayController
                     byRange[eff] = discs = new List<GpuFieldRenderer.BandDisc>();
                 discs.Add(new GpuFieldRenderer.BandDisc(gp.x, gp.z,
                     eff + m.BaseRadiusInches + TacticalOverlayConfig.DefaultReferenceRadiusInches));
+                if (!byRangeNames.TryGetValue(eff, out Dictionary<string, int>? names))
+                    byRangeNames[eff] = names = new Dictionary<string, int>();
+                names[w.Name] = names.GetValueOrDefault(w.Name) + 1;
             }
         }
 
@@ -288,7 +304,9 @@ public class TacticalOverlayController
         var perBand = new List<(BandSpec band, List<GpuFieldRenderer.BandDisc> discs)>(ranges.Count);
         for (int i = 0; i < ranges.Count; i++)
         {
-            var band = new BandSpec(ranges[i], (byte)(ranges.Count - i), $"{ranges[i]:0.#}\"");
+            string names = string.Join(" / ",
+                byRangeNames[ranges[i]].OrderBy(kv => kv.Key).Select(kv => $"{kv.Value}x {kv.Key}"));
+            var band = new BandSpec(ranges[i], (byte)(ranges.Count - i), $"{ranges[i]:0.#}\" {names}");
             perBand.Add((band, byRange[ranges[i]]));
         }
 
@@ -301,9 +319,8 @@ public class TacticalOverlayController
             foreach (Position s in sources)
                 maps.Add(PolarSightMap.Build(s, relevant, TacticalOverlayConfig.PolarBuckets));
 
-        (byte r, byte g, byte b) accentCol = _pins.Count > 0 && _focusIndex >= 0
-            ? TacticalOverlayConfig.AccentPalette[_pins[_focusIndex].Accent % TacticalOverlayConfig.AccentPalette.Length]
-            : TacticalOverlayConfig.AccentPalette[0];
+        (byte r, byte g, byte b) accentCol = TeamAccent(movingUnit);   // Self mode: the mover's team color
+        _fieldAccentCol = accentCol;
 
         var sw = System.Diagnostics.Stopwatch.StartNew();
         bool gpuActive = _gpuField != null && TacticalOverlayConfig.UseGpuField;
@@ -335,8 +352,24 @@ public class TacticalOverlayController
                           $"(budget {TacticalOverlayConfig.RebuildBudgetMs:0}ms) - consider Field: GPU");
         }
 
-        _bandLabels = new List<BandLabel>();                 // labels would ride the cursor; suppressed
-        _fieldRings = new List<List<Float2>>();              // per-frame marching too costly; fill-only here
+        // Band labels: one per range, placed analytically on each ring toward the board centre (no mask
+        // ray-march -- the GPU path has no CPU band mask). They ride the ghosts as the unit moves.
+        float gcx = 0f, gcz = 0f;
+        foreach (Position s in sources) { gcx += s.x; gcz += s.z; }
+        gcx /= sources.Count; gcz /= sources.Count;
+        float dirx = GameWideConstants.DEFAULT_TABLE_WIDTH_INCHES * 0.5f - gcx;
+        float dirz = GameWideConstants.DEFAULT_TABLE_HEIGHT_INCHES * 0.5f - gcz;
+        float dlen = MathF.Sqrt(dirx * dirx + dirz * dirz);
+        if (dlen < 1e-3f) { dirx = 0f; dirz = 1f; } else { dirx /= dlen; dirz /= dlen; }
+        float labelR = _probe.ModalBaseRadius(movingUnit) + TacticalOverlayConfig.DefaultReferenceRadiusInches;
+        var ghostLabels = new List<BandLabel>(perBand.Count);
+        foreach ((BandSpec band, _) in perBand)
+        {
+            float rr = band.RangeInches + labelR;
+            ghostLabels.Add(new BandLabel(new Float2(gcx + dirx * rr, gcz + dirz * rr), band.Label, 0));
+        }
+        _bandLabels = ghostLabels;
+        _fieldRings = new List<List<Float2>>();              // GPU draws rings; per-frame CPU marching too costly
         _lastFieldBands = perBand.Select(pb => pb.band).ToList();  // distance readout still promotes
         _fieldMasksValid = false;  // ghost-anchored masks must not feed the target-anchored sampler truth
         InvalidateField();  // leaving ghost mode must force a target-anchored rebuild
@@ -939,7 +972,10 @@ public class TacticalOverlayController
     {
         IUnit movingUnit = req.UnitDataBinding.GetValue();
         float shooterRadius = _probe!.ModalBaseRadius(movingUnit);
-        List<BandSpec> bands = BuildBands(req, movingUnit, target);
+        // The rings are the SELECTED enemy's own weapon ranges (their threat); the disc inflation stays the
+        // mover's radius (where MY base can sit relative to their reach). Base ranges -- no mover-vs-target
+        // override applies to the enemy's own guns.
+        List<BandSpec> bands = BuildBands(req, target, overrideTarget: null);
 
         long sig = ComputeFieldSignature(movingUnit, target, accent, alphaScale, bands);
         if (_fieldBuiltOnce && sig == _lastFieldSig) return;
@@ -964,8 +1000,8 @@ public class TacticalOverlayController
         var sw = System.Diagnostics.Stopwatch.StartNew();
         OpportunityFieldBuilder.Build(_bandMask!, targets, shooterRadius, bands);
         List<PolarSightMap> maps = BuildSightMaps(movingUnit, target);
-        (byte r, byte g, byte b) accentCol =
-            TacticalOverlayConfig.AccentPalette[accent % TacticalOverlayConfig.AccentPalette.Length];
+        (byte r, byte g, byte b) accentCol = TeamAccent(target);   // selected enemy's team color
+        _fieldAccentCol = accentCol;
 
         bool gpuActive = _gpuField != null && TacticalOverlayConfig.UseGpuField;
         if (gpuActive)
@@ -995,17 +1031,23 @@ public class TacticalOverlayController
 
     // The moving unit's deduplicated effective weapon ranges vs the target, as nested bands: shortest
     // range gets the highest value (innermost), so max-blend keeps the best band at each texel.
-    private List<BandSpec> BuildBands(DefineMovementPathRequest req, IUnit movingUnit, IUnit target)
+    // Bands come from the SELECTED unit's own weapons: in Target mode that's the enemy (their threat --
+    // "where I'm in danger"), in Self mode the mover. Range overrides (mover-vs-target modifiers from the
+    // request) only apply when weaponSource is the mover shooting overrideTarget; the enemy's own guns use
+    // base range.
+    private List<BandSpec> BuildBands(DefineMovementPathRequest req, IUnit weaponSource, IUnit? overrideTarget)
     {
         // Per effective range, count each weapon name across the unit so the label can show "5x Rifle".
         var byRange = new Dictionary<float, Dictionary<string, int>>();
-        foreach (IModel m in movingUnit.Models)
+        foreach (IModel m in weaponSource.Models)
         {
             if (!m.GetIsAlive()) continue;
             foreach (Weapon w in m.Weapons)
             {
                 if (w.RangeInches <= 0f) continue;
-                float eff = EffectiveRange(req, w.Name, target.ID, w.RangeInches);
+                float eff = overrideTarget != null
+                    ? EffectiveRange(req, w.Name, overrideTarget.ID, w.RangeInches)
+                    : w.RangeInches;
                 if (!byRange.TryGetValue(eff, out Dictionary<string, int>? counts))
                     byRange[eff] = counts = new Dictionary<string, int>();
                 counts[w.Name] = counts.GetValueOrDefault(w.Name) + 1;
@@ -1509,7 +1551,7 @@ public class TacticalOverlayController
         uint textCol = ImGui.ColorConvertFloat4ToU32(new Vector4(1f, 1f, 1f, 1f));
         foreach (BandLabel bl in _bandLabels)
         {
-            (byte r, byte g, byte b) = TacticalOverlayConfig.AccentPalette[bl.Accent % TacticalOverlayConfig.AccentPalette.Length];
+            (byte r, byte g, byte b) = _fieldAccentCol;   // selected unit's team color
             uint bgCol = ImGui.ColorConvertFloat4ToU32(new Vector4(r / 255f, g / 255f, b / 255f, 0.88f));
 
             Vector2 at   = WorldToScreen(bl.World);
