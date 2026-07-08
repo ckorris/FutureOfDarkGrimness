@@ -44,10 +44,11 @@ internal sealed class GpuFieldRenderer : IDisposable
     private Shader _ringShader;   // draw-time band-ring overlay (screen-space edge detection)
     private int _locMask, _locAccent, _locAlphaScale, _locInvSize, _locHatchPeriod, _locHatchLineWidth,
         _locBandBase, _locBandBoost, _locBandFillMax, _locFillWhiteMix;
-    private int _locRingBand, _locRingStep, _locRingColor, _locRingAlpha;
+    private int _locRingBand, _locRingSize, _locRingWidth, _locRingColor, _locRingAlpha;
     private bool _ready;
     private bool _ringReady;
     private bool _hasContent;
+    private (byte r, byte g, byte b) _accent;   // last fill accent, reused for the ring color
 
     public bool Ready => _ready;
     public bool HasContent => _hasContent;
@@ -117,27 +118,41 @@ void main()
 #version 330
 in vec2 fragTexCoord;
 out vec4 finalColor;
-uniform sampler2D texture0;
-uniform sampler2D bandTex;
-uniform vec2 texelStep;
+uniform sampler2D bandTex;   // R = band value (Point-filtered; bilinear done manually below)
+uniform vec2 bandTexSize;    // (W, H)
+uniform float ringWidthPx;   // desired on-screen line width, constant at any zoom
 uniform vec3 ringColor;
 uniform float ringAlpha;
 
+// Manual bilinear sample of the band-value field so it varies smoothly across a band edge, letting us
+// draw a thin ANTI-ALIASED, constant-screen-width contour line via screen-space derivatives (fwidth).
+float bandBilinear(vec2 uv)
+{
+    vec2 t = uv * bandTexSize - 0.5;
+    vec2 f = fract(t);
+    vec2 base = (floor(t) + 0.5) / bandTexSize;
+    vec2 dx = vec2(1.0 / bandTexSize.x, 0.0);
+    vec2 dy = vec2(0.0, 1.0 / bandTexSize.y);
+    float b00 = texture(bandTex, base).r * 255.0;
+    float b10 = texture(bandTex, base + dx).r * 255.0;
+    float b01 = texture(bandTex, base + dy).r * 255.0;
+    float b11 = texture(bandTex, base + dx + dy).r * 255.0;
+    return mix(mix(b00, b10, f.x), mix(b01, b11, f.x), f.y);
+}
+
 void main()
 {
-    // Sample bandTex at the SAME coord as the fill (texture0): compositeRT was built from bandRT through
-    // the composite pass's flipped draw, so at draw time (this pass also uses a flipped src) the two line
-    // up directly -- an extra v-flip here mirrors the rings vertically off the fill (harness-verified).
-    vec2 buv = fragTexCoord;
-    float b  = texture(bandTex, buv).r * 255.0;
-    float bl = texture(bandTex, buv - vec2(texelStep.x, 0.0)).r * 255.0;
-    float br = texture(bandTex, buv + vec2(texelStep.x, 0.0)).r * 255.0;
-    float bd = texture(bandTex, buv - vec2(0.0, texelStep.y)).r * 255.0;
-    float bu = texture(bandTex, buv + vec2(0.0, texelStep.y)).r * 255.0;
-    bool edge = abs(bl - b) > 0.5 || abs(br - b) > 0.5 || abs(bd - b) > 0.5 || abs(bu - b) > 0.5;
-    bool near = b >= 0.5 || bl >= 0.5 || br >= 0.5 || bd >= 0.5 || bu >= 0.5;
-    // Ring-ONLY overlay: transparent off the rings, so it can be drawn above terrain (fill stays below).
-    finalColor = (edge && near) ? vec4(ringColor, ringAlpha) : vec4(0.0);
+    // Sample bandTex at the SAME coord as the fill: compositeRT was built from bandRT through the
+    // composite pass's flipped draw, so at draw time (this pass also uses a flipped src) the two line up
+    // directly -- an extra v-flip mirrors the rings vertically (harness-verified).
+    float b = bandBilinear(fragTexCoord);
+    float d = abs(fract(b) - 0.5);   // band-units to the nearest half-integer boundary (edge or band-band)
+    float g = fwidth(b);             // band-units per screen pixel
+    if (g < 1e-5) { finalColor = vec4(0.0); return; }
+    float pxDist = d / g;            // distance to the boundary in screen pixels
+    // Solid core of half-width ringWidthPx*0.5, then a 1px anti-aliased fade (avoids a faint/stippled line).
+    float a = 1.0 - smoothstep(ringWidthPx * 0.5, ringWidthPx * 0.5 + 1.0, pxDist);
+    finalColor = vec4(ringColor, a * ringAlpha);  // transparent off the line -> drawable above terrain
 }
 ";
 
@@ -188,7 +203,8 @@ void main()
             if (_ringShader.Id != 0 && _ringShader.Id != Rlgl.GetShaderIdDefault())
             {
                 _locRingBand  = Raylib.GetShaderLocation(_ringShader, "bandTex");
-                _locRingStep  = Raylib.GetShaderLocation(_ringShader, "texelStep");
+                _locRingSize  = Raylib.GetShaderLocation(_ringShader, "bandTexSize");
+                _locRingWidth = Raylib.GetShaderLocation(_ringShader, "ringWidthPx");
                 _locRingColor = Raylib.GetShaderLocation(_ringShader, "ringColor");
                 _locRingAlpha = Raylib.GetShaderLocation(_ringShader, "ringAlpha");
                 _ringReady = _locRingBand >= 0;
@@ -248,6 +264,7 @@ void main()
             if (discs.Count > 0) { any = true; break; }
         if (!any) { _hasContent = false; return; }
         _hasContent = true;
+        _accent = accent;   // rings reuse the fill accent (selected unit's team color)
 
         // ---- Pass 1: band values (opaque overwrite, ascending band value = descending range) --------
         var ordered = new List<(BandSpec band, List<BandDisc> discs)>(perBand);
@@ -375,12 +392,10 @@ void main()
     {
         if (!_ready || !_ringReady || !_hasContent) return;
 
-        // Ring half-width in texels, clamped to >= 1 texel so the +-offset always crosses a real (Point-
-        // filtered) band edge -> a thin, ~constant-screen-width ring at any zoom.
-        float hwTexels = MathF.Max(TacticalOverlayConfig.BandBoundaryThicknessPx * 0.5f * _tpi / scale, 1f);
-        var texelStep = new Vector2(hwTexels / _w, hwTexels / _h);
-        (byte rr, byte gg, byte bb) = TacticalOverlayConfig.AccentPalette[0];
-        Raylib.SetShaderValue(_ringShader, _locRingStep, texelStep, ShaderUniformDataType.Vec2);
+        // fwidth-based contour: constant thin screen width at any zoom, no per-zoom texel math needed.
+        (byte rr, byte gg, byte bb) = _accent;   // rings match the fill (selected unit's team color)
+        Raylib.SetShaderValue(_ringShader, _locRingSize, new Vector2(_w, _h), ShaderUniformDataType.Vec2);
+        Raylib.SetShaderValue(_ringShader, _locRingWidth, TacticalOverlayConfig.BandBoundaryThicknessPx, ShaderUniformDataType.Float);
         Raylib.SetShaderValue(_ringShader, _locRingColor, new Vector3(rr / 255f, gg / 255f, bb / 255f), ShaderUniformDataType.Vec3);
         Raylib.SetShaderValue(_ringShader, _locRingAlpha, TacticalOverlayConfig.BandBoundaryAlpha, ShaderUniformDataType.Float);
 
