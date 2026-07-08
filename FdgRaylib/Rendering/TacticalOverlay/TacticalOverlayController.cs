@@ -744,7 +744,7 @@ public class TacticalOverlayController
     }
 
     // A cheap FNV-1a-style hash over everything that changes the threat picture; a rebuild fires only
-    // when it differs from the last. Position quantized to ~0.5" so sub-inch presentation glide doesn't
+    // when it differs from the last. Position quantized to 0.1" so sub-inch presentation glide doesn't
     // thrash rebuilds while a genuine move still trips it.
     private long ComputeThreatSignature(PlayerID? refPlayer, float refRadius, List<IUnit> enemies)
     {
@@ -1250,8 +1250,11 @@ public class TacticalOverlayController
         if (_moveResolver?.ActiveRequest == null) return intended;
         if (ImGui.GetIO().KeyAlt) return intended;
 
-        // Band snap (focused pin) takes precedence over threat snap.
-        if (_pins.Count > 0 && _focusIndex >= 0 && _focusIndex < _pins.Count && _lastFieldBands.Count > 0)
+        // Band snap (pin) takes precedence over threat snap -- but only in Target mode: in Self mode the
+        // drawn bands are around the MOVER (with the mover's ranges), so snapping to pin-centred circles
+        // that aren't on screen would jump the cursor to nowhere the player can see.
+        if (!TacticalOverlayConfig.GhostAnchoredField &&
+            _pins.Count > 0 && _focusIndex >= 0 && _focusIndex < _pins.Count && _lastFieldBands.Count > 0)
         {
             IUnit focus = _pins[_focusIndex].Unit;
             IModel? nearest = null;

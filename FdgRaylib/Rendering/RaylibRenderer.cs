@@ -395,9 +395,6 @@ public class RaylibRenderer
                 // _taskDisplay?.Draw(screenW, screenH);
                 _tooltipOverlay.UpdateLayout(layout.Scale, layout.OriginX, layout.OriginY, TableHIn);
                 _tooltipOverlay.Draw(screenW, screenH, _hitTester, _resolverOverlay?.ActiveInteractionHandler);
-                // Instruments sit on the background draw list, above tokens and under ImGui windows --
-                // same layer as the existing ghosts/fire lines they annotate.
-                _tacticalOverlay.DrawInstruments(screenW, screenH);
                 _resolverOverlay?.UpdateLayout(layout.Scale, layout.OriginX, layout.OriginY, TableHIn);
                 // Hold interactive prompts until the animation queue drains, so the player always
                 // sees movement / shots land before being asked to react.
@@ -416,6 +413,10 @@ public class RaylibRenderer
                         _log?.Add(ex.StackTrace ?? "(no stack trace)", errColor);
                     }
                 }
+                // Instruments draw AFTER the resolver so the movement resolver has published this frame's
+                // ghost snapshot -- pips/counts/distance then track the ghost with no one-frame lag. On the
+                // background draw list (above tokens, under windows), same layer as the ghosts they annotate.
+                _tacticalOverlay.DrawInstruments(screenW, screenH);
                 DrawGameOverOverlay(screenW, screenH);
                 rlImGui.End();
             }

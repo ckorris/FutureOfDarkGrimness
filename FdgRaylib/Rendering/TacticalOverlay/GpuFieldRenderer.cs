@@ -55,6 +55,10 @@ internal sealed class GpuFieldRenderer : IDisposable
     /// <summary>Clamp for open (+inf) polar buckets, comfortably past the table diagonal.</summary>
     private const float MaxFanReachInches = 100f;
 
+    // Reused triangle-fan vertex buffer (2 perimeter verts per bucket + centre + close), so the per-frame
+    // Self-mode path doesn't allocate a ~4k-element array per source per layer.
+    private readonly Vector2[] _fanScratch = new Vector2[TacticalOverlayConfig.PolarBuckets * 2 + 2];
+
     // The composite shader: FieldCompositor.Compose, texel for texel. texture0 = bandRT (R = band value),
     // maskTex = visibility (R>0 visible, G>0 clear). See the class summary for the encoding.
     private const string CompositeFs = @"
@@ -121,7 +125,10 @@ uniform float ringAlpha;
 
 void main()
 {
-    vec2 buv = vec2(fragTexCoord.x, 1.0 - fragTexCoord.y);
+    // Sample bandTex at the SAME coord as the fill (texture0): compositeRT was built from bandRT through
+    // the composite pass's flipped draw, so at draw time (this pass also uses a flipped src) the two line
+    // up directly -- an extra v-flip here mirrors the rings vertically off the fill (harness-verified).
+    vec2 buv = fragTexCoord;
     float b  = texture(bandTex, buv).r * 255.0;
     float bl = texture(bandTex, buv - vec2(texelStep.x, 0.0)).r * 255.0;
     float br = texture(bandTex, buv + vec2(texelStep.x, 0.0)).r * 255.0;
@@ -322,7 +329,7 @@ void main()
         float[] block = map.BlockDepthRaw;
         float[] cov = map.CoverDepthRaw;
 
-        var pts = new Vector2[n * 2 + 2];
+        Vector2[] pts = _fanScratch;   // sized PolarBuckets*2+2 == n*2+2
         pts[0] = ToTexel(map.Source.X, map.Source.Y);
 
         int k = 1;
@@ -339,7 +346,7 @@ void main()
         // Close the fan back to the first perimeter point.
         pts[k] = pts[1];
 
-        Raylib.DrawTriangleFan(pts, pts.Length, color);
+        Raylib.DrawTriangleFan(pts, n * 2 + 2, color);
     }
 
     // World inches -> texel-space draw coordinates (top-left origin, z up -> y down).

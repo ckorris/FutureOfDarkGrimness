@@ -78,6 +78,10 @@ internal static class FieldHarness
 
         return new List<Scene>
         {
+            // Deliberately ASYMMETRIC (target near the bottom edge, z=8) so a vertical flip shows up
+            // clearly against the drawn target marker.
+            new("asym-lowz", new List<FieldTargetModel> { new(18f, 8f, 0.5f) }, twoBands, 0.5f, new List<ITerrain>()),
+
             new("bands-only", targetsA, twoBands, 0.5f, new List<ITerrain>()),
 
             new("blocking-wall", targetsA, twoBands, 0.5f, new List<ITerrain>
@@ -186,6 +190,10 @@ internal static class FieldHarness
         for (int gy = 0; gy < H; gy += gridStep) Raylib.DrawLine(0, gy, W, gy, gridCol);
         gpu.DrawComposite(0, 0, GameWideConstants.DEFAULT_TABLE_WIDTH_INCHES, GameWideConstants.DEFAULT_TABLE_HEIGHT_INCHES, Tpi);
         gpu.DrawRings(0, 0, GameWideConstants.DEFAULT_TABLE_WIDTH_INCHES, GameWideConstants.DEFAULT_TABLE_HEIGHT_INCHES, Tpi);
+        // Target markers at the MODEL screen convention (x*scale, (tableH - z)*scale) -- the field should
+        // sit ON these. If it sits at their vertical mirror, DrawComposite/DrawRings is flipped.
+        foreach (FieldTargetModel t in scene.Targets)
+            Raylib.DrawCircle((int)(t.X * Tpi), (int)((GameWideConstants.DEFAULT_TABLE_HEIGHT_INCHES - t.Z) * Tpi), 5f, new Color(255, 0, 255, 255));
         Raylib.EndTextureMode();
         Image onmatImg = Raylib.LoadImageFromTexture(scratch.Texture);
         byte[] onmatPx = ExtractRgba(onmatImg, out _);
