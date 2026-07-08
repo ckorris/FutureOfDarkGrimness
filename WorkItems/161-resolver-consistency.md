@@ -40,6 +40,10 @@ Right-click means "undo/cancel the last action" across the canvas resolvers — 
 - **G** = toggle Group/Single (shared). **R / Shift+R / wheel** = rotate facing.
 - Every unit/model selector: stats on the button + button<->canvas hover-highlight + click-to-select-on-canvas.
 
+### F. `GetIsAlive()` filter parity (found by the 2026-07-06 new-subsystems audit)
+- `GuiModelSelectionResolver.DrawCandidateRings`/`DrawHoverHighlight` never check `GetIsAlive()` (only the unplaced-position sentinel), unlike its sibling `GuiUnitSelectionResolver`, which filters both. The #157/#158 dead-model-filtering discipline (rings/counts/cover skip corpses) generalized to most canvas resolvers but missed this one.
+- Currently latent, not exploitable: both live callers (`BuildTargetListStage.MaybePickIndividualTarget`, `CastSpellStage.PickIndividualModel`, both engine-side) already pre-filter to living models before building the request. Flagged as an addendum rather than fixed standalone, since it's the same duplication (D) that let the cancellable twin drift — best closed by the shared canvas-selector base extraction, not a fourth copy-pasted guard.
+
 ## Decisions
 - Filed as a standalone item (not folded into the session's changes) at the user's request, so the already-shipped deploy/activate stat labels + movement/consolidation click fix stay a clean unit and the remaining parity work is tracked separately.
 
