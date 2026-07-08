@@ -1,4 +1,6 @@
+using System.Linq;
 using System.Net;
+using System.Net.Sockets;
 using System.Numerics;
 using FDG.Network.Connection;
 using FDG.Network.Connection.Lobby;
@@ -13,11 +15,12 @@ public class ClientModal : IAppScreen
 
     private string _yourName  = "Mrs. Client";
     private string _ipAddress = "127.0.0.1";
+    private string _password  = "";
     private string _status    = "";
     private bool   _isConnecting = false;
 
     private const float DialogWidthFraction  = 0.30f;
-    private const float DialogHeightFraction = 0.38f;
+    private const float DialogHeightFraction = 0.44f;
 
     // How long to wait for the host's accept/reject handshake before giving up (#075).
     private const double JoinTimeoutSeconds = 8.0;
@@ -57,7 +60,12 @@ public class ClientModal : IAppScreen
         ImGui.SetCursorPosX(pad);
         DrawLabeledInput("Your Name",  ref _yourName,  dw, scale);
         ImGui.SetCursorPosX(pad);
-        DrawLabeledInput("IP Address", ref _ipAddress, dw, scale, ImGuiInputTextFlags.CharsDecimal);
+        // "Host Address", not "IP Address", and no CharsDecimal filter - that flag blocked both letters and
+        // the colons in an IPv6 literal, so a DNS name (DuckDNS / No-IP for a host on a dynamic IP) or a
+        // Tailscale hostname couldn't be typed (QF10).
+        DrawLabeledInput("Host Address", ref _ipAddress, dw, scale);
+        ImGui.SetCursorPosX(pad);
+        DrawLabeledInput("Password", ref _password, dw, scale, ImGuiInputTextFlags.Password);
         ImGui.EndDisabled();
 
         CenterText(_status, dw);
@@ -117,18 +125,27 @@ public class ClientModal : IAppScreen
             return;
         }
 
-        if (!IPAddress.TryParse(_ipAddress, out IPAddress? ip))
+        if (string.IsNullOrWhiteSpace(_ipAddress))
         {
-            _status = "Invalid IP address format.";
+            _status = "Host address can't be empty.";
             return;
         }
 
         _isConnecting = true;
-        _status = "Attempting to connect...";
+        _status = "Resolving host...";
 
-        FDGClient client = new();
         try
         {
+            IPAddress? ip = await ResolveHostAsync(_ipAddress).ConfigureAwait(false);
+            if (ip == null)
+            {
+                _status = "Could not find that host address.";
+                return;
+            }
+
+            _status = "Attempting to connect...";
+
+            FDGClient client = new();
             bool connected = await client.ConnectAsync(ip).ConfigureAwait(false);
             if (!connected)
             {
@@ -141,7 +158,7 @@ public class ClientModal : IAppScreen
             // returns a readable rejection (incompatible build). Wait for that outcome here so a rejection
             // surfaces in this modal instead of half-joining the lobby.
             _status = "Joining lobby...";
-            var viewModel = new LobbyViewModel_Client(_yourName, client);
+            var viewModel = new LobbyViewModel_Client(_yourName, client, _password);
 
             Task<string?> joinTask = viewModel.JoinResultTask;
             Task winner = await Task.WhenAny(joinTask, Task.Delay(TimeSpan.FromSeconds(JoinTimeoutSeconds)))
@@ -173,10 +190,33 @@ public class ClientModal : IAppScreen
         }
     }
 
+    // Turns whatever the host typed into a connectable address: an IPv4/IPv6 literal passes straight
+    // through; anything else is resolved as a DNS name. FDGHost listens on IPAddress.Any (IPv4 only), so a
+    // resolved name must yield an IPv4 address to actually connect (QF10).
+    private static async Task<IPAddress?> ResolveHostAsync(string hostText)
+    {
+        string trimmed = hostText.Trim();
+        if (string.IsNullOrEmpty(trimmed)) return null;
+
+        if (IPAddress.TryParse(trimmed, out IPAddress? literal))
+            return literal;
+
+        try
+        {
+            IPAddress[] resolved = await Dns.GetHostAddressesAsync(trimmed).ConfigureAwait(false);
+            return resolved.FirstOrDefault(a => a.AddressFamily == AddressFamily.InterNetwork);
+        }
+        catch
+        {
+            return null;
+        }
+    }
+
     private void Reset()
     {
         _yourName     = "Mrs. Client";
         _ipAddress    = "127.0.0.1";
+        _password     = "";
         _status       = "";
         _isConnecting = false;
     }
