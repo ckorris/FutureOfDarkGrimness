@@ -274,8 +274,8 @@
           "dieValue": 6
         },
         "effect": {
-          "kind": "rollModifier",
-          "rollKind": "Save",
+          "kind": "perHitSaveModifier",
+          "onRollValue": 6,
           "delta": -4
         },
         "lifetime": "ThisAttack",

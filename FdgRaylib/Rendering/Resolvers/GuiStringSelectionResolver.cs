@@ -46,7 +46,7 @@ public class GuiStringSelectionResolver : IStageResolver<StringSelectionRequest,
         const float gapAfterDesc = 8f;
         const float invalidRowH = 32f;
 
-        float dw = MathF.Min(screenW * 0.5f, 620f);
+        float dw = ResolverPanelLayout.W;   // dock into the right-column resolver panel
         float btnW = dw - pad * 2;
 
         // Measure heights up front so the dialog is sized to its content and a wrapped description can never
@@ -74,16 +74,15 @@ public class GuiStringSelectionResolver : IStageResolver<StringSelectionRequest,
             validHeight += h;
         }
 
-        float contentH = pad + instrH + 4f + validHeight + invalidCount * invalidRowH + pad;
-        float dh = MathF.Min(contentH, screenH * 0.85f);
-        float dx = screenW - dw - 12f;   // right-aligned in the open right-side space (#105)
-        float dy = (screenH - dh) * 0.5f;
+        float dh = ResolverPanelLayout.H;   // fill the panel; content taller than this scrolls
+        float dx = ResolverPanelLayout.X;
+        float dy = ResolverPanelLayout.Y;
 
         ImGui.SetCursorPos(new Vector2(dx, dy));
         ImGui.PushStyleColor(ImGuiCol.ChildBg, new Vector4(0.15f, 0.15f, 0.20f, 0.97f));
         ImGui.PushStyleVar(ImGuiStyleVar.ChildRounding, 6f);
         ImGui.BeginChild("##StrSelDialog", new Vector2(dw, dh), ImGuiChildFlags.Borders,
-            ImGuiWindowFlags.NoScrollbar);
+            ImGuiWindowFlags.None);
         ImGui.PopStyleColor();
         ImGui.PopStyleVar();
 

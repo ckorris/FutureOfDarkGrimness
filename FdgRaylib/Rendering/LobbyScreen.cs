@@ -38,8 +38,11 @@ public class LobbyScreen : IAppScreen
     private string? _lastLaunchError;
     private IReadOnlyList<string> _launchProblems = Array.Empty<string>();
 
+    // Orange / Purple as the two default team colours (was Blue / Red). Purple isn't a Raylib built-in,
+    // so it's spelled out; Green/Yellow round out the palette for 3-4 player games.
+    private static readonly Color TeamPurple = new(150, 70, 200, 255);
     private static readonly Color[] PlayerPalette =
-        { Color.Blue, Color.Red, Color.Green, Color.Yellow };
+        { Color.Orange, TeamPurple, Color.Green, Color.Yellow };
 
     // Light-blue accent (matches ImGuiTheme) used to make section/column headers read as headers.
     private static readonly Vector4 HeaderAccent = new(0.50f, 0.73f, 1.0f, 1f);

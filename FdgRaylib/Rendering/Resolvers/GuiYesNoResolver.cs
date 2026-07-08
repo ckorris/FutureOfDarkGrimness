@@ -39,10 +39,10 @@ public class GuiYesNoResolver : IStageResolver<YesNoRequest, bool>, IGuiResolver
             ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoScrollbar | ImGuiWindowFlags.NoInputs |
             ImGuiWindowFlags.NoBackground);
 
-        float dw = MathF.Min(screenW * 0.40f, 520f);
-        float dh = screenH * 0.22f;
-        float dx = screenW - dw - 12f;                 // right-aligned in the open right-side space (#105)
-        float dy = (screenH - dh) * 0.5f;
+        float dw = ResolverPanelLayout.W;   // dock into the right-column resolver panel
+        float dh = ResolverPanelLayout.H;
+        float dx = ResolverPanelLayout.X;
+        float dy = ResolverPanelLayout.Y;
 
         ImGui.SetCursorPos(new Vector2(dx, dy));
         ImGui.PushStyleColor(ImGuiCol.ChildBg, new Vector4(0.15f, 0.15f, 0.20f, 0.97f));
@@ -60,19 +60,21 @@ public class GuiYesNoResolver : IStageResolver<YesNoRequest, bool>, IGuiResolver
         ImGui.TextUnformatted(question);
         ImGui.PopTextWrapPos();
 
-        // Buttons anchored to bottom of dialog
-        float btnW = dw * 0.35f;
+        // Buttons anchored to bottom of dialog. Yes is the primary affirmative (accent + Enter); No recedes.
+        float btnW = dw * 0.42f;
         float btnH = 36f;
-        float gap  = dw * 0.06f;
+        float gap  = dw * 0.04f;
         float firstX = (dw - btnW * 2 - gap) * 0.5f;
         float btnY = dh - pad - btnH;
 
         ImGui.SetCursorPos(new Vector2(firstX, btnY));
-        if (ImGui.Button("Yes", new Vector2(btnW, btnH)))
+        if (ResolverButtons.Primary("Yes", new Vector2(btnW, btnH)))
             Complete(tcs, true);
 
         ImGui.SameLine(0, gap);
-        if (ImGui.Button("No", new Vector2(btnW, btnH)))
+        bool noPressed  = ResolverButtons.Deemphasized("No  (Esc)", new Vector2(btnW, btnH));
+        bool escPressed = !ImGui.GetIO().WantTextInput && ImGui.IsKeyPressed(ImGuiKey.Escape);
+        if (noPressed || escPressed)
             Complete(tcs, false);
 
         ImGui.EndChild();

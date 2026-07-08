@@ -89,10 +89,10 @@ public class GuiAssignWoundsResolver
             listContentH  += btnHeights[i] + spacingY;
         }
 
-        float dw = MathF.Min(screenW * 0.5f, 560f);
-        float dh = MathF.Min(hdrH + pad + listContentH + pad + footH + pad, screenH * 0.82f);
-        float dx = screenW - dw - 12f;   // right-aligned in the open right-side space (#105)
-        float dy = (screenH - dh) * 0.5f;
+        float dw = ResolverPanelLayout.W;   // dock into the right-column resolver panel
+        float dh = ResolverPanelLayout.H;   // header top, scrollable model list middle, footer bottom
+        float dx = ResolverPanelLayout.X;
+        float dy = ResolverPanelLayout.Y;
 
         ImGui.SetCursorPos(new Vector2(dx, dy));
         ImGui.PushStyleColor(ImGuiCol.ChildBg, new Vector4(0.15f, 0.15f, 0.20f, 0.97f));

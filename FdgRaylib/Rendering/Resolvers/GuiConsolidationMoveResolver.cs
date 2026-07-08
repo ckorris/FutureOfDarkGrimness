@@ -225,12 +225,13 @@ public class GuiConsolidationMoveResolver
     private void DrawInfoPanel(int screenW, ConsolidationMoveRequest request, PathTemplate pt,
         TaskCompletionSource<List<ModelMoveEntry>> tcs, List<ITerrain> terrain)
     {
-        float panelW = MathF.Min(screenW * 0.5f, 560f);
-        ImGui.SetNextWindowPos(new Vector2(screenW - panelW - 12f, 16f), ImGuiCond.FirstUseEver); // right-aligned (#105)
-        ImGui.SetNextWindowSizeConstraints(new Vector2(panelW, 0f), new Vector2(panelW, float.MaxValue));
+        float panelW = ResolverPanelLayout.W;   // dock into the right-column resolver panel
+        ImGui.SetNextWindowPos(new Vector2(ResolverPanelLayout.X, ResolverPanelLayout.Y), ImGuiCond.Always);
+        ImGui.SetNextWindowSize(new Vector2(ResolverPanelLayout.W, ResolverPanelLayout.H), ImGuiCond.Always);
         ImGui.PushStyleColor(ImGuiCol.WindowBg, new Vector4(0.10f, 0.10f, 0.15f, 0.92f));
         ImGui.Begin("##ConsolidatePanel",
-            ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoScrollbar | ImGuiWindowFlags.AlwaysAutoResize);
+            ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoCollapse |
+            ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoBringToFrontOnFocus);
         ImGui.PopStyleColor();
 
         string unitName = request.UnitDataBinding.GetValue().Name;
@@ -255,7 +256,7 @@ public class GuiConsolidationMoveResolver
         ImGui.Spacing();
         float spacing = ImGui.GetStyle().ItemSpacing.X;
         float pad     = ImGui.GetStyle().WindowPadding.X * 2;
-        float btnW    = (panelW - pad - spacing * 2) / 3f;
+        float fullW   = panelW - pad;
 
         var results = pt.GetResultsAsList();
         // #090: enemy-check the consolidation preview so it matches the authoritative ConsolidateStage check.
@@ -281,26 +282,19 @@ public class GuiConsolidationMoveResolver
             issues.Add($"Cohesion: two models would be {cohesion.FarthestPair.Value.dist:F2}\" apart (max {GameWideConstants.MAX_MODEL_DISTANCE_FROM_ALL_OTHER_MODELS_INCHES:F1}\")");
 
         bool canSubmit = issues.Count == 0;
-        if (!canSubmit) ImGui.BeginDisabled();
-        bool donePressed = ImGui.Button("Done", new Vector2(btnW, 28f));
-        if (!canSubmit) ImGui.EndDisabled();
+        // Primary: Done -- larger, accented, commits on click or Enter (gated on a valid move).
+        bool donePressed = ResolverButtons.Primary("Done", new Vector2(fullW, 34f), enabled: canSubmit);
         if (ImGui.IsItemHovered(ImGuiHoveredFlags.AllowWhenDisabled))
-            ImGui.SetTooltip(canSubmit ? "Commit this move and continue." : string.Join("\n", issues));
-        if (canSubmit && donePressed)
+            ImGui.SetTooltip(canSubmit ? "Commit this move and continue. (Enter)" : string.Join("\n", issues));
+        if (donePressed)
         {
             Complete(tcs, results);
             ImGui.End();
             return;
         }
 
-        ImGui.SameLine();
-        bool clearPressed = ImGui.Button("Clear selected", new Vector2(btnW, 28f));
-        if (ImGui.IsItemHovered())
-            ImGui.SetTooltip("Remove all waypoints from the currently selected model.");
-        if (clearPressed && _selectedModel != null) pt.ClearModelSteps(_selectedModel);
-
-        ImGui.SameLine();
-        bool stayPressed = ImGui.Button("Stay in place", new Vector2(btnW, 28f));
+        // Secondary: Stay in place (de-emphasized).
+        bool stayPressed = ResolverButtons.Deemphasized("Stay in place", new Vector2(fullW, 28f));
         if (ImGui.IsItemHovered())
             ImGui.SetTooltip("Don't move the unit. Every model stays where it is.");
         if (stayPressed)
@@ -310,6 +304,13 @@ public class GuiConsolidationMoveResolver
             ImGui.End();
             return;
         }
+
+        // Destructive: Clear -- set apart below a separator, red-tinted.
+        ImGui.Separator();
+        bool clearPressed = ResolverButtons.Destructive("Clear selected", new Vector2(fullW, 26f));
+        if (ImGui.IsItemHovered())
+            ImGui.SetTooltip("Remove all waypoints from the currently selected model.");
+        if (clearPressed && _selectedModel != null) pt.ClearModelSteps(_selectedModel);
 
         ImGui.End();
     }

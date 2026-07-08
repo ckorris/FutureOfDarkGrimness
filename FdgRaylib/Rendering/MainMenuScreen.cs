@@ -67,6 +67,16 @@ public class MainMenuScreen : IAppScreen
 
         if (useMenuFont) ImGui.PopFont();
 
+        // Fan-project disclaimer, small but legible, centered along the bottom edge. Drawn in the body
+        // font (menu font already popped) so it stays modest next to the title/buttons.
+        const string disclaimer =
+            "This game is a fan-made project and is not an official product of OnePageRules.";
+        Vector2 discSize = ImGui.CalcTextSize(disclaimer);
+        ImGui.PushStyleColor(ImGuiCol.Text, new Vector4(0.62f, 0.62f, 0.62f, 1f));
+        ImGui.SetCursorPos(new Vector2((screenW - discSize.X) * 0.5f, screenH - discSize.Y - screenH * 0.02f));
+        ImGui.TextUnformatted(disclaimer);
+        ImGui.PopStyleColor();
+
         ImGui.End();
         ImGui.PopStyleColor();
     }

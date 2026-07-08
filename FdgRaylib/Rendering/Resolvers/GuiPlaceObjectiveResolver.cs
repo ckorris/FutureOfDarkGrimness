@@ -188,19 +188,8 @@ public class GuiPlaceObjectiveResolver
     private void DrawInfoPanel(int screenW, PlaceObjectiveRequest request,
         TaskCompletionSource<Position> tcs, Position? pending)
     {
-        // Default centered horizontally, just below where GuiOutstandingTaskDisplay sits.
-        // OutstandingTasks is at y=8 with AlwaysAutoResize; ~140px down clears the typical
-        // 5-row list. FirstUseEver lets the user drag the window if they want it elsewhere.
-        const float PanelDefaultWidth = 360f;
-        const float OutstandingTasksClearance = 140f;
-        float defaultX = screenW - PanelDefaultWidth - 12f; // right-aligned in the open right-side space (#105)
-        ImGui.SetNextWindowPos(new Vector2(defaultX, OutstandingTasksClearance), ImGuiCond.FirstUseEver);
-        ImGui.SetNextWindowSize(new Vector2(PanelDefaultWidth, 0f), ImGuiCond.FirstUseEver);
-        ImGui.SetNextWindowBgAlpha(0.92f);
-
-        ImGui.Begin("Place Objective",
-            ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoCollapse |
-            ImGuiWindowFlags.AlwaysAutoResize | ImGuiWindowFlags.NoSavedSettings);
+        // Docked into the right-column resolver panel.
+        ResolverPanelLayout.BeginDocked("Place Objective##placeobjectivepanel");
 
         ImGui.TextUnformatted($"Objective {request.MarkerIndex} of {request.TotalMarkers}");
         ImGui.Spacing();
@@ -210,13 +199,10 @@ public class GuiPlaceObjectiveResolver
             ImGui.TextWrapped($"Place here? (X {pending.Value.x:F1}\", Z {pending.Value.z:F1}\")");
             ImGui.Spacing();
 
-            float btnW = 130f;
-            bool confirmPressed = ImGui.Button("Confirm", new Vector2(btnW, 28f))
-                || ImGui.IsKeyPressed(ImGuiKey.Enter)
-                || ImGui.IsKeyPressed(ImGuiKey.KeypadEnter);
-
+            // Primary: Confirm (accent + Enter). Cancel is de-emphasized.
+            bool confirmPressed = ResolverButtons.Primary("Confirm", new Vector2(190f, 30f));
             ImGui.SameLine();
-            bool cancelPressed = ImGui.Button("Cancel", new Vector2(btnW, 28f));
+            bool cancelPressed = ResolverButtons.Deemphasized("Cancel", new Vector2(120f, 30f));
 
             if (confirmPressed)
             {

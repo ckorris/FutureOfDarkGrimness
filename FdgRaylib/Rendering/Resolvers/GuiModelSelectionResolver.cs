@@ -38,13 +38,13 @@ public class GuiModelSelectionResolver : GuiSelectionResolver<ModelData>, IGuiCa
     // Dialog content: heading "Model 2  (2/3 wounds)" + a weapon line per group beneath it, so the choice is
     // informed without hunting the canvas. Single-wound models skip the counter (same convention as wounds).
     protected override (string Heading, IReadOnlyList<string> Details) OptionContent(
-        SelectionRequest<ModelData>.ValidOption opt)
+        DataBinding<ModelData> option, string name)
     {
-        ModelData model = opt.Option.GetValue();
+        ModelData model = option.GetValue();
         string wounds = model.TotalWounds > 1f
             ? $"  ({model.TotalWounds - model.WoundsDealt:F0}/{model.TotalWounds:F0} wounds)"
             : "";
-        return ($"{opt.Name}{wounds}", GuiAssignWoundsResolver.WeaponLines(model));
+        return ($"{name}{wounds}", GuiAssignWoundsResolver.WeaponLines(model));
     }
 
     protected override void OnValidOptionHovered(SelectionRequest<ModelData>.ValidOption opt) =>

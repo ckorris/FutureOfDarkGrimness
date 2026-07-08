@@ -25,25 +25,24 @@ public class RaylibRenderer
     private const float TableWIn      = GameWideConstants.DEFAULT_TABLE_WIDTH_INCHES;
     private const float TableHIn      = GameWideConstants.DEFAULT_TABLE_HEIGHT_INCHES;
     private const int   MinMargin     = 20;
-    private const float TableZoom     = 1.15f;  // fill more of the available space than a strict fit
     // Anchor for the resolution-derived UI scale (see ComputeUiScale): the multiplier that was tuned
     // by hand on a 4K (2160p) desktop. Smaller displays scale down from here, larger ones cap here.
     private const float ReferenceUiScale  = 1.4f;
     private const float ReferenceHeightPx = 2160f;
 
     private static readonly Color TableColor  = new(40, 100, 40, 255);
-    private static readonly Color TableBorder = new(20, 60, 20, 255);
+    // Warm brown so the table edge reads clearly against both the green felt and the dark background.
+    private static readonly Color TableBorder = new(150, 105, 55, 255);
     private static readonly Color Background  = new(30, 30, 30, 255);
 
     // Table grid: minor lines every 6", major every 12" (matches the game's inch measurements — a
     // major square is one charge move across). Lines are etched darker than the felt for an engraved
-    // look rather than painted on top. A soft edge vignette adds depth. Everything here is confined to
-    // the table rectangle by construction, so it never bleeds onto terrain/objectives/models drawn after.
+    // look rather than painted on top. Everything here is confined to the table rectangle by
+    // construction, so it never bleeds onto terrain/objectives/models drawn after.
     private const float GridMinorInches = 6f;
     private const float GridMajorInches = 12f;
     private static readonly Color GridMinorColor = new(33, 85, 33, 80);
     private static readonly Color GridMajorColor = new(24, 66, 24, 150);
-    private const int   FeltVignetteAlpha = 55;
 
     // Toggled from the table toolbar (TableTooltipOverlay) alongside the label toggle. Read by
     // DrawTableGrid's call site so the grid/felt can be turned off without touching anything else.
@@ -64,11 +63,11 @@ public class RaylibRenderer
     private GuiPlayerMessageUI? _playerMessageUI;  // in-game chat sink + send hook (#077)
     private string _chatInput = "";
 
-    // Bottom console (#105): a collapsible, full-width dock. Log and Chat are independent TOGGLES (not
-    // exclusive tabs) -- with both on, their lines are merged into one column in arrival order.
-    private bool _consoleCollapsed = false;
-    private bool _showChat = true;   // Chat source shown (button on the left)
-    private bool _showLog  = true;   // Log source shown
+    // Right-column console: Log and Chat are independent TOGGLES (not exclusive tabs) -- with both on,
+    // their lines are merged into one column in arrival order.
+    private bool _showChat  = true;   // Chat source shown (button on the left)
+    private bool _showLog   = true;   // Log source shown
+    private bool _showDebug = false;  // Debug source shown (developer detail; off by default)
     private EChatMessageType _chatChannel = EChatMessageType.Global;
     private bool _chatUnread    = false;  // new chat arrived while Chat is toggled off / console collapsed
     private int  _lastChatCount = 0;      // for the unread check
@@ -97,6 +96,13 @@ public class RaylibRenderer
     private static readonly Color ExclusionFill = new(235, 95, 95, 255);
     private const byte ExclusionCompositeAlpha = 70;
 
+    // Subtle grass mottling over the felt: a small tileable Perlin-noise texture generated once, then
+    // tiled across the table rect (repeat wrap) and composited additively at a low green tint so it reads
+    // as faint grassy flecks rather than flat felt. Lazily generated on first draw; unloaded on shutdown.
+    private Texture2D _grassTex;
+    private bool      _grassReady;
+    private static readonly Color GrassTint = new(22, 44, 22, 60);
+
     public RaylibRenderer()
     {
         _currentScreen = MainMenu;
@@ -110,11 +116,33 @@ public class RaylibRenderer
 
     private record Layout(float Scale, int OriginX, int OriginY, int AreaW, int ScreenH);
 
-    // Bottom-console height: a thin bar (tabs only) when collapsed, ~26% of the window when open.
-    private int ConsoleHeight(int screenH) =>
-        _log == null ? 0
-        : _consoleCollapsed ? Math.Max(34, (int)(screenH * 0.038f))
-                            : Math.Max(170, (int)(screenH * 0.26f));
+    // In-game right column: a fixed-width strip on the right holding the resolver panel (top half) and the
+    // log/chat console (bottom half). Everything left of it is the table viewport. Width is a fraction of
+    // the window, floored so the panels stay usable on narrow windows and capped at half the width.
+    private const float RightColumnFraction = 0.28f;
+    private const int   RightColumnMinPx    = 340;
+    private int RightColumnWidth(int screenW) =>
+        _log == null ? 0 : Math.Clamp((int)(screenW * RightColumnFraction), RightColumnMinPx, screenW / 2);
+
+    // Table view transform (#8): _zoom is a multiplier over the fit-to-viewport scale (1 = ~100% of the
+    // viewport, up to MaxZoom); _pan is a pixel offset from the centered position. Both default to the
+    // plain fit until the player zooms (Ctrl+wheel, toward the cursor) or pans (middle-drag).
+    private const float MinZoom = 1f;   // fully zoomed out = table fills the viewport
+    private const float MaxZoom = 3f;   // 300%
+    // When zoomed in, allow panning this fraction of the table past each edge, so a strip of background
+    // shows and it's clear you've hit the edge. Ignored at min zoom (the table stays locked centered).
+    private const float PanEdgeMarginFraction = 0.05f;
+    private float   _zoom = 1f;
+    private Vector2 _pan  = Vector2.Zero;
+
+    // Fit-to-viewport scale: the largest scale that shows the whole table inside the viewport (with a
+    // margin). _zoom multiplies this; MinZoom==1 means "table fills the viewport".
+    private static float FitScale(int viewportW, int screenH)
+    {
+        float fitX = (viewportW - MinMargin * 2f) / TableWIn;
+        float fitY = (screenH   - MinMargin * 2f) / TableHIn;
+        return Math.Max(1f, Math.Min(fitX, fitY));
+    }
 
     public void TransitionToGame(ITableState tableState, Func<PlayerID, Color> colorForPlayer,
         GameLog? log, GuiResolverOverlay? resolverOverlay = null,
@@ -223,9 +251,11 @@ public class RaylibRenderer
         _log                   = null;
         _playerMessageUI       = null;
         _chatInput             = "";
-        _consoleCollapsed      = false;
+        _zoom                  = 1f;
+        _pan                   = Vector2.Zero;
         _showChat              = true;
         _showLog               = true;
+        _showDebug             = false;
         _chatChannel           = EChatMessageType.Global;
         _chatUnread            = false;
         _lastChatCount         = 0;
@@ -333,6 +363,7 @@ public class RaylibRenderer
             {
                 _presentationPlayer?.Update(Raylib.GetFrameTime());
 
+                HandleTableViewInput(screenW, screenH);
                 var layout = ComputeLayout(screenW, screenH);
                 // Push the layout to the tactical overlay once per frame so both its canvas-pass draws
                 // (below) and its ImGui-pass instruments read the same world<->screen mapping.
@@ -381,6 +412,12 @@ public class RaylibRenderer
 
                 DrawStatusHud(layout);
 
+                // Right-column regions: resolver panel (top half) + log/chat console (bottom half).
+                int rightW    = RightColumnWidth(screenW);
+                int rightX    = screenW - rightW;
+                int panelH    = screenH / 2;
+                ResolverPanelLayout.Set(rightX, 0, rightW, panelH);
+
                 rlImGui.Begin();
                 // Runs before the hit tester / resolvers so its Alt-measure WantCaptureMouse override
                 // lands before they read that flag (see MeasurementOverlay).
@@ -390,7 +427,7 @@ public class RaylibRenderer
                 // Overlay input (F toggle, hover timing, pins) runs after the hit tester so hover state
                 // is fresh; heavy rebuilds happen in the next frame's DrawField.
                 _tacticalOverlay.UpdateInput(Raylib.GetFrameTime(), _hitTester);
-                DrawBottomConsole(layout);
+                DrawConsole(rightX, panelH, rightW, screenH - panelH);
                 // Outstanding Tasks window hidden per user request; re-enable by restoring this draw call.
                 // _taskDisplay?.Draw(screenW, screenH);
                 _tooltipOverlay.UpdateLayout(layout.Scale, layout.OriginX, layout.OriginY, TableHIn);
@@ -399,11 +436,13 @@ public class RaylibRenderer
                 // Hold interactive prompts until the animation queue drains, so the player always
                 // sees movement / shots land before being asked to react.
                 bool animating = _presentationPlayer?.IsAnimating ?? false;
+                bool resolverShown = false;
                 if (!_resolverOverlayFaulted && !animating)
                 {
                     try
                     {
                         _resolverOverlay?.Draw(screenW, screenH);
+                        resolverShown = _resolverOverlay?.HasAnyPending ?? false;
                     }
                     catch (Exception ex)
                     {
@@ -417,6 +456,9 @@ public class RaylibRenderer
                 // ghost snapshot -- pips/counts/distance then track the ghost with no one-frame lag. On the
                 // background draw list (above tokens, under windows), same layer as the ghosts they annotate.
                 _tacticalOverlay.DrawInstruments(screenW, screenH);
+                // Fill the resolver panel with an idle placeholder whenever nothing is prompting, so the
+                // top-right region always reads as an intentional panel rather than empty space.
+                if (!resolverShown) DrawIdleResolverPanel();
                 DrawGameOverOverlay(screenW, screenH);
                 rlImGui.End();
             }
@@ -432,36 +474,120 @@ public class RaylibRenderer
 
         rlImGui.Shutdown();
         if (_exclusionRTReady) Raylib.UnloadRenderTexture(_exclusionRT);
+        if (_grassReady) Raylib.UnloadTexture(_grassTex);
         _audio?.Dispose();
         Raylib.CloseWindow();
     }
 
     private Layout ComputeLayout(int screenW, int screenH)
     {
-        // Full-width table; the console reserves height at the bottom instead of a right-side strip.
-        int consoleH   = ConsoleHeight(screenH);
-        int tableAreaH = screenH - consoleH;
+        // The right column reserves width on the right; the table viewport is everything to its left.
+        int rightW    = RightColumnWidth(screenW);
+        int viewportW = Math.Max(1, screenW - rightW);
 
-        float scaleX = (screenW     - MinMargin * 2f) / TableWIn;
-        float scaleY = (tableAreaH  - MinMargin * 2f) / TableHIn;
-        // Nudge the auto-fit up so the board fills more of the (otherwise slack) space. The board is
-        // usually height-bound, so this trades the vertical margin for a bigger table, centered.
-        float scale  = Math.Max(1f, Math.Min(scaleX, scaleY)) * TableZoom;
+        // Fit-to-viewport scale (the #8 zoom-out clamp: the table fills ~100% of the viewport at _zoom==1).
+        float scale = FitScale(viewportW, screenH) * _zoom;
 
         int tablePixW = (int)(TableWIn * scale);
         int tablePixH = (int)(TableHIn * scale);
-        int originX   = (screenW     - tablePixW) / 2;
-        int originY   = (tableAreaH  - tablePixH) / 2;
+        int originX   = (int)((viewportW - tablePixW) / 2f + _pan.X);
+        int originY   = (int)((screenH   - tablePixH) / 2f + _pan.Y);
 
-        return new Layout(scale, originX, originY, screenW, screenH);
+        // AreaW is the viewport width so centered overlays (status HUD, dice, banners) sit over the table,
+        // not under the right column.
+        return new Layout(scale, originX, originY, viewportW, screenH);
     }
 
-    private static void DrawTable(Layout l)
+    // Ctrl+wheel to zoom toward the cursor (clamped MinZoom..MaxZoom), middle-drag to pan. Runs at the top
+    // of the frame, before ComputeLayout, so this frame renders with the updated transform. Zoom is gated
+    // on the mouse being over the table viewport only (NOT WantCaptureMouse -- the measurement overlay
+    // raises that flag whenever Ctrl is held over the table, which would otherwise veto every zoom); pan
+    // additionally respects WantCaptureMouse so dragging over the toolbar/panels doesn't scroll the board.
+    private void HandleTableViewInput(int screenW, int screenH)
+    {
+        int rightW    = RightColumnWidth(screenW);
+        int viewportW = Math.Max(1, screenW - rightW);
+        float fit     = FitScale(viewportW, screenH);
+
+        float mx = Raylib.GetMouseX(), my = Raylib.GetMouseY();
+        bool overViewport = mx < viewportW && my < screenH;
+
+        // Ctrl + wheel: zoom, keeping the world point under the cursor pinned.
+        bool ctrl   = Raylib.IsKeyDown(KeyboardKey.LeftControl) || Raylib.IsKeyDown(KeyboardKey.RightControl);
+        float wheel = Raylib.GetMouseWheelMove();
+        if (overViewport && ctrl && wheel != 0f)
+        {
+            float scaleOld   = fit * _zoom;
+            float originXOld = (viewportW - TableWIn * scaleOld) / 2f + _pan.X;
+            float originYOld = (screenH   - TableHIn * scaleOld) / 2f + _pan.Y;
+            float worldXin   = (mx - originXOld) / scaleOld;   // inches from table origin under the cursor
+            float worldYin   = (my - originYOld) / scaleOld;
+
+            float newZoom  = Math.Clamp(_zoom * MathF.Pow(1.1f, wheel), MinZoom, MaxZoom);
+            float scaleNew = fit * newZoom;
+            _pan.X = mx - (viewportW - TableWIn * scaleNew) / 2f - worldXin * scaleNew;
+            _pan.Y = my - (screenH   - TableHIn * scaleNew) / 2f - worldYin * scaleNew;
+            _zoom  = newZoom;
+        }
+
+        // Middle-drag: pan (skip when an ImGui window owns the mouse).
+        bool overUi = ImGui.GetIO().WantCaptureMouse;
+        if (overViewport && !overUi && Raylib.IsMouseButtonDown(MouseButton.Middle))
+        {
+            Vector2 d = Raylib.GetMouseDelta();
+            _pan.X += d.X;
+            _pan.Y += d.Y;
+        }
+
+        // Bound the pan by the overflow of the scaled table past the viewport, plus (when zoomed in) a 5%
+        // margin so a strip of background shows past the edge and it reads as the edge. At min zoom there's
+        // no overflow and no margin, so the table stays locked centered.
+        float scale = fit * _zoom;
+        float overflowX = MathF.Max(0f, (TableWIn * scale - viewportW) / 2f);
+        float overflowY = MathF.Max(0f, (TableHIn * scale - screenH)   / 2f);
+        float marginX = _zoom > MinZoom ? PanEdgeMarginFraction * TableWIn * scale : 0f;
+        float marginY = _zoom > MinZoom ? PanEdgeMarginFraction * TableHIn * scale : 0f;
+        _pan.X = Math.Clamp(_pan.X, -(overflowX + marginX), overflowX + marginX);
+        _pan.Y = Math.Clamp(_pan.Y, -(overflowY + marginY), overflowY + marginY);
+    }
+
+    // Border thickness (px) framing the table rect.
+    private const float TableBorderThickness = 3f;
+
+    private void DrawTable(Layout l)
     {
         int tw = (int)(TableWIn * l.Scale);
         int th = (int)(TableHIn * l.Scale);
         Raylib.DrawRectangle(l.OriginX, l.OriginY, tw, th, TableColor);
-        Raylib.DrawRectangleLines(l.OriginX, l.OriginY, tw, th, TableBorder);
+        DrawGrassTexture(l, tw, th);
+        // A thin, defined frame around the felt (replaces the old edge vignette / "satin" sheen).
+        Raylib.DrawRectangleLinesEx(new Rectangle(l.OriginX, l.OriginY, tw, th),
+            TableBorderThickness, TableBorder);
+    }
+
+    // Tiles the grass-noise texture across the table at a constant on-screen density (source rect larger
+    // than the texture, repeat wrap) and blends it additively so only the lighter flecks show through.
+    private void DrawGrassTexture(Layout l, int tw, int th)
+    {
+        EnsureGrassTexture();
+        var src = new Rectangle(0, 0, tw, th);
+        var dst = new Rectangle(l.OriginX, l.OriginY, tw, th);
+        Raylib.BeginBlendMode(BlendMode.Additive);
+        Raylib.DrawTexturePro(_grassTex, src, dst, Vector2.Zero, 0f, GrassTint);
+        Raylib.EndBlendMode();
+    }
+
+    private void EnsureGrassTexture()
+    {
+        if (_grassReady) return;
+        // 128px Perlin patch; fine scale for a close, organic grain. Bilinear + repeat so it tiles
+        // seamlessly and stays smooth when stretched.
+        Image img = Raylib.GenImagePerlinNoise(128, 128, 0, 0, 5f);
+        _grassTex = Raylib.LoadTextureFromImage(img);
+        Raylib.UnloadImage(img);
+        Raylib.SetTextureFilter(_grassTex, TextureFilter.Bilinear);
+        Raylib.SetTextureWrap(_grassTex, TextureWrap.Repeat);
+        _grassReady = true;
     }
 
     // Etched inch grid + a soft felt vignette, drawn only within the table rect (so it stays under
@@ -483,16 +609,6 @@ public class RaylibRenderer
             int py = y0 + (int)(zi * l.Scale);
             Raylib.DrawLine(x0, py, x1, py, IsMajorGridLine(zi) ? GridMajorColor : GridMinorColor);
         }
-
-        // Edge vignette: a dark band fading inward on each side (corners overlap for a little extra
-        // emphasis). Clipped to the table rect.
-        int band = Math.Max(6, (int)(Math.Min(tw, th) * 0.08f));
-        var edge  = new Color((byte)0, (byte)0, (byte)0, (byte)FeltVignetteAlpha);
-        var clear = new Color((byte)0, (byte)0, (byte)0, (byte)0);
-        Raylib.DrawRectangleGradientV(x0, y0, tw, band, edge, clear);            // top
-        Raylib.DrawRectangleGradientV(x0, y1 - band, tw, band, clear, edge);     // bottom
-        Raylib.DrawRectangleGradientH(x0, y0, band, th, edge, clear);            // left
-        Raylib.DrawRectangleGradientH(x1 - band, y0, band, th, clear, edge);     // right
     }
 
     private static bool IsMajorGridLine(float inches)
@@ -510,6 +626,8 @@ public class RaylibRenderer
         {
             (Color fill, Color outline) = TerrainColors.For(terrain.TerrainType);
             ZoneRenderer.DrawFilled(terrain.Shape, l.Scale, l.OriginX, l.OriginY, TableHIn, fill, outline);
+            // Legibility patterns layered on top (hatch=difficult, chevrons=cover, crimson Xs=dangerous).
+            TerrainPatternRenderer.Draw(terrain.Shape, terrain.TerrainType, l.Scale, l.OriginX, l.OriginY, TableHIn);
         }
     }
 
@@ -742,46 +860,51 @@ public class RaylibRenderer
         ImGui.End();
     }
 
-    // Bottom console (#105): a full-width, collapsible dock. Log and Chat are independent TOGGLES (Chat on
-    // the left); with both on, their lines merge into one column in arrival order (by the shared
-    // LogEntry.Sequence). The engine GameLog is the Log source; the sender-coloured chat store is the Chat
-    // source, which also shows the Global/Team channel toggle + input. Chat flags unread when a message
-    // arrives while Chat is toggled off or the console is collapsed.
-    private void DrawBottomConsole(Layout l)
+    // Log/chat console: fills the bottom half of the in-game right column. Log and Chat are independent
+    // TOGGLES (Chat on the left); with both on, their lines merge into one column in arrival order (by the
+    // shared LogEntry.Sequence). The engine GameLog is the Log source; the sender-coloured chat store is
+    // the Chat source, which also shows the Global/Team channel toggle + input. Chat flags unread when a
+    // message arrives while Chat is toggled off.
+    private void DrawConsole(int x, int y, int w, int h)
     {
         if (_log == null) return;
-        int h = ConsoleHeight(l.ScreenH);
 
         // Unread bookkeeping (every frame, regardless of what's shown).
         int chatCount = _playerMessageUI?.ChatLog.Count ?? 0;
-        if (chatCount > _lastChatCount && (_consoleCollapsed || !_showChat))
+        if (chatCount > _lastChatCount && !_showChat)
             _chatUnread = true;
         _lastChatCount = chatCount;
 
-        ImGui.SetNextWindowPos(new Vector2(0, l.ScreenH - h), ImGuiCond.Always);
-        ImGui.SetNextWindowSize(new Vector2(l.AreaW, h), ImGuiCond.Always);
+        ImGui.SetNextWindowPos(new Vector2(x, y), ImGuiCond.Always);
+        ImGui.SetNextWindowSize(new Vector2(w, h), ImGuiCond.Always);
         ImGui.Begin("##console",
             ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoCollapse |
             ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoBringToFrontOnFocus);
 
-        // Source toggles: Chat (left), then Log.
+        // Source toggles: Chat (left), then Log, then Debug (developer detail, off by default).
         DrawConsoleToggle((_chatUnread ? "Chat *" : "Chat") + "##chattoggle", ref _showChat, isChat: true);
         ImGui.SameLine();
         DrawConsoleToggle("Log##logtoggle", ref _showLog, isChat: false);
-
-        // Collapse / expand button, pinned right.
-        const float collapseW = 32f;
         ImGui.SameLine();
-        ImGui.SetCursorPosX(ImGui.GetWindowWidth() - collapseW - 10f);
-        if (ImGui.Button((_consoleCollapsed ? "+" : "-") + "##consolecollapse", new Vector2(collapseW, 0f)))
-            _consoleCollapsed = !_consoleCollapsed;
+        DrawConsoleToggle("Debug##debugtoggle", ref _showDebug, isChat: false);
 
-        if (!_consoleCollapsed)
+        ImGui.Separator();
+        DrawConsoleContent();
+
+        ImGui.End();
+    }
+
+    // Idle placeholder shown in the resolver panel (top-right) when no decision is pending, so the region
+    // always reads as an intentional panel.
+    private void DrawIdleResolverPanel()
+    {
+        if (_log == null) return;
+        if (ResolverPanelLayout.BeginDocked("##idleresolver"))
         {
-            ImGui.Separator();
-            DrawConsoleContent();
+            ImGui.TextDisabled("No decision pending.");
+            ImGui.Spacing();
+            ImGui.TextDisabled("Prompts appear here on your turn.");
         }
-
         ImGui.End();
     }
 
@@ -809,14 +932,22 @@ public class RaylibRenderer
         ImGui.BeginChild("##consolescroll", new Vector2(0, -inputH), ImGuiChildFlags.None,
             ImGuiWindowFlags.HorizontalScrollbar);
 
-        List<LogEntry>? logMsgs  = _showLog ? _log!.Snapshot() : null;
+        // The engine log stream carries both normal and Debug-tagged lines; keep whichever categories are
+        // toggled on (Debug is a developer view, off by default).
+        List<LogEntry>? logMsgs = null;
+        if (_showLog || _showDebug)
+        {
+            logMsgs = _log!.Snapshot();
+            logMsgs.RemoveAll(e => e.IsDebug ? !_showDebug : !_showLog);
+        }
         List<LogEntry>? chatMsgs = (_showChat && _playerMessageUI != null) ? _playerMessageUI.ChatLog.Snapshot() : null;
         int ln = logMsgs?.Count ?? 0, cn = chatMsgs?.Count ?? 0;
 
         if (ln == 0 && cn == 0)
         {
-            ImGui.TextDisabled(!_showLog && !_showChat ? "Log and Chat hidden -- toggle one on above."
-                                                       : "No messages yet.");
+            ImGui.TextDisabled(!_showLog && !_showChat && !_showDebug
+                ? "Log, Debug and Chat hidden -- toggle one on above."
+                : "No messages yet.");
         }
         else
         {

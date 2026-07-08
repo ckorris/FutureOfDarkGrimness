@@ -125,28 +125,30 @@ public class GuiChooseRangedAttackResolver
             ImGuiWindowFlags.NoInputs | ImGuiWindowFlags.NoBackground);
         ImGui.End();
 
-        float dw = MathF.Min(screenW * 0.75f, 920f);
-        float dh = MathF.Min(screenH * 0.60f, 440f);
-        ImGui.SetNextWindowPos(new Vector2(screenW - dw - 12f, (screenH - dh) * 0.5f), ImGuiCond.FirstUseEver); // right-aligned (#105)
-        ImGui.SetNextWindowSize(new Vector2(dw, dh), ImGuiCond.Always);
+        // Docked into the right-column resolver panel. The narrow column can't fit three side-by-side
+        // sub-panels, so Weapon / Target / Details stack top-to-bottom, each an independently scrolling third.
+        ImGui.SetNextWindowPos(new Vector2(ResolverPanelLayout.X, ResolverPanelLayout.Y), ImGuiCond.Always);
+        ImGui.SetNextWindowSize(new Vector2(ResolverPanelLayout.W, ResolverPanelLayout.H), ImGuiCond.Always);
         ImGui.PushStyleColor(ImGuiCol.WindowBg, new Vector4(0.13f, 0.13f, 0.18f, 0.97f));
         ImGui.PushStyleVar(ImGuiStyleVar.WindowRounding, 6f);
         string attackerName = request.AttackingUnit.GetValue().Name;
         ImGui.Begin($"Shoot: {attackerName}##RangedDialog",
-            ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoScrollbar);
+            ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoCollapse |
+            ImGuiWindowFlags.NoBringToFrontOnFocus | ImGuiWindowFlags.NoScrollbar);
         ImGui.PopStyleColor();
         ImGui.PopStyleVar();
 
         float pad       = 8f;
         float rowH      = 36f;
         float footerH   = rowH + pad * 2;
-        float colsH     = ImGui.GetContentRegionAvail().Y - footerH;
-        float colW      = (ImGui.GetContentRegionAvail().X - pad * 2) / 3f;
+        float spacingY  = ImGui.GetStyle().ItemSpacing.Y;
+        // Three stacked sections share the vertical space above the footer (two gaps between them).
+        float sectionH  = (ImGui.GetContentRegionAvail().Y - footerH - spacingY * 2f) / 3f;
 
         (int wIdx, int tIdx) newHovered = (-1, -1);
 
-        // ── Column 1: Weapons ─────────────────────────────────────────────────
-        ImGui.BeginChild("##WeaponCol", new Vector2(colW, colsH), ImGuiChildFlags.Borders);
+        // ── Section 1: Weapons ────────────────────────────────────────────────
+        ImGui.BeginChild("##WeaponCol", new Vector2(0, sectionH), ImGuiChildFlags.Borders);
         ImGui.TextUnformatted("Weapon");
         ImGui.Separator();
         for (int wi = 0; wi < request.WeaponOptions.Count; wi++)
@@ -194,10 +196,8 @@ public class GuiChooseRangedAttackResolver
         }
         ImGui.EndChild();
 
-        ImGui.SameLine(0, pad);
-
-        // ── Column 2: Targets ─────────────────────────────────────────────────
-        ImGui.BeginChild("##TargetCol", new Vector2(colW, colsH), ImGuiChildFlags.Borders);
+        // ── Section 2: Targets ────────────────────────────────────────────────
+        ImGui.BeginChild("##TargetCol", new Vector2(0, sectionH), ImGuiChildFlags.Borders);
         ImGui.TextUnformatted("Target");
         ImGui.Separator();
         if (_selectedWeaponIdx >= 0)
@@ -270,10 +270,8 @@ public class GuiChooseRangedAttackResolver
         }
         ImGui.EndChild();
 
-        ImGui.SameLine(0, pad);
-
-        // ── Column 3: Details ─────────────────────────────────────────────────
-        ImGui.BeginChild("##DetailCol", new Vector2(colW, colsH), ImGuiChildFlags.Borders);
+        // ── Section 3: Details ────────────────────────────────────────────────
+        ImGui.BeginChild("##DetailCol", new Vector2(0, sectionH), ImGuiChildFlags.Borders);
         ImGui.TextUnformatted("Details");
         ImGui.Separator();
         if (_selectedWeaponIdx >= 0 && _selectedTargetTIdx >= 0)
@@ -330,16 +328,6 @@ public class GuiChooseRangedAttackResolver
         // ── Footer ────────────────────────────────────────────────────────────
         ImGui.SetCursorPosY(ImGui.GetCursorPosY() + pad);
 
-        // Back is only allowed before the first weapon has fired this shoot action — once you start
-        // shooting, you're committed to finishing the shoot stage.
-        if (_firesThisAction == 0)
-        {
-            ImGui.PushStyleColor(ImGuiCol.Button, new Vector4(0.25f, 0.25f, 0.30f, 1f));
-            if (ImGui.Button("Back##back")) Complete(tcs, new Cancelled<RangedAttackChoice>());
-            ImGui.PopStyleColor();
-            ImGui.SameLine();
-        }
-
         bool canFire = _selectedWeaponIdx >= 0 && _selectedTargetTIdx >= 0
                     && request.WeaponOptions[_selectedWeaponIdx]
                               .WeaponTargetStats[_selectedTargetTIdx]
@@ -347,17 +335,43 @@ public class GuiChooseRangedAttackResolver
                     && request.WeaponOptions[_selectedWeaponIdx]
                               .WeaponTargetStats[_selectedTargetTIdx]
                               .modelsThatCanShoot.Count > 0;
+
+        // Back is only offered before the first weapon has fired this shoot action -- once you start
+        // shooting, you're committed to finishing the shoot stage. De-emphasized (secondary to Fire).
+        float footW   = ImGui.GetContentRegionAvail().X;
+        float spacing = ImGui.GetStyle().ItemSpacing.X;
+        bool  showBack = _firesThisAction == 0;
+        if (showBack)
+        {
+            if (ResolverButtons.Deemphasized("Back", new Vector2(footW * 0.36f, 32f)))
+            {
+                Complete(tcs, new Cancelled<RangedAttackChoice>());
+                ImGui.End();
+                return;
+            }
+            ImGui.SameLine();
+        }
+
+        // Primary: Fire! -- red accent, larger; commits on click or Enter when a weapon+target is chosen.
+        float fireW = showBack ? footW * 0.64f - spacing : footW;
+        ImGui.PushStyleColor(ImGuiCol.Button,        new Vector4(0.65f, 0.20f, 0.20f, 1f));
+        ImGui.PushStyleColor(ImGuiCol.ButtonHovered, new Vector4(0.78f, 0.27f, 0.27f, 1f));
+        ImGui.PushStyleColor(ImGuiCol.ButtonActive,  new Vector4(0.55f, 0.16f, 0.16f, 1f));
         if (!canFire) ImGui.BeginDisabled(true);
-        ImGui.PushStyleColor(ImGuiCol.Button, new Vector4(0.65f, 0.20f, 0.20f, 1f));
-        if (ImGui.Button("Fire!##fire"))
+        bool fireClicked = ImGui.Button("Fire!  (Enter)##fire", new Vector2(fireW, 32f));
+        if (!canFire) ImGui.EndDisabled();
+        ImGui.PopStyleColor(3);
+        bool fireEnter = canFire && !ImGui.GetIO().WantTextInput
+                         && (ImGui.IsKeyPressed(ImGuiKey.Enter) || ImGui.IsKeyPressed(ImGuiKey.KeypadEnter));
+        if (fireClicked || fireEnter)
         {
             var wo = request.WeaponOptions[_selectedWeaponIdx];
             var ts = wo.WeaponTargetStats[_selectedTargetTIdx];
             _firesThisAction++;
             Complete(tcs, new Selected<RangedAttackChoice>(new RangedAttackChoice(wo.Weapon, ts.TargetUnit)));
+            ImGui.End();
+            return;
         }
-        ImGui.PopStyleColor();
-        if (!canFire) ImGui.EndDisabled();
 
         ImGui.End();
 

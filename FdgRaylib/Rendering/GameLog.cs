@@ -8,7 +8,7 @@ namespace FdgRaylib.Rendering;
 /// across ALL <see cref="GameLog"/> instances (engine log + chat), so entries from different logs can be
 /// merged into one column in true arrival order (the console's combined Log+Chat view).
 /// </summary>
-public readonly record struct LogEntry(string Message, TextColor Color, long Sequence);
+public readonly record struct LogEntry(string Message, TextColor Color, long Sequence, bool IsDebug = false);
 
 public class GameLog
 {
@@ -18,10 +18,10 @@ public class GameLog
     // Shared across every GameLog so a merged view of two logs sorts correctly by arrival.
     private static long _globalSequence;
 
-    public void Add(string message, TextColor color)
+    public void Add(string message, TextColor color, bool isDebug = false)
     {
         long seq = Interlocked.Increment(ref _globalSequence);
-        lock (_lock) _messages.Add(new LogEntry(message, color, seq));
+        lock (_lock) _messages.Add(new LogEntry(message, color, seq, isDebug));
     }
 
     public List<LogEntry> Snapshot()

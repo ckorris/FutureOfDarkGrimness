@@ -153,10 +153,7 @@ public class GuiAircraftAdvanceResolver
 
     private void DrawInfoPanel(int screenW, AircraftAdvanceRequest request, bool leaves)
     {
-        const float panelW = 300f;
-        ImGui.SetNextWindowPos(new Vector2(screenW - panelW - 12f, 12f), ImGuiCond.FirstUseEver);
-        ImGui.SetNextWindowSize(new Vector2(panelW, 0f), ImGuiCond.Always);
-        ImGui.Begin("Aircraft Move", ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoCollapse);
+        ResolverPanelLayout.BeginDocked("Aircraft Move##aircraftpanel");
 
         ImGui.TextUnformatted($"{request.UnitDataBinding.GetValue().Name} flies straight ahead.");
         ImGui.TextUnformatted($"Distance: {_currentDistance:0.0}\"  ({request.MinDistanceInches:0.#}-{request.MaxDistanceInches:0.#}\")");

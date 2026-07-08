@@ -389,14 +389,13 @@ public class GuiPlaceObjectsResolver<T>
         int total = request.ModelsToPlace.Count;
         bool group = _formationMode.IsGroup;
         bool dropping = group && _placed.Count == 0; // showing the whole-unit ghost
-        float panelW = MathF.Min(screenW * 0.5f, 580f);
-        float panelH = 212f;
-        ImGui.SetNextWindowPos(new Vector2(screenW - panelW - 12f, 16f), ImGuiCond.Always); // right-aligned (#105)
-        ImGui.SetNextWindowSize(new Vector2(panelW, panelH), ImGuiCond.Always);
+        float panelW = ResolverPanelLayout.W;   // dock into the right-column resolver panel
+        ImGui.SetNextWindowPos(new Vector2(ResolverPanelLayout.X, ResolverPanelLayout.Y), ImGuiCond.Always);
+        ImGui.SetNextWindowSize(new Vector2(ResolverPanelLayout.W, ResolverPanelLayout.H), ImGuiCond.Always);
         ImGui.PushStyleColor(ImGuiCol.WindowBg, new Vector4(0.10f, 0.10f, 0.15f, 0.92f));
         ImGui.Begin("##PlacePanel",
             ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoCollapse |
-            ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoScrollbar);
+            ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoBringToFrontOnFocus);
         ImGui.PopStyleColor();
 
         ImGui.TextUnformatted($"Deploy: {_placed.Count} / {total} models placed");
@@ -442,11 +441,22 @@ public class GuiPlaceObjectsResolver<T>
         }
 
         ImGui.Spacing();
-        float btnW = (panelW - ImGui.GetStyle().ItemSpacing.X * 2 - ImGui.GetStyle().WindowPadding.X * 2) / 3f;
         float fullW = panelW - ImGui.GetStyle().WindowPadding.X * 2;
+        float halfW = (fullW - ImGui.GetStyle().ItemSpacing.X) / 2f;
 
+        // Primary: Done -- larger, accented, commits on click or Enter (gated on all models placed).
+        bool canDone = _placed.Count == total && !_dragIndex.HasValue
+            && (!request.MustTouchTableEdge || PlacedTouchesEdge(request));
+        if (ResolverButtons.Primary("Done", new Vector2(fullW, 32f), enabled: canDone))
+        {
+            Complete(tcs, new List<PlacedObjectEntry<T>>(_placed));
+            ImGui.End();
+            return;
+        }
+
+        // Secondary row: Undo + Auto-place.
         ImGui.BeginDisabled(_placed.Count == 0);
-        if (ImGui.Button("Undo", new Vector2(btnW, 28f)))
+        if (ImGui.Button("Undo", new Vector2(halfW, 28f)))
         {
             _placed.RemoveAt(_placed.Count - 1);
             _dragIndex = null;
@@ -456,7 +466,7 @@ public class GuiPlaceObjectsResolver<T>
 
         ImGui.SameLine();
         ImGui.BeginDisabled(_placed.Count >= total);
-        if (ImGui.Button("Auto-place", new Vector2(btnW, 28f)))
+        if (ImGui.Button("Auto-place", new Vector2(halfW, 28f)))
         {
             if (AutoPlaceRemaining(request)) _errorMessage = null;
             else
@@ -467,27 +477,16 @@ public class GuiPlaceObjectsResolver<T>
         }
         ImGui.EndDisabled();
 
-        ImGui.SameLine();
+        // Destructive: Restart -- set apart below a separator, red-tinted.
+        ImGui.Separator();
         ImGui.BeginDisabled(_placed.Count == 0);
-        if (ImGui.Button("Restart", new Vector2(btnW, 28f)))
+        if (ResolverButtons.Destructive("Restart", new Vector2(fullW, 26f)))
         {
             _placed.Clear();
             _dragIndex = null;
             _errorMessage = null;
         }
         ImGui.EndDisabled();
-
-        bool canDone = _placed.Count == total && !_dragIndex.HasValue
-            && (!request.MustTouchTableEdge || PlacedTouchesEdge(request));
-        ImGui.BeginDisabled(!canDone);
-        bool donePressed = ImGui.Button("Done", new Vector2(fullW, 28f));
-        ImGui.EndDisabled();
-        if (canDone && donePressed)
-        {
-            Complete(tcs, new List<PlacedObjectEntry<T>>(_placed));
-            ImGui.End();
-            return;
-        }
 
         ImGui.End();
     }

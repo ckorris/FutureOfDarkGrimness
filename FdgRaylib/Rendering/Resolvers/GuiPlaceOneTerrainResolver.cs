@@ -178,14 +178,8 @@ public class GuiPlaceOneTerrainResolver
     private void DrawInfoPanel(int screenW, int screenH, PlaceOneTerrainRequest request,
         TaskCompletionSource<TerrainPlacementResult> tcs, int? selected, Float2? pending, float rotationDegrees)
     {
-        const float PanelWidth = 280f;
-        ImGui.SetNextWindowPos(new Vector2(screenW - PanelWidth - 12f, 80f), ImGuiCond.FirstUseEver);
-        ImGui.SetNextWindowSize(new Vector2(PanelWidth, 0f), ImGuiCond.FirstUseEver);
-        ImGui.SetNextWindowBgAlpha(0.92f);
-
-        ImGui.Begin("Place Terrain",
-            ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoCollapse |
-            ImGuiWindowFlags.AlwaysAutoResize | ImGuiWindowFlags.NoSavedSettings);
+        float PanelWidth = ResolverPanelLayout.ContentWidth;   // dock into the right-column resolver panel
+        ResolverPanelLayout.BeginDocked("Place Terrain##placeterrainpanel");
 
         int remaining = request.TotalPieces - request.PiecesPlaced;
         ImGui.TextUnformatted($"Pieces remaining: {remaining}");
@@ -199,12 +193,10 @@ public class GuiPlaceOneTerrainResolver
             ImGui.TextDisabled("Press R to rotate 45°.");
             ImGui.Spacing();
 
-            float btnW = 120f;
-            bool confirmPressed = ImGui.Button("Confirm", new Vector2(btnW, 28f))
-                || ImGui.IsKeyPressed(ImGuiKey.Enter)
-                || ImGui.IsKeyPressed(ImGuiKey.KeypadEnter);
+            // Primary: Confirm (accent + Enter). Cancel is de-emphasized.
+            bool confirmPressed = ResolverButtons.Primary("Confirm", new Vector2(190f, 30f));
             ImGui.SameLine();
-            bool cancelPressed = ImGui.Button("Cancel", new Vector2(btnW, 28f));
+            bool cancelPressed = ResolverButtons.Deemphasized("Cancel", new Vector2(120f, 30f));
 
             if (confirmPressed)
                 Complete(tcs, new TerrainPlacementResult(selected.Value, pending.Value, rotationDegrees));

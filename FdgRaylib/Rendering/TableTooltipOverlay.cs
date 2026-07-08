@@ -97,51 +97,69 @@ public class TableTooltipOverlay
         // only the name text is gated on _showLabels.
         DrawUnitOverlays();
 
-        // Toolbar buttons — anchored top-left, stacked vertically.
-        ImGui.SetNextWindowPos(new Vector2(8, 8), ImGuiCond.Always);
+        // Toolbar — anchored bottom-left, two items tall: column [Labels/Grid], then [Tokens/Save], then a
+        // column of hotkey hints. Each column is a BeginGroup so they sit side by side. Pivot (0,1) pins the
+        // auto-sized window by its bottom-left corner.
+        ImGui.SetNextWindowPos(new Vector2(8, screenH - 8), ImGuiCond.Always, new Vector2(0f, 1f));
         ImGui.SetNextWindowBgAlpha(0.70f);
         ImGui.Begin("##tabletools",
             ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoCollapse |
             ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.AlwaysAutoResize |
             ImGuiWindowFlags.NoFocusOnAppearing | ImGuiWindowFlags.NoNav);
 
-        string btnLabel = _showLabels ? "Labels: ON" : "Labels: OFF";
-        if (ImGui.Button(btnLabel))
+        // Uniform button width so the columns don't jitter as the toggle labels change length.
+        float pad  = ImGui.GetStyle().FramePadding.X * 2f;
+        float btnW = MathF.Max(
+            MathF.Max(ImGui.CalcTextSize("Labels: OFF").X, ImGui.CalcTextSize("Grid: OFF").X),
+            MathF.Max(ImGui.CalcTextSize("Tokens: ALL").X, ImGui.CalcTextSize("Save Game").X)) + pad;
+        var btnSize = new Vector2(btnW, 0f);
+
+        // Column 1: Labels (top) / Grid (bottom)
+        ImGui.BeginGroup();
+        if (ImGui.Button(_showLabels ? "Labels: ON" : "Labels: OFF", btnSize))
             _showLabels = !_showLabels;
-
-        if (ImGui.Button(RaylibRenderer.ShowGrid ? "Grid: ON" : "Grid: OFF"))
+        if (ImGui.Button(RaylibRenderer.ShowGrid ? "Grid: ON" : "Grid: OFF", btnSize))
             RaylibRenderer.ShowGrid = !RaylibRenderer.ShowGrid;
+        ImGui.EndGroup();
 
-        if (ImGui.Button(_showAllTokens ? "Tokens: ALL" : "Tokens: std"))
+        // Column 2: Tokens (top) / Save (bottom, host only)
+        ImGui.SameLine();
+        ImGui.BeginGroup();
+        if (ImGui.Button(_showAllTokens ? "Tokens: ALL" : "Tokens: std", btnSize))
             _showAllTokens = !_showAllTokens;
+        if (_saveGameToJson != null && ImGui.Button("Save Game", btnSize))
+            HandleSaveGame();
+        ImGui.EndGroup();
 
+        // Column 3: tactical overlay toggles
+        ImGui.SameLine();
+        ImGui.BeginGroup();
         // Threat frontiers inspection toggle (also F). Auto-shown during a move job regardless.
-        if (_tactical != null && ImGui.Button(_tactical.ThreatToggledOn ? "Threat: ON" : "Threat: OFF"))
+        if (_tactical != null && ImGui.Button(_tactical.ThreatToggledOn ? "Threat: ON" : "Threat: OFF", btnSize))
             _tactical.ToggleThreat();
-
         // Opportunity-field renderer: GPU rasterizer (default) vs the CPU reference compositor. One
         // click back to the known-good CPU path if the GPU picture ever looks wrong.
-        if (_tactical != null && ImGui.Button(TacticalOverlay.TacticalOverlayConfig.UseGpuField ? "Field: GPU" : "Field: CPU"))
+        if (_tactical != null && ImGui.Button(TacticalOverlay.TacticalOverlayConfig.UseGpuField ? "Field: GPU" : "Field: CPU", btnSize))
         {
             TacticalOverlay.TacticalOverlayConfig.UseGpuField = !TacticalOverlay.TacticalOverlayConfig.UseGpuField;
             _tactical.InvalidateFieldCache();
         }
-
-        // Field anchor: Target = "where can I stand to shoot the pin" (classic), Self = "what can I
-        // hit from my pending position", live per frame (H4, feel-check pending).
-        if (_tactical != null && ImGui.Button(TacticalOverlay.TacticalOverlayConfig.GhostAnchoredField ? "Anchor: Self" : "Anchor: Target"))
+        // Field anchor: Target = "the selected unit's gun ranges" (classic), Self = "my reach from my
+        // pending position", live per frame (H4).
+        if (_tactical != null && ImGui.Button(TacticalOverlay.TacticalOverlayConfig.GhostAnchoredField ? "Anchor: Self" : "Anchor: Target", btnSize))
         {
             TacticalOverlay.TacticalOverlayConfig.GhostAnchoredField = !TacticalOverlay.TacticalOverlayConfig.GhostAnchoredField;
             _tactical.InvalidateFieldCache();
         }
+        ImGui.EndGroup();
 
-        if (_saveGameToJson != null)
-        {
-            if (ImGui.Button("Save Game"))
-                HandleSaveGame();
-        }
-
+        // Column 4: hotkey hints
+        ImGui.SameLine();
+        ImGui.BeginGroup();
         ImGui.TextDisabled("Ctrl+drag: measure");
+        ImGui.TextDisabled("Ctrl+wheel: zoom");
+        ImGui.TextDisabled("Middle-drag: pan");
+        ImGui.EndGroup();
 
         ImGui.End();
     }

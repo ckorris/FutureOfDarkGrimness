@@ -43,15 +43,15 @@ public class GuiUnitSelectionResolver : GuiSelectionResolver<UnitData>, IGuiCanv
     // and wounds dialog give. Unit-wide special rules are omitted here (they live in the hover tooltip);
     // opt.Name may already carry a reserve suffix like "(Ambush)", which is kept as the heading.
     protected override (string Heading, IReadOnlyList<string> Details) OptionContent(
-        SelectionRequest<UnitData>.ValidOption opt)
+        DataBinding<UnitData> option, string name)
     {
-        UnitData unit = opt.Option.GetValue();
+        UnitData unit = option.GetValue();
         int liveModels = unit.Models.Count(m => m.GetIsAlive());
         var weapons = unit.AllWeapons()
             .DistinctBy(w => w.Name)
             .Select(w => (w.Name, w.RangeInches))
             .ToList();
-        return UnitOptionLabel.Build(opt.Name, liveModels, unit.Quality, unit.Defense, weapons);
+        return UnitOptionLabel.Build(name, liveModels, unit.Quality, unit.Defense, weapons);
     }
 
     protected override void OnValidOptionHovered(SelectionRequest<UnitData>.ValidOption opt) =>

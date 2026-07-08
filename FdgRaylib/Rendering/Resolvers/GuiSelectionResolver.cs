@@ -49,8 +49,7 @@ public class GuiSelectionResolver<T> : IStageResolver<SelectionRequest<T>, DataB
 
         float pad     = 16f;
         float instrH  = 48f;
-        float rowH    = 32f;   // single-line rows (invalid options, Back)
-        float backH   = request.AllowCancel ? rowH + pad : 0f;
+        float rowH    = 32f;   // single-line rows (Back button)
 
         // Text metrics — a bright heading in the main font size, detail lines smaller + dimmer, matching the
         // wounds dialog. Detail lines wrap so long weapon lists stack instead of clipping off the edge.
@@ -62,35 +61,41 @@ public class GuiSelectionResolver<T> : IStageResolver<SelectionRequest<T>, DataB
         const float btnPadY  = 6f;
         const float textPadX = 10f;
 
-        float dw = MathF.Min(screenW * 0.45f, 560f);
+        float dw = ResolverPanelLayout.W;   // dock into the right-column resolver panel (#GreenUIPolish)
         float btnW = dw - pad * 2f;
         float wrapW = btnW - textPadX * 2f;
 
-        // Build heading + wrapped detail lines per valid option, sizing each row to its content.
-        var headings   = new string[validCount];
-        var detailWrap = new List<string>[validCount];
-        var rowHeights = new float[validCount];
-        float validH = 0f;
-        for (int i = 0; i < validCount; i++)
+        // Build heading + wrapped detail lines for EVERY option (valid first, then invalid), sizing each row
+        // to its content. Invalid options keep their full stats and just append the reason to the heading,
+        // so a grayed-out unit reads the same as a pickable one -- only its heading and disabled state differ.
+        int total = validCount + invalidCount;
+        var headings   = new string[total];
+        var detailWrap = new List<string>[total];
+        var rowHeights = new float[total];
+        for (int i = 0; i < total; i++)
         {
-            var (heading, details) = OptionContent(request.ValidOptions[i]);
-            headings[i]   = heading;
+            bool isValid = i < validCount;
+            DataBinding<T> option = isValid ? request.ValidOptions[i].Option
+                                            : request.InvalidOptions[i - validCount].Option;
+            string name = isValid ? request.ValidOptions[i].Name
+                                  : request.InvalidOptions[i - validCount].Name;
+            var (heading, details) = OptionContent(option, name);
+            headings[i]   = isValid ? heading : $"{heading}  ({request.InvalidOptions[i - validCount].Reason})";
             detailWrap[i] = new List<string>();
             foreach (string d in details)
                 detailWrap[i].AddRange(WrapDetail(d, smallScale, wrapW));
             rowHeights[i] = btnPadY * 2f + mainLineH + detailWrap[i].Count * smallLineH;
-            validH += rowHeights[i] + ImGui.GetStyle().ItemSpacing.Y;
         }
 
-        float dh = MathF.Min(instrH + pad + validH + invalidCount * rowH + backH + pad * 2, screenH * 0.80f);
-        float dx = screenW - dw - 12f;   // right-aligned in the open right-side space (#105)
-        float dy = (screenH - dh) * 0.5f;
+        float dh = ResolverPanelLayout.H;   // fill the panel; content taller than this scrolls
+        float dx = ResolverPanelLayout.X;
+        float dy = ResolverPanelLayout.Y;
 
         ImGui.SetCursorPos(new Vector2(dx, dy));
         ImGui.PushStyleColor(ImGuiCol.ChildBg, new Vector4(0.15f, 0.15f, 0.20f, 0.97f));
         ImGui.PushStyleVar(ImGuiStyleVar.ChildRounding, 6f);
         ImGui.BeginChild("##SelectionDialog", new Vector2(dw, dh), ImGuiChildFlags.Borders,
-            ImGuiWindowFlags.NoScrollbar);
+            ImGuiWindowFlags.None);
         ImGui.PopStyleColor();
         ImGui.PopStyleVar();
 
@@ -100,52 +105,41 @@ public class GuiSelectionResolver<T> : IStageResolver<SelectionRequest<T>, DataB
         ImGui.TextUnformatted(request.Instructions);
         ImGui.PopTextWrapPos();
 
-        // Valid options — a real button (for click + hover feedback) with a bright heading and smaller,
-        // dimmer wrapped detail lines drawn over it (the wounds-dialog treatment).
+        // Each option is a real button (for click + hover feedback on valid ones) with a bright heading and
+        // smaller, dimmer wrapped detail lines drawn over it (the wounds-dialog treatment). Invalid options
+        // render the same way but disabled and dimmed, with the reason baked into their heading above.
         var dl   = ImGui.GetWindowDrawList();
         var font = ImGui.GetFont();
-        uint headCol = ImGui.GetColorU32(ImGuiCol.Text);
+        uint headCol     = ImGui.GetColorU32(ImGuiCol.Text);
+        uint headDimCol  = ImGui.ColorConvertFloat4ToU32(new Vector4(0.55f, 0.55f, 0.58f, 1f));
+        uint detailDimCol = ImGui.ColorConvertFloat4ToU32(new Vector4(0.48f, 0.50f, 0.55f, 1f));
         float listY = pad + instrH;
         float y = listY;
-        for (int i = 0; i < validCount; i++)
+        for (int i = 0; i < total; i++)
         {
-            var opt = request.ValidOptions[i];
+            bool isValid = i < validCount;
             ImGui.SetCursorPos(new Vector2(pad, y));
             Vector2 origin = ImGui.GetCursorScreenPos();
 
+            if (!isValid) ImGui.BeginDisabled(true);
             bool clicked = ImGui.Button($"##opt{i}", new Vector2(btnW, rowHeights[i]));
-            bool hovered = ImGui.IsItemHovered();
+            bool hovered = isValid && ImGui.IsItemHovered();
+            if (!isValid) ImGui.EndDisabled();
 
             float tx = origin.X + textPadX;
             float ty = origin.Y + btnPadY;
-            dl.AddText(new Vector2(tx, ty), headCol, headings[i]);
+            dl.AddText(new Vector2(tx, ty), isValid ? headCol : headDimCol, headings[i]);
             float wy = ty + mainLineH;
             foreach (string line in detailWrap[i])
             {
-                dl.AddText(font, smallSize, new Vector2(tx + 2f, wy), DetailCol, line);
+                dl.AddText(font, smallSize, new Vector2(tx + 2f, wy), isValid ? DetailCol : detailDimCol, line);
                 wy += smallLineH;
             }
 
-            if (hovered) OnValidOptionHovered(opt);
-            if (clicked) Complete(tcs, opt.Option);
+            if (isValid && hovered) OnValidOptionHovered(request.ValidOptions[i]);
+            if (isValid && clicked) Complete(tcs, request.ValidOptions[i].Option);
 
             y += rowHeights[i] + ImGui.GetStyle().ItemSpacing.Y;
-        }
-
-        // Invalid options (grayed out, single line)
-        if (invalidCount > 0)
-        {
-            ImGui.PushStyleColor(ImGuiCol.Text, new Vector4(0.5f, 0.5f, 0.5f, 1f));
-            for (int i = 0; i < invalidCount; i++)
-            {
-                var opt = request.InvalidOptions[i];
-                ImGui.SetCursorPos(new Vector2(pad, y));
-                ImGui.BeginDisabled(true);
-                ImGui.Button($"{opt.Name} ({opt.Reason})##{validCount + i}", new Vector2(btnW, rowH - 4f));
-                ImGui.EndDisabled();
-                y += rowH;
-            }
-            ImGui.PopStyleColor();
         }
 
         // Back button — only for cancellable selections. Mandatory choices (which unit to activate/deploy)
@@ -163,11 +157,12 @@ public class GuiSelectionResolver<T> : IStageResolver<SelectionRequest<T>, DataB
         ImGui.End();
     }
 
-    /// <summary>A valid option's dialog content: a bright heading plus zero or more smaller, dimmer detail
-    /// lines (stats, weapons) that wrap. Default is just the option name. Override to enrich (e.g. unit/model
-    /// stats). Game-facing: ASCII only (see CLAUDE.md).</summary>
-    protected virtual (string Heading, IReadOnlyList<string> Details) OptionContent(SelectionRequest<T>.ValidOption opt)
-        => (opt.Name, System.Array.Empty<string>());
+    /// <summary>An option's dialog content: a bright heading plus zero or more smaller, dimmer detail lines
+    /// (stats, weapons) that wrap. Default is just the option name. Override to enrich (e.g. unit/model stats).
+    /// Called for both valid and invalid options (invalid ones append their reason to the heading but keep the
+    /// same stats), so it takes the data + name rather than a ValidOption. Game-facing: ASCII only (CLAUDE.md).</summary>
+    protected virtual (string Heading, IReadOnlyList<string> Details) OptionContent(DataBinding<T> option, string name)
+        => (name, System.Array.Empty<string>());
 
     /// <summary>Called while a valid option's dialog button is hovered — lets subclasses highlight the
     /// corresponding object on the table canvas.</summary>
