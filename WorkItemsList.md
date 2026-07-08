@@ -83,7 +83,6 @@ From `SpecialRulesAudit.md` (15 fixes already landed; plan detail, file paths, a
 From `Audit-2026-07-06-New-Subsystems.md` (13 smaller findings were fixed in that pass; its §8 is the full bug log).
 
 - [ ] 184 — Counter strike sequencing: engine's whole-unit role swap vs RAW per-weapon interleave (counter weapons first, charger, then the rest); exact for homogeneous units, over-grants for mixed/hero-joined ones. Deferred by design from #183. [Notes](WorkItems/184-counter-strike-sequencing.md)
-- [~] 169 — Transport Rout occupant spill: Option B (spillout at the `UnitDestructionNotifier` choke point) signed off + implemented 2026-07-08 — fixes Rout plus the latent impact/spell/strafing/overwatch gaps; awaiting GUI hand-verify. ([WorkItems/169](WorkItems/169-transport-rout-spillout.md))
 - [ ] 170 — Port `CohesiveFormation.PackGrid` per-row sizing into `AiPlaceObjectsResolver`: mixed-base units deploy with small models stranded out of cohesion (the #159 bug's unfixed deploy sibling); add the missing mixed-base deploy test.
 - [ ] 171 — Army Forge: enforce `UpgradeSection.MinPicks` (importer sets it for OPR "exactly" selects; validator errors on under-pick). Dormant today. Relates #156.
 - [ ] 172 — Army Forge: combined-unit asymmetric rule values (`Tough(3)` + `Tough(6)`) both survive the merge and only the first is read — needs a ruling (max / warn / forbid). Relates #156/#107.
@@ -104,7 +103,6 @@ From `Audit-2026-07-06-New-Subsystems.md` (13 smaller findings were fixed in tha
 Implemented, merged, suite green — held open only until confirmed by hand in the running app.
 Tick and move to the archive once verified. The detail files carry the full ledgers.
 
-- [~] GUI `--scenario` direct launch (facet of #167; headless form verified end-to-end, GUI shares the lobby's wiring via `GameGuiWiring` but hasn't been run by hand). Verify: `dotnet run --project FdgRaylib/FdgRaylib.csproj -- --scenario Scenarios/example-shootout.json` — straight into the game, slot 0 playable, AI opponent acts, save hook works. ([WorkItems/167](WorkItems/167-human-testing-tools.md))
 - [~] 003 — Force-org validation warnings. Verify: build an over-points / 3+ hero / 4+ same-unit army — amber warnings appear; save + launch never blocked. ([WorkItems/003](WorkItems/003-force-org-validation.md))
 - [~] 108 — AI deploy coherent block packing. Verify: AI deploys tight square-ish grids, no stranded or scattered models. ([WorkItems/108](WorkItems/108-ai-deploy-cohesion.md))
 - [~] 159 — `DefinePathStage` cohesion crash (four root causes fixed; 0/24 repro, was 5/20). Verify: melee-heavy games (HEF/AH armies) — no `ConsolidateStage` crash, no stacked models. ([WorkItems/159](WorkItems/159-definepath-cohesion-crash.md))

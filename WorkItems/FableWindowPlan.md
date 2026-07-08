@@ -15,12 +15,10 @@ executed during the window; this is the handoff state for any session, any model
 
 ## Remaining, in priority order (fine on any model)
 
-1. **#169 Transport Rout occupant spill** - HIGH. Still needs the design-fork write-up (extract the
-   placement flow for a second stage vs. a destruction choke point; preserve the deliberate
-   no-auto-sweep) and **Chris's sign-off BEFORE building** (repo convention). Audit
-   `Audit-2026-07-06-New-Subsystems.md` section 8.18; relates #035/#096/#165.
-2. **GUI `--scenario` hand-verify** - human-only; the command is in WorkItemsList.md's Awaiting
-   verification section.
+1. ~~**#169 Transport Rout occupant spill**~~ DONE 2026-07-08 (Option B: spillout at the
+   `UnitDestructionNotifier` choke point; signed off, GUI hand-verified, archived).
+2. ~~**GUI `--scenario` hand-verify**~~ DONE 2026-07-08 (segfaulted on first run - GL resources
+   pre-window; fixed via `RaylibRenderer.OnWindowReady`, then verified in-window).
 3. **#175 Fear/Fearless rulebook check** - rules research, not engineering.
 4. **#065 networking loopback tests** (zero TCP transport tests exist) and **#166 residuals**
    (RuleInteractionTests, SaveLoadRoundTrip helper).

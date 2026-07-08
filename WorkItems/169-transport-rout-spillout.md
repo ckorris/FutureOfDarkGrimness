@@ -1,6 +1,6 @@
 # 169 — Transport Rout occupant spill
 
-**Status**: in-progress (design phase — fork write-up + sign-off required BEFORE building)
+**Status**: done (GUI hand-verified 2026-07-08)
 **Related**: #035 (Transport core — slice E built the spillout), #096 (transport visuals), #165 (dangerous-terrain deaths miss `UnitDestructionNotifier` — sibling destruction-path gap), #184 (counter strike sequencing). Audit: `Audit-2026-07-06-New-Subsystems.md` §8 item 18.
 
 ## Goal
@@ -28,4 +28,17 @@ A Transport that dies by Routing (melee-morale loss at half strength) spills its
 - **Option B — single choke point at `UnitDestructionNotifier` (signed off by Chris, 2026-07-08).** Extract `SpilloutOccupantsStage.SpillOccupants`/`PresentSpilloutRolls` into a helper needing only `IGameContext` + the transport; invoke it inside `NotifyUnitDestroyed` — before the token sweep and before the `killer == null` early-return — so all notifier-reached destruction paths (shooting, melee swing, Rout, impact hits, spells, strafing, overwatch) spill in one seam. The two hard-wired `SpilloutOccupantsStage` insertions (`FireStage`, `SwingMeleeWeaponStage`) become redundant and are removed. `NotifyUnitDestroyed` goes async (2 call sites, both already async contexts). **Rejected:** A (Rout-site patch — fixes 1 of 5 gaps, adds a third parallel insertion site); C (fold #165 in — bundles #165's unresolved kill-attribution ruling; #165 stays separate and becomes nearly free after B since its fix is "route MovementExecutor deaths through the notifier"). Preserved from #035: no `EmbarkedIn` auto-sweep, interactive placement, spillout-before-removal semantics. Sign-off covers the engine-submodule modification.
 
 ## Outcome
-(open)
+**Done 2026-07-08 (Option B, signed off).** Transport destruction spillout moved from two hard-wired
+combat-pipeline stages to the `UnitDestructionNotifier` choke point: `SpilloutOccupantsStage`'s flow
+extracted to `SpilloutExecutor` (needs only `IGameContext` + the dead unit) and invoked in
+`NotifyUnitDestroyed` before the token sweep and the killer-null early-return, so every notifying
+death path spills — fixing the filed Rout bug plus four latent gaps the code map uncovered (impact
+hits, spell damage, strafing, overwatch). #035's decisions preserved: no `EmbarkedIn` auto-sweep,
+interactive 6" placement, spillout-before-removal. Tests: `TransportSpilloutTests` retargeted +
+`RoutedTransport_SpillsOutOccupants` (real Rout path) + `NotifyUnitDestroyed_WithoutKiller_StillSpills`;
+suite 1317/0. **GUI hand-verified by Chris 2026-07-08** via the seed-pinned `Scenarios/rout-spillout.json`
+(embark -> AI charge -> morale fail -> Rout -> wreck banner -> interactive placement -> Shaken +
+dangerous-terrain dice) — which also exercised #035's mid-game embark and, en route, surfaced and
+fixed the #167 GUI `--scenario` launch segfault (`1ec69c9`). Deferred/remaining elsewhere: dangerous
+terrain deaths still bypass the notifier (#165, now nearly free); rout kill-attribution stays the
+documented open rules question (#165/#175 territory). Engine `9395afa`, scenario `8945ec0`.
