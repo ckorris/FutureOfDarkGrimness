@@ -88,10 +88,12 @@ public class TableTooltipOverlay
         else if (hoveredTerrain != null)
             DrawTerrainTooltip(hoveredTerrain);
 
-        // Range / threat rings for the hovered unit -- a passive hover hint (no input capture), so it
-        // coexists with any active resolver rather than fighting it for the mouse.
-        if (hoveredUnit != null)
-            DrawRangeRings(hoveredUnit, hoveredModel);
+        // Range / threat rings for the hovered unit (cyan shoot rings) were REPLACED by the #162
+        // team-colored opportunity field, which shows the same weapon-range info in the selected unit's
+        // team color while planning a move. Disabled to avoid two overlapping range visualizations.
+        // Re-enable this call to bring the passive hover rings back.
+        // if (hoveredUnit != null)
+        //     DrawRangeRings(hoveredUnit, hoveredModel);
 
         // Unit name labels + token chips. Chips show regardless of the label toggle (status at a glance);
         // only the name text is gated on _showLabels.
@@ -131,10 +133,11 @@ public class TableTooltipOverlay
             HandleSaveGame();
         ImGui.EndGroup();
 
-        // Column 3: tactical overlay toggles
+        // Column 3: tactical overlay toggles (Threat / Field) -- kept to 2 rows so the toolbar stays 2 tall
         ImGui.SameLine();
         ImGui.BeginGroup();
-        // Threat frontiers inspection toggle (also F). Auto-shown during a move job regardless.
+        // Threat frontiers inspection toggle (also F). No longer auto-shown during a move (the field
+        // replaced that); this is the only way to bring them up now.
         if (_tactical != null && ImGui.Button(_tactical.ThreatToggledOn ? "Threat: ON" : "Threat: OFF", btnSize))
             _tactical.ToggleThreat();
         // Opportunity-field renderer: GPU rasterizer (default) vs the CPU reference compositor. One
@@ -144,6 +147,11 @@ public class TableTooltipOverlay
             TacticalOverlay.TacticalOverlayConfig.UseGpuField = !TacticalOverlay.TacticalOverlayConfig.UseGpuField;
             _tactical.InvalidateFieldCache();
         }
+        ImGui.EndGroup();
+
+        // Column 4: Anchor (its own short column so Column 3 stays 2 rows)
+        ImGui.SameLine();
+        ImGui.BeginGroup();
         // Field anchor: Target = "the selected unit's gun ranges" (classic), Self = "my reach from my
         // pending position", live per frame (H4).
         if (_tactical != null && ImGui.Button(TacticalOverlay.TacticalOverlayConfig.GhostAnchoredField ? "Anchor: Self" : "Anchor: Target", btnSize))
@@ -153,7 +161,7 @@ public class TableTooltipOverlay
         }
         ImGui.EndGroup();
 
-        // Column 4: hotkey hints
+        // Column 5: hotkey hints
         ImGui.SameLine();
         ImGui.BeginGroup();
         ImGui.TextDisabled("Ctrl+drag: measure");

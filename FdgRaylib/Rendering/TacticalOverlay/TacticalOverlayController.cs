@@ -401,8 +401,12 @@ public class TacticalOverlayController
 
         if (moveJobActive || _threatToggledOn)
         {
-            RebuildThreatIfNeeded();
-            DrawThreatPolylines();
+            RebuildThreatIfNeeded();   // kept for the fidelity sampler + threat snap
+            // Auto-showing the enemy threat frontiers during a move was REPLACED by the team-colored
+            // opportunity field (the selected enemy's own weapon ranges read directly off the field). Only
+            // draw the frontiers now on an explicit F / "Threat" toggle, so they don't clutter the field.
+            if (_threatToggledOn)
+                DrawThreatPolylines();
         }
 
         // The focused field's band rings + secondary-pin contours ride with the field (move job only).
@@ -521,7 +525,10 @@ public class TacticalOverlayController
         {
             IUnit movingUnit = req.UnitDataBinding.GetValue();
             DrawPips(req, movingUnit);
-            DrawGhostThreatTint(movingUnit);
+            // DrawGhostThreatTint (red "this ghost is inside enemy threat" ring) was REPLACED by the
+            // team-colored opportunity field: a ghost sitting inside the enemy's field reads the danger
+            // directly. Re-enable this call if a discrete per-ghost danger marker is wanted again.
+            // DrawGhostThreatTint(movingUnit);
             DrawDistanceReadout(req, movingUnit);
         }
 

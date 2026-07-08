@@ -160,7 +160,8 @@ public class RaylibRenderer
         _playerMessageUI    = playerMessageUI;
         _tooltipOverlay.Attach(tableState, colorForPlayer, saveGameToJson);
         _measurementOverlay.Attach(tableState);
-        _tacticalOverlay.Attach(tableState, msg => _log?.Add(msg, new TextColor(255, 180, 90, 255)),
+        // [overlay] messages are developer detail (rebuild-budget warnings) -> the Debug log category.
+        _tacticalOverlay.Attach(tableState, msg => _log?.Add(msg, new TextColor(255, 180, 90, 255), isDebug: true),
             pid => { Color c = colorForPlayer(pid); return (c.R, c.G, c.B); });
         _tacticalOverlay.AttachMovementResolver(resolverOverlay?.MovementResolver);
         _tooltipOverlay.AttachTacticalOverlay(_tacticalOverlay);
