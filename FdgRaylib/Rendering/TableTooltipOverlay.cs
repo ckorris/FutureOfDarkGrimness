@@ -149,12 +149,14 @@ public class TableTooltipOverlay
         }
         ImGui.EndGroup();
 
-        // Column 4: Anchor (its own short column so Column 3 stays 2 rows)
+        // Column 4: Anchor (its own short column so Column 3 stays 2 rows). Wider button -- "Anchor: Target"
+        // is longer than the other labels and would truncate at the shared btnSize width.
+        var anchorSize = new Vector2(ImGui.CalcTextSize("Anchor: Target").X + pad, 0f);
         ImGui.SameLine();
         ImGui.BeginGroup();
         // Field anchor: Target = "the selected unit's gun ranges" (classic), Self = "my reach from my
         // pending position", live per frame (H4).
-        if (_tactical != null && ImGui.Button(TacticalOverlay.TacticalOverlayConfig.GhostAnchoredField ? "Anchor: Self" : "Anchor: Target", btnSize))
+        if (_tactical != null && ImGui.Button(TacticalOverlay.TacticalOverlayConfig.GhostAnchoredField ? "Anchor: Self" : "Anchor: Target", anchorSize))
         {
             TacticalOverlay.TacticalOverlayConfig.GhostAnchoredField = !TacticalOverlay.TacticalOverlayConfig.GhostAnchoredField;
             _tactical.InvalidateFieldCache();

@@ -1538,11 +1538,16 @@ public class TacticalOverlayController
         Vector2 ghostScreen = WorldToScreen(new Float2(ghostPos.x, ghostPos.z));
         string txt = boundary.HasValue ? $"{bestDist:0.0}\" / {boundary.Value:0}\"" : $"{bestDist:0.0}\"";
 
-        if (boundary.HasValue)
-        {
-            Vector2 targetScreen = WorldToScreen(new Float2(nearestTarget.Position.x, nearestTarget.Position.z));
-            dl.AddLine(ghostScreen, targetScreen, col, 1.5f);
-        }
+        // The "promote to a labeled measurement line" behaviour drew a line from the ghost to the nearest
+        // enemy whenever the ghost sat within MeasurementPromoteInches of a band boundary (an enemy gun's
+        // range edge). With the team-colored field showing those ranges directly it just read as a stray
+        // line near the range edge, so it's disabled -- the distance TEXT (which still shows "/ 24\"" near a
+        // boundary) carries the same information. Re-enable this block for the measurement line.
+        // if (boundary.HasValue)
+        // {
+        //     Vector2 targetScreen = WorldToScreen(new Float2(nearestTarget.Position.x, nearestTarget.Position.z));
+        //     dl.AddLine(ghostScreen, targetScreen, col, 1.5f);
+        // }
 
         Vector2 size = ImGui.CalcTextSize(txt);
         Vector2 at = ghostScreen + new Vector2(-size.X * 0.5f, -(ghostModel.BaseRadiusInches * _scale) - size.Y - 4f);
