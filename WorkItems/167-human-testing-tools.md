@@ -110,6 +110,16 @@ units minus any marked `Activated`, `CurrentRoundTeamFinishOrder` empty, `Settin
   networked resume).
 
 ## Notes
+- 2026-07-08 (cont.): **GUI `--scenario` first hand-run segfaulted at launch - fixed (`1ec69c9`).**
+  Silent exit, no window: the `--scenario` block called `TransitionToGame` before `Run()` opened the
+  window, and TransitionToGame attaches the #162 tactical overlay whose `GpuFieldRenderer.TryInit`
+  creates GL render textures -> `rlLoadFramebuffer` jumped through null GL function pointers
+  (SIGSEGV; stdout buffer lost, hence zero output). The Program.cs comment ("no GPU resources")
+  predated #162's overlay attach. Fix: new `RaylibRenderer.OnWindowReady` hook (fires after
+  InitWindow/ImGui setup, before the first frame); the scenario block defers GameGuiWiring.Launch +
+  FDGServer construction to it, keeping load/compile eager for fail-fast errors. Verified: GUI
+  launch reaches "Player 1's Activation" with the window live; headless `--scenario` + plain
+  headless smoke unaffected. Found during #169's rout-spillout hand-verify.
 - 2026-07-08: Design locked after mapping FDGServer bootstrap, GameProgressUtilities
   capture/restore, TeamPlayerAlternationCursor semantics, PlaceOneObjectiveStage, PlayerSlot
   (ctor self-registers PlayerSlotInfo — lobby re-crew data comes free from building slots at
