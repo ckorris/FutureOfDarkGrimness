@@ -7718,6 +7718,49 @@
       "engineArgumentCount": 0,
       "valence": "Positive",
       "description": "When shooting, each unmodified 6 to hit scores an extra hit."
+    },
+    {
+      "name": "Ignores Cover when Shooting",
+      "passive": [
+        {
+          "hookID": "Shooting_OnSaveRollModifier",
+          "condition": {
+            "kind": "always"
+          },
+          "effect": {
+            "kind": "ignoreCover"
+          },
+          "lifetime": "ThisAttack",
+          "seat": "Actor"
+        }
+      ],
+      "activated": [],
+      "scope": "Weapon",
+      "engineArgumentCount": 0,
+      "valence": "Positive",
+      "description": "When shooting, this weapon\u0027s attacks ignore cover."
+    },
+    {
+      "name": "Ignores Cover when Shooting Aura",
+      "passive": [
+        {
+          "hookID": "Lifecycle_OnUnitCreated",
+          "condition": {
+            "kind": "always"
+          },
+          "effect": {
+            "kind": "aura",
+            "ruleName": "Ignores Cover when Shooting"
+          },
+          "lifetime": "UntilEndOfGame",
+          "seat": "Actor"
+        }
+      ],
+      "activated": [],
+      "scope": "Unit",
+      "engineArgumentCount": 0,
+      "valence": "Positive",
+      "description": "This model and its unit gain Ignores Cover when Shooting."
     }
   ],
   "spells": [

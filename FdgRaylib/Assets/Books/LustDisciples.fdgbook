@@ -7424,6 +7424,27 @@
       "engineArgumentCount": 0,
       "valence": "Positive",
       "description": "This model and its unit gain Lustbound Boost."
+    },
+    {
+      "name": "Ignores Cover",
+      "passive": [
+        {
+          "hookID": "Shooting_OnSaveRollModifier",
+          "condition": {
+            "kind": "always"
+          },
+          "effect": {
+            "kind": "ignoreCover"
+          },
+          "lifetime": "ThisAttack",
+          "seat": "Actor"
+        }
+      ],
+      "activated": [],
+      "scope": "Weapon",
+      "engineArgumentCount": 0,
+      "valence": "Positive",
+      "description": "This weapon\u0027s attacks ignore cover."
     }
   ],
   "spells": [
