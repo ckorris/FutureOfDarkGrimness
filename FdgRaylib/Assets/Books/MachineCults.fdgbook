@@ -4541,6 +4541,76 @@
       "engineArgumentCount": 0,
       "valence": "Positive",
       "description": "This model and its unit gain Machine-Fog Boost."
+    },
+    {
+      "name": "Rending when Shooting Aura",
+      "passive": [
+        {
+          "hookID": "Lifecycle_OnUnitCreated",
+          "condition": {
+            "kind": "always"
+          },
+          "effect": {
+            "kind": "aura",
+            "ruleName": "Rending when shooting"
+          },
+          "lifetime": "UntilEndOfGame",
+          "seat": "Actor"
+        }
+      ],
+      "activated": [],
+      "scope": "Unit",
+      "engineArgumentCount": 0,
+      "valence": "Positive",
+      "description": "This model and its unit gain Rending when shooting."
+    },
+    {
+      "name": "Rending when shooting",
+      "passive": [
+        {
+          "hookID": "Shooting_OnHitRollComplete",
+          "condition": {
+            "kind": "and",
+            "left": {
+              "kind": "not",
+              "inner": {
+                "kind": "isMelee"
+              }
+            },
+            "right": {
+              "kind": "unmodifiedRollEquals",
+              "dieValue": 6
+            }
+          },
+          "effect": {
+            "kind": "perHitSaveModifier",
+            "onRollValue": 6,
+            "delta": -4
+          },
+          "lifetime": "ThisAttack",
+          "seat": "Actor"
+        },
+        {
+          "hookID": "Shooting_OnSaveRollComplete",
+          "condition": {
+            "kind": "not",
+            "inner": {
+              "kind": "isMelee"
+            }
+          },
+          "effect": {
+            "kind": "ignoreRule",
+            "ruleName": "Regeneration"
+          },
+          "lifetime": "ThisAttack",
+          "seat": "Actor"
+        }
+      ],
+      "activated": [],
+      "scope": "Weapon",
+      "engineArgumentCount": 0,
+      "valence": "Positive",
+      "description": "When shooting, an unmodified 6 to hit gives the attack AP(\u002B4), and the attack ignores Regeneration."
     }
   ],
   "spells": [

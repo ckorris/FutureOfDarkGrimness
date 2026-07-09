@@ -3944,6 +3944,28 @@
       "engineArgumentCount": 0,
       "valence": "Positive",
       "description": "Once per activation, before attacking, pick one friendly unit within 12 inches, which gains Courage for its next relevant roll."
+    },
+    {
+      "name": "Strider Aura",
+      "passive": [
+        {
+          "hookID": "Lifecycle_OnUnitCreated",
+          "condition": {
+            "kind": "always"
+          },
+          "effect": {
+            "kind": "aura",
+            "ruleName": "Strider"
+          },
+          "lifetime": "UntilEndOfGame",
+          "seat": "Actor"
+        }
+      ],
+      "activated": [],
+      "scope": "Unit",
+      "engineArgumentCount": 0,
+      "valence": "Positive",
+      "description": "This model and its unit gain Strider."
     }
   ],
   "spells": [

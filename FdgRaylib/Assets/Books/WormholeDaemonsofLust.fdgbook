@@ -4155,6 +4155,28 @@
       "engineArgumentCount": 0,
       "valence": "Positive",
       "description": "This model and its unit gain Lustbound Boost."
+    },
+    {
+      "name": "Strider Aura",
+      "passive": [
+        {
+          "hookID": "Lifecycle_OnUnitCreated",
+          "condition": {
+            "kind": "always"
+          },
+          "effect": {
+            "kind": "aura",
+            "ruleName": "Strider"
+          },
+          "lifetime": "UntilEndOfGame",
+          "seat": "Actor"
+        }
+      ],
+      "activated": [],
+      "scope": "Unit",
+      "engineArgumentCount": 0,
+      "valence": "Positive",
+      "description": "This model and its unit gain Strider."
     }
   ],
   "spells": [
