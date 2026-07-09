@@ -9,15 +9,15 @@ using FDG.SaveLoad;
 namespace FdgRaylib.Cli;
 
 /// <summary>
-/// #191 slice 1 / SYS-5: reports every dead rule reference across a directory of `.fdgbook` files —
-/// the measurement loop #191/#192 close against, and the "import reconciliation report" the audit asked
+/// #196 slice 1 / SYS-5: reports every dead rule reference across a directory of `.fdgbook` files —
+/// the measurement loop #196/#197 close against, and the "import reconciliation report" the audit asked
 /// for so a re-import can't silently regress coverage without anyone noticing.
 ///
 /// Mirrors army load's own resolution exactly (mirrors `ArmyListRuleResolution` / `GameBootstrap` /
 /// `ListCompiler`, and is exercised the same way `FdgRaylib.Tests/BookRuleScopeTests.cs` does): a name
 /// with no definition anywhere is "no-definition"; a `Unit`-scoped definition named on a weapon is
 /// "scope-mismatch" (nowhere for it to attach); a `Weapon`-scoped definition named at unit level is NOT
-/// a mismatch — #192 slice 0 re-homes those onto the unit's weapons, so it counts as attached.
+/// a mismatch — #197 slice 0 re-homes those onto the unit's weapons, so it counts as attached.
 /// </summary>
 public static class RuleCoverageReport
 {

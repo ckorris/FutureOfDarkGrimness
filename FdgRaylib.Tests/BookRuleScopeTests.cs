@@ -13,7 +13,7 @@ using NUnit.Framework;
 
 namespace FdgRaylib.Tests;
 
-// #192 slice 0 — the regression guard for the scope-mismatch bug: 157 references to rules the engine
+// #197 slice 0 — the regression guard for the scope-mismatch bug: 157 references to rules the engine
 // fully implements never attached, because ArmyListRuleResolution refuses a definition whose declared
 // ERuleScope differs from the site naming it, and the imported corpus disagreed with the catalog.
 //
@@ -37,7 +37,7 @@ public class BookRuleScopeTests
             "correctly on bomb weapons. The catalog's Strafing is a unit-scoped approximation (3 hits, no " +
             "weapon restriction) whose fly-over passive rides Movement_OnMoveThroughEnemy, a hook that " +
             "never reads weapon rules. Re-scoping it needs a mid-move attack-with-this-weapon primitive " +
-            "plus a once-per-activation weapon-use restriction - its own #192 slice.",
+            "plus a once-per-activation weapon-use restriction - its own #197 slice.",
     };
 
     private static string BooksDirectory => Path.Combine(AppContext.BaseDirectory, "Assets", "Books");
@@ -62,7 +62,7 @@ public class BookRuleScopeTests
         {
             if (reference.AttachesAt != ERuleScope.Weapon) continue;
 
-            // Unresolvable names are the other half of the audit (#191's data authoring), not this test's
+            // Unresolvable names are the other half of the audit (#196's data authoring), not this test's
             // business — a name with no definition anywhere has no scope to disagree about.
             if (!resolver.TryResolve(reference.Name, out ResolvedRule resolved)) continue;
             if (resolved.Definition.Scope == ERuleScope.Weapon) continue;

@@ -1,7 +1,7 @@
-# 192 — Faction rule coverage, part 2: engine primitives + the scope-mismatch bug
+# 197 — Faction rule coverage, part 2: engine primitives + the scope-mismatch bug
 
 **Status**: in progress (slice 0 DONE 2026-07-09; later slices still carry their own forks)
-**Related**: #191 (data-only half of the same audit), #100 (primitive catalog — this item is its corpus-wide successor), #102 (range/terrain threading; defensive Darkborn residual), #034 (spells), #042, #093, `SpecialRulesAudit.md`
+**Related**: #196 (data-only half of the same audit), #100 (primitive catalog — this item is its corpus-wide successor), #102 (range/terrain threading; defensive Darkborn residual), #034 (spells), #042, #093, `SpecialRulesAudit.md`
 
 ## Goal
 
@@ -13,7 +13,7 @@ Done = each slice below either ships its primitive with an integration test mirr
 existing `*RuleIntegrationTests`, or is explicitly re-deferred with a recorded reason. This is an
 umbrella; expect it to fragment into per-primitive slices as it is picked up, exactly as #100 did.
 
-## Why this half needs Opus (and #191 does not)
+## Why this half needs Opus (and #196 does not)
 
 - **It edits the `FutureOfDarkGrimness` submodule**, which is read-only by default (CLAUDE.md). Every
   slice needs explicit authorization, submodule-first commit cadence, and cross-repo pointer bumps.
@@ -110,6 +110,19 @@ weapon rule needs: (a) movement-hook access to the bearer's weapons, (b) a mid-m
 primitive replacing the fixed 3-hit `InvokeDealHits`, and (c) a once-per-activation weapon-use restriction.
 Filed as its own slice; allowlisted in `BookRuleScopeTests` with that reason so the guard stays meaningful.
 
+## Slices found while building #196 (2026-07-09)
+
+Small, self-contained primitive gaps #196 hit while authoring data-only rules — each blocks a handful of
+refs its family otherwise fully resolved. None found until the family was actually built; recorded here the
+same day per the "don't silently cut scope" guardrail.
+
+| Refs | Slice | Needs | Rules |
+|-----:|-------|-------|-------|
+| 10 | **Distance at the save-roll hook** | `SaveRollCompleteContext` carries no `DistanceInches` (only `HitRollCompleteContext` does), but `AddExtraWound`'s effect must fire at `Shooting_OnSaveRollComplete` (it reads the save-roll histogram). F5's Boost variants need "extra wound on 1-2 instead of 1, when shooting/charging enemies over 9in away" and can't express the distance gate at the hook the effect requires. Thread distance into `SaveRollCompleteContext`, or find another way to carry it through to the save stage. | Warbound Boost (2), Warbound Boost Aura (5), Infected Boost Aura (3) |
+| 6 | **Reroll threshold parameter** | `RerollCondition.OnUnmodifiedValue` carries no value — `RerollSink.cs` hardcodes it to the unmodified max face (6). F10's Boost variants need "re-roll unmodified 5s *or* 6s". `AddExtraHit`/`AddExtraWound` already parameterize their trigger value per entry (`OnRollValue`); `RerollCondition` needs the same, or a second variant with a threshold. | Mischievous Boost Aura (4), Scrapper Boost Aura (2) |
+| 7 | **`moraleTestThen` outside spell casting** | `Effect.MoraleTestThen.Apply()` is an intentional no-op — `CastSpellStage` special-cases the effect before calling `Apply()` and runs the morale-test-then-branch itself. None of the five generic ability-offering stages (`ChooseActionStage`, `PreAttackStage`, `StrafingStage`, `DeterminePlayerTurnStage`, `DeployUnitStage`) do the same, so a plain `SpecialRuleDefinition` activated ability using it is a genuine no-op in play (confirmed by `RuleFireLint`, not assumed). Wire `MoraleTestThen` into the generic ability path, or add a non-spell "morale test, conditional consequence" primitive. Both corpus uses are ordinary unit-rule references (`unit.rules`), not spell-list entries, so modelling them as `SpellDefinition`s instead would not fix the corpus. | Mind Control (4), Fatigue Debuff (3) |
+| 3 | **Vengeance** | "Place N markers on the unit that destroyed this one, N = models with this rule in this unit at game start; friendly units get +N to hit where N is the marker count on the target." Needs two things that don't exist: a magnitude source for "count of models with rule X in the bearer unit" (`ValueSource` only has `Literal`/`Arg`), and marker-scaled roll magnitude (this is P13, already tracked below — Vengeance can piggyback on P13 once it lands, but still needs the model-count source on top). | Vengeance (3) |
+
 ## Slices — by leverage
 
 Reference counts are corpus-wide (44 books). Primitive numbers are #100's.
@@ -149,7 +162,7 @@ Reference counts are corpus-wide (44 books). Primitive numbers are #100's.
 5. **P22 / P21** — deployment cluster; share a placement resolver.
 6. Then the long tail (P6, P8, P11, P15, P17, P20, P7, P16, P19), Darkborn, and the misc triage.
 
-`#191` can run fully in parallel — it touches no engine file.
+`#196` can run fully in parallel — it touches no engine file.
 
 ## Notes
 
@@ -165,21 +178,21 @@ Reference counts are corpus-wide (44 books). Primitive numbers are #100's.
   weapons, with DAO Union's `Reliable`/`Takedown` moved onto the Pulse Rifle as data. Confirmed while
   scoping: per-weapon dispatch already works, so no hit-roll refactor is needed.
   *(Superseded by the entry above — kept for the record of what was agreed vs what the data supported.)*
-- 2026-07-09: Filed alongside #191 from a full-corpus resolution run (the engine's own
+- 2026-07-09: Filed alongside #196 from a full-corpus resolution run (the engine's own
   `ResolveForScope` over all 44 books). Corpus totals: 13,870 rule references; 2,342 dead (16.9%).
   Of 216 distinct non-catalog rule names, 204 never resolve. Split: 107 names / 1,243 refs are
-  data-only (#191); 97 names / 942 refs need engine work (this item); 10 names / 157 refs are the
+  data-only (#196); 97 names / 942 refs need engine work (this item); 10 names / 157 refs are the
   slice-0 scope bug.
 - 2026-07-09: Also found — 13 catalog rules are referenced by no book at all. Mostly harmless, but
   `Darkborn (Offensive)` / `Darkborn (Defensive)` are the pair the books try to reach as `Darkborn`.
 
 ## Decisions
 
-- **Split from #191 on "does it touch the submodule", not on rule count.** The data half has a closed
+- **Split from #196 on "does it touch the submodule", not on rule count.** The data half has a closed
   vocabulary and a mechanical pass/fail gate (`--validate-rules` + `RuleFireLint`); the engine half has
   design forks and cross-repo commit cadence. Mixing them would have made the whole thing gated on
   engine authorization.
-- **Slice 0 lives here, not in #191**, despite being small: it is a catalog-scope semantics call on
+- **Slice 0 lives here, not in #196**, despite being small: it is a catalog-scope semantics call on
   read-only submodule code, and re-scoping `Reliable`/`Takedown` has a real regression surface.
 
 ## Outcome

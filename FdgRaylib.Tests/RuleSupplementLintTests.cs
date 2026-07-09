@@ -23,7 +23,7 @@ public class RuleSupplementLintTests
         ["Unique"] = "list-building marker: no dispatch entries; enforced at army-build time by " +
             "ListValidator ('the army may only include one copy'), never during play.",
 
-        // #191 F1. RuleFireLint's synthesized-context search covers "the capability conditions: near/far,
+        // #196 F1. RuleFireLint's synthesized-context search covers "the capability conditions: near/far,
         // moved, melee, charging, all die faces" (its own doc comment) but not a target unit's Tough stat -
         // there is no Tough-majority variant among its synthesized IHasTarget contexts. The condition
         // itself is real and engine-tested (ConditionEvaluationTests.TargetMajorityHasTough_..., .

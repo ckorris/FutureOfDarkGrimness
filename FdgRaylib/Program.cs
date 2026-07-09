@@ -109,12 +109,12 @@ if (validateIdx >= 0 && validateIdx + 1 < args.Length)
     return;
 }
 
-// --rule-coverage <booksDir>  (#191 slice 1 / SYS-5): the import reconciliation report the audit asked
+// --rule-coverage <booksDir>  (#196 slice 1 / SYS-5): the import reconciliation report the audit asked
 // for. Mirrors what army load actually does — CoreRuleCatalog + each book's own embedded rule
 // definitions, walked over every reference at its real attachment scope (unit rules/items, weapon
 // profiles, and the same three inside every upgrade option) — so a name with no definition anywhere and
 // a name whose definition disagrees with its attachment scope are reported separately, and a name that
-// resolves cleanly (including a weapon-scoped rule reached via a unit-level wargear bundle, which #192
+// resolves cleanly (including a weapon-scoped rule reached via a unit-level wargear bundle, which #197
 // slice 0 made a legal attach, not a mismatch) is not reported at all.
 int coverageIdx = Array.IndexOf(args, "--rule-coverage");
 if (coverageIdx >= 0 && coverageIdx + 1 < args.Length)
