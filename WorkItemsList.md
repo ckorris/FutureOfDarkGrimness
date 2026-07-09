@@ -15,6 +15,10 @@ When closing an item: write the Outcome in its detail file, tick the line, and m
 
 ---
 
+## Rounds & resume
+
+- [ ] 195 — Resumed games play four MORE rounds instead of finishing the four-round game (`ReconcileObjectivesStage._timesEntered` is a per-instance counter ignoring the resumed round); round logs mislabelled. Behavior change - sign-off before building. Found by #193. ([WorkItems/195](WorkItems/195-resume-plays-extra-rounds.md))
+
 ## Movement
 
 - [~] 159 — `DefinePathStage` cohesion crash: four root causes fixed, but a residual still repros ~1 run in 10 on the default army (2/24 on origin/master, 2026-07-09) — *not* fixed; not yet isolated to the CLI auto-advance vs the AI resolver. ([WorkItems/159](WorkItems/159-definepath-cohesion-crash.md))
@@ -50,7 +54,6 @@ All 33 GF v3.5.1 core special rules are implemented (verified 2026-06-30; see ar
 Master plan: `docs/ai-agent-plan.md` (heuristics -> MCTS -> learned value net; gates, invariants, vocabulary).
 
 - [ ] 191 — Tactician AI agent umbrella: challenge-level game-playing AI as a new profile alongside the solo-rules bot; phased A-D, benchmark-gated. ([WorkItems/191](WorkItems/191-tactician-agent.md))
-- [ ] 193 — Determinism & seeding pass: seeded `RollDecisive`, seed the solo-rules placement RNGs, CLI `--seed`, no static mutable RNG (parallel-safe). Tactician prereq P2. ([WorkItems/193](WorkItems/193-determinism-seeding.md))
 - [ ] 194 — FdgLab self-play harness: new in-repo console project; in-process parallel `GameRunner`, watchdog, seeded benchmark matrix + strategy probes. Tactician prereq P3. ([WorkItems/194](WorkItems/194-fdglab-harness.md))
 
 ## Networking & infrastructure

@@ -31,7 +31,13 @@ public static class ScenarioLauncher
         return ScenarioCompiler.CompileFromFile(path);
     }
 
-    public static ResumeParts BuildResume(GameDataStore store)
+    /// <param name="seedOverride">
+    /// #193 <c>--seed</c>: replaces the seed saved in the scenario, so the same scenario can be replayed
+    /// under different (but individually reproducible) dice. Null keeps whatever the save carries. The
+    /// resume path reads settings from the store's <see cref="GameProgressData"/>, so the override is
+    /// written there before the server is built.
+    /// </param>
+    public static ResumeParts BuildResume(GameDataStore store, int? seedOverride = null)
     {
         // Mirror LaunchResume: capture the saved slot infos, then drop the old records so the
         // rebuilt slots don't create duplicates.
@@ -39,6 +45,15 @@ public static class ScenarioLauncher
             .OrderBy(info => info.SlotID).ToList();
         if (savedInfos.Count == 0)
             throw new ScenarioCompileException("This save carries no player slots - it can't be resumed.");
+
+        GameProgressData? progress = GameProgressUtilities.TryGetProgress(store);
+        if (seedOverride.HasValue && progress != null)
+        {
+            GameSettings settings = progress.Settings;
+            settings.DiceSeed = seedOverride;
+            progress.Settings = settings;
+        }
+        int? effectiveSeed = progress?.Settings.DiceSeed;
 
         foreach (DataReference oldInfo in store.GetAllDataReferences<PlayerSlotInfo>().ToList())
             store.Destroy(oldInfo);
@@ -64,7 +79,7 @@ public static class ScenarioLauncher
             {
                 var aiGame = new FDGGame_AsLocal(store, bus);
                 slots[i].AssignPlayerController(AiResolverRegistryFactory.CreateSoloRulesController(
-                    $"Player {i + 1} (AI)", savedInfos[i].PlayerID, aiGame));
+                    $"Player {i + 1} (AI)", savedInfos[i].PlayerID, aiGame, effectiveSeed, slots[i].SlotID));
             }
         }
 

@@ -20,6 +20,19 @@ pin tests.
 
 ## Notes (newest first)
 
+**2026-07-09 — P2 (#193) done, archived.** Determinism is now a tested engine invariant: same seed +
+same build => identical game, and that holds with 16 games running concurrently in one process (the
+cross-talk detector plan sec. 6.4 asked for). #194's benchmark can therefore trust its aggregates on
+day one, which is why the order was swapped. Three things worth carrying into #194:
+(1) **AI seeds key on slot ID, not PlayerID** — GUIDs are per-run; `GameRunner`'s `GameSpec` must pass
+`(seed, slotID)` the same way, or seeded benchmarks silently drift.
+(2) **Benchmark fingerprints must include objectives**, not just models. The solo-rules bot ignores
+objectives, so a model-only comparison is blind to objective-placement nondeterminism (a mutation test
+proved it). Same trap will apply to any FdgLab state hashing.
+(3) **#195 filed**: resumed games play four MORE rounds instead of finishing the four-round game. Any
+probe or rollout resumed from a snapshot is currently a round too long. Fix before Phase B's
+`SimulationService` depends on resume, and before scenario probes become gating.
+
 **2026-07-09 — P1 (#192) done, archived.** Engine `9b1c0ba`. `GameResult` + `FDGServer.OnGameCompleted`
 land the reward/benchmark signal the whole ladder depends on. Two findings worth carrying forward:
 (1) the default headless game ends `Tie` with `scores=[0, 0]` because **all four objectives stay
