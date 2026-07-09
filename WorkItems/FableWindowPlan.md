@@ -30,6 +30,15 @@ GUI hand-verification backlog (human-only), mechanical chores (#179/#180/#068/#1
 audits (three done July 6-7; residue filed as #163-#185), #162 tactical overlay (good work but
 polish; loses to correctness + tooling).
 
+## Addendum 2026-07-09 — Tactician AI plan frontloaded
+
+The game-playing-AI effort (#191, prereqs #192-#194) was deep-planned during the window:
+`docs/ai-agent-plan.md` carries the full spec, invariants, and gates, written to be executed by
+any model. Remaining window-worthy uses: (1) a fresh-session dry-run review of that plan for
+ambiguity ("read the plan, restate slice P1 and its verification"); (2) Chris's edit of its
+Appendix A macro-action vocabulary. The prerequisite implementation itself is mechanical — fine
+on any model.
+
 ## How to apply
 
 Start from item 1; present options + recommendation and get sign-off before implementing #169.
