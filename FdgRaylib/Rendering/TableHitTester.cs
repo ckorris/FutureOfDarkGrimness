@@ -39,6 +39,9 @@ public class TableHitTester
         float bestDist = float.MaxValue;
         foreach (var unit in tableState.Units.Objects)
         {
+            // Off-table units (Ambush reserve, embarked, flown-off Aircraft) park at the origin.
+            if (!unit.GetIsOnBattlefield()) continue;
+
             foreach (var model in unit.Models)
             {
                 if (!model.GetIsAlive()) continue;
