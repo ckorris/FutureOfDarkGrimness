@@ -20,6 +20,25 @@ pin tests.
 
 ## Notes (newest first)
 
+**2026-07-09 — A2 (TacticalAnalysis) DONE.** `Ai/Tactician/TacticalAnalysis.cs`: mobility queries
+(Advance/Rush reuse `MovementRuleQueries`; `ChargeDistanceAgainst` composes the unit's charge
+budget + the target-conditioned query exactly as DefinePathStage does - first draft wrongly fed
+the BASE charge into the per-target query and the Fast test caught it); `ThreatRangeAgainst`
+(max of advance+longest-effective-weapon-range and charge reach - the M4 kite band's input);
+`ExpectedShootingAt` (CombatMath at a hypothetical distance/cover); objective projection
+(`ProjectObjectives`/`ProjectedScore` mirroring ReconcileObjectivesStage: base-edge distance
+within 3", sticky owner, contest-to-neutral, Shaken/reserve-arrival/Aircraft exclusions - the
+radius + rules are a MIRROR of that stage's privates, noted in both files); `UnitValue` (runtime
+units carry no point cost - UnitFileEntry.PointCost never reaches UnitData - so it is the plan's
+f(wounds, quality, weapon output): sqrt(durability x (1+output)) vs a Q4/D4 reference).
+**Verified:** 10 tests on authored states - base/Fast move+charge distances, threat ranges,
+seize/contest/sticky/edge-distance/exclusion projection cases, value ordering on real HDF stat
+lines (Infantry>Recruits, Storm Troopers>Veterans, Tank>all), value falls with casualties. Suite
+1462/1462. **Honest calibration note:** the book prices Recruits (10 @ 75) BELOW GRUNT Robots
+(5 @ 80) where the formula ranks them the other way - quality is weighted harder by the book than
+by this v1; revisit only if A4's value-weighted targeting misreads benchmarks (G2). Special rules
+deliberately don't contribute to UnitValue yet (recorded gap).
+
 **2026-07-09 — A1 (CombatMath) DONE.** `Ai/Tactician/CombatMath.cs`: `EstimateShooting` (all
 in-range weapon batches), `EstimateMelee` (impact hits, Counter strike-first swap - which also
 strips the charger's IsCharging, exactly as the engine's role swap does - swings per weapon batch,
