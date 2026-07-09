@@ -9429,6 +9429,32 @@
       "engineArgumentCount": 0,
       "valence": "Positive",
       "description": "This model and its unit gain Ferocious Boost."
+    },
+    {
+      "name": "Bad Shot",
+      "passive": [
+        {
+          "hookID": "Shooting_OnHitRollModifier",
+          "condition": {
+            "kind": "not",
+            "inner": {
+              "kind": "isMelee"
+            }
+          },
+          "effect": {
+            "kind": "rollModifier",
+            "rollKind": "Hit",
+            "delta": -1
+          },
+          "lifetime": "ThisAttack",
+          "seat": "Actor"
+        }
+      ],
+      "activated": [],
+      "scope": "Unit",
+      "engineArgumentCount": 0,
+      "valence": "Negative",
+      "description": "This model gets -1 to hit rolls when shooting."
     }
   ],
   "spells": [
