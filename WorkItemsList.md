@@ -22,6 +22,7 @@ When closing an item: write the Outcome in its detail file, tick the line, and m
 
 ## Shooting & cover
 
+- [ ] 199 — `AutoFill` faults on a tiny fractional wound in probabilistic mode ("Required: 0.0555, assigned: 0" -> whole game Fault); deterministic repro: rich-army fresh game, seed 31415. ([WorkItems/199](WorkItems/199-autofill-fractional-wound-fault.md))
 - [ ] 201 — Shooting *out of* cover grants the defender cover: `EvaluateSightLine` folds every terrain piece on the segment into one worst-effect with no notion of *where* it sits, so the attacker's own wall counts. Blocked on a rules ruling (proximity to defender, shoot-through depth). ([WorkItems/201](WorkItems/201-cover-attacker-side.md))
 
 ## Model bases & geometry
@@ -53,7 +54,6 @@ Corpus coverage is a different story: 1,018 of 13,870 book rule references (7.3%
 Master plan: `docs/ai-agent-plan.md` (heuristics -> MCTS -> learned value net; gates, invariants, vocabulary).
 
 - [ ] 191 — Tactician AI agent umbrella: challenge-level game-playing AI as a new profile alongside the solo-rules bot; phased A-D, benchmark-gated. ([WorkItems/191](WorkItems/191-tactician-agent.md))
-- [ ] 194 — FdgLab self-play harness: new in-repo console project; in-process parallel `GameRunner`, watchdog, seeded benchmark matrix + strategy probes. Tactician prereq P3. ([WorkItems/194](WorkItems/194-fdglab-harness.md))
 
 ## Networking & infrastructure
 

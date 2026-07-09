@@ -14,6 +14,29 @@ graceful exit 0, so don't rely on the exit code).
 
 ## Notes
 
+- 2026-07-09 (during #191 A0): **deterministic PIPED-HEADLESS repro found: seed 5150.**
+  `printf "2\n2\n" | dotnet run --project FdgRaylib/FdgRaylib.csproj -- --headless --seed 5150`
+  faults with the cohesion signature every run (byte-identical transcripts). Unlike the FdgLab
+  sweeps below (two AI slots, zero faults in 1,200 games), this path has the CLI resolver's EOF
+  AutoAdvance driving slot 0 — evidence the residual submitter may be the CLI auto-advance rather
+  than (or in addition to) `AiDefineMovementResolver`. The old isolation question is now cheaply
+  answerable: trace this seed and see who submits the rejected move.
+- 2026-07-09 (latest, post-#198): **the 8/10 seeded repro below is stale.** The #198 fix (seeded
+  terrain thinning) changed every seeded trajectory: seed 1027 is now 10/10 clean, and **1,200
+  deterministic games (seeds 1000-1099 + 2000-2199, builtin and builtin-basic, both sides) produced
+  ZERO cohesion faults**. The old crash trajectories were evidently fed by random deployment-zone
+  terrain. NOT proof of fix - unseeded play still randomizes terrain, so the original unseeded repro
+  loop still applies. New hunting tool: games are now seed-deterministic, so any seed that crashes
+  crashes 10/10 - scan with `fdglab bench --games N --seed-base S` and grep the CSV for Fault, then
+  `fdglab smoke --seed X --trace --dump-logs DIR` gives a full position trace of the crash run.
+- 2026-07-09 (superseded, from #194's harness): **strong seeded repro found** —
+  `dotnet run --project FdgLab/FdgLab.csproj -- smoke --seed 1027 --repeat 10` (builtin armies, both
+  slots AI) hits the crash **~8/10** and captures the full `[GAME ERROR]` stack: the rejected move is
+  submitted during a normal AI activation; `smoke --dump-logs DIR` gives per-run transcripts. Two AI
+  slots (no CLI AutoAdvance in the loop) — so `AiDefineMovementResolver` (or a consolidation path) is
+  the submitter, answering the open isolation question below. Also explains why the crash flakes even
+  at a fixed seed: movement paths themselves are nondeterministic run-to-run (**#198**) and the crash
+  sits downstream of them — fixing #198 should make seed 1027 either always or never crash.
 - 2026-07-09 (measured during #202's pre-push verification, on the built-in two-unit EOF default army):
   the residual reproduces at roughly **1 run in 10**. Paired A/B, 24 headless runs each:
   **origin/master `334b58c` / engine `38c5aa5`: 2/24**; **#202 branch: 3/24**. Statistically

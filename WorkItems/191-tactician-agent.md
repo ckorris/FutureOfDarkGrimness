@@ -20,6 +20,45 @@ pin tests.
 
 ## Notes (newest first)
 
+**2026-07-09 — A0 (Tactician scaffold) DONE.** Phase A begun. Engine: `Ai/Tactician/`
+(`TacticianOptions`, `TacticianResolverRegistryFactory` — A0 delegates every request wholesale to
+the unmodified solo-rules resolvers), `EAiProfile { SoloRules, Tactician }` + `AiProfileFactory`
+(the single profile->AI dispatch; moved the enum from FdgLab into the engine, per plan sec. 3).
+App: `--ai-profile <solorules|tactician>` on the headless + `--scenario` paths (lobby selection
+stays deferred to A6); FdgLab `smoke --profile-a/--profile-b`; `bench` per-side profile flags
+deliberately deferred to A4 (first benchmark that needs them). Verified per plan A0: new
+`TacticianScaffoldTests` (rich armies, seed 24601: Tactician game == solo-rules game, fingerprint
+equality; plus self-reproducibility) — suite 1382/1382; seeded headless CLI transcripts
+solo-vs-tactician byte-identical modulo per-run PlayerID GUIDs on BOTH a completing seed (42,
+4 rounds) and a faulting one (5150); lab smoke tactician-vs-tactician matches solorules exactly.
+Test-fixture refactor: shared `Tests/Doubles/TestArmies.cs` + `GameFingerprints.cs` extracted from
+DeterminismTests (pure move). Bycatch: **#199 filed** (AutoFill faults on a ~0.0555 fractional
+wound, deterministic at seed 31415, profile-independent) and a **deterministic #159 repro** (piped
+headless seed 5150, noted in #159 — points at the CLI AutoAdvance as a submitter). Next: A1
+CombatMath.
+
+**2026-07-09 — #198 fixed same day; P3 (#194) gate now 3/3, all prerequisites COMPLETE.** Root cause
+was a single unseeded `new System.Random()` in `PlaceTerrainStage`'s auto-layout thinning (Chris
+called the terrain theory; the async-race suspicion was a red herring). Found via FdgLab's new
+`GameTracer` (position-write trace interleaved with the log). Every determinism instrument now
+agrees: 200-game bench hashes identical across runs on both army sets, rich-army engine test
+(mutation-verified) pins it, seeded CLI runs byte-identical. **Phase B's replayable-rollout
+prerequisite is met early** - the B0 spike no longer carries #198 risk. Also: zero #159 faults in
+1,200 deterministic games (see #159 - old crash trajectories were fed by random zone terrain).
+The ladder is clear: next is Phase A (A0 Tactician scaffold), per plan sec. 8.
+
+**2026-07-09 — P3 (#194) shipped; gate 2/3.** FdgLab exists and works: 200-game seeded matrix in 38s
+Debug (**5.25 games/s, ~450k games/day** at DOP 16 — comfortably above the plan's Phase C/D
+assumptions), zero hangs, exactly symmetric mirror results, faults ~0.5-1% (all = #159, for which the
+harness found an 8/10 seeded repro: `fdglab smoke --seed 1027 --repeat 10`). The harness's first real
+catch is **#198**: seeded games are NOT run-to-run deterministic on rich army paths (movement paths
+differ; ambush arrival flips) — #193 covered RNGs, but something timing- or identity-hash-ordered
+remains. Consequences for the ladder: **Phase A can proceed** (win-rate statistics are unbiased noise;
+the bench outcome hash simply won't match between runs yet), but **#198 must close before Phase B**
+(search rollouts must replay exactly) — slot it with or before the B0 spike, which was already going
+to stare at the same async-void plumbing. Baseline solo-rules-vs-solo-rules report archived in
+`FdgLab/reports/` conventions; builtin mirror A-score 50.0% exact.
+
 **2026-07-09 — P2 (#193) done, archived.** Determinism is now a tested engine invariant: same seed +
 same build => identical game, and that holds with 16 games running concurrently in one process (the
 cross-talk detector plan sec. 6.4 asked for). #194's benchmark can therefore trust its aggregates on
