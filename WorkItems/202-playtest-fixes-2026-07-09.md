@@ -43,7 +43,7 @@ because it needs a rules ruling rather than an engineering call.
        `//Should go back to choosing.`) It now has its own sibling. Second, with exactly one valid
        defender the stage auto-attacked, skipping the only prompt that has a Back button; it now always
        poses the pick.
-     - *Move / Disembark* (`3821847`). `DefineMovementPathRequest` and `PlaceObjectsRequest` now reply
+     - *Move / Disembark* (`c873597`). `DefineMovementPathRequest` and `PlaceObjectsRequest` now reply
        with `CancellableResult` and carry an `AllowCancel` flag (mirroring `SelectionRequest`). Only the
        two player-chosen actions set it. Mandatory placements — deployment, Scout, Ambush arrival,
        transport spillout — go through `PlacementRequesting.RequestMandatoryPlacement`, which rejects a
@@ -51,7 +51,7 @@ because it needs a rules ruling rather than an engineering call.
        `MovementStage.ReconcileChildContextBeforeLeaving` runs on every sibling exit and threw when no
        path was submitted, hence the `MoveCancelled` guard.
 
-  5. **Ambush** (`16a4ab3`). "In reserve" was inferred from "every model sits at (0,0)", re-derived
+  5. **Ambush** (`6a44d56`). "In reserve" was inferred from "every model sits at (0,0)", re-derived
      independently in `GetIsOnBattlefield`, two private `IsUnplaced` copies, the renderer, the AI place
      resolver, the LoS blocker builder, the hit tester and the measurement overlay. Reserve now lives on
      the unit as `TokenType.InReserve` (see `ReserveRules`). `DrawModels` skips models whose unit isn't
