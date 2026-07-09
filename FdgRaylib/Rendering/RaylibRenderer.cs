@@ -118,7 +118,10 @@ public class RaylibRenderer
 
     public void NavigateTo(IAppScreen screen) => _currentScreen = screen;
 
-    private readonly ConcurrentDictionary<IModel, Color> _placedModels = new();
+    // The owning unit rides along with the colour so DrawModels can ask whether the model is actually in
+    // play. A model belonging to an off-table unit (Ambush reserve, embarked, an Aircraft that flew off)
+    // sits at the world origin, which maps to the table's bottom-left corner - it must not be drawn there.
+    private readonly ConcurrentDictionary<IModel, (Color Color, IUnit Unit)> _placedModels = new();
     private bool _autoScroll = true;
     private int  _lastLogCount = 0;
 
@@ -296,7 +299,7 @@ public class RaylibRenderer
 
         var unit = _tableState.Units.Objects.FirstOrDefault(u => u.Models.Contains(model));
         if (unit != null)
-            _placedModels[model] = _colorForPlayer(unit.PlayerID);
+            _placedModels[model] = (_colorForPlayer(unit.PlayerID), unit);
     }
 
     /// <summary>
@@ -322,6 +325,11 @@ public class RaylibRenderer
         Raylib.SetConfigFlags(ConfigFlags.ResizableWindow);
         Raylib.InitWindow(1280, 720, "Future of Dark Grimness");
         Raylib.SetTargetFPS(30);
+
+        // Escape is not a quit key. It reads as "cancel the action I'm in the middle of" - several
+        // resolvers already bind it that way - and raylib's default exit key made it tear the window
+        // down instead. Quit via the main menu or the window close button.
+        Raylib.SetExitKey(KeyboardKey.Null);
 
         int monitor   = Raylib.GetCurrentMonitor();
         int monitorW  = Raylib.GetMonitorWidth(monitor);
@@ -767,8 +775,12 @@ public class RaylibRenderer
 
     private void DrawModels(Layout l)
     {
-        foreach (var (model, color) in _placedModels)
+        foreach (var (model, (color, unit)) in _placedModels)
         {
+            // Not in play: held in Ambush reserve, riding a transport, or an Aircraft that flew off the
+            // edge. Its models are parked at the origin, which is the table's bottom-left corner.
+            if (!unit.GetIsOnBattlefield()) continue;
+
             // The presentation player decides position/visibility/effects: gliding mid-move,
             // tinted while dying (red, fading) or hurt (orange), hidden once dead, else authoritative.
             ModelDrawState draw = _presentationPlayer?.GetModelDrawState(model)

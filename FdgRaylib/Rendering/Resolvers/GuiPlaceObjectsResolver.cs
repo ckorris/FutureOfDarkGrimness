@@ -8,7 +8,7 @@ using ImGuiNET;
 namespace FdgRaylib.Rendering.Resolvers;
 
 public class GuiPlaceObjectsResolver<T>
-    : IStageResolver<PlaceObjectsRequest<T>, List<PlacedObjectEntry<T>>>, IGuiResolver, IGuiCanvasOverlay,
+    : IStageResolver<PlaceObjectsRequest<T>, CancellableResult<List<PlacedObjectEntry<T>>>>, IGuiResolver, IGuiCanvasOverlay,
       IEnemyExclusionProvider
 {
     private readonly ITableState _tableState;
@@ -22,7 +22,7 @@ public class GuiPlaceObjectsResolver<T>
 
     // Request state
     private PlaceObjectsRequest<T>? _request;
-    private TaskCompletionSource<List<PlacedObjectEntry<T>>>? _tcs;
+    private TaskCompletionSource<CancellableResult<List<PlacedObjectEntry<T>>>>? _tcs;
     private readonly List<PlacedObjectEntry<T>> _placed = new();
 
     // Index into _placed of the model currently being re-placed by drag (single mode); null = none.
@@ -62,9 +62,9 @@ public class GuiPlaceObjectsResolver<T>
 
     public bool HasPendingRequest { get { lock (_lock) return _request != null; } }
 
-    public Task<List<PlacedObjectEntry<T>>> Resolve(PlaceObjectsRequest<T> request)
+    public Task<CancellableResult<List<PlacedObjectEntry<T>>>> Resolve(PlaceObjectsRequest<T> request)
     {
-        var tcs = new TaskCompletionSource<List<PlacedObjectEntry<T>>>();
+        var tcs = new TaskCompletionSource<CancellableResult<List<PlacedObjectEntry<T>>>>();
         lock (_lock)
         {
             _tcs = tcs;
@@ -81,7 +81,7 @@ public class GuiPlaceObjectsResolver<T>
     public void Draw(int screenW, int screenH)
     {
         PlaceObjectsRequest<T>? request;
-        TaskCompletionSource<List<PlacedObjectEntry<T>>>? tcs;
+        TaskCompletionSource<CancellableResult<List<PlacedObjectEntry<T>>>>? tcs;
         lock (_lock) { request = _request; tcs = _tcs; }
         if (request == null || tcs == null) return;
 
@@ -384,7 +384,7 @@ public class GuiPlaceObjectsResolver<T>
     }
 
     private void DrawInfoPanel(int screenW, PlaceObjectsRequest<T> request,
-        TaskCompletionSource<List<PlacedObjectEntry<T>>> tcs)
+        TaskCompletionSource<CancellableResult<List<PlacedObjectEntry<T>>>> tcs)
     {
         int total = request.ModelsToPlace.Count;
         bool group = _formationMode.IsGroup;
@@ -452,6 +452,20 @@ public class GuiPlaceObjectsResolver<T>
             Complete(tcs, new List<PlacedObjectEntry<T>>(_placed));
             ImGui.End();
             return;
+        }
+
+        // Back: abandon the whole placement. Only offered where the player chose the action and can still
+        // decline it (Disembark) - deployment, Scout, Ambush arrival and spillout are mandatory.
+        if (request.AllowCancel)
+        {
+            if (ResolverButtons.Deemphasized("Back", new Vector2(fullW, 28f)))
+            {
+                CompleteCancelled(tcs);
+                ImGui.End();
+                return;
+            }
+            if (ImGui.IsItemHovered())
+                ImGui.SetTooltip("Cancel and pick a different action. The unit stays aboard its transport.");
         }
 
         // Secondary row: Undo + Auto-place.
@@ -645,10 +659,18 @@ public class GuiPlaceObjectsResolver<T>
         return false;
     }
 
-    private void Complete(TaskCompletionSource<List<PlacedObjectEntry<T>>> tcs, List<PlacedObjectEntry<T>> entries)
+    private void Complete(TaskCompletionSource<CancellableResult<List<PlacedObjectEntry<T>>>> tcs, List<PlacedObjectEntry<T>> entries) =>
+        CompleteWith(tcs, new Selected<List<PlacedObjectEntry<T>>>(entries));
+
+    /// <summary> Abandon the placement (Disembark only). Nothing has been repositioned yet. </summary>
+    private void CompleteCancelled(TaskCompletionSource<CancellableResult<List<PlacedObjectEntry<T>>>> tcs) =>
+        CompleteWith(tcs, new Cancelled<List<PlacedObjectEntry<T>>>());
+
+    private void CompleteWith(TaskCompletionSource<CancellableResult<List<PlacedObjectEntry<T>>>> tcs,
+        CancellableResult<List<PlacedObjectEntry<T>>> result)
     {
         lock (_lock) { _request = null; _tcs = null; _placed.Clear(); }
-        tcs.SetResult(entries);
+        tcs.SetResult(result);
     }
 
     private (float x, float z) PixelToInches(float px, float py) =>

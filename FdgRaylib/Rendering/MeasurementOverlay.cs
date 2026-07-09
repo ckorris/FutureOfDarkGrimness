@@ -154,6 +154,9 @@ public class MeasurementOverlay
         float bestD = float.MaxValue;
         foreach (IUnit unit in _tableState!.Units.Objects)
         {
+            // Off-table units (Ambush reserve, embarked, flown-off Aircraft) park at the origin.
+            if (!unit.GetIsOnBattlefield()) continue;
+
             foreach (IModel m in unit.Models)
             {
                 if (!m.GetIsAlive()) continue;
