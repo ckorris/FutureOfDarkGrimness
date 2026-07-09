@@ -6,7 +6,7 @@ using FDG.Stages;
 
 namespace FdgRaylib.Cli.Resolvers;
 
-public class DefineMovementPathResolver : IStageResolver<DefineMovementPathRequest, List<ModelMoveEntry>>
+public class DefineMovementPathResolver : IStageResolver<DefineMovementPathRequest, CancellableResult<List<ModelMoveEntry>>>
 {
     private readonly ITableState? _tableState;
 
@@ -15,7 +15,7 @@ public class DefineMovementPathResolver : IStageResolver<DefineMovementPathReque
         _tableState = tableState;
     }
 
-    public Task<List<ModelMoveEntry>> Resolve(DefineMovementPathRequest request)
+    public Task<CancellableResult<List<ModelMoveEntry>>> Resolve(DefineMovementPathRequest request)
     {
         var unit = request.UnitDataBinding.GetValue();
         var models = unit.ModelBindings;
@@ -32,10 +32,13 @@ public class DefineMovementPathResolver : IStageResolver<DefineMovementPathReque
                 Console.WriteLine($"            and within {GameWideConstants.MAX_MODEL_DISTANCE_FROM_ALL_OTHER_MODELS_INCHES:F0}\" of every other model");
             }
             Console.WriteLine("  Enter destination as 'x z' (inches, e.g. '24 18'), or press Enter to leave in place.");
+            if (request.AllowCancel)
+                Console.WriteLine("  Type 'back' to cancel the move and choose a different action.");
             Console.WriteLine();
 
             var entries = new List<ModelMoveEntry>();
             bool eof = false;
+            bool cancelled = false;
 
             for (int i = 0; i < models.Count; i++)
             {
@@ -47,6 +50,12 @@ public class DefineMovementPathResolver : IStageResolver<DefineMovementPathReque
                 if (input == null)
                 {
                     eof = true;
+                    break;
+                }
+
+                if (request.AllowCancel && input.Equals("back", StringComparison.OrdinalIgnoreCase))
+                {
+                    cancelled = true;
                     break;
                 }
 
@@ -66,13 +75,17 @@ public class DefineMovementPathResolver : IStageResolver<DefineMovementPathReque
                 }
             }
 
+            if (cancelled)
+                return Task.FromResult<CancellableResult<List<ModelMoveEntry>>>(new Cancelled<List<ModelMoveEntry>>());
+
+            // EOF keeps the piped-stdin default: advance rather than cancel, so an automated run still plays.
             if (eof)
-                return Task.FromResult(AutoAdvance(request));
+                return Selected(AutoAdvance(request));
 
             if (MovementUtilities.ValidatePaths(entries, BudgetFor(request),
                     GetEnemyFootprints(request), request.CanMoveThroughEnemies, request.IgnoresDifficultTerrain,
                     request.IgnoresImpassibleTerrain, _tableState?.Terrain.Objects, out var errors))
-                return Task.FromResult(entries);
+                return Selected(entries);
 
             Console.WriteLine();
             Console.WriteLine("  Movement is invalid - please re-enter all models:");
@@ -80,6 +93,9 @@ public class DefineMovementPathResolver : IStageResolver<DefineMovementPathReque
                 Console.WriteLine($"    ! {MovementUtilities.ErrorReasonToString(err.ErrorReasonType)}");
         }
     }
+
+    private static Task<CancellableResult<List<ModelMoveEntry>>> Selected(List<ModelMoveEntry> entries) =>
+        Task.FromResult<CancellableResult<List<ModelMoveEntry>>>(new Selected<List<ModelMoveEntry>>(entries));
 
     // Automatically advance the unit toward the nearest enemy, re-forming the living models into a
     // cohesive grid at the destination. A rigid translate would preserve any hole a casualty left in the
