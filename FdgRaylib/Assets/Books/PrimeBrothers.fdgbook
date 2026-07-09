@@ -8933,7 +8933,7 @@
           "condition": {
             "kind": "and",
             "left": {
-              "kind": "distanceGreaterThan",
+              "kind": "attackedFromOverInches",
               "distanceInches": 9
             },
             "right": {

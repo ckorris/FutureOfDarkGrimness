@@ -720,11 +720,11 @@
     "name": "Changebound",
     "passive": [
       {
-        "hookID": "Shooting_OnHitRollComplete",
+        "hookID": "Shooting_OnHitRollModifier",
         "condition": {
           "kind": "and",
           "left": {
-            "kind": "distanceGreaterThan",
+            "kind": "attackedFromOverInches",
             "distanceInches": 9
           },
           "right": {
@@ -754,7 +754,7 @@
         "condition": {
           "kind": "and",
           "left": {
-            "kind": "distanceGreaterThan",
+            "kind": "attackedFromOverInches",
             "distanceInches": 9
           },
           "right": {
@@ -783,7 +783,7 @@
         "condition": {
           "kind": "and",
           "left": {
-            "kind": "distanceGreaterThan",
+            "kind": "attackedFromOverInches",
             "distanceInches": 9
           },
           "right": {
@@ -813,7 +813,7 @@
         "condition": {
           "kind": "and",
           "left": {
-            "kind": "distanceGreaterThan",
+            "kind": "attackedFromOverInches",
             "distanceInches": 9
           },
           "right": {
@@ -838,11 +838,11 @@
     "name": "Machine-Fog",
     "passive": [
       {
-        "hookID": "Shooting_OnHitRollComplete",
+        "hookID": "Shooting_OnHitRollModifier",
         "condition": {
           "kind": "and",
           "left": {
-            "kind": "distanceGreaterThan",
+            "kind": "attackedFromOverInches",
             "distanceInches": 9
           },
           "right": {
@@ -868,9 +868,19 @@
     "name": "Changebound Boost",
     "passive": [
       {
-        "hookID": "Shooting_OnHitRollComplete",
+        "hookID": "Shooting_OnHitRollModifier",
         "condition": {
-          "kind": "allModelsHaveThisRule"
+          "kind": "and",
+          "left": {
+            "kind": "not",
+            "inner": {
+              "kind": "attackedFromOverInches",
+              "distanceInches": 9
+            }
+          },
+          "right": {
+            "kind": "allModelsHaveThisRule"
+          }
         },
         "effect": {
           "kind": "rollModifier",
@@ -885,7 +895,7 @@
     "scope": "Unit",
     "engineArgumentCount": 0,
     "valence": "Positive",
-    "description": "Enemies attacking this unit always get -1 to hit (boosted, no range gate)."
+    "description": "Enemies attacking this unit always get -1 to hit from Changebound (not only from over 9 inches away)."
   },
   {
     "name": "Changebound Boost Aura",
@@ -915,7 +925,17 @@
       {
         "hookID": "Shooting_OnHitRollComplete",
         "condition": {
-          "kind": "allModelsHaveThisRule"
+          "kind": "and",
+          "left": {
+            "kind": "not",
+            "inner": {
+              "kind": "attackedFromOverInches",
+              "distanceInches": 9
+            }
+          },
+          "right": {
+            "kind": "allModelsHaveThisRule"
+          }
         },
         "effect": {
           "kind": "reduceArmorPenetration",
@@ -929,7 +949,7 @@
     "scope": "Unit",
     "engineArgumentCount": 0,
     "valence": "Positive",
-    "description": "Hits on this unit always count as AP reduced by 1, to a minimum of 0 (boosted, no range gate)."
+    "description": "Hits on this unit always count as AP reduced by 1 from Guardian (not only from over 9 inches away)."
   },
   {
     "name": "Guardian Boost Aura",
@@ -959,7 +979,17 @@
       {
         "hookID": "Shooting_OnHitRollComplete",
         "condition": {
-          "kind": "allModelsHaveThisRule"
+          "kind": "and",
+          "left": {
+            "kind": "not",
+            "inner": {
+              "kind": "attackedFromOverInches",
+              "distanceInches": 9
+            }
+          },
+          "right": {
+            "kind": "allModelsHaveThisRule"
+          }
         },
         "effect": {
           "kind": "rollModifier",
@@ -974,7 +1004,7 @@
     "scope": "Unit",
     "engineArgumentCount": 0,
     "valence": "Positive",
-    "description": "This unit always gets +1 to defense rolls (boosted, no range gate)."
+    "description": "This unit always gets +1 to defense rolls from Sturdy (not only from over 9 inches away)."
   },
   {
     "name": "Sturdy Boost Aura",
@@ -1002,9 +1032,19 @@
     "name": "Machine-Fog Boost",
     "passive": [
       {
-        "hookID": "Shooting_OnHitRollComplete",
+        "hookID": "Shooting_OnHitRollModifier",
         "condition": {
-          "kind": "allModelsHaveThisRule"
+          "kind": "and",
+          "left": {
+            "kind": "not",
+            "inner": {
+              "kind": "attackedFromOverInches",
+              "distanceInches": 9
+            }
+          },
+          "right": {
+            "kind": "allModelsHaveThisRule"
+          }
         },
         "effect": {
           "kind": "rollModifier",
@@ -1019,7 +1059,7 @@
     "scope": "Unit",
     "engineArgumentCount": 0,
     "valence": "Positive",
-    "description": "Enemies attacking this unit always get -1 to hit (boosted, no range gate)."
+    "description": "Enemies attacking this unit always get -1 to hit from Machine-Fog (not only from over 9 inches away)."
   },
   {
     "name": "Machine-Fog Boost Aura",
@@ -1339,26 +1379,19 @@
       {
         "hookID": "Shooting_OnHitRollComplete",
         "condition": {
-          "kind": "unmodifiedRollEquals",
-          "dieValue": 5
+          "kind": "and",
+          "left": {
+            "kind": "unitHasRule",
+            "ruleName": "Primal"
+          },
+          "right": {
+            "kind": "unmodifiedRollEquals",
+            "dieValue": 5
+          }
         },
         "effect": {
           "kind": "addExtraHit",
           "onRollValue": 5,
-          "count": 1
-        },
-        "lifetime": "ThisAttack",
-        "seat": "Actor"
-      },
-      {
-        "hookID": "Shooting_OnHitRollComplete",
-        "condition": {
-          "kind": "unmodifiedRollEquals",
-          "dieValue": 6
-        },
-        "effect": {
-          "kind": "addExtraHit",
-          "onRollValue": 6,
           "count": 1
         },
         "lifetime": "ThisAttack",
@@ -1369,7 +1402,7 @@
     "scope": "Unit",
     "engineArgumentCount": 0,
     "valence": "Positive",
-    "description": "Each unmodified 5 or 6 to hit scores an extra hit."
+    "description": "If this model has Primal, unmodified 5s or 6s to hit each score an extra hit (instead of only 6). The base rule already covers the 6s."
   },
   {
     "name": "Primal Boost Buff",
@@ -1466,26 +1499,19 @@
       {
         "hookID": "Shooting_OnHitRollComplete",
         "condition": {
-          "kind": "unmodifiedRollEquals",
-          "dieValue": 5
+          "kind": "and",
+          "left": {
+            "kind": "unitHasRule",
+            "ruleName": "Clan Warrior"
+          },
+          "right": {
+            "kind": "unmodifiedRollEquals",
+            "dieValue": 5
+          }
         },
         "effect": {
           "kind": "addExtraHit",
           "onRollValue": 5,
-          "count": 1
-        },
-        "lifetime": "ThisAttack",
-        "seat": "Actor"
-      },
-      {
-        "hookID": "Shooting_OnHitRollComplete",
-        "condition": {
-          "kind": "unmodifiedRollEquals",
-          "dieValue": 6
-        },
-        "effect": {
-          "kind": "addExtraHit",
-          "onRollValue": 6,
           "count": 1
         },
         "lifetime": "ThisAttack",
@@ -1496,7 +1522,7 @@
     "scope": "Unit",
     "engineArgumentCount": 0,
     "valence": "Positive",
-    "description": "Each unmodified 5 or 6 to hit scores an extra hit."
+    "description": "If this model has Clan Warrior, unmodified 5s or 6s to hit each score an extra hit (instead of only 6). The base rule already covers the 6s."
   },
   {
     "name": "Clan Warrior Boost Aura",
@@ -1670,7 +1696,7 @@
         "effect": {
           "kind": "movementBonus",
           "actionType": "Advance",
-          "distanceInches": 2,
+          "distanceInches": 1,
           "minResultInches": 0
         },
         "lifetime": "ThisActivation",
@@ -1692,7 +1718,7 @@
         "effect": {
           "kind": "movementBonus",
           "actionType": "Rush",
-          "distanceInches": 6,
+          "distanceInches": 3,
           "minResultInches": 0
         },
         "lifetime": "ThisActivation",
@@ -1714,7 +1740,7 @@
         "effect": {
           "kind": "movementBonus",
           "actionType": "Charge",
-          "distanceInches": 6,
+          "distanceInches": 3,
           "minResultInches": 0
         },
         "lifetime": "ThisActivation",
@@ -1725,7 +1751,7 @@
     "scope": "Unit",
     "engineArgumentCount": 0,
     "valence": "Positive",
-    "description": "If this model has Lustbound, it moves +2 inches on Advance and +6 inches on Rush/Charge from Lustbound (instead of the base amount)."
+    "description": "If this model has Lustbound, it moves +2 inches on Advance and +6 inches on Rush/Charge (instead of only +1 and +3)."
   },
   {
     "name": "Lustbound Boost Aura",
@@ -1761,7 +1787,7 @@
         "effect": {
           "kind": "movementBonus",
           "actionType": "Advance",
-          "distanceInches": 4,
+          "distanceInches": 2,
           "minResultInches": 0
         },
         "lifetime": "ThisActivation",
@@ -1776,7 +1802,7 @@
         "effect": {
           "kind": "movementBonus",
           "actionType": "Rush",
-          "distanceInches": 4,
+          "distanceInches": 2,
           "minResultInches": 0
         },
         "lifetime": "ThisActivation",
@@ -1791,7 +1817,7 @@
         "effect": {
           "kind": "movementBonus",
           "actionType": "Charge",
-          "distanceInches": 4,
+          "distanceInches": 2,
           "minResultInches": 0
         },
         "lifetime": "ThisActivation",
@@ -1802,7 +1828,7 @@
     "scope": "Unit",
     "engineArgumentCount": 0,
     "valence": "Positive",
-    "description": "Moves +4 inches on Advance and +4 inches on Rush/Charge."
+    "description": "Moves a further +2 inches on Advance and +2 inches on Rush/Charge, on top of Scurry."
   },
   {
     "name": "Scurry Boost Aura",
@@ -2060,7 +2086,7 @@
         "condition": {
           "kind": "and",
           "left": {
-            "kind": "distanceGreaterThan",
+            "kind": "attackedFromOverInches",
             "distanceInches": 9
           },
           "right": {
@@ -2082,41 +2108,13 @@
         },
         "lifetime": "ThisAttack",
         "seat": "Actor"
-      },
-      {
-        "hookID": "Shooting_OnHitRollComplete",
-        "condition": {
-          "kind": "and",
-          "left": {
-            "kind": "distanceGreaterThan",
-            "distanceInches": 9
-          },
-          "right": {
-            "kind": "and",
-            "left": {
-              "kind": "unitHasRule",
-              "ruleName": "Devout"
-            },
-            "right": {
-              "kind": "unmodifiedRollEquals",
-              "dieValue": 6
-            }
-          }
-        },
-        "effect": {
-          "kind": "addExtraHit",
-          "onRollValue": 6,
-          "count": 1
-        },
-        "lifetime": "ThisAttack",
-        "seat": "Actor"
       }
     ],
     "activated": [],
     "scope": "Unit",
     "engineArgumentCount": 0,
     "valence": "Positive",
-    "description": "If this model has Devout and shoots or charges enemies over 9 inches away, unmodified 5s or 6s to hit score an extra hit (instead of only 6)."
+    "description": "If this model has Devout and shoots or charges enemies over 9 inches away, unmodified 5s or 6s to hit each score an extra hit (instead of only 6). The base rule already covers the 6s."
   },
   {
     "name": "Ferocious Boost",
@@ -2126,7 +2124,7 @@
         "condition": {
           "kind": "and",
           "left": {
-            "kind": "distanceGreaterThan",
+            "kind": "attackedFromOverInches",
             "distanceInches": 9
           },
           "right": {
@@ -2148,41 +2146,13 @@
         },
         "lifetime": "ThisAttack",
         "seat": "Actor"
-      },
-      {
-        "hookID": "Shooting_OnHitRollComplete",
-        "condition": {
-          "kind": "and",
-          "left": {
-            "kind": "distanceGreaterThan",
-            "distanceInches": 9
-          },
-          "right": {
-            "kind": "and",
-            "left": {
-              "kind": "unitHasRule",
-              "ruleName": "Ferocious"
-            },
-            "right": {
-              "kind": "unmodifiedRollEquals",
-              "dieValue": 6
-            }
-          }
-        },
-        "effect": {
-          "kind": "addExtraHit",
-          "onRollValue": 6,
-          "count": 1
-        },
-        "lifetime": "ThisAttack",
-        "seat": "Actor"
       }
     ],
     "activated": [],
     "scope": "Unit",
     "engineArgumentCount": 0,
     "valence": "Positive",
-    "description": "If this model has Ferocious and shoots or charges enemies over 9 inches away, unmodified 5s or 6s to hit score an extra hit (instead of only 6)."
+    "description": "If this model has Ferocious and shoots or charges enemies over 9 inches away, unmodified 5s or 6s to hit each score an extra hit (instead of only 6). The base rule already covers the 6s."
   },
   {
     "name": "Devout Boost Aura",
@@ -2453,8 +2423,33 @@
       {
         "hookID": "Shooting_OnHitRollComplete",
         "condition": {
-          "kind": "unitHasRule",
-          "ruleName": "Havocbound"
+          "kind": "and",
+          "left": {
+            "kind": "unitHasRule",
+            "ruleName": "Havocbound"
+          },
+          "right": {
+            "kind": "not",
+            "inner": {
+              "kind": "or",
+              "left": {
+                "kind": "and",
+                "left": {
+                  "kind": "not",
+                  "inner": {
+                    "kind": "isMelee"
+                  }
+                },
+                "right": {
+                  "kind": "distanceGreaterThan",
+                  "distanceInches": 9
+                }
+              },
+              "right": {
+                "kind": "isCharging"
+              }
+            }
+          }
         },
         "effect": {
           "kind": "rollModifier",
@@ -2501,14 +2496,24 @@
         "condition": {
           "kind": "and",
           "left": {
-            "kind": "not",
-            "inner": {
-              "kind": "isMelee"
-            }
-          },
-          "right": {
             "kind": "unitHasRule",
             "ruleName": "Targeting Visor"
+          },
+          "right": {
+            "kind": "and",
+            "left": {
+              "kind": "not",
+              "inner": {
+                "kind": "isMelee"
+              }
+            },
+            "right": {
+              "kind": "not",
+              "inner": {
+                "kind": "distanceGreaterThan",
+                "distanceInches": 9
+              }
+            }
           }
         },
         "effect": {
@@ -3786,7 +3791,7 @@
         "condition": {
           "kind": "and",
           "left": {
-            "kind": "distanceGreaterThan",
+            "kind": "attackedFromOverInches",
             "distanceInches": 9
           },
           "right": {
@@ -3966,5 +3971,97 @@
     "engineArgumentCount": 0,
     "valence": "Positive",
     "description": "Once per activation, before attacking, pick one friendly unit within 12 inches, which gains Increased Shooting Range for its next relevant roll."
+  },
+  {
+    "name": "Warbound Boost",
+    "passive": [
+      {
+        "hookID": "Shooting_OnSaveRollComplete",
+        "condition": {
+          "kind": "attackedFromOverInches",
+          "distanceInches": 9
+        },
+        "effect": {
+          "kind": "addExtraWound",
+          "onRollValue": 2,
+          "count": 1
+        },
+        "lifetime": "ThisAttack",
+        "seat": "Actor"
+      }
+    ],
+    "activated": [],
+    "scope": "Weapon",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "If this model has Warbound and shoots or charges enemies over 9 inches away, the defender's unmodified defense rolls of 1-2 each deal an extra wound (instead of only 1). The base rule already covers the 1s."
+  },
+  {
+    "name": "Warbound Boost Aura",
+    "passive": [
+      {
+        "hookID": "Lifecycle_OnUnitCreated",
+        "condition": {
+          "kind": "always"
+        },
+        "effect": {
+          "kind": "aura",
+          "ruleName": "Warbound Boost"
+        },
+        "lifetime": "UntilEndOfGame",
+        "seat": "Actor"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "This model and its unit gain Warbound Boost."
+  },
+  {
+    "name": "Infected Boost",
+    "passive": [
+      {
+        "hookID": "Shooting_OnSaveRollComplete",
+        "condition": {
+          "kind": "attackedFromOverInches",
+          "distanceInches": 9
+        },
+        "effect": {
+          "kind": "addExtraWound",
+          "onRollValue": 2,
+          "count": 1
+        },
+        "lifetime": "ThisAttack",
+        "seat": "Actor"
+      }
+    ],
+    "activated": [],
+    "scope": "Weapon",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "If this model has Infected and shoots or charges enemies over 9 inches away, the defender's unmodified defense rolls of 1-2 each deal an extra wound (instead of only 1). The base rule already covers the 1s."
+  },
+  {
+    "name": "Infected Boost Aura",
+    "passive": [
+      {
+        "hookID": "Lifecycle_OnUnitCreated",
+        "condition": {
+          "kind": "always"
+        },
+        "effect": {
+          "kind": "aura",
+          "ruleName": "Infected Boost"
+        },
+        "lifetime": "UntilEndOfGame",
+        "seat": "Actor"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "This model and its unit gain Infected Boost."
   }
 ]

@@ -4143,6 +4143,30 @@
       "engineArgumentCount": 0,
       "valence": "Positive",
       "description": "Each of the defender\u0027s unmodified Defense rolls of 1 deals an extra wound."
+    },
+    {
+      "name": "Warbound Boost",
+      "passive": [
+        {
+          "hookID": "Shooting_OnSaveRollComplete",
+          "condition": {
+            "kind": "attackedFromOverInches",
+            "distanceInches": 9
+          },
+          "effect": {
+            "kind": "addExtraWound",
+            "onRollValue": 2,
+            "count": 1
+          },
+          "lifetime": "ThisAttack",
+          "seat": "Actor"
+        }
+      ],
+      "activated": [],
+      "scope": "Weapon",
+      "engineArgumentCount": 0,
+      "valence": "Positive",
+      "description": "If this model has Warbound and shoots or charges enemies over 9 inches away, the defender\u0027s unmodified defense rolls of 1-2 each deal an extra wound (instead of only 1). The base rule already covers the 1s."
     }
   ],
   "spells": [

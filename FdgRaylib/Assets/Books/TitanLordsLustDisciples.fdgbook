@@ -4219,7 +4219,7 @@
           "effect": {
             "kind": "movementBonus",
             "actionType": "Advance",
-            "distanceInches": 2,
+            "distanceInches": 1,
             "minResultInches": 0
           },
           "lifetime": "ThisActivation",
@@ -4241,7 +4241,7 @@
           "effect": {
             "kind": "movementBonus",
             "actionType": "Rush",
-            "distanceInches": 6,
+            "distanceInches": 3,
             "minResultInches": 0
           },
           "lifetime": "ThisActivation",
@@ -4263,7 +4263,7 @@
           "effect": {
             "kind": "movementBonus",
             "actionType": "Charge",
-            "distanceInches": 6,
+            "distanceInches": 3,
             "minResultInches": 0
           },
           "lifetime": "ThisActivation",
@@ -4274,7 +4274,7 @@
       "scope": "Unit",
       "engineArgumentCount": 0,
       "valence": "Positive",
-      "description": "If this model has Lustbound, it moves \u002B2 inches on Advance and \u002B6 inches on Rush/Charge from Lustbound (instead of the base amount)."
+      "description": "If this model has Lustbound, it moves \u002B2 inches on Advance and \u002B6 inches on Rush/Charge (instead of only \u002B1 and \u002B3)."
     }
   ],
   "spells": [

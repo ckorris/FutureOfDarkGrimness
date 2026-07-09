@@ -6306,7 +6306,7 @@
           "effect": {
             "kind": "movementBonus",
             "actionType": "Advance",
-            "distanceInches": 4,
+            "distanceInches": 2,
             "minResultInches": 0
           },
           "lifetime": "ThisActivation",
@@ -6321,7 +6321,7 @@
           "effect": {
             "kind": "movementBonus",
             "actionType": "Rush",
-            "distanceInches": 4,
+            "distanceInches": 2,
             "minResultInches": 0
           },
           "lifetime": "ThisActivation",
@@ -6336,7 +6336,7 @@
           "effect": {
             "kind": "movementBonus",
             "actionType": "Charge",
-            "distanceInches": 4,
+            "distanceInches": 2,
             "minResultInches": 0
           },
           "lifetime": "ThisActivation",
@@ -6347,7 +6347,7 @@
       "scope": "Unit",
       "engineArgumentCount": 0,
       "valence": "Positive",
-      "description": "Moves \u002B4 inches on Advance and \u002B4 inches on Rush/Charge."
+      "description": "Moves a further \u002B2 inches on Advance and \u002B2 inches on Rush/Charge, on top of Scurry."
     },
     {
       "name": "Scurry Boost Aura",

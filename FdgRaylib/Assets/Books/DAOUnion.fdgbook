@@ -5974,14 +5974,24 @@
           "condition": {
             "kind": "and",
             "left": {
-              "kind": "not",
-              "inner": {
-                "kind": "isMelee"
-              }
-            },
-            "right": {
               "kind": "unitHasRule",
               "ruleName": "Targeting Visor"
+            },
+            "right": {
+              "kind": "and",
+              "left": {
+                "kind": "not",
+                "inner": {
+                  "kind": "isMelee"
+                }
+              },
+              "right": {
+                "kind": "not",
+                "inner": {
+                  "kind": "distanceGreaterThan",
+                  "distanceInches": 9
+                }
+              }
             }
           },
           "effect": {

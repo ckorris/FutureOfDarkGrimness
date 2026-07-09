@@ -4317,11 +4317,11 @@
       "name": "Changebound",
       "passive": [
         {
-          "hookID": "Shooting_OnHitRollComplete",
+          "hookID": "Shooting_OnHitRollModifier",
           "condition": {
             "kind": "and",
             "left": {
-              "kind": "distanceGreaterThan",
+              "kind": "attackedFromOverInches",
               "distanceInches": 9
             },
             "right": {
@@ -4347,9 +4347,19 @@
       "name": "Changebound Boost",
       "passive": [
         {
-          "hookID": "Shooting_OnHitRollComplete",
+          "hookID": "Shooting_OnHitRollModifier",
           "condition": {
-            "kind": "allModelsHaveThisRule"
+            "kind": "and",
+            "left": {
+              "kind": "not",
+              "inner": {
+                "kind": "attackedFromOverInches",
+                "distanceInches": 9
+              }
+            },
+            "right": {
+              "kind": "allModelsHaveThisRule"
+            }
           },
           "effect": {
             "kind": "rollModifier",
@@ -4364,7 +4374,7 @@
       "scope": "Unit",
       "engineArgumentCount": 0,
       "valence": "Positive",
-      "description": "Enemies attacking this unit always get -1 to hit (boosted, no range gate)."
+      "description": "Enemies attacking this unit always get -1 to hit from Changebound (not only from over 9 inches away)."
     },
     {
       "name": "Changebound Boost Aura",

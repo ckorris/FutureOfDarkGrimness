@@ -4565,26 +4565,19 @@
         {
           "hookID": "Shooting_OnHitRollComplete",
           "condition": {
-            "kind": "unmodifiedRollEquals",
-            "dieValue": 5
+            "kind": "and",
+            "left": {
+              "kind": "unitHasRule",
+              "ruleName": "Primal"
+            },
+            "right": {
+              "kind": "unmodifiedRollEquals",
+              "dieValue": 5
+            }
           },
           "effect": {
             "kind": "addExtraHit",
             "onRollValue": 5,
-            "count": 1
-          },
-          "lifetime": "ThisAttack",
-          "seat": "Actor"
-        },
-        {
-          "hookID": "Shooting_OnHitRollComplete",
-          "condition": {
-            "kind": "unmodifiedRollEquals",
-            "dieValue": 6
-          },
-          "effect": {
-            "kind": "addExtraHit",
-            "onRollValue": 6,
             "count": 1
           },
           "lifetime": "ThisAttack",
@@ -4595,7 +4588,7 @@
       "scope": "Unit",
       "engineArgumentCount": 0,
       "valence": "Positive",
-      "description": "Each unmodified 5 or 6 to hit scores an extra hit."
+      "description": "If this model has Primal, unmodified 5s or 6s to hit each score an extra hit (instead of only 6). The base rule already covers the 6s."
     },
     {
       "name": "Primal Boost Buff",

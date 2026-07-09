@@ -7671,8 +7671,33 @@
         {
           "hookID": "Shooting_OnHitRollComplete",
           "condition": {
-            "kind": "unitHasRule",
-            "ruleName": "Havocbound"
+            "kind": "and",
+            "left": {
+              "kind": "unitHasRule",
+              "ruleName": "Havocbound"
+            },
+            "right": {
+              "kind": "not",
+              "inner": {
+                "kind": "or",
+                "left": {
+                  "kind": "and",
+                  "left": {
+                    "kind": "not",
+                    "inner": {
+                      "kind": "isMelee"
+                    }
+                  },
+                  "right": {
+                    "kind": "distanceGreaterThan",
+                    "distanceInches": 9
+                  }
+                },
+                "right": {
+                  "kind": "isCharging"
+                }
+              }
+            }
           },
           "effect": {
             "kind": "rollModifier",

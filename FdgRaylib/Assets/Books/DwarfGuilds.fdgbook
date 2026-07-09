@@ -7575,7 +7575,7 @@
           "condition": {
             "kind": "and",
             "left": {
-              "kind": "distanceGreaterThan",
+              "kind": "attackedFromOverInches",
               "distanceInches": 9
             },
             "right": {
@@ -7603,7 +7603,17 @@
         {
           "hookID": "Shooting_OnHitRollComplete",
           "condition": {
-            "kind": "allModelsHaveThisRule"
+            "kind": "and",
+            "left": {
+              "kind": "not",
+              "inner": {
+                "kind": "attackedFromOverInches",
+                "distanceInches": 9
+              }
+            },
+            "right": {
+              "kind": "allModelsHaveThisRule"
+            }
           },
           "effect": {
             "kind": "rollModifier",
@@ -7618,7 +7628,7 @@
       "scope": "Unit",
       "engineArgumentCount": 0,
       "valence": "Positive",
-      "description": "This unit always gets \u002B1 to defense rolls (boosted, no range gate)."
+      "description": "This unit always gets \u002B1 to defense rolls from Sturdy (not only from over 9 inches away)."
     },
     {
       "name": "Sturdy Boost Aura",

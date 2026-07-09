@@ -5904,7 +5904,7 @@
           "condition": {
             "kind": "and",
             "left": {
-              "kind": "distanceGreaterThan",
+              "kind": "attackedFromOverInches",
               "distanceInches": 9
             },
             "right": {
@@ -5931,7 +5931,17 @@
         {
           "hookID": "Shooting_OnHitRollComplete",
           "condition": {
-            "kind": "allModelsHaveThisRule"
+            "kind": "and",
+            "left": {
+              "kind": "not",
+              "inner": {
+                "kind": "attackedFromOverInches",
+                "distanceInches": 9
+              }
+            },
+            "right": {
+              "kind": "allModelsHaveThisRule"
+            }
           },
           "effect": {
             "kind": "reduceArmorPenetration",
@@ -5945,7 +5955,7 @@
       "scope": "Unit",
       "engineArgumentCount": 0,
       "valence": "Positive",
-      "description": "Hits on this unit always count as AP reduced by 1, to a minimum of 0 (boosted, no range gate)."
+      "description": "Hits on this unit always count as AP reduced by 1 from Guardian (not only from over 9 inches away)."
     },
     {
       "name": "Guardian Boost Aura",
