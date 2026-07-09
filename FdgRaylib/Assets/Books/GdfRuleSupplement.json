@@ -2547,5 +2547,344 @@
     "engineArgumentCount": 0,
     "valence": "Positive",
     "description": "This model and its unit gain Targeting Visor Boost."
+  },
+  {
+    "name": "Unstoppable Mark",
+    "passive": [],
+    "activated": [
+      {
+        "triggerHook": "Activation_OnPreAttack",
+        "cost": {
+          "kind": "oncePerActivation"
+        },
+        "targetSelector": {
+          "rangeInches": 18,
+          "minCount": 1,
+          "maxCount": 1,
+          "targetAffinity": "Foe",
+          "requireLineOfSight": true,
+          "requiredToken": null,
+          "singleModel": false,
+          "requiredRule": null
+        },
+        "effect": {
+          "kind": "markTarget",
+          "ruleName": "Unstoppable"
+        },
+        "availableWhen": {
+          "kind": "always"
+        }
+      }
+    ],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "Once per activation, before attacking, pick one enemy unit within 18 inches in line of sight. The first friendly attack against it this activation gets Unstoppable."
+  },
+  {
+    "name": "Rending Mark",
+    "passive": [],
+    "activated": [
+      {
+        "triggerHook": "Activation_OnPreAttack",
+        "cost": {
+          "kind": "oncePerActivation"
+        },
+        "targetSelector": {
+          "rangeInches": 18,
+          "minCount": 1,
+          "maxCount": 1,
+          "targetAffinity": "Foe",
+          "requireLineOfSight": true,
+          "requiredToken": null,
+          "singleModel": false,
+          "requiredRule": null
+        },
+        "effect": {
+          "kind": "markTarget",
+          "ruleName": "Rending"
+        },
+        "availableWhen": {
+          "kind": "always"
+        }
+      }
+    ],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "Once per activation, before attacking, pick one enemy unit within 18 inches in line of sight. The first friendly attack against it this activation gets Rending."
+  },
+  {
+    "name": "Bane Mark",
+    "passive": [],
+    "activated": [
+      {
+        "triggerHook": "Activation_OnPreAttack",
+        "cost": {
+          "kind": "oncePerActivation"
+        },
+        "targetSelector": {
+          "rangeInches": 18,
+          "minCount": 1,
+          "maxCount": 1,
+          "targetAffinity": "Foe",
+          "requireLineOfSight": true,
+          "requiredToken": null,
+          "singleModel": false,
+          "requiredRule": null
+        },
+        "effect": {
+          "kind": "markTarget",
+          "ruleName": "Bane"
+        },
+        "availableWhen": {
+          "kind": "always"
+        }
+      }
+    ],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "Once per activation, before attacking, pick one enemy unit within 18 inches in line of sight. The first friendly attack against it this activation gets Bane."
+  },
+  {
+    "name": "Furious Mark",
+    "passive": [],
+    "activated": [
+      {
+        "triggerHook": "Activation_OnPreAttack",
+        "cost": {
+          "kind": "oncePerActivation"
+        },
+        "targetSelector": {
+          "rangeInches": 18,
+          "minCount": 1,
+          "maxCount": 1,
+          "targetAffinity": "Foe",
+          "requireLineOfSight": true,
+          "requiredToken": null,
+          "singleModel": false,
+          "requiredRule": null
+        },
+        "effect": {
+          "kind": "markTarget",
+          "ruleName": "Furious"
+        },
+        "availableWhen": {
+          "kind": "always"
+        }
+      }
+    ],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "Once per activation, before attacking, pick one enemy unit within 18 inches in line of sight. The first friendly attack against it this activation gets Furious."
+  },
+  {
+    "name": "Relentless Mark",
+    "passive": [],
+    "activated": [
+      {
+        "triggerHook": "Activation_OnPreAttack",
+        "cost": {
+          "kind": "oncePerActivation"
+        },
+        "targetSelector": {
+          "rangeInches": 18,
+          "minCount": 1,
+          "maxCount": 1,
+          "targetAffinity": "Foe",
+          "requireLineOfSight": true,
+          "requiredToken": null,
+          "singleModel": false,
+          "requiredRule": null
+        },
+        "effect": {
+          "kind": "markTarget",
+          "ruleName": "Relentless"
+        },
+        "availableWhen": {
+          "kind": "always"
+        }
+      }
+    ],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "Once per activation, before attacking, pick one enemy unit within 18 inches in line of sight. The first friendly attack against it this activation gets Relentless."
+  },
+  {
+    "name": "Precision Fighting",
+    "passive": [
+      {
+        "hookID": "Shooting_OnHitRollModifier",
+        "condition": {
+          "kind": "isMelee"
+        },
+        "effect": {
+          "kind": "rollModifier",
+          "rollKind": "Hit",
+          "delta": 1
+        },
+        "lifetime": "ThisAttack",
+        "seat": "Actor"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "+1 to hit rolls in melee."
+  },
+  {
+    "name": "Precision Fighting Mark",
+    "passive": [],
+    "activated": [
+      {
+        "triggerHook": "Activation_OnPreAttack",
+        "cost": {
+          "kind": "oncePerActivation"
+        },
+        "targetSelector": {
+          "rangeInches": 18,
+          "minCount": 1,
+          "maxCount": 1,
+          "targetAffinity": "Foe",
+          "requireLineOfSight": true,
+          "requiredToken": null,
+          "singleModel": false,
+          "requiredRule": null
+        },
+        "effect": {
+          "kind": "markTarget",
+          "ruleName": "Precision Fighting"
+        },
+        "availableWhen": {
+          "kind": "always"
+        }
+      }
+    ],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "Once per activation, before attacking, pick one enemy unit within 18 inches in line of sight. The first friendly attack against it this activation gets +1 to hit rolls in melee."
+  },
+  {
+    "name": "Piercing Shooting",
+    "passive": [
+      {
+        "hookID": "Shooting_OnHitRollComplete",
+        "condition": {
+          "kind": "not",
+          "inner": {
+            "kind": "isMelee"
+          }
+        },
+        "effect": {
+          "kind": "rollModifier",
+          "rollKind": "Save",
+          "delta": -1
+        },
+        "lifetime": "ThisAttack",
+        "seat": "Actor"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "AP(+1) when shooting."
+  },
+  {
+    "name": "Piercing Shooting Mark",
+    "passive": [],
+    "activated": [
+      {
+        "triggerHook": "Activation_OnPreAttack",
+        "cost": {
+          "kind": "oncePerActivation"
+        },
+        "targetSelector": {
+          "rangeInches": 18,
+          "minCount": 1,
+          "maxCount": 1,
+          "targetAffinity": "Foe",
+          "requireLineOfSight": true,
+          "requiredToken": null,
+          "singleModel": false,
+          "requiredRule": null
+        },
+        "effect": {
+          "kind": "markTarget",
+          "ruleName": "Piercing Shooting"
+        },
+        "availableWhen": {
+          "kind": "always"
+        }
+      }
+    ],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "Once per activation, before attacking, pick one enemy unit within 18 inches in line of sight. The first friendly attack against it this activation gets AP(+1) when shooting."
+  },
+  {
+    "name": "Precision Shooting",
+    "passive": [
+      {
+        "hookID": "Shooting_OnHitRollModifier",
+        "condition": {
+          "kind": "not",
+          "inner": {
+            "kind": "isMelee"
+          }
+        },
+        "effect": {
+          "kind": "rollModifier",
+          "rollKind": "Hit",
+          "delta": 1
+        },
+        "lifetime": "ThisAttack",
+        "seat": "Actor"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "+1 to hit rolls when shooting."
+  },
+  {
+    "name": "Precision Shooting Mark",
+    "passive": [],
+    "activated": [
+      {
+        "triggerHook": "Activation_OnPreAttack",
+        "cost": {
+          "kind": "oncePerActivation"
+        },
+        "targetSelector": {
+          "rangeInches": 18,
+          "minCount": 1,
+          "maxCount": 1,
+          "targetAffinity": "Foe",
+          "requireLineOfSight": true,
+          "requiredToken": null,
+          "singleModel": false,
+          "requiredRule": null
+        },
+        "effect": {
+          "kind": "markTarget",
+          "ruleName": "Precision Shooting"
+        },
+        "availableWhen": {
+          "kind": "always"
+        }
+      }
+    ],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "Once per activation, before attacking, pick one enemy unit within 18 inches in line of sight. The first friendly attack against it this activation gets +1 to hit rolls when shooting."
   }
 ]

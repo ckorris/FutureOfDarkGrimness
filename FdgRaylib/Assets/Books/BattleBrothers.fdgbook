@@ -9956,6 +9956,39 @@
       "engineArgumentCount": 0,
       "valence": "Positive",
       "description": "Once per activation, before attacking, pick one friendly unit within 6\u0022 with Artillery, which may immediately move by up to 9\u0022."
+    },
+    {
+      "name": "Unstoppable Mark",
+      "passive": [],
+      "activated": [
+        {
+          "triggerHook": "Activation_OnPreAttack",
+          "cost": {
+            "kind": "oncePerActivation"
+          },
+          "targetSelector": {
+            "rangeInches": 18,
+            "minCount": 1,
+            "maxCount": 1,
+            "targetAffinity": "Foe",
+            "requireLineOfSight": true,
+            "requiredToken": null,
+            "singleModel": false,
+            "requiredRule": null
+          },
+          "effect": {
+            "kind": "markTarget",
+            "ruleName": "Unstoppable"
+          },
+          "availableWhen": {
+            "kind": "always"
+          }
+        }
+      ],
+      "scope": "Unit",
+      "engineArgumentCount": 0,
+      "valence": "Positive",
+      "description": "Once per activation, before attacking, pick one enemy unit within 18 inches in line of sight. The first friendly attack against it this activation gets Unstoppable."
     }
   ],
   "spells": [

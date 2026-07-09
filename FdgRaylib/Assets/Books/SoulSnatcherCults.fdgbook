@@ -4693,6 +4693,39 @@
       "description": "This model and its unit gain Melee Slayer."
     },
     {
+      "name": "Precision Shooting Mark",
+      "passive": [],
+      "activated": [
+        {
+          "triggerHook": "Activation_OnPreAttack",
+          "cost": {
+            "kind": "oncePerActivation"
+          },
+          "targetSelector": {
+            "rangeInches": 18,
+            "minCount": 1,
+            "maxCount": 1,
+            "targetAffinity": "Foe",
+            "requireLineOfSight": true,
+            "requiredToken": null,
+            "singleModel": false,
+            "requiredRule": null
+          },
+          "effect": {
+            "kind": "markTarget",
+            "ruleName": "Precision Shooting"
+          },
+          "availableWhen": {
+            "kind": "always"
+          }
+        }
+      ],
+      "scope": "Unit",
+      "engineArgumentCount": 0,
+      "valence": "Positive",
+      "description": "Once per activation, before attacking, pick one enemy unit within 18 inches in line of sight. The first friendly attack against it this activation gets \u002B1 to hit rolls when shooting."
+    },
+    {
       "name": "Melee Slayer",
       "passive": [
         {
@@ -4721,6 +4754,32 @@
       "engineArgumentCount": 0,
       "valence": "Positive",
       "description": "This model\u0027s melee attacks get AP(\u002B2) against units where most models have Tough 3\u002B."
+    },
+    {
+      "name": "Precision Shooting",
+      "passive": [
+        {
+          "hookID": "Shooting_OnHitRollModifier",
+          "condition": {
+            "kind": "not",
+            "inner": {
+              "kind": "isMelee"
+            }
+          },
+          "effect": {
+            "kind": "rollModifier",
+            "rollKind": "Hit",
+            "delta": 1
+          },
+          "lifetime": "ThisAttack",
+          "seat": "Actor"
+        }
+      ],
+      "activated": [],
+      "scope": "Unit",
+      "engineArgumentCount": 0,
+      "valence": "Positive",
+      "description": "\u002B1 to hit rolls when shooting."
     }
   ],
   "spells": [
