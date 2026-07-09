@@ -14,6 +14,14 @@ graceful exit 0, so don't rely on the exit code).
 
 ## Notes
 
+- 2026-07-09 (later, from #194's harness): **strong seeded repro found** —
+  `dotnet run --project FdgLab/FdgLab.csproj -- smoke --seed 1027 --repeat 10` (builtin armies, both
+  slots AI) hits the crash **~8/10** and captures the full `[GAME ERROR]` stack: the rejected move is
+  submitted during a normal AI activation; `smoke --dump-logs DIR` gives per-run transcripts. Two AI
+  slots (no CLI AutoAdvance in the loop) — so `AiDefineMovementResolver` (or a consolidation path) is
+  the submitter, answering the open isolation question below. Also explains why the crash flakes even
+  at a fixed seed: movement paths themselves are nondeterministic run-to-run (**#198**) and the crash
+  sits downstream of them — fixing #198 should make seed 1027 either always or never crash.
 - 2026-07-09 (measured during #202's pre-push verification, on the built-in two-unit EOF default army):
   the residual reproduces at roughly **1 run in 10**. Paired A/B, 24 headless runs each:
   **origin/master `334b58c` / engine `38c5aa5`: 2/24**; **#202 branch: 3/24**. Statistically

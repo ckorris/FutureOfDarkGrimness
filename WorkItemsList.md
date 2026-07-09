@@ -53,7 +53,8 @@ Corpus coverage is a different story: 1,028 of 13,870 book rule references (7.4%
 Master plan: `docs/ai-agent-plan.md` (heuristics -> MCTS -> learned value net; gates, invariants, vocabulary).
 
 - [ ] 191 — Tactician AI agent umbrella: challenge-level game-playing AI as a new profile alongside the solo-rules bot; phased A-D, benchmark-gated. ([WorkItems/191](WorkItems/191-tactician-agent.md))
-- [ ] 194 — FdgLab self-play harness: new in-repo console project; in-process parallel `GameRunner`, watchdog, seeded benchmark matrix + strategy probes. Tactician prereq P3. ([WorkItems/194](WorkItems/194-fdglab-harness.md))
+- [~] 194 — FdgLab self-play harness: shipped (GameRunner, watchdog, timing, log capture, bench matrix + outcome hash, probes scaffold; ~19k games/hour); held open only for the reproducibility gate facet, blocked on #198. ([WorkItems/194](WorkItems/194-fdglab-harness.md))
+- [ ] 198 — Engine game outcomes vary run-to-run beyond the seed (rich army paths; movement paths differ, ambush arrival flips). Suspects: async-void stage races / identity-hash iteration. Blocks #194's repro gate + Phase B replay; explains #159's flake-at-seed. Repro + acceptance tests in FdgLab. ([WorkItems/198](WorkItems/198-engine-run-to-run-nondeterminism.md))
 
 ## Networking & infrastructure
 

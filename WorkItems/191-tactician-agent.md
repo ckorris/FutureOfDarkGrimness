@@ -20,6 +20,18 @@ pin tests.
 
 ## Notes (newest first)
 
+**2026-07-09 — P3 (#194) shipped; gate 2/3.** FdgLab exists and works: 200-game seeded matrix in 38s
+Debug (**5.25 games/s, ~450k games/day** at DOP 16 — comfortably above the plan's Phase C/D
+assumptions), zero hangs, exactly symmetric mirror results, faults ~0.5-1% (all = #159, for which the
+harness found an 8/10 seeded repro: `fdglab smoke --seed 1027 --repeat 10`). The harness's first real
+catch is **#198**: seeded games are NOT run-to-run deterministic on rich army paths (movement paths
+differ; ambush arrival flips) — #193 covered RNGs, but something timing- or identity-hash-ordered
+remains. Consequences for the ladder: **Phase A can proceed** (win-rate statistics are unbiased noise;
+the bench outcome hash simply won't match between runs yet), but **#198 must close before Phase B**
+(search rollouts must replay exactly) — slot it with or before the B0 spike, which was already going
+to stare at the same async-void plumbing. Baseline solo-rules-vs-solo-rules report archived in
+`FdgLab/reports/` conventions; builtin mirror A-score 50.0% exact.
+
 **2026-07-09 — P2 (#193) done, archived.** Determinism is now a tested engine invariant: same seed +
 same build => identical game, and that holds with 16 games running concurrently in one process (the
 cross-talk detector plan sec. 6.4 asked for). #194's benchmark can therefore trust its aggregates on

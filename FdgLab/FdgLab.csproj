@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- #194: training/benchmark lab for the Tactician AI effort (#191). Deliberately references the
+       engine ONLY - no Raylib, no FdgRaylib - so nothing lab-side can leak into the shipping app and
+       the lab always builds against the exact engine commit the app uses (plan decision D3). -->
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <RootNamespace>FdgLab</RootNamespace>
+    <!-- The engine assembly carries NUnit/test-platform packages (#068), which transitively generate a
+         testing-platform entry point here and warn about the real one. FdgLab is not a test project. -->
+    <GenerateTestingPlatformEntryPoint>false</GenerateTestingPlatformEntryPoint>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\FutureOfDarkGrimness\FutureOfDarkGrimness.csproj" />
+  </ItemGroup>
+
+</Project>
