@@ -95,6 +95,7 @@ public class CliApp
 
         var gameEnded = new TaskCompletionSource();
         var server = new FDGServer(_gameDataStore!, _messageBus!, gameSettings, playerSlots);
+        server.OnGameCompleted += PrintGameResult;
         server.OnGameEnded += result =>
         {
             logUI.DisplayLogMessage($"Game ended: {result}", TextColor.White);
@@ -132,6 +133,7 @@ public class CliApp
 
         var gameEnded = new TaskCompletionSource();
         var server = new FDGServer(parts.Store, parts.Bus, parts.Slots); // resume constructor
+        server.OnGameCompleted += PrintGameResult;
         server.OnGameEnded += result =>
         {
             logUI.DisplayLogMessage($"Game ended: {result}", TextColor.White);
@@ -141,6 +143,13 @@ public class CliApp
         Console.WriteLine("Scenario resumed.");
         await gameEnded.Task;
     }
+
+    /// <summary>
+    /// #192: the one machine-readable line a headless run emits. Automated verification (smoke tests,
+    /// FdgLab benchmarks) keys off the "Game result:" prefix, so keep it single-line and stable.
+    /// </summary>
+    private static void PrintGameResult(GameResult result) =>
+        Console.WriteLine($"Game result: {result.ToSummaryLine()}");
 
     private PlayerSlot[] CreatePlayerSlots()
     {

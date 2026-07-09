@@ -20,6 +20,16 @@ pin tests.
 
 ## Notes (newest first)
 
+**2026-07-09 — P1 (#192) done, archived.** Engine `9b1c0ba`. `GameResult` + `FDGServer.OnGameCompleted`
+land the reward/benchmark signal the whole ladder depends on. Two findings worth carrying forward:
+(1) the default headless game ends `Tie` with `scores=[0, 0]` because **all four objectives stay
+neutral all game** — neither the CLI-EOF player nor the solo-rules bot ever moves within 3". That is
+the baseline #191 exists to beat, and it means early benchmarks will be tie-heavy until Phase A's
+objective awareness lands; the `score = wins + 0.5 * ties` metric (plan G4) already handles this, but
+expect low signal from A0/A1 comparisons. (2) `EGameOutcome.Fault` is now emitted by the disconnect
+and engine-fault paths, so #194's watchdog can distinguish a real tie from a broken game for free.
+Remaining prereqs: #193, #194.
+
 **2026-07-09 — Appendix A v2.** Chris reviewed the vocabulary and contributed seven plays:
 bodyguard/escort, kite, mass (death ball), fatigue bait, block, move-to-cast, transport delivery.
 Integrated as: new intents M9 Escort / M10 Concentrate / M11 MoveToCast / M12 DeliverCargo+

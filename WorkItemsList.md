@@ -50,7 +50,6 @@ All 33 GF v3.5.1 core special rules are implemented (verified 2026-06-30; see ar
 Master plan: `docs/ai-agent-plan.md` (heuristics -> MCTS -> learned value net; gates, invariants, vocabulary).
 
 - [ ] 191 — Tactician AI agent umbrella: challenge-level game-playing AI as a new profile alongside the solo-rules bot; phased A-D, benchmark-gated. ([WorkItems/191](WorkItems/191-tactician-agent.md))
-- [ ] 192 — Structured game result: `GameResult` (outcome/winner/scores/rounds) from `VictoryCalculationStage` + `FDGServer.OnGameCompleted`; string event stays. Tactician prereq P1. ([WorkItems/192](WorkItems/192-structured-game-result.md))
 - [ ] 193 — Determinism & seeding pass: seeded `RollDecisive`, seed the solo-rules placement RNGs, CLI `--seed`, no static mutable RNG (parallel-safe). Tactician prereq P2. ([WorkItems/193](WorkItems/193-determinism-seeding.md))
 - [ ] 194 — FdgLab self-play harness: new in-repo console project; in-process parallel `GameRunner`, watchdog, seeded benchmark matrix + strategy probes. Tactician prereq P3. ([WorkItems/194](WorkItems/194-fdglab-harness.md))
 
