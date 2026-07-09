@@ -39,7 +39,7 @@ When closing an item: write the Outcome in its detail file, tick the line, and m
 - [ ] 197 — Faction rule coverage pt.2: the 97 dead names (942 refs) needing new engine primitives. DONE: slice 0 (145 refs), the ">9in shot or charged" gate (+10, also fixed 3 defect classes in #196's data), P5a's activation-choice hook (+154), P5b's round-start recovery (+66), and RuleFireLint's operation-consumption check. ([WorkItems/197](WorkItems/197-faction-rule-engine-primitives.md))
 
 All 33 GF v3.5.1 core special rules are implemented (verified 2026-06-30; see archive #029-#032/#051).
-Corpus coverage is a different story: 798 of 13,870 book rule references (5.8%) do nothing today — see #196/#197.
+Corpus coverage is a different story: 797 of 13,870 book rule references (5.7%) do nothing today — see #196/#197.
 
 ## Casting
 

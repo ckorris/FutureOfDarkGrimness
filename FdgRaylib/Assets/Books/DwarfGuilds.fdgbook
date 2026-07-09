@@ -7772,6 +7772,28 @@
       "engineArgumentCount": 0,
       "valence": "Positive",
       "description": "This model and its unit gain Ignores Cover when Shooting."
+    },
+    {
+      "name": "Infiltrate Aura",
+      "passive": [
+        {
+          "hookID": "Lifecycle_OnUnitCreated",
+          "condition": {
+            "kind": "always"
+          },
+          "effect": {
+            "kind": "aura",
+            "ruleName": "Infiltrate"
+          },
+          "lifetime": "UntilEndOfGame",
+          "seat": "Actor"
+        }
+      ],
+      "activated": [],
+      "scope": "Unit",
+      "engineArgumentCount": 0,
+      "valence": "Positive",
+      "description": "This model and its unit gain Infiltrate."
     }
   ],
   "spells": [
