@@ -100,7 +100,7 @@ public class GuiPlaceOneTerrainResolver
 
                 DrawGhost(dl, template.TerrainType, placedShape, valid: stillValid, frozen: true);
 
-                if (EscapeGate.TryConsume())
+                if (ImGui.IsKeyPressed(ImGuiKey.Escape))
                 {
                     lock (_lock) { _pendingCenter = null; }
                     pending = null;
@@ -129,7 +129,7 @@ public class GuiPlaceOneTerrainResolver
                 }
 
                 // Right-click or Esc returns to template selection (also resets rotation).
-                if (EscapeGate.TryConsume() ||
+                if (ImGui.IsKeyPressed(ImGuiKey.Escape) ||
                     (!io.WantCaptureMouse && ImGui.IsMouseClicked(ImGuiMouseButton.Right)))
                 {
                     lock (_lock) { _selectedTemplate = null; _rotationDegrees = 0f; }
