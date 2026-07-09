@@ -60,6 +60,20 @@ int seedIdx = Array.IndexOf(args, "--seed");
 if (seedIdx >= 0 && seedIdx + 1 < args.Length && int.TryParse(args[seedIdx + 1], out int parsedSeed))
     diceSeed = parsedSeed;
 
+// --ai-profile <solorules|tactician> (#191): which AI drives the computer slots on the headless and
+// scenario paths (lobby AI selection is a later slice, plan A6). Default: solo-rules.
+var aiProfile = FDG.Ai.EAiProfile.SoloRules;
+int profileIdx = Array.IndexOf(args, "--ai-profile");
+if (profileIdx >= 0 && profileIdx + 1 < args.Length)
+{
+    if (!Enum.TryParse(args[profileIdx + 1], ignoreCase: true, out aiProfile))
+    {
+        Console.Error.WriteLine($"Unknown --ai-profile '{args[profileIdx + 1]}'. Known: " +
+            string.Join(", ", Enum.GetNames<FDG.Ai.EAiProfile>()).ToLowerInvariant());
+        Environment.Exit(2);
+    }
+}
+
 // --import-opr <in.json> <out.fdgbook> [supplement.json]  (#153 P0b): one-time OnePageRules Army Forge
 // JSON → .fdgbook snapshot, via the engine importer. Data is OPR's, used under CC-BY-SA (stamped on the
 // book). The optional supplement embeds curated rule definitions the book references (see --apply-rules).
@@ -190,7 +204,7 @@ if (headless && armyIdx >= 0 && armyIdx + 1 < args.Length)
     Console.SetIn(new StringReader($"1\n{armyPath}\n1\n{armyPath}\n"));
 }
 
-var app = new CliApp(headless, slowDelayMs, diceSeed);
+var app = new CliApp(headless, slowDelayMs, diceSeed, aiProfile);
 
 if (headless)
 {
@@ -313,7 +327,7 @@ else
         try
         {
             GameDataStore scenarioStore = ScenarioLauncher.LoadStore(scenarioPath);
-            var parts = ScenarioLauncher.BuildResume(scenarioStore, diceSeed);
+            var parts = ScenarioLauncher.BuildResume(scenarioStore, diceSeed, aiProfile);
 
             var players = new List<(PlayerID ID, string Name)>();
             for (int i = 0; i < parts.SavedInfos.Count; i++)

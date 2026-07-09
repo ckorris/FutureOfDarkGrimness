@@ -1,16 +1,11 @@
 using FDG;
+using FDG.Ai;
 using FDG.SaveLoad;
 
 namespace FdgLab;
-
-/// <summary>
-/// Which AI drives a slot. Only the solo-rules bot exists today; the Tactician (#191) joins here,
-/// which is the point of the enum — every rung of the ladder stays benchmarkable against every other.
-/// </summary>
-public enum EAiProfile
-{
-    SoloRules,
-}
+// EAiProfile moved into the engine with the Tactician scaffold (#191 A0): the profile is selected
+// at every launch path (CLI, scenario, lab), so the engine owns the enum and the dispatch
+// (FDG.Ai.AiProfileFactory).
 
 /// <summary>
 /// Everything needed to run one fully in-process AI-vs-AI game reproducibly (#194).

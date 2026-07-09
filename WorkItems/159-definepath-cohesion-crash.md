@@ -14,6 +14,13 @@ graceful exit 0, so don't rely on the exit code).
 
 ## Notes
 
+- 2026-07-09 (during #191 A0): **deterministic PIPED-HEADLESS repro found: seed 5150.**
+  `printf "2\n2\n" | dotnet run --project FdgRaylib/FdgRaylib.csproj -- --headless --seed 5150`
+  faults with the cohesion signature every run (byte-identical transcripts). Unlike the FdgLab
+  sweeps below (two AI slots, zero faults in 1,200 games), this path has the CLI resolver's EOF
+  AutoAdvance driving slot 0 — evidence the residual submitter may be the CLI auto-advance rather
+  than (or in addition to) `AiDefineMovementResolver`. The old isolation question is now cheaply
+  answerable: trace this seed and see who submits the rejected move.
 - 2026-07-09 (latest, post-#198): **the 8/10 seeded repro below is stale.** The #198 fix (seeded
   terrain thinning) changed every seeded trajectory: seed 1027 is now 10/10 clean, and **1,200
   deterministic games (seeds 1000-1099 + 2000-2199, builtin and builtin-basic, both sides) produced

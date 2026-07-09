@@ -21,6 +21,9 @@ public class CliApp
     // #193 --seed: seeds dice, decisive rolls, objective auto-placement, and each AI player's stream.
     private readonly int? _diceSeed;
 
+    // #191 --ai-profile: which AI drives the computer slots (solo-rules baseline or the Tactician).
+    private readonly EAiProfile _aiProfile;
+
     // Initialized by Prepare(); used by RunAsync().
     private LocalMessageBus? _messageBus;
     private GameDataStore? _gameDataStore;
@@ -33,11 +36,13 @@ public class CliApp
     // Filled during CreatePlayerSlots(); read by the renderer at draw time.
     public Dictionary<PlayerID, Color> PlayerColors { get; } = new();
 
-    public CliApp(bool headless, int slowDelayMs = 0, int? diceSeed = null)
+    public CliApp(bool headless, int slowDelayMs = 0, int? diceSeed = null,
+        EAiProfile aiProfile = EAiProfile.SoloRules)
     {
         _headless = headless;
         _slowDelayMs = slowDelayMs;
         _diceSeed = diceSeed;
+        _aiProfile = aiProfile;
     }
 
     // Creates the local game instance (and thus TableState) without any user prompts.
@@ -87,9 +92,9 @@ public class CliApp
         var humanController = new LocalPlayerController("Player 1", playerSlots[0].PlayerID, _localGame);
         playerSlots[0].AssignPlayerController(humanController);
 
-        // Player 2 — computer (solo-rules AI)
+        // Player 2 — computer (profile per --ai-profile; solo-rules by default)
         _aiGame = new FDGGame_AsLocal(_gameDataStore!, _messageBus!);
-        var aiController = AiResolverRegistryFactory.CreateSoloRulesController(
+        var aiController = AiProfileFactory.CreateController(_aiProfile,
             "Player 2 (AI)", playerSlots[1].PlayerID, _aiGame, _diceSeed, playerSlots[1].SlotID);
         playerSlots[1].AssignPlayerController(aiController);
 
@@ -119,7 +124,7 @@ public class CliApp
     {
         Console.WriteLine("=== FDG Raylib - scenario ===");
 
-        var parts = ScenarioLauncher.BuildResume(loadedStore, _diceSeed);
+        var parts = ScenarioLauncher.BuildResume(loadedStore, _diceSeed, _aiProfile);
         _messageBus = parts.Bus;
         _gameDataStore = parts.Store;
         _localGame = parts.HumanGame;

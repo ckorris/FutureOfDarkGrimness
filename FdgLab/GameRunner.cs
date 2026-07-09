@@ -90,11 +90,8 @@ public static class GameRunner
         return new GameRecord(spec, result, wall.Elapsed, stats, winnerSlot, capturedLog, tracer?.Entries);
     }
 
+    // The game seed goes in whole; the engine derives the per-player stream by slot ID (#193).
     private static FDG.StageResolution.IStageResolverRegistry BuildRegistry(
-        EAiProfile profile, FDGGame_AsLocal aiGame, PlayerID playerID, int seed, int slotID) => profile switch
-    {
-        // The game seed goes in whole; the factory derives the per-player stream by slot ID (#193).
-        EAiProfile.SoloRules => AiResolverRegistryFactory.BuildSoloRules(aiGame.TableState, playerID, seed, slotID),
-        _ => throw new ArgumentOutOfRangeException(nameof(profile), profile, "Unknown AI profile."),
-    };
+        EAiProfile profile, FDGGame_AsLocal aiGame, PlayerID playerID, int seed, int slotID) =>
+        AiProfileFactory.BuildRegistry(profile, aiGame.TableState, playerID, seed, slotID);
 }

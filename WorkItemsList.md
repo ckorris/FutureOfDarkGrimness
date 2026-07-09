@@ -22,6 +22,7 @@ When closing an item: write the Outcome in its detail file, tick the line, and m
 
 ## Shooting & cover
 
+- [ ] 199 — `AutoFill` faults on a tiny fractional wound in probabilistic mode ("Required: 0.0555, assigned: 0" -> whole game Fault); deterministic repro: rich-army fresh game, seed 31415. ([WorkItems/199](WorkItems/199-autofill-fractional-wound-fault.md))
 - [ ] 201 — Shooting *out of* cover grants the defender cover: `EvaluateSightLine` folds every terrain piece on the segment into one worst-effect with no notion of *where* it sits, so the attacker's own wall counts. Blocked on a rules ruling (proximity to defender, shoot-through depth). ([WorkItems/201](WorkItems/201-cover-attacker-side.md))
 
 ## Model bases & geometry

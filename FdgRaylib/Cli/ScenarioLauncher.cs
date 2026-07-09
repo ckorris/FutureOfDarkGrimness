@@ -37,7 +37,12 @@ public static class ScenarioLauncher
     /// resume path reads settings from the store's <see cref="GameProgressData"/>, so the override is
     /// written there before the server is built.
     /// </param>
-    public static ResumeParts BuildResume(GameDataStore store, int? seedOverride = null)
+    /// <param name="aiProfile">
+    /// #191 <c>--ai-profile</c>: which AI drives the non-human slots. One profile for all AI slots —
+    /// per-slot selection arrives with the lobby UX (plan A6) if ever needed here.
+    /// </param>
+    public static ResumeParts BuildResume(GameDataStore store, int? seedOverride = null,
+        EAiProfile aiProfile = EAiProfile.SoloRules)
     {
         // Mirror LaunchResume: capture the saved slot infos, then drop the old records so the
         // rebuilt slots don't create duplicates.
@@ -78,7 +83,7 @@ public static class ScenarioLauncher
             else
             {
                 var aiGame = new FDGGame_AsLocal(store, bus);
-                slots[i].AssignPlayerController(AiResolverRegistryFactory.CreateSoloRulesController(
+                slots[i].AssignPlayerController(AiProfileFactory.CreateController(aiProfile,
                     $"Player {i + 1} (AI)", savedInfos[i].PlayerID, aiGame, effectiveSeed, slots[i].SlotID));
             }
         }

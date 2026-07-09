@@ -20,6 +20,23 @@ pin tests.
 
 ## Notes (newest first)
 
+**2026-07-09 — A0 (Tactician scaffold) DONE.** Phase A begun. Engine: `Ai/Tactician/`
+(`TacticianOptions`, `TacticianResolverRegistryFactory` — A0 delegates every request wholesale to
+the unmodified solo-rules resolvers), `EAiProfile { SoloRules, Tactician }` + `AiProfileFactory`
+(the single profile->AI dispatch; moved the enum from FdgLab into the engine, per plan sec. 3).
+App: `--ai-profile <solorules|tactician>` on the headless + `--scenario` paths (lobby selection
+stays deferred to A6); FdgLab `smoke --profile-a/--profile-b`; `bench` per-side profile flags
+deliberately deferred to A4 (first benchmark that needs them). Verified per plan A0: new
+`TacticianScaffoldTests` (rich armies, seed 24601: Tactician game == solo-rules game, fingerprint
+equality; plus self-reproducibility) — suite 1382/1382; seeded headless CLI transcripts
+solo-vs-tactician byte-identical modulo per-run PlayerID GUIDs on BOTH a completing seed (42,
+4 rounds) and a faulting one (5150); lab smoke tactician-vs-tactician matches solorules exactly.
+Test-fixture refactor: shared `Tests/Doubles/TestArmies.cs` + `GameFingerprints.cs` extracted from
+DeterminismTests (pure move). Bycatch: **#199 filed** (AutoFill faults on a ~0.0555 fractional
+wound, deterministic at seed 31415, profile-independent) and a **deterministic #159 repro** (piped
+headless seed 5150, noted in #159 — points at the CLI AutoAdvance as a submitter). Next: A1
+CombatMath.
+
 **2026-07-09 — #198 fixed same day; P3 (#194) gate now 3/3, all prerequisites COMPLETE.** Root cause
 was a single unseeded `new System.Random()` in `PlaceTerrainStage`'s auto-layout thinning (Chris
 called the terrain theory; the async-race suspicion was a red herring). Found via FdgLab's new
