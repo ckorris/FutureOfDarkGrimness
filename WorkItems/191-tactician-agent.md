@@ -20,6 +20,42 @@ pin tests.
 
 ## Notes (newest first)
 
+**2026-07-09 — A1 (CombatMath) DONE.** `Ai/Tactician/CombatMath.cs`: `EstimateShooting` (all
+in-range weapon batches), `EstimateMelee` (impact hits, Counter strike-first swap - which also
+strips the charger's IsCharging, exactly as the engine's role swap does - swings per weapon batch,
+return strikes from survivors only, fatigue, Fear-adjusted resolution margin), `EstimateVolley`
+(the pinned core). **Design refinement over the plan (G10 note added to sec. 8):** the "~15 named
+rules" became *definition-driven* math - CombatMath mirrors the stages' arithmetic skeleton and
+delegates all rule effects to the engine's own `RuleEvaluator.EvaluateAllNamed` (read-only: no
+log spam, no one-shot-grant spending) with the same contexts/participants/sinks the stages use.
+So the plan's candidates AND their ~hundreds of data-authored clone instances (Lacerate, Crack,
+Shred variants, gated "when shooting/in melee" families...) all price themselves identically to
+the engine, by construction. ("Poison" from the candidate list does not exist in the engine.)
+**Verified:** 60 pin tests (`CombatMathPinTests`) drive the REAL stage chain per case and assert
+|delta| <= max(0.05, 2%) - in practice exact: Q2-6 x D2-6 sweep, AP sweep, cover, Reliable,
+Stealth both sides of 9", Shielded, Fortified (AP2+AP0), Rending+Regen, Crack, Regeneration,
+Unstoppable, Bane, Lacerate, Shred, Surge, Relentless both ranges, Blast cap (big+small unit),
+Deadly vs 1W and Tough(3), melee swing, Furious charge-gated both ways, Thrust, Fatigued-token
+6s-only, plus composition tests (impact math, Counter flag + charge strip, Fear margin, survivor
+return strikes, out-of-range = 0). Mutation-verified: naive Deadly multiply and skipped Bane
+reroll each turn their pins red. Suite 1442/1442.
+**Coverage table (what prices itself vs what does not):**
+- Modeled (sink-folded at the 7 combat hooks): rollModifier, qualityFloor, addExtraHit,
+  multiplyHits, perHitSaveModifier, reduceArmorPenetration, reroll(save), addExtraWound,
+  multiplyWounds (clump-confined), ignoreWoundOnRoll, ignoreRule, ignoreCover, chargeImpactHits,
+  reduceImpactDicePerModel, strikeFirst, extraMeleeWoundCount, setMaxWounds (via stats), fatigue.
+- Modeled at runtime IF the caller passes the game's evaluator (token read-back needs its rule
+  resolver): aura/addRule-granted rules. A bare evaluator prices static rules only.
+- NOT priced (surfaced per-call via `AttackEstimate.Notes` where detectable): granted one-shot
+  roll-modifier tokens (engine's only accessor consumes them - a Peek API is an engine-seam ask),
+  target Mark claiming (mutates tokens), Takedown priced best-case vs healthiest model,
+  per-volley casualty carry-over inside one attack, melee in-range subset (assumes all living
+  carriers reach post pile-in), morale/movement/deployment/casting hooks (other slices' scope).
+**Deferred, recorded:** book-wide generated attacker/defender matrix sweep (6.3's full form) -
+the hand-built matrix covers every core combat rule; the sweep needs app-side book loading and
+lands with the FdgLab probe tooling (A2+). Full-MeleeStage composition pin (PileIn geometry etc.)
+- component math is stage-pinned; composition is covered by analytic tests.
+
 **2026-07-09 — A0 (Tactician scaffold) DONE.** Phase A begun. Engine: `Ai/Tactician/`
 (`TacticianOptions`, `TacticianResolverRegistryFactory` — A0 delegates every request wholesale to
 the unmodified solo-rules resolvers), `EAiProfile { SoloRules, Tactician }` + `AiProfileFactory`

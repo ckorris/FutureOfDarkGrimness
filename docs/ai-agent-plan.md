@@ -287,6 +287,12 @@ Deadly(X), Furious, Reliable, Poison, Stealth, cover, Regeneration, Tough(X) spi
 morale contribution; finalize the list from actual counts and record it). Melee variant includes
 return strikes and fatigue. Everything unsupported is *listed* (6.3 reports coverage), not
 approximated silently. *Verify:* 6.3 pin tests green; coverage + discrepancy table in the ledger.
+*As built (2026-07-09, G10 note):* implemented definition-driven rather than name-keyed — the
+core catalog and the data-authored supplement share one Condition x Effect vocabulary, so
+CombatMath mirrors only the stages' arithmetic and delegates every rule effect to the engine's
+own read-only evaluation (`RuleEvaluator.EvaluateAllNamed` + the stages' sinks). All named
+candidates above are covered AND their clones price themselves for free; "Poison" does not exist
+in the engine (no such catalog rule). Coverage/gaps recorded per the A1 ledger entry in #191.
 
 **A2 — TacticalAnalysis.** Per-unit threat range (mobility + weapon range) and expected-damage-
 at-range queries; objective-control math (who holds/contests within 3", projected at round end);
