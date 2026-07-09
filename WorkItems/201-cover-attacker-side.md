@@ -1,4 +1,4 @@
-# 191 — Cover granted by terrain on the attacker's side of the line
+# 201 — Cover granted by terrain on the attacker's side of the line
 
 **Status**: todo (design fork open — do not build until the rules questions below are answered)
 **Related**: #044-#046 (line-of-sight cluster), #150 (base-shape geometry), #055 (rule attribution in resolvers)

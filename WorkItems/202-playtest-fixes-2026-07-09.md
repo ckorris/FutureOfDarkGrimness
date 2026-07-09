@@ -1,11 +1,11 @@
-# 192 — 2026-07-09 playtest fixes
+# 202 — 2026-07-09 playtest fixes
 
 **Status**: done (awaiting GUI hand-verification)
-**Related**: #191 (cover, split out and deferred), #035/#096 (transport), #056 (beats), #161 (resolver consistency)
+**Related**: #201 (cover, split out and deferred), #035/#096 (transport), #056 (beats), #161 (resolver consistency)
 
 ## Goal
 
-Fix the five actionable bugs from the 2026-07-08 playtest. The sixth (cover) was split out as #191
+Fix the five actionable bugs from the 2026-07-08 playtest. The sixth (cover) was split out as #201
 because it needs a rules ruling rather than an engineering call.
 
 ## Notes
@@ -83,7 +83,7 @@ because it needs a rules ruling rather than an engineering call.
 
 ## Outcome
 
-All five shipped across five engine commits + superproject bumps. Cover became #191, unfixed by
+All five shipped across five engine commits + superproject bumps. Cover became #201, unfixed by
 request. Remaining: hand-verification in the running app (below).
 
 **Verify by hand:**
