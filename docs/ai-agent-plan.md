@@ -186,10 +186,11 @@ G12. **Explainability aid:** every Tactician decision logs a one-line ASCII rati
 - Wanting to lower a gate threshold, or a gate failed after two distinct fix attempts.
 - Any training run projected over ~12 hours.
 - Curating or changing the benchmark army pool.
-- **Starting slice A3c (goal enumeration):** Appendix A is NOT yet signed off. Chris filed the
-  plan while busy and asked to be re-prompted — before A3c begins, present Appendix A to him for
-  review/edit and record his sign-off (date + changes) in the #191 ledger and in the Appendix A
-  header. Implementing the vocabulary without that sign-off is a plan violation.
+- **Starting slice A3c (goal enumeration):** Appendix A v2 integrates Chris's 2026-07-09 review
+  (escort/kite/mass/fatigue-bait/block/move-to-cast/transport-delivery) but he has not yet
+  confirmed the refined form — before A3c begins, present Appendix A v2 to him and record his
+  confirmation (date + any changes) in the #191 ledger and the Appendix A header. Implementing
+  the vocabulary without that confirmation is a plan violation.
 
 ---
 
@@ -469,31 +470,75 @@ design principle: grow vocabulary on demand).
 
 ---
 
-## Appendix A — Macro-action vocabulary v1 (NOT SIGNED OFF — re-ask Chris before A3c; see section 5)
+## Appendix A — Macro-action vocabulary v2 (Chris's additions integrated 2026-07-09; awaiting his confirmation of this refined form — see section 5)
 
-Movement intents (per activation; generator caps at ~12 candidates; Hold always present):
+v1 was authored by the planning session; v2 folds in Chris's review (escort, kite, mass, fatigue
+bait, block, move-to-cast, transport delivery). Two of those became generator-wide rules rather
+than intents — see "Generator rules" below.
+
+**Generator rules (apply to every intent):**
+
+- **Diversity-preserving pruning.** The per-activation candidate cap ranks within and across
+  intent families but must keep at least one feasible candidate per family, and must NEVER prune
+  purely by immediate expected value. Sacrificial plays — a cheap unit charging a strong melee
+  unit to eat its fatigue (protecting a more valuable later attacker), a throwaway line that just
+  buys time — look terrible to one-step math and are exactly what search exists to discover. If
+  a candidate is generated, search decides its worth; the generator only decides feasibility.
+  (Origin: Chris's "fatigue bait" — not a movement intent, but a hard rule that the candidate
+  survives to be searched. Requires fatigue state in CombatMath (A1) and in C1 features.)
+- **Feasibility is explicit.** Every candidate states reachable / blocked / budget-clipped, so
+  search never wastes rollouts on infeasible branches and G3 fallbacks are attributable.
+
+**Movement intents** (per activation; Hold always present):
 
 - **M1 Hold** — stay, optionally reform/re-face toward the dominant threat.
 - **M2 AdvanceOnObjective(o)** — path toward objective *o* at advance budget (can still shoot).
 - **M3 RushObjective(o)** — path toward *o* at rush budget (no shooting).
-- **M4 EngageAtRange(e)** — approach enemy *e*, stopping at own best weapon's max-range band
-  (variant: half-range band when the weapon profile rewards it).
-- **M5 ChargeToContact(e)** — existing charge machinery, gap-targeted.
+- **M4 EngageAtRange(e, band)** — position relative to enemy *e* at a chosen range band:
+  *MaxRange* (own best weapon's reach), *HalfRange* (when the weapon profile rewards it), or
+  *SafeShooting* (kite): inside own range but OUTSIDE e's threat envelope (e's move + weapon
+  reach), so we shoot and e cannot answer even after moving. The kite band may move the unit
+  *away* from e; that is the point.
+- **M5 ChargeToContact(e)** — existing charge machinery, gap-targeted. Generated even when the
+  immediate exchange is unfavorable (see diversity rule — fatigue bait, tarpits).
 - **M6 FallBack** — away from the highest-threat enemies, maximizing survival while staying
   within objective-relevant distance if currently holding one.
 - **M7 SeekCoverFrom(e)** — nearest position with cover against *e* within budget, biased toward
   the current strategic goal.
-- **M8 ScreenLane(o)** — occupy the chokepoint cell on the enemy's shortest path to objective *o*
-  (from the pathfinding field). *Flagged speculative: cheap to try because the path grid exists,
-  but if it underperforms, drop it and let Phase C learn lane value instead.*
+- **M8 Block(e, asset)** — form a barrier across enemy *e*'s shortest path toward *asset* (an
+  objective or a friendly unit): enemies cannot move or shoot through our units, so a line stops
+  an advance outright. Subsumes v1's speculative ScreenLane. Whether the blocker is a durable
+  wall or a cheap speed bump is search's call, not the generator's. *Implementation note:*
+  blocking wants a stretched line formation, not `PackGrid`'s tight block — the formation packer
+  needs a line mode (new work, flag in A3a).
+- **M9 Escort(ally)** — keep pace with a key friendly unit, interposing against its dominant
+  threats (bodyguard for a caster, a transport, an objective-holder).
+- **M10 Concentrate** — move toward the army's main friendly cluster / focal sector. This is the
+  per-unit enabler of a "death ball": massing sacrifices map coverage to overwhelm one area, and
+  is sometimes right, sometimes wrong — the generator only offers the option; search and (in C)
+  the learned evaluator decide when concentration beats spreading. C1 features must include
+  local force-concentration measures so this is learnable.
+- **M11 MoveToCast(spell, target)** — position the caster within cast range (and, where required,
+  line of sight) of an intended target — friendly buff recipients (e.g. Furious onto a
+  high-attack melee unit, a defensive buff onto something vulnerable) or enemy targets for
+  damage/debuffs. Also generated for cast-*assist* positioning (the 18" assist radius). The
+  value is often anticipatory (cast lands this turn or next); search/eval judges it. *Verify
+  during A5:* whether the Cast action permits movement in the same activation — if not, this
+  intent is inherently a set-up move and only search can value it.
+- **M12 DeliverCargo(transport)** / **MoveToEmbark(unit)** — a transport routes to where its
+  *cargo* wants to be (the cargo's own projected best goals: objectives, charge targets,
+  range bands), including disembark timing; inversely, a unit far from the action routes toward
+  a transport worth boarding. The transport's own position is subordinate to the cargo's plan.
 
-Deployment intents: zone-constrained analogues of M2/M4/M7, plus reserve declarations
+**Deployment intents:** zone-constrained analogues of M2/M4/M7/M10, plus reserve declarations
 (Ambush/Scout timing: simple round/threat heuristics in A5).
 
-Casting intents: (spell x valid target) enumeration; assist contribute/decline by expected value.
+**Casting intents:** (spell x valid target) enumeration; assist contribute/decline by expected
+value; M11 supplies the positioning half.
 
-Per intent, the generator must state feasibility clearly (reachable? blocked? budget-clipped?) so
-search never wastes rollouts on infeasible branches and G3 fallbacks are attributable.
+With twelve intent families the raw candidate count can exceed the old ~12 cap; the cap becomes
+a ranking budget governed by the diversity rule above (at least one candidate per feasible
+family survives). Tune the budget empirically at A3c/B2 and record the choice.
 
 ---
 

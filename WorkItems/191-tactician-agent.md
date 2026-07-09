@@ -20,6 +20,16 @@ pin tests.
 
 ## Notes (newest first)
 
+**2026-07-09 — Appendix A v2.** Chris reviewed the vocabulary and contributed seven plays:
+bodyguard/escort, kite, mass (death ball), fatigue bait, block, move-to-cast, transport delivery.
+Integrated as: new intents M9 Escort / M10 Concentrate / M11 MoveToCast / M12 DeliverCargo+
+MoveToEmbark; kite folded into M4 as the SafeShooting band; ScreenLane generalized into M8
+Block(e, asset); fatigue bait became the generator-wide *diversity-preserving pruning* rule
+(sacrificial candidates must survive to be searched) rather than an intent. New implementation
+flags: line-formation mode for the formation packer (A3a), fatigue in CombatMath features (A1) +
+concentration features (C1), verify whether Cast permits same-activation movement (A5). v2
+awaits Chris's confirmation of the refined form before A3c (see plan sec. 5).
+
 **2026-07-09 — filed.** Plan authored during the Fable window from a three-agent codebase
 exploration (existing AI map, engine interface assessment, special-rules variance) + hardware
 check. Signed off: new-option-not-replacement, engine-side bot, in-repo FdgLab, Python+ONNX,
