@@ -474,7 +474,7 @@ public class LobbyScreen : IAppScreen
         ImGui.Spacing();
 
         // Cancel first and focused — the safe default.
-        if (ImGui.Button("Cancel", new Vector2(140f, 0f)) || ImGui.IsKeyPressed(ImGuiKey.Escape))
+        if (ImGui.Button("Cancel", new Vector2(140f, 0f)) || EscapeGate.TryConsume())
         {
             ImGui.CloseCurrentPopup();
         }

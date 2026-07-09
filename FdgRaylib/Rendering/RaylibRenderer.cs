@@ -82,6 +82,7 @@ public class RaylibRenderer
     private bool _inGame = false;
     private bool _closeRequested = false;
     private bool _resolverOverlayFaulted = false;
+    private bool _quitConfirmOpen = false;
 
     /// <summary>
     /// Runs once inside <see cref="Run"/>, right after the window + ImGui exist and before the first
@@ -323,6 +324,11 @@ public class RaylibRenderer
         Raylib.InitWindow(1280, 720, "Future of Dark Grimness");
         Raylib.SetTargetFPS(30);
 
+        // Escape must not tear the window down: it is the natural key for "cancel the action I'm in the
+        // middle of", and several resolvers already bind it that way. Every Escape is routed through
+        // EscapeGate instead, and an unclaimed one raises the quit confirmation (DrawQuitConfirm).
+        Raylib.SetExitKey(KeyboardKey.Null);
+
         int monitor   = Raylib.GetCurrentMonitor();
         int monitorW  = Raylib.GetMonitorWidth(monitor);
         int monitorH  = Raylib.GetMonitorHeight(monitor);
@@ -368,6 +374,8 @@ public class RaylibRenderer
             int screenW = Raylib.GetScreenWidth();
             int screenH = Raylib.GetScreenHeight();
 
+            EscapeGate.BeginFrame(lockedOut: _quitConfirmOpen);
+
             Raylib.BeginDrawing();
             Raylib.ClearBackground(Background);
 
@@ -375,7 +383,9 @@ public class RaylibRenderer
             {
                 _presentationPlayer?.Update(Raylib.GetFrameTime());
 
-                HandleTableViewInput(screenW, screenH);
+                // While the quit modal is up, the board is frozen: zoom/pan read raw Raylib input and
+                // would otherwise slide around behind the dimmer.
+                if (!_quitConfirmOpen) HandleTableViewInput(screenW, screenH);
                 var layout = ComputeLayout(screenW, screenH);
                 // Push the layout to the tactical overlay once per frame so both its canvas-pass draws
                 // (below) and its ImGui-pass instruments read the same world<->screen mapping.
@@ -431,6 +441,17 @@ public class RaylibRenderer
                 ResolverPanelLayout.Set(rightX, 0, rightW, panelH);
 
                 rlImGui.Begin();
+                // The quit modal blocks the game behind it. ImGui's own modal only blocks its widgets;
+                // the canvas resolvers, hit tester, and overlays all read the mouse directly and gate on
+                // WantCaptureMouse instead. Claiming both flags here (the same trick MeasurementOverlay
+                // uses for Ctrl-measure) makes every one of those guards close at once, with no per-
+                // resolver changes. Set before anything reads them; overlays only ever set them true.
+                if (_quitConfirmOpen)
+                {
+                    var io = ImGui.GetIO();
+                    io.WantCaptureMouse    = true;
+                    io.WantCaptureKeyboard = true;
+                }
                 // Runs before the hit tester / resolvers so its Alt-measure WantCaptureMouse override
                 // lands before they read that flag (see MeasurementOverlay).
                 _measurementOverlay.UpdateLayout(layout.Scale, layout.OriginX, layout.OriginY, TableHIn);
@@ -472,6 +493,8 @@ public class RaylibRenderer
                 // top-right region always reads as an intentional panel rather than empty space.
                 if (!resolverShown) DrawIdleResolverPanel();
                 DrawGameOverOverlay(screenW, screenH);
+                // Last: only an Escape that no resolver or overlay wanted reaches the quit confirmation.
+                DrawQuitConfirm(screenW, screenH);
                 rlImGui.End();
             }
             else
@@ -482,6 +505,7 @@ public class RaylibRenderer
                 // its lobby view-model raises the same game-ended signal, so draw the overlay here too so
                 // that pre-launch case isn't silently stuck (QF8). No-op when nothing has ended.
                 DrawGameOverOverlay(screenW, screenH);
+                DrawQuitConfirm(screenW, screenH);
                 rlImGui.End();
             }
 
@@ -874,6 +898,55 @@ public class RaylibRenderer
         }
 
         ImGui.End();
+    }
+
+    private const string QuitPopupId = "Quit Future of Dark Grimness?";
+
+    /// <summary>
+    /// Escape used to be raylib's exit key, so hitting it to cancel a half-finished action killed the
+    /// game instead. Now an Escape that nothing else claimed (see <see cref="EscapeGate"/>) raises this
+    /// confirmation. It is an ImGui modal, so the theme's ModalWindowDimBg dims the board behind it and
+    /// ImGui refuses input to the windows underneath; the raw-input canvas paths are shut off separately
+    /// by the WantCapture* override in the frame loop. Drawn last, in both the in-game and menu branches.
+    /// </summary>
+    private void DrawQuitConfirm(int screenW, int screenH)
+    {
+        if (!_quitConfirmOpen)
+        {
+            if (!EscapeGate.TryConsume()) return;
+            _quitConfirmOpen = true;
+            ImGui.OpenPopup(QuitPopupId);
+        }
+
+        // OpenPopup is consumed by the first BeginPopupModal, so re-arm it while we stay open.
+        if (!ImGui.IsPopupOpen(QuitPopupId)) ImGui.OpenPopup(QuitPopupId);
+
+        var center = ImGui.GetMainViewport().GetCenter();
+        ImGui.SetNextWindowPos(center, ImGuiCond.Appearing, new Vector2(0.5f, 0.5f));
+        if (!ImGui.BeginPopupModal(QuitPopupId, ImGuiWindowFlags.AlwaysAutoResize | ImGuiWindowFlags.NoSavedSettings))
+            return;
+
+        ImGui.TextUnformatted(_inGame
+            ? "Quit to desktop? The game in progress will be lost unless you have saved it."
+            : "Quit to desktop?");
+        ImGui.Spacing();
+
+        var btn = new Vector2(140f, 32f);
+        bool quit   = ImGui.Button("Quit", btn);
+        ImGui.SameLine();
+        bool cancel = ImGui.Button("Cancel  (Esc)", btn);
+
+        // The gate is locked out while we're open, so read the key straight from ImGui.
+        cancel |= !ImGui.GetIO().WantTextInput && ImGui.IsKeyPressed(ImGuiKey.Escape);
+
+        if (quit || cancel)
+        {
+            ImGui.CloseCurrentPopup();
+            _quitConfirmOpen = false;
+            if (quit) RequestClose();
+        }
+
+        ImGui.EndPopup();
     }
 
     // Log/chat console: fills the bottom half of the in-game right column. Log and Chat are independent

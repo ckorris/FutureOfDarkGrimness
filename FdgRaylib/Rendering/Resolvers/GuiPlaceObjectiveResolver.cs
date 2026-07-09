@@ -83,7 +83,7 @@ public class GuiPlaceObjectiveResolver
             DrawGhost(dl, pending.Value, markerNumber, valid: true, frozen: true);
 
             // Esc / right-click cancels.
-            if (ImGui.IsKeyPressed(ImGuiKey.Escape) ||
+            if (EscapeGate.TryConsume() ||
                 (!io.WantCaptureMouse && ImGui.IsMouseClicked(ImGuiMouseButton.Right)))
             {
                 lock (_lock) _pendingCandidate = null;
