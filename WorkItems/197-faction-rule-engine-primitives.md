@@ -1,6 +1,6 @@
 # 197 — Faction rule coverage, part 2: engine primitives + the scope-mismatch bug
 
-**Status**: in progress (slice 0 DONE 2026-07-09; later slices still carry their own forks)
+**Status**: in progress (slice 0 + the ">9in shot or charged" gate DONE 2026-07-09; later slices still carry their own forks)
 **Related**: #196 (data-only half of the same audit), #100 (primitive catalog — this item is its corpus-wide successor), #102 (range/terrain threading; defensive Darkborn residual), #034 (spells), #042, #093, `SpecialRulesAudit.md`
 
 ## Goal
@@ -118,10 +118,62 @@ same day per the "don't silently cut scope" guardrail.
 
 | Refs | Slice | Needs | Rules |
 |-----:|-------|-------|-------|
-| 10 | **Distance at the save-roll hook** | `SaveRollCompleteContext` carries no `DistanceInches` (only `HitRollCompleteContext` does), but `AddExtraWound`'s effect must fire at `Shooting_OnSaveRollComplete` (it reads the save-roll histogram). F5's Boost variants need "extra wound on 1-2 instead of 1, when shooting/charging enemies over 9in away" and can't express the distance gate at the hook the effect requires. Thread distance into `SaveRollCompleteContext`, or find another way to carry it through to the save stage. | Warbound Boost (2), Warbound Boost Aura (5), Infected Boost Aura (3) |
-| 6 | **Reroll threshold parameter** | `RerollCondition.OnUnmodifiedValue` carries no value — `RerollSink.cs` hardcodes it to the unmodified max face (6). F10's Boost variants need "re-roll unmodified 5s *or* 6s". `AddExtraHit`/`AddExtraWound` already parameterize their trigger value per entry (`OnRollValue`); `RerollCondition` needs the same, or a second variant with a threshold. | Mischievous Boost Aura (4), Scrapper Boost Aura (2) |
+| 10 | ~~**Distance at the save-roll hook**~~ **DONE 2026-07-09** | Turned out to be one facet of a bigger gap — the whole ">9in shot **or charged**" gate. See the slice write-up below. `SaveRollCompleteContext` now carries `DistanceInches` (+ `IHasDistance`) and the charge launch distance. | Warbound Boost (2), Warbound Boost Aura (5), Infected Boost Aura (3) — all authored |
+| 6 | **Reroll threshold parameter** | `RerollCondition.OnUnmodifiedValue` carries no value — `RerollSink.cs` hardcodes it to the unmodified max face (6). F10's Boost variants need "re-roll unmodified 5s *or* 6s". `AddExtraHit`/`AddExtraWound` already parameterize their trigger value per entry (`OnRollValue`); `RerollCondition` needs the same, or a second variant with a threshold. **Note:** once built, these two must be authored as the *increment* (re-roll 5s only) — their base already re-rolls the 6s. See the Boost-composition rule below. They also need `attackedFromOverInches` (already built). | Mischievous Boost Aura (4), Scrapper Boost Aura (2) |
+| — | **`RuleFireLint` does not check operation *consumption*** | The lint proves a passive entry CAN emit an operation; it explicitly does not check that the stage at that hook ever *reads* it ("NOT covered: whether a PASSIVE entry's operations are consumed by the stages at its hook", its own doc). That hole let `Changebound`/`Machine-Fog` ship as complete no-ops — a `rollModifier(Hit)` at `Shooting_OnHitRollComplete`, after the dice are rolled. A hand-maintained map (hook -> consumed operation kinds, distinguishing `ApplyRollModifier(Hit)` from `(Save)`) mirroring `IsOpHandledAtAbilityHook` would close it. `BoostRuleCompositionTests` catches the instances that exist today, but only for rules it names. | (no refs — an authoring-safety gap) |
 | 7 | **`moraleTestThen` outside spell casting** | `Effect.MoraleTestThen.Apply()` is an intentional no-op — `CastSpellStage` special-cases the effect before calling `Apply()` and runs the morale-test-then-branch itself. None of the five generic ability-offering stages (`ChooseActionStage`, `PreAttackStage`, `StrafingStage`, `DeterminePlayerTurnStage`, `DeployUnitStage`) do the same, so a plain `SpecialRuleDefinition` activated ability using it is a genuine no-op in play (confirmed by `RuleFireLint`, not assumed). Wire `MoraleTestThen` into the generic ability path, or add a non-spell "morale test, conditional consequence" primitive. Both corpus uses are ordinary unit-rule references (`unit.rules`), not spell-list entries, so modelling them as `SpellDefinition`s instead would not fix the corpus. | Mind Control (4), Fatigue Debuff (3) |
 | 3 | **Vengeance** | "Place N markers on the unit that destroyed this one, N = models with this rule in this unit at game start; friendly units get +N to hit where N is the marker count on the target." Needs two things that don't exist: a magnitude source for "count of models with rule X in the bearer unit" (`ValueSource` only has `Literal`/`Arg`), and marker-scaled roll magnitude (this is P13, already tracked below — Vengeance can piggyback on P13 once it lands, but still needs the model-count source on top). | Vengeance (3) |
+
+## Slice: the ">9in shot or charged" gate — **DONE 2026-07-09**
+
+**Owner sign-off (2026-07-09):** the 9" measures the *distance to the target when the charge is declared*
+(not the path length travelled), expressed as **one condition** rather than a hand-composed `Or()`.
+
+Six Boost rules and six defensive rules share the wording "*when it shoots **or charges** enemies over 9\"
+away*" / "*when units ... are shot **or charged** from over 9\" away*". `Condition.DistanceGreaterThan`
+reads the **live** attacker-to-target distance, and a melee attack resolves in base contact
+(`MELEE_RANGE_INCHES_HORIZONTAL == 2`), so a 9" live-distance gate **can never pass in melee**. The charge
+arm of all twelve was dead. Max charge is 12", so charges from 9–12" are a real, reachable case — the arm
+was unimplementable, not vacuous.
+
+- **`IHasAttackOriginDistance`** (new capability): the distance an attack was *launched* from. Live distance
+  when shooting; distance to the defender at **activation start** when charging; 0 for a non-charging melee
+  swing, so a strike-back never inherits the charger's launch.
+- **Why activation start.** This engine models `Charge` as the *melee attack* and the approach as a separate
+  `Move` action (see `ChooseActionStage.GetCanCharge`: Charge is offered when an enemy is already within
+  melee range). So the moment the unit "declares a charge and sets off" is its activation start.
+  `UnitActionContext.Reset` snapshots the min distance to every enemy unit, because by the time a charge's
+  defender is picked the unit has closed and the pre-move geometry is gone.
+- **`Condition.AttackedFromOverInches(X)`** reads it. Implemented on `HitRollModifierContext`,
+  `HitRollCompleteContext` and `SaveRollCompleteContext` (the last also gained `DistanceInches`/`IHasDistance`,
+  which is what the old "distance at the save-roll hook" slice was really asking for).
+- Engine `bf6353d` + `e677f1e`; `AttackOriginDistanceTests` (10 cases). Mutation-checked: dropping the charge
+  origin, treating *any* charge as qualifying, and letting a strike-back inherit the origin each turn exactly
+  one test red.
+
+### Three defects in #196's shipped data, found and fixed here (app-side `27c55c4`)
+
+All three passed `--validate-rules` **and** `RuleFireLint`. The first checks structure; the second proves an
+entry *can* fire, not that its operations are *consumed*, nor what several rules *sum to*.
+
+1. **Boost rules double-counted with their base.** The corpus writes a Boost as the *boosted rule*
+   ("extra hits on 5-6, instead of only on 6"), but the engine composes base + Boost **additively**
+   (`HitInjectionSink`, `RollModifierSink`, `MovementModifierSink` all add; only `WoundIgnoreSink` takes the
+   min, which is why F2's Boosts were accidentally right). `Devout` + `Devout Boost` gave **two** extra hits
+   on a natural 6. `Lustbound Boost` gave +3"/+9" instead of +2"/+6". Every gate-removal Boost gave −2 to hit
+   beyond 9" instead of −1. **45 corpus units carry both a base and its Boost.**
+   **Rule going forward: a Boost is authored as the INCREMENT** — only the face, magnitude, or range band its
+   base does not already cover. The `Highborn Boost` template I generalized from is correct *only* because its
+   increment happens to equal its base.
+2. **`Changebound` and `Machine-Fog` were outright no-ops.** A `rollModifier(Hit)` emitted at
+   `Shooting_OnHitRollComplete` is never read — the dice are already rolled, and only `Save` deltas fold from
+   that hook. Core `Stealth`, the identical defensive −1-to-hit shape, correctly sits at
+   `Shooting_OnHitRollModifier`. Both moved.
+3. **The charge arm** (above) for `Changebound`, `Primeborn`, `Sturdy`, `Guardian`, `Machine-Fog`, `Guarded`.
+
+`FdgRaylib.Tests/BoostRuleCompositionTests.cs` is the guard: it drives the real shipped supplement through the
+real evaluator and the real sinks and asserts the **net** effect a player sees. Against the pre-fix data 9 of
+its 11 cases go red, at least one per defect class.
 
 ## Slices — by leverage
 
@@ -166,6 +218,13 @@ Reference counts are corpus-wide (44 books). Primitive numbers are #100's.
 
 ## Notes
 
+- 2026-07-09: **The ">9in shot or charged" gate shipped** (engine `bf6353d`, `e677f1e`; app `27c55c4`).
+  Signed off first: declared-distance semantics, one condition. Building it surfaced **three defect classes in
+  #196's already-pushed data** — Boost rules double-counting with their base (45 units affected), two rules
+  that were outright no-ops on the wrong hook, and the dead charge arm itself. All fixed; see the slice
+  write-up above. Also closed the old "distance at the save-roll hook" slice (it was one facet of this) and
+  authored the four rules it blocked. Filed a new slice: `RuleFireLint` does not check operation consumption,
+  which is the hole that let the no-op rules ship.
 - 2026-07-09: **Slice 0 shipped.** 145 of 157 refs attach; 23 mis-aimed `Precise` refs corrected. Engine
   commit `8cdca83`. Two deviations from the sign-off, both surfaced before building:
   (a) `Strafing` is a genuine primitive gap, not a data bug — the signed-off "fix the book data" premise

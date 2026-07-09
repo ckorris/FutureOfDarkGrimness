@@ -50,8 +50,10 @@ ignoreEnemyMovementBlock ignoreCover ignoreLineOfSight deferDeployment disembark
 applyFatigue markTarget reduceArmorPenetration countAsInTerrain perHitSaveModifier`
 
 Condition kinds: `always unitHasRule allModelsHaveThisRule targetHasRule actionTypeIs unmodifiedRollEquals
-distanceGreaterThan statGreaterOrEqualTo targetMajorityHasTough tokenPresent and or not afterMoving
-isMelee isCharging isNotSpell isSpell`
+distanceGreaterThan attackedFromOverInches statGreaterOrEqualTo targetMajorityHasTough tokenPresent and or
+not afterMoving isMelee isCharging isNotSpell isSpell`
+(`attackedFromOverInches` added by #197: the distance the attack was *launched* from — the live distance when
+shooting, the charge's declared distance in melee. Use it for every "shot or charged from over N inches away".)
 
 Hooks: see `Rules/Foundation/EHookID.cs`. Only hooks with a registered context fire; `RuleValidator`
 warns on the rest, and `RuleFireLint` fails them.
@@ -71,6 +73,17 @@ whole "when this unit is shot / takes hits" family is `Subject`.
   transitively into the book. Author a base rule **before** its `Boost` / `Aura` / `Buff` / `Mark` variant.
 - **`perHitSaveModifier`, not `rollModifier(Save)`, for "on a 6 to hit, AP(+N)".** A whole-attack save
   modifier applies to every hit in the volley (BUG-2, the Destructive bug). Mirror core `Rending`.
+- **A `Boost` is the INCREMENT, not the boosted rule.** (Learned the hard way — see Notes.) Base and Boost
+  both attach, and the sinks *add*. So a Boost that widens "extra hit on a 6" to "5-6" must emit the 5 only;
+  one that raises "+1\"/+3\"" to "+2\"/+6\"" must emit "+1\"/+3\""; one that removes a `>9"` gate must fire
+  only *inside* 9". Exception: `ignoreWoundOnRoll` folds via `WoundIgnoreSink`, which keeps the **best**
+  (lowest) threshold rather than adding — so those Boosts state the boosted threshold directly.
+- **Check where an effect is CONSUMED, not just that the hook accepts it.** `RuleValidator` and `RuleFireLint`
+  both pass a `rollModifier(Hit)` emitted at `Shooting_OnHitRollComplete`, and it does nothing: the dice are
+  already rolled, and only `Save` deltas fold from that hook. Hit modifiers belong at
+  `Shooting_OnHitRollModifier` (copy core `Stealth`). The lint's blind spot here is a filed #197 slice.
+- **`distanceGreaterThan` never passes in melee** — base contact is `<= 2"`. For "shot or charged from over
+  9\" away", use `attackedFromOverInches` (#197), which reads the charge's launch distance in melee.
 
 ## Verification loop (run before every commit)
 
@@ -196,6 +209,24 @@ engine work. `Thrust in Melee Aura` and `Strider Aura` needed no new base — th
 
 ## Notes
 
+- 2026-07-09: **Three defect classes found in this item's shipped data while building #197's shoot-or-charge
+  gate.** All three were fixed there (app `27c55c4`); recorded here because this is where they were authored.
+  - **A Boost is the INCREMENT, not the boosted rule.** The corpus writes "gets extra hits on 5-6, instead of
+    only on 6", but the engine composes base + Boost *additively* (`HitInjectionSink`, `RollModifierSink`,
+    `MovementModifierSink` all add; `WoundIgnoreSink` takes the min, which is the only reason F2's Boosts were
+    right). `Devout` + `Devout Boost` gave **two** extra hits on a natural 6. 45 corpus units carry both.
+    Affected F3, F4, F6, F7, F8. I generalized the wrong lesson from the shipped `Highborn Boost` template,
+    which is correct only because its increment happens to equal its base.
+  - **A `rollModifier(Hit)` at `Shooting_OnHitRollComplete` is never read** — the dice are already rolled, and
+    only `Save` deltas fold from that hook. `Changebound` and `Machine-Fog` (F4) were complete no-ops. Core
+    `Stealth`, the identical shape, correctly sits at `Shooting_OnHitRollModifier`. **Check where an effect is
+    consumed, not just that the hook accepts the condition.**
+  - **`distanceGreaterThan` can never pass in melee** (base contact is <= 2in), so six rules' "or charged from
+    over 9in away" arm was dead. Use `attackedFromOverInches`, built in #197.
+  - **Why the gates missed all three:** `--validate-rules` checks structure, and `RuleFireLint` proves an entry
+    *can* fire but explicitly does not check that its operations are *consumed* at that hook (its own doc says
+    so), nor what several rules *sum to*. `FdgRaylib.Tests/BoostRuleCompositionTests.cs` now asserts the **net**
+    effect through the real evaluator and sinks; the lint's consumption gap is filed as a #197 slice.
 - 2026-07-09: F16 asked of the owner; verdict is "investigate further, don't guess" — see the F16 section
   above for the corpus data (which books/units, `Armor`'s `coreNumeric` shape vs. `Banner`/`Sergeant`/
   `Musician`'s uniform cross-faction champion-package shape) and the owner's aura-miscategorization
