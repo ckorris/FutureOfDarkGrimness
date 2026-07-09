@@ -20,6 +20,45 @@ pin tests.
 
 ## Notes (newest first)
 
+**2026-07-09 — A3a (MovementPlanner extraction) DONE.** `Ai/Tactician/MovementPlanner.cs`: the
+solo-rules move-construction mechanics moved verbatim behind shared primitives - `BuildCandidate`
+(single-step vs formation re-pack, with the step<=0 -> StayInPlace degenerate preserved exactly,
+dead models' zero-length paths included), `RefineStepTowardGap` (measure-and-correct, 3
+iterations), `ValidateWithBackoff` (the G3 ladder: halve to min step -> reform-in-place -> hold
+exact), `StayInPlace`/`HoldExactPositions`/`LiveEnemyFootprints`/`MinEnemyGap`, tuning constants.
+`AiDefineMovementResolver` keeps only policy (archetype, nearest-enemy targeting, terrain
+skirting, difficult-terrain clamp) and delegates the mechanics. NEW: `PackLine` + the
+`EFormation {Grid, Line}` flag (Appendix A M8's barrier shape; perpendicular-to-move by default),
+with rank-wrap so a long line never breaks the 9" coherency rule.
+**Pinned (D1):** the 8 AiDefineMovementResolver tests + 7 CohesiveFormation tests green unchanged;
+suite 1472/1472 (+3 PackLine tests); and the decisive instrument - 200-game benchmark outcome
+hashes on both matrices, captured fresh immediately before the refactor and re-run after:
+builtin `B05AA1D810364C6B`, builtin-basic `F4318EF0D91161F5`, BOTH IDENTICAL pre/post (they also
+still match the #198-era values, so #196/#197's parallel landings didn't shift these
+trajectories either). Deferred, recorded: `AiConsolidationMoveResolver` still owns its own
+consolidation logic - migrate onto the planner only if A4 needs consolidation policy (avoid
+speculative churn). Next: A3b (grid pathfinding), then the HARD GATE - Appendix A confirmation
+with Chris before A3c.
+
+**2026-07-09 — A2 (TacticalAnalysis) DONE.** `Ai/Tactician/TacticalAnalysis.cs`: mobility queries
+(Advance/Rush reuse `MovementRuleQueries`; `ChargeDistanceAgainst` composes the unit's charge
+budget + the target-conditioned query exactly as DefinePathStage does - first draft wrongly fed
+the BASE charge into the per-target query and the Fast test caught it); `ThreatRangeAgainst`
+(max of advance+longest-effective-weapon-range and charge reach - the M4 kite band's input);
+`ExpectedShootingAt` (CombatMath at a hypothetical distance/cover); objective projection
+(`ProjectObjectives`/`ProjectedScore` mirroring ReconcileObjectivesStage: base-edge distance
+within 3", sticky owner, contest-to-neutral, Shaken/reserve-arrival/Aircraft exclusions - the
+radius + rules are a MIRROR of that stage's privates, noted in both files); `UnitValue` (runtime
+units carry no point cost - UnitFileEntry.PointCost never reaches UnitData - so it is the plan's
+f(wounds, quality, weapon output): sqrt(durability x (1+output)) vs a Q4/D4 reference).
+**Verified:** 10 tests on authored states - base/Fast move+charge distances, threat ranges,
+seize/contest/sticky/edge-distance/exclusion projection cases, value ordering on real HDF stat
+lines (Infantry>Recruits, Storm Troopers>Veterans, Tank>all), value falls with casualties. Suite
+1462/1462. **Honest calibration note:** the book prices Recruits (10 @ 75) BELOW GRUNT Robots
+(5 @ 80) where the formula ranks them the other way - quality is weighted harder by the book than
+by this v1; revisit only if A4's value-weighted targeting misreads benchmarks (G2). Special rules
+deliberately don't contribute to UnitValue yet (recorded gap).
+
 **2026-07-09 — A1 (CombatMath) DONE.** `Ai/Tactician/CombatMath.cs`: `EstimateShooting` (all
 in-range weapon batches), `EstimateMelee` (impact hits, Counter strike-first swap - which also
 strips the charger's IsCharging, exactly as the engine's role swap does - swings per weapon batch,
