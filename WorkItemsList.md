@@ -29,8 +29,11 @@ When closing an item: write the Outcome in its detail file, tick the line, and m
 - [ ] 087 — Custom special-rule authoring + standalone rules files (author new rules as data in the builder; import/export rule sets independent of armies). Builds on #059. ([WorkItems/087](WorkItems/087-custom-rule-authoring.md))
 - [~] 100 — Special-rule engine primitives umbrella: Part 1 + cross-unit pre-attack targeting done; open: dormant hooks, RangeModifier/Strider, Part-2/3 primitives (deferred-debuff, dice-pool, markers). Corpus reference is off-repo (`../GDF Armies/`, do not commit). ([WorkItems/100](WorkItems/100-special-rule-primitive-gaps.md))
 - [ ] 104 — Single-unit `Evaluate` doesn't consume `NextTrigger` grants — correct today; build the opt-in when a rule needs it. ([WorkItems/104](WorkItems/104-single-unit-evaluate-grant-consume.md))
+- [ ] 191 — Faction rule coverage pt.1: author the 107 dead rule names (1,243 refs) that are clones of live primitives, as data in `GdfRuleSupplement.json`. App-side only, no engine changes. ([WorkItems/191](WorkItems/191-faction-rule-data-authoring.md))
+- [ ] 192 — Faction rule coverage pt.2: the 97 dead names (942 refs) needing new engine primitives. Slice 0 (scope-mismatch bug) DONE — 145 refs recovered; `Strafing` split out as its own slice. ([WorkItems/192](WorkItems/192-faction-rule-engine-primitives.md))
 
 All 33 GF v3.5.1 core special rules are implemented (verified 2026-06-30; see archive #029-#032/#051).
+Corpus coverage is a different story: 2,197 of 13,870 book rule references (15.8%) do nothing today — see #191/#192.
 
 ## Casting
 
