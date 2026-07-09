@@ -15,9 +15,18 @@ When closing an item: write the Outcome in its detail file, tick the line, and m
 
 ---
 
+## Rounds & resume
+
+- [ ] 195 — Resumed games play four MORE rounds instead of finishing the four-round game (`ReconcileObjectivesStage._timesEntered` is a per-instance counter ignoring the resumed round); round logs mislabelled. Behavior change - sign-off before building. Found by #193. ([WorkItems/195](WorkItems/195-resume-plays-extra-rounds.md))
+
 ## Movement
 
+- [~] 159 — `DefinePathStage` cohesion crash: four root causes fixed, but a residual still repros ~1 run in 10 on the default army (2/24 on origin/master, 2026-07-09) — *not* fixed; not yet isolated to the CLI auto-advance vs the AI resolver. ([WorkItems/159](WorkItems/159-definepath-cohesion-crash.md))
 - [ ] 182 — Move through friendly units, but not stop on them: movement validation today only checks enemy footprints; add the "can't end overlapping a different friendly unit" guard (mirror #011's ending-stacked check, minus pass-through block and standoff), threaded through the GUI/CLI/AI resolvers + preview. ([WorkItems/182](WorkItems/182-move-through-friendly-units.md))
+
+## Shooting & cover
+
+- [ ] 201 — Shooting *out of* cover grants the defender cover: `EvaluateSightLine` folds every terrain piece on the segment into one worst-effect with no notion of *where* it sits, so the attacker's own wall counts. Blocked on a rules ruling (proximity to defender, shoot-through depth). ([WorkItems/201](WorkItems/201-cover-attacker-side.md))
 
 ## Model bases & geometry
 
@@ -42,6 +51,13 @@ Corpus coverage is a different story: 1,028 of 13,870 book rule references (7.4%
 ## Transport
 
 - [ ] 097 — Disembark/embark full movement: replace the Advance-equivalent simplifications (disembark-then-Rush/Charge from the 6" drop; real move-into-contact to embark). ([WorkItems/097](WorkItems/097-transport-full-movement.md))
+
+## AI agent (Tactician)
+
+Master plan: `docs/ai-agent-plan.md` (heuristics -> MCTS -> learned value net; gates, invariants, vocabulary).
+
+- [ ] 191 — Tactician AI agent umbrella: challenge-level game-playing AI as a new profile alongside the solo-rules bot; phased A-D, benchmark-gated. ([WorkItems/191](WorkItems/191-tactician-agent.md))
+- [ ] 194 — FdgLab self-play harness: new in-repo console project; in-process parallel `GameRunner`, watchdog, seeded benchmark matrix + strategy probes. Tactician prereq P3. ([WorkItems/194](WorkItems/194-fdglab-harness.md))
 
 ## Networking & infrastructure
 
@@ -115,9 +131,9 @@ From `Audit-2026-07-06-New-Subsystems.md` (13 smaller findings were fixed in tha
 Implemented, merged, suite green — held open only until confirmed by hand in the running app.
 Tick and move to the archive once verified. The detail files carry the full ledgers.
 
+- [~] 202 — 2026-07-09 playtest fixes (Esc no longer quits; Fast/Very Fast reach Rush+Charge; ranged morale once per defender after shooting; Move/Charge/Disembark back-out; Ambush reserve is unit state, not an origin position). Verify: the six checks in the detail file. ([WorkItems/202](WorkItems/202-playtest-fixes-2026-07-09.md))
 - [~] 003 — Force-org validation warnings. Verify: build an over-points / 3+ hero / 4+ same-unit army — amber warnings appear; save + launch never blocked. ([WorkItems/003](WorkItems/003-force-org-validation.md))
 - [~] 108 — AI deploy coherent block packing. Verify: AI deploys tight square-ish grids, no stranded or scattered models. ([WorkItems/108](WorkItems/108-ai-deploy-cohesion.md))
-- [~] 159 — `DefinePathStage` cohesion crash (four root causes fixed; 0/24 repro, was 5/20). Verify: melee-heavy games (HEF/AH armies) — no `ConsolidateStage` crash, no stacked models. ([WorkItems/159](WorkItems/159-definepath-cohesion-crash.md))
 - [~] 150 — Base-shape geometry everywhere (unified collision, swept paths, LoS, pile-in, previews). Verify: play a rect-base/aircraft army — placement, movement clamps, LoS, pile-in respect the true oriented shape. ([WorkItems/150](WorkItems/150-base-shape-bounding-radius-remnants.md))
 - [~] 157 — Takedown per-shot target picks. Verify: fire HEF Snipers (3+ Sniper Rifles) — one canvas pick per shot, spreadable across models. ([WorkItems/157](WorkItems/157-takedown-per-shot-picks.md))
 - [~] 158 — Dead models in shooting chooser + stale rings. Verify: shoot a unit that has taken casualties — no rings/aim lines on corpses, living-only counts. ([WorkItems/158](WorkItems/158-shooting-target-dead-models.md))

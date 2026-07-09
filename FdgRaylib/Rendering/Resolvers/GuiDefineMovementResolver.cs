@@ -9,7 +9,7 @@ using ImGuiNET;
 namespace FdgRaylib.Rendering.Resolvers;
 
 public class GuiDefineMovementResolver
-    : IStageResolver<DefineMovementPathRequest, List<ModelMoveEntry>>, IGuiResolver, IGuiCanvasOverlay
+    : IStageResolver<DefineMovementPathRequest, CancellableResult<List<ModelMoveEntry>>>, IGuiResolver, IGuiCanvasOverlay
 {
     private readonly ITableState _tableState;
     private readonly FormationModeState _formationMode;
@@ -54,7 +54,7 @@ public class GuiDefineMovementResolver
 
     // Request state
     private DefineMovementPathRequest? _request;
-    private TaskCompletionSource<List<ModelMoveEntry>>? _tcs;
+    private TaskCompletionSource<CancellableResult<List<ModelMoveEntry>>>? _tcs;
 
     // Pathing state — main-thread only after Resolve assigns it
     private PathTemplate? _pathTemplate;
@@ -175,9 +175,9 @@ public class GuiDefineMovementResolver
         return hitUnit != null && _tactical.TryHandleEnemyClick(hitUnit);
     }
 
-    public Task<List<ModelMoveEntry>> Resolve(DefineMovementPathRequest request)
+    public Task<CancellableResult<List<ModelMoveEntry>>> Resolve(DefineMovementPathRequest request)
     {
-        var tcs = new TaskCompletionSource<List<ModelMoveEntry>>();
+        var tcs = new TaskCompletionSource<CancellableResult<List<ModelMoveEntry>>>();
         var template = new PathTemplate(request.UnitDataBinding, request.MaxAdvanceDistance, request.MaxDistanceInches);
         var first = request.UnitDataBinding.GetValue().ModelBindings
             .Select(mb => mb.GetValue() as IModel)
@@ -201,7 +201,7 @@ public class GuiDefineMovementResolver
     public void Draw(int screenW, int screenH)
     {
         DefineMovementPathRequest? request;
-        TaskCompletionSource<List<ModelMoveEntry>>? tcs;
+        TaskCompletionSource<CancellableResult<List<ModelMoveEntry>>>? tcs;
         PathTemplate? pt;
         lock (_lock) { request = _request; tcs = _tcs; pt = _pathTemplate; }
         if (request == null || tcs == null || pt == null) return;
@@ -830,7 +830,7 @@ public class GuiDefineMovementResolver
     }
 
     private void DrawInfoPanel(int screenW, DefineMovementPathRequest request, PathTemplate pt,
-        TaskCompletionSource<List<ModelMoveEntry>> tcs, List<ITerrain> terrain,
+        TaskCompletionSource<CancellableResult<List<ModelMoveEntry>>> tcs, List<ITerrain> terrain,
         int dangerousCrossers, bool difficultCrossing, bool difficultStopped, bool selectedCapped)
     {
         float panelW = ResolverPanelLayout.W;   // dock into the right-column resolver panel
@@ -972,6 +972,21 @@ public class GuiDefineMovementResolver
             Complete(tcs, results);
             ImGui.End();
             return;
+        }
+
+        // Back: abandon the move entirely. Distinct from "Skip all", which commits a 0" move and still
+        // spends the unit's Move action. Nothing has been mutated yet, so this is always safe here.
+        if (request.AllowCancel)
+        {
+            bool backPressed = ResolverButtons.Deemphasized("Back", new Vector2(fullW, 28f));
+            if (ImGui.IsItemHovered())
+                ImGui.SetTooltip("Cancel the move and pick a different action. The unit keeps its move.");
+            if (backPressed)
+            {
+                CompleteCancelled(tcs);
+                ImGui.End();
+                return;
+            }
         }
 
         // Secondary row: Skip (de-emphasized) + Auto-advance.
@@ -1828,7 +1843,15 @@ public class GuiDefineMovementResolver
             .Select(mb => new ModelMoveEntry(mb, new List<Position>()))
             .ToList();
 
-    private void Complete(TaskCompletionSource<List<ModelMoveEntry>> tcs, List<ModelMoveEntry> entries)
+    private void Complete(TaskCompletionSource<CancellableResult<List<ModelMoveEntry>>> tcs, List<ModelMoveEntry> entries) =>
+        CompleteWith(tcs, new Selected<List<ModelMoveEntry>>(entries));
+
+    /// <summary> Abandon the move. Nothing has moved yet, so the stage returns to the action menu. </summary>
+    private void CompleteCancelled(TaskCompletionSource<CancellableResult<List<ModelMoveEntry>>> tcs) =>
+        CompleteWith(tcs, new Cancelled<List<ModelMoveEntry>>());
+
+    private void CompleteWith(TaskCompletionSource<CancellableResult<List<ModelMoveEntry>>> tcs,
+        CancellableResult<List<ModelMoveEntry>> result)
     {
         lock (_lock)
         {
@@ -1837,7 +1860,7 @@ public class GuiDefineMovementResolver
             _pathTemplate  = null;
             _selectedModel = null;
         }
-        tcs.SetResult(entries);
+        tcs.SetResult(result);
     }
 
     private (float x, float z) PixelToInches(float px, float py) =>

@@ -5,7 +5,7 @@ using FDG.StageResolution.Requests;
 
 namespace FdgRaylib.Cli.Resolvers;
 
-public class PlaceObjectsResolver<T> : IStageResolver<PlaceObjectsRequest<T>, List<PlacedObjectEntry<T>>>
+public class PlaceObjectsResolver<T> : IStageResolver<PlaceObjectsRequest<T>, CancellableResult<List<PlacedObjectEntry<T>>>>
 {
     private readonly ITableState? _tableState;
     // Tracks how many times each player has deployed, to stagger Z rows.
@@ -20,7 +20,7 @@ public class PlaceObjectsResolver<T> : IStageResolver<PlaceObjectsRequest<T>, Li
         _tableState = tableState;
     }
 
-    public Task<List<PlacedObjectEntry<T>>> Resolve(PlaceObjectsRequest<T> request)
+    public Task<CancellableResult<List<PlacedObjectEntry<T>>>> Resolve(PlaceObjectsRequest<T> request)
     {
         var zone = request.DeploymentZone;
         ZoneBounds bounds = zone.Bounds;
@@ -50,6 +50,8 @@ public class PlaceObjectsResolver<T> : IStageResolver<PlaceObjectsRequest<T>, Li
         Console.WriteLine($"--- Deploy: place {total} model{(total != 1 ? "s" : "")} ---");
         Console.WriteLine($"  Zone X: {bounds.Left:F1}\" to {bounds.Right:F1}\"  |  Zone Z: {bounds.Bottom:F1}\" to {bounds.Top:F1}\"");
         Console.WriteLine("  Enter position as 'x z' (inches). Bases must not overlap.");
+        if (request.AllowCancel)
+            Console.WriteLine("  Type 'back' to cancel and choose a different action.");
         if (request.MustTouchTableEdge)
             Console.WriteLine("  At least one model must touch a table edge (Aircraft redeploy).");
         Console.WriteLine();
@@ -89,6 +91,10 @@ public class PlaceObjectsResolver<T> : IStageResolver<PlaceObjectsRequest<T>, Li
                     placed.Add(new PlacedObjectEntry<T>(binding, pos, defaultFacing));
                     break;
                 }
+
+                if (request.AllowCancel && raw.Trim().Equals("back", StringComparison.OrdinalIgnoreCase))
+                    return Task.FromResult<CancellableResult<List<PlacedObjectEntry<T>>>>(
+                        new Cancelled<List<PlacedObjectEntry<T>>>());
 
                 string[] parts = raw.Trim().Split(' ', StringSplitOptions.RemoveEmptyEntries);
                 if (parts.Length >= 2 && float.TryParse(parts[0], out float x) && float.TryParse(parts[1], out float z))
@@ -145,7 +151,8 @@ public class PlaceObjectsResolver<T> : IStageResolver<PlaceObjectsRequest<T>, Li
             }
         }
 
-        return Task.FromResult(placed);
+        return Task.FromResult<CancellableResult<List<PlacedObjectEntry<T>>>>(
+            new Selected<List<PlacedObjectEntry<T>>>(placed));
     }
 
     // Finds the next free auto-placement slot, scanning a compact grid (per-axis step so a wide rectangle

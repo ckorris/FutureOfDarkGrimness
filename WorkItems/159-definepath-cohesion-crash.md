@@ -14,6 +14,14 @@ graceful exit 0, so don't rely on the exit code).
 
 ## Notes
 
+- 2026-07-09 (measured during #202's pre-push verification, on the built-in two-unit EOF default army):
+  the residual reproduces at roughly **1 run in 10**. Paired A/B, 24 headless runs each:
+  **origin/master `334b58c` / engine `38c5aa5`: 2/24**; **#202 branch: 3/24**. Statistically
+  indistinguishable, so #202's morale-sequencing and back-out changes neither caused nor worsened it —
+  they only shift the random trajectory that reaches it. Confirms the 2026-07-08 counterexample below
+  and settles that this is **not** fixed: the item must not be ticked on the strength of "0/24".
+  Not yet isolated to a resolver: in a headless smoke the human slot answers via the CLI resolver's
+  EOF `AutoAdvance` and the other via `AiDefineMovementResolver`, and either could be the submitter.
 - 2026-07-08 (drive-by observation during #169 verification): a plain headless smoke (the built-in
   two-unit EOF default army, NOT the HEF repro army) ended once in 4 runs with the `DefinePathStage`
   "Breaks cohesion: further than 1 inches" game error (graceful exit 0; 3/3 clean ties on rerun).

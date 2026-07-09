@@ -53,6 +53,13 @@ int slowIdx = Array.IndexOf(args, "--slow");
 if (slowIdx >= 0)
     slowDelayMs = slowIdx + 1 < args.Length && int.TryParse(args[slowIdx + 1], out int ms) ? ms : 1500;
 
+// --seed <int> (#193): seeds the whole game — dice, decisive rolls, objective auto-placement, and each
+// AI player's own stream. Same seed + same build => identical game. Overrides a seed saved in a scenario.
+int? diceSeed = null;
+int seedIdx = Array.IndexOf(args, "--seed");
+if (seedIdx >= 0 && seedIdx + 1 < args.Length && int.TryParse(args[seedIdx + 1], out int parsedSeed))
+    diceSeed = parsedSeed;
+
 // --import-opr <in.json> <out.fdgbook> [supplement.json]  (#153 P0b): one-time OnePageRules Army Forge
 // JSON → .fdgbook snapshot, via the engine importer. Data is OPR's, used under CC-BY-SA (stamped on the
 // book). The optional supplement embeds curated rule definitions the book references (see --apply-rules).
@@ -183,7 +190,7 @@ if (headless && armyIdx >= 0 && armyIdx + 1 < args.Length)
     Console.SetIn(new StringReader($"1\n{armyPath}\n1\n{armyPath}\n"));
 }
 
-var app = new CliApp(headless, slowDelayMs);
+var app = new CliApp(headless, slowDelayMs, diceSeed);
 
 if (headless)
 {
@@ -306,7 +313,7 @@ else
         try
         {
             GameDataStore scenarioStore = ScenarioLauncher.LoadStore(scenarioPath);
-            var parts = ScenarioLauncher.BuildResume(scenarioStore);
+            var parts = ScenarioLauncher.BuildResume(scenarioStore, diceSeed);
 
             var players = new List<(PlayerID ID, string Name)>();
             for (int i = 0; i < parts.SavedInfos.Count; i++)
