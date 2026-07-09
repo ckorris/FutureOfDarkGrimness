@@ -15,10 +15,6 @@ When closing an item: write the Outcome in its detail file, tick the line, and m
 
 ---
 
-## Rounds & resume
-
-- [ ] 195 — Resumed games play four MORE rounds instead of finishing the four-round game (`ReconcileObjectivesStage._timesEntered` is a per-instance counter ignoring the resumed round); round logs mislabelled. Behavior change - sign-off before building. Found by #193. ([WorkItems/195](WorkItems/195-resume-plays-extra-rounds.md))
-
 ## Movement
 
 - [~] 159 — `DefinePathStage` cohesion crash: four root causes fixed, but a residual still repros ~1 run in 10 on the default army (2/24 on origin/master, 2026-07-09) — *not* fixed; not yet isolated to the CLI auto-advance vs the AI resolver. ([WorkItems/159](WorkItems/159-definepath-cohesion-crash.md))

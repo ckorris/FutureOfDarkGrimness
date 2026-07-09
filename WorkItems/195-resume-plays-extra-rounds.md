@@ -28,17 +28,15 @@ would silently play the wrong number of rounds and score the wrong board.
 fixture reported 5. `ScenarioCompilerTests`'s own comment says the resumed scenario should play
 "rounds 2..4", so the intent is clear and this is a real regression, not a design choice.
 
-**Fix sketch (not yet done).** Terminate on `context.RoundCount >= GameWideConstants.NUMBER_OF_ROUNDS`
-rather than an instance counter, or seed `_timesEntered` from the resumed round. Prefer reading the
-authoritative round number — the instance counter is the bug. Keep the log line's round number honest
-(it should print the game round, not the entry count). Behavior change, so: sign-off before building.
-
-**Verify.** A scenario compiled at round 2 ends after round 4 with `rounds=4`; a fresh game still ends
-at 4; `DeterminismTests` resume fixture can then assert `RoundsPlayed == NUMBER_OF_ROUNDS` (drop the
-`expectedRounds: null` exemption + its #195 comment); add a test resuming at round 4 that plays exactly
-one more round.
-
 ## Notes (newest first)
+
+**2026-07-09 — fixed** (Chris signed off). `_timesEntered` deleted; the stage now terminates on the
+authoritative round number. Ordering detail that makes it work: `SingleRoundStage` advances
+`MainPhaseContext.RoundCount` in `ReconcileChildContextBeforeLeaving` (`OnEndOfRound`) on its way out,
+and `ReconcileObjectivesStage` is its sibling successor — so on entry the round that just finished is
+`RoundCount - 1`. That value drives both the log line and the end-of-game test, and it is restored from
+the save, so resume behaves exactly like a fresh game. Verified against the pre-fix code: the new tests
+report 5 rounds (resume at 2) and 7 rounds (resume at 4) before the change.
 
 **2026-07-09 — filed** while implementing #193 (determinism pass). Not fixed there: it changes game
 behavior and is unrelated to seeding. Relates #052 (save/load), #167 (scenario compiler), #192
@@ -46,4 +44,20 @@ behavior and is unrelated to seeding. Relates #052 (save/load), #167 (scenario c
 
 ## Outcome
 
-(open)
+**Done 2026-07-09.** Engine `a19e6ab`. One-line semantic fix in `ReconcileObjectivesStage`: terminate
+on `roundJustFinished < NUMBER_OF_ROUNDS` (where `roundJustFinished = context.RoundCount - 1`) instead
+of an entry counter, and log the real round number.
+
+New `ResumeRoundCountTests` (3): resume at round 2 and at round 4 both finish the four-round game;
+resume at round 1 is unchanged. **Mutation-verified** — reverting the stage makes the first two fail
+with 5 and 7 rounds. Round-1 resume passes either way, which is precisely why this survived: the only
+shipped example scenario (`Scenarios/example-shootout.json`) resumes at round 1.
+
+`DeterminismTests` resume fixture tightened to assert the full `NUMBER_OF_ROUNDS` (the `#195` exemption
+is gone). Suite **1370/1370**, full build clean. End-to-end: a scenario resumed at round 3 headless now
+logs "end of round 3", "end of round 4", "4 rounds complete", `rounds=4`, exit 0; a fresh game still
+logs rounds 1-4 identically to before.
+
+Scoring note: objectives are now reconciled exactly four times per game regardless of resume point.
+Previously a resumed game reconciled extra times, so end-of-game ownership could differ from a fresh
+game's - resumed saves played before this fix are not comparable to fresh ones.
