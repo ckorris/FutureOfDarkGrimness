@@ -19,6 +19,10 @@ When closing an item: write the Outcome in its detail file, tick the line, and m
 
 - [ ] 182 — Move through friendly units, but not stop on them: movement validation today only checks enemy footprints; add the "can't end overlapping a different friendly unit" guard (mirror #011's ending-stacked check, minus pass-through block and standoff), threaded through the GUI/CLI/AI resolvers + preview. ([WorkItems/182](WorkItems/182-move-through-friendly-units.md))
 
+## Shooting & cover
+
+- [ ] 191 — Shooting *out of* cover grants the defender cover: `EvaluateSightLine` folds every terrain piece on the segment into one worst-effect with no notion of *where* it sits, so the attacker's own wall counts. Blocked on a rules ruling (proximity to defender, shoot-through depth). ([WorkItems/191](WorkItems/191-cover-attacker-side.md))
+
 ## Model bases & geometry
 
 - [~] 149 — Configurable model base size + shapes (per-unit circle/rect via the `IBaseShape` seam): core landed; remaining facets in the detail file. The deferred hard-path geometry became #150 (awaiting verification below). ([WorkItems/149](WorkItems/149-base-shapes.md))
