@@ -5871,7 +5871,32 @@
       ]
     }
   ],
-  "ruleDefinitions": [],
+  "ruleDefinitions": [
+    {
+      "name": "Tear",
+      "passive": [
+        {
+          "hookID": "Shooting_OnHitRollComplete",
+          "condition": {
+            "kind": "targetMajorityHasTough",
+            "minToughValue": 9
+          },
+          "effect": {
+            "kind": "rollModifier",
+            "rollKind": "Save",
+            "delta": -4
+          },
+          "lifetime": "ThisAttack",
+          "seat": "Actor"
+        }
+      ],
+      "activated": [],
+      "scope": "Weapon",
+      "engineArgumentCount": 0,
+      "valence": "Positive",
+      "description": "Against units where most models have Tough 9\u002B, this weapon gets AP(\u002B4)."
+    }
+  ],
   "spells": [
     {
       "name": "The Founder\u0027s Curse",

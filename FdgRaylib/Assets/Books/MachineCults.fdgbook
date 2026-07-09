@@ -4436,6 +4436,36 @@
       "engineArgumentCount": 0,
       "valence": "Negative",
       "description": "This unit\u0027s shooting has its AP reduced by 1, to a minimum of AP(0) (from Corrode Weapons)."
+    },
+    {
+      "name": "Melee Slayer",
+      "passive": [
+        {
+          "hookID": "Shooting_OnHitRollComplete",
+          "condition": {
+            "kind": "and",
+            "left": {
+              "kind": "isMelee"
+            },
+            "right": {
+              "kind": "targetMajorityHasTough",
+              "minToughValue": 3
+            }
+          },
+          "effect": {
+            "kind": "rollModifier",
+            "rollKind": "Save",
+            "delta": -2
+          },
+          "lifetime": "ThisAttack",
+          "seat": "Actor"
+        }
+      ],
+      "activated": [],
+      "scope": "Unit",
+      "engineArgumentCount": 0,
+      "valence": "Positive",
+      "description": "This model\u0027s melee attacks get AP(\u002B2) against units where most models have Tough 3\u002B."
     }
   ],
   "spells": [

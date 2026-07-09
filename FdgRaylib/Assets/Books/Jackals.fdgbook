@@ -3618,6 +3618,52 @@
       "engineArgumentCount": 0,
       "valence": "Positive",
       "description": "An unmodified 6 to hit gives the attack AP(\u002B4)."
+    },
+    {
+      "name": "Shatter",
+      "passive": [
+        {
+          "hookID": "Shooting_OnHitRollComplete",
+          "condition": {
+            "kind": "targetMajorityHasTough",
+            "minToughValue": 3
+          },
+          "effect": {
+            "kind": "rollModifier",
+            "rollKind": "Save",
+            "delta": -2
+          },
+          "lifetime": "ThisAttack",
+          "seat": "Actor"
+        }
+      ],
+      "activated": [],
+      "scope": "Weapon",
+      "engineArgumentCount": 0,
+      "valence": "Positive",
+      "description": "Against units where most models have Tough 3\u002B, this weapon gets AP(\u002B2)."
+    },
+    {
+      "name": "Ignores Regeneration in Melee",
+      "passive": [
+        {
+          "hookID": "Shooting_OnSaveRollComplete",
+          "condition": {
+            "kind": "isMelee"
+          },
+          "effect": {
+            "kind": "ignoreRule",
+            "ruleName": "Regeneration"
+          },
+          "lifetime": "ThisAttack",
+          "seat": "Actor"
+        }
+      ],
+      "activated": [],
+      "scope": "Weapon",
+      "engineArgumentCount": 0,
+      "valence": "Positive",
+      "description": "In melee, this weapon\u0027s attacks ignore the target\u0027s Regeneration."
     }
   ],
   "spells": [

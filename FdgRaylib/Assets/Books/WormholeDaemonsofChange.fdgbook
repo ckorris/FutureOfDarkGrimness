@@ -4290,6 +4290,28 @@
       "engineArgumentCount": 0,
       "valence": "Neutral",
       "description": "Your army may only include one copy of this unit."
+    },
+    {
+      "name": "Ignores Regeneration",
+      "passive": [
+        {
+          "hookID": "Shooting_OnSaveRollComplete",
+          "condition": {
+            "kind": "always"
+          },
+          "effect": {
+            "kind": "ignoreRule",
+            "ruleName": "Regeneration"
+          },
+          "lifetime": "ThisAttack",
+          "seat": "Actor"
+        }
+      ],
+      "activated": [],
+      "scope": "Weapon",
+      "engineArgumentCount": 0,
+      "valence": "Positive",
+      "description": "This weapon\u0027s attacks ignore the target\u0027s Regeneration."
     }
   ],
   "spells": [

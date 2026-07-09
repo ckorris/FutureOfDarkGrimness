@@ -52,7 +52,7 @@
     "scope": "Unit",
     "engineArgumentCount": 0,
     "valence": "Positive",
-    "description": "Moves \u002B2\u0022 when using Advance, and \u002B2\u0022 when using Rush/Charge."
+    "description": "Moves +2\" when using Advance, and +2\" when using Rush/Charge."
   },
   {
     "name": "Highborn Boost",
@@ -128,7 +128,7 @@
     "scope": "Unit",
     "engineArgumentCount": 0,
     "valence": "Positive",
-    "description": "If this unit has Highborn, it moves \u002B4\u0022 on Advance and \u002B4\u0022 on Rush/Charge from Highborn (instead of only \u002B2\u0022 and \u002B2\u0022)."
+    "description": "If this unit has Highborn, it moves +4\" on Advance and +4\" on Rush/Charge from Highborn (instead of only +2\" and +2\")."
   },
   {
     "name": "Highborn Boost Aura",
@@ -184,7 +184,7 @@
     "scope": "Unit",
     "engineArgumentCount": 0,
     "valence": "Positive",
-    "description": "Once per activation, before attacking, pick one friendly unit within 6\u0022 with Artillery, which may immediately move by up to 9\u0022."
+    "description": "Once per activation, before attacking, pick one friendly unit within 6\" with Artillery, which may immediately move by up to 9\"."
   },
   {
     "name": "Unique",
@@ -216,7 +216,7 @@
     "scope": "Unit",
     "engineArgumentCount": 0,
     "valence": "Positive",
-    "description": "Units where all models have this rule get \u002B1 to morale test rolls."
+    "description": "Units where all models have this rule get +1 to morale test rolls."
   },
   {
     "name": "Hive Bond Boost",
@@ -240,7 +240,7 @@
     "scope": "Unit",
     "engineArgumentCount": 0,
     "valence": "Positive",
-    "description": "If this unit has Hive Bond, it gets \u002B2 to morale test rolls from Hive Bond (instead of only \u002B1)."
+    "description": "If this unit has Hive Bond, it gets +2 to morale test rolls from Hive Bond (instead of only +1)."
   },
   {
     "name": "Hive Bond Boost Aura",
@@ -286,7 +286,7 @@
     "scope": "Weapon",
     "engineArgumentCount": 0,
     "valence": "Positive",
-    "description": "An unmodified 6 to hit gives the attack AP(\u002B4)."
+    "description": "An unmodified 6 to hit gives the attack AP(+4)."
   },
   {
     "name": "Predator Fighter",
@@ -339,7 +339,7 @@
     "scope": "Unit",
     "engineArgumentCount": 0,
     "valence": "Positive",
-    "description": "Kept in reserve; may arrive from round 2 onward, placed anywhere over 3\u0022 from enemy units."
+    "description": "Kept in reserve; may arrive from round 2 onward, placed anywhere over 3\" from enemy units."
   },
   {
     "name": "Breath Attack",
@@ -376,7 +376,7 @@
     "scope": "Unit",
     "engineArgumentCount": 0,
     "valence": "Positive",
-    "description": "Once per activation, before attacking, one enemy unit within 6\u0022 in line of sight takes 1 hit with Blast(3) and AP(1)."
+    "description": "Once per activation, before attacking, one enemy unit within 6\" in line of sight takes 1 hit with Blast(3) and AP(1)."
   },
   {
     "name": "Precision Debuff",
@@ -411,7 +411,7 @@
     "scope": "Unit",
     "engineArgumentCount": 0,
     "valence": "Positive",
-    "description": "Once per activation, before attacking, pick one enemy unit within 18\u0022 in line of sight, which gets -1 to hit rolls when attacking once (next time the effect would apply)."
+    "description": "Once per activation, before attacking, pick one enemy unit within 18\" in line of sight, which gets -1 to hit rolls when attacking once (next time the effect would apply)."
   },
   {
     "name": "Stealth Buff",
@@ -445,6 +445,275 @@
     "scope": "Unit",
     "engineArgumentCount": 0,
     "valence": "Positive",
-    "description": "Once per activation, before attacking, pick one friendly unit within 12\u0022, which gets Stealth once (next time the effect would apply)."
+    "description": "Once per activation, before attacking, pick one friendly unit within 12\", which gets Stealth once (next time the effect would apply)."
+  },
+  {
+    "name": "Shatter",
+    "passive": [
+      {
+        "hookID": "Shooting_OnHitRollComplete",
+        "condition": {
+          "kind": "targetMajorityHasTough",
+          "minToughValue": 3
+        },
+        "effect": {
+          "kind": "rollModifier",
+          "rollKind": "Save",
+          "delta": -2
+        },
+        "lifetime": "ThisAttack",
+        "seat": "Actor"
+      }
+    ],
+    "activated": [],
+    "scope": "Weapon",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "Against units where most models have Tough 3+, this weapon gets AP(+2)."
+  },
+  {
+    "name": "Tear",
+    "passive": [
+      {
+        "hookID": "Shooting_OnHitRollComplete",
+        "condition": {
+          "kind": "targetMajorityHasTough",
+          "minToughValue": 9
+        },
+        "effect": {
+          "kind": "rollModifier",
+          "rollKind": "Save",
+          "delta": -4
+        },
+        "lifetime": "ThisAttack",
+        "seat": "Actor"
+      }
+    ],
+    "activated": [],
+    "scope": "Weapon",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "Against units where most models have Tough 9+, this weapon gets AP(+4)."
+  },
+  {
+    "name": "Disintegrate",
+    "passive": [
+      {
+        "hookID": "Shooting_OnSaveRollComplete",
+        "condition": {
+          "kind": "always"
+        },
+        "effect": {
+          "kind": "ignoreRule",
+          "ruleName": "Regeneration"
+        },
+        "lifetime": "ThisAttack",
+        "seat": "Actor"
+      },
+      {
+        "hookID": "Shooting_OnHitRollComplete",
+        "condition": {
+          "kind": "statGreaterOrEqualTo",
+          "stat": "Defense",
+          "statValue": 2
+        },
+        "effect": {
+          "kind": "rollModifier",
+          "rollKind": "Save",
+          "delta": -2
+        },
+        "lifetime": "ThisAttack",
+        "seat": "Actor"
+      }
+    ],
+    "activated": [],
+    "scope": "Weapon",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "Ignores Regeneration. Against units with Defense 2+, this weapon gets AP(+2)."
+  },
+  {
+    "name": "Melee Slayer",
+    "passive": [
+      {
+        "hookID": "Shooting_OnHitRollComplete",
+        "condition": {
+          "kind": "and",
+          "left": {
+            "kind": "isMelee"
+          },
+          "right": {
+            "kind": "targetMajorityHasTough",
+            "minToughValue": 3
+          }
+        },
+        "effect": {
+          "kind": "rollModifier",
+          "rollKind": "Save",
+          "delta": -2
+        },
+        "lifetime": "ThisAttack",
+        "seat": "Actor"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "This model's melee attacks get AP(+2) against units where most models have Tough 3+."
+  },
+  {
+    "name": "Melee Slayer Aura",
+    "passive": [
+      {
+        "hookID": "Lifecycle_OnUnitCreated",
+        "condition": {
+          "kind": "always"
+        },
+        "effect": {
+          "kind": "aura",
+          "ruleName": "Melee Slayer"
+        },
+        "lifetime": "UntilEndOfGame",
+        "seat": "Actor"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "This model and its unit gain Melee Slayer."
+  },
+  {
+    "name": "Ranged Slayer",
+    "passive": [
+      {
+        "hookID": "Shooting_OnHitRollComplete",
+        "condition": {
+          "kind": "and",
+          "left": {
+            "kind": "not",
+            "inner": {
+              "kind": "isMelee"
+            }
+          },
+          "right": {
+            "kind": "targetMajorityHasTough",
+            "minToughValue": 3
+          }
+        },
+        "effect": {
+          "kind": "rollModifier",
+          "rollKind": "Save",
+          "delta": -2
+        },
+        "lifetime": "ThisAttack",
+        "seat": "Actor"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "This model's ranged attacks get AP(+2) against units where most models have Tough 3+."
+  },
+  {
+    "name": "Ranged Slayer Aura",
+    "passive": [
+      {
+        "hookID": "Lifecycle_OnUnitCreated",
+        "condition": {
+          "kind": "always"
+        },
+        "effect": {
+          "kind": "aura",
+          "ruleName": "Ranged Slayer"
+        },
+        "lifetime": "UntilEndOfGame",
+        "seat": "Actor"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "This model and its unit gain Ranged Slayer."
+  },
+  {
+    "name": "Slayer Mark",
+    "passive": [],
+    "activated": [
+      {
+        "triggerHook": "Activation_OnPreAttack",
+        "cost": {
+          "kind": "oncePerActivation"
+        },
+        "targetSelector": {
+          "rangeInches": 18,
+          "minCount": 1,
+          "maxCount": 1,
+          "targetAffinity": "Foe",
+          "requireLineOfSight": true,
+          "requiredToken": null,
+          "singleModel": false,
+          "requiredRule": null
+        },
+        "effect": {
+          "kind": "markTarget",
+          "ruleName": "Melee Slayer"
+        },
+        "availableWhen": {
+          "kind": "always"
+        }
+      }
+    ],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "Once per activation, before attacking, pick one enemy unit within 18 inches in line of sight. The first friendly attack against it this activation gets Melee Slayer."
+  },
+  {
+    "name": "Ignores Regeneration",
+    "passive": [
+      {
+        "hookID": "Shooting_OnSaveRollComplete",
+        "condition": {
+          "kind": "always"
+        },
+        "effect": {
+          "kind": "ignoreRule",
+          "ruleName": "Regeneration"
+        },
+        "lifetime": "ThisAttack",
+        "seat": "Actor"
+      }
+    ],
+    "activated": [],
+    "scope": "Weapon",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "This weapon's attacks ignore the target's Regeneration."
+  },
+  {
+    "name": "Ignores Regeneration in Melee",
+    "passive": [
+      {
+        "hookID": "Shooting_OnSaveRollComplete",
+        "condition": {
+          "kind": "isMelee"
+        },
+        "effect": {
+          "kind": "ignoreRule",
+          "ruleName": "Regeneration"
+        },
+        "lifetime": "ThisAttack",
+        "seat": "Actor"
+      }
+    ],
+    "activated": [],
+    "scope": "Weapon",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "In melee, this weapon's attacks ignore the target's Regeneration."
   }
 ]

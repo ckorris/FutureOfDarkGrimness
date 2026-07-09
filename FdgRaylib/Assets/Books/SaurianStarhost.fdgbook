@@ -4497,6 +4497,43 @@
       "engineArgumentCount": 0,
       "valence": "Positive",
       "description": "Once per activation, before attacking, one enemy unit within 6\u0022 in line of sight takes 1 hit with Blast(3) and AP(1)."
+    },
+    {
+      "name": "Disintegrate",
+      "passive": [
+        {
+          "hookID": "Shooting_OnSaveRollComplete",
+          "condition": {
+            "kind": "always"
+          },
+          "effect": {
+            "kind": "ignoreRule",
+            "ruleName": "Regeneration"
+          },
+          "lifetime": "ThisAttack",
+          "seat": "Actor"
+        },
+        {
+          "hookID": "Shooting_OnHitRollComplete",
+          "condition": {
+            "kind": "statGreaterOrEqualTo",
+            "stat": "Defense",
+            "statValue": 2
+          },
+          "effect": {
+            "kind": "rollModifier",
+            "rollKind": "Save",
+            "delta": -2
+          },
+          "lifetime": "ThisAttack",
+          "seat": "Actor"
+        }
+      ],
+      "activated": [],
+      "scope": "Weapon",
+      "engineArgumentCount": 0,
+      "valence": "Positive",
+      "description": "Ignores Regeneration. Against units with Defense 2\u002B, this weapon gets AP(\u002B2)."
     }
   ],
   "spells": [

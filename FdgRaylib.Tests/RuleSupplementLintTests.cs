@@ -22,6 +22,18 @@ public class RuleSupplementLintTests
     {
         ["Unique"] = "list-building marker: no dispatch entries; enforced at army-build time by " +
             "ListValidator ('the army may only include one copy'), never during play.",
+
+        // #191 F1. RuleFireLint's synthesized-context search covers "the capability conditions: near/far,
+        // moved, melee, charging, all die faces" (its own doc comment) but not a target unit's Tough stat -
+        // there is no Tough-majority variant among its synthesized IHasTarget contexts. The condition
+        // itself is real and engine-tested (ConditionEvaluationTests.TargetMajorityHasTough_..., .
+        // StatGreaterOrEqualTo_Tough_UsesMajoritySemantics), so this is a lint-coverage gap, not a rule
+        // defect - StatGreaterOrEqualTo's Defense/Quality arms pass today only because the lint's default
+        // synthesized target happens to clear a low threshold, not because Tough is actually covered.
+        ["Shatter"] = "AP(+2) vs Tough 3+ (targetMajorityHasTough); lint has no Tough-majority target context.",
+        ["Tear"] = "AP(+4) vs Tough 9+ (targetMajorityHasTough); lint has no Tough-majority target context.",
+        ["Melee Slayer"] = "AP(+2) in melee vs Tough 3+ (targetMajorityHasTough); lint has no Tough-majority target context.",
+        ["Ranged Slayer"] = "AP(+2) at range vs Tough 3+ (targetMajorityHasTough); lint has no Tough-majority target context.",
     };
 
     private static string SupplementPath =>
