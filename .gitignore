@@ -5,6 +5,9 @@ obj/
 .idea/
 *.DotSettings.user
 
+# Distributable build output (scripts/build-dist.sh)
+dist/
+
 # Runtime ImGui window-layout state
 imgui.ini
 
