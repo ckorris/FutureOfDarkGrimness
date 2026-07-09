@@ -4120,7 +4120,61 @@
       ]
     }
   ],
-  "ruleDefinitions": [],
+  "ruleDefinitions": [
+    {
+      "name": "Changebound",
+      "passive": [
+        {
+          "hookID": "Shooting_OnHitRollComplete",
+          "condition": {
+            "kind": "and",
+            "left": {
+              "kind": "distanceGreaterThan",
+              "distanceInches": 9
+            },
+            "right": {
+              "kind": "allModelsHaveThisRule"
+            }
+          },
+          "effect": {
+            "kind": "rollModifier",
+            "rollKind": "Hit",
+            "delta": -1
+          },
+          "lifetime": "ThisAttack",
+          "seat": "Subject"
+        }
+      ],
+      "activated": [],
+      "scope": "Unit",
+      "engineArgumentCount": 0,
+      "valence": "Positive",
+      "description": "Enemies shooting or charging this unit from over 9 inches away get -1 to hit."
+    },
+    {
+      "name": "Changebound Boost",
+      "passive": [
+        {
+          "hookID": "Shooting_OnHitRollComplete",
+          "condition": {
+            "kind": "allModelsHaveThisRule"
+          },
+          "effect": {
+            "kind": "rollModifier",
+            "rollKind": "Hit",
+            "delta": -1
+          },
+          "lifetime": "ThisAttack",
+          "seat": "Subject"
+        }
+      ],
+      "activated": [],
+      "scope": "Unit",
+      "engineArgumentCount": 0,
+      "valence": "Positive",
+      "description": "Enemies attacking this unit always get -1 to hit (boosted, no range gate)."
+    }
+  ],
   "spells": [
     {
       "name": "Shifting Form",

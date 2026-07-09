@@ -715,5 +715,332 @@
     "engineArgumentCount": 0,
     "valence": "Positive",
     "description": "In melee, this weapon's attacks ignore the target's Regeneration."
+  },
+  {
+    "name": "Changebound",
+    "passive": [
+      {
+        "hookID": "Shooting_OnHitRollComplete",
+        "condition": {
+          "kind": "and",
+          "left": {
+            "kind": "distanceGreaterThan",
+            "distanceInches": 9
+          },
+          "right": {
+            "kind": "allModelsHaveThisRule"
+          }
+        },
+        "effect": {
+          "kind": "rollModifier",
+          "rollKind": "Hit",
+          "delta": -1
+        },
+        "lifetime": "ThisAttack",
+        "seat": "Subject"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "Enemies shooting or charging this unit from over 9 inches away get -1 to hit."
+  },
+  {
+    "name": "Primeborn",
+    "passive": [
+      {
+        "hookID": "Shooting_OnHitRollComplete",
+        "condition": {
+          "kind": "and",
+          "left": {
+            "kind": "distanceGreaterThan",
+            "distanceInches": 9
+          },
+          "right": {
+            "kind": "allModelsHaveThisRule"
+          }
+        },
+        "effect": {
+          "kind": "reduceArmorPenetration",
+          "amount": 1
+        },
+        "lifetime": "ThisAttack",
+        "seat": "Subject"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "Hits on this unit from over 9 inches away count as AP reduced by 1, to a minimum of 0."
+  },
+  {
+    "name": "Sturdy",
+    "passive": [
+      {
+        "hookID": "Shooting_OnHitRollComplete",
+        "condition": {
+          "kind": "and",
+          "left": {
+            "kind": "distanceGreaterThan",
+            "distanceInches": 9
+          },
+          "right": {
+            "kind": "allModelsHaveThisRule"
+          }
+        },
+        "effect": {
+          "kind": "rollModifier",
+          "rollKind": "Save",
+          "delta": 1
+        },
+        "lifetime": "ThisAttack",
+        "seat": "Subject"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "This unit gets +1 to defense rolls when shot or charged from over 9 inches away."
+  },
+  {
+    "name": "Guardian",
+    "passive": [
+      {
+        "hookID": "Shooting_OnHitRollComplete",
+        "condition": {
+          "kind": "and",
+          "left": {
+            "kind": "distanceGreaterThan",
+            "distanceInches": 9
+          },
+          "right": {
+            "kind": "allModelsHaveThisRule"
+          }
+        },
+        "effect": {
+          "kind": "reduceArmorPenetration",
+          "amount": 1
+        },
+        "lifetime": "ThisAttack",
+        "seat": "Subject"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "Hits on this unit from over 9 inches away count as AP reduced by 1, to a minimum of 0."
+  },
+  {
+    "name": "Machine-Fog",
+    "passive": [
+      {
+        "hookID": "Shooting_OnHitRollComplete",
+        "condition": {
+          "kind": "and",
+          "left": {
+            "kind": "distanceGreaterThan",
+            "distanceInches": 9
+          },
+          "right": {
+            "kind": "allModelsHaveThisRule"
+          }
+        },
+        "effect": {
+          "kind": "rollModifier",
+          "rollKind": "Hit",
+          "delta": -1
+        },
+        "lifetime": "ThisAttack",
+        "seat": "Subject"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "Enemies shooting or charging this unit from over 9 inches away get -1 to hit."
+  },
+  {
+    "name": "Changebound Boost",
+    "passive": [
+      {
+        "hookID": "Shooting_OnHitRollComplete",
+        "condition": {
+          "kind": "allModelsHaveThisRule"
+        },
+        "effect": {
+          "kind": "rollModifier",
+          "rollKind": "Hit",
+          "delta": -1
+        },
+        "lifetime": "ThisAttack",
+        "seat": "Subject"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "Enemies attacking this unit always get -1 to hit (boosted, no range gate)."
+  },
+  {
+    "name": "Changebound Boost Aura",
+    "passive": [
+      {
+        "hookID": "Lifecycle_OnUnitCreated",
+        "condition": {
+          "kind": "always"
+        },
+        "effect": {
+          "kind": "aura",
+          "ruleName": "Changebound Boost"
+        },
+        "lifetime": "UntilEndOfGame",
+        "seat": "Actor"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "This model and its unit gain Changebound Boost."
+  },
+  {
+    "name": "Guardian Boost",
+    "passive": [
+      {
+        "hookID": "Shooting_OnHitRollComplete",
+        "condition": {
+          "kind": "allModelsHaveThisRule"
+        },
+        "effect": {
+          "kind": "reduceArmorPenetration",
+          "amount": 1
+        },
+        "lifetime": "ThisAttack",
+        "seat": "Subject"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "Hits on this unit always count as AP reduced by 1, to a minimum of 0 (boosted, no range gate)."
+  },
+  {
+    "name": "Guardian Boost Aura",
+    "passive": [
+      {
+        "hookID": "Lifecycle_OnUnitCreated",
+        "condition": {
+          "kind": "always"
+        },
+        "effect": {
+          "kind": "aura",
+          "ruleName": "Guardian Boost"
+        },
+        "lifetime": "UntilEndOfGame",
+        "seat": "Actor"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "This model and its unit gain Guardian Boost."
+  },
+  {
+    "name": "Sturdy Boost",
+    "passive": [
+      {
+        "hookID": "Shooting_OnHitRollComplete",
+        "condition": {
+          "kind": "allModelsHaveThisRule"
+        },
+        "effect": {
+          "kind": "rollModifier",
+          "rollKind": "Save",
+          "delta": 1
+        },
+        "lifetime": "ThisAttack",
+        "seat": "Subject"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "This unit always gets +1 to defense rolls (boosted, no range gate)."
+  },
+  {
+    "name": "Sturdy Boost Aura",
+    "passive": [
+      {
+        "hookID": "Lifecycle_OnUnitCreated",
+        "condition": {
+          "kind": "always"
+        },
+        "effect": {
+          "kind": "aura",
+          "ruleName": "Sturdy Boost"
+        },
+        "lifetime": "UntilEndOfGame",
+        "seat": "Actor"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "This model and its unit gain Sturdy Boost."
+  },
+  {
+    "name": "Machine-Fog Boost",
+    "passive": [
+      {
+        "hookID": "Shooting_OnHitRollComplete",
+        "condition": {
+          "kind": "allModelsHaveThisRule"
+        },
+        "effect": {
+          "kind": "rollModifier",
+          "rollKind": "Hit",
+          "delta": -1
+        },
+        "lifetime": "ThisAttack",
+        "seat": "Subject"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "Enemies attacking this unit always get -1 to hit (boosted, no range gate)."
+  },
+  {
+    "name": "Machine-Fog Boost Aura",
+    "passive": [
+      {
+        "hookID": "Lifecycle_OnUnitCreated",
+        "condition": {
+          "kind": "always"
+        },
+        "effect": {
+          "kind": "aura",
+          "ruleName": "Machine-Fog Boost"
+        },
+        "lifetime": "UntilEndOfGame",
+        "seat": "Actor"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "This model and its unit gain Machine-Fog Boost."
   }
 ]
