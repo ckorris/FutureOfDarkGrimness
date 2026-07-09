@@ -12,6 +12,14 @@ live-tested") is exercised end-to-end: host loads the recovery save, the dropped
 their saved slot, and play continues.
 
 ## Notes
+- 2026-07-08: **Slice 2 (disconnect while not this player's turn) done.** Slice 1 only ended the game when
+  the drop coincided with a pending request for that player; a client closed while it wasn't its turn left
+  nothing to fail, so the game silently continued and then hung on the dead connection at the player's next
+  turn ("closed the client and nothing happened"). `RequestMessageSender` now records dropped players and
+  faults any request targeting one on arrival (not just in-flight ones), so the disconnect reliably ends the
+  game at the next decision regardless of timing. Test in `DisconnectLifecycleTests`. Known limitation: ends
+  at the *next* request, so a drop mid-opponent-turn ends the game one activation later, not instantly -
+  acceptable; true immediate end would need out-of-band state-machine faulting.
 - 2026-07-08: **Slice 1 (graceful player-left messaging) done.** Closing a client mid-game surfaced as a
   "Game error: PlayerDisconnectedException ..." Game Over popup + a console stack trace - reads like a crash
   when a player simply left. `FDGServer.LaunchStateMachineOnceReady` now catches
