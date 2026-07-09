@@ -14,8 +14,7 @@ namespace FdgLab;
 /// </summary>
 public sealed class LabPlayerController : IPlayerController
 {
-    private readonly List<string>? _logSink;
-    private readonly object? _logLock;
+    private readonly Action<string>? _logSink;
 
     public string Name { get; }
     public PlayerID ID { get; }
@@ -28,23 +27,18 @@ public sealed class LabPlayerController : IPlayerController
 #pragma warning restore CS0067
 
     public LabPlayerController(string name, PlayerID id, FDGGame_AsLocal localGame,
-        IStageResolverRegistry registry, List<string>? logSink = null, object? logLock = null)
+        IStageResolverRegistry registry, Action<string>? logSink = null)
     {
         Name = name;
         ID = id;
         _logSink = logSink;
-        _logLock = logLock;
         localGame.AddLocalPlayerID(id);
         localGame.AssignInterfaces(null, null, registry, null, null);
     }
 
     public Task WaitUntilReadyAsync() => Task.CompletedTask;
 
-    public void SendLogMessage(string logMessage, TextColor color)
-    {
-        if (_logSink == null) return;
-        lock (_logLock!) _logSink.Add(logMessage);
-    }
+    public void SendLogMessage(string logMessage, TextColor color) => _logSink?.Invoke(logMessage);
 
     public void SendPlayerMessage(string sendingPlayerName, EChatMessageType messageType, string message) { }
 }

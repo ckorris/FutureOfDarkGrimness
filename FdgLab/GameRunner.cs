@@ -24,9 +24,23 @@ public static class GameRunner
         var store = GameDataStore.GameDataStoreBuilder.GetDefault();
         var bus = new LabMessageBus();
 
-        // One shared log (slot 0's view - the host broadcasts the same lines to every slot).
-        List<string>? log = spec.CaptureLog ? new List<string>() : null;
+        // One shared log (slot 0's view - the host broadcasts the same lines to every slot). The
+        // tracer, when on, interleaves the log with every position write (#198 divergence hunting);
+        // it must attach BEFORE the server constructor creates armies, or it misses the creations.
+        List<string>? log = spec.CaptureLog || spec.Trace ? new List<string>() : null;
         var logLock = new object();
+        GameTracer? tracer = null;
+        if (spec.Trace)
+        {
+            tracer = new GameTracer();
+            tracer.Attach(new TableState(store));
+        }
+
+        Action<string>? logSink = log == null ? null : line =>
+        {
+            lock (logLock) log.Add(line);
+            tracer?.AddLog(line);
+        };
 
         var slots = new PlayerSlot[spec.Slots.Count];
         for (int i = 0; i < slots.Length; i++)
@@ -39,7 +53,7 @@ public static class GameRunner
             var timed = new TimingRegistry(registry, samples, sampleLock);
             slots[i].AssignPlayerController(new LabPlayerController(
                 $"{slotSpec.ArmyLabel} (slot {i})", slots[i].PlayerID, aiGame, timed,
-                logSink: i == 0 ? log : null, logLock: logLock));
+                logSink: i == 0 ? logSink : null));
         }
 
         var settings = GameSettings.GetDefault();
@@ -73,7 +87,7 @@ public static class GameRunner
         lock (sampleLock) stats = DecisionStats.From(samples);
         IReadOnlyList<string>? capturedLog;
         lock (logLock) capturedLog = log?.ToArray();
-        return new GameRecord(spec, result, wall.Elapsed, stats, winnerSlot, capturedLog);
+        return new GameRecord(spec, result, wall.Elapsed, stats, winnerSlot, capturedLog, tracer?.Entries);
     }
 
     private static FDG.StageResolution.IStageResolverRegistry BuildRegistry(

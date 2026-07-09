@@ -20,6 +20,16 @@ pin tests.
 
 ## Notes (newest first)
 
+**2026-07-09 — #198 fixed same day; P3 (#194) gate now 3/3, all prerequisites COMPLETE.** Root cause
+was a single unseeded `new System.Random()` in `PlaceTerrainStage`'s auto-layout thinning (Chris
+called the terrain theory; the async-race suspicion was a red herring). Found via FdgLab's new
+`GameTracer` (position-write trace interleaved with the log). Every determinism instrument now
+agrees: 200-game bench hashes identical across runs on both army sets, rich-army engine test
+(mutation-verified) pins it, seeded CLI runs byte-identical. **Phase B's replayable-rollout
+prerequisite is met early** - the B0 spike no longer carries #198 risk. Also: zero #159 faults in
+1,200 deterministic games (see #159 - old crash trajectories were fed by random zone terrain).
+The ladder is clear: next is Phase A (A0 Tactician scaffold), per plan sec. 8.
+
 **2026-07-09 — P3 (#194) shipped; gate 2/3.** FdgLab exists and works: 200-game seeded matrix in 38s
 Debug (**5.25 games/s, ~450k games/day** at DOP 16 — comfortably above the plan's Phase C/D
 assumptions), zero hangs, exactly symmetric mirror results, faults ~0.5-1% (all = #159, for which the

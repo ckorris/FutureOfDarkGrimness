@@ -26,7 +26,8 @@ public sealed record GameSpec(
     int Seed,
     ERandomnessType Randomness = ERandomnessType.Realistic,
     int WatchdogSeconds = 120,
-    bool CaptureLog = false)
+    bool CaptureLog = false,
+    bool Trace = false)
 {
     public static GameSpec TwoPlayer(SlotSpec a, SlotSpec b, int seed,
         ERandomnessType randomness = ERandomnessType.Realistic) =>
@@ -43,7 +44,8 @@ public sealed record GameRecord(
     TimeSpan WallClock,
     DecisionStats Decisions,
     int? WinnerSlot,
-    IReadOnlyList<string>? Log = null)
+    IReadOnlyList<string>? Log = null,
+    IReadOnlyList<string>? Trace = null)
 {
     /// <summary>True when the watchdog killed the game rather than the engine finishing it.</summary>
     public bool TimedOut => Result.Outcome == EGameOutcome.Fault && Result.Message.StartsWith("watchdog:");

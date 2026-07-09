@@ -14,7 +14,15 @@ graceful exit 0, so don't rely on the exit code).
 
 ## Notes
 
-- 2026-07-09 (later, from #194's harness): **strong seeded repro found** —
+- 2026-07-09 (latest, post-#198): **the 8/10 seeded repro below is stale.** The #198 fix (seeded
+  terrain thinning) changed every seeded trajectory: seed 1027 is now 10/10 clean, and **1,200
+  deterministic games (seeds 1000-1099 + 2000-2199, builtin and builtin-basic, both sides) produced
+  ZERO cohesion faults**. The old crash trajectories were evidently fed by random deployment-zone
+  terrain. NOT proof of fix - unseeded play still randomizes terrain, so the original unseeded repro
+  loop still applies. New hunting tool: games are now seed-deterministic, so any seed that crashes
+  crashes 10/10 - scan with `fdglab bench --games N --seed-base S` and grep the CSV for Fault, then
+  `fdglab smoke --seed X --trace --dump-logs DIR` gives a full position trace of the crash run.
+- 2026-07-09 (superseded, from #194's harness): **strong seeded repro found** —
   `dotnet run --project FdgLab/FdgLab.csproj -- smoke --seed 1027 --repeat 10` (builtin armies, both
   slots AI) hits the crash **~8/10** and captures the full `[GAME ERROR]` stack: the rejected move is
   submitted during a normal AI activation; `smoke --dump-logs DIR` gives per-run transcripts. Two AI

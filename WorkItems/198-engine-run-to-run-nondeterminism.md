@@ -60,6 +60,21 @@ builtin army so the suite holds the line.
 
 ## Notes (newest first)
 
+**2026-07-09 — fixed. Root cause: ONE unseeded RNG, not a race.** Chris's theory ("related to random
+terrain placement, or objective placement") was correct. Method: FdgLab gained a `GameTracer` — an
+ordered trace of every model position write + terrain/objective creation interleaved with the game
+log (`smoke --trace --dump-logs`). Diffing a Tie trace against a Win trace of the same seed put the
+first divergence in **`PlaceTerrainStage.PlaceAutoLayout`**: `new System.Random()` drives the 40%
+deployment-zone thinning of the built-in auto layout, so every run played on a different table and
+everything cascaded. #193's audit missed it because the fully-qualified `new System.Random()` dodged
+the `new Random()` grep; a corrected audit confirms it was the last one on the game path.
+
+Why the transcripts lied: the skip log line does not name the piece, so two different tables produced
+identical-looking logs for ~394 lines. The suspected async-void race and identity-hash iteration were
+red herrings (and .NET Dictionary/HashSet enumerate in insertion order anyway, so the identity-hash
+theory was doubly wrong). The filing's "movement paths differ / ambush arrival flips" localizations
+were all downstream symptoms of different terrain.
+
 **2026-07-09 — filed** from #194's gate verification (the benchmark harness's first catch). Engine
 investigation, likely in the state-machine transition plumbing — read `docs/EngineNotes.md` threading
 notes and audit stage-transition concurrency before touching anything. Relates #193 (seeding half of
@@ -68,4 +83,20 @@ rollouts), #194 (gate facet blocked).
 
 ## Outcome
 
-(open)
+**Done 2026-07-09.** Engine: one-line fix — `PlaceAutoLayout` draws from `IGameContext.Rng` (the #193
+seam); unseeded games still vary (null seed -> unseeded Rng), seeded games now reproduce end-to-end.
+
+Verified against this item's own acceptance tests: `smoke --seed 1007 --repeat 20` -> 20/20 identical
+(was 12/8); `smoke --a builtin-basic --b builtin-basic --seed 1032 --repeat 16` -> 16/16 (was 13/3);
+two 200-game `bench` runs -> **identical outcome hashes** on both builtin (`B05AA1D810364C6B`) and
+builtin-basic (`F4318EF0D91161F5`) matrices at DOP 16, so parallel-safety holds at game level. Engine
+suite gained a rich-army fresh-game determinism test (Ambush/Scout/Vanguard/Counter/Blast/etc. — the
+paths the too-simple #193 fixtures never touched), **mutation-verified**: reverting the fix turns it
+red. Suite 1380/1380; two seeded headless CLI runs byte-identical. A humility note for the ledger:
+#193's own two-run CLI check had passed despite this bug — two runs can match by chance; the 200-game
+outcome hash is the standard that caught it.
+
+Bonus: zero #159 faults in 1,200 post-fix games (seeds 1000-1099, 2000-2199, both army sets) — the
+old crash trajectories were fed by the random deployment-zone terrain. Not proof of fix; noted in #159.
+
+Closes the #194 reproducibility gate facet. Phase B's replayable-rollout prerequisite is met.

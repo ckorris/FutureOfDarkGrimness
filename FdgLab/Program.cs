@@ -84,10 +84,11 @@ static async Task<int> RunSmoke(string[] args)
     // --dump-logs DIR: write each iteration's full game log for transcript diffing.
     int repeat = IntArg(args, "--repeat", 1);
     string? dumpDir = Arg(args, "--dump-logs");
+    bool trace = args.Contains("--trace"); // #198: dump the position-write trace alongside the log
     if (dumpDir != null)
     {
         Directory.CreateDirectory(dumpDir);
-        spec = spec with { CaptureLog = true };
+        spec = spec with { CaptureLog = true, Trace = trace };
     }
 
     bool anyFault = false;
@@ -96,6 +97,8 @@ static async Task<int> RunSmoke(string[] args)
         GameRecord record = await GameRunner.RunGameAsync(spec);
         if (dumpDir != null && record.Log != null)
             File.WriteAllLines(Path.Combine(dumpDir, $"game_{i:D2}_{record.Result.Outcome}.log"), record.Log);
+        if (dumpDir != null && record.Trace != null)
+            File.WriteAllLines(Path.Combine(dumpDir, $"game_{i:D2}_{record.Result.Outcome}.trace"), record.Trace);
         Console.WriteLine($"Game result: {record.Result.ToSummaryLine()}");
         if (repeat == 1)
             Console.WriteLine($"winner_army={record.WinnerArmy ?? "none"} wall={record.WallClock.TotalMilliseconds:F0}ms " +

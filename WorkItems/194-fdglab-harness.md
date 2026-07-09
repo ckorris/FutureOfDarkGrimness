@@ -59,5 +59,11 @@ real pool.
 
 ## Outcome
 
-(open — implementation complete and verified; held open only for the reproducibility facet, which
-re-verifies via the bench outcome hash once #198 lands.)
+**Done 2026-07-09 — gate 3/3.** The deferred reproducibility facet re-verified the same day #198
+landed: two identical 200-game `bench` invocations produce identical outcome hashes on both the
+builtin (`B05AA1D810364C6B`) and builtin-basic (`F4318EF0D91161F5`) matrices at DOP 16. Zero hangs,
+symmetric mirrors, zero faults post-#198 (fault-rate note in #159). Baseline: 5.25 games/s Debug
+(~19k/hour). The harness earned its keep before closing: its outcome hash caught #198, its trace
+instrument (`GameTracer`, added mid-investigation) localized it, and its seed scan updated #159.
+Deferred to Phase C1 as designed: per-round score trace + state snapshots. Probes: scaffold only
+until Phase A. Chris's curated benchmark army pool: still pending (stop-and-ask).
