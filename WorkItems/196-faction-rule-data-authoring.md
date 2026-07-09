@@ -154,6 +154,31 @@ the OPR importer emitted as rule names; they are absent from the rules-page extr
 are unknown. Do not guess. Ask before authoring; if they turn out to be pure list-building flavor, they
 should follow `Unique`'s precedent (a registered zero-hook definition, enforced elsewhere or nowhere).
 
+**Asked the owner 2026-07-09.** Verdict: don't guess, investigate further. Two structurally different
+groups surfaced while checking which books use them (`.fdgbook` corpus, `--rule-coverage`-style scan):
+
+- **`Armor` is `coreNumeric`** (`Armor(X)`), always bundled inside a single item alongside other
+  well-known numeric core rules (`Fast`, `Fear(1)`, `Impact(6)`, `Tough(6)`) — e.g. Wormhole Daemons of
+  Lust's "Razor-Flail Chariot (Armor(3), Fast, Fear(1), Impact(6), Tough(6))", or Human Defense Force's
+  "Heavy Armor (Armor(4))" on Company Leader/Veterans. It reads like a mount/vehicle stat-block slot
+  (a Defense-side numeric, the shape `Tough(X)` is on the wound side), not flavor text — a wrong guess at
+  its mechanic risks a real balance error, not just a cosmetic gap. Appears across Dark Elf Raiders,
+  Goblin Reclaimers, Human Defense Force, Saurian Starhost, and three Wormhole Daemons sub-factions
+  (Lust/War/Change).
+- **`Banner`/`Sergeant`/`Musician` are plain `core` rules** (no argument), offered as a uniform
+  "upgrade up to three models, pick one each" champion package at a consistent 5/15/10-point spread
+  (Sergeant/Musician/Banner respectively) across all four Wormhole Daemons sub-factions
+  (Change/Lust/Plague/War) and War Disciples — the same shape and cost in every book that has it.
+
+Owner's read: Banner is very likely an aura-like unit-wide buff (its cost, 3x Sergeant's, points that
+way); Musician "sounds bard-like, also like an aura"; Sergeant is unclear beyond "assigned to weapon
+names and whatnot, nothing specific." Owner's working theory is these may be **miscategorized aura
+abilities** rather than inert flavor — the consistent cross-faction cost/shape supports a real shared
+mechanic, not per-faction flavor text that would vary. `Armor`'s mechanic is completely open. **Left
+blocked pending further investigation** (a fresh, targeted read of the OPR wargear/upgrade rules text
+for these four specific names, rather than the rules-page extract this item was scoped against, which
+doesn't cover wargear).
+
 ### Notes on the F14 aura wrappers
 
 Several aura names grant a base rule whose canonical spelling may differ (the resolver is
@@ -171,6 +196,14 @@ engine work. `Thrust in Melee Aura` and `Strider Aura` needed no new base — th
 
 ## Notes
 
+- 2026-07-09: F16 asked of the owner; verdict is "investigate further, don't guess" — see the F16 section
+  above for the corpus data (which books/units, `Armor`'s `coreNumeric` shape vs. `Banner`/`Sergeant`/
+  `Musician`'s uniform cross-faction champion-package shape) and the owner's aura-miscategorization
+  theory. Still blocked; not authored.
+- 2026-07-09: Renumbered 191 -> 196 (owner-directed merge with origin/master — see the superproject
+  merge commit). A parallel Tactician AI session had already claimed 191/192/193/194 with real merged
+  work by the time this item's number was chosen; per the never-reuse rule the unmerged local item
+  yields. No content changed, only the number and cross-references.
 - 2026-07-09: **Item closed** (F16 excepted — blocked on owner input). Slice 1 (`--rule-coverage`) shipped
   first, then F1/F4/F2/F3/F7/F5/F6/F8/F12/F10/F9/F14/F11/F13 in that order (F5 and F10 partial, F15 fully
   deferred), one commit per family/slice, engine untouched throughout (1338 tests green at every step;
