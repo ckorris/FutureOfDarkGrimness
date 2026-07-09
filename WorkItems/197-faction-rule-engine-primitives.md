@@ -1,6 +1,6 @@
 # 197 — Faction rule coverage, part 2: engine primitives + the scope-mismatch bug
 
-**Status**: in progress (slice 0 + the ">9in shot or charged" gate DONE 2026-07-09; later slices still carry their own forks)
+**Status**: in progress (slice 0, the ">9in shot or charged" gate, and P5a DONE 2026-07-09; later slices still carry their own forks)
 **Related**: #196 (data-only half of the same audit), #100 (primitive catalog — this item is its corpus-wide successor), #102 (range/terrain threading; defensive Darkborn residual), #034 (spells), #042, #093, `SpecialRulesAudit.md`
 
 ## Goal
@@ -175,13 +175,54 @@ entry *can* fire, not that its operations are *consumed*, nor what several rules
 real evaluator and the real sinks and asserts the **net** effect a player sees. Against the pre-fix data 9 of
 its 11 cases go red, at least one per defect class.
 
+## Slice P5a — activation-choice hook — **DONE 2026-07-09** (154 of 175 refs)
+
+**Owner sign-off (2026-07-09):** label the abilities (not a new `Effect.ChooseOne`); give the choice **its own
+request type**; defer `Versatile Defense Aura`.
+
+Four rules read "when this unit is activated, pick one effect: until the end of the activation ...". The hook
+they need (`Activation_OnActivationStart`) existed and nothing ever fired it.
+
+- **`ActivationStartStage`** — `MainUnitActionStage`'s new starting child, binding on to `ChooseActionStage`.
+  Runs once per activation: every loop-back from Movement/Melee/Shoot returns to ChooseAction, not here.
+- **`ActivatedAbility.Label`** — a rule carries one ability per effect, all at the same hook;
+  `AbilityOffer.RuleName` cannot tell them apart. The once-per-X `Cost` is keyed on the **rule** name, so
+  taking one effect spends the gate for its siblings — exactly "pick one".
+- **`ChooseAbilityEffectRequest`**, replying with the chosen option's **index**. Its own request type because
+  `docs/ai-agent-plan.md` A4 replaces AI resolvers *one request type at a time*: riding `StringSelectionRequest`
+  would force a future agent to take over Choose Action **and** the pre-attack menu at once, and tell them apart
+  by sniffing prompt text — which `AiStringSelectionResolver` already does today
+  (`if (request.Instructions == "Choose Action")`). Options are plain data: requests cross the wire via
+  Newtonsoft, which cannot round-trip an ability's polymorphic `Effect` graph. An in-process agent recovers the
+  abilities from the catalog via `RuleName`.
+- Chosen effects grant a helper rule with `addRule(ThisActivation)` — the use `Effect.AddRule`'s own doc names.
+  **No new effect kind or operation.**
+- Engine `df234bc`, `90ba258`; app `6dbd31c`. Verified in play, not just by lint: a headless Dark Prime
+  Brothers game logs `Versatile Attack - chose AP(+1)` once per activation.
+
+### Latent defect found and fixed: granted rules' abilities were never offered
+
+`RuleEvaluator.GatherOffers` read only the unit's and its models' **own** rules, while the passive path has
+always resolved `RuleGrant` tokens back to definitions via `CollectGrantedRules`. So an aura conferring an
+**ability-only** rule granted a token nothing ever read — the Breath Attack failure mode, one level up.
+Latent until now (no shipped aura granted an ability-bearing rule); `Versatile Reach Aura` (56 refs) is the
+first. Fixed by mirroring the passive path's screening exactly, and mutation-checked.
+
+### Deferred: `Versatile Defense Aura` (21 refs)
+
+Triggers on **deployment or activation** and lasts **until the unit's next activation** — a lifetime
+`ELifetime` doesn't have (`ThisRound` is wrong; it must span the opponent's turns). Needs a new lifetime plus a
+`TokenClearTrigger` that fires at activation **start** rather than end, and a second trigger hook at deployment.
+Its own slice; mixing a token-lifecycle change into a hook/resolver slice was the thing the sign-off avoided.
+
 ## Slices — by leverage
 
 Reference counts are corpus-wide (44 books). Primitive numbers are #100's.
 
 | Refs | Slice | Needs | Rules |
 |-----:|-------|-------|-------|
-| 175 | **P5a** activation-choice hook | Fire dormant `Activation_OnActivationStart` + a "pick one effect until end of activation" resolver (CLI + GUI + AI). **FORK:** new request type vs reuse `StringSelectionRequest`. | Versatile Attack (56), Versatile Reach Aura (56), Watchborn (42), Versatile Defense Aura (21) |
+| 175 | ~~**P5a** activation-choice hook~~ **DONE 2026-07-09** (154/175) | Shipped: see the P5a write-up above. `Versatile Defense Aura` (21) deferred — needs an until-next-activation lifetime. | Versatile Attack (56), Versatile Reach Aura (56), Watchborn (42) done; Versatile Defense Aura (21) deferred |
+| 21 | **Versatile Defense** (out of P5a) | A new `ELifetime.UntilNextActivation` + a `TokenClearTrigger` firing at activation **start**, and a second trigger at `Deployment_OnUnitDeployed`. Everything else (labelled abilities, the choice request) already exists. | Versatile Defense Aura (21) |
 | 93 | **P22** new deploy timings | `deferDeployment` variants beyond Scout/Ambush; "deploy anywhere >3in from enemy"; deploy-round state for round-of-arrival bonuses. | Delayed Action (47), Teleport (15), Rapid Blink (8), Ambush Beacon (6), Rapid Ambush (4), Teleport Aura (4), Ambushing Piercing Shot (4), Surprise Attack (2), Rapid Blink Boost Aura (2), Infiltrate Aura (1) |
 | 86 | **New** reposition-at-activation | Place a unit's models within a rolled D3/D3+1in of their current position at activation start. Needs the P5a hook + a placement resolver + the dice invariant. | Wolfborn (60), Bounding (22), Bounding Aura (4) |
 | 66 | **P5b** round-start hook | Fire dormant `Round_OnRoundStart`; a "roll to clear Shaken" outcome effect. Cheapest of the dormant hooks. | Steadfast Aura (28), Battleborn (26), Honor Code (9), Steadfast (3) |
@@ -218,6 +259,11 @@ Reference counts are corpus-wide (44 books). Primitive numbers are #100's.
 
 ## Notes
 
+- 2026-07-09: **P5a shipped** (engine `df234bc`, `90ba258`; app `6dbd31c`). 154 of its 175 refs; corpus dead
+  count 1,018 -> 864. Signed off first: labelled abilities, a dedicated request type, defer Versatile Defense.
+  Building it exposed a latent engine defect — `GatherOffers` never read granted-rule tokens, so an aura
+  conferring an ability-only rule did nothing. Fixed and mutation-checked. Verified in a real headless game,
+  not just by the fire-lint.
 - 2026-07-09: **The ">9in shot or charged" gate shipped** (engine `bf6353d`, `e677f1e`; app `27c55c4`).
   Signed off first: declared-distance semantics, one condition. Building it surfaced **three defect classes in
   #196's already-pushed data** — Boost rules double-counting with their base (45 units affected), two rules
