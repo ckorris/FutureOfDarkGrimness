@@ -20,6 +20,25 @@ pin tests.
 
 ## Notes (newest first)
 
+**2026-07-09 — A3b (grid pathfinding) DONE.** `Ai/Tactician/GridPathfinder.cs`: `TerrainGrid`
+(1" cells over the table, blocked/difficult by degenerate swept-disc tests, inflated by base
+radius - the validator's own Minkowski semantics), A* (8-connected, no corner cutting, octile
+heuristic, difficult cells x2 as a route PREFERENCE - the rules-true 6" whole-move cap is applied
+by the caller), string-pulled polylines, `AdvanceAlongPath` (arc-length walk reporting passed
+waypoints + difficult crossings). `MovementPlanner.BuildPathCandidate` (all models share the
+path's interior waypoints - the unit funnels through corridors - and fan into Grid/Line formation
+at the endpoint; arc length is the ladder's backoff knob) and `PlanMoveToward` (grid -> path ->
+difficult cap -> G3 ladder; straight-line fallback when unreachable or flying). Multi-leg
+`ModelMoveEntry.Positions` carries the corridor legs, so the engine validates the true route.
+**Verified:** 7 authored-terrain tests - straight-when-clear, routes-around-wall (no leg clips
+impassible), THREADS THE 4" CORRIDOR (plan D5's canonical failure of angular skirting), sealed
+goal -> null (infeasible, not wrong), mid-leg budget stop, difficult-route 6" cap end-to-end,
+corridor composition passes MovementUtilities.ValidatePaths and gains >4" toward the goal. Suite
+1479/1479; bench hash unchanged (B05AA1D810364C6B - solo-rules untouched, as intended: nothing
+calls PlanMoveToward until A3c/A4). Perf note (G6): grid built per query, a few thousand point
+tests - optimize only on profiler evidence. NEXT IS THE HARD GATE: Appendix A v2 confirmation
+with Chris before A3c (plan sec. 5) - A3c must not start without it.
+
 **2026-07-09 — A3a (MovementPlanner extraction) DONE.** `Ai/Tactician/MovementPlanner.cs`: the
 solo-rules move-construction mechanics moved verbatim behind shared primitives - `BuildCandidate`
 (single-step vs formation re-pack, with the step<=0 -> StayInPlace degenerate preserved exactly,
