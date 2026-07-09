@@ -6170,6 +6170,31 @@
       "engineArgumentCount": 0,
       "valence": "Positive",
       "description": "Against units where most models have Tough 9\u002B, this weapon gets AP(\u002B4)."
+    },
+    {
+      "name": "Mischievous",
+      "passive": [
+        {
+          "hookID": "Shooting_OnSaveRollComplete",
+          "condition": {
+            "kind": "always"
+          },
+          "effect": {
+            "kind": "reroll",
+            "roll": "Save",
+            "condition": {
+              "kind": "onUnmodifiedValue"
+            }
+          },
+          "lifetime": "ThisAttack",
+          "seat": "Actor"
+        }
+      ],
+      "activated": [],
+      "scope": "Weapon",
+      "engineArgumentCount": 0,
+      "valence": "Positive",
+      "description": "The defender must re-roll unmodified Defense 6s."
     }
   ],
   "spells": [

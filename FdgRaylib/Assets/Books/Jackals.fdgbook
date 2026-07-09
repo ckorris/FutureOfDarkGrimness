@@ -3664,6 +3664,31 @@
       "engineArgumentCount": 0,
       "valence": "Positive",
       "description": "In melee, this weapon\u0027s attacks ignore the target\u0027s Regeneration."
+    },
+    {
+      "name": "Scrapper",
+      "passive": [
+        {
+          "hookID": "Shooting_OnSaveRollComplete",
+          "condition": {
+            "kind": "always"
+          },
+          "effect": {
+            "kind": "reroll",
+            "roll": "Save",
+            "condition": {
+              "kind": "onUnmodifiedValue"
+            }
+          },
+          "lifetime": "ThisAttack",
+          "seat": "Actor"
+        }
+      ],
+      "activated": [],
+      "scope": "Weapon",
+      "engineArgumentCount": 0,
+      "valence": "Positive",
+      "description": "The defender must re-roll unmodified Defense 6s."
     }
   ],
   "spells": [

@@ -2886,5 +2886,55 @@
     "engineArgumentCount": 0,
     "valence": "Positive",
     "description": "Once per activation, before attacking, pick one enemy unit within 18 inches in line of sight. The first friendly attack against it this activation gets +1 to hit rolls when shooting."
+  },
+  {
+    "name": "Mischievous",
+    "passive": [
+      {
+        "hookID": "Shooting_OnSaveRollComplete",
+        "condition": {
+          "kind": "always"
+        },
+        "effect": {
+          "kind": "reroll",
+          "roll": "Save",
+          "condition": {
+            "kind": "onUnmodifiedValue"
+          }
+        },
+        "lifetime": "ThisAttack",
+        "seat": "Actor"
+      }
+    ],
+    "activated": [],
+    "scope": "Weapon",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "The defender must re-roll unmodified Defense 6s."
+  },
+  {
+    "name": "Scrapper",
+    "passive": [
+      {
+        "hookID": "Shooting_OnSaveRollComplete",
+        "condition": {
+          "kind": "always"
+        },
+        "effect": {
+          "kind": "reroll",
+          "roll": "Save",
+          "condition": {
+            "kind": "onUnmodifiedValue"
+          }
+        },
+        "lifetime": "ThisAttack",
+        "seat": "Actor"
+      }
+    ],
+    "activated": [],
+    "scope": "Weapon",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "The defender must re-roll unmodified Defense 6s."
   }
 ]
