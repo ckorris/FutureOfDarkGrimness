@@ -1791,7 +1791,8 @@
           },
           "availableWhen": {
             "kind": "always"
-          }
+          },
+          "label": ""
         }
       ],
       "scope": "Unit",

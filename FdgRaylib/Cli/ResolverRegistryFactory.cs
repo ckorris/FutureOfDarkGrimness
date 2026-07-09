@@ -14,6 +14,7 @@ public static class ResolverRegistryFactory
         return new StageResolverRegistry()
             .RegisterResolver(new YesNoResolver())
             .RegisterResolver(new StringSelectionResolver())
+            .RegisterResolver(new ChooseAbilityEffectResolver())
             .RegisterResolver(new CastAssistResolver())
             .RegisterResolver(new ChooseDeploymentZoneResolver())
             .RegisterResolver(new ChooseRangedAttackResolver())
@@ -44,6 +45,7 @@ public static class ResolverRegistryFactory
         var selectZone    = new GuiSelectionResolver<RectangularZone>();
         var cancelSelectUnit = new GuiCancellableUnitSelectionResolver();   // canvas click-to-select (#100 pre-attack targeting)
         var strSel        = new GuiStringSelectionResolver();
+        var abilityEffect = new GuiChooseAbilityEffectResolver();   // #197 P5a "pick one effect" at activation start
         var castAssist    = new GuiCastAssistResolver();
         var deployZone    = new GuiChooseDeploymentZoneResolver();
         var rangedAttack  = new GuiChooseRangedAttackResolver(tableState);
@@ -60,6 +62,7 @@ public static class ResolverRegistryFactory
         overlay.Register(selectZone);
         overlay.Register(cancelSelectUnit);
         overlay.Register(strSel);
+        overlay.Register(abilityEffect);
         overlay.Register(castAssist);
         overlay.Register(deployZone);
         overlay.Register(rangedAttack);
@@ -78,6 +81,7 @@ public static class ResolverRegistryFactory
             .RegisterResolver(selectZone)                                    // GUI
             .RegisterResolver(cancelSelectUnit)                              // GUI
             .RegisterResolver(strSel)                                        // GUI
+            .RegisterResolver(abilityEffect)                                 // GUI
             .RegisterResolver(castAssist)                                    // GUI
             .RegisterResolver(deployZone)                                    // GUI
             .RegisterResolver(rangedAttack)                                  // GUI

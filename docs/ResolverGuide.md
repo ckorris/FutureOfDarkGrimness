@@ -37,6 +37,7 @@ Resolvers that need to interact with the table canvas (movement, placement) addi
 | `AssignWoundsRequest` | `AssignWoundsResolver` | `GuiAssignWoundsResolver` | Stateful — `AssignWoundsResults` accumulates clicks; auto-completes when full |
 | `DefineMovementPathRequest` | `DefineMovementPathResolver` | `GuiDefineMovementResolver` | Click destination on canvas; whole unit moves same delta |
 | `PlaceObjectsRequest<T>` | `PlaceObjectsResolver<T>` | `GuiPlaceObjectsResolver<T>` | Click each model in turn within deployment zone |
+| `ChooseAbilityEffectRequest` | `ChooseAbilityEffectResolver` | `GuiChooseAbilityEffectResolver` | #197 P5a. "Pick one of this rule's effects" at activation start (Versatile Attack/Reach, Watchborn). Reply is the chosen option's **index**. Mandatory — no Back, no cancel; the stage only raises it when 2+ effects are available. EOF/AI default: option 0. Its own request type on purpose: `docs/ai-agent-plan.md` A4 swaps AI resolvers in one request type at a time, and riding `StringSelectionRequest` would force an agent to take over Choose Action and the pre-attack menu too, telling them apart by prompt text |
 
 (The table lists the original core set; later additions — `GuiUnitSelectionResolver`, `GuiCancellableUnitSelectionResolver`, `GuiCastAssistResolver`, aircraft-advance, terrain-placement, consolidation resolvers — follow the same pattern. See #161 for the consistency pass across them.)
 
