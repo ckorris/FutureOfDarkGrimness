@@ -29,9 +29,9 @@ day one, which is why the order was swapped. Three things worth carrying into #1
 (2) **Benchmark fingerprints must include objectives**, not just models. The solo-rules bot ignores
 objectives, so a model-only comparison is blind to objective-placement nondeterminism (a mutation test
 proved it). Same trap will apply to any FdgLab state hashing.
-(3) **#195 filed**: resumed games play four MORE rounds instead of finishing the four-round game. Any
-probe or rollout resumed from a snapshot is currently a round too long. Fix before Phase B's
-`SimulationService` depends on resume, and before scenario probes become gating.
+(3) **#195 filed and now fixed** (engine `a19e6ab`): resumed games played four MORE rounds instead of
+finishing the four-round game. Resume is now round-count-correct, so Phase B's `SimulationService` and
+the scenario probes can rely on it. Remaining prereq: #194.
 
 **2026-07-09 — P1 (#192) done, archived.** Engine `9b1c0ba`. `GameResult` + `FDGServer.OnGameCompleted`
 land the reward/benchmark signal the whole ladder depends on. Two findings worth carrying forward:
