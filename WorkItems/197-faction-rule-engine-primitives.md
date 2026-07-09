@@ -225,7 +225,7 @@ Reference counts are corpus-wide (44 books). Primitive numbers are #100's.
 | 21 | **Versatile Defense** (out of P5a) | A new `ELifetime.UntilNextActivation` + a `TokenClearTrigger` firing at activation **start**, and a second trigger at `Deployment_OnUnitDeployed`. Everything else (labelled abilities, the choice request) already exists. | Versatile Defense Aura (21) |
 | 93 | **P22** new deploy timings | `deferDeployment` variants beyond Scout/Ambush; "deploy anywhere >3in from enemy"; deploy-round state for round-of-arrival bonuses. | Delayed Action (47), Teleport (15), Rapid Blink (8), Ambush Beacon (6), Rapid Ambush (4), Teleport Aura (4), Ambushing Piercing Shot (4), Surprise Attack (2), Rapid Blink Boost Aura (2), Infiltrate Aura (1) |
 | 86 | **New** reposition-at-activation | Place a unit's models within a rolled D3/D3+1in of their current position at activation start. Needs the P5a hook + a placement resolver + the dice invariant. | Wolfborn (60), Bounding (22), Bounding Aura (4) |
-| 66 | **P5b** round-start Shaken recovery | **Correction (2026-07-09):** `Round_OnRoundStart` is **not** dormant — `StartOfRoundExtraActionStage.GrantSpellTokens` fires it every round for every living unit (Caster token grants), applying token ops and running executables. So P5b needs only the *effect*: "roll a die at round start; on a pass, clear Shaken". No hook work. | Steadfast Aura (28), Battleborn (26), Honor Code (9), Steadfast (3) |
+| 66 | ~~**P5b** round-start Shaken recovery~~ **DONE 2026-07-09** (66/66) | **The premise was wrong:** `Round_OnRoundStart` is not dormant — `StartOfRoundExtraActionStage.GrantSpellTokens` fires it every round for every living unit (Caster token grants), applying token ops and running executables. So this needed only the effect. New `Effect.ClearTokenOnRoll` -> `InvokeClearTokenOnRoll`, an executable resolved through `IOperationServices`. Rolls with `RollDecisiveFace`, never `Roll(1)` — the outcome is binary, so a histogram would want to remove a *fraction* of a token. Engine `05eb91e`. | Steadfast Aura (28), Battleborn (26), Honor Code (9), Steadfast (3) |
 | 60 | **P21** setup-phase re-deploy | Remove + re-place a unit during/after deployment. | Re-Deployment (27), Fanatic (19), Dash Aura (4), Ambush Re-Deployment (4), Dash (2), Mobile Artillery (2), Quick Readjustment (2) |
 | 59 | **Darkborn** (#102 residual) | Defensive Darkborn: enemies get reduced range **and** reduced movement/charge vs this unit. Per-target charge-distance debuff does not exist. **Also a naming bug:** the catalog registers `Darkborn (Offensive)` / `Darkborn (Defensive)`; the books reference plain `Darkborn`, which resolves to nothing. | Darkborn (59) |
 | 53 | **P15** randomized-branch effect | "Roll one die: 1-3 -> effect A, 4-6 -> effect B", applied per attack. **Must respect the RollDecisive threshold-shift invariant.** | Unpredictable Fighter (26), Unpredictable Fighter Aura (11), Unpredictable (5), Unpredictable Shooter Aura (5), Unpredictable Fighter Mark (3), Unpredictable Shooter Mark (2), Unpredictable Shooter (1) |
@@ -259,6 +259,11 @@ Reference counts are corpus-wide (44 books). Primitive numbers are #100's.
 
 ## Notes
 
+- 2026-07-09: **`RuleFireLint` consumption check + P5b shipped.** The lint now verifies that some stage at a
+  passive entry's hook actually *reads* what it emits (`IsOpConsumedAtPassiveHook`, engine `a2304fb`) — the
+  hole that let `Changebound`/`Machine-Fog` ship as no-ops. Whole catalog + supplement pass unchanged;
+  reverting `Changebound` to its shipped hook turns exactly that rule red. P5b (66 refs, engine `05eb91e`)
+  turned out to need no hook work at all: `Round_OnRoundStart` was never dormant. Corpus dead count 864 -> 798.
 - 2026-07-09: **P5a shipped** (engine `df234bc`, `90ba258`; app `6dbd31c`). 154 of its 175 refs; corpus dead
   count 1,018 -> 864. Signed off first: labelled abilities, a dedicated request type, defer Versatile Defense.
   Building it exposed a latent engine defect — `GatherOffers` never read granted-rule tokens, so an aura

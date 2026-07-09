@@ -4175,6 +4175,41 @@
       "engineArgumentCount": 0,
       "valence": "Positive",
       "description": "Moves \u002B2\u0022 when using Advance, and \u002B4\u0022 when using Rush/Charge (from Shock Speed)."
+    },
+    {
+      "name": "Honor Code",
+      "passive": [
+        {
+          "hookID": "Round_OnRoundStart",
+          "condition": {
+            "kind": "and",
+            "left": {
+              "kind": "tokenPresent",
+              "tType": {
+                "id": "Shaken"
+              },
+              "minCount": 1
+            },
+            "right": {
+              "kind": "allModelsHaveThisRule"
+            }
+          },
+          "effect": {
+            "kind": "clearTokenOnRoll",
+            "tType": {
+              "id": "Shaken"
+            },
+            "minRoll": 4
+          },
+          "lifetime": "ThisRound",
+          "seat": "Actor"
+        }
+      ],
+      "activated": [],
+      "scope": "Unit",
+      "engineArgumentCount": 0,
+      "valence": "Positive",
+      "description": "If this unit is Shaken at the start of the round, roll one die. On a 4\u002B it stops being Shaken."
     }
   ],
   "spells": [
