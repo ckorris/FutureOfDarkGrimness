@@ -20,6 +20,28 @@ pin tests.
 
 ## Notes (newest first)
 
+**2026-07-10 — A5-4 ANTI-HORDE PLAY SHIPPED (Chris-designed); GATE 79.4% MIRRORS / 77.4% MATRIX,
+ZERO FAULTS - ONE CELL LEFT BELOW 50.** Engine `f-see-log` (A5-4 commit). Chris's design: screen
+with expendable bodies (spent transports, the BB tank), shoot the horde before racing markers,
+break mobs with concentrated fire. Implementation: (1) MoveScreen credits endpoints on the lane
+between the biggest melee threat and our most valuable OTHER unit x the ward's threatened value
+- the M8 Block / M9 Escort candidates existed all along, nothing paid them; deliberately NO
+who-may-screen gate (retaliation prices each unit's own cost of absorbing the charge, so Tough
+tanks and empty transports screen and casters do not). (2) MoraleBreakBonus 1.3x for volleys
+expected to push a unit below HALF strength (the engine's own rout mechanic - break, don't
+shave); needs CombatMath.ExpectedKillsFrom (public wrapper on the allocation mirror). (3)
+ObjectiveUrgency scales the objective terms ~0.66 (round 1) -> 1.3 (final round). 3+1 pins;
+suite 1554/1554. 50-game probes first: BB-vs-Orks 49 -> 61, DE-vs-Orks flat 48. **Gate
+(a5-4-gate): mirror avg 79.1 -> 79.4, matrix 79.2 -> 77.4 (parity within #210 noise +
+redistribution), faults 0/1800. Below-50 cells 2 -> 1: BB-vs-Orks 49 -> 58, BB-vs-HEF 37 -> 51;
+remaining straggler DE-vs-Orks 46. Watch: BB-vs-RL 82 -> 63 (more conservative BB; still
+comfortable).** Queued next (Chris review 2026-07-10): A5-4b screen tweaks - ward threat as
+EXCHANGE MARGIN (a counter-blade powerhouse ward needs no screen) + one-screen-per-lane
+(no dogpiled screens); DE disembark timing investigation (does cargo ever leave the boats
+proactively, or only on spillout?); cargo-aware transport value; speed-differential kiting;
+shoot-what-threatens-you. Chris's read on DE-vs-Orks: possibly a genuinely one-sided matchup,
+but it should still beat the dumb bot (>50).
+
 **2026-07-10 — A5-4 ANTI-HORDE SCORING PROBED AND REVERTED (negative result).** The 49%-cell
 loss reading (BB/DE vs Orks): elite units take an early marker, hold a firing position, get
 CAUGHT by the horde's melee elements in rounds 2-3 (BB s3005: APC eaten r2, a BB squad r3,
