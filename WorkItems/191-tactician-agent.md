@@ -20,6 +20,22 @@ pin tests.
 
 ## Notes (newest first)
 
+**2026-07-10 — BENCH SHAPE FIXED (Chris caught it) + FIRST ORDERED-PAIRS GATE: 79.2% MATRIX,
+BUT THE TRIANGLE WAS HIDING AN RL-ROW COLLAPSE.** Superproject `9ed0d1b`: pool benches now run
+every ORDERED pair (64 matchups, 3200 games) - the old unordered triangle made profile A play
+alphabetically-early armies far more often (Hives as the Tactician's side in 8 matchups, Robot
+Legions in 1), skewing the aggregate toward its best armies; --triangle keeps the old shape for
+historical comparison. **Ordered gate (a5-6-gate-ordered): matrix 79.2 (triangle said 81.1),
+mirrors 77.4, faults 1/3200 (#208 family - better than baseline rate). Row averages: Hives
+92.5, HEF 89.1, DE 86.6, Orks 83.6, Dwarf 79.5, HDF 72.6, BB 70.1, RL 59.9. THREE below-50
+cells the triangle could never see, all Tactician-as-RL: vs Hives 36, vs HEF 35, vs Orks 36 -
+RL playing into pressure armies collapses.** So the honest "no matchup < 50" criterion FAILS
+again; the ordered grid is the reference going forward. Next session: G2 log-read the RL row
+(hypothesis: same family as the soft HDF row - UnitValue is blind to special rules, and RL's
+durability lives in rules like Regeneration/self-repair; also RL is slow, and the round-urgency
++ staging changes may interact badly with a slow army under pressure). Then hallway probe + A6
++ Chris's hand-played games.
+
 **2026-07-10 — A5-6 SHIPPED (Chris's second review pass); GATE 77.2% MIRRORS / 81.1% MATRIX,
 NO CELL BELOW 50, ZERO FAULTS - BEST MATRIX YET.** Engine `b626bea`. Six facets: (1)
 charge-band staging - approach credit stops at the enemy's TRUE threat line (charge budget +
