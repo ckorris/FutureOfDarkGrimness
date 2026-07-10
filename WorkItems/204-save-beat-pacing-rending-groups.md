@@ -21,3 +21,6 @@ math; verify by eye in the GUI with a Rending weapon vs a mixed volley.
 ## Notes
 
 - 2026-07-09 — filed verbatim from Chris's report during #200/#203 work.
+- 2026-07-09 (second report, same day): re-raised - "the two beats for the dice rolls play too
+  close together and it's not clear what happened." The readability harm is confirmed felt in
+  real play, not just cosmetic.
