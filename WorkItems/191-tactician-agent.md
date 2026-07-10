@@ -20,6 +20,34 @@ pin tests.
 
 ## Notes (newest first)
 
+**2026-07-10 — A5-8 (Chris's third review pass, from the RL-row post-mortem): TARPIT CHARGES,
+ALWAYS-AMBUSH, DEADLINE-AWARE OBJECTIVE GRADIENT, THREATENED-VALUE WARD PICK.** Four facets:
+(1) Tarpit (Chris): a landed charge degrades the target's next volley (his correction: it does
+NOT deny the activation - the target still shoots, with fewer guns and chargers in the way), so
+charges earn ChargeTarpitPerWound (0.04) per expected wound of the target's ranged output (new
+TacticalAnalysis.RangedOutputWounds). Makes Bot-Swarm-style chaff charge gunlines instead of
+fleeing them; pin test verified failing at weight 0. (2) Always-Ambush (Chris): AmbushPolicy
+now holds EVERYTHING with Ambush - the old melee-only + half-army cap left the Forge Spider
+(24" gun) walking on at round 1 in all 20 dumped games; Ambush is free positioning, especially
+for Slow armies. Arrival stays the engine default (round-2 YesNo, defaults to deploy).
+(3) Deadline gradient (Chris: "RL must move toward objectives most of the game"): the
+objective-approach gradient is now deadline-scaled PER OBJECTIVE - full 1.3 urgency when
+rounds-to-reach (gap / rush speed) equals rounds remaining, decaying to the round baseline
+with slack (fast units keep shooting and pop on late - his over-rush worry), zero when
+unreachable even rushing every round (no futile marches; a marker 71" out is worth nothing).
+The flip term keeps round-based urgency. (4) Ward re-key (Chris: "the Monolith needs
+protection the LEAST"): ScreenLane picks the ward by threatened value (A5-4b exchange margin
+vs the melee threat nearest each friendly, cargo-scaled) instead of raw UnitValue - the
+Monolith topping the old pick with margin ~0 nulled the lane so nobody screened anyone;
+M8/M9 emit lanes for the top-2 assets so the paying lane always has candidates. NOT in this
+pass: deployment matchup awareness (design fork - options to be sketched for sign-off);
+Deadly-vs-Tough recalibration (verified CombatMath already mirrors Deadly clump confinement -
+overkill into chaff is lost in the estimate; no change needed); Flesh-Eaters Infiltrate aim
+verified sane from traces (lands 1-3" from a marker). Suite 1566/1566. **50-game probes (seed
+3000, 0 faults): RL-vs-Hives 42 -> 48, RL-vs-Orks 42 -> 53 (clears the 50 line), RL-vs-HEF 53
+(held). Session total for the row: 36/36/35 -> 48/53/53 over solo-vs-solo baselines of
+30/29/42.** Full ordered gate: a5-8-gate-ordered (numbers in a later entry).
+
 **2026-07-10 — RL-ROW ROOT CAUSE: PHANTOM SHOOT CREDIT ON RUSH INTENTS (CanShootAfter keyed on
 intent, executor on ActionType).** G2 log-read of the three sub-50 cells (10-game probes, seed
 3000+, logs + #198 position traces): RL units walked INTO 24" gun range from round 2 on and
@@ -47,7 +75,13 @@ read: shooting 9-12 activations/game (was 3-9), wounds dealt 29-43 (was 9-35); r
 losses/ties are objective endgames (hordes camp/contest markers a Slow army cannot clear -
 10-15 ties per 50 even solo-vs-solo, army character). The "no cell <50" criterion still fails
 on Hives/Orks (~42) unless another lever lands or the criterion is judged against the
-one-sidedness baseline - Chris's call.** Full ordered gate rerun follows this entry.
+one-sidedness baseline - Chris's call.** Full ordered gate (a5-7-gate-ordered): **matrix 80.4
+(was 79.2), mirrors 77.5, RL row 59.9 -> 63.6, below-50 cells down to two (RL-vs-Hives 44,
+RL-vs-Orks 42; the HEF cell cleared at 53). Row deltas: Dwarf 79.5->83.8, Orks 83.6->85.1,
+Hives 92.5->93.0, HEF 89.1->91.2; BB 70.1->69.2 and HDF 72.6->71.9 (noise-level). Faults
+4/3200, ALL the #208 cohesion signature ("further than 1 inch from the closest model" at
+DefinePathStage, mid-game), vs 1/3200 last run and baseline 1/1800 - same family, small-sample
+Poisson wobble; none reproduce serially (consistent with #210 DOP sensitivity).**
 
 **2026-07-10 — BENCH SHAPE FIXED (Chris caught it) + FIRST ORDERED-PAIRS GATE: 79.2% MATRIX,
 BUT THE TRIANGLE WAS HIDING AN RL-ROW COLLAPSE.** Superproject `9ed0d1b`: pool benches now run
