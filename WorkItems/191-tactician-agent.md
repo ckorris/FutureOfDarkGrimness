@@ -20,6 +20,25 @@ pin tests.
 
 ## Notes (newest first)
 
+**2026-07-10 — A5-6 SHIPPED (Chris's second review pass); GATE 77.2% MIRRORS / 81.1% MATRIX,
+NO CELL BELOW 50, ZERO FAULTS - BEST MATRIX YET.** Engine `b626bea`. Six facets: (1)
+charge-band staging - approach credit stops at the enemy's TRUE threat line (charge budget +
+the 2" melee cylinder Chris flagged + 1.5" centroid slack; new TacticalAnalysis.MeleeThreatReach
+used by approach, retaliation, and transport-danger checks alike) - charging beats being
+charged; (2) boat-then-payload activation order (loaded transport +0.5 urgency, embarked cargo
+-0.5); (3) emergency disembark when one enemy activation could take half the boat's remaining
+wounds; (4) TacticianModelSelectionResolver - Takedown/single-model-spell picks snipe the
+output model / rules-carrying (hero) model instead of solo's "Model 1"; (5) cargo-aware value
+(TacticalAnalysis.UnitValueWithCargo) in ward selection and shooting targets; (6)
+ShootThreatFactor 1.25x for targets that can charge us next activation. 6 pins; suite
+1562/1562. **Gate (a5-6-gate): matrix 80.6 -> 81.1, mirrors 78.1 -> 77.2, no cell below 50
+(floor: BB-vs-Orks 56), faults 0/1800. DE-vs-Orks 46 -> 70 across the A5-5/A5-6 passes.
+Weakest remaining: HDF row (63-68) and RL mirror (69) - all comfortably clear.** Speed-
+differential kiting was consciously NOT implemented: under alternating activations a "we are
+faster" discount is unsound (they activate next); the charge-band staging is the sound version.
+Report: FdgLab/reports/a5-6-gate. Remaining for the A-gate: hallway probe, A6 selection UX,
+Chris's two hand-played games.
+
 **2026-07-10 — A5-4b + A5-5 SHIPPED; GATE 78.1% MIRRORS / 80.6% MATRIX, NO CELL BELOW 50,
 FAULTS = BASELINE - ALL AUTOMATED A-GATE CRITERIA PASS.** Engine `bcedbe4`. A5-4b (Chris's
 review): ward threat = EXCHANGE MARGIN (a counter-blade powerhouse needs no screen; pinned) +
