@@ -11166,6 +11166,31 @@
       "description": "This model and its unit gain Versatile Reach."
     },
     {
+      "name": "Wolfborn",
+      "passive": [
+        {
+          "hookID": "Activation_OnActivationStart",
+          "condition": {
+            "kind": "always"
+          },
+          "effect": {
+            "kind": "repositionAtActivation",
+            "distance": {
+              "kind": "d3"
+            },
+            "plusInches": 0
+          },
+          "lifetime": "ThisActivation",
+          "seat": "Actor"
+        }
+      ],
+      "activated": [],
+      "scope": "Unit",
+      "engineArgumentCount": 0,
+      "valence": "Positive",
+      "description": "When this unit is activated, it may place all its models anywhere fully within D3 inches of their position."
+    },
+    {
       "name": "Versatile Attack (Piercing)",
       "passive": [
         {

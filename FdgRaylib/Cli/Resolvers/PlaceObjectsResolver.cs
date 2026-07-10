@@ -85,6 +85,18 @@ public class PlaceObjectsResolver<T> : IStageResolver<PlaceObjectsRequest<T>, Ca
                 string? raw = Console.ReadLine();
                 if (raw == null)
                 {
+                    // #197 reposition-at-activation: the auto-placer aims at a deployment lane and knows
+                    // nothing about this model's own radius, so it would propose an illegal spot. Standing
+                    // still is always inside the radius and never breaks a rule the model already satisfies,
+                    // and "you MAY place" makes declining legal.
+                    if (request.MaxDistanceFromStartInches > 0f)
+                    {
+                        Position stay = StartPositionOf(binding.GetValue());
+                        Console.WriteLine($"    (EOF - staying at {stay.x:F1}\", {stay.z:F1}\")");
+                        placed.Add(new PlacedObjectEntry<T>(binding, stay));
+                        break;
+                    }
+
                     var pos = FindAutoPosition(r, ShapeOf(binding.GetValue()), defaultFacing, autoStepX, autoStepZ, zone, cz, xStagger, placed, enemies, minEnemyDist,
                         total, request.MustTouchTableEdge);
                     Console.WriteLine($"    (EOF - auto-placing at {pos.x:F1}\", {pos.z:F1}\")");
@@ -125,6 +137,14 @@ public class PlaceObjectsResolver<T> : IStageResolver<PlaceObjectsRequest<T>, Ca
                     if (TooCloseToEnemy(newPos, enemies, minEnemyDist))
                     {
                         Console.WriteLine($"    ! Too close to an enemy - must be over {minEnemyDist:F0}\" from enemy units.");
+                        continue;
+                    }
+
+                    if (!PlacementUtilities.IsWithinStartRadius(newPos, StartPositionOf(binding.GetValue()),
+                            request.MaxDistanceFromStartInches))
+                    {
+                        Console.WriteLine($"    ! Too far from where this model stands - it may move at most " +
+                            $"{request.MaxDistanceFromStartInches:F1}\".");
                         continue;
                     }
 
@@ -344,6 +364,11 @@ public class PlaceObjectsResolver<T> : IStageResolver<PlaceObjectsRequest<T>, Ca
     // Circumscribing radius so rectangular bases don't overlap when auto-placed and so they stay in the zone
     // for any facing — a conservative layout bound matching the AI and GUI deploy resolvers (#150). The
     // inscribed BaseRadiusInches under-bounded a rectangle and let adjacent bases overlap.
+    // The model's live position, i.e. where a reposition placement measures its radius from. Read before any
+    // placement is committed, which PlacedObjectEntry's deferred-write shape guarantees.
+    private static Position StartPositionOf(T value) =>
+        value is ModelData model ? model.Position : new Position();
+
     private static float GetBaseRadius(T value) =>
         value is ModelData m ? m.BaseShape.CircumscribedRadiusInches : 0.75f;
 

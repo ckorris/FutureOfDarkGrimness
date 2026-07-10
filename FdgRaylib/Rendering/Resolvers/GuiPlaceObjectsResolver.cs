@@ -158,7 +158,8 @@ public class GuiPlaceObjectsResolver<T>
             var binding = _placed[k].Binding;
             float r = GetBaseRadius(binding.GetValue());
             var cand = new Position(mouseInX, mouseInZ);
-            bool valid = IsPlacementValid(cand, r, GetBaseShape(binding.GetValue()), facing, zone, enemies, minEnemyDist, k, out string? why);
+            bool valid = IsPlacementValid(cand, r, GetBaseShape(binding.GetValue()), facing, zone, enemies,
+                minEnemyDist, k, StartPositionOf(binding.GetValue()), request.MaxDistanceFromStartInches, out string? why);
             if (overTable) DrawGhost(dl, GetBaseShape(binding.GetValue()), io.MousePos, _scale, valid, facing);
             if (clicked)
             {
@@ -188,7 +189,8 @@ public class GuiPlaceObjectsResolver<T>
         var currentBinding = request.ModelsToPlace[_placed.Count];
         float curR = GetBaseRadius(currentBinding.GetValue());
         var candidate = new Position(mouseInX, mouseInZ);
-        bool ok = IsPlacementValid(candidate, curR, GetBaseShape(currentBinding.GetValue()), facing, zone, enemies, minEnemyDist, -1, out string? reason);
+        bool ok = IsPlacementValid(candidate, curR, GetBaseShape(currentBinding.GetValue()), facing, zone, enemies,
+            minEnemyDist, -1, StartPositionOf(currentBinding.GetValue()), request.MaxDistanceFromStartInches, out string? reason);
         if (overTable) DrawGhost(dl, GetBaseShape(currentBinding.GetValue()), io.MousePos, _scale, ok, facing);
         if (clicked)
         {
@@ -263,7 +265,8 @@ public class GuiPlaceObjectsResolver<T>
             float dx = offsets[i].dx, dz = offsets[i].dz;
             float rx = dx * cos - dz * sin, rz = dx * sin + dz * cos;
             positions[i] = new Position(centroid.x + rx, centroid.z + rz);
-            bool valid = IsGroupSlotValid(positions[i], radii[i], GetBaseShape(models[i].GetValue()), groupFacing, zone, enemies, minEnemyDist);
+            bool valid = IsGroupSlotValid(positions[i], radii[i], GetBaseShape(models[i].GetValue()), groupFacing,
+                zone, enemies, minEnemyDist, StartPositionOf(models[i].GetValue()), request.MaxDistanceFromStartInches);
             DrawGhost(dl, GetBaseShape(models[i].GetValue()), ToPixelVec(positions[i]), _scale, valid, groupFacing);
             if (!valid) allValid = false;
         }
@@ -315,8 +318,13 @@ public class GuiPlaceObjectsResolver<T>
     /// legal packings of elongated rectangles aren't falsely rejected. <paramref name="r"/> (circumscribing)
     /// still bounds the zone/table containment (rotation-safe).</summary>
     private bool IsPlacementValid(Position cand, float r, IBaseShape shape, Float2 facing, IBoundedZone zone,
-        List<Position> enemies, float minEnemyDist, int excludeIndex, out string? reason)
+        List<Position> enemies, float minEnemyDist, int excludeIndex, Position startPos, float maxFromStart,
+        out string? reason)
     {
+        // #197 reposition-at-activation: each model has its own radius around where it already stands.
+        if (!PlacementUtilities.IsWithinStartRadius(cand, startPos, maxFromStart))
+        { reason = $"Too far - this model may move at most {maxFromStart:F1}\" from where it stands."; return false; }
+
         if (!PlacementUtilities.IsBaseWithinZone(cand, shape, facing, zone))
         { reason = "Outside deployment zone."; return false; }
 
@@ -340,8 +348,9 @@ public class GuiPlaceObjectsResolver<T>
     /// occupants or terrain, and enemy spacing. Intra-formation overlap/cohesion are guaranteed by the
     /// layout, so they aren't re-checked here.</summary>
     private bool IsGroupSlotValid(Position cand, float r, IBaseShape shape, Float2 facing, IBoundedZone zone,
-        List<Position> enemies, float minEnemyDist)
+        List<Position> enemies, float minEnemyDist, Position startPos, float maxFromStart)
     {
+        if (!PlacementUtilities.IsWithinStartRadius(cand, startPos, maxFromStart)) return false;
         if (!PlacementUtilities.IsBaseWithinZone(cand, shape, facing, zone)) return false;
         foreach (var (pos, oShape, oFacing) in GetTableOccupants())
             if (BaseShapeGeometry.AreColliding(shape, cand, facing, oShape, pos, oFacing)) return false;
@@ -530,6 +539,15 @@ public class GuiPlaceObjectsResolver<T>
         for (int i = _placed.Count; i < request.ModelsToPlace.Count; i++)
         {
             var binding = request.ModelsToPlace[i];
+
+            // #197 reposition: the block-packing search aims at a deployment lane and knows nothing about this
+            // model's own radius. Standing still is always inside it and always legal.
+            if (request.MaxDistanceFromStartInches > 0f)
+            {
+                _placed.Add(new PlacedObjectEntry<T>(binding, StartPositionOf(binding.GetValue())));
+                continue;
+            }
+
             float r = GetBaseRadius(binding.GetValue());
             IBaseShape shape = GetBaseShape(binding.GetValue());
             if (!TryFindAutoPosition(r, shape, deployFacing, stepX, stepZ, targetCols, zone, startCz, enemies, minEnemyDist, out Position pos))
@@ -609,6 +627,11 @@ public class GuiPlaceObjectsResolver<T>
         }
         return positions;
     }
+
+    // Where the model stands now. Safe to read at validation time: PlacedObjectEntry defers every write until
+    // the whole placement is accepted, so no model has moved yet.
+    private static Position StartPositionOf(T value) =>
+        value is ModelData model ? model.Position : new Position();
 
     private static bool TooCloseToEnemy(Position p, List<Position> enemies, float minDist)
     {

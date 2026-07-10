@@ -4558,5 +4558,149 @@
     "engineArgumentCount": 0,
     "valence": "Positive",
     "description": "This model and its unit gain Infiltrate."
+  },
+  {
+    "name": "Wolfborn",
+    "passive": [
+      {
+        "hookID": "Activation_OnActivationStart",
+        "condition": {
+          "kind": "always"
+        },
+        "effect": {
+          "kind": "repositionAtActivation",
+          "distance": {
+            "kind": "d3"
+          },
+          "plusInches": 0
+        },
+        "lifetime": "ThisActivation",
+        "seat": "Actor"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "When this unit is activated, it may place all its models anywhere fully within D3 inches of their position."
+  },
+  {
+    "name": "Rapid Blink",
+    "passive": [
+      {
+        "hookID": "Activation_OnActivationStart",
+        "condition": {
+          "kind": "always"
+        },
+        "effect": {
+          "kind": "repositionAtActivation",
+          "distance": {
+            "kind": "d3"
+          },
+          "plusInches": 0
+        },
+        "lifetime": "ThisActivation",
+        "seat": "Actor"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "When this unit is activated, it may place all its models anywhere fully within D3 inches of their position."
+  },
+  {
+    "name": "Bounding",
+    "passive": [
+      {
+        "hookID": "Activation_OnActivationStart",
+        "condition": {
+          "kind": "always"
+        },
+        "effect": {
+          "kind": "repositionAtActivation",
+          "distance": {
+            "kind": "d3"
+          },
+          "plusInches": 1
+        },
+        "lifetime": "ThisActivation",
+        "seat": "Actor"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "When this unit is activated, it may place all its models anywhere fully within D3+1 inches of their position."
+  },
+  {
+    "name": "Rapid Blink Boost",
+    "passive": [
+      {
+        "hookID": "Activation_OnActivationStart",
+        "condition": {
+          "kind": "always"
+        },
+        "effect": {
+          "kind": "repositionAtActivation",
+          "distance": {
+            "kind": "d3"
+          },
+          "plusInches": 0
+        },
+        "lifetime": "ThisActivation",
+        "seat": "Actor"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "If this model has Rapid Blink, it may be placed within 2D3 inches instead of only D3 inches."
+  },
+  {
+    "name": "Bounding Aura",
+    "passive": [
+      {
+        "hookID": "Lifecycle_OnUnitCreated",
+        "condition": {
+          "kind": "always"
+        },
+        "effect": {
+          "kind": "aura",
+          "ruleName": "Bounding"
+        },
+        "lifetime": "UntilEndOfGame",
+        "seat": "Actor"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "This model and its unit gain Bounding."
+  },
+  {
+    "name": "Rapid Blink Boost Aura",
+    "passive": [
+      {
+        "hookID": "Lifecycle_OnUnitCreated",
+        "condition": {
+          "kind": "always"
+        },
+        "effect": {
+          "kind": "aura",
+          "ruleName": "Rapid Blink Boost"
+        },
+        "lifetime": "UntilEndOfGame",
+        "seat": "Actor"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "This model and its unit gain Rapid Blink Boost."
   }
 ]
