@@ -186,11 +186,9 @@ G12. **Explainability aid:** every Tactician decision logs a one-line ASCII rati
 - Wanting to lower a gate threshold, or a gate failed after two distinct fix attempts.
 - Any training run projected over ~12 hours.
 - Curating or changing the benchmark army pool.
-- **Starting slice A3c (goal enumeration):** Appendix A v2 integrates Chris's 2026-07-09 review
-  (escort/kite/mass/fatigue-bait/block/move-to-cast/transport-delivery) but he has not yet
-  confirmed the refined form — before A3c begins, present Appendix A v2 to him and record his
-  confirmation (date + any changes) in the #191 ledger and the Appendix A header. Implementing
-  the vocabulary without that confirmation is a plan violation.
+- **Starting slice A3c (goal enumeration):** SATISFIED 2026-07-09 — Chris confirmed Appendix A
+  v2 with one edit (mid-game MoveToEmbark cut from M12; see the appendix entry). Recorded here,
+  in the appendix header, and in the #191 ledger.
 
 ---
 
@@ -198,7 +196,13 @@ G12. **Explainability aid:** every Tactician decision logs a one-line ASCII rati
 
 **6.1 Benchmark matrix.** An army pool of ~8 armies curated by Chris (stop-and-ask trigger),
 spanning archetypes: horde melee, elite shooting, mixed arms, caster-heavy, tough/vehicle-heavy,
-ambush/scout-heavy. A fixed matchup list (~12 pairs including mirrors) x >= 100 seeds x side swap.
+ambush/scout-heavy (+ suggested: a transport list, and a second-faction repeat of one archetype).
+*Point level (decided with Chris 2026-07-09): 2,000 points, uniform across the pool* — matches
+real play (usually 2k+), expresses full archetypes, and big games degrade through small-force
+regimes anyway (the reverse is false). Throughput cost accepted; measure real game wall-time on
+the first 2k army (G6) and record it. C-gate rider: hold out one army PAIR at a different point
+level (e.g. 1k) to probe generalization across game SIZE. A fixed matchup list (~12 pairs
+including mirrors) x >= 100 seeds x side swap.
 Output: per-matchup and aggregate score, fault/timeout counts, decision-time distribution;
 markdown + CSV under `FdgLab/reports/` (gitignored; gate summaries copied into the #191 ledger).
 
@@ -476,7 +480,7 @@ design principle: grow vocabulary on demand).
 
 ---
 
-## Appendix A — Macro-action vocabulary v2 (Chris's additions integrated 2026-07-09; awaiting his confirmation of this refined form — see section 5)
+## Appendix A — Macro-action vocabulary v2 (CONFIRMED by Chris 2026-07-09, with one edit: mid-game MoveToEmbark cut from M12 — see that entry. A3c is cleared to build this vocabulary.)
 
 v1 was authored by the planning session; v2 folds in Chris's review (escort, kite, mass, fatigue
 bait, block, move-to-cast, transport delivery). Two of those became generator-wide rules rather
@@ -531,10 +535,14 @@ than intents — see "Generator rules" below.
   value is often anticipatory (cast lands this turn or next); search/eval judges it. *Verify
   during A5:* whether the Cast action permits movement in the same activation — if not, this
   intent is inherently a set-up move and only search can value it.
-- **M12 DeliverCargo(transport)** / **MoveToEmbark(unit)** — a transport routes to where its
-  *cargo* wants to be (the cargo's own projected best goals: objectives, charge targets,
-  range bands), including disembark timing; inversely, a unit far from the action routes toward
-  a transport worth boarding. The transport's own position is subordinate to the cargo's plan.
+- **M12 DeliverCargo(transport)** — a transport routes to where its *cargo* wants to be (the
+  cargo's own projected best goals: objectives, charge targets, range bands), including
+  disembark timing. The transport's own position is subordinate to the cargo's plan.
+  *Confirmed edit (Chris, 2026-07-09):* the inverse intent — mid-game **MoveToEmbark** — is CUT
+  from the generator: post-deployment embarking is almost never useful in real play (seen once,
+  and only because the transport flew). Deploy-time embark stays (deployment intents). Revival
+  condition if it ever returns: gate it on the transport's mobility meaningfully exceeding the
+  cargo's (e.g. Flying), never as a universal candidate.
 
 **Deployment intents:** zone-constrained analogues of M2/M4/M7/M10, plus reserve declarations
 (Ambush/Scout timing: simple round/threat heuristics in A5).

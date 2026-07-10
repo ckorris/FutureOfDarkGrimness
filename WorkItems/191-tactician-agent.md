@@ -20,6 +20,20 @@ pin tests.
 
 ## Notes (newest first)
 
+**2026-07-09 — APPENDIX A v2 CONFIRMED by Chris (the A3c gate, plan sec. 5). A3c is go.**
+One edit folded in at his direction: mid-game MoveToEmbark cut from M12 (post-deployment
+embarking almost never useful - seen once, transport had Flying; revival condition recorded in
+the appendix: gate on transport mobility >> cargo mobility). Deploy-time embark stays.
+Also decided with him: **benchmark pool = ~8 armies at 2,000 points, uniform** (his argument
+carried: real games are 2k+, strategy differs with scale - objective spread vs concentration -
+big games pass through small-force regimes as attrition bites, and low-point lists under-sample
+novel units). Chris is building the armies now; suggested archetypes given (the sec. 6.1 six +
+a transport list + a second-faction repeat). Throughput cost to be measured on the first real
+2k army (G6). C-gate rider recorded: one held-out pair at a different point level probes
+generalization across game size. Plan doc updated in the same commit (appendix header, M12
+entry, sec. 5 trigger marked satisfied, sec. 6.1 pool spec). Bycatch this exchange: Army Forge
+gained an editable points limit (was hard-coded 1000; superproject `00132d3`).
+
 **2026-07-09 — A3b (grid pathfinding) DONE.** `Ai/Tactician/GridPathfinder.cs`: `TerrainGrid`
 (1" cells over the table, blocked/difficult by degenerate swept-disc tests, inflated by base
 radius - the validator's own Minkowski semantics), A* (8-connected, no corner cutting, octile
