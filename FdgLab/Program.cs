@@ -8,7 +8,7 @@ return args.FirstOrDefault() switch
 {
     "bench" => await RunBench(args.Skip(1).ToArray()),
     "smoke" => await RunSmoke(args.Skip(1).ToArray()),
-    "probes" => RunProbes(),
+    "probes" => await RunProbes(args.Skip(1).ToArray()),
     _ => Usage(),
 };
 
@@ -27,7 +27,9 @@ static int Usage()
                   [--out DIR]        report directory (default FdgLab/reports)
           smoke   [--seed S] [--a <army>] [--b <army>]   one game, prints the record
                   [--profile-a P] [--profile-b P]        AI per slot: solorules | tactician (#191)
-          probes  strategy-probe scaffold (probes authored from Phase A onward)
+          probes  --feasibility [--games N] [--seed-base S] [--a/--b <army>]   #191 A3 gate metric:
+                  shadow-runs the MacroActionGenerator at every movement decision of real games and
+                  reports the fraction of activations with a valid non-Hold candidate (target >= 95%)
 
         An <army> is a .fdgarmy path, 'builtin' (the CLI's EOF-fallback test army), or
         'builtin-basic' (builtin minus its Ambush unit - the harness-determinism gate army, see #198).
@@ -113,15 +115,48 @@ static async Task<int> RunSmoke(string[] args)
     return anyFault ? 1 : 0;
 }
 
-static int RunProbes()
+static async Task<int> RunProbes(string[] args)
 {
-    // Scaffold only (#194): probes are hand-authored scenarios with one known-best decision, scored
-    // automatically. They arrive with Phase A (plan sec. 6.2) as ScenarioCompiler JSONs under
-    // FdgLab/probes/ once there is a Tactician whose choices are worth scoring.
+    if (args.Contains("--feasibility"))
+        return await RunFeasibilityProbe(args);
+
+    // Scaffold (#194): scenario probes are hand-authored states with one known-best decision, scored
+    // automatically. They arrive as ScenarioCompiler JSONs under FdgLab/probes/ once there is a
+    // Tactician whose choices are worth scoring (plan sec. 6.2).
     string probesDir = Path.Combine("FdgLab", "probes");
     int count = Directory.Exists(probesDir) ? Directory.GetFiles(probesDir, "*.json").Length : 0;
-    Console.WriteLine($"{count} probe(s) found in {probesDir}. Probes are authored from Phase A (see docs/ai-agent-plan.md sec. 6.2).");
+    Console.WriteLine($"{count} probe(s) found in {probesDir}. Scenario probes arrive with A4+; " +
+        "the generator feasibility metric runs now via 'probes --feasibility'.");
     return 0;
+}
+
+// #191 A3 gate metric: real solo-rules games, with the MacroActionGenerator shadow-run at every
+// movement decision. Decision-neutral: the solo bot still plays, so games match the benchmark.
+static async Task<int> RunFeasibilityProbe(string[] args)
+{
+    int games = IntArg(args, "--games", 20);
+    int seedBase = IntArg(args, "--seed-base", 1000);
+    var shadow = new FeasibilityShadow();
+
+    var armyA = Armies.LoadSlot(Arg(args, "--a") ?? Armies.BuiltinSpec);
+    var armyB = Armies.LoadSlot(Arg(args, "--b") ?? Armies.BuiltinSpec);
+
+    int faults = 0;
+    await Parallel.ForEachAsync(Enumerable.Range(0, games),
+        new ParallelOptions { MaxDegreeOfParallelism = Math.Min(16, Environment.ProcessorCount) },
+        async (i, _) =>
+        {
+            GameRecord record = await GameRunner.RunGameAsync(
+                GameSpec.TwoPlayer(armyA, armyB, seed: seedBase + i),
+                (registry, aiGame) => shadow.Wrap(registry, aiGame.TableState));
+            if (record.Result.Outcome == EGameOutcome.Fault) Interlocked.Increment(ref faults);
+        });
+
+    double pct = shadow.Fraction * 100.0;
+    Console.WriteLine($"games={games} (faults={faults}) activations={shadow.Activations} " +
+        $"with_non_hold_candidate={shadow.WithNonHoldCandidate} generator_faults={shadow.GeneratorFaults}");
+    Console.WriteLine($"feasibility={pct:F1}% (gate: >= 95%) -> {(pct >= 95.0 ? "PASS" : "FAIL")}");
+    return pct >= 95.0 ? 0 : 1;
 }
 
 static string? Arg(string[] args, string name)

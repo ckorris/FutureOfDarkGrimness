@@ -20,6 +20,21 @@ pin tests.
 
 ## Notes (newest first)
 
+**2026-07-09 — A3c-2 DONE; A3 COMPLETE (all of A3a/b/c verified).** M11 MoveToCast (spell-token
+holders + army spells via TableState.Armies; goal just inside the best affordable spell's range
+of its affinity target; Self-affinity skipped; LoS not modeled - recorded; one candidate per
+activation) and M12 DeliverCargo (loaded transports - IsTransport + GetOccupants - route toward
+the nearest unowned objective as the cargo-plan proxy) complete the confirmed vocabulary. Float-
+margin bug fixed on the way: movers take the epsilon, validators keep the full budget (the
+ResolverGuide gotcha, caught by the DeliverCargo test at exactly one ladder halving). **The A3
+feasibility gate metric PASSES:** new FdgLab instrument (`probes --feasibility`) shadow-runs the
+generator at every real movement decision of benchmark games (JSON-path interception; decision-
+neutral - the solo bot still plays): builtin mirror 597/597 activations with a valid non-Hold
+candidate, builtin-vs-builtin-basic 464/464 - **100% vs the >= 95% gate**, zero generator
+faults. Suite 1509/1509 (4 M11/M12 tests added). Engine `6ad58b5`; lab instrument in the
+superproject commit. **Next: A4 (greedy decision policy)** - replace delegated resolvers one
+request type at a time, benchmark after each; needs Chris's 2k army pool for meaningful scores.
+
 **2026-07-09 — A3c-1 (MacroActionGenerator, M1-M10) DONE.** `Ai/Tactician/MacroAction.cs` +
 `MacroActionGenerator.cs`: goal enumeration per confirmed Appendix A - Hold (always), objective
 advance/rush (both budgets), EngageAtRange with the three bands (SafeShooting/kite exists only

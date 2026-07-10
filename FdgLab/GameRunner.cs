@@ -15,7 +15,13 @@ namespace FdgLab;
 /// </summary>
 public static class GameRunner
 {
-    public static async Task<GameRecord> RunGameAsync(GameSpec spec)
+    /// <param name="registryWrapper">
+    /// Optional per-slot registry decorator (#191 A3's feasibility shadow): receives the slot's
+    /// built registry and its game view, returns what the controller actually uses. Decision-
+    /// neutral wrappers keep games hash-identical.
+    /// </param>
+    public static async Task<GameRecord> RunGameAsync(GameSpec spec,
+        Func<FDG.StageResolution.IStageResolverRegistry, FDGGame_AsLocal, FDG.StageResolution.IStageResolverRegistry>? registryWrapper = null)
     {
         var wall = Stopwatch.StartNew();
         var samples = new List<double>();
@@ -50,6 +56,8 @@ public static class GameRunner
 
             var aiGame = new FDGGame_AsLocal(store, bus);
             var registry = BuildRegistry(slotSpec.Profile, aiGame, slots[i].PlayerID, spec.Seed, i);
+            if (registryWrapper != null)
+                registry = registryWrapper(registry, aiGame);
             var timed = new TimingRegistry(registry, samples, sampleLock);
             slots[i].AssignPlayerController(new LabPlayerController(
                 $"{slotSpec.ArmyLabel} (slot {i})", slots[i].PlayerID, aiGame, timed,
