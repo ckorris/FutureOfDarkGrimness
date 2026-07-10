@@ -20,6 +20,23 @@ pin tests.
 
 ## Notes (newest first)
 
+**2026-07-10 — A4b-2 OBJECTIVE PLACEMENT SHIPPED; GATE 57.1% MIRRORS / 58.7% MATRIX.** Engine
+`dd0b1f1`. TacticianPlaceObjectiveResolver: zones are chosen AFTER objectives, so the
+side-agnostic lever is cluster-vs-spread along X - an army whose model-count majority carries
+>=18" guns clusters the markers around centre at MinSeparation steps (one firebase covers
+them all); everyone else races them wide (+/-0.7 x half-width, first marker central). Z
+reflects the existing-marker centroid through the band centre (solo's balancing idea,
+deterministic - no RNG). Legality via public ObjectivePlacementValidator.Check on a 1" grid
+sorted nearest-to-target, same as solo. 3 pins in TacticianObjectivePlacementTests; suite
+1538/1538. **Gate: mirror avg 54.4 -> 57.1, matrix 54.4 -> 58.7, faults 1/1800 (= baseline,
+#208 cohesion family). BB mirror recovered 42->50 (the A4b watch item), RL mirror 45 (still
+soft). Six of eight mirrors >= 50; Hives rows dominant (60-94).** Weakest cells now
+Tactician-as-shooters vs Orks horde: BB-vs-Orks 22, HDF-vs-Orks 36, Dwarf-vs-Orks 36 -
+anti-horde defense (screening/focus-fire vs bodies), not obviously an A5 casting/reserve
+gap; watch after A5, may need a weight pass. Dwarf rows + HEF-as-opponent rows remain A5
+scope (ambush timing, casting). Report: FdgLab/reports/a4b2-gate (hash 05AE804C8A32F2EB).
+Next: A5 casting/abilities/reserves.
+
 **2026-07-10 — A4b DEPLOYMENT SHIPPED; GATE 54.4% MIRRORS / 54.4% MATRIX - FIRST GATE ABOVE
 PARITY.** Engine `bb971b1`. Mechanism: the solo placement resolver's only strategy knob (the
 preferred block centre) became a protected virtual seam - solo's fan-out is the unchanged base
