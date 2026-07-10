@@ -26,6 +26,9 @@ static int Usage()
                   [--timeout T]      per-game watchdog seconds (default 120)
                   [--dice realistic|probabilistic]   (default realistic)
                   [--out DIR]        report directory (default FdgLab/reports)
+                  [--dump-logs DIR]  write each game's full log (stable filenames - diff two runs
+                                     file by file to hunt divergence, #210); [--trace] adds the
+                                     #198 position-write trace next to each log
           smoke   [--seed S] [--a <army>] [--b <army>]   one game, prints the record
                   [--profile-a P] [--profile-b P]        AI per slot: solorules | tactician (#191)
           probes  --feasibility [--games N] [--seed-base S] [--a/--b <army>]   #191 A3 gate metric:
@@ -77,7 +80,9 @@ static async Task<int> RunBench(string[] args)
         Randomness: Arg(args, "--dice") == "probabilistic" ? ERandomnessType.Probabilistic : ERandomnessType.Realistic,
         OutDir: Arg(args, "--out") ?? Path.Combine("FdgLab", "reports"),
         ProfileA: benchProfileA,
-        ProfileB: benchProfileB);
+        ProfileB: benchProfileB,
+        DumpLogsDir: Arg(args, "--dump-logs"),
+        Trace: args.Contains("--trace"));
 
     return await Benchmark.RunAsync(options);
 }

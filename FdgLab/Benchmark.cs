@@ -19,7 +19,12 @@ public sealed record BenchmarkOptions(
     // still exchanges slots, so slot advantage cancels while "profile A playing army A" stays the
     // measured quantity. Tactician-vs-solo comparisons set these differently.
     FDG.Ai.EAiProfile ProfileA = FDG.Ai.EAiProfile.SoloRules,
-    FDG.Ai.EAiProfile ProfileB = FDG.Ai.EAiProfile.SoloRules);
+    FDG.Ai.EAiProfile ProfileB = FDG.Ai.EAiProfile.SoloRules,
+    // #210: per-game log dumping for divergence hunting. Filenames are stable across runs (no
+    // outcome in the name), so two same-options runs diff file by file; Trace additionally writes
+    // the #198 position-write trace next to each log.
+    string? DumpLogsDir = null,
+    bool Trace = false);
 
 /// <summary>
 /// The seeded, side-swapped benchmark matrix (#194; plan sec. 6.1). Scoring: for a matchup (A, B),
@@ -31,6 +36,8 @@ public static class Benchmark
     public static async Task<int> RunAsync(BenchmarkOptions options)
     {
         Directory.CreateDirectory(options.OutDir);
+        bool dump = options.DumpLogsDir != null;
+        if (dump) Directory.CreateDirectory(options.DumpLogsDir!);
 
         // Build every game spec up front: per matchup, seeds seedBase..seedBase+N/2-1, each seed played
         // twice with sides swapped. Same options => same specs => (via #193) same outcomes.
@@ -43,8 +50,10 @@ public static class Benchmark
             for (int s = 0; s < seeds; s++)
             {
                 int seed = options.SeedBase + s;
-                work.Add((matchup, seed, false, new GameSpec(new[] { a, b }, seed, options.Randomness, options.WatchdogSeconds)));
-                work.Add((matchup, seed, true, new GameSpec(new[] { b, a }, seed, options.Randomness, options.WatchdogSeconds)));
+                work.Add((matchup, seed, false, new GameSpec(new[] { a, b }, seed, options.Randomness,
+                    options.WatchdogSeconds, CaptureLog: dump, Trace: dump && options.Trace)));
+                work.Add((matchup, seed, true, new GameSpec(new[] { b, a }, seed, options.Randomness,
+                    options.WatchdogSeconds, CaptureLog: dump, Trace: dump && options.Trace)));
             }
         }
 
@@ -61,7 +70,10 @@ public static class Benchmark
             new ParallelOptions { MaxDegreeOfParallelism = options.DegreeOfParallelism },
             async (i, _) =>
             {
-                records[i] = await GameRunner.RunGameAsync(work[i].Spec);
+                GameRecord record = await GameRunner.RunGameAsync(work[i].Spec);
+                if (dump)
+                    record = DumpGameFiles(options.DumpLogsDir!, work[i], record);
+                records[i] = record;
                 int n = Interlocked.Increment(ref done);
                 if (n % 25 == 0 || n == work.Count)
                     Console.WriteLine($"  {n}/{work.Count} games ({overall.Elapsed.TotalSeconds:F0}s)");
@@ -80,6 +92,31 @@ public static class Benchmark
 
         int faults = rows.Count(r => r.Record.Result.Outcome == EGameOutcome.Fault);
         return faults == rows.Count ? 1 : 0; // all-fault run means the harness itself is broken
+    }
+
+    // #210: write the game's log/trace the moment it completes and strip them from the kept
+    // record, so a full 1800-game run's memory stays flat. The filename is STABLE across runs
+    // (matchup + seed + side, never the outcome), so two runs of the same options diff file by
+    // file and a flipped game shows up as a content diff, not a missing file.
+    private static GameRecord DumpGameFiles(string dir,
+        (Matchup Matchup, int Seed, bool Swapped, GameSpec Spec) game, GameRecord record)
+    {
+        string baseName = $"{Sanitize(Path.GetFileNameWithoutExtension(game.Matchup.SpecA))}__vs__" +
+                          $"{Sanitize(Path.GetFileNameWithoutExtension(game.Matchup.SpecB))}" +
+                          $"__s{game.Seed}_{(game.Swapped ? "swp" : "fwd")}";
+        if (record.Log != null)
+            File.WriteAllLines(Path.Combine(dir, baseName + ".log"), record.Log);
+        if (record.Trace != null)
+            File.WriteAllLines(Path.Combine(dir, baseName + ".trace"), record.Trace);
+        return record with { Log = null, Trace = null };
+    }
+
+    private static string Sanitize(string label)
+    {
+        var sb = new StringBuilder(label.Length);
+        foreach (char c in label)
+            sb.Append(char.IsLetterOrDigit(c) || c == '-' ? c : '_');
+        return sb.ToString();
     }
 
     private sealed record GameRow(Matchup Matchup, int Seed, bool Swapped, GameRecord Record)

@@ -22,6 +22,8 @@ When closing an item: write the Outcome in its detail file, tick the line, and m
 - [ ] 205 — AI unit with a large rectangular base drove over friendly models (charge or pile-in suspected); establish pass-through vs ended-stacked, check pile-in overlap validation and rect-vs-circle footprints; likely #182 adjacency. ([WorkItems/205](WorkItems/205-rect-base-drives-over-friendlies.md))
 - [ ] 206 — Standoff hard-rejects moving within 1" of a large rect base; the agreed design was move-close-then-FORCED-charge-next (Pass removed). Suspect window: the Cast-gating changes; also check rect-base standoff geometry. ([WorkItems/206](WorkItems/206-standoff-blocks-move-then-charge.md))
 - [ ] 208 — #197 reposition-at-activation triggered moves can submit validator-rejected moves (cohesion / move-through) and fault the game; needs the G3 validate-or-decline ladder. ([WorkItems/208](WorkItems/208-triggered-move-validity.md))
+- [ ] 209 — Weapon-choice option order is nondeterministic (ConcurrentDictionary keyed by Weapon identity): multi-weapon units swing/fire in random order, breaking #193 same-seed replay and benchmark hash reproducibility; fix candidate awaiting sign-off. ([WorkItems/209](WorkItems/209-weapon-choice-order-nondeterminism.md))
+- [ ] 210 — Residual bench nondeterminism at --dop > 1 (scattered per-game flips under CPU contention; serial runs exact after #209). Needs the #198 tracer wired into bench to isolate. ([WorkItems/210](WorkItems/210-dop-concurrency-nondeterminism.md))
 
 ## Shooting & cover
 
