@@ -1,6 +1,22 @@
 # 207 - AI movement/consolidation submits standoff-violating moves (pool games)
 
-**Status:** open (filed 2026-07-09 from the first 2k pool baseline)
+**Status:** CLOSED 2026-07-10 - root cause was engine core, not the AI. Fixed in engine
+`ebd2c8f` (Chris-authorized).
+
+## Outcome
+
+Both fault flavors ("Moves through an enemy unit" AND "Ends within 1 inch without charging")
+had one root cause: embarked models are parked at Position(0,0) (EmbarkStage), and
+GetEnemyModelFootprints included every living enemy model with no on-battlefield filter - so a
+loaded enemy transport left invisible passenger footprints at the table-origin corner that any
+legal move sweeping or ending near (0,0) collided with. Fix: GetEnemyModelFootprints and
+GetEnemyUnitsMovedThrough skip units where !GetIsOnBattlefield() (covers embarked, reserve,
+off-table). Pinned by EnemyFootprintTests. Verified: pool baseline v3 (1800 solo games, seeds
+1000+) - every seed listed below now clean, 1 remaining fault is #208's triggered-move
+cohesion family; 100-game Hives-DE Tactician matchup 0 faults (was 12/50). The AI's move
+submission and its G3 re-validation were correct all along.
+
+**Status when filed:** open (filed 2026-07-09 from the first 2k pool baseline)
 **Related:** #206 (standoff semantics vs big rect bases), #159 (AI cohesion crash family), #150
 
 ## Symptom

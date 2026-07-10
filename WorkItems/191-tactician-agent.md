@@ -20,6 +20,27 @@ pin tests.
 
 ## Notes (newest first)
 
+**2026-07-10 — #207 MOVE-THROUGH FLAVOR FIXED (Chris-authorized engine core) + A4-4 SHIPPED;
+GATE 49.0% MIRRORS, ZERO FAULTS.** Engine fix (`ebd2c8f`): GetEnemyModelFootprints and
+GetEnemyUnitsMovedThrough skip off-battlefield units - embarked models parked at (0,0) no
+longer form an invisible wall at the table corner. Pinned by EnemyFootprintTests (embarked
+cargo leaves no footprint; deployed enemies still obstacles). Verified: seed-3000 Hives-DE
+fault repro now plays out (Hives win 2-0); 100-game Hives-DE matchup 0 faults (was 12/50),
+Tactician 81%. **Solo pool baseline re-frozen: v3 hash `0888D6E37A1F11E8`** (v2
+CC04AE4A5C713492 stale - the fix changes transport-game outcomes); 1 fault/1800 remains,
+triggered-move cohesion = #208 family, NOT #207. A4-4 (`580e194`):
+TacticianAssignWoundsResolver - the engine machinery already enforces every ordering rule and
+TryAddWounds pours full capacity per pick, so the decision is fill ORDER; greedy min
+output-lost-per-wound-absorbed (static weapon score attacks x AP factor; special rules not
+weighed - recorded gap). Mixed units lose cheap bodies first; Tough models soak partial
+volleys; AutoFill fallback so it can never fault (G3). 3 pins in
+TacticianWoundAssignmentTests. Suite 1531/1531. **A4-4 gate (1800 games, seeds 3000+):
+mirror avg 49.0% (was 47.1%), matrix 47.4% (was 45.9%), faults 0/1800 vs baseline 1/1800 -
+fault criterion passed clean. HDF mirror 34->39, Dwarfs 37->44 (wound assignment helping the
+Tough-heavy lists).** Weakest rows now: BB-vs-Orks 24, DE rows vs melee ~24-29, Dwarf rows
+27-36 (ambush timing = A5 scope). Reports: FdgLab/reports/{207-fix-hives-de,
+pool-baseline-v3, a4-4-gate}. Next: A4b deployment + objective placement.
+
 **2026-07-10 — OPTION (a) SHIPPED: MELEE APPROACH TERM; THIRD GATE 47.1% MIRRORS (from 25.4%)
 - collapse fixed, fault regression root-caused to engine core (awaiting Chris).** Chris picked
 option (a). Three-part fix (engine `5dc976d`, all inside Ai/Tactician): (1) generator - an
