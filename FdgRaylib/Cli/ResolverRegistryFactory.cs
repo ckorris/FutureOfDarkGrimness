@@ -14,6 +14,7 @@ public static class ResolverRegistryFactory
         // #191 A4-1's request split: unit activation is its own request type; it renders through the
         // same stdin selection flow via the adapter.
         var selectUnit = new SelectionResolver<UnitData>();
+        var cancelSelectUnitCli = new CancellableSelectionResolver<UnitData>();
         return new StageResolverRegistry()
             .RegisterResolver(new YesNoResolver())
             .RegisterResolver(new StringSelectionResolver())
@@ -30,7 +31,11 @@ public static class ResolverRegistryFactory
                 SelectionRequest<UnitData>, FDG.Data.DataBinding<UnitData>>(selectUnit))
             .RegisterResolver(new SelectionResolver<ModelData>())
             .RegisterResolver(new SelectionResolver<RectangularZone>())
-            .RegisterResolver(new CancellableSelectionResolver<UnitData>())
+            .RegisterResolver(cancelSelectUnitCli)
+            // #191 A4-3's split: the melee-defender pick renders through the same stdin flow.
+            .RegisterResolver(new DerivedRequestAdapter<ChooseMeleeDefenderRequest,
+                CancellableSelectionRequest<UnitData>, CancellableResult<FDG.Data.DataBinding<UnitData>>>(
+                cancelSelectUnitCli))
             .RegisterResolver(new PlaceObjectsResolver<ModelData>(tableState))
             .RegisterResolver(new PlaceOneTerrainResolver(tableState));
     }
@@ -89,6 +94,10 @@ public static class ResolverRegistryFactory
             .RegisterResolver(selectModel)                                   // GUI
             .RegisterResolver(selectZone)                                    // GUI
             .RegisterResolver(cancelSelectUnit)                              // GUI
+            // #191 A4-3's split: melee-defender forwards to the SAME canvas resolver instance.
+            .RegisterResolver(new DerivedRequestAdapter<ChooseMeleeDefenderRequest,
+                CancellableSelectionRequest<UnitData>, CancellableResult<FDG.Data.DataBinding<UnitData>>>(
+                cancelSelectUnit))
             .RegisterResolver(strSel)                                        // GUI
             .RegisterResolver(abilityEffect)                                 // GUI
             .RegisterResolver(castAssist)                                    // GUI
