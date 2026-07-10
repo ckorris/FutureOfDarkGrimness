@@ -20,6 +20,28 @@ pin tests.
 
 ## Notes (newest first)
 
+**2026-07-10 (overnight) — SECOND A4 GATE FAILED (25.4%); STOPPED per plan sec. 13. Analysis for
+Chris below; no further weight iterations without his direction.** Cumulative A4-2(retuned)+A4-3
+gate, mirrors: Hives 7, Orks 5, Dwarfs 12, HEF 15, HDF 24, RL 26 - but **Dark Elf 62 and Battle
+Brothers 52: the two SHOOTING armies WIN their mirrors.** That split is the mechanism, confirmed
+by reading a Hives game (G2): an all-melee mirror produced only ~8 melee engagements in 4 rounds -
+Tactician brawlers barely fight. Why: the greedy one-step score gives a melee unit outside charge
+reach NO reason to approach (offense=0 beyond 12", every position near the enemy scores
+-retaliation), so melee armies dither/kite while solo's Charge>Move priority marches in, wins the
+attrition war, then takes the objectives. Shooting armies don't have this hole - their one-step
+damage calculus is correct at range - and they beat solo. **This is the anticipation gap the plan
+assigns to Phase B search (D6); greedy was always going to be weakest here.**
+Options for Chris (recommendation first):
+(a) RECOMMENDED - add an approach term for melee units: progress toward the best charge target
+    scaled by the expected margin-if-reached (a one-line proxy for next-turn value; plan A4's
+    'small terms' clause covers it). One more gate run decides it.
+(b) Hybrid interim: Tactician planner defers to solo behavior for melee-only units, keeps its
+    (winning) policy for shooters - ships a strictly-better-than-solo bot today, ugly but honest.
+(c) Accept A4 as scaffolding and pull Phase B (search) forward - the failure is exactly what
+    search fixes, but it leaves the A-gate unpassed.
+Faults 9/1800 (Dark-Elf #207-family; profile attribution still TODO). Suite 1525/1525 throughout;
+all code pushed (engine `8c17102`). Gates archived in FdgLab/reports/a4-2-gate + a4-3-gate.
+
 **2026-07-10 (overnight) — A4-2 + A4-3 SHIPPED; A4-2 GATE FAILED (23.75%) -> weights retuned;
 cumulative re-gate running.** A4-2: TacticianPlanner scores (action x macro-action) pairs at
 Choose Action (value-weighted damage - retaliation + objective delta), caches the winner, plays
