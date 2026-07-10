@@ -20,6 +20,19 @@ pin tests.
 
 ## Notes (newest first)
 
+**2026-07-10 — A4-1 GATE + post-#199 baseline recorded.** Baseline v2 (solo-vs-solo, fixed engine,
+36x100, seeds 1000+): hash `CC04AE4A5C713492` - THE frozen solo reference now (v1's
+`3AC9C6FA0B50D590` was pre-#199). A4-1 gate (tactician-vs-solo, 36x50, seeds 3000+): hash
+`94AA56B0A094DAD0`. **Mirror average 52.75% for the Tactician** (Robot Legions 64, Hives 59,
+Dwarfs 56, HDF 52, BB 51, HEF 50, Orks 48, Dark Elf 42; N=50 each, so single-mirror noise ~7pp,
+average ~2.5pp) - the small positive nudge expected from activation order alone; movement is
+still solo. Faults 4/1800: three #207-class (consolidation standoff/move-through, all Dark Elf
+transport games) + one 120s watchdog on a Hives-DarkElf game (baseline showed legit 2k games
+reach 103s - pool runs should use --timeout 240; noted). Cross-matchup rows mix army strength
+with profile and are not read as profile signal. NEXT: A4-2 (action+movement onto the
+MacroActionGenerator) - Chris authorized continuing overnight; then A4-3 (shooting/melee targets).
+
+
 **2026-07-09 — A4-1 SHIPPED (activation order + request split); #199 FIXED; first pool baseline.**
 A4-1: `ChooseUnitToActivateRequest` split out per Chris's call (type dispatch - which immediately
 caught the string version matching Instructions vs the auto-generated TaskName: it would have
