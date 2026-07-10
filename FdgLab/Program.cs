@@ -29,6 +29,8 @@ static int Usage()
                   [--dump-logs DIR]  write each game's full log (stable filenames - diff two runs
                                      file by file to hunt divergence, #210); [--trace] adds the
                                      #198 position-write trace next to each log
+                  [--triangle]       pool: unordered pairs only (pre-2026-07-10 shape; skews the
+                                     aggregate toward profile A's alphabetically-early armies)
           smoke   [--seed S] [--a <army>] [--b <army>]   one game, prints the record
                   [--profile-a P] [--profile-b P]        AI per slot: solorules | tactician (#191)
           probes  --feasibility [--games N] [--seed-base S] [--a/--b <army>]   #191 A3 gate metric:
@@ -50,11 +52,16 @@ static async Task<int> RunBench(string[] args)
     var matchups = new List<Matchup>();
     if (pool != null)
     {
-        // Every unordered pair including self-mirrors; mirrors are the symmetry baseline.
+        // Every ORDERED pair plus each self-mirror once (Chris, 2026-07-10): profile A binds to
+        // army A, so an unordered triangle made profile A play alphabetically-early armies far
+        // more often (Hives in 8 matchups, Robot Legions in 1) and skewed the aggregate toward
+        // its best armies. Ordered pairs give every army equal coverage on both sides of the
+        // profile split. --triangle restores the old (cheaper, skewed) shape for comparisons.
         string[] armies = Directory.GetFiles(pool, "*.fdgarmy").OrderBy(p => p).ToArray();
         if (armies.Length == 0) { Console.Error.WriteLine($"No .fdgarmy files in {pool}"); return 2; }
+        bool triangle = args.Contains("--triangle");
         for (int i = 0; i < armies.Length; i++)
-            for (int j = i; j < armies.Length; j++)
+            for (int j = triangle ? i : 0; j < armies.Length; j++)
                 matchups.Add(new Matchup(armies[i], armies[j]));
     }
     else if (a != null && b != null)
