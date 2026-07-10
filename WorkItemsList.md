@@ -21,10 +21,11 @@ When closing an item: write the Outcome in its detail file, tick the line, and m
 - [ ] 182 — Move through friendly units, but not stop on them: movement validation today only checks enemy footprints; add the "can't end overlapping a different friendly unit" guard (mirror #011's ending-stacked check, minus pass-through block and standoff), threaded through the GUI/CLI/AI resolvers + preview. ([WorkItems/182](WorkItems/182-move-through-friendly-units.md))
 - [ ] 205 — AI unit with a large rectangular base drove over friendly models (charge or pile-in suspected); establish pass-through vs ended-stacked, check pile-in overlap validation and rect-vs-circle footprints; likely #182 adjacency. ([WorkItems/205](WorkItems/205-rect-base-drives-over-friendlies.md))
 - [ ] 206 — Standoff hard-rejects moving within 1" of a large rect base; the agreed design was move-close-then-FORCED-charge-next (Pass removed). Suspect window: the Cast-gating changes; also check rect-base standoff geometry. ([WorkItems/206](WorkItems/206-standoff-blocks-move-then-charge.md))
+- [ ] 207 — AI movement/consolidation submits "ends within 1\" without charging" moves in 2k pool games (Dark Elf transport list; rect-base standoff geometry suspected, kin of #206). Deterministic seeds in the detail file. ([WorkItems/207](WorkItems/207-ai-standoff-violating-moves.md))
+- [ ] 208 — #197 reposition-at-activation triggered moves can submit validator-rejected moves (cohesion / move-through) and fault the game; needs the G3 validate-or-decline ladder. ([WorkItems/208](WorkItems/208-triggered-move-validity.md))
 
 ## Shooting & cover
 
-- [ ] 199 — `AutoFill` faults on a tiny fractional wound in probabilistic mode ("Required: 0.0555, assigned: 0" -> whole game Fault); deterministic repro: rich-army fresh game, seed 31415. ([WorkItems/199](WorkItems/199-autofill-fractional-wound-fault.md))
 - [ ] 201 — Shooting *out of* cover grants the defender cover: `EvaluateSightLine` folds every terrain piece on the segment into one worst-effect with no notion of *where* it sits, so the attacker's own wall counts. Blocked on a rules ruling (proximity to defender, shoot-through depth). ([WorkItems/201](WorkItems/201-cover-attacker-side.md))
 
 ## Model bases & geometry

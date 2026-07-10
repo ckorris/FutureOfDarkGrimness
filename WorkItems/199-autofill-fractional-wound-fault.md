@@ -35,3 +35,17 @@ investigated.
 
 - 2026-07-09 — filed. Not a #159 sibling (that's movement cohesion; this is wound assignment), but
   found the same way: a seeded whole-game run that now reproduces exactly (#198's payoff).
+
+## Outcome
+
+**Fixed 2026-07-09** (engine `3d9e01a`). Root cause as suspected, but sharper: TryAddWounds took
+its amount from RemainingWoundsBinding while guarding against TotalWounds - WoundsDealt - and
+WoundsDealt is itself TotalWounds - binding, so the guard compared the binding against its own
+double-rounded round-trip; one ULP of drift made the dying model's last fractional wound
+"an overfill" and AutoFill faulted the game. IsFinishedAssigning also demanded exact float
+equality across different summation orders, and ULP-sized residues counted as "room" in the
+hero-last/finish-first guards. Fix: a single capacity formula, clamp-not-reject, and
+WoundEpsilon (1e-4) on every capacity comparison. Pinned by the four-seed graveyard
+(31415 solo + 424242/424243/777001 Tactician - each faulted deterministically before, each
+mutation-verified red on the old math); suite 1518/1518; builtin bench hashes unchanged (those
+games never faulted, so the fix is invisible there).
