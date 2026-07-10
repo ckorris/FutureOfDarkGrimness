@@ -20,6 +20,27 @@ pin tests.
 
 ## Notes (newest first)
 
+**2026-07-10 (overnight) — A4-2 + A4-3 SHIPPED; A4-2 GATE FAILED (23.75%) -> weights retuned;
+cumulative re-gate running.** A4-2: TacticianPlanner scores (action x macro-action) pairs at
+Choose Action (value-weighted damage - retaliation + objective delta), caches the winner, plays
+it out at the movement request with request-budget re-validation and solo fallback (G3). Perf
+war: 508ms -> 68ms per decision (one lazy shared TerrainGrid per enumeration; straight-clear
+paths skip the grid). A4-3: value-weighted shooting target choice (CombatMath EstimateVolley per
+selectable weapon x target, kill bonus) + melee defender by exchange margin; ChooseMeleeDefenderRequest
+split from the generic cancellable selection (A4-1 pattern; adapters keep CLI/GUI dialogs and
+solo behavior identical - solo hashes stable). Suite 1525/1525.
+**THE GATE LESSON (G2/G4 doing their job): A4-2's first gate scored 23.75% mirror average** -
+Hives 4%, Dwarfs 7%, Orks 7% - a collapse, not a tuning miss. Root cause read from the numbers:
+objective terms were FLAT bonuses (2.5 move / 2.0 activation) while damage/retaliation terms are
+value-fractions (~0.0-0.5), so every unit rushed objectives (Rush = no shooting), never fought,
+and solo's brawlers cleared them then took the table. Retune: objective terms onto the same scale
+(0.75) - a flip outranks a good exchange, not ten. Cumulative A4-2+A4-3 re-gate running (seeds
+3000+, timeout 240). Per plan sec. 13: if this second attempt also fails the gate, STOP and
+present analysis to Chris (one weight iteration is spent). Also noted: 7 Dark-Elf-game faults in
+the failed gate (#207-family signatures, 5x "moves through an enemy unit" new flavor) - needs
+profile attribution (TODO in #207); Tactician games ~12.6s wall (thinking is real; G6 later).
+
+
 **2026-07-10 — A4-1 GATE + post-#199 baseline recorded.** Baseline v2 (solo-vs-solo, fixed engine,
 36x100, seeds 1000+): hash `CC04AE4A5C713492` - THE frozen solo reference now (v1's
 `3AC9C6FA0B50D590` was pre-#199). A4-1 gate (tactician-vs-solo, 36x50, seeds 3000+): hash
