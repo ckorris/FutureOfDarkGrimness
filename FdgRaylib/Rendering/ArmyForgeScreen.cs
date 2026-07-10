@@ -222,6 +222,14 @@ public class ArmyForgeScreen : IAppScreen
         else if (warnings > 0) ImGui.TextColored(YellowText, $"[{warnings} warning{(warnings == 1 ? "" : "s")}]");
         else ImGui.TextColored(GreenText, "[Legal]");
 
+        // Editable points limit (games run 1000-5000; the 1000 default was hard-coded until now).
+        // Advisory like everything else here (#003): over-cap only turns the header red.
+        ImGui.SameLine();
+        ImGui.SetNextItemWidth(110f);
+        int limit = _list.PointsLimit;
+        if (ImGui.InputInt("pts limit", ref limit, 250) && limit > 0)
+            _list.PointsLimit = limit;
+
         string header = PointsHeader(compiled.TotalPoints, _list.PointsLimit);
         float headerW = ImGui.CalcTextSize(header).X;
         ImGui.SameLine();
