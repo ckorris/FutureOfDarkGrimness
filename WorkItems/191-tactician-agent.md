@@ -20,6 +20,26 @@ pin tests.
 
 ## Notes (newest first)
 
+**2026-07-09 — A4-1 SHIPPED (activation order + request split); #199 FIXED; first pool baseline.**
+A4-1: `ChooseUnitToActivateRequest` split out per Chris's call (type dispatch - which immediately
+caught the string version matching Instructions vs the auto-generated TaskName: it would have
+silently no-opped); `DerivedRequestAdapter` forwards to existing base-type resolvers in all three
+sets, GUI canvas dialog unchanged (shared instance - Chris to eyeball next GUI session);
+`TacticianRegistry` = own resolvers over a solo fallback; urgency scoring (value-weighted kill +
+flip + threat, weights in TacticianWeights). A0 identity pin retired per its own instructions;
+3 behavioral tests replace it. Solo hashes identical (split is behavior-neutral).
+**#199 fixed** (Chris-authorized): the float-identity trio in AssignWoundsResults - guard compared
+RemainingWoundsBinding against its own double-rounded round-trip; exact-equality finish check;
+ULP residues as "room". WoundEpsilon (1e-4) + one capacity formula; four-seed graveyard pinned +
+mutation-verified. Suite 1518/1518.
+**First 2k pool baseline (solo-vs-solo, 36 matchups x 100, realistic dice, PRE-#199 build):**
+hash `3AC9C6FA0B50D590`, 2.79 games/s (10k/hour), mean 5.7s/game, mirrors ~48-52%, real archetype
+signal (Hives 80% over elite shooting, HEF casters 64% over Hives). 7 faults / 3600 (~0.2%) - NONE
+were #199 (realistic dice): two NEW classes filed as **#207** (AI standoff-violating moves, Dark
+Elf transport list, rect-base geometry suspected - kin of #206) and **#208** (#197's triggered
+moves lack the G3 validate-or-decline ladder). Baseline + A4-1 gate re-running on the fixed build;
+gate numbers land in the next entry.
+
 **2026-07-09 — #200 + #203 FIXED (Chris-authorized engine-core changes); POOL 8/8 GREEN.**
 #203 first (its verification needed #200's livelock alive): Task.Yield at the activation boundary
 + Choose Action entry - the livelock then idled to a clean watchdog Fault at DEFAULT stacks
