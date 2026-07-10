@@ -20,6 +20,29 @@ pin tests.
 
 ## Notes (newest first)
 
+**2026-07-10 — A5-2 AMBUSH/RESERVES SHIPPED; GATE 61.9% MIRRORS / 63.5% MATRIX, ZERO FAULTS -
+DWARF MIRROR 66->84.** Engine `6e6f523`. Neither bot ever used Ambush (solo always answers
+"Deploy normally"). Now: AmbushPolicy holds melee/short-range Ambushers (max weapon range <
+18" - they skip the approach march; long-range units keep their round-1 shooting), capped at
+half the army's living units so the table is never conceded; the hold prompt is answered
+explicitly both ways (never "Back to unit list" - the deploy-picker loop). Arrivals aim at the
+most WINNABLE objective (not-ours -> fewest enemies within 9" -> nearest table centre; the
+engine's spiral search enforces the clearance); Scout placement ("Place Scout Unit") reuses the
+objective-aware deployment aim. Arrival TIMING stays the engine default (first opportunity,
+round 2) - deferring arrival is search-level judgment (Phase B); dropping beside enemies to set
+up charges is a recorded deferral. 4 pins; suite 1550/1550. G2: Dwarfs hold Jetpack
+Warriors/Miners, arrive round 2, seed 3050 flips to a win. **Gate (a5-2-gate, hash
+BED656997B7235ED): mirror avg 56.3 -> 61.9, matrix 58.8 -> 63.5, faults 0/1800 (baseline v4:
+1). Dwarf row transformed: mirror 66->84, vs Orks 29->63, vs HDF 54->64, vs HEF 53->65, vs RL
+48->69. Hives row also up broadly (65-94); Orks mirror 44->51, RL mirror 36->49.** Solo pool
+baseline v4 frozen: hash `64A59D65881C48A6`, 1 fault/1800 (#208 family; note #210 - DOP-16
+hashes only approximately reproducible). Remaining weak cluster is now sharply defined:
+Tactician-as-shooters/transports vs Ork horde (DE-vs-Orks 23, BB-vs-Orks 30, HDF-vs-Orks 33)
+plus the HDF rows generally (mirror 45, vs RL 40) - anti-horde defense
+(screening/kiting/focus-fire) and Tough/vehicle handling, not casting or reserves. A-gate
+check: aggregate 63.5 vs the 70 target, 9 cells below 50. Next: G2 log-read the weak cluster
+before choosing the next slice.
+
 **2026-07-10 — A5-1 CASTING SHIPPED (engine `0b0c0f7`) + #209 DETERMINISM FIX (engine `52d1968`,
 Chris-authorized); GATE 56.3% MIRRORS / 58.8% MATRIX, ZERO FAULTS - HEF MIRROR 66->77.** A5-1:
 Cast is LAYERED (loops back to Choose Action without ending the activation), so the planner takes
