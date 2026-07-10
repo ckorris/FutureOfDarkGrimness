@@ -20,6 +20,35 @@ pin tests.
 
 ## Notes (newest first)
 
+**2026-07-10 — RL-ROW ROOT CAUSE: PHANTOM SHOOT CREDIT ON RUSH INTENTS (CanShootAfter keyed on
+intent, executor on ActionType).** G2 log-read of the three sub-50 cells (10-game probes, seed
+3000+, logs + #198 position traces): RL units walked INTO 24" gun range from round 2 on and
+then never fired - Warriors (Combined), the 10-gauss firebase, shot 0-1 times per GAME; whole-
+army shooting was 3-9 activations of ~30 (wounds dealt 6-18 vs opponents' 32-53). Instrumented
+the planner (temporary intent logging, removed): Warriors picked **SeekCoverFrom three rounds
+running**, Spider picked Escort/SeekCoverFrom - both intents are planned as EActionType.RUSH
+(shot forfeited at the engine's advance-and-shoot gate) but `CanShootAfter` said they keep the
+volley, so Score paid full shooting offense on top of the retaliation-dodging/screen credit.
+Dodge-and-still-shoot priced as a free lunch = a gunline that seeks cover forever. Why RL is
+hit worst: every unit is a shooter (phantom credit army-wide), it owns the pool's biggest
+Escort magnet (760-pt Monolith), and the three killer opponents are pressure armies whose
+charge threat makes retaliation-dodging moves score highest. Same defect family plausibly
+behind the other two soft rows (BB 70.1, HDF 72.6 - the shooting armies). Fix: `CanShootAfter`
+now keys on the ActionType the executor declares (Hold/Advance only). Pin test
+ShooterWithATargetInRange_NeverPicksAMoveThatForfeitsItsShot (horde in range + in charge-
+threat, cover in rush reach behind: buggy code rushes 8.5" and forfeits the volley) - verified
+FAILING against the pre-fix code, green after. Suite 1563/1563. Behavior after fix (seed-3001
+smoke): Warriors Hold+Shoot r3/r4, SeekCoverFrom gone from the picks. Casting untouched;
+MoveToCast (Advance) keeps its credit. **50-game probes (seed 3000): vs Hives 36->42, vs Orks
+36->42, vs HEF 35->53, all 0 faults. Context - solo-vs-solo baselines for the same cells: 30 /
+29 / 42, so these matchups are intrinsically ~30% for RL and pre-fix the Tactician was BELOW
+the dumb bot in the HEF cell; post-fix it lifts every cell +11..13 over solo. Post-fix log
+read: shooting 9-12 activations/game (was 3-9), wounds dealt 29-43 (was 9-35); remaining
+losses/ties are objective endgames (hordes camp/contest markers a Slow army cannot clear -
+10-15 ties per 50 even solo-vs-solo, army character). The "no cell <50" criterion still fails
+on Hives/Orks (~42) unless another lever lands or the criterion is judged against the
+one-sidedness baseline - Chris's call.** Full ordered gate rerun follows this entry.
+
 **2026-07-10 — BENCH SHAPE FIXED (Chris caught it) + FIRST ORDERED-PAIRS GATE: 79.2% MATRIX,
 BUT THE TRIANGLE WAS HIDING AN RL-ROW COLLAPSE.** Superproject `9ed0d1b`: pool benches now run
 every ORDERED pair (64 matchups, 3200 games) - the old unordered triangle made profile A play
