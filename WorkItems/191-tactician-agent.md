@@ -20,6 +20,45 @@ pin tests.
 
 ## Notes (newest first)
 
+**2026-07-10 — GAME-1 SAVE ANALYSIS (HEFDestroyingAliens_MeleeStayingBack.fdgsave, round 3)
++ RETUNE: MoveRetaliation 0.6 -> 0.45.** Loaded Chris's save and dumped every candidate score
+for the stuck units - the numbers convict the retaliation term: Winged Grunts (fast, 10
+models, objective 23" out) best moves were FallBack 0.059 / Hold 0.050 with RushObjective at
+0.039; Hive Guardians topped on SeekCoverFrom 0.292; Hive Swarms all-negative except a 0.042
+objective rush. Meanwhile engaged units were correct (Assault Grunts charge 0.547, Hive Lord
+objective rush 0.682) - the pathology is specifically CROSSING INTO a gunline that holds its
+line, which the solo benchmark opponent never does (it advances; Hives-vs-HEF benches 86 while
+looking timid vs Chris). Retune 0.45: on the same save the three stuck units flip to forward
+moves (Winged Grunts rush the marker 0.128, Swarms 0.100, Guardians approach the Combat Walker
+fight 0.398). Suite 1570/1570. STILL OPEN (next slice candidates, do not lose): (a) the A5-8
+deadline fade can zero the gradient for slow backfield units with nothing else pulling - should
+degrade to nearest-fight approach, not freeze; (b) no focus-fire dilution - retaliation prices
+every unit as if it alone eats the full volley, so hordes cannot price flooding; (c) A5-6
+staging can stand off INSIDE enemy gun range vs sword-carrying shooters. Probes attached to
+the retune commit.**
+
+**2026-07-10 — CHRIS'S HAND-PLAYED GAME 1 (HEF vs Tactician-as-Hives), live impressions
+(verbatim):** "Into the second round, several of the alien hives' melee units haven't moved
+much from the deployment zone. They deployed at the bottom. Oddly, the first turn, the assault
+grunts, which had deployed further to the right, just moved straight laterally, not getting
+close to anything worthwhile. It might be noted that I have a very shooty army, so maybe
+they're scared, but that's not helpful." Screenshot: round 2/4, Hives backfield cluster
+(Assault Grunts / Winged Grunts / Hive Guardians / Hive Swarms) still at the bottom edge.
+Diagnosis hypotheses (in suspected order): (1) the A5-8 deadline fade turned into a GIVE-UP
+mechanism - a slow backfield unit whose slack drops below -1 for every not-ours objective gets
+ZERO gradient, and vs a gunline the melee-approach term is its only other pull; (2) approach
+vs retaliation imbalance against a HUMAN gunline that holds its line - the solo benchmark
+opponent ADVANCES into the horde, which masks the crossing problem (bench Hives-vs-HEF is 86);
+one-step greedy pays margin x fraction-closed per step but charges 0.6 x the retaliation
+increase, so hiding/lateral SeekCover/screen moves outscore crossing; (3) the A5-6 staging
+line vs sword-carrying shooters (HEF Retributors have Energy Swords) can create a standoff
+dead zone INSIDE the enemy's gun range: stage at their MeleeThreatReach + 1.5 while own charge
+reach is symmetric -> hover at ~15.5" getting shot at 18-24". Fix candidates AFTER his games:
+deadline fade should fall back to nearest-fight approach, not zero; a horde-crossing term
+(retaliation is per-unit but alternating activations dilute focus fire across a flood);
+staging slack rethink vs mixed gun+sword enemies. DO NOT tune mid-game - collect both games'
+impressions first.
+
 **2026-07-10 — A5-8b GATE: FIRST CLEAN ORDERED GRID - MATRIX 81.8, MIRRORS 82.8, NO CELL
 BELOW 50.** a5-8b-gate-ordered (3200 games, seed 3000): matrix 79.2 -> 80.4 -> **81.8** across
 the day's three gates; mirrors 77.4 -> **82.8** (best ever). **Zero cells below 50 for the
