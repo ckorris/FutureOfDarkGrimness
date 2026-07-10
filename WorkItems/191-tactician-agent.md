@@ -20,6 +20,24 @@ pin tests.
 
 ## Notes (newest first)
 
+**2026-07-10 — A5-4b + A5-5 SHIPPED; GATE 78.1% MIRRORS / 80.6% MATRIX, NO CELL BELOW 50,
+FAULTS = BASELINE - ALL AUTOMATED A-GATE CRITERIA PASS.** Engine `bcedbe4`. A5-4b (Chris's
+review): ward threat = EXCHANGE MARGIN (a counter-blade powerhouse needs no screen; pinned) +
+one-screen-per-lane (no dogpiles); his cases (a) weak-melee-threat and (d) late-objective-vs-
+screen were already self-limiting (documented in code). A5-5: THE DE FIX - zero voluntary
+disembarks existed in any DE log (cargo rode until the boat died and spilled out Shaken; the
+fallback chain ended in Pass for embarked units). WantsDisembark: get out when a not-ours
+marker or a winnable melee is within post-drop reach (6" placement + move/charge), keep riding
+otherwise. Pinned both ways. 50-game probe DE-vs-Orks 46 -> 61.2 BEFORE the gate. **Gate
+(a5-5-gate): matrix 77.4 -> 80.6, mirrors 79.4 -> 78.1, below-50 cells 1 -> 0 (DE-vs-Orks
+cleared), faults 1/1800 = baseline v4 (#208 family). A-gate automated criteria: aggregate >= 70
+PASS, no cell < 50 PASS, faults <= baseline PASS. Remaining: hallway probe, A6, Chris's two
+hand-played games.** Report: FdgLab/reports/a5-5-gate. Next: A5-6 already code-complete
+(Chris's second review pass - charge-band staging outside charge+2"-melee-cylinder threat
+reach, boat-then-payload activation order, emergency disembark from doomed transports,
+Takedown/single-model-spell sniping resolver, cargo-aware target/ward value,
+shoot-what-threatens-you), gate to follow.
+
 **2026-07-10 — A5-4 ANTI-HORDE PLAY SHIPPED (Chris-designed); GATE 79.4% MIRRORS / 77.4% MATRIX,
 ZERO FAULTS - ONE CELL LEFT BELOW 50.** Engine `f-see-log` (A5-4 commit). Chris's design: screen
 with expendable bodies (spent transports, the BB tank), shoot the horde before racing markers,
