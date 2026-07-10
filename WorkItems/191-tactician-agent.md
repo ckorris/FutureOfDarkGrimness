@@ -20,6 +20,27 @@ pin tests.
 
 ## Notes (newest first)
 
+**2026-07-09 — A3c-1 (MacroActionGenerator, M1-M10) DONE.** `Ai/Tactician/MacroAction.cs` +
+`MacroActionGenerator.cs`: goal enumeration per confirmed Appendix A - Hold (always), objective
+advance/rush (both budgets), EngageAtRange with the three bands (SafeShooting/kite exists only
+when own reach exceeds the enemy's threat envelope; endpoint may open the distance - verified),
+ChargeToContact (solo-style explicit-end-gap construction when the lane is clear, path-planner
+route otherwise; feasibility graded by ACHIEVED gap), FallBack, SeekCoverFrom (far side of the
+nearest Cover piece), Block (LINE spread perpendicular to the LANE via the new lineAxis
+parameter - the first draft spread across the approach and the test caught it), Escort
+(interpose toward the ward's nearest threat), Concentrate. Every move is ladder-built (G3);
+every candidate carries feasibility (Reachable/BudgetClipped/Blocked) + a G12 rationale string.
+Diversity-preserving pruning: rank-by-feasibility within family, round-robin across families,
+round 0 completes even past the budget (>=1 per family guaranteed - tested at budget 6). Two
+planner fixes shaken out by the tests: ClampRepackStep pre-clamp in BuildPathCandidate (first
+candidates were over-budget and the ladder halved real moves - Concentrate under-moved), and the
+charge construction above. **Verified:** 10 tests incl. the GATING generator-level hallway probe
+(objective beyond a 4" corridor -> traversing candidate emitted, >6" progress) and
+every-emitted-move-passes-ValidatePaths. Suite 1505/1505; bench hash unchanged (B05AA1D810364C6B,
+solo-rules untouched). **Sub-slice split (G7), recorded:** A3c-2 = M11 MoveToCast + M12
+DeliverCargo (need casting/transport queries) + the benchmark-sampled >=95% feasibility metric
+(shadow-generator instrument in FdgLab). Next after that: A4 greedy policy.
+
 **2026-07-09 — APPENDIX A v2 CONFIRMED by Chris (the A3c gate, plan sec. 5). A3c is go.**
 One edit folded in at his direction: mid-game MoveToEmbark cut from M12 (post-deployment
 embarking almost never useful - seen once, transport had Flying; revival condition recorded in
