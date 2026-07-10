@@ -20,6 +20,28 @@ pin tests.
 
 ## Notes (newest first)
 
+**2026-07-10 — OPTION (a) SHIPPED: MELEE APPROACH TERM; THIRD GATE 47.1% MIRRORS (from 25.4%)
+- collapse fixed, fault regression root-caused to engine core (awaiting Chris).** Chris picked
+option (a). Three-part fix (engine `5dc976d`, all inside Ai/Tactician): (1) generator - an
+out-of-charge-reach M5 candidate now emits a RUSH-budget approach move toward a 1.1"-standoff
+point on the lane to the nearest enemy model (before: an unplayable charge-budget move that
+ActionNameFor discarded, so melee units outside 12" had literally no candidate that closed
+distance); (2) planner dispatch keys on ActionType - Charge-typed candidates map to Charge,
+the Rush-typed approach plays as a plain Move; (3) Score adds `MoveApproach=0.75 x exchange
+margin-if-reached x fraction-of-charge-gap-closed` (cached per enemy per activation), zeroed
+once in reach so real charges still dominate; the reachable-charge offense branch now also
+requires ActionType==Charge so a reached standoff point is not scored as a fight. Pinned by
+MeleeUnitOutOfChargeReach_ApproachesInsteadOfStanding (brawlers 24" out must close >= 6").
+Suite 1526/1526. **Gate (a4-approach-gate, 1800 games, seeds 3000+): mirror avg 47.1%, matrix
+45.9%. Melee mirrors: Hives 7->47, Orks 5->38; shooters held (DE 62, BB 51, RL 60). Six of
+eight mirrors within noise of parity or above.** Remaining below: HDF 34 (Tough/vehicles -
+wound-assignment and target-saturation, A4-4 territory), Dwarfs 37 (ambush/scout timing = A5).
+**Faults 17/1800 vs 9 baseline - REGRESSION, but root-caused to an ENGINE-CORE bug the
+approach behavior merely tickles more often** (embarked models parked at (0,0) count as
+movement obstacles at the table-origin corner; full writeup + candidate one-line fix in #207;
+faulting moves are legal per the real rules). Engine fix is outside the authorized seam -
+stopped and asked Chris. Reports in FdgLab/reports/a4-approach-gate.
+
 **2026-07-10 (overnight) — SECOND A4 GATE FAILED (25.4%); STOPPED per plan sec. 13. Analysis for
 Chris below; no further weight iterations without his direction.** Cumulative A4-2(retuned)+A4-3
 gate, mirrors: Hives 7, Orks 5, Dwarfs 12, HEF 15, HDF 24, RL 26 - but **Dark Elf 62 and Battle

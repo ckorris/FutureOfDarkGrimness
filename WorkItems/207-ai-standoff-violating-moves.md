@@ -20,6 +20,23 @@ fault in DefinePathStage; 1011(swapped) in ConsolidateStage. Also Dark Elf mirro
 
 ## Notes
 
+- 2026-07-10 - **ROOT CAUSE FOUND for the "Moves through an enemy unit" flavor (engine core,
+  fix awaiting Chris's go-ahead).** `EmbarkStage.cs:61` (and `DefinePathStage.cs:145`) park
+  embarked models at `Position(0,0)` - and `MovementUtilities.GetEnemyModelFootprints` includes
+  every LIVING enemy model with no on-battlefield filter. A loaded enemy transport therefore
+  leaves a stack of invisible passenger footprints at the table-origin corner, and ANY move
+  (AI or human) whose swept path passes within (moverRadius + passengerRadius) of (0,0) is
+  rejected by DefinePathStage/ConsolidateStage/PileInStage. The Tactician's re-validation
+  (MovementPlanner.LiveEnemyFootprints) correctly filters (0,0) models, approves the legal
+  move, the engine faults the game. Deterministic repro: seed 3000 Hives-vs-DE smoke, faulting
+  side = Tactician's Assault Grunts (a legal move near the corner). Explains why every
+  instance involves the Dark Elf TRANSPORT list. The #191 A4 approach term made Hives close
+  distance along table edges, raising the hit rate (12 faults in 50 Hives-DE games vs ~3
+  before). Candidate fix (one line, engine core): skip units where
+  `TransportUtilities.IsEmbarked(...)` / `!GetIsOnBattlefield()` in GetEnemyModelFootprints
+  (and audit GetEnemyUnitsMovedThrough, which has the same gap for Strafing triggers).
+  The "Ends within 1 inch" flavor may be the same bug (a move ending near the corner) or the
+  original rect-vs-circle hypothesis below - re-check after the footprint fix lands.
 - 2026-07-09 - filed. The G3 ladder (MovementPlanner.ValidateWithBackoff) exists precisely to
   prevent this class - check whether the failing paths bypass it or whether MinEnemyGap's
   shape-aware measurement disagrees with the validator's for oriented rectangles.
