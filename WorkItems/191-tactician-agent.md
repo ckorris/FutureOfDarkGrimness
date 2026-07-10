@@ -20,6 +20,20 @@ pin tests.
 
 ## Notes (newest first)
 
+**2026-07-10 — A5-8b GATE: FIRST CLEAN ORDERED GRID - MATRIX 81.8, MIRRORS 82.8, NO CELL
+BELOW 50.** a5-8b-gate-ordered (3200 games, seed 3000): matrix 79.2 -> 80.4 -> **81.8** across
+the day's three gates; mirrors 77.4 -> **82.8** (best ever). **Zero cells below 50 for the
+first time on the honest ordered grid** - worst cell RL-vs-Hives 51. Row averages: Hives 92.6,
+HEF 86.8, DE 86.0, Orks 84.1, Dwarf 82.6, BB 79.8 (mirror 72 -> 96!), HDF 72.0, RL 70.2 (was
+59.9 this morning). Faults 4/3200, all four the exact #208 triggered-move cohesion signature
+(Nightmares/Warriors Combined) - rate 0.125% vs baseline 0.056%, same family, small-sample.
+A-gate automated criteria: aggregate >= 70 PASS (81.8); no matchup < 50 PASS (first time);
+faults-vs-baseline marginal (same family, rate wobble - flag for Chris). Remaining for the
+A-gate: hallway probe (not built), deployment matchup awareness (design sketch for sign-off),
+Chris plays >= 2 games (lobby button now exists). RL-row investigation (task #16) CLOSED -
+root causes were the phantom shoot credit (A5-7) plus the A5-8/8b positional levers, not
+UnitValue rule-blindness (that gap remains recorded but was not the collapse mechanism).
+
 **2026-07-10 — A5-8 (Chris's third review pass, from the RL-row post-mortem): TARPIT CHARGES,
 ALWAYS-AMBUSH, DEADLINE-AWARE OBJECTIVE GRADIENT, THREATENED-VALUE WARD PICK.** Four facets:
 (1) Tarpit (Chris): a landed charge degrades the target's next volley (his correction: it does
