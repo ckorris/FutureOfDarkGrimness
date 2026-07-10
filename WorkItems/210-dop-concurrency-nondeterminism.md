@@ -40,5 +40,17 @@ game by game.
 
 ## Notes (newest first)
 
-**2026-07-10 — filed.** Found while verifying the #209 fix (which this item's evidence isolates
-from). Pre-existing; every historical bench hash was a one-shot sample.
+**2026-07-10 — bench tooling landed + first hunt: a sharp signature, and it's a heisenbug.**
+`bench --dump-logs DIR [--trace]` now writes per-game logs/traces with run-stable filenames
+(superproject `053ca25`). Two untraced 20-game DOP-16 runs: 16/20 games diverge INTERNALLY
+(GUID-normalized diff), far more than the outcome flips suggest. The signature (s7002_fwd):
+logs identical up to a melee exchange where run 1 has a "Heavy Claw. Count: 1" batch and run 2
+has "Count: 2" - the IN-RANGE MODEL SET differs while every logged prior event (moves, rolls,
+casts) matches. So a model POSITION differs below log precision, or the range check itself is
+reading racy state. The melee pool is rebuilt per exchange from InRangeAttackingModels
+(MeleeRangeUtilities), so suspicion falls on pile-in/charge placement float paths or a shared
+cache they read. **--trace does NOT reproduce it: two traced 10-game runs were bit-identical
+(hash 351C1566CBE175C1, zero trace diffs) - the tracer's lock serializes enough to suppress the
+race.** Next session: diff untraced logs to shortlist the exact combats, then instrument the
+melee-range check inputs (positions at full precision) via a lighter-weight channel than the
+global tracer.

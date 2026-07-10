@@ -20,6 +20,38 @@ pin tests.
 
 ## Notes (newest first)
 
+**2026-07-10 — A5-1 CASTING SHIPPED (engine `0b0c0f7`) + #209 DETERMINISM FIX (engine `52d1968`,
+Chris-authorized); GATE 56.3% MIRRORS / 58.8% MATRIX, ZERO FAULTS - HEF MIRROR 66->77.** A5-1:
+Cast is LAYERED (loops back to Choose Action without ending the activation), so the planner takes
+any positive-EV cast FIRST - checked before the post-move branch too, which is what pays off M11
+MoveToCast set-up moves. SpellValuation prices damage spells through a new
+CombatMath.EstimateSpellDamage (fixed hits through the save/wound mirror; the stage's
+hit-complete fold on spell hits - Blast multiply - is a recorded gap); non-damage effects get the
+flat CastEffectStaticFraction placeholder (plan A5; real buff value arrives in C). Net EV = 0.5 x
+target sum - tokens x CastTokenValue. Pickers are livelock-safe BY CONSTRUCTION: spell pick =
+argmax over the ENGINE's offered labels, never Cancel (a cancelled pick re-enters Choose Action
+unspent); target pick never cancels before MinCount (same loop), stops adding targets when value
+runs out after it. TacticianCastAssistResolver spends tokens when a 1/6 threshold shift beats
+CastTokenValue, friend-boost and enemy-deny alike (solo always declines). G2 verified in logs:
+spell picks, casts, and a +2 assist turning a 4+ into a 2+. 6+2 pins; suite 1546/1546. Deferred
+(recorded, not silent): ability-effect choice + pre-attack ability menus (solo first-option),
+single-model spell target pick (solo), granted-token buff read-back (existing evaluator gap).
+**#209 (found during G2 verification): weapon-choice options were built by enumerating a
+Weapon-keyed dictionary in identity-hash order - multi-weapon units swung/fired in RANDOM order,
+so same-seed games did not replay (predates A5; hit the solo baseline too - two identical
+10-game benches gave different hashes). Fixed at both stages (deterministic option order),
+pinned by WeaponOrderDeterminismTests; serial runs now reproduce hashes exactly across
+processes. Residual DOP>1 flips = #210 (contention race, trace-diff tooling added to bench).
+Consequence: pre-fix gate hashes are historical one-shots; this gate is only loosely comparable
+to A4b-2's because #209 changed both bots' weapon order in every multi-weapon game.**
+**Gate (a5-1-gate, hash 53E1E8837F86AC8E): mirror avg 56.3 (was 57.1), matrix 58.8 (was 58.7),
+faults 0/1800. A5 verify criterion (caster matchups improve or hold) PASSED: HEF mirror 66->77,
+HEF-vs-HDF 73->79, HEF-vs-RL 82->86. Scattered moves elsewhere (DE-vs-Orks 33->23, RL mirror
+45->36, Hives-vs-HDF 66->72) are consistent with the #209 baseline shift.** Solo pool baseline
+v4 re-freeze pending (v3 hash is pre-#209). Report: FdgLab/reports/a5-1-gate. Next: A5-2
+ambush/reserves - neither bot uses Ambush at all today (solo always answers "Deploy normally"),
+so this is the Dwarf list's whole signature mechanic.
+
 **2026-07-10 — A4b-2 OBJECTIVE PLACEMENT SHIPPED; GATE 57.1% MIRRORS / 58.7% MATRIX.** Engine
 `dd0b1f1`. TacticianPlaceObjectiveResolver: zones are chosen AFTER objectives, so the
 side-agnostic lever is cluster-vs-spread along X - an army whose model-count majority carries
