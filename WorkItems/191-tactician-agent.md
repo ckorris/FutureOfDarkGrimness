@@ -20,6 +20,23 @@ pin tests.
 
 ## Notes (newest first)
 
+**2026-07-10 — A4b DEPLOYMENT SHIPPED; GATE 54.4% MIRRORS / 54.4% MATRIX - FIRST GATE ABOVE
+PARITY.** Engine `bb971b1`. Mechanism: the solo placement resolver's only strategy knob (the
+preferred block centre) became a protected virtual seam - solo's fan-out is the unchanged base
+implementation (pinned bit-identical by TacticianDeploymentTests' disembark comparison + the
+in-suite determinism hashes); TacticianPlaceObjectsResolver overrides it for DEPLOYMENT
+requests only (TaskName discriminator "Place Unit Models"): units spread across objectives
+nearest-to-zone-first, melee crowds the forward edge, shooters stand 6" back (12"-range units
+3"). Non-deployment placements (disembark/spillout/ambush/reposition) ARE the solo resolver.
+4 pins; suite 1535/1535. **Gate: mirror avg 49.0 -> 54.4, matrix 47.4 -> 54.4. HEF mirror
+45->68, DE 61->77, Dwarf 44->58, Hives 43->54; regressions BB mirror 55->42 and RL 60->46
+(static gunlines may dislike clustered deploys - watch after A4b-2/A5, retune depth if it
+persists). Faults 2/1800, both #208's triggered-move cohesion family (baseline has 1) - no new
+fault modes.** Scope note (not silent): cover-aware centre choice deferred to a later A4b
+sub-slice; deployment ORDER (which unit next) and zone choice stay solo. Report:
+FdgLab/reports/a4b-gate. Next: A4b-2 objective placement (side-agnostic: zones are chosen
+AFTER objectives, so the profile lever is cluster-vs-spread, not own-side).
+
 **2026-07-10 — #207 MOVE-THROUGH FLAVOR FIXED (Chris-authorized engine core) + A4-4 SHIPPED;
 GATE 49.0% MIRRORS, ZERO FAULTS.** Engine fix (`ebd2c8f`): GetEnemyModelFootprints and
 GetEnemyUnitsMovedThrough skip off-battlefield units - embarked models parked at (0,0) no
