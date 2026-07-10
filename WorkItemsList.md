@@ -24,6 +24,7 @@ When closing an item: write the Outcome in its detail file, tick the line, and m
 - [ ] 208 — #197 reposition-at-activation triggered moves can submit validator-rejected moves (cohesion / move-through) and fault the game; needs the G3 validate-or-decline ladder. ([WorkItems/208](WorkItems/208-triggered-move-validity.md))
 - [ ] 209 — Weapon-choice option order is nondeterministic (ConcurrentDictionary keyed by Weapon identity): multi-weapon units swing/fire in random order, breaking #193 same-seed replay and benchmark hash reproducibility; fix candidate awaiting sign-off. ([WorkItems/209](WorkItems/209-weapon-choice-order-nondeterminism.md))
 - [ ] 210 — Residual bench nondeterminism at --dop > 1 (scattered per-game flips under CPU contention; serial runs exact after #209). Needs the #198 tracer wired into bench to isolate. ([WorkItems/210](WorkItems/210-dop-concurrency-nondeterminism.md))
+- [ ] 211 — Solo AI mover submits a path through impassible terrain (~1/1800; #159's family, impassible flavor). Fix with one validate-or-decline ladder on the solo mover alongside #159. ([WorkItems/211](WorkItems/211-solo-mover-impassible-terrain.md))
 
 ## Shooting & cover
 

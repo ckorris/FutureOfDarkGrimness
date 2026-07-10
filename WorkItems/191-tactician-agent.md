@@ -20,6 +20,26 @@ pin tests.
 
 ## Notes (newest first)
 
+**2026-07-10 — A5-3 OBJECTIVE GRADIENT SHIPPED; GATE 79.1% MIRRORS / 79.2% MATRIX - THROUGH THE
+70% A-GATE AGGREGATE.** Engine `26eb326`. Mechanism (from G2 log-reading the a5-2-gate DE-vs-Orks
+losses): ObjectiveDelta pays only ON the marker, so a unit two moves out had no reason to close -
+shooter armies froze against hordes (offense 0 out of range, retaliation punishes proximity =>
+Hold/Pass; DE units PASSED their round-4 activations while Orks walked onto the markers). The
+melee-approach bug's exact twin, on the other win condition. Fix: ObjectiveApproach pays
+MoveObjectiveApproach (0.4) x the fraction of the gap closed toward the nearest not-ours
+objective; below MoveObjective (0.75) so arriving still dominates. 1 pin (shooter far from an
+uncontested marker with a looming out-of-range horde must walk, not pass); suite 1551/1551.
+20-game probe on the worst cell first: DE-vs-Orks 23 -> 60. **Gate (a5-3-gate, hash
+63AC904B902B3D1D): mirror avg 61.9 -> 79.1, matrix 63.5 -> 79.2. Every mirror >= 64 (Hives 85,
+BB 78, DE 90, Dwarf 81, HEF 90, HDF 64, Orks 78, RL 67). A-gate criteria: aggregate >= 70
+PASSED; "no matchup < 50" NOT YET - BB-vs-Orks 49.0 and DE-vs-Orks 49.0 (one game each);
+faults 2/1800 vs baseline 1, but ZERO Tactician-attributable: one is #208 (triggered-move
+cohesion, baseline family), one is NEW #211 - the SOLO mover pathing through impassible terrain
+during its own activation (repro'd; solo-side, #159's family).** Remaining for the A-gate: the
+two 49% cells (both "shooters/transport vs Ork horde" - the next lever is likely kiting /
+focus-fire, not objectives), the hallway probe, A6 selection UX, and Chris's >= 2 hand-played
+games. Report: FdgLab/reports/a5-3-gate.
+
 **2026-07-10 — A5-2 AMBUSH/RESERVES SHIPPED; GATE 61.9% MIRRORS / 63.5% MATRIX, ZERO FAULTS -
 DWARF MIRROR 66->84.** Engine `6e6f523`. Neither bot ever used Ambush (solo always answers
 "Deploy normally"). Now: AmbushPolicy holds melee/short-range Ambushers (max weapon range <
