@@ -29,3 +29,13 @@ coordinate the change with that spike. Interim mitigation for FdgLab fleets:
 ## Notes
 
 - 2026-07-09 — filed with #200 during #191 pool validation.
+
+## Outcome
+
+**Fixed 2026-07-09** (engine `5d8c939`). `await Task.Yield()` at the two chokepoints: entering
+`ReconcileEndOfActivationStage` (bounds stack across activations - depth is now the deepest single
+activation, not the whole game) and entering `ChooseActionStage` (bounds it WITHIN an activation,
+so any action ping-pong idles at constant depth for the watchdog instead of killing the process).
+Verified: the #200 livelock at DEFAULT stack size survived to a clean watchdog Fault (previously an
+uncatchable process-killing StackOverflow); suite green; 200-game bench hashes byte-identical on
+both matrices (the yields are outcome-neutral).

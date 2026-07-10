@@ -20,6 +20,20 @@ pin tests.
 
 ## Notes (newest first)
 
+**2026-07-09 — #200 + #203 FIXED (Chris-authorized engine-core changes); POOL 8/8 GREEN.**
+#203 first (its verification needed #200's livelock alive): Task.Yield at the activation boundary
++ Choose Action entry - the livelock then idled to a clean watchdog Fault at DEFAULT stacks
+instead of killing the process; bench hashes unchanged on both matrices (outcome-neutral). Then
+#200: instrumentation of the bounce branch revealed the real state - the Orc Bikers' Rocket-Mod
+is Limited+Deadly and SPENT, and Deadly-first gating ran before Limited-spent gating, so the
+empty rocket locked out every other weapon while the Shoot gate (no Deadly gating) said
+"fireable". Fix: gating order swapped AND gate/stage now share one pipeline (ApplyTargetGating)
+so they can never disagree again; 2 regression pins. Orks mirror now plays 4 full rounds (3.5s).
+**All 8 pool mirrors complete**; suite 1511/1511; builtin hashes stable (pool-army trajectories
+legitimately shifted - wrongly-locked-out units now shoot). Both items archived. The pool is
+ready for A4's first benchmark baseline. Also filed at Chris's request: #204 (save-roll beats
+for Rending vs non-Rending groups pace too close together - presentation only).
+
 **2026-07-09 — BENCHMARK POOL DELIVERED by Chris; 7/8 validated; #200/#203 filed off the 8th.**
 Eight 2k armies now in `FdgLab/armies/` (moved out of the engine submodule per D3): Alien Hives
 horde melee, Battle Brothers elite shooting, Dark Elf Raiders transport, Dwarf Guilds

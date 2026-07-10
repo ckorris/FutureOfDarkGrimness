@@ -23,8 +23,6 @@ When closing an item: write the Outcome in its detail file, tick the line, and m
 ## Shooting & cover
 
 - [ ] 199 — `AutoFill` faults on a tiny fractional wound in probabilistic mode ("Required: 0.0555, assigned: 0" -> whole game Fault); deterministic repro: rich-army fresh game, seed 31415. ([WorkItems/199](WorkItems/199-autofill-fractional-wound-fault.md))
-- [ ] 200 — Choose Action offers Shoot with no fireable target -> deterministic AI livelocks (Choose Action <-> Shoot forever); GetCanShoot needs the GetCanCast-style target gate. Repro: Orks 2k pool mirror, seed 42. ([WorkItems/200](WorkItems/200-choose-action-shoot-loop.md))
-- [ ] 203 — Stage transitions chain synchronously, so stack depth grows with game length: long games kill the PROCESS with an uncatchable StackOverflow (surfaced by #200; long legit games walk the same cliff). Direction: Task.Yield at an activation boundary, with the plan's B0 spike. ([WorkItems/203](WorkItems/203-stage-machine-stack-growth.md))
 - [ ] 201 — Shooting *out of* cover grants the defender cover: `EvaluateSightLine` folds every terrain piece on the segment into one worst-effect with no notion of *where* it sits, so the attacker's own wall counts. Blocked on a rules ruling (proximity to defender, shoot-through depth). ([WorkItems/201](WorkItems/201-cover-attacker-side.md))
 
 ## Model bases & geometry
@@ -74,6 +72,7 @@ detection, host-IP display, DNS host entry. See `NetworkingHandoff-2026-07-08.md
 
 ## Client / renderer
 
+- [ ] 204 — Save-roll beats for Rending and non-Rending hit groups play too close together to read as two rolls; presentation pacing only (min spacing or co-present the groups). ([WorkItems/204](WorkItems/204-save-beat-pacing-rending-groups.md))
 - [~] 162 — Tactical overlay: opportunity fields, threat frontiers, per-model instruments (instruments call real rules, never the field texture). P0 scaffolding done; P1-P7 remain. Design doc: `docs/tactical-overlay-plan.md`. ([WorkItems/162](WorkItems/162-tactical-overlay.md))
 - [ ] 161 — Resolver UI consistency pass: stat/highlight parity, right-click undo on deploy, shared canvas-selector base (also absorbs the `GuiModelSelectionResolver` alive-filter gap), dialog chrome. Findings + canonical click scheme in the detail file. ([WorkItems/161](WorkItems/161-resolver-consistency.md))
 - [~] 056 — Presentation beat stream: architecture shipped and live on master; remaining animation polish + a hands-on pass. ([WorkItems/056](WorkItems/056-presentation-beat-stream.md))

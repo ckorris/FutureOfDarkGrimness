@@ -38,3 +38,16 @@ weapons, no LoS to any enemy -> Shoot not offered -> AI activation completes.
 
 - 2026-07-09 — filed. Found on the pool's first validation pass: 7/8 armies play clean 2k mirrors
   in 1.4-2.5s; the Orks horde-mixed list is blocked on this.
+
+## Outcome
+
+**Fixed 2026-07-09** (engine `a8b593b`). Two changes: (1) the gating pipeline order - Limited-spent
+now gates BEFORE Deadly-first, so a spent Limited+Deadly weapon can no longer lock out the unit's
+other weapons (the Orc Bikers' empty Rocket-Mod demanded to be "fired first" forever); (2)
+`HasAnyFireableTarget` now runs the stage's exact pipeline (`ApplyTargetGating` + the same fireable
+check), so the Shoot action gate and the shoot stage can never disagree again. Diagnosed by
+temporarily instrumenting the bounce branch and reading the live divergence. Verified: two
+regression pins in ChooseRangedAttackStageTests; the Orks 2k mirror plays a full 4-round game
+(3.5s, default stacks); all 8 pool mirrors green; suite 1511/1511; builtin bench hashes unchanged
+(no Limited weapons there - pool-army trajectories legitimately changed where wrongly-locked-out
+units now shoot).
