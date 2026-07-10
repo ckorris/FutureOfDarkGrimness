@@ -23,6 +23,8 @@ When closing an item: write the Outcome in its detail file, tick the line, and m
 ## Shooting & cover
 
 - [ ] 199 — `AutoFill` faults on a tiny fractional wound in probabilistic mode ("Required: 0.0555, assigned: 0" -> whole game Fault); deterministic repro: rich-army fresh game, seed 31415. ([WorkItems/199](WorkItems/199-autofill-fractional-wound-fault.md))
+- [ ] 200 — Choose Action offers Shoot with no fireable target -> deterministic AI livelocks (Choose Action <-> Shoot forever); GetCanShoot needs the GetCanCast-style target gate. Repro: Orks 2k pool mirror, seed 42. ([WorkItems/200](WorkItems/200-choose-action-shoot-loop.md))
+- [ ] 203 — Stage transitions chain synchronously, so stack depth grows with game length: long games kill the PROCESS with an uncatchable StackOverflow (surfaced by #200; long legit games walk the same cliff). Direction: Task.Yield at an activation boundary, with the plan's B0 spike. ([WorkItems/203](WorkItems/203-stage-machine-stack-growth.md))
 - [ ] 201 — Shooting *out of* cover grants the defender cover: `EvaluateSightLine` folds every terrain piece on the segment into one worst-effect with no notion of *where* it sits, so the attacker's own wall counts. Blocked on a rules ruling (proximity to defender, shoot-through depth). ([WorkItems/201](WorkItems/201-cover-attacker-side.md))
 
 ## Model bases & geometry

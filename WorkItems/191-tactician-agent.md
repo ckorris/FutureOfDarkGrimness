@@ -20,6 +20,21 @@ pin tests.
 
 ## Notes (newest first)
 
+**2026-07-09 — BENCHMARK POOL DELIVERED by Chris; 7/8 validated; #200/#203 filed off the 8th.**
+Eight 2k armies now in `FdgLab/armies/` (moved out of the engine submodule per D3): Alien Hives
+horde melee, Battle Brothers elite shooting, Dark Elf Raiders transport, Dwarf Guilds
+ambush/scout, High Elf Fleets caster, HDF tough/vehicle, Orks horde mixed, Robot Legions mixed.
+**Throughput (G6, measured):** 2k mirrors run 1.4-2.5s wall each, 200-420 decisions - barely
+above the tiny test armies; the 5-15x slowdown fear was wrong; Phase C/D volumes are unthreatened.
+7/8 play clean full-length mirrors with real objective scores. The Orks mirror exposed two
+engine bugs, filed: **#200** (Choose Action offers Shoot with zero fireable targets ->
+deterministic AI livelocks; GetCanShoot lacks the target gate GetCanCast already has) and
+**#203** (stage transitions chain synchronously; stack depth grows with game length; the loop -
+and eventually any long game - kills the process with an uncatchable StackOverflow;
+DOTNET_DefaultStackSize=0x4000000 is the lab's interim shield). Both fixes are engine-core
+(outside Ai/Tactician) -> awaiting Chris's go per D2. Pool baseline matrix + A4 start once #200
+is resolved (or run 7-army in the interim).
+
 **2026-07-09 — A3c-2 DONE; A3 COMPLETE (all of A3a/b/c verified).** M11 MoveToCast (spell-token
 holders + army spells via TableState.Armies; goal just inside the best affordable spell's range
 of its affinity target; Self-affinity skipped; LoS not modeled - recorded; one candidate per
