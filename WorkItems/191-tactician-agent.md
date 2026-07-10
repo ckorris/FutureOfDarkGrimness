@@ -20,6 +20,22 @@ pin tests.
 
 ## Notes (newest first)
 
+**2026-07-10 — A5-4 ANTI-HORDE SCORING PROBED AND REVERTED (negative result).** The 49%-cell
+loss reading (BB/DE vs Orks): elite units take an early marker, hold a firing position, get
+CAUGHT by the horde's melee elements in rounds 2-3 (BB s3005: APC eaten r2, a BB squad r3,
+Battle Tank routed), and the horde's surplus bodies take every marker in round 4. Kiting
+endpoints DO exist (EngageAtRange far-band aims can back away) - they lose the argmax. Two
+scoring hypotheses probed on the cells' own 20 seeds: (a) soft-OR retaliation aggregation
+(1 - prod(1-x)) + melee-threat factor 0.5 -> 0.75: BB 50, DE 45 (tie-heavy - near a horde every
+endpoint saturates to "dangerous", differences flatten, the army turns passive); (b) max
+aggregation + 0.75 factor alone: BB 47.5, DE 47.5 (DE's fast transports WANT to operate close -
+pricier melee threat makes them shy). Neither beats shipped A5-3 (BB 50, DE 49-60 on the same
+seeds); both reverted, no engine change. Takeaway: the anti-horde lever is BEHAVIORAL
+(screening, focus-fire to break mobs, or true kite-cycles), not a constant nudge, and 20-game
+probes are too noisy for weight deltas this small - use 50-100 games for any future retune.
+The two cells sit at parity (49) and do not block practical play; candidates for the next
+session alongside the hallway probe and A6.
+
 **2026-07-10 — A5-3 OBJECTIVE GRADIENT SHIPPED; GATE 79.1% MIRRORS / 79.2% MATRIX - THROUGH THE
 70% A-GATE AGGREGATE.** Engine `26eb326`. Mechanism (from G2 log-reading the a5-2-gate DE-vs-Orks
 losses): ObjectiveDelta pays only ON the marker, so a unit two moves out had no reason to close -
