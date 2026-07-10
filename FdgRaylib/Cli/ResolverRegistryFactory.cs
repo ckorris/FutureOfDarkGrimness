@@ -11,6 +11,9 @@ public static class ResolverRegistryFactory
     /// <summary>Headless / CLI build — all decisions via stdin.</summary>
     public static IStageResolverRegistry Build(ITableState tableState)
     {
+        // #191 A4-1's request split: unit activation is its own request type; it renders through the
+        // same stdin selection flow via the adapter.
+        var selectUnit = new SelectionResolver<UnitData>();
         return new StageResolverRegistry()
             .RegisterResolver(new YesNoResolver())
             .RegisterResolver(new StringSelectionResolver())
@@ -22,7 +25,9 @@ public static class ResolverRegistryFactory
             .RegisterResolver(new AircraftAdvanceResolver())
             .RegisterResolver(new ConsolidationMoveResolver(tableState))
             .RegisterResolver(new AssignWoundsResolver())
-            .RegisterResolver(new SelectionResolver<UnitData>())
+            .RegisterResolver(selectUnit)
+            .RegisterResolver(new DerivedRequestAdapter<ChooseUnitToActivateRequest,
+                SelectionRequest<UnitData>, FDG.Data.DataBinding<UnitData>>(selectUnit))
             .RegisterResolver(new SelectionResolver<ModelData>())
             .RegisterResolver(new SelectionResolver<RectangularZone>())
             .RegisterResolver(new CancellableSelectionResolver<UnitData>())
@@ -77,6 +82,10 @@ public static class ResolverRegistryFactory
         var registry = new StageResolverRegistry()
             .RegisterResolver(yesNo)                                         // GUI
             .RegisterResolver(selectUnit)                                    // GUI
+            // #191 A4-1's request split: activation forwards to the SAME canvas click-to-select
+            // resolver instance, so the overlay's pending/draw state works unchanged.
+            .RegisterResolver(new DerivedRequestAdapter<ChooseUnitToActivateRequest,
+                SelectionRequest<UnitData>, FDG.Data.DataBinding<UnitData>>(selectUnit))
             .RegisterResolver(selectModel)                                   // GUI
             .RegisterResolver(selectZone)                                    // GUI
             .RegisterResolver(cancelSelectUnit)                              // GUI

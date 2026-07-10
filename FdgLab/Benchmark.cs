@@ -14,7 +14,12 @@ public sealed record BenchmarkOptions(
     int DegreeOfParallelism,
     int WatchdogSeconds,
     ERandomnessType Randomness,
-    string OutDir);
+    string OutDir,
+    // #191 A4: which AI drives each side. The profile binds to its ARMY (A or B) - the side swap
+    // still exchanges slots, so slot advantage cancels while "profile A playing army A" stays the
+    // measured quantity. Tactician-vs-solo comparisons set these differently.
+    FDG.Ai.EAiProfile ProfileA = FDG.Ai.EAiProfile.SoloRules,
+    FDG.Ai.EAiProfile ProfileB = FDG.Ai.EAiProfile.SoloRules);
 
 /// <summary>
 /// The seeded, side-swapped benchmark matrix (#194; plan sec. 6.1). Scoring: for a matchup (A, B),
@@ -32,8 +37,8 @@ public static class Benchmark
         var work = new List<(Matchup Matchup, int Seed, bool Swapped, GameSpec Spec)>();
         foreach (Matchup matchup in options.Matchups)
         {
-            SlotSpec a = Armies.LoadSlot(matchup.SpecA);
-            SlotSpec b = Armies.LoadSlot(matchup.SpecB);
+            SlotSpec a = Armies.LoadSlot(matchup.SpecA) with { Profile = options.ProfileA };
+            SlotSpec b = Armies.LoadSlot(matchup.SpecB) with { Profile = options.ProfileB };
             int seeds = Math.Max(1, options.GamesPerMatchup / 2);
             for (int s = 0; s < seeds; s++)
             {
@@ -44,7 +49,8 @@ public static class Benchmark
         }
 
         Console.WriteLine($"Benchmark: {options.Matchups.Count} matchup(s), {work.Count} games, " +
-                          $"DOP {options.DegreeOfParallelism}, seeds from {options.SeedBase}, {options.Randomness} dice.");
+                          $"DOP {options.DegreeOfParallelism}, seeds from {options.SeedBase}, {options.Randomness} dice, " +
+                          $"A={options.ProfileA} B={options.ProfileB}.");
 
         var records = new GameRecord[work.Count];
         int done = 0;
@@ -110,6 +116,7 @@ public static class Benchmark
         sb.AppendLine("# FdgLab benchmark report");
         sb.AppendLine();
         sb.AppendLine($"- Games: {rows.Count} | Seeds from {options.SeedBase} | Dice: {options.Randomness} | DOP: {options.DegreeOfParallelism}");
+        sb.AppendLine($"- Profiles: A = {options.ProfileA}, B = {options.ProfileB}");
         sb.AppendLine($"- Outcome hash (deterministic): `{outcomeHash}`");
         sb.AppendLine();
         sb.AppendLine("## Matchups");

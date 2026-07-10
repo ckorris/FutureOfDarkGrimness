@@ -19,6 +19,7 @@ static int Usage()
 
         Commands:
           bench   --a <army> --b <army> | --pool <dir>   seeded, side-swapped benchmark matrix
+                  [--profile-a P] [--profile-b P]  AI per army side: solorules | tactician (#191 A4)
                   [--games N]        total games per matchup (default 200; played as N/2 seeds x 2 sides)
                   [--seed-base S]    first seed (default 1000)
                   [--dop D]          concurrent games (default: min(16, cores))
@@ -63,6 +64,10 @@ static async Task<int> RunBench(string[] args)
         return 2;
     }
 
+    if (!TryProfileArg(args, "--profile-a", out FDG.Ai.EAiProfile benchProfileA) ||
+        !TryProfileArg(args, "--profile-b", out FDG.Ai.EAiProfile benchProfileB))
+        return 2;
+
     var options = new BenchmarkOptions(
         Matchups: matchups,
         GamesPerMatchup: IntArg(args, "--games", 200),
@@ -70,7 +75,9 @@ static async Task<int> RunBench(string[] args)
         DegreeOfParallelism: IntArg(args, "--dop", Math.Min(16, Environment.ProcessorCount)),
         WatchdogSeconds: IntArg(args, "--timeout", 120),
         Randomness: Arg(args, "--dice") == "probabilistic" ? ERandomnessType.Probabilistic : ERandomnessType.Realistic,
-        OutDir: Arg(args, "--out") ?? Path.Combine("FdgLab", "reports"));
+        OutDir: Arg(args, "--out") ?? Path.Combine("FdgLab", "reports"),
+        ProfileA: benchProfileA,
+        ProfileB: benchProfileB);
 
     return await Benchmark.RunAsync(options);
 }
