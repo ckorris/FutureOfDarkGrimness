@@ -48,6 +48,27 @@ verified sane from traces (lands 1-3" from a marker). Suite 1566/1566. **50-game
 (held). Session total for the row: 36/36/35 -> 48/53/53 over solo-vs-solo baselines of
 30/29/42.** Full ordered gate: a5-8-gate-ordered (numbers in a later entry).
 
+**2026-07-10 — A5-8b: AMBUSH STRIKE AIM (Chris follow-up) + A6 LOBBY BOT SELECTION.**
+(1) Ambush arrivals now aim BEHIND the best strike victim, not at a marker (Chris: "in real
+games they'll always pop up right behind a unit that they'll do lots of damage to" - the
+objective-first aim surprised him). TacticianPlaceObjectsResolver: per enemy unit, a landing
+spot just over the rule clearance on the side away from their army mass; scored by best of
+shoot-from-spot / charge-if-in-reach via CombatMath, minus the planner-style retaliation price;
+strike taken when gross damage >= AmbushStrikeMinDamageValue (0.25) and net > 0, else the old
+most-winnable-objective aim. Arrivals can't score the landing round, so the strike costs no
+tempo. Pin test verified discriminating (bar at 99 -> falls back to marker). This un-defers the
+A5-2 "dropping beside enemies is a search-level judgment" deferral. (2) A6 lobby: "Add AI
+Player" is now two buttons - "Add Tactician Bot" / "Add DerpBot" (Chris's name for the legacy
+solo bot); resume re-crew rows get Tactician/DerpBot buttons too. Plumbing: EAiProfile on
+LobbyPlayerInfoFull + AddAiPlayer(profile) + SetSavedSlotPlayerType(..., profile) through
+ILobbyViewModel/host/client, both launch sites dispatch through AiProfileFactory (the seam
+built for exactly this); bots are listed as "Tactician Bot N" / "DerpBot N". Engine touch
+outside Ai/Tactician (lobby layer) covered by Chris's explicit request. Suite 1567/1567.
+**50-game probes (seed 3000, 0 faults): RL-vs-Hives 48 -> 50, RL-vs-Orks 53 -> 54, RL-vs-HEF
+53 -> 58, Dwarf mirror 91 (44W-3L-3T; the strike aim is the ambush army's payoff). Session
+total for the RL row: 36/36/35 -> 50/54/58.** The stale mid-A5-8 gate run was killed; the
+definitive gate is a5-8b-gate-ordered.
+
 **2026-07-10 — RL-ROW ROOT CAUSE: PHANTOM SHOOT CREDIT ON RUSH INTENTS (CanShootAfter keyed on
 intent, executor on ActionType).** G2 log-read of the three sub-50 cells (10-game probes, seed
 3000+, logs + #198 position traces): RL units walked INTO 24" gun range from round 2 on and

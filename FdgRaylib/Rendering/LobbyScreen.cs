@@ -1,5 +1,6 @@
 using System.Numerics;
 using FDG;
+using FDG.Ai;
 using FDG.EngineInterface;
 using FDG.Network.Connection.Lobby;
 using FDG.Network.Messages;
@@ -250,13 +251,16 @@ public class LobbyScreen : IAppScreen
                 ImGui.TableNextColumn();
                 if (_viewModel.IsResumeMode)
                 {
-                    // Re-crew a saved slot. Host only; Local/AI today (networked client assignment TBD).
+                    // Re-crew a saved slot. Host only; Local/bots today (networked client assignment TBD).
                     ImGui.BeginDisabled(!_viewModel.HasHostPrivileges);
                     if (ImGui.SmallButton($"Local##{i}"))
                         _viewModel.SetSavedSlotPlayerType(info.PlayerID, EPlayerType.Local);
                     ImGui.SameLine();
-                    if (ImGui.SmallButton($"AI##{i}"))
-                        _viewModel.SetSavedSlotPlayerType(info.PlayerID, EPlayerType.AI);
+                    if (ImGui.SmallButton($"Tactician##{i}"))
+                        _viewModel.SetSavedSlotPlayerType(info.PlayerID, EPlayerType.AI, EAiProfile.Tactician);
+                    ImGui.SameLine();
+                    if (ImGui.SmallButton($"DerpBot##{i}"))
+                        _viewModel.SetSavedSlotPlayerType(info.PlayerID, EPlayerType.AI, EAiProfile.SoloRules);
                     ImGui.EndDisabled();
                 }
                 else
@@ -281,8 +285,13 @@ public class LobbyScreen : IAppScreen
             if (ImGui.Button("Add Local Player"))
                 _viewModel.AddLocalPlayer();
             ImGui.SameLine();
-            if (ImGui.Button("Add AI Player"))
-                _viewModel.AddAiPlayer();
+            // #191 A6: two bot flavors - the Tactician (challenge AI) and the legacy
+            // solo-rules bot, rechristened DerpBot (Chris's naming).
+            if (ImGui.Button("Add Tactician Bot"))
+                _viewModel.AddAiPlayer(EAiProfile.Tactician);
+            ImGui.SameLine();
+            if (ImGui.Button("Add DerpBot"))
+                _viewModel.AddAiPlayer(EAiProfile.SoloRules);
         }
     }
 
