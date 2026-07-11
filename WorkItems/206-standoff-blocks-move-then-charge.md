@@ -24,6 +24,38 @@ GetCanCast/castable filtering, or #197 P5a's activation-choice changes are the s
    in ChooseActionStage and the move validator's standoff branch for a behavior change that made
    "ends within standoff" a hard reject instead of a charge-obligation.
 
+## Outcome (2026-07-11) — RESOLVED
+
+The intended design in the report was confirmed by Chris and implemented: you MAY move right up
+against an enemy without charging; the consequence is a forced charge, enforced at action choice,
+not a move-time block.
+
+- Engine `6053061`:
+  - `MovementUtilities.ValidateMovingThroughEnemyUnits` no longer rejects a non-charge move that
+    ends inside the standoff band against a CONTACTABLE enemy. Pass-through and ending-stacked stay
+    enforced; Aircraft (uncontactable, can't be charged) keep their own standoff. This clears the
+    reported "can't press Done, must charge" block in the movement resolver (both the GUI Done gate
+    and the engine `DefinePathStage` throw funnel through `ValidatePaths`, so one removal fixes both).
+  - `ChooseActionStage.GetCanPass` is now PROXIMITY-based: Pass is gated when any enemy has a living
+    model within `ENEMY_STANDOFF_DISTANCE_INCHES` (1", base-to-base, 3D) of the unit. The charge
+    band (`MELEE_RANGE_INCHES_HORIZONTAL`, 2") is deliberately wider, so a unit at 1"-2" MAY Charge
+    but is not forced (it may Pass). Allied units never force a charge (team-filtered like
+    `GetCanCharge`). Distance moved no longer gates Pass (the old beyond-Rush rule is gone).
+
+Design note vs the report's wording: the report said "forced to charge NEXT activation." This engine
+loops back to Choose Action within the SAME activation after a move, and Charge is available there
+once in range - so the obligation is enforced same-activation (move up -> Teleport or Charge, no
+Pass), which matches Chris's re-described flow. The two-band model (forced at 1", chargeable at 2")
+is what makes "teleport just clear of the standoff -> Pass returns, Charge still offered" work.
+
+Tests: `ChooseActionPassDisableTests` rewritten to the proximity model (enemy at 0.5" gap -> no Pass;
+1.5" gap -> Pass ok; allied -> Pass ok; moved-far-no-enemy -> Pass ok; already-attacked -> Pass ok).
+`MoveThroughEnemyValidationTests` standoff-band cases flipped to accepted; pass-through/stacked/
+aircraft unchanged. 1571 engine tests green, build clean, headless exits 0.
+
+Enables the #197 Teleport slice (teleport clear of the standoff restores Pass).
+
 ## Notes
 
 - 2026-07-09 — filed.
+- 2026-07-11 — resolved (see Outcome).
