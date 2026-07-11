@@ -20,6 +20,30 @@ pin tests.
 
 ## Notes (newest first)
 
+**2026-07-11 — GAME 3 (Chris HEF vs Tactician HEF, mirror): impressions + save analysis
+(HEFMirror_ShootersGuardedObjectiveTooMuch.fdgsave, late game).** Chris verbatim: "I won
+handedly. Some bugs got in my way, but I focused on 3 of the objectives and purposefully
+abandoned the most isolated one at the start of the game. Tactician put half its forces toward
+that one, and left two of them guarding it. Smartly, it used shooters to do so, but even after
+the objective was 100% safe, they still stayed there. I saw the deploy pattern early on and
+knew I would almost definitely win." ... "I didn't see any particularly dumb moves, though,
+other than over-committing, which I can imagine humans doing."
+Save-dump diagnosis (fdglab analyze, first real use): late game, Chris owns 3 objectives to
+the bot's 1; bot has 2 units left - Jetbike Protectors (3 models) parked ON its owned
+objective, Retributors (10) nearby. The Jetbikes' table is the GARRISON LOCK in one screen:
+stay-on-owned-objective +0.05, and every leave option -0.34 to -0.93. Two stacked causes:
+(1) the leave-penalty (ObjectiveDelta -1 for stepping off an owned marker that only we hold)
+applies even when NO enemy could reach the marker before game end - "100% safe" changes
+nothing in the score; (2) once freed, forward moves are still negative because a lone unit
+prices the FULL enemy volley at the end position (focus-fire dilution gap again) and there is
+no losing-position urgency (1-vs-3 objectives scores identically to 3-vs-1). Deployment
+over-commit (half the army toward the isolated objective Chris conceded) is the same family:
+allocation is not proportional to expected contest. Strategic-allocation family recorded:
+(a) deployment allocation, (b) garrison release when un-contestable, (c) score-aware urgency
+when behind on objectives. (b) is cheap and targeted; (c) is Phase B/C anticipation territory
+per the plan's "tactically sharp, strategically naive" A-phase character - over-committing is
+exactly the naivete the phase boundary predicts, per Chris "I can imagine humans doing" it.
+
 **2026-07-11 — ANALYSIS KIT (Chris: "make a tool to be better able to have headless games be
 helpful for your analysis"; approved all three pieces).** Engine e7274d2, superproject b0952fb.
 - `FdgLab analyze <save> [--unit substr] [--no-board]` - per-unit candidate-score table +
