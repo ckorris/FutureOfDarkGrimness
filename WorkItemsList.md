@@ -23,6 +23,7 @@ When closing an item: write the Outcome in its detail file, tick the line, and m
 - [ ] 211 — Solo AI mover submits a path through impassible terrain (~1/1800; #159's family, impassible flavor). Fix with one validate-or-decline ladder on the solo mover alongside #159. ([WorkItems/211](WorkItems/211-solo-mover-impassible-terrain.md))
 - [ ] 214 — Teleport (#197) doesn't draw a range-of-motion circle like movement does; placement is bounded correctly, just add the reach-circle visual. ([WorkItems/214](WorkItems/214-teleport-range-circle.md))
 - [ ] 215 — Add a "move as group" option to the two post-melee movement prompts (mirror the normal-move group mode). ([WorkItems/215](WorkItems/215-move-as-group-post-melee.md))
+- [ ] 216 — Tactician plans rejected by the #205 friendly-stacking check silently fall back to the SOLO resolver (suspected DE/RL mirror-drift driver); charge candidate made friendly-aware, resolver-level repair + drift attribution still open. ([WorkItems/216](WorkItems/216-tactician-solo-fallback-on-stacked-plans.md))
 
 ## Shooting & cover
 
