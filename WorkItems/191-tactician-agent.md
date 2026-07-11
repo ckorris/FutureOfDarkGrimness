@@ -20,6 +20,75 @@ pin tests.
 
 ## Notes (newest first)
 
+**2026-07-11 — GARRISON RELEASE + FOCUS-FIRE DILUTION shipped (Chris: "I agree. Let's do
+that." on the game-3 fork; the dilution fix was the standing recommendation from games 1-2).**
+Two `TacticianPlanner.Score` changes, both in Ai/Tactician:
+- *Garrison release:* the ObjectiveDelta -1 walk-away penalty now applies only while some
+  living enemy can still reach the marker before game end (rounds left x max(rush, charge
+  budget) + seizure radius, base-edge; aircraft excluded - they can never seize). Any living
+  enemy OFF the battlefield (Ambush reserve, embarked cargo) conservatively keeps every
+  marker contestable. Cached per activation (`MarkerContestable`).
+- *Focus-fire dilution:* each enemy's priced retaliation divides by 1 +
+  `RetaliationDilutionPerSharer` (0.5) x (OTHER friendlies inside its threat envelope,
+  `ThreatRangeAgainst`-based, cached per activation). Half-weight, not uniform 1/N: the enemy
+  picks its target adversarially. Applies to the melee-threat term too (a charger also picks
+  one victim).
+4 pin tests (SafeGarrison_Releases / GuardedGarrison_Holds / EnemyInReserve_KeepsGuarded /
+Retaliation_Dilutes), each verified to FAIL with its fix reverted. Suite 1620/1620.
+Behavioral verification, all three instruments:
+- Game-3 save replay (analyze): Jetbikes' stay-on-marker (+0.05) falls 1st -> 13th; new top
+  is EngageAtRange +0.72 toward the Elemental Strikers. Board verdicts stay sane.
+- Seed-7001 decision replay (game-2 timidity repro): Hive Warriors' activations go
+  RushObjective/SeekCoverFrom/Charge -> Charge/RushObjective/Charge/Block - the sideways
+  slide is gone; still Win 3-0.
+- Gunline probes: Hives 100.0 (=baseline), RL 97.0 (98.0 baseline; one win -> tie), 0 faults.
+- Mirrors (8 x 50, Tactician vs SoloRules): avg 84.1 vs 84.4 at A5-9, no cell < 74, 0 faults.
+  Per-cell: HEF 73->89 (the A5-9 dip resolves UP), Orks 70->74, HDF 72->75, BB 91->95,
+  Hives 89->90, DG 92->90, DE 99->82, RL 89->78. The two drops were attributed: with both
+  fixes NEUTRALIZED on the current engine DE=80/RL=76, so the fixes are +2 on both cells and
+  the drops are engine drift landed since A5-9 (#204/#205/#206/#208 family) - exactly what
+  the handoff's clean full re-gate rebaselines. Reports: FdgLab/reports/garrison-dilution-*,
+  attribution-neutralized/.
+Deliberate simplifications (recorded, not hidden): contest reach ignores terrain/pathing
+(straight-line, over-estimates threat = conservative); dilution counts units, not their
+remaining volley value; no losing-position urgency yet (strategic-allocation (c), still open).
+
+**2026-07-11 — OPUS HANDOFF: remaining Phase A work, specced for execution (Chris is out of
+Fable hours after today).** Ordered by value; (1) is the only A-gate blocker.
+1. *Probe harness + hallway probe (A-GATE BLOCKER, plan 6.2 + A-gate line 345).* `FdgLab
+   probes` is a scaffold that counts JSONs in `FdgLab/probes/` - neither harness nor scenarios
+   exist. Build: each probe = a ScenarioCompiler JSON (see `Scenarios/README.md` +
+   `example-shootout.json`) plus an expectation block (which unit activates, what the correct
+   choice looks like - action name and/or endpoint predicate). Harness: load via
+   ScenarioCompiler like `--make-scenario` does, build a Tactician registry
+   (`AiProfileFactory.BuildRegistry`), run ONE decision through the planner
+   (BeginActivation + ChooseAction + TakePlannedMove - the `FdgLab/Analyze.cs` code path is
+   the template), score pass/fail, print a table. Hallway scenario: narrow impassible-terrain
+   corridor, unit at the mouth, marker on the far side; PASS = the planned move enters/
+   traverses the corridor. Note the A3 gate already proved a corridor-traversing CANDIDATE is
+   emitted (generator-level test green) - the probe asserts the planner PICKS it.
+2. *Remaining 5 probes (informational at A):* lane-block, last-round steal, focus-fire,
+   charge-vs-shoot, buff-anticipation - specs in plan 6.2. Same harness; author JSONs.
+3. *Post-#208 clean full gate:* rerun the A5-9 matrix + mirrors on the current engine (the
+   #208 decline-invalid-triggered-moves fix killed the benchmark fault family) - baseline the
+   garrison-release + dilution changes AND settle whether the HEF-row dip (89 -> 84.5, mirror
+   73) was fault noise. Compare vs matrix 83.9 / mirrors 84.4 / no cell < 55.
+4. *Nearest-fight fallback:* units with nothing scoring positive should drift toward the
+   nearest live engagement instead of holding (observed as end-game passivity); small
+   MacroAction/score facet, needs a pin test + mirror bench.
+5. *Gunline polish (apparatus, not ladder):* spread claims across several safe objectives
+   (today: all claimers converge on one), optional casting. Only worth it if Gunline probes
+   become a standing gate.
+NOT handed off (design-judgment or replan): focus-fire dilution tuning beyond the shipped
+half-weight; Phase B kickoff/replan.
+Also recorded (Chris, game-3 follow-up): movement scoring is COVER-BLIND - the offense term
+prices shooting from the endpoint by distance only (`TacticianPlanner.Score` ->
+`AttackContext` with no DefenderInCover from geometry), so a unit never shifts sideways for a
+clear firing lane and never discounts shooting into cover; cover enters only at target-pick
+time (RangedAttackResolver) and the defensive M7 SeekCover candidate. "Shift for a clear
+lane" = new facet (needs LoS/cover ray checks per candidate endpoint, geometry exists in
+`MacroActionGenerator.TryFindCoverGoal`); deferred, ranked below the shipped fixes.
+
 **2026-07-11 — GAME 3 (Chris HEF vs Tactician HEF, mirror): impressions + save analysis
 (HEFMirror_ShootersGuardedObjectiveTooMuch.fdgsave, late game).** Chris verbatim: "I won
 handedly. Some bugs got in my way, but I focused on 3 of the objectives and purposefully
