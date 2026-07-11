@@ -938,11 +938,16 @@ public class GuiDefineMovementResolver
         }
         var results = pt.GetResultsAsList(facingOffsets, travelDirectionFacing: true);
         var enemyFootprints = GetEnemyFootprintsForRequest(request);
+        // #212: friendlies may be passed THROUGH but not ENDED on - so the Done gate must reject a move (esp.
+        // a group translate) that finishes on a friendly, exactly as the authoritative DefinePathStage does
+        // (#205). Single-mode placement is already blocked per-model by WouldOverlapAnyModel; this covers group.
+        var friendlyFootprints = GetFriendlyFootprintsForRequest(request);
         // #093: validate each model against its OWN budget so Done gates exactly as the authoritative stage.
         bool engineValid = MovementUtilities.ValidatePaths(results,
             entry => { var (_, rush, maxDist) = request.BudgetFor(entry.Model.GetValue().ID);
                        return new ModelMoveBudget(rush, maxDist); },
-            enemyFootprints, request.CanMoveThroughEnemies, request.IgnoresDifficultTerrain, request.IgnoresImpassibleTerrain, terrain, out var engineErrors);
+            enemyFootprints, request.CanMoveThroughEnemies, request.IgnoresDifficultTerrain, request.IgnoresImpassibleTerrain, terrain, out var engineErrors,
+            friendlyFootprints);
         var finals = BuildFinalPositions(pt.CurrentPaths, null, null);
         var cohesion = CheckCohesion(finals);
 
@@ -1126,10 +1131,12 @@ public class GuiDefineMovementResolver
     private const float EnemyClampMargin = 0.02f;
 
     /// <summary>Shrinks <paramref name="allowed"/> so the moving base, sliding from <paramref name="anchor"/>
-    /// along (dirX,dirZ), stops just short of first contact with any other unit's live model (#155) - the
-    /// distance-limit analogue of the difficult-terrain clamp, for "can't move through a unit". Own-unit
-    /// models are ignored (their spacing is handled by cohesion/overlap); reaching contact still leaves a
-    /// charger inside melee range, so this doesn't block charges.</summary>
+    /// along (dirX,dirZ), stops just short of first contact with any ENEMY unit's live model (#155) - the
+    /// distance-limit analogue of the difficult-terrain clamp, for "can't move through an enemy unit".
+    /// #212: FRIENDLY units are NOT clamped - a unit may pass THROUGH friendlies (it's only stopped from
+    /// ENDING on them, by WouldOverlapAnyModel), mirroring the engine rule (#205). Own-unit models are
+    /// ignored too (their spacing is cohesion/overlap); reaching contact still leaves a charger inside melee
+    /// range, so this doesn't block charges.</summary>
     private float EnemyClampTravel(Position anchor, float dirX, float dirZ, float allowed,
         IModel movingModel, Float2 facing, DefineMovementPathRequest request)
     {
@@ -1141,6 +1148,7 @@ public class GuiDefineMovementResolver
         foreach (var unit in _tableState.Units.Objects)
         {
             if (ReferenceEquals(unit, ownUnit)) continue;
+            if (!IsEnemyUnit(unit, request)) continue; // #212: pass through friendlies freely
             foreach (var m in unit.Models)
             {
                 if (!m.GetIsAlive()) continue;
@@ -1155,13 +1163,47 @@ public class GuiDefineMovementResolver
         return limited;
     }
 
+    // #212: team-based enemy test (falls back to different-player when no team is registered), matching the
+    // engine's GetEnemyModelFootprints. Friendlies (own unit + allies) are not enemies - the mover passes
+    // through them and is only stopped from ENDING on them.
+    private bool IsEnemyUnit(IUnit unit, DefineMovementPathRequest request)
+    {
+        var me = request.TargetPlayerID;
+        var myTeam = _tableState.Teams.Objects.FirstOrDefault(t => t.IsPlayerOnTeam(me));
+        return myTeam != null ? !myTeam.IsPlayerOnTeam(unit.PlayerID) : !unit.PlayerID.Equals(me);
+    }
+
+    // #212: friendly model footprints (allies + any other same-team unit, but NOT the moving unit) for the
+    // end-on-friendly gate. Reuses EnemyModelFootprint purely as a base-footprint carrier, matching the
+    // engine's MovementUtilities.GetFriendlyModelFootprints. The moving unit's own spacing is cohesion/overlap.
+    private List<EnemyModelFootprint> GetFriendlyFootprintsForRequest(DefineMovementPathRequest request)
+    {
+        var footprints = new List<EnemyModelFootprint>();
+        IUnit ownUnit = request.UnitDataBinding.GetValue();
+        int unitKey = 0;
+        foreach (var u in _tableState.Units.Objects)
+        {
+            if (ReferenceEquals(u, ownUnit)) continue;
+            if (IsEnemyUnit(u, request)) continue;
+            bool anyLiving = false;
+            foreach (var m in u.Models)
+                if (m.GetIsAlive() && (m.Position.x != 0f || m.Position.z != 0f))
+                {
+                    footprints.Add(new EnemyModelFootprint(m.Position, m.BaseRadiusInches, unitKey, false, m.BaseShape, m.Facing));
+                    anyLiving = true;
+                }
+            if (anyLiving) unitKey++;
+        }
+        return footprints;
+    }
+
     private List<EnemyModelFootprint> GetEnemyFootprintsForRequest(DefineMovementPathRequest request)
     {
         var footprints = new List<EnemyModelFootprint>();
         int unitKey = 0;
         foreach (var u in _tableState.Units.Objects)
         {
-            if (u.PlayerID == request.TargetPlayerID) continue;
+            if (!IsEnemyUnit(u, request)) continue; // #212: allied units aren't pass-through blockers
             bool uncontactable = FDG.Rules.Dispatch.AircraftRules.IsAircraft(u); // #029
             bool anyLiving = false;
             foreach (var m in u.Models)
