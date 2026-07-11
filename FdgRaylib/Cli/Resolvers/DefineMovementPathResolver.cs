@@ -1,4 +1,5 @@
 using FDG;
+using FDG.Ai.Tactician;
 using FDG.Data;
 using FDG.StageResolution;
 using FDG.StageResolution.Requests;
@@ -84,7 +85,8 @@ public class DefineMovementPathResolver : IStageResolver<DefineMovementPathReque
 
             if (MovementUtilities.ValidatePaths(entries, BudgetFor(request),
                     GetEnemyFootprints(request), request.CanMoveThroughEnemies, request.IgnoresDifficultTerrain,
-                    request.IgnoresImpassibleTerrain, _tableState?.Terrain.Objects, out var errors))
+                    request.IgnoresImpassibleTerrain, _tableState?.Terrain.Objects, out var errors,
+                    GetFriendlyFootprints(request)))
                 return Selected(entries);
 
             Console.WriteLine();
@@ -109,6 +111,8 @@ public class DefineMovementPathResolver : IStageResolver<DefineMovementPathReque
 
         // Live enemy footprints (centre + radius) via ITableState.
         var footprints = GetEnemyFootprints(request);
+        // #205: friendly footprints the auto-advance must not end stacked on (else DefinePathStage throws).
+        var friendlies = GetFriendlyFootprints(request);
 
         // Compute the living models' centre.
         float cx = living.Average(mb => mb.GetValue().Position.x);
@@ -147,7 +151,7 @@ public class DefineMovementPathResolver : IStageResolver<DefineMovementPathReque
 
         var candidate = CohesiveFormation.PackGrid(living, cx + ndx * step, cz + ndz * step);
         bool valid = MovementUtilities.ValidatePaths(candidate, BudgetFor(request),
-            footprints, request.CanMoveThroughEnemies, request.IgnoresDifficultTerrain, request.IgnoresImpassibleTerrain, terrain, out _);
+            footprints, request.CanMoveThroughEnemies, request.IgnoresDifficultTerrain, request.IgnoresImpassibleTerrain, terrain, out _, friendlies);
         int attempts = 0;
         while (!valid && attempts < 6)
         {
@@ -156,7 +160,7 @@ public class DefineMovementPathResolver : IStageResolver<DefineMovementPathReque
                 ? CohesiveFormation.PackGrid(living, cx, cz)
                 : CohesiveFormation.PackGrid(living, cx + ndx * step, cz + ndz * step);
             valid = MovementUtilities.ValidatePaths(candidate, BudgetFor(request),
-            footprints, request.CanMoveThroughEnemies, request.IgnoresDifficultTerrain, request.IgnoresImpassibleTerrain, terrain, out _);
+            footprints, request.CanMoveThroughEnemies, request.IgnoresDifficultTerrain, request.IgnoresImpassibleTerrain, terrain, out _, friendlies);
             attempts++;
         }
         if (!valid)
@@ -164,7 +168,7 @@ public class DefineMovementPathResolver : IStageResolver<DefineMovementPathReque
             // Reform in place to close casualty gaps...
             candidate = CohesiveFormation.PackGrid(living, cx, cz);
             valid = MovementUtilities.ValidatePaths(candidate, BudgetFor(request),
-            footprints, request.CanMoveThroughEnemies, request.IgnoresDifficultTerrain, request.IgnoresImpassibleTerrain, terrain, out _);
+            footprints, request.CanMoveThroughEnemies, request.IgnoresDifficultTerrain, request.IgnoresImpassibleTerrain, terrain, out _, friendlies);
 
             // ...but a unit intermingled with enemies can't re-pack without a model crossing an enemy base;
             // hold exact positions then (zero-length paths can't move through anything).
@@ -210,6 +214,15 @@ public class DefineMovementPathResolver : IStageResolver<DefineMovementPathReque
         }
         return footprints;
     }
+
+    // #205: friendly model footprints (same team, excluding the moving unit) the move may not end stacked on.
+    // Empty when detached (no table state). Reuses the engine's team-based gatherer so it matches the
+    // authoritative DefinePathStage check exactly.
+    private List<EnemyModelFootprint> GetFriendlyFootprints(DefineMovementPathRequest request)
+        => _tableState == null
+            ? new List<EnemyModelFootprint>()
+            : MovementPlanner.LiveFriendlyFootprints(_tableState, request.TargetPlayerID,
+                request.UnitDataBinding.GetValue().ID);
 
     private static List<ModelMoveEntry> StayInPlace(DefineMovementPathRequest request)
     {

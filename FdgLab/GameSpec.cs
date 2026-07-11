@@ -22,7 +22,11 @@ public sealed record GameSpec(
     ERandomnessType Randomness = ERandomnessType.Realistic,
     int WatchdogSeconds = 120,
     bool CaptureLog = false,
-    bool Trace = false)
+    bool Trace = false,
+    // #191 tooling: interleave each planning AI's Choose Action narration (winner + full scored
+    // candidate table, prefixed "[ai N]") into the captured log - a replay of decisions, not
+    // just outcomes. Requires CaptureLog.
+    bool LogDecisions = false)
 {
     public static GameSpec TwoPlayer(SlotSpec a, SlotSpec b, int seed,
         ERandomnessType randomness = ERandomnessType.Realistic) =>

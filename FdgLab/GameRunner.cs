@@ -54,8 +54,13 @@ public static class GameRunner
             SlotSpec slotSpec = spec.Slots[i];
             slots[i] = new PlayerSlot(i, teamNumber: i, new PlayerID(Guid.NewGuid()), slotSpec.Army, store);
 
+            int slot = i; // the decision sink must not capture the shared loop variable
+            Action<string>? decisionLog = spec.LogDecisions && log != null
+                ? line => { lock (logLock) { log.Add($"[ai {slot}] {line}"); tracer?.AddLog($"[ai {slot}] {line}"); } }
+                : null;
+
             var aiGame = new FDGGame_AsLocal(store, bus);
-            var registry = BuildRegistry(slotSpec.Profile, aiGame, slots[i].PlayerID, spec.Seed, i);
+            var registry = BuildRegistry(slotSpec.Profile, aiGame, slots[i].PlayerID, spec.Seed, i, decisionLog);
             if (registryWrapper != null)
                 registry = registryWrapper(registry, aiGame);
             var timed = new TimingRegistry(registry, samples, sampleLock);
@@ -100,6 +105,7 @@ public static class GameRunner
 
     // The game seed goes in whole; the engine derives the per-player stream by slot ID (#193).
     private static FDG.StageResolution.IStageResolverRegistry BuildRegistry(
-        EAiProfile profile, FDGGame_AsLocal aiGame, PlayerID playerID, int seed, int slotID) =>
-        AiProfileFactory.BuildRegistry(profile, aiGame.TableState, playerID, seed, slotID);
+        EAiProfile profile, FDGGame_AsLocal aiGame, PlayerID playerID, int seed, int slotID,
+        Action<string>? decisionLog) =>
+        AiProfileFactory.BuildRegistry(profile, aiGame.TableState, playerID, seed, slotID, decisionLog);
 }

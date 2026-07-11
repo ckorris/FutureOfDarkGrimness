@@ -4,6 +4,8 @@ Completed and closed work items, moved verbatim out of `WorkItemsList.md` (2026-
 always-read index lean. Numbers are permanent and never reused — the per-clone pre-push hook checks
 this file as well as the index when blocking duplicate numbers.
 
+- [x] 205 — AI units ended their move stacked on top of FRIENDLY units (not base-shape specific - circle bases too): the movement validator only checked enemy footprints, so nothing forbade ending on a friendly, and both AI resolvers did it. Fix: engine `ValidateEndsOnFriendly` (end-overlap only, pass-through legal, not-newly-stacked guard) threaded through ValidatePaths/ValidateConsolidationPaths + pile-in obstacles; DefinePathStage/ConsolidateStage/PileInStage/MovementExecutor enforce; AI + CLI resolvers back off (GUI already did). Engine 1583/0; cited bench + rect-base vehicle bench 0 faults; rejection fired 306x/20 games. Shifts #191 benchmark hashes (owner re-baseline). ([WorkItems/205](205-rect-base-drives-over-friendlies.md))
+
 - [x] 208 — Optional triggered moves (Harassing / Hit & Run) faulted the game when a unit intermingled with the enemy after melee couldn't re-pack into cohesion: `MoveUnit` threw on the ladder's cohesion-breaking last resort instead of declining. Fix: `allowCancel = isOptional` on the movement request; optional Cancelled/invalid-path replies now decline (unit unmoved, budget kept), forced moves still fault; `AiDefineMovementResolver` replies Cancelled when stuck-and-cancellable. Engine-only (2 files + 2 test files); repro seeds 1021/1039 clean, cited 100-game bench 0 faults, engine 1577/0. ([WorkItems/208](208-triggered-move-validity.md))
 
 Entries keep their original wording; relative links inside them are written from the repo root.
