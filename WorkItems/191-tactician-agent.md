@@ -20,6 +20,30 @@ pin tests.
 
 ## Notes (newest first)
 
+**2026-07-11 — ANALYSIS KIT (Chris: "make a tool to be better able to have headless games be
+helpful for your analysis"; approved all three pieces).** Engine e7274d2, superproject b0952fb.
+- `FdgLab analyze <save> [--unit substr] [--no-board]` - per-unit candidate-score table +
+  ChooseAction verdict + a text board snapshot (objectives w/ projected owner, unit positions).
+  Replaces the throwaway-NUnit-test workflow from the game-1/game-2 investigations.
+- Decision-log sink: TacticianOptions.DecisionLog -> the planner narrates every Choose Action
+  (winner + full scored candidate table, same format as analyze); GunlinePlanner narrates too.
+  `smoke --log-decisions` (requires --dump-logs) interleaves "[ai N]" lines into the game log -
+  a decision replay, not just an outcome log.
+- Gunline profile (EAiProfile.Gunline, Ai/Gunline/): scripted human stand-in - hold the line
+  and shoot, claim only objectives with no enemy within 18in, never charge or approach. Reuses
+  Tactician deployment/target/wound micro; new IMovePlanSource seam shares the move executor.
+  Known simplifications (fine for apparatus): no casting, no spreading across safe objectives,
+  first-in-list activation order. 4 pin tests.
+- Rebase note: engine master had grown 3 commits from a parallel session (#206 forced-charge
+  Pass gate, #208 decline invalid optional triggered moves - the benchmark fault family! -
+  #197 Teleport); rebased the kit on top, merged suite 1591/1591 green.
+- Probes (50 games each, seeds 3000, 0 faults): Hives-vs-HEF(Gunline) 100.0, RL-vs-HEF(Gunline)
+  98.0 (2 ties). A static line loses on objectives - the kit's value is BEHAVIORAL: the seed-7001
+  decision replay reproduces the game-2 timidity signature headless (round-1 chaff SeekCoverFrom/
+  FallBack against the held line; rounds 3-4 left-flank grunts still churning SeekCoverFrom at
+  ~25in) - the focus-fire dilution fix now has an automated repro to iterate against. (One
+  glitch: the first RL bench run exited 0 without writing its report; unreproduced, rerun clean.)
+
 **2026-07-11 — GAME 2 (Chris HEF vs Tactician Hives, rematch): impressions + save analysis
 (HEFvsAliensPart2.fdgsave, parked round 3).** Chris verbatim, at round 2: "only one unit on
 the Alien side did the sideways move - the Hive Warriors. (The grunts in the bottom left
