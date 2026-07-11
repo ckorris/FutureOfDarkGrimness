@@ -397,8 +397,19 @@ public class GuiDefineMovementResolver
             ghostExtraDist = allowed;
             ghostOverlaps  = WouldOverlapAnyModel(ghostPos.Value, ghostFacing, _selectedModel, request, paths);
 
-            // Preview line from anchor to ghost. #155: red solid if the model's path (committed + this ghost)
-            // crosses Dangerous terrain, dotted gray if it crosses Difficult, else the band colour.
+            // #213: a path that would move THROUGH impassible terrain is invalid - a model can't cross it. Flag
+            // it up front (red base + red line + un-clickable) instead of letting you place it and only blocking
+            // Done. Folded into ghostOverlaps so the placement gate + red fill already treat it as "can't place".
+            bool ghostCrossesImpassible = false;
+            if (!request.IgnoresImpassibleTerrain && bindings.TryGetValue(_selectedModel, out var impBinding))
+            {
+                var impPath = new List<Position>(paths.TryGetValue(_selectedModel, out var ip) ? ip : (IReadOnlyList<Position>)System.Array.Empty<Position>()) { ghostPos.Value };
+                ghostCrossesImpassible = MovementUtilities.DoesPathCrossImpassibleTerrain(new ModelMoveEntry(impBinding, impPath), terrain);
+            }
+            ghostOverlaps |= ghostCrossesImpassible;
+
+            // Preview line from anchor to ghost. #155/#213: red solid if the model's path (committed + this
+            // ghost) crosses Dangerous OR Impassible terrain, dotted gray if it crosses Difficult, else band.
             bool ghDanger = committedCrossedDangerous.Contains(_selectedModel);
             bool ghDiff   = committedCrossedDifficult.Contains(_selectedModel);
             if ((dangerousActive || difficultActive) && bindings.TryGetValue(_selectedModel, out var selBinding))
@@ -410,7 +421,8 @@ public class GuiDefineMovementResolver
             }
             var (ax, ay) = InchesToPixel(anchor.x, anchor.z);
             var (gx, gy) = InchesToPixel(nx, nz);
-            if      (ghDanger) dl.AddLine(new Vector2(ax, ay), new Vector2(gx, gy), DangerPathCol, 2.5f);
+            if      (ghostCrossesImpassible) dl.AddLine(new Vector2(ax, ay), new Vector2(gx, gy), OverlapFill, 2.5f);
+            else if (ghDanger) dl.AddLine(new Vector2(ax, ay), new Vector2(gx, gy), DangerPathCol, 2.5f);
             else if (ghDiff)   AddDottedLine(dl, new Vector2(ax, ay), new Vector2(gx, gy), DifficultPathCol, 2.5f);
             else               dl.AddLine(new Vector2(ax, ay), new Vector2(gx, gy), LineColorFor(ghostBand), 2f);
 
@@ -751,6 +763,14 @@ public class GuiDefineMovementResolver
             groupFacings[i] = RotateFloat2(
                 TravelFacing(lastPositions[i], newPositions[i], models[i].Facing), _groupFacingAngle);
             blocked[i] = GroupPositionBlocked(newPositions[i], models[i].BaseShape, groupFacings[i], ownUnit);
+            // #213: also block a phantom whose PATH crosses impassible terrain (GroupPositionBlocked only
+            // checks the END position sitting on it). Red base + red line + no commit, same as any block.
+            if (!blocked[i] && !request.IgnoresImpassibleTerrain && bindings.TryGetValue(models[i], out var gimpB))
+            {
+                var gimpPath = new List<Position>(paths.TryGetValue(models[i], out var gp) ? gp : (IReadOnlyList<Position>)System.Array.Empty<Position>()) { newPositions[i] };
+                if (MovementUtilities.DoesPathCrossImpassibleTerrain(new ModelMoveEntry(gimpB, gimpPath), terrain))
+                    blocked[i] = true;
+            }
             if (blocked[i]) allValid = false;
             if (Position.GetDistance2D(lastPositions[i], newPositions[i]) > 0.001f) anyMovement = true;
         }

@@ -1,6 +1,7 @@
 # 213 — Moving through impassible terrain: show it as invalid (red, unclickable) + block the AI too
 
-**Status:** open (filed 2026-07-11 from Chris's play report)
+**Status:** DONE 2026-07-11 (engine helper + app GUI). GUI feedback UNVERIFIED (needs Chris's eyeball).
+The AI half was already enforced; the residual ~1/1800 leak stays as #211.
 **Related:** #211 (solo AI mover submits a path through impassible terrain ~1/1800), #159 (DefinePathStage
 cohesion/validate-or-decline ladder), #050 (base-radius-aware terrain geometry), #155 (difficult-terrain clamp)
 
@@ -32,3 +33,25 @@ the same family (solo mover submits an impassible-crossing path ~1/1800).
 ## Notes
 
 - 2026-07-11 — filed. The AI half overlaps #211; keep them coordinated (one validate-or-decline ladder).
+
+## Outcome
+
+- **Engine (submodule):** new `MovementUtilities.DoesPathCrossImpassibleTerrain(move, terrain)` - the
+  Impassible preview sibling of the existing Difficult/Dangerous swept-base checks (delegates to the same
+  `DoesPathCrossTerrainPieces`). Test `DoesPathCrossImpassibleTerrain_MirrorsTheDifficultCheck`.
+- **GUI (app):** `GuiDefineMovementResolver` now flags a move whose PATH would cross impassible terrain as
+  INVALID up front, in BOTH modes:
+  - Single mode: `ghostCrossesImpassible` folds into `ghostOverlaps`, so the ghost base draws red
+    (`OverlapFill`) and the placement click is blocked; the move LINE draws red too.
+  - Group mode: folded into each phantom's `blocked[i]`, so that model's base + line draw red and Done/commit
+    is disabled (it already flagged ending ON impassible; now also crossing THROUGH it).
+  This replaces the old "you can place it but Done stays disabled" dead-end with immediate red feedback,
+  matching how enemy-overlap red already reads.
+- **AI:** already enforced - `MovementPlanner.ValidateWithBackoff` (the AI ladder) validates every candidate
+  through `ValidatePaths` with the impassible check and backs off, so the AI resolvers never submit an
+  impassible-crossing move. The rare ~1/1800 residual leak on the solo mover is the separate #211.
+
+**Verify:** engine 1617/0, app 327/0; builds clean. The GUI red/un-clickable feedback (single + group) is for
+Chris to eyeball - it can't be driven headlessly.
+
+Engine commit: `e3cbc95`; superproject (GUI + pointer bump): this commit.
