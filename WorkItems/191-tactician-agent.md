@@ -20,6 +20,34 @@ pin tests.
 
 ## Notes (newest first)
 
+**2026-07-11 — GAME 2 (Chris HEF vs Tactician Hives, rematch): impressions + save analysis
+(HEFvsAliensPart2.fdgsave, parked round 3).** Chris verbatim, at round 2: "only one unit on
+the Alien side did the sideways move - the Hive Warriors. (The grunts in the bottom left
+didn't move because they're shaken.) So it seems better but not fixed." Later: "I just saw
+the Hive Guardians move right up to my Retributors, totally within charging range, and then
+they didn't charge. That's also the second time this happened, I think, I wanna say the
+Assault Grunts did this to my Elemental Strikers... in both cases, they are likely to lose
+the fight... But it's okay to be sacrificial sometimes." Also: "in both cases, they're on
+the objective."
+Save-dump findings (temp score-dump test, same technique as game 1):
+- NOT a charge-scoring bug: from the save state every adjacent unit picks Charge next
+  activation, decisively (Hive Guardians 1.186 charge vs 0.805 hold; Assault Grunts x2 pick
+  Charge at 0.662 and 0.816; ChooseAction returns "Charge" end-to-end). What Chris saw is the
+  CHARGE-APPROACH LAG: charge and rush share the same budget, so a unit that ends its move
+  "just within charging range" was by construction OUT of charge reach when it activated -
+  the BudgetClipped M5 approach rushes to a ~1" gap and the contact charge comes next
+  activation, after eating one point-blank volley. Inherent to the one-action ruleset,
+  arguably correct play (staying at 13" never converts); the tarpit term then makes the
+  follow-up charge a deliberate sacrifice, as designed.
+- Hive Warriors (pure melee - 3x Razor Whip, Tough(3), no guns, parked in the corner):
+  their round-2 lateral slide is the ledgered FOCUS-FIRE DILUTION gap in its purest form -
+  a unit whose forward move buys zero offense this activation still gets charged the FULL
+  expected enemy volley at the end position, so distance-keeping wins early. From the round-3
+  save they now choose RushObjective toward (43,24) - urgency growing + geometry, so "better
+  but not fixed" is exactly right. Queued fixes (Chris not yet asked): (1) dilution - scale
+  priced retaliation by friendlies sharing the threat envelope; (2) nearest-fight fallback
+  for melee units with no offense in reach. Do (1) first; it is the disease, (2) is a patch.
+
 **2026-07-10 — A5-9: MATCHUP-AWARE DEPLOYMENT (Chris picked option 2; "no need to make it
 mega perfect").** Two halves, new shared DeploymentMatchup helper (CombatMath at a nominal 12"
 engagement range, ValueFraction units): (1) LANE CHOICE - deployment aims still use the

@@ -4,6 +4,8 @@ Completed and closed work items, moved verbatim out of `WorkItemsList.md` (2026-
 always-read index lean. Numbers are permanent and never reused — the per-clone pre-push hook checks
 this file as well as the index when blocking duplicate numbers.
 
+- [x] 208 — Optional triggered moves (Harassing / Hit & Run) faulted the game when a unit intermingled with the enemy after melee couldn't re-pack into cohesion: `MoveUnit` threw on the ladder's cohesion-breaking last resort instead of declining. Fix: `allowCancel = isOptional` on the movement request; optional Cancelled/invalid-path replies now decline (unit unmoved, budget kept), forced moves still fault; `AiDefineMovementResolver` replies Cancelled when stuck-and-cancellable. Engine-only (2 files + 2 test files); repro seeds 1021/1039 clean, cited 100-game bench 0 faults, engine 1577/0. ([WorkItems/208](208-triggered-move-validity.md))
+
 Entries keep their original wording; relative links inside them are written from the repo root.
 Detail files (where they exist) live beside this file as `NNN-slug.md`.
 

@@ -203,7 +203,15 @@ public class GuiChooseRangedAttackResolver
         if (_selectedWeaponIdx >= 0)
         {
             var wo = request.WeaponOptions[_selectedWeaponIdx];
-            for (int ti = 0; ti < wo.WeaponTargetStats.Count; ti++)
+            // Float the fireable (in-range) targets to the top and sink the out-of-range ones (already
+            // grayed) to the bottom, so the player doesn't hunt past unreachable rows. OrderBy is stable,
+            // so each group keeps its original order. Everything below still indexes WeaponTargetStats by
+            // the ORIGINAL index ti (selection, the Fire button, and canvas hover all key on it) - only the
+            // draw order changes.
+            var displayOrder = Enumerable.Range(0, wo.WeaponTargetStats.Count)
+                .OrderBy(i => wo.WeaponTargetStats[i].modelsThatCanShoot.Count > 0 ? 0 : 1)
+                .ToList();
+            foreach (int ti in displayOrder)
             {
                 var ts             = wo.WeaponTargetStats[ti];
                 bool inRange       = ts.modelsThatCanShoot.Count > 0;
