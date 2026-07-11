@@ -37,8 +37,12 @@ at chosen spots); Scout/Infiltrate placements also route through the same deploy
 aim and inherit lane scoring for free. **50-game probes (seed 3000, 0 faults): RL-vs-Hives
 52 -> 67, RL-vs-Orks 50 -> 64 - the biggest single-slice lift since A5-3, exactly in the
 Slow-army cells Chris's reasoning predicted ("they have to be intentional with their movements
-from the start"); BB-vs-Orks 58 -> 61, HDF-vs-Hives 57 (noise). Full gate:
-a5-9-gate-ordered.**
+from the start"); BB-vs-Orks 58 -> 61, HDF-vs-Hives 57 (noise). **Full gate
+(a5-9-gate-ordered): matrix 83.9 / mirrors 84.4, best yet; NO CELL BELOW 55 (worst HDF-vs-
+Hives 57, RL-vs-HEF 59); RL row 69.6 -> 77.6, HDF 74.0 -> 80.9; HEF row dipped 89.0 -> 84.5
+(mirror 81 -> 73 - watch next gate, could be deployment-order interaction with caster armies);
+faults 2/3200 (#208 signature). Session arc: matrix 79.2 -> 83.9, mirrors 77.4 -> 84.4, RL row
+59.9 -> 77.6, worst cell 35 -> 57.**
 
 **2026-07-10 — GAME-1 SAVE ANALYSIS (HEFDestroyingAliens_MeleeStayingBack.fdgsave, round 3)
 + RETUNE: MoveRetaliation 0.6 -> 0.45.** Loaded Chris's save and dumped every candidate score
