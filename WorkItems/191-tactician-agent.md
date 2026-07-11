@@ -35,7 +35,11 @@ deadline fade can zero the gradient for slow backfield units with nothing else p
 degrade to nearest-fight approach, not freeze; (b) no focus-fire dilution - retaliation prices
 every unit as if it alone eats the full volley, so hordes cannot price flooding; (c) A5-6
 staging can stand off INSIDE enemy gun range vs sword-carrying shooters. Probes attached to
-the retune commit.**
+the retune commit. **Full gate (retal-045-gate-ordered): matrix 83.0 (best yet; was 81.8),
+mirrors 83.2, no cell below 50 (worst: RL-vs-Orks exactly 50), faults 3/3200 all the #208
+signature. The human-play-inspired retune also lifted the automated grid nearly everywhere
+(Hives row 93.4, HEF 89.0, DE 87.8, Dwarf 85.1, HDF 74.0) - the timidity was costing games
+against the solo bot too, just not enough to see without the save dump.**
 
 **2026-07-10 — CHRIS'S HAND-PLAYED GAME 1 (HEF vs Tactician-as-Hives), live impressions
 (verbatim):** "Into the second round, several of the alien hives' melee units haven't moved
