@@ -143,6 +143,33 @@ public class BookRuleScopeTests
             "Rules placed on their target weapon do not also fold onto the unit.");
     }
 
+    // #197 (Darkborn): OPR names two mechanically different rules bare "Darkborn" across armies, so the bare
+    // name resolved to neither catalog variant and all 59 references were dead. The bundled books now name the
+    // army's variant, and each resolves to the fully-built definition (its mechanics are proven by
+    // RangeModifierRuleIntegrationTests). This is the end-to-end guard the reference-count fix rests on: a
+    // regression to the bare name - or a re-import that reintroduces it without the importer's disambiguation -
+    // would leave the rule silently doing nothing, which looks exactly like a rule working.
+    [TestCase("DarkBrothers", "Darkborn (Defensive)")]
+    [TestCase("DarkPrimeBrothers", "Darkborn (Offensive)")]
+    public void Darkborn_ResolvesToTheArmyVariant(string bookFile, string expectedVariant)
+    {
+        BookFile book = LoadBook(Path.Combine(BooksDirectory, bookFile + BookFile.EXTENSION_WITH_PERIOD));
+        IRuleResolver resolver = ResolverFor(book);
+
+        List<Reference> darkbornRefs = ReferencesIn(book)
+            .Where(r => r.Name.StartsWith("Darkborn", StringComparison.Ordinal)).ToList();
+
+        Assert.That(darkbornRefs, Is.Not.Empty, $"{bookFile} should still reference Darkborn.");
+        foreach (Reference reference in darkbornRefs)
+        {
+            Assert.That(reference.Name, Is.EqualTo(expectedVariant),
+                $"{reference.Site}: bare 'Darkborn' resolves to nothing - it must name the army's variant.");
+            Assert.That(resolver.TryResolve(reference.Name, out ResolvedRule resolved), Is.True,
+                $"{reference.Site}: '{reference.Name}' must resolve to a definition.");
+            Assert.That(resolved.Definition.Name, Is.EqualTo(expectedVariant));
+        }
+    }
+
     private static BookFile LoadBook(string path) =>
         JsonSerializer.Deserialize<BookFile>(File.ReadAllText(path), RuleJson.Options)!;
 

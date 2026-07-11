@@ -288,6 +288,38 @@ Action unit vs 2 enemy units): the offer appears only while outnumbered, accepti
 opponent, the unit activates on a later turn, and it isn't re-offered once the team has used it. 6 new
 integration tests. Corpus dead references 682 -> 635.
 
+## Slice: Darkborn — **DONE 2026-07-11** (59 refs)
+
+**It was only the naming bug** - both mechanics were already fully built. The table row's "per-target
+charge-distance debuff does not exist" was **stale**: `Movement_OnChargeDeclared` +
+`MovementRuleQueries.EffectiveChargeDistanceAgainst` were built for #029/#183 (Melee Shrouding), and
+`DarkbornDefensive` already rides them for its "-2in charge" facet (Melee Shrouding's own doc even says
+"Same mechanism unblocks defensive Darkborn's -2 charge"). Both `DarkbornOffensive` (+3in range / +3in
+charge, self-buff) and `DarkbornDefensive` (enemies -4in range floor 6 / -2in charge floor 6 vs this unit)
+are in the catalog with passing mechanic tests (`RangeModifierRuleIntegrationTests`).
+
+The only defect: **OPR reuses the bare name "Darkborn" for both rules across armies**, so all 59 references
+(Dark Brothers 27, Dark Prime Brothers 32) matched neither disambiguated catalog name and were dead.
+Confirmed against the source text which army means which: **Dark Brothers -> Defensive**, **Dark Prime
+Brothers -> Offensive** (clean, unambiguous split).
+
+Fork resolved with Chris (option B): disambiguate at the importer, not only in book data.
+- **`OprBookImporter.DisambiguateAmbiguousRuleNames`** - a post-import pass keyed on the OPR army name
+  (`{("Dark Brothers","Darkborn")->"Darkborn (Defensive)", ("Dark Prime Brothers","Darkborn")->"Darkborn
+  (Offensive)"}`). The importer is the one place with the owning-army context needed to route the bare
+  name, so a future re-import stays correct rather than reintroducing the dead bare name. The pass walks
+  every rule-reference site (unit rules, weapon rules, items, and upgrade-option gains), not just
+  unit-level, so it can't silently miss a placement.
+- **The two bundled books** were patched to the variant names directly (a targeted string replace, not a
+  re-import - the books have diverged from their imported state with the other hand-authored #197 rules,
+  so a regenerate would clobber those).
+
+Tests: `OprBookImporterTests.Import_DisambiguatesDarkborn_ByArmy` (both armies x unit/weapon/upgrade sites)
++ `Import_LeavesDarkbornUntouched_ForAnUnlistedArmy` (control); app-side
+`BookRuleScopeTests.Darkborn_ResolvesToTheArmyVariant` (both shipped books resolve to the right variant,
+the end-to-end guard against a re-import reintroducing the bare name). Verified via `--rule-coverage`:
+corpus dead references **635 -> 576**, no Darkborn ref left dead.
+
 ## Slices — by leverage
 
 Reference counts are corpus-wide (44 books). Primitive numbers are #100's.
@@ -303,7 +335,7 @@ Reference counts are corpus-wide (44 books). Primitive numbers are #100's.
 | 96 | ~~**New** reposition-at-activation~~ **DONE 2026-07-09** (96/96) | Owner's ruling: a **placement**, not a move — nothing is asked of the path, only of the destination. `PlaceObjectsRequest` gained `MaxDistanceFromStartInches`, a *per-model* radius (0 = unconstrained, so deployment is untouched), honoured by all three resolvers. `Effect.RepositionAtActivation` rolls its die at Apply (Heal's shape) so the op carries a concrete distance; several **sum**, which is how `Rapid Blink Boost` widens D3 to 2D3 as an increment rather than a second prompt. The AI declines by standing still. Engine `5f3c4df`. | Wolfborn (60), Bounding (22), Rapid Blink (8), Bounding Aura (4), Rapid Blink Boost Aura (2) |
 | 66 | ~~**P5b** round-start Shaken recovery~~ **DONE 2026-07-09** (66/66) | **The premise was wrong:** `Round_OnRoundStart` is not dormant — `StartOfRoundExtraActionStage.GrantSpellTokens` fires it every round for every living unit (Caster token grants), applying token ops and running executables. So this needed only the effect. New `Effect.ClearTokenOnRoll` -> `InvokeClearTokenOnRoll`, an executable resolved through `IOperationServices`. Rolls with `RollDecisiveFace`, never `Roll(1)` — the outcome is binary, so a histogram would want to remove a *fraction* of a token. Engine `05eb91e`. | Steadfast Aura (28), Battleborn (26), Honor Code (9), Steadfast (3) |
 | 60 | **P21** setup-phase re-deploy | Remove + re-place a unit during/after deployment. | Re-Deployment (27), Fanatic (19), Dash Aura (4), Ambush Re-Deployment (4), Dash (2), Mobile Artillery (2), Quick Readjustment (2) |
-| 59 | **Darkborn** (#102 residual) | Defensive Darkborn: enemies get reduced range **and** reduced movement/charge vs this unit. Per-target charge-distance debuff does not exist. **Also a naming bug:** the catalog registers `Darkborn (Offensive)` / `Darkborn (Defensive)`; the books reference plain `Darkborn`, which resolves to nothing. | Darkborn (59) |
+| 59 | ~~**Darkborn** (#102 residual)~~ **DONE 2026-07-11** | It was **only the naming bug** - both mechanics were already built (the "per-target charge debuff doesn't exist" note was stale; #029/#183's `EffectiveChargeDistanceAgainst` powers it). The importer now disambiguates the bare `Darkborn` by army; books patched. See the Darkborn write-up above. | Darkborn (59) |
 | 53 | **P15** randomized-branch effect | "Roll one die: 1-3 -> effect A, 4-6 -> effect B", applied per attack. **Must respect the RollDecisive threshold-shift invariant.** | Unpredictable Fighter (26), Unpredictable Fighter Aura (11), Unpredictable (5), Unpredictable Shooter Aura (5), Unpredictable Fighter Mark (3), Unpredictable Shooter Mark (2), Unpredictable Shooter (1) |
 | 44 | **P10** dice-pool -> hits / auto-wounds | Generalize `dealHits` to a rolled count and to wounds-without-to-hit. Unblocks the `dealHits.WithRules` resolver seam (#164) too. | Ravage (31), Crossing Attack (8), Storm of Lust (2), Storm of Change (1), Storm of Plague (1), Storm of War (1) |
 | 41 | **P13** marker-scaled magnitude | `ValueSource.TokenCount` + effects whose magnitude scales with a marker count. Couple with P5b (round-start markers) and P5c. | Piercing Frenzy (9), Defensive Frenzy (8), Piercing Growth (6), Precision Frenzy (6), Fortified Growth (6), Precision Growth (5), Defensive Growth Aura (1) |
@@ -335,6 +367,11 @@ Reference counts are corpus-wide (44 books). Primitive numbers are #100's.
 
 ## Notes
 
+- 2026-07-11: **Darkborn shipped** (59 refs; engine importer + book data). It was only the naming bug -
+  both mechanics were already built (#029/#183's charge-distance debuff powers defensive Darkborn; the old
+  "doesn't exist" note was stale). OPR names both armies' rules bare "Darkborn"; the importer now
+  disambiguates by army name (Dark Brothers -> Defensive, Dark Prime Brothers -> Offensive) and the two
+  bundled books were patched. Corpus dead count **635 -> 576**. See the Darkborn write-up above.
 - 2026-07-11: **Delayed Action shipped** (47 refs; engine `597a43e`). Hold-back at unit selection
   (pick-then-confirm), NOT an action-menu button - see the Delayed Action write-up above. Corpus dead count
   682 -> 635.
