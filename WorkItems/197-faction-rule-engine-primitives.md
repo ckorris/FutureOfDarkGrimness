@@ -251,6 +251,43 @@ allowCancel, cancel-leaves-put-and-unspent. Verified end-to-end in a real headle
 unit with Teleport): the action surfaces in the menu, offers the 6in placement, holds/loops correctly, and
 is spent once used. Corpus dead references 701 -> 682.
 
+## Slice: Delayed Action — **DONE 2026-07-11** (47 refs)
+
+"Once per round, if your opponent has more units left to activate than you, this model's unit may pass
+its turn instead of activating (may still be activated later)." An activation-ORDER rule (Titan Lords x5
+sub-factions).
+
+Design decided with Chris in-conversation (several forks):
+- "Pass its turn" is DISTINCT from the existing Pass/Hold action (which activates the unit and consumes
+  it). Delayed Action does NOT activate the unit - it stays in the pool for a later turn, and the turn
+  passes to the opponent.
+- Placement: NOT an action-menu button. The rule's condition ("who has more units left") is only knowable
+  at the turn/round level, and "don't activate at all" isn't representable once you're in a unit's action
+  menu. So it lives at unit-selection: after you pick the unit, a Yes/No "hold back?" appears (the
+  disembark-style pick-then-confirm). This kept the shared unit-selection resolvers (and the click-on-map
+  affordance) untouched - the alternative (an inline per-unit button) would have forced dedicated
+  CLI/GUI/AI activation resolvers. Chris chose the lighter pick-then-confirm.
+- Budget: once per round per TEAM (a team-wide `DelayedActionUsed` token scan over living units), per
+  Chris's read of "once per round".
+
+Shipped (engine `597a43e`):
+- `CoreRuleCatalog.DelayedAction` marker (in `All`; no hooks/abilities - detected by name), allowlisted in
+  the fire-lint like Hero/Transport. `TokenType.DelayedActionUsed` (RoundEnd-cleared) is the per-team gate.
+- `SingleTurnStage.GetNewChildContext` snapshots `OpponentHasMoreUnitsToActivate` (any opposing team has
+  strictly more living-unactivated units than mine) onto the turn context. `ReconcileChildContextBeforeLeaving`
+  skips `MarkUnitAsActivated` when the turn was delayed, so the held-back unit stays in the pool; the cursor
+  then advances to the opponent on the next `DeterminePlayerTurnStage`.
+- `ChooseUnitToActivateStage` offers the hold-back after selection when the unit has the rule, the gate
+  holds, and the team hasn't already held back (token scan); accepting drops the token, marks the turn
+  delayed, and routes to a new `ToDelayedTurnEnd` (straight to the ActivatedUnit-null-safe reconcile stage).
+- Yes/No default is `false` (activate), so headless/AI never stall on the offer.
+
+Termination: the once-per-round-per-team token guarantees a team can hold back at most once per round, so
+every unit eventually activates and the round ends. Verified end-to-end in a headless scenario (1 Delayed
+Action unit vs 2 enemy units): the offer appears only while outnumbered, accepting hands the turn to the
+opponent, the unit activates on a later turn, and it isn't re-offered once the team has used it. 6 new
+integration tests. Corpus dead references 682 -> 635.
+
 ## Slices — by leverage
 
 Reference counts are corpus-wide (44 books). Primitive numbers are #100's.
@@ -259,7 +296,7 @@ Reference counts are corpus-wide (44 books). Primitive numbers are #100's.
 |-----:|-------|-------|-------|
 | 175 | ~~**P5a** activation-choice hook~~ **DONE 2026-07-09** (154/175) | Shipped: see the P5a write-up above. `Versatile Defense Aura` (21) deferred — needs an until-next-activation lifetime. | Versatile Attack (56), Versatile Reach Aura (56), Watchborn (42) done; Versatile Defense Aura (21) deferred |
 | 21 | **Versatile Defense** (out of P5a) | A new `ELifetime.UntilNextActivation` + a `TokenClearTrigger` firing at activation **start**, and a second trigger at `Deployment_OnUnitDeployed`. Everything else (labelled abilities, the choice request) already exists. | Versatile Defense Aura (21) |
-| 47 | **Delayed Action** (was P22) | **Not a deploy timing.** "Once per round, if your opponent has more units left to activate than you, this unit may pass its turn instead of activating (may still be activated later)." An activation-ORDER mechanic: a decline-to-activate option at the next-activator seam (`Activation_OnNextActivatorRequested`, which already offers abilities), gated on a live unmoved-unit count comparison, once per round. **FORK:** does declining consume the player's turn-slot (opponent activates twice) or is it free? | Delayed Action (47) |
+| 47 | ~~**Delayed Action** (was P22)~~ **DONE 2026-07-11** | Shipped at unit-selection (pick-then-confirm hold-back), NOT the next-activator seam - see the Delayed Action write-up above. Fork resolved with Chris: holding back does NOT activate the unit (it stays in the pool) and the turn passes to the opponent; once per round per team. | Delayed Action (47) |
 | 15 | ~~**Teleport** (was P22)~~ **DONE 2026-07-11** (15 + Teleport Aura 4) | Shipped as a flat-6in menu action - see the Teleport write-up below. The pre-attack-hook / 3in-vs-6in reading was wrong (see write-up); Chris corrected the design in-conversation. | Teleport (15), Teleport Aura (4) |
 | 14 | **Ambush variants** (the real P22) | The only genuine deploy-timing work. `Rapid Ambush` (deployable from round 1 — a new `EDeferTiming`), `Ambush Beacon` (relaxes the >9in enemy restriction for OTHER friendly Ambushers within 6in — a cross-unit deployment constraint), `Ambushing Piercing Shot` (Ambush + AP(+1) during the round it arrives — needs deploy-round state). | Rapid Ambush (4), Ambush Beacon (6), Ambushing Piercing Shot (4) |
 | 2 | **Surprise Attack** (was P22) | Infiltrate + "the first time this unit is activated, pick one enemy within 6in in LoS and roll X dice; each 2+ deals a hit with AP(1)". Blocked on **P10**'s dice-pool primitive regardless. | Surprise Attack (2) |
@@ -298,6 +335,9 @@ Reference counts are corpus-wide (44 books). Primitive numbers are #100's.
 
 ## Notes
 
+- 2026-07-11: **Delayed Action shipped** (47 refs; engine `597a43e`). Hold-back at unit selection
+  (pick-then-confirm), NOT an action-menu button - see the Delayed Action write-up above. Corpus dead count
+  682 -> 635.
 - 2026-07-11: **Teleport shipped** (15 + Teleport Aura 4; engine `a84c56b`), after **#206 proximity Pass
   gate** (engine `6053061`) which it depends on. Corpus dead count 701 -> 682. See the Teleport write-up
   above - flat 6in menu action, not the pre-attack 3in/6in the row first assumed (Chris corrected both).
