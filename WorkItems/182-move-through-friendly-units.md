@@ -1,6 +1,17 @@
 # 182 — Move through friendly units, but not stop on them
 
-**Status**: todo
+**Status**: DONE (implementation) 2026-07-11, **UNVERIFIED in the GUI**. Split and shipped as #205 (engine +
+AI + CLI resolvers: `ValidateEndsOnFriendly`, friendly footprints threaded through `ValidatePaths`) and #212
+(GUI: pass through friendlies, block only ending-on, in single + group mode). The rule and its integration
+tests are in place and green; the GUI feel still needs Chris's eyeball, so this stays UNVERIFIED until then.
+
+## Outcome
+
+Implemented across #205 (engine authoritative check + AI/CLI resolvers back off; `EndedOnFriendlyUnit`
+validation with a not-newly-overlapping guard; engine integration tests `EndsOnFriendlyValidationTests`) and
+#212 (`GuiDefineMovementResolver`: friendlies are no longer pass-through clamps, and the Done gate rejects
+ending on a friendly). Pass-through allowed, ending-on rejected, no standoff for friendlies - exactly this
+item's goal. Remaining: GUI hand-verification (both single and group move).
 **Related**: #011 (move-through-enemy + standoff — the enemy analog to mirror), #089/#090 (enemy-check on AI/consolidation/executor paths), #150 (`BaseShapeGeometry.SurfaceGap2D` true-footprint overlap), #155 (movement GUI preview clamps), #018 (pile-in)
 
 ## Goal
