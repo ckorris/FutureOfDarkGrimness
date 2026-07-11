@@ -74,7 +74,6 @@ detection, host-IP display, DNS host entry. See `NetworkingHandoff-2026-07-08.md
 
 ## Client / renderer
 
-- [ ] 204 — Save-roll beats for Rending and non-Rending hit groups play too close together to read as two rolls; presentation pacing only (min spacing or co-present the groups). ([WorkItems/204](WorkItems/204-save-beat-pacing-rending-groups.md))
 - [~] 162 — Tactical overlay: opportunity fields, threat frontiers, per-model instruments (instruments call real rules, never the field texture). P0 scaffolding done; P1-P7 remain. Design doc: `docs/tactical-overlay-plan.md`. ([WorkItems/162](WorkItems/162-tactical-overlay.md))
 - [ ] 161 — Resolver UI consistency pass: stat/highlight parity, right-click undo on deploy, shared canvas-selector base (also absorbs the `GuiModelSelectionResolver` alive-filter gap), dialog chrome. Findings + canonical click scheme in the detail file. ([WorkItems/161](WorkItems/161-resolver-consistency.md))
 - [~] 056 — Presentation beat stream: architecture shipped and live on master; remaining animation polish + a hands-on pass. ([WorkItems/056](WorkItems/056-presentation-beat-stream.md))
