@@ -1,4 +1,5 @@
 using FDG;
+using FDG.Ai.Tactician;
 using FDG.Data;
 using FDG.StageResolution;
 using FDG.StageResolution.Requests;
@@ -56,7 +57,8 @@ public class ConsolidationMoveResolver : IStageResolver<ConsolidationMoveRequest
             // downstream — while a hold / re-form of an already-broken unit isn't wrongly blocked.
             if (_tableState != null && !MovementUtilities.ValidateConsolidationPaths(entries, request.MaxDistanceInches,
                     GetEnemyFootprints(request), request.CanMoveThroughEnemies, request.IgnoresDifficultTerrain,
-                    request.IgnoresImpassibleTerrain, _tableState.Terrain.Objects, out var errors))
+                    request.IgnoresImpassibleTerrain, _tableState.Terrain.Objects, out var errors,
+                    GetFriendlyFootprints(request)))
             {
                 Console.WriteLine($"    Invalid: {string.Join(", ", errors.Select(e => e.ToString()))}. Try again.");
                 continue;
@@ -81,7 +83,8 @@ public class ConsolidationMoveResolver : IStageResolver<ConsolidationMoveRequest
 
         if (_tableState == null || MovementUtilities.ValidateConsolidationPaths(reform, request.MaxDistanceInches,
                 GetEnemyFootprints(request), request.CanMoveThroughEnemies, request.IgnoresDifficultTerrain,
-                request.IgnoresImpassibleTerrain, _tableState.Terrain.Objects, out _))
+                request.IgnoresImpassibleTerrain, _tableState.Terrain.Objects, out _,
+                GetFriendlyFootprints(request)))
             return reform;
 
         return StayInPlace(aliveModels);
@@ -107,6 +110,13 @@ public class ConsolidationMoveResolver : IStageResolver<ConsolidationMoveRequest
         }
         return footprints;
     }
+
+    // #205: friendly footprints (same team, excluding the consolidating unit) it may not end stacked on.
+    private List<EnemyModelFootprint> GetFriendlyFootprints(ConsolidationMoveRequest request)
+        => _tableState == null
+            ? new List<EnemyModelFootprint>()
+            : MovementPlanner.LiveFriendlyFootprints(_tableState, request.TargetPlayerID,
+                request.UnitDataBinding.GetValue().ID);
 
     private static List<ModelMoveEntry> StayInPlace(List<DataBinding<ModelData>> aliveModels) =>
         aliveModels.Select(mb => new ModelMoveEntry(mb, new List<Position>())).ToList();
