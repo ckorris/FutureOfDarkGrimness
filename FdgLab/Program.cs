@@ -9,6 +9,7 @@ return args.FirstOrDefault() switch
     "bench" => await RunBench(args.Skip(1).ToArray()),
     "smoke" => await RunSmoke(args.Skip(1).ToArray()),
     "probes" => await RunProbes(args.Skip(1).ToArray()),
+    "analyze" => FdgLab.Analyze.Run(args.Skip(1).ToArray()),
     _ => Usage(),
 };
 
@@ -32,7 +33,15 @@ static int Usage()
                   [--triangle]       pool: unordered pairs only (pre-2026-07-10 shape; skews the
                                      aggregate toward profile A's alphabetically-early armies)
           smoke   [--seed S] [--a <army>] [--b <army>]   one game, prints the record
-                  [--profile-a P] [--profile-b P]        AI per slot: solorules | tactician (#191)
+                  [--profile-a P] [--profile-b P]        AI per slot: solorules | tactician |
+                                                         gunline (scripted human stand-in: holds
+                                                         its line, shoots, claims safe objectives)
+                  [--log-decisions]  with --dump-logs: interleave each planning AI's Choose Action
+                                     narration ("[ai N] plan ..." + full scored candidate table)
+                                     into the game log - a decision replay (#191 tooling)
+          analyze <save.fdgsave> [--unit substr] [--no-board]   per-unit Tactician candidate-score
+                  dump + the action it would take from that exact state - point it at a parked
+                  save from a hand-played game (#191 tooling)
           probes  --feasibility [--games N] [--seed-base S] [--a/--b <army>]   #191 A3 gate metric:
                   shadow-runs the MacroActionGenerator at every movement decision of real games and
                   reports the fraction of activations with a valid non-Hold candidate (target >= 95%)
@@ -111,10 +120,16 @@ static async Task<int> RunSmoke(string[] args)
     int repeat = IntArg(args, "--repeat", 1);
     string? dumpDir = Arg(args, "--dump-logs");
     bool trace = args.Contains("--trace"); // #198: dump the position-write trace alongside the log
+    bool logDecisions = args.Contains("--log-decisions"); // #191 tooling: decision replay
+    if (logDecisions && dumpDir == null)
+    {
+        Console.Error.WriteLine("--log-decisions needs --dump-logs DIR (the narration goes into the game log).");
+        return 2;
+    }
     if (dumpDir != null)
     {
         Directory.CreateDirectory(dumpDir);
-        spec = spec with { CaptureLog = true, Trace = trace };
+        spec = spec with { CaptureLog = true, Trace = trace, LogDecisions = logDecisions };
     }
 
     bool anyFault = false;
