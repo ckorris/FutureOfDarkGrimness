@@ -267,12 +267,12 @@ Design decided with Chris in-conversation (several forks):
   disembark-style pick-then-confirm). This kept the shared unit-selection resolvers (and the click-on-map
   affordance) untouched - the alternative (an inline per-unit button) would have forced dedicated
   CLI/GUI/AI activation resolvers. Chris chose the lighter pick-then-confirm.
-- Budget: once per round per TEAM (a team-wide `DelayedActionUsed` token scan over living units), per
+- Budget: once per round per PLAYER (a per-player `DelayedActionUsed` token scan over that player's living units), per
   Chris's read of "once per round".
 
 Shipped (engine `597a43e`):
 - `CoreRuleCatalog.DelayedAction` marker (in `All`; no hooks/abilities - detected by name), allowlisted in
-  the fire-lint like Hero/Transport. `TokenType.DelayedActionUsed` (RoundEnd-cleared) is the per-team gate.
+  the fire-lint like Hero/Transport. `TokenType.DelayedActionUsed` (RoundEnd-cleared) is the per-player gate.
 - `SingleTurnStage.GetNewChildContext` snapshots `OpponentHasMoreUnitsToActivate` (any opposing team has
   strictly more living-unactivated units than mine) onto the turn context. `ReconcileChildContextBeforeLeaving`
   skips `MarkUnitAsActivated` when the turn was delayed, so the held-back unit stays in the pool; the cursor
@@ -282,7 +282,7 @@ Shipped (engine `597a43e`):
   delayed, and routes to a new `ToDelayedTurnEnd` (straight to the ActivatedUnit-null-safe reconcile stage).
 - Yes/No default is `false` (activate), so headless/AI never stall on the offer.
 
-Termination: the once-per-round-per-team token guarantees a team can hold back at most once per round, so
+Termination: the once-per-round-per-player token guarantees a player can hold back at most once per round, so
 every unit eventually activates and the round ends. Verified end-to-end in a headless scenario (1 Delayed
 Action unit vs 2 enemy units): the offer appears only while outnumbered, accepting hands the turn to the
 opponent, the unit activates on a later turn, and it isn't re-offered once the team has used it. 6 new
@@ -296,7 +296,7 @@ Reference counts are corpus-wide (44 books). Primitive numbers are #100's.
 |-----:|-------|-------|-------|
 | 175 | ~~**P5a** activation-choice hook~~ **DONE 2026-07-09** (154/175) | Shipped: see the P5a write-up above. `Versatile Defense Aura` (21) deferred — needs an until-next-activation lifetime. | Versatile Attack (56), Versatile Reach Aura (56), Watchborn (42) done; Versatile Defense Aura (21) deferred |
 | 21 | **Versatile Defense** (out of P5a) | A new `ELifetime.UntilNextActivation` + a `TokenClearTrigger` firing at activation **start**, and a second trigger at `Deployment_OnUnitDeployed`. Everything else (labelled abilities, the choice request) already exists. | Versatile Defense Aura (21) |
-| 47 | ~~**Delayed Action** (was P22)~~ **DONE 2026-07-11** | Shipped at unit-selection (pick-then-confirm hold-back), NOT the next-activator seam - see the Delayed Action write-up above. Fork resolved with Chris: holding back does NOT activate the unit (it stays in the pool) and the turn passes to the opponent; once per round per team. | Delayed Action (47) |
+| 47 | ~~**Delayed Action** (was P22)~~ **DONE 2026-07-11** | Shipped at unit-selection (pick-then-confirm hold-back), NOT the next-activator seam - see the Delayed Action write-up above. Fork resolved with Chris: holding back does NOT activate the unit (it stays in the pool) and the turn passes to the opponent; once per round per player. | Delayed Action (47) |
 | 15 | ~~**Teleport** (was P22)~~ **DONE 2026-07-11** (15 + Teleport Aura 4) | Shipped as a flat-6in menu action - see the Teleport write-up below. The pre-attack-hook / 3in-vs-6in reading was wrong (see write-up); Chris corrected the design in-conversation. | Teleport (15), Teleport Aura (4) |
 | 14 | **Ambush variants** (the real P22) | The only genuine deploy-timing work. `Rapid Ambush` (deployable from round 1 — a new `EDeferTiming`), `Ambush Beacon` (relaxes the >9in enemy restriction for OTHER friendly Ambushers within 6in — a cross-unit deployment constraint), `Ambushing Piercing Shot` (Ambush + AP(+1) during the round it arrives — needs deploy-round state). | Rapid Ambush (4), Ambush Beacon (6), Ambushing Piercing Shot (4) |
 | 2 | **Surprise Attack** (was P22) | Infiltrate + "the first time this unit is activated, pick one enemy within 6in in LoS and roll X dice; each 2+ deals a hit with AP(1)". Blocked on **P10**'s dice-pool primitive regardless. | Surprise Attack (2) |
