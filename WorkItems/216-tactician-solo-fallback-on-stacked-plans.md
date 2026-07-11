@@ -19,6 +19,18 @@ from the garrison-release/dilution work).
 
 ## Notes (newest first)
 
+**2026-07-11 (later) — charge fix does NOT recover the mirror drift; drift-driver hypothesis
+REJECTED.** DE/RL mirrors rerun post-fix (FdgLab/reports/216-recheck/): RL 78.0 with an
+IDENTICAL outcome hash to the pre-fix run (the fix changed nothing in those 50 games); DE 82.0
+with a changed hash (blocked charge lanes do occur in transport play) but the same 38/6/6
+split. The fix stands on its own merits (a planned charge no longer silently degrades to
+solo), but the DE 99->82 / RL 89->78 drift has another cause. Leading alternative: #205/#212
+changed MOVEMENT LEGALITY FOR BOTH SIDES - the solo baseline can now move through friendlies
+(ending-only stacking check), which plausibly strengthens SOLO play most in the two densest
+armies; i.e. the "drop" may be baseline improvement, not Tactician degradation. Next step
+(unchanged): transcript diff, same seed, A5-9 engine vs current (#210 workflow), or fold into
+the Opus clean re-gate.
+
 **2026-07-11 — straight-line charge candidate made friendly-aware.** Passes
 `LiveFriendlyFootprints` into its ValidateWithBackoff, so the backoff ladder shortens the
 charge rather than emitting a plan the resolver must reject. Pin test:
