@@ -20,6 +20,26 @@ pin tests.
 
 ## Notes (newest first)
 
+**2026-07-10 — A5-9: MATCHUP-AWARE DEPLOYMENT (Chris picked option 2; "no need to make it
+mega perfect").** Two halves, new shared DeploymentMatchup helper (CombatMath at a nominal 12"
+engagement range, ValueFraction units): (1) LANE CHOICE - deployment aims still use the
+objective anchors + depth-by-range, but each lane is scored by the VISIBLE enemies roughly
+opposite it (favorability = our value-out minus theirs, faded over 18" lateral); the override
+fires only when a lane clearly beats the round-robin spread (edge > 0.05), so blind early
+placements keep today's fan-out. (2) DEPLOY ORDER - "Choose Unit to Deploy" picks the LEAST
+matchup-sensitive unit first (sensitivity = spread of OUTPUT-ONLY value across the enemy's
+whole list - lists are open info; full favorability was wrong here, it marked fragile
+generalists sensitive just because different enemies kill them differently), so counters
+place late with more of the enemy layout visible. Pin tests: melter platform deploys into the
+tank's lane not the horde's; blade chaff deploys before the melters. Suite 1571/1571.
+Interactions noted: always-Ambush shrinks what deployment must solve (ambushers place round 2
+at chosen spots); Scout/Infiltrate placements also route through the same deployment-shaped
+aim and inherit lane scoring for free. **50-game probes (seed 3000, 0 faults): RL-vs-Hives
+52 -> 67, RL-vs-Orks 50 -> 64 - the biggest single-slice lift since A5-3, exactly in the
+Slow-army cells Chris's reasoning predicted ("they have to be intentional with their movements
+from the start"); BB-vs-Orks 58 -> 61, HDF-vs-Hives 57 (noise). Full gate:
+a5-9-gate-ordered.**
+
 **2026-07-10 — GAME-1 SAVE ANALYSIS (HEFDestroyingAliens_MeleeStayingBack.fdgsave, round 3)
 + RETUNE: MoveRetaliation 0.6 -> 0.45.** Loaded Chris's save and dumped every candidate score
 for the stuck units - the numbers convict the retaliation term: Winged Grunts (fast, 10
