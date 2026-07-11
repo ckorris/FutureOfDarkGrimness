@@ -12,6 +12,8 @@ public class GuiConsolidationMoveResolver
     : IStageResolver<ConsolidationMoveRequest, List<ModelMoveEntry>>, IGuiResolver, IGuiCanvasOverlay
 {
     private readonly ITableState _tableState;
+    // #215: shared Group/Single toggle (same instance the movement + deployment resolvers use).
+    private readonly FormationModeState _formationMode;
     private readonly object _lock = new();
 
     // Layout — main-thread only
@@ -27,6 +29,13 @@ public class GuiConsolidationMoveResolver
     private PathTemplate? _pathTemplate;
     private IModel? _selectedModel;
 
+    // #215 group-mode state (main-thread only): rotation of the CURRENT pending step, and the accumulated
+    // facing rotation across the whole move (baked into each committed step's facings). Reset per request.
+    private float _groupRotation;
+    private float _groupFacingAngle;
+    private static readonly float GroupRotationStep = MathF.PI / 12f; // 15 deg per wheel notch / R press
+    private const float GroupMoveSafetyMargin = 0.005f;
+
     private static readonly uint MoveColor      = ImGui.ColorConvertFloat4ToU32(new Vector4(0.40f, 0.85f, 1.00f, 0.95f));
     private static readonly uint RangeRingCol   = ImGui.ColorConvertFloat4ToU32(new Vector4(0.40f, 0.85f, 1.00f, 0.55f));
     private static readonly uint SelectionOutline = ImGui.ColorConvertFloat4ToU32(new Vector4(1f, 1f, 1f, 0.95f));
@@ -37,7 +46,11 @@ public class GuiConsolidationMoveResolver
     private static readonly uint OverlapFill    = ImGui.ColorConvertFloat4ToU32(new Vector4(1.00f, 0.25f, 0.25f, 0.55f));
     private static readonly uint GhostFill      = ImGui.ColorConvertFloat4ToU32(new Vector4(0.40f, 0.85f, 1.00f, 0.40f));
 
-    public GuiConsolidationMoveResolver(ITableState tableState) => _tableState = tableState;
+    public GuiConsolidationMoveResolver(ITableState tableState, FormationModeState formationMode)
+    {
+        _tableState = tableState;
+        _formationMode = formationMode;
+    }
 
     public void UpdateLayout(float scale, int originX, int originY, float tableH)
     {
@@ -64,6 +77,8 @@ public class GuiConsolidationMoveResolver
             _request       = request;
             _pathTemplate  = template;
             _selectedModel = first;
+            _groupRotation = 0f;
+            _groupFacingAngle = 0f;
         }
         return tcs.Task;
     }
@@ -112,6 +127,20 @@ public class GuiConsolidationMoveResolver
             }
         }
 
+        bool overTable = IsOverTable(io.MousePos.X, io.MousePos.Y);
+        bool wantInput = !io.WantCaptureMouse && !io.WantCaptureKeyboard;
+
+        // #215: G toggles Group/Single for the rest of the game (shared with movement/deployment).
+        if (wantInput && ImGui.IsKeyPressed(ImGuiKey.G)) _formationMode.Toggle();
+
+        if (_formationMode.IsGroup)
+        {
+            DrawGroupMode(request, pt, dl, io, terrain, overTable, wantInput);
+            DrawInfoPanel(screenW, request, pt, tcs, terrain);
+            return;
+        }
+
+        // ---- Single mode ----
         // 2) Range ring around selected model's last waypoint
         if (_selectedModel != null)
         {
@@ -124,8 +153,6 @@ public class GuiConsolidationMoveResolver
         }
 
         // 3) Ghost following mouse (clamped to cap AND to table bounds)
-        bool overTable = IsOverTable(io.MousePos.X, io.MousePos.Y);
-        bool wantInput = !io.WantCaptureMouse && !io.WantCaptureKeyboard;
         Position? ghostPos = null;
         bool ghostOverlaps = false;
 
@@ -222,6 +249,140 @@ public class GuiConsolidationMoveResolver
         DrawInfoPanel(screenW, request, pt, tcs, terrain);
     }
 
+    // #215: whole-unit group move. Drag translates the formation so its centroid follows the cursor; the
+    // mouse wheel / R rotates the formation (Shift+R the other way). Reuses the same GroupFormationUtilities
+    // (budget solve + out-of-coherency repair) the normal-move group mode uses; the authoritative
+    // ValidateConsolidationPaths in DrawInfoPanel still gates Done, so this only previews/commits legal steps.
+    private void DrawGroupMode(ConsolidationMoveRequest request, PathTemplate pt, ImDrawListPtr dl,
+        ImGuiIOPtr io, List<ITerrain> terrain, bool overTable, bool wantInput)
+    {
+        var paths  = pt.CurrentPaths;
+        var models = paths.Keys.ToList();
+        if (models.Count == 0) return;
+        IUnit ownUnit = request.UnitDataBinding.GetValue();
+        float maxDist = request.MaxDistanceInches;
+
+        if (wantInput)
+        {
+            if (io.MouseWheel != 0f)
+            {
+                float d = io.MouseWheel > 0f ? GroupRotationStep : -GroupRotationStep;
+                _groupRotation += d; _groupFacingAngle += d;
+            }
+            if (ImGui.IsKeyPressed(ImGuiKey.R))
+            {
+                bool shift = ImGui.IsKeyDown(ImGuiKey.LeftShift) || ImGui.IsKeyDown(ImGuiKey.RightShift);
+                float d = shift ? GroupRotationStep : -GroupRotationStep;
+                _groupRotation += d; _groupFacingAngle += d;
+            }
+        }
+
+        var lastPositions = new List<Position>(models.Count);
+        var budgets       = new List<float>(models.Count);
+        foreach (var m in models)
+        {
+            lastPositions.Add(pt.GetModelLastPathPosition(m));
+            budgets.Add(maxDist - pt.GetTotalDistanceMoved(m) - GroupMoveSafetyMargin);
+        }
+
+        // Re-form an out-of-coherency unit (a mid-unit casualty left survivors >1" apart) toward its centroid,
+        // so one drag can pull them back into cohesion; budgets are still measured from each real start.
+        var startPairs = new List<(IModel model, Position pos)>(models.Count);
+        for (int i = 0; i < models.Count; i++) startPairs.Add((models[i], lastPositions[i]));
+        IReadOnlyList<Position> basePositions = lastPositions;
+        if (CheckCohesion(startPairs).Any)
+        {
+            var radii = models.Select(m => m.BaseShape.CircumscribedRadiusInches).ToList();
+            basePositions = GroupFormationUtilities.RepairCoherencyByContraction(
+                lastPositions, radii,
+                GameWideConstants.MAX_MODEL_DISTANCE_FROM_ANY_OTHER_MODEL_INCHES,
+                GameWideConstants.MAX_MODEL_DISTANCE_FROM_ALL_OTHER_MODELS_INCHES);
+        }
+
+        Position pivot = GroupFormationUtilities.Centroid(basePositions);
+        float cos = MathF.Cos(_groupRotation), sin = MathF.Sin(_groupRotation);
+
+        float desiredTx = 0f, desiredTz = 0f;
+        if (overTable && !io.WantCaptureMouse)
+        {
+            var (mx, mz) = PixelToInches(io.MousePos.X, io.MousePos.Y);
+            desiredTx = mx - pivot.x;
+            desiredTz = mz - pivot.z;
+        }
+
+        var plan = GroupFormationUtilities.PlanGroupMove(basePositions, lastPositions, budgets, pivot, cos, sin, desiredTx, desiredTz);
+        var newPositions = plan.NewPositions;
+        for (int i = 0; i < models.Count; i++)
+        {
+            var (cx, cz) = ClampToTable(newPositions[i].x, newPositions[i].z, models[i].BaseShape.CircumscribedRadiusInches);
+            newPositions[i] = new Position(cx, cz);
+        }
+
+        var groupFacings = new Float2[models.Count];
+        var blocked      = new bool[models.Count];
+        bool anyMovement = false;
+        for (int i = 0; i < models.Count; i++)
+        {
+            groupFacings[i] = RotateFloat2(models[i].Facing, _groupFacingAngle);
+            blocked[i] = PhantomOverlapsOtherUnit(newPositions[i], models[i].BaseShape, groupFacings[i], ownUnit);
+            if (Position.GetDistance2D(lastPositions[i], newPositions[i]) > 0.001f) anyMovement = true;
+        }
+        bool allValid = plan.WithinBudget && !blocked.Any(b => b);
+
+        for (int i = 0; i < models.Count; i++)
+        {
+            bool bad = blocked[i] || !plan.WithinBudget;
+            var (sx, sy) = InchesToPixel(lastPositions[i].x, lastPositions[i].z);
+            var (nx, ny) = InchesToPixel(newPositions[i].x, newPositions[i].z);
+            dl.AddLine(new Vector2(sx, sy), new Vector2(nx, ny), bad ? OverlapFill : MoveColor, 2f);
+            ModelBaseRenderer.DrawFilledImGui(dl, models[i].BaseShape, new Vector2(nx, ny), _scale,
+                bad ? OverlapFill : GhostFill, GhostOutline, 1.5f, groupFacings[i]);
+            ModelBaseRenderer.DrawHeadingImGui(dl, models[i].BaseShape, new Vector2(nx, ny), _scale, groupFacings[i], GhostOutline);
+        }
+
+        var finals = new List<(IModel model, Position pos)>(models.Count);
+        for (int i = 0; i < models.Count; i++) finals.Add((models[i], newPositions[i]));
+        DrawCohesionIndicators(dl, finals, null);
+
+        if (overTable && !io.WantCaptureMouse && ImGui.IsMouseClicked(ImGuiMouseButton.Left) && allValid && anyMovement)
+        {
+            for (int i = 0; i < models.Count; i++) pt.AddStep(models[i], newPositions[i]);
+            _groupRotation = 0f; // rotation is folded into _groupFacingAngle (baked into the committed facings)
+        }
+
+        // Right-click / Backspace undo the last committed group step (one per model).
+        if ((wantInput && ImGui.IsKeyPressed(ImGuiKey.Backspace))
+            || (overTable && !io.WantCaptureMouse && ImGui.IsMouseClicked(ImGuiMouseButton.Right)))
+        {
+            foreach (var m in models)
+                if (paths.TryGetValue(m, out var l) && l.Count > 0) pt.RemoveLastStep(m);
+        }
+    }
+
+    private static Float2 RotateFloat2(Float2 f, float radians)
+    {
+        float cos = MathF.Cos(radians), sin = MathF.Sin(radians);
+        return new Float2(f.X * cos - f.Y * sin, f.X * sin + f.Y * cos);
+    }
+
+    // True if the shape at p (facing) overlaps a live model of ANOTHER unit. Own-unit models are ignored -
+    // the group moves rigidly, so its internal spacing is preserved (and cohesion is checked separately).
+    private bool PhantomOverlapsOtherUnit(Position p, IBaseShape shape, Float2 facing, IUnit ownUnit)
+    {
+        foreach (var unit in _tableState.Units.Objects)
+        {
+            if (ReferenceEquals(unit, ownUnit)) continue;
+            foreach (var m in unit.Models)
+            {
+                if (!m.GetIsAlive()) continue;
+                var mp = m.Position;
+                if (mp.x == 0f && mp.z == 0f) continue;
+                if (BaseShapeGeometry.AreColliding(shape, p, facing, m.BaseShape, mp, m.Facing)) return true;
+            }
+        }
+        return false;
+    }
+
     private void DrawInfoPanel(int screenW, ConsolidationMoveRequest request, PathTemplate pt,
         TaskCompletionSource<List<ModelMoveEntry>> tcs, List<ITerrain> terrain)
     {
@@ -250,15 +411,28 @@ public class GuiConsolidationMoveResolver
             ImGui.TextDisabled("No model selected. Left-click a model on the table.");
         }
 
-        ImGui.TextDisabled("L-click: select   R-click: waypoint");
-        ImGui.TextDisabled("Space: next model   Backspace: undo");
+        // #215: Group/Single toggle (shared with the movement + deployment resolvers).
+        if (ImGui.Button(_formationMode.IsGroup ? "Mode: Group (G)" : "Mode: Single (G)"))
+            _formationMode.Toggle();
+        if (_formationMode.IsGroup)
+            ImGui.TextDisabled("Drag: move unit   Wheel/R: rotate\nL-click: commit   R-click/Bksp: undo");
+        else
+            ImGui.TextDisabled("L-click: select/waypoint   R-click/Bksp: undo\nSpace: next model");
 
         ImGui.Spacing();
         float spacing = ImGui.GetStyle().ItemSpacing.X;
         float pad     = ImGui.GetStyle().WindowPadding.X * 2;
         float fullW   = panelW - pad;
 
-        var results = pt.GetResultsAsList();
+        // #215: in group mode the accumulated rotation is baked into every committed step's facing.
+        IReadOnlyDictionary<IModel, float>? facingOffsets = null;
+        if (_formationMode.IsGroup && _groupFacingAngle != 0f)
+        {
+            var fo = new Dictionary<IModel, float>();
+            foreach (var m in pt.CurrentPaths.Keys) fo[m] = _groupFacingAngle;
+            facingOffsets = fo;
+        }
+        var results = pt.GetResultsAsList(facingOffsets);
         // #090: enemy-check the consolidation preview so it matches the authoritative ConsolidateStage check.
         var enemyFootprints = GetEnemyFootprintsForRequest(request);
         bool engineValid = MovementUtilities.ValidatePaths(results, request.MaxDistanceInches,
@@ -388,6 +562,8 @@ public class GuiConsolidationMoveResolver
             List<(IModel, IModel, Position, Position, float)> tooFar,
             (IModel, IModel, Position, Position, float)? farthest)
         { TooFarFromAny = tooFar; FarthestPair = farthest; }
+
+        public bool Any => TooFarFromAny.Count > 0 || FarthestPair.HasValue;
     }
 
     private static CohesionViolations CheckCohesion(List<(IModel model, Position pos)> finals)
@@ -514,6 +690,8 @@ public class GuiConsolidationMoveResolver
             _tcs           = null;
             _pathTemplate  = null;
             _selectedModel = null;
+            _groupRotation = 0f;
+            _groupFacingAngle = 0f;
         }
         tcs.SetResult(entries);
     }

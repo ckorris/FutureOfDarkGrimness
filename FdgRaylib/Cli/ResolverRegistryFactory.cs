@@ -62,7 +62,7 @@ public static class ResolverRegistryFactory
         var assignWounds  = new GuiAssignWoundsResolver();
         var movement      = new GuiDefineMovementResolver(tableState, formationMode);
         var aircraftMove  = new GuiAircraftAdvanceResolver();
-        var consolidate   = new GuiConsolidationMoveResolver(tableState);
+        var consolidate   = new GuiConsolidationMoveResolver(tableState, formationMode);
         var placeObjects  = new GuiPlaceObjectsResolver<ModelData>(tableState, formationMode);
         var placeObjective = new GuiPlaceObjectiveResolver(tableState);
         var placeTerrain   = new GuiPlaceOneTerrainResolver(tableState);
