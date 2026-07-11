@@ -320,6 +320,55 @@ Tests: `OprBookImporterTests.Import_DisambiguatesDarkborn_ByArmy` (both armies x
 the end-to-end guard against a re-import reintroducing the bare name). Verified via `--rule-coverage`:
 corpus dead references **635 -> 576**, no Darkborn ref left dead.
 
+## Slice: P15 randomized-branch effect (Unpredictable) — **DONE 2026-07-11** (48 of 53 refs)
+
+The whole family is one shape: "when attacking, roll one die: on a 1-3 the models get AP(+1), on a 4-6
+they get +1 to hit instead." Both modifiers already existed - the only new thing is a per-attack die that
+SELECTS between them. Two forks were resolved with Chris before building:
+
+1. **Decisive vs weighted branch** (the dice-invariant fork). The selecting die is DECISIVE
+   (`RollDecisiveFace`): even under the probabilistic roller it commits to one concrete face, exactly as
+   morale / dangerous-terrain / P5b round-start rolls do. A branch selector can't be meaningfully averaged
+   into "half a modifier" on a threshold roll. Chris chose decisive (Option A) - faithful to a
+   literally-"roll one die" rule and consistent with every other discrete roll in the engine. The AI's
+   analytic `CombatMath` sees one branch per evaluation rather than the 50/50 mean; accepted as the same
+   tradeoff the engine already takes everywhere it uses `RollDecisive`. Neither arm violates the invariant:
+   +1-to-hit and AP(+1) are both threshold shifts folded before the analytic spread is counted.
+2. **Roll granularity: once per attack ACTION** (not per weapon). Chris chose per-action, so a multi-weapon
+   unit shares one branch across all its weapons ("roll one die ... apply to all models").
+
+Why it needed real engine work (not just data): the two arms consume at DIFFERENT hooks - +1 to hit at
+`Shooting_OnHitRollModifier` (72), AP(+1) as a -1 save modifier at `Shooting_OnHitRollComplete` (73, the
+Thrust machinery) - and ops emitted at one hook aren't visible at the other. Two independent hook-rolls
+would give both-or-neither instead of exactly one, so the single roll has to be taken before hook 72 and
+carried to 73. Hook 72 is the first shared shoot/melee rule hook (hook 70 is shooting-only), and a same-pass
+token grant isn't visible in that same pass, so the branch is resolved ABOVE the hooks and threaded down.
+
+Shipped (engine):
+- `EUnpredictableBranch` (None/HitBonus/ApBonus) + `IHasUnpredictableBranch` capability + a
+  `Condition.UnpredictableBranchIs` that reads it.
+- `UnpredictableBranchResolver` rolls the decisive die once, ONLY when the attacker carries an applicable
+  rule (native, per-model, OR aura-granted via a RuleGrant token - so the Auras work), so the seeded stream
+  (#193) is untouched for ordinary attacks. Called from `CombatActionContext.ConsumeAttackIntoContext`,
+  cached per action (reset on `SwapCombatRoles` so a Counter attacker rolls fresh), threaded into
+  `CombatMetadata.UnpredictableBranch` and onto the hit/save contexts.
+- Catalog: `Unpredictable` (both kinds), `Unpredictable Fighter` (IsMelee), `Unpredictable Shooter`
+  (Not(IsMelee)) - each two arms sharing the branch - plus `Unpredictable Fighter/Shooter Aura` via
+  `UnitAura`. The fire-lint's hit/save context variants gained a branch dimension so the arms lint as
+  firing (no allowlist). Single-emission verified: no corpus unit stacks base variants.
+
+Tests: `UnpredictableRuleIntegrationTests` (15) - both arms through the REAL DetermineHitRollStage /
+RollToHitStage (HitBonus -> hit threshold 4->3, ApBonus -> SaveModifier -1, exactly one fires),
+melee/shooting gating, the resolver (roll bands, no-roll-when-absent, aura-granted detection), and the
+once-per-action-shared-across-weapons behavior through a real `CombatActionContext` with a sequence roller.
+Corpus dead references **576 -> 528**.
+
+**Deferred: the two Mark variants** (`Unpredictable Fighter Mark` 3, `Unpredictable Shooter Mark` 2 = 5
+refs). A mark grants Unpredictable at the hit-roll hook (72), AFTER the action-level roll has already
+happened, so the mark-granted rule is invisible to the once-per-action resolver. Making them work needs the
+resolver to also scan the DEFENDER for an Unpredictable-granting mark at action time - its own small slice.
+Left dead (not silently), tracked in the by-leverage table below.
+
 ## Slices — by leverage
 
 Reference counts are corpus-wide (44 books). Primitive numbers are #100's.
@@ -336,7 +385,7 @@ Reference counts are corpus-wide (44 books). Primitive numbers are #100's.
 | 66 | ~~**P5b** round-start Shaken recovery~~ **DONE 2026-07-09** (66/66) | **The premise was wrong:** `Round_OnRoundStart` is not dormant — `StartOfRoundExtraActionStage.GrantSpellTokens` fires it every round for every living unit (Caster token grants), applying token ops and running executables. So this needed only the effect. New `Effect.ClearTokenOnRoll` -> `InvokeClearTokenOnRoll`, an executable resolved through `IOperationServices`. Rolls with `RollDecisiveFace`, never `Roll(1)` — the outcome is binary, so a histogram would want to remove a *fraction* of a token. Engine `05eb91e`. | Steadfast Aura (28), Battleborn (26), Honor Code (9), Steadfast (3) |
 | 60 | **P21** setup-phase re-deploy | Remove + re-place a unit during/after deployment. | Re-Deployment (27), Fanatic (19), Dash Aura (4), Ambush Re-Deployment (4), Dash (2), Mobile Artillery (2), Quick Readjustment (2) |
 | 59 | ~~**Darkborn** (#102 residual)~~ **DONE 2026-07-11** | It was **only the naming bug** - both mechanics were already built (the "per-target charge debuff doesn't exist" note was stale; #029/#183's `EffectiveChargeDistanceAgainst` powers it). The importer now disambiguates the bare `Darkborn` by army; books patched. See the Darkborn write-up above. | Darkborn (59) |
-| 53 | **P15** randomized-branch effect | "Roll one die: 1-3 -> effect A, 4-6 -> effect B", applied per attack. **Must respect the RollDecisive threshold-shift invariant.** | Unpredictable Fighter (26), Unpredictable Fighter Aura (11), Unpredictable (5), Unpredictable Shooter Aura (5), Unpredictable Fighter Mark (3), Unpredictable Shooter Mark (2), Unpredictable Shooter (1) |
+| 53 | ~~**P15** randomized-branch effect~~ **DONE 2026-07-11** (48/53) | Decisive per-attack-action die (Option A), once per action, threaded via a new `IHasUnpredictableBranch` capability. See the P15 write-up above. **The 2 Mark variants (5 refs) are deferred** - a mark grants after the action-level roll. | Unpredictable Fighter (26), Unpredictable Fighter Aura (11), Unpredictable (5), Unpredictable Shooter Aura (5), Unpredictable Shooter (1) done; Unpredictable Fighter Mark (3) + Unpredictable Shooter Mark (2) deferred |
 | 44 | **P10** dice-pool -> hits / auto-wounds | Generalize `dealHits` to a rolled count and to wounds-without-to-hit. Unblocks the `dealHits.WithRules` resolver seam (#164) too. | Ravage (31), Crossing Attack (8), Storm of Lust (2), Storm of Change (1), Storm of Plague (1), Storm of War (1) |
 | 41 | **P13** marker-scaled magnitude | `ValueSource.TokenCount` + effects whose magnitude scales with a marker count. Couple with P5b (round-start markers) and P5c. | Piercing Frenzy (9), Defensive Frenzy (8), Piercing Growth (6), Precision Frenzy (6), Fortified Growth (6), Precision Growth (5), Defensive Growth Aura (1) |
 | 28 | **P14b** spend-for-bonus markers | Tag a target with N markers; friendly attackers remove them for +AP/+hit. Distinct from the built `markTarget` (one-shot rule transfer). | Precision Target (7), Piercing Tag (6), Precision Spotter (4), Piercing Spotter (4), Precision Tag (4), Piercing Target (3) |
@@ -367,6 +416,12 @@ Reference counts are corpus-wide (44 books). Primitive numbers are #100's.
 
 ## Notes
 
+- 2026-07-11: **P15 (Unpredictable) shipped** (48 of 53 refs; engine only). A per-attack-action decisive
+  die (1-3 -> AP(+1), 4-6 -> +1 to hit), rolled once per action and threaded to both the hit hook (72) and
+  the save hook (73) via a new `IHasUnpredictableBranch` capability so both arms read the SAME roll. Forks
+  resolved with Chris: decisive (not weighted) roll, once per action (not per weapon). The 2 Mark variants
+  (5 refs) are deferred - a mark grants after the action-level roll. Corpus dead count **576 -> 528**. See
+  the P15 write-up above.
 - 2026-07-11: **Darkborn shipped** (59 refs; engine importer + book data). It was only the naming bug -
   both mechanics were already built (#029/#183's charge-distance debuff powers defensive Darkborn; the old
   "doesn't exist" note was stale). OPR names both armies' rules bare "Darkborn"; the importer now
