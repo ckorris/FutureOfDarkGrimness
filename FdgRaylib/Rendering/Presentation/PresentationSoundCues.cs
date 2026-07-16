@@ -28,7 +28,9 @@ public static class PresentationSoundCues
     /// <summary>The sound-cue key for a beat, or null if the beat has no audio.</summary>
     public static string? CueFor(PresentationBeat beat) => beat switch
     {
-        AttackBeat a       => a.IsMelee ? Melee : Gunshot,
+        // #238: attacks cue PER VOLLEY via VolleyCue/AttackVolleyStarted, not once at beat start —
+        // three swings sound three times.
+        AttackBeat         => null,
         DiceRolledBeat     => Dice,
         RollOffBeat        => Dice,
         SaveBeat           => Save,
@@ -39,6 +41,10 @@ public static class PresentationSoundCues
         UnitMovedBeat      => Move,
         _                  => null,
     };
+
+    /// <summary>The sound-cue key for one volley of an attack (#238) — fired once per volley via
+    /// <c>PresentationPlayer.AttackVolleyStarted</c>, so every visible burst of shots/swings sounds.</summary>
+    public static string VolleyCue(AttackBeat beat) => beat.IsMelee ? Melee : Gunshot;
 
     /// <summary>
     /// Registers every cue with <paramref name="audio"/>: loads Assets/Sounds/{key}.wav if present,

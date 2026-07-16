@@ -180,11 +180,17 @@ public class RaylibRenderer
         // Play a sound cue the moment each beat becomes active, in lockstep with its visual. Audio is
         // GUI-only and may be unavailable (then AudioManager no-ops), so this is best-effort.
         if (_presentationPlayer != null && _audio != null)
+        {
             _presentationPlayer.BeatStarted += beat =>
             {
                 string? cue = PresentationSoundCues.CueFor(beat);
                 if (cue != null) _audio.Play(cue);
             };
+            // #238: attacks sound once per VOLLEY (in step with each visible burst of shots/swings),
+            // not once at beat start.
+            _presentationPlayer.AttackVolleyStarted += attack =>
+                _audio.Play(PresentationSoundCues.VolleyCue(attack));
+        }
 
         tableState.Models.OnObjectCreated += SubscribeToModel;
         foreach (var model in tableState.Models.Objects)

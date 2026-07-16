@@ -104,6 +104,7 @@ detection, host-IP display, DNS host entry. See `NetworkingHandoff-2026-07-08.md
 - [ ] 233 — Add a dice-roll beat for casting (engine beat emission in CastSpellStage). ([WorkItems/233](WorkItems/233-cast-roll-beat.md))
 - [ ] 235 — Game Over card: center the result text + make the window draggable so the final board is inspectable. ([WorkItems/235](WorkItems/235-game-over-box-polish.md))
 - [~] 237 — Single-option pick shortcuts: shooting pre-selects a sole fireable target, sole-defender charge shows a one-click confirm card (keeps #202's Back), Enter = Auto-assign All. Implemented + tested; awaiting GUI hand-verify. ([WorkItems/237](WorkItems/237-single-option-pick-shortcuts.md))
+- [~] 238 — Attack animation now plays WHILE the to-hit dice tumble (AttackBeat is a zero-lead-in held beat) + gunshot/melee sound per volley instead of once. Implemented + tested; awaiting GUI hand-verify. ([WorkItems/238](WorkItems/238-attack-dice-overlap-volley-sound.md))
 
 ## 2026-06-10 audit follow-ups
 

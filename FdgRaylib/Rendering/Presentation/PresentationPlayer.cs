@@ -55,9 +55,15 @@ public class PresentationPlayer : IPresentationSink
     private RollOffBeat? _activeRollOff;
     private float _rollOffProgress;
 
-    // World-space attack (tracers / clash) for the currently-active AttackBeat (null when none).
+    // World-space attack (tracers / clash) — runs on its OWN timeline, concurrent with the active
+    // beat (#238): AttackBeat is a held beat with zero lead-in, so it transfers here the frame it is
+    // dequeued and animates over its full NominalDuration WHILE the to-hit dice that always follow
+    // it tumble in the active slot.
     private AttackBeat? _activeAttack;
     private float _attackProgress;
+    private float _attackElapsedSeconds;
+    private int   _attackVolleysCued;    // volley sound cues fired so far for the current attack
+    private bool  _attackHitStopFired;
 
     // Models flashing a "hurt but survived" tint (the wounded beat is active for each).
     private readonly HashSet<Guid> _wounded = new();
@@ -73,7 +79,6 @@ public class PresentationPlayer : IPresentationSink
     // weight. Fired once per melee AttackBeat, at the clash. The freeze decays in real time while the
     // beat animation runs slow, so it self-corrects and never desyncs from the engine's pacing.
     private float _hitStopRemaining;
-    private bool  _hitStopFiredForActive;
     private const float HitStopDuration  = 0.07f; // real seconds of freeze
     private const float HitStopTimeScale = 0.12f; // how slow the timeline runs during it
     private const float HitStopTriggerT  = 0.42f; // beat progress at which the clash lands
@@ -81,7 +86,7 @@ public class PresentationPlayer : IPresentationSink
     /// <summary>True while a beat is in flight or queued — used to gate interactive prompts.</summary>
     public bool IsAnimating
     {
-        get { lock (_lock) return _active != null || _incoming.Count > 0; }
+        get { lock (_lock) return _active != null || _incoming.Count > 0 || _activeAttack != null; }
     }
 
     /// <summary>
@@ -90,6 +95,13 @@ public class PresentationPlayer : IPresentationSink
     /// the renderer wires this to the <c>AudioManager</c>. Invoked outside the internal lock.
     /// </summary>
     public Action<PresentationBeat>? BeatStarted;
+
+    /// <summary>
+    /// Raised on the render thread each time a volley of the current attack starts firing — once per
+    /// volley, including the first — so each visible burst of shots/swings gets its own sound cue
+    /// (#238). Same audio-agnostic contract as <see cref="BeatStarted"/>. Invoked outside the lock.
+    /// </summary>
+    public Action<AttackBeat>? AttackVolleyStarted;
 
     // ---------------- engine thread ----------------
 
@@ -126,7 +138,8 @@ public class PresentationPlayer : IPresentationSink
 
     public void Update(float realDt)
     {
-        PresentationBeat? started = null;
+        List<PresentationBeat>? started = null;
+        AttackBeat? volleyCued = null;
         lock (_lock)
         {
             float dtSeconds = realDt;
@@ -149,13 +162,26 @@ public class PresentationPlayer : IPresentationSink
                 }
             }
 
-            if (_active == null && _incoming.Count > 0)
+            // Dequeue until a beat holds the active slot. An AttackBeat never does (#238): it
+            // transfers to its own concurrent track, so the to-hit dice behind it become active this
+            // same frame and shots fly while the dice tumble.
+            while (_active == null && _incoming.Count > 0)
             {
-                _active = _incoming.Dequeue();
+                PresentationBeat next = _incoming.Dequeue();
+                (started ??= new List<PresentationBeat>()).Add(next);
+                if (next is AttackBeat attack)
+                {
+                    _activeAttack         = attack;
+                    _attackProgress       = 0f;
+                    _attackElapsedSeconds = 0f;
+                    _attackVolleysCued    = 0;
+                    _attackHitStopFired   = false;
+                    continue;
+                }
+                _active = next;
                 _elapsedSeconds = 0f;
-                started = _active;
-                _hitStopFiredForActive = false;
             }
+
             if (_active != null)
             {
                 _elapsedSeconds += dtSeconds;
@@ -163,13 +189,6 @@ public class PresentationPlayer : IPresentationSink
                 float t = dur <= 0f ? 1f : Math.Clamp(_elapsedSeconds / dur, 0f, 1f);
 
                 Advance(_active, t);
-
-                // A melee clash fires a one-time hit-stop for weight.
-                if (!_hitStopFiredForActive && _active is AttackBeat { IsMelee: true } && t >= HitStopTriggerT)
-                {
-                    _hitStopRemaining = HitStopDuration;
-                    _hitStopFiredForActive = true;
-                }
 
                 // A held dice beat parks once past its lead-in: keep it displayed (settled) and free the
                 // active slot so following action beats play WHILE it lingers.
@@ -187,11 +206,51 @@ public class PresentationPlayer : IPresentationSink
                     _active = null;
                 }
             }
+
+            // The concurrent attack track advances every frame, independent of the active slot.
+            if (_activeAttack != null)
+            {
+                _attackElapsedSeconds += dtSeconds;
+                float dur = (float)_activeAttack.NominalDuration.TotalSeconds;
+                float t = dur <= 0f ? 1f : Math.Clamp(_attackElapsedSeconds / dur, 0f, 1f);
+                _attackProgress = t;
+
+                // Attack activity keeps a parked dice display alive, like any action beat would.
+                if (_diceHeld) _diceLingerSeconds = 0f;
+
+                // One sound cue per volley, when its time slice begins (at most one per frame; a
+                // dropped frame catches up on the next).
+                if (_attackVolleysCued < VolleysStarted(t, _activeAttack.VolleyCount))
+                {
+                    volleyCued = _activeAttack;
+                    _attackVolleysCued++;
+                }
+
+                // A melee clash fires a one-time hit-stop for weight.
+                if (!_attackHitStopFired && _activeAttack.IsMelee && t >= HitStopTriggerT)
+                {
+                    _hitStopRemaining = HitStopDuration;
+                    _attackHitStopFired = true;
+                }
+
+                if (_attackElapsedSeconds >= dur) _activeAttack = null;
+            }
         }
 
-        // Outside the lock: the cue handler (sound) shouldn't run under our lock, and it never
-        // re-enters the player.
-        if (started != null) BeatStarted?.Invoke(started);
+        // Outside the lock: the cue handlers (sound) shouldn't run under our lock, and they never
+        // re-enter the player.
+        if (started != null)
+            foreach (PresentationBeat beat in started) BeatStarted?.Invoke(beat);
+        if (volleyCued != null) AttackVolleyStarted?.Invoke(volleyCued);
+    }
+
+    // #238: how many volleys have begun by progress t. Volley v owns the slice starting at t = v/volleys
+    // (matching AttackOverlay), so this is floor(t*volleys)+1 capped at the volley count — 1 the moment
+    // the attack starts, stepping up as each later volley's slice opens. Internal for tests.
+    internal static int VolleysStarted(float t, int volleyCount)
+    {
+        int volleys = Math.Max(1, volleyCount);
+        return Math.Min(volleys, (int)(Math.Clamp(t, 0f, 1f) * volleys) + 1);
     }
 
     private void Advance(PresentationBeat beat, float t)
@@ -229,10 +288,7 @@ public class PresentationPlayer : IPresentationSink
                 _activeRollOff = rollOff;
                 _rollOffProgress = t;
                 break;
-            case AttackBeat attack:
-                _activeAttack = attack;
-                _attackProgress = t;
-                break;
+            // AttackBeat never reaches here: it runs on its own concurrent track (see Update, #238).
             case SaveBeat save:
                 _activeSave = save;
                 _saveProgress = t;
@@ -269,9 +325,6 @@ public class PresentationPlayer : IPresentationSink
                 break;
             case RollOffBeat:
                 _activeRollOff = null;
-                break;
-            case AttackBeat:
-                _activeAttack = null;
                 break;
             case SaveBeat:
                 _activeSave = null;
