@@ -101,6 +101,8 @@ public class GuiChooseRangedAttackResolver
         if (request == null || tcs == null) return;
 
         // Auto-select first selectable weapon on new request; reset fire counter if attacker changed.
+        // #237: when that weapon has exactly one fireable target, pre-select it too - the player only
+        // has to press Fire. Never auto-fires: the commit stays a deliberate click/Enter.
         if (!ReferenceEquals(request, _lastRequest))
         {
             _lastRequest        = request;
@@ -110,8 +112,9 @@ public class GuiChooseRangedAttackResolver
                 _trackedAttackerRef = attackerRef;
                 _firesThisAction    = 0;
             }
-            _selectedWeaponIdx  = request.WeaponOptions.Count > 0 ? 0 : -1;
-            _selectedTargetTIdx = -1;
+            _selectedWeaponIdx  = FirstFireableWeaponIndex(request.WeaponOptions);
+            _selectedTargetTIdx = _selectedWeaponIdx >= 0
+                ? SoleFireableTargetIndex(request.WeaponOptions[_selectedWeaponIdx]) : -1;
         }
 
         DrawHoverLines(request);
@@ -164,7 +167,8 @@ public class GuiChooseRangedAttackResolver
             {
                 if (selectableW)
                 {
-                    if (_selectedWeaponIdx != wi) _selectedTargetTIdx = -1;
+                    // #237: switching weapons re-applies the sole-target pre-select.
+                    if (_selectedWeaponIdx != wi) _selectedTargetTIdx = SoleFireableTargetIndex(wo);
                     _selectedWeaponIdx = wi;
                 }
             }
@@ -485,6 +489,32 @@ public class GuiChooseRangedAttackResolver
         for (int ti = 0; ti < stats.Count; ti++)
             if (stats[ti].UnselectableReason == null && stats[ti].modelsThatCanShoot.Count > 0) return ti;
         return -1;
+    }
+
+    // #237: the first weapon that can actually fire at something, so the auto-selected weapon is never
+    // a grayed row. Falls back to 0 (the old behavior) when nothing is fireable, so the panel still
+    // shows the first weapon's rows rather than nothing; -1 only when there are no weapons at all.
+    // Internal for tests.
+    internal static int FirstFireableWeaponIndex(IReadOnlyList<WeaponOption> weaponOptions)
+    {
+        for (int wi = 0; wi < weaponOptions.Count; wi++)
+            if (HasAnyFireableTarget(weaponOptions[wi])) return wi;
+        return weaponOptions.Count > 0 ? 0 : -1;
+    }
+
+    // #237: the index of the weapon's ONLY fireable target, or -1 when it has zero or several - the
+    // pre-select must never guess between real alternatives. Internal for tests.
+    internal static int SoleFireableTargetIndex(WeaponOption wo)
+    {
+        int sole = -1;
+        for (int ti = 0; ti < wo.WeaponTargetStats.Count; ti++)
+        {
+            var ts = wo.WeaponTargetStats[ti];
+            if (ts.UnselectableReason != null || ts.modelsThatCanShoot.Count == 0) continue;
+            if (sole >= 0) return -1;
+            sole = ti;
+        }
+        return sole;
     }
 
     private static bool HasAnyFireableTarget(WeaponOption wo)

@@ -169,10 +169,11 @@ public class GuiAssignWoundsResolver
 
         ImGui.EndChild();
 
-        // Auto-assign button
+        // Auto-assign button. #237: Primary style binds Enter, so the common "just spread them" case
+        // is a single keypress.
         float btnY = dh - pad - footH;
         ImGui.SetCursorPos(new Vector2(pad, btnY));
-        if (ImGui.Button("Auto-assign All", new Vector2(btnW, footH - 4f)))
+        if (ResolverButtons.Primary("Auto-assign All", new Vector2(btnW, footH - 4f)))
         {
             results.AutoFill();
             Complete(tcs, results);

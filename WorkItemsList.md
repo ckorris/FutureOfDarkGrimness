@@ -103,6 +103,7 @@ detection, host-IP display, DNS host entry. See `NetworkingHandoff-2026-07-08.md
 - [ ] 232 — Remove the saved-hits beat, especially its sound (keep failed-save presentation); goes beyond #204's pacing fix. ([WorkItems/232](WorkItems/232-remove-save-hit-beat.md))
 - [ ] 233 — Add a dice-roll beat for casting (engine beat emission in CastSpellStage). ([WorkItems/233](WorkItems/233-cast-roll-beat.md))
 - [ ] 235 — Game Over card: center the result text + make the window draggable so the final board is inspectable. ([WorkItems/235](WorkItems/235-game-over-box-polish.md))
+- [~] 237 — Single-option pick shortcuts: shooting pre-selects a sole fireable target, sole-defender charge shows a one-click confirm card (keeps #202's Back), Enter = Auto-assign All. Implemented + tested; awaiting GUI hand-verify. ([WorkItems/237](WorkItems/237-single-option-pick-shortcuts.md))
 
 ## 2026-06-10 audit follow-ups
 

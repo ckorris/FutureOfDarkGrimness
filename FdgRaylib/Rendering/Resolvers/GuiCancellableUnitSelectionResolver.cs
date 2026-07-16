@@ -19,7 +19,9 @@ public class GuiCancellableUnitSelectionResolver
     private float _scale = 10f;
     private float _tableH = GameWideConstants.DEFAULT_TABLE_HEIGHT_INCHES;
     private int _originX, _originY;
-    private DataReference? _hoveredValidRef;
+    // Protected so GuiChooseMeleeDefenderResolver's confirm-card path (#237) shares the ring
+    // drawing and clears the hover ref exactly like the base Draw does.
+    protected DataReference? _hoveredValidRef;
 
     public void UpdateLayout(float scale, int originX, int originY, float tableH)
     {
@@ -75,7 +77,7 @@ public class GuiCancellableUnitSelectionResolver
         _hoveredValidRef = null;
     }
 
-    private void DrawTargetRings()
+    protected void DrawTargetRings()
     {
         CancellableSelectionRequest<UnitData>? request;
         lock (_lock) { request = _request; }
