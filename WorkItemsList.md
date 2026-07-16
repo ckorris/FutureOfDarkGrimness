@@ -49,6 +49,7 @@ Corpus coverage is a different story: 528 of 13,870 book rule references (3.8%) 
 ## Casting
 
 - [~] 034 — Spell content: targeting primitives Part 1 complete; remaining: conferred-rule implementations (coordinate with #100) and per-faction spell JSON (copyrighted — authored locally, never committed; partially generated). ([WorkItems/034](WorkItems/034-spell-content.md))
+- [ ] 234 — Casting is possible after Charge + melee in one activation; check the rulebook, then gate the Cast option if illegal. ([WorkItems/234](WorkItems/234-cast-after-charge-legality.md))
 
 ## Army Forge
 
@@ -94,6 +95,13 @@ detection, host-IP display, DNS host entry. See `NetworkingHandoff-2026-07-08.md
 - [ ] 224 — (exploratory, unconfirmed) Persistent "selected unit" inspector panel: stat detail, charge/shoot threat radius, hover-to-explain special rules. ([WorkItems/224](WorkItems/224-persistent-unit-inspector-panel.md))
 - [ ] 226 — In-app bug reporting system; mechanism not yet decided. ([WorkItems/226](WorkItems/226-bug-reporting-system.md))
 - [~] 227 — Hero indicator: white dark-outlined star on the hero model's base + hover-tooltip tag with the hero's own Q/D. Implemented + tested; awaiting GUI hand-verification. ([WorkItems/227](WorkItems/227-hero-visual-indicator.md))
+- [ ] 228 — Terrain texture shifts when zooming (texture likely sampled in screen space, not table space). ([WorkItems/228](WorkItems/228-terrain-texture-zoom-shift.md))
+- [ ] 229 — (exploratory) Bottom in-game menu should maybe be its own panel; confirm which strip + intent before building. ([WorkItems/229](WorkItems/229-bottom-menu-own-panel.md))
+- [ ] 230 — Show weapon range rings during placement (deploy / embark / ambush arrival), anchored to the candidate position. ([WorkItems/230](WorkItems/230-placement-weapon-range-rings.md))
+- [ ] 231 — Remove the LoS blocking-line visual from shooting (confusing when a valid target stands in front of the blocker). ([WorkItems/231](WorkItems/231-remove-los-blocking-lines.md))
+- [ ] 232 — Remove the saved-hits beat, especially its sound (keep failed-save presentation); goes beyond #204's pacing fix. ([WorkItems/232](WorkItems/232-remove-save-hit-beat.md))
+- [ ] 233 — Add a dice-roll beat for casting (engine beat emission in CastSpellStage). ([WorkItems/233](WorkItems/233-cast-roll-beat.md))
+- [ ] 235 — Game Over card: center the result text + make the window draggable so the final board is inspectable. ([WorkItems/235](WorkItems/235-game-over-box-polish.md))
 
 ## 2026-06-10 audit follow-ups
 
