@@ -21,6 +21,13 @@ public class ArmyBuilderScreen : IAppScreen
 
     private readonly ArmyListFile _army = new() { PointsLimit = DefaultPointsLimit };
 
+    // #236: whether the currently loaded file carried an Army Forge block (BuiltArmyFile.Book/Selections).
+    // Saving from this freeform screen writes a plain ArmyListFile, which strips that block - how
+    // "Battle Brothers 2k" silently lost its book (2026-07-15). Save therefore gates on an explicit
+    // "detach" confirm whenever this is set. (Preserving the block instead would be worse: freeform edits
+    // desync it, and a later Forge re-save would silently discard them.)
+    private bool _loadedForgeArmy;
+
     private static readonly FileFilter ArmyFilter = new(
         $"Army List (*{ArmyListFile.EXTENSION_WITH_PERIOD})",
         new[] { $"*{ArmyListFile.EXTENSION_WITH_PERIOD}" });
@@ -128,6 +135,18 @@ public class ArmyBuilderScreen : IAppScreen
 
     private void Save()
     {
+        // #236: never silently strip a Forge-built army's embedded block - confirm the detach first.
+        // (The modal itself is drawn in DrawToolbar, the OpenPopup ID scope.)
+        if (_loadedForgeArmy)
+        {
+            ImGui.OpenPopup(DetachPopupTitle);
+            return;
+        }
+        SaveToDisk();
+    }
+
+    private void SaveToDisk()
+    {
         var (canceled, path) = TinyDialogs.SaveFileDialog("Save Army", "", ArmyFilter);
         if (canceled || string.IsNullOrEmpty(path)) return;
 
@@ -135,6 +154,8 @@ public class ArmyBuilderScreen : IAppScreen
             path = Path.ChangeExtension(path, ArmyListFile.EXTENSION_WITH_PERIOD);
 
         File.WriteAllText(path, JsonSerializer.Serialize(_army, RuleJson.Options));
+        // What's on disk is now a plain freeform army; later saves in this session need no re-confirm.
+        _loadedForgeArmy = false;
     }
 
     private void Load()
@@ -145,8 +166,12 @@ public class ArmyBuilderScreen : IAppScreen
         string path = paths?.FirstOrDefault() ?? "";
         if (!File.Exists(path)) return;
 
-        var loaded = JsonSerializer.Deserialize<ArmyListFile>(File.ReadAllText(path), RuleJson.Options);
+        // #236: read as BuiltArmyFile (a superset - plain armies just leave Book/Selections null) so a
+        // Forge-built file is RECOGNIZED here even though this freeform editor doesn't edit the block.
+        var loaded = JsonSerializer.Deserialize<FDG.ArmyBuilding.BuiltArmyFile>(File.ReadAllText(path), RuleJson.Options);
         if (loaded is null) return;
+
+        _loadedForgeArmy = HasForgeBlock(loaded);
 
         _army.Units.Clear();
         _army.RuleDefinitions.Clear();
@@ -188,6 +213,7 @@ public class ArmyBuilderScreen : IAppScreen
                 _army.Name    = "";
                 _army.Faction = "";
                 _army.PointsLimit = DefaultPointsLimit;
+                _loadedForgeArmy = false; // fresh freeform army - nothing to detach
                 ImGui.CloseCurrentPopup();
             }
             ImGui.SameLine();
@@ -197,8 +223,40 @@ public class ArmyBuilderScreen : IAppScreen
             ImGui.EndPopup();
         }
 
+        // #236: detach confirm for saving a Forge-built army from the freeform editor. Cancel is the
+        // focused, safe default (mirrors the launch gate).
+        if (ImGui.BeginPopupModal(DetachPopupTitle, ImGuiWindowFlags.AlwaysAutoResize))
+        {
+            ImGui.PushTextWrapPos(ImGui.GetCursorPosX() + 440f);
+            ImGui.TextUnformatted(
+                "This army was built in the Army Forge. Saving from this editor writes it WITHOUT the " +
+                "embedded book and selections, so the Army Forge can no longer re-edit it. The file will " +
+                "still play normally.");
+            ImGui.PopTextWrapPos();
+            ImGui.Spacing();
+
+            if (ImGui.Button("Cancel", new Vector2(140, 0)))
+                ImGui.CloseCurrentPopup();
+            ImGui.SetItemDefaultFocus();
+            ImGui.SameLine();
+            if (ImGui.Button("Save detached", new Vector2(140, 0)))
+            {
+                ImGui.CloseCurrentPopup();
+                SaveToDisk();
+            }
+
+            ImGui.EndPopup();
+        }
+
         ImGui.Separator();
     }
+
+    private const string DetachPopupTitle = "Detach from Army Forge?";
+
+    /// <summary>#236: whether a loaded file carries the Army Forge block (book and/or selections) that a
+    /// freeform save would strip. Pure - unit-tested.</summary>
+    internal static bool HasForgeBlock(ArmyListFile? file) =>
+        file is FDG.ArmyBuilding.BuiltArmyFile built && (built.Selections != null || built.Book != null);
 
     private void DrawArmyHeader()
     {

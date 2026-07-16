@@ -114,4 +114,33 @@ public class ArmyBuilderScreenTests
         Assert.That(u.SpecialRules, Has.Count.EqualTo(2));
         Assert.That(u.Weapons, Has.Count.EqualTo(1));
     }
+
+    // #236: the freeform builder must RECOGNIZE a Forge-built army, so Save can gate on the detach
+    // confirm instead of silently stripping the embedded book/selections block.
+    [Test]
+    public void HasForgeBlock_TrueOnlyWhenBookOrSelectionsPresent()
+    {
+        Assert.That(ArmyBuilderScreen.HasForgeBlock(null), Is.False);
+        Assert.That(ArmyBuilderScreen.HasForgeBlock(new ArmyListFile()), Is.False, "plain freeform army");
+        Assert.That(ArmyBuilderScreen.HasForgeBlock(new FDG.ArmyBuilding.BuiltArmyFile()), Is.False,
+            "BuiltArmyFile with no block (a plain file read through the superset type)");
+        Assert.That(ArmyBuilderScreen.HasForgeBlock(
+            new FDG.ArmyBuilding.BuiltArmyFile { Book = new FDG.ArmyBuilding.BookFile() }), Is.True);
+        Assert.That(ArmyBuilderScreen.HasForgeBlock(
+            new FDG.ArmyBuilding.BuiltArmyFile { Selections = new FDG.ArmyBuilding.BuilderList() }), Is.True);
+    }
+
+    [Test]
+    public void HasForgeBlock_SurvivesTheLoadPathRoundTrip()
+    {
+        // Mirrors ArmyBuilderScreen.Load: every file deserializes as BuiltArmyFile via RuleJson.Options.
+        // A Forge file's block must be seen; a plain army's absence of one must read as false.
+        var forge = System.Text.Json.JsonSerializer.Deserialize<FDG.ArmyBuilding.BuiltArmyFile>(
+            "{\"name\":\"A\",\"units\":[],\"book\":{\"name\":\"B\"}}", FDG.Rules.Serialization.RuleJson.Options);
+        Assert.That(ArmyBuilderScreen.HasForgeBlock(forge), Is.True, "book block detected through the load path");
+
+        var plain = System.Text.Json.JsonSerializer.Deserialize<FDG.ArmyBuilding.BuiltArmyFile>(
+            "{\"name\":\"A\",\"units\":[]}", FDG.Rules.Serialization.RuleJson.Options);
+        Assert.That(ArmyBuilderScreen.HasForgeBlock(plain), Is.False, "plain army stays freeform");
+    }
 }
