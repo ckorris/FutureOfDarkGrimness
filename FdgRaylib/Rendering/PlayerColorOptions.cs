@@ -48,13 +48,14 @@ public static class PlayerColorOptions
     }
 
     /// <summary>
-    /// Resolves each slot's effective option index. Explicit picks (non-null, in range) always win;
-    /// unchosen slots take the first option nobody has explicitly claimed or already been defaulted to,
-    /// scanning in <see cref="Options"/> order. The dropdown (via <see cref="IsTakenByAnother"/>) never
-    /// offers a colour that is currently anyone else's, so in practice picks and defaults stay disjoint;
-    /// if a stale pick does collide with another pick (host-side races resolve first-committed-wins),
-    /// the bump-to-next-free below is the deterministic fallback. Slots beyond <see cref="Count"/> wrap
-    /// by slot index.
+    /// Resolves each slot's effective option index. Explicit picks (non-null, in range) always win.
+    /// Unchosen slots are SLOT-ANCHORED: slot i prefers Options[i] (P1 orange, P2 purple, ...) and keeps
+    /// it as long as it's free - so one player picking a free colour never shifts anyone else's default.
+    /// Only when a slot's own colour is actually taken does it fall to the first free option in palette
+    /// order (deterministic bump - covers the stale-pick races the host resolves first-committed-wins,
+    /// since the host can't reserve app-side defaults). The dropdown (via <see cref="IsTakenByAnother"/>)
+    /// never offers a colour that is currently anyone else's, so in the normal flow picks and defaults
+    /// stay disjoint. Slots beyond <see cref="Count"/> wrap by slot index.
     /// </summary>
     public static int[] ResolveIndices(IReadOnlyList<int?> chosenPerSlot)
     {
@@ -65,7 +66,6 @@ public static class PlayerColorOptions
             if (chosenPerSlot[i] is int c && c >= 0 && c < Options.Length)
                 taken.Add(c);
 
-        int next = 0;
         for (int i = 0; i < n; i++)
         {
             if (chosenPerSlot[i] is int chosen && chosen >= 0 && chosen < Options.Length)
@@ -74,6 +74,15 @@ public static class PlayerColorOptions
                 continue;
             }
 
+            int preferred = i % Options.Length; // the slot's own palette colour
+            if (!taken.Contains(preferred))
+            {
+                result[i] = preferred;
+                taken.Add(preferred);
+                continue;
+            }
+
+            int next = 0;
             while (next < Options.Length && taken.Contains(next)) next++;
             if (next < Options.Length)
             {
@@ -82,7 +91,7 @@ public static class PlayerColorOptions
             }
             else
             {
-                result[i] = i % Options.Length; // more slots than colours: wrap, duplicates unavoidable
+                result[i] = preferred; // more slots than colours: wrap, duplicates unavoidable
             }
         }
         return result;

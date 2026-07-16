@@ -35,7 +35,16 @@ public class PlayerColorOptionsTests
     {
         int[] r = PlayerColorOptions.ResolveIndices(new int?[] { 7, null });
         Assert.That(r[0], Is.EqualTo(7), "picked pink stays pink");
-        Assert.That(r[1], Is.EqualTo(0), "unpicked slot takes the first free default");
+        Assert.That(r[1], Is.EqualTo(1), "unpicked slot keeps its own slot colour (purple)");
+    }
+
+    [Test]
+    public void Resolve_DefaultsAreSlotAnchored_PickingAFreeColourShiftsNobody()
+    {
+        // P1 picks Red, freeing Orange. P2 and P3 must KEEP purple/green - a default only moves when its
+        // colour is actually taken, never because a lower slot vacated its own.
+        int[] r = PlayerColorOptions.ResolveIndices(new int?[] { 4, null, null });
+        Assert.That(r, Is.EqualTo(new[] { 4, 1, 2 }));
     }
 
     [Test]
@@ -82,7 +91,7 @@ public class PlayerColorOptionsTests
         var chosen = new int?[10];
         int[] r = PlayerColorOptions.ResolveIndices(chosen);
         Assert.That(r.Take(8), Is.EqualTo(Enumerable.Range(0, 8)), "first eight get the palette");
-        Assert.That(r[8], Is.InRange(0, 7));
-        Assert.That(r[9], Is.InRange(0, 7));
+        Assert.That(r[8], Is.EqualTo(0), "ninth wraps to its slot colour");
+        Assert.That(r[9], Is.EqualTo(1));
     }
 }
