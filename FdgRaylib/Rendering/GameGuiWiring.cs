@@ -16,12 +16,6 @@ namespace FdgRaylib.Rendering;
 /// </summary>
 public static class GameGuiWiring
 {
-    // Orange / Purple as the two default team colours (was Blue / Red). Purple isn't a Raylib built-in,
-    // so it's spelled out; Green/Yellow round out the palette for 3-4 player games.
-    public static readonly Color TeamPurple = new(150, 70, 200, 255);
-    public static readonly Color[] PlayerPalette =
-        { Color.Orange, TeamPurple, Color.Green, Color.Yellow };
-
     public delegate void GameLaunchedHandler(ITableState tableState, Func<PlayerID, Color> colorForPlayer,
         GameLog? log, GuiResolverOverlay overlay, GuiOutstandingTaskDisplay taskDisplay,
         PresentationPlayer presentationPlayer, Func<string?>? saveGameToJson, GuiPlayerMessageUI playerMessageUI);
@@ -30,15 +24,25 @@ public static class GameGuiWiring
     /// Builds and assigns the GUI interfaces on <paramref name="game"/> and hands the assembled
     /// pieces to <paramref name="onLaunched"/> (normally <c>RaylibRenderer.TransitionToGame</c>).
     /// </summary>
+    /// <param name="colorChoiceForPlayer">A player's lobby colour pick (#221) as an index into
+    /// <see cref="PlayerColorOptions.Options"/>, or null for no pick. Null / omitted entirely (the
+    /// --scenario direct launch) means every slot takes the palette defaults in order.</param>
     public static void Launch(IFDGGame game, IReadOnlyList<(PlayerID ID, string Name)> players,
-        Func<string?>? saveGameToJson, GameLaunchedHandler? onLaunched)
+        Func<string?>? saveGameToJson, GameLaunchedHandler? onLaunched,
+        Func<PlayerID, int?>? colorChoiceForPlayer = null)
     {
-        // Player -> palette colour, by both PlayerID (table models) and display name (chat sender lines).
+        // Player -> palette colour (#221: lobby picks win, unpicked slots fill with the free defaults),
+        // by both PlayerID (table models) and display name (chat sender lines).
+        var chosen = new int?[players.Count];
+        for (int i = 0; i < players.Count; i++)
+            chosen[i] = colorChoiceForPlayer?.Invoke(players[i].ID);
+        int[] colorIdx = PlayerColorOptions.ResolveIndices(chosen);
+
         var colors = new Dictionary<PlayerID, Color>();
         var nameColors = new Dictionary<string, TextColor>();
         for (int i = 0; i < players.Count; i++)
         {
-            Color c = PlayerPalette[i % PlayerPalette.Length];
+            Color c = PlayerColorOptions.Options[colorIdx[i]].Color;
             colors[players[i].ID] = c;
             nameColors[players[i].Name] = new TextColor(c.R, c.G, c.B, 255);
         }

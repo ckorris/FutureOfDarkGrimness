@@ -88,7 +88,7 @@ detection, host-IP display, DNS host entry. See `NetworkingHandoff-2026-07-08.md
 - [~] 056 — Presentation beat stream: architecture shipped and live on master; remaining animation polish + a hands-on pass. ([WorkItems/056](WorkItems/056-presentation-beat-stream.md))
 - [ ] 049 — Multi-pool terrain selection: lobby picker for which `TerrainLayoutFile` feeds AutoFromLayout / Alternating. Spun off #002.
 - [~] 055 — Special-rule attribution in resolvers: (a) movement overlay + (b) shooting resolver done; remaining (c): markers on units carrying relevant defensive/relational rules (e.g. a Stealth tag at the source).
-- [ ] 221 — Color picker in lobby for player/team colors (none exists today); scope includes where the color then surfaces in-game. ([WorkItems/221](WorkItems/221-lobby-color-picker.md))
+- [~] 221 — Lobby color picker: 8-color RTS-style dropdown per player row, picks resolved at launch. Implemented (local-machine only; network sync deferred to the ledger); awaiting GUI hand-verification. ([WorkItems/221](WorkItems/221-lobby-color-picker.md))
 - [ ] 222 — Tie dice rolls (`RollOffBeat`) take too long; tune beat/overlay pacing. ([WorkItems/222](WorkItems/222-dice-roll-speed.md))
 - [~] 223 — Deploy/activate unit picker: hovering a valid option raises a full-spec stat tooltip (shared `UnitStatBlockRenderer`). Implemented; awaiting build + GUI hand-verification. ([WorkItems/223](WorkItems/223-deploy-option-tooltip.md))
 - [ ] 224 — (exploratory, unconfirmed) Persistent "selected unit" inspector panel: stat detail, charge/shoot threat radius, hover-to-explain special rules. ([WorkItems/224](WorkItems/224-persistent-unit-inspector-panel.md))
