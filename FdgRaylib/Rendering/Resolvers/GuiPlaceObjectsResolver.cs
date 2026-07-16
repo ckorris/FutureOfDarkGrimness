@@ -417,6 +417,18 @@ public class GuiPlaceObjectsResolver<T>
             _dragIndex = null;
         }
 
+        // The unit's stats (weapons with special rules + unit special rules). Most needed for an Ambush
+        // arrival, where the unit is coming on from reserve and isn't visible on the table to hover. Shown
+        // for any model placement; skipped for non-model objects (objectives).
+        IUnit? deploying = FindOwningUnit(request);
+        if (deploying != null)
+        {
+            ImGui.Spacing();
+            ImGui.BeginChild("##DeployStats", new Vector2(0, 118f), ImGuiChildFlags.Borders);
+            UnitStatBlockRenderer.Draw(deploying, includeRuleDescriptions: false);
+            ImGui.EndChild();
+        }
+
         ImGui.Spacing();
         if (_errorMessage != null)
         {
@@ -512,6 +524,18 @@ public class GuiPlaceObjectsResolver<T>
         ImGui.EndDisabled();
 
         ImGui.End();
+    }
+
+    // The unit the placed models belong to, or null when placing non-model objects (objectives) or when it
+    // can't be found. Matches on the first model's reference against every unit's model list.
+    private IUnit? FindOwningUnit(PlaceObjectsRequest<T> request)
+    {
+        if (request.ModelsToPlace.Count == 0) return null;
+        if (request.ModelsToPlace[0].GetValue() is not ModelData first) return null;
+        foreach (var unit in _tableState.Units.Objects)
+            foreach (var m in unit.Models)
+                if (ReferenceEquals(m, first)) return unit;
+        return null;
     }
 
     /// <summary>Tries to place all remaining models into free spots; returns false if any can't fit.</summary>

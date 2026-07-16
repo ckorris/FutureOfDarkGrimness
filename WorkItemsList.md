@@ -23,6 +23,7 @@ When closing an item: write the Outcome in its detail file, tick the line, and m
 - [ ] 211 — Solo AI mover submits a path through impassible terrain (~1/1800; #159's family, impassible flavor). Fix with one validate-or-decline ladder on the solo mover alongside #159. ([WorkItems/211](WorkItems/211-solo-mover-impassible-terrain.md))
 - [ ] 214 — Teleport (#197) doesn't draw a range-of-motion circle like movement does; placement is bounded correctly, just add the reach-circle visual. ([WorkItems/214](WorkItems/214-teleport-range-circle.md))
 - [ ] 216 — Tactician plans rejected by the #205 friendly-stacking check silently fall back to the SOLO resolver (suspected DE/RL mirror-drift driver); charge candidate made friendly-aware, resolver-level repair + drift attribution still open. ([WorkItems/216](WorkItems/216-tactician-solo-fallback-on-stacked-plans.md))
+- [ ] 217 — Tactician Bot lobby name is enumerated by total player count, not by how many bots of that profile already exist ("Tactician Bot 3" as the first Tactician added). ([WorkItems/217](WorkItems/217-tactician-bot-naming.md))
 
 ## Shooting & cover
 
@@ -31,6 +32,7 @@ When closing an item: write the Outcome in its detail file, tick the line, and m
 ## Model bases & geometry
 
 - [~] 149 — Configurable model base size + shapes (per-unit circle/rect via the `IBaseShape` seam): core landed; remaining facets in the detail file. The deferred hard-path geometry became #150 (awaiting verification below). ([WorkItems/149](WorkItems/149-base-shapes.md))
+- [ ] 225 — Audit bundled army/book data for default or wrong-aspect (wider-than-long) base shapes/sizes against real OPR bases. ([WorkItems/225](WorkItems/225-army-list-base-shape-audit.md))
 
 ## Special rules — framework
 
@@ -47,6 +49,12 @@ Corpus coverage is a different story: 528 of 13,870 book rule references (3.8%) 
 ## Casting
 
 - [~] 034 — Spell content: targeting primitives Part 1 complete; remaining: conferred-rule implementations (coordinate with #100) and per-faction spell JSON (copyrighted — authored locally, never committed; partially generated). ([WorkItems/034](WorkItems/034-spell-content.md))
+
+## Army Forge
+
+- [ ] 218 — "Replace All" upgrade sections charge `option.Cost` once per model instead of a flat section cost; needs an OPR-pricing-convention check before fixing `ListCompiler`'s multiplication. ([WorkItems/218](WorkItems/218-army-forge-replace-all-cost.md))
+- [ ] 219 — Audit bundled `.fdgbook` upgrades for options that should cost points but show/charge 0 (importer or data gap, not yet isolated). ([WorkItems/219](WorkItems/219-army-forge-zero-cost-upgrades.md))
+- [ ] 220 — Version control for Army Forge lists (undo/revision history); mechanism not yet decided, surface the design fork first. ([WorkItems/220](WorkItems/220-army-forge-list-version-control.md))
 
 ## Transport
 
@@ -80,6 +88,12 @@ detection, host-IP display, DNS host entry. See `NetworkingHandoff-2026-07-08.md
 - [~] 056 — Presentation beat stream: architecture shipped and live on master; remaining animation polish + a hands-on pass. ([WorkItems/056](WorkItems/056-presentation-beat-stream.md))
 - [ ] 049 — Multi-pool terrain selection: lobby picker for which `TerrainLayoutFile` feeds AutoFromLayout / Alternating. Spun off #002.
 - [~] 055 — Special-rule attribution in resolvers: (a) movement overlay + (b) shooting resolver done; remaining (c): markers on units carrying relevant defensive/relational rules (e.g. a Stealth tag at the source).
+- [ ] 221 — Color picker in lobby for player/team colors (none exists today); scope includes where the color then surfaces in-game. ([WorkItems/221](WorkItems/221-lobby-color-picker.md))
+- [ ] 222 — Tie dice rolls (`RollOffBeat`) take too long; tune beat/overlay pacing. ([WorkItems/222](WorkItems/222-dice-roll-speed.md))
+- [~] 223 — Deploy/activate unit picker: hovering a valid option raises a full-spec stat tooltip (shared `UnitStatBlockRenderer`). Implemented; awaiting build + GUI hand-verification. ([WorkItems/223](WorkItems/223-deploy-option-tooltip.md))
+- [ ] 224 — (exploratory, unconfirmed) Persistent "selected unit" inspector panel: stat detail, charge/shoot threat radius, hover-to-explain special rules. ([WorkItems/224](WorkItems/224-persistent-unit-inspector-panel.md))
+- [ ] 226 — In-app bug reporting system; mechanism not yet decided. ([WorkItems/226](WorkItems/226-bug-reporting-system.md))
+- [~] 227 — Hero indicator: white dark-outlined star on the hero model's base + hover-tooltip tag with the hero's own Q/D. Implemented + tested; awaiting GUI hand-verification. ([WorkItems/227](WorkItems/227-hero-visual-indicator.md))
 
 ## 2026-06-10 audit follow-ups
 

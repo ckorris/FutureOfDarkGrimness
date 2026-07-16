@@ -18,6 +18,15 @@ public static class UnitOptionLabel
     public static (string Heading, IReadOnlyList<string> Details) Build(
         string displayName, int liveModelCount, int quality, int defense,
         IReadOnlyList<(string Name, float RangeInches)> distinctWeapons)
+        => Build(displayName, liveModelCount, quality, defense,
+            distinctWeapons.Select(w => (w.Name, w.RangeInches, "")).ToList());
+
+    /// <param name="displayName">The option's display name (may already carry a suffix like "(Ambush)").</param>
+    /// <param name="distinctWeapons">One entry per distinct weapon: name, range in inches (0 = melee), and a
+    /// (possibly empty) special-rule list like "Rending, Blast(3)" appended in brackets after the range.</param>
+    public static (string Heading, IReadOnlyList<string> Details) Build(
+        string displayName, int liveModelCount, int quality, int defense,
+        IReadOnlyList<(string Name, float RangeInches, string Rules)> distinctWeapons)
     {
         string plural = liveModelCount == 1 ? "model" : "models";
         var details = new List<string>
@@ -25,7 +34,7 @@ public static class UnitOptionLabel
             $"{liveModelCount} {plural}, Q{quality}+ D{defense}+",
             distinctWeapons.Count > 0
                 ? string.Join(", ", distinctWeapons.Select(w =>
-                    $"{w.Name} ({(w.RangeInches > 0f ? $"{w.RangeInches:0.#}\"" : "melee")})"))
+                    $"{w.Name} ({(w.RangeInches > 0f ? $"{w.RangeInches:0.#}\"" : "melee")}{(string.IsNullOrEmpty(w.Rules) ? "" : $", {w.Rules}")})"))
                 : "(no weapons)",
         };
         return (displayName, details);

@@ -801,6 +801,12 @@ public class RaylibRenderer
             ModelBaseRenderer.DrawFilledRaylib(model.BaseShape, cx, cy, l.Scale, fill, outline, model.Facing);
             ModelBaseRenderer.DrawHeadingRaylib(model.BaseShape, cx, cy, l.Scale, model.Facing,
                 new Color((byte)255, (byte)255, (byte)255, a));
+
+            // Joined-Hero marker (#227): a white, dark-outlined star centred on the hero model's base. Drawn
+            // last so it sits atop the fill; overlays the base rather than ringing it, so it never clashes
+            // with the selection / hover halos or range rings.
+            if (HeroMarkerRenderer.IsHeroModel(unit, model))
+                HeroMarkerRenderer.DrawStarRaylib(cx, cy, model.BaseRadiusInches * l.Scale, a);
         }
     }
 

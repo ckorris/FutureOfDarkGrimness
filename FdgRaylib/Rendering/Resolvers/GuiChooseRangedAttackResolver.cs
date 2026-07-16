@@ -191,8 +191,10 @@ public class GuiChooseRangedAttackResolver
                 ? ImGui.ColorConvertFloat4ToU32(new Vector4(0.65f, 0.65f, 0.70f, 1f))
                 : ImGui.ColorConvertFloat4ToU32(new Vector4(0.50f, 0.50f, 0.50f, 1f));
             dl.AddText(rMin + new Vector2(4, 2), colTxt, wo.Weapon.Name);
+            string wRules = WeaponStatFormatter.RuleList(wo.Weapon);
+            string wRuleSuffix = wRules.Length > 0 ? $", {wRules}" : "";
             dl.AddText(rMin + new Vector2(4, ImGui.GetTextLineHeight() + 4), colSub,
-                $"{wo.Weapon.RangeInches}\", A{wo.Weapon.Attacks} AP{wo.Weapon.ArmorPenetration}");
+                $"{wo.Weapon.RangeInches}\", A{wo.Weapon.Attacks} AP{wo.Weapon.ArmorPenetration}{wRuleSuffix}");
         }
         ImGui.EndChild();
 

@@ -52,10 +52,21 @@ public class UnitOptionLabelTests
     [Test]
     public void Build_OmitsUnitWideSpecialRules()
     {
-        // Special rules are intentionally not part of the button content (they belong in the hover tooltip).
+        // Unit-WIDE special rules are intentionally not part of the button content (they belong in the hover
+        // tooltip). Per-WEAPON rules are shown via the rules overload below.
         var (heading, details) = UnitOptionLabel.Build("Shadow Squad", 5, 4, 4,
             new[] { ("Rifle", 24f) });
 
         Assert.That(heading + string.Join(" ", details), Does.Not.Contain("Stealth"));
+    }
+
+    [Test]
+    public void Build_WithWeaponRules_AppendsRulesAfterRange()
+    {
+        var (_, details) = UnitOptionLabel.Build("Snipers", 3, 4, 4,
+            new[] { ("Shredder Cannon", 18f, "Rending, Blast(3)"), ("Blade", 0f, "") });
+
+        // Range then rules inside the parens; a ruleless weapon stays "(melee)".
+        Assert.That(details[1], Is.EqualTo("Shredder Cannon (18\", Rending, Blast(3)), Blade (melee)"));
     }
 }

@@ -49,13 +49,21 @@ public class GuiUnitSelectionResolver : GuiSelectionResolver<UnitData>, IGuiCanv
         int liveModels = unit.Models.Count(m => m.GetIsAlive());
         var weapons = unit.AllWeapons()
             .DistinctBy(w => w.Name)
-            .Select(w => (w.Name, w.RangeInches))
+            .Select(w => (w.Name, w.RangeInches, WeaponStatFormatter.RuleList(w)))
             .ToList();
         return UnitOptionLabel.Build(name, liveModels, unit.Quality, unit.Defense, weapons);
     }
 
-    protected override void OnValidOptionHovered(SelectionRequest<UnitData>.ValidOption opt) =>
+    // Hovering a valid option highlights its models on the canvas AND raises a full-spec tooltip (#223): the
+    // same read-only stat block the canvas hover shows, so the player can compare units to deploy / activate
+    // without hunting the board. Called from the base draw loop while the option's button is the hovered item.
+    protected override void OnValidOptionHovered(SelectionRequest<UnitData>.ValidOption opt)
+    {
         _hoveredValidRef = opt.Option.Reference;
+        ImGui.BeginTooltip();
+        UnitStatBlockRenderer.Draw(opt.Option.GetValue(), includeRuleDescriptions: true);
+        ImGui.EndTooltip();
+    }
 
     public string? GetHoverLabel(IUnit unit, IModel model)
     {

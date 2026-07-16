@@ -196,6 +196,18 @@ public class TableTooltipOverlay
         // Model section first — it sits nearest the cursor, so the hovered model's own weapon(s), its
         // model-specific special rules, and (if Tough) its remaining wounds read before the whole-unit stats.
         DrawModelSection(model);
+
+        // Joined-Hero tag (#227): if the hovered model is the unit's joined hero, call it out with the hero's
+        // OWN Quality / Defense (which diverge from the host unit's). The stats live on HeroAttachment, off
+        // the concrete UnitData; fall back to a bare "Hero" for any other IUnit impl.
+        if (HeroMarkerRenderer.IsHeroModel(unit, model))
+        {
+            string tag = unit is UnitData { HeroAttachment: { } ha }
+                ? HeroMarkerRenderer.FormatHeroTag(ha.Quality, ha.Defense)
+                : "Hero";
+            ImGui.TextColored(new Vector4(1f, 0.85f, 0.3f, 1f), tag);
+        }
+
         ImGui.Separator();
 
         ImGui.PushFont(RaylibRenderer.LargeFont);
@@ -248,7 +260,9 @@ public class TableTooltipOverlay
                 string count = grp.Count() > 1 ? $"{grp.Count()}x " : "";
                 string range = w.RangeInches > 0 ? $"{w.RangeInches}\"" : "Melee";
                 string ap    = w.ArmorPenetration > 0 ? $" AP{w.ArmorPenetration}" : "";
-                ImGui.TextUnformatted($"{count}{w.Name}  A{w.Attacks}  {range}{ap}");
+                string wRules = WeaponStatFormatter.RuleList(w);
+                string wRuleSuffix = wRules.Length > 0 ? $"  {wRules}" : "";
+                ImGui.TextUnformatted($"{count}{w.Name}  A{w.Attacks}  {range}{ap}{wRuleSuffix}");
             }
             ImGui.Unindent();
         }
@@ -325,7 +339,9 @@ public class TableTooltipOverlay
             string count = grp.Count() > 1 ? $"{grp.Count()}x " : "";
             string range = w.RangeInches > 0 ? $"{w.RangeInches}\"" : "Melee";
             string ap    = w.ArmorPenetration > 0 ? $" AP{w.ArmorPenetration}" : "";
-            ImGui.TextUnformatted($"{count}{w.Name}  A{w.Attacks}  {range}{ap}");
+            string rules = WeaponStatFormatter.RuleList(w);
+            string ruleSuffix = rules.Length > 0 ? $"  {rules}" : "";
+            ImGui.TextUnformatted($"{count}{w.Name}  A{w.Attacks}  {range}{ap}{ruleSuffix}");
         }
 
         var modelRules = model.RuleDefinitions
