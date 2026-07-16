@@ -43,11 +43,6 @@ public class LobbyScreen : IAppScreen
     private string? _lastLaunchError;
     private IReadOnlyList<string> _launchProblems = Array.Empty<string>();
 
-    // #221: per-player colour picks (index into PlayerColorOptions.Options), keyed by PlayerID so list
-    // refreshes keep them. App-side and local-machine only - picks don't sync over the network (each
-    // machine's lobby colours its own view); GameGuiWiring resolves picks + defaults at launch.
-    private readonly Dictionary<PlayerID, int> _colorChoices = new();
-
     // Host connection info shown so the host knows what address to share (QF9). The port mirrors
     // CommandProtocol.TEMP_PORT (internal to the engine assembly, so it's restated here).
     private const int ListenPort = 6389;
@@ -64,7 +59,6 @@ public class LobbyScreen : IAppScreen
         _viewModel = viewModel;
         _chatInput = "";
         _pendingGame = null;
-        _colorChoices.Clear();
         viewModel.OnLaunched += game => _pendingGame = game;
         // Fires on the engine thread; the renderer just records it and reacts on the main thread.
         viewModel.OnGameEnded += result => OnGameEnded?.Invoke(result);
@@ -218,11 +212,12 @@ public class LobbyScreen : IAppScreen
         float rowH = ImGui.GetTextLineHeight() + cellPad.Y * 2f;
         ImGui.PushStyleVar(ImGuiStyleVar.CellPadding, new Vector2(cellPad.X, cellPad.Y + rowH * 0.25f));
 
-        // #221: effective colour per row this frame - explicit picks win, unpicked rows fill with the
-        // free defaults in palette order (so picking another row's default bumps it to the next colour).
+        // #221: effective colour per row this frame, resolved from the SYNCED picks (ColorIndex rides
+        // LobbyPlayerInfoSummary through the lobby protocol, so every machine computes the same result) -
+        // explicit picks win, unpicked rows fill with the free defaults in palette order.
         var chosen = new int?[players.Count];
         for (int i = 0; i < players.Count; i++)
-            chosen[i] = _colorChoices.TryGetValue(players[i].PlayerID, out int ci) ? ci : null;
+            chosen[i] = players[i].ColorIndex >= 0 ? players[i].ColorIndex : null;
         int[] effectiveColor = PlayerColorOptions.ResolveIndices(chosen);
 
         if (ImGui.BeginTable("##ptable", 7,
@@ -313,9 +308,10 @@ public class LobbyScreen : IAppScreen
     }
 
     // #221: the colour cell - a swatch of the row's effective colour + a dropdown of the 8 palette options,
-    // classic-RTS style. Options another row has EXPLICITLY picked are disabled ("(taken)"); defaults don't
-    // block, so picking someone's default colour steals it and their default shifts. Gated by the same
-    // modify-permission as Load Army (host: everyone; client: itself). Local-machine only - see _colorChoices.
+    // classic-RTS style. Any colour that is currently another row's - explicit pick OR assigned default -
+    // is disabled ("(taken)"), so no pick ever changes someone else's colour. Picks write through the view
+    // model (host: applies + rebroadcasts; client: requests its own row from the host), so they sync to
+    // every machine. Gated by the same modify-permission as Load Army (host: everyone; client: itself).
     private void DrawColorCell(int rowIdx, LobbyPlayerInfoSummary info,
         IReadOnlyList<LobbyPlayerInfoSummary> players, int[] effectiveColor)
     {
@@ -334,11 +330,7 @@ public class LobbyScreen : IAppScreen
         {
             for (int j = 0; j < PlayerColorOptions.Count; j++)
             {
-                // Taken = some OTHER row explicitly picked it (their default doesn't reserve it).
-                bool takenByOther = false;
-                for (int k = 0; k < players.Count && !takenByOther; k++)
-                    takenByOther = k != rowIdx
-                        && _colorChoices.TryGetValue(players[k].PlayerID, out int kc) && kc == j;
+                bool takenByOther = PlayerColorOptions.IsTakenByAnother(effectiveColor, rowIdx, j);
 
                 var (name, col) = PlayerColorOptions.Options[j];
                 var itemSwatch = new Vector4(col.R / 255f, col.G / 255f, col.B / 255f, 1f);
@@ -347,7 +339,7 @@ public class LobbyScreen : IAppScreen
                 ImGui.SameLine();
                 if (ImGui.Selectable(takenByOther ? $"{name} (taken)" : name, j == effectiveColor[rowIdx],
                         takenByOther ? ImGuiSelectableFlags.Disabled : ImGuiSelectableFlags.None))
-                    _colorChoices[info.PlayerID] = j;
+                    _viewModel.SetPlayerColor(info.PlayerID, j);
             }
             ImGui.EndCombo();
         }
@@ -608,18 +600,20 @@ public class LobbyScreen : IAppScreen
 
     private void HandleLaunch(IFDGGame game)
     {
-        var players = (_viewModel?.PlayerInfos ?? [])
-            .Select(info => (info.PlayerID, info.PlayerName)).ToList();
+        var infos = _viewModel?.PlayerInfos ?? [];
+        var players = infos.Select(info => (info.PlayerID, info.PlayerName)).ToList();
 
         // Host-only save hook (work item #054 will add client-initiated saving).
         Func<string?>? saveGame = _viewModel != null && _viewModel.CanSaveGame ? _viewModel.SaveGameToJson : null;
 
         // Shared with the --scenario direct launch (#167); the wiring lives in GameGuiWiring.
-        // #221: hand the lobby colour picks over; unpicked slots fill with the free palette defaults.
+        // #221: colour picks come from the SYNCED roster (ColorIndex rides LobbyPlayerInfoSummary), so
+        // host and clients all launch with the same colours; unpicked slots fill with the free defaults.
+        var colorPicks = infos.ToDictionary(info => info.PlayerID, info => info.ColorIndex);
         GameGuiWiring.Launch(game, players, saveGame,
             (tableState, colorForPlayer, log, overlay, taskDisplay, presentationPlayer, save, playerMessageUI) =>
                 OnGameLaunched?.Invoke(tableState, colorForPlayer, log, overlay, taskDisplay, presentationPlayer, save, playerMessageUI),
-            colorChoiceForPlayer: pid => _colorChoices.TryGetValue(pid, out int idx) ? idx : null);
+            colorChoiceForPlayer: pid => colorPicks.TryGetValue(pid, out int idx) && idx >= 0 ? idx : null);
     }
 
     private static void DrawIntField(string label, int current, Action<int> setter)

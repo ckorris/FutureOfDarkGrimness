@@ -39,12 +39,26 @@ public class PlayerColorOptionsTests
     }
 
     [Test]
-    public void Resolve_PickingAnothersDefault_BumpsThemToNextFree()
+    public void Resolve_PickCollidingWithAnothersDefault_BumpsTheDefaultDeterministically()
     {
-        // P2 explicitly takes Orange (P1's default): P1 shifts to the next free colour, deterministic.
+        // The dropdown (IsTakenByAnother) refuses picks of anyone's current colour, so this input only
+        // arises from stale/raced state - the resolver's fallback keeps it deterministic: the explicit
+        // pick holds and the defaulted slot shifts to the next free colour.
         int[] r = PlayerColorOptions.ResolveIndices(new int?[] { null, 0 });
         Assert.That(r[1], Is.EqualTo(0), "explicit pick holds");
         Assert.That(r[0], Is.EqualTo(1), "bumped to the next free (purple)");
+    }
+
+    [Test]
+    public void IsTakenByAnother_ReservesDefaultsAndPicksAlike()
+    {
+        // Two untouched slots: effective = [orange, purple]. Row 1 may not take orange (row 0's DEFAULT
+        // is reserved - no stealing), may keep its own purple, and may take any free colour.
+        int[] effective = PlayerColorOptions.ResolveIndices(new int?[] { null, null });
+        Assert.That(PlayerColorOptions.IsTakenByAnother(effective, 1, 0), Is.True, "another row's default is taken");
+        Assert.That(PlayerColorOptions.IsTakenByAnother(effective, 1, 1), Is.False, "own current colour is not taken");
+        Assert.That(PlayerColorOptions.IsTakenByAnother(effective, 1, 5), Is.False, "a free colour is not taken");
+        Assert.That(PlayerColorOptions.IsTakenByAnother(effective, 0, 1), Is.True, "symmetric for the other row");
     }
 
     [Test]

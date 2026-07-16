@@ -10,9 +10,9 @@ namespace FdgRaylib.Rendering;
 /// (unit-tested); the lobby draws the dropdown and <see cref="GameGuiWiring"/> consumes the resolution at
 /// launch.
 ///
-/// Colour picks are app-side and local-machine only today: they never cross the network, so in a networked
-/// game each machine sees its own lobby's picks (remote players get defaults there). True synced colours
-/// need a lobby-protocol extension in the engine - recorded as #221's deferred facet.
+/// Picks sync through the lobby protocol (<c>LobbyPlayerInfoSummary.ColorIndex</c>, engine-side): the host
+/// applies and rebroadcasts them, so every machine resolves the same effective colours from the same synced
+/// roster. The engine treats the index as an opaque int - this palette is the only decoder.
 /// </summary>
 public static class PlayerColorOptions
 {
@@ -35,11 +35,26 @@ public static class PlayerColorOptions
     public static int Count => Options.Length;
 
     /// <summary>
+    /// True when option <paramref name="optionIdx"/> is unavailable to row <paramref name="rowIdx"/>
+    /// because it is some OTHER row's effective colour - explicit pick or assigned default alike. The
+    /// dropdown disables these, so no pick can ever change another player's colour (defaults are reserved,
+    /// not stealable). A row's own current colour is never "taken" from itself.
+    /// </summary>
+    public static bool IsTakenByAnother(int[] effectiveIndices, int rowIdx, int optionIdx)
+    {
+        for (int k = 0; k < effectiveIndices.Length; k++)
+            if (k != rowIdx && effectiveIndices[k] == optionIdx) return true;
+        return false;
+    }
+
+    /// <summary>
     /// Resolves each slot's effective option index. Explicit picks (non-null, in range) always win;
     /// unchosen slots take the first option nobody has explicitly claimed or already been defaulted to,
-    /// scanning in <see cref="Options"/> order. So an explicit pick of another slot's default colour
-    /// "steals" it and the other slot shifts to the next free one - the classic RTS behaviour.
-    /// Deterministic for a given input. Slots beyond <see cref="Count"/> wrap by slot index.
+    /// scanning in <see cref="Options"/> order. The dropdown (via <see cref="IsTakenByAnother"/>) never
+    /// offers a colour that is currently anyone else's, so in practice picks and defaults stay disjoint;
+    /// if a stale pick does collide with another pick (host-side races resolve first-committed-wins),
+    /// the bump-to-next-free below is the deterministic fallback. Slots beyond <see cref="Count"/> wrap
+    /// by slot index.
     /// </summary>
     public static int[] ResolveIndices(IReadOnlyList<int?> chosenPerSlot)
     {
