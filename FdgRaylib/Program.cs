@@ -198,6 +198,46 @@ if (b2aIdx >= 0 && b2aIdx + 2 < args.Length)
     return;
 }
 
+// --retrofit-effects <fileOrDir> [more...]  (#239): stamp weapon effect-set keys into existing data.
+// Books get their faction's default sets; armies get army-level defaults plus per-weapon keyword keys
+// (explicit keys already in a file are never touched). Idempotent — re-run after a keyword-table change.
+int retrofitIdx = Array.IndexOf(args, "--retrofit-effects");
+if (retrofitIdx >= 0 && retrofitIdx + 1 < args.Length)
+{
+    List<string> retrofitTargets = args.Skip(retrofitIdx + 1).TakeWhile(a => !a.StartsWith("--"))
+        .SelectMany(t => Directory.Exists(t)
+            ? Directory.GetFiles(t, "*" + BookFile.EXTENSION_WITH_PERIOD)
+                .Concat(Directory.GetFiles(t, "*" + ArmyListFile.EXTENSION_WITH_PERIOD))
+            : new[] { t })
+        .ToList();
+    int retrofitPatched = 0;
+    foreach (string path in retrofitTargets)
+    {
+        bool changed;
+        if (path.EndsWith(BookFile.EXTENSION_WITH_PERIOD, StringComparison.OrdinalIgnoreCase))
+        {
+            BookFile book = JsonSerializer.Deserialize<BookFile>(File.ReadAllText(path), RuleJson.Options)!;
+            changed = WeaponEffectAssigner.ApplyToBook(book);
+            if (changed) File.WriteAllText(path, JsonSerializer.Serialize(book, RuleJson.Options));
+        }
+        else
+        {
+            // Deserialize as BuiltArmyFile so a forge army's selections/book snapshot survives the
+            // round-trip (#236); a hand-authored army has both null and re-saves as the base type.
+            BuiltArmyFile army = JsonSerializer.Deserialize<BuiltArmyFile>(File.ReadAllText(path), RuleJson.Options)!;
+            changed = WeaponEffectAssigner.ApplyToArmy(army);
+            if (changed)
+                File.WriteAllText(path, army.Book != null
+                    ? JsonSerializer.Serialize(army, RuleJson.Options)
+                    : JsonSerializer.Serialize<ArmyListFile>(army, RuleJson.Options));
+        }
+        Console.WriteLine($"  {(changed ? "patched" : "unchanged")}: {path}");
+        if (changed) retrofitPatched++;
+    }
+    Console.WriteLine($"Retrofit complete: {retrofitPatched}/{retrofitTargets.Count} file(s) patched.");
+    return;
+}
+
 // --make-scenario <scenario.json> <out.fdgsave>  (#167 T1): compile a compact scenario JSON (armies,
 // placements, wounds/tokens, whose activation it is) into a resumable save positioned at the start of
 // the active player's activation. Author a rule test in ~20 lines of JSON instead of playing to it.

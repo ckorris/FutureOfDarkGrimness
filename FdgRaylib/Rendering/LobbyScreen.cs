@@ -533,8 +533,8 @@ public class LobbyScreen : IAppScreen
         ImGui.PopStyleColor();
         ImGui.Spacing();
 
-        // Cancel first and focused — the safe default.
-        if (ImGui.Button("Cancel", new Vector2(140f, 0f)) || ImGui.IsKeyPressed(ImGuiKey.Escape))
+        // Cancel first and focused — the safe default. #240: edge-only Esc (stuck-key safe).
+        if (ImGui.Button("Cancel", new Vector2(140f, 0f)) || ImGui.IsKeyPressed(ImGuiKey.Escape, repeat: false))
         {
             ImGui.CloseCurrentPopup();
         }

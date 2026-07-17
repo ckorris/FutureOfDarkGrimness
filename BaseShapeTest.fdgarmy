@@ -5,12 +5,14 @@
   "units": [
     {
       "name": "Lancers (long 1x3 rect)",
+      "id": null,
+      "joinsUnitId": null,
       "modelCount": 4,
       "base": {
         "shape": "Rectangle",
         "diameterInches": 1.1023622,
-        "widthInches": 1.0,
-        "heightInches": 3.0
+        "widthInches": 1,
+        "heightInches": 3
       },
       "quality": 3,
       "defense": 4,
@@ -22,6 +24,7 @@
           "rangeInches": 0,
           "attacks": 2,
           "armorPenetration": 1,
+          "effectSet": "spear-pierce",
           "specialRules": []
         }
       ],
@@ -29,11 +32,13 @@
     },
     {
       "name": "Wall Bearers (wide 4x1.5 rect)",
+      "id": null,
+      "joinsUnitId": null,
       "modelCount": 3,
       "base": {
         "shape": "Rectangle",
         "diameterInches": 1.1023622,
-        "widthInches": 4.0,
+        "widthInches": 4,
         "heightInches": 1.5
       },
       "quality": 4,
@@ -46,6 +51,7 @@
           "rangeInches": 0,
           "attacks": 1,
           "armorPenetration": 0,
+          "effectSet": "crude-melee",
           "specialRules": []
         }
       ],
@@ -53,6 +59,8 @@
     },
     {
       "name": "Riflemen (round base, control)",
+      "id": null,
+      "joinsUnitId": null,
       "modelCount": 5,
       "base": {
         "shape": "Circle",
@@ -77,12 +85,14 @@
     },
     {
       "name": "Skyblade (aircraft, 1.5x3 rect)",
+      "id": null,
+      "joinsUnitId": null,
       "modelCount": 2,
       "base": {
         "shape": "Rectangle",
         "diameterInches": 1.1023622,
         "widthInches": 1.5,
-        "heightInches": 3.0
+        "heightInches": 3
       },
       "quality": 3,
       "defense": 4,
@@ -105,5 +115,6 @@
       "pointCost": 140
     }
   ],
-  "ruleDefinitions": []
+  "ruleDefinitions": [],
+  "spells": []
 }

@@ -63,6 +63,7 @@ public class PresentationPlayer : IPresentationSink
     private float _attackProgress;
     private float _attackElapsedSeconds;
     private int   _attackVolleysCued;    // volley sound cues fired so far for the current attack
+    private int   _attackImpactsCued;    // volley LANDINGS processed so far (#239 impact sounds)
     private bool  _attackHitStopFired;
 
     // Models flashing a "hurt but survived" tint (the wounded beat is active for each).
@@ -103,6 +104,14 @@ public class PresentationPlayer : IPresentationSink
     /// </summary>
     public Action<AttackBeat>? AttackVolleyStarted;
 
+    /// <summary>
+    /// Raised on the render thread when a volley's shots LAND and that volley contains at least one
+    /// visual hit (#239) — the impact-sound moment. Whiffed volleys never raise it. Landing time is
+    /// the effect style's LandFraction within the volley slice (melee: the clash instant). Same
+    /// audio-agnostic contract as <see cref="BeatStarted"/>. Invoked outside the lock.
+    /// </summary>
+    public Action<AttackBeat>? AttackVolleyImpact;
+
     // ---------------- engine thread ----------------
 
     public void OnBeat(PresentationBeat beat)
@@ -140,6 +149,7 @@ public class PresentationPlayer : IPresentationSink
     {
         List<PresentationBeat>? started = null;
         AttackBeat? volleyCued = null;
+        AttackBeat? impactCued = null;
         lock (_lock)
         {
             float dtSeconds = realDt;
@@ -175,6 +185,7 @@ public class PresentationPlayer : IPresentationSink
                     _attackProgress       = 0f;
                     _attackElapsedSeconds = 0f;
                     _attackVolleysCued    = 0;
+                    _attackImpactsCued    = 0;
                     _attackHitStopFired   = false;
                     continue;
                 }
@@ -226,11 +237,27 @@ public class PresentationPlayer : IPresentationSink
                     _attackVolleysCued++;
                 }
 
-                // A melee clash fires a one-time hit-stop for weight.
+                // #239: one impact cue per volley that LANDS something, at the moment its shots
+                // arrive (the effect style's LandFraction into the volley slice; melee at the
+                // clash). Whiffed volleys advance the counter silently. At most one per frame.
+                if (_attackImpactsCued < ImpactsLanded(t, _activeAttack.VolleyCount, LandFraction(_activeAttack)))
+                {
+                    int volley = _attackImpactsCued;
+                    _attackImpactsCued++;
+                    int volleys = Math.Max(1, _activeAttack.VolleyCount);
+                    int visualHits = AttackShotPlan.VisualHits(_activeAttack.HitCount, _activeAttack.AttackCount,
+                        AttackShotPlan.TotalShots(_activeAttack.From.Count, volleys));
+                    if (AttackShotPlan.VolleyHasHit(volley, _activeAttack.From.Count, volleys, visualHits))
+                        impactCued = _activeAttack;
+                }
+
+                // A melee clash fires a one-time hit-stop for weight — but only when something
+                // actually connects (#239): a whiffed swing has no impact to freeze on.
                 if (!_attackHitStopFired && _activeAttack.IsMelee && t >= HitStopTriggerT)
                 {
-                    _hitStopRemaining = HitStopDuration;
                     _attackHitStopFired = true;
+                    if (AttackShotPlan.HasAnyHit(_activeAttack))
+                        _hitStopRemaining = HitStopDuration;
                 }
 
                 if (_attackElapsedSeconds >= dur) _activeAttack = null;
@@ -242,6 +269,7 @@ public class PresentationPlayer : IPresentationSink
         if (started != null)
             foreach (PresentationBeat beat in started) BeatStarted?.Invoke(beat);
         if (volleyCued != null) AttackVolleyStarted?.Invoke(volleyCued);
+        if (impactCued != null) AttackVolleyImpact?.Invoke(impactCued);
     }
 
     // #238: how many volleys have begun by progress t. Volley v owns the slice starting at t = v/volleys
@@ -252,6 +280,22 @@ public class PresentationPlayer : IPresentationSink
         int volleys = Math.Max(1, volleyCount);
         return Math.Min(volleys, (int)(Math.Clamp(t, 0f, 1f) * volleys) + 1);
     }
+
+    // #239: how many volleys' shots have LANDED by progress t — volley v lands at
+    // t = (v + landFraction)/volleys, so the impact trails the firing cue by the flight time the
+    // effect style declares. Internal for tests.
+    internal static int ImpactsLanded(float t, int volleyCount, float landFraction)
+    {
+        int volleys = Math.Max(1, volleyCount);
+        float x = Math.Clamp(t, 0f, 1f) * volleys - Math.Clamp(landFraction, 0f, 0.99f);
+        return Math.Clamp((int)MathF.Floor(x) + 1, 0, volleys);
+    }
+
+    // Where in the volley slice the shots land: melee at the clash instant (the same moment the
+    // hit-stop bites); ranged per the effect style (beams are near-instant, lobbed shells late).
+    private static float LandFraction(AttackBeat attack) => attack.IsMelee
+        ? HitStopTriggerT
+        : WeaponEffectCatalog.Ranged(attack.WeaponEffect).LandFraction;
 
     private void Advance(PresentationBeat beat, float t)
     {

@@ -25,6 +25,15 @@ internal static class ResolverButtons
     /// Primary / commit button. Accented; appends an "(Enter)" hint and also returns true when Enter (or
     /// keypad Enter) is pressed -- unless a text field is focused (so typing in chat can't trip it) or the
     /// button is disabled. Pass <paramref name="enabled"/> = false to gray it out and ignore Enter.
+    ///
+    /// <para>
+    /// #240: key shortcuts on commit/cancel actions must use <c>repeat: false</c>. A key whose release
+    /// is missed (focus change mid-press, a sticky key on old hardware) reads as held-down for the rest
+    /// of the session, and with repeat enabled ImGui re-fires "pressed" every repeat interval — every
+    /// panel with the shortcut then commits itself the moment it appears (a session-long "Move skips
+    /// like Pass" bug traced to exactly this). Edge-only detection caps a stuck key at one spurious
+    /// fire ever; a deliberate fresh tap still works, and nobody wants key-repeat on a commit button.
+    /// </para>
     /// </summary>
     public static bool Primary(string label, Vector2 size, bool enabled = true, bool bindEnter = true)
     {
@@ -38,7 +47,8 @@ internal static class ResolverButtons
         ImGui.PopStyleColor(3);
 
         bool enter = enabled && bindEnter && !ImGui.GetIO().WantTextInput
-                     && (ImGui.IsKeyPressed(ImGuiKey.Enter) || ImGui.IsKeyPressed(ImGuiKey.KeypadEnter));
+                     && (ImGui.IsKeyPressed(ImGuiKey.Enter, repeat: false)
+                         || ImGui.IsKeyPressed(ImGuiKey.KeypadEnter, repeat: false));
         return clicked || enter;
     }
 

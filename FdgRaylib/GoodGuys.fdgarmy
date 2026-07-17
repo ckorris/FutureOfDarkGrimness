@@ -5,7 +5,15 @@
   "units": [
     {
       "name": "Neighborly Knights",
+      "id": null,
+      "joinsUnitId": null,
       "modelCount": 5,
+      "base": {
+        "shape": "Circle",
+        "diameterInches": 1.1023622,
+        "widthInches": 0.984252,
+        "heightInches": 1.968504
+      },
       "quality": 3,
       "defense": 4,
       "specialRules": [
@@ -25,6 +33,7 @@
           "rangeInches": 0,
           "attacks": 1,
           "armorPenetration": 1,
+          "effectSet": "crude-melee",
           "specialRules": [
             {
               "kind": "core",
@@ -38,6 +47,7 @@
           "rangeInches": 0,
           "attacks": 2,
           "armorPenetration": 1,
+          "effectSet": "blade-standard",
           "specialRules": [
             {
               "kind": "coreNumeric",
@@ -51,7 +61,15 @@
     },
     {
       "name": "Righteous Riflemen",
+      "id": null,
+      "joinsUnitId": null,
       "modelCount": 5,
+      "base": {
+        "shape": "Circle",
+        "diameterInches": 1.1023622,
+        "widthInches": 0.984252,
+        "heightInches": 1.968504
+      },
       "quality": 3,
       "defense": 4,
       "specialRules": [],
@@ -81,5 +99,6 @@
       "pointCost": 100
     }
   ],
-  "ruleDefinitions": []
+  "ruleDefinitions": [],
+  "spells": []
 }

@@ -189,6 +189,8 @@
     "version": "OPR v3.5.3",
     "source": "OnePageRules - Army Forge (army-forge.onepagerules.com)",
     "license": "CC-BY-SA 4.0",
+    "defaultRangedEffectSet": "storm-tracer",
+    "defaultMeleeEffectSet": "energy-blade",
     "units": [
       {
         "id": "qMjB0Rk",
@@ -10622,6 +10624,7 @@
           "rangeInches": 12,
           "attacks": 2,
           "armorPenetration": 4,
+          "effectSet": "plasma-bolt",
           "specialRules": []
         },
         {
@@ -10630,6 +10633,7 @@
           "rangeInches": 12,
           "attacks": 1,
           "armorPenetration": 4,
+          "effectSet": "fusion-melta",
           "specialRules": [
             {
               "kind": "coreNumeric",
@@ -10648,6 +10652,7 @@
           "rangeInches": 0,
           "attacks": 2,
           "armorPenetration": 1,
+          "effectSet": "energy-blade",
           "specialRules": [
             {
               "kind": "core",
@@ -10708,6 +10713,7 @@
           "rangeInches": 18,
           "attacks": 1,
           "armorPenetration": 4,
+          "effectSet": "fusion-melta",
           "specialRules": [
             {
               "kind": "coreNumeric",
@@ -10766,6 +10772,7 @@
           "rangeInches": 6,
           "attacks": 1,
           "armorPenetration": 0,
+          "effectSet": "flame-jet",
           "specialRules": [
             {
               "kind": "coreNumeric",
@@ -10784,6 +10791,7 @@
           "rangeInches": 12,
           "attacks": 1,
           "armorPenetration": 0,
+          "effectSet": "flame-jet",
           "specialRules": [
             {
               "kind": "coreNumeric",
@@ -10806,6 +10814,7 @@
           "rangeInches": 0,
           "attacks": 2,
           "armorPenetration": 1,
+          "effectSet": "energy-blade",
           "specialRules": [
             {
               "kind": "core",
@@ -10866,6 +10875,7 @@
           "rangeInches": 12,
           "attacks": 1,
           "armorPenetration": 1,
+          "effectSet": "flame-jet",
           "specialRules": [
             {
               "kind": "coreNumeric",
@@ -10928,6 +10938,7 @@
           "rangeInches": 24,
           "attacks": 6,
           "armorPenetration": 1,
+          "effectSet": "storm-tracer",
           "specialRules": []
         },
         {
@@ -10984,6 +10995,7 @@
           "rangeInches": 24,
           "attacks": 3,
           "armorPenetration": 1,
+          "effectSet": "storm-tracer",
           "specialRules": []
         },
         {
@@ -11000,6 +11012,7 @@
           "rangeInches": 24,
           "attacks": 1,
           "armorPenetration": 2,
+          "effectSet": "missile-rocket",
           "specialRules": [
             {
               "kind": "coreNumeric",
@@ -11022,6 +11035,7 @@
       "modelCount": 1,
       "base": {
         "shape": "Rectangle",
+        "diameterInches": 1.1023622,
         "widthInches": 2.1653543,
         "heightInches": 2.952756
       },
@@ -11066,6 +11080,7 @@
           "rangeInches": 18,
           "attacks": 1,
           "armorPenetration": 4,
+          "effectSet": "fusion-melta",
           "specialRules": [
             {
               "kind": "coreNumeric",
@@ -11092,6 +11107,7 @@
       "modelCount": 1,
       "base": {
         "shape": "Rectangle",
+        "diameterInches": 1.1023622,
         "widthInches": 1.968504,
         "heightInches": 2.7559056
       },
@@ -11137,6 +11153,7 @@
           "rangeInches": 24,
           "attacks": 3,
           "armorPenetration": 1,
+          "effectSet": "storm-tracer",
           "specialRules": []
         },
         {
@@ -11145,6 +11162,7 @@
           "rangeInches": 18,
           "attacks": 1,
           "armorPenetration": 4,
+          "effectSet": "fusion-melta",
           "specialRules": [
             {
               "kind": "coreNumeric",
@@ -11157,6 +11175,8 @@
       "pointCost": 290
     }
   ],
+  "defaultRangedEffectSet": "storm-tracer",
+  "defaultMeleeEffectSet": "energy-blade",
   "ruleDefinitions": [
     {
       "name": "Re-Position Artillery",

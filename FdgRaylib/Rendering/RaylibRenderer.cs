@@ -187,9 +187,12 @@ public class RaylibRenderer
                 if (cue != null) _audio.Play(cue);
             };
             // #238: attacks sound once per VOLLEY (in step with each visible burst of shots/swings),
-            // not once at beat start.
+            // not once at beat start. #239: each cue is voiced by the weapon's effect set, and a
+            // volley that lands something also sounds its impact when the shots arrive.
             _presentationPlayer.AttackVolleyStarted += attack =>
                 _audio.Play(PresentationSoundCues.VolleyCue(attack));
+            _presentationPlayer.AttackVolleyImpact += attack =>
+                _audio.Play(PresentationSoundCues.ImpactCue(attack));
         }
 
         tableState.Models.OnObjectCreated += SubscribeToModel;

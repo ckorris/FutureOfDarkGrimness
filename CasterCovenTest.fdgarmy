@@ -109,6 +109,7 @@
           "rangeInches": 18,
           "attacks": 1,
           "armorPenetration": 1,
+          "effectSet": "arcane-psychic",
           "specialRules": []
         }
       ],
@@ -161,6 +162,7 @@
           "rangeInches": 0,
           "attacks": 2,
           "armorPenetration": 1,
+          "effectSet": "spear-pierce",
           "specialRules": []
         }
       ],
@@ -179,7 +181,8 @@
         "targetAffinity": "Foe",
         "requireLineOfSight": true,
         "requiredToken": null,
-        "singleModel": false
+        "singleModel": false,
+        "requiredRule": null
       },
       "effect": {
         "kind": "dealHits",
@@ -198,7 +201,8 @@
         "targetAffinity": "Foe",
         "requireLineOfSight": true,
         "requiredToken": null,
-        "singleModel": false
+        "singleModel": false,
+        "requiredRule": null
       },
       "effect": {
         "kind": "dealHits",
@@ -217,7 +221,8 @@
         "targetAffinity": "Friend",
         "requireLineOfSight": false,
         "requiredToken": null,
-        "singleModel": false
+        "singleModel": false,
+        "requiredRule": null
       },
       "effect": {
         "kind": "addRule",
@@ -235,7 +240,8 @@
         "targetAffinity": "Friend",
         "requireLineOfSight": false,
         "requiredToken": null,
-        "singleModel": false
+        "singleModel": false,
+        "requiredRule": null
       },
       "effect": {
         "kind": "addRule",
