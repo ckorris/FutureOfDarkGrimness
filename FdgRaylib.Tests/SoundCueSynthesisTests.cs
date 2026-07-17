@@ -44,12 +44,11 @@ public class SoundCueSynthesisTests
     [Test]
     public void EveryCue_HasAudibleAndDistinctPlaceholder()
     {
-        string[] cues =
-        {
-            PresentationSoundCues.Gunshot, PresentationSoundCues.Melee, PresentationSoundCues.Dice,
-            PresentationSoundCues.Save, PresentationSoundCues.Wound, PresentationSoundCues.Death,
-            PresentationSoundCues.Banner, PresentationSoundCues.Move,
-        };
+        // #239: the registered set covers the base beats plus every effect set's fire/impact
+        // (ranged) and swing/connect (melee) voices — all must synthesize, and no two identically.
+        string[] cues = System.Linq.Enumerable.ToArray(PresentationSoundCues.AllCueKeys());
+        Assert.That(cues.Length, Is.GreaterThanOrEqualTo(6 + 13 * 2 + 10 * 2),
+            "base cues + per-set attack voices");
 
         var clips = new short[cues.Length][];
         for (int i = 0; i < cues.Length; i++)
@@ -59,9 +58,16 @@ public class SoundCueSynthesisTests
             Assert.That(System.Array.Exists(clips[i], x => x != 0), Is.True, $"{cues[i]} should be audible");
         }
 
-        // No two beats should sound identical.
+        // No two cues should sound identical (a recipe copy-paste would silently blur two sets).
         for (int i = 0; i < clips.Length; i++)
             for (int j = i + 1; j < clips.Length; j++)
                 Assert.That(clips[i], Is.Not.EqualTo(clips[j]), $"{cues[i]} and {cues[j]} should differ");
+    }
+
+    [Test]
+    public void UnknownCue_StillSynthesizesTheFallbackVoice()
+    {
+        short[] clip = PresentationSoundCues.PlaceholderSamples("no-such-cue");
+        Assert.That(clip.Length, Is.GreaterThan(0));
     }
 }
