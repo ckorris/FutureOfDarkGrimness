@@ -375,8 +375,10 @@ public class GuiChooseRangedAttackResolver
         bool fireClicked = ImGui.Button("Fire!  (Enter)##fire", new Vector2(fireW, 32f));
         if (!canFire) ImGui.EndDisabled();
         ImGui.PopStyleColor(3);
+        // #240: edge-only (repeat: false) so a stuck Enter can't fire volleys on its own.
         bool fireEnter = canFire && !ImGui.GetIO().WantTextInput
-                         && (ImGui.IsKeyPressed(ImGuiKey.Enter) || ImGui.IsKeyPressed(ImGuiKey.KeypadEnter));
+                         && (ImGui.IsKeyPressed(ImGuiKey.Enter, repeat: false)
+                             || ImGui.IsKeyPressed(ImGuiKey.KeypadEnter, repeat: false));
         if (fireClicked || fireEnter)
         {
             var wo = request.WeaponOptions[_selectedWeaponIdx];

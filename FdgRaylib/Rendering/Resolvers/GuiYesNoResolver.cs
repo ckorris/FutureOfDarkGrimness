@@ -73,7 +73,8 @@ public class GuiYesNoResolver : IStageResolver<YesNoRequest, bool>, IGuiResolver
 
         ImGui.SameLine(0, gap);
         bool noPressed  = ResolverButtons.Deemphasized("No  (Esc)", new Vector2(btnW, btnH));
-        bool escPressed = !ImGui.GetIO().WantTextInput && ImGui.IsKeyPressed(ImGuiKey.Escape);
+        // #240: edge-only (repeat: false) so a stuck Esc can't auto-answer No to everything.
+        bool escPressed = !ImGui.GetIO().WantTextInput && ImGui.IsKeyPressed(ImGuiKey.Escape, repeat: false);
         if (noPressed || escPressed)
             Complete(tcs, false);
 
