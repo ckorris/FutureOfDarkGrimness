@@ -113,6 +113,18 @@ if (importArmyIdx >= 0 && importArmyIdx + 2 < args.Length)
         if (outcome.InertRules.Count > 0)
             Console.WriteLine($"  not enforced by engine: {string.Join(", ", outcome.InertRules)}");
 
+        // #241 v2: pricing reconciliation - our ListCompiler vs Army Forge (a #218/#219 detector).
+        if (outcome.ForgeSession is { } session)
+        {
+            foreach ((string name, int pts) in session.ExcludedUnits)
+                Console.WriteLine($"  excluded (not in bundled book): {name} ({pts} pts)");
+            foreach ((string name, int ours, int theirs) in session.UnitPointsDeltas)
+                Console.WriteLine($"  points delta: {name} - our Forge {ours} pts, Army Forge {theirs} pts");
+            Console.WriteLine(session.OurTotalPoints == session.TheirTotalPoints
+                ? $"  points check: OK ({session.OurTotalPoints} pts both ways)"
+                : $"  points check: MISMATCH - our Forge {session.OurTotalPoints} pts vs Army Forge {session.TheirTotalPoints} pts");
+        }
+
         string outArmyPath = args[importArmyIdx + 2];
         if (Path.GetExtension(outArmyPath) != ArmyListFile.EXTENSION_WITH_PERIOD)
             outArmyPath = Path.ChangeExtension(outArmyPath, ArmyListFile.EXTENSION_WITH_PERIOD);

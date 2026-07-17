@@ -52,6 +52,7 @@ public class ArmyForgeScreen : IAppScreen
     private Task<ArmyForgeShareService.ImportOutcome>? _importTask;
     private ArmyForgeShareService.ImportOutcome? _importOutcome;
     private string? _importError;
+    private bool _confirmOpenInForge;
 
     public ArmyForgeScreen()
     {
@@ -131,9 +132,14 @@ public class ArmyForgeScreen : IAppScreen
 
     // ── #241 Import from an Army Forge share link ───────────────────────────────────────────────────────
 
-    // Paste link -> fetch + import on a worker task -> preview (units, points, warnings, inert rules) ->
-    // Save As. The saved file is a PLAIN ArmyListFile (no embedded book/selections): it plays everywhere
-    // and edits in the freeform Army Builder, but is not re-openable in this catalog screen.
+    // Paste link -> fetch + import on a worker task -> preview (units, points, warnings, inert rules,
+    // pricing reconciliation) -> two exits:
+    //   Save As       - the verbatim import as a PLAIN ArmyListFile (Army Forge's exact points; plays
+    //                   everywhere, edits in the freeform Army Builder, not re-openable here).
+    //   Open in Forge - an editable session reconstructed against the bundled book, compiled by OUR
+    //                   ListCompiler. Units the book doesn't know are excluded (cost disclosed so the
+    //                   user can pad); every our-vs-Army-Forge points delta is shown - each one is a
+    //                   real-data repro for the #218/#219 pricing bugs.
     private void DrawImportModal()
     {
         bool open = true;
@@ -189,6 +195,16 @@ public class ArmyForgeScreen : IAppScreen
             ImGui.TextColored(army.PointsLimit > 0 && army.TotalPoints > army.PointsLimit ? RedText : WhiteText,
                 PointsHeader(army.TotalPoints, army.PointsLimit));
 
+            // #241 v2: the import doubles as a pricing check of OUR Forge against Army Forge's numbers.
+            if (outcome.ForgeSession is { } check)
+            {
+                if (check.OurTotalPoints == check.TheirTotalPoints && check.ExcludedUnits.Count == 0)
+                    ImGui.TextColored(GreenText, $"Points check: our Forge matches Army Forge ({check.OurTotalPoints} pts).");
+                else if (check.OurTotalPoints != check.TheirTotalPoints)
+                    ImGui.TextColored(RedText, $"Points check: our Forge computes {check.OurTotalPoints} pts, " +
+                        $"Army Forge says {check.TheirTotalPoints} (see #218/#219).");
+            }
+
             ImGui.BeginChild("##import-preview", new Vector2(660, 280), ImGuiChildFlags.Borders);
             ImGui.TextDisabled("UNITS");
             foreach (UnitFileEntry u in army.Units)
@@ -219,14 +235,70 @@ public class ArmyForgeScreen : IAppScreen
                 ImGui.TextWrapped(string.Join(", ", outcome.InertRules));
                 ImGui.PopStyleColor();
             }
+            if (outcome.ForgeSession is { } session &&
+                (session.ExcludedUnits.Count > 0 || session.UnitPointsDeltas.Count > 0 || session.Warnings.Count > 0))
+            {
+                ImGui.Spacing();
+                ImGui.TextDisabled("FORGE RECONCILIATION (Open in Forge uses OUR pricing)");
+                foreach ((string name, int pts) in session.ExcludedUnits)
+                    ImGui.TextColored(RedText, $"Excluded (not in bundled book): {name} ({pts} pts)");
+                foreach ((string name, int ours, int theirs) in session.UnitPointsDeltas)
+                    ImGui.TextColored(YellowText, $"{name}: our Forge {ours} pts, Army Forge {theirs} pts");
+                ImGui.PushStyleColor(ImGuiCol.Text, YellowText);
+                foreach (string warning in session.Warnings) ImGui.TextWrapped(warning);
+                ImGui.PopStyleColor();
+            }
             ImGui.EndChild();
 
-            ImGui.TextDisabled("Saves as a plain army file: playable everywhere, editable in the Army Builder,\nnot re-openable in this catalog screen.");
-            if (ImGui.Button("Save As...", new Vector2(140, 0)) && SaveImported(army))
-                ImGui.CloseCurrentPopup();
+            ImGui.TextDisabled("Save As: exact Army Forge data (plays everywhere, edits in the Army Builder).\n" +
+                "Open in Forge: editable here against the bundled book, priced by our Forge.");
+
+            if (_confirmOpenInForge)
+            {
+                ImGui.TextColored(YellowText, "This will replace your current Forge list. Continue?");
+                if (ImGui.Button("Replace list", new Vector2(140, 0)))
+                {
+                    _confirmOpenInForge = false;
+                    AdoptImported(outcome);
+                    ImGui.CloseCurrentPopup();
+                }
+                ImGui.SameLine();
+                if (ImGui.Button("Back", new Vector2(140, 0))) _confirmOpenInForge = false;
+            }
+            else
+            {
+                ImGui.BeginDisabled(outcome.ForgeSession is null || outcome.BundledBook is null);
+                if (ImGui.Button("Open in Forge", new Vector2(140, 0)))
+                {
+                    if (_list.Units.Count > 0) _confirmOpenInForge = true;
+                    else
+                    {
+                        AdoptImported(outcome);
+                        ImGui.CloseCurrentPopup();
+                    }
+                }
+                ImGui.EndDisabled();
+                ImGui.SameLine();
+                if (ImGui.Button("Save As...", new Vector2(140, 0)) && SaveImported(army))
+                    ImGui.CloseCurrentPopup();
+            }
         }
 
         ImGui.EndPopup();
+    }
+
+    // #241 v2: hand the reconstructed session to the normal Forge editing path. Compile gives the same
+    // BuiltArmyFile shape a Load would, so AdoptLoaded's book-dropdown sync and per-frame recompile all
+    // apply unchanged.
+    private void AdoptImported(ArmyForgeShareService.ImportOutcome outcome)
+    {
+        if (outcome.ForgeSession is not { } session || outcome.BundledBook is null) return;
+        if (!AdoptLoaded(ListCompiler.Compile(outcome.BundledBook, session.Selections))) return;
+
+        string hint = $"Imported '{session.Selections.Name}' into the Forge";
+        if (session.ExcludedUnits.Count > 0) hint += $" - {session.ExcludedUnits.Count} unit(s) excluded";
+        if (session.UnitPointsDeltas.Count > 0) hint += $" - {session.UnitPointsDeltas.Count} points delta(s) vs Army Forge";
+        _statusHint = hint;
     }
 
     private bool SaveImported(ArmyListFile army)
@@ -324,6 +396,7 @@ public class ArmyForgeScreen : IAppScreen
             _importTask = null;
             _importOutcome = null;
             _importError = null;
+            _confirmOpenInForge = false;
             ImGui.OpenPopup("Import from Army Forge");
         }
         ImGui.SameLine();

@@ -24,12 +24,17 @@ public static class ArmyForgeShareService
     private static readonly HttpClient Http = new() { Timeout = TimeSpan.FromSeconds(20) };
 
     /// <summary>Everything the preview shows: the import result plus which rule names will be inert in
-    /// play (no definition after the bundled-book attach) and whether a bundled book matched at all.</summary>
+    /// play (no definition after the bundled-book attach) and whether a bundled book matched at all.
+    /// When it did, <see cref="ForgeSession"/> carries the editable reconstruction against that book
+    /// ("Open in Forge") with its points reconciliation; null when no book matched or the rebuild threw
+    /// (disclosed via a warning) — Save As keeps working either way.</summary>
     public sealed class ImportOutcome
     {
         public required OprListImportResult Result { get; init; }
         public required IReadOnlyList<string> InertRules { get; init; }
         public required bool FactionBookMatched { get; init; }
+        public OprForgeSessionResult? ForgeSession { get; init; }
+        public BookFile? BundledBook { get; init; }
     }
 
     /// <summary>Accepts a full share link (https://army-forge.onepagerules.com/share?id=XXX&amp;name=...),
@@ -92,11 +97,28 @@ public static class ArmyForgeShareService
             result.Warnings.Add($"No bundled book matches faction '{result.Army.Faction}' - " +
                 "faction-specific rules and spells will not be enforced.");
 
+        // #241 v2: the editable session + pricing reconciliation. Best-effort — a failure here never
+        // blocks the verbatim import, it just leaves the Open-in-Forge button disabled.
+        OprForgeSessionResult? session = null;
+        if (bundled is not null)
+        {
+            try
+            {
+                session = OprListImporter.ReconstructSelections(listJson, bundled);
+            }
+            catch (Exception ex)
+            {
+                result.Warnings.Add($"Could not rebuild an editable Forge session: {ex.Message}");
+            }
+        }
+
         return new ImportOutcome
         {
             Result = result,
             InertRules = OprListImporter.UnresolvedRuleNames(result.Army),
             FactionBookMatched = bundled is not null,
+            ForgeSession = session,
+            BundledBook = bundled,
         };
     }
 
