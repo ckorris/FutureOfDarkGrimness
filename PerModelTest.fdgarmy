@@ -8,6 +8,12 @@
       "id": "host-fast",
       "joinsUnitId": null,
       "modelCount": 5,
+      "base": {
+        "shape": "Circle",
+        "diameterInches": 1.1023622,
+        "widthInches": 0.984252,
+        "heightInches": 1.968504
+      },
       "quality": 4,
       "defense": 4,
       "specialRules": [],
@@ -28,12 +34,27 @@
       "id": null,
       "joinsUnitId": "host-fast",
       "modelCount": 1,
+      "base": {
+        "shape": "Circle",
+        "diameterInches": 1.1023622,
+        "widthInches": 0.984252,
+        "heightInches": 1.968504
+      },
       "quality": 3,
       "defense": 3,
       "specialRules": [
-        { "kind": "core", "name": "Hero" },
-        { "kind": "core", "name": "Fast" },
-        { "kind": "core", "name": "Vanguard" }
+        {
+          "kind": "core",
+          "name": "Hero"
+        },
+        {
+          "kind": "core",
+          "name": "Fast"
+        },
+        {
+          "kind": "core",
+          "name": "Vanguard"
+        }
       ],
       "weapons": [
         {
@@ -42,6 +63,7 @@
           "rangeInches": 0,
           "attacks": 3,
           "armorPenetration": 1,
+          "effectSet": "daemon-arcane-melee",
           "specialRules": []
         }
       ],
@@ -52,10 +74,19 @@
       "id": "host-stealth-broken",
       "joinsUnitId": null,
       "modelCount": 5,
+      "base": {
+        "shape": "Circle",
+        "diameterInches": 1.1023622,
+        "widthInches": 0.984252,
+        "heightInches": 1.968504
+      },
       "quality": 4,
       "defense": 4,
       "specialRules": [
-        { "kind": "core", "name": "Stealth" }
+        {
+          "kind": "core",
+          "name": "Stealth"
+        }
       ],
       "weapons": [
         {
@@ -74,10 +105,19 @@
       "id": null,
       "joinsUnitId": "host-stealth-broken",
       "modelCount": 1,
+      "base": {
+        "shape": "Circle",
+        "diameterInches": 1.1023622,
+        "widthInches": 0.984252,
+        "heightInches": 1.968504
+      },
       "quality": 3,
       "defense": 3,
       "specialRules": [
-        { "kind": "core", "name": "Hero" }
+        {
+          "kind": "core",
+          "name": "Hero"
+        }
       ],
       "weapons": [
         {
@@ -96,10 +136,19 @@
       "id": "host-stealth-ok",
       "joinsUnitId": null,
       "modelCount": 5,
+      "base": {
+        "shape": "Circle",
+        "diameterInches": 1.1023622,
+        "widthInches": 0.984252,
+        "heightInches": 1.968504
+      },
       "quality": 4,
       "defense": 4,
       "specialRules": [
-        { "kind": "core", "name": "Stealth" }
+        {
+          "kind": "core",
+          "name": "Stealth"
+        }
       ],
       "weapons": [
         {
@@ -118,11 +167,23 @@
       "id": null,
       "joinsUnitId": "host-stealth-ok",
       "modelCount": 1,
+      "base": {
+        "shape": "Circle",
+        "diameterInches": 1.1023622,
+        "widthInches": 0.984252,
+        "heightInches": 1.968504
+      },
       "quality": 3,
       "defense": 3,
       "specialRules": [
-        { "kind": "core", "name": "Hero" },
-        { "kind": "core", "name": "Stealth" }
+        {
+          "kind": "core",
+          "name": "Hero"
+        },
+        {
+          "kind": "core",
+          "name": "Stealth"
+        }
       ],
       "weapons": [
         {
@@ -137,5 +198,6 @@
       "pointCost": 55
     }
   ],
-  "ruleDefinitions": []
+  "ruleDefinitions": [],
+  "spells": []
 }

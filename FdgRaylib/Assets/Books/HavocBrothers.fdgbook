@@ -4,6 +4,8 @@
   "version": "OPR v3.5.3",
   "source": "OnePageRules - Army Forge (army-forge.onepagerules.com)",
   "license": "CC-BY-SA 4.0",
+  "defaultRangedEffectSet": "ballistic-slug",
+  "defaultMeleeEffectSet": "energy-blade",
   "units": [
     {
       "id": "E3FXCAQ",

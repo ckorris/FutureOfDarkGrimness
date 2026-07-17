@@ -43,6 +43,7 @@
           "rangeInches": 0,
           "attacks": 3,
           "armorPenetration": 1,
+          "effectSet": "claw-rend",
           "specialRules": []
         },
         {
@@ -51,6 +52,7 @@
           "rangeInches": 0,
           "attacks": 4,
           "armorPenetration": 1,
+          "effectSet": "titan-impact",
           "specialRules": []
         },
         {
@@ -59,6 +61,7 @@
           "rangeInches": 0,
           "attacks": 6,
           "armorPenetration": 4,
+          "effectSet": "claw-rend",
           "specialRules": [
             {
               "kind": "core",
@@ -90,6 +93,7 @@
           "rangeInches": 0,
           "attacks": 2,
           "armorPenetration": 0,
+          "effectSet": "claw-rend",
           "specialRules": []
         }
       ],
@@ -116,6 +120,7 @@
           "rangeInches": 0,
           "attacks": 2,
           "armorPenetration": 0,
+          "effectSet": "claw-rend",
           "specialRules": []
         }
       ],
@@ -152,6 +157,7 @@
           "rangeInches": 0,
           "attacks": 2,
           "armorPenetration": 0,
+          "effectSet": "claw-rend",
           "specialRules": []
         }
       ],
@@ -193,6 +199,7 @@
           "rangeInches": 0,
           "attacks": 3,
           "armorPenetration": 1,
+          "effectSet": "claw-rend",
           "specialRules": []
         },
         {
@@ -201,12 +208,15 @@
           "rangeInches": 0,
           "attacks": 4,
           "armorPenetration": 1,
+          "effectSet": "titan-impact",
           "specialRules": []
         }
       ],
       "pointCost": 295
     }
   ],
+  "defaultRangedEffectSet": "bio-organic",
+  "defaultMeleeEffectSet": "claw-rend",
   "ruleDefinitions": [],
   "spells": []
 }

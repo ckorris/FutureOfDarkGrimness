@@ -174,6 +174,7 @@
           "rangeInches": 24,
           "attacks": 3,
           "armorPenetration": 1,
+          "effectSet": "storm-tracer",
           "specialRules": []
         }
       ],
@@ -214,6 +215,8 @@
       "pointCost": 100
     }
   ],
+  "defaultRangedEffectSet": "ballistic-slug",
+  "defaultMeleeEffectSet": "energy-blade",
   "ruleDefinitions": [],
   "spells": []
 }

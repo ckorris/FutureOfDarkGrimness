@@ -207,6 +207,8 @@
     "version": "OPR v3.5.3",
     "source": "OnePageRules - Army Forge (army-forge.onepagerules.com)",
     "license": "CC-BY-SA 4.0",
+    "defaultRangedEffectSet": "ballistic-slug",
+    "defaultMeleeEffectSet": "shock-melee",
     "units": [
       {
         "id": "5op34S_",
@@ -8177,6 +8179,7 @@
           "rangeInches": 12,
           "attacks": 1,
           "armorPenetration": 4,
+          "effectSet": "fusion-melta",
           "specialRules": [
             {
               "kind": "coreNumeric",
@@ -8372,6 +8375,7 @@
           "rangeInches": 0,
           "attacks": 1,
           "armorPenetration": 0,
+          "effectSet": "crude-melee",
           "specialRules": []
         }
       ],
@@ -8427,6 +8431,7 @@
           "rangeInches": 0,
           "attacks": 2,
           "armorPenetration": 1,
+          "effectSet": "energy-blade",
           "specialRules": [
             {
               "kind": "core",
@@ -8440,6 +8445,7 @@
           "rangeInches": 0,
           "attacks": 1,
           "armorPenetration": 0,
+          "effectSet": "shock-melee",
           "specialRules": [
             {
               "kind": "coreNumeric",
@@ -8603,6 +8609,7 @@
           "rangeInches": 12,
           "attacks": 2,
           "armorPenetration": 1,
+          "effectSet": "flame-jet",
           "specialRules": [
             {
               "kind": "coreNumeric",
@@ -8662,6 +8669,7 @@
           "rangeInches": 0,
           "attacks": 4,
           "armorPenetration": 1,
+          "effectSet": "titan-impact",
           "specialRules": []
         },
         {
@@ -8670,6 +8678,7 @@
           "rangeInches": 0,
           "attacks": 4,
           "armorPenetration": 4,
+          "effectSet": "shock-melee",
           "specialRules": []
         },
         {
@@ -8678,6 +8687,7 @@
           "rangeInches": 0,
           "attacks": 4,
           "armorPenetration": 2,
+          "effectSet": "titan-impact",
           "specialRules": []
         }
       ],
@@ -8718,6 +8728,7 @@
           "rangeInches": 24,
           "attacks": 2,
           "armorPenetration": 1,
+          "effectSet": "mortar-artillery",
           "specialRules": [
             {
               "kind": "coreNumeric",
@@ -8736,6 +8747,7 @@
           "rangeInches": 0,
           "attacks": 3,
           "armorPenetration": 0,
+          "effectSet": "crude-melee",
           "specialRules": []
         }
       ],
@@ -8787,6 +8799,7 @@
           "rangeInches": 12,
           "attacks": 1,
           "armorPenetration": 1,
+          "effectSet": "flame-jet",
           "specialRules": [
             {
               "kind": "coreNumeric",
@@ -8803,6 +8816,8 @@
       "pointCost": 115
     }
   ],
+  "defaultRangedEffectSet": "ballistic-slug",
+  "defaultMeleeEffectSet": "shock-melee",
   "ruleDefinitions": [
     {
       "name": "Deceleration Rune Effect",

@@ -5,7 +5,15 @@
   "units": [
     {
       "name": "Berserkers",
+      "id": null,
+      "joinsUnitId": null,
       "modelCount": 2,
+      "base": {
+        "shape": "Circle",
+        "diameterInches": 1.1023622,
+        "widthInches": 0.984252,
+        "heightInches": 1.968504
+      },
       "quality": 2,
       "defense": 3,
       "specialRules": [],
@@ -16,6 +24,7 @@
           "rangeInches": 0,
           "attacks": 2,
           "armorPenetration": 1,
+          "effectSet": "crude-melee",
           "specialRules": []
         }
       ],

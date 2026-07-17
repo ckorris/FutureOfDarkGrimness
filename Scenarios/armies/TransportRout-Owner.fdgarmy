@@ -5,7 +5,15 @@
   "units": [
     {
       "name": "Rhino",
+      "id": null,
+      "joinsUnitId": null,
       "modelCount": 1,
+      "base": {
+        "shape": "Circle",
+        "diameterInches": 1.1023622,
+        "widthInches": 0.984252,
+        "heightInches": 1.968504
+      },
       "quality": 6,
       "defense": 5,
       "specialRules": [
@@ -27,6 +35,7 @@
           "rangeInches": 0,
           "attacks": 1,
           "armorPenetration": 0,
+          "effectSet": "titan-impact",
           "specialRules": []
         }
       ],
@@ -34,7 +43,15 @@
     },
     {
       "name": "Riders",
+      "id": null,
+      "joinsUnitId": null,
       "modelCount": 3,
+      "base": {
+        "shape": "Circle",
+        "diameterInches": 1.1023622,
+        "widthInches": 0.984252,
+        "heightInches": 1.968504
+      },
       "quality": 4,
       "defense": 4,
       "specialRules": [],

@@ -146,6 +146,8 @@
     "version": "OPR v3.5.3",
     "source": "OnePageRules - Army Forge (army-forge.onepagerules.com)",
     "license": "CC-BY-SA 4.0",
+    "defaultRangedEffectSet": "gauss-particle",
+    "defaultMeleeEffectSet": "titan-impact",
     "units": [
       {
         "id": "R2d8LeD",
@@ -5501,6 +5503,7 @@
           "rangeInches": 0,
           "attacks": 3,
           "armorPenetration": 0,
+          "effectSet": "claw-rend",
           "specialRules": [
             {
               "kind": "core",
@@ -5546,6 +5549,7 @@
           "rangeInches": 0,
           "attacks": 3,
           "armorPenetration": 0,
+          "effectSet": "claw-rend",
           "specialRules": [
             {
               "kind": "core",
@@ -5594,6 +5598,7 @@
           "rangeInches": 24,
           "attacks": 1,
           "armorPenetration": 0,
+          "effectSet": "gauss-particle",
           "specialRules": [
             {
               "kind": "core",
@@ -5642,6 +5647,7 @@
           "rangeInches": 24,
           "attacks": 2,
           "armorPenetration": 0,
+          "effectSet": "gauss-particle",
           "specialRules": [
             {
               "kind": "core",
@@ -5695,6 +5701,7 @@
           "rangeInches": 24,
           "attacks": 6,
           "armorPenetration": 1,
+          "effectSet": "gauss-particle",
           "specialRules": []
         },
         {
@@ -5703,6 +5710,7 @@
           "rangeInches": 0,
           "attacks": 6,
           "armorPenetration": 0,
+          "effectSet": "claw-rend",
           "specialRules": [
             {
               "kind": "core",
@@ -5766,6 +5774,7 @@
           "rangeInches": 0,
           "attacks": 6,
           "armorPenetration": 2,
+          "effectSet": "titan-impact",
           "specialRules": []
         },
         {
@@ -5774,6 +5783,7 @@
           "rangeInches": 0,
           "attacks": 6,
           "armorPenetration": 2,
+          "effectSet": "titan-impact",
           "specialRules": []
         },
         {
@@ -5782,6 +5792,7 @@
           "rangeInches": 18,
           "attacks": 3,
           "armorPenetration": 3,
+          "effectSet": "laser-beam",
           "specialRules": [
             {
               "kind": "coreNumeric",
@@ -5832,6 +5843,7 @@
           "rangeInches": 0,
           "attacks": 2,
           "armorPenetration": 1,
+          "effectSet": "claw-rend",
           "specialRules": []
         }
       ],
@@ -5880,6 +5892,7 @@
           "rangeInches": 24,
           "attacks": 2,
           "armorPenetration": 0,
+          "effectSet": "gauss-particle",
           "specialRules": [
             {
               "kind": "core",
@@ -5893,6 +5906,7 @@
           "rangeInches": 0,
           "attacks": 3,
           "armorPenetration": 1,
+          "effectSet": "energy-blade",
           "specialRules": [
             {
               "kind": "core",
@@ -5904,6 +5918,8 @@
       "pointCost": 55
     }
   ],
+  "defaultRangedEffectSet": "gauss-particle",
+  "defaultMeleeEffectSet": "titan-impact",
   "ruleDefinitions": [
     {
       "name": "Unique",

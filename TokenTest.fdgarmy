@@ -17,12 +17,31 @@
       "quality": 4,
       "defense": 4,
       "specialRules": [
-        { "kind": "core", "name": "Regeneration Aura" },
-        { "kind": "core", "name": "Furious Aura" },
-        { "kind": "core", "name": "Stealth Aura" },
-        { "kind": "core", "name": "Courage Aura" },
-        { "kind": "core", "name": "Shielded Aura" },
-        { "kind": "coreNumeric", "name": "Tough", "numericValue": 2 }
+        {
+          "kind": "core",
+          "name": "Regeneration Aura"
+        },
+        {
+          "kind": "core",
+          "name": "Furious Aura"
+        },
+        {
+          "kind": "core",
+          "name": "Stealth Aura"
+        },
+        {
+          "kind": "core",
+          "name": "Courage Aura"
+        },
+        {
+          "kind": "core",
+          "name": "Shielded Aura"
+        },
+        {
+          "kind": "coreNumeric",
+          "name": "Tough",
+          "numericValue": 2
+        }
       ],
       "weapons": [
         {
@@ -31,6 +50,7 @@
           "rangeInches": 0,
           "attacks": 2,
           "armorPenetration": 1,
+          "effectSet": "blade-standard",
           "specialRules": []
         }
       ],
@@ -50,8 +70,16 @@
       "quality": 4,
       "defense": 4,
       "specialRules": [
-        { "kind": "coreNumeric", "name": "Caster", "numericValue": 3 },
-        { "kind": "coreNumeric", "name": "Tough", "numericValue": 3 }
+        {
+          "kind": "coreNumeric",
+          "name": "Caster",
+          "numericValue": 3
+        },
+        {
+          "kind": "coreNumeric",
+          "name": "Tough",
+          "numericValue": 3
+        }
       ],
       "weapons": [
         {
@@ -72,15 +100,22 @@
       "modelCount": 1,
       "base": {
         "shape": "Circle",
-        "diameterInches": 2.0,
+        "diameterInches": 2,
         "widthInches": 0.984252,
         "heightInches": 1.968504
       },
       "quality": 3,
       "defense": 3,
       "specialRules": [
-        { "kind": "coreNumeric", "name": "Tough", "numericValue": 8 },
-        { "kind": "core", "name": "Relentless Aura" }
+        {
+          "kind": "coreNumeric",
+          "name": "Tough",
+          "numericValue": 8
+        },
+        {
+          "kind": "core",
+          "name": "Relentless Aura"
+        }
       ],
       "weapons": [
         {
@@ -89,6 +124,7 @@
           "rangeInches": 0,
           "attacks": 4,
           "armorPenetration": 2,
+          "effectSet": "claw-rend",
           "specialRules": []
         }
       ],
@@ -133,9 +169,14 @@
         "targetAffinity": "Friend",
         "requireLineOfSight": false,
         "requiredToken": null,
-        "singleModel": false
+        "singleModel": false,
+        "requiredRule": null
       },
-      "effect": { "kind": "addRule", "ruleName": "Furious", "scope": "ThisRound" }
+      "effect": {
+        "kind": "addRule",
+        "ruleName": "Furious",
+        "scope": "ThisRound"
+      }
     },
     {
       "name": "Hex (-1 to Hit)",
@@ -147,9 +188,15 @@
         "targetAffinity": "Foe",
         "requireLineOfSight": true,
         "requiredToken": null,
-        "singleModel": false
+        "singleModel": false,
+        "requiredRule": null
       },
-      "effect": { "kind": "statModifier", "roll": "Hit", "delta": -1, "lifetimeScope": "ThisRound" }
+      "effect": {
+        "kind": "statModifier",
+        "roll": "Hit",
+        "delta": -1,
+        "lifetimeScope": "ThisRound"
+      }
     },
     {
       "name": "Sap Defense (-1 Defense)",
@@ -161,9 +208,15 @@
         "targetAffinity": "Foe",
         "requireLineOfSight": true,
         "requiredToken": null,
-        "singleModel": false
+        "singleModel": false,
+        "requiredRule": null
       },
-      "effect": { "kind": "statModifier", "roll": "Save", "delta": -1, "lifetimeScope": "ThisRound" }
+      "effect": {
+        "kind": "statModifier",
+        "roll": "Save",
+        "delta": -1,
+        "lifetimeScope": "ThisRound"
+      }
     },
     {
       "name": "Zap",
@@ -175,9 +228,15 @@
         "targetAffinity": "Foe",
         "requireLineOfSight": true,
         "requiredToken": null,
-        "singleModel": false
+        "singleModel": false,
+        "requiredRule": null
       },
-      "effect": { "kind": "dealHits", "count": 3, "withRules": [], "armorPenetration": 1 }
+      "effect": {
+        "kind": "dealHits",
+        "count": 3,
+        "withRules": [],
+        "armorPenetration": 1
+      }
     }
   ]
 }
