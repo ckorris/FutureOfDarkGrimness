@@ -57,6 +57,8 @@ Corpus coverage is a different story: 528 of 13,870 book rule references (3.8%) 
 - [ ] 219 — Audit bundled `.fdgbook` upgrades for options that should cost points but show/charge 0 (importer or data gap, not yet isolated). ([WorkItems/219](WorkItems/219-army-forge-zero-cost-upgrades.md))
 - [ ] 220 — Version control for Army Forge lists (undo/revision history); mechanism not yet decided, surface the design fork first. ([WorkItems/220](WorkItems/220-army-forge-list-version-control.md))
 - [~] 236 — Freeform builder silently stripped a Forge army's embedded book/selections on save; now gated behind an explicit "Save detached" confirm. Implemented + tested; modal awaits GUI hand-verify. ([WorkItems/236](WorkItems/236-freeform-save-strips-forge-block.md))
+- [~] 241 — Army Forge share-link importer: paste an army-forge.onepagerules.com share link -> preview -> .fdgarmy (engine `OprListImporter` + Forge-screen UI + `--import-army`); gates on OPR version 3.5.x. ([WorkItems/241](WorkItems/241-army-forge-share-import.md))
+- [ ] 242 — Import campaign/narrative list features (XP, traits, campaign mode) that #241's importer warns about and drops. ([WorkItems/242](WorkItems/242-campaign-import-features.md))
 
 ## Transport
 

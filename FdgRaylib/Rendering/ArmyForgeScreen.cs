@@ -4,9 +4,11 @@ using System.IO;
 using System.Linq;
 using System.Numerics;
 using System.Text.Json;
+using System.Threading.Tasks;
 using FDG.ArmyBuilding;
 using FDG.Rules.Serialization;
 using FDG.SaveLoad;
+using FdgRaylib.Import;
 using ImGuiNET;
 using TinyDialogsNet;
 
@@ -43,6 +45,13 @@ public class ArmyForgeScreen : IAppScreen
     private int? _selectedListIndex;
     private string? _statusHint;
     private int? _pendingBookIndex;
+
+    // #241 Import-from-share-link modal state. The fetch runs on a worker task (HTTP must not stall the
+    // ImGui thread); Draw polls for completion. Only Draw (main thread) reads/writes these fields.
+    private string _importInput = string.Empty;
+    private Task<ArmyForgeShareService.ImportOutcome>? _importTask;
+    private ArmyForgeShareService.ImportOutcome? _importOutcome;
+    private string? _importError;
 
     public ArmyForgeScreen()
     {
@@ -118,6 +127,117 @@ public class ArmyForgeScreen : IAppScreen
             ImGui.CloseCurrentPopup();
         }
         ImGui.EndPopup();
+    }
+
+    // ── #241 Import from an Army Forge share link ───────────────────────────────────────────────────────
+
+    // Paste link -> fetch + import on a worker task -> preview (units, points, warnings, inert rules) ->
+    // Save As. The saved file is a PLAIN ArmyListFile (no embedded book/selections): it plays everywhere
+    // and edits in the freeform Army Builder, but is not re-openable in this catalog screen.
+    private void DrawImportModal()
+    {
+        bool open = true;
+        ImGui.SetNextWindowSize(new Vector2(680, 0), ImGuiCond.Appearing);
+        if (!ImGui.BeginPopupModal("Import from Army Forge", ref open, ImGuiWindowFlags.AlwaysAutoResize))
+            return;
+
+        // Harvest the worker task on the ImGui thread before drawing state-dependent widgets.
+        if (_importTask is { IsCompleted: true } finished)
+        {
+            _importTask = null;
+            if (finished.IsFaulted)
+                _importError = finished.Exception?.GetBaseException().Message ?? "Import failed.";
+            else if (finished.IsCanceled)
+                _importError = "Import was canceled.";
+            else
+                _importOutcome = finished.Result;
+        }
+        bool busy = _importTask is not null;
+
+        ImGui.TextUnformatted("Paste an Army Forge share link (or list id):");
+        ImGui.SetNextItemWidth(660f);
+        bool entered = ImGui.InputText("##import-link", ref _importInput, 512, ImGuiInputTextFlags.EnterReturnsTrue);
+
+        ImGui.BeginDisabled(busy || _importInput.Trim().Length == 0);
+        bool fetch = ImGui.Button("Fetch", new Vector2(120, 0)) || (entered && !busy && _importInput.Trim().Length > 0);
+        ImGui.EndDisabled();
+        ImGui.SameLine();
+        if (ImGui.Button("Close", new Vector2(120, 0))) ImGui.CloseCurrentPopup();
+
+        if (fetch)
+        {
+            string input = _importInput;
+            _importOutcome = null;
+            _importError = null;
+            _importTask = Task.Run(() => ArmyForgeShareService.FetchAndImportAsync(input));
+        }
+
+        if (busy) ImGui.TextDisabled("Fetching from army-forge.onepagerules.com ...");
+        if (_importError is not null)
+        {
+            ImGui.PushStyleColor(ImGuiCol.Text, RedText);
+            ImGui.TextWrapped(_importError);
+            ImGui.PopStyleColor();
+        }
+
+        if (_importOutcome is { } outcome)
+        {
+            ArmyListFile army = outcome.Result.Army;
+            ImGui.Separator();
+            ImGui.TextUnformatted($"{army.Name}  -  {army.Faction}");
+            ImGui.SameLine();
+            ImGui.TextColored(army.PointsLimit > 0 && army.TotalPoints > army.PointsLimit ? RedText : WhiteText,
+                PointsHeader(army.TotalPoints, army.PointsLimit));
+
+            ImGui.BeginChild("##import-preview", new Vector2(660, 280), ImGuiChildFlags.Borders);
+            ImGui.TextDisabled("UNITS");
+            foreach (UnitFileEntry u in army.Units)
+            {
+                ImGui.TextUnformatted($"{u.Name} [{u.ModelCount}] - Qua {u.Quality}+ Def {u.Defense}+  ({u.PointCost} pts)");
+                string gear = string.Join(", ", u.Weapons.Select(w => $"{w.Quantity}x {w.Name}"));
+                if (gear.Length > 0) ImGui.TextDisabled("    " + gear);
+            }
+            if (outcome.Result.ListErrors.Count > 0)
+            {
+                ImGui.Spacing();
+                ImGui.TextDisabled("ARMY FORGE LIST ERRORS");
+                foreach (string error in outcome.Result.ListErrors) ImGui.TextColored(RedText, error);
+            }
+            if (outcome.Result.Warnings.Count > 0)
+            {
+                ImGui.Spacing();
+                ImGui.TextDisabled("IMPORT WARNINGS");
+                ImGui.PushStyleColor(ImGuiCol.Text, YellowText);
+                foreach (string warning in outcome.Result.Warnings) ImGui.TextWrapped(warning);
+                ImGui.PopStyleColor();
+            }
+            if (outcome.InertRules.Count > 0)
+            {
+                ImGui.Spacing();
+                ImGui.TextDisabled("RULES NOT ENFORCED BY THE ENGINE (inert in play)");
+                ImGui.PushStyleColor(ImGuiCol.Text, YellowText);
+                ImGui.TextWrapped(string.Join(", ", outcome.InertRules));
+                ImGui.PopStyleColor();
+            }
+            ImGui.EndChild();
+
+            ImGui.TextDisabled("Saves as a plain army file: playable everywhere, editable in the Army Builder,\nnot re-openable in this catalog screen.");
+            if (ImGui.Button("Save As...", new Vector2(140, 0)) && SaveImported(army))
+                ImGui.CloseCurrentPopup();
+        }
+
+        ImGui.EndPopup();
+    }
+
+    private bool SaveImported(ArmyListFile army)
+    {
+        var (canceled, path) = TinyDialogs.SaveFileDialog("Save Imported Army", "", ArmyFilter);
+        if (canceled || string.IsNullOrEmpty(path)) return false;
+        if (Path.GetExtension(path) != ArmyListFile.EXTENSION_WITH_PERIOD)
+            path = Path.ChangeExtension(path, ArmyListFile.EXTENSION_WITH_PERIOD);
+        File.WriteAllText(path, JsonSerializer.Serialize(army, RuleJson.Options));
+        _statusHint = $"Imported {Path.GetFileName(path)}";
+        return true;
     }
 
     // ── List-mutation seams (unit-tested without ImGui) ─────────────────────────────────────────────────
@@ -198,6 +318,15 @@ public class ArmyForgeScreen : IAppScreen
         ImGui.SameLine();
         if (ImGui.Button("Load")) Load();
         ImGui.SameLine();
+        if (ImGui.Button("Import Link"))
+        {
+            _importInput = string.Empty;
+            _importTask = null;
+            _importOutcome = null;
+            _importError = null;
+            ImGui.OpenPopup("Import from Army Forge");
+        }
+        ImGui.SameLine();
         ImGui.Text("Army Forge  -");
         ImGui.SameLine();
         ImGui.SetNextItemWidth(220f);
@@ -208,6 +337,7 @@ public class ArmyForgeScreen : IAppScreen
             else { _pendingBookIndex = bi; ImGui.OpenPopup("Switch book?"); }
         }
         DrawSwitchBookConfirm();
+        DrawImportModal();
         if (_statusHint is not null)
         {
             ImGui.SameLine();

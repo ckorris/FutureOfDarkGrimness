@@ -98,6 +98,38 @@ if (importIdx >= 0 && importIdx + 2 < args.Length)
     return;
 }
 
+// --import-army <share-link-or-id> <out.fdgarmy>  (#241): fetch an Army Forge share list and write a
+// playable army file (same pipeline as the Forge screen's Import Link button). Refuses on an OPR
+// version / game-system mismatch. Exit 0 on success, 1 on any failure.
+int importArmyIdx = Array.IndexOf(args, "--import-army");
+if (importArmyIdx >= 0 && importArmyIdx + 2 < args.Length)
+{
+    try
+    {
+        var outcome = FdgRaylib.Import.ArmyForgeShareService
+            .FetchAndImportAsync(args[importArmyIdx + 1]).GetAwaiter().GetResult();
+        foreach (string w in outcome.Result.Warnings) Console.WriteLine($"  warning: {w}");
+        foreach (string e in outcome.Result.ListErrors) Console.WriteLine($"  Army Forge list error: {e}");
+        if (outcome.InertRules.Count > 0)
+            Console.WriteLine($"  not enforced by engine: {string.Join(", ", outcome.InertRules)}");
+
+        string outArmyPath = args[importArmyIdx + 2];
+        if (Path.GetExtension(outArmyPath) != ArmyListFile.EXTENSION_WITH_PERIOD)
+            outArmyPath = Path.ChangeExtension(outArmyPath, ArmyListFile.EXTENSION_WITH_PERIOD);
+        string? outArmyDir = Path.GetDirectoryName(Path.GetFullPath(outArmyPath));
+        if (!string.IsNullOrEmpty(outArmyDir)) Directory.CreateDirectory(outArmyDir);
+        File.WriteAllText(outArmyPath, JsonSerializer.Serialize(outcome.Result.Army, RuleJson.Options));
+        Console.WriteLine($"Imported '{outcome.Result.Army.Name}' ({outcome.Result.Army.Faction}): " +
+            $"{outcome.Result.Army.Units.Count} units, {outcome.Result.Army.TotalPoints} pts -> {outArmyPath}");
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"Import failed: {ex.Message}");
+        Environment.Exit(1);
+    }
+    return;
+}
+
 // --apply-rules <book.fdgbook> <supplement.json>  (#153): merge curated rule definitions into an existing
 // book snapshot in place — the definitions the book references (plus what those grant) embed into the
 // book's ruleDefinitions, replace-by-name, so re-applying after editing the supplement is idempotent.
