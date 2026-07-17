@@ -226,11 +226,13 @@ public class PresentationPlayer : IPresentationSink
                     _attackVolleysCued++;
                 }
 
-                // A melee clash fires a one-time hit-stop for weight.
+                // A melee clash fires a one-time hit-stop for weight — but only when something
+                // actually connects (#239): a whiffed swing has no impact to freeze on.
                 if (!_attackHitStopFired && _activeAttack.IsMelee && t >= HitStopTriggerT)
                 {
-                    _hitStopRemaining = HitStopDuration;
                     _attackHitStopFired = true;
+                    if (AttackShotPlan.HasAnyHit(_activeAttack))
+                        _hitStopRemaining = HitStopDuration;
                 }
 
                 if (_attackElapsedSeconds >= dur) _activeAttack = null;
