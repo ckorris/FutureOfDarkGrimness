@@ -1,6 +1,6 @@
 # 239 — Weapon effect sets (per-weapon combat visuals + sounds)
 
-**Status**: todo (plan signed off 2026-07-16; implementation not started)
+**Status**: in-progress (implemented + tested 2026-07-16; awaiting GUI hand-verify)
 **Related**: #238 (attack/dice overlap + volley sounds), #056 (beat stream), #053 (sound cues), #233 (cast roll beat), #218 (ListCompiler cost bug — same forge seam)
 
 ## Goal
@@ -217,6 +217,36 @@ bio-organic/toxic-melee; Wormhole Daemons of War bio-organic/blade-standard.
 
 ## Notes
 
+- 2026-07-16: All five slices implemented and committed the same day (engine a941117 + 1d79995;
+  superproject 9541daf, 0d312fb, 73aff0f, 0877da0). Suite green (engine 1669, app 376), full build
+  clean, headless smoke + scenario smoke exit 0. Deviations from / additions to the plan:
+  - The Forge pipeline (BookFile/ListCompiler/OprBookImporter) turned out to live in the ENGINE's
+    ArmyBuilding/, not FdgRaylib — so the WeaponEffectAssigner (keyword tables, faction defaults,
+    (faction,name) overrides) lives there too, beside the compiler. Runtime beat path stays opaque.
+  - Books carry only the two default-set fields; per-weapon keys bake at COMPILE time (so keyword
+    improvements reach future armies without re-patching 47 books). The Saurian "Power Claw"
+    misfire is a (faction, name) override in the assigner, not a book edit.
+  - Retrofit ran via the new `--retrofit-effects <fileOrDir>...` dev command (idempotent; re-run it
+    after keyword-table changes): 47 books (two-line diffs) + 27 armies patched, incl. embedded
+    Forge-block book defaults; engine submodule's example armies deliberately skipped. Side effect:
+    hand-authored test armies got formatting-normalized by the STJ round-trip (compact rule objects
+    expanded, default 28mm base materialized) — semantically identical, one-time churn.
+  - New nullable fields are omitted-when-null under BOTH serializers, so keyless pre-#239 files
+    round-trip byte-identical.
+  - AttackBeat carries HitCount/AttackCount as floats (Realistic-mode dice are fractional);
+    AttackCount <= 0 = legacy all-hit rendering. AttackShotPlan (pure, tested) spreads the hit
+    share Bresenham-evenly across the shot grid; overlay visuals and impact-sound timing share it.
+    Tiny fractional hits (0.4 of 6) still show >= 1 impact. Melee hit-stop now fires only when
+    something connects.
+  - Sound cue vocabulary changed: gunshot.wav/melee.wav are replaced by per-set
+    fire-/impact-/melee-/meleehit-<set>.wav (46 distinct synth placeholder voices; no real wavs
+    existed, so nothing broke). Impact cues fire via the new PresentationPlayer.AttackVolleyImpact
+    hook at the style's LandFraction into the volley slice (melee: the hit-stop instant).
+  - GUI HAND-VERIFY CHECKLIST: (1) plasma/fusion/missile weapons look+sound distinct within one
+    army and identical across armies; (2) Orks read as crude slugs, High Elf Fleets as cyan shards,
+    Robot Legions as green beams; (3) a whiffed volley visibly overshoots, no impact flash/sound;
+    (4) melee whiff = swing without clash spark or hit-stop; (5) mortar arcs, flamer cones, bio
+    globs read correctly; (6) volume balance across the 46 synth voices is tolerable.
 - 2026-07-16: Filed with signed-off plan. Survey (Sonnet subagent) over 47 books + 8 FdgLab armies
   produced the roster above; recommended 13 ranged / 10 melee vs the requested 7-10 (gravity-pulse
   earned a slot on 170 occurrences; arcane-psychic is the only sane fit for Wormhole Daemons of
