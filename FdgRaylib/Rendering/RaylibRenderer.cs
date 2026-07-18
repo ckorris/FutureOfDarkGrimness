@@ -79,6 +79,7 @@ public class RaylibRenderer
     private readonly TableHitTester      _hitTester      = new();
     private readonly MeasurementOverlay  _measurementOverlay = new();
     private readonly TacticalOverlay.TacticalOverlayController _tacticalOverlay = new();
+    private readonly EscapeMenuOverlay _escapeMenu = new();
     private bool _inGame = false;
     private bool _closeRequested = false;
     private bool _resolverOverlayFaulted = false;
@@ -114,6 +115,11 @@ public class RaylibRenderer
     public RaylibRenderer()
     {
         _currentScreen = MainMenu;
+
+        // In-game menu actions. Returning to the menu and quitting both tear the game down first; these
+        // reuse the exact pair the game-over card uses (ExitGame + NavigateTo) so there's one teardown path.
+        _escapeMenu.OnReturnToMainMenu = () => { ExitGame(); NavigateTo(MainMenu); };
+        _escapeMenu.OnQuitToDesktop    = RequestClose;
     }
 
     public void NavigateTo(IAppScreen screen) => _currentScreen = screen;
@@ -176,6 +182,7 @@ public class RaylibRenderer
             pid => { Color c = colorForPlayer(pid); return (c.R, c.G, c.B); });
         _tacticalOverlay.AttachMovementResolver(resolverOverlay?.MovementResolver);
         _tooltipOverlay.AttachTacticalOverlay(_tacticalOverlay);
+        _tooltipOverlay.OnOpenMenu = _escapeMenu.Open;
 
         // Play a sound cue the moment each beat becomes active, in lockstep with its visual. Audio is
         // GUI-only and may be unavailable (then AudioManager no-ops), so this is best-effort.
@@ -264,6 +271,7 @@ public class RaylibRenderer
 
         _measurementOverlay.Reset();
         _tacticalOverlay.Detach();
+        _escapeMenu.Close();
         _placedModels.Clear();
         lock (_terrainLock)    _terrain.Clear();
         lock (_objectivesLock) _objectives.Clear();
@@ -453,6 +461,9 @@ public class RaylibRenderer
                 ResolverPanelLayout.Set(rightX, 0, rightW, panelH);
 
                 rlImGui.Begin();
+                // Reset the Escape arbiter before any consumer runs this frame. Passing the menu's open
+                // state mutes every other Escape consumer while the menu owns the key.
+                EscapeRouter.BeginFrame(_escapeMenu.IsOpen);
                 // Runs before the hit tester / resolvers so its Alt-measure WantCaptureMouse override
                 // lands before they read that flag (see MeasurementOverlay).
                 _measurementOverlay.UpdateLayout(layout.Scale, layout.OriginX, layout.OriginY, TableHIn);
@@ -494,6 +505,18 @@ public class RaylibRenderer
                 // top-right region always reads as an intentional panel rather than empty space.
                 if (!resolverShown) DrawIdleResolverPanel();
                 DrawGameOverOverlay(screenW, screenH);
+
+                // In-game menu (Esc). Opens only when no context claimed Escape this frame, and never
+                // over the game-over card (that has its own Return to Main Menu button). Drawn last so
+                // its dim + window sit above every other in-game overlay.
+                bool justOpenedMenu = false;
+                if (_gameOverResult == null && EscapeRouter.ShouldOpenMenu())
+                {
+                    _escapeMenu.Open();
+                    justOpenedMenu = true;
+                }
+                _escapeMenu.Draw(screenW, screenH, justOpenedMenu);
+
                 rlImGui.End();
             }
             else

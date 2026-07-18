@@ -74,7 +74,8 @@ public class GuiYesNoResolver : IStageResolver<YesNoRequest, bool>, IGuiResolver
         ImGui.SameLine(0, gap);
         bool noPressed  = ResolverButtons.Deemphasized("No  (Esc)", new Vector2(btnW, btnH));
         // #240: edge-only (repeat: false) so a stuck Esc can't auto-answer No to everything.
-        bool escPressed = !ImGui.GetIO().WantTextInput && ImGui.IsKeyPressed(ImGuiKey.Escape, repeat: false);
+        // #246: routed through EscapeRouter so this dialog claims Esc before the in-game menu can open.
+        bool escPressed = !ImGui.GetIO().WantTextInput && EscapeRouter.TryConsumeEscape();
         if (noPressed || escPressed)
             Complete(tcs, false);
 

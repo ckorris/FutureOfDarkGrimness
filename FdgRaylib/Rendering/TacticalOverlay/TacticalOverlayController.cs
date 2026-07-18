@@ -457,10 +457,12 @@ public class TacticalOverlayController
         if (_tableState == null) return;
 
         ImGuiIOPtr io = ImGui.GetIO();
-        if (!io.WantCaptureKeyboard && ImGui.IsKeyPressed(TacticalOverlayConfig.ThreatToggleKey))
+        // Hotkeys are muted while the in-game menu owns input (#246).
+        bool wantKeys = !io.WantCaptureKeyboard && !EscapeRouter.MenuOpen;
+        if (wantKeys && ImGui.IsKeyPressed(TacticalOverlayConfig.ThreatToggleKey))
             _threatToggledOn = !_threatToggledOn;
 
-        if (!io.WantCaptureKeyboard && ImGui.IsKeyPressed(TacticalOverlayConfig.FidelitySamplerKey))
+        if (wantKeys && ImGui.IsKeyPressed(TacticalOverlayConfig.FidelitySamplerKey))
         {
             _sampler.Enabled = !_sampler.Enabled;
             // The sampler's field channels read the CPU masks, which the GPU-default path skips
@@ -480,7 +482,8 @@ public class TacticalOverlayController
         if (req != null)
         {
             // Esc clears the pin (single-pin: no focus cycling; no move-cancel exists today -- plan C1).
-            if (!io.WantCaptureKeyboard && _pins.Count > 0 && ImGui.IsKeyPressed(TacticalOverlayConfig.ClearPinsKey))
+            // Routed through EscapeRouter (#246) so a pin claims Esc before the in-game menu can open.
+            if (!io.WantCaptureKeyboard && _pins.Count > 0 && EscapeRouter.TryConsumeEscape())
                 ClearPins();
 
             UpdateHover(frameTimeSeconds, hitTester, req);

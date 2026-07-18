@@ -107,6 +107,7 @@ detection, host-IP display, DNS host entry. See `NetworkingHandoff-2026-07-08.md
 - [~] 238 — Attack animation now plays WHILE the to-hit dice tumble (AttackBeat is a zero-lead-in held beat) + gunshot/melee sound per volley instead of once. Implemented + tested; awaiting GUI hand-verify. ([WorkItems/238](WorkItems/238-attack-dice-overlap-volley-sound.md))
 - [~] 239 — Weapon effect sets: 13 ranged / 10 melee themed visual+sound styles baked into books/armies as explicit keys (faction defaults + global fallback), truthful hit/miss impacts + impact sounds. Implemented + tested; awaiting GUI hand-verify (checklist in detail file). ([WorkItems/239](WorkItems/239-weapon-effect-sets.md))
 - [~] 245 — Dice roll panel redesign: bottom caption strip, target badge, overlap ghost-fade; v2 roll-offs join + toolbar vertical; v3 glance metadata (category stripe/word, who-vs-who context, modifier + proc chips, stretched beats — engine + app). Implemented + tested; awaiting GUI hand-verify. ([WorkItems/245](WorkItems/245-dice-caption-strip.md))
+- [ ] 246 — In-game escape menu (Esc): Save/Load/Options/quit-to-menu/quit; bottom-left toolbar collapses to one Menu button, Field GPU/CPU button deleted. Plan ready 2026-07-18, awaiting fork sign-off. ([WorkItems/246](WorkItems/246-escape-menu.md))
 
 ## 2026-06-10 audit follow-ups
 

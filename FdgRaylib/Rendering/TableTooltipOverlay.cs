@@ -44,6 +44,10 @@ public class TableTooltipOverlay
     private TacticalOverlay.TacticalOverlayController? _tactical;
     public void AttachTacticalOverlay(TacticalOverlay.TacticalOverlayController tactical) => _tactical = tactical;
 
+    // Opens the in-game menu (#246). Wired in TransitionToGame; the toolbar's "Menu" button and, later,
+    // the standalone button both call it.
+    public Action? OnOpenMenu;
+
     private static readonly FileFilter SaveFilter = new(
         $"Saved Game (*{GameSaveFile.EXTENSION_WITH_PERIOD})",
         new[] { $"*{GameSaveFile.EXTENSION_WITH_PERIOD}" });
@@ -68,18 +72,20 @@ public class TableTooltipOverlay
     {
         if (_tableState == null) return;
 
-        if (ImGui.IsKeyPressed(ImGuiKey.L) && !ImGui.GetIO().WantCaptureKeyboard)
+        // Hotkeys are muted while the in-game menu owns input (#246).
+        bool wantKeys = !ImGui.GetIO().WantCaptureKeyboard && !EscapeRouter.MenuOpen;
+        if (wantKeys && ImGui.IsKeyPressed(ImGuiKey.L))
             _showLabels = !_showLabels;
 
-        if (ImGui.IsKeyPressed(ImGuiKey.T) && !ImGui.GetIO().WantCaptureKeyboard)
+        if (wantKeys && ImGui.IsKeyPressed(ImGuiKey.T))
             _showAllTokens = !_showAllTokens;
 
         var hoveredUnit    = hitTester.HoveredUnit;
         var hoveredModel   = hitTester.HoveredModel;
         var hoveredTerrain = hitTester.HoveredTerrain;
 
-        // Route canvas clicks to the active resolver
-        if (hitTester.Clicked && hoveredUnit != null && hoveredModel != null)
+        // Route canvas clicks to the active resolver (suppressed while the in-game menu is open, #246).
+        if (!EscapeRouter.MenuOpen && hitTester.Clicked && hoveredUnit != null && hoveredModel != null)
             interactionHandler?.HandleClick(hoveredUnit, hoveredModel);
 
         // Draw tooltip
@@ -114,6 +120,12 @@ public class TableTooltipOverlay
         float pad  = ImGui.GetStyle().FramePadding.X * 2f;
         float btnW = ImGui.CalcTextSize("Anchor: Target").X + pad;
         var btnSize = new Vector2(btnW, 0f);
+
+        // In-game menu (#246): Save / quit paths live behind Esc now; this button is the discoverable
+        // way in. Sits at the top of the stack until the rest of the toolbar retires (#246 S3).
+        if (OnOpenMenu != null && ImGui.Button("Menu", btnSize))
+            OnOpenMenu();
+        ImGui.Separator();
 
         if (ImGui.Button(_showLabels ? "Labels: ON" : "Labels: OFF", btnSize))
             _showLabels = !_showLabels;
