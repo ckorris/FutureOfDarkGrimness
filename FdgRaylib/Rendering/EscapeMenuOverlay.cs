@@ -1,5 +1,7 @@
 using System.Numerics;
+using FDG.SaveLoad;
 using ImGuiNET;
+using TinyDialogsNet;
 
 namespace FdgRaylib.Rendering;
 
@@ -11,19 +13,30 @@ namespace FdgRaylib.Rendering;
 /// playing. Gameplay input is suppressed via <see cref="EscapeRouter.MenuOpen"/> checks at the canvas
 /// and hotkey sites; the full-screen dim window also blocks clicks from reaching windows behind it.</para>
 ///
-/// <para>S1 scope: Resume / Return to Main Menu / Quit to Desktop, the latter two behind a confirm.
-/// Save / Load / Options rows land in later slices (#246).</para>
+/// <para>Contents: Resume, Save Game (host only), Load Game (host only), Return to Main Menu, Quit to
+/// Desktop. Options and the toolbar retirement land in #246 S3.</para>
 /// </summary>
 public sealed class EscapeMenuOverlay
 {
-    private enum Confirm { None, ReturnToMenu, Quit }
+    private enum Confirm { None, ReturnToMenu, Quit, LoadGame }
     private Confirm _confirm = Confirm.None;
 
     public bool IsOpen { get; private set; }
 
-    // Wired by the renderer (each captures ExitGame/NavigateTo/RequestClose).
+    // Wired by the renderer (each captures ExitGame/NavigateTo/RequestClose/the load flow).
     public Action? OnReturnToMainMenu;
     public Action? OnQuitToDesktop;
+    public Action? OnLoadGame;
+
+    // Serializes the live game to a .fdgsave string. Non-null only on the host (a client can't save yet
+    // — that's #054); a null func drives the disabled Save/Load rows.
+    private Func<string?>? _saveGameToJson;
+    public void AttachSave(Func<string?>? saveGameToJson) => _saveGameToJson = saveGameToJson;
+    private bool IsHost => _saveGameToJson != null;
+
+    private static readonly FileFilter SaveFilter = new(
+        $"Saved Game (*{GameSaveFile.EXTENSION_WITH_PERIOD})",
+        new[] { $"*{GameSaveFile.EXTENSION_WITH_PERIOD}" });
 
     public void Open()  { IsOpen = true;  _confirm = Confirm.None; }
     public void Close() { IsOpen = false; _confirm = Confirm.None; }
@@ -87,17 +100,41 @@ public sealed class EscapeMenuOverlay
         ImGui.Spacing();
 
         if (FullWidthButton("Resume")) Close();
+
+        // Save / Load are host actions. A client sees them disabled with a one-line reason (client-side
+        // save is #054); the host resumes/saves the whole game.
+        if (IsHost)
+        {
+            if (FullWidthButton("Save Game")) HandleSaveGame();
+            if (FullWidthButton("Load Game")) _confirm = Confirm.LoadGame;
+        }
+        else
+        {
+            ImGui.BeginDisabled();
+            FullWidthButton("Save Game");
+            FullWidthButton("Load Game");
+            ImGui.EndDisabled();
+            ImGui.TextDisabled("Host controls saving and loading.");
+            ImGui.Spacing();
+        }
+
         if (FullWidthButton("Return to Main Menu")) _confirm = Confirm.ReturnToMenu;
         if (FullWidthButton("Quit to Desktop")) _confirm = Confirm.Quit;
     }
 
     private void DrawConfirm()
     {
-        string question = _confirm == Confirm.ReturnToMenu
-            ? "Leave this game and return to the main menu? This ends the game for all players."
-            : "Quit to desktop? This ends the game for all players.";
+        (string title, string question) = _confirm switch
+        {
+            Confirm.ReturnToMenu => ("Return to Main Menu",
+                "Leave this game and return to the main menu? This ends the game for all players."),
+            Confirm.LoadGame => ("Load Game",
+                "Load a saved game? This ends the current game for all players, then opens a file to resume."),
+            _ => ("Quit to Desktop",
+                "Quit to desktop? This ends the game for all players."),
+        };
 
-        DrawTitle(_confirm == Confirm.ReturnToMenu ? "Return to Main Menu" : "Quit to Desktop");
+        DrawTitle(title);
         ImGui.Spacing();
         ImGui.PushTextWrapPos(0f);
         ImGui.TextUnformatted(question);
@@ -108,11 +145,31 @@ public sealed class EscapeMenuOverlay
         {
             Confirm which = _confirm;
             Close();
-            if (which == Confirm.ReturnToMenu) OnReturnToMainMenu?.Invoke();
-            else OnQuitToDesktop?.Invoke();
+            switch (which)
+            {
+                case Confirm.ReturnToMenu: OnReturnToMainMenu?.Invoke(); break;
+                case Confirm.LoadGame:     OnLoadGame?.Invoke();        break;
+                default:                   OnQuitToDesktop?.Invoke();   break;
+            }
             return;
         }
         if (FullWidthButton("Back")) _confirm = Confirm.None;
+    }
+
+    // Serialize the game and write it to a player-chosen .fdgsave (native save dialog). No-op if the
+    // game can't be serialized or the dialog is canceled. Moved here from the retired table toolbar.
+    private void HandleSaveGame()
+    {
+        string? json = _saveGameToJson?.Invoke();
+        if (json == null) return;
+
+        var (canceled, path) = TinyDialogs.SaveFileDialog("Save Game", "", SaveFilter);
+        if (canceled || string.IsNullOrWhiteSpace(path)) return;
+
+        if (!path.EndsWith(GameSaveFile.EXTENSION_WITH_PERIOD, StringComparison.OrdinalIgnoreCase))
+            path += GameSaveFile.EXTENSION_WITH_PERIOD;
+
+        File.WriteAllText(path, json);
     }
 
     private static void DrawTitle(string text)

@@ -91,6 +91,11 @@ public class RaylibRenderer
     /// window - calling it before Run() segfaults inside raylib (null GL function pointers).
     /// </summary>
     public Action? OnWindowReady;
+
+    // Starts the "open a .fdgsave and resume it" flow (the same one the main menu's Load Game runs).
+    // Program.cs assigns the shared implementation; the in-game menu's Load option invokes it after
+    // tearing the current game down and returning to the menu.
+    public Action? OnLoadGameRequested;
     // Set from the engine thread when the game ends (see ShowGameOver); read on the main thread to draw
     // the game-over overlay. Non-null = game finished, result string to display.
     private volatile string? _gameOverResult = null;
@@ -120,6 +125,8 @@ public class RaylibRenderer
         // reuse the exact pair the game-over card uses (ExitGame + NavigateTo) so there's one teardown path.
         _escapeMenu.OnReturnToMainMenu = () => { ExitGame(); NavigateTo(MainMenu); };
         _escapeMenu.OnQuitToDesktop    = RequestClose;
+        // Load ends the current game, returns to the menu, then runs the shared load-from-file flow.
+        _escapeMenu.OnLoadGame = () => { ExitGame(); NavigateTo(MainMenu); OnLoadGameRequested?.Invoke(); };
     }
 
     public void NavigateTo(IAppScreen screen) => _currentScreen = screen;
@@ -175,7 +182,8 @@ public class RaylibRenderer
         _taskDisplay        = taskDisplay;
         _presentationPlayer = presentationPlayer;
         _playerMessageUI    = playerMessageUI;
-        _tooltipOverlay.Attach(tableState, colorForPlayer, saveGameToJson);
+        _tooltipOverlay.Attach(tableState, colorForPlayer);
+        _escapeMenu.AttachSave(saveGameToJson);
         _measurementOverlay.Attach(tableState);
         // [overlay] messages are developer detail (rebuild-budget warnings) -> the Debug log category.
         _tacticalOverlay.Attach(tableState, msg => _log?.Add(msg, new TextColor(255, 180, 90, 255), isDebug: true),

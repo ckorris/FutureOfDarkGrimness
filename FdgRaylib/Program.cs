@@ -327,7 +327,9 @@ else
         renderer.NavigateTo(renderer.ClientModal);
 
     // ── Load Game (work item #052): open a .fdgsave, resume it as host ───────────
-    renderer.MainMenu.OnLoadGameClicked = () =>
+    // Shared by the main menu's Load Game and the in-game menu's Load (#246); the latter tears the
+    // current game down and returns to the menu before calling this.
+    void LoadGameFlow()
     {
         var saveFilter = new FileFilter(
             $"Saved Game (*{GameSaveFile.EXTENSION_WITH_PERIOD})",
@@ -355,7 +357,10 @@ else
         var lobby = new LobbyViewModel_Host("Mr. Host", "Loaded Game", "", host, loadedStore);
         renderer.LobbyScreen.SetViewModel(lobby);
         renderer.NavigateTo(renderer.LobbyScreen);
-    };
+    }
+
+    renderer.MainMenu.OnLoadGameClicked = LoadGameFlow;
+    renderer.OnLoadGameRequested        = LoadGameFlow;
 
     renderer.MainMenu.OnQuitClicked = renderer.RequestClose;
 

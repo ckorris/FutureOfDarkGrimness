@@ -1,13 +1,11 @@
 using System.Numerics;
 using FDG;
 using FDG.Players;
-using FDG.SaveLoad;
 using FDG.Rules.Dispatch;
 using FDG.Rules.Foundation;
 using FdgRaylib.Rendering.Resolvers;
 using ImGuiNET;
 using Raylib_cs;
-using TinyDialogsNet;
 
 namespace FdgRaylib.Rendering;
 
@@ -35,10 +33,6 @@ public class TableTooltipOverlay
     // army-embedded rules (#059) aren't in here and fall back to Neutral/no-description.
     private readonly IRuleResolver _ruleResolver = CoreRuleCatalog.CreateResolver();
 
-    // Non-null only on the host (work item #054 will add client-initiated saving); returns the
-    // serialized game to write to a .fdgsave file.
-    private Func<string?>? _saveGameToJson;
-
     // The tactical overlay, so the toolbar can expose its Threat toggle (also bound to F). Non-null
     // once wired in TransitionToGame.
     private TacticalOverlay.TacticalOverlayController? _tactical;
@@ -48,15 +42,9 @@ public class TableTooltipOverlay
     // the standalone button both call it.
     public Action? OnOpenMenu;
 
-    private static readonly FileFilter SaveFilter = new(
-        $"Saved Game (*{GameSaveFile.EXTENSION_WITH_PERIOD})",
-        new[] { $"*{GameSaveFile.EXTENSION_WITH_PERIOD}" });
-
-    public void Attach(ITableState tableState, Func<PlayerID, Color> colorForPlayer,
-        Func<string?>? saveGameToJson = null)
+    public void Attach(ITableState tableState, Func<PlayerID, Color> colorForPlayer)
     {
         _tableState = tableState;
-        _saveGameToJson = saveGameToJson;
     }
 
     public void UpdateLayout(float scale, int originX, int originY, float tableH)
@@ -133,8 +121,6 @@ public class TableTooltipOverlay
             RaylibRenderer.ShowGrid = !RaylibRenderer.ShowGrid;
         if (ImGui.Button(_showAllTokens ? "Tokens: ALL" : "Tokens: std", btnSize))
             _showAllTokens = !_showAllTokens;
-        if (_saveGameToJson != null && ImGui.Button("Save Game", btnSize))
-            HandleSaveGame();
 
         // Threat frontiers inspection toggle (also F). No longer auto-shown during a move (the field
         // replaced that); this is the only way to bring them up now.
@@ -161,20 +147,6 @@ public class TableTooltipOverlay
         ImGui.TextDisabled("Middle-drag: pan");
 
         ImGui.End();
-    }
-
-    private void HandleSaveGame()
-    {
-        string? json = _saveGameToJson?.Invoke();
-        if (json == null) return;
-
-        var (canceled, path) = TinyDialogs.SaveFileDialog("Save Game", "", SaveFilter);
-        if (canceled || string.IsNullOrWhiteSpace(path)) return;
-
-        if (!path.EndsWith(GameSaveFile.EXTENSION_WITH_PERIOD, StringComparison.OrdinalIgnoreCase))
-            path += GameSaveFile.EXTENSION_WITH_PERIOD;
-
-        File.WriteAllText(path, json);
     }
 
     private void DrawUnitTooltip(IUnit unit, IModel model,
