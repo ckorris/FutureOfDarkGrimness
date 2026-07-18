@@ -60,6 +60,27 @@ public static class AttackOverlay
         }
     }
 
+    /// <summary>
+    /// Screen-space bounding box of this attack's action — every shooter and defender position plus
+    /// <paramref name="padPx"/> slack for muzzle flashes, miss splay, and impact bursts. #244: the
+    /// dice caption strip ghosts itself while this rect reaches it.
+    /// </summary>
+    internal static Rectangle ScreenBounds(AttackBeat beat, float scale, int originX, int originY,
+        float tableH, float padPx)
+    {
+        float minX = float.MaxValue, minY = float.MaxValue, maxX = float.MinValue, maxY = float.MinValue;
+        void Include(Position p)
+        {
+            Vector2 v = ToPixel(p, scale, originX, originY, tableH);
+            minX = Math.Min(minX, v.X); maxX = Math.Max(maxX, v.X);
+            minY = Math.Min(minY, v.Y); maxY = Math.Max(maxY, v.Y);
+        }
+        foreach (Position p in beat.From) Include(p);
+        foreach (Position p in beat.To) Include(p);
+        if (minX > maxX) return new Rectangle(0, 0, 0, 0);
+        return new Rectangle(minX - padPx, minY - padPx, maxX - minX + padPx * 2, maxY - minY + padPx * 2);
+    }
+
     // ---------------- ranged ----------------
 
     private static void DrawRanged(RangedEffectStyle s, Vector2 from, Vector2 to, float t,

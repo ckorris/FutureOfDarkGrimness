@@ -46,6 +46,13 @@ public class PresentationPlayer : IPresentationSink
     private bool  _diceHeld;
     private float _diceLingerSeconds;
     private const float DiceHoldLingerSeconds = 2.5f;
+    // Display alpha for the dice panel (#244): eases in as a beat starts, out over the end of a
+    // non-held beat's duration or the tail of a held beat's linger — the panel fades instead of
+    // popping. When a new dice beat replaces a still-visible panel the fade-in is skipped (no blink).
+    private float _diceAlpha = 1f;
+    private bool  _diceSkipFadeIn;
+    private const float DiceFadeInSeconds  = 0.12f;
+    private const float DiceFadeOutSeconds = 0.35f;
 
     // Screen-space banner for the currently-active BannerBeat (null when none).
     private BannerBeat? _activeBanner;
@@ -183,6 +190,9 @@ public class PresentationPlayer : IPresentationSink
             if (_diceHeld)
             {
                 _diceLingerSeconds += dtSeconds;
+                // Fade the parked panel out over the linger's tail instead of popping (#244).
+                _diceAlpha = Math.Clamp(
+                    (DiceHoldLingerSeconds - _diceLingerSeconds) / DiceFadeOutSeconds, 0f, 1f);
                 if (_diceLingerSeconds >= DiceHoldLingerSeconds)
                 {
                     _activeDice = null;
@@ -234,6 +244,7 @@ public class PresentationPlayer : IPresentationSink
                     _diceHeld = true;
                     _diceLingerSeconds = 0f;
                     _diceProgress = 1f; // fully settled while parked
+                    _diceAlpha = 1f;
                     _active = null;
                 }
                 else if (_elapsedSeconds >= dur)
@@ -360,9 +371,19 @@ public class PresentationPlayer : IPresentationSink
                         routDeath.SetProgress(t); // all routed models fade together
                 break;
             case DiceRolledBeat dice:
+                if (!ReferenceEquals(_activeDice, dice))
+                    _diceSkipFadeIn = _activeDice != null; // replacing a visible panel — no blink to zero
                 _activeDice = dice;
                 _diceProgress = t;
                 _diceHeld = false; // an actively-animating dice beat is not parked; it replaces any parked one
+                float fadeIn = _diceSkipFadeIn ? 1f : Math.Min(1f, _elapsedSeconds / DiceFadeInSeconds);
+                float fadeOut = 1f;
+                if (!dice.Held) // a held beat parks and fades on the linger instead
+                {
+                    float diceDur = (float)dice.NominalDuration.TotalSeconds;
+                    fadeOut = Math.Clamp((diceDur - _elapsedSeconds) / DiceFadeOutSeconds, 0f, 1f);
+                }
+                _diceAlpha = Math.Min(fadeIn, fadeOut);
                 break;
             case BannerBeat banner:
                 _activeBanner = banner;
@@ -403,6 +424,7 @@ public class PresentationPlayer : IPresentationSink
             case DiceRolledBeat:
                 _activeDice = null;
                 _diceHeld = false;
+                _diceSkipFadeIn = false;
                 break;
             case BannerBeat:
                 _activeBanner = null;
@@ -419,13 +441,17 @@ public class PresentationPlayer : IPresentationSink
         }
     }
 
-    /// <summary>The dice roll being shown this frame, if any, with its 0..1 progress.</summary>
-    public bool TryGetActiveDice(out DiceRolledBeat beat, out float progress)
+    /// <summary>
+    /// The dice roll being shown this frame, if any, with its 0..1 progress and display alpha
+    /// (fade in/out easing, #244 — the overlay multiplies its colors by it).
+    /// </summary>
+    public bool TryGetActiveDice(out DiceRolledBeat beat, out float progress, out float alpha)
     {
         lock (_lock)
         {
             beat = _activeDice!;
             progress = _diceProgress;
+            alpha = _diceAlpha;
             return _activeDice != null;
         }
     }

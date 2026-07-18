@@ -106,6 +106,7 @@ detection, host-IP display, DNS host entry. See `NetworkingHandoff-2026-07-08.md
 - [~] 237 — Single-option pick shortcuts: shooting pre-selects a sole fireable target, sole-defender charge shows a one-click confirm card (keeps #202's Back), Enter = Auto-assign All. Implemented + tested; awaiting GUI hand-verify. ([WorkItems/237](WorkItems/237-single-option-pick-shortcuts.md))
 - [~] 238 — Attack animation now plays WHILE the to-hit dice tumble (AttackBeat is a zero-lead-in held beat) + gunshot/melee sound per volley instead of once. Implemented + tested; awaiting GUI hand-verify. ([WorkItems/238](WorkItems/238-attack-dice-overlap-volley-sound.md))
 - [~] 239 — Weapon effect sets: 13 ranged / 10 melee themed visual+sound styles baked into books/armies as explicit keys (faction defaults + global fallback), truthful hit/miss impacts + impact sounds. Implemented + tested; awaiting GUI hand-verify (checklist in detail file). ([WorkItems/239](WorkItems/239-weapon-effect-sets.md))
+- [~] 244 — Dice roll panel redesign: bottom-docked caption strip + standalone "4+" target badge, ghost-fade when the attack animation overlaps, stable width, throttled tumble, fade in/out; roll-offs stay centered. Implemented + tested; awaiting GUI hand-verify. ([WorkItems/244](WorkItems/244-dice-caption-strip.md))
 
 ## 2026-06-10 audit follow-ups
 
