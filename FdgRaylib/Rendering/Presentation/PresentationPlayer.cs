@@ -69,6 +69,19 @@ public class PresentationPlayer : IPresentationSink
     // Models flashing a "hurt but survived" tint (the wounded beat is active for each).
     private readonly HashSet<Guid> _wounded = new();
 
+    // #232 casualty cascade: overlapped (Held) death/flinch beats play out here, concurrent with the
+    // active slot, each over its own full NominalDuration - the engine paces only the short stagger
+    // between them, so a multi-kill volley reads as rapid-fire deaths with the last one (non-held,
+    // played through the active slot as usual) finishing on its own.
+    private readonly List<CascadeState> _cascading = new();
+
+    private sealed class CascadeState
+    {
+        public readonly PresentationBeat Beat;
+        public float Elapsed;
+        public CascadeState(PresentationBeat beat) => Beat = beat;
+    }
+
     // World-space save "pings" for the currently-active SaveBeat (null when none).
     private SaveBeat? _activeSave;
     private float _saveProgress;
@@ -87,7 +100,12 @@ public class PresentationPlayer : IPresentationSink
     /// <summary>True while a beat is in flight or queued — used to gate interactive prompts.</summary>
     public bool IsAnimating
     {
-        get { lock (_lock) return _active != null || _incoming.Count > 0 || _activeAttack != null; }
+        get
+        {
+            lock (_lock)
+                return _active != null || _incoming.Count > 0 || _activeAttack != null
+                    || _cascading.Count > 0;
+        }
     }
 
     /// <summary>
@@ -189,6 +207,13 @@ public class PresentationPlayer : IPresentationSink
                     _attackHitStopFired   = false;
                     continue;
                 }
+                // #232: an overlapped casualty beat never holds the active slot - it transfers to the
+                // cascade track and animates concurrently while later beats play.
+                if (next.Held && next is ModelDiedBeat or ModelWoundedBeat)
+                {
+                    _cascading.Add(new CascadeState(next));
+                    continue;
+                }
                 _active = next;
                 _elapsedSeconds = 0f;
             }
@@ -215,6 +240,21 @@ public class PresentationPlayer : IPresentationSink
                 {
                     Finish(_active);
                     _active = null;
+                }
+            }
+
+            // The cascade track (#232) advances every overlapped casualty animation each frame,
+            // independent of the active slot; each finishes after its own full duration.
+            for (int i = _cascading.Count - 1; i >= 0; i--)
+            {
+                CascadeState c = _cascading[i];
+                c.Elapsed += dtSeconds;
+                float cDur = (float)c.Beat.NominalDuration.TotalSeconds;
+                Advance(c.Beat, cDur <= 0f ? 1f : Math.Clamp(c.Elapsed / cDur, 0f, 1f));
+                if (c.Elapsed >= cDur)
+                {
+                    Finish(c.Beat);
+                    _cascading.RemoveAt(i);
                 }
             }
 

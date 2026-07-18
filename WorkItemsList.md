@@ -102,7 +102,7 @@ detection, host-IP display, DNS host entry. See `NetworkingHandoff-2026-07-08.md
 - [ ] 229 — (exploratory) Bottom in-game menu should maybe be its own panel; confirm which strip + intent before building. ([WorkItems/229](WorkItems/229-bottom-menu-own-panel.md))
 - [ ] 230 — Show weapon range rings during placement (deploy / embark / ambush arrival), anchored to the candidate position. ([WorkItems/230](WorkItems/230-placement-weapon-range-rings.md))
 - [ ] 231 — Remove the LoS blocking-line visual from shooting (confusing when a valid target stands in front of the blocker). ([WorkItems/231](WorkItems/231-remove-los-blocking-lines.md))
-- [~] 232 — Remove the saved-hits beat + its sound (failed-save presentation kept); also wound flinches 40% faster. Implemented + tested; awaiting GUI hand-verify. ([WorkItems/232](WorkItems/232-remove-save-hit-beat.md))
+- [~] 232 — Remove the saved-hits beat + its sound; v2: casualty cascade - a volley's deaths/flinches overlap on a 150ms stagger, last one plays fully. Implemented + tested; awaiting GUI hand-verify. ([WorkItems/232](WorkItems/232-remove-save-hit-beat.md))
 - [ ] 233 — Add a dice-roll beat for casting (engine beat emission in CastSpellStage). ([WorkItems/233](WorkItems/233-cast-roll-beat.md))
 - [~] 235 — Game Over card: center the result text + make the window draggable so the final board is inspectable. Implemented; awaiting GUI hand-verify. ([WorkItems/235](WorkItems/235-game-over-box-polish.md))
 - [~] 237 — Single-option pick shortcuts: shooting pre-selects a sole fireable target, sole-defender charge shows a one-click confirm card (keeps #202's Back), Enter = Auto-assign All. Implemented + tested; awaiting GUI hand-verify. ([WorkItems/237](WorkItems/237-single-option-pick-shortcuts.md))
