@@ -52,8 +52,9 @@ spell, boost tokens are spent with the cast cost (regardless of pass/fail), the 
   (`MoraleUtilities`), and the Tactician's `CombatMath` mirrors all clamp; fixed-threshold rolls
   (impact 2+, dangerous terrain 1s, Unpredictable branch) can't be modified. Only gap: the
   Regeneration/wound-ignore threshold is used unclamped (`AssignWoundsStage` + `CombatMath`) - safe
-  today because the catalog only defines 2+/5+/6+, but not defensive; worth a tiny clamp if
-  wound-ignore thresholds ever become data-authored. Cast now uses the same shared clamp (engine
+  today because the catalog only defines 2+/5+/6+, but not defensive. **Closed same day** (engine
+  `fb8273f`): one clamp at the `WoundIgnoreSink` read face covers both consumers + the beat display,
+  pin test added - no separate work item (user call). Cast now uses the same shared clamp (engine
   `db076fe`).
 - 2026-07-18 (later): **Natural-1 amendment.** User caught that the threshold clamp floor of 1 let a
   maxed boost turn the cast into an auto-success - violating GDF's "unmodified 1 always fails /
