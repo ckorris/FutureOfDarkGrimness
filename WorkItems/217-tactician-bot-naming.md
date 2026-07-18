@@ -1,6 +1,6 @@
 # 217 — Tactician Bot name enumerated by player slot, not bot count
 
-**Status**: todo
+**Status**: done (GUI-verified 2026-07-18)
 **Related**: #191 (Tactician agent umbrella), #216, `LobbyViewModel_Host.cs:859-866`
 
 ## Goal
@@ -17,3 +17,6 @@
 ## Decisions
 
 ## Outcome
+Fixed and hand-verified 2026-07-18. Bots are numbered by their rank among same-profile bots
+(`AddAiPlayer` counts existing AI infos with the same `EAiProfile`), independent of humans and other
+bot types. Pinned by `LobbyBotNamingTests`. Engine commit `b781572`.

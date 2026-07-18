@@ -1,6 +1,6 @@
 # 232 — Remove the saved-hits beat (especially its sound)
 
-**Status**: todo
+**Status**: done (GUI-verified 2026-07-18)
 **Related**: #204 (save-beat pacing/grouping, done - this goes further), #056 (presentation beat stream), #053 (sound cues)
 
 ## Goal
@@ -36,3 +36,10 @@ Remove the presentation beat that plays when hits are SAVED (the no-damage outco
   added the wound-beat speedup (~40%) to this item's scope.
 
 ## Outcome
+Done and hand-verified 2026-07-18, in two rounds. (1) The saved-hits `SaveBeat` (deflection pings +
+ping sound) is no longer emitted - the save dice-roll beats keep the "N saved, M wounds" captions;
+the beat class/overlay/cue stay in code for wire compat but are dead. (2) Casualty cascade: a
+volley's deaths/flinches overlap on a 150ms `CasualtyStagger` (Overlap/Held beats + a concurrent
+cascade track in `PresentationPlayer`), the last casualty plays in full - 5 kills ~1.1s instead of
+2.5s, sounds rapid-fire. `ModelWounded` stays 300ms (the interim 180ms flat trim was superseded).
+Engine commits `b781572`, `bd045b6`; app/superproject `b293e43`, `9ee2c73`.

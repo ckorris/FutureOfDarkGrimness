@@ -1,6 +1,6 @@
 # 235 — Game Over box: center the text, make it draggable
 
-**Status**: todo
+**Status**: done (GUI-verified 2026-07-18)
 **Related**: #040 (post-game navigation, done - built this card), `RaylibRenderer.DrawGameOverOverlay`
 
 ## Goal
@@ -18,3 +18,6 @@ Two cosmetic fixes to the Game Over card: (1) the result text is left-aligned in
 ## Decisions
 
 ## Outcome
+Done and hand-verified 2026-07-18. Game Over card centers its title and result line and is draggable
+(position forced only on appear, `NoMove` dropped) so the final board can be inspected before
+returning to the menu. App-side only, `RaylibRenderer.DrawGameOverOverlay`. Superproject `b293e43`.
