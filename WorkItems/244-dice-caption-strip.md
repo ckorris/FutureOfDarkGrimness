@@ -17,6 +17,33 @@ split** (roll-offs stay centered). Notably `DiceOverlay`'s own doc comment alway
 
 ## Notes
 
+- 2026-07-18 (v3, glance metadata - ENGINE + app, engine change user-authorized): the roll panel now
+  answers "what kind of roll, who, why this number, what procced" at a cursory look.
+  - **Engine** (submodule `753cdeb`): `DiceRolledBeat` gains optional `ERollBeatCategory`
+    (Offense/Defense/Misc), `Context` ("Warriors -> Heavy Gunners"), `ModifierTags`
+    (["Quality 4+", "Stealth -1"]) and `ProcTags` (["Furious +2 on 6s"]) - all display-ready
+    strings composed at the emitting stage, serialized for networked clients. Each info block
+    stretches the beat +400ms (held lead-in +200ms) so there is time to read it (user request).
+    - `DetermineHitRollStage` + `MoraleUtilities` switch `EvaluateAll` -> `EvaluateAllNamedLive`
+      (#204's named twin, behavior-identical) to attribute threshold modifiers.
+    - `RollToHitStage` presents its dice beat AFTER the hit-roll-complete evaluation (pure
+      computation; RNG order and grant spends unchanged) so proc chips ride the beat; also
+      composes `SaveModifierTags` naming Shielded/Thrust/Fortified for the save side.
+    - Save arithmetic chips ("Defense 4+ | AP 2 | Cover +1") compose in
+      `DetermineSaveRollsNeededStage`; save beats stamp Defense + "X saves" context.
+    - Bane Re-roll + Regeneration beats stamp Defense + defender context. Unmodified rolls carry
+      NO chips (no noise, no stretched beat). `DiceBeatGlanceMetadataTests` x10.
+  - **App**: category = 4px accent stripe down the panel's left edge (ember=attack,
+    steel=save, neutral=misc) + the word ATTACK/SAVE under the target badge (redundant,
+    colorblind-safe channel); dim context line under the header; neutral modifier chips row; gold
+    proc chips row; top-face successes get a gold rim when procs fired; probabilistic panel gets
+    the same treatment minus the rim. Held panels with chips linger +0.4s per info block
+    (`PresentationPlayer`; new linger test).
+  - Deferred, recorded: world-link pulse on the participating units (redundant with tracers/save
+    pings today); per-die reroll animation (histogram beats have no die identity - the engine's
+    existing chained "Bane Re-roll" beat is the vocabulary for now); proc chips only show rules
+    that FIRED (a Furious roll with no 6s shows nothing - "could have procced" needs a pre-roll
+    rule query that doesn't exist yet).
 - 2026-07-18 (v2, same-day playtest feedback): two revisions.
   - **Roll-offs join the bottom strip.** The objective-count roll (DiceRolledBeat, bottom) is
     immediately followed by the first-turn roll-off (was: centered) — back-to-back rolls hopping
@@ -60,6 +87,15 @@ split** (roll-offs stay centered). Notably `DiceOverlay`'s own doc comment alway
   is layout, not sequencing.
 - Deferred (explicitly, from the same design survey): redundant success encoding beyond color
   (green/gray dice), and an anticipation animation for the probabilistic bar's instant result.
+
+**Verify by hand (v3 additions):**
+- Shoot with a plain unit: ember stripe + ATTACK word + "A -> B" context; NO chips (unmodified roll).
+- Shoot with Furious (or similar): gold "Furious +N on 6s" chip; rolled 6s that hit get a gold rim;
+  the beat visibly lasts longer than a plain roll.
+- Save roll into cover / with AP: steel stripe + SAVE word + "X saves" context + "Defense 4+ | AP n |
+  Cover +1" chips matching the badge arithmetic.
+- Morale with a modifier (e.g. spell debuff): "Quality 4+ | <rule> -1" chips; plain morale = no chips.
+- Networked client: same chips/colors on the client's panel.
 
 **Verify by hand:**
 - Shoot/melee: dice strip sits at the bottom-center; tracers/swings play unobstructed above it;

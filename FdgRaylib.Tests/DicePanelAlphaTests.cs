@@ -71,6 +71,26 @@ public class DicePanelAlphaTests
     }
 
     [Test]
+    public void HeldRollWithInfoChips_LingersLonger()
+    {
+        // #244: modifier chips are extra reading, so the parked panel stays up past the base
+        // 2.5s linger (base + 0.4s per info block).
+        var player = new PresentationPlayer();
+        var beat = new DiceRolledBeat(new[] { 1f, 1f, 1f, 1f, 1f, 1f }, 1, 4,
+            ERandomnessType.Realistic, "Roll to Hit", held: true,
+            modifierTags: new[] { "Quality 4+", "Stealth -1" });
+        player.OnBeat(beat);
+
+        player.Update(0.9f);  // past the (stretched, 800ms) HoldLeadIn — parks
+        player.Update(2.6f);  // linger 2.6s: past the base 2.5s limit, inside the extended one
+        Assert.That(player.TryGetActiveDice(out _, out _, out _), Is.True,
+            "chips buy the panel extra linger time");
+
+        player.Update(0.4f);  // linger 3.0s: past the extended 2.9s limit
+        Assert.That(player.TryGetActiveDice(out _, out _, out _), Is.False);
+    }
+
+    [Test]
     public void ReplacingAVisiblePanel_SkipsTheFadeIn()
     {
         var player = new PresentationPlayer();

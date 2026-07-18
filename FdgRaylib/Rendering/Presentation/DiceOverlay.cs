@@ -11,9 +11,13 @@ namespace FdgRaylib.Rendering.Presentation;
 /// bottom-center of the table viewport (#244) — the subtitle convention: the action plays out on
 /// the table while the numbers narrate from the caption zone, never covering the units or the
 /// concurrent attack animation (#238). The panel is: a standalone <b>target badge</b> (the success
-/// threshold, e.g. "4+", big enough to read before the dice settle), a <b>header</b> with the
-/// roll's purpose (<see cref="DiceRolledBeat.Label"/>), the dice themselves, and a <b>result
-/// line</b> with the settled outcome (<see cref="DiceRolledBeat.ResultSummary"/>).
+/// threshold, e.g. "4+", big enough to read before the dice settle) over the roll's category word
+/// (ATTACK / SAVE, matching the panel's accent stripe), a <b>header</b> with the roll's purpose
+/// (<see cref="DiceRolledBeat.Label"/>), an optional dim <b>context</b> line (who's rolling at
+/// whom), the dice themselves, optional <b>modifier chips</b> ("Quality 4+ | Stealth -1") and gold
+/// <b>proc chips</b> ("Furious +2 on 6s") — top-face successes get a gold rim when procs fired —
+/// and a <b>result line</b> with the settled outcome (<see cref="DiceRolledBeat.ResultSummary"/>).
+/// Beats carrying chips arrive pre-stretched by the engine so there is time to read them.
 ///
 /// <para>If the attack animation's screen bounds still reach the strip (units fighting at the
 /// bottom table edge), the panel fades to a ghost instead of moving — consistent anchor, graceful
@@ -36,9 +40,15 @@ public static class DiceOverlay
     private const float TumbleHz   = 9f;   // face-change rate while rolling (per-frame swaps strobe)
 
     private const int HeaderSize   = 22;
+    private const int ContextSize  = 18;
     private const int ResultSize   = 20;
     private const int BadgeSize    = 40;   // the standalone target number
     private const int BadgePad     = 10;
+    private const int CategorySize = 12;   // the ATTACK / SAVE word under the badge
+    private const int ChipSize     = 16;
+    private const int ChipPadX     = 7;
+    private const int ChipPadY     = 3;
+    private const int ChipGap      = 6;
     private const int PanelPad     = 16;
     private const int RowGap       = 8;
     private const int ColGap       = 16;
@@ -55,6 +65,16 @@ public static class DiceOverlay
     private static readonly Color Result   = new(255, 225, 150, 255); // gold — the settled "what it means"
     private static readonly Color Hint     = new(170, 170, 175, 255); // dim — the "..." while rolling
     private static readonly Color Tie      = new(228, 200, 60, 255);  // yellow — tied for the win (re-rolls)
+
+    // #244 category accents: the edge stripe + badge word color-code what the roll is FOR. The word
+    // is the redundant channel (color alone would fail a colorblind glance).
+    private static readonly Color OffenseAccent = new(215, 95, 60, 255);   // ember — attacks
+    private static readonly Color DefenseAccent = new(95, 145, 215, 255);  // steel — saves
+    private static readonly Color MiscAccent    = new(140, 140, 148, 255); // neutral — everything else
+
+    private static readonly Color ChipBg     = new(45, 45, 52, 230);
+    private static readonly Color ChipText   = new(210, 210, 215, 255);
+    private static readonly Color ProcChipBg = new(58, 48, 24, 230);
 
     // Smoothed overlap dim so the ghosting eases instead of stepping. Render-thread only.
     private static float  _dim = 1f;
@@ -86,27 +106,41 @@ public static class DiceOverlay
         // sized for it up front and never reflows at the settle instant.
         string result = ResultText(beat);
         string badge  = $"{beat.SuccessThreshold}+";
+        int maxChipRow = areaWidth - 260;
+        List<(string Text, int W)>? modChips  = LayoutChips(beat.ModifierTags, maxChipRow);
+        List<(string Text, int W)>? procChips = LayoutChips(beat.ProcTags, maxChipRow);
+        bool procsFired = procChips != null;
 
         // Size the dice row (shrink the die if there are many).
         int gap = 8;
         int dieSize = 44;
         if (faces.Count > 0)
         {
-            float maxRow = areaWidth - 240; // leave room for the badge column + margins
+            float maxRow = areaWidth - 260; // leave room for the badge column + margins
             if (faces.Count * (dieSize + gap) > maxRow)
                 dieSize = Math.Max(16, (int)(maxRow / faces.Count) - gap);
         }
         int rowW  = faces.Count > 0 ? faces.Count * dieSize + (faces.Count - 1) * gap : 0;
         int diceH = faces.Count > 0 ? dieSize : 0;
 
-        int badgeW = Raylib.MeasureText(badge, BadgeSize) + BadgePad * 2;
-        int badgeH = BadgeSize + BadgePad * 2;
+        (int badgeW, int badgeColH) = BadgeColumnSize(badge, beat.Category);
 
-        int contentW = Max3(Raylib.MeasureText(header, HeaderSize), rowW, Raylib.MeasureText(result, ResultSize));
-        int contentH = HeaderSize + RowGap + (diceH > 0 ? diceH + RowGap : 0) + ResultSize;
+        int chipH = ChipSize + ChipPadY * 2;
+        int contentW = Math.Max(Raylib.MeasureText(header, HeaderSize),
+                       Math.Max(rowW, Raylib.MeasureText(result, ResultSize)));
+        if (beat.Context != null) contentW = Math.Max(contentW, Raylib.MeasureText(beat.Context, ContextSize));
+        if (modChips != null)  contentW = Math.Max(contentW, ChipsWidth(modChips));
+        if (procChips != null) contentW = Math.Max(contentW, ChipsWidth(procChips));
+
+        int contentH = HeaderSize
+            + (beat.Context != null ? RowGap + ContextSize : 0)
+            + (diceH > 0 ? RowGap + diceH : 0)
+            + (modChips != null ? RowGap + chipH : 0)
+            + (procChips != null ? RowGap + chipH : 0)
+            + RowGap + ResultSize;
 
         int panelW = PanelPad + badgeW + ColGap + contentW + PanelPad;
-        int panelH = PanelPad * 2 + Math.Max(contentH, badgeH);
+        int panelH = PanelPad * 2 + Math.Max(contentH, badgeColH);
         int panelX = (areaWidth - panelW) / 2;
         int panelY = screenH - panelH - BottomMargin;
 
@@ -115,17 +149,25 @@ public static class DiceOverlay
         if (a <= 0.02f) return;
 
         Raylib.DrawRectangleRounded(panelRect, 0.18f, 6, Faded(Panel, a));
-
-        DrawBadge(panelX + PanelPad, panelY + (panelH - badgeH) / 2, badgeW, badgeH, badge, a);
+        DrawAccentStripe(panelX, panelY, panelH, beat.Category, a);
+        DrawBadgeColumn(panelX + PanelPad, panelY + (panelH - badgeColH) / 2, badgeW, badge, beat.Category, a);
 
         // Content column, centered within its own span (the badge offsets it from the panel center).
         int contentX = panelX + PanelPad + badgeW + ColGap;
         int y = panelY + (panelH - contentH) / 2;
         DrawCenteredIn(header, contentX, contentW, y, HeaderSize, Faded(Header, a));
-        y += HeaderSize + RowGap;
+        y += HeaderSize;
+
+        if (beat.Context != null)
+        {
+            y += RowGap;
+            DrawCenteredIn(beat.Context, contentX, contentW, y, ContextSize, Faded(Hint, a));
+            y += ContextSize;
+        }
 
         if (diceH > 0)
         {
+            y += RowGap;
             int rowX = contentX + (contentW - rowW) / 2;
             for (int i = 0; i < faces.Count; i++)
             {
@@ -146,10 +188,28 @@ public static class DiceOverlay
                     pip = new Color(30, 30, 30, 255);
                 }
                 DrawDie(x, y, dieSize, shownFace, fill, pip, a);
+                // A top-face success with a proc riding it gets a gold rim — "that 6 did something".
+                if (settled && procsFired && shownFace == beat.SideMax && shownFace >= beat.SuccessThreshold)
+                    Raylib.DrawRectangleRoundedLines(new Rectangle(x - 2, y - 2, dieSize + 4, dieSize + 4),
+                        0.22f, 6, Faded(Result, a));
             }
-            y += dieSize + RowGap;
+            y += dieSize;
         }
 
+        if (modChips != null)
+        {
+            y += RowGap;
+            DrawChips(modChips, contentX, contentW, y, ChipBg, ChipText, border: null, a);
+            y += chipH;
+        }
+        if (procChips != null)
+        {
+            y += RowGap;
+            DrawChips(procChips, contentX, contentW, y, ProcChipBg, Result, border: Result, a);
+            y += chipH;
+        }
+
+        y += RowGap;
         DrawCenteredIn(settled ? result : "...", contentX, contentW, y, ResultSize,
             Faded(settled ? Result : Hint, a));
     }
@@ -162,18 +222,31 @@ public static class DiceOverlay
         string header = beat.Label;
         string result = ResultText(beat);
         string badge  = $"{beat.SuccessThreshold}+";
+        int maxChipRow = areaWidth - 260;
+        List<(string Text, int W)>? modChips  = LayoutChips(beat.ModifierTags, maxChipRow);
+        List<(string Text, int W)>? procChips = LayoutChips(beat.ProcTags, maxChipRow);
 
-        int barW = Math.Min(360, areaWidth - 240);
+        int barW = Math.Min(360, areaWidth - 260);
         int barH = 22;
 
-        int badgeW = Raylib.MeasureText(badge, BadgeSize) + BadgePad * 2;
-        int badgeH = BadgeSize + BadgePad * 2;
+        (int badgeW, int badgeColH) = BadgeColumnSize(badge, beat.Category);
 
-        int contentW = Max3(Raylib.MeasureText(header, HeaderSize), barW, Raylib.MeasureText(result, ResultSize));
-        int contentH = HeaderSize + RowGap + barH + RowGap + ResultSize;
+        int chipH = ChipSize + ChipPadY * 2;
+        int contentW = Math.Max(Raylib.MeasureText(header, HeaderSize),
+                       Math.Max(barW, Raylib.MeasureText(result, ResultSize)));
+        if (beat.Context != null) contentW = Math.Max(contentW, Raylib.MeasureText(beat.Context, ContextSize));
+        if (modChips != null)  contentW = Math.Max(contentW, ChipsWidth(modChips));
+        if (procChips != null) contentW = Math.Max(contentW, ChipsWidth(procChips));
+
+        int contentH = HeaderSize
+            + (beat.Context != null ? RowGap + ContextSize : 0)
+            + RowGap + barH
+            + (modChips != null ? RowGap + chipH : 0)
+            + (procChips != null ? RowGap + chipH : 0)
+            + RowGap + ResultSize;
 
         int panelW = PanelPad + badgeW + ColGap + contentW + PanelPad;
-        int panelH = PanelPad * 2 + Math.Max(contentH, badgeH);
+        int panelH = PanelPad * 2 + Math.Max(contentH, badgeColH);
         int panelX = (areaWidth - panelW) / 2;
         int panelY = screenH - panelH - BottomMargin;
 
@@ -182,21 +255,43 @@ public static class DiceOverlay
         if (a <= 0.02f) return;
 
         Raylib.DrawRectangleRounded(panelRect, 0.18f, 6, Faded(Panel, a));
-
-        DrawBadge(panelX + PanelPad, panelY + (panelH - badgeH) / 2, badgeW, badgeH, badge, a);
+        DrawAccentStripe(panelX, panelY, panelH, beat.Category, a);
+        DrawBadgeColumn(panelX + PanelPad, panelY + (panelH - badgeColH) / 2, badgeW, badge, beat.Category, a);
 
         int contentX = panelX + PanelPad + badgeW + ColGap;
         int y = panelY + (panelH - contentH) / 2;
         DrawCenteredIn(header, contentX, contentW, y, HeaderSize, Faded(Header, a));
-        y += HeaderSize + RowGap;
+        y += HeaderSize;
 
+        if (beat.Context != null)
+        {
+            y += RowGap;
+            DrawCenteredIn(beat.Context, contentX, contentW, y, ContextSize, Faded(Hint, a));
+            y += ContextSize;
+        }
+
+        y += RowGap;
         int barX = contentX + (contentW - barW) / 2;
         Raylib.DrawRectangle(barX, y, barW, barH, Faded(Fail, a));
         float frac = beat.Total > 0f ? beat.Successes / beat.Total : 0f;
         Raylib.DrawRectangle(barX, y, (int)(barW * Math.Clamp(frac, 0f, 1f)), barH, Faded(Success, a));
         Raylib.DrawRectangleLines(barX, y, barW, barH, Faded(Color.Black, a));
-        y += barH + RowGap;
+        y += barH;
 
+        if (modChips != null)
+        {
+            y += RowGap;
+            DrawChips(modChips, contentX, contentW, y, ChipBg, ChipText, border: null, a);
+            y += chipH;
+        }
+        if (procChips != null)
+        {
+            y += RowGap;
+            DrawChips(procChips, contentX, contentW, y, ProcChipBg, Result, border: Result, a);
+            y += chipH;
+        }
+
+        y += RowGap;
         DrawCenteredIn(result, contentX, contentW, y, ResultSize, Faded(Result, a));
     }
 
@@ -283,16 +378,109 @@ public static class DiceOverlay
     private static string ResultText(DiceRolledBeat beat) =>
         beat.ResultSummary ?? $"{beat.Successes:0.##} / {beat.Total:0.##}";
 
-    // The big standalone target number ("4+") — readable at a glance before the dice settle, and
-    // still there afterwards so the settled faces can be interpreted without re-reading anything.
-    private static void DrawBadge(int x, int y, int w, int h, string text, float a)
+    // ---------------- #244 category + badge column ----------------
+
+    private static Color AccentFor(ERollBeatCategory category) => category switch
     {
-        var rect = new Rectangle(x, y, w, h);
+        ERollBeatCategory.Offense => OffenseAccent,
+        ERollBeatCategory.Defense => DefenseAccent,
+        _                         => MiscAccent,
+    };
+
+    private static string CategoryWord(ERollBeatCategory category) => category switch
+    {
+        ERollBeatCategory.Offense => "ATTACK",
+        ERollBeatCategory.Defense => "SAVE",
+        _                         => "",
+    };
+
+    // A thin colored stripe down the panel's left edge — the peripheral-glance channel for the
+    // roll's category (the badge word is the redundant, colorblind-safe one).
+    private static void DrawAccentStripe(int panelX, int panelY, int panelH, ERollBeatCategory category, float a)
+    {
+        Raylib.DrawRectangle(panelX, panelY + 6, 4, panelH - 12, Faded(AccentFor(category), a));
+    }
+
+    private static (int Width, int Height) BadgeColumnSize(string badge, ERollBeatCategory category)
+    {
+        string word = CategoryWord(category);
+        int badgeW = Raylib.MeasureText(badge, BadgeSize) + BadgePad * 2;
+        int width  = Math.Max(badgeW, word.Length > 0 ? Raylib.MeasureText(word, CategorySize) : 0);
+        int height = BadgeSize + BadgePad * 2 + (word.Length > 0 ? 4 + CategorySize : 0);
+        return (width, height);
+    }
+
+    // The big standalone target number ("4+") — readable at a glance before the dice settle, and
+    // still there afterwards so the settled faces can be interpreted without re-reading anything —
+    // with the roll's category word beneath it in the accent color.
+    private static void DrawBadgeColumn(int x, int y, int colW, string badge, ERollBeatCategory category, float a)
+    {
+        int badgeW = Raylib.MeasureText(badge, BadgeSize) + BadgePad * 2;
+        int badgeH = BadgeSize + BadgePad * 2;
+        int chipX  = x + (colW - badgeW) / 2;
+        var rect = new Rectangle(chipX, y, badgeW, badgeH);
         Raylib.DrawRectangleRounded(rect, 0.25f, 6, Faded(BadgeBg, a));
         Raylib.DrawRectangleRoundedLines(rect, 0.25f, 6, Faded(Result, a));
-        int tw = Raylib.MeasureText(text, BadgeSize);
-        Raylib.DrawText(text, x + (w - tw) / 2, y + (h - BadgeSize) / 2, BadgeSize, Faded(Result, a));
+        int tw = Raylib.MeasureText(badge, BadgeSize);
+        Raylib.DrawText(badge, chipX + (badgeW - tw) / 2, y + (badgeH - BadgeSize) / 2, BadgeSize, Faded(Result, a));
+
+        string word = CategoryWord(category);
+        if (word.Length > 0)
+            DrawCenteredIn(word, x, colW, y + badgeH + 4, CategorySize, Faded(AccentFor(category), a));
     }
+
+    // ---------------- #244 info chips ----------------
+
+    // Measures the chips for one row, truncating with a "+N" chip if the row would exceed maxWidth.
+    // Null when there is nothing to show — the caller then reserves no row at all.
+    private static List<(string Text, int W)>? LayoutChips(IReadOnlyList<string>? tags, int maxWidth)
+    {
+        if (tags == null || tags.Count == 0) return null;
+
+        var chips = new List<(string, int)>();
+        int used = 0;
+        for (int i = 0; i < tags.Count; i++)
+        {
+            int w = Raylib.MeasureText(tags[i], ChipSize) + ChipPadX * 2;
+            int gap = chips.Count > 0 ? ChipGap : 0;
+            // Keep room for a potential "+N" tail chip when more tags follow.
+            int tailReserve = i < tags.Count - 1 ? 50 : 0;
+            if (used + gap + w + tailReserve > maxWidth && chips.Count > 0)
+            {
+                string more = $"+{tags.Count - i}";
+                chips.Add((more, Raylib.MeasureText(more, ChipSize) + ChipPadX * 2));
+                return chips;
+            }
+            chips.Add((tags[i], w));
+            used += gap + w;
+        }
+        return chips;
+    }
+
+    private static int ChipsWidth(List<(string Text, int W)> chips)
+    {
+        int w = 0;
+        for (int i = 0; i < chips.Count; i++) w += (i > 0 ? ChipGap : 0) + chips[i].W;
+        return w;
+    }
+
+    private static void DrawChips(List<(string Text, int W)> chips, int x, int width, int y,
+        Color bg, Color text, Color? border, float a)
+    {
+        int chipH = ChipSize + ChipPadY * 2;
+        int cx = x + (width - ChipsWidth(chips)) / 2;
+        foreach ((string chipText, int w) in chips)
+        {
+            var rect = new Rectangle(cx, y, w, chipH);
+            Raylib.DrawRectangleRounded(rect, 0.35f, 6, Faded(bg, a));
+            if (border.HasValue)
+                Raylib.DrawRectangleRoundedLines(rect, 0.35f, 6, Faded(border.Value, a * 0.8f));
+            Raylib.DrawText(chipText, cx + ChipPadX, y + ChipPadY, ChipSize, Faded(text, a));
+            cx += w + ChipGap;
+        }
+    }
+
+    // ---------------- shared drawing ----------------
 
     // While tumbling, faces swap at TumbleHz instead of every frame — reads as rolling without
     // strobing. Deterministic per (die, time slice), cosmetic only.
@@ -324,8 +512,6 @@ public static class DiceOverlay
         int w = Raylib.MeasureText(text, fontSize);
         Raylib.DrawText(text, x + (width - w) / 2, y, fontSize, color);
     }
-
-    private static int Max3(int a, int b, int c) => Math.Max(a, Math.Max(b, c));
 
     // Standard d6 pip layout on a 3x3 grid (col, row), 0..2.
     private static readonly Dictionary<int, (int, int)[]> PipCells = new()

@@ -190,10 +190,12 @@ public class PresentationPlayer : IPresentationSink
             if (_diceHeld)
             {
                 _diceLingerSeconds += dtSeconds;
+                // A panel carrying info chips lingers longer — same principle as the engine's
+                // stretched beat duration: more to read, more time to read it (#244).
+                float lingerLimit = DiceHoldLingerSeconds + 0.4f * (_activeDice?.InfoBlocks ?? 0);
                 // Fade the parked panel out over the linger's tail instead of popping (#244).
-                _diceAlpha = Math.Clamp(
-                    (DiceHoldLingerSeconds - _diceLingerSeconds) / DiceFadeOutSeconds, 0f, 1f);
-                if (_diceLingerSeconds >= DiceHoldLingerSeconds)
+                _diceAlpha = Math.Clamp((lingerLimit - _diceLingerSeconds) / DiceFadeOutSeconds, 0f, 1f);
+                if (_diceLingerSeconds >= lingerLimit)
                 {
                     _activeDice = null;
                     _diceHeld = false;
