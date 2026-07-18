@@ -870,24 +870,29 @@ public class RaylibRenderer
 
     // Centered "Game Over" card shown once the game ends. The board stays visible behind it; the player
     // must click through to leave (no auto-return), at which point we tear down and return to the menu.
+    // #235: draggable (position forced only when it appears) so the final board can be inspected.
     private void DrawGameOverOverlay(int screenW, int screenH)
     {
         string? result = _gameOverResult;
         if (result == null) return;
 
         var size = new Vector2(Math.Min(460f, screenW * 0.8f), 200f);
-        ImGui.SetNextWindowPos(new Vector2((screenW - size.X) / 2f, (screenH - size.Y) / 2f), ImGuiCond.Always);
+        ImGui.SetNextWindowPos(new Vector2((screenW - size.X) / 2f, (screenH - size.Y) / 2f), ImGuiCond.Appearing);
         ImGui.SetNextWindowSize(size, ImGuiCond.Always);
         ImGui.Begin("Game Over##overlay",
-            ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoCollapse |
+            ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoCollapse |
             ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoSavedSettings);
 
         ImGui.PushFont(LargeFont);
-        ImGui.TextUnformatted("Game Over");
+        CenteredText(size.X, "Game Over");
         ImGui.PopFont();
 
         ImGui.Spacing();
-        ImGui.TextWrapped(result);
+        // Center the result line when it fits; long results fall back to left-aligned wrapping.
+        if (ImGui.CalcTextSize(result).X <= ImGui.GetContentRegionAvail().X)
+            CenteredText(size.X, result);
+        else
+            ImGui.TextWrapped(result);
         ImGui.Spacing();
         ImGui.Spacing();
 
@@ -901,6 +906,13 @@ public class RaylibRenderer
         }
 
         ImGui.End();
+    }
+
+    // One line of text horizontally centered in a window of the given width (uses the current font).
+    private static void CenteredText(float windowW, string text)
+    {
+        ImGui.SetCursorPosX(MathF.Max(0f, (windowW - ImGui.CalcTextSize(text).X) / 2f));
+        ImGui.TextUnformatted(text);
     }
 
     // Log/chat console: fills the bottom half of the in-game right column. Log and Chat are independent

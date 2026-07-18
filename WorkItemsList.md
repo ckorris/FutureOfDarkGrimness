@@ -23,7 +23,7 @@ When closing an item: write the Outcome in its detail file, tick the line, and m
 - [ ] 211 — Solo AI mover submits a path through impassible terrain (~1/1800; #159's family, impassible flavor). Fix with one validate-or-decline ladder on the solo mover alongside #159. ([WorkItems/211](WorkItems/211-solo-mover-impassible-terrain.md))
 - [ ] 214 — Teleport (#197) doesn't draw a range-of-motion circle like movement does; placement is bounded correctly, just add the reach-circle visual. ([WorkItems/214](WorkItems/214-teleport-range-circle.md))
 - [ ] 216 — Tactician plans rejected by the #205 friendly-stacking check silently fall back to the SOLO resolver (suspected DE/RL mirror-drift driver); charge candidate made friendly-aware, resolver-level repair + drift attribution still open. ([WorkItems/216](WorkItems/216-tactician-solo-fallback-on-stacked-plans.md))
-- [ ] 217 — Tactician Bot lobby name is enumerated by total player count, not by how many bots of that profile already exist ("Tactician Bot 3" as the first Tactician added). ([WorkItems/217](WorkItems/217-tactician-bot-naming.md))
+- [~] 217 — Tactician Bot lobby name is enumerated by total player count, not by how many bots of that profile already exist. Implemented + tested; awaiting GUI hand-verify. ([WorkItems/217](WorkItems/217-tactician-bot-naming.md))
 
 ## Shooting & cover
 
@@ -102,9 +102,9 @@ detection, host-IP display, DNS host entry. See `NetworkingHandoff-2026-07-08.md
 - [ ] 229 — (exploratory) Bottom in-game menu should maybe be its own panel; confirm which strip + intent before building. ([WorkItems/229](WorkItems/229-bottom-menu-own-panel.md))
 - [ ] 230 — Show weapon range rings during placement (deploy / embark / ambush arrival), anchored to the candidate position. ([WorkItems/230](WorkItems/230-placement-weapon-range-rings.md))
 - [ ] 231 — Remove the LoS blocking-line visual from shooting (confusing when a valid target stands in front of the blocker). ([WorkItems/231](WorkItems/231-remove-los-blocking-lines.md))
-- [ ] 232 — Remove the saved-hits beat, especially its sound (keep failed-save presentation); goes beyond #204's pacing fix. ([WorkItems/232](WorkItems/232-remove-save-hit-beat.md))
+- [~] 232 — Remove the saved-hits beat + its sound (failed-save presentation kept); also wound flinches 40% faster. Implemented + tested; awaiting GUI hand-verify. ([WorkItems/232](WorkItems/232-remove-save-hit-beat.md))
 - [ ] 233 — Add a dice-roll beat for casting (engine beat emission in CastSpellStage). ([WorkItems/233](WorkItems/233-cast-roll-beat.md))
-- [ ] 235 — Game Over card: center the result text + make the window draggable so the final board is inspectable. ([WorkItems/235](WorkItems/235-game-over-box-polish.md))
+- [~] 235 — Game Over card: center the result text + make the window draggable so the final board is inspectable. Implemented; awaiting GUI hand-verify. ([WorkItems/235](WorkItems/235-game-over-box-polish.md))
 - [~] 237 — Single-option pick shortcuts: shooting pre-selects a sole fireable target, sole-defender charge shows a one-click confirm card (keeps #202's Back), Enter = Auto-assign All. Implemented + tested; awaiting GUI hand-verify. ([WorkItems/237](WorkItems/237-single-option-pick-shortcuts.md))
 - [~] 238 — Attack animation now plays WHILE the to-hit dice tumble (AttackBeat is a zero-lead-in held beat) + gunshot/melee sound per volley instead of once. Implemented + tested; awaiting GUI hand-verify. ([WorkItems/238](WorkItems/238-attack-dice-overlap-volley-sound.md))
 - [~] 239 — Weapon effect sets: 13 ranged / 10 melee themed visual+sound styles baked into books/armies as explicit keys (faction defaults + global fallback), truthful hit/miss impacts + impact sounds. Implemented + tested; awaiting GUI hand-verify (checklist in detail file). ([WorkItems/239](WorkItems/239-weapon-effect-sets.md))
