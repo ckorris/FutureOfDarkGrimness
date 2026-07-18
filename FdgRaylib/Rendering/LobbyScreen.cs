@@ -379,7 +379,8 @@ public class LobbyScreen : IAppScreen
         ImGui.PushItemWidth(panelW - innerPad * 2);
 
         DrawIntField("Army Points",    _viewModel.ArmyPoints,    _viewModel.SetArmyPoints);
-        DrawEnumCombo("Terrain Mode",  _viewModel.TerrainPlacementMode, _viewModel.SetTerrainPlacementMode);
+        DrawEnumCombo("Terrain Mode",  _viewModel.TerrainPlacementMode, _viewModel.SetTerrainPlacementMode,
+            debugLast: new[] { ETerrainPlacementMode.AutoFromLayout });
 
         // Conditional sub-options under Terrain Mode.
         switch (_viewModel.TerrainPlacementMode)
@@ -391,6 +392,10 @@ public class LobbyScreen : IAppScreen
                 DrawTerrainLayoutPicker(_viewModel.TerrainLayoutPath, _viewModel.SetTerrainLayoutPath);
                 break;
         }
+
+        DrawEnumCombo("Objective Mode", _viewModel.ObjectivePlacementMode, _viewModel.SetObjectivePlacementMode,
+            debugLast: new[] { EObjectivePlacementMode.AutoPlaced },
+            displayName: ObjectiveModeLabel);
 
         DrawEnumCombo("Randomness",    _viewModel.RandomnessType, _viewModel.SetRandomnessType);
         DrawEnumCombo("Turn Style",    _viewModel.TurnStyle,      _viewModel.SetTurnStyle);
@@ -558,6 +563,13 @@ public class LobbyScreen : IAppScreen
             setter(v);
     }
 
+    private static string ObjectiveModeLabel(EObjectivePlacementMode mode) => mode switch
+    {
+        EObjectivePlacementMode.AutoPlaced => "Auto-Placed",
+        EObjectivePlacementMode.PlayerPlaced => "Player-Placed",
+        _ => mode.ToString(),
+    };
+
     private static void DrawTerrainLayoutPicker(string? current, Action<string?> setter)
     {
         ImGui.TextUnformatted("Layout File");
@@ -625,14 +637,35 @@ public class LobbyScreen : IAppScreen
             setter(Math.Max(0, v));
     }
 
-    private static void DrawEnumCombo<TEnum>(string label, TEnum current, Action<TEnum> setter)
+    // Draws a labeled enum dropdown. `debugLast` names values that are debug conveniences (e.g. the
+    // pre-placed / auto-placed setup shortcuts): in a Debug build they keep their declared position -
+    // first, for fast iteration - while in a Release build they move to the end so a normal game doesn't
+    // lead with them. `displayName` supplies a friendly label per value (falls back to the raw enum name).
+    // This is presentation only: the enum, saves, and network wire are identical across build types (#243).
+    private static void DrawEnumCombo<TEnum>(string label, TEnum current, Action<TEnum> setter,
+        TEnum[]? debugLast = null, Func<TEnum, string>? displayName = null)
         where TEnum : struct, Enum
     {
         ImGui.TextUnformatted(label);
         ImGui.SameLine();
-        string[] names = Enum.GetNames<TEnum>();
-        int idx = Math.Max(0, Array.IndexOf(names, current.ToString()));
-        if (ImGui.Combo($"##{label}", ref idx, names, names.Length))
-            setter((TEnum)Enum.Parse(typeof(TEnum), names[idx]));
+
+        TEnum[] values = OrderComboValues(debugLast);
+        string[] labels = values.Select(v => displayName?.Invoke(v) ?? v.ToString()).ToArray();
+        int idx = Math.Max(0, Array.IndexOf(values, current));
+        if (ImGui.Combo($"##{label}", ref idx, labels, labels.Length))
+            setter(values[idx]);
+    }
+
+    private static TEnum[] OrderComboValues<TEnum>(TEnum[]? debugLast) where TEnum : struct, Enum
+    {
+        TEnum[] all = Enum.GetValues<TEnum>();
+#if DEBUG
+        return all;
+#else
+        if (debugLast is null || debugLast.Length == 0)
+            return all;
+        var debug = new HashSet<TEnum>(debugLast);
+        return all.Where(v => !debug.Contains(v)).Concat(all.Where(v => debug.Contains(v))).ToArray();
+#endif
     }
 }

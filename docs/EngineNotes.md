@@ -38,7 +38,7 @@ When LAUNCH fires, **both** sides invoke `OnLaunched` with an `IFDGGame`. Both s
 The engine has substantial gaps. Don't assume rules are enforced just because a stage exists. Surveyed Apr 2026 (setup, melee pile-in, and wound auto-fill re-verified 2026-06-14):
 
 **Setup is implemented** (was stubbed at the Apr 2026 survey)
-- `MapSetupStage` runs the full sequence: `RollForObjectiveCountStage` rolls D3+2 (3-5 objectives), `RollForFirstObjectivePlacementStage` + `PlaceObjectivesStage`/`PlaceOneObjectiveStage` alternate players placing real `ObjectiveData` (player request, or a debug auto-placer behind `AutoPlaceObjectivesDebug`), and `RollForFirstTerrainPlacementStage` + `PlaceTerrainStage` place terrain (AutoFromLayout / LoadFromFile / Alternating modes).
+- `MapSetupStage` runs the full sequence: `RollForObjectiveCountStage` rolls D3+2 (3-5 objectives), `RollForFirstObjectivePlacementStage` + `PlaceObjectivesStage`/`PlaceOneObjectiveStage` place `ObjectiveData` per `GameSettings.ObjectivePlacementMode` (AutoPlaced = engine places all via the shared `ObjectiveAutoPlacer`, the same algorithm the solo-rules AI uses; PlayerPlaced = alternating player/AI requests), and `RollForFirstTerrainPlacementStage` + `PlaceTerrainStage` place terrain (AutoFromLayout / LoadFromFile / Alternating modes).
 - `ReconcileObjectivesStage` and `VictoryCalculationStage` (seizure + objective tally -> real winner) operate on the objectives `MapSetupStage` actually produces.
 
 **Movement validation is partial**

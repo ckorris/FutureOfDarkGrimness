@@ -100,7 +100,7 @@ public class CliApp
 
         var gameSettings = GameSettings.GetDefault();
         gameSettings.RandomnessType = ERandomnessType.Realistic;
-        gameSettings.AutoPlaceObjectivesDebug = true;
+        gameSettings.ObjectivePlacementMode = EObjectivePlacementMode.AutoPlaced;
         gameSettings.DiceSeed = _diceSeed;
 
         var gameEnded = new TaskCompletionSource();

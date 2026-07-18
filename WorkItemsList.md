@@ -155,6 +155,7 @@ From `Audit-2026-07-06-New-Subsystems.md` (13 smaller findings were fixed in tha
 Implemented, merged, suite green — held open only until confirmed by hand in the running app.
 Tick and move to the archive once verified. The detail files carry the full ledgers.
 
+- [~] 243 — Objective placement mode (Auto-Placed / Player-Placed) mirroring terrain modes; Auto uses the solo-rules AI algorithm via a shared `ObjectiveAutoPlacer`, debug options sort last in Release, roll-off skipped in Auto. Verify: the four GUI checks in the detail file. ([WorkItems/243](WorkItems/243-objective-placement-mode.md))
 - [~] 202 — 2026-07-09 playtest fixes (Esc no longer quits; Fast/Very Fast reach Rush+Charge; ranged morale once per defender after shooting; Move/Charge/Disembark back-out; Ambush reserve is unit state, not an origin position). Verify: the six checks in the detail file. ([WorkItems/202](WorkItems/202-playtest-fixes-2026-07-09.md))
 - [~] 003 — Force-org validation warnings. Verify: build an over-points / 3+ hero / 4+ same-unit army — amber warnings appear; save + launch never blocked. ([WorkItems/003](WorkItems/003-force-org-validation.md))
 - [~] 108 — AI deploy coherent block packing. Verify: AI deploys tight square-ish grids, no stranded or scattered models. ([WorkItems/108](WorkItems/108-ai-deploy-cohesion.md))
