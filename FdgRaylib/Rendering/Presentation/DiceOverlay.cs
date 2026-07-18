@@ -26,9 +26,9 @@ namespace FdgRaylib.Rendering.Presentation;
 /// <item><b>Probabilistic</b> — no discrete dice exist (fractional), so a labeled success bar.</item>
 /// </list>
 ///
-/// <para><see cref="DrawRollOff"/> deliberately stays centered: a roll-off is rare, decisive, and
-/// plays with nothing else animating, so it keeps the center-stage treatment routine rolls
-/// don't get.</para>
+/// <para><see cref="DrawRollOff"/> docks to the same caption zone: the objective-count roll and the
+/// first-turn roll-off play back-to-back at game start, and hopping between center and bottom read
+/// as jarring — placement continuity won over stakes-based prominence (playtest 2026-07-18).</para>
 /// </summary>
 public static class DiceOverlay
 {
@@ -205,11 +205,17 @@ public static class DiceOverlay
     /// die on the right — so it's clear who's rolling against whom. The sole highest roller's die turns
     /// green (Won); a shared highest turns yellow (TiedForWin) and the engine emits a fresh beat for the
     /// run-off. Dice tumble for the first fraction of the beat, then settle to the rolled face + colour.
-    /// Stays centered on purpose — roll-offs are rare, decisive, and play with nothing else animating.
+    /// Docked to the same bottom caption zone as the dice strip — back-to-back rolls (the objective
+    /// count, then the first-turn roll-off) shouldn't hop around the screen. No ghost logic needed:
+    /// nothing else animates during a roll-off. Fades in/out over the beat's ends so successive tie
+    /// re-rolls read as fresh rolls.
     /// </summary>
     public static void DrawRollOff(RollOffBeat beat, float progress, int areaWidth, int screenH)
     {
         if (beat.Entries == null || beat.Entries.Count == 0) return;
+
+        float a = RollOffEnvelope(progress);
+        if (a <= 0.02f) return;
 
         bool settled = progress >= FlickerEnd;
         const int nameFont = 22;
@@ -226,10 +232,10 @@ public static class DiceOverlay
         int panelW = innerW + PanelPad * 2;
         int panelH = PanelPad * 2 + HeaderSize + RowGap + rowsH;
         int panelX = (areaWidth - panelW) / 2;
-        int panelY = (int)((screenH - panelH) * 0.45f);
+        int panelY = screenH - panelH - BottomMargin;
 
-        Raylib.DrawRectangleRounded(new Rectangle(panelX, panelY, panelW, panelH), 0.12f, 6, Panel);
-        DrawCenteredIn(beat.Label, panelX, panelW, panelY + PanelPad, HeaderSize, Header);
+        Raylib.DrawRectangleRounded(new Rectangle(panelX, panelY, panelW, panelH), 0.12f, 6, Faded(Panel, a));
+        DrawCenteredIn(beat.Label, panelX, panelW, panelY + PanelPad, HeaderSize, Faded(Header, a));
 
         int rowTop = panelY + PanelPad + HeaderSize + RowGap;
         int nameX  = panelX + PanelPad;
@@ -238,7 +244,7 @@ public static class DiceOverlay
         {
             RollOffEntry e = beat.Entries[i];
             int rowY = rowTop + i * (dieSize + rowGap);
-            Raylib.DrawText(e.Name, nameX, rowY + (dieSize - nameFont) / 2, nameFont, Header);
+            Raylib.DrawText(e.Name, nameX, rowY + (dieSize - nameFont) / 2, nameFont, Faded(Header, a));
 
             int face;
             Color fill, pip;
@@ -259,8 +265,18 @@ public static class DiceOverlay
                 fill = Rolling;
                 pip  = new Color((byte)30, (byte)30, (byte)30, (byte)255);
             }
-            DrawDie(dieX, rowY, dieSize, face, fill, pip, 1f);
+            DrawDie(dieX, rowY, dieSize, face, fill, pip, a);
         }
+    }
+
+    // The roll-off's fade envelope, driven by beat progress (it always runs its full duration through
+    // the active slot, unlike held dice beats): ease in fast, hold, ease out over the tail.
+    private static float RollOffEnvelope(float t)
+    {
+        const float fadeIn = 0.06f, fadeOutStart = 0.90f;
+        if (t < fadeIn) return t / fadeIn;
+        if (t > fadeOutStart) return Math.Max(0f, 1f - (t - fadeOutStart) / (1f - fadeOutStart));
+        return 1f;
     }
 
     // The settled result line: the stage-supplied summary, or a generic successes/total fallback.

@@ -17,6 +17,17 @@ split** (roll-offs stay centered). Notably `DiceOverlay`'s own doc comment alway
 
 ## Notes
 
+- 2026-07-18 (v2, same-day playtest feedback): two revisions.
+  - **Roll-offs join the bottom strip.** The objective-count roll (DiceRolledBeat, bottom) is
+    immediately followed by the first-turn roll-off (was: centered) — back-to-back rolls hopping
+    between center and bottom read as jarring. Placement continuity beats stakes-based prominence;
+    the v1 "roll-offs stay centered" decision is REVERSED. `DrawRollOff` bottom-docks and gains a
+    progress-driven fade envelope (in 6% / out last 10% of the beat) so tie re-rolls read as fresh
+    rolls. No ghost logic (nothing else animates during a roll-off), no player-side state needed.
+  - **Bottom-left table toolbar restacked vertically.** The 5-column layout (~600px wide) reached
+    into the caption zone. Now a single thin column (~140px, widest-label width) hugging the left
+    edge — keeps the learned corner anchor rather than relocating, and clears the centered strip
+    on any window size. Button order/behavior unchanged (`TableTooltipOverlay`).
 - 2026-07-18: Implemented, app-side only (no engine changes).
   - **Bottom strip**: `DiceOverlay` panels (realistic + probabilistic) dock bottom-center of the
     table viewport (18px margin) instead of 45% center. `DrawRollOff` deliberately stays centered —
@@ -41,8 +52,10 @@ split** (roll-offs stay centered). Notably `DiceOverlay`'s own doc comment alway
 
 - **Ghost, don't dodge**: on overlap the strip fades in place rather than repositioning —
   consistent spatial anchoring beats occlusion-free-at-any-cost (players learn where to look).
-- **Roll-offs keep center stage** (stakes-based split, BG3-style): only routine `DiceRolledBeat`
-  rolls move to the strip.
+- **Roll-offs keep center stage** — REVERSED same day (see v2 note): placement continuity for
+  back-to-back rolls beats stakes-based prominence; everything dice now lives in the caption zone.
+- **Toolbar keeps its corner, changes shape**: restacked vertical rather than moved to another
+  corner — preserving the learned bottom-left anchor while freeing the caption zone.
 - **Engine beat choreography untouched**: #238's attack/dice concurrency is a pacing win; the fix
   is layout, not sequencing.
 - Deferred (explicitly, from the same design survey): redundant success encoding beyond color
@@ -54,4 +67,7 @@ split** (roll-offs stay centered). Notably `DiceOverlay`'s own doc comment alway
 - Fight near the bottom table edge: the strip ghosts to ~1/3 alpha while shots cross it, recovers after.
 - Held dice: linger through the wound/death animations, then fade out (no pop); back-to-back rolls
   swap without a blink.
-- Roll-off (game start / objective ties): still centered, dice tumble at a calm rate.
+- Roll-off (game start / objective ties): bottom-docked like the dice strip — the objective-count
+  roll then the first-turn roll-off appear in the same place; fades between tie re-rolls.
+- Bottom-left toolbar: single thin vertical column; all buttons still work; no overlap with the
+  strip even on a narrow window / wide roll.

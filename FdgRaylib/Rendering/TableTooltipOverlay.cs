@@ -99,9 +99,10 @@ public class TableTooltipOverlay
         // only the name text is gated on _showLabels.
         DrawUnitOverlays();
 
-        // Toolbar — anchored bottom-left, two items tall: column [Labels/Grid], then [Tokens/Save], then a
-        // column of hotkey hints. Each column is a BeginGroup so they sit side by side. Pivot (0,1) pins the
-        // auto-sized window by its bottom-left corner.
+        // Toolbar — a single vertical column pinned to the bottom-left corner. #244: the bottom-CENTER
+        // is the dice caption strip's reserved zone, so the toolbar hugs the edge as a tall thin
+        // palette instead of spreading sideways into it. Pivot (0,1) pins the auto-sized window by
+        // its bottom-left corner.
         ImGui.SetNextWindowPos(new Vector2(8, screenH - 8), ImGuiCond.Always, new Vector2(0f, 1f));
         ImGui.SetNextWindowBgAlpha(0.70f);
         ImGui.Begin("##tabletools",
@@ -109,33 +110,20 @@ public class TableTooltipOverlay
             ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.AlwaysAutoResize |
             ImGuiWindowFlags.NoFocusOnAppearing | ImGuiWindowFlags.NoNav);
 
-        // Uniform button width so the columns don't jitter as the toggle labels change length.
+        // Uniform button width (the widest label) so the stack doesn't jitter as toggle text changes.
         float pad  = ImGui.GetStyle().FramePadding.X * 2f;
-        float btnW = MathF.Max(
-            MathF.Max(ImGui.CalcTextSize("Labels: OFF").X, ImGui.CalcTextSize("Grid: OFF").X),
-            MathF.Max(ImGui.CalcTextSize("Tokens: ALL").X, ImGui.CalcTextSize("Save Game").X)) + pad;
+        float btnW = ImGui.CalcTextSize("Anchor: Target").X + pad;
         var btnSize = new Vector2(btnW, 0f);
 
-        // Column 1: Labels (top) / Grid (bottom)
-        ImGui.BeginGroup();
         if (ImGui.Button(_showLabels ? "Labels: ON" : "Labels: OFF", btnSize))
             _showLabels = !_showLabels;
         if (ImGui.Button(RaylibRenderer.ShowGrid ? "Grid: ON" : "Grid: OFF", btnSize))
             RaylibRenderer.ShowGrid = !RaylibRenderer.ShowGrid;
-        ImGui.EndGroup();
-
-        // Column 2: Tokens (top) / Save (bottom, host only)
-        ImGui.SameLine();
-        ImGui.BeginGroup();
         if (ImGui.Button(_showAllTokens ? "Tokens: ALL" : "Tokens: std", btnSize))
             _showAllTokens = !_showAllTokens;
         if (_saveGameToJson != null && ImGui.Button("Save Game", btnSize))
             HandleSaveGame();
-        ImGui.EndGroup();
 
-        // Column 3: tactical overlay toggles (Threat / Field) -- kept to 2 rows so the toolbar stays 2 tall
-        ImGui.SameLine();
-        ImGui.BeginGroup();
         // Threat frontiers inspection toggle (also F). No longer auto-shown during a move (the field
         // replaced that); this is the only way to bring them up now.
         if (_tactical != null && ImGui.Button(_tactical.ThreatToggledOn ? "Threat: ON" : "Threat: OFF", btnSize))
@@ -147,29 +135,18 @@ public class TableTooltipOverlay
             TacticalOverlay.TacticalOverlayConfig.UseGpuField = !TacticalOverlay.TacticalOverlayConfig.UseGpuField;
             _tactical.InvalidateFieldCache();
         }
-        ImGui.EndGroup();
-
-        // Column 4: Anchor (its own short column so Column 3 stays 2 rows). Wider button -- "Anchor: Target"
-        // is longer than the other labels and would truncate at the shared btnSize width.
-        var anchorSize = new Vector2(ImGui.CalcTextSize("Anchor: Target").X + pad, 0f);
-        ImGui.SameLine();
-        ImGui.BeginGroup();
         // Field anchor: Target = "the selected unit's gun ranges" (classic), Self = "my reach from my
         // pending position", live per frame (H4).
-        if (_tactical != null && ImGui.Button(TacticalOverlay.TacticalOverlayConfig.GhostAnchoredField ? "Anchor: Self" : "Anchor: Target", anchorSize))
+        if (_tactical != null && ImGui.Button(TacticalOverlay.TacticalOverlayConfig.GhostAnchoredField ? "Anchor: Self" : "Anchor: Target", btnSize))
         {
             TacticalOverlay.TacticalOverlayConfig.GhostAnchoredField = !TacticalOverlay.TacticalOverlayConfig.GhostAnchoredField;
             _tactical.InvalidateFieldCache();
         }
-        ImGui.EndGroup();
 
-        // Column 5: hotkey hints
-        ImGui.SameLine();
-        ImGui.BeginGroup();
+        // Hotkey hints
         ImGui.TextDisabled("Ctrl+drag: measure");
         ImGui.TextDisabled("Ctrl+wheel: zoom");
         ImGui.TextDisabled("Middle-drag: pan");
-        ImGui.EndGroup();
 
         ImGui.End();
     }
