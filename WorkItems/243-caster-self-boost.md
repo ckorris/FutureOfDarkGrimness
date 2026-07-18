@@ -19,10 +19,14 @@ spell, boost tokens are spent with the cast cost (regardless of pass/fail), the 
   existing description subtext; disabled rows with a reason (unaffordable / no target); below: a
   [-]/[+] boost stepper, a live "Roll needed: X+" readout, a total-spend line, then Cast / Cancel.
 - **Overspend allowed, gated by a context-aware useful cap.** Boost max = min(affordable,
-  (base threshold - 1) + in-range enemy hinder tokens). Past guaranteed success the + keeps working
-  only while enemy Casters within 18" hold tokens (hedge vs their -1s, which are prompted AFTER the
-  caster commits); at the cap the UI says why ("no enemy casters in range" / "capped: N enemy tokens
-  in range"). The request carries `HinderTokensInRange` + `BaseThreshold` so the UI computes this.
+  `MaxUsefulBoost` = (base threshold - 2) + in-range enemy hinder tokens). Past the 2+ floor the +
+  keeps working only while enemy Casters within 18" hold tokens (hedge vs their -1s, which are
+  prompted AFTER the caster commits); at the cap the UI says why ("no enemy casters in range" /
+  "capped: N enemy tokens in range"). The request carries `HinderTokensInRange` + `BaseThreshold`.
+- **Natural 1 always fails / natural 6 always succeeds** (GDF core principle, user-corrected
+  2026-07-18): the cast threshold clamps to [2, 6], never 1+ - no boost makes a cast un-failable.
+  This also fixed #103's pre-existing clamp floor of 1 (its comment claimed "a natural 1 failing"
+  but the code allowed an effective 1+ at net +3).
 - **Boost spent with the cast cost** - after target selection (cancelling targets still spends
   nothing), regardless of pass/fail, like #103 assist tokens.
 - **Open information:** a nonzero boost fires the same blue banner shape as a friendly assist
@@ -38,6 +42,13 @@ spell, boost tokens are spent with the cast cost (regardless of pass/fail), the 
   the boost/assist banners).
 
 ## Notes
+- 2026-07-18 (later): **Natural-1 amendment.** User caught that the threshold clamp floor of 1 let a
+  maxed boost turn the cast into an auto-success - violating GDF's "unmodified 1 always fails /
+  unmodified 6 always succeeds". Floor raised to 2 (`MIN_ROLL_THRESHOLD`), `MaxUsefulBoost` moved onto
+  the request as the single source (base - 2 + hinder tokens), CLI/GUI notes updated, 2 pinning tests
+  added (natural 1 fails despite +3 boost; natural 6 succeeds despite -3 hinder). A Haiku audit of the
+  other modified rolls (hit/save/morale) was commissioned the same session - results recorded below
+  when in.
 - 2026-07-18: **Built** (with #233, same commit pair). Engine: `ChooseSpellRequest` (all army spells as
   rows - castable, or disabled with "need N tokens"/"no valid target" - + caster binding, token pool,
   `BaseThreshold`, `HinderTokensInRange`) replying `ChooseSpellReply(spellIndex, boostTokens)`;

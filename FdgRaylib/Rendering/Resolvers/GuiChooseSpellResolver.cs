@@ -10,9 +10,10 @@ namespace FdgRaylib.Rendering.Resolvers;
 /// (highlight, not instant-commit) with effect subtext, disabled rows with the reason (unaffordable /
 /// no target), then a boost stepper with a live "roll needed" readout and a total-spend line, and
 /// Cast / Cancel. Boost is capped at the affordable remainder AND the useful maximum
-/// ((base threshold - 1) + in-range enemy hinder tokens); at the cap the stepper says why, so a player
-/// never overspends into tokens that cannot matter (#103 hinder prompts come after the caster commits,
-/// which is why hedging past guaranteed success is real only while enemy Casters hold tokens in range).
+/// (to the 2+ floor - a natural 1 always fails - plus one per in-range enemy hinder token); at the cap
+/// the stepper says why, so a player never overspends into tokens that cannot matter (#103 hinder
+/// prompts come after the caster commits, which is why hedging past the floor is real only while enemy
+/// Casters hold tokens in range).
 /// </summary>
 public class GuiChooseSpellResolver : IStageResolver<ChooseSpellRequest, ChooseSpellReply>, IGuiResolver
 {
@@ -148,7 +149,7 @@ public class GuiChooseSpellResolver : IStageResolver<ChooseSpellRequest, ChooseS
         // ── Boost stepper + live odds ───────────────────────────────────────────
         ChooseSpellRequest.SpellOption chosen = request.Spells[_selectedIndex];
         int affordable = System.Math.Max(0, request.AvailableTokens - chosen.Cost);
-        int useful = (request.BaseThreshold - 1) + request.HinderTokensInRange;
+        int useful = request.MaxUsefulBoost; // to the 2+ floor (+ hedge vs in-range hinder tokens)
         int cap = System.Math.Min(affordable, useful);
 
         y += 6f;
@@ -178,14 +179,14 @@ public class GuiChooseSpellResolver : IStageResolver<ChooseSpellRequest, ChooseS
             ImGui.PushStyleColor(ImGuiCol.Text, WarnTextRgba);
             ImGui.SetWindowFontScale(descScale);
             string capNote = request.HinderTokensInRange == 0
-                ? "Max useful boost - no enemy casters in range."
+                ? "Max useful boost - no enemy casters in range (2+ is the floor, a 1 always fails)."
                 : $"Max useful boost vs the {request.HinderTokensInRange} enemy token{(request.HinderTokensInRange == 1 ? "" : "s")} in range.";
             ImGui.TextUnformatted(capNote);
             ImGui.SetWindowFontScale(1f);
             ImGui.PopStyleColor();
             y += 18f;
         }
-        else if (_boost > (request.BaseThreshold - 1) && request.HinderTokensInRange > 0)
+        else if (_boost > (request.BaseThreshold - 2) && request.HinderTokensInRange > 0)
         {
             ImGui.SetCursorPos(new Vector2(pad, y));
             ImGui.PushStyleColor(ImGuiCol.Text, WarnTextRgba);
@@ -196,7 +197,7 @@ public class GuiChooseSpellResolver : IStageResolver<ChooseSpellRequest, ChooseS
             y += 18f;
         }
 
-        int needed = System.Math.Max(1, request.BaseThreshold - _boost);
+        int needed = System.Math.Max(2, request.BaseThreshold - _boost); // 2+ floor: a natural 1 always fails
         ImGui.SetCursorPos(new Vector2(pad, y));
         ImGui.TextUnformatted(_boost > 0
             ? $"Roll needed: {needed}+ (base {request.BaseThreshold}+, self +{_boost})"
@@ -233,8 +234,7 @@ public class GuiChooseSpellResolver : IStageResolver<ChooseSpellRequest, ChooseS
     {
         ChooseSpellRequest.SpellOption chosen = request.Spells[_selectedIndex];
         int affordable = System.Math.Max(0, request.AvailableTokens - chosen.Cost);
-        int useful = (request.BaseThreshold - 1) + request.HinderTokensInRange;
-        _boost = System.Math.Clamp(_boost, 0, System.Math.Min(affordable, useful));
+        _boost = System.Math.Clamp(_boost, 0, System.Math.Min(affordable, request.MaxUsefulBoost));
     }
 
     private void Complete(TaskCompletionSource<ChooseSpellReply> tcs, ChooseSpellReply reply)

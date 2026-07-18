@@ -5,9 +5,9 @@ namespace FdgRaylib.Cli.Resolvers;
 
 // #243 — stdin resolver for the spell picker: choose a spell, then how many extra tokens of the caster's
 // own to spend boosting the roll (+1 each, on top of the spell's cost). Boost is capped at the affordable
-// remainder AND the useful maximum ((base threshold - 1) + in-range enemy hinder tokens) — past guaranteed
-// success extra tokens only hedge against enemy Casters' -1s, so with none in range the cap closes.
-// EOF defaults: first castable spell, 0 boost (preserves the old first-option piped/headless behavior).
+// remainder AND the useful maximum (to the 2+ floor - a natural 1 always fails - plus one per in-range
+// enemy hinder token); past the floor extra tokens only hedge against enemy Casters' -1s, so with none in
+// range the cap closes. EOF defaults: first castable spell, 0 boost (the old first-option piped behavior).
 public class ChooseSpellResolver : IStageResolver<ChooseSpellRequest, ChooseSpellReply>
 {
     public Task<ChooseSpellReply> Resolve(ChooseSpellRequest request)
@@ -65,19 +65,21 @@ public class ChooseSpellResolver : IStageResolver<ChooseSpellRequest, ChooseSpel
     }
 
     // 0..cap boost prompt; EOF / blank spends nothing. Skipped entirely when no boost is possible.
+    // The useful cap comes from the request: boost to the 2+ floor (a natural 1 always fails) plus one
+    // per in-range enemy hinder token.
     private static int PromptBoost(ChooseSpellRequest request, int cost)
     {
         int affordable = request.AvailableTokens - cost;
-        int useful = (request.BaseThreshold - 1) + request.HinderTokensInRange;
+        int useful = request.MaxUsefulBoost;
         int cap = Math.Min(affordable, useful);
         if (cap <= 0) return 0;
 
         Console.WriteLine($"Boost the roll? +1 per extra token ({affordable} affordable).");
         if (request.HinderTokensInRange > 0)
             Console.WriteLine($"  (enemy casters in range hold {request.HinderTokensInRange} token" +
-                $"{(request.HinderTokensInRange == 1 ? "" : "s")} - overspending past +{request.BaseThreshold - 1} hedges their -1s)");
+                $"{(request.HinderTokensInRange == 1 ? "" : "s")} - overspending past +{request.BaseThreshold - 2} hedges their -1s)");
         else if (affordable > useful)
-            Console.WriteLine($"  (capped at +{useful}: no enemy casters in range, more cannot matter)");
+            Console.WriteLine($"  (capped at +{useful}: no enemy casters in range, more cannot matter - 2+ is the floor, a 1 always fails)");
 
         while (true)
         {
