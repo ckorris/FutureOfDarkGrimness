@@ -424,7 +424,7 @@ public class RaylibRenderer
                 if (_presentationPlayer != null &&
                     _presentationPlayer.TryGetActiveDice(out var diceBeat, out var diceProgress, out var diceAlpha))
                 {
-                    // #244: the caption strip ghosts itself while the attack animation reaches into it.
+                    // #245: the caption strip ghosts itself while the attack animation reaches into it.
                     Rectangle? diceAvoid = null;
                     if (_presentationPlayer.TryGetActiveAttack(out var diceAvoidAttack, out _))
                         diceAvoid = AttackOverlay.ScreenBounds(diceAvoidAttack,

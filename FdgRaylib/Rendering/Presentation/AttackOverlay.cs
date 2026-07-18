@@ -62,7 +62,7 @@ public static class AttackOverlay
 
     /// <summary>
     /// Screen-space bounding box of this attack's action — every shooter and defender position plus
-    /// <paramref name="padPx"/> slack for muzzle flashes, miss splay, and impact bursts. #244: the
+    /// <paramref name="padPx"/> slack for muzzle flashes, miss splay, and impact bursts. #245: the
     /// dice caption strip ghosts itself while this rect reaches it.
     /// </summary>
     internal static Rectangle ScreenBounds(AttackBeat beat, float scale, int originX, int originY,

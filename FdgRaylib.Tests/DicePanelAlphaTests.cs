@@ -6,7 +6,7 @@ using NUnit.Framework;
 
 namespace FdgRaylib.Tests;
 
-// #244 — the dice caption strip fades in and out instead of popping. PresentationPlayer owns the
+// #245 — the dice caption strip fades in and out instead of popping. PresentationPlayer owns the
 // alpha: eased in over the start of a beat, eased out over the end of a non-held beat's duration or
 // the tail of a held beat's linger, and skipped entirely when a new roll replaces a still-visible
 // panel (no blink to zero between back-to-back rolls).
@@ -73,7 +73,7 @@ public class DicePanelAlphaTests
     [Test]
     public void HeldRollWithInfoChips_LingersLonger()
     {
-        // #244: modifier chips are extra reading, so the parked panel stays up past the base
+        // #245: modifier chips are extra reading, so the parked panel stays up past the base
         // 2.5s linger (base + 0.4s per info block).
         var player = new PresentationPlayer();
         var beat = new DiceRolledBeat(new[] { 1f, 1f, 1f, 1f, 1f, 1f }, 1, 4,

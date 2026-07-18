@@ -1,4 +1,8 @@
-# 244 — Dice roll panel: bottom caption strip + target badge
+# 245 — Dice roll panel: bottom caption strip + target badge
+
+> Filed and built as **244**; renumbered 244 -> 245 at push time (reconciliation 16 — a parallel
+> session's merged caster self-boost item took 244). Commit messages were rewritten pre-push;
+> nothing published references the old number.
 
 **Status**: implemented (awaiting GUI hand-verification)
 **Related**: #238 (attack/dice overlap — created the occlusion), #232 (casualty cascade — held dice linger through it), #222 (roll-off pacing), #056 (beat stream)
@@ -19,7 +23,7 @@ split** (roll-offs stay centered). Notably `DiceOverlay`'s own doc comment alway
 
 - 2026-07-18 (v3, glance metadata - ENGINE + app, engine change user-authorized): the roll panel now
   answers "what kind of roll, who, why this number, what procced" at a cursory look.
-  - **Engine** (submodule `753cdeb`): `DiceRolledBeat` gains optional `ERollBeatCategory`
+  - **Engine** (submodule `57b9dd9`; originally `753cdeb`, rebased onto the caster work at push): `DiceRolledBeat` gains optional `ERollBeatCategory`
     (Offense/Defense/Misc), `Context` ("Warriors -> Heavy Gunners"), `ModifierTags`
     (["Quality 4+", "Stealth -1"]) and `ProcTags` (["Furious +2 on 6s"]) - all display-ready
     strings composed at the emitting stage, serialized for networked clients. Each info block

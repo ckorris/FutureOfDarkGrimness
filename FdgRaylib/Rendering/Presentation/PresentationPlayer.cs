@@ -46,7 +46,7 @@ public class PresentationPlayer : IPresentationSink
     private bool  _diceHeld;
     private float _diceLingerSeconds;
     private const float DiceHoldLingerSeconds = 2.5f;
-    // Display alpha for the dice panel (#244): eases in as a beat starts, out over the end of a
+    // Display alpha for the dice panel (#245): eases in as a beat starts, out over the end of a
     // non-held beat's duration or the tail of a held beat's linger — the panel fades instead of
     // popping. When a new dice beat replaces a still-visible panel the fade-in is skipped (no blink).
     private float _diceAlpha = 1f;
@@ -191,9 +191,9 @@ public class PresentationPlayer : IPresentationSink
             {
                 _diceLingerSeconds += dtSeconds;
                 // A panel carrying info chips lingers longer — same principle as the engine's
-                // stretched beat duration: more to read, more time to read it (#244).
+                // stretched beat duration: more to read, more time to read it (#245).
                 float lingerLimit = DiceHoldLingerSeconds + 0.4f * (_activeDice?.InfoBlocks ?? 0);
-                // Fade the parked panel out over the linger's tail instead of popping (#244).
+                // Fade the parked panel out over the linger's tail instead of popping (#245).
                 _diceAlpha = Math.Clamp((lingerLimit - _diceLingerSeconds) / DiceFadeOutSeconds, 0f, 1f);
                 if (_diceLingerSeconds >= lingerLimit)
                 {
@@ -445,7 +445,7 @@ public class PresentationPlayer : IPresentationSink
 
     /// <summary>
     /// The dice roll being shown this frame, if any, with its 0..1 progress and display alpha
-    /// (fade in/out easing, #244 — the overlay multiplies its colors by it).
+    /// (fade in/out easing, #245 — the overlay multiplies its colors by it).
     /// </summary>
     public bool TryGetActiveDice(out DiceRolledBeat beat, out float progress, out float alpha)
     {

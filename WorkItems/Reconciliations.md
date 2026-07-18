@@ -6,6 +6,18 @@ from origin/master. Standing precedent: numbers are never reused, and when two p
 claim the same number, the *unmerged local* item yields to the *merged* one and takes a fresh number.
 A per-clone pre-push hook blocks duplicate numbers across the index and the archive.
 
+> **2026-07-18 — reconciliation 16.** The push of the dice-caption-strip work found origin/master had
+> meanwhile landed reconciliation 15's **244 = caster self-boost** (merged), colliding with this
+> session's locally-filed **244 = dice caption strip** (unpushed, three superproject commits + one
+> engine commit). Per merged-wins precedent the local item yields: **dice caption strip 244 → 245**
+> (`WorkItems/245-dice-caption-strip.md`; 245 free on index + archive). Nothing had been pushed, so
+> per reconciliation 13's precedent the renumber landed everywhere before publication — detail file,
+> index, engine + app source comments, the amended engine commit message, and the three superproject
+> commit messages (rewritten via `filter-branch --msg-filter`); no published references predate the
+> renumber. The engine commit rebased cleanly onto the caster/clamp work (no file overlap, 1708 tests
+> green). Reconciliation 15's `#`-subject rebase hazard was dodged with `-c core.commentChar=';'` —
+> worth repeating for any rebase carrying `#NNN:`-style subjects.
+>
 > **2026-07-18 — reconciliation 15.** The push of the caster self-boost work found origin/master had
 > meanwhile landed **243 = objective placement mode** (engine `714cb54`/`d6e79bd`, superproject
 > `041b04d`, reconciliation 14 below), colliding with this session's locally-filed **243 = caster

@@ -99,7 +99,7 @@ public class TableTooltipOverlay
         // only the name text is gated on _showLabels.
         DrawUnitOverlays();
 
-        // Toolbar — a single vertical column pinned to the bottom-left corner. #244: the bottom-CENTER
+        // Toolbar — a single vertical column pinned to the bottom-left corner. #245: the bottom-CENTER
         // is the dice caption strip's reserved zone, so the toolbar hugs the edge as a tall thin
         // palette instead of spreading sideways into it. Pivot (0,1) pins the auto-sized window by
         // its bottom-left corner.

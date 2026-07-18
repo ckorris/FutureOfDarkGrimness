@@ -8,7 +8,7 @@ namespace FdgRaylib.Rendering.Presentation;
 
 /// <summary>
 /// Draws the active <see cref="DiceRolledBeat"/> as a lower-third caption strip docked to the
-/// bottom-center of the table viewport (#244) — the subtitle convention: the action plays out on
+/// bottom-center of the table viewport (#245) — the subtitle convention: the action plays out on
 /// the table while the numbers narrate from the caption zone, never covering the units or the
 /// concurrent attack animation (#238). The panel is: a standalone <b>target badge</b> (the success
 /// threshold, e.g. "4+", big enough to read before the dice settle) over the roll's category word
@@ -66,7 +66,7 @@ public static class DiceOverlay
     private static readonly Color Hint     = new(170, 170, 175, 255); // dim — the "..." while rolling
     private static readonly Color Tie      = new(228, 200, 60, 255);  // yellow — tied for the win (re-rolls)
 
-    // #244 category accents: the edge stripe + badge word color-code what the roll is FOR. The word
+    // #245 category accents: the edge stripe + badge word color-code what the roll is FOR. The word
     // is the redundant channel (color alone would fail a colorblind glance).
     private static readonly Color OffenseAccent = new(215, 95, 60, 255);   // ember — attacks
     private static readonly Color DefenseAccent = new(95, 145, 215, 255);  // steel — saves
@@ -378,7 +378,7 @@ public static class DiceOverlay
     private static string ResultText(DiceRolledBeat beat) =>
         beat.ResultSummary ?? $"{beat.Successes:0.##} / {beat.Total:0.##}";
 
-    // ---------------- #244 category + badge column ----------------
+    // ---------------- #245 category + badge column ----------------
 
     private static Color AccentFor(ERollBeatCategory category) => category switch
     {
@@ -429,7 +429,7 @@ public static class DiceOverlay
             DrawCenteredIn(word, x, colW, y + badgeH + 4, CategorySize, Faded(AccentFor(category), a));
     }
 
-    // ---------------- #244 info chips ----------------
+    // ---------------- #245 info chips ----------------
 
     // Measures the chips for one row, truncating with a "+N" chip if the row would exceed maxWidth.
     // Null when there is nothing to show — the caller then reserves no row at all.
