@@ -6,7 +6,7 @@ using ImGuiNET;
 namespace FdgRaylib.Rendering.Resolvers;
 
 /// <summary>
-/// #243 — GUI spell picker with the caster's self-boost built in. One panel: selectable spell rows
+/// #244 — GUI spell picker with the caster's self-boost built in. One panel: selectable spell rows
 /// (highlight, not instant-commit) with effect subtext, disabled rows with the reason (unaffordable /
 /// no target), then a boost stepper with a live "roll needed" readout and a total-spend line, and
 /// Cast / Cancel. Boost is capped at the affordable remainder AND the useful maximum

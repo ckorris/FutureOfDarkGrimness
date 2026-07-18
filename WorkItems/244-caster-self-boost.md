@@ -1,4 +1,8 @@
-# 243 — Caster self-boost: spend own tokens on the cast roll, in the spell picker
+# 244 — Caster self-boost: spend own tokens on the cast roll, in the spell picker
+
+> **Renumbered 2026-07-18.** Filed as #243, but origin/master had meanwhile assigned #243 to
+> *objective placement mode*. Per the never-reuse rule this item yields and takes #244
+> (reconciliation 15). The four pre-renumber commit messages reference "#243" for this work.
 
 **Status**: in progress (2026-07-18)
 **Related**: #033 (Caster framework), #103 (friendly/enemy cast assist), #233 (cast dice-roll beat, built together), #191 A5 (Tactician casting)
@@ -42,6 +46,15 @@ spell, boost tokens are spent with the cast cost (regardless of pass/fail), the 
   the boost/assist banners).
 
 ## Notes
+- 2026-07-18 (audit): **Haiku sweep of every modified-roll site** (commissioned with the natural-1
+  amendment) confirms the [2, 6] principle holds engine-wide via `DiceUtilities.ClampSuccessRollNeeded`:
+  hit (`RollToHitStage`), save (`RollToSaveStage`, Bane reroll in `AssignWoundsStage`), morale
+  (`MoraleUtilities`), and the Tactician's `CombatMath` mirrors all clamp; fixed-threshold rolls
+  (impact 2+, dangerous terrain 1s, Unpredictable branch) can't be modified. Only gap: the
+  Regeneration/wound-ignore threshold is used unclamped (`AssignWoundsStage` + `CombatMath`) - safe
+  today because the catalog only defines 2+/5+/6+, but not defensive; worth a tiny clamp if
+  wound-ignore thresholds ever become data-authored. Cast now uses the same shared clamp (engine
+  `db076fe`).
 - 2026-07-18 (later): **Natural-1 amendment.** User caught that the threshold clamp floor of 1 let a
   maxed boost turn the cast into an auto-success - violating GDF's "unmodified 1 always fails /
   unmodified 6 always succeeds". Floor raised to 2 (`MIN_ROLL_THRESHOLD`), `MaxUsefulBoost` moved onto

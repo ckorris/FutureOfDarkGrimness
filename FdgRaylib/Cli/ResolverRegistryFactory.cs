@@ -58,7 +58,7 @@ public static class ResolverRegistryFactory
         var meleeDefender    = new GuiChooseMeleeDefenderResolver();        // #237: sole-defender charge confirm card
         var strSel        = new GuiStringSelectionResolver();
         var abilityEffect = new GuiChooseAbilityEffectResolver();   // #197 P5a "pick one effect" at activation start
-        var chooseSpell   = new GuiChooseSpellResolver();           // #243 spell pick + self-boost stepper
+        var chooseSpell   = new GuiChooseSpellResolver();           // #244 spell pick + self-boost stepper
         var castAssist    = new GuiCastAssistResolver();
         var deployZone    = new GuiChooseDeploymentZoneResolver();
         var rangedAttack  = new GuiChooseRangedAttackResolver(tableState);

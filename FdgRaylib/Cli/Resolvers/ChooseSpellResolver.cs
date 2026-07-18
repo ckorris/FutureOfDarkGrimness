@@ -3,7 +3,7 @@ using FDG.StageResolution.Requests;
 
 namespace FdgRaylib.Cli.Resolvers;
 
-// #243 — stdin resolver for the spell picker: choose a spell, then how many extra tokens of the caster's
+// #244 — stdin resolver for the spell picker: choose a spell, then how many extra tokens of the caster's
 // own to spend boosting the roll (+1 each, on top of the spell's cost). Boost is capped at the affordable
 // remainder AND the useful maximum (to the 2+ floor - a natural 1 always fails - plus one per in-range
 // enemy hinder token); past the floor extra tokens only hedge against enemy Casters' -1s, so with none in

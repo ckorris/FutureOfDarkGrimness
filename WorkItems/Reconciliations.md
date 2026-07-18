@@ -6,6 +6,19 @@ from origin/master. Standing precedent: numbers are never reused, and when two p
 claim the same number, the *unmerged local* item yields to the *merged* one and takes a fresh number.
 A per-clone pre-push hook blocks duplicate numbers across the index and the archive.
 
+> **2026-07-18 — reconciliation 15.** The push of the caster self-boost work found origin/master had
+> meanwhile landed **243 = objective placement mode** (engine `714cb54`/`d6e79bd`, superproject
+> `041b04d`, reconciliation 14 below), colliding with this session's locally-filed **243 = caster
+> self-boost** (unpushed). Per merged-wins precedent the local item yields: **caster self-boost
+> 243 → 244** (`WorkItems/244-caster-self-boost.md`; 244 free on index + archive). Renumber landed in
+> the detail file, index, both repos' source comments, and `docs/ResolverGuide.md` before push.
+> **Left as-is on purpose:** the four pre-renumber commit messages say "#243" for this work (per the
+> standing commit-messages-are-not-rewritten precedent; two rebased superproject messages were
+> recreated with "#244" because a conflicted `rebase --continue` had stripped their `#`-leading
+> subject lines as comments — a hazard worth remembering with `#NNN:`-style subjects). The engine
+> renumber commit `db076fe` was pushed calling this "reconciliation 14" before the parallel session's
+> entry below surfaced in the rebase and claimed the number; this log is authoritative: it's 15.
+>
 > **2026-07-18 — reconciliation 14.** First push of the objective-placement-mode work tripped the fast-forward reject: origin/master had meanwhile landed reconciliation 13's **241 = Army Forge share-link importer** and **242 = campaign import features** (both merged). This session had filed the objective-placement-mode item locally as **241**. Per merged-wins precedent the local item yields, skipping the also-taken 242: **objective placement mode 241 -> 243** (`WorkItems/243-objective-placement-mode.md`). The renumber landed everywhere before publication - detail file, index, the engine test comment (a one-line follow-up submodule commit `d6e79bd` since the first engine commit had already been pushed as #241), the app-side source comment, and the (amended) engine commit message - so no references predate the renumber except the already-pushed engine commit `714cb54`'s message, which is left as-is per precedent. The engine commit rebased cleanly onto reconciliation 13's Army Forge + casualty-cascade work (1691 tests green).
 >
 > **2026-07-16 — reconciliation 13.** Pre-push fetch caught a double collision: origin/master had meanwhile landed **239 = weapon effect sets** and **240 = stuck-key hardening** (already archived), while this session had locally filed **239 = Army Forge share-link importer** and **240 = campaign-feature import**. Per merged-wins precedent both local items yield: **share-link importer 239 → 241** (`WorkItems/241-army-forge-share-import.md`) and **campaign import 240 → 242** (`WorkItems/242-campaign-import-features.md`). Nothing had been pushed, so like reconciliation 12 the renumber landed everywhere before publication — detail files, index, engine + app source comments, and the (amended) commit messages; no commit messages predate the renumber. The engine commit also gained the #239 weapon-effect integration on rebase (`WeaponEffectAssigner.ApplyToArmy` stamps imported armies).
