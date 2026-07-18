@@ -19,6 +19,7 @@ public static class ResolverRegistryFactory
             .RegisterResolver(new YesNoResolver())
             .RegisterResolver(new StringSelectionResolver())
             .RegisterResolver(new ChooseAbilityEffectResolver())
+            .RegisterResolver(new ChooseSpellResolver())
             .RegisterResolver(new CastAssistResolver())
             .RegisterResolver(new ChooseDeploymentZoneResolver())
             .RegisterResolver(new ChooseRangedAttackResolver())
@@ -57,6 +58,7 @@ public static class ResolverRegistryFactory
         var meleeDefender    = new GuiChooseMeleeDefenderResolver();        // #237: sole-defender charge confirm card
         var strSel        = new GuiStringSelectionResolver();
         var abilityEffect = new GuiChooseAbilityEffectResolver();   // #197 P5a "pick one effect" at activation start
+        var chooseSpell   = new GuiChooseSpellResolver();           // #243 spell pick + self-boost stepper
         var castAssist    = new GuiCastAssistResolver();
         var deployZone    = new GuiChooseDeploymentZoneResolver();
         var rangedAttack  = new GuiChooseRangedAttackResolver(tableState);
@@ -75,6 +77,7 @@ public static class ResolverRegistryFactory
         overlay.Register(meleeDefender);
         overlay.Register(strSel);
         overlay.Register(abilityEffect);
+        overlay.Register(chooseSpell);
         overlay.Register(castAssist);
         overlay.Register(deployZone);
         overlay.Register(rangedAttack);
@@ -102,6 +105,7 @@ public static class ResolverRegistryFactory
                 meleeDefender)
             .RegisterResolver(strSel)                                        // GUI
             .RegisterResolver(abilityEffect)                                 // GUI
+            .RegisterResolver(chooseSpell)                                   // GUI
             .RegisterResolver(castAssist)                                    // GUI
             .RegisterResolver(deployZone)                                    // GUI
             .RegisterResolver(rangedAttack)                                  // GUI

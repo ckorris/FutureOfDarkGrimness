@@ -49,6 +49,7 @@ Corpus coverage is a different story: 528 of 13,870 book rule references (3.8%) 
 
 - [~] 034 — Spell content: targeting primitives Part 1 complete; remaining: conferred-rule implementations (coordinate with #100) and per-faction spell JSON (copyrighted — authored locally, never committed; partially generated). ([WorkItems/034](WorkItems/034-spell-content.md))
 - [ ] 234 — Casting is possible after Charge + melee in one activation; check the rulebook, then gate the Cast option if illegal. ([WorkItems/234](WorkItems/234-cast-after-charge-legality.md))
+- [~] 243 — Caster self-boost: own tokens for +1/each in a new dedicated spell picker (`ChooseSpellRequest`, one-panel GUI with useful-cap-gated boost stepper). Implemented + tested; awaiting GUI hand-verify. ([WorkItems/243](WorkItems/243-caster-self-boost.md))
 
 ## Army Forge
 
@@ -101,7 +102,7 @@ detection, host-IP display, DNS host entry. See `NetworkingHandoff-2026-07-08.md
 - [ ] 229 — (exploratory) Bottom in-game menu should maybe be its own panel; confirm which strip + intent before building. ([WorkItems/229](WorkItems/229-bottom-menu-own-panel.md))
 - [ ] 230 — Show weapon range rings during placement (deploy / embark / ambush arrival), anchored to the candidate position. ([WorkItems/230](WorkItems/230-placement-weapon-range-rings.md))
 - [ ] 231 — Remove the LoS blocking-line visual from shooting (confusing when a valid target stands in front of the blocker). ([WorkItems/231](WorkItems/231-remove-los-blocking-lines.md))
-- [ ] 233 — Add a dice-roll beat for casting (engine beat emission in CastSpellStage). ([WorkItems/233](WorkItems/233-cast-roll-beat.md))
+- [~] 233 — Add a dice-roll beat for casting: `CastSpellStage` presents a "Roll to Cast" `DiceRolledBeat` with the shifted threshold. Implemented + tested (with #243); awaiting GUI hand-verify. ([WorkItems/233](WorkItems/233-cast-roll-beat.md))
 - [~] 237 — Single-option pick shortcuts: shooting pre-selects a sole fireable target, sole-defender charge shows a one-click confirm card (keeps #202's Back), Enter = Auto-assign All. Implemented + tested; awaiting GUI hand-verify. ([WorkItems/237](WorkItems/237-single-option-pick-shortcuts.md))
 - [~] 238 — Attack animation now plays WHILE the to-hit dice tumble (AttackBeat is a zero-lead-in held beat) + gunshot/melee sound per volley instead of once. Implemented + tested; awaiting GUI hand-verify. ([WorkItems/238](WorkItems/238-attack-dice-overlap-volley-sound.md))
 - [~] 239 — Weapon effect sets: 13 ranged / 10 melee themed visual+sound styles baked into books/armies as explicit keys (faction defaults + global fallback), truthful hit/miss impacts + impact sounds. Implemented + tested; awaiting GUI hand-verify (checklist in detail file). ([WorkItems/239](WorkItems/239-weapon-effect-sets.md))
