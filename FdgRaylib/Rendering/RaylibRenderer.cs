@@ -44,10 +44,6 @@ public class RaylibRenderer
     private static readonly Color GridMinorColor = new(33, 85, 33, 80);
     private static readonly Color GridMajorColor = new(24, 66, 24, 150);
 
-    // Toggled from the table toolbar (TableTooltipOverlay) alongside the label toggle. Read by
-    // DrawTableGrid's call site so the grid/felt can be turned off without touching anything else.
-    public static bool ShowGrid = true;
-
     public MainMenuScreen    MainMenu     { get; } = new();
     public ArmyBuilderScreen ArmyBuilder  { get; } = new();
     public ArmyForgeScreen   ArmyForge    { get; } = new();
@@ -189,8 +185,8 @@ public class RaylibRenderer
         _tacticalOverlay.Attach(tableState, msg => _log?.Add(msg, new TextColor(255, 180, 90, 255), isDebug: true),
             pid => { Color c = colorForPlayer(pid); return (c.R, c.G, c.B); });
         _tacticalOverlay.AttachMovementResolver(resolverOverlay?.MovementResolver);
-        _tooltipOverlay.AttachTacticalOverlay(_tacticalOverlay);
-        _tooltipOverlay.OnOpenMenu = _escapeMenu.Open;
+        // The menu's Options panel drives the tactical toggles (Threat, field anchor) and master volume.
+        _escapeMenu.AttachOptions(_tacticalOverlay, _audio);
 
         // Play a sound cue the moment each beat becomes active, in lockstep with its visual. Audio is
         // GUI-only and may be unavailable (then AudioManager no-ops), so this is best-effort.
@@ -414,7 +410,7 @@ public class RaylibRenderer
                 // (below) and its ImGui-pass instruments read the same world<->screen mapping.
                 _tacticalOverlay.UpdateLayout(layout.Scale, layout.OriginX, layout.OriginY, TableHIn);
                 DrawTable(layout);
-                if (ShowGrid)
+                if (ViewSettings.ShowGrid)
                     DrawTableGrid(layout);   // etched grid + felt vignette, under terrain/objectives/models
                 _tacticalOverlay.DrawField();    // opportunity field: under terrain (spec draw order)
                 DrawTerrain(layout);
@@ -513,6 +509,10 @@ public class RaylibRenderer
                 // top-right region always reads as an intentional panel rather than empty space.
                 if (!resolverShown) DrawIdleResolverPanel();
                 DrawGameOverOverlay(screenW, screenH);
+
+                // Standalone "Menu" button in the bottom-left corner (where the retired toolbar sat),
+                // the discoverable way into the Esc menu. Drawn before the menu so its dim covers it.
+                DrawMenuButton(screenH);
 
                 // In-game menu (Esc). Opens only when no context claimed Escape this frame, and never
                 // over the game-over card (that has its own Return to Main Menu button). Drawn last so
@@ -902,6 +902,21 @@ public class RaylibRenderer
                 Raylib.DrawCircleV(new Vector2(px, py), MathF.Max(1.2f, 0.05f * l.Scale), spec);
             }
         }
+    }
+
+    // Small always-visible "Menu" button pinned to the bottom-left corner (pivot 0,1), the same spot the
+    // old view toolbar occupied. Opens the in-game menu; Esc does the same. Auto-sized, faintly backed.
+    private void DrawMenuButton(int screenH)
+    {
+        ImGui.SetNextWindowPos(new Vector2(8, screenH - 8), ImGuiCond.Always, new Vector2(0f, 1f));
+        ImGui.SetNextWindowBgAlpha(0.70f);
+        ImGui.Begin("##menubtn",
+            ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoCollapse |
+            ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.AlwaysAutoResize |
+            ImGuiWindowFlags.NoFocusOnAppearing | ImGuiWindowFlags.NoNav);
+        if (ImGui.Button("Menu"))
+            _escapeMenu.Open();
+        ImGui.End();
     }
 
     // Centered "Game Over" card shown once the game ends. The board stays visible behind it; the player

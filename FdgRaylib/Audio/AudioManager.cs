@@ -29,10 +29,27 @@ public sealed class AudioManager : IDisposable
     /// <summary>True once the audio device initialized successfully; false makes every op a no-op.</summary>
     public bool Enabled => _enabled;
 
+    // Last value handed to Raylib.SetMasterVolume, so the Options slider can show the current level.
+    // Raylib's device default is 1.0 (full).
+    private float _masterVolume = 1f;
+
+    /// <summary>Current master volume, 0..1 (1 = full). Set via <see cref="SetMasterVolume"/>.</summary>
+    public float MasterVolume => _masterVolume;
+
     public AudioManager()
     {
         Raylib.InitAudioDevice();
         _enabled = Raylib.IsAudioDeviceReady();
+    }
+
+    /// <summary>
+    /// Sets the global playback volume for every cue (clamped to 0..1). No-op if audio is unavailable,
+    /// but the value is still remembered so the UI stays consistent.
+    /// </summary>
+    public void SetMasterVolume(float volume)
+    {
+        _masterVolume = Math.Clamp(volume, 0f, 1f);
+        if (_enabled) Raylib.SetMasterVolume(_masterVolume);
     }
 
     /// <summary>

@@ -26,21 +26,9 @@ public class TableTooltipOverlay
     private int   _originY;
     private float _tableH;
 
-    private bool _showLabels = true;
-    private bool _showAllTokens; // dev toggle (T): reveal Invisible bookkeeping tokens
-
     // Built from the core catalog so granted-rule tokens get the right valence + description. Custom
     // army-embedded rules (#059) aren't in here and fall back to Neutral/no-description.
     private readonly IRuleResolver _ruleResolver = CoreRuleCatalog.CreateResolver();
-
-    // The tactical overlay, so the toolbar can expose its Threat toggle (also bound to F). Non-null
-    // once wired in TransitionToGame.
-    private TacticalOverlay.TacticalOverlayController? _tactical;
-    public void AttachTacticalOverlay(TacticalOverlay.TacticalOverlayController tactical) => _tactical = tactical;
-
-    // Opens the in-game menu (#246). Wired in TransitionToGame; the toolbar's "Menu" button and, later,
-    // the standalone button both call it.
-    public Action? OnOpenMenu;
 
     public void Attach(ITableState tableState, Func<PlayerID, Color> colorForPlayer)
     {
@@ -60,13 +48,14 @@ public class TableTooltipOverlay
     {
         if (_tableState == null) return;
 
-        // Hotkeys are muted while the in-game menu owns input (#246).
+        // Hotkeys are muted while the in-game menu owns input (#246). Toggles live in ViewSettings, shared
+        // with the menu's Options panel.
         bool wantKeys = !ImGui.GetIO().WantCaptureKeyboard && !EscapeRouter.MenuOpen;
         if (wantKeys && ImGui.IsKeyPressed(ImGuiKey.L))
-            _showLabels = !_showLabels;
+            ViewSettings.ShowLabels = !ViewSettings.ShowLabels;
 
         if (wantKeys && ImGui.IsKeyPressed(ImGuiKey.T))
-            _showAllTokens = !_showAllTokens;
+            ViewSettings.ShowAllTokens = !ViewSettings.ShowAllTokens;
 
         var hoveredUnit    = hitTester.HoveredUnit;
         var hoveredModel   = hitTester.HoveredModel;
@@ -90,63 +79,8 @@ public class TableTooltipOverlay
         //     DrawRangeRings(hoveredUnit, hoveredModel);
 
         // Unit name labels + token chips. Chips show regardless of the label toggle (status at a glance);
-        // only the name text is gated on _showLabels.
+        // only the name text is gated on ViewSettings.ShowLabels.
         DrawUnitOverlays();
-
-        // Toolbar — a single vertical column pinned to the bottom-left corner. #245: the bottom-CENTER
-        // is the dice caption strip's reserved zone, so the toolbar hugs the edge as a tall thin
-        // palette instead of spreading sideways into it. Pivot (0,1) pins the auto-sized window by
-        // its bottom-left corner.
-        ImGui.SetNextWindowPos(new Vector2(8, screenH - 8), ImGuiCond.Always, new Vector2(0f, 1f));
-        ImGui.SetNextWindowBgAlpha(0.70f);
-        ImGui.Begin("##tabletools",
-            ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoCollapse |
-            ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.AlwaysAutoResize |
-            ImGuiWindowFlags.NoFocusOnAppearing | ImGuiWindowFlags.NoNav);
-
-        // Uniform button width (the widest label) so the stack doesn't jitter as toggle text changes.
-        float pad  = ImGui.GetStyle().FramePadding.X * 2f;
-        float btnW = ImGui.CalcTextSize("Anchor: Target").X + pad;
-        var btnSize = new Vector2(btnW, 0f);
-
-        // In-game menu (#246): Save / quit paths live behind Esc now; this button is the discoverable
-        // way in. Sits at the top of the stack until the rest of the toolbar retires (#246 S3).
-        if (OnOpenMenu != null && ImGui.Button("Menu", btnSize))
-            OnOpenMenu();
-        ImGui.Separator();
-
-        if (ImGui.Button(_showLabels ? "Labels: ON" : "Labels: OFF", btnSize))
-            _showLabels = !_showLabels;
-        if (ImGui.Button(RaylibRenderer.ShowGrid ? "Grid: ON" : "Grid: OFF", btnSize))
-            RaylibRenderer.ShowGrid = !RaylibRenderer.ShowGrid;
-        if (ImGui.Button(_showAllTokens ? "Tokens: ALL" : "Tokens: std", btnSize))
-            _showAllTokens = !_showAllTokens;
-
-        // Threat frontiers inspection toggle (also F). No longer auto-shown during a move (the field
-        // replaced that); this is the only way to bring them up now.
-        if (_tactical != null && ImGui.Button(_tactical.ThreatToggledOn ? "Threat: ON" : "Threat: OFF", btnSize))
-            _tactical.ToggleThreat();
-        // Opportunity-field renderer: GPU rasterizer (default) vs the CPU reference compositor. One
-        // click back to the known-good CPU path if the GPU picture ever looks wrong.
-        if (_tactical != null && ImGui.Button(TacticalOverlay.TacticalOverlayConfig.UseGpuField ? "Field: GPU" : "Field: CPU", btnSize))
-        {
-            TacticalOverlay.TacticalOverlayConfig.UseGpuField = !TacticalOverlay.TacticalOverlayConfig.UseGpuField;
-            _tactical.InvalidateFieldCache();
-        }
-        // Field anchor: Target = "the selected unit's gun ranges" (classic), Self = "my reach from my
-        // pending position", live per frame (H4).
-        if (_tactical != null && ImGui.Button(TacticalOverlay.TacticalOverlayConfig.GhostAnchoredField ? "Anchor: Self" : "Anchor: Target", btnSize))
-        {
-            TacticalOverlay.TacticalOverlayConfig.GhostAnchoredField = !TacticalOverlay.TacticalOverlayConfig.GhostAnchoredField;
-            _tactical.InvalidateFieldCache();
-        }
-
-        // Hotkey hints
-        ImGui.TextDisabled("Ctrl+drag: measure");
-        ImGui.TextDisabled("Ctrl+wheel: zoom");
-        ImGui.TextDisabled("Middle-drag: pan");
-
-        ImGui.End();
     }
 
     private void DrawUnitTooltip(IUnit unit, IModel model,
@@ -254,7 +188,7 @@ public class TableTooltipOverlay
             ImGui.Unindent();
         }
 
-        var tokenInfos = TokenChipRenderer.ResolveVisible(unit.Tokens, _ruleResolver, false, _showAllTokens);
+        var tokenInfos = TokenChipRenderer.ResolveVisible(unit.Tokens, _ruleResolver, false, ViewSettings.ShowAllTokens);
         if (tokenInfos.Count > 0)
         {
             ImGui.Spacing();
@@ -369,7 +303,7 @@ public class TableTooltipOverlay
                 count++;
 
                 // Model-scoped tokens sit just above each model (usually none).
-                var modelChips = TokenChipRenderer.ResolveVisible(model.Tokens, _ruleResolver, true, _showAllTokens);
+                var modelChips = TokenChipRenderer.ResolveVisible(model.Tokens, _ruleResolver, true, ViewSettings.ShowAllTokens);
                 if (modelChips.Count > 0)
                     TokenChipRenderer.DrawChipRow(drawList, modelChips, mx,
                         my - mr - 3f - TokenChipRenderer.RowHeight(modelChips));
@@ -382,7 +316,7 @@ public class TableTooltipOverlay
             float modelsTop = cy - minRadiusPx;
 
             // Unit-scoped tokens sit just above the unit, under its name.
-            var unitChips = TokenChipRenderer.ResolveVisible(unit.Tokens, _ruleResolver, false, _showAllTokens);
+            var unitChips = TokenChipRenderer.ResolveVisible(unit.Tokens, _ruleResolver, false, ViewSettings.ShowAllTokens);
             float chipH = TokenChipRenderer.RowHeight(unitChips);
             float chipTopY = modelsTop - 3f - chipH;
             if (unitChips.Count > 0)
@@ -391,7 +325,7 @@ public class TableTooltipOverlay
             // Top of the name/chips stack — the health bar sits above it.
             float stackTopY = unitChips.Count > 0 ? chipTopY : modelsTop - 3f;
 
-            if (_showLabels)
+            if (ViewSettings.ShowLabels)
             {
                 Vector2 textSize = ImGui.CalcTextSize(unit.Name);
                 float labelX = cx - textSize.X * 0.5f;

@@ -1,5 +1,6 @@
 using System.Numerics;
 using FDG.SaveLoad;
+using FdgRaylib.Audio;
 using ImGuiNET;
 using TinyDialogsNet;
 
@@ -20,6 +21,7 @@ public sealed class EscapeMenuOverlay
 {
     private enum Confirm { None, ReturnToMenu, Quit, LoadGame }
     private Confirm _confirm = Confirm.None;
+    private bool _inOptions;
 
     public bool IsOpen { get; private set; }
 
@@ -38,8 +40,18 @@ public sealed class EscapeMenuOverlay
         $"Saved Game (*{GameSaveFile.EXTENSION_WITH_PERIOD})",
         new[] { $"*{GameSaveFile.EXTENSION_WITH_PERIOD}" });
 
-    public void Open()  { IsOpen = true;  _confirm = Confirm.None; }
-    public void Close() { IsOpen = false; _confirm = Confirm.None; }
+    // Options-panel dependencies: the tactical overlay (Threat + field-anchor toggles) and the audio
+    // manager (master volume). Wired in TransitionToGame; audio may be null/disabled.
+    private TacticalOverlay.TacticalOverlayController? _tactical;
+    private AudioManager? _audio;
+    public void AttachOptions(TacticalOverlay.TacticalOverlayController tactical, AudioManager? audio)
+    {
+        _tactical = tactical;
+        _audio    = audio;
+    }
+
+    public void Open()  { IsOpen = true;  _confirm = Confirm.None; _inOptions = false; }
+    public void Close() { IsOpen = false; _confirm = Confirm.None; _inOptions = false; }
 
     /// <param name="justOpened">
     /// True on the frame the renderer opened the menu from an Escape press. That same press is still
@@ -52,14 +64,16 @@ public sealed class EscapeMenuOverlay
 
         if (!justOpened && ImGui.IsKeyPressed(ImGuiKey.Escape, repeat: false))
         {
-            // Escape steps back one level: out of a confirm first, then out of the menu entirely.
+            // Escape steps back one level: out of a confirm, then out of Options, then out of the menu.
             if (_confirm != Confirm.None) _confirm = Confirm.None;
+            else if (_inOptions) _inOptions = false;
             else { Close(); return; }
         }
 
         DrawDimBlocker(screenW, screenH);
 
-        float menuW = MathF.Min(360f, screenW * 0.8f);
+        // Options is wider (slider + longer labels) than the plain button column.
+        float menuW = _inOptions ? MathF.Min(440f, screenW * 0.9f) : MathF.Min(360f, screenW * 0.8f);
         ImGui.SetNextWindowPos(new Vector2(screenW * 0.5f, screenH * 0.5f), ImGuiCond.Always,
             new Vector2(0.5f, 0.5f));
         ImGui.SetNextWindowSize(new Vector2(menuW, 0f), ImGuiCond.Always);
@@ -67,8 +81,9 @@ public sealed class EscapeMenuOverlay
             ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoMove |
             ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoSavedSettings);
 
-        if (_confirm == Confirm.None) DrawMainList();
-        else DrawConfirm();
+        if (_confirm != Confirm.None) DrawConfirm();
+        else if (_inOptions) DrawOptions();
+        else DrawMainList();
 
         ImGui.End();
     }
@@ -118,8 +133,62 @@ public sealed class EscapeMenuOverlay
             ImGui.Spacing();
         }
 
+        if (FullWidthButton("Options")) _inOptions = true;
         if (FullWidthButton("Return to Main Menu")) _confirm = Confirm.ReturnToMenu;
         if (FullWidthButton("Quit to Desktop")) _confirm = Confirm.Quit;
+    }
+
+    private void DrawOptions()
+    {
+        DrawTitle("Options");
+        ImGui.Spacing();
+
+        SectionHeader("Display");
+        ImGui.Checkbox("Unit labels (L)", ref ViewSettings.ShowLabels);
+        ImGui.Checkbox("Table grid", ref ViewSettings.ShowGrid);
+        ImGui.Checkbox("Show all tokens (T, dev)", ref ViewSettings.ShowAllTokens);
+
+        if (_tactical != null)
+        {
+            SectionHeader("Tactical overlay");
+            bool threat = _tactical.ThreatToggledOn;
+            if (ImGui.Checkbox("Threat frontiers (F)", ref threat))
+                _tactical.ToggleThreat();
+
+            bool anchorSelf = TacticalOverlay.TacticalOverlayConfig.GhostAnchoredField;
+            if (ImGui.Checkbox("Anchor field on my position", ref anchorSelf))
+            {
+                TacticalOverlay.TacticalOverlayConfig.GhostAnchoredField = anchorSelf;
+                _tactical.InvalidateFieldCache();
+            }
+            ImGui.TextDisabled("Off = the target's weapon ranges.");
+        }
+
+        SectionHeader("Audio");
+        if (_audio != null && _audio.Enabled)
+        {
+            float vol = _audio.MasterVolume;
+            if (ImGui.SliderFloat("Master volume", ref vol, 0f, 1f, "%.2f"))
+                _audio.SetMasterVolume(vol);
+        }
+        else
+        {
+            ImGui.TextDisabled("Audio unavailable.");
+        }
+
+        SectionHeader("Controls");
+        ImGui.TextDisabled("Ctrl+drag: measure");
+        ImGui.TextDisabled("Ctrl+wheel: zoom");
+        ImGui.TextDisabled("Middle-drag: pan");
+        ImGui.TextDisabled("L labels   T tokens   F threat");
+        ImGui.TextDisabled("G: cycle formation (during moves)");
+        ImGui.TextDisabled("Enter: auto-assign / confirm");
+        ImGui.TextDisabled("Esc: cancel / open this menu");
+
+        ImGui.Spacing();
+        ImGui.Separator();
+        ImGui.Spacing();
+        if (FullWidthButton("Back")) _inOptions = false;
     }
 
     private void DrawConfirm()
@@ -170,6 +239,15 @@ public sealed class EscapeMenuOverlay
             path += GameSaveFile.EXTENSION_WITH_PERIOD;
 
         File.WriteAllText(path, json);
+    }
+
+    // A small labelled divider between Options sections (SeparatorText isn't in this ImGui binding).
+    private static void SectionHeader(string text)
+    {
+        ImGui.Spacing();
+        ImGui.TextDisabled(text);
+        ImGui.Separator();
+        ImGui.Spacing();
     }
 
     private static void DrawTitle(string text)
