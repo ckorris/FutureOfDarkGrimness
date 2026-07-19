@@ -1,8 +1,36 @@
 # 246 — In-game escape menu; retire the bottom-left toolbar
 
-**Status:** Plan written 2026-07-18 (design session with Fable). Awaiting Chris's sign-off on the
-decision forks below, then implement slice by slice. Number 246 verified free against the index,
+**Status:** Implemented 2026-07-18 (S1-S3), suite/build green + headless smoke exits 0. **Awaiting
+GUI hand-verify** (the checklist below). Chris signed off with "make it so" on the plan as written, so
+the decision forks landed at their recommended settings. Number 246 verified free against the index,
 archive, and Reconciliations.md as of 2026-07-18 — re-verify against origin before first push.
+
+## Dated notes
+
+**2026-07-18 — implemented, all three slices (commits `589a0db` S1, `0e284ac` S2, `d8c1440` S3).**
+App-side only, no engine changes. Decision forks resolved at their recommended settings (cancel-first
+Esc, Load included, single Menu button, Threat via hotkey+Options, S4 persistence deferred — see below).
+
+- **S1** — `EscapeRouter` (frame-scoped Esc arbiter) + `EscapeMenuOverlay` (Resume / Return to Main
+  Menu / Quit to Desktop, latter two confirmed) + full-screen dim/click-blocker. Four Esc consumers
+  routed through `EscapeRouter.TryConsumeEscape` (yes/no No, objective+terrain placement back-out,
+  tactical pin-clear); menu opens via `ShouldOpenMenu` only when none claimed it. Canvas clicks and
+  L/T/F hotkeys gated on `EscapeRouter.MenuOpen`. Menu button lived in the toolbar for S1/S2.
+- **S2** — Save + Load moved into the menu. Save reuses the native-dialog flow lifted out of the
+  toolbar (`TableTooltipOverlay` lost `_saveGameToJson`/`SaveFilter`/`HandleSaveGame` + the Save
+  button). Load shares one `LoadGameFlow` local in `Program.cs`, assigned to both
+  `MainMenu.OnLoadGameClicked` and the new `renderer.OnLoadGameRequested`; the menu's Load confirms,
+  tears the game down (`ExitGame` + `NavigateTo(MainMenu)`), then runs it. Host-gated on
+  `_saveGameToJson != null`; clients see a disabled Save/Load pair + reason.
+- **S3** — Toolbar deleted; standalone `DrawMenuButton` in the renderer holds its bottom-left corner.
+  Toggles moved to an Options panel (Display / Tactical overlay / Audio / Controls). New `ViewSettings`
+  static owns Labels/Grid/Tokens (migrated `RaylibRenderer.ShowGrid` and the two `TableTooltipOverlay`
+  fields; hotkeys L/T unchanged). New `AudioManager.SetMasterVolume`/`MasterVolume` behind a slider.
+  **Field GPU/CPU button deleted** — `UseGpuField` stays defaulted GPU with auto-fallback + CPU
+  reference intact; the optional dev re-toggle was not added (left for if a driver problem needs it).
+
+**Deferred (unchanged from plan):** S4 settings persistence (`fdg-settings.json`) — not built; view
+toggles + volume are session statics as before. Explicitly not silently cut: called out here.
 
 ## Goal
 
@@ -115,14 +143,14 @@ under a dev row.
 
 ## Implementation slices (one at a time, verify + commit each)
 
-- **S1 — Menu shell + Esc routing.** `EscapeRouter`, `EscapeMenuOverlay` (Resume / Return to Main
+- [x] **S1 — Menu shell + Esc routing.** `EscapeRouter`, `EscapeMenuOverlay` (Resume / Return to Main
   Menu / Quit to Desktop, both confirmed), the small Menu button, input suppression while open.
-  App-side only; no engine changes.
-- **S2 — Save + Load.** Move save into the menu (host gating), wire Load via the shared Program.cs
-  method, remove the toolbar Save button.
-- **S3 — Options + toolbar retirement.** Options panel (Display / Tactical / Audio / Controls),
-  `AudioManager.SetMasterVolume`, delete the toolbar window, delete the Field button.
-- **S4 (optional) — Persistence.** `fdg-settings.json`, load at startup, save on change.
+  App-side only; no engine changes. (`589a0db`)
+- [x] **S2 — Save + Load.** Move save into the menu (host gating), wire Load via the shared Program.cs
+  method, remove the toolbar Save button. (`0e284ac`)
+- [x] **S3 — Options + toolbar retirement.** Options panel (Display / Tactical / Audio / Controls),
+  `AudioManager.SetMasterVolume`, delete the toolbar window, delete the Field button. (`d8c1440`)
+- [ ] **S4 (optional) — Persistence.** `fdg-settings.json`, load at startup, save on change. Deferred.
 
 ## Verification
 
