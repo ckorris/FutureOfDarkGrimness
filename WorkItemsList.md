@@ -17,7 +17,7 @@ When closing an item: write the Outcome in its detail file, tick the line, and m
 
 ## Movement
 
-- [~] 159 — `DefinePathStage` cohesion crash: four root causes fixed, but a residual still repros ~1 run in 10 on the default army (2/24 on origin/master, 2026-07-09) — *not* fixed; not yet isolated to the CLI auto-advance vs the AI resolver. ([WorkItems/159](WorkItems/159-definepath-cohesion-crash.md))
+- [~] 159 — `DefinePathStage` cohesion crash: residual isolated (CLI/AI HOLD-EXACT submitting an already-broken unit's positions) and fixed 2026-07-18 via lenient movement coherency (mirrors the ConsolidateStage fix), 90/90 clean; GUI human-movement Done-gate facet explicitly deferred + awaiting GUI hand-verify. ([WorkItems/159](WorkItems/159-definepath-cohesion-crash.md))
 - [ ] 209 — Weapon-choice option order is nondeterministic (ConcurrentDictionary keyed by Weapon identity): multi-weapon units swing/fire in random order, breaking #193 same-seed replay and benchmark hash reproducibility; fix candidate awaiting sign-off. ([WorkItems/209](WorkItems/209-weapon-choice-order-nondeterminism.md))
 - [ ] 210 — Residual bench nondeterminism at --dop > 1 (scattered per-game flips under CPU contention; serial runs exact after #209). Needs the #198 tracer wired into bench to isolate. ([WorkItems/210](WorkItems/210-dop-concurrency-nondeterminism.md))
 - [ ] 211 — Solo AI mover submits a path through impassible terrain (~1/1800; #159's family, impassible flavor). Fix with one validate-or-decline ladder on the solo mover alongside #159. ([WorkItems/211](WorkItems/211-solo-mover-impassible-terrain.md))

@@ -83,10 +83,12 @@ public class DefineMovementPathResolver : IStageResolver<DefineMovementPathReque
             if (eof)
                 return Selected(AutoAdvance(request));
 
+            // #159: lenientCoherency mirrors DefinePathStage - a unit already broken by a casualty may hold
+            // (or pull together) rather than being rejected for a coherency it can't restore while boxed in.
             if (MovementUtilities.ValidatePaths(entries, BudgetFor(request),
                     GetEnemyFootprints(request), request.CanMoveThroughEnemies, request.IgnoresDifficultTerrain,
                     request.IgnoresImpassibleTerrain, _tableState?.Terrain.Objects, out var errors,
-                    GetFriendlyFootprints(request)))
+                    GetFriendlyFootprints(request), lenientCoherency: true))
                 return Selected(entries);
 
             Console.WriteLine();
@@ -151,7 +153,7 @@ public class DefineMovementPathResolver : IStageResolver<DefineMovementPathReque
 
         var candidate = CohesiveFormation.PackGrid(living, cx + ndx * step, cz + ndz * step);
         bool valid = MovementUtilities.ValidatePaths(candidate, BudgetFor(request),
-            footprints, request.CanMoveThroughEnemies, request.IgnoresDifficultTerrain, request.IgnoresImpassibleTerrain, terrain, out _, friendlies);
+            footprints, request.CanMoveThroughEnemies, request.IgnoresDifficultTerrain, request.IgnoresImpassibleTerrain, terrain, out _, friendlies, lenientCoherency: true);
         int attempts = 0;
         while (!valid && attempts < 6)
         {
@@ -160,7 +162,7 @@ public class DefineMovementPathResolver : IStageResolver<DefineMovementPathReque
                 ? CohesiveFormation.PackGrid(living, cx, cz)
                 : CohesiveFormation.PackGrid(living, cx + ndx * step, cz + ndz * step);
             valid = MovementUtilities.ValidatePaths(candidate, BudgetFor(request),
-            footprints, request.CanMoveThroughEnemies, request.IgnoresDifficultTerrain, request.IgnoresImpassibleTerrain, terrain, out _, friendlies);
+            footprints, request.CanMoveThroughEnemies, request.IgnoresDifficultTerrain, request.IgnoresImpassibleTerrain, terrain, out _, friendlies, lenientCoherency: true);
             attempts++;
         }
         if (!valid)
@@ -168,7 +170,7 @@ public class DefineMovementPathResolver : IStageResolver<DefineMovementPathReque
             // Reform in place to close casualty gaps...
             candidate = CohesiveFormation.PackGrid(living, cx, cz);
             valid = MovementUtilities.ValidatePaths(candidate, BudgetFor(request),
-            footprints, request.CanMoveThroughEnemies, request.IgnoresDifficultTerrain, request.IgnoresImpassibleTerrain, terrain, out _, friendlies);
+            footprints, request.CanMoveThroughEnemies, request.IgnoresDifficultTerrain, request.IgnoresImpassibleTerrain, terrain, out _, friendlies, lenientCoherency: true);
 
             // ...but a unit intermingled with enemies can't re-pack without a model crossing an enemy base;
             // hold exact positions then (zero-length paths can't move through anything).

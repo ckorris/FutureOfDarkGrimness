@@ -1,6 +1,7 @@
 # 159 — Intermittent DefinePathStage cohesion crash from AI/auto movement
 
-**Status**: in-progress (code complete + headless-verified; awaiting GUI hand-verification)
+**Status**: in-progress (2026-07-18 lenient-coherency fix landed + headless-verified 90/90 clean; one
+GUI human-movement facet explicitly DEFERRED, see the 2026-07-18 note; still awaiting GUI hand-verification)
 **Related**: #017 (where it was the "(separate, still-open)" note), #089/#108 (AI packing), #011/#090 (move-through / consolidation enemy checks), #150/#153 (shape-aware geometry — the containment bug fixed here), #018/#019 (melee pile-in/consolidation stacking, the out-of-scope deeper cause)
 
 ## Goal
@@ -13,6 +14,71 @@ to a real ending every time. Repro recipe: generate a HEF army
 graceful exit 0, so don't rely on the exit code).
 
 ## Notes
+
+- 2026-07-18 (FIX LANDED, option A - engine lenient coherency on the movement path): **90/90 unseeded
+  games clean (was ~13%); seeds 5115 + 5128 now play to real endings.** Engine + app tests green
+  (1711/0, 383/0). Approved by owner with the explicit rationale: *the strict "always end in coherency"
+  rule is true to the tabletop game, but on tabletop two humans negotiate a stuck casualty-holed unit;
+  we have no negotiation channel, so every response must be deterministically legal or the stage faults.*
+  - **Engine (`MovementUtilities.ValidatePaths` per-model overload):** added an opt-in
+    `bool lenientCoherency = false` that routes coherency to `ValidateCoherencyNotWorsened` instead of
+    strict `ValidateCoherency`. Behaviour-preserving for any unit that STARTS coherent (its pre-move
+    nearest gap <= 1", so the lenient limit collapses to the strict 1"/9"); only a unit ALREADY broken by
+    a casualty gets leniency, for which a hold (or any not-worse move) validates. Default false keeps every
+    other caller unchanged. `DefinePathStage` passes `lenientCoherency: true`, with a comment recording the
+    deliberate tabletop-rules deviation and why (no negotiation channel -> must be deterministic).
+  - **Resolvers aligned to the stage:** CLI `DefineMovementPathResolver` (interactive pre-check + AutoAdvance
+    backoff), `TacticianMovementResolver`, and `MovementPlanner.ValidateWithBackoff` now pass
+    `lenientCoherency: true` so their "will the stage accept this" pre-checks agree with the authoritative
+    one. `AiDefineMovementResolver`'s optional-move DECLINE gate deliberately stays STRICT: for a cancellable
+    "may move" a boxed-in broken unit can only hold, and declining (return to the action menu) is better than
+    spending the optional move on a 0" hold - the engine no longer faults either way. (Pinned by
+    `Resolve_NoLegalPath_CancellableRequest_DeclinesWithCancelled` / `..._NonCancellableRequest_StillReturnsAPath`.)
+  - **Tests:** `MovementValidationTests.ValidatePaths_LenientCoherency_BrokenUnitHolds_Accepted`,
+    `..._BrokenUnitScattersFurther_Rejected` (lenient != skipped), `..._CohesiveUnitBreakingCoherency_StillRejected`
+    (behaviour-preserving proof).
+  - **DEFERRED (explicit, not silently cut): GUI human movement.** `GuiDefineMovementResolver` gates its Done
+    button on its OWN strict `CheckCohesion` (it already skips the engine's coherency errors), and that method
+    also feeds the live cohesion-violation overlay lines, so it can't simply be made lenient. A human manually
+    moving a casualty-broken, enemy-boxed unit therefore still gets a disabled Done button (a soft block - the
+    move is cancellable so they can back out; NOT a crash). Making the GUI gate not-worsened while keeping the
+    strict overlay needs a before/after comparison and GUI hand-verification, so it is deferred to a follow-up
+    rather than folded into this headless-verifiable slice. Filed here; revisit during GUI hand-verification.
+
+- 2026-07-18: **residual fully isolated — it is the CLI `AutoAdvance` HOLD-EXACT fallback submitting a
+  broken unit's positions, which strict `DefinePathStage` coherency rejects.** Same root family as the
+  already-fixed `ConsolidateStage` crash; the movement path never got the lenient-coherency treatment.
+  - Repro is live at ~13% unseeded (4/30, default two-unit army, engine `57b9dd9` / app `fcda624`). The
+    old seed 5150 is stale again (clean tie now). **Fresh deterministic seeds: 5115 and 5128** (both 3/3),
+    found by scanning 5100-5140. `printf "2\n2\n" | dotnet run --project FdgRaylib/FdgRaylib.csproj --
+    --headless --seed 5115`.
+  - Instrumented `AutoAdvance`: the submitter is the CLI resolver on Player 1 (human slot, EOF AutoAdvance),
+    NOT `AiDefineMovementResolver`. Branch trace at the crash:
+    `unit=Heavy Gunners living=2 branch=HOLD-EXACT finalValid=False errs=[TooFarFromAnyUnitModel x2]`.
+  - Geometry (seed 5115): unit is down to 2 of 3 models (a casualty left a hole) at (2.92,18.90) and
+    (0.52,18.90), r=0.55 — base-to-base gap 1.30" > 1", so **broken**. A wall of 4 enemy bases sits ~1"
+    north at z~19.9-20.8. `PackGrid` centres the 2-model row on the raw centroid (1.72,18.90) and packs
+    HORIZONTALLY, so a model lands at ~(1.12,18.90) whose move clips enemy base (1.01,19.88). dest-pack and
+    inplace-pack both fail move-through -> HOLD-EXACT holds the broken positions unvalidated -> strict
+    coherency throws. (A legal move DOES exist here - pack ~0.9" downward, away from the enemy wall - so
+    `PackGrid` being enemy-blind is a contributing factor, but a fully-surrounded broken unit has no
+    strict-legal answer at all, so the resolver can never fully close this.)
+  - **The resolver author's HOLD-EXACT assumption ("zero-length paths can't move through anything, so a hold
+    is always safe") is only true for the move-through check, not coherency.** ConsolidateStage was
+    explicitly changed (2026-07-03 note) to make a hold always legal via `ValidateCoherencyNotWorsened`;
+    DefinePathStage still uses strict `ValidateCoherency`, so the same "hold is safe" assumption crashes here.
+  - **Fix fork (needs sign-off - engine submodule + rules nuance):**
+    (A) *Engine, recommended:* swap `ValidateCoherency` -> `ValidateCoherencyNotWorsened` on the movement
+        path (via a parallel `ValidatePaths` variant or flag, mirroring `ValidateConsolidationPaths`). This
+        is **behaviour-preserving for every cohesive unit** (for them `nearestBefore <= 1"`, so the limit is
+        `max(1", nearestBefore) = 1"` = strict); only a unit that STARTS broken gets leniency, and a hold
+        always validates. Matches the documented ConsolidateStage decision exactly and makes the crash
+        impossible regardless of resolver cleverness or player (human/AI/CLI). Resolvers must call the same
+        variant so their pre-check agrees with the stage.
+    (B) *App-side only, partial:* make `PackGrid`/AutoAdvance enemy-aware (search pack offsets away from
+        enemy bases). Reduces the rate but cannot eliminate it - a surrounded broken unit still has no
+        strict-legal move, and it does nothing for the AI resolver or a human hitting the same wall.
+  - Recommendation: (A). It is the actual root cause, minimal, and consistent with the existing decision.
 
 - 2026-07-09 (during #191 A0): **deterministic PIPED-HEADLESS repro found: seed 5150.**
   `printf "2\n2\n" | dotnet run --project FdgRaylib/FdgRaylib.csproj -- --headless --seed 5150`
