@@ -1,6 +1,6 @@
 # 248 — Resolver keyboard hotkeys + activation back-out
 
-**Status**: in-progress
+**Status**: done (awaiting GUI hand-verification)
 **Related**: #161 (resolver consistency — the shared keyboard list helper absorbs part of its dedup finding), #202 (built the AllowCancel/CancellableResult back-out plumbing this extends), #237 (Enter-as-commit precedent), #240 (repeat:false stuck-key rule), #246 (EscapeRouter)
 
 ## Goal
@@ -70,4 +70,21 @@ Esc routed through `EscapeRouter` (#246).
 
 ## Outcome
 
-_(open)_
+All three slices shipped 2026-07-19 (S1 a279b9d, S2 4ca72bb, S3 engine f072205/13f2531 +
+superproject c5d5436/98bf002). Suite 1717 green, build clean, headless smoke exit 0.
+Deferred (recorded in Notes): wound-assign/placement canvas resolvers keep their existing click
+schemes; GameProgress spotlight stays on a backed-out unit until the next pick.
+
+**Verify by hand (GUI):**
+- Action menu shows [W]/[C]/[S]/[A]/[X] letters + pool letters on Disembark/custom rows; pressing
+  W moves, letters stay put when Move grays out next activation.
+- Activate a unit, press Esc (or Back) at the action menu before doing anything -> back at unit
+  selection, unit still activatable, no Esc-menu popup on that press.
+- Move (or shoot/cast) first -> the action menu's Back button is gone; Esc opens the in-game menu.
+- Unit/target/spell pickers: number keys pick instantly, Up/Down walks rows (ring highlight follows
+  on unit/model pickers, list scrolls), Enter commits the highlight.
+- Shoot panel: Left/Right cycles weapons, numbers/arrows pick targets, Esc backs out until the
+  first volley fires.
+- Yes/No prompts answer to Y and N. Cast assist: 0 = don't spend, N = spend N.
+- Headless: at the action menu of a fresh activation the CLI lists "[0] Back"; entering 0 returns
+  to unit selection; piped EOF runs still complete (never auto-cancels).
