@@ -95,12 +95,23 @@ public class GuiCastAssistResolver : IStageResolver<CastAssistRequest, int>, IGu
         string sign = request.IsFriendly ? "+" : "-";
 
         int buttonCount = request.AvailableTokens + 1; // "Don't spend" + one per token
-        const float rowH = 30f, gap = 4f, pad = 14f, headerH = 46f;
+        const float rowH = 30f, gap = 4f, pad = 14f;
 
         float dw = ResolverPanelLayout.W;   // dock into the right-column resolver panel
         float dh = ResolverPanelLayout.H;
         float dx = ResolverPanelLayout.X;
         float dy = ResolverPanelLayout.Y;
+
+        // Header sized to its content, not a constant: the question line wraps (long unit/spell names,
+        // narrow panels, any UI scale), and a fixed height let the first button overlap a second line.
+        // Measured at the same wrap width the draw uses (text starts at x=pad, wrap pos dw-pad).
+        string title    = $"{assister.Name}  ({request.AvailableTokens} spell token" +
+                          $"{(request.AvailableTokens == 1 ? "" : "s")})";
+        string question = $"Spend tokens to {verb} {caster.Name}'s cast of {request.SpellName}? " +
+                          $"({sign}1 each)";
+        float titleH    = ImGui.CalcTextSize(title).Y;
+        float questionH = ImGui.CalcTextSize(question, false, dw - pad * 2f).Y;
+        float headerH   = titleH + 6f + questionH + 12f;
 
         ImGui.SetNextWindowPos(Vector2.Zero, ImGuiCond.Always);
         ImGui.SetNextWindowSize(new Vector2(screenW, screenH), ImGuiCond.Always);
@@ -120,13 +131,11 @@ public class GuiCastAssistResolver : IStageResolver<CastAssistRequest, int>, IGu
         Vector4 accent = request.IsFriendly ? FriendlyRgba : EnemyRgba;
         ImGui.SetCursorPos(new Vector2(pad, pad));
         ImGui.PushStyleColor(ImGuiCol.Text, accent);
-        ImGui.TextUnformatted($"{assister.Name}  ({request.AvailableTokens} spell token" +
-            $"{(request.AvailableTokens == 1 ? "" : "s")})");
+        ImGui.TextUnformatted(title);
         ImGui.PopStyleColor();
-        ImGui.SetCursorPos(new Vector2(pad, pad + 22f));
+        ImGui.SetCursorPos(new Vector2(pad, pad + titleH + 6f));
         ImGui.PushTextWrapPos(dw - pad);
-        ImGui.TextUnformatted($"Spend tokens to {verb} {caster.Name}'s cast of {request.SpellName}? " +
-            $"({sign}1 each)");
+        ImGui.TextUnformatted(question);
         ImGui.PopTextWrapPos();
 
         // #248: the digit IS the quantity here — 0 = don't spend, N = spend N (keys past the
