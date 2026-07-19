@@ -343,7 +343,11 @@ public class RaylibRenderer
 
     public void Run()
     {
-        Raylib.SetConfigFlags(ConfigFlags.ResizableWindow);
+        // Start maximized: the old flow resized a 1280x720 window up to near-monitor size WITHOUT
+        // repositioning it, leaving it off-center and not quite filling the screen. The maximized
+        // flag fills the work area properly (taskbar respected), and the window stays resizable;
+        // 1280x720 remains the un-maximize/restore size.
+        Raylib.SetConfigFlags(ConfigFlags.ResizableWindow | ConfigFlags.MaximizedWindow);
         Raylib.InitWindow(1280, 720, "Future of Dark Grimness");
         Raylib.SetTargetFPS(30);
 
@@ -353,11 +357,7 @@ public class RaylibRenderer
         Raylib.SetExitKey(KeyboardKey.Null);
 
         int monitor   = Raylib.GetCurrentMonitor();
-        int monitorW  = Raylib.GetMonitorWidth(monitor);
         int monitorH  = Raylib.GetMonitorHeight(monitor);
-        int initW     = Math.Min(1280 * 2, monitorW);
-        int initH     = Math.Min(720  * 2, monitorH);
-        Raylib.SetWindowSize(initW, initH);
 
         float uiScale = ComputeUiScale(monitorH);
 
