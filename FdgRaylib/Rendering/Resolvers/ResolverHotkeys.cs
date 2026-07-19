@@ -57,5 +57,111 @@ internal static class ResolverHotkeys
         return ImGui.IsKeyPressed(ImGuiKey.A + (letter - 'A'), repeat: false);
     }
 
+    /// <summary>The number key pressed this frame mapped to a list index — 1-9 pick options 0-8, 0
+    /// picks option 9 (the tenth). Top row and keypad both bind. -1 when none (or list shorter).</summary>
+    public static int PressedNumberIndex(int optionCount)
+    {
+        if (KeysMuted) return -1;
+        int n = Math.Min(optionCount, 10);
+        for (int i = 0; i < n; i++)
+        {
+            ImGuiKey digit = i == 9 ? ImGuiKey._0 : ImGuiKey._1 + i;
+            ImGuiKey pad   = i == 9 ? ImGuiKey.Keypad0 : ImGuiKey.Keypad1 + i;
+            if (ImGui.IsKeyPressed(digit, repeat: false) || ImGui.IsKeyPressed(pad, repeat: false))
+                return i;
+        }
+        return -1;
+    }
+
+    /// <summary>Label prefix advertising an option's number key ("[1] ".."[9] ", "[0] " for the
+    /// tenth); empty past ten (click/arrows still work).</summary>
+    public static string NumberPrefix(int index) =>
+        index < 9 ? $"[{index + 1}] " : index == 9 ? "[0] " : "";
+
+    /// <summary>The literal digit pressed this frame (0-9, top row or keypad), or -1 — for panels
+    /// where the digit IS the quantity (cast assist: 0 = don't spend, N = spend N tokens), as opposed
+    /// to <see cref="PressedNumberIndex"/>'s 1-based list positions.</summary>
+    public static int PressedDigit()
+    {
+        if (KeysMuted) return -1;
+        for (int d = 0; d <= 9; d++)
+        {
+            if (ImGui.IsKeyPressed(ImGuiKey._0 + d, repeat: false)
+                || ImGui.IsKeyPressed(ImGuiKey.Keypad0 + d, repeat: false))
+                return d;
+        }
+        return -1;
+    }
+
+    /// <summary>Up/Down arrow movement this frame (+1 down, -1 up). Key-repeat is deliberately ON —
+    /// holding an arrow walks a long list; #240's edge-only rule is for commit/cancel keys.</summary>
+    public static int ArrowDelta()
+    {
+        if (KeysMuted) return 0;
+        int delta = 0;
+        if (ImGui.IsKeyPressed(ImGuiKey.DownArrow)) delta++;
+        if (ImGui.IsKeyPressed(ImGuiKey.UpArrow)) delta--;
+        return delta;
+    }
+
+    /// <summary>Left/Right arrow movement this frame (+1 right, -1 left), repeat on — used by
+    /// two-pane pickers (shoot: weapons) where vertical arrows own the other list.</summary>
+    public static int HorizontalArrowDelta()
+    {
+        if (KeysMuted) return 0;
+        int delta = 0;
+        if (ImGui.IsKeyPressed(ImGuiKey.RightArrow)) delta++;
+        if (ImGui.IsKeyPressed(ImGuiKey.LeftArrow)) delta--;
+        return delta;
+    }
+
+    /// <summary>Edge-only Enter/keypad-Enter (commit key, so repeat: false per #240).</summary>
+    public static bool IsEnterPressed()
+    {
+        if (KeysMuted) return false;
+        return ImGui.IsKeyPressed(ImGuiKey.Enter, repeat: false)
+            || ImGui.IsKeyPressed(ImGuiKey.KeypadEnter, repeat: false);
+    }
+
     private static bool KeysMuted => ImGui.GetIO().WantTextInput || EscapeRouter.MenuOpen;
+}
+
+/// <summary>
+/// #248: per-resolver keyboard state for a list of valid options: number keys instant-pick, Up/Down
+/// move a highlight (wrapping), Enter commits the highlight. One instance per resolver; call
+/// <see cref="Update"/> once per frame from Draw. Resets itself when the request object changes, so
+/// a stale highlight never carries into the next decision. Main-thread only (Draw-scoped).
+/// </summary>
+internal sealed class KeyboardListNav
+{
+    private object? _trackedRequest;
+
+    /// <summary>Currently highlighted valid-option index, or -1 when the keyboard hasn't navigated.</summary>
+    public int Index { get; private set; } = -1;
+
+    /// <summary>Process this frame's keys. Returns the valid-option index to pick NOW (a number key,
+    /// or Enter on the highlight), or -1. <paramref name="moved"/> is true when arrows changed the
+    /// highlight this frame — scroll it into view.</summary>
+    public int Update(object request, int validCount, out bool moved)
+    {
+        moved = false;
+        if (!ReferenceEquals(request, _trackedRequest)) { _trackedRequest = request; Index = -1; }
+        if (validCount <= 0) { Index = -1; return -1; }
+        if (Index >= validCount) Index = validCount - 1;
+
+        int number = ResolverHotkeys.PressedNumberIndex(validCount);
+        if (number >= 0) return number;
+
+        int delta = ResolverHotkeys.ArrowDelta();
+        if (delta != 0)
+        {
+            Index = Index < 0
+                ? (delta > 0 ? 0 : validCount - 1)
+                : (Index + delta + validCount) % validCount;
+            moved = true;
+        }
+
+        if (Index >= 0 && ResolverHotkeys.IsEnterPressed()) return Index;
+        return -1;
+    }
 }

@@ -18,6 +18,10 @@ public class GuiSelectionResolver<T> : IStageResolver<SelectionRequest<T>, DataB
     // wound-assignment dialog so every selector reads the same.
     private static readonly uint DetailCol = ImGui.ColorConvertFloat4ToU32(new Vector4(0.72f, 0.78f, 0.85f, 1f));
 
+    // #248: keyboard navigation — number keys instant-pick, arrows move this highlight, Enter commits it.
+    private readonly KeyboardListNav _nav = new();
+    private static readonly uint KbHighlightCol = ImGui.ColorConvertFloat4ToU32(new Vector4(0.55f, 0.90f, 1.00f, 0.90f));
+
     public Task<DataBinding<T>> Resolve(SelectionRequest<T> request)
     {
         var tcs = new TaskCompletionSource<DataBinding<T>>();
@@ -80,6 +84,8 @@ public class GuiSelectionResolver<T> : IStageResolver<SelectionRequest<T>, DataB
             string name = isValid ? request.ValidOptions[i].Name
                                   : request.InvalidOptions[i - validCount].Name;
             var (heading, details) = OptionContent(option, name);
+            // #248: valid options advertise their number key in the heading ("[1] Warriors").
+            if (isValid) heading = ResolverHotkeys.NumberPrefix(i) + heading;
             headings[i]   = isValid ? heading : $"{heading}  ({request.InvalidOptions[i - validCount].Reason})";
             detailWrap[i] = new List<string>();
             foreach (string d in details)
@@ -113,12 +119,33 @@ public class GuiSelectionResolver<T> : IStageResolver<SelectionRequest<T>, DataB
         uint headCol     = ImGui.GetColorU32(ImGuiCol.Text);
         uint headDimCol  = ImGui.ColorConvertFloat4ToU32(new Vector4(0.55f, 0.55f, 0.58f, 1f));
         uint detailDimCol = ImGui.ColorConvertFloat4ToU32(new Vector4(0.48f, 0.50f, 0.55f, 1f));
+
+        // #248: keyboard picks — a number key resolves immediately; arrows move a highlight that Enter
+        // commits. The pick is applied ONCE after the frame's drawing (picked/cancelled locals below), so
+        // a click and a key landing on the same frame can't double-resolve the TaskCompletionSource.
+        int kbPick = _nav.Update(request, validCount, out bool kbMoved);
+        DataBinding<T>? picked = kbPick >= 0 ? request.ValidOptions[kbPick].Option : null;
+        bool cancelled = false;
+
         float listY = pad + instrH;
         float y = listY;
         for (int i = 0; i < total; i++)
         {
             bool isValid = i < validCount;
             ImGui.SetCursorPos(new Vector2(pad, y));
+
+            // Arrow navigation scrolls the highlighted row into view (the panel is fixed-height; long
+            // activation lists scroll). Cursor Y is in content coordinates, matching GetScrollY's space.
+            if (kbMoved && isValid && i == _nav.Index)
+            {
+                float viewH = ImGui.GetWindowHeight();
+                if (y < ImGui.GetScrollY() + pad)
+                    ImGui.SetScrollY(MathF.Max(0f, y - pad));
+                else if (y + rowHeights[i] > ImGui.GetScrollY() + viewH - pad)
+                    ImGui.SetScrollY(y + rowHeights[i] - viewH + pad);
+                ImGui.SetCursorPos(new Vector2(pad, y));
+            }
+
             Vector2 origin = ImGui.GetCursorScreenPos();
 
             if (!isValid) ImGui.BeginDisabled(true);
@@ -136,25 +163,41 @@ public class GuiSelectionResolver<T> : IStageResolver<SelectionRequest<T>, DataB
                 wy += smallLineH;
             }
 
+            // #248: the keyboard highlight gets a bright border + the same canvas emphasis as a hover
+            // (ring only — no tooltip, which would pop at the unrelated mouse position).
+            if (isValid && i == _nav.Index)
+            {
+                dl.AddRect(origin, origin + new Vector2(btnW, rowHeights[i]), KbHighlightCol, 4f,
+                    ImDrawFlags.None, 2f);
+                OnValidOptionHighlighted(request.ValidOptions[i]);
+            }
+
             if (isValid && hovered) OnValidOptionHovered(request.ValidOptions[i]);
-            if (isValid && clicked) Complete(tcs, request.ValidOptions[i].Option);
+            if (isValid && clicked) picked ??= request.ValidOptions[i].Option;
 
             y += rowHeights[i] + ImGui.GetStyle().ItemSpacing.Y;
         }
 
         // Back button — only for cancellable selections. Mandatory choices (which unit to activate/deploy)
         // have no back-destination, and a null reply from Back crashes the networked reply path.
+        // #248: Esc backs out too, routed through EscapeRouter so it claims the key before the in-game menu.
         if (request.AllowCancel)
         {
             ImGui.SetCursorPos(new Vector2(pad, y + pad));
             ImGui.PushStyleColor(ImGuiCol.Button, new Vector4(0.25f, 0.25f, 0.30f, 1f));
-            if (ImGui.Button("Back##back", new Vector2(btnW, rowH - 4f)))
-                Complete(tcs, null!);
+            if (ImGui.Button("Back  (Esc)##back", new Vector2(btnW, rowH - 4f)))
+                cancelled = true;
             ImGui.PopStyleColor();
+
+            if (EscapeRouter.TryConsumeEscape())
+                cancelled = true;
         }
 
         ImGui.EndChild();
         ImGui.End();
+
+        if (picked != null) Complete(tcs, picked);
+        else if (cancelled) Complete(tcs, null!);
     }
 
     /// <summary>An option's dialog content: a bright heading plus zero or more smaller, dimmer detail lines
@@ -167,6 +210,11 @@ public class GuiSelectionResolver<T> : IStageResolver<SelectionRequest<T>, DataB
     /// <summary>Called while a valid option's dialog button is hovered — lets subclasses highlight the
     /// corresponding object on the table canvas.</summary>
     protected virtual void OnValidOptionHovered(SelectionRequest<T>.ValidOption opt) { }
+
+    /// <summary>#248: called while a valid option carries the keyboard highlight (arrow navigation).
+    /// Subclasses ring the object on the canvas like a hover — but must NOT raise hover tooltips,
+    /// which would pop at the unrelated mouse position.</summary>
+    protected virtual void OnValidOptionHighlighted(SelectionRequest<T>.ValidOption opt) { }
 
     // Word-wrap a detail line to maxWidth. Detail text renders at the smaller size, so widths measured at the
     // main font size are scaled by smallScale (text width scales ~linearly with font size) — avoids a

@@ -18,6 +18,11 @@ public class GuiChooseAbilityEffectResolver : IStageResolver<ChooseAbilityEffect
 
     public bool HasPendingRequest { get { lock (_lock) return _request != null; } }
 
+    // #248: keyboard navigation — number keys instant-pick, arrows move this highlight, Enter commits.
+    // Still mandatory: no Esc/Back (the rule text says "pick one effect").
+    private readonly KeyboardListNav _nav = new();
+    private static readonly uint KbHighlightCol = ImGui.ColorConvertFloat4ToU32(new Vector4(0.55f, 0.90f, 1.00f, 0.90f));
+
     public Task<int> Resolve(ChooseAbilityEffectRequest request)
     {
         var tcs = new TaskCompletionSource<int>();
@@ -80,14 +85,22 @@ public class GuiChooseAbilityEffectResolver : IStageResolver<ChooseAbilityEffect
         ImGui.TextUnformatted(request.Instructions);
         ImGui.PopTextWrapPos();
 
+        // #248: keyboard picks, applied once after drawing (same-frame click + key can't double-resolve).
+        int picked = _nav.Update(request, request.Options.Count, out _);
+        var dl = ImGui.GetWindowDrawList();
+
         float y = pad + headerH + instrH + 4f;
         for (int i = 0; i < request.Options.Count; i++)
         {
             ChooseAbilityEffectRequest.EffectOption option = request.Options[i];
 
             ImGui.SetCursorPos(new Vector2(pad, y));
-            if (ImGui.Button($"{option.Label}##{i}", new Vector2(btnW, btnH)))
-                Complete(tcs, i);
+            Vector2 origin = ImGui.GetCursorScreenPos();
+            if (ImGui.Button($"{ResolverHotkeys.NumberPrefix(i)}{option.Label}##{i}", new Vector2(btnW, btnH))
+                && picked < 0)
+                picked = i;
+            if (i == _nav.Index)
+                dl.AddRect(origin, origin + new Vector2(btnW, btnH), KbHighlightCol, 4f, ImDrawFlags.None, 2f);
 
             if (!string.IsNullOrEmpty(option.Description))
             {
@@ -106,6 +119,9 @@ public class GuiChooseAbilityEffectResolver : IStageResolver<ChooseAbilityEffect
 
         ImGui.EndChild();
         ImGui.End();
+
+        if (picked >= 0)
+            Complete(tcs, picked);
     }
 
     private void Complete(TaskCompletionSource<int> tcs, int index)

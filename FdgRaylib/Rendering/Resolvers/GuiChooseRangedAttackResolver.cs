@@ -117,6 +117,10 @@ public class GuiChooseRangedAttackResolver
                 ? SoleFireableTargetIndex(request.WeaponOptions[_selectedWeaponIdx]) : -1;
         }
 
+        // #248 keyboard: Left/Right cycle the weapon (among fireable ones), Up/Down + number keys pick
+        // the target (among fireable ones, display order). Enter fires via the footer's existing binding.
+        HandleKeyboard(request);
+
         DrawHoverLines(request);
 
         // Invisible non-interactive backdrop to anchor z-order
@@ -153,6 +157,8 @@ public class GuiChooseRangedAttackResolver
         // ── Section 1: Weapons ────────────────────────────────────────────────
         ImGui.BeginChild("##WeaponCol", new Vector2(0, sectionH), ImGuiChildFlags.Borders);
         ImGui.TextUnformatted("Weapon");
+        ImGui.SameLine();
+        ImGui.TextDisabled("(Left/Right)");
         ImGui.Separator();
         for (int wi = 0; wi < request.WeaponOptions.Count; wi++)
         {
@@ -205,7 +211,10 @@ public class GuiChooseRangedAttackResolver
         // ── Section 2: Targets ────────────────────────────────────────────────
         ImGui.BeginChild("##TargetCol", new Vector2(0, sectionH), ImGuiChildFlags.Borders);
         ImGui.TextUnformatted("Target");
+        ImGui.SameLine();
+        ImGui.TextDisabled("(Up/Down, 1-9)");
         ImGui.Separator();
+        int fireableRowsSeen = 0;   // #248: numbers the fireable rows top-down, matching HandleKeyboard
         if (_selectedWeaponIdx >= 0)
         {
             var wo = request.WeaponOptions[_selectedWeaponIdx];
@@ -249,7 +258,9 @@ public class GuiChooseRangedAttackResolver
                 uint colTxt = selectableT
                     ? ImGui.GetColorU32(ImGuiCol.Text)
                     : ImGui.ColorConvertFloat4ToU32(new Vector4(0.55f, 0.55f, 0.55f, 1f));
-                dl.AddText(rMin + new Vector2(4, 2), colTxt, name);
+                // #248: fireable rows advertise their number key ("[1] Warriors").
+                string numPrefix = selectableT ? ResolverHotkeys.NumberPrefix(fireableRowsSeen++) : "";
+                dl.AddText(rMin + new Vector2(4, 2), colTxt, $"{numPrefix}{name}");
 
                 string sub;
                 uint colSub;
@@ -357,7 +368,10 @@ public class GuiChooseRangedAttackResolver
         bool  showBack = _firesThisAction == 0;
         if (showBack)
         {
-            if (ResolverButtons.Deemphasized("Back", new Vector2(footW * 0.36f, 32f)))
+            // #248: Esc backs out too (only while Back is offered), routed through EscapeRouter so it
+            // claims the key before the in-game menu.
+            if (ResolverButtons.Deemphasized("Back (Esc)", new Vector2(footW * 0.36f, 32f))
+                || EscapeRouter.TryConsumeEscape())
             {
                 Complete(tcs, new Cancelled<RangedAttackChoice>());
                 ImGui.End();
@@ -394,6 +408,58 @@ public class GuiChooseRangedAttackResolver
         // Clear canvas hover so it only persists for the single frame after GetHoverLabel set it.
         // (If the mouse is still over a model next frame, GetHoverLabel will set it again before Draw.)
         _canvasHoveredOption = (-1, -1);
+    }
+
+    // #248: keyboard selection. Weapon cycling mirrors a weapon-row click (sole-target pre-select
+    // re-applied); target keys move among FIREABLE targets in the same fireable-first display order
+    // the rows use, so "[2]" on screen is always number key 2.
+    private void HandleKeyboard(ChooseRangedAttackRequest request)
+    {
+        var fireableWeapons = new List<int>();
+        for (int wi = 0; wi < request.WeaponOptions.Count; wi++)
+            if (HasAnyFireableTarget(request.WeaponOptions[wi])) fireableWeapons.Add(wi);
+
+        int lr = ResolverHotkeys.HorizontalArrowDelta();
+        if (lr != 0 && fireableWeapons.Count > 0)
+        {
+            int pos = fireableWeapons.IndexOf(_selectedWeaponIdx);
+            pos = pos < 0 ? 0 : (pos + lr + fireableWeapons.Count) % fireableWeapons.Count;
+            int newW = fireableWeapons[pos];
+            if (newW != _selectedWeaponIdx)
+            {
+                _selectedTargetTIdx = SoleFireableTargetIndex(request.WeaponOptions[newW]);
+                _selectedWeaponIdx  = newW;
+            }
+        }
+
+        if (_selectedWeaponIdx < 0) return;
+        List<int> fireableTargets = FireableTargetsInDisplayOrder(request.WeaponOptions[_selectedWeaponIdx]);
+        if (fireableTargets.Count == 0) return;
+
+        int number = ResolverHotkeys.PressedNumberIndex(fireableTargets.Count);
+        if (number >= 0) { _selectedTargetTIdx = fireableTargets[number]; return; }
+
+        int ud = ResolverHotkeys.ArrowDelta();
+        if (ud != 0)
+        {
+            int pos = fireableTargets.IndexOf(_selectedTargetTIdx);
+            pos = pos < 0 ? (ud > 0 ? 0 : fireableTargets.Count - 1)
+                          : (pos + ud + fireableTargets.Count) % fireableTargets.Count;
+            _selectedTargetTIdx = fireableTargets[pos];
+        }
+    }
+
+    // The fireable targets of a weapon, in the same fireable-first stable order the target rows render
+    // in (fireable rows float to the top, so this is just "the displayed prefix").
+    private static List<int> FireableTargetsInDisplayOrder(WeaponOption wo)
+    {
+        var result = new List<int>();
+        for (int ti = 0; ti < wo.WeaponTargetStats.Count; ti++)
+        {
+            var ts = wo.WeaponTargetStats[ti];
+            if (ts.UnselectableReason == null && ts.modelsThatCanShoot.Count > 0) result.Add(ti);
+        }
+        return result;
     }
 
     // ── Canvas line drawing ───────────────────────────────────────────────────

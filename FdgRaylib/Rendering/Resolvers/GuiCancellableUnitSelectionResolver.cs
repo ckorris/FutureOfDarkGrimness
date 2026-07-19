@@ -77,6 +77,11 @@ public class GuiCancellableUnitSelectionResolver
         _hoveredValidRef = null;
     }
 
+    // #248: keyboard highlight rings the unit like a hover. Rings draw before the base dialog each
+    // frame, so a highlight set here paints on the next frame — one frame of lag, imperceptible.
+    protected override void OnValidOptionHighlighted(CancellableSelectionRequest<UnitData>.ValidOption opt) =>
+        _hoveredValidRef = opt.Option.Reference;
+
     protected void DrawTargetRings()
     {
         CancellableSelectionRequest<UnitData>? request;

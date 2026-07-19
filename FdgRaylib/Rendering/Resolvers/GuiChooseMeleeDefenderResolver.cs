@@ -81,8 +81,13 @@ public class GuiChooseMeleeDefenderResolver : GuiCancellableUnitSelectionResolve
             return;
         }
 
+        // #248: Esc backs out of the confirm card too (routed so it claims the key before the in-game
+        // menu), applied once after drawing so a same-frame Back click can't double-resolve the TCS.
         ImGui.SetCursorPos(new Vector2(pad, pad + 80f + rowH + 8f));
-        if (ResolverButtons.Deemphasized("Back", new Vector2(btnW, rowH - 4f)))
+        bool cancelled = ResolverButtons.Deemphasized("Back  (Esc)", new Vector2(btnW, rowH - 4f));
+        if (EscapeRouter.TryConsumeEscape())
+            cancelled = true;
+        if (cancelled)
             Complete(tcs, new Cancelled<DataBinding<UnitData>>());
 
         ImGui.EndChild();

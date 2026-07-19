@@ -31,8 +31,22 @@ Esc routed through `EscapeRouter` (#246).
 
 ## Notes
 
+- 2026-07-19: S2 landed. Shared pieces: `KeyboardListNav` (per-resolver highlight state, resets on
+  request change) + `ResolverHotkeys.PressedNumberIndex/NumberPrefix/ArrowDelta/HorizontalArrowDelta/
+  IsEnterPressed/PressedDigit`. Coverage: `GuiSelectionResolver<T>` base (unit/model/zone dialogs,
+  incl. scroll-into-view + `OnValidOptionHighlighted` ring hook overridden in unit/model selectors),
+  `GuiCancellableSelectionResolver<T>` + unit twin, melee-defender confirm card (Esc), shoot panel
+  (Left/Right weapon, Up/Down + numbers target in fireable-first display order, Esc while Back shown),
+  spell picker (numbers/arrows highlight - NOT instant, boost stepper owns Left/Right, Enter casts,
+  Esc cancels), ability-effect picker (numbers/arrows/Enter, still mandatory - no Esc), Yes/No (Y/N),
+  cast assist (digit = tokens: 0 = don't spend), deployment zones (numbers). Every new commit-path
+  key is edge-only; every resolver now applies picks ONCE after drawing (same-frame click + key can't
+  double-resolve the TCS - several inline-Complete paths were converted to this discipline).
+- 2026-07-19: Skipped on purpose in S2: `GuiAssignWoundsResolver` (stateful canvas clicker; #237
+  already gave it Enter = Auto-assign All), movement/placement/aircraft/terrain canvas resolvers (not
+  lists - their Esc/right-click undo shipped with #202/#161-C), `GuiPlaceObjectsResolver`.
 - 2026-07-18: Filed. Sign-offs recorded in Decisions. Verified 248 free on origin index + archive;
-  ff-synced master to origin (9843c76) before starting.
+  ff-synced master to origin (9843c76) before starting. S1 landed (a279b9d).
 
 ## Decisions
 

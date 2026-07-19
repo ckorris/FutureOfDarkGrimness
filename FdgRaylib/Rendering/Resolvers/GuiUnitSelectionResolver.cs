@@ -65,6 +65,11 @@ public class GuiUnitSelectionResolver : GuiSelectionResolver<UnitData>, IGuiCanv
         ImGui.EndTooltip();
     }
 
+    // #248: keyboard highlight rings the unit like a hover, but skips the tooltip (it would pop at the
+    // unrelated mouse position).
+    protected override void OnValidOptionHighlighted(SelectionRequest<UnitData>.ValidOption opt) =>
+        _hoveredValidRef = opt.Option.Reference;
+
     public string? GetHoverLabel(IUnit unit, IModel model)
     {
         SelectionRequest<UnitData>? request;

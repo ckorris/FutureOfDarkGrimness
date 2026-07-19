@@ -50,6 +50,10 @@ public class GuiModelSelectionResolver : GuiSelectionResolver<ModelData>, IGuiCa
     protected override void OnValidOptionHovered(SelectionRequest<ModelData>.ValidOption opt) =>
         _hoveredModel = opt.Option.GetValue();
 
+    // #248: keyboard highlight rings the model like a hover (no tooltip to suppress here).
+    protected override void OnValidOptionHighlighted(SelectionRequest<ModelData>.ValidOption opt) =>
+        _hoveredModel = opt.Option.GetValue();
+
     // ICanvasInteractionHandler — hover a candidate model on the table for its stats, click to select it.
 
     public string? GetHoverLabel(IUnit unit, IModel model)

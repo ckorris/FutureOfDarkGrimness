@@ -129,12 +129,19 @@ public class GuiCastAssistResolver : IStageResolver<CastAssistRequest, int>, IGu
             $"({sign}1 each)");
         ImGui.PopTextWrapPos();
 
+        // #248: the digit IS the quantity here — 0 = don't spend, N = spend N (keys past the
+        // affordable count ignored). Applied once after drawing (complete-once discipline).
+        int digit = ResolverHotkeys.PressedDigit();
+        int picked = digit == 0 ? 0
+            : digit > 0 && digit <= request.AvailableTokens ? digit
+            : -1;
+
         float btnW = dw - pad * 2;
         float y = pad + headerH;
 
         ImGui.SetCursorPos(new Vector2(pad, y));
-        if (ImGui.Button("Don't spend##assist0", new Vector2(btnW, rowH)))
-            Complete(tcs, 0);
+        if (ImGui.Button("[0] Don't spend##assist0", new Vector2(btnW, rowH)) && picked < 0)
+            picked = 0;
         y += rowH + gap;
 
         ImGui.PushStyleColor(ImGuiCol.Button, new Vector4(accent.X * 0.5f, accent.Y * 0.5f, accent.Z * 0.5f, 1f));
@@ -142,14 +149,18 @@ public class GuiCastAssistResolver : IStageResolver<CastAssistRequest, int>, IGu
         for (int i = 1; i <= request.AvailableTokens; i++)
         {
             ImGui.SetCursorPos(new Vector2(pad, y));
-            if (ImGui.Button($"Spend {i}  ({sign}{i})##assist{i}", new Vector2(btnW, rowH)))
-                Complete(tcs, i);
+            string numTag = i <= 9 ? $"[{i}] " : "";
+            if (ImGui.Button($"{numTag}Spend {i}  ({sign}{i})##assist{i}", new Vector2(btnW, rowH)) && picked < 0)
+                picked = i;
             y += rowH + gap;
         }
         ImGui.PopStyleColor(2);
 
         ImGui.EndChild();
         ImGui.End();
+
+        if (picked >= 0)
+            Complete(tcs, picked);
     }
 
     private bool TryCentroidPixel(UnitData unit, out Vector2 pixel)

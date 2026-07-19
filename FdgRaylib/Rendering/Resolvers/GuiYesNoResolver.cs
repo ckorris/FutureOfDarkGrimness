@@ -67,20 +67,24 @@ public class GuiYesNoResolver : IStageResolver<YesNoRequest, bool>, IGuiResolver
         float firstX = (dw - btnW * 2 - gap) * 0.5f;
         float btnY = dh - pad - btnH;
 
+        // #248: Y/N letter keys answer too; results applied once after drawing so same-frame
+        // opposite inputs can't double-resolve the TCS (Yes wins the tie, matching button order).
         ImGui.SetCursorPos(new Vector2(firstX, btnY));
-        if (ResolverButtons.Primary("Yes", new Vector2(btnW, btnH)))
-            Complete(tcs, true);
+        bool yesPressed = ResolverButtons.Primary("Yes [Y]", new Vector2(btnW, btnH))
+                          || ResolverHotkeys.IsLetterPressed('Y');
 
         ImGui.SameLine(0, gap);
-        bool noPressed  = ResolverButtons.Deemphasized("No  (Esc)", new Vector2(btnW, btnH));
+        bool noPressed  = ResolverButtons.Deemphasized("No [N] (Esc)", new Vector2(btnW, btnH))
+                          || ResolverHotkeys.IsLetterPressed('N');
         // #240: edge-only (repeat: false) so a stuck Esc can't auto-answer No to everything.
         // #246: routed through EscapeRouter so this dialog claims Esc before the in-game menu can open.
         bool escPressed = !ImGui.GetIO().WantTextInput && EscapeRouter.TryConsumeEscape();
-        if (noPressed || escPressed)
-            Complete(tcs, false);
 
         ImGui.EndChild();
         ImGui.End();
+
+        if (yesPressed) Complete(tcs, true);
+        else if (noPressed || escPressed) Complete(tcs, false);
     }
 
     private void Complete(TaskCompletionSource<bool> tcs, bool answer)

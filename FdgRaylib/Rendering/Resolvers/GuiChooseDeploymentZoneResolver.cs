@@ -146,8 +146,12 @@ public class GuiChooseDeploymentZoneResolver
         ImGui.TextUnformatted("Choose Deployment Zone");
         ImGui.Spacing();
         ImGui.TextUnformatted($"Deploy within {GameWideConstants.DEPLOYMENT_DISTANCE_INCHES:F0}\" of your table edge.");
-        ImGui.TextDisabled("Click a button or click a zone on the table.");
+        ImGui.TextDisabled("Click a button, click a zone on the table, or press its number.");
         ImGui.PopTextWrapPos();
+
+        // #248: number keys instant-pick a zone. Applied once after the loop (complete-once discipline).
+        int kbPick = ResolverHotkeys.PressedNumberIndex(availCount);
+        DataBinding<RectangularZone>? picked = kbPick >= 0 ? available[kbPick] : null;
 
         float btnW = dw - pad * 2;
         int buttonHover = -1;
@@ -155,7 +159,7 @@ public class GuiChooseDeploymentZoneResolver
         {
             var zb   = available[i];
             var zone = zb.GetValue();
-            string label = $"Zone {i + 1}  (X {zone.Left:F0}\"-{zone.Right:F0}\", Z {zone.Bottom:F0}\"-{zone.Top:F0}\")##{i}";
+            string label = $"{ResolverHotkeys.NumberPrefix(i)}Zone {i + 1}  (X {zone.Left:F0}\"-{zone.Right:F0}\", Z {zone.Bottom:F0}\"-{zone.Top:F0}\")##{i}";
 
             bool forceHover = i == canvasHover;
             if (forceHover)
@@ -164,10 +168,12 @@ public class GuiChooseDeploymentZoneResolver
                 ImGui.PushStyleColor(ImGuiCol.Button, hov);
             }
             if (ImGui.Button(label, new Vector2(btnW, rowH - 4f)))
-                Complete(tcs, zb);
+                picked ??= zb;
             if (ImGui.IsItemHovered()) buttonHover = i;
             if (forceHover) ImGui.PopStyleColor();
         }
+        if (picked != null)
+            Complete(tcs, picked);
 
         if (takenCount > 0)
         {

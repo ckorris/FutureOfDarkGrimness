@@ -83,6 +83,30 @@ public class GuiChooseSpellResolver : IStageResolver<ChooseSpellRequest, ChooseS
         ImGui.PopStyleColor();
         ImGui.PopStyleVar();
 
+        // #248 keyboard: numbers/arrows move the highlight among CASTABLE rows (not instant cast — the
+        // boost stepper sits between select and commit in this panel by design, #244), Left/Right step
+        // the boost, Enter casts, Esc cancels (buttons below).
+        var castable = new List<int>();
+        for (int i = 0; i < request.Spells.Count; i++)
+            if (request.Spells[i].Castable) castable.Add(i);
+        if (castable.Count > 0)
+        {
+            int number = ResolverHotkeys.PressedNumberIndex(castable.Count);
+            if (number >= 0) { _selectedIndex = castable[number]; ClampBoost(request); }
+
+            int ud = ResolverHotkeys.ArrowDelta();
+            if (ud != 0)
+            {
+                int pos = castable.IndexOf(_selectedIndex);
+                pos = pos < 0 ? (ud > 0 ? 0 : castable.Count - 1)
+                              : (pos + ud + castable.Count) % castable.Count;
+                _selectedIndex = castable[pos];
+                ClampBoost(request);
+            }
+        }
+        int lr = ResolverHotkeys.HorizontalArrowDelta();
+        if (lr != 0) { _boost += lr; if (_boost < 0) _boost = 0; ClampBoost(request); }
+
         string casterName = request.CastingUnit.GetValue().Name;
 
         // ── Header ──────────────────────────────────────────────────────────────
@@ -99,6 +123,7 @@ public class GuiChooseSpellResolver : IStageResolver<ChooseSpellRequest, ChooseS
 
         // ── Spell rows: click to highlight; disabled rows show why ──────────────
         float descWrapMeasure = (btnW - descIndent) / descScale;
+        int castableRowsSeen = 0;   // #248: numbers the castable rows top-down, matching the key handler
         for (int i = 0; i < request.Spells.Count; i++)
         {
             ChooseSpellRequest.SpellOption option = request.Spells[i];
@@ -107,12 +132,13 @@ public class GuiChooseSpellResolver : IStageResolver<ChooseSpellRequest, ChooseS
             ImGui.SetCursorPos(new Vector2(pad, y));
             if (option.Castable)
             {
+                string numPrefix = ResolverHotkeys.NumberPrefix(castableRowsSeen++);
                 if (selected)
                 {
                     ImGui.PushStyleColor(ImGuiCol.Button, new Vector4(AccentRgba.X * 0.5f, AccentRgba.Y * 0.5f, AccentRgba.Z * 0.5f, 1f));
                     ImGui.PushStyleColor(ImGuiCol.ButtonHovered, AccentRgba);
                 }
-                if (ImGui.Button($"{(selected ? "> " : "")}{option.Label}##spell{i}", new Vector2(btnW, rowH)))
+                if (ImGui.Button($"{(selected ? "> " : "")}{numPrefix}{option.Label}##spell{i}", new Vector2(btnW, rowH)))
                 {
                     _selectedIndex = i;
                     ClampBoost(request);
@@ -213,20 +239,26 @@ public class GuiChooseSpellResolver : IStageResolver<ChooseSpellRequest, ChooseS
         y += 28f;
 
         // ── Commit / cancel ─────────────────────────────────────────────────────
+        // #248: Enter casts, Esc cancels (via EscapeRouter so it claims the key before the in-game
+        // menu). Applied once after drawing so same-frame click + key can't double-resolve the TCS.
         float half = (btnW - 8f) / 2f;
         ImGui.SetCursorPos(new Vector2(pad, y));
         ImGui.PushStyleColor(ImGuiCol.Button, new Vector4(AccentRgba.X * 0.5f, AccentRgba.Y * 0.5f, AccentRgba.Z * 0.5f, 1f));
         ImGui.PushStyleColor(ImGuiCol.ButtonHovered, AccentRgba);
-        if (ImGui.Button($"Cast##commit", new Vector2(half, rowH + 4f)))
-            Complete(tcs, new ChooseSpellReply(_selectedIndex, _boost));
+        bool castNow = ImGui.Button($"Cast (Enter)##commit", new Vector2(half, rowH + 4f));
         ImGui.PopStyleColor(2);
         ImGui.SameLine();
         ImGui.SetCursorPosX(pad + half + 8f);
-        if (ImGui.Button("Cancel##cancel", new Vector2(half, rowH + 4f)))
-            Complete(tcs, ChooseSpellReply.Cancel);
+        bool cancelNow = ImGui.Button("Cancel (Esc)##cancel", new Vector2(half, rowH + 4f));
+
+        castNow   |= ResolverHotkeys.IsEnterPressed();
+        cancelNow |= EscapeRouter.TryConsumeEscape();
 
         ImGui.EndChild();
         ImGui.End();
+
+        if (castNow) Complete(tcs, new ChooseSpellReply(_selectedIndex, _boost));
+        else if (cancelNow) Complete(tcs, ChooseSpellReply.Cancel);
     }
 
     // Re-clamp the boost when the selected spell changes (a pricier spell leaves fewer boost tokens).
