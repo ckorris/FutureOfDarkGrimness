@@ -31,6 +31,18 @@ Esc routed through `EscapeRouter` (#246).
 
 ## Notes
 
+- 2026-07-19: S3 landed (engine f072205 + superproject bump). Engine: `StringSelectionRequest.AllowCancel`
+  (default false) + null-reply cancel sentinel (wire-safe - RequestMessageSender already forwards null as
+  a legitimate cancel); `IUnitActionContext.IrreversibleActionTaken` marked at every commit point
+  (ActivationStartStage passive ops + resolved ability offers, CastSpellStage token spend, CustomActionStage
+  resolve, TeleportStage accepted placement; HasMoved/HasAttacked cover the rest); ChooseActionStage offers
+  AllowCancel only while pristine and routes a null reply out `ToBackOut` -> MainUnitActionStage's own
+  `OnBackedOut` sibling (nothing marks the unit activated) -> SingleTurnStage rebinds to
+  ChooseUnitToActivateStage. 5 new tests (`ActivationBackOutTests`), suite 1716 green. App: GUI action menu
+  gets Back (Esc) when cancellable; CLI prints `[0] Back` (EOF default unchanged - never cancels).
+  Known cosmetic: the GameProgress activating-unit spotlight stays on the backed-out unit until the next
+  pick overwrites it.
+
 - 2026-07-19: S2 landed. Shared pieces: `KeyboardListNav` (per-resolver highlight state, resets on
   request change) + `ResolverHotkeys.PressedNumberIndex/NumberPrefix/ArrowDelta/HorizontalArrowDelta/
   IsEnterPressed/PressedDigit`. Coverage: `GuiSelectionResolver<T>` base (unit/model/zone dialogs,

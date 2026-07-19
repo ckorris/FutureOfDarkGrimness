@@ -138,11 +138,29 @@ public class GuiStringSelectionResolver : IStageResolver<StringSelectionRequest,
             ImGui.PopStyleColor();
         }
 
+        // #248: cancellable string menus (a pristine activation's action menu) get a Back button + Esc,
+        // replying null — the SelectionRequest cancel sentinel. Esc routes through EscapeRouter so it
+        // claims the key before the in-game menu.
+        bool cancelled = false;
+        if (request.AllowCancel)
+        {
+            ImGui.SetCursorPos(new Vector2(pad, y + 8f));
+            ImGui.PushStyleColor(ImGuiCol.Button, new Vector4(0.25f, 0.25f, 0.30f, 1f));
+            if (ImGui.Button("Back  (Esc)##back", new Vector2(btnW, btnH)))
+                cancelled = true;
+            ImGui.PopStyleColor();
+
+            if (EscapeRouter.TryConsumeEscape())
+                cancelled = true;
+        }
+
         ImGui.EndChild();
         ImGui.End();
 
         if (picked != null)
             Complete(tcs, picked);
+        else if (cancelled)
+            Complete(tcs, null!);
     }
 
     private void Complete(TaskCompletionSource<string> tcs, string choice)

@@ -28,6 +28,12 @@ public class StringSelectionResolver : IStageResolver<StringSelectionRequest, st
                 Console.WriteLine($"    - {opt.Option} ({opt.Reason})");
         }
 
+        // #248: a cancellable menu (pristine activation's action menu) offers [0] Back, replying null.
+        // The EOF default stays the FIRST VALID OPTION, never the cancel — piped/automated runs must not
+        // loop the turn by backing out forever.
+        if (request.AllowCancel)
+            Console.WriteLine("  [0] Back");
+
         while (true)
         {
             Console.Write("Choice: ");
@@ -35,13 +41,16 @@ public class StringSelectionResolver : IStageResolver<StringSelectionRequest, st
 
             if (input == null) return Task.FromResult(request.ValidOptions[0]); // EOF default: first option
 
-            if (int.TryParse(input, out int choice) &&
-                choice >= 1 && choice <= request.ValidOptions.Count)
+            if (int.TryParse(input, out int choice))
             {
-                return Task.FromResult(request.ValidOptions[choice - 1]);
+                if (request.AllowCancel && choice == 0) return Task.FromResult<string>(null!);
+                if (choice >= 1 && choice <= request.ValidOptions.Count)
+                    return Task.FromResult(request.ValidOptions[choice - 1]);
             }
 
-            Console.WriteLine($"Enter a number between 1 and {request.ValidOptions.Count}.");
+            Console.WriteLine(request.AllowCancel
+                ? $"Enter a number between 1 and {request.ValidOptions.Count}, or 0 to go back."
+                : $"Enter a number between 1 and {request.ValidOptions.Count}.");
         }
     }
 }
