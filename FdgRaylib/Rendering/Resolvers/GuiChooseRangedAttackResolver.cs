@@ -368,10 +368,10 @@ public class GuiChooseRangedAttackResolver
         bool  showBack = _firesThisAction == 0;
         if (showBack)
         {
-            // #248: Esc backs out too (only while Back is offered), routed through EscapeRouter so it
-            // claims the key before the in-game menu.
-            if (ResolverButtons.Deemphasized("Back (Esc)", new Vector2(footW * 0.36f, 32f))
-                || EscapeRouter.TryConsumeEscape())
+            // #248: Backspace backs out too (only while Back is offered; Esc is reserved for the
+            // in-game menu).
+            if (ResolverButtons.Deemphasized("Back (Backspace)", new Vector2(footW * 0.36f, 32f))
+                || ResolverHotkeys.IsBackPressed())
             {
                 Complete(tcs, new Cancelled<RangedAttackChoice>());
                 ImGui.End();
@@ -389,10 +389,9 @@ public class GuiChooseRangedAttackResolver
         bool fireClicked = ImGui.Button("Fire!  (Enter)##fire", new Vector2(fireW, 32f));
         if (!canFire) ImGui.EndDisabled();
         ImGui.PopStyleColor(3);
-        // #240: edge-only (repeat: false) so a stuck Enter can't fire volleys on its own.
-        bool fireEnter = canFire && !ImGui.GetIO().WantTextInput
-                         && (ImGui.IsKeyPressed(ImGuiKey.Enter, repeat: false)
-                             || ImGui.IsKeyPressed(ImGuiKey.KeypadEnter, repeat: false));
+        // #240: edge-only (repeat: false) so a stuck Enter can't fire volleys on its own; #248: the
+        // shared helper also mutes it while typing or while the in-game menu is open.
+        bool fireEnter = canFire && ResolverHotkeys.IsEnterPressed();
         if (fireClicked || fireEnter)
         {
             var wo = request.WeaponOptions[_selectedWeaponIdx];

@@ -479,7 +479,9 @@ public class GuiPlaceObjectsResolver<T>
         // decline it (Disembark) - deployment, Scout, Ambush arrival and spillout are mandatory.
         if (request.AllowCancel)
         {
-            if (ResolverButtons.Deemphasized("Back", new Vector2(fullW, 28f)))
+            // #248: Backspace = back here too (no waypoint-undo exists yet in placement - #161 C).
+            if (ResolverButtons.Deemphasized("Back (Backspace)", new Vector2(fullW, 28f))
+                || ResolverHotkeys.IsBackPressed())
             {
                 CompleteCancelled(tcs);
                 ImGui.End();

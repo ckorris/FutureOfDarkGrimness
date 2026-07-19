@@ -46,7 +46,9 @@ internal static class ResolverButtons
         if (!enabled) ImGui.EndDisabled();
         ImGui.PopStyleColor(3);
 
-        bool enter = enabled && bindEnter && !ImGui.GetIO().WantTextInput
+        // #248: also muted while the in-game menu is open — the menu blocks clicks (modal), but this
+        // key check is manual code that would otherwise still commit the panel behind the dim.
+        bool enter = enabled && bindEnter && !ImGui.GetIO().WantTextInput && !EscapeRouter.MenuOpen
                      && (ImGui.IsKeyPressed(ImGuiKey.Enter, repeat: false)
                          || ImGui.IsKeyPressed(ImGuiKey.KeypadEnter, repeat: false));
         return clicked || enter;

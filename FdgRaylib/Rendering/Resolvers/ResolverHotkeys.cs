@@ -123,6 +123,15 @@ internal static class ResolverHotkeys
             || ImGui.IsKeyPressed(ImGuiKey.KeypadEnter, repeat: false);
     }
 
+    /// <summary>Edge-only Backspace — the universal resolver back/cancel key. Esc deliberately does NOT
+    /// cancel resolvers (it opens the in-game menu): mid-move you can reach Options without your Esc
+    /// press first undoing the plan (#248 playtest feedback). Cancel key, so repeat: false per #240.</summary>
+    public static bool IsBackPressed()
+    {
+        if (KeysMuted) return false;
+        return ImGui.IsKeyPressed(ImGuiKey.Backspace, repeat: false);
+    }
+
     private static bool KeysMuted => ImGui.GetIO().WantTextInput || EscapeRouter.MenuOpen;
 }
 

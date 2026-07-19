@@ -180,16 +180,16 @@ public class GuiSelectionResolver<T> : IStageResolver<SelectionRequest<T>, DataB
 
         // Back button — only for cancellable selections. Mandatory choices (which unit to activate/deploy)
         // have no back-destination, and a null reply from Back crashes the networked reply path.
-        // #248: Esc backs out too, routed through EscapeRouter so it claims the key before the in-game menu.
+        // #248: Backspace backs out too (Esc is reserved for the in-game menu).
         if (request.AllowCancel)
         {
             ImGui.SetCursorPos(new Vector2(pad, y + pad));
             ImGui.PushStyleColor(ImGuiCol.Button, new Vector4(0.25f, 0.25f, 0.30f, 1f));
-            if (ImGui.Button("Back  (Esc)##back", new Vector2(btnW, rowH - 4f)))
+            if (ImGui.Button("Back  (Backspace)##back", new Vector2(btnW, rowH - 4f)))
                 cancelled = true;
             ImGui.PopStyleColor();
 
-            if (EscapeRouter.TryConsumeEscape())
+            if (ResolverHotkeys.IsBackPressed())
                 cancelled = true;
         }
 

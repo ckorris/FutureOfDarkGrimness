@@ -537,11 +537,37 @@ public class GuiDefineMovementResolver
             }
         }
 
-        // Backspace removes last waypoint of selected model (single mode)
-        if (!group && wantInput && _selectedModel != null && ImGui.IsKeyPressed(ImGuiKey.Backspace))
+        // Backspace: undo first, back out second (#248). With waypoints down it removes the last one
+        // (selected model in single mode, one per model in group mode - parity with right-click);
+        // key-repeat walks the whole path back. A FRESH press (edge-only, #240) with nothing left to
+        // undo abandons the move entirely, same as the Back button - only where AllowCancel (player-
+        // chosen moves; mandatory placements have no back-destination). Esc never cancels here: it
+        // opens the in-game menu, so you can reach Options mid-plan without losing the path.
+        if (wantInput && ImGui.IsKeyPressed(ImGuiKey.Backspace))
         {
-            if (paths.TryGetValue(_selectedModel, out var list) && list.Count > 0)
+            bool undone = false;
+            if (group)
+            {
+                // Snapshot the keys: RemoveLastStep may mutate the underlying path map.
+                foreach (var m in paths.Keys.ToList())
+                    if (paths.TryGetValue(m, out var groupList) && groupList.Count > 0)
+                    {
+                        pt.RemoveLastStep(m);
+                        undone = true;
+                    }
+            }
+            else if (_selectedModel != null
+                && paths.TryGetValue(_selectedModel, out var list) && list.Count > 0)
+            {
                 pt.RemoveLastStep(_selectedModel);
+                undone = true;
+            }
+
+            if (!undone && request.AllowCancel && ImGui.IsKeyPressed(ImGuiKey.Backspace, repeat: false))
+            {
+                CompleteCancelled(tcs);
+                return;
+            }
         }
 
         // R / Shift+R rotates the selected model's facing — an offset from its direction of travel (#150).
@@ -917,12 +943,12 @@ public class GuiDefineMovementResolver
             ImGui.PushStyleColor(ImGuiCol.Text, color);
             ImGui.TextUnformatted($"Selected model: {dist:F2}\" / {FormatInches(maxShown)}\"{capTag}  ({(inRush ? "RUSH - cannot shoot" : "advance - may shoot")})");
             ImGui.PopStyleColor();
-            ImGui.TextDisabled("L-click: select   R-click: waypoint   Space: next   Backspace: undo");
+            ImGui.TextDisabled("L-click: select   R-click: waypoint   Space: next   Backspace: undo / back");
         }
         else
         {
             ImGui.TextDisabled("No model selected. Left-click a model on the table.");
-            ImGui.TextDisabled("L-click: select   R-click: waypoint   Space: next   Backspace: undo");
+            ImGui.TextDisabled("L-click: select   R-click: waypoint   Space: next   Backspace: undo / back");
         }
 
         if (ImGui.Button(group ? "Mode: Group (G)" : "Mode: Single (G)"))
@@ -1003,7 +1029,7 @@ public class GuiDefineMovementResolver
         // spends the unit's Move action. Nothing has been mutated yet, so this is always safe here.
         if (request.AllowCancel)
         {
-            bool backPressed = ResolverButtons.Deemphasized("Back", new Vector2(fullW, 28f));
+            bool backPressed = ResolverButtons.Deemphasized("Back (Backspace)", new Vector2(fullW, 28f));
             if (ImGui.IsItemHovered())
                 ImGui.SetTooltip("Cancel the move and pick a different action. The unit keeps its move.");
             if (backPressed)

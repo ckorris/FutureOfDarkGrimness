@@ -31,6 +31,18 @@ Esc routed through `EscapeRouter` (#246).
 
 ## Notes
 
+- 2026-07-19 (v2, playtest feedback): **Backspace is now the universal back/cancel key; Esc always
+  opens the in-game menu.** Rationale: Esc-as-cancel meant reaching Options mid-move first undid the
+  plan. Swapped in every resolver that bound Esc (selection dialogs, cancellable twin, melee card,
+  shoot footer, spell Cancel, action menu, Yes/No's No, objective/terrain ghost cancels); labels now
+  say (Backspace). Movement gets the key it never had: Backspace undoes the last waypoint (single =
+  selected model, group = one per model - new parity with right-click), and a FRESH edge press with
+  nothing left to undo backs out of the move (AllowCancel only). Cancellable placements
+  (disembark/teleport/reposition) take Backspace = Back directly. Exception kept: tactical-overlay
+  pin-clear still claims Esc (moving it to Backspace would collide with waypoint undo mid-move).
+  Also: the Esc menu is now a true ImGui modal (see #246 note) and Enter commits are muted while it
+  is open (`ResolverButtons.Primary` + shoot's Fire bound through the muted helper).
+
 - 2026-07-19: S3 landed (engine f072205 + superproject bump). Engine: `StringSelectionRequest.AllowCancel`
   (default false) + null-reply cancel sentinel (wire-safe - RequestMessageSender already forwards null as
   a legitimate cancel); `IUnitActionContext.IrreversibleActionTaken` marked at every commit point
@@ -78,13 +90,18 @@ schemes; GameProgress spotlight stays on a backed-out unit until the next pick.
 **Verify by hand (GUI):**
 - Action menu shows [W]/[C]/[S]/[A]/[X] letters + pool letters on Disembark/custom rows; pressing
   W moves, letters stay put when Move grays out next activation.
-- Activate a unit, press Esc (or Back) at the action menu before doing anything -> back at unit
-  selection, unit still activatable, no Esc-menu popup on that press.
-- Move (or shoot/cast) first -> the action menu's Back button is gone; Esc opens the in-game menu.
+- Activate a unit, press Backspace (or Back) at the action menu before doing anything -> back at
+  unit selection, unit still activatable.
+- Move (or shoot/cast) first -> the action menu's Back button is gone; Backspace does nothing.
+- Esc ALWAYS opens the in-game menu (mid-move plan included - the path survives Esc + Resume).
+  The menu dims and blocks EVERYTHING including the console and resolver panel; no clicks land
+  behind it, and Enter/letters/numbers do nothing while it is open.
+- Move: Backspace peels waypoints one at a time (group mode too); one more press with an empty
+  path backs out to the action menu. Same for disembark/teleport placement (straight back-out).
 - Unit/target/spell pickers: number keys pick instantly, Up/Down walks rows (ring highlight follows
   on unit/model pickers, list scrolls), Enter commits the highlight.
-- Shoot panel: Left/Right cycles weapons, numbers/arrows pick targets, Esc backs out until the
-  first volley fires.
-- Yes/No prompts answer to Y and N. Cast assist: 0 = don't spend, N = spend N.
+- Shoot panel: Left/Right cycles weapons, numbers/arrows pick targets, Backspace backs out until
+  the first volley fires.
+- Yes/No prompts answer to Y and N (Backspace = No). Cast assist: 0 = don't spend, N = spend N.
 - Headless: at the action menu of a fresh activation the CLI lists "[0] Back"; entering 0 returns
   to unit selection; piped EOF runs still complete (never auto-cancels).

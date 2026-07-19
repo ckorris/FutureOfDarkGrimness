@@ -100,7 +100,7 @@ public class GuiPlaceOneTerrainResolver
 
                 DrawGhost(dl, template.TerrainType, placedShape, valid: stillValid, frozen: true);
 
-                if (EscapeRouter.TryConsumeEscape()) // #240: stuck-key safe; #246: routed before the menu
+                if (ResolverHotkeys.IsBackPressed()) // #248: Backspace = back; Esc opens the in-game menu
                 {
                     lock (_lock) { _pendingCenter = null; }
                     pending = null;
@@ -128,11 +128,11 @@ public class GuiPlaceOneTerrainResolver
                     pending = center;
                 }
 
-                // Right-click or Esc returns to template selection (also resets rotation). #240: stuck-key
-                // safe; #246: Esc routed through EscapeRouter so it claims Esc before the in-game menu.
-                bool escBack   = EscapeRouter.TryConsumeEscape();
+                // Right-click or Backspace returns to template selection (also resets rotation).
+                // #248: Backspace = back (edge-only, #240); Esc is reserved for the in-game menu.
+                bool backBack  = ResolverHotkeys.IsBackPressed();
                 bool rightBack = !io.WantCaptureMouse && ImGui.IsMouseClicked(ImGuiMouseButton.Right);
-                if (escBack || rightBack)
+                if (backBack || rightBack)
                 {
                     lock (_lock) { _selectedTemplate = null; _rotationDegrees = 0f; }
                     selected = null;

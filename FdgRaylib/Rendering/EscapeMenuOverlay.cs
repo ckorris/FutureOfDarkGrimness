@@ -67,46 +67,41 @@ public sealed class EscapeMenuOverlay
             // Escape steps back one level: out of a confirm, then out of Options, then out of the menu.
             if (_confirm != Confirm.None) _confirm = Confirm.None;
             else if (_inOptions) _inOptions = false;
-            else { Close(); return; }
+            else Close();   // fall through so the popup gets its CloseCurrentPopup this frame
         }
 
-        DrawDimBlocker(screenW, screenH);
+        // #248 feedback: a true ImGui modal. The previous hand-rolled dim window carried
+        // NoBringToFrontOnFocus, so the console/resolver windows (whichever had been focused after it)
+        // stayed ABOVE the dim and the sidebars remained clickable while the menu was open. A modal
+        // popup blocks input to every other window by construction and dims the whole viewport.
+        if (IsOpen && !ImGui.IsPopupOpen("##escmenu"))
+            ImGui.OpenPopup("##escmenu");
 
         // Options is wider (slider + longer labels) than the plain button column.
         float menuW = _inOptions ? MathF.Min(440f, screenW * 0.9f) : MathF.Min(360f, screenW * 0.8f);
         ImGui.SetNextWindowPos(new Vector2(screenW * 0.5f, screenH * 0.5f), ImGuiCond.Always,
             new Vector2(0.5f, 0.5f));
         ImGui.SetNextWindowSize(new Vector2(menuW, 0f), ImGuiCond.Always);
-        ImGui.Begin("##escmenu",
+        ImGui.PushStyleColor(ImGuiCol.ModalWindowDimBg, new Vector4(0f, 0f, 0f, 0.55f));
+
+        bool visible = true;   // NoTitleBar hides the implicit close button this ref would add
+        if (ImGui.BeginPopupModal("##escmenu", ref visible,
             ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoMove |
-            ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoSavedSettings);
+            ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoSavedSettings))
+        {
+            if (IsOpen)
+            {
+                if (_confirm != Confirm.None) DrawConfirm();
+                else if (_inOptions) DrawOptions();
+                else DrawMainList();
+            }
 
-        if (_confirm != Confirm.None) DrawConfirm();
-        else if (_inOptions) DrawOptions();
-        else DrawMainList();
+            // Closed this frame (Esc above, Resume, or a confirmed action) — release the modal.
+            if (!IsOpen) ImGui.CloseCurrentPopup();
+            ImGui.EndPopup();
+        }
 
-        ImGui.End();
-    }
-
-    // A full-screen window that dims the board and, being drawn just under the menu window, eats mouse
-    // input everywhere the menu itself doesn't cover — so clicks can't fall through to the console or a
-    // resolver dialog behind it.
-    private static void DrawDimBlocker(int screenW, int screenH)
-    {
-        ImGui.SetNextWindowPos(Vector2.Zero, ImGuiCond.Always);
-        ImGui.SetNextWindowSize(new Vector2(screenW, screenH), ImGuiCond.Always);
-        // Flat, edge-to-edge: no border or rounding so the dim doesn't frame the screen.
-        ImGui.PushStyleVar(ImGuiStyleVar.WindowRounding, 0f);
-        ImGui.PushStyleVar(ImGuiStyleVar.WindowBorderSize, 0f);
-        ImGui.PushStyleColor(ImGuiCol.WindowBg, new Vector4(0f, 0f, 0f, 0.55f));
-        ImGui.Begin("##escmenu_dim",
-            ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoMove |
-            ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoSavedSettings |
-            ImGuiWindowFlags.NoBringToFrontOnFocus | ImGuiWindowFlags.NoNavFocus |
-            ImGuiWindowFlags.NoScrollbar);
-        ImGui.End();
         ImGui.PopStyleColor();
-        ImGui.PopStyleVar(2);
     }
 
     private void DrawMainList()
@@ -183,7 +178,8 @@ public sealed class EscapeMenuOverlay
         ImGui.TextDisabled("L labels   T tokens   F threat");
         ImGui.TextDisabled("G: cycle formation (during moves)");
         ImGui.TextDisabled("Enter: auto-assign / confirm");
-        ImGui.TextDisabled("Esc: cancel / open this menu");
+        ImGui.TextDisabled("Backspace: undo / back out");
+        ImGui.TextDisabled("Esc: open this menu");
 
         ImGui.Spacing();
         ImGui.Separator();

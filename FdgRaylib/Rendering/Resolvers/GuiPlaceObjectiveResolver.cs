@@ -82,11 +82,11 @@ public class GuiPlaceObjectiveResolver
             // Confirmation mode — frozen ghost, brighter, plus the Confirm/Cancel panel.
             DrawGhost(dl, pending.Value, markerNumber, valid: true, frozen: true);
 
-            // Esc / right-click cancels. #240: stuck-key safe; #246: Esc routed through EscapeRouter so
-            // an armed placement claims it before the in-game menu can open.
-            bool escCancel   = EscapeRouter.TryConsumeEscape();
+            // Backspace / right-click cancels the pending ghost (#248: the universal back key; Esc is
+            // reserved for the in-game menu). #240: stuck-key safe (edge-only inside IsBackPressed).
+            bool backCancel  = ResolverHotkeys.IsBackPressed();
             bool rightCancel = !io.WantCaptureMouse && ImGui.IsMouseClicked(ImGuiMouseButton.Right);
-            if (escCancel || rightCancel)
+            if (backCancel || rightCancel)
             {
                 lock (_lock) _pendingCandidate = null;
                 pending = null;

@@ -7,6 +7,14 @@ archive, and Reconciliations.md as of 2026-07-18 — re-verify against origin be
 
 ## Dated notes
 
+**2026-07-19 — hand-verify feedback fixes (with #248 v2).** (1) The hand-rolled dim window carried
+`NoBringToFrontOnFocus`, so the console/resolver windows kept their higher z-order and the sidebars
+stayed clickable while the menu was open; replaced with a true `BeginPopupModal` (blocks input to
+every other window, dims the whole viewport). (2) The "cancel-first Esc" decision is REVERSED by
+#248 v2: resolvers now cancel on Backspace and Esc always opens this menu (except the tactical
+pin-clear, which still claims Esc). Enter commits are muted while the menu is open. Options'
+Controls text updated.
+
 **2026-07-18 — implemented, all three slices (commits `589a0db` S1, `0e284ac` S2, `d8c1440` S3).**
 App-side only, no engine changes. Decision forks resolved at their recommended settings (cancel-first
 Esc, Load included, single Menu button, Threat via hotkey+Options, S4 persistence deferred — see below).
