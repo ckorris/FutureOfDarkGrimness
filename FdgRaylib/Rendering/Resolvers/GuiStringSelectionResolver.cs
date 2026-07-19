@@ -91,13 +91,22 @@ public class GuiStringSelectionResolver : IStageResolver<StringSelectionRequest,
         ImGui.TextUnformatted(request.Instructions);
         ImGui.PopTextWrapPos();
 
+        // #248: letter hotkeys — pinned letters for the built-in actions, pool letters for the rest.
+        // The label carries the letter so the shortcut is discoverable on the button itself, and the
+        // picked option is completed once after the loop so two same-frame presses can't double-resolve.
+        char?[] letters = ResolverHotkeys.AssignLetters(request.ValidOptions);
+        string? picked = null;
+
         float y = pad + instrH + 4f;
         for (int i = 0; i < validCount; i++)
         {
             string opt = request.ValidOptions[i];
+            string label = letters[i] is char key ? $"[{key}] {opt}" : opt;
             ImGui.SetCursorPos(new Vector2(pad, y));
-            if (ImGui.Button($"{opt}##{i}", new Vector2(btnW, btnH)))
-                Complete(tcs, opt);
+            if (ImGui.Button($"{label}##{i}", new Vector2(btnW, btnH)))
+                picked ??= opt;
+            if (letters[i] is char pressedKey && ResolverHotkeys.IsLetterPressed(pressedKey))
+                picked ??= opt;
 
             // Optional subtext under the option (e.g. a spell's effect summary): smaller and dimmed.
             if (descs[i] != null)
@@ -131,6 +140,9 @@ public class GuiStringSelectionResolver : IStageResolver<StringSelectionRequest,
 
         ImGui.EndChild();
         ImGui.End();
+
+        if (picked != null)
+            Complete(tcs, picked);
     }
 
     private void Complete(TaskCompletionSource<string> tcs, string choice)
