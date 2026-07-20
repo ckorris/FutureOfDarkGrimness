@@ -91,6 +91,7 @@
               "id": "35vAMyq",
               "label": "Magic Blast (12\u0022, A3, Rending)",
               "cost": 5,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Magic Blast",
@@ -114,6 +115,7 @@
               "id": "_qi5gmT",
               "label": "Magic Beam (12\u0022, A1, AP(2), Deadly(3), Disintegrate)",
               "cost": 5,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Magic Beam",
@@ -154,6 +156,7 @@
               "id": "o2tzANFw9m",
               "label": "Sacred Destiny (Protection Feat)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -174,6 +177,7 @@
               "id": "EKuk9",
               "label": "Magic Protection (Fortified)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -194,6 +198,7 @@
               "id": "taW-gG_08W",
               "label": "Ancient Palanquin (Magic Pulse (A3), Caster(1), Tough(3))",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Magic Pulse",
@@ -241,6 +246,7 @@
               "id": "hluryzSt",
               "label": "Primal Guidance (Primal Boost Buff)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -261,6 +267,7 @@
               "id": "fWElA1me",
               "label": "Enlightened Mage (Caster(1))",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -282,6 +289,7 @@
               "id": "mtPZfCvF",
               "label": "Temple Guardian (Counter-Attack Aura)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -302,6 +310,7 @@
               "id": "0pjWBxF8",
               "label": "Zealot (Scout Aura)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -322,6 +331,7 @@
               "id": "yOtlu01_",
               "label": "Crusader (Rending when Shooting Aura)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -423,6 +433,7 @@
               "id": "C5b8B",
               "label": "Power Knuckle (A3, AP(2))",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Power Knuckle",
@@ -441,6 +452,7 @@
               "id": "JcK1ECXAfg",
               "label": "Heavy Shooter (12\u0022, A4, AP(1))",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Heavy Shooter",
@@ -459,6 +471,7 @@
               "id": "s8P_7",
               "label": "Power Spike (A1, AP(4), Deadly(3))",
               "cost": 5,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Power Spike",
@@ -495,6 +508,7 @@
               "id": "6KHvK",
               "label": "Rapid Missile Pod (18\u0022, A3, AP(1), Limited, Unstoppable)",
               "cost": 10,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Rapid Missile Pod",
@@ -534,6 +548,7 @@
               "id": "qEWMz_J4",
               "label": "Sacred Destiny (Protection Feat)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -566,6 +581,7 @@
               "id": "oSsw_Xtx",
               "label": "Primal Roar (Primal Boost Buff)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -586,6 +602,7 @@
               "id": "1GDlchmL",
               "label": "Storm Leader (Rapid Charge Aura)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -606,6 +623,7 @@
               "id": "2XorpnZZ",
               "label": "Zealot (Scout Aura)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -626,6 +644,7 @@
               "id": "W2j62Pq0",
               "label": "Crusader (Rending when Shooting Aura)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -716,6 +735,7 @@
               "id": "qwBMVAQ",
               "label": "Veteran Spike Pistol (9\u0022, A3, Rending)",
               "cost": 5,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Veteran Spike Pistol",
@@ -739,6 +759,7 @@
               "id": "Mk_OS",
               "label": "Veteran Carbine (18\u0022, A3)",
               "cost": 15,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Veteran Carbine",
@@ -771,6 +792,7 @@
               "id": "Wk6BoHw",
               "label": "Power Spear (A2, Thrust)",
               "cost": 5,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Power Spear",
@@ -794,6 +816,7 @@
               "id": "57Buyxq",
               "label": "Power Claw (A2, AP(1), Rending)",
               "cost": 10,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Power Claw",
@@ -817,6 +840,7 @@
               "id": "sRWgXMG",
               "label": "Power Mace (A2, AP(4))",
               "cost": 15,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Power Mace",
@@ -847,6 +871,7 @@
               "id": "Mfobs",
               "label": "Hardened Elite (Fortified)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -867,6 +892,7 @@
               "id": "dI-MuUuGvb",
               "label": "Sacred Destiny (Protection Feat)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -887,6 +913,7 @@
               "id": "c8rhK",
               "label": "Raptor (Fast, Ravage(1))",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -912,6 +939,7 @@
               "id": "U_2i3n-",
               "label": "Tyrannosaur (Crushing Jaws (A6, AP(2)), Stomp (A4, AP(1)), Armor(2), Fear(2), Primal Boost Buff, Tough(12))",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Crushing Jaws",
@@ -976,6 +1004,7 @@
               "id": "mXws4pKO",
               "label": "Storm Leader (Rapid Charge Aura)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -996,6 +1025,7 @@
               "id": "BD6e9k6c",
               "label": "Temple Guardian (Counter-Attack Aura)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1016,6 +1046,7 @@
               "id": "Zc_cd4VC",
               "label": "Zealot (Scout Aura)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1036,6 +1067,7 @@
               "id": "9FOOoTN3",
               "label": "Crusader (Rending when Shooting Aura)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1127,6 +1159,7 @@
               "id": "0jOHu",
               "label": "Shock Lance (A3, AP(4)), Energy Shield (Shielded)",
               "cost": 5,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Shock Lance",
@@ -1156,6 +1189,7 @@
               "id": "6QXb3",
               "label": "Champion Sniper Rifle (30\u0022, A2, AP(1), Reliable, Takedown), Dagger (A1)",
               "cost": 60,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Champion Sniper Rifle",
@@ -1205,6 +1239,7 @@
               "id": "VuOaXBC",
               "label": "Champion Shock Pistol (12\u0022, A2, AP(4))",
               "cost": 5,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Champion Shock Pistol",
@@ -1223,6 +1258,7 @@
               "id": "dj1io",
               "label": "Champion Shock Rifle (18\u0022, A2, AP(4))",
               "cost": 5,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Champion Shock Rifle",
@@ -1241,6 +1277,7 @@
               "id": "oYommMwvUj",
               "label": "Champion Precision Carbine (18\u0022, A2, AP(1), Precise)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Champion Precision Carbine",
@@ -1278,6 +1315,7 @@
               "id": "5qgoSXt",
               "label": "Bash (A1), Energy Shield (Shielded)",
               "cost": 5,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Bash",
@@ -1307,6 +1345,7 @@
               "id": "egONVO0",
               "label": "Sacred Mace (A1, Blast(3))",
               "cost": 5,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Sacred Mace",
@@ -1343,6 +1382,7 @@
               "id": "GqwZ9_Axnx",
               "label": "Sacred Destiny (Protection Feat)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1363,6 +1403,7 @@
               "id": "R3hf3SmgqC",
               "label": "Phase Backpack (Teleport)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1383,6 +1424,7 @@
               "id": "1Crar",
               "label": "Deinonychus (Bounding, Impact(1))",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1408,6 +1450,7 @@
               "id": "m_qsNt1eji",
               "label": "Chameleon Breed (Evasive, Good Shot, Scout)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1436,6 +1479,7 @@
               "id": "f7aft",
               "label": "Starseer Palanquin (Pulse (A3), Spell Conduit, Tough(3))",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Pulse",
@@ -1470,6 +1514,7 @@
               "id": "MLzm8lq",
               "label": "Pterodactyl (Claws (A2), Disposable Bombs (A1, AP(1), Blast(3), Limited, Strafing), Ambush, Flying, Impact(1), Tough(3))",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Claws",
@@ -1535,6 +1580,7 @@
               "id": "scSksua",
               "label": "Ripjawdactyl (Ambush, Flying, Heavy Impact(3), Precision Target(1), Tough(3))",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1586,6 +1632,7 @@
               "id": "sCAcXREvFq",
               "label": "Primal Hunter (Primal Boost Buff)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1606,6 +1653,7 @@
               "id": "6Wlng27d",
               "label": "Storm Leader (Rapid Charge Aura)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1626,6 +1674,7 @@
               "id": "PM6VFDWa",
               "label": "Sacred Priest (Caster(2))",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1647,6 +1696,7 @@
               "id": "uKiGGtjV",
               "label": "Temple Guardian (Counter-Attack Aura)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1667,6 +1717,7 @@
               "id": "FoIGHu87",
               "label": "Zealot (Scout Aura)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1751,6 +1802,7 @@
               "id": "VF82c",
               "label": "CCW (A2)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "CCW",
@@ -1781,6 +1833,7 @@
               "id": "F3hHv",
               "label": "Phase Backpacks (Teleport)",
               "cost": 15,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1813,6 +1866,7 @@
               "id": "3d8Dx",
               "label": "Sacred Destiny (Protection Feat)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1895,6 +1949,7 @@
               "id": "VKk18cA",
               "label": "Carbine (18\u0022, A2), CCW (A1)",
               "cost": 20,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Carbine",
@@ -1935,6 +1990,7 @@
               "id": "rBTsSkn",
               "label": "Flamer (12\u0022, A1, Blast(3), Reliable)",
               "cost": 15,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Flamer",
@@ -1963,6 +2019,7 @@
               "id": "6iuwtF4",
               "label": "Spike Shooter (18\u0022, A2, Rending)",
               "cost": 15,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Spike Shooter",
@@ -1986,6 +2043,7 @@
               "id": "rICOlbL",
               "label": "Shock Charger (24\u0022, A1, AP(4))",
               "cost": 15,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Shock Charger",
@@ -2004,6 +2062,7 @@
               "id": "yTms4eH",
               "label": "Beam Gun (12\u0022, A1, AP(2), Deadly(3), Disintegrate)",
               "cost": 20,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Beam Gun",
@@ -2044,6 +2103,7 @@
               "id": "3d8Dx",
               "label": "Sacred Destiny (Protection Feat)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -2137,6 +2197,7 @@
               "id": "m-KJZCljvv",
               "label": "Precision Carbine (18\u0022, A1, AP(1), Precise)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Precision Carbine",
@@ -2172,6 +2233,7 @@
               "id": "EaqL4IFUqZ",
               "label": "Advanced Locator (Ambush Beacon)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -2245,6 +2307,7 @@
               "id": "j3kba",
               "label": "Mace-Shots (12\u0022, A2, AP(1)), Mace (A2)",
               "cost": 35,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Mace-Shots",
@@ -2285,6 +2348,7 @@
               "id": "aSO8wKf",
               "label": "Great Hammer (A1, AP(2), Blast(3))",
               "cost": 5,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Great Hammer",
@@ -2321,6 +2385,7 @@
               "id": "J8SWq",
               "label": "Hardened Elites (Fortified)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -2353,6 +2418,7 @@
               "id": "3d8Dx",
               "label": "Sacred Destiny (Protection Feat)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -2440,8 +2506,8 @@
       "base": {
         "shape": "Rectangle",
         "diameterInches": 1.1023622,
-        "widthInches": 2.3622048,
-        "heightInches": 1.3779528
+        "widthInches": 1.3779528,
+        "heightInches": 2.3622048
       },
       "weapons": [
         {
@@ -2494,6 +2560,7 @@
               "id": "t79T1",
               "label": "Shock Pistol (12\u0022, A1, AP(4)), CCW (A1)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Shock Pistol",
@@ -2532,8 +2599,8 @@
       "base": {
         "shape": "Rectangle",
         "diameterInches": 1.1023622,
-        "widthInches": 2.3622048,
-        "heightInches": 1.3779528
+        "widthInches": 1.3779528,
+        "heightInches": 2.3622048
       },
       "weapons": [
         {
@@ -2590,6 +2657,7 @@
               "id": "Z96jv8-",
               "label": "Spike Pistol (9\u0022, A2, Rending)",
               "cost": 5,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Spike Pistol",
@@ -2627,6 +2695,7 @@
               "id": "DLy8i",
               "label": "Power Spear (A2, Thrust)",
               "cost": 5,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Power Spear",
@@ -2650,6 +2719,7 @@
               "id": "GQGc-",
               "label": "Power Claw (A2, AP(1), Rending)",
               "cost": 5,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Power Claw",
@@ -2673,6 +2743,7 @@
               "id": "Dzz8Acd",
               "label": "Power Mace (A2, AP(4))",
               "cost": 10,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Power Mace",
@@ -2778,6 +2849,7 @@
               "id": "MrLetEMs",
               "label": "Shock Rifle (18\u0022, A1, AP(4))",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Shock Rifle",
@@ -2796,6 +2868,7 @@
               "id": "f1qoe4Y3",
               "label": "Shock Pistol (12\u0022, A1, AP(4)), Energy Shields (Shielded)",
               "cost": 5,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Shock Pistol",
@@ -2837,6 +2910,7 @@
               "id": "cmUEXLFMmw",
               "label": "Disposable Bombs (A1, AP(1), Blast(3), Limited, Strafing)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Disposable Bombs",
@@ -2948,6 +3022,7 @@
               "id": "OJVEdxFO",
               "label": "Shock Rifle (18\u0022, A1, AP(4))",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Shock Rifle",
@@ -2966,6 +3041,7 @@
               "id": "ClHI7lK9",
               "label": "Shock Pistol (12\u0022, A1, AP(4)), Energy Shields (Shielded)",
               "cost": 5,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Shock Pistol",
@@ -3007,6 +3083,7 @@
               "id": "cXvzmaDQoe",
               "label": "Hunting Bait (Precision Target(1))",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -3099,6 +3176,7 @@
               "id": "YOlBmAc",
               "label": "Power Knuckle (A1, AP(2))",
               "cost": 5,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Power Knuckle",
@@ -3117,6 +3195,7 @@
               "id": "i-xoC",
               "label": "Heavy Shooter (12\u0022, A2, AP(1))",
               "cost": 5,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Heavy Shooter",
@@ -3135,6 +3214,7 @@
               "id": "9PBuKdX",
               "label": "Power Claw (A1, AP(1), Rending)",
               "cost": 5,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Power Claw",
@@ -3170,6 +3250,7 @@
               "id": "kvoLB",
               "label": "Missile Pod (18\u0022, A1, AP(1), Limited, Unstoppable)",
               "cost": 5,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Missile Pod",
@@ -3209,6 +3290,7 @@
               "id": "3d8Dx",
               "label": "Sacred Destiny (Protection Feat)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -3340,8 +3422,8 @@
       "base": {
         "shape": "Rectangle",
         "diameterInches": 1.1023622,
-        "widthInches": 3.543307,
-        "heightInches": 2.047244
+        "widthInches": 2.047244,
+        "heightInches": 3.543307
       },
       "weapons": [
         {
@@ -3410,6 +3492,7 @@
               "id": "hU6ov",
               "label": "Combat Lizard Handlers (Relentless)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -3430,6 +3513,7 @@
               "id": "4cME-FaQTD",
               "label": "Vanguard Lizard Handlers (Scout)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -3462,6 +3546,7 @@
               "id": "p3LOaNzR",
               "label": "Poison Flechettes (Bane Mark)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -3494,8 +3579,8 @@
       "base": {
         "shape": "Rectangle",
         "diameterInches": 1.1023622,
-        "widthInches": 3.543307,
-        "heightInches": 2.047244
+        "widthInches": 2.047244,
+        "heightInches": 3.543307
       },
       "weapons": [
         {
@@ -3564,6 +3649,7 @@
               "id": "hU6ov",
               "label": "Combat Lizard Handlers (Relentless)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -3584,6 +3670,7 @@
               "id": "4cME-FaQTD",
               "label": "Vanguard Lizard Handlers (Scout)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -3616,6 +3703,7 @@
               "id": "p3LOaNzR",
               "label": "Poison Flechettes (Bane Mark)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -3648,8 +3736,8 @@
       "base": {
         "shape": "Rectangle",
         "diameterInches": 1.1023622,
-        "widthInches": 4.7244096,
-        "heightInches": 3.6220472
+        "widthInches": 3.6220472,
+        "heightInches": 4.7244096
       },
       "weapons": [
         {
@@ -3724,6 +3812,7 @@
               "id": "oft7x_T3Sq",
               "label": "Gecko Crew (18\u0022, A6, AP(1))",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Gecko Crew",
@@ -3742,6 +3831,7 @@
               "id": "tYYeW",
               "label": "Gecko Crew (18\u0022, A6, AP(1)), Gecko Priest (Caster(2))",
               "cost": 40,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Gecko Crew",
@@ -3772,6 +3862,7 @@
               "id": "iQnC6Bl",
               "label": "Heavy Rocket Launcher (24\u0022, A4, AP(1), Blast(3), Indirect)",
               "cost": 105,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Heavy Rocket Launcher",
@@ -3800,6 +3891,7 @@
               "id": "Ne80vKZ",
               "label": "Heavy Missile Launcher (30\u0022, A4, AP(2), Deadly(3), Unstoppable)",
               "cost": 150,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Heavy Missile Launcher",
@@ -3840,6 +3932,7 @@
               "id": "zRqqrb9jOy",
               "label": "Trample (Impact(3))",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -3873,8 +3966,8 @@
       "base": {
         "shape": "Rectangle",
         "diameterInches": 1.1023622,
-        "widthInches": 4.7244096,
-        "heightInches": 3.6220472
+        "widthInches": 3.6220472,
+        "heightInches": 4.7244096
       },
       "weapons": [
         {
@@ -3953,6 +4046,7 @@
               "id": "rP4N9qjv_-",
               "label": "Primal Roar (Primal Boost Buff)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -3973,6 +4067,7 @@
               "id": "E9rtIcG",
               "label": "Chief Rider (Impact(3))",
               "cost": 15,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -4006,8 +4101,8 @@
       "base": {
         "shape": "Rectangle",
         "diameterInches": 1.1023622,
-        "widthInches": 4.7244096,
-        "heightInches": 3.6220472
+        "widthInches": 3.6220472,
+        "heightInches": 4.7244096
       },
       "weapons": [
         {
@@ -4087,6 +4182,7 @@
               "id": "F9z5W",
               "label": "Heavy Plasma Burster (30\u0022, A4, AP(4), Blast(3))",
               "cost": 40,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Heavy Plasma Burster",
@@ -4123,6 +4219,7 @@
               "id": "TYPGiyDCfm",
               "label": "Advanced Locator (Ambush Beacon)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -4143,6 +4240,7 @@
               "id": "8M4Qsmpww3",
               "label": "Poison Flechettes (Bane Mark)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -4260,6 +4358,7 @@
               "id": "DYsxn",
               "label": "Dread Tyrannosaur (Super-Heavy Laser Cannon (36\u0022, A1, AP(3), Deadly(9)), Heavy Arch Rockets (18\u0022, A4, AP(1), Blast(3), Indirect))",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Heavy Arch Rockets",
@@ -4308,6 +4407,7 @@
               "id": "eq7hOAvwBP",
               "label": "Dread Behemoth (Super-Heavy Beam Cannon (24\u0022, A2, AP(2), Deadly(12), Disintegrate))",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Super-Heavy Beam Cannon",
@@ -4342,6 +4442,7 @@
               "id": "iWxmQoa",
               "label": "Dread Scorcher (Scorcher Cannon (18\u0022, A8, AP(1), Blast(3), Reliable))",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Scorcher Cannon",

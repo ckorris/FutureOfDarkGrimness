@@ -19,8 +19,8 @@
       "base": {
         "shape": "Rectangle",
         "diameterInches": 1.1023622,
-        "widthInches": 4.7244096,
-        "heightInches": 3.6220472
+        "widthInches": 3.6220472,
+        "heightInches": 4.7244096
       },
       "weapons": [
         {
@@ -92,6 +92,7 @@
               "id": "zaJz4PT",
               "label": "Exalted Ritual Blade (A9, Rending, Surge)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Exalted Ritual Blade",
@@ -119,6 +120,7 @@
               "id": "JlRhb",
               "label": "Exalted Arm-Crossbow (12\u0022, A12, Surge)",
               "cost": 5,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Exalted Arm-Crossbow",
@@ -142,6 +144,7 @@
               "id": "bw6hhmX",
               "label": "Exalted Ritual Spear (A3, AP(2), Deadly(3), Surge)",
               "cost": 20,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Exalted Ritual Spear",
@@ -170,6 +173,7 @@
               "id": "nQfbHQghAG",
               "label": "Exalted Crossbow (18\u0022, A6, AP(1), Surge)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Exalted Crossbow",
@@ -193,6 +197,7 @@
               "id": "dkMz1",
               "label": "Exalted Perfect Sword (A9, Shatter)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Exalted Perfect Sword",
@@ -216,6 +221,7 @@
               "id": "lOe1IOa",
               "label": "Exalted Ritual Gauntlet (A9, AP(3), Surge)",
               "cost": 70,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Exalted Ritual Gauntlet",
@@ -251,6 +257,7 @@
               "id": "BOZXwXTZ",
               "label": "Daemonic Incursion (Ambush)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -283,6 +290,7 @@
               "id": "5b0fxBpR",
               "label": "Lust Favour (Lustbound Boost)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -303,6 +311,7 @@
               "id": "SQ3vX1Z0",
               "label": "Lust God\u0027s Power (Storm of Lust)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -323,6 +332,7 @@
               "id": "48nmL3wA",
               "label": "Envoy of Lust (Piercing Assault)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -343,6 +353,7 @@
               "id": "8byO-CB_",
               "label": "Gift of Lust (Counter-Attack)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -363,6 +374,7 @@
               "id": "Bzi_V8pi",
               "label": "Lore of Lust (Caster(5))",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -396,8 +408,8 @@
       "base": {
         "shape": "Rectangle",
         "diameterInches": 1.1023622,
-        "widthInches": 4.133858,
-        "heightInches": 2.7559056
+        "widthInches": 2.7559056,
+        "heightInches": 4.133858
       },
       "weapons": [
         {
@@ -465,6 +477,7 @@
               "id": "8GwxTfo",
               "label": "Great Ritual Spear (A2, AP(1), Deadly(3), Surge)",
               "cost": -5,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Great Ritual Spear",
@@ -493,6 +506,7 @@
               "id": "7wZlO34",
               "label": "Great Ritual Blade (A6, Rending, Surge)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Great Ritual Blade",
@@ -520,6 +534,7 @@
               "id": "bZkXs",
               "label": "Great Perfect Sword (A6, Shatter)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Great Perfect Sword",
@@ -543,6 +558,7 @@
               "id": "rBZeg",
               "label": "Great Arm-Crossbow (12\u0022, A8, Surge)",
               "cost": 5,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Great Arm-Crossbow",
@@ -566,6 +582,7 @@
               "id": "kzVZpCRzC5",
               "label": "Great Crossbow (18\u0022, A4, AP(1), Surge)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Great Crossbow",
@@ -589,6 +606,7 @@
               "id": "8pDhn-w",
               "label": "Great Ritual Gauntlet (A6, AP(3), Surge)",
               "cost": 45,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Great Ritual Gauntlet",
@@ -624,6 +642,7 @@
               "id": "gjatxAcX",
               "label": "Daemonic Incursion (Ambush)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -656,6 +675,7 @@
               "id": "vlNOeSLN",
               "label": "Lust Favour (Lustbound Boost)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -676,6 +696,7 @@
               "id": "REQgWTaB",
               "label": "Symbol of Lust (Hit \u0026 Run Fighter)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -696,6 +717,7 @@
               "id": "rVgkIlJi",
               "label": "Gift of Lust (Counter-Attack)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -716,6 +738,7 @@
               "id": "_QtjNRAm",
               "label": "Curse of Lust (Quick Shot Mark)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -736,6 +759,7 @@
               "id": "Vua-dUMO",
               "label": "Lore of Lust (Caster(4))",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -838,6 +862,7 @@
               "id": "zTUca",
               "label": "Ritual Spear (A1, AP(1), Deadly(3), Surge)",
               "cost": -5,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Ritual Spear",
@@ -866,6 +891,7 @@
               "id": "NiGs0",
               "label": "Heavy Ritual Blade (A3, Rending, Surge)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Heavy Ritual Blade",
@@ -893,6 +919,7 @@
               "id": "pkLpy",
               "label": "Heavy Perfect Sword (A3, Shatter)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Heavy Perfect Sword",
@@ -916,6 +943,7 @@
               "id": "SRcmF",
               "label": "Arm-Crossbow (12\u0022, A4, Surge)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Arm-Crossbow",
@@ -939,6 +967,7 @@
               "id": "84krjv1icE",
               "label": "Crossbow (18\u0022, A2, AP(1), Surge)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Crossbow",
@@ -962,6 +991,7 @@
               "id": "aKapG",
               "label": "Heavy Ritual Gauntlet (A3, AP(3), Surge)",
               "cost": 15,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Heavy Ritual Gauntlet",
@@ -997,6 +1027,7 @@
               "id": "Fb3NrZ9W",
               "label": "Lust Boon (Retaliate(1))",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1030,6 +1061,7 @@
               "id": "JQVhi",
               "label": "Wings (Flying)",
               "cost": 15,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1050,6 +1082,7 @@
               "id": "Ua3VaJP5Ei",
               "label": "Daemonic Incursion (Ambush Aura)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1070,6 +1103,7 @@
               "id": "Om1vI8M4Ij",
               "label": "Fury Wings (Flying, Scout)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1106,6 +1140,7 @@
               "id": "A8K-E5rI",
               "label": "Symbol of Lust (Hit \u0026 Run Fighter Aura)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1126,6 +1161,7 @@
               "id": "TXtIW7i_",
               "label": "Lust Favour (Lustbound Boost Aura)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1146,6 +1182,7 @@
               "id": "FDd7doj-",
               "label": "Gift of Lust (Counter-Attack Aura)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1166,6 +1203,7 @@
               "id": "nbd2awUp",
               "label": "Envoy of Lust (Piercing Assault Aura)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1186,6 +1224,7 @@
               "id": "tQ_k3yVR",
               "label": "Lore of Lust (Caster(3))",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1289,6 +1328,7 @@
               "id": "r6gPU",
               "label": "Blade (A1, Surge), Ritual Spear (A1, AP(1), Deadly(3), Surge)",
               "cost": -5,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Blade",
@@ -1330,6 +1370,7 @@
               "id": "s_9h7-K8ie",
               "label": "2x Perfect Sword (A2, Shatter)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Perfect Sword",
@@ -1353,6 +1394,7 @@
               "id": "fvhi2",
               "label": "Arm-Crossbow (12\u0022, A4, Surge), Perfect Sword (A2, Shatter)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Arm-Crossbow",
@@ -1389,6 +1431,7 @@
               "id": "kFpiCKiPJy",
               "label": "Crossbow (18\u0022, A2, AP(1), Surge), Perfect Sword (A2, Shatter)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Crossbow",
@@ -1439,6 +1482,7 @@
               "id": "mrzBDwXdXx",
               "label": "Ritual Blade (A2, Rending, Surge)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Ritual Blade",
@@ -1466,6 +1510,7 @@
               "id": "U8NyX",
               "label": "Ritual Gauntlet (A2, AP(3), Surge)",
               "cost": 5,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Ritual Gauntlet",
@@ -1501,6 +1546,7 @@
               "id": "yYfzlQB3",
               "label": "Lust Boon (Retaliate(1))",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1534,6 +1580,7 @@
               "id": "4ESey",
               "label": "Lust Beast (Toxin Claws (A1, Bane), Fast)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Toxin Claws",
@@ -1568,6 +1615,7 @@
               "id": "9LLVpP0SVX",
               "label": "Daemonic Incursion (Ambush Aura)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1588,6 +1636,7 @@
               "id": "0TNUv",
               "label": "Razor-Flail Chariot (Armor(3), Fast, Fear(1), Impact(6), Tough(6))",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1628,6 +1677,7 @@
               "id": "Zr4RG",
               "label": "Bonded Harbinger (Great Claws (A6, AP(1), Surge), Armor(2), Fear(1), Tough(6))",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Great Claws",
@@ -1685,6 +1735,7 @@
               "id": "J7ACi",
               "label": "Symbol of Lust (Hit \u0026 Run Fighter Aura)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1705,6 +1756,7 @@
               "id": "DZJdO",
               "label": "Army Standard Bearer (Fear(2))",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1726,6 +1778,7 @@
               "id": "tshmg",
               "label": "Icon of Lust (Unstoppable when Shooting Aura)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1746,6 +1799,7 @@
               "id": "Xv34y",
               "label": "Lust Favour (Lustbound Boost Aura)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1766,6 +1820,7 @@
               "id": "ZjQS8",
               "label": "Envoy of Lust (Piercing Assault Aura)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1786,6 +1841,7 @@
               "id": "EwGKn",
               "label": "Lore of Lust (Caster(2))",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1897,6 +1953,7 @@
               "id": "n3jlA",
               "label": "Blade (A1, Surge), Ritual Spear (A1, AP(1), Deadly(3), Surge)",
               "cost": -5,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Blade",
@@ -1938,6 +1995,7 @@
               "id": "ci5XO",
               "label": "2x Perfect Sword (A2, Shatter)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Perfect Sword",
@@ -1961,6 +2019,7 @@
               "id": "S3xkd",
               "label": "Arm-Crossbow (12\u0022, A4, Surge), Perfect Sword (A2, Shatter)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Arm-Crossbow",
@@ -1997,6 +2056,7 @@
               "id": "nrWvgNeSrP",
               "label": "Crossbow (18\u0022, A2, AP(1), Surge), Perfect Sword (A2, Shatter)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Crossbow",
@@ -2047,6 +2107,7 @@
               "id": "u3HoS",
               "label": "Ritual Blade (A2, Rending, Surge)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Ritual Blade",
@@ -2074,6 +2135,7 @@
               "id": "8bf5Y",
               "label": "Ritual Gauntlet (A2, AP(3), Surge)",
               "cost": 5,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Ritual Gauntlet",
@@ -2109,6 +2171,7 @@
               "id": "t5njE",
               "label": "Symbol of Lust (Hit \u0026 Run Fighter Aura)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -2129,6 +2192,7 @@
               "id": "YXyMB",
               "label": "Icon of Lust (Unstoppable when Shooting Aura)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -2149,6 +2213,7 @@
               "id": "ID6tT",
               "label": "Gift of Lust (Counter-Attack Aura)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -2169,6 +2234,7 @@
               "id": "HDSve",
               "label": "Envoy of Lust (Piercing Assault Aura)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -2272,6 +2338,7 @@
               "id": "ROW06azf65",
               "label": "Song of Banishment (Storm of Lust)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -2292,6 +2359,7 @@
               "id": "xEL__nR",
               "label": "Song of War (Spawn(Lust Warriors [5]))",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -2324,6 +2392,7 @@
               "id": "r70ym2wx",
               "label": "Lust Boon (Retaliate(1))",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -2397,6 +2466,7 @@
               "id": "UlQsegx",
               "label": "Sergeant",
               "cost": 5,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [
                 {
@@ -2411,6 +2481,7 @@
               "id": "Vw0GFp-",
               "label": "Banner",
               "cost": 15,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [
                 {
@@ -2425,6 +2496,7 @@
               "id": "Jy4bG64",
               "label": "Musician",
               "cost": 10,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [
                 {
@@ -2453,6 +2525,7 @@
               "id": "MW5dR",
               "label": "Perfect Sword (A1, Shatter)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Perfect Sword",
@@ -2476,6 +2549,7 @@
               "id": "Q7Zy4wQ",
               "label": "Halberd (A1, Rending, Surge)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Halberd",
@@ -2503,6 +2577,7 @@
               "id": "89ygFs5",
               "label": "Spear (A1, Counter, Surge)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Spear",
@@ -2530,6 +2605,7 @@
               "id": "Xild_ol",
               "label": "Great Weapon (A1, AP(2), Surge)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Great Weapon",
@@ -2553,6 +2629,7 @@
               "id": "Z3FjAit",
               "label": "Dual Hand Weapons (A2, Surge)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Dual Hand Weapons",
@@ -2588,6 +2665,7 @@
               "id": "sQkNOj_h",
               "label": "Lust Boon (Retaliate(1))",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -2621,6 +2699,7 @@
               "id": "VVNwWNk",
               "label": "Banner of Lust (Strider Aura)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -2703,6 +2782,7 @@
               "id": "RLQLdrcr93",
               "label": "Rending Claws (A2, Rending)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Rending Claws",
@@ -2726,6 +2806,7 @@
               "id": "ueViF",
               "label": "Armblades (A2, AP(1), Surge)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Armblades",
@@ -2819,6 +2900,7 @@
               "id": "dth-1-hW-_",
               "label": "Crossbow (18\u0022, A1, AP(1), Surge)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Crossbow",
@@ -2902,6 +2984,7 @@
               "id": "UlQsegx",
               "label": "Sergeant",
               "cost": 5,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [
                 {
@@ -2916,6 +2999,7 @@
               "id": "Vw0GFp-",
               "label": "Banner",
               "cost": 15,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [
                 {
@@ -2930,6 +3014,7 @@
               "id": "Jy4bG64",
               "label": "Musician",
               "cost": 10,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [
                 {
@@ -2958,6 +3043,7 @@
               "id": "utk495yx",
               "label": "Crossbow (18\u0022, A1, AP(1), Surge)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Crossbow",
@@ -2993,6 +3079,7 @@
               "id": "LcIbR",
               "label": "Lust Boon (Retaliate(1))",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -3026,8 +3113,8 @@
       "base": {
         "shape": "Rectangle",
         "diameterInches": 1.1023622,
-        "widthInches": 2.3622048,
-        "heightInches": 1.3779528
+        "widthInches": 1.3779528,
+        "heightInches": 2.3622048
       },
       "weapons": [
         {
@@ -3083,6 +3170,7 @@
               "id": "UlQsegx",
               "label": "Sergeant",
               "cost": 5,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [
                 {
@@ -3097,6 +3185,7 @@
               "id": "Vw0GFp-",
               "label": "Banner",
               "cost": 15,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [
                 {
@@ -3111,6 +3200,7 @@
               "id": "Jy4bG64",
               "label": "Musician",
               "cost": 10,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [
                 {
@@ -3139,6 +3229,7 @@
               "id": "esRk2",
               "label": "Perfect Sword (A1, Shatter)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Perfect Sword",
@@ -3174,6 +3265,7 @@
               "id": "-FxGRRo9",
               "label": "Lust Boon (Retaliate(1))",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -3310,6 +3402,7 @@
               "id": "nLisn",
               "label": "Heavy Ritual Blade (A3, Rending, Surge)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Heavy Ritual Blade",
@@ -3337,6 +3430,7 @@
               "id": "1jHVF",
               "label": "Mutated Perfect Claws (A4, Shatter)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Mutated Perfect Claws",
@@ -3372,8 +3466,8 @@
       "base": {
         "shape": "Rectangle",
         "diameterInches": 1.1023622,
-        "widthInches": 3.543307,
-        "heightInches": 2.047244
+        "widthInches": 2.047244,
+        "heightInches": 3.543307
       },
       "weapons": [
         {
@@ -3425,8 +3519,8 @@
       "base": {
         "shape": "Rectangle",
         "diameterInches": 1.1023622,
-        "widthInches": 4.7244096,
-        "heightInches": 3.6220472
+        "widthInches": 3.6220472,
+        "heightInches": 4.7244096
       },
       "weapons": [
         {
@@ -3503,6 +3597,7 @@
               "id": "O6GXgx8Uu3",
               "label": "Great Crossbow (24\u0022, A1, AP(2), Deadly(6), Unstoppable)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Great Crossbow",
@@ -3531,6 +3626,7 @@
               "id": "cEHjWntTqb",
               "label": "Crossbow Crew (18\u0022, A6, AP(1), Surge)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Crossbow Crew",
@@ -3566,6 +3662,7 @@
               "id": "wavabZCm",
               "label": "Curse of Lust (Quick Shot Mark)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -3598,8 +3695,8 @@
       "base": {
         "shape": "Rectangle",
         "diameterInches": 1.1023622,
-        "widthInches": 3.543307,
-        "heightInches": 2.047244
+        "widthInches": 2.047244,
+        "heightInches": 3.543307
       },
       "weapons": [
         {
@@ -3672,6 +3769,7 @@
               "id": "J0KTd170Jt",
               "label": "Focused Reflection (18\u0022, A2, AP(2), Deadly(3), Unstoppable)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Focused Reflection",
@@ -3712,6 +3810,7 @@
               "id": "AXhBnOhDQM",
               "label": "Curse of Lust (Quick Shot Mark)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -3732,6 +3831,7 @@
               "id": "BycH-qTqgI",
               "label": "Seductive Reflection (Mind Control)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -3764,8 +3864,8 @@
       "base": {
         "shape": "Rectangle",
         "diameterInches": 1.1023622,
-        "widthInches": 4.7244096,
-        "heightInches": 3.6220472
+        "widthInches": 3.6220472,
+        "heightInches": 4.7244096
       },
       "weapons": [
         {
@@ -3841,6 +3941,7 @@
               "id": "3tmbFSw",
               "label": "Heavy Lust Sword (A12, AP(2), Surge)",
               "cost": 20,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Heavy Lust Sword",
@@ -3864,6 +3965,7 @@
               "id": "5t1PC",
               "label": "Giant Perfect Sword (A18, Shatter)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Giant Perfect Sword",
@@ -3901,6 +4003,7 @@
               "id": "BIgs9KA",
               "label": "Heavy Lust Cannon (24\u0022, A6, AP(2), Surge)",
               "cost": 20,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Heavy Lust Cannon",
@@ -3924,6 +4027,7 @@
               "id": "DQDY3",
               "label": "Perfect Cannon (18\u0022, A18, Shatter)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Perfect Cannon",
@@ -3959,6 +4063,7 @@
               "id": "xDWEMYAv",
               "label": "Curse of Lust (Quick Shot Mark)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [

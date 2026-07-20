@@ -79,6 +79,7 @@
               "id": "UXGs0",
               "label": "Heavy Sword (A4, AP(1), Rending), Combat Shield (Shielded)",
               "cost": 25,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Heavy Sword",
@@ -113,6 +114,7 @@
               "id": "De_GruT",
               "label": "2x Heavy Flame-Fist (12\u0022, A1, AP(1), Blast(3), Reliable)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Heavy Flame-Fist",
@@ -141,6 +143,7 @@
               "id": "AktPCfP",
               "label": "Great Sword (A6, AP(1), Rending)",
               "cost": 30,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Great Sword",
@@ -164,6 +167,7 @@
               "id": "SscSd",
               "label": "Heavy Glaive (A6, AP(2))",
               "cost": 30,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Heavy Glaive",
@@ -196,6 +200,7 @@
               "id": "qGTUd-u",
               "label": "Heavy Gun-Fist (24\u0022, A3)",
               "cost": -5,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Heavy Gun-Fist",
@@ -214,6 +219,7 @@
               "id": "e1t2rSi",
               "label": "Heavy Shred-Fist (18\u0022, A3, Rending)",
               "cost": -5,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Heavy Shred-Fist",
@@ -237,6 +243,7 @@
               "id": "nDYS0VP",
               "label": "Heavy Fist (A3, AP(4))",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Heavy Fist",
@@ -255,6 +262,7 @@
               "id": "ITADvfn",
               "label": "Heavy Rocket-Fist (24\u0022, A1, AP(1), Blast(3), Indirect)",
               "cost": 15,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Heavy Rocket-Fist",
@@ -283,6 +291,7 @@
               "id": "D4xqrtB",
               "label": "Heavy Fusion-Fist (18\u0022, A1, AP(4), Deadly(3))",
               "cost": 10,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Heavy Fusion-Fist",
@@ -307,6 +316,7 @@
               "id": "eR1qHmr",
               "label": "Heavy Plasma-Fist (24\u0022, A3, AP(4))",
               "cost": 35,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Heavy Plasma-Fist",
@@ -325,6 +335,7 @@
               "id": "oQHii",
               "label": "Heavy Missile-Fist (30\u0022, A3, AP(3), Unstoppable)",
               "cost": 60,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Heavy Missile-Fist",
@@ -360,6 +371,7 @@
               "id": "OiWJrIS",
               "label": "Jetpack (Ambush, Flying)",
               "cost": 30,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -396,6 +408,7 @@
               "id": "GDqeD2a",
               "label": "Attack Drone (Drone Laser Gun (18\u0022, A1, Limited, Tear))",
               "cost": 5,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Drone Laser Gun",
@@ -429,6 +442,7 @@
               "id": "7LDvJ",
               "label": "Energy Drone (Ignores Cover Aura)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -461,6 +475,7 @@
               "id": "s4jtQSvi",
               "label": "Captain (Clan Warrior Boost Aura)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -481,6 +496,7 @@
               "id": "uTUI-y3T",
               "label": "Spirit-Core Bearer (Rapid Charge Aura)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -501,6 +517,7 @@
               "id": "WAhquGUQ",
               "label": "Sentinel (Fearless Aura)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -521,6 +538,7 @@
               "id": "eZc7qKDwPT",
               "label": "Sergeant (Piercing Hunter Aura)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -605,6 +623,7 @@
               "id": "GDqeD2a",
               "label": "Attack Drone (Drone Laser Gun (18\u0022, A1, Limited, Tear))",
               "cost": 5,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Drone Laser Gun",
@@ -638,6 +657,7 @@
               "id": "7LDvJ",
               "label": "Energy Drone (Ignores Cover Aura)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -673,6 +693,7 @@
               "id": "sI-nC",
               "label": "2x Leader Auto-Gun (12\u0022, A2, Rending), Martial Arts (A1)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Leader Auto-Gun",
@@ -704,6 +725,7 @@
               "id": "crZ9P",
               "label": "2x Royal Sword (A2, AP(1), Rending)",
               "cost": 10,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Royal Sword",
@@ -727,6 +749,7 @@
               "id": "wD4-2",
               "label": "2x Royal Sickle (A2, AP(2))",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Royal Sickle",
@@ -745,6 +768,7 @@
               "id": "gfuVZ",
               "label": "Spear-Shock (18\u0022, A3, AP(1)), Spear (A3, AP(1))",
               "cost": 30,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Spear-Shock",
@@ -785,6 +809,7 @@
               "id": "_tz4n",
               "label": "Leader Shotgun (12\u0022, A3, AP(1))",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Leader Shotgun",
@@ -803,6 +828,7 @@
               "id": "-rTQTwD",
               "label": "Leader Carbine (18\u0022, A3)",
               "cost": 5,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Leader Carbine",
@@ -821,6 +847,7 @@
               "id": "_rw-P",
               "label": "Leader Long Rifle (30\u0022, A2)",
               "cost": 5,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Leader Long Rifle",
@@ -853,6 +880,7 @@
               "id": "-rDhY",
               "label": "Royal Sickle (A2, AP(2))",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Royal Sickle",
@@ -871,6 +899,7 @@
               "id": "jXiwN",
               "label": "Royal Sword (A2, AP(1), Rending)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Royal Sword",
@@ -894,6 +923,7 @@
               "id": "9GWPz",
               "label": "Hook Sword (A1, AP(2), Deadly(3))",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Hook Sword",
@@ -930,6 +960,7 @@
               "id": "pfGozCg",
               "label": "Hover Alert-Drone (Repel Ambushers)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -950,6 +981,7 @@
               "id": "NhLWmJuVsQ",
               "label": "Royal Guard Master (Regeneration, Versatile Attack)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -974,6 +1006,7 @@
               "id": "tACrG",
               "label": "Ninja Master (Ambush, Stealth, Teleport)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1014,6 +1047,7 @@
               "id": "WHfDf",
               "label": "Captain (Clan Warrior Boost Aura)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1034,6 +1068,7 @@
               "id": "5g_uQuGyY8",
               "label": "Sentinel (Fearless Aura)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1054,6 +1089,7 @@
               "id": "c2hPm",
               "label": "Warlord (Counter-Attack Aura)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1074,6 +1110,7 @@
               "id": "ttrp9",
               "label": "Sage (Caster(2))",
               "cost": 40,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1095,6 +1132,7 @@
               "id": "mKMzc",
               "label": "Sergeant (Piercing Hunter Aura)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1170,6 +1208,7 @@
               "id": "xiu4bVs",
               "label": "Attack Drone (Drone Laser Gun (18\u0022, A1, Limited, Tear))",
               "cost": 5,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Drone Laser Gun",
@@ -1203,6 +1242,7 @@
               "id": "LA6wLd5",
               "label": "Energy Drone (Ignores Cover Aura)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1223,6 +1263,7 @@
               "id": "US-KuV2",
               "label": "Shield Drone (Stealth Aura)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1257,6 +1298,7 @@
               "id": "prDG6tH",
               "label": "Shotgun (12\u0022, A2, AP(1))",
               "cost": 10,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Shotgun",
@@ -1275,6 +1317,7 @@
               "id": "otFL3q7",
               "label": "Carbine (18\u0022, A2)",
               "cost": 15,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Carbine",
@@ -1307,6 +1350,7 @@
               "id": "gkw6bMI",
               "label": "Flamer (12\u0022, A1, Blast(3), Reliable)",
               "cost": 10,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Flamer",
@@ -1335,6 +1379,7 @@
               "id": "4qMNiYP",
               "label": "Shred Rifle (18\u0022, A2, Rending)",
               "cost": 10,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Shred Rifle",
@@ -1358,6 +1403,7 @@
               "id": "SG_Ukxc",
               "label": "Plasma Rifle (24\u0022, A1, AP(4))",
               "cost": 10,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Plasma Rifle",
@@ -1376,6 +1422,7 @@
               "id": "D38XYVt",
               "label": "Fusion Rifle (12\u0022, A1, AP(4), Deadly(3))",
               "cost": 15,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Fusion Rifle",
@@ -1400,6 +1447,7 @@
               "id": "qstLI",
               "label": "Shishi Turret (Rocket (24\u0022, A1, Blast(3), Indirect))",
               "cost": 20,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Rocket",
@@ -1434,6 +1482,7 @@
               "id": "hN_rU",
               "label": "Shishi Turret (Missiles (30\u0022, A2, AP(3), Unstoppable))",
               "cost": 40,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Missiles",
@@ -1478,6 +1527,7 @@
               "id": "JPPHfen9",
               "label": "Twin Heavy Pistol (12\u0022, A2, AP(1)), CCW (A1)",
               "cost": 5,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Twin Heavy Pistol",
@@ -1504,6 +1554,7 @@
               "id": "GjCgpsV7",
               "label": "Heavy Pistol (12\u0022, A1, AP(1)), Royal Sword (A2, AP(1), Rending)",
               "cost": 5,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Heavy Pistol",
@@ -1547,6 +1598,7 @@
               "id": "8_8b0uLdkr",
               "label": "Honor-Bound (Vengeance)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1626,6 +1678,7 @@
               "id": "xiu4bVs",
               "label": "Attack Drone (Drone Laser Gun (18\u0022, A1, Limited, Tear))",
               "cost": 5,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Drone Laser Gun",
@@ -1659,6 +1712,7 @@
               "id": "LA6wLd5",
               "label": "Energy Drone (Ignores Cover Aura)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1679,6 +1733,7 @@
               "id": "US-KuV2",
               "label": "Shield Drone (Stealth Aura)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1713,6 +1768,7 @@
               "id": "xIaJd",
               "label": "Carbine (18\u0022, A2)",
               "cost": 5,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Carbine",
@@ -1745,6 +1801,7 @@
               "id": "gTZ_Mmv",
               "label": "Energy Rifle (36\u0022, A1, AP(4))",
               "cost": 15,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Energy Rifle",
@@ -1763,6 +1820,7 @@
               "id": "piDSZzn",
               "label": "Sniper Rifle (30\u0022, A1, AP(1), Reliable, Takedown)",
               "cost": 30,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Sniper Rifle",
@@ -1802,6 +1860,7 @@
               "id": "HdF_Tbl",
               "label": "Dynastic Triangulator (Ambush Beacon)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1902,6 +1961,7 @@
               "id": "-iI0H_1-k5",
               "label": "Auto-Gun (12\u0022, A1, Rending), Sickle (A1, AP(2))",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Auto-Gun",
@@ -1933,6 +1993,7 @@
               "id": "BwYgH",
               "label": "2x Sword (A1, AP(1), Rending)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Sword",
@@ -1956,6 +2017,7 @@
               "id": "I6JwNYkW-4",
               "label": "2x Sickle (A1, AP(2))",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Sickle",
@@ -1974,6 +2036,7 @@
               "id": "Y5M4AZtMUW",
               "label": "2x Auto-Gun (12\u0022, A1, Rending), Martial Arts (A1)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Auto-Gun",
@@ -2070,6 +2133,7 @@
               "id": "bZSmr7t",
               "label": "Spear-Flame (12\u0022, A1, Blast(3), Limited, Reliable)",
               "cost": 5,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Spear-Flame",
@@ -2102,6 +2166,7 @@
               "id": "_8-zMw2",
               "label": "Spear-Plasma (24\u0022, A1, AP(4), Limited)",
               "cost": 5,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Spear-Plasma",
@@ -2125,6 +2190,7 @@
               "id": "WU6bxcp",
               "label": "Spear-Fuse (12\u0022, A1, AP(4), Deadly(3), Limited)",
               "cost": 10,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Spear-Fuse",
@@ -2153,6 +2219,7 @@
               "id": "q9VAaXE",
               "label": "Spear-Shred (9\u0022, A3, Rending)",
               "cost": 10,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Spear-Shred",
@@ -2188,6 +2255,7 @@
               "id": "8_8b0uLdkr",
               "label": "Honor-Bound (Vengeance)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -2274,6 +2342,7 @@
               "id": "h1PYOOy",
               "label": "Heavy Laser Gun (24\u0022, A1, Deadly(3), Tear)",
               "cost": 30,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Heavy Laser Gun",
@@ -2364,6 +2433,7 @@
               "id": "M_627RW",
               "label": "Gun-Fist (24\u0022, A2)",
               "cost": 10,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Gun-Fist",
@@ -2382,6 +2452,7 @@
               "id": "IGin4xV",
               "label": "Shred-Fist (18\u0022, A2, Rending)",
               "cost": 10,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Shred-Fist",
@@ -2405,6 +2476,7 @@
               "id": "5v30Yp_",
               "label": "Plasma-Fist (24\u0022, A2, AP(4))",
               "cost": 35,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Plasma-Fist",
@@ -2437,6 +2509,7 @@
               "id": "Gjv3O",
               "label": "Flame-Fist (12\u0022, A1, Blast(3), Reliable)",
               "cost": 10,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Flame-Fist",
@@ -2465,6 +2538,7 @@
               "id": "2r1w6",
               "label": "Fusion-Fist (12\u0022, A1, AP(4), Deadly(3))",
               "cost": 20,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Fusion-Fist",
@@ -2489,6 +2563,7 @@
               "id": "XR9DY",
               "label": "Rocket-Fist (24\u0022, A1, Blast(3), Indirect)",
               "cost": 25,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Rocket-Fist",
@@ -2517,6 +2592,7 @@
               "id": "99TW4",
               "label": "Missile-Fist (30\u0022, A2, AP(3), Unstoppable)",
               "cost": 50,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Missile-Fist",
@@ -2554,6 +2630,7 @@
               "id": "_FX3A",
               "label": "Sword (A2, AP(1), Rending), Combat Shield (Shielded)",
               "cost": 5,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Sword",
@@ -2588,6 +2665,7 @@
               "id": "7TIhtQ1",
               "label": "Heavy Glaive (A3, AP(2))",
               "cost": 15,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Heavy Glaive",
@@ -2618,6 +2696,7 @@
               "id": "LGBieIm",
               "label": "Jetpacks (Ambush, Flying)",
               "cost": 50,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -2654,6 +2733,7 @@
               "id": "xiu4bVs",
               "label": "Attack Drone (Drone Laser Gun (18\u0022, A1, Limited, Tear))",
               "cost": 5,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Drone Laser Gun",
@@ -2687,6 +2767,7 @@
               "id": "LA6wLd5",
               "label": "Energy Drone (Ignores Cover Aura)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -2707,6 +2788,7 @@
               "id": "US-KuV2",
               "label": "Shield Drone (Stealth Aura)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -2739,6 +2821,7 @@
               "id": "8_8b0uLdkr",
               "label": "Honor-Bound (Vengeance)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -2820,6 +2903,7 @@
               "id": "8pkC9NI3fY",
               "label": "Vanguard Hunt Master (Scout)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -2840,6 +2924,7 @@
               "id": "EE3I2k_",
               "label": "Combat Hunt Master (Unpredictable Fighter)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -2872,8 +2957,8 @@
       "base": {
         "shape": "Rectangle",
         "diameterInches": 1.1023622,
-        "widthInches": 2.3622048,
-        "heightInches": 1.3779528
+        "widthInches": 1.3779528,
+        "heightInches": 2.3622048
       },
       "weapons": [
         {
@@ -2916,6 +3001,7 @@
               "id": "8pkC9NI3fY",
               "label": "Vanguard Hunt Master (Scout)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -2936,6 +3022,7 @@
               "id": "EE3I2k_",
               "label": "Combat Hunt Master (Unpredictable Fighter)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -3012,6 +3099,7 @@
               "id": "8pkC9NI3fY",
               "label": "Vanguard Hunt Master (Scout)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -3032,6 +3120,7 @@
               "id": "EE3I2k_",
               "label": "Combat Hunt Master (Unpredictable Fighter)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -3134,6 +3223,7 @@
               "id": "vaMM5",
               "label": "Heavy Auto-Gun (18\u0022, A4, Rending)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Heavy Auto-Gun",
@@ -3157,6 +3247,7 @@
               "id": "Mc0hP-F",
               "label": "Heavy Laser Gun (24\u0022, A1, Deadly(3), Tear)",
               "cost": 5,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Heavy Laser Gun",
@@ -3280,6 +3371,7 @@
               "id": "vaMM5",
               "label": "Heavy Auto-Gun (18\u0022, A4, Rending)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Heavy Auto-Gun",
@@ -3303,6 +3395,7 @@
               "id": "Mc0hP-F",
               "label": "Heavy Laser Gun (24\u0022, A1, Deadly(3), Tear)",
               "cost": 5,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Heavy Laser Gun",
@@ -3345,6 +3438,7 @@
               "id": "aoQXmlE",
               "label": "Heavy Anti-Tank Cannon (30\u0022, A2, AP(3), Deadly(6))",
               "cost": 60,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Heavy Anti-Tank Cannon",
@@ -3369,6 +3463,7 @@
               "id": "lMuE5Ho",
               "label": "Heavy Battle Cannon (30\u0022, A4, AP(2), Blast(3))",
               "cost": 50,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Heavy Battle Cannon",
@@ -3393,6 +3488,7 @@
               "id": "wuxvn5i",
               "label": "Heavy Autocannon (36\u0022, A9, AP(2))",
               "cost": 50,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Heavy Autocannon",
@@ -3423,8 +3519,8 @@
       "base": {
         "shape": "Rectangle",
         "diameterInches": 1.1023622,
-        "widthInches": 4.133858,
-        "heightInches": 2.7559056
+        "widthInches": 2.7559056,
+        "heightInches": 4.133858
       },
       "weapons": [
         {
@@ -3496,6 +3592,7 @@
               "id": "uw5E9tU",
               "label": "Twin Heavy Laser Gun (24\u0022, A2, Deadly(3), Tear)",
               "cost": 35,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Twin Heavy Laser Gun",
@@ -3538,6 +3635,7 @@
               "id": "roYJO",
               "label": "Hull Flamer (12\u0022, A2, AP(1), Reliable)",
               "cost": 5,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Hull Flamer",
@@ -3561,6 +3659,7 @@
               "id": "tLIt4",
               "label": "Hull Laser Gun (24\u0022, A2, Tear)",
               "cost": 15,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Hull Laser Gun",
@@ -3596,6 +3695,7 @@
               "id": "SOrxHcd-",
               "label": "Targeting Beam (Increased Shooting Range Mark)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -3710,6 +3810,7 @@
               "id": "-urYOJ3",
               "label": "Sword-Laser (12\u0022, A4, Tear), Heavy Sword (A6, AP(1), Rending)",
               "cost": 10,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Sword-Laser",
@@ -3760,6 +3861,7 @@
               "id": "nBT_j8z",
               "label": "Rope-Blade (12\u0022, A4, Rending)",
               "cost": 15,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Rope-Blade",
@@ -3783,6 +3885,7 @@
               "id": "HsG3fFc",
               "label": "Displacement Pack (Teleport)",
               "cost": 35,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -3815,6 +3918,7 @@
               "id": "SOrxHcd-",
               "label": "Targeting Beam (Increased Shooting Range Mark)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -3912,6 +4016,7 @@
               "id": "__gmQ",
               "label": "Rocket Launcher (24\u0022, A4, Blast(3), Indirect)",
               "cost": 35,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Rocket Launcher",
@@ -3940,6 +4045,7 @@
               "id": "o_6YXlG",
               "label": "Heavy Blast Cannon (24\u0022, A4, AP(2), Blast(3))",
               "cost": 80,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Heavy Blast Cannon",
@@ -3964,6 +4070,7 @@
               "id": "F1ATleg",
               "label": "Heavy Strike Cannon (30\u0022, A2, AP(3), Deadly(6))",
               "cost": 115,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Heavy Strike Cannon",
@@ -3988,6 +4095,7 @@
               "id": "kACjT",
               "label": "Missile Launcher (30\u0022, A8, AP(3), Unstoppable)",
               "cost": 140,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Missile Launcher",
@@ -4023,6 +4131,7 @@
               "id": "--fyg35",
               "label": "Attack Drone (Laser Gun (18\u0022, A1, Tear))",
               "cost": 15,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Laser Gun",
@@ -4052,6 +4161,7 @@
               "id": "dkLZM3_",
               "label": "Shield Drone (Stealth)",
               "cost": 65,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -4084,8 +4194,8 @@
       "base": {
         "shape": "Rectangle",
         "diameterInches": 1.1023622,
-        "widthInches": 4.7244096,
-        "heightInches": 3.6220472
+        "widthInches": 3.6220472,
+        "heightInches": 4.7244096
       },
       "weapons": [
         {
@@ -4148,6 +4258,7 @@
               "id": "E27jCOs",
               "label": "Titan Heavy Laser Rifle (24\u0022, A4, Deadly(3), Tear)",
               "cost": 90,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Titan Heavy Laser Rifle",
@@ -4176,6 +4287,7 @@
               "id": "UEt81Wo",
               "label": "Titan Heavy Plasma Rifle (24\u0022, A4, AP(4), Blast(3))",
               "cost": 115,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Titan Heavy Plasma Rifle",
@@ -4200,6 +4312,7 @@
               "id": "QNj4c6l",
               "label": "Titan Heavy Shred Rifle (24\u0022, A18, Rending)",
               "cost": 135,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Titan Heavy Shred Rifle",
@@ -4235,6 +4348,7 @@
               "id": "t8BChtR",
               "label": "Force Field (Stealth)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -4536,6 +4650,7 @@
               "id": "yhcXM6Q",
               "label": "Titan Strike Cannon (36\u0022, A2, AP(3), Deadly(6))",
               "cost": 40,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Titan Strike Cannon",
@@ -4574,6 +4689,7 @@
               "id": "cxVw9Ds",
               "label": "Missile Pod (30\u0022, A4, AP(3), Unstoppable)",
               "cost": 50,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Missile Pod",
@@ -4680,8 +4796,8 @@
       "base": {
         "shape": "Rectangle",
         "diameterInches": 1.1023622,
-        "widthInches": 2.952756,
-        "heightInches": 1.8110236
+        "widthInches": 1.8110236,
+        "heightInches": 2.952756
       },
       "weapons": [
         {

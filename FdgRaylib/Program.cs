@@ -255,6 +255,47 @@ if (retrofitIdx >= 0 && retrofitIdx + 1 < args.Length)
     return;
 }
 
+// --retrofit-bases <fileOrDir> [more...]  (#225): correct rectangular base orientation in existing data.
+// OPR writes its base spec length-first and the engine runs HeightInches along the facing, so books
+// imported before the fix have the two swapped (a 60x35 bike faced across its 35mm axis). Idempotent —
+// only entries with Width > Height are touched, and a corrected base never matches again.
+int retrofitBasesIdx = Array.IndexOf(args, "--retrofit-bases");
+if (retrofitBasesIdx >= 0 && retrofitBasesIdx + 1 < args.Length)
+{
+    List<string> targets = args.Skip(retrofitBasesIdx + 1).TakeWhile(a => !a.StartsWith("--"))
+        .SelectMany(t => Directory.Exists(t)
+            ? Directory.GetFiles(t, "*" + BookFile.EXTENSION_WITH_PERIOD)
+                .Concat(Directory.GetFiles(t, "*" + ArmyListFile.EXTENSION_WITH_PERIOD))
+            : new[] { t })
+        .ToList();
+    int patched = 0;
+    foreach (string path in targets)
+    {
+        bool changed;
+        if (path.EndsWith(BookFile.EXTENSION_WITH_PERIOD, StringComparison.OrdinalIgnoreCase))
+        {
+            BookFile book = JsonSerializer.Deserialize<BookFile>(File.ReadAllText(path), RuleJson.Options)!;
+            changed = BaseOrientationRetrofit.ApplyToBook(book);
+            if (changed) File.WriteAllText(path, JsonSerializer.Serialize(book, RuleJson.Options));
+        }
+        else
+        {
+            // As #239: read as BuiltArmyFile so a forge army's selections/book snapshot survive the
+            // round-trip (#236), and re-serialize as the base type when there is no forge block.
+            BuiltArmyFile army = JsonSerializer.Deserialize<BuiltArmyFile>(File.ReadAllText(path), RuleJson.Options)!;
+            changed = BaseOrientationRetrofit.ApplyToArmy(army);
+            if (changed)
+                File.WriteAllText(path, army.Book != null
+                    ? JsonSerializer.Serialize(army, RuleJson.Options)
+                    : JsonSerializer.Serialize<ArmyListFile>(army, RuleJson.Options));
+        }
+        Console.WriteLine($"  {(changed ? "patched" : "unchanged")}: {path}");
+        if (changed) patched++;
+    }
+    Console.WriteLine($"Base-orientation retrofit complete: {patched}/{targets.Count} file(s) patched.");
+    return;
+}
+
 // --make-scenario <scenario.json> <out.fdgsave>  (#167 T1): compile a compact scenario JSON (armies,
 // placements, wounds/tokens, whose activation it is) into a resumable save positioned at the start of
 // the active player's activation. Author a rule test in ~20 lines of JSON instead of playing to it.

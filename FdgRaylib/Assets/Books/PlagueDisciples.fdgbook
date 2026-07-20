@@ -78,6 +78,7 @@
               "id": "2dvMhWR",
               "label": "Great Plague Flail (A2, AP(1), Blast(3), Bane)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Great Plague Flail",
@@ -106,6 +107,7 @@
               "id": "5Ax_e",
               "label": "Dual Energy Claws (A8, Rending)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Dual Energy Claws",
@@ -129,6 +131,7 @@
               "id": "a0ksJHj",
               "label": "Great Scythe (A2, AP(4), Deadly(3))",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Great Scythe",
@@ -153,6 +156,7 @@
               "id": "xZGhjR-",
               "label": "Twin Plague Sprayer (12\u0022, A2, Blast(3), Reliable, Bane), CCW (A4)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Twin Plague Sprayer",
@@ -193,6 +197,7 @@
               "id": "OXvOM",
               "label": "Rapid Storm Rifle (24\u0022, A6, AP(1)), CCW (A4)",
               "cost": 50,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Rapid Storm Rifle",
@@ -233,6 +238,7 @@
               "id": "fAY2m",
               "label": "Flamer-Mod (12\u0022, A1, Blast(3), Limited, Reliable)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Flamer-Mod",
@@ -265,6 +271,7 @@
               "id": "5f-k3",
               "label": "Plasma-Mod (24\u0022, A1, AP(4), Limited)",
               "cost": 5,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Plasma-Mod",
@@ -288,6 +295,7 @@
               "id": "ul9Pc",
               "label": "Shred-Mod (18\u0022, A2, Limited, Rending)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Shred-Mod",
@@ -315,6 +323,7 @@
               "id": "N6IIj",
               "label": "Fusion-Mod (12\u0022, A1, AP(4), Deadly(3), Limited)",
               "cost": 5,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Fusion-Mod",
@@ -357,6 +366,7 @@
               "id": "WzIKq",
               "label": "Energy Hammer (A2, Blast(3))",
               "cost": 5,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Energy Hammer",
@@ -381,6 +391,7 @@
               "id": "Ku1A9",
               "label": "Energy Sword (A4, AP(1), Rending)",
               "cost": 15,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Energy Sword",
@@ -404,6 +415,7 @@
               "id": "kSrhB",
               "label": "Energy Axe (A2, AP(2), Deadly(3))",
               "cost": 25,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Energy Axe",
@@ -428,6 +440,7 @@
               "id": "E9AsU",
               "label": "Energy Fist (A4, AP(4))",
               "cost": 30,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Energy Fist",
@@ -458,6 +471,7 @@
               "id": "mOC3hVrF",
               "label": "Executioner (Furious Aura)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -478,6 +492,7 @@
               "id": "yshbWEXO",
               "label": "Apostle (Relentless Aura)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -498,6 +513,7 @@
               "id": "yeTi6-bvPI",
               "label": "Lord of Plague (Plaguebound Boost Aura)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -518,6 +534,7 @@
               "id": "vzl0Nlsr5S",
               "label": "Icon Bearer (Resistance Aura)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -538,6 +555,7 @@
               "id": "GhEve9EO",
               "label": "Dark Smith (Mend)",
               "cost": 35,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -558,6 +576,7 @@
               "id": "bABQt8xN",
               "label": "Warlock (Caster(2))",
               "cost": 40,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -579,6 +598,7 @@
               "id": "-XpxVzLH",
               "label": "Master Warlock (Caster(3))",
               "cost": 60,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -681,6 +701,7 @@
               "id": "aMLwh7b",
               "label": "Dual Plague CCWs (A4, Bane)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Dual Plague CCWs",
@@ -704,6 +725,7 @@
               "id": "o9Ormg7",
               "label": "Dual Energy Claws (A4, Rending)",
               "cost": -5,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Dual Energy Claws",
@@ -741,6 +763,7 @@
               "id": "POl7y",
               "label": "Champion Heavy Pistol (12\u0022, A2, AP(1))",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Champion Heavy Pistol",
@@ -759,6 +782,7 @@
               "id": "QQ8bDXD",
               "label": "Plague Sprayer (12\u0022, A1, Blast(3), Reliable, Bane)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Plague Sprayer",
@@ -791,6 +815,7 @@
               "id": "36K0S",
               "label": "Champion Plasma Pistol (12\u0022, A2, AP(4))",
               "cost": 10,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Champion Plasma Pistol",
@@ -809,6 +834,7 @@
               "id": "HvOtB",
               "label": "Champion Heavy Rifle (24\u0022, A2, AP(1))",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Champion Heavy Rifle",
@@ -827,6 +853,7 @@
               "id": "BCW9rdH",
               "label": "Champion Plasma Rifle (24\u0022, A2, AP(4))",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Champion Plasma Rifle",
@@ -845,6 +872,7 @@
               "id": "JaE_90z",
               "label": "Champion Storm Rifle (24\u0022, A4, AP(1))",
               "cost": 45,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Champion Storm Rifle",
@@ -877,6 +905,7 @@
               "id": "9vt9C",
               "label": "Flamer-Mod (12\u0022, A1, Blast(3), Limited, Reliable)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Flamer-Mod",
@@ -909,6 +938,7 @@
               "id": "1ijr4YU",
               "label": "Plasma-Mod (24\u0022, A1, AP(4), Limited)",
               "cost": 5,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Plasma-Mod",
@@ -932,6 +962,7 @@
               "id": "FaFLg",
               "label": "Shred-Mod (18\u0022, A2, Limited, Rending)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Shred-Mod",
@@ -959,6 +990,7 @@
               "id": "zYMyr4Y",
               "label": "Fusion-Mod (12\u0022, A1, AP(4), Deadly(3), Limited)",
               "cost": 5,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Fusion-Mod",
@@ -1001,6 +1033,7 @@
               "id": "aAXx9O1",
               "label": "Energy Hammer (A1, Blast(3))",
               "cost": 10,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Energy Hammer",
@@ -1025,6 +1058,7 @@
               "id": "AirwBzy",
               "label": "Energy Sword (A2, AP(1), Rending)",
               "cost": 15,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Energy Sword",
@@ -1048,6 +1082,7 @@
               "id": "XRjNJSC",
               "label": "Plague Sword (A2, AP(1), Bane)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Plague Sword",
@@ -1071,6 +1106,7 @@
               "id": "RqChaRj",
               "label": "Energy Axe (A1, AP(2), Deadly(3))",
               "cost": 20,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Energy Axe",
@@ -1095,6 +1131,7 @@
               "id": "-5V1AIA",
               "label": "Energy Fist (A2, AP(4))",
               "cost": 20,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Energy Fist",
@@ -1113,6 +1150,7 @@
               "id": "o_FTKFB",
               "label": "Heavy Scythe (A1, AP(4), Deadly(3))",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Heavy Scythe",
@@ -1149,6 +1187,7 @@
               "id": "cDS7rgc",
               "label": "Jetpack (Ambush, Flying)",
               "cost": 15,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1173,6 +1212,7 @@
               "id": "DTKHb",
               "label": "Combat Bike (Twin Heavy Rifle (24\u0022, A2, AP(1)), Fast, Tough(3))",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Twin Heavy Rifle",
@@ -1219,6 +1259,7 @@
               "id": "_QHruNVceH",
               "label": "Executioner (Furious Aura)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1239,6 +1280,7 @@
               "id": "LbakQ7T",
               "label": "Lord of Plague (Plaguebound Boost Aura)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1259,6 +1301,7 @@
               "id": "TsWKL",
               "label": "Icon Bearer (Resistance Aura)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1279,6 +1322,7 @@
               "id": "yHdoG4PCOv",
               "label": "Agitator (Scout Aura)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1299,6 +1343,7 @@
               "id": "xnJ65d4",
               "label": "Dark Smith (Mend)",
               "cost": 35,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1319,6 +1364,7 @@
               "id": "7cZIObC",
               "label": "Warlock (Caster(2))",
               "cost": 40,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1340,6 +1386,7 @@
               "id": "uZMlPK1",
               "label": "Plague Bringer (Bounding Aura)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1360,6 +1407,7 @@
               "id": "cCJ_5fl",
               "label": "Master Warlock (Caster(3))",
               "cost": 60,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1458,6 +1506,7 @@
               "id": "aMLwh7b",
               "label": "Dual Plague CCWs (A4, Bane)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Dual Plague CCWs",
@@ -1481,6 +1530,7 @@
               "id": "o9Ormg7",
               "label": "Dual Energy Claws (A4, Rending)",
               "cost": -5,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Dual Energy Claws",
@@ -1518,6 +1568,7 @@
               "id": "POl7y",
               "label": "Champion Heavy Pistol (12\u0022, A2, AP(1))",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Champion Heavy Pistol",
@@ -1536,6 +1587,7 @@
               "id": "QQ8bDXD",
               "label": "Plague Sprayer (12\u0022, A1, Blast(3), Reliable, Bane)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Plague Sprayer",
@@ -1568,6 +1620,7 @@
               "id": "36K0S",
               "label": "Champion Plasma Pistol (12\u0022, A2, AP(4))",
               "cost": 10,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Champion Plasma Pistol",
@@ -1586,6 +1639,7 @@
               "id": "HvOtB",
               "label": "Champion Heavy Rifle (24\u0022, A2, AP(1))",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Champion Heavy Rifle",
@@ -1604,6 +1658,7 @@
               "id": "BCW9rdH",
               "label": "Champion Plasma Rifle (24\u0022, A2, AP(4))",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Champion Plasma Rifle",
@@ -1622,6 +1677,7 @@
               "id": "JaE_90z",
               "label": "Champion Storm Rifle (24\u0022, A4, AP(1))",
               "cost": 45,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Champion Storm Rifle",
@@ -1654,6 +1710,7 @@
               "id": "9vt9C",
               "label": "Flamer-Mod (12\u0022, A1, Blast(3), Limited, Reliable)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Flamer-Mod",
@@ -1686,6 +1743,7 @@
               "id": "1ijr4YU",
               "label": "Plasma-Mod (24\u0022, A1, AP(4), Limited)",
               "cost": 5,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Plasma-Mod",
@@ -1709,6 +1767,7 @@
               "id": "FaFLg",
               "label": "Shred-Mod (18\u0022, A2, Limited, Rending)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Shred-Mod",
@@ -1736,6 +1795,7 @@
               "id": "zYMyr4Y",
               "label": "Fusion-Mod (12\u0022, A1, AP(4), Deadly(3), Limited)",
               "cost": 5,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Fusion-Mod",
@@ -1778,6 +1838,7 @@
               "id": "aAXx9O1",
               "label": "Energy Hammer (A1, Blast(3))",
               "cost": 10,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Energy Hammer",
@@ -1802,6 +1863,7 @@
               "id": "AirwBzy",
               "label": "Energy Sword (A2, AP(1), Rending)",
               "cost": 15,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Energy Sword",
@@ -1825,6 +1887,7 @@
               "id": "XRjNJSC",
               "label": "Plague Sword (A2, AP(1), Bane)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Plague Sword",
@@ -1848,6 +1911,7 @@
               "id": "RqChaRj",
               "label": "Energy Axe (A1, AP(2), Deadly(3))",
               "cost": 20,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Energy Axe",
@@ -1872,6 +1936,7 @@
               "id": "-5V1AIA",
               "label": "Energy Fist (A2, AP(4))",
               "cost": 20,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Energy Fist",
@@ -1890,6 +1955,7 @@
               "id": "o_FTKFB",
               "label": "Heavy Scythe (A1, AP(4), Deadly(3))",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Heavy Scythe",
@@ -1926,6 +1992,7 @@
               "id": "cDS7rgc",
               "label": "Jetpack (Ambush, Flying)",
               "cost": 15,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1950,6 +2017,7 @@
               "id": "DTKHb",
               "label": "Combat Bike (Twin Heavy Rifle (24\u0022, A2, AP(1)), Fast, Tough(3))",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Twin Heavy Rifle",
@@ -1996,6 +2064,7 @@
               "id": "_QHruNVceH",
               "label": "Executioner (Furious Aura)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -2016,6 +2085,7 @@
               "id": "LbakQ7T",
               "label": "Lord of Plague (Plaguebound Boost Aura)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -2036,6 +2106,7 @@
               "id": "TsWKL",
               "label": "Icon Bearer (Resistance Aura)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -2056,6 +2127,7 @@
               "id": "yHdoG4PCOv",
               "label": "Agitator (Scout Aura)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -2076,6 +2148,7 @@
               "id": "xnJ65d4",
               "label": "Dark Smith (Mend)",
               "cost": 35,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -2096,6 +2169,7 @@
               "id": "7cZIObC",
               "label": "Warlock (Caster(2))",
               "cost": 40,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -2117,6 +2191,7 @@
               "id": "uZMlPK1",
               "label": "Plague Bringer (Bounding Aura)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -2137,6 +2212,7 @@
               "id": "cCJ_5fl",
               "label": "Master Warlock (Caster(3))",
               "cost": 60,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -2225,6 +2301,7 @@
               "id": "New6F",
               "label": "Cursed Blade (A3, AP(2), Rending)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Cursed Blade",
@@ -2262,6 +2339,7 @@
               "id": "WjkEP",
               "label": "Flamer Pistol (6\u0022, A1, Blast(3), Reliable)",
               "cost": 5,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Flamer Pistol",
@@ -2290,6 +2368,7 @@
               "id": "LELvX",
               "label": "Champion Rifle (24\u0022, A2)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Champion Rifle",
@@ -2308,6 +2387,7 @@
               "id": "HW4sP",
               "label": "Champion Shred Pistol (9\u0022, A3, Rending)",
               "cost": 5,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Champion Shred Pistol",
@@ -2331,6 +2411,7 @@
               "id": "F14Xi",
               "label": "Champion Shotgun (12\u0022, A4, AP(1))",
               "cost": 10,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Champion Shotgun",
@@ -2349,6 +2430,7 @@
               "id": "wf8Q_",
               "label": "Champion Sniper Rifle (30\u0022, A2, AP(1), Reliable, Takedown)",
               "cost": 70,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Champion Sniper Rifle",
@@ -2390,6 +2472,7 @@
               "id": "JfJwB",
               "label": "Energy Sword (A2, AP(1), Rending)",
               "cost": 10,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Energy Sword",
@@ -2425,6 +2508,7 @@
               "id": "I9WADJA3OK",
               "label": "Executioner (Furious Aura)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -2445,6 +2529,7 @@
               "id": "Kbas1D_F",
               "label": "Apostle (Relentless Aura)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -2465,6 +2550,7 @@
               "id": "utKPfeqN",
               "label": "Icon Bearer (Resistance Aura)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -2485,6 +2571,7 @@
               "id": "dUWwngua",
               "label": "Agitator (Scout Aura)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -2505,6 +2592,7 @@
               "id": "dkjSGrSyEV",
               "label": "Psy-Witch  (Caster(2))",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -2626,6 +2714,7 @@
               "id": "0B4im",
               "label": "Pistol (12\u0022, A1), CCW (A2)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Pistol",
@@ -2666,6 +2755,7 @@
               "id": "ri_BjYQ",
               "label": "Shotgun (12\u0022, A2, AP(1))",
               "cost": 5,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Shotgun",
@@ -2684,6 +2774,7 @@
               "id": "IVug8l-",
               "label": "Plasma Rifle (24\u0022, A1, AP(4))",
               "cost": 5,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Plasma Rifle",
@@ -2702,6 +2793,7 @@
               "id": "kAbDRNQ",
               "label": "Grenade Launcher (24\u0022, A1, Blast(3))",
               "cost": 10,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Grenade Launcher",
@@ -2726,6 +2818,7 @@
               "id": "pD2_4Le",
               "label": "Shred Rifle (18\u0022, A2, Rending)",
               "cost": 10,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Shred Rifle",
@@ -2749,6 +2842,7 @@
               "id": "FTZ763l",
               "label": "Machinegun (30\u0022, A3)",
               "cost": 15,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Machinegun",
@@ -2767,6 +2861,7 @@
               "id": "jVQYVT4",
               "label": "Flamer (12\u0022, A1, Blast(3), Reliable)",
               "cost": 15,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Flamer",
@@ -2795,6 +2890,7 @@
               "id": "fFmreMg",
               "label": "Sniper Rifle (30\u0022, A1, AP(1), Reliable, Takedown)",
               "cost": 30,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Sniper Rifle",
@@ -2834,6 +2930,7 @@
               "id": "ctN4b2Sfde",
               "label": "Havoc Favour (Steadfast Aura)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -2854,6 +2951,7 @@
               "id": "jfNfn",
               "label": "Icon of Havoc (Versatile Defense Aura)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -2932,6 +3030,7 @@
               "id": "D0a2W9w",
               "label": "Dual Plague CCWs (A2, Bane)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Dual Plague CCWs",
@@ -2955,6 +3054,7 @@
               "id": "kfTmc",
               "label": "Heavy Pistol (12\u0022, A1, AP(1)), Heavy CCW (A2, AP(1))",
               "cost": 10,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Heavy Pistol",
@@ -2995,6 +3095,7 @@
               "id": "8PAJOV-",
               "label": "Flamer (12\u0022, A1, Blast(3), Reliable)",
               "cost": 5,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Flamer",
@@ -3023,6 +3124,7 @@
               "id": "I3h7cs1",
               "label": "Shred Rifle (18\u0022, A2, Rending)",
               "cost": 10,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Shred Rifle",
@@ -3046,6 +3148,7 @@
               "id": "vr-bWni",
               "label": "Plasma Rifle (24\u0022, A1, AP(4))",
               "cost": 10,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Plasma Rifle",
@@ -3064,6 +3167,7 @@
               "id": "iKwlWss",
               "label": "Plague Sprayer (12\u0022, A1, Blast(3), Reliable, Bane)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Plague Sprayer",
@@ -3096,6 +3200,7 @@
               "id": "twKwP97",
               "label": "Plague Launcher (24\u0022, A1, Blast(3), Bane)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Plague Launcher",
@@ -3124,6 +3229,7 @@
               "id": "MM45MaX",
               "label": "Fusion Rifle (12\u0022, A1, AP(4), Deadly(3))",
               "cost": 15,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Fusion Rifle",
@@ -3148,6 +3254,7 @@
               "id": "Ygg8Lj1",
               "label": "Heavy Machinegun (30\u0022, A3, AP(1))",
               "cost": 35,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Heavy Machinegun",
@@ -3166,6 +3273,7 @@
               "id": "kpyfo",
               "label": "Reaper Cannon (24\u0022, A4, Shred)",
               "cost": 45,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Reaper Cannon",
@@ -3189,6 +3297,7 @@
               "id": "sqWFWQQ",
               "label": "Missile Launcher (30\u0022, A1, AP(2), Deadly(3), Unstoppable)",
               "cost": 55,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Missile Launcher",
@@ -3217,6 +3326,7 @@
               "id": "J1r_WVZ",
               "label": "Autocannon (36\u0022, A3, AP(2))",
               "cost": 55,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Autocannon",
@@ -3235,6 +3345,7 @@
               "id": "3itRyuu",
               "label": "Laser Cannon (36\u0022, A1, AP(3), Deadly(3))",
               "cost": 55,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Laser Cannon",
@@ -3274,6 +3385,7 @@
               "id": "7G3loWSO",
               "label": "Sgt. Heavy Pistol (12\u0022, A1, AP(1)), Energy Sword (A2, AP(1), Rending)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Sgt. Heavy Pistol",
@@ -3319,6 +3431,7 @@
               "id": "ZGih3MoY",
               "label": "Plasma Pistol (12\u0022, A1, AP(4))",
               "cost": 5,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Plasma Pistol",
@@ -3351,6 +3464,7 @@
               "id": "okqlpys7c4",
               "label": "Plague Sword (A2, AP(1), Bane)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Plague Sword",
@@ -3374,6 +3488,7 @@
               "id": "o5pQo6Xh",
               "label": "Energy Fist (A2, AP(4))",
               "cost": 15,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Energy Fist",
@@ -3404,6 +3519,7 @@
               "id": "ctN4b2Sfde",
               "label": "Havoc Favour (Steadfast Aura)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -3424,6 +3540,7 @@
               "id": "jfNfn",
               "label": "Icon of Havoc (Versatile Defense Aura)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -3459,6 +3576,7 @@
               "id": "rBwe6",
               "label": "Plague Flail (A1, AP(1), Blast(3), Bane)",
               "cost": 5,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Plague Flail",
@@ -3549,6 +3667,7 @@
               "id": "pTULH",
               "label": "Heavy Pistol (12\u0022, A1, AP(1)), Heavy CCW (A2, AP(1))",
               "cost": 10,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Heavy Pistol",
@@ -3575,6 +3694,7 @@
               "id": "YJtRIv38S3",
               "label": "Dual Plague CCWs (A4, Bane)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Dual Plague CCWs",
@@ -3598,6 +3718,7 @@
               "id": "KvvP5",
               "label": "Dual Energy Claws (A4, Rending)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Dual Energy Claws",
@@ -3635,6 +3756,7 @@
               "id": "l1qS6",
               "label": "Flamer (12\u0022, A1, Blast(3), Reliable)",
               "cost": 5,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Flamer",
@@ -3663,6 +3785,7 @@
               "id": "ddSIz",
               "label": "Shred Rifle (18\u0022, A2, Rending)",
               "cost": 10,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Shred Rifle",
@@ -3686,6 +3809,7 @@
               "id": "YoDIDlc",
               "label": "Plague Sprayer (12\u0022, A1, Blast(3), Reliable, Bane)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Plague Sprayer",
@@ -3718,6 +3842,7 @@
               "id": "sul_h",
               "label": "Plasma Rifle (24\u0022, A1, AP(4))",
               "cost": 10,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Plasma Rifle",
@@ -3736,6 +3861,7 @@
               "id": "JizpL",
               "label": "Fusion Rifle (12\u0022, A1, AP(4), Deadly(3))",
               "cost": 15,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Fusion Rifle",
@@ -3760,6 +3886,7 @@
               "id": "i7-6yda",
               "label": "Plague Launcher (24\u0022, A1, Blast(3), Bane)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Plague Launcher",
@@ -3788,6 +3915,7 @@
               "id": "6Lv93",
               "label": "Reaper Cannon (24\u0022, A4, Shred)",
               "cost": 45,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Reaper Cannon",
@@ -3811,6 +3939,7 @@
               "id": "PtT0s",
               "label": "Heavy Machinegun (30\u0022, A3, AP(1))",
               "cost": 35,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Heavy Machinegun",
@@ -3829,6 +3958,7 @@
               "id": "2Txj-",
               "label": "Missile Launcher (30\u0022, A1, AP(2), Deadly(3), Unstoppable)",
               "cost": 55,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Missile Launcher",
@@ -3857,6 +3987,7 @@
               "id": "84r1L",
               "label": "Laser Cannon (36\u0022, A1, AP(3), Deadly(3))",
               "cost": 55,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Laser Cannon",
@@ -3881,6 +4012,7 @@
               "id": "VcSTj",
               "label": "Autocannon (36\u0022, A3, AP(2))",
               "cost": 55,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Autocannon",
@@ -3913,6 +4045,7 @@
               "id": "97gCd",
               "label": "Flamer-Mod (12\u0022, A1, Blast(3), Limited, Reliable)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Flamer-Mod",
@@ -3945,6 +4078,7 @@
               "id": "Wk8hY",
               "label": "Plasma-Mod (24\u0022, A1, AP(4), Limited)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Plasma-Mod",
@@ -3968,6 +4102,7 @@
               "id": "qVIpe",
               "label": "Shred-Mod (18\u0022, A2, Limited, Rending)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Shred-Mod",
@@ -3995,6 +4130,7 @@
               "id": "O-TLs",
               "label": "Fusion-Mod (12\u0022, A1, AP(4), Deadly(3), Limited)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Fusion-Mod",
@@ -4038,6 +4174,7 @@
               "id": "GqytnSQb",
               "label": "Sgt. Heavy Pistol (12\u0022, A1, AP(1)), Energy Sword (A2, AP(1), Rending)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Sgt. Heavy Pistol",
@@ -4083,6 +4220,7 @@
               "id": "XC7NV62m",
               "label": "Plasma Pistol (12\u0022, A1, AP(4))",
               "cost": 5,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Plasma Pistol",
@@ -4115,6 +4253,7 @@
               "id": "By46gOLAzf",
               "label": "Plague Sword (A2, AP(1), Bane)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Plague Sword",
@@ -4138,6 +4277,7 @@
               "id": "D_CdmOHV",
               "label": "Energy Fist (A2, AP(4))",
               "cost": 15,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Energy Fist",
@@ -4168,6 +4308,7 @@
               "id": "ctN4b2Sfde",
               "label": "Havoc Favour (Steadfast Aura)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -4188,6 +4329,7 @@
               "id": "jfNfn",
               "label": "Icon of Havoc (Versatile Defense Aura)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -4223,6 +4365,7 @@
               "id": "rBwe6",
               "label": "Plague Flail (A1, AP(1), Blast(3), Bane)",
               "cost": 5,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Plague Flail",
@@ -4322,6 +4465,7 @@
               "id": "P2WvfNJ",
               "label": "Plague Sprayer (12\u0022, A1, Blast(3), Reliable, Bane)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Plague Sprayer",
@@ -4354,6 +4498,7 @@
               "id": "5Jb_EGA",
               "label": "Plague Launcher (24\u0022, A1, Blast(3), Bane)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Plague Launcher",
@@ -4382,6 +4527,7 @@
               "id": "G87Kv",
               "label": "Heavy Fusion Rifle (18\u0022, A1, AP(4), Deadly(3))",
               "cost": 20,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Heavy Fusion Rifle",
@@ -4406,6 +4552,7 @@
               "id": "N81q6Ss",
               "label": "Reaper Cannon (24\u0022, A4, Shred)",
               "cost": 35,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Reaper Cannon",
@@ -4429,6 +4576,7 @@
               "id": "_ykGd",
               "label": "Heavy Machinegun (30\u0022, A3, AP(1))",
               "cost": 25,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Heavy Machinegun",
@@ -4447,6 +4595,7 @@
               "id": "qb3hpvy",
               "label": "Missile Launcher (30\u0022, A1, AP(2), Deadly(3), Unstoppable)",
               "cost": 45,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Missile Launcher",
@@ -4475,6 +4624,7 @@
               "id": "e2Rd5",
               "label": "Plasma Cannon (30\u0022, A1, AP(4), Blast(3))",
               "cost": 45,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Plasma Cannon",
@@ -4499,6 +4649,7 @@
               "id": "MDL9FMa",
               "label": "Laser Cannon (36\u0022, A1, AP(3), Deadly(3))",
               "cost": 45,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Laser Cannon",
@@ -4523,6 +4674,7 @@
               "id": "QvzQzfr",
               "label": "Autocannon (36\u0022, A3, AP(2))",
               "cost": 50,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Autocannon",
@@ -4604,6 +4756,7 @@
               "id": "WIfj-",
               "label": "Rapid Heavy Rifle (24\u0022, A2, AP(1)), Flamer-Mod (12\u0022, A1, Blast(3), Limited, Reliable), CCW (A1)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Rapid Heavy Rifle",
@@ -4652,6 +4805,7 @@
               "id": "Rb8MXCz",
               "label": "Poison Gauntlet (6\u0022, A1, Blast(3), Reliable, Bane), Heavy Scythe (A1, AP(4), Deadly(3))",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Poison Gauntlet",
@@ -4698,6 +4852,7 @@
               "id": "Jeq1D",
               "label": "Storm Rifle (24\u0022, A3, AP(1)), CCW (A1)",
               "cost": 60,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Storm Rifle",
@@ -4738,6 +4893,7 @@
               "id": "MTd9S",
               "label": "Plasma-Mod (24\u0022, A1, AP(4), Limited)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Plasma-Mod",
@@ -4761,6 +4917,7 @@
               "id": "jsGuT",
               "label": "Shred-Mod (18\u0022, A2, Limited, Rending)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Shred-Mod",
@@ -4788,6 +4945,7 @@
               "id": "tzzYL",
               "label": "Fusion-Mod (12\u0022, A1, AP(4), Deadly(3), Limited)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Fusion-Mod",
@@ -4830,6 +4988,7 @@
               "id": "Vv2m5tt",
               "label": "Reaper Cannon (24\u0022, A4, Shred)",
               "cost": 15,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Reaper Cannon",
@@ -4853,6 +5012,7 @@
               "id": "NxUQj8J",
               "label": "Twin Plague Sprayer (12\u0022, A2, Blast(3), Reliable, Bane)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Twin Plague Sprayer",
@@ -4885,6 +5045,7 @@
               "id": "zsSX-q5",
               "label": "Twin Heavy Flamer (12\u0022, A2, AP(1), Blast(3), Reliable)",
               "cost": -15,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Twin Heavy Flamer",
@@ -4913,6 +5074,7 @@
               "id": "GbsU2dW",
               "label": "Twin Plague Launcher (24\u0022, A2, Blast(3), Bane)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Twin Plague Launcher",
@@ -4955,6 +5117,7 @@
               "id": "yp3j3HN",
               "label": "Energy Hammer (A1, Blast(3))",
               "cost": 10,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Energy Hammer",
@@ -4979,6 +5142,7 @@
               "id": "uzQLX8F",
               "label": "Energy Axe (A1, AP(2), Deadly(3))",
               "cost": 20,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Energy Axe",
@@ -5003,6 +5167,7 @@
               "id": "r0_3zYO",
               "label": "Plague Sword (A3, AP(1), Bane)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Plague Sword",
@@ -5026,6 +5191,7 @@
               "id": "KsnR5--",
               "label": "Energy Sword (A3, AP(1), Rending)",
               "cost": 20,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Energy Sword",
@@ -5049,6 +5215,7 @@
               "id": "S0559uE",
               "label": "Energy Fist (A3, AP(4))",
               "cost": 30,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Energy Fist",
@@ -5079,6 +5246,7 @@
               "id": "ctN4b2Sfde",
               "label": "Havoc Favour (Steadfast Aura)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -5099,6 +5267,7 @@
               "id": "jfNfn",
               "label": "Icon of Havoc (Versatile Defense Aura)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -5133,6 +5302,7 @@
               "id": "omWLc",
               "label": "Great Plague Flail (A2, AP(1), Blast(3), Bane)",
               "cost": 10,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Great Plague Flail",
@@ -5263,6 +5433,7 @@
               "id": "7W7Ac",
               "label": "Mutant Wings (Ambush, Flying)",
               "cost": 25,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -5396,6 +5567,7 @@
               "id": "v7j8JFn",
               "label": "Mutated Gun (24\u0022, A6, AP(1)), Mutated Claw (A3, AP(1))",
               "cost": 60,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Mutated Claw",
@@ -5434,6 +5606,7 @@
               "id": "txQH1eOb",
               "label": "Summoned Tendrils (Dangerous Terrain Debuff)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -5466,8 +5639,8 @@
       "base": {
         "shape": "Rectangle",
         "diameterInches": 1.1023622,
-        "widthInches": 2.3622048,
-        "heightInches": 1.3779528
+        "widthInches": 1.3779528,
+        "heightInches": 2.3622048
       },
       "weapons": [
         {
@@ -5529,6 +5702,7 @@
               "id": "zArVS",
               "label": "Heavy Rifle (24\u0022, A1, AP(1)), CCW (A1)",
               "cost": 5,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Heavy Rifle",
@@ -5569,6 +5743,7 @@
               "id": "OjKWc5x",
               "label": "Flamer (12\u0022, A1, Blast(3), Reliable)",
               "cost": 5,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Flamer",
@@ -5597,6 +5772,7 @@
               "id": "5FRnVv3",
               "label": "Plasma Rifle (24\u0022, A1, AP(4))",
               "cost": 10,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Plasma Rifle",
@@ -5615,6 +5791,7 @@
               "id": "339iPAS",
               "label": "Fusion Rifle (12\u0022, A1, AP(4), Deadly(3))",
               "cost": 15,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Fusion Rifle",
@@ -5654,6 +5831,7 @@
               "id": "s4ut-tYk",
               "label": "Sgt. Heavy Pistol (12\u0022, A1, AP(1)), Energy Sword (A2, AP(1), Rending)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Sgt. Heavy Pistol",
@@ -5699,6 +5877,7 @@
               "id": "-w-txYKM",
               "label": "Plasma Pistol (12\u0022, A1, AP(4))",
               "cost": 5,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Plasma Pistol",
@@ -5731,6 +5910,7 @@
               "id": "-gj-D5EQXU",
               "label": "Plague Sword (A2, AP(1), Bane)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Plague Sword",
@@ -5754,6 +5934,7 @@
               "id": "TNP_qUcb",
               "label": "Energy Fist (A2, AP(4))",
               "cost": 15,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Energy Fist",
@@ -5838,6 +6019,7 @@
               "id": "ms6pvy2",
               "label": "Rapid Heavy Rifle (24\u0022, A2, AP(1)), Flamer-Mod (12\u0022, A1, Blast(3), Limited, Reliable)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Rapid Heavy Rifle",
@@ -5878,6 +6060,7 @@
               "id": "O43sp",
               "label": "Rapid Heavy Rifle (24\u0022, A2, AP(1)), Shred-Mod (18\u0022, A2, Limited, Rending)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Rapid Heavy Rifle",
@@ -5913,6 +6096,7 @@
               "id": "BYQMcXH",
               "label": "Rot Volley Gun (24\u0022, A3, Bane)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Rot Volley Gun",
@@ -5936,6 +6120,7 @@
               "id": "7fFKt",
               "label": "Plasma-Mod (24\u0022, A1, AP(4), Limited), Rapid Heavy Rifle (24\u0022, A2, AP(1))",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Rapid Heavy Rifle",
@@ -5967,6 +6152,7 @@
               "id": "b6eFC",
               "label": "Rapid Heavy Rifle (24\u0022, A2, AP(1)), Fusion-Mod (12\u0022, A1, AP(4), Deadly(3), Limited)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Rapid Heavy Rifle",
@@ -6003,6 +6189,7 @@
               "id": "DL94j2S",
               "label": "Storm Rifle (24\u0022, A3, AP(1))",
               "cost": 45,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Storm Rifle",
@@ -6021,6 +6208,7 @@
               "id": "oJaVd",
               "label": "Havoc Missiles (24\u0022, A1, AP(2), Deadly(3), Unstoppable)",
               "cost": 60,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Havoc Missiles",
@@ -6049,6 +6237,7 @@
               "id": "c3I7MkF",
               "label": "Heavy Machinegun (30\u0022, A3, AP(1))",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Heavy Machinegun",
@@ -6079,6 +6268,7 @@
               "id": "zw2J0",
               "label": "Spiked Ram (Impact(2))",
               "cost": 10,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -6100,6 +6290,7 @@
               "id": "J2G6h7O",
               "label": "Dozer Blade (Strider)",
               "cost": 25,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -6199,6 +6390,7 @@
               "id": "ms6pvy2",
               "label": "Rapid Heavy Rifle (24\u0022, A2, AP(1)), Flamer-Mod (12\u0022, A1, Blast(3), Limited, Reliable)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Rapid Heavy Rifle",
@@ -6239,6 +6431,7 @@
               "id": "O43sp",
               "label": "Rapid Heavy Rifle (24\u0022, A2, AP(1)), Shred-Mod (18\u0022, A2, Limited, Rending)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Rapid Heavy Rifle",
@@ -6274,6 +6467,7 @@
               "id": "BYQMcXH",
               "label": "Rot Volley Gun (24\u0022, A3, Bane)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Rot Volley Gun",
@@ -6297,6 +6491,7 @@
               "id": "7fFKt",
               "label": "Plasma-Mod (24\u0022, A1, AP(4), Limited), Rapid Heavy Rifle (24\u0022, A2, AP(1))",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Rapid Heavy Rifle",
@@ -6328,6 +6523,7 @@
               "id": "b6eFC",
               "label": "Rapid Heavy Rifle (24\u0022, A2, AP(1)), Fusion-Mod (12\u0022, A1, AP(4), Deadly(3), Limited)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Rapid Heavy Rifle",
@@ -6364,6 +6560,7 @@
               "id": "DL94j2S",
               "label": "Storm Rifle (24\u0022, A3, AP(1))",
               "cost": 45,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Storm Rifle",
@@ -6382,6 +6579,7 @@
               "id": "oJaVd",
               "label": "Havoc Missiles (24\u0022, A1, AP(2), Deadly(3), Unstoppable)",
               "cost": 60,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Havoc Missiles",
@@ -6410,6 +6608,7 @@
               "id": "c3I7MkF",
               "label": "Heavy Machinegun (30\u0022, A3, AP(1))",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Heavy Machinegun",
@@ -6440,6 +6639,7 @@
               "id": "zw2J0",
               "label": "Spiked Ram (Impact(2))",
               "cost": 10,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -6461,6 +6661,7 @@
               "id": "J2G6h7O",
               "label": "Dozer Blade (Strider)",
               "cost": 25,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -6495,6 +6696,7 @@
               "id": "YFNPJ-K",
               "label": "Plague Mortar (36\u0022, A2, Blast(3), Indirect, Bane)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Plague Mortar",
@@ -6527,6 +6729,7 @@
               "id": "WYEnC",
               "label": "Twin Laser Cannon (36\u0022, A2, AP(3), Deadly(3))",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Twin Laser Cannon",
@@ -6551,6 +6754,7 @@
               "id": "vAxalV2",
               "label": "Rapid Autocannon (36\u0022, A6, AP(2))",
               "cost": -10,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Rapid Autocannon",
@@ -6583,6 +6787,7 @@
               "id": "_kruI2S",
               "label": "Twin Plague Sprayer (12\u0022, A2, Blast(3), Reliable, Bane)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Twin Plague Sprayer",
@@ -6615,6 +6820,7 @@
               "id": "QAPFu1g",
               "label": "Twin Entropy Gun (30\u0022, A2, AP(2), Deadly(3))",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Twin Entropy Gun",
@@ -6639,6 +6845,7 @@
               "id": "mIO9aOj",
               "label": "Twin Laser Cannon (36\u0022, A2, AP(3), Deadly(3))",
               "cost": 40,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Twin Laser Cannon",
@@ -6743,6 +6950,7 @@
               "id": "ms6pvy2",
               "label": "Rapid Heavy Rifle (24\u0022, A2, AP(1)), Flamer-Mod (12\u0022, A1, Blast(3), Limited, Reliable)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Rapid Heavy Rifle",
@@ -6783,6 +6991,7 @@
               "id": "O43sp",
               "label": "Rapid Heavy Rifle (24\u0022, A2, AP(1)), Shred-Mod (18\u0022, A2, Limited, Rending)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Rapid Heavy Rifle",
@@ -6818,6 +7027,7 @@
               "id": "BYQMcXH",
               "label": "Rot Volley Gun (24\u0022, A3, Bane)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Rot Volley Gun",
@@ -6841,6 +7051,7 @@
               "id": "7fFKt",
               "label": "Plasma-Mod (24\u0022, A1, AP(4), Limited), Rapid Heavy Rifle (24\u0022, A2, AP(1))",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Rapid Heavy Rifle",
@@ -6872,6 +7083,7 @@
               "id": "b6eFC",
               "label": "Rapid Heavy Rifle (24\u0022, A2, AP(1)), Fusion-Mod (12\u0022, A1, AP(4), Deadly(3), Limited)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Rapid Heavy Rifle",
@@ -6908,6 +7120,7 @@
               "id": "DL94j2S",
               "label": "Storm Rifle (24\u0022, A3, AP(1))",
               "cost": 45,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Storm Rifle",
@@ -6926,6 +7139,7 @@
               "id": "oJaVd",
               "label": "Havoc Missiles (24\u0022, A1, AP(2), Deadly(3), Unstoppable)",
               "cost": 60,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Havoc Missiles",
@@ -6954,6 +7168,7 @@
               "id": "c3I7MkF",
               "label": "Heavy Machinegun (30\u0022, A3, AP(1))",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Heavy Machinegun",
@@ -6984,6 +7199,7 @@
               "id": "zw2J0",
               "label": "Spiked Ram (Impact(2))",
               "cost": 10,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -7005,6 +7221,7 @@
               "id": "J2G6h7O",
               "label": "Dozer Blade (Strider)",
               "cost": 25,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -7101,6 +7318,7 @@
               "id": "BkXaD",
               "label": "Twin Plague Sprayer (12\u0022, A2, Blast(3), Reliable, Bane)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Twin Plague Sprayer",
@@ -7133,6 +7351,7 @@
               "id": "oy0xX",
               "label": "Heavy Plague Launcher (30\u0022, A2, Blast(3), Bane)",
               "cost": 20,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Heavy Plague Launcher",
@@ -7173,6 +7392,7 @@
               "id": "txQH1eOb",
               "label": "Summoned Tendrils (Dangerous Terrain Debuff)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -7205,8 +7425,8 @@
       "base": {
         "shape": "Rectangle",
         "diameterInches": 1.1023622,
-        "widthInches": 3.543307,
-        "heightInches": 2.047244
+        "widthInches": 2.047244,
+        "heightInches": 3.543307
       },
       "weapons": [
         {
@@ -7294,6 +7514,7 @@
               "id": "txQH1eOb",
               "label": "Summoned Tendrils (Dangerous Terrain Debuff)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -7326,8 +7547,8 @@
       "base": {
         "shape": "Rectangle",
         "diameterInches": 1.1023622,
-        "widthInches": 4.7244096,
-        "heightInches": 3.6220472
+        "widthInches": 3.6220472,
+        "heightInches": 4.7244096
       },
       "weapons": [
         {
@@ -7387,6 +7608,7 @@
               "id": "JH4Fg",
               "label": "Missile Array (30\u0022, A4, AP(2), Unstoppable)",
               "cost": 80,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Missile Array",
@@ -7424,6 +7646,7 @@
               "id": "_Ulfrx0",
               "label": "Super-Heavy Fusion Rifle (18\u0022, A1, AP(4), Deadly(6))",
               "cost": 55,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Super-Heavy Fusion Rifle",
@@ -7448,6 +7671,7 @@
               "id": "vIdULGV",
               "label": "Heavy Reaper Cannon (24\u0022, A6, AP(1), Shred)",
               "cost": 90,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Heavy Reaper Cannon",
@@ -7471,6 +7695,7 @@
               "id": "3waRXnk",
               "label": "Twin Heavy Machinegun (30\u0022, A6, AP(1))",
               "cost": 75,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Twin Heavy Machinegun",
@@ -7489,6 +7714,7 @@
               "id": "r4opQrs",
               "label": "Heavy Plasma Cannon (30\u0022, A1, AP(4), Blast(6))",
               "cost": 95,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Heavy Plasma Cannon",
@@ -7513,6 +7739,7 @@
               "id": "-qG1_ql",
               "label": "Twin Laser Cannon (36\u0022, A2, AP(3), Deadly(3))",
               "cost": 115,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Twin Laser Cannon",
@@ -7551,6 +7778,7 @@
               "id": "PnYn9hd",
               "label": "Brute Flail (A4, AP(1), Rending)",
               "cost": 10,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Brute Flail",
@@ -7574,6 +7802,7 @@
               "id": "rFZ7Qlh",
               "label": "Brute Axe (A2, AP(2), Deadly(3))",
               "cost": 20,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Brute Axe",
@@ -7598,6 +7827,7 @@
               "id": "uVvhmUd",
               "label": "Brute Fist (A4, AP(4))",
               "cost": 20,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Brute Fist",
@@ -7630,6 +7860,7 @@
               "id": "YeMbPuk",
               "label": "Heavy Flamer (12\u0022, A1, AP(1), Blast(3), Reliable)",
               "cost": 30,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Heavy Flamer",
@@ -7658,6 +7889,7 @@
               "id": "2Xi9NdQ",
               "label": "Storm Rifle (24\u0022, A3, AP(1))",
               "cost": 45,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Storm Rifle",
@@ -7688,8 +7920,8 @@
       "base": {
         "shape": "Rectangle",
         "diameterInches": 1.1023622,
-        "widthInches": 4.7244096,
-        "heightInches": 3.6220472
+        "widthInches": 3.6220472,
+        "heightInches": 4.7244096
       },
       "weapons": [
         {
@@ -7760,6 +7992,7 @@
               "id": "aWDuXlk",
               "label": "Dual Maul Cutters (A6, AP(3))",
               "cost": 5,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Dual Maul Cutters",
@@ -7793,6 +8026,7 @@
               "id": "cc-iLnr",
               "label": "Twin Fiend Autocannon (36\u0022, A8, AP(2))",
               "cost": 100,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Twin Fiend Autocannon",
@@ -7811,6 +8045,7 @@
               "id": "we2GADk",
               "label": "Twin Ecto-Cannons (24\u0022, A4, AP(4), Blast(3))",
               "cost": 155,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Twin Ecto-Cannons",
@@ -7928,6 +8163,7 @@
               "id": "8DKoV4aQyh",
               "label": "Anti-Tank Cannon (30\u0022, A1, AP(3), Deadly(6))",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Anti-Tank Cannon",
@@ -7966,6 +8202,7 @@
               "id": "Vek4NrPQPw",
               "label": "Twin Heavy Flamer (12\u0022, A2, AP(1), Blast(3), Reliable)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Twin Heavy Flamer",
@@ -7994,6 +8231,7 @@
               "id": "xjzhmmTexS",
               "label": "Havoc Missiles (24\u0022, A2, AP(2), Deadly(3), Unstoppable)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Havoc Missiles",
@@ -8022,6 +8260,7 @@
               "id": "Tf4p5BtYiw",
               "label": "Heavy Reaper Cannon (24\u0022, A6, AP(1), Shred)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Heavy Reaper Cannon",
@@ -8045,6 +8284,7 @@
               "id": "2oUxnZy",
               "label": "Twin Heavy Machinegun (30\u0022, A6, AP(1))",
               "cost": 40,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Twin Heavy Machinegun",
@@ -8063,6 +8303,7 @@
               "id": "Y3Wjyki",
               "label": "Twin Laser Cannon (36\u0022, A2, AP(3), Deadly(3))",
               "cost": 80,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Twin Laser Cannon",
@@ -8099,6 +8340,7 @@
               "id": "2wI_jTRuKX",
               "label": "Twin Pain Cannons (24\u0022, A2, Blast(3))",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Twin Pain Cannons",
@@ -8123,6 +8365,7 @@
               "id": "KmsZAnQ4Jq",
               "label": "Dual Maul Cutters (A6, AP(3))",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Dual Maul Cutters",
@@ -8141,6 +8384,7 @@
               "id": "BpylS8Km9e",
               "label": "Twin Heavy Machinegun (30\u0022, A6, AP(1))",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Twin Heavy Machinegun",

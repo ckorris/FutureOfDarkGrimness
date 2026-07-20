@@ -100,6 +100,7 @@
               "id": "TMkgLRV",
               "label": "Fusion Pistol (6\u0022, A1, AP(4), Deadly(3))",
               "cost": 5,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Fusion Pistol",
@@ -124,6 +125,7 @@
               "id": "Norbj",
               "label": "Hallucination-GL (18\u0022, A1, Blast(3))",
               "cost": 5,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Hallucination-GL",
@@ -148,6 +150,7 @@
               "id": "yzRwZ",
               "label": "Master Neuron Pistol (12\u0022, A3, Bane)",
               "cost": 5,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Master Neuron Pistol",
@@ -171,6 +174,7 @@
               "id": "a08lo",
               "label": "Jester Sniper Rifle (24\u0022, A2, Reliable, Disintegrate, Takedown)",
               "cost": 40,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Jester Sniper Rifle",
@@ -217,6 +221,7 @@
               "id": "vG-EHi2qrA",
               "label": "2x CCW (A2)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "CCW",
@@ -235,6 +240,7 @@
               "id": "MrAeY",
               "label": "Dagger (A1), Deathly Kiss (A1, AP(2), Deadly(3))",
               "cost": 10,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Deathly Kiss",
@@ -281,6 +287,7 @@
               "id": "iIYJ-",
               "label": "Deathly Caress (A2, AP(1), Rending)",
               "cost": 10,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Deathly Caress",
@@ -304,6 +311,7 @@
               "id": "3dK0V",
               "label": "Deathly Embrace (A2, AP(4))",
               "cost": 15,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Deathly Embrace",
@@ -334,6 +342,7 @@
               "id": "bt3UaC_8",
               "label": "Twisted Illusion (Ambush Re-Deployment)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -366,6 +375,7 @@
               "id": "3Xy0FrTy5e",
               "label": "Joker Hoverpack (Flying, Point-Blank Surge)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -390,6 +400,7 @@
               "id": "iZ8BlN_LPm",
               "label": "Prankster Suit (Ambush, Regeneration)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -414,6 +425,7 @@
               "id": "XOaf1OI",
               "label": "Jetbike (Fragment Cannon (24\u0022, A3, AP(1), Disintegrate), Fast, Strider, Tough(3))",
               "cost": 125,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Fragment Cannon",
@@ -469,6 +481,7 @@
               "id": "-bQNR",
               "label": "Stage Master (Shielded Aura)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -489,6 +502,7 @@
               "id": "iE0JQj09Gt",
               "label": "Solitaire Assassin (Takedown Strike)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -509,6 +523,7 @@
               "id": "4kL02NYN-h",
               "label": "Death Dealer (Shred when Shooting Aura)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -529,6 +544,7 @@
               "id": "8fydS",
               "label": "Troupe Lord (Rapid Blink Boost Aura)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -549,6 +565,7 @@
               "id": "Z0UV7",
               "label": "Apex Killer (Unpredictable Fighter Aura)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -569,6 +586,7 @@
               "id": "IF6uP",
               "label": "Jester Seer (Caster(2))",
               "cost": 40,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -590,6 +608,7 @@
               "id": "IebOQAo",
               "label": "Master Jester Seer (Caster(3))",
               "cost": 60,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -688,6 +707,7 @@
               "id": "63Z8NNSs",
               "label": "Stage Master (Shielded Aura)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -708,6 +728,7 @@
               "id": "fGCgLFDh",
               "label": "Death Dealer (Shred when Shooting Aura)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -728,6 +749,7 @@
               "id": "4WMBoEP2Vt",
               "label": "Troupe Lord (Rapid Blink Boost Aura)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -748,6 +770,7 @@
               "id": "INTCopeN",
               "label": "Jester Seer (Caster(2))",
               "cost": 40,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -769,6 +792,7 @@
               "id": "Yyz_0me6",
               "label": "Harlequin (Teleport Aura)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -914,6 +938,7 @@
               "id": "llGIxy1",
               "label": "Neuron Pistol (12\u0022, A2, Bane)",
               "cost": 5,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Neuron Pistol",
@@ -951,6 +976,7 @@
               "id": "XLcx0",
               "label": "Fusion Pistol (6\u0022, A1, AP(4), Deadly(3))",
               "cost": 10,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Fusion Pistol",
@@ -989,6 +1015,7 @@
               "id": "y9P_vwx",
               "label": "Deathly Caress (A2, AP(1), Rending)",
               "cost": 10,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Deathly Caress",
@@ -1012,6 +1039,7 @@
               "id": "tD1bdD3",
               "label": "Deathly Embrace (A2, AP(4))",
               "cost": 15,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Deathly Embrace",
@@ -1044,6 +1072,7 @@
               "id": "3tg6i",
               "label": "Deathly Touch (A1, Blast(3))",
               "cost": 5,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Deathly Touch",
@@ -1068,6 +1097,7 @@
               "id": "zxtNS",
               "label": "Deathly Kiss (A1, AP(2), Deadly(3))",
               "cost": 15,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Deathly Kiss",
@@ -1104,6 +1134,7 @@
               "id": "NUHZ1",
               "label": "Twisted Illusion (Ambush Re-Deployment)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1192,6 +1223,7 @@
               "id": "NUHZ1",
               "label": "Twisted Illusion (Ambush Re-Deployment)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1289,6 +1321,7 @@
               "id": "NUHZ1",
               "label": "Twisted Illusion (Ambush Re-Deployment)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1321,8 +1354,8 @@
       "base": {
         "shape": "Rectangle",
         "diameterInches": 1.1023622,
-        "widthInches": 2.3622048,
-        "heightInches": 1.3779528
+        "widthInches": 1.3779528,
+        "heightInches": 2.3622048
       },
       "weapons": [
         {
@@ -1406,6 +1439,7 @@
               "id": "WI6kVsPqdP",
               "label": "Energy Glaive (A2, AP(1), Thrust)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Energy Glaive",
@@ -1429,6 +1463,7 @@
               "id": "kmggBz1BuT",
               "label": "Light EMP Cannon (24\u0022, A3, Rending)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Light EMP Cannon",
@@ -1452,6 +1487,7 @@
               "id": "G-sDIWr",
               "label": "Fragment Cannon (24\u0022, A3, AP(1), Disintegrate)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Fragment Cannon",
@@ -1487,8 +1523,8 @@
       "base": {
         "shape": "Rectangle",
         "diameterInches": 1.1023622,
-        "widthInches": 2.952756,
-        "heightInches": 1.8110236
+        "widthInches": 1.8110236,
+        "heightInches": 2.952756
       },
       "weapons": [
         {
@@ -1568,6 +1604,7 @@
               "id": "vcWkzrkkA5",
               "label": "Twin Light Fragment Cannon (24\u0022, A4, AP(1), Disintegrate)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Twin Light Fragment Cannon",
@@ -1605,6 +1642,7 @@
               "id": "XH7Dxk4aJT",
               "label": "Light EMP Cannon (24\u0022, A3, Rending)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Light EMP Cannon",
@@ -1628,6 +1666,7 @@
               "id": "iohEw2cMnf",
               "label": "Focus Cannon (24\u0022, A1, AP(2), Blast(3))",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Focus Cannon",
@@ -1652,6 +1691,7 @@
               "id": "1RvKm0tAz3",
               "label": "Light Laser Cannon (24\u0022, A1, AP(3), Deadly(3))",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Light Laser Cannon",
@@ -1688,6 +1728,7 @@
               "id": "SpMyLGg9gH",
               "label": "Open Back (Transport(6))",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1709,6 +1750,7 @@
               "id": "CJX9zCdqu9",
               "label": "Spectacle of Death (Slayer Mark)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [

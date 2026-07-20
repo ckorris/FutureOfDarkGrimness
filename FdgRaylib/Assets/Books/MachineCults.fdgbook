@@ -75,6 +75,7 @@
               "id": "h7nsn",
               "label": "Macro Pistol (12\u0022, A3)",
               "cost": 15,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Macro Pistol",
@@ -93,6 +94,7 @@
               "id": "twMAC",
               "label": "P-Repeater (18\u0022, A2, Lacerate)",
               "cost": 20,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "P-Repeater",
@@ -116,6 +118,7 @@
               "id": "EfxfRzv",
               "label": "Supersonic Cannon (12\u0022, A1, AP(1), Blast(3), Reliable)",
               "cost": 30,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Supersonic Cannon",
@@ -144,6 +147,7 @@
               "id": "s5489-S",
               "label": "Eradicator (24\u0022, A1, AP(1), Blast(3))",
               "cost": 35,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Eradicator",
@@ -168,6 +172,7 @@
               "id": "flEV7Ce",
               "label": "Rail Gun (18\u0022, A1, AP(3), Deadly(3))",
               "cost": 40,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Rail Gun",
@@ -192,6 +197,7 @@
               "id": "q4RQjlT",
               "label": "V-Blaster (24\u0022, A3, Rending)",
               "cost": 45,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "V-Blaster",
@@ -227,6 +233,7 @@
               "id": "p5tKI",
               "label": "Machine-Preserver (Melee Shrouding Aura)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -247,6 +254,7 @@
               "id": "7Ch1QrX",
               "label": "Preacher (Unpredictable Fighter Aura)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -267,6 +275,7 @@
               "id": "WMrFSXc",
               "label": "Engineer (Mend)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -287,6 +296,7 @@
               "id": "8-_4e_gBKu",
               "label": "Canticle Chanter (Machine-Fog Boost Aura)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -307,6 +317,7 @@
               "id": "VC9Z-lM",
               "label": "Psy-Hacker (Caster(2))",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -328,6 +339,7 @@
               "id": "5ccN_w1",
               "label": "Deacon (Rending when Shooting Aura)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -348,6 +360,7 @@
               "id": "DwEgGb9",
               "label": "Master Psy-Hacker (Caster(3))",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -381,6 +394,7 @@
               "id": "TdAV29qe",
               "label": "Cult Assault (Versatile Attack)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -477,6 +491,7 @@
               "id": "k69C1",
               "label": "Leader Dual S-Blades (A4, AP(1), Rending)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Leader Dual S-Blades",
@@ -500,6 +515,7 @@
               "id": "cRHu0",
               "label": "Leader S-Razor \u0026 Claw (A4, AP(2))",
               "cost": 5,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Leader S-Razor \u0026 Claw",
@@ -518,6 +534,7 @@
               "id": "6zZdj",
               "label": "Leader Burst Carbine (18\u0022, A3), Energy Sword (A3, AP(1), Rending)",
               "cost": 15,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Leader Burst Carbine",
@@ -561,6 +578,7 @@
               "id": "wVbuf",
               "label": "Stalker (Fast, Furious)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -585,6 +603,7 @@
               "id": "0XC7g",
               "label": "Infiltrator (Grounded Stealth, Scout)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -621,6 +640,7 @@
               "id": "loK0gkeQ",
               "label": "Machine-Preserver (Melee Shrouding Aura)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -641,6 +661,7 @@
               "id": "d9RSrpPW",
               "label": "Preacher (Unpredictable Fighter Aura)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -661,6 +682,7 @@
               "id": "9A7l1WAe",
               "label": "Machine-Modifier (Teleport Aura)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -681,6 +703,7 @@
               "id": "9s2Wa1ky",
               "label": "Psy-Hacker (Caster(2))",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -702,6 +725,7 @@
               "id": "sROOzUu3",
               "label": "Deacon (Rending when Shooting Aura)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -797,6 +821,7 @@
               "id": "aH5568p",
               "label": "Leader P-Pistol (9\u0022, A3, Lacerate)",
               "cost": 5,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Leader P-Pistol",
@@ -820,6 +845,7 @@
               "id": "OlomW",
               "label": "Leader Revolver (12\u0022, A2, AP(1))",
               "cost": 5,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Leader Revolver",
@@ -838,6 +864,7 @@
               "id": "dsaUAwb",
               "label": "Leader Arc Pistol (9\u0022, A3, Rending)",
               "cost": 5,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Leader Arc Pistol",
@@ -861,6 +888,7 @@
               "id": "YB6PM",
               "label": "Leader R-Fusil (18\u0022, A2, Shred)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Leader R-Fusil",
@@ -884,6 +912,7 @@
               "id": "O8kvKQo",
               "label": "Leader G-Rifle (30\u0022, A2, AP(1))",
               "cost": 20,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Leader G-Rifle",
@@ -902,6 +931,7 @@
               "id": "hIOUu",
               "label": "Leader Uranium Rifle (30\u0022, A2, AP(1), Reliable, Shred, Takedown)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Leader Uranium Rifle",
@@ -933,6 +963,7 @@
               "id": "uG0jS",
               "label": "Leader R-Jezzail (30\u0022, A4, Reliable, Shred, Takedown)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Leader R-Jezzail",
@@ -978,6 +1009,7 @@
               "id": "1ws-_dJ",
               "label": "Taser Sword (A2, Surge)",
               "cost": 5,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Taser Sword",
@@ -1001,6 +1033,7 @@
               "id": "vajv7ps",
               "label": "R-Sword (A2, AP(1), Shred)",
               "cost": 5,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "R-Sword",
@@ -1024,6 +1057,7 @@
               "id": "Hl2hA60",
               "label": "Arc Sword (A2, AP(1), Rending)",
               "cost": 5,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Arc Sword",
@@ -1047,6 +1081,7 @@
               "id": "eYS1WmJ",
               "label": "Axe-Halberd (A2, AP(4))",
               "cost": 10,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Axe-Halberd",
@@ -1077,6 +1112,7 @@
               "id": "oPUiGoZsP8",
               "label": "Shock Priests Leader (Furious, Melee Slayer, Regeneration)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1105,6 +1141,7 @@
               "id": "xYE5m",
               "label": "Stalker Wings (Ambush, Crossing Attack(1), Flying)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1134,6 +1171,7 @@
               "id": "14ncT",
               "label": "Sentinel Stilts (Bounding, Stealth)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1158,6 +1196,7 @@
               "id": "-5lOG",
               "label": "Cyborg Horse (Fast, Tough(3))",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1183,6 +1222,7 @@
               "id": "pMWBu2Mxxt",
               "label": "Raider Horse (Scout, Tough(3))",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1220,6 +1260,7 @@
               "id": "SsJIOwZm",
               "label": "Machine-Preserver (Melee Shrouding Aura)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1240,6 +1281,7 @@
               "id": "8G0OHZVD",
               "label": "Engineer (Mend)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1260,6 +1302,7 @@
               "id": "MhHCUawf",
               "label": "Canticle Chanter (Machine-Fog Boost Aura)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1280,6 +1323,7 @@
               "id": "sVXlWfZN",
               "label": "Machine-Modifier (Teleport Aura)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1300,6 +1344,7 @@
               "id": "Uwg9QiMn",
               "label": "Psy-Hacker (Caster(2))",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1321,6 +1366,7 @@
               "id": "8Ds53YCZ",
               "label": "Deacon (Rending when Shooting Aura)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1353,6 +1399,7 @@
               "id": "TdAV29qe",
               "label": "Cult Assault (Versatile Attack)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1439,6 +1486,7 @@
               "id": "AYpCI",
               "label": "G-Rifle (30\u0022, A1, AP(1))",
               "cost": 30,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "G-Rifle",
@@ -1471,6 +1519,7 @@
               "id": "nTanhQn",
               "label": "Arc Gun (18\u0022, A2, Rending)",
               "cost": 10,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Arc Gun",
@@ -1494,6 +1543,7 @@
               "id": "9-I4Ari",
               "label": "Flamer (12\u0022, A1, Blast(3), Reliable)",
               "cost": 15,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Flamer",
@@ -1522,6 +1572,7 @@
               "id": "W50lpJz",
               "label": "Fusion Rifle (12\u0022, A1, AP(4), Deadly(3))",
               "cost": 15,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Fusion Rifle",
@@ -1546,6 +1597,7 @@
               "id": "t_PxoPu",
               "label": "Plasma Carbine (18\u0022, A2, AP(4))",
               "cost": 20,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Plasma Carbine",
@@ -1564,6 +1616,7 @@
               "id": "re-VF2_",
               "label": "Uranium Rifle (30\u0022, A1, AP(1), Reliable, Shred, Takedown)",
               "cost": 35,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Uranium Rifle",
@@ -1610,6 +1663,7 @@
               "id": "9c54YV3c",
               "label": "R-Pistol (9\u0022, A1, Shred), Taser Sword (A2, Surge)",
               "cost": 5,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "R-Pistol",
@@ -1660,6 +1714,7 @@
               "id": "ogdzVE_4",
               "label": "P-Pistol (9\u0022, A2, Lacerate)",
               "cost": 5,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "P-Pistol",
@@ -1683,6 +1738,7 @@
               "id": "VVsJd7y1",
               "label": "Revolver (12\u0022, A1, AP(1))",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Revolver",
@@ -1701,6 +1757,7 @@
               "id": "sNp6wyph",
               "label": "Arc Pistol (9\u0022, A2, Rending)",
               "cost": 5,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Arc Pistol",
@@ -1724,6 +1781,7 @@
               "id": "MHoynE-g",
               "label": "G-Rifle (30\u0022, A1, AP(1))",
               "cost": 5,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "G-Rifle",
@@ -1756,6 +1814,7 @@
               "id": "O7Do2c8c",
               "label": "R-Sword (A2, AP(1), Shred)",
               "cost": 5,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "R-Sword",
@@ -1779,6 +1838,7 @@
               "id": "Fr5H29Bn",
               "label": "Arc Sword (A2, AP(1), Rending)",
               "cost": 5,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Arc Sword",
@@ -1802,6 +1862,7 @@
               "id": "PXEr4ELi",
               "label": "Axe-Halberd (A2, AP(4))",
               "cost": 10,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Axe-Halberd",
@@ -1832,6 +1893,7 @@
               "id": "5g0IQ",
               "label": "Machine-Creed Canticles (Versatile Attack)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1918,6 +1980,7 @@
               "id": "GHBWIHw",
               "label": "Gauntlet Shocks (12\u0022, A2, Surge), Taser Gauntlet (A2, Surge)",
               "cost": 40,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Taser Gauntlet",
@@ -1966,6 +2029,7 @@
               "id": "5g0IQ",
               "label": "Machine-Creed Canticles (Versatile Attack)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -2052,6 +2116,7 @@
               "id": "eC3RKIUt9T",
               "label": "S-Razor \u0026 Claw (A2, AP(2))",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "S-Razor \u0026 Claw",
@@ -2082,6 +2147,7 @@
               "id": "XZ-SoF5",
               "label": "Metal Spike (A1, AP(1), Deadly(3), Limited)",
               "cost": 5,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Metal Spike",
@@ -2185,6 +2251,7 @@
               "id": "G4xJj",
               "label": "Burst Carbine (18\u0022, A2), Energy Sword (A2, AP(1), Rending)",
               "cost": 70,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Burst Carbine",
@@ -2281,6 +2348,7 @@
               "id": "XQok6",
               "label": "P-Thrower (12\u0022, A2, Reliable, Lacerate)",
               "cost": 20,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "P-Thrower",
@@ -2323,6 +2391,7 @@
               "id": "zAlCozi",
               "label": "F-Blaster (9\u0022, A2), Taser Sword (A2, Surge)",
               "cost": -5,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "F-Blaster",
@@ -2366,6 +2435,7 @@
               "id": "g4hlgzF",
               "label": "Sky-Grenadier (Crossing Attack(1))",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -2399,8 +2469,8 @@
       "base": {
         "shape": "Rectangle",
         "diameterInches": 1.1023622,
-        "widthInches": 2.3622048,
-        "heightInches": 1.3779528
+        "widthInches": 1.3779528,
+        "heightInches": 2.3622048
       },
       "weapons": [
         {
@@ -2469,6 +2539,7 @@
               "id": "RnJQJ",
               "label": "G-Carbine (18\u0022, A2, AP(1))",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "G-Carbine",
@@ -2501,6 +2572,7 @@
               "id": "sIy0rqo",
               "label": "Twin P-Blaster (18\u0022, A4, Lacerate)",
               "cost": 15,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Twin P-Blaster",
@@ -2539,6 +2611,7 @@
               "id": "Gh6p_",
               "label": "Revolver (12\u0022, A1, AP(1)), Raider Sabre (A3, AP(1))",
               "cost": 5,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Raider Sabre",
@@ -2565,6 +2638,7 @@
               "id": "VZ-rA",
               "label": "P-Pistol (9\u0022, A2, Lacerate), Energy Sword (A2, AP(1), Rending)",
               "cost": 5,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "P-Pistol",
@@ -2613,6 +2687,7 @@
               "id": "wXGL1SG",
               "label": "P-Breath (6\u0022, A2, Limited, Lacerate)",
               "cost": 5,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "P-Breath",
@@ -2654,6 +2729,7 @@
               "id": "5Uc8dq0RXJ",
               "label": "Raider Hooves (Scout)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -2686,6 +2762,7 @@
               "id": "5g0IQ",
               "label": "Machine-Creed Canticles (Versatile Attack)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -2777,6 +2854,7 @@
               "id": "a8e1OD3dDx",
               "label": "Neutron Laser (36\u0022, A1, AP(3), Deadly(3))",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Neutron Laser",
@@ -2813,6 +2891,7 @@
               "id": "kY_eWSiVSO",
               "label": "Light P-Pistol (9\u0022, A1, Lacerate)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Light P-Pistol",
@@ -2836,6 +2915,7 @@
               "id": "fRcjmVAZ4q",
               "label": "Light Arc Pistol (9\u0022, A1, Rending)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Light Arc Pistol",
@@ -2871,6 +2951,7 @@
               "id": "5g0IQ",
               "label": "Machine-Creed Canticles (Versatile Attack)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -2959,6 +3040,7 @@
               "id": "4zNP2Uv",
               "label": "Plasma Cannon (30\u0022, A1, AP(4), Blast(3))",
               "cost": 5,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Plasma Cannon",
@@ -2997,6 +3079,7 @@
               "id": "0klSalP",
               "label": "Plasma Cannon (30\u0022, A1, AP(4), Blast(3)), P-Blaster (18\u0022, A2, Lacerate)",
               "cost": 20,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "P-Blaster",
@@ -3034,6 +3117,7 @@
               "id": "83FypDf",
               "label": "Plasma Cannon (30\u0022, A1, AP(4), Blast(3)), Flamer (12\u0022, A1, Blast(3), Reliable)",
               "cost": 25,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Flamer",
@@ -3144,6 +3228,7 @@
               "id": "WSVAbnkthh",
               "label": "Heavy Arc Gun (36\u0022, A3, Rending)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Heavy Arc Gun",
@@ -3181,6 +3266,7 @@
               "id": "P0e2phD",
               "label": "Arc Claw (A3, AP(1), Rending)",
               "cost": 30,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Arc Claw",
@@ -3279,6 +3365,7 @@
               "id": "CpbGg",
               "label": "Twin P-Machinegun (30\u0022, A4, Lacerate)",
               "cost": 60,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Twin P-Machinegun",
@@ -3392,6 +3479,7 @@
               "id": "Oc4oV",
               "label": "Iron Cannon (36\u0022, A2, AP(2), Deadly(3), Unstoppable)",
               "cost": 60,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Iron Cannon",
@@ -3432,6 +3520,7 @@
               "id": "kC_8rPY",
               "label": "Disruption Missile (24\u0022, A3, AP(1))",
               "cost": 45,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Disruption Missile",
@@ -3462,6 +3551,7 @@
               "id": "TdAV29qe",
               "label": "Cult Assault (Versatile Attack)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -3494,8 +3584,8 @@
       "base": {
         "shape": "Rectangle",
         "diameterInches": 1.1023622,
-        "widthInches": 6.2992125,
-        "heightInches": 4.8031497
+        "widthInches": 4.8031497,
+        "heightInches": 6.2992125
       },
       "weapons": [
         {
@@ -3575,6 +3665,7 @@
               "id": "E8RSs",
               "label": "Twin P-Cannon (24\u0022, A8, Lacerate)",
               "cost": -15,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Twin P-Cannon",
@@ -3598,6 +3689,7 @@
               "id": "Ui5gL",
               "label": "Heavy Neutron Laser (36\u0022, A2, AP(3), Deadly(3)), P-Machinegun (30\u0022, A2, Lacerate)",
               "cost": 65,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "P-Machinegun",
@@ -3635,6 +3727,7 @@
               "id": "5pkyh",
               "label": "Icarus AA-System (36\u0022, A6, AP(3), Unstoppable)",
               "cost": 105,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Icarus AA-System",
@@ -3670,6 +3763,7 @@
               "id": "N9e2L7V",
               "label": "Repair Arm (Regeneration)",
               "cost": 50,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -3702,6 +3796,7 @@
               "id": "TdAV29qe",
               "label": "Cult Assault (Versatile Attack)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -3734,8 +3829,8 @@
       "base": {
         "shape": "Rectangle",
         "diameterInches": 1.1023622,
-        "widthInches": 4.133858,
-        "heightInches": 2.7559056
+        "widthInches": 2.7559056,
+        "heightInches": 4.133858
       },
       "weapons": [
         {
@@ -3806,6 +3901,7 @@
               "id": "v6R3TLi",
               "label": "R-Jezzail (30\u0022, A3, Reliable, Shred, Takedown)",
               "cost": 55,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "R-Jezzail",
@@ -3849,6 +3945,7 @@
               "id": "afHLtxQ",
               "label": "P-Repeater (18\u0022, A2, Lacerate)",
               "cost": 20,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "P-Repeater",
@@ -3884,6 +3981,7 @@
               "id": "bXifW0eA",
               "label": "Power Hacker (Piercing Debuff)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -3994,6 +4092,7 @@
               "id": "UULEYJo",
               "label": "Twin P-Cannon (24\u0022, A8, Lacerate)",
               "cost": 30,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Twin P-Cannon",
@@ -4031,6 +4130,7 @@
               "id": "pLk5-vM",
               "label": "P-Cannon (24\u0022, A4, Lacerate)",
               "cost": 25,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "P-Cannon",
@@ -4066,6 +4166,7 @@
               "id": "Yw6Cs4r",
               "label": "Robot Smith (Regeneration)",
               "cost": 20,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -4086,6 +4187,7 @@
               "id": "hfqwgiWgyT",
               "label": "Power Hacker (Piercing Debuff)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -4118,8 +4220,8 @@
       "base": {
         "shape": "Rectangle",
         "diameterInches": 1.1023622,
-        "widthInches": 4.133858,
-        "heightInches": 2.7559056
+        "widthInches": 2.7559056,
+        "heightInches": 4.133858
       },
       "weapons": [
         {
@@ -4187,6 +4289,7 @@
               "id": "EWUNe",
               "label": "Twin Autocannon (36\u0022, A6, AP(2))",
               "cost": 5,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Twin Autocannon",
@@ -4217,6 +4320,7 @@
               "id": "bXifW0eA",
               "label": "Power Hacker (Piercing Debuff)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -4249,8 +4353,8 @@
       "base": {
         "shape": "Rectangle",
         "diameterInches": 1.1023622,
-        "widthInches": 4.7244096,
-        "heightInches": 3.6220472
+        "widthInches": 3.6220472,
+        "heightInches": 4.7244096
       },
       "weapons": [
         {
@@ -4316,6 +4420,7 @@
               "id": "vRCmqYEufe",
               "label": "Assault Module (Transport(11))",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -4349,8 +4454,8 @@
       "base": {
         "shape": "Rectangle",
         "diameterInches": 1.1023622,
-        "widthInches": 4.7244096,
-        "heightInches": 3.6220472
+        "widthInches": 3.6220472,
+        "heightInches": 4.7244096
       },
       "weapons": [
         {

@@ -265,6 +265,7 @@
                 "id": "8ZZkD",
                 "label": "Elite EMP Pistol (9\u0022, A3, Rending)",
                 "cost": 5,
+                "costUnpriced": false,
                 "weaponsGained": [
                   {
                     "name": "Elite EMP Pistol",
@@ -288,6 +289,7 @@
                 "id": "4N4am48",
                 "label": "Phantom-GL (18\u0022, A1, Blast(3))",
                 "cost": 10,
+                "costUnpriced": false,
                 "weaponsGained": [
                   {
                     "name": "Phantom-GL",
@@ -312,6 +314,7 @@
                 "id": "rPtgfUY",
                 "label": "Elite Plas-Blaster Pistol (6\u0022, A3, AP(4))",
                 "cost": 5,
+                "costUnpriced": false,
                 "weaponsGained": [
                   {
                     "name": "Elite Plas-Blaster Pistol",
@@ -330,6 +333,7 @@
                 "id": "OF9Sx",
                 "label": "Elite Barb Rifle (24\u0022, A2, Lacerate)",
                 "cost": 0,
+                "costUnpriced": false,
                 "weaponsGained": [
                   {
                     "name": "Elite Barb Rifle",
@@ -367,6 +371,7 @@
                 "id": "mhoxgf6",
                 "label": "Agony Whip (A1, Blast(3))",
                 "cost": 10,
+                "costUnpriced": false,
                 "weaponsGained": [
                   {
                     "name": "Agony Whip",
@@ -391,6 +396,7 @@
                 "id": "bYPD0nr",
                 "label": "Energy Sword (A2, AP(1), Rending)",
                 "cost": 15,
+                "costUnpriced": false,
                 "weaponsGained": [
                   {
                     "name": "Energy Sword",
@@ -414,6 +420,7 @@
                 "id": "4dLxzLX",
                 "label": "Shell Sword (A1, AP(2), Deadly(3))",
                 "cost": 20,
+                "costUnpriced": false,
                 "weaponsGained": [
                   {
                     "name": "Shell Sword",
@@ -450,6 +457,7 @@
                 "id": "72YCO",
                 "label": "Alchemist (Melee Shrouding Aura)",
                 "cost": 0,
+                "costUnpriced": false,
                 "weaponsGained": [],
                 "rulesGained": [],
                 "itemsGained": [
@@ -470,6 +478,7 @@
                 "id": "zI_fAj026V",
                 "label": "Agoniser (Furious Aura)",
                 "cost": 0,
+                "costUnpriced": false,
                 "weaponsGained": [],
                 "rulesGained": [],
                 "itemsGained": [
@@ -490,6 +499,7 @@
                 "id": "CInxn",
                 "label": "Raid Leader (Harassing Boost Aura)",
                 "cost": 0,
+                "costUnpriced": false,
                 "weaponsGained": [],
                 "rulesGained": [],
                 "itemsGained": [
@@ -510,6 +520,7 @@
                 "id": "V2DHs8gWPS",
                 "label": "Tormentor (Piercing Hunter Aura)",
                 "cost": 0,
+                "costUnpriced": false,
                 "weaponsGained": [],
                 "rulesGained": [],
                 "itemsGained": [
@@ -542,6 +553,7 @@
                 "id": "tqqvOv1r3k",
                 "label": "Expert Raider (Piercing Frenzy)",
                 "cost": 0,
+                "costUnpriced": false,
                 "weaponsGained": [],
                 "rulesGained": [],
                 "itemsGained": [
@@ -562,6 +574,7 @@
                 "id": "Tad3IZSL",
                 "label": "Witch Master (Melee Evasion)",
                 "cost": 0,
+                "costUnpriced": false,
                 "weaponsGained": [],
                 "rulesGained": [],
                 "itemsGained": [
@@ -582,6 +595,7 @@
                 "id": "K828nk68",
                 "label": "Wings (Ambush, Flying)",
                 "cost": 0,
+                "costUnpriced": false,
                 "weaponsGained": [],
                 "rulesGained": [],
                 "itemsGained": [
@@ -606,6 +620,7 @@
                 "id": "tlYrY5aW",
                 "label": "Hoverboard (Agile, Scout, Strider)",
                 "cost": 0,
+                "costUnpriced": false,
                 "weaponsGained": [],
                 "rulesGained": [],
                 "itemsGained": [
@@ -634,6 +649,7 @@
                 "id": "dlmDvq9R",
                 "label": "Jetbike (Twin Barb Rifle (24\u0022, A2, Lacerate), Fast, Strider, Tough(3))",
                 "cost": 0,
+                "costUnpriced": false,
                 "weaponsGained": [
                   {
                     "name": "Twin Barb Rifle",
@@ -748,6 +764,7 @@
                 "id": "8ZZkD",
                 "label": "Elite EMP Pistol (9\u0022, A3, Rending)",
                 "cost": 5,
+                "costUnpriced": false,
                 "weaponsGained": [
                   {
                     "name": "Elite EMP Pistol",
@@ -771,6 +788,7 @@
                 "id": "4N4am48",
                 "label": "Phantom-GL (18\u0022, A1, Blast(3))",
                 "cost": 10,
+                "costUnpriced": false,
                 "weaponsGained": [
                   {
                     "name": "Phantom-GL",
@@ -795,6 +813,7 @@
                 "id": "rPtgfUY",
                 "label": "Elite Plas-Blaster Pistol (6\u0022, A3, AP(4))",
                 "cost": 5,
+                "costUnpriced": false,
                 "weaponsGained": [
                   {
                     "name": "Elite Plas-Blaster Pistol",
@@ -813,6 +832,7 @@
                 "id": "OF9Sx",
                 "label": "Elite Barb Rifle (24\u0022, A2, Lacerate)",
                 "cost": 0,
+                "costUnpriced": false,
                 "weaponsGained": [
                   {
                     "name": "Elite Barb Rifle",
@@ -850,6 +870,7 @@
                 "id": "mhoxgf6",
                 "label": "Agony Whip (A1, Blast(3))",
                 "cost": 10,
+                "costUnpriced": false,
                 "weaponsGained": [
                   {
                     "name": "Agony Whip",
@@ -874,6 +895,7 @@
                 "id": "bYPD0nr",
                 "label": "Energy Sword (A2, AP(1), Rending)",
                 "cost": 15,
+                "costUnpriced": false,
                 "weaponsGained": [
                   {
                     "name": "Energy Sword",
@@ -897,6 +919,7 @@
                 "id": "4dLxzLX",
                 "label": "Shell Sword (A1, AP(2), Deadly(3))",
                 "cost": 20,
+                "costUnpriced": false,
                 "weaponsGained": [
                   {
                     "name": "Shell Sword",
@@ -936,6 +959,7 @@
                 "id": "z4MOSmr",
                 "label": "Dual Sword-Flails (A1, AP(2), Blast(3))",
                 "cost": -5,
+                "costUnpriced": false,
                 "weaponsGained": [
                   {
                     "name": "Dual Sword-Flails",
@@ -960,6 +984,7 @@
                 "id": "pDO63",
                 "label": "Net \u0026 Spear (A3, Thrust)",
                 "cost": -5,
+                "costUnpriced": false,
                 "weaponsGained": [
                   {
                     "name": "Net \u0026 Spear",
@@ -983,6 +1008,7 @@
                 "id": "V46vhs0",
                 "label": "Dual Crystal Claws (A4, Rending)",
                 "cost": 5,
+                "costUnpriced": false,
                 "weaponsGained": [
                   {
                     "name": "Dual Crystal Claws",
@@ -1006,6 +1032,7 @@
                 "id": "8-Uk1-4",
                 "label": "Energy Glaive (A4, AP(1))",
                 "cost": 5,
+                "costUnpriced": false,
                 "weaponsGained": [
                   {
                     "name": "Energy Glaive",
@@ -1036,6 +1063,7 @@
                 "id": "19TEz0xrtA",
                 "label": "Expert Raider (Piercing Frenzy)",
                 "cost": 0,
+                "costUnpriced": false,
                 "weaponsGained": [],
                 "rulesGained": [],
                 "itemsGained": [
@@ -1056,6 +1084,7 @@
                 "id": "z9aKVy9a",
                 "label": "Witch Master (Melee Evasion)",
                 "cost": 0,
+                "costUnpriced": false,
                 "weaponsGained": [],
                 "rulesGained": [],
                 "itemsGained": [
@@ -1076,6 +1105,7 @@
                 "id": "1fuYgfzG",
                 "label": "Wings (Ambush, Flying)",
                 "cost": 0,
+                "costUnpriced": false,
                 "weaponsGained": [],
                 "rulesGained": [],
                 "itemsGained": [
@@ -1100,6 +1130,7 @@
                 "id": "2KU97-IA",
                 "label": "Hoverboard (Agile, Scout, Strider)",
                 "cost": 0,
+                "costUnpriced": false,
                 "weaponsGained": [],
                 "rulesGained": [],
                 "itemsGained": [
@@ -1128,6 +1159,7 @@
                 "id": "cpR6iStC",
                 "label": "Jetbike (Twin Barb Rifle (24\u0022, A2, Lacerate), Armor(4), Fast, Strider, Tough(3))",
                 "cost": 0,
+                "costUnpriced": false,
                 "weaponsGained": [
                   {
                     "name": "Twin Barb Rifle",
@@ -1188,6 +1220,7 @@
                 "id": "oO52Kz1P6z",
                 "label": "Alchemist (Melee Shrouding Aura)",
                 "cost": 0,
+                "costUnpriced": false,
                 "weaponsGained": [],
                 "rulesGained": [],
                 "itemsGained": [
@@ -1208,6 +1241,7 @@
                 "id": "GB29mXG5",
                 "label": "Dread Ruler (Courage Aura)",
                 "cost": 0,
+                "costUnpriced": false,
                 "weaponsGained": [],
                 "rulesGained": [],
                 "itemsGained": [
@@ -1228,6 +1262,7 @@
                 "id": "HSPRqQ81",
                 "label": "Agoniser (Furious Aura)",
                 "cost": 0,
+                "costUnpriced": false,
                 "weaponsGained": [],
                 "rulesGained": [],
                 "itemsGained": [
@@ -1248,6 +1283,7 @@
                 "id": "m4uv7izx",
                 "label": "Tormentor (Piercing Hunter Aura)",
                 "cost": 0,
+                "costUnpriced": false,
                 "weaponsGained": [],
                 "rulesGained": [],
                 "itemsGained": [
@@ -1339,6 +1375,7 @@
                 "id": "8ZZkD",
                 "label": "Elite EMP Pistol (9\u0022, A3, Rending)",
                 "cost": 5,
+                "costUnpriced": false,
                 "weaponsGained": [
                   {
                     "name": "Elite EMP Pistol",
@@ -1362,6 +1399,7 @@
                 "id": "4N4am48",
                 "label": "Phantom-GL (18\u0022, A1, Blast(3))",
                 "cost": 10,
+                "costUnpriced": false,
                 "weaponsGained": [
                   {
                     "name": "Phantom-GL",
@@ -1386,6 +1424,7 @@
                 "id": "rPtgfUY",
                 "label": "Elite Plas-Blaster Pistol (6\u0022, A3, AP(4))",
                 "cost": 5,
+                "costUnpriced": false,
                 "weaponsGained": [
                   {
                     "name": "Elite Plas-Blaster Pistol",
@@ -1404,6 +1443,7 @@
                 "id": "OF9Sx",
                 "label": "Elite Barb Rifle (24\u0022, A2, Lacerate)",
                 "cost": 0,
+                "costUnpriced": false,
                 "weaponsGained": [
                   {
                     "name": "Elite Barb Rifle",
@@ -1441,6 +1481,7 @@
                 "id": "mhoxgf6",
                 "label": "Agony Whip (A1, Blast(3))",
                 "cost": 10,
+                "costUnpriced": false,
                 "weaponsGained": [
                   {
                     "name": "Agony Whip",
@@ -1465,6 +1506,7 @@
                 "id": "bYPD0nr",
                 "label": "Energy Sword (A2, AP(1), Rending)",
                 "cost": 15,
+                "costUnpriced": false,
                 "weaponsGained": [
                   {
                     "name": "Energy Sword",
@@ -1488,6 +1530,7 @@
                 "id": "4dLxzLX",
                 "label": "Shell Sword (A1, AP(2), Deadly(3))",
                 "cost": 20,
+                "costUnpriced": false,
                 "weaponsGained": [
                   {
                     "name": "Shell Sword",
@@ -1527,6 +1570,7 @@
                 "id": "z4MOSmr",
                 "label": "Dual Sword-Flails (A1, AP(2), Blast(3))",
                 "cost": -5,
+                "costUnpriced": false,
                 "weaponsGained": [
                   {
                     "name": "Dual Sword-Flails",
@@ -1551,6 +1595,7 @@
                 "id": "pDO63",
                 "label": "Net \u0026 Spear (A3, Thrust)",
                 "cost": -5,
+                "costUnpriced": false,
                 "weaponsGained": [
                   {
                     "name": "Net \u0026 Spear",
@@ -1574,6 +1619,7 @@
                 "id": "V46vhs0",
                 "label": "Dual Crystal Claws (A4, Rending)",
                 "cost": 5,
+                "costUnpriced": false,
                 "weaponsGained": [
                   {
                     "name": "Dual Crystal Claws",
@@ -1597,6 +1643,7 @@
                 "id": "8-Uk1-4",
                 "label": "Energy Glaive (A4, AP(1))",
                 "cost": 5,
+                "costUnpriced": false,
                 "weaponsGained": [
                   {
                     "name": "Energy Glaive",
@@ -1627,6 +1674,7 @@
                 "id": "19TEz0xrtA",
                 "label": "Expert Raider (Piercing Frenzy)",
                 "cost": 0,
+                "costUnpriced": false,
                 "weaponsGained": [],
                 "rulesGained": [],
                 "itemsGained": [
@@ -1647,6 +1695,7 @@
                 "id": "z9aKVy9a",
                 "label": "Witch Master (Melee Evasion)",
                 "cost": 0,
+                "costUnpriced": false,
                 "weaponsGained": [],
                 "rulesGained": [],
                 "itemsGained": [
@@ -1667,6 +1716,7 @@
                 "id": "1fuYgfzG",
                 "label": "Wings (Ambush, Flying)",
                 "cost": 0,
+                "costUnpriced": false,
                 "weaponsGained": [],
                 "rulesGained": [],
                 "itemsGained": [
@@ -1691,6 +1741,7 @@
                 "id": "2KU97-IA",
                 "label": "Hoverboard (Agile, Scout, Strider)",
                 "cost": 0,
+                "costUnpriced": false,
                 "weaponsGained": [],
                 "rulesGained": [],
                 "itemsGained": [
@@ -1719,6 +1770,7 @@
                 "id": "cpR6iStC",
                 "label": "Jetbike (Twin Barb Rifle (24\u0022, A2, Lacerate), Armor(4), Fast, Strider, Tough(3))",
                 "cost": 0,
+                "costUnpriced": false,
                 "weaponsGained": [
                   {
                     "name": "Twin Barb Rifle",
@@ -1779,6 +1831,7 @@
                 "id": "oO52Kz1P6z",
                 "label": "Alchemist (Melee Shrouding Aura)",
                 "cost": 0,
+                "costUnpriced": false,
                 "weaponsGained": [],
                 "rulesGained": [],
                 "itemsGained": [
@@ -1799,6 +1852,7 @@
                 "id": "GB29mXG5",
                 "label": "Dread Ruler (Courage Aura)",
                 "cost": 0,
+                "costUnpriced": false,
                 "weaponsGained": [],
                 "rulesGained": [],
                 "itemsGained": [
@@ -1819,6 +1873,7 @@
                 "id": "HSPRqQ81",
                 "label": "Agoniser (Furious Aura)",
                 "cost": 0,
+                "costUnpriced": false,
                 "weaponsGained": [],
                 "rulesGained": [],
                 "itemsGained": [
@@ -1839,6 +1894,7 @@
                 "id": "m4uv7izx",
                 "label": "Tormentor (Piercing Hunter Aura)",
                 "cost": 0,
+                "costUnpriced": false,
                 "weaponsGained": [],
                 "rulesGained": [],
                 "itemsGained": [
@@ -1921,6 +1977,7 @@
                 "id": "aD8YT",
                 "label": "Syringe Pistol (12\u0022, A1, Deadly(3)), CCW (A2)",
                 "cost": 0,
+                "costUnpriced": false,
                 "weaponsGained": [
                   {
                     "name": "Syringe Pistol",
@@ -1967,6 +2024,7 @@
                 "id": "VYb40",
                 "label": "Elite Barb Pistol (12\u0022, A2, Lacerate)",
                 "cost": 0,
+                "costUnpriced": false,
                 "weaponsGained": [
                   {
                     "name": "Elite Barb Pistol",
@@ -1990,6 +2048,7 @@
                 "id": "kf-0jvH",
                 "label": "Acid Gun (12\u0022, A1, Blast(3), Reliable, Bane)",
                 "cost": 15,
+                "costUnpriced": false,
                 "weaponsGained": [
                   {
                     "name": "Acid Gun",
@@ -2022,6 +2081,7 @@
                 "id": "3FybPqM",
                 "label": "Arcane Rifle (30\u0022, A1, AP(1), Reliable, Takedown)",
                 "cost": 30,
+                "costUnpriced": false,
                 "weaponsGained": [
                   {
                     "name": "Arcane Rifle",
@@ -2063,6 +2123,7 @@
                 "id": "f2t7tXY",
                 "label": "Agony Whip (A1, Blast(3))",
                 "cost": 5,
+                "costUnpriced": false,
                 "weaponsGained": [
                   {
                     "name": "Agony Whip",
@@ -2087,6 +2148,7 @@
                 "id": "Ik3xBzU",
                 "label": "Venom Sword (A2, Bane)",
                 "cost": 5,
+                "costUnpriced": false,
                 "weaponsGained": [
                   {
                     "name": "Venom Sword",
@@ -2110,6 +2172,7 @@
                 "id": "xW-lSFB",
                 "label": "Electro-Corroder (A2, AP(1), Bane)",
                 "cost": 0,
+                "costUnpriced": false,
                 "weaponsGained": [
                   {
                     "name": "Electro-Corroder",
@@ -2133,6 +2196,7 @@
                 "id": "Pev2125",
                 "label": "Leech Claw (A2, AP(1), Rending)",
                 "cost": 5,
+                "costUnpriced": false,
                 "weaponsGained": [
                   {
                     "name": "Leech Claw",
@@ -2156,6 +2220,7 @@
                 "id": "UDHYDS2",
                 "label": "Syringe Claw (A1, AP(2), Deadly(3))",
                 "cost": 10,
+                "costUnpriced": false,
                 "weaponsGained": [
                   {
                     "name": "Syringe Claw",
@@ -2180,6 +2245,7 @@
                 "id": "_Ub5I5b",
                 "label": "Scissor Claw (A2, AP(4))",
                 "cost": 10,
+                "costUnpriced": false,
                 "weaponsGained": [
                   {
                     "name": "Scissor Claw",
@@ -2210,6 +2276,7 @@
                 "id": "YZaA7WAn",
                 "label": "Alchemist (Melee Shrouding Aura)",
                 "cost": 0,
+                "costUnpriced": false,
                 "weaponsGained": [],
                 "rulesGained": [],
                 "itemsGained": [
@@ -2230,6 +2297,7 @@
                 "id": "rF1vmNX7",
                 "label": "Dread Ruler (Courage Aura)",
                 "cost": 0,
+                "costUnpriced": false,
                 "weaponsGained": [],
                 "rulesGained": [],
                 "itemsGained": [
@@ -2250,6 +2318,7 @@
                 "id": "Sw86xIJG",
                 "label": "Agoniser (Furious Aura)",
                 "cost": 0,
+                "costUnpriced": false,
                 "weaponsGained": [],
                 "rulesGained": [],
                 "itemsGained": [
@@ -2270,6 +2339,7 @@
                 "id": "rqpT_rM1Dj",
                 "label": "Raid Leader (Harassing Boost Aura)",
                 "cost": 0,
+                "costUnpriced": false,
                 "weaponsGained": [],
                 "rulesGained": [],
                 "itemsGained": [
@@ -2290,6 +2360,7 @@
                 "id": "uEZu5yf7",
                 "label": "Soul Carrier (Caster(2))",
                 "cost": 0,
+                "costUnpriced": false,
                 "weaponsGained": [],
                 "rulesGained": [],
                 "itemsGained": [
@@ -2311,6 +2382,7 @@
                 "id": "3ASVkOOA",
                 "label": "Master Soul Carrier (Caster(3))",
                 "cost": 0,
+                "costUnpriced": false,
                 "weaponsGained": [],
                 "rulesGained": [],
                 "itemsGained": [
@@ -2385,6 +2457,7 @@
                 "id": "5pcdZ",
                 "label": "Barb Pistol (12\u0022, A1, Lacerate), CCW (A2)",
                 "cost": 5,
+                "costUnpriced": false,
                 "weaponsGained": [
                   {
                     "name": "Barb Pistol",
@@ -2430,6 +2503,7 @@
                 "id": "zVIDg",
                 "label": "Syringe Pistol (12\u0022, A1, Deadly(3))",
                 "cost": 5,
+                "costUnpriced": false,
                 "weaponsGained": [
                   {
                     "name": "Syringe Pistol",
@@ -2454,6 +2528,7 @@
                 "id": "VHs1J",
                 "label": "Acid Gun (12\u0022, A1, Blast(3), Reliable, Bane)",
                 "cost": 20,
+                "costUnpriced": false,
                 "weaponsGained": [
                   {
                     "name": "Acid Gun",
@@ -2500,6 +2575,7 @@
                 "id": "rKAIw",
                 "label": "Bone Gun (18\u0022, A2, Rending)",
                 "cost": 15,
+                "costUnpriced": false,
                 "weaponsGained": [
                   {
                     "name": "Bone Gun",
@@ -2523,6 +2599,7 @@
                 "id": "ipxUV",
                 "label": "Arcane Rifle (30\u0022, A1, AP(1), Reliable, Takedown)",
                 "cost": 35,
+                "costUnpriced": false,
                 "weaponsGained": [
                   {
                     "name": "Arcane Rifle",
@@ -2564,6 +2641,7 @@
                 "id": "aAjbK",
                 "label": "Agony Whip (A1, Blast(3))",
                 "cost": 5,
+                "costUnpriced": false,
                 "weaponsGained": [
                   {
                     "name": "Agony Whip",
@@ -2588,6 +2666,7 @@
                 "id": "0EIuD",
                 "label": "Venom Sword (A2, Bane)",
                 "cost": 5,
+                "costUnpriced": false,
                 "weaponsGained": [
                   {
                     "name": "Venom Sword",
@@ -2611,6 +2690,7 @@
                 "id": "DfO1C",
                 "label": "Electro-Corroder (A2, AP(1), Bane)",
                 "cost": 0,
+                "costUnpriced": false,
                 "weaponsGained": [
                   {
                     "name": "Electro-Corroder",
@@ -2634,6 +2714,7 @@
                 "id": "kRxsE",
                 "label": "Leech Claw (A2, AP(1), Rending)",
                 "cost": 5,
+                "costUnpriced": false,
                 "weaponsGained": [
                   {
                     "name": "Leech Claw",
@@ -2657,6 +2738,7 @@
                 "id": "dqdjD",
                 "label": "Syringe Claw (A1, AP(2), Deadly(3))",
                 "cost": 10,
+                "costUnpriced": false,
                 "weaponsGained": [
                   {
                     "name": "Syringe Claw",
@@ -2681,6 +2763,7 @@
                 "id": "e6iOx",
                 "label": "Scissor Claw (A2, AP(4))",
                 "cost": 10,
+                "costUnpriced": false,
                 "weaponsGained": [
                   {
                     "name": "Scissor Claw",
@@ -2766,6 +2849,7 @@
                 "id": "-ogEc",
                 "label": "Net \u0026 Spear (A3, Thrust)",
                 "cost": 5,
+                "costUnpriced": false,
                 "weaponsGained": [
                   {
                     "name": "Net \u0026 Spear",
@@ -2789,6 +2873,7 @@
                 "id": "YCsVJ",
                 "label": "Dual Sword-Flails (A1, AP(2), Blast(3))",
                 "cost": 5,
+                "costUnpriced": false,
                 "weaponsGained": [
                   {
                     "name": "Dual Sword-Flails",
@@ -2813,6 +2898,7 @@
                 "id": "P3jlv",
                 "label": "Energy Glaive (A4, AP(1))",
                 "cost": 10,
+                "costUnpriced": false,
                 "weaponsGained": [
                   {
                     "name": "Energy Glaive",
@@ -2831,6 +2917,7 @@
                 "id": "geD2i",
                 "label": "Dual Crystal Claws (A4, Rending)",
                 "cost": 10,
+                "costUnpriced": false,
                 "weaponsGained": [
                   {
                     "name": "Dual Crystal Claws",
@@ -2869,6 +2956,7 @@
                 "id": "4Qn9nWvc",
                 "label": "Sgt. Barb Pistol (12\u0022, A1, Lacerate), Energy Sword (A2, AP(1), Rending)",
                 "cost": 0,
+                "costUnpriced": false,
                 "weaponsGained": [
                   {
                     "name": "Sgt. Barb Pistol",
@@ -2919,6 +3007,7 @@
                 "id": "4r2q_xJn",
                 "label": "EMP Pistol (9\u0022, A2, Rending)",
                 "cost": 5,
+                "costUnpriced": false,
                 "weaponsGained": [
                   {
                     "name": "EMP Pistol",
@@ -2942,6 +3031,7 @@
                 "id": "p4LYz74R",
                 "label": "Plas-Blaster Pistol (6\u0022, A2, AP(4))",
                 "cost": 5,
+                "costUnpriced": false,
                 "weaponsGained": [
                   {
                     "name": "Plas-Blaster Pistol",
@@ -2972,6 +3062,7 @@
                 "id": "FX7hM",
                 "label": "Expert Raider (Piercing Frenzy)",
                 "cost": 0,
+                "costUnpriced": false,
                 "weaponsGained": [],
                 "rulesGained": [],
                 "itemsGained": [
@@ -3054,6 +3145,7 @@
                 "id": "aj7cH-v",
                 "label": "EMP Rifle (18\u0022, A2, Rending)",
                 "cost": 10,
+                "costUnpriced": false,
                 "weaponsGained": [
                   {
                     "name": "EMP Rifle",
@@ -3077,6 +3169,7 @@
                 "id": "Zt8an3b",
                 "label": "Scrapper (12\u0022, A1, Blast(3), Reliable)",
                 "cost": 10,
+                "costUnpriced": false,
                 "weaponsGained": [
                   {
                     "name": "Scrapper",
@@ -3105,6 +3198,7 @@
                 "id": "bcOd6Up",
                 "label": "Scythe Launcher (30\u0022, A1, AP(3), Unstoppable)",
                 "cost": 15,
+                "costUnpriced": false,
                 "weaponsGained": [
                   {
                     "name": "Scythe Launcher",
@@ -3128,6 +3222,7 @@
                 "id": "rI7Z0Am",
                 "label": "Plas-Blaster (18\u0022, A2, AP(4))",
                 "cost": 20,
+                "costUnpriced": false,
                 "weaponsGained": [
                   {
                     "name": "Plas-Blaster",
@@ -3146,6 +3241,7 @@
                 "id": "Kkj-mPq",
                 "label": "Barb Cannon (30\u0022, A3, Lacerate)",
                 "cost": 20,
+                "costUnpriced": false,
                 "weaponsGained": [
                   {
                     "name": "Barb Cannon",
@@ -3169,6 +3265,7 @@
                 "id": "ZVNXZfG",
                 "label": "Laser Cannon (36\u0022, A1, AP(3), Deadly(3))",
                 "cost": 45,
+                "costUnpriced": false,
                 "weaponsGained": [
                   {
                     "name": "Laser Cannon",
@@ -3208,6 +3305,7 @@
                 "id": "qD_S6mu-",
                 "label": "Sgt. Barb Pistol (12\u0022, A1, Lacerate), Energy Sword (A2, AP(1), Rending)",
                 "cost": 0,
+                "costUnpriced": false,
                 "weaponsGained": [
                   {
                     "name": "Sgt. Barb Pistol",
@@ -3258,6 +3356,7 @@
                 "id": "JG5K7P3g",
                 "label": "EMP Pistol (9\u0022, A2, Rending)",
                 "cost": 5,
+                "costUnpriced": false,
                 "weaponsGained": [
                   {
                     "name": "EMP Pistol",
@@ -3281,6 +3380,7 @@
                 "id": "q7WeDMI0",
                 "label": "Plas-Blaster Pistol (6\u0022, A2, AP(4))",
                 "cost": 5,
+                "costUnpriced": false,
                 "weaponsGained": [
                   {
                     "name": "Plas-Blaster Pistol",
@@ -3311,6 +3411,7 @@
                 "id": "FX7hM",
                 "label": "Expert Raider (Piercing Frenzy)",
                 "cost": 0,
+                "costUnpriced": false,
                 "weaponsGained": [],
                 "rulesGained": [],
                 "itemsGained": [
@@ -3398,6 +3499,7 @@
                 "id": "liQHk",
                 "label": "Dual Sword-Flails (A1, AP(2), Blast(3))",
                 "cost": 5,
+                "costUnpriced": false,
                 "weaponsGained": [
                   {
                     "name": "Dual Sword-Flails",
@@ -3422,6 +3524,7 @@
                 "id": "eEGgH",
                 "label": "Net \u0026 Spear (A3, Thrust)",
                 "cost": 5,
+                "costUnpriced": false,
                 "weaponsGained": [
                   {
                     "name": "Net \u0026 Spear",
@@ -3445,6 +3548,7 @@
                 "id": "OhqrV",
                 "label": "Dual Crystal Claws (A4, Rending)",
                 "cost": 10,
+                "costUnpriced": false,
                 "weaponsGained": [
                   {
                     "name": "Dual Crystal Claws",
@@ -3468,6 +3572,7 @@
                 "id": "GQmlN",
                 "label": "Energy Glaive (A4, AP(1))",
                 "cost": 10,
+                "costUnpriced": false,
                 "weaponsGained": [
                   {
                     "name": "Energy Glaive",
@@ -3501,6 +3606,7 @@
                 "id": "TUz8ZCxQ",
                 "label": "Sgt. Barb Pistol (12\u0022, A1, Lacerate), Energy Sword (A2, AP(1), Rending)",
                 "cost": 0,
+                "costUnpriced": false,
                 "weaponsGained": [
                   {
                     "name": "Sgt. Barb Pistol",
@@ -3551,6 +3657,7 @@
                 "id": "si-GBJi8",
                 "label": "EMP Pistol (9\u0022, A2, Rending)",
                 "cost": 5,
+                "costUnpriced": false,
                 "weaponsGained": [
                   {
                     "name": "EMP Pistol",
@@ -3574,6 +3681,7 @@
                 "id": "oeezpa0J",
                 "label": "Plas-Blaster Pistol (6\u0022, A2, AP(4))",
                 "cost": 5,
+                "costUnpriced": false,
                 "weaponsGained": [
                   {
                     "name": "Plas-Blaster Pistol",
@@ -3604,6 +3712,7 @@
                 "id": "FX7hM",
                 "label": "Expert Raider (Piercing Frenzy)",
                 "cost": 0,
+                "costUnpriced": false,
                 "weaponsGained": [],
                 "rulesGained": [],
                 "itemsGained": [
@@ -3686,6 +3795,7 @@
                 "id": "yeLiL",
                 "label": "Scrapper (12\u0022, A1, Blast(3), Reliable)",
                 "cost": 10,
+                "costUnpriced": false,
                 "weaponsGained": [
                   {
                     "name": "Scrapper",
@@ -3714,6 +3824,7 @@
                 "id": "vdlCg",
                 "label": "EMP Rifle (18\u0022, A2, Rending)",
                 "cost": 10,
+                "costUnpriced": false,
                 "weaponsGained": [
                   {
                     "name": "EMP Rifle",
@@ -3737,6 +3848,7 @@
                 "id": "Aj_ct",
                 "label": "Scythe Launcher (30\u0022, A1, AP(3), Unstoppable)",
                 "cost": 15,
+                "costUnpriced": false,
                 "weaponsGained": [
                   {
                     "name": "Scythe Launcher",
@@ -3760,6 +3872,7 @@
                 "id": "_wsTN",
                 "label": "Barb Cannon (30\u0022, A3, Lacerate)",
                 "cost": 20,
+                "costUnpriced": false,
                 "weaponsGained": [
                   {
                     "name": "Barb Cannon",
@@ -3783,6 +3896,7 @@
                 "id": "mzzzX",
                 "label": "Plas-Blaster (18\u0022, A2, AP(4))",
                 "cost": 20,
+                "costUnpriced": false,
                 "weaponsGained": [
                   {
                     "name": "Plas-Blaster",
@@ -3801,6 +3915,7 @@
                 "id": "5E7v-",
                 "label": "Laser Cannon (36\u0022, A1, AP(3), Deadly(3))",
                 "cost": 45,
+                "costUnpriced": false,
                 "weaponsGained": [
                   {
                     "name": "Laser Cannon",
@@ -3840,6 +3955,7 @@
                 "id": "8wJKxcH-",
                 "label": "Sgt. Barb Pistol (12\u0022, A1, Lacerate), Energy Sword (A2, AP(1), Rending)",
                 "cost": 0,
+                "costUnpriced": false,
                 "weaponsGained": [
                   {
                     "name": "Sgt. Barb Pistol",
@@ -3890,6 +4006,7 @@
                 "id": "V4YFwVSW",
                 "label": "EMP Pistol (9\u0022, A2, Rending)",
                 "cost": 5,
+                "costUnpriced": false,
                 "weaponsGained": [
                   {
                     "name": "EMP Pistol",
@@ -3913,6 +4030,7 @@
                 "id": "5wdoELqS",
                 "label": "Plas-Blaster Pistol (6\u0022, A2, AP(4))",
                 "cost": 5,
+                "costUnpriced": false,
                 "weaponsGained": [
                   {
                     "name": "Plas-Blaster Pistol",
@@ -3943,6 +4061,7 @@
                 "id": "FX7hM",
                 "label": "Expert Raider (Piercing Frenzy)",
                 "cost": 0,
+                "costUnpriced": false,
                 "weaponsGained": [],
                 "rulesGained": [],
                 "itemsGained": [
@@ -4021,6 +4140,7 @@
                 "id": "m4bwF",
                 "label": "Ghoulish Claws (A4, Rending)",
                 "cost": 0,
+                "costUnpriced": false,
                 "weaponsGained": [
                   {
                     "name": "Ghoulish Claws",
@@ -4044,6 +4164,7 @@
                 "id": "XRU9M",
                 "label": "Naga Guns (18\u0022, A4, Lacerate), Barb Dagger (A1, Lacerate)",
                 "cost": 15,
+                "costUnpriced": false,
                 "weaponsGained": [
                   {
                     "name": "Naga Guns",
@@ -4080,6 +4201,7 @@
                 "id": "-_x8S",
                 "label": "Medusa\u0027s Gaze (12\u0022, A4, AP(3)), Barb Dagger (A1, Lacerate)",
                 "cost": 25,
+                "costUnpriced": false,
                 "weaponsGained": [
                   {
                     "name": "Barb Dagger",
@@ -4185,6 +4307,7 @@
                 "id": "v9R-yJF",
                 "label": "Agony Whip (A1, Blast(3))",
                 "cost": 0,
+                "costUnpriced": false,
                 "weaponsGained": [
                   {
                     "name": "Agony Whip",
@@ -4209,6 +4332,7 @@
                 "id": "ZEBDh",
                 "label": "Energy Sword (A2, AP(1), Rending)",
                 "cost": 5,
+                "costUnpriced": false,
                 "weaponsGained": [
                   {
                     "name": "Energy Sword",
@@ -4232,6 +4356,7 @@
                 "id": "KioZ0p8",
                 "label": "Grapple Claw (A1, AP(2), Deadly(3))",
                 "cost": 5,
+                "costUnpriced": false,
                 "weaponsGained": [
                   {
                     "name": "Grapple Claw",
@@ -4270,6 +4395,7 @@
                 "id": "Mp3zX8q",
                 "label": "Barb-Pod (18\u0022, A1, Lacerate), Phantom-GL (18\u0022, A1, Blast(3))",
                 "cost": 10,
+                "costUnpriced": false,
                 "weaponsGained": [
                   {
                     "name": "Phantom-GL",
@@ -4319,6 +4445,7 @@
                 "id": "FX7hM",
                 "label": "Expert Raider (Piercing Frenzy)",
                 "cost": 0,
+                "costUnpriced": false,
                 "weaponsGained": [],
                 "rulesGained": [],
                 "itemsGained": [
@@ -4452,6 +4579,7 @@
                 "id": "fyXr7tW",
                 "label": "EMP Rifle (18\u0022, A2, Rending)",
                 "cost": 5,
+                "costUnpriced": false,
                 "weaponsGained": [
                   {
                     "name": "EMP Rifle",
@@ -4475,6 +4603,7 @@
                 "id": "7NhNNCZ",
                 "label": "Scrapper (12\u0022, A1, Blast(3), Reliable)",
                 "cost": 5,
+                "costUnpriced": false,
                 "weaponsGained": [
                   {
                     "name": "Scrapper",
@@ -4503,6 +4632,7 @@
                 "id": "AYBwco6",
                 "label": "Plas-Blaster (18\u0022, A2, AP(4))",
                 "cost": 15,
+                "costUnpriced": false,
                 "weaponsGained": [
                   {
                     "name": "Plas-Blaster",
@@ -4521,6 +4651,7 @@
                 "id": "h8r9Ulr",
                 "label": "Barb Cannon (30\u0022, A3, Lacerate)",
                 "cost": 15,
+                "costUnpriced": false,
                 "weaponsGained": [
                   {
                     "name": "Barb Cannon",
@@ -4544,6 +4675,7 @@
                 "id": "jcDO4",
                 "label": "Heavy Fusion Gun (18\u0022, A1, AP(4), Deadly(3))",
                 "cost": 20,
+                "costUnpriced": false,
                 "weaponsGained": [
                   {
                     "name": "Heavy Fusion Gun",
@@ -4568,6 +4700,7 @@
                 "id": "84FBL19",
                 "label": "Laser Cannon (36\u0022, A1, AP(3), Deadly(3))",
                 "cost": 40,
+                "costUnpriced": false,
                 "weaponsGained": [
                   {
                     "name": "Laser Cannon",
@@ -4607,6 +4740,7 @@
                 "id": "h5yoNd_D",
                 "label": "Sgt. Barb Pistol (12\u0022, A1, Lacerate), Energy Sword (A2, AP(1), Rending)",
                 "cost": -5,
+                "costUnpriced": false,
                 "weaponsGained": [
                   {
                     "name": "Energy Sword",
@@ -4657,6 +4791,7 @@
                 "id": "gmLQj-iC",
                 "label": "EMP Pistol (9\u0022, A2, Rending)",
                 "cost": 5,
+                "costUnpriced": false,
                 "weaponsGained": [
                   {
                     "name": "EMP Pistol",
@@ -4680,6 +4815,7 @@
                 "id": "kRe6Wy_m",
                 "label": "Plas-Blaster Pistol (6\u0022, A2, AP(4))",
                 "cost": 5,
+                "costUnpriced": false,
                 "weaponsGained": [
                   {
                     "name": "Plas-Blaster Pistol",
@@ -4710,6 +4846,7 @@
                 "id": "FX7hM",
                 "label": "Expert Raider (Piercing Frenzy)",
                 "cost": 0,
+                "costUnpriced": false,
                 "weaponsGained": [],
                 "rulesGained": [],
                 "itemsGained": [
@@ -4870,6 +5007,7 @@
                 "id": "0vdHm",
                 "label": "Dual Scissor Claws (A4, AP(4))",
                 "cost": 0,
+                "costUnpriced": false,
                 "weaponsGained": [
                   {
                     "name": "Dual Scissor Claws",
@@ -4900,8 +5038,8 @@
         "base": {
           "shape": "Rectangle",
           "diameterInches": 1.1023622,
-          "widthInches": 2.3622048,
-          "heightInches": 1.3779528
+          "widthInches": 1.3779528,
+          "heightInches": 2.3622048
         },
         "weapons": [
           {
@@ -4976,6 +5114,7 @@
                 "id": "kVu4vOF",
                 "label": "Plas-Blaster (18\u0022, A2, AP(4))",
                 "cost": 10,
+                "costUnpriced": false,
                 "weaponsGained": [
                   {
                     "name": "Plas-Blaster",
@@ -4994,6 +5133,7 @@
                 "id": "2tLM41D",
                 "label": "Heavy Fusion Gun (18\u0022, A1, AP(4), Deadly(3))",
                 "cost": 15,
+                "costUnpriced": false,
                 "weaponsGained": [
                   {
                     "name": "Heavy Fusion Gun",
@@ -5032,6 +5172,7 @@
                 "id": "FNq06kh",
                 "label": "Spiked Talon (A1, AP(2), Deadly(3))",
                 "cost": 10,
+                "costUnpriced": false,
                 "weaponsGained": [
                   {
                     "name": "Spiked Talon",
@@ -5056,6 +5197,7 @@
                 "id": "WT31M",
                 "label": "Razor Caltrops (Impact(3))",
                 "cost": 10,
+                "costUnpriced": false,
                 "weaponsGained": [],
                 "rulesGained": [],
                 "itemsGained": [
@@ -5138,6 +5280,7 @@
                 "id": "z3Kcy3jFEd",
                 "label": "Pathfinder Beast Handler (Vanguard)",
                 "cost": 0,
+                "costUnpriced": false,
                 "weaponsGained": [],
                 "rulesGained": [],
                 "itemsGained": [
@@ -5158,6 +5301,7 @@
                 "id": "izIXABk",
                 "label": "Combat Beast Handler (Unpredictable Fighter)",
                 "cost": 0,
+                "costUnpriced": false,
                 "weaponsGained": [],
                 "rulesGained": [],
                 "itemsGained": [
@@ -5190,8 +5334,8 @@
         "base": {
           "shape": "Rectangle",
           "diameterInches": 1.1023622,
-          "widthInches": 2.3622048,
-          "heightInches": 1.3779528
+          "widthInches": 1.3779528,
+          "heightInches": 2.3622048
         },
         "weapons": [
           {
@@ -5234,6 +5378,7 @@
                 "id": "z3Kcy3jFEd",
                 "label": "Pathfinder Beast Handler (Vanguard)",
                 "cost": 0,
+                "costUnpriced": false,
                 "weaponsGained": [],
                 "rulesGained": [],
                 "itemsGained": [
@@ -5254,6 +5399,7 @@
                 "id": "izIXABk",
                 "label": "Combat Beast Handler (Unpredictable Fighter)",
                 "cost": 0,
+                "costUnpriced": false,
                 "weaponsGained": [],
                 "rulesGained": [],
                 "itemsGained": [
@@ -5330,6 +5476,7 @@
                 "id": "z3Kcy3jFEd",
                 "label": "Pathfinder Beast Handler (Vanguard)",
                 "cost": 0,
+                "costUnpriced": false,
                 "weaponsGained": [],
                 "rulesGained": [],
                 "itemsGained": [
@@ -5350,6 +5497,7 @@
                 "id": "izIXABk",
                 "label": "Combat Beast Handler (Unpredictable Fighter)",
                 "cost": 0,
+                "costUnpriced": false,
                 "weaponsGained": [],
                 "rulesGained": [],
                 "itemsGained": [
@@ -5450,6 +5598,7 @@
                 "id": "P5OSd",
                 "label": "Soul Vortex (18\u0022, A2, AP(1), Deadly(3), Bane)",
                 "cost": 0,
+                "costUnpriced": false,
                 "weaponsGained": [
                   {
                     "name": "Soul Vortex",
@@ -5478,6 +5627,7 @@
                 "id": "JlvnqeanaI",
                 "label": "Soul Blaster (24\u0022, A2, AP(1), Blast(3), Bane)",
                 "cost": 0,
+                "costUnpriced": false,
                 "weaponsGained": [
                   {
                     "name": "Soul Blaster",
@@ -5518,6 +5668,7 @@
                 "id": "sR0IekidGx",
                 "label": "Widow Maker (Precision Fighting Mark)",
                 "cost": 0,
+                "costUnpriced": false,
                 "weaponsGained": [],
                 "rulesGained": [],
                 "itemsGained": [
@@ -5538,6 +5689,7 @@
                 "id": "5-UGrEh",
                 "label": "Soul Conductor (Regeneration Buff)",
                 "cost": 0,
+                "costUnpriced": false,
                 "weaponsGained": [],
                 "rulesGained": [],
                 "itemsGained": [
@@ -5643,6 +5795,7 @@
                 "id": "4Ztb0atvro",
                 "label": "Twin EMP Rifle (18\u0022, A4, Rending)",
                 "cost": 0,
+                "costUnpriced": false,
                 "weaponsGained": [
                   {
                     "name": "Twin EMP Rifle",
@@ -5666,6 +5819,7 @@
                 "id": "Hd3aq5T",
                 "label": "Stinger Cannon (24\u0022, A2, Blast(3))",
                 "cost": 45,
+                "costUnpriced": false,
                 "weaponsGained": [
                   {
                     "name": "Stinger Cannon",
@@ -5690,6 +5844,7 @@
                 "id": "mm_Kw4c",
                 "label": "Rapid Barb Cannon (30\u0022, A6, Lacerate)",
                 "cost": 25,
+                "costUnpriced": false,
                 "weaponsGained": [
                   {
                     "name": "Rapid Barb Cannon",
@@ -5713,6 +5868,7 @@
                 "id": "O2kBY26",
                 "label": "Twin Heavy Fusion Gun (18\u0022, A2, AP(4), Deadly(3))",
                 "cost": 35,
+                "costUnpriced": false,
                 "weaponsGained": [
                   {
                     "name": "Twin Heavy Fusion Gun",
@@ -5751,6 +5907,7 @@
                 "id": "dAPfAes",
                 "label": "Heavy Claws (A3, AP(1))",
                 "cost": 5,
+                "costUnpriced": false,
                 "weaponsGained": [
                   {
                     "name": "Heavy Claws",
@@ -5769,6 +5926,7 @@
                 "id": "CnKxlSS",
                 "label": "Venom Injector (A3, Bane)",
                 "cost": 5,
+                "costUnpriced": false,
                 "weaponsGained": [
                   {
                     "name": "Venom Injector",
@@ -5792,6 +5950,7 @@
                 "id": "OzlpAMM",
                 "label": "Shred Flail (A3, Rending)",
                 "cost": 5,
+                "costUnpriced": false,
                 "weaponsGained": [
                   {
                     "name": "Shred Flail",
@@ -5827,6 +5986,7 @@
                 "id": "zCAwIqIWzZ",
                 "label": "Pain Fueled (Regenerative Strength)",
                 "cost": 0,
+                "costUnpriced": false,
                 "weaponsGained": [],
                 "rulesGained": [],
                 "itemsGained": [
@@ -5847,6 +6007,7 @@
                 "id": "syd5dBBpqT",
                 "label": "Widow Maker (Precision Fighting Mark)",
                 "cost": 0,
+                "costUnpriced": false,
                 "weaponsGained": [],
                 "rulesGained": [],
                 "itemsGained": [
@@ -5952,6 +6113,7 @@
                 "id": "FHBFTJI",
                 "label": "Scythe Launcher (30\u0022, A1, AP(3), Unstoppable)",
                 "cost": 5,
+                "costUnpriced": false,
                 "weaponsGained": [
                   {
                     "name": "Scythe Launcher",
@@ -5975,6 +6137,7 @@
                 "id": "-9ZG9j4",
                 "label": "Barb Cannon (30\u0022, A3, Lacerate)",
                 "cost": 10,
+                "costUnpriced": false,
                 "weaponsGained": [
                   {
                     "name": "Barb Cannon",
@@ -6010,6 +6173,7 @@
                 "id": "HjVnYuj9q2",
                 "label": "Dark-Sails (Agile)",
                 "cost": 0,
+                "costUnpriced": false,
                 "weaponsGained": [],
                 "rulesGained": [],
                 "itemsGained": [
@@ -6030,6 +6194,7 @@
                 "id": "4NBgs7__i5",
                 "label": "Shield of Darkness (Stealth)",
                 "cost": 0,
+                "costUnpriced": false,
                 "weaponsGained": [],
                 "rulesGained": [],
                 "itemsGained": [
@@ -6050,6 +6215,7 @@
                 "id": "u7ZGwAeEJg",
                 "label": "Open Deck (Transport(6))",
                 "cost": 0,
+                "costUnpriced": false,
                 "weaponsGained": [],
                 "rulesGained": [],
                 "itemsGained": [
@@ -6071,6 +6237,7 @@
                 "id": "3uXyAKkqil",
                 "label": "Energy Ram (Impact(5))",
                 "cost": 0,
+                "costUnpriced": false,
                 "weaponsGained": [],
                 "rulesGained": [],
                 "itemsGained": [
@@ -6167,6 +6334,7 @@
                 "id": "K2trSrp",
                 "label": "Dark-Sails (Agile)",
                 "cost": 25,
+                "costUnpriced": false,
                 "weaponsGained": [],
                 "rulesGained": [],
                 "itemsGained": [
@@ -6187,6 +6355,7 @@
                 "id": "1f-raDr",
                 "label": "Phantom-GL (18\u0022, A1, Blast(3))",
                 "cost": 20,
+                "costUnpriced": false,
                 "weaponsGained": [
                   {
                     "name": "Phantom-GL",
@@ -6211,6 +6380,7 @@
                 "id": "YoqFyOM",
                 "label": "Shield of Darkness (Stealth)",
                 "cost": 45,
+                "costUnpriced": false,
                 "weaponsGained": [],
                 "rulesGained": [],
                 "itemsGained": [
@@ -6231,6 +6401,7 @@
                 "id": "n4CSR6Y",
                 "label": "Energy Ram (Impact(5))",
                 "cost": 25,
+                "costUnpriced": false,
                 "weaponsGained": [],
                 "rulesGained": [],
                 "itemsGained": [
@@ -6266,6 +6437,7 @@
                 "id": "XgdsG8kxSQ",
                 "label": "Barb Cannon (30\u0022, A3, Lacerate)",
                 "cost": 0,
+                "costUnpriced": false,
                 "weaponsGained": [
                   {
                     "name": "Barb Cannon",
@@ -6289,6 +6461,7 @@
                 "id": "5ulld7-1NK",
                 "label": "Laser Cannon (36\u0022, A1, AP(3), Deadly(3))",
                 "cost": 0,
+                "costUnpriced": false,
                 "weaponsGained": [
                   {
                     "name": "Laser Cannon",
@@ -6313,6 +6486,7 @@
                 "id": "ziWN8lHM",
                 "label": "Destroyer Cannon (36\u0022, A3, AP(2))",
                 "cost": 5,
+                "costUnpriced": false,
                 "weaponsGained": [
                   {
                     "name": "Destroyer Cannon",
@@ -6343,8 +6517,8 @@
         "base": {
           "shape": "Rectangle",
           "diameterInches": 1.1023622,
-          "widthInches": 4.7244096,
-          "heightInches": 3.6220472
+          "widthInches": 3.6220472,
+          "heightInches": 4.7244096
         },
         "weapons": [
           {
@@ -6401,6 +6575,7 @@
                 "id": "K2trSrp",
                 "label": "Dark-Sails (Agile)",
                 "cost": 25,
+                "costUnpriced": false,
                 "weaponsGained": [],
                 "rulesGained": [],
                 "itemsGained": [
@@ -6421,6 +6596,7 @@
                 "id": "1f-raDr",
                 "label": "Phantom-GL (18\u0022, A1, Blast(3))",
                 "cost": 20,
+                "costUnpriced": false,
                 "weaponsGained": [
                   {
                     "name": "Phantom-GL",
@@ -6445,6 +6621,7 @@
                 "id": "YoqFyOM",
                 "label": "Shield of Darkness (Stealth)",
                 "cost": 45,
+                "costUnpriced": false,
                 "weaponsGained": [],
                 "rulesGained": [],
                 "itemsGained": [
@@ -6465,6 +6642,7 @@
                 "id": "n4CSR6Y",
                 "label": "Energy Ram (Impact(5))",
                 "cost": 25,
+                "costUnpriced": false,
                 "weaponsGained": [],
                 "rulesGained": [],
                 "itemsGained": [
@@ -6500,6 +6678,7 @@
                 "id": "U2E_wXOA",
                 "label": "Destroyer Cannon (36\u0022, A3, AP(2))",
                 "cost": 5,
+                "costUnpriced": false,
                 "weaponsGained": [
                   {
                     "name": "Destroyer Cannon",
@@ -6518,6 +6697,7 @@
                 "id": "jm-YygKyNA",
                 "label": "Laser Cannon (36\u0022, A1, AP(3), Deadly(3))",
                 "cost": 0,
+                "costUnpriced": false,
                 "weaponsGained": [
                   {
                     "name": "Laser Cannon",
@@ -6554,8 +6734,8 @@
         "base": {
           "shape": "Rectangle",
           "diameterInches": 1.1023622,
-          "widthInches": 4.7244096,
-          "heightInches": 3.6220472
+          "widthInches": 3.6220472,
+          "heightInches": 4.7244096
         },
         "weapons": [
           {
@@ -6634,6 +6814,7 @@
                 "id": "6Umnqt1",
                 "label": "Void Missiles (36\u0022, A1, AP(3), Deadly(3))",
                 "cost": 10,
+                "costUnpriced": false,
                 "weaponsGained": [
                   {
                     "name": "Void Missiles",
@@ -6670,8 +6851,8 @@
         "base": {
           "shape": "Rectangle",
           "diameterInches": 1.1023622,
-          "widthInches": 4.7244096,
-          "heightInches": 3.6220472
+          "widthInches": 3.6220472,
+          "heightInches": 4.7244096
         },
         "weapons": [
           {
@@ -6749,6 +6930,7 @@
                 "id": "H1-TsLr",
                 "label": "Barb Cannon (30\u0022, A3, Lacerate)",
                 "cost": 15,
+                "costUnpriced": false,
                 "weaponsGained": [
                   {
                     "name": "Barb Cannon",
@@ -6786,6 +6968,7 @@
                 "id": "W6Z9Krs",
                 "label": "Destroyer Cannon (36\u0022, A3, AP(2))",
                 "cost": 5,
+                "costUnpriced": false,
                 "weaponsGained": [
                   {
                     "name": "Destroyer Cannon",
@@ -6818,6 +7001,7 @@
                 "id": "8SaMRVB",
                 "label": "Shatter Missiles (36\u0022, A1, Blast(6))",
                 "cost": 25,
+                "costUnpriced": false,
                 "weaponsGained": [
                   {
                     "name": "Shatter Missiles",
@@ -6842,6 +7026,7 @@
                 "id": "apn7K",
                 "label": "Scythe Missiles (36\u0022, A2, AP(3), Unstoppable)",
                 "cost": 35,
+                "costUnpriced": false,
                 "weaponsGained": [
                   {
                     "name": "Scythe Missiles",
@@ -7615,8 +7800,8 @@
       "base": {
         "shape": "Rectangle",
         "diameterInches": 1.1023622,
-        "widthInches": 4.7244096,
-        "heightInches": 3.6220472
+        "widthInches": 3.6220472,
+        "heightInches": 4.7244096
       },
       "quality": 3,
       "defense": 2,
@@ -7935,5 +8120,6 @@
         "armorPenetration": 0
       }
     }
-  ]
+  ],
+  "unattributedPoints": 0
 }

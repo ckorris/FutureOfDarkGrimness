@@ -245,6 +245,7 @@
                 "id": "-X9uv",
                 "label": "Re-Animator (Reanimation Aura)",
                 "cost": 0,
+                "costUnpriced": false,
                 "weaponsGained": [],
                 "rulesGained": [],
                 "itemsGained": [
@@ -265,6 +266,7 @@
                 "id": "VHtYlsj",
                 "label": "Psychomancer (Stealth Aura)",
                 "cost": 0,
+                "costUnpriced": false,
                 "weaponsGained": [],
                 "rulesGained": [],
                 "itemsGained": [
@@ -285,6 +287,7 @@
                 "id": "a-G2qj8",
                 "label": "Controller (Piercing Assault Aura)",
                 "cost": 0,
+                "costUnpriced": false,
                 "weaponsGained": [],
                 "rulesGained": [],
                 "itemsGained": [
@@ -305,6 +308,7 @@
                 "id": "iUPolg0",
                 "label": "Chronomancer (Ambush Aura)",
                 "cost": 0,
+                "costUnpriced": false,
                 "weaponsGained": [],
                 "rulesGained": [],
                 "itemsGained": [
@@ -325,6 +329,7 @@
                 "id": "o9XTNqDKhH",
                 "label": "Overseer (No Retreat Aura)",
                 "cost": 0,
+                "costUnpriced": false,
                 "weaponsGained": [],
                 "rulesGained": [],
                 "itemsGained": [
@@ -421,6 +426,7 @@
                 "id": "PuKT0nUIL-",
                 "label": "Dual Hyper Swords (A4, AP(1), Rending)",
                 "cost": 0,
+                "costUnpriced": false,
                 "weaponsGained": [
                   {
                     "name": "Dual Hyper Swords",
@@ -444,6 +450,7 @@
                 "id": "-3YN10I",
                 "label": "Staff-Shots (12\u0022, A3, AP(1)), Hyper Sword (A3, AP(1), Rending), Combat Staff (A3, AP(1))",
                 "cost": 15,
+                "costUnpriced": false,
                 "weaponsGained": [
                   {
                     "name": "Staff-Shots",
@@ -497,6 +504,7 @@
                 "id": "3IcMq",
                 "label": "Combat Shield (Shielded)",
                 "cost": 0,
+                "costUnpriced": false,
                 "weaponsGained": [],
                 "rulesGained": [],
                 "itemsGained": [
@@ -517,6 +525,7 @@
                 "id": "Wf-4yd5",
                 "label": "Wrist-Flamer (12\u0022, A1, Blast(3), Reliable)",
                 "cost": 5,
+                "costUnpriced": false,
                 "weaponsGained": [
                   {
                     "name": "Wrist-Flamer",
@@ -545,6 +554,7 @@
                 "id": "uiYOefY",
                 "label": "Wrist-Plasma (24\u0022, A1, AP(4))",
                 "cost": 35,
+                "costUnpriced": false,
                 "weaponsGained": [
                   {
                     "name": "Wrist-Plasma",
@@ -563,6 +573,7 @@
                 "id": "nvflTmAnRV",
                 "label": "Heavy Gauss Cannon (30\u0022, A6, Destructive)",
                 "cost": 0,
+                "costUnpriced": false,
                 "weaponsGained": [
                   {
                     "name": "Heavy Gauss Cannon",
@@ -600,6 +611,7 @@
                 "id": "bbWMZnA",
                 "label": "Void Sword (A1, Blast(3))",
                 "cost": -5,
+                "costUnpriced": false,
                 "weaponsGained": [
                   {
                     "name": "Void Sword",
@@ -624,6 +636,7 @@
                 "id": "cYskqiN",
                 "label": "Doom Scythe (A1, AP(2), Deadly(3))",
                 "cost": 10,
+                "costUnpriced": false,
                 "weaponsGained": [
                   {
                     "name": "Doom Scythe",
@@ -648,6 +661,7 @@
                 "id": "pX4Pg2c",
                 "label": "Hyper Sword (A3, AP(1), Rending)",
                 "cost": 10,
+                "costUnpriced": false,
                 "weaponsGained": [
                   {
                     "name": "Hyper Sword",
@@ -671,6 +685,7 @@
                 "id": "0UFj8Wn",
                 "label": "Phase Glaive (A3, AP(4))",
                 "cost": 20,
+                "costUnpriced": false,
                 "weaponsGained": [
                   {
                     "name": "Phase Glaive",
@@ -701,6 +716,7 @@
                 "id": "Vc8Jxy2P7J",
                 "label": "Phase Core (Ambush)",
                 "cost": 0,
+                "costUnpriced": false,
                 "weaponsGained": [],
                 "rulesGained": [],
                 "itemsGained": [
@@ -733,6 +749,7 @@
                 "id": "hZ4c-_MS",
                 "label": "Warden (Relentless Aura)",
                 "cost": 0,
+                "costUnpriced": false,
                 "weaponsGained": [],
                 "rulesGained": [],
                 "itemsGained": [
@@ -753,6 +770,7 @@
                 "id": "KXpsDa_L",
                 "label": "Re-Animator (Reanimation Aura)",
                 "cost": 0,
+                "costUnpriced": false,
                 "weaponsGained": [],
                 "rulesGained": [],
                 "itemsGained": [
@@ -773,6 +791,7 @@
                 "id": "s53tnvC-",
                 "label": "Psychomancer (Stealth Aura)",
                 "cost": 0,
+                "costUnpriced": false,
                 "weaponsGained": [],
                 "rulesGained": [],
                 "itemsGained": [
@@ -793,6 +812,7 @@
                 "id": "5JBuIEot",
                 "label": "Technomancer (Caster(2))",
                 "cost": 40,
+                "costUnpriced": false,
                 "weaponsGained": [],
                 "rulesGained": [],
                 "itemsGained": [
@@ -814,6 +834,7 @@
                 "id": "YL3SK4gW",
                 "label": "Controller (Piercing Assault Aura)",
                 "cost": 0,
+                "costUnpriced": false,
                 "weaponsGained": [],
                 "rulesGained": [],
                 "itemsGained": [
@@ -834,6 +855,7 @@
                 "id": "YpAyrQtc7X",
                 "label": "Overseer (No Retreat Aura)",
                 "cost": 0,
+                "costUnpriced": false,
                 "weaponsGained": [],
                 "rulesGained": [],
                 "itemsGained": [
@@ -928,6 +950,7 @@
                 "id": "naOtTU7I",
                 "label": "Staff-Shots (12\u0022, A3, AP(1)), Combat Staff (A3, AP(1))",
                 "cost": 15,
+                "costUnpriced": false,
                 "weaponsGained": [
                   {
                     "name": "Staff-Shots",
@@ -968,6 +991,7 @@
                 "id": "xSDaM3DEcn",
                 "label": "Lord Gauss Pistol (12\u0022, A2, Destructive)",
                 "cost": 0,
+                "costUnpriced": false,
                 "weaponsGained": [
                   {
                     "name": "Lord Gauss Pistol",
@@ -991,6 +1015,7 @@
                 "id": "ZreTSK6T",
                 "label": "Wrist-Flamer (12\u0022, A1, Blast(3), Reliable)",
                 "cost": 5,
+                "costUnpriced": false,
                 "weaponsGained": [
                   {
                     "name": "Wrist-Flamer",
@@ -1019,6 +1044,7 @@
                 "id": "AGPRbyVn",
                 "label": "Wrist-Plasma (24\u0022, A1, AP(4))",
                 "cost": 35,
+                "costUnpriced": false,
                 "weaponsGained": [
                   {
                     "name": "Wrist-Plasma",
@@ -1037,6 +1063,7 @@
                 "id": "XqYUO6IwXg",
                 "label": "Lord Reaper Rifle (18\u0022, A2, AP(1), Shred)",
                 "cost": 0,
+                "costUnpriced": false,
                 "weaponsGained": [
                   {
                     "name": "Lord Reaper Rifle",
@@ -1060,6 +1087,7 @@
                 "id": "fsyf5DWYdy",
                 "label": "Lord Gauss Rifle (24\u0022, A2, Destructive)",
                 "cost": 0,
+                "costUnpriced": false,
                 "weaponsGained": [
                   {
                     "name": "Lord Gauss Rifle",
@@ -1083,6 +1111,7 @@
                 "id": "lAp_fGh0",
                 "label": "Gauss Blaster (18\u0022, A4, Destructive)",
                 "cost": 0,
+                "costUnpriced": false,
                 "weaponsGained": [
                   {
                     "name": "Gauss Blaster",
@@ -1120,6 +1149,7 @@
                 "id": "CrvwnnNr",
                 "label": "Void Sword (A1, Blast(3))",
                 "cost": -5,
+                "costUnpriced": false,
                 "weaponsGained": [
                   {
                     "name": "Void Sword",
@@ -1144,6 +1174,7 @@
                 "id": "M--NkSUw",
                 "label": "Doom Scythe (A1, AP(2), Deadly(3))",
                 "cost": 10,
+                "costUnpriced": false,
                 "weaponsGained": [
                   {
                     "name": "Doom Scythe",
@@ -1168,6 +1199,7 @@
                 "id": "lpum77Fl",
                 "label": "Hyper Sword (A3, AP(1), Rending)",
                 "cost": 10,
+                "costUnpriced": false,
                 "weaponsGained": [
                   {
                     "name": "Hyper Sword",
@@ -1191,6 +1223,7 @@
                 "id": "v6oAy26N",
                 "label": "Phase Glaive (A3, AP(4))",
                 "cost": 20,
+                "costUnpriced": false,
                 "weaponsGained": [
                   {
                     "name": "Phase Glaive",
@@ -1221,6 +1254,7 @@
                 "id": "XqEVp42Ws4",
                 "label": "Pet Technoaide (Repel Ambushers)",
                 "cost": 0,
+                "costUnpriced": false,
                 "weaponsGained": [],
                 "rulesGained": [],
                 "itemsGained": [
@@ -1241,6 +1275,7 @@
                 "id": "bBzY0Z8RwI",
                 "label": "Jetpack (Ambush, Flying, Swift)",
                 "cost": 0,
+                "costUnpriced": false,
                 "weaponsGained": [],
                 "rulesGained": [],
                 "itemsGained": [
@@ -1281,6 +1316,7 @@
                 "id": "j6HM1Sbi",
                 "label": "Warden (Relentless Aura)",
                 "cost": 0,
+                "costUnpriced": false,
                 "weaponsGained": [],
                 "rulesGained": [],
                 "itemsGained": [
@@ -1301,6 +1337,7 @@
                 "id": "IX0ogKsR",
                 "label": "Re-Animator (Reanimation Aura)",
                 "cost": 0,
+                "costUnpriced": false,
                 "weaponsGained": [],
                 "rulesGained": [],
                 "itemsGained": [
@@ -1321,6 +1358,7 @@
                 "id": "iG8fpXPdzR",
                 "label": "Psychomancer (Stealth Aura)",
                 "cost": 0,
+                "costUnpriced": false,
                 "weaponsGained": [],
                 "rulesGained": [],
                 "itemsGained": [
@@ -1341,6 +1379,7 @@
                 "id": "H9PNM4jf",
                 "label": "Technomancer (Caster(2))",
                 "cost": 40,
+                "costUnpriced": false,
                 "weaponsGained": [],
                 "rulesGained": [],
                 "itemsGained": [
@@ -1362,6 +1401,7 @@
                 "id": "7lxEwwHb",
                 "label": "Chronomancer (Ambush Aura)",
                 "cost": 0,
+                "costUnpriced": false,
                 "weaponsGained": [],
                 "rulesGained": [],
                 "itemsGained": [
@@ -1382,6 +1422,7 @@
                 "id": "nwoVXhKvN_",
                 "label": "Overseer (No Retreat Aura)",
                 "cost": 0,
+                "costUnpriced": false,
                 "weaponsGained": [],
                 "rulesGained": [],
                 "itemsGained": [
@@ -1468,6 +1509,7 @@
                 "id": "C12ZlroNdj",
                 "label": "Gauss Rifle (24\u0022, A1, Destructive)",
                 "cost": 0,
+                "costUnpriced": false,
                 "weaponsGained": [
                   {
                     "name": "Gauss Rifle",
@@ -1505,6 +1547,7 @@
                 "id": "4Tdkvna",
                 "label": "Plasma Caster (24\u0022, A1, AP(4))",
                 "cost": 5,
+                "costUnpriced": false,
                 "weaponsGained": [
                   {
                     "name": "Plasma Caster",
@@ -1523,6 +1566,7 @@
                 "id": "fKU7QT5",
                 "label": "Flame Caster (12\u0022, A1, Blast(3), Reliable)",
                 "cost": 10,
+                "costUnpriced": false,
                 "weaponsGained": [
                   {
                     "name": "Flame Caster",
@@ -1551,6 +1595,7 @@
                 "id": "vzTRYEt",
                 "label": "Fusion Caster (12\u0022, A1, AP(4), Deadly(3))",
                 "cost": 10,
+                "costUnpriced": false,
                 "weaponsGained": [
                   {
                     "name": "Fusion Caster",
@@ -1575,6 +1620,7 @@
                 "id": "bhUJI",
                 "label": "Ray Caster (18\u0022, A2, AP(4), Unstoppable)",
                 "cost": 50,
+                "costUnpriced": false,
                 "weaponsGained": [
                   {
                     "name": "Ray Caster",
@@ -1660,6 +1706,7 @@
                 "id": "iJb_1pk",
                 "label": "War Scythe (A2, AP(2))",
                 "cost": 5,
+                "costUnpriced": false,
                 "weaponsGained": [
                   {
                     "name": "War Scythe",
@@ -1678,6 +1725,7 @@
                 "id": "copnY",
                 "label": "Rod-Shots (12\u0022, A2, AP(1)), Rod (A1)",
                 "cost": 10,
+                "costUnpriced": false,
                 "weaponsGained": [
                   {
                     "name": "Rod-Shots",
@@ -1704,6 +1752,7 @@
                 "id": "dCcieks",
                 "label": "Hyper Sword (A2, AP(1), Rending), Combat Shields (Shielded)",
                 "cost": 10,
+                "costUnpriced": false,
                 "weaponsGained": [
                   {
                     "name": "Hyper Sword",
@@ -1750,6 +1799,7 @@
                 "id": "CqbkQoJ",
                 "label": "Jetpacks (Ambush, Flying, Swift)",
                 "cost": 40,
+                "costUnpriced": false,
                 "weaponsGained": [],
                 "rulesGained": [],
                 "itemsGained": [
@@ -1833,6 +1883,7 @@
                 "id": "kDpZSflgHy",
                 "label": "Machine-Horror (Fear(1))",
                 "cost": 0,
+                "costUnpriced": false,
                 "weaponsGained": [],
                 "rulesGained": [],
                 "itemsGained": [
@@ -1920,6 +1971,7 @@
                 "id": "4wl6uX1",
                 "label": "Heavy Gauss Rifle (24\u0022, A2, Destructive)",
                 "cost": 55,
+                "costUnpriced": false,
                 "weaponsGained": [
                   {
                     "name": "Heavy Gauss Rifle",
@@ -2011,6 +2063,7 @@
                 "id": "zI794Cc",
                 "label": "Hyperspace Reapers (Ambushing Piercing Shot)",
                 "cost": 35,
+                "costUnpriced": false,
                 "weaponsGained": [],
                 "rulesGained": [],
                 "itemsGained": [
@@ -2147,6 +2200,7 @@
                 "id": "SBY8c9UtjY",
                 "label": "2x Metal Fangs (A2, Rending)",
                 "cost": 0,
+                "costUnpriced": false,
                 "weaponsGained": [
                   {
                     "name": "Metal Fangs",
@@ -2170,6 +2224,7 @@
                 "id": "i9ceKIhrwI",
                 "label": "Shock Whips (A4, AP(1), Surge)",
                 "cost": 0,
+                "costUnpriced": false,
                 "weaponsGained": [
                   {
                     "name": "Shock Whips",
@@ -2207,6 +2262,7 @@
                 "id": "mWbTxiU",
                 "label": "Twin Atom-Caster (12\u0022, A2, AP(1))",
                 "cost": 0,
+                "costUnpriced": false,
                 "weaponsGained": [
                   {
                     "name": "Twin Atom-Caster",
@@ -2225,6 +2281,7 @@
                 "id": "8axTRpf",
                 "label": "Death Gaze (12\u0022, A2, AP(4))",
                 "cost": 5,
+                "costUnpriced": false,
                 "weaponsGained": [
                   {
                     "name": "Death Gaze",
@@ -2306,6 +2363,7 @@
                 "id": "qScEKgrw",
                 "label": "Heavy Reaper Blade (A1, AP(3), Deadly(6), Shred)",
                 "cost": -10,
+                "costUnpriced": false,
                 "weaponsGained": [
                   {
                     "name": "Heavy Reaper Blade",
@@ -2346,6 +2404,7 @@
                 "id": "dS1iaKPR",
                 "label": "Plasmabot (Rending in Melee)",
                 "cost": 45,
+                "costUnpriced": false,
                 "weaponsGained": [],
                 "rulesGained": [],
                 "itemsGained": [
@@ -2378,6 +2437,7 @@
                 "id": "Jk7LdYM44E",
                 "label": "Elite Vanguard (Scout)",
                 "cost": 0,
+                "costUnpriced": false,
                 "weaponsGained": [],
                 "rulesGained": [],
                 "itemsGained": [
@@ -2461,6 +2521,7 @@
                 "id": "4cbFIbx",
                 "label": "Gauss Cannon (24\u0022, A4, Destructive), CCW (A1)",
                 "cost": 115,
+                "costUnpriced": false,
                 "weaponsGained": [
                   {
                     "name": "Gauss Cannon",
@@ -2506,6 +2567,7 @@
                 "id": "ACs7O",
                 "label": "Ray Cannon (24\u0022, A2, AP(4), Unstoppable)",
                 "cost": 45,
+                "costUnpriced": false,
                 "weaponsGained": [
                   {
                     "name": "Ray Cannon",
@@ -2529,6 +2591,7 @@
                 "id": "3G2M1",
                 "label": "Heavy Gauss Cannon (30\u0022, A6, Destructive)",
                 "cost": 25,
+                "costUnpriced": false,
                 "weaponsGained": [
                   {
                     "name": "Heavy Gauss Cannon",
@@ -2564,6 +2627,7 @@
                 "id": "gKxEYw8PlK",
                 "label": "Phase Core (Ambush)",
                 "cost": 0,
+                "costUnpriced": false,
                 "weaponsGained": [],
                 "rulesGained": [],
                 "itemsGained": [
@@ -2659,6 +2723,7 @@
                 "id": "eDUyrWE",
                 "label": "Heavy Reaper Blade (A1, AP(3), Deadly(6), Shred)",
                 "cost": -10,
+                "costUnpriced": false,
                 "weaponsGained": [
                   {
                     "name": "Heavy Reaper Blade",
@@ -2699,6 +2764,7 @@
                 "id": "CuaPMH-",
                 "label": "Plasmabot (Rending in Melee)",
                 "cost": 45,
+                "costUnpriced": false,
                 "weaponsGained": [],
                 "rulesGained": [],
                 "itemsGained": [
@@ -2791,6 +2857,7 @@
                 "id": "PESiOrcX",
                 "label": "Networked Target Lock (Indirect Mark)",
                 "cost": 0,
+                "costUnpriced": false,
                 "weaponsGained": [],
                 "rulesGained": [],
                 "itemsGained": [
@@ -2823,8 +2890,8 @@
         "base": {
           "shape": "Rectangle",
           "diameterInches": 1.1023622,
-          "widthInches": 4.7244096,
-          "heightInches": 3.6220472
+          "widthInches": 3.6220472,
+          "heightInches": 4.7244096
         },
         "weapons": [
           {
@@ -2880,6 +2947,7 @@
                 "id": "--D-J",
                 "label": "Widowmaker (Ambush)",
                 "cost": 25,
+                "costUnpriced": false,
                 "weaponsGained": [],
                 "rulesGained": [],
                 "itemsGained": [
@@ -2900,6 +2968,7 @@
                 "id": "PgpX2FajxI",
                 "label": "Repair Nanobots (Self-Repair Boost Buff)",
                 "cost": 0,
+                "costUnpriced": false,
                 "weaponsGained": [],
                 "rulesGained": [],
                 "itemsGained": [
@@ -2920,6 +2989,7 @@
                 "id": "CxZjZn5",
                 "label": "Bot Fabricator (Spawn(Bot Swarms [3]))",
                 "cost": 0,
+                "costUnpriced": false,
                 "weaponsGained": [],
                 "rulesGained": [],
                 "itemsGained": [
@@ -2954,6 +3024,7 @@
                 "id": "-uNTHox",
                 "label": "Atom-Beamer (24\u0022, A3, AP(1)), Cyber-Palps (Mend)",
                 "cost": 5,
+                "costUnpriced": false,
                 "weaponsGained": [
                   {
                     "name": "Atom-Beamer",
@@ -3054,6 +3125,7 @@
                 "id": "5rbjt",
                 "label": "Exterminator Cannon (30\u0022, A2, AP(2), Blast(3))",
                 "cost": 20,
+                "costUnpriced": false,
                 "weaponsGained": [
                   {
                     "name": "Exterminator Cannon",
@@ -3078,6 +3150,7 @@
                 "id": "JsYtKUP",
                 "label": "Heavy Ray Cannon (24\u0022, A4, AP(4), Unstoppable)",
                 "cost": 15,
+                "costUnpriced": false,
                 "weaponsGained": [
                   {
                     "name": "Heavy Ray Cannon",
@@ -3113,6 +3186,7 @@
                 "id": "tkZJFj0w-n",
                 "label": "Phase Core (Ambush)",
                 "cost": 0,
+                "costUnpriced": false,
                 "weaponsGained": [],
                 "rulesGained": [],
                 "itemsGained": [
@@ -3133,6 +3207,7 @@
                 "id": "aThzg0k_HO",
                 "label": "Networked Target Lock (Indirect Mark)",
                 "cost": 0,
+                "costUnpriced": false,
                 "weaponsGained": [],
                 "rulesGained": [],
                 "itemsGained": [
@@ -3165,8 +3240,8 @@
         "base": {
           "shape": "Rectangle",
           "diameterInches": 1.1023622,
-          "widthInches": 2.3622048,
-          "heightInches": 1.3779528
+          "widthInches": 1.3779528,
+          "heightInches": 2.3622048
         },
         "weapons": [
           {
@@ -3228,6 +3303,7 @@
                 "id": "KUvdZXo",
                 "label": "Rapid Gauss Rifle (24\u0022, A3, Destructive)",
                 "cost": 0,
+                "costUnpriced": false,
                 "weaponsGained": [
                   {
                     "name": "Rapid Gauss Rifle",
@@ -3251,6 +3327,7 @@
                 "id": "MA2pB-p",
                 "label": "Atom-Beamer (24\u0022, A3, AP(1))",
                 "cost": -5,
+                "costUnpriced": false,
                 "weaponsGained": [
                   {
                     "name": "Atom-Beamer",
@@ -3340,6 +3417,7 @@
                 "id": "2jOGNDdDac",
                 "label": "Repair Nanobots (Self-Repair Boost Buff)",
                 "cost": 0,
+                "costUnpriced": false,
                 "weaponsGained": [],
                 "rulesGained": [],
                 "itemsGained": [
@@ -3442,6 +3520,7 @@
                 "id": "i0Cst",
                 "label": "Heavy Doom Cannon (30\u0022, A3, AP(3), Deadly(3))",
                 "cost": 25,
+                "costUnpriced": false,
                 "weaponsGained": [
                   {
                     "name": "Heavy Doom Cannon",
@@ -3549,6 +3628,7 @@
                 "id": "ysN0D",
                 "label": "Flux Cannon (24\u0022, A3, AP(1), Surge)",
                 "cost": 20,
+                "costUnpriced": false,
                 "weaponsGained": [
                   {
                     "name": "Flux Cannon",
@@ -3572,6 +3652,7 @@
                 "id": "mleTL7p",
                 "label": "Gauss Cannon (24\u0022, A4, Destructive)",
                 "cost": 0,
+                "costUnpriced": false,
                 "weaponsGained": [
                   {
                     "name": "Gauss Cannon",
@@ -3609,6 +3690,7 @@
                 "id": "O55As",
                 "label": "Twin Flux Cannon (24\u0022, A6, AP(1), Surge)",
                 "cost": 0,
+                "costUnpriced": false,
                 "weaponsGained": [
                   {
                     "name": "Twin Flux Cannon",
@@ -3644,6 +3726,7 @@
                 "id": "GfO7FOyKPo",
                 "label": "Repair Nanobots (Self-Repair Boost Buff)",
                 "cost": 0,
+                "costUnpriced": false,
                 "weaponsGained": [],
                 "rulesGained": [],
                 "itemsGained": [
@@ -3664,6 +3747,7 @@
                 "id": "QuWegInD",
                 "label": "Networked Target Lock (Indirect Mark)",
                 "cost": 0,
+                "costUnpriced": false,
                 "weaponsGained": [],
                 "rulesGained": [],
                 "itemsGained": [
@@ -3765,6 +3849,7 @@
                 "id": "Kn8u51H",
                 "label": "Rapid Doom Blaster (24\u0022, A2, AP(1), Blast(3))",
                 "cost": 20,
+                "costUnpriced": false,
                 "weaponsGained": [
                   {
                     "name": "Rapid Doom Blaster",
@@ -3789,6 +3874,7 @@
                 "id": "MEdz-w1",
                 "label": "Rapid Ray Caster (18\u0022, A4, AP(4), Unstoppable)",
                 "cost": 105,
+                "costUnpriced": false,
                 "weaponsGained": [
                   {
                     "name": "Rapid Ray Caster",
@@ -3824,6 +3910,7 @@
                 "id": "vUKoS",
                 "label": "Tripod Queen (Swift Buff)",
                 "cost": 0,
+                "costUnpriced": false,
                 "weaponsGained": [],
                 "rulesGained": [],
                 "itemsGained": [
@@ -3844,6 +3931,7 @@
                 "id": "LwOuSPi",
                 "label": "Twin Gauss Rifle (24\u0022, A2, Destructive)",
                 "cost": 30,
+                "costUnpriced": false,
                 "weaponsGained": [
                   {
                     "name": "Twin Gauss Rifle",
@@ -3879,6 +3967,7 @@
                 "id": "sOYgKbI3",
                 "label": "Repair Nanobots (Self-Repair Boost Buff)",
                 "cost": 0,
+                "costUnpriced": false,
                 "weaponsGained": [],
                 "rulesGained": [],
                 "itemsGained": [
@@ -3899,6 +3988,7 @@
                 "id": "yIlIlnXS7F",
                 "label": "Networked Target Lock (Indirect Mark)",
                 "cost": 0,
+                "costUnpriced": false,
                 "weaponsGained": [],
                 "rulesGained": [],
                 "itemsGained": [
@@ -4004,6 +4094,7 @@
                 "id": "YM-OZBomHx",
                 "label": "Twin Heavy Gauss Cannon (24\u0022, A12, Destructive)",
                 "cost": 0,
+                "costUnpriced": false,
                 "weaponsGained": [
                   {
                     "name": "Twin Heavy Gauss Cannon",
@@ -4027,6 +4118,7 @@
                 "id": "xip22",
                 "label": "Twin Atom-Shredder (24\u0022, A12, AP(1))",
                 "cost": 15,
+                "costUnpriced": false,
                 "weaponsGained": [
                   {
                     "name": "Twin Atom-Shredder",
@@ -4045,6 +4137,7 @@
                 "id": "NYSw1",
                 "label": "Twin Exterminator Cannon (30\u0022, A4, AP(2), Blast(3))",
                 "cost": 50,
+                "costUnpriced": false,
                 "weaponsGained": [
                   {
                     "name": "Twin Exterminator Cannon",
@@ -4168,6 +4261,7 @@
                 "id": "-m-fy",
                 "label": "Void Shard (24\u0022, A12, AP(2))",
                 "cost": 95,
+                "costUnpriced": false,
                 "weaponsGained": [
                   {
                     "name": "Void Shard",
@@ -4198,8 +4292,8 @@
         "base": {
           "shape": "Rectangle",
           "diameterInches": 1.1023622,
-          "widthInches": 6.2992125,
-          "heightInches": 4.8031497
+          "widthInches": 4.8031497,
+          "heightInches": 6.2992125
         },
         "weapons": [
           {
@@ -4264,8 +4358,8 @@
         "base": {
           "shape": "Rectangle",
           "diameterInches": 1.1023622,
-          "widthInches": 6.2992125,
-          "heightInches": 4.8031497
+          "widthInches": 4.8031497,
+          "heightInches": 6.2992125
         },
         "weapons": [
           {
@@ -4325,8 +4419,8 @@
         "base": {
           "shape": "Rectangle",
           "diameterInches": 1.1023622,
-          "widthInches": 6.2992125,
-          "heightInches": 4.8031497
+          "widthInches": 4.8031497,
+          "heightInches": 6.2992125
         },
         "weapons": [
           {
@@ -4407,6 +4501,7 @@
                 "id": "KBsG2FBwFa",
                 "label": "Monolith Beam (18\u0022, A3, AP(3), Deadly(6))",
                 "cost": 0,
+                "costUnpriced": false,
                 "weaponsGained": [
                   {
                     "name": "Monolith Beam",
@@ -4443,6 +4538,7 @@
                 "id": "KWVm-",
                 "label": "Technoward (Casting Buff)",
                 "cost": 0,
+                "costUnpriced": false,
                 "weaponsGained": [],
                 "rulesGained": [],
                 "itemsGained": [
@@ -4554,6 +4650,7 @@
                 "id": "gz0nP",
                 "label": "Atom-Scourge (24\u0022, A9, AP(4))",
                 "cost": 5,
+                "costUnpriced": false,
                 "weaponsGained": [
                   {
                     "name": "Atom-Scourge",
@@ -4586,6 +4683,7 @@
                 "id": "y-E4k48c3I",
                 "label": "Gauss Arc Array (24\u0022, A12, Destructive)",
                 "cost": 0,
+                "costUnpriced": false,
                 "weaponsGained": [
                   {
                     "name": "Gauss Arc Array",
@@ -4621,6 +4719,7 @@
                 "id": "2ifV25v",
                 "label": "Warp Gate (Transport(21))",
                 "cost": 65,
+                "costUnpriced": false,
                 "weaponsGained": [],
                 "rulesGained": [],
                 "itemsGained": [
@@ -4642,6 +4741,7 @@
                 "id": "NILpP",
                 "label": "Wraith-Shard Vault (Caster(4), Tough(6))",
                 "cost": 270,
+                "costUnpriced": false,
                 "weaponsGained": [],
                 "rulesGained": [],
                 "itemsGained": [
@@ -4774,6 +4874,7 @@
                 "id": "7sNyuXMx",
                 "label": "Void Shard (24\u0022, A12, AP(2))",
                 "cost": 95,
+                "costUnpriced": false,
                 "weaponsGained": [
                   {
                     "name": "Void Shard",
@@ -4806,6 +4907,7 @@
                 "id": "swLo3",
                 "label": "Great Wraith (Wraith Spear (A2, AP(4), Deadly(3)), Flying)",
                 "cost": 0,
+                "costUnpriced": false,
                 "weaponsGained": [
                   {
                     "name": "Wraith Spear",
@@ -5666,8 +5768,8 @@
       "base": {
         "shape": "Rectangle",
         "diameterInches": 1.1023622,
-        "widthInches": 4.7244096,
-        "heightInches": 3.6220472
+        "widthInches": 3.6220472,
+        "heightInches": 4.7244096
       },
       "quality": 4,
       "defense": 3,
@@ -5729,8 +5831,8 @@
       "base": {
         "shape": "Rectangle",
         "diameterInches": 1.1023622,
-        "widthInches": 6.2992125,
-        "heightInches": 4.8031497
+        "widthInches": 4.8031497,
+        "heightInches": 6.2992125
       },
       "quality": 3,
       "defense": 2,
@@ -6321,5 +6423,6 @@
         "armorPenetration": 0
       }
     }
-  ]
+  ],
+  "unattributedPoints": 0
 }

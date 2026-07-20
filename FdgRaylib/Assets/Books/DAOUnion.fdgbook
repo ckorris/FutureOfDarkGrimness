@@ -98,6 +98,7 @@
               "id": "UbHfv_2",
               "label": "Gun Drone (Drone Pulse-Gun (18\u0022, A2, Limited, Rending))",
               "cost": 5,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Drone Pulse-Gun",
@@ -146,6 +147,7 @@
               "id": "6nSPBvoI",
               "label": "Suit-Burst (18\u0022, A1, Rending), Suit-Ion (18\u0022, A1, AP(1), Blast(3))",
               "cost": 5,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Suit-Ion",
@@ -183,6 +185,7 @@
               "id": "SuyiFLUx",
               "label": "Suit-Burst (18\u0022, A1, Rending), Suit-Fuse (12\u0022, A1, AP(4), Deadly(3))",
               "cost": 10,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Suit-Fuse",
@@ -220,6 +223,7 @@
               "id": "ot02rcpF",
               "label": "Suit-Frag (24\u0022, A1, Blast(3), Indirect), Suit-Burst (18\u0022, A1, Rending)",
               "cost": 15,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Suit-Frag",
@@ -261,6 +265,7 @@
               "id": "vm3S40f7",
               "label": "2x Rapid Suit-Burst (18\u0022, A2, Rending)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Rapid Suit-Burst",
@@ -299,6 +304,7 @@
               "id": "t9RhXJzh",
               "label": "2x Rapid Suit-Burst (18\u0022, A2, Rending), Plasma Sword (A4, AP(1), Rending), Energy Shield (Shielded)",
               "cost": 10,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Plasma Sword",
@@ -346,6 +352,7 @@
               "id": "x9d2cOxT",
               "label": "Rapid Heavy Suit-Burst (24\u0022, A6, AP(1), Rending), Rapid Suit-Burst (18\u0022, A2, Rending)",
               "cost": 45,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Rapid Heavy Suit-Burst",
@@ -396,6 +403,7 @@
               "id": "ITHh4cdBWX",
               "label": "Rapid Suit-Missiles (30\u0022, A2, Disintegrate, Unstoppable)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Rapid Suit-Missiles",
@@ -423,6 +431,7 @@
               "id": "qSm4Wq9SGG",
               "label": "Rapid Suit-Plasma (24\u0022, A2, AP(4))",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Rapid Suit-Plasma",
@@ -453,6 +462,7 @@
               "id": "ciwiVu13",
               "label": "Drop-Thrusters (Ambush)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -485,6 +495,7 @@
               "id": "AwnmY6ch",
               "label": "Storm Leader (Hit \u0026 Run Shooter Aura)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -505,6 +516,7 @@
               "id": "Nnvd8tMy",
               "label": "Captain (Targeting Visor Boost Aura)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -525,6 +537,7 @@
               "id": "vxAyPM6Fm-",
               "label": "Master Armorer (Counter-Attack Aura)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -545,6 +558,7 @@
               "id": "tE_rHW29",
               "label": "Big Game Hunter (Ranged Slayer Aura)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -631,6 +645,7 @@
               "id": "UbHfv_2",
               "label": "Gun Drone (Drone Pulse-Gun (18\u0022, A2, Limited, Rending))",
               "cost": 5,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Drone Pulse-Gun",
@@ -678,6 +693,7 @@
               "id": "tYjnd",
               "label": "Holy Halberd (A1, AP(2), Deadly(3))",
               "cost": -5,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Holy Halberd",
@@ -702,6 +718,7 @@
               "id": "i20Tx",
               "label": "Holy Sword (A3, AP(1), Rending)",
               "cost": 5,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Holy Sword",
@@ -725,6 +742,7 @@
               "id": "09e1A",
               "label": "Holy Dual-Spear (A3, AP(4))",
               "cost": 5,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Holy Dual-Spear",
@@ -743,6 +761,7 @@
               "id": "_B69A",
               "label": "Leader Pulse Pistol (12\u0022, A2, AP(1)), CCW (A2)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Leader Pulse Pistol",
@@ -783,6 +802,7 @@
               "id": "3JioB",
               "label": "Leader Pulse Shotgun (12\u0022, A3, AP(1))",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Leader Pulse Shotgun",
@@ -801,6 +821,7 @@
               "id": "c98J_",
               "label": "Leader Pulse Carbine (18\u0022, A3, AP(1))",
               "cost": 15,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Leader Pulse Carbine",
@@ -819,6 +840,7 @@
               "id": "vYREi",
               "label": "Leader Pulse Rifle (30\u0022, A2, AP(1))",
               "cost": 15,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Leader Pulse Rifle",
@@ -851,6 +873,7 @@
               "id": "3ysvT",
               "label": "Plasma Sword (A2, AP(1), Rending)",
               "cost": 5,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Plasma Sword",
@@ -874,6 +897,7 @@
               "id": "WsiSr",
               "label": "Plasma Gauntlet (A2, AP(4))",
               "cost": 10,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Plasma Gauntlet",
@@ -904,6 +928,7 @@
               "id": "ofuiJB7W3b",
               "label": "Particle Wall (Shielded)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -924,6 +949,7 @@
               "id": "HoHLe3q8xE",
               "label": "Spotter Leader (Scout)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -956,6 +982,7 @@
               "id": "ie79y",
               "label": "High Sage (Fortified Aura)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -976,6 +1003,7 @@
               "id": "LPlYP",
               "label": "Captain (Targeting Visor Boost Aura)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -996,6 +1024,7 @@
               "id": "UccrB",
               "label": "Master Armorer (Counter-Attack Aura)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1016,6 +1045,7 @@
               "id": "5XLEwfdKww",
               "label": "Big Game Hunter (Ranged Slayer Aura)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1036,6 +1066,7 @@
               "id": "rJaHv",
               "label": "Ethereal Elder (Caster(2))",
               "cost": 40,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1118,6 +1149,7 @@
               "id": "xl-1VFRr",
               "label": "Burst Carbine (18\u0022, A2, Rending)",
               "cost": 5,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Burst Carbine",
@@ -1141,6 +1173,7 @@
               "id": "b97OfDze",
               "label": "Plasma Rifle (24\u0022, A1, AP(4))",
               "cost": 5,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Plasma Rifle",
@@ -1159,6 +1192,7 @@
               "id": "an_dBIat",
               "label": "Flamer (12\u0022, A1, Blast(3), Reliable)",
               "cost": 10,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Flamer",
@@ -1187,6 +1221,7 @@
               "id": "KbfIW41b",
               "label": "Fusion Carbine (18\u0022, A1, AP(4), Deadly(3))",
               "cost": 25,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Fusion Carbine",
@@ -1223,6 +1258,7 @@
               "id": "Cr-C7PGjiH",
               "label": "Particle Wall (Shielded)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1258,6 +1294,7 @@
               "id": "_1-eEjrX",
               "label": "Pulse Pistol (12\u0022, A1, AP(1)), Plasma Sword (A2, AP(1), Rending)",
               "cost": -5,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Pulse Pistol",
@@ -1303,6 +1340,7 @@
               "id": "oP6p_ZO-",
               "label": "Plasma Gauntlet (A2, AP(4))",
               "cost": 5,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Plasma Gauntlet",
@@ -1333,6 +1371,7 @@
               "id": "gcMioO3O",
               "label": "Inhibitor Drone (Melee Shrouding Aura)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1353,6 +1392,7 @@
               "id": "pZao-OAM",
               "label": "Gun Drone (Drone Pulse-Gun (18\u0022, A2, Limited, Rending))",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Drone Pulse-Gun",
@@ -1386,6 +1426,7 @@
               "id": "lZG9gjVG",
               "label": "Recon Drone (Ambush Beacon)",
               "cost": 10,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1406,6 +1447,7 @@
               "id": "cJemohDN",
               "label": "Shield Drone (Stealth Aura)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1485,6 +1527,7 @@
               "id": "eafWj3Q",
               "label": "Gun Drone (Drone Pulse-Gun (18\u0022, A2, Limited, Rending))",
               "cost": 5,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Drone Pulse-Gun",
@@ -1518,6 +1561,7 @@
               "id": "OTdmXg9",
               "label": "Spotter Drone (Precision Spotter)",
               "cost": 25,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1538,6 +1582,7 @@
               "id": "oWBWdfp",
               "label": "Shield Drone (Stealth Aura)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1572,6 +1617,7 @@
               "id": "XpXQnmE",
               "label": "Pulse Carbine (18\u0022, A2, AP(1))",
               "cost": 30,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Pulse Carbine",
@@ -1604,6 +1650,7 @@
               "id": "nl-iQuF",
               "label": "Burst Carbine (18\u0022, A2, Rending)",
               "cost": 5,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Burst Carbine",
@@ -1627,6 +1674,7 @@
               "id": "zOqyvEn",
               "label": "Plasma Rifle (24\u0022, A1, AP(4))",
               "cost": 5,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Plasma Rifle",
@@ -1645,6 +1693,7 @@
               "id": "XIpBsIK",
               "label": "Flamer (12\u0022, A1, Blast(3), Reliable)",
               "cost": 10,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Flamer",
@@ -1673,6 +1722,7 @@
               "id": "8Ttpz",
               "label": "Support Turret (Missile Pod (30\u0022, A2, Disintegrate, Unstoppable))",
               "cost": 30,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Missile Pod",
@@ -1706,6 +1756,7 @@
               "id": "Y5eXpzt",
               "label": "Fusion Carbine (18\u0022, A1, AP(4), Deadly(3))",
               "cost": 25,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Fusion Carbine",
@@ -1730,6 +1781,7 @@
               "id": "AOmT3",
               "label": "Support Turret (Smart Missiles (30\u0022, A3, AP(1), Indirect))",
               "cost": 45,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Smart Missiles",
@@ -1774,6 +1826,7 @@
               "id": "DkgEF-1W",
               "label": "Pulse Pistol (12\u0022, A1, AP(1)), Plasma Sword (A2, AP(1), Rending)",
               "cost": -5,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Pulse Pistol",
@@ -1819,6 +1872,7 @@
               "id": "HJTXvxil",
               "label": "Pulse Rifle (30\u0022, A1, AP(1))",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Pulse Rifle",
@@ -1837,6 +1891,7 @@
               "id": "EF8VYqJ1",
               "label": "Pulse Carbine (18\u0022, A2, AP(1))",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Pulse Carbine",
@@ -1869,6 +1924,7 @@
               "id": "0iIN4Lco",
               "label": "Plasma Gauntlet (A2, AP(4))",
               "cost": 5,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Plasma Gauntlet",
@@ -1952,6 +2008,7 @@
               "id": "uAwcxdE",
               "label": "Scoped Rifle (30\u0022, A1, AP(1), Reliable, Takedown)",
               "cost": 20,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Scoped Rifle",
@@ -1993,6 +2050,7 @@
               "id": "5vzZT",
               "label": "Ion Rifle (30\u0022, A1, AP(1), Blast(3))",
               "cost": -5,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Ion Rifle",
@@ -2017,6 +2075,7 @@
               "id": "XxGrj",
               "label": "Rail Rifle (30\u0022, A1, AP(2), Deadly(3))",
               "cost": 5,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Rail Rifle",
@@ -2053,6 +2112,7 @@
               "id": "1F5f2Bi",
               "label": "Spotting Laser (Precision Spotter)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -2085,6 +2145,7 @@
               "id": "sXRMyRQC",
               "label": "Inhibitor Drone (Melee Shrouding Aura)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -2105,6 +2166,7 @@
               "id": "Ghn6r-AV",
               "label": "Gun Drone (Drone Pulse-Gun (18\u0022, A2, Limited, Rending))",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Drone Pulse-Gun",
@@ -2138,6 +2200,7 @@
               "id": "sM7gW3RY",
               "label": "Recon Drone (Ambush Beacon)",
               "cost": 10,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -2158,6 +2221,7 @@
               "id": "ccSAzGkc",
               "label": "Shield Drone (Stealth Aura)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -2178,6 +2242,7 @@
               "id": "d8rfMvZg",
               "label": "Accelerator Drone (Increased Shooting Range Aura)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -2273,6 +2338,7 @@
               "id": "1Xte7",
               "label": "Fusion Carbine (18\u0022, A1, AP(4), Deadly(3))",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Fusion Carbine",
@@ -2309,6 +2375,7 @@
               "id": "MAZH0P5",
               "label": "Recon Locator (Ambush Beacon)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -2329,6 +2396,7 @@
               "id": "dsgV0Vj",
               "label": "Spotting Laser (Precision Spotter)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -2361,6 +2429,7 @@
               "id": "QAKvC",
               "label": "Backpack Thrusters (Flying)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -2450,6 +2519,7 @@
               "id": "eafWj3Q",
               "label": "Gun Drone (Drone Pulse-Gun (18\u0022, A2, Limited, Rending))",
               "cost": 5,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Drone Pulse-Gun",
@@ -2483,6 +2553,7 @@
               "id": "OTdmXg9",
               "label": "Spotter Drone (Precision Spotter)",
               "cost": 25,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -2503,6 +2574,7 @@
               "id": "oWBWdfp",
               "label": "Shield Drone (Stealth Aura)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -2537,6 +2609,7 @@
               "id": "c6VdwWT",
               "label": "Suit-Missiles (30\u0022, A1, Disintegrate, Unstoppable)",
               "cost": 10,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Suit-Missiles",
@@ -2564,6 +2637,7 @@
               "id": "V1_eaGP",
               "label": "Suit-Plasma (24\u0022, A1, AP(4))",
               "cost": 10,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Suit-Plasma",
@@ -2596,6 +2670,7 @@
               "id": "j3ZmT",
               "label": "Suit-Flamer (12\u0022, A1, Blast(3), Reliable)",
               "cost": 10,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Suit-Flamer",
@@ -2624,6 +2699,7 @@
               "id": "Hvaj5",
               "label": "Suit-Ion (18\u0022, A1, AP(1), Blast(3))",
               "cost": 10,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Suit-Ion",
@@ -2648,6 +2724,7 @@
               "id": "ND7pD",
               "label": "Suit-Fuse (12\u0022, A1, AP(4), Deadly(3))",
               "cost": 15,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Suit-Fuse",
@@ -2672,6 +2749,7 @@
               "id": "Sm6SX",
               "label": "Suit-Frag (24\u0022, A1, Blast(3), Indirect)",
               "cost": 20,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Suit-Frag",
@@ -2714,6 +2792,7 @@
               "id": "v-Xqa",
               "label": "Suit-Flamer (12\u0022, A1, Blast(3), Reliable)",
               "cost": 5,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Suit-Flamer",
@@ -2742,6 +2821,7 @@
               "id": "3R-JKurzdG",
               "label": "Plasma Sword (A2, AP(1), Rending), Energy Shield (Shielded)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Plasma Sword",
@@ -2776,6 +2856,7 @@
               "id": "tK_-D",
               "label": "Suit-Ion (18\u0022, A1, AP(1), Blast(3))",
               "cost": 5,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Suit-Ion",
@@ -2800,6 +2881,7 @@
               "id": "5xqc2",
               "label": "Suit-Fuse (12\u0022, A1, AP(4), Deadly(3))",
               "cost": 5,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Suit-Fuse",
@@ -2824,6 +2906,7 @@
               "id": "Omu1h",
               "label": "Suit-Frag (24\u0022, A1, Blast(3), Indirect)",
               "cost": 10,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Suit-Frag",
@@ -2864,6 +2947,7 @@
               "id": "7cXe2uOeeX",
               "label": "Drop-Thrusters (Ambush)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -2952,6 +3036,7 @@
               "id": "QbV9nqy",
               "label": "Precision Rounds (Ignores Cover when Shooting)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -2972,6 +3057,7 @@
               "id": "YSU1Cgo",
               "label": "Shock Rounds (Shred when Shooting)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -3004,6 +3090,7 @@
               "id": "0NH4PuE",
               "label": "Self-Repair (Regeneration)",
               "cost": 15,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -3089,6 +3176,7 @@
               "id": "PiWt5ip",
               "label": "Drone Controller (Reliable, Takedown)",
               "cost": 75,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -3125,8 +3213,8 @@
       "base": {
         "shape": "Rectangle",
         "diameterInches": 1.1023622,
-        "widthInches": 4.7244096,
-        "heightInches": 3.6220472
+        "widthInches": 3.6220472,
+        "heightInches": 4.7244096
       },
       "weapons": [
         {
@@ -3198,6 +3286,7 @@
               "id": "UvejaWa",
               "label": "Twin Heavy Burst Carbine (18\u0022, A4, AP(1), Rending)",
               "cost": 10,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Twin Heavy Burst Carbine",
@@ -3221,6 +3310,7 @@
               "id": "7oCDy",
               "label": "Twin Heavy Missile Pod (30\u0022, A4, AP(1), Disintegrate, Unstoppable)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Twin Heavy Missile Pod",
@@ -3248,6 +3338,7 @@
               "id": "BcUGQfn",
               "label": "Twin Heavy Frag Pod (24\u0022, A2, AP(1), Blast(3), Indirect)",
               "cost": 45,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Twin Heavy Frag Pod",
@@ -3276,6 +3367,7 @@
               "id": "moC2vqA",
               "label": "Twin Heavy Smart Missiles (30\u0022, A6, AP(2), Indirect)",
               "cost": 80,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Twin Heavy Smart Missiles",
@@ -3311,6 +3403,7 @@
               "id": "s_hpSvjLXY",
               "label": "Homing Frag-Missiles (24\u0022, A1, AP(1), Blast(3), Indirect, Limited)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Homing Frag-Missiles",
@@ -3343,6 +3436,7 @@
               "id": "XALV9xt",
               "label": "Homing AT-Missiles (30\u0022, A1, AP(2), Deadly(3), Indirect, Limited)",
               "cost": 15,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Homing AT-Missiles",
@@ -3387,6 +3481,7 @@
               "id": "O62VqLs",
               "label": "Inhibitor System (Melee Shrouding)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -3407,6 +3502,7 @@
               "id": "P8YkOP-",
               "label": "Vision Scrambler (Stealth)",
               "cost": 60,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -3439,8 +3535,8 @@
       "base": {
         "shape": "Rectangle",
         "diameterInches": 1.1023622,
-        "widthInches": 4.7244096,
-        "heightInches": 3.6220472
+        "widthInches": 3.6220472,
+        "heightInches": 4.7244096
       },
       "weapons": [
         {
@@ -3508,6 +3604,7 @@
               "id": "UvejaWa",
               "label": "Twin Heavy Burst Carbine (18\u0022, A4, AP(1), Rending)",
               "cost": 10,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Twin Heavy Burst Carbine",
@@ -3531,6 +3628,7 @@
               "id": "7oCDy",
               "label": "Twin Heavy Missile Pod (30\u0022, A4, AP(1), Disintegrate, Unstoppable)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Twin Heavy Missile Pod",
@@ -3558,6 +3656,7 @@
               "id": "BcUGQfn",
               "label": "Twin Heavy Frag Pod (24\u0022, A2, AP(1), Blast(3), Indirect)",
               "cost": 45,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Twin Heavy Frag Pod",
@@ -3586,6 +3685,7 @@
               "id": "moC2vqA",
               "label": "Twin Heavy Smart Missiles (30\u0022, A6, AP(2), Indirect)",
               "cost": 80,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Twin Heavy Smart Missiles",
@@ -3621,6 +3721,7 @@
               "id": "s_hpSvjLXY",
               "label": "Homing Frag-Missiles (24\u0022, A1, AP(1), Blast(3), Indirect, Limited)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Homing Frag-Missiles",
@@ -3653,6 +3754,7 @@
               "id": "XALV9xt",
               "label": "Homing AT-Missiles (30\u0022, A1, AP(2), Deadly(3), Indirect, Limited)",
               "cost": 15,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Homing AT-Missiles",
@@ -3697,6 +3799,7 @@
               "id": "O62VqLs",
               "label": "Inhibitor System (Melee Shrouding)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -3717,6 +3820,7 @@
               "id": "P8YkOP-",
               "label": "Vision Scrambler (Stealth)",
               "cost": 60,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -3752,6 +3856,7 @@
               "id": "Chp_nPRnxU",
               "label": "Heavy Sub-Railgun (36\u0022, A2, AP(1), Blast(6)), Heavy Pulse-Gun (18\u0022, A2, AP(1))",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Heavy Sub-Railgun",
@@ -3798,6 +3903,7 @@
               "id": "GJdV0EQ",
               "label": "Homing Frag-Missile Array (24\u0022, A2, AP(1), Blast(3), Indirect)",
               "cost": 15,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Homing Frag-Missile Array",
@@ -3826,6 +3932,7 @@
               "id": "TMhiB1H",
               "label": "Ion Cannon (30\u0022, A2, AP(2), Blast(3))",
               "cost": 20,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Ion Cannon",
@@ -3850,6 +3957,7 @@
               "id": "SwlL6aI",
               "label": "Homing AT-Missile Array (30\u0022, A2, AP(2), Deadly(3), Indirect)",
               "cost": 60,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Homing AT-Missile Array",
@@ -3878,6 +3986,7 @@
               "id": "t9HzQ",
               "label": "Railgun (36\u0022, A2, AP(4), Deadly(3))",
               "cost": 40,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Railgun",
@@ -3916,6 +4025,7 @@
               "id": "TsMaL0vvLd",
               "label": "Heavy Homing Frag-Missile Array (24\u0022, A2, AP(1), Blast(6), Indirect)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Heavy Homing Frag-Missile Array",
@@ -3944,6 +4054,7 @@
               "id": "4UTixTKxjX",
               "label": "Heavy Ion Cannon (30\u0022, A2, AP(2), Blast(6))",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Heavy Ion Cannon",
@@ -3968,6 +4079,7 @@
               "id": "kCXiJMgzrw",
               "label": "Heavy Homing AT-Missile Array (30\u0022, A2, AP(2), Deadly(6), Indirect)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Heavy Homing AT-Missile Array",
@@ -3996,6 +4108,7 @@
               "id": "v9KHFl6lSY",
               "label": "Heavy Railgun (36\u0022, A2, AP(4), Deadly(6))",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Heavy Railgun",
@@ -4034,6 +4147,7 @@
               "id": "eO2AhKI5",
               "label": "Heavy Burst Carbine (18\u0022, A2, AP(1), Rending)",
               "cost": 10,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Heavy Burst Carbine",
@@ -4057,6 +4171,7 @@
               "id": "FXrbDKo0",
               "label": "Heavy Missile Pod (30\u0022, A2, AP(1), Disintegrate, Unstoppable)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Heavy Missile Pod",
@@ -4084,6 +4199,7 @@
               "id": "0Q7Lx93-",
               "label": "Heavy Frag Pod (24\u0022, A1, AP(1), Blast(3), Indirect)",
               "cost": 45,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Heavy Frag Pod",
@@ -4112,6 +4228,7 @@
               "id": "6gpDVs-U",
               "label": "Heavy Smart Missiles (30\u0022, A3, AP(2), Indirect)",
               "cost": 80,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Heavy Smart Missiles",
@@ -4213,6 +4330,7 @@
               "id": "s_hpSvjLXY",
               "label": "Homing Frag-Missiles (24\u0022, A1, AP(1), Blast(3), Indirect, Limited)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Homing Frag-Missiles",
@@ -4245,6 +4363,7 @@
               "id": "XALV9xt",
               "label": "Homing AT-Missiles (30\u0022, A1, AP(2), Deadly(3), Indirect, Limited)",
               "cost": 15,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Homing AT-Missiles",
@@ -4289,6 +4408,7 @@
               "id": "O62VqLs",
               "label": "Inhibitor System (Melee Shrouding)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -4309,6 +4429,7 @@
               "id": "P8YkOP-",
               "label": "Vision Scrambler (Stealth)",
               "cost": 60,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -4343,6 +4464,7 @@
               "id": "ChqmP",
               "label": "Fusion Carbine (18\u0022, A1, AP(4), Deadly(3))",
               "cost": 15,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Fusion Carbine",
@@ -4379,6 +4501,7 @@
               "id": "JUs2sYBr",
               "label": "Weak Spot Locator (Piercing Shooting Mark)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -4411,8 +4534,8 @@
       "base": {
         "shape": "Rectangle",
         "diameterInches": 1.1023622,
-        "widthInches": 4.7244096,
-        "heightInches": 3.6220472
+        "widthInches": 3.6220472,
+        "heightInches": 4.7244096
       },
       "weapons": [
         {
@@ -4474,6 +4597,7 @@
               "id": "s_hpSvjLXY",
               "label": "Homing Frag-Missiles (24\u0022, A1, AP(1), Blast(3), Indirect, Limited)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Homing Frag-Missiles",
@@ -4506,6 +4630,7 @@
               "id": "XALV9xt",
               "label": "Homing AT-Missiles (30\u0022, A1, AP(2), Deadly(3), Indirect, Limited)",
               "cost": 15,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Homing AT-Missiles",
@@ -4552,6 +4677,7 @@
               "id": "_UH3ACfkU8",
               "label": "Quad Missile Pod (30\u0022, A8, Disintegrate, Unstoppable)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Quad Missile Pod",
@@ -4579,6 +4705,7 @@
               "id": "S1Xqm-P",
               "label": "Twin Heavy Rail Rifle (30\u0022, A2, AP(2), Deadly(6))",
               "cost": 35,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Twin Heavy Rail Rifle",
@@ -4615,6 +4742,7 @@
               "id": "lCmmJ",
               "label": "Twin Suit Missile Pod (30\u0022, A3, Disintegrate, Unstoppable)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Twin Suit Missile Pod",
@@ -4642,6 +4770,7 @@
               "id": "bZp_D-i",
               "label": "Twin Plasma Rifle (24\u0022, A2, AP(4))",
               "cost": 35,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Twin Plasma Rifle",
@@ -4660,6 +4789,7 @@
               "id": "mdiLQCl",
               "label": "Twin Suit Smart Missiles (30\u0022, A4, AP(1), Indirect)",
               "cost": 75,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Twin Suit Smart Missiles",
@@ -4695,6 +4825,7 @@
               "id": "__8xXZh",
               "label": "Gun Drone (Drone Pulse-Gun (18\u0022, A2, Limited, Rending))",
               "cost": 5,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Drone Pulse-Gun",
@@ -4728,6 +4859,7 @@
               "id": "geJEjWt",
               "label": "Shield Drone (Stealth)",
               "cost": 60,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -4760,8 +4892,8 @@
       "base": {
         "shape": "Rectangle",
         "diameterInches": 1.1023622,
-        "widthInches": 4.7244096,
-        "heightInches": 3.6220472
+        "widthInches": 3.6220472,
+        "heightInches": 4.7244096
       },
       "weapons": [
         {
@@ -4842,6 +4974,7 @@
               "id": "PFYjG",
               "label": "Heavy Fusion Carbine (18\u0022, A1, AP(4), Deadly(6))",
               "cost": 25,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Heavy Fusion Carbine",
@@ -4880,6 +5013,7 @@
               "id": "3GiDfEV",
               "label": "Twin Flamer (12\u0022, A2, Blast(3), Reliable)",
               "cost": 5,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Twin Flamer",
@@ -4908,6 +5042,7 @@
               "id": "bVJpj",
               "label": "Twin Fusion Carbine (18\u0022, A2, AP(4), Deadly(3))",
               "cost": 35,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Twin Fusion Carbine",
@@ -4944,6 +5079,7 @@
               "id": "Cx8lw",
               "label": "Backpack Thrusters (Flying)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -4964,6 +5100,7 @@
               "id": "dsSs1L0F_l",
               "label": "Weak Spot Locator (Piercing Shooting Mark)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -4984,6 +5121,7 @@
               "id": "uQoOePL",
               "label": "Stealth Drone (Evasive)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -5016,8 +5154,8 @@
       "base": {
         "shape": "Rectangle",
         "diameterInches": 1.1023622,
-        "widthInches": 4.7244096,
-        "heightInches": 3.6220472
+        "widthInches": 3.6220472,
+        "heightInches": 4.7244096
       },
       "weapons": [
         {
@@ -5081,6 +5219,7 @@
               "id": "PBmVi",
               "label": "Twin Missile Pod (30\u0022, A4, Disintegrate, Unstoppable)",
               "cost": 45,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Twin Missile Pod",
@@ -5120,6 +5259,7 @@
               "id": "Dg1Q9oElzb",
               "label": "Frag-Missiles (24\u0022, A1, AP(1), Blast(3), Limited)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Frag-Missiles",
@@ -5148,6 +5288,7 @@
               "id": "tBtkZTzm",
               "label": "AT-Missiles (30\u0022, A1, AP(2), Deadly(3), Limited)",
               "cost": 15,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "AT-Missiles",
@@ -5188,8 +5329,8 @@
       "base": {
         "shape": "Rectangle",
         "diameterInches": 1.1023622,
-        "widthInches": 4.7244096,
-        "heightInches": 3.6220472
+        "widthInches": 3.6220472,
+        "heightInches": 4.7244096
       },
       "weapons": [
         {
@@ -5273,6 +5414,7 @@
               "id": "Dg1Q9oElzb",
               "label": "Frag-Missiles (24\u0022, A1, AP(1), Blast(3), Limited)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Frag-Missiles",
@@ -5301,6 +5443,7 @@
               "id": "tBtkZTzm",
               "label": "AT-Missiles (30\u0022, A1, AP(2), Deadly(3), Limited)",
               "cost": 15,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "AT-Missiles",
@@ -5341,8 +5484,8 @@
       "base": {
         "shape": "Rectangle",
         "diameterInches": 1.1023622,
-        "widthInches": 6.2992125,
-        "heightInches": 4.8031497
+        "widthInches": 4.8031497,
+        "heightInches": 6.2992125
       },
       "weapons": [
         {
@@ -5409,6 +5552,7 @@
               "id": "1Icr2zX",
               "label": "Titan Burst Carbine (18\u0022, A12, AP(1), Rending)",
               "cost": 95,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Titan Burst Carbine",
@@ -5432,6 +5576,7 @@
               "id": "t76YkBW",
               "label": "Twin Ion Cannon (30\u0022, A4, AP(2), Blast(3))",
               "cost": 140,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Twin Ion Cannon",
@@ -5470,6 +5615,7 @@
               "id": "faIPX",
               "label": "Nova Shield (Evasive)",
               "cost": 35,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -5504,6 +5650,7 @@
               "id": "Jz5TA",
               "label": "Twin Missile Pod (30\u0022, A4, Disintegrate, Unstoppable)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Twin Missile Pod",
@@ -5531,6 +5678,7 @@
               "id": "pbwGE",
               "label": "Twin Fusion Carbine (18\u0022, A2, AP(4), Deadly(3))",
               "cost": 45,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Twin Fusion Carbine",
@@ -5555,6 +5703,7 @@
               "id": "1feBCD1",
               "label": "Twin Smart Missiles (30\u0022, A6, AP(1), Indirect)",
               "cost": 100,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Twin Smart Missiles",
@@ -5590,8 +5739,8 @@
       "base": {
         "shape": "Rectangle",
         "diameterInches": 1.1023622,
-        "widthInches": 6.2992125,
-        "heightInches": 4.8031497
+        "widthInches": 4.8031497,
+        "heightInches": 6.2992125
       },
       "weapons": [
         {
@@ -5659,6 +5808,7 @@
               "id": "xPuFiOA",
               "label": "Pulse Driver (36\u0022, A3, AP(3), Deadly(3))",
               "cost": 65,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Pulse Driver",
@@ -5695,6 +5845,7 @@
               "id": "id-IsYm",
               "label": "Twin Flamer (12\u0022, A2, Blast(3), Reliable)",
               "cost": 40,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Twin Flamer",
@@ -5723,6 +5874,7 @@
               "id": "ymzFbZe",
               "label": "Destroyer Missiles (30\u0022, A1, AP(2), Deadly(3))",
               "cost": 55,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Destroyer Missiles",
@@ -5759,6 +5911,7 @@
               "id": "02OSH",
               "label": "Twin Missile Pod (30\u0022, A4, Disintegrate, Unstoppable)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Twin Missile Pod",
@@ -5786,6 +5939,7 @@
               "id": "fkQAm",
               "label": "Twin Smart Missiles (30\u0022, A6, AP(1), Indirect)",
               "cost": 0,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Twin Smart Missiles",
@@ -5823,6 +5977,7 @@
               "id": "9Vsnxes",
               "label": "Twin Heavy Burst Carbine (18\u0022, A4, AP(1), Rending)",
               "cost": 15,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Twin Heavy Burst Carbine",
@@ -5846,6 +6001,7 @@
               "id": "h2oPJtB",
               "label": "Twin Frag Pod (24\u0022, A2, Blast(3), Indirect)",
               "cost": 35,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Twin Frag Pod",
