@@ -48,7 +48,8 @@ Corpus coverage is a different story: 528 of 13,870 book rule references (3.8%) 
 ## Casting
 
 - [~] 034 — Spell content: targeting primitives Part 1 complete; remaining: conferred-rule implementations (coordinate with #100) and per-faction spell JSON (copyrighted — authored locally, never committed; partially generated). ([WorkItems/034](WorkItems/034-spell-content.md))
-- [ ] 234 — Casting is possible after Charge + melee in one activation; check the rulebook, then gate the Cast option if illegal. ([WorkItems/234](WorkItems/234-cast-after-charge-legality.md))
+- [~] 234 — Cast gated on `HasAttacked` (shooting or melee closes the casting window; moving does not), per v3.5.1 Caster(X) "at any point before attacking". Implemented + tested; awaiting GUI hand-verify. ([WorkItems/234](WorkItems/234-cast-after-charge-legality.md))
+- [ ] 249 — Caster's "only one try per spell" is unenforced: no per-spell attempt state, so a caster can re-try the same spell all activation. Split out of #234; mechanism fork open. ([WorkItems/249](WorkItems/249-one-try-per-spell.md))
 - [~] 244 — Caster self-boost: own tokens for +1/each in a new dedicated spell picker (`ChooseSpellRequest`, one-panel GUI with useful-cap-gated boost stepper). Implemented + tested; awaiting GUI hand-verify. ([WorkItems/244](WorkItems/244-caster-self-boost.md))
 
 ## Army Forge
