@@ -54,7 +54,7 @@ Corpus coverage is a different story: 528 of 13,870 book rule references (3.8%) 
 
 ## Army Forge
 
-- [ ] 218 — "Replace All" upgrade sections charge `option.Cost` once per model instead of a flat section cost; needs an OPR-pricing-convention check before fixing `ListCompiler`'s multiplication. ([WorkItems/218](WorkItems/218-army-forge-replace-all-cost.md))
+- [~] 218 — "Replace All" charged per model instead of flat. Convention confirmed from a real share list and fixed 2026-07-19 (Havoc list reconciles 1120 both ways; 200 priced All options were overcharging). Open: `Affects.Any` pricing unverified (1185 options ride on it) + GUI hand-verify. ([WorkItems/218](WorkItems/218-army-forge-replace-all-cost.md))
 - [ ] 219 — Bundled `.fdgbook` upgrades that should cost points charge 0. Root-caused 2026-07-19: OPR omits `cost` on options it prices internally and the importer coerced absent->0; now flagged, but the real prices are unrecoverable from OPR - design fork + book re-import open. ([WorkItems/219](WorkItems/219-army-forge-zero-cost-upgrades.md))
 - [ ] 220 — Version control for Army Forge lists (undo/revision history); mechanism not yet decided, surface the design fork first. ([WorkItems/220](WorkItems/220-army-forge-list-version-control.md))
 - [~] 236 — Freeform builder silently stripped a Forge army's embedded book/selections on save; now gated behind an explicit "Save detached" confirm. Implemented + tested; modal awaits GUI hand-verify. ([WorkItems/236](WorkItems/236-freeform-save-strips-forge-block.md))
