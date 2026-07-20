@@ -112,6 +112,7 @@ detection, host-IP display, DNS host entry. See `NetworkingHandoff-2026-07-08.md
 - [~] 246 — In-game escape menu (Esc): Save/Load/Options/quit-to-menu/quit; bottom-left toolbar collapsed to one Menu button, Field GPU/CPU button deleted. Implemented (S1-S3) 2026-07-18; awaiting GUI hand-verify. ([WorkItems/246](WorkItems/246-escape-menu.md))
 - [~] 248 — Resolver keyboard hotkeys (fixed action letters, list numbers/arrows/Enter) + engine back-out of a pristine activation (extends #202, absorbs part of #161). Implemented + tested 2026-07-19; awaiting GUI hand-verify. ([WorkItems/248](WorkItems/248-resolver-hotkeys-and-backout.md))
 - [~] 250 — Per-model visuals now follow the base shape: 4 raw-circle draws (spotlight halo, shooting target rings, ghost threat ring, cast-assist) + 4 dropped-facing call sites, plus a new `DrawOutlineRaylib`. Implemented 2026-07-19; awaiting GUI hand-verify. ([WorkItems/250](WorkItems/250-per-model-visuals-follow-base-shape.md))
+- [~] 251 — Ruler overlay measured rectangular bases as circles (inscribed radius): edge reading and snapping now use the engine's facing-aware shape geometry; nose-to-nose bikes were reading ~0.98in too far. Implemented 2026-07-19; awaiting GUI hand-verify. ([WorkItems/251](WorkItems/251-ruler-shape-aware-measurement.md))
 
 ## 2026-06-10 audit follow-ups
 

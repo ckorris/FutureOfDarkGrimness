@@ -160,7 +160,9 @@ public class ArmyForgeScreenTests
         RosterUnit gunners = DemoBook.Build().Units.Single(u => u.Id == "gunners");
         ArmyForgeScreen.SetChoice(bu, gunners.Sections.Single(s => s.Id == "gunners-missiles"), "missile", 1);
 
-        Assert.That(screen.Compile().Units.Single().PointCost, Is.EqualTo(165)); // 120 + 15×3 (all 3 swapped)
+        // #218: an "all" replace is a FLAT per-unit price, not per model — 120 + 15 once, however many
+        // models are swapped. This test previously pinned the old 120 + 15×3 = 165 multiplication.
+        Assert.That(screen.Compile().Units.Single().PointCost, Is.EqualTo(135));
     }
 
     [Test]

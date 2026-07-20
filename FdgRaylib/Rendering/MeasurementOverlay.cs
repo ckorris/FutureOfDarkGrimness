@@ -121,21 +121,14 @@ public class MeasurementOverlay
         dl.AddCircleFilled(a, 3.5f, DotColor);
         dl.AddCircleFilled(b, 3.5f, DotColor);
 
-        // Distances: centre-to-centre always; base-to-base too when both ends snapped to a model.
+        // Distances: centre-to-centre always; base-to-base too when at least one end snapped to a model.
         float dx = _anchor.XIn - _cursor.XIn;
         float dz = _anchor.ZIn - _cursor.ZIn;
         float centerIn = MathF.Sqrt(dx * dx + dz * dz);
 
-        string label;
-        if (_anchor.Snapped && _cursor.Snapped)
-        {
-            float edge = MathF.Max(0f, centerIn - _anchor.RadiusIn - _cursor.RadiusIn);
-            label = $"{edge:0.0}\" edge / {centerIn:0.0}\" ctr";
-        }
-        else
-        {
-            label = $"{centerIn:0.0}\"";
-        }
+        string label = TryEdgeDistance(out float edge)
+            ? $"{edge:0.0}\" edge / {centerIn:0.0}\" ctr"
+            : $"{centerIn:0.0}\"";
 
         Vector2 mid  = (a + b) * 0.5f;
         Vector2 size = ImGui.CalcTextSize(label);
@@ -144,11 +137,24 @@ public class MeasurementOverlay
         dl.AddText(at, TextColor, label);
     }
 
+    // The ruler's base-to-base ("edge") reading — see MeasurementGeometry (#251) for why this measures
+    // against true base shapes rather than subtracting scalar radii.
+    private bool TryEdgeDistance(out float edgeIn)
+    {
+        IModel? a = _anchor.Model, b = _cursor.Model;
+        float? edge = MeasurementGeometry.EdgeDistanceInches(
+            a?.BaseShape, a?.Position ?? new Position(_anchor.XIn, 0f, _anchor.ZIn), a?.Facing ?? default,
+            b?.BaseShape, b?.Position ?? new Position(_cursor.XIn, 0f, _cursor.ZIn), b?.Facing ?? default);
+        edgeIn = edge ?? 0f;
+        return edge.HasValue;
+    }
+
     // Nearest living, placed model whose base (plus a small margin) contains the cursor; else the raw point.
     private MeasurePoint Snap(Vector2 mouse)
     {
         float xIn = (mouse.X - _originX) / _scale;
         float zIn = _tableH - (mouse.Y - _originY) / _scale;
+        var cursor = new Position(xIn, 0f, zIn);
 
         IModel? best = null;
         float bestD = float.MaxValue;
@@ -163,9 +169,12 @@ public class MeasurementOverlay
                 Position p = m.Position;
                 if (p.x == 0f && p.z == 0f) continue;
 
-                float ex = xIn - p.x, ez = zIn - p.z;
-                float d = MathF.Sqrt(ex * ex + ez * ez);
-                if (d <= m.BaseRadiusInches + SnapMarginInches && d < bestD)
+                // #251: snap against the true base surface (0 when inside), not a circle of the inscribed
+                // radius — that under-snapped every rectangle, making the long ends of a bike or tank base
+                // unclickable. Ties break on the smallest surface distance, so an overlapping/nested base
+                // still picks the one the cursor is most inside of.
+                float d = MeasurementGeometry.SnapDistanceInches(m.BaseShape, p, m.Facing, cursor);
+                if (d <= SnapMarginInches && d < bestD)
                 {
                     bestD = d;
                     best  = m;
@@ -176,9 +185,9 @@ public class MeasurementOverlay
         if (best != null)
         {
             Position c = best.Position;
-            return new MeasurePoint { XIn = c.x, ZIn = c.z, RadiusIn = best.BaseRadiusInches, Snapped = true };
+            return new MeasurePoint { XIn = c.x, ZIn = c.z, Model = best };
         }
-        return new MeasurePoint { XIn = xIn, ZIn = zIn, RadiusIn = 0f, Snapped = false };
+        return new MeasurePoint { XIn = xIn, ZIn = zIn, Model = null };
     }
 
     private Vector2 ToPixel(MeasurePoint p) =>
@@ -186,8 +195,12 @@ public class MeasurementOverlay
 
     private struct MeasurePoint
     {
-        public float XIn, ZIn, RadiusIn;
-        public bool  Snapped;
+        public float XIn, ZIn;
+
+        // #251: the snapped model itself, not a scalar radius — the edge reading measures against its true
+        // base shape and facing. Null when this end is a free point (the single "did it snap?" signal;
+        // a separate bool would be a second source of truth that could drift).
+        public IModel? Model;
     }
 
     private static uint U32(float r, float g, float b, float a) =>
