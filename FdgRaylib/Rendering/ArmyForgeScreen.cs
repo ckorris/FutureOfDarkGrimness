@@ -200,6 +200,12 @@ public class ArmyForgeScreen : IAppScreen
             {
                 if (check.OurTotalPoints == check.TheirTotalPoints && check.ExcludedUnits.Count == 0)
                     ImGui.TextColored(GreenText, $"Points check: our Forge matches Army Forge ({check.OurTotalPoints} pts).");
+                else if (check.UnpricedUpgradeCount > 0)
+                    // Amber, not red: Army Forge never published a price for these, so our shortfall is
+                    // expected and is NOT a defect in our compiler (#219).
+                    ImGui.TextColored(YellowText, $"Points check: our Forge computes {check.OurTotalPoints} pts vs " +
+                        $"Army Forge's {check.TheirTotalPoints} - {check.UnpricedUpgradeCount} selected " +
+                        "upgrade(s) have no published price, so we count them as free (#219).");
                 else if (check.OurTotalPoints != check.TheirTotalPoints)
                     ImGui.TextColored(RedText, $"Points check: our Forge computes {check.OurTotalPoints} pts, " +
                         $"Army Forge says {check.TheirTotalPoints} (see #218/#219).");

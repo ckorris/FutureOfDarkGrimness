@@ -119,10 +119,15 @@ if (importArmyIdx >= 0 && importArmyIdx + 2 < args.Length)
             foreach ((string name, int pts) in session.ExcludedUnits)
                 Console.WriteLine($"  excluded (not in bundled book): {name} ({pts} pts)");
             foreach ((string name, int ours, int theirs) in session.UnitPointsDeltas)
-                Console.WriteLine($"  points delta: {name} - our Forge {ours} pts, Army Forge {theirs} pts");
+                Console.WriteLine($"  base cost drift: {name} - bundled book {ours} pts, Army Forge {theirs} pts");
+            if (session.UnpricedUpgradeCount > 0)
+                Console.WriteLine($"  {session.UnpricedUpgradeCount} selected upgrade(s) have no published " +
+                    "Army Forge price - our total counts them as free (#219)");
             Console.WriteLine(session.OurTotalPoints == session.TheirTotalPoints
                 ? $"  points check: OK ({session.OurTotalPoints} pts both ways)"
-                : $"  points check: MISMATCH - our Forge {session.OurTotalPoints} pts vs Army Forge {session.TheirTotalPoints} pts");
+                : $"  points check: our Forge {session.OurTotalPoints} pts vs Army Forge " +
+                  $"{session.TheirTotalPoints} pts" +
+                  (session.UnpricedUpgradeCount > 0 ? " (expected - unpriced upgrades above)" : ""));
         }
 
         string outArmyPath = args[importArmyIdx + 2];
