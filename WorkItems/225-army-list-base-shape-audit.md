@@ -45,17 +45,52 @@ User has spotted a number of units with default (probably unintended) base shape
   - Verification: engine suite **1739 passed / 0 failed** (+5 new tests), full `dotnet build` clean,
     headless smoke exits 0.
 
+- 2026-07-19: **Defect B shipped.** New engine `DefaultBaseEstimator` replaces the silent 28mm fallback.
+  - **The heuristic gained a second axis beyond `Tough`.** Profiling the 102 affected units showed every
+    one carries a Tough rule, in six discrete buckets (3/6/9/12/18/24 - no interpolation needed), and
+    that `Hero` cleanly separates two populations that must not share a size curve: all six Tough(3)
+    units are Hero+Unique named CHARACTERS, and four larger Heroes are monstrous creatures (a flying
+    Tough(12) hive lord, Tough(6) named beasts). Sizing those as vehicles would have put a named
+    character on a 90x52mm tank hull. So: **Hero -> circle, otherwise rectangle, sized by Tough.**
+  - Sizes deliberately reuse tuples ALREADY present in the corpus, so an estimated base never looks
+    alien beside an imported one. Vehicles: T<=6 90x52, T<=9 105x70, T<=12 120x92, T<=18 160x122,
+    else 175x125. Heroes: T<=3 40mm, T<=6 50mm, else 60mm. Both tables are single constants, tunable
+    by editing them and re-running the retrofit.
+  - `MapBase` now takes the unit's rules + name + the `warn` callback; **every estimate emits a warning**
+    (`no base declared for 'X' - estimated ...`), so an invented base is never silent. `MapUnit` maps
+    rules up front to feed it.
+  - `BaseOrientationRetrofit` handles both defects, in order: an unsized default is REPLACED outright
+    (leaving no orientation to fix), otherwise a mis-oriented rectangle is swapped. `--retrofit-bases`
+    reports an estimate count per file and `--verbose` names every one.
+  - Convergence is a tested invariant: an estimate is never itself `IsUnsizedDefault`, and no estimated
+    rectangle is wider than long - so the retrofit cannot re-estimate or re-swap on a second pass.
+    Verified: second run reported 0 patched.
+  - `IsUnsizedDefault` gates on `Shape == Circle` FIRST. Every Rectangle also carries a leftover 28mm
+    `DiameterInches` in its dead field, so a diameter-only test would have flagged correctly-sized
+    rectangles. Pinned by a test.
+  - Ran over the corpus: **38/56 files patched, 138 bases estimated** (more than 102 because armies carry
+    both compiled units and an embedded book snapshot). Corpus now has **0 unsized defaults** (was 102)
+    and **0 wider-than-long rectangles**; the resulting distribution is 12 tuples, all pre-existing.
+  - Verification: engine **1756 passed / 0 failed** (+17 new), app **393 passed / 0 failed**,
+    `dotnet build` clean, headless smoke exits 0.
+  - **Expected side effect**: the headless smoke's outcome changed (Tie -> a Win). Vehicles went from
+    28mm dots to real footprints, so collision, LoS and coherency geometry genuinely changed. Not a
+    regression - it is the point of the fix.
+
 ## Decisions
 
-- 2026-07-19: Defect B's 28mm fallback will be replaced with a **heuristic keyed off `Tough`** (user
-  call), rather than a hand-authored per-unit override table or a warn-only change. OPR genuinely
-  declares no base for vehicles, so there is nothing to import and a size must be invented; the heuristic
-  is self-maintaining as books change. Pair it with an import warning either way so these stop passing
-  unnoticed. NOT YET IMPLEMENTED.
+- 2026-07-19: Defect B's 28mm fallback replaced with a heuristic rather than a hand-authored per-unit
+  override table or a warn-only change (user call). OPR genuinely declares no base for vehicles, so
+  there is nothing to import and a size must be invented; a heuristic is self-maintaining as books
+  change. Implemented with the `Hero` axis added on top of `Tough` - see the note above for why.
+- 2026-07-19: Estimated sizes are constrained to tuples already in the corpus. An invented base should
+  be indistinguishable in KIND from a real one, even though its value is a guess.
 
 ## Deferred / still open
 
-- **Defect B (the 28mm default on 102 units)** — decided but not built; see Decisions above.
+- **The estimated sizes are guesses.** They are plausible and internally consistent, but they will not
+  match anyone's actual models. If a specific unit looks wrong on the table, hand-tune the tables in
+  `DefaultBaseEstimator` and re-run `--retrofit-bases`.
 - **Base sizes are coarse in OPR's own data** and were left alone: 105x70 covers both `Artillery Gun`
   and `Paladin Light Titan`; 120x92 covers both `Jeep` and `Super Heavy Battle Tank`. That coarseness
   comes from upstream, not from our importer - out of scope unless hand-tuning is wanted.
@@ -65,4 +100,12 @@ User has spotted a number of units with default (probably unintended) base shape
 
 ## Outcome
 
-Defect A complete and verified; Defect B decided and outstanding. Item stays open until B lands.
+Both defects complete and verified; corpus is clean (0 unsized defaults, 0 mis-oriented rectangles).
+Open only until hand-verified in the GUI.
+
+**Verify by hand:**
+1. Play an army with vehicles (Human Defense Force, Orks) - tanks and titans occupy real footprints
+   rather than infantry-sized dots; they block line of sight and cannot slip through gaps they used to.
+2. A named character (e.g. Jackals' Ranjo "Swiftsnare") is on a normal round base, NOT a tank hull.
+3. Re-import a book with `--import-opr` and confirm the console warns once per undeclared base.
+4. Spot-check that estimated vehicle sizes look sane on the table; tune `DefaultBaseEstimator` if not.

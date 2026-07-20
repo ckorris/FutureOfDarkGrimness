@@ -3407,7 +3407,7 @@
       "basePointCost": 75,
       "base": {
         "shape": "Circle",
-        "diameterInches": 1.1023622,
+        "diameterInches": 1.5748031,
         "widthInches": 0.984252,
         "heightInches": 1.968504
       },
@@ -3589,7 +3589,7 @@
       "basePointCost": 85,
       "base": {
         "shape": "Circle",
-        "diameterInches": 1.1023622,
+        "diameterInches": 1.5748031,
         "widthInches": 0.984252,
         "heightInches": 1.968504
       },

@@ -31,7 +31,7 @@ When closing an item: write the Outcome in its detail file, tick the line, and m
 ## Model bases & geometry
 
 - [~] 149 — Configurable model base size + shapes (per-unit circle/rect via the `IBaseShape` seam): core landed; remaining facets in the detail file. The deferred hard-path geometry became #150 (awaiting verification below). ([WorkItems/149](WorkItems/149-base-shapes.md))
-- [~] 225 — Base shape/size audit: two importer defects, not scattered bad data. Rectangle axis swap FIXED 2026-07-19 (294 units re-emitted, OPR writes length-first); the 28mm default on 102 vehicles/titans is decided (Tough-keyed heuristic) but not built. ([WorkItems/225](WorkItems/225-army-list-base-shape-audit.md))
+- [~] 225 — Base shape/size audit: two importer defects, both FIXED 2026-07-19 — rectangle axis swap (OPR writes length-first) and the 28mm default on 102 vehicles/titans (now estimated from Hero + Tough, with an import warning). Corpus clean; awaiting GUI hand-verify. ([WorkItems/225](WorkItems/225-army-list-base-shape-audit.md))
 
 ## Special rules — framework
 

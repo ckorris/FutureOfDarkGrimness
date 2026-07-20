@@ -4271,10 +4271,10 @@
       "maxModels": 1,
       "basePointCost": 840,
       "base": {
-        "shape": "Circle",
+        "shape": "Rectangle",
         "diameterInches": 1.1023622,
-        "widthInches": 0.984252,
-        "heightInches": 1.968504
+        "widthInches": 4.92126,
+        "heightInches": 6.889764
       },
       "weapons": [
         {

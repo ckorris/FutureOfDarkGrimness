@@ -2628,10 +2628,10 @@
       "maxModels": 1,
       "basePointCost": 170,
       "base": {
-        "shape": "Circle",
+        "shape": "Rectangle",
         "diameterInches": 1.1023622,
-        "widthInches": 0.984252,
-        "heightInches": 1.968504
+        "widthInches": 2.047244,
+        "heightInches": 3.543307
       },
       "weapons": [
         {
@@ -2819,10 +2819,10 @@
       "maxModels": 1,
       "basePointCost": 400,
       "base": {
-        "shape": "Circle",
+        "shape": "Rectangle",
         "diameterInches": 1.1023622,
-        "widthInches": 0.984252,
-        "heightInches": 1.968504
+        "widthInches": 3.6220472,
+        "heightInches": 4.7244096
       },
       "weapons": [
         {

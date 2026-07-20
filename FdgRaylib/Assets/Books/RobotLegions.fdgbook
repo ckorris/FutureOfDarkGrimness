@@ -3214,10 +3214,10 @@
       "maxModels": 1,
       "basePointCost": 200,
       "base": {
-        "shape": "Circle",
+        "shape": "Rectangle",
         "diameterInches": 1.1023622,
-        "widthInches": 0.984252,
-        "heightInches": 1.968504
+        "widthInches": 2.047244,
+        "heightInches": 3.543307
       },
       "weapons": [
         {
@@ -3306,10 +3306,10 @@
       "maxModels": 1,
       "basePointCost": 375,
       "base": {
-        "shape": "Circle",
+        "shape": "Rectangle",
         "diameterInches": 1.1023622,
-        "widthInches": 0.984252,
-        "heightInches": 1.968504
+        "widthInches": 2.7559056,
+        "heightInches": 4.133858
       },
       "weapons": [
         {
@@ -3636,10 +3636,10 @@
       "maxModels": 1,
       "basePointCost": 185,
       "base": {
-        "shape": "Circle",
+        "shape": "Rectangle",
         "diameterInches": 1.1023622,
-        "widthInches": 0.984252,
-        "heightInches": 1.968504
+        "widthInches": 2.047244,
+        "heightInches": 3.543307
       },
       "weapons": [
         {
@@ -3877,10 +3877,10 @@
       "maxModels": 1,
       "basePointCost": 445,
       "base": {
-        "shape": "Circle",
+        "shape": "Rectangle",
         "diameterInches": 1.1023622,
-        "widthInches": 0.984252,
-        "heightInches": 1.968504
+        "widthInches": 3.6220472,
+        "heightInches": 4.7244096
       },
       "weapons": [
         {
@@ -4427,10 +4427,10 @@
       "maxModels": 1,
       "basePointCost": 820,
       "base": {
-        "shape": "Circle",
+        "shape": "Rectangle",
         "diameterInches": 1.1023622,
-        "widthInches": 0.984252,
-        "heightInches": 1.968504
+        "widthInches": 4.8031497,
+        "heightInches": 6.2992125
       },
       "weapons": [
         {
@@ -4812,7 +4812,7 @@
       "basePointCost": 165,
       "base": {
         "shape": "Circle",
-        "diameterInches": 1.1023622,
+        "diameterInches": 1.968504,
         "widthInches": 0.984252,
         "heightInches": 1.968504
       },
@@ -4951,7 +4951,7 @@
       "basePointCost": 80,
       "base": {
         "shape": "Circle",
-        "diameterInches": 1.1023622,
+        "diameterInches": 1.5748031,
         "widthInches": 0.984252,
         "heightInches": 1.968504
       },

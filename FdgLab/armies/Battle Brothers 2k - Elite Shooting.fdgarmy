@@ -7376,10 +7376,10 @@
         "maxModels": 1,
         "basePointCost": 220,
         "base": {
-          "shape": "Circle",
+          "shape": "Rectangle",
           "diameterInches": 1.1023622,
-          "widthInches": 0.984252,
-          "heightInches": 1.968504
+          "widthInches": 2.047244,
+          "heightInches": 3.543307
         },
         "weapons": [
           {
@@ -7556,10 +7556,10 @@
         "maxModels": 1,
         "basePointCost": 215,
         "base": {
-          "shape": "Circle",
+          "shape": "Rectangle",
           "diameterInches": 1.1023622,
-          "widthInches": 0.984252,
-          "heightInches": 1.968504
+          "widthInches": 2.047244,
+          "heightInches": 3.543307
         },
         "weapons": [
           {
@@ -7896,10 +7896,10 @@
         "maxModels": 1,
         "basePointCost": 495,
         "base": {
-          "shape": "Circle",
+          "shape": "Rectangle",
           "diameterInches": 1.1023622,
-          "widthInches": 0.984252,
-          "heightInches": 1.968504
+          "widthInches": 3.6220472,
+          "heightInches": 4.7244096
         },
         "weapons": [
           {
@@ -8268,10 +8268,10 @@
         "maxModels": 1,
         "basePointCost": 780,
         "base": {
-          "shape": "Circle",
+          "shape": "Rectangle",
           "diameterInches": 1.1023622,
-          "widthInches": 0.984252,
-          "heightInches": 1.968504
+          "widthInches": 4.8031497,
+          "heightInches": 6.2992125
         },
         "weapons": [
           {

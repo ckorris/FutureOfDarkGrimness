@@ -269,13 +269,16 @@ if (retrofitBasesIdx >= 0 && retrofitBasesIdx + 1 < args.Length)
             : new[] { t })
         .ToList();
     int patched = 0;
+    int estimated = 0;
+    bool verbose = args.Contains("--verbose");
     foreach (string path in targets)
     {
         bool changed;
+        var estimates = new List<string>();
         if (path.EndsWith(BookFile.EXTENSION_WITH_PERIOD, StringComparison.OrdinalIgnoreCase))
         {
             BookFile book = JsonSerializer.Deserialize<BookFile>(File.ReadAllText(path), RuleJson.Options)!;
-            changed = BaseOrientationRetrofit.ApplyToBook(book);
+            changed = BaseOrientationRetrofit.ApplyToBook(book, estimates);
             if (changed) File.WriteAllText(path, JsonSerializer.Serialize(book, RuleJson.Options));
         }
         else
@@ -283,16 +286,23 @@ if (retrofitBasesIdx >= 0 && retrofitBasesIdx + 1 < args.Length)
             // As #239: read as BuiltArmyFile so a forge army's selections/book snapshot survive the
             // round-trip (#236), and re-serialize as the base type when there is no forge block.
             BuiltArmyFile army = JsonSerializer.Deserialize<BuiltArmyFile>(File.ReadAllText(path), RuleJson.Options)!;
-            changed = BaseOrientationRetrofit.ApplyToArmy(army);
+            changed = BaseOrientationRetrofit.ApplyToArmy(army, estimates);
             if (changed)
                 File.WriteAllText(path, army.Book != null
                     ? JsonSerializer.Serialize(army, RuleJson.Options)
                     : JsonSerializer.Serialize<ArmyListFile>(army, RuleJson.Options));
         }
-        Console.WriteLine($"  {(changed ? "patched" : "unchanged")}: {path}");
+        Console.WriteLine($"  {(changed ? "patched" : "unchanged")}: {path}"
+            + (estimates.Count > 0 ? $"  ({estimates.Count} base(s) estimated)" : string.Empty));
+        // #225 defect B: an estimated base is invented, not imported. Never let that pass silently -
+        // --verbose names every one so the guesses can be reviewed.
+        if (verbose)
+            foreach (string e in estimates) Console.WriteLine($"      estimated: {e}");
+        estimated += estimates.Count;
         if (changed) patched++;
     }
-    Console.WriteLine($"Base-orientation retrofit complete: {patched}/{targets.Count} file(s) patched.");
+    Console.WriteLine($"Base retrofit complete: {patched}/{targets.Count} file(s) patched, "
+        + $"{estimated} base(s) estimated from unit rules (pass --verbose to list them).");
     return;
 }
 
