@@ -21,24 +21,47 @@ public static class ModelBaseRenderer
 {
     private const int CircleSegments = 32;
 
-    /// <summary> Filled base + outline on the Raylib canvas, centred at pixel (<paramref name="cx"/>, <paramref name="cy"/>). </summary>
+    /// <summary>
+    /// Filled base + outline on the Raylib canvas, centred at pixel (<paramref name="cx"/>, <paramref name="cy"/>),
+    /// optionally inflated by <paramref name="inflateInches"/> so a highlight sits just outside the base.
+    /// </summary>
     public static void DrawFilledRaylib(IBaseShape shape, float cx, float cy, float scale, Color fill, Color outline,
-        Float2 facing = default)
+        Float2 facing = default, float inflateInches = 0f)
     {
         if (shape is RectangleBase r)
         {
             Float2 f = Forward(facing);
-            float w = r.WidthInches * scale, h = r.HeightInches * scale;
+            float w = (r.WidthInches + 2f * inflateInches) * scale;
+            float h = (r.HeightInches + 2f * inflateInches) * scale;
             float deg = MathF.Atan2(-f.X, -f.Y) * (180f / MathF.PI);
             // Filled via the built-in rotated-rect (handles winding internally); outline via the matching corners.
             Raylib.DrawRectanglePro(new Rectangle(cx, cy, w, h), new Vector2(w * 0.5f, h * 0.5f), deg, fill);
-            Vector2[] c = RectCorners(r, new Vector2(cx, cy), scale, f);
+            Vector2[] c = RectCorners(r, new Vector2(cx, cy), scale, f, inflateInches);
             for (int i = 0; i < 4; i++) Raylib.DrawLineEx(c[i], c[(i + 1) % 4], 1f, outline);
             return;
         }
 
-        float pr = shape.BoundingRadiusInches * scale; // CircleBase → its radius; fallback → bounding circle.
+        float pr = (shape.BoundingRadiusInches + inflateInches) * scale; // CircleBase → its radius; fallback → bounding circle.
         Raylib.DrawCircle((int)cx, (int)cy, pr, fill);
+        Raylib.DrawCircleLines((int)cx, (int)cy, pr, outline);
+    }
+
+    /// <summary>
+    /// Outline-only base on the Raylib canvas (selection / spotlight rings) — the canvas counterpart to
+    /// <see cref="DrawOutlineImGui"/>, inflated by <paramref name="inflateInches"/> so the ring sits
+    /// outside the base.
+    /// </summary>
+    public static void DrawOutlineRaylib(IBaseShape shape, float cx, float cy, float scale, Color outline,
+        float thickness = 1f, float inflateInches = 0f, Float2 facing = default)
+    {
+        if (shape is RectangleBase r)
+        {
+            Vector2[] c = RectCorners(r, new Vector2(cx, cy), scale, Forward(facing), inflateInches);
+            for (int i = 0; i < 4; i++) Raylib.DrawLineEx(c[i], c[(i + 1) % 4], thickness, outline);
+            return;
+        }
+
+        float pr = (shape.BoundingRadiusInches + inflateInches) * scale;
         Raylib.DrawCircleLines((int)cx, (int)cy, pr, outline);
     }
 

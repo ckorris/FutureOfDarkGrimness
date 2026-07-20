@@ -490,7 +490,10 @@ public class GuiChooseRangedAttackResolver
             if (!m.GetIsAlive()) continue;
             if (m.Position.x == 0f && m.Position.z == 0f) continue;
             var (tx, ty) = InchesToPixel(m.Position.x, m.Position.z);
-            dl.AddCircle(new Vector2(tx, ty), m.BaseRadiusInches * _scale + 3f, colorTarget, 32, 2f);
+            // #250: the ring follows the model's true base shape — it used to be a circle while the
+            // base-to-base distance label below reads from the real shape, so the two disagreed.
+            ModelBaseRenderer.DrawOutlineImGui(dl, m.BaseShape, new Vector2(tx, ty), _scale, colorTarget,
+                thickness: 2f, inflateInches: 3f / _scale, facing: m.Facing);
         }
 
         // One line per shooter — from each attacker model that can hit this unit, to its

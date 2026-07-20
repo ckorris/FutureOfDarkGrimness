@@ -1486,7 +1486,9 @@ public class TacticalOverlayController
             if (GhostInThreat(gp.x, gp.z, out _, out _))
             {
                 Vector2 c = WorldToScreen(new Float2(gp.x, gp.z));
-                dl.AddCircle(c, m.BaseRadiusInches * _scale + 2f, col, 24, 2f);
+                // #250: the emphasis ring follows the model's true base shape.
+                ModelBaseRenderer.DrawOutlineImGui(dl, m.BaseShape, c, _scale, col,
+                    thickness: 2f, inflateInches: 2f / _scale, facing: m.Facing);
             }
         }
     }

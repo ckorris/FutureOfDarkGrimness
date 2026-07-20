@@ -108,7 +108,9 @@ public class GuiConsolidationMoveResolver
 
             uint outline = ReferenceEquals(model, _selectedModel) ? SelectionOutline : ModelOutline;
             float thick  = ReferenceEquals(model, _selectedModel) ? 2.5f : 1.5f;
-            ModelBaseRenderer.DrawOutlineImGui(dl, model.BaseShape, new Vector2(sx, sy), _scale, outline, thick);
+            // #250: consolidation slides without rotating, so every ghost/outline keeps the model's facing.
+            ModelBaseRenderer.DrawOutlineImGui(dl, model.BaseShape, new Vector2(sx, sy), _scale, outline, thick,
+                facing: model.Facing);
 
             if (pathPoints.Count > 0)
             {
@@ -123,7 +125,8 @@ public class GuiConsolidationMoveResolver
                 }
                 var last = pathPoints[^1];
                 var (lx, ly) = InchesToPixel(last.x, last.z);
-                ModelBaseRenderer.DrawFilledImGui(dl, model.BaseShape, new Vector2(lx, ly), _scale, FinalGhostCol, outline, thick);
+                ModelBaseRenderer.DrawFilledImGui(dl, model.BaseShape, new Vector2(lx, ly), _scale, FinalGhostCol, outline, thick,
+                    facing: model.Facing);
             }
         }
 
@@ -186,7 +189,7 @@ public class GuiConsolidationMoveResolver
             dl.AddLine(new Vector2(apx, apy), new Vector2(gx, gy), MoveColor, 2f);
 
             ModelBaseRenderer.DrawFilledImGui(dl, _selectedModel.BaseShape, new Vector2(gx, gy), _scale,
-                ghostOverlaps ? OverlapFill : GhostFill, GhostOutline);
+                ghostOverlaps ? OverlapFill : GhostFill, GhostOutline, facing: _selectedModel.Facing);
 
             var finalsWithGhost = BuildFinalPositions(paths, _selectedModel, ghostPos);
             DrawCohesionIndicators(dl, finalsWithGhost, _selectedModel);

@@ -111,6 +111,7 @@ detection, host-IP display, DNS host entry. See `NetworkingHandoff-2026-07-08.md
 - [~] 245 — Dice roll panel redesign: bottom caption strip, target badge, overlap ghost-fade; v2 roll-offs join + toolbar vertical; v3 glance metadata (category stripe/word, who-vs-who context, modifier + proc chips, stretched beats — engine + app). Implemented + tested; awaiting GUI hand-verify. ([WorkItems/245](WorkItems/245-dice-caption-strip.md))
 - [~] 246 — In-game escape menu (Esc): Save/Load/Options/quit-to-menu/quit; bottom-left toolbar collapsed to one Menu button, Field GPU/CPU button deleted. Implemented (S1-S3) 2026-07-18; awaiting GUI hand-verify. ([WorkItems/246](WorkItems/246-escape-menu.md))
 - [~] 248 — Resolver keyboard hotkeys (fixed action letters, list numbers/arrows/Enter) + engine back-out of a pristine activation (extends #202, absorbs part of #161). Implemented + tested 2026-07-19; awaiting GUI hand-verify. ([WorkItems/248](WorkItems/248-resolver-hotkeys-and-backout.md))
+- [~] 250 — Per-model visuals now follow the base shape: 4 raw-circle draws (spotlight halo, shooting target rings, ghost threat ring, cast-assist) + 4 dropped-facing call sites, plus a new `DrawOutlineRaylib`. Implemented 2026-07-19; awaiting GUI hand-verify. ([WorkItems/250](WorkItems/250-per-model-visuals-follow-base-shape.md))
 
 ## 2026-06-10 audit follow-ups
 

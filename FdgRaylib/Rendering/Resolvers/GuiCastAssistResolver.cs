@@ -69,7 +69,9 @@ public class GuiCastAssistResolver : IStageResolver<CastAssistRequest, int>, IGu
             var p = m.Position;
             if (p.x == 0f && p.z == 0f) continue;
             var (px, py) = InchesToPixel(p.x, p.z);
-            dl.AddCircle(new Vector2(px, py), m.BaseRadiusInches * _scale + 3f, color, 32, 3f);
+            // #250: follow the model's true base shape rather than ringing a rectangle with a circle.
+            ModelBaseRenderer.DrawOutlineImGui(dl, m.BaseShape, new Vector2(px, py), _scale, color,
+                thickness: 3f, inflateInches: 3f / _scale, facing: m.Facing);
         }
 
         if (TryCentroidPixel(assister, out Vector2 aPix) && TryCentroidPixel(caster, out Vector2 cPix))

@@ -256,7 +256,10 @@ public class GuiDefineMovementResolver
             // Start base outline (real model position) — drawn as the model's true shape (#149)
             uint outline = ReferenceEquals(model, _selectedModel) ? SelectionOutline : ModelOutline;
             float thick  = ReferenceEquals(model, _selectedModel) ? 2.5f : 1.5f;
-            ModelBaseRenderer.DrawOutlineImGui(dl, model.BaseShape, new Vector2(sx, sy), _scale, outline, thick);
+            // #250: pass the facing — without it a rotated rectangular base drew axis-aligned and
+            // mismatched the model rendered underneath it.
+            ModelBaseRenderer.DrawOutlineImGui(dl, model.BaseShape, new Vector2(sx, sy), _scale, outline, thick,
+                facing: model.Facing);
 
             // Path lines. #155: a model whose committed path crosses Dangerous terrain draws its whole path
             // solid red; crossing Difficult draws dotted gray; otherwise the per-segment band colour.

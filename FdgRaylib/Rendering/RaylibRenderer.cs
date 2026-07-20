@@ -810,11 +810,16 @@ public class RaylibRenderer
 
             int cx = l.OriginX + (int)(draw.Position.x * l.Scale);
             int cy = l.OriginY + (int)((TableHIn - draw.Position.z) * l.Scale);
-            float baseR = (model.BaseRadiusInches + 0.18f) * l.Scale; // just outside the base
 
-            Raylib.DrawCircle(cx, cy, baseR, fill);
-            Raylib.DrawCircleLines(cx, cy, baseR, ring);
-            Raylib.DrawCircleLines(cx, cy, baseR + 3f + 6f * pulse, halo); // expanding pulse ring
+            // #250: follow the model's true base shape, like DrawModels does — a rectangle-based model
+            // used to get a circular halo that contradicted the base drawn under it. Inflations are in
+            // inches so they track zoom; the pulse ring's extra pixels convert back through the scale.
+            const float HaloInflateIn = 0.18f; // just outside the base
+            float pulseInflateIn = HaloInflateIn + (3f + 6f * pulse) / l.Scale;
+
+            ModelBaseRenderer.DrawFilledRaylib(model.BaseShape, cx, cy, l.Scale, fill, ring, model.Facing, HaloInflateIn);
+            ModelBaseRenderer.DrawOutlineRaylib(model.BaseShape, cx, cy, l.Scale, halo,
+                thickness: 1f, inflateInches: pulseInflateIn, facing: model.Facing);
         }
     }
 
