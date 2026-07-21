@@ -478,11 +478,17 @@ else
             for (int i = 0; i < parts.SavedInfos.Count; i++)
                 players.Add((parts.SavedInfos[i].PlayerID, i == 0 ? "Player 1" : $"Player {i + 1} (AI)"));
 
+            // #201: a compiled scenario carries its GameSettings in the store's progress record;
+            // absent (or a pre-#201 save) means the default ON.
+            GameSettings scenarioSettings = GameProgressUtilities.TryGetProgress(parts.Store)?.Settings
+                ?? GameSettings.GetDefault();
+
             renderer.OnWindowReady = () =>
             {
                 GameGuiWiring.Launch(parts.HumanGame, players,
                     saveGameToJson: () => GameSaveSerializer.Save(parts.Store),
-                    onLaunched: renderer.TransitionToGame);
+                    onLaunched: renderer.TransitionToGame,
+                    coverProximityExceptions: scenarioSettings.CoverProximityExceptionsEnabled);
 
                 var scenarioServer = new FDGServer(parts.Store, parts.Bus, parts.Slots,
                     new RealtimePresentationClock());

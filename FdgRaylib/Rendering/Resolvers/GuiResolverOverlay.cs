@@ -11,6 +11,14 @@ public class GuiResolverOverlay
     public void Register(IGuiResolver resolver) => _resolvers.Add(resolver);
 
     /// <summary>
+    /// The launched game's #201 cover-proximity-exceptions setting, stamped by
+    /// <c>ResolverRegistryFactory.BuildGui</c>. Rides the overlay because the renderer receives it
+    /// at TransitionToGame and hands it to the tactical overlay's rules probe - keeping every
+    /// client-side cover preview on the same setting the host's CoverCheckStage rolls with.
+    /// </summary>
+    public bool CoverProximityExceptions { get; set; } = true;
+
+    /// <summary>
     /// The movement resolver in this overlay, if one is registered (always, in a GUI build). The
     /// tactical overlay pulls the active move job off it and routes enemy pin-clicks back to it, so
     /// the renderer wires the two together once at game start.

@@ -146,13 +146,17 @@ public class TacticalOverlayController
     private (byte r, byte g, byte b) _fieldAccentCol = TacticalOverlayConfig.AccentPalette[0];
 
     /// <summary>Wires the live game world. Called from RaylibRenderer.TransitionToGame.</summary>
+    /// <param name="coverProximityExceptions">The launched game's #201 cover setting; the probe's
+    /// pips apply it so they match the engine's cover stage (the field texture stays raw - see
+    /// <see cref="PolarSightMap"/>).</param>
     public void Attach(ITableState tableState, System.Action<string>? warn = null,
-        Func<PlayerID, (byte r, byte g, byte b)>? teamColor = null)
+        Func<PlayerID, (byte r, byte g, byte b)>? teamColor = null,
+        bool coverProximityExceptions = true)
     {
         _tableState = tableState;
         _warn       = warn;
         _teamColor  = teamColor;
-        _probe      = new RulesProbe(tableState);
+        _probe      = new RulesProbe(tableState, coverProximityExceptions);
 
         int w = (int)MathF.Ceiling(GameWideConstants.DEFAULT_TABLE_WIDTH_INCHES  * TacticalOverlayConfig.TexelsPerInch);
         int h = (int)MathF.Ceiling(GameWideConstants.DEFAULT_TABLE_HEIGHT_INCHES * TacticalOverlayConfig.TexelsPerInch);

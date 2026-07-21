@@ -183,7 +183,9 @@ public class RaylibRenderer
         _measurementOverlay.Attach(tableState);
         // [overlay] messages are developer detail (rebuild-budget warnings) -> the Debug log category.
         _tacticalOverlay.Attach(tableState, msg => _log?.Add(msg, new TextColor(255, 180, 90, 255), isDebug: true),
-            pid => { Color c = colorForPlayer(pid); return (c.R, c.G, c.B); });
+            pid => { Color c = colorForPlayer(pid); return (c.R, c.G, c.B); },
+            // #201: the launched game's cover setting rides the resolver overlay (stamped in BuildGui).
+            coverProximityExceptions: resolverOverlay?.CoverProximityExceptions ?? true);
         _tacticalOverlay.AttachMovementResolver(resolverOverlay?.MovementResolver);
         // The menu's Options panel drives the tactical toggles (Threat, field anchor) and master volume.
         _escapeMenu.AttachOptions(_tacticalOverlay, _audio);
