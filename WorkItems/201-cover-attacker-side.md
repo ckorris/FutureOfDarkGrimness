@@ -260,6 +260,10 @@ lobby -> old behavior; forest brawl <6" -> no cover).
 
 ### Future visual: "stand here to shoot over this cover" (owner request, 2026-07-21)
 
+> 2026-07-21 later: placement visuals now tracked as **#253** (defender-side "move here and cover
+> counts" primary; this attacker-side idea flagged there as a candidate second facet). The
+> compatibility constraints below remain the contract `VoidsCover` upholds.
+
 Later (not this item), the movement UI should be able to paint a colored area near a cover piece such
 that a model touching it ignores that piece via rule 1. The implementation must stay compatible:
 
@@ -276,6 +280,8 @@ that a model touching it ignores that piece via rule 1. The implementation must 
   as such.
 
 ### Assessed 2026-07-21: making the FIELD TEXTURE (Self/Target-anchored targeting visual) rules-true
+
+> 2026-07-21 later: filed as **#252**; the assessment below is carried in its detail file.
 
 Owner asked how hard it is for the existing anchored field to reflect the proximity rules. Verdict:
 **not trivial - do not bolt on**. Findings from reading the pipeline:
