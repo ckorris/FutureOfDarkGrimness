@@ -400,6 +400,15 @@ public class LobbyScreen : IAppScreen
         DrawEnumCombo("Randomness",    _viewModel.RandomnessType, _viewModel.SetRandomnessType);
         DrawEnumCombo("Turn Style",    _viewModel.TurnStyle,      _viewModel.SetTurnStyle);
 
+        // #201 cover proximity house rules (default on). Inside the disabled block: host-only.
+        bool coverProximity = _viewModel.CoverProximityExceptions;
+        if (ImGui.Checkbox("Cover Proximity Rules", ref coverProximity))
+            _viewModel.SetCoverProximityExceptions(coverProximity);
+        if (ImGui.IsItemHovered())
+            ImGui.SetTooltip("House rule (default on): cover the shooter's muzzle hugs (< 2in to the exit)\n" +
+                             "grants nothing unless the target hugs the same piece, and cover shared by\n" +
+                             "shooter and target grants nothing when they are closer than 6in.");
+
         ImGui.PopItemWidth();
         ImGui.EndDisabled();
     }
