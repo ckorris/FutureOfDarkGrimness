@@ -3,6 +3,7 @@ using FDG;
 using FDG.Players;
 using FDG.Rules.Dispatch;
 using FDG.Rules.Foundation;
+using FdgRaylib.Rendering.Presentation;
 using FdgRaylib.Rendering.Resolvers;
 using ImGuiNET;
 using Raylib_cs;
@@ -21,6 +22,10 @@ public class TableTooltipOverlay
 {
     private ITableState? _tableState;
 
+    // Same animated-position source the model bases and spotlight use, so name labels glide with the
+    // models during a move instead of teleporting to the destination (which is the logical model.Position).
+    private PresentationPlayer? _presentationPlayer;
+
     private float _scale;
     private int   _originX;
     private int   _originY;
@@ -30,9 +35,11 @@ public class TableTooltipOverlay
     // army-embedded rules (#059) aren't in here and fall back to Neutral/no-description.
     private readonly IRuleResolver _ruleResolver = CoreRuleCatalog.CreateResolver();
 
-    public void Attach(ITableState tableState, Func<PlayerID, Color> colorForPlayer)
+    public void Attach(ITableState tableState, Func<PlayerID, Color> colorForPlayer,
+        PresentationPlayer? presentationPlayer = null)
     {
         _tableState = tableState;
+        _presentationPlayer = presentationPlayer;
     }
 
     public void UpdateLayout(float scale, int originX, int originY, float tableH)
@@ -87,6 +94,13 @@ public class TableTooltipOverlay
         ICanvasInteractionHandler? interactionHandler)
     {
         ImGui.BeginTooltip();
+
+        // Activation state up top, in red, so a spent unit reads before anything else.
+        if (HasActivated(unit))
+        {
+            ImGui.TextColored(new Vector4(1f, 0.30f, 0.30f, 1f), "Already Activated.");
+            ImGui.Separator();
+        }
 
         // Model section first — it sits nearest the cursor, so the hovered model's own weapon(s), its
         // model-specific special rules, and (if Tough) its remaining wounds read before the whole-unit stats.
@@ -277,6 +291,7 @@ public class TableTooltipOverlay
         uint shadow = ImGui.ColorConvertFloat4ToU32(new Vector4(0, 0, 0, 0.75f));
         uint white  = ImGui.ColorConvertFloat4ToU32(new Vector4(1, 1, 1, 1));
         uint cyan   = ImGui.ColorConvertFloat4ToU32(new Vector4(0.55f, 0.85f, 0.95f, 1)); // #096 occupancy badge
+        uint red    = ImGui.ColorConvertFloat4ToU32(new Vector4(0.85f, 0.14f, 0.14f, 1)); // "activated" marker
 
         foreach (var unit in _tableState!.Units.Objects)
         {
@@ -288,7 +303,10 @@ public class TableTooltipOverlay
             foreach (var model in unit.Models)
             {
                 if (!model.GetIsAlive()) continue;
-                var pos = model.Position;
+                // Follow the animated draw position (glide during a move) rather than the logical
+                // destination, matching DrawModels / DrawActiveUnitSpotlight. Falls back to the logical
+                // position when there is no presentation layer (e.g. tests) or no active override.
+                var pos = _presentationPlayer?.GetModelDrawState(model).Position ?? model.Position;
                 if (pos.x == 0f && pos.z == 0f) continue;
 
                 float mx = _originX + pos.x * _scale;
@@ -331,6 +349,33 @@ public class TableTooltipOverlay
                 float labelX = cx - textSize.X * 0.5f;
                 float labelY = stackTopY - textSize.Y - 2f;
 
+                // Activation marker: a red disc with a white "A" just left of the name, so a spent unit
+                // reads at a glance. The currently-activating unit already has its own spotlight halo, so
+                // it is excluded (see HasActivated) and does not get the marker until its turn ends.
+                if (HasActivated(unit))
+                {
+                    float   radius = textSize.Y * 0.6f;
+                    Vector2 center = new Vector2(labelX - 5f - radius, labelY + textSize.Y * 0.5f);
+
+                    drawList.AddCircleFilled(center, radius, red);
+                    drawList.AddCircle(center, radius, shadow, 0, 1.5f); // thin outline
+
+                    // "A" from line segments, so it sits geometrically centered in the disc (the text
+                    // glyph has uneven side bearings and never quite centers). Apex at top, two legs to
+                    // the base corners, and a crossbar a little below middle.
+                    float   h    = radius * 1.15f;               // glyph height
+                    float   w    = radius * 0.95f;               // glyph width
+                    Vector2 apex = new Vector2(center.X, center.Y - h * 0.5f);
+                    Vector2 botL = new Vector2(center.X - w * 0.5f, center.Y + h * 0.5f);
+                    Vector2 botR = new Vector2(center.X + w * 0.5f, center.Y + h * 0.5f);
+                    Vector2 barL = apex + (botL - apex) * 0.62f;
+                    Vector2 barR = apex + (botR - apex) * 0.62f;
+                    float   thick = MathF.Max(1.4f, radius * 0.2f);
+                    drawList.AddLine(apex, botL, white, thick);
+                    drawList.AddLine(apex, botR, white, thick);
+                    drawList.AddLine(barL, barR, white, thick);
+                }
+
                 drawList.AddText(new Vector2(labelX + 1, labelY + 1), shadow, unit.Name);
                 drawList.AddText(new Vector2(labelX,     labelY),     white,  unit.Name);
 
@@ -360,6 +405,21 @@ public class TableTooltipOverlay
                 HealthBarRenderer.Draw(drawList, cx, stackTopY - 3f - HealthBarRenderer.Height,
                     maxRightX - minLeftX, remainingW, maxW);
         }
+    }
+
+    // A unit has spent its activation this round once the main phase is under way (RoundCount != null)
+    // and it is no longer in the unactivated pool. The unit currently taking its turn stays in the pool
+    // until the turn ends (SingleTurnStage.MarkUnitAsActivated), and is excluded here too so a unit
+    // mid-activation does not prematurely read as done. Outside the main phase nothing is activated.
+    private bool HasActivated(IUnit unit)
+    {
+        var progress = _tableState!.Progress;
+        if (progress.RoundCount == null) return false;
+        if (progress.ActivatingUnit?.ID.Equals(unit.ID) == true) return false;
+
+        foreach (var u in progress.UnactivatedUnits)
+            if (u.ID.Equals(unit.ID)) return false;
+        return true;
     }
 
     // Per-model weapon-range and charge-reach rings for the hovered unit, drawn in world space centred on

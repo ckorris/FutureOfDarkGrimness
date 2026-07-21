@@ -178,7 +178,7 @@ public class RaylibRenderer
         _taskDisplay        = taskDisplay;
         _presentationPlayer = presentationPlayer;
         _playerMessageUI    = playerMessageUI;
-        _tooltipOverlay.Attach(tableState, colorForPlayer);
+        _tooltipOverlay.Attach(tableState, colorForPlayer, presentationPlayer);
         _escapeMenu.AttachSave(saveGameToJson);
         _measurementOverlay.Attach(tableState);
         // [overlay] messages are developer detail (rebuild-budget warnings) -> the Debug log category.
