@@ -275,6 +275,35 @@ that a model touching it ignores that piece via rule 1. The implementation must 
   the existing aim-line preview; any target-independent band is an approximation and must be labeled
   as such.
 
+### Assessed 2026-07-21: making the FIELD TEXTURE (Self/Target-anchored targeting visual) rules-true
+
+Owner asked how hard it is for the existing anchored field to reflect the proximity rules. Verdict:
+**not trivial - do not bolt on**. Findings from reading the pipeline:
+
+- The per-texel `BestSight` calls in `TacticalOverlayController` (~line 597) are only the debug
+  fidelity sampler. The production picture, both render paths, is built from `PolarSightMap`
+  (`GpuFieldRenderer.RebuildDiscs(perBand, maps, ...)` fans on GPU; `PolarSightMap.ClassifyInto`
+  on CPU), whose representation is ONE nearest-cover-entry distance per angle bucket per source.
+- The proximity rules are actually *radially encodable* in principle - per angle, rule 1 voids a
+  piece for query distances d in a band just past that piece's far edge (d - exit(theta) < 2" + base
+  r), rule 2 for d under ~6" when the source sits inside the piece - BUT that turns "cover" per
+  angle from a single threshold into a union of per-piece intervals. That means: PolarSightMap
+  stores per-piece cover *intervals* (entry AND exit), `ClassifyInto` composites per piece with
+  each piece's own void band excluded, and the GPU fan geometry gains the same structure. A real
+  rework, perf-sensitive in per-frame ghost mode (`RebuildBudgetMs` warnings exist for a reason).
+- Alternative: exact per-texel CPU correction over cover-classified texels near cover pieces
+  (the predicate is cheap and the affected texels are a thin band). But GPU-only frames build no
+  CPU masks at all, so this forces a mask upload/composite into the GPU path too.
+- Semantics gap: rule verdicts need a target. Target-anchored mode has one; **Self/ghost mode has
+  no single target**, so a rules-true self field needs per-enemy evaluation or a documented
+  approximation. Needs a design call, not just code.
+- Already truthful today (S4): pips, movement aim lines, and the option-card cover flag - the
+  actionable instruments. Only the field *tint* can over-paint cover.
+
+Recommended shape if/when built: per-piece polar intervals (approach 1) for target-anchored mode,
+Self/ghost mode stays raw with the divergence note. Estimate: a solid day incl. perf validation +
+fidelity-sampler channel updates. File as its own slice under #162 or a new item when wanted.
+
 ### Explicitly out of scope (recorded, not silently cut)
 
 - Blocking/sight-blocker proximity (shooter's line clipping a blocking corner at their own muzzle) —
