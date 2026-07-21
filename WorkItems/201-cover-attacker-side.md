@@ -1,7 +1,7 @@
 # 201 — Cover granted by terrain on the attacker's side of the line
 
-**Status**: ruling received 2026-07-21 — plan written (below), awaiting owner sign-off on one flagged
-amendment, then implement. Branches: `201-cover-proximity` (superproject + submodule).
+**Status**: implemented + tested 2026-07-21 (all four slices, amendment included) — awaiting GUI
+hand-verify (checklist below), then merge. Branches: `201-cover-proximity` (superproject + submodule).
 **Related**: #044-#046 (line-of-sight cluster), #150 (base-shape geometry), #055 (rule attribution in resolvers), #162 (tactical overlay truthfulness)
 
 ## Goal
@@ -258,6 +258,23 @@ Verify: engine tests + full build + headless smoke; GUI hand-check goes on the a
 list (hug a wall and shoot out -> no cover badge on the option card, no +1 in the roll; toggle OFF in
 lobby -> old behavior; forest brawl <6" -> no cover).
 
+### Future visual: "stand here to shoot over this cover" (owner request, 2026-07-21)
+
+Later (not this item), the movement UI should be able to paint a colored area near a cover piece such
+that a model touching it ignores that piece via rule 1. The implementation must stay compatible:
+
+- `CoverProximityRules.VoidsCover(piece, ctx)` is a **public, pure, allocation-free predicate** over
+  (shooter pos/base/facing, target pos/base/facing, piece). A UI paints the area by sampling it at
+  candidate shooter positions — same pattern as the #162 field texture ("instruments call real
+  rules"), and cheap enough for per-texel use (one `GetLastSegmentExit` + at most three
+  `SurfaceDistanceToPoint2D` calls per piece). Keep it that cheap; don't fold it into anything that
+  needs a full `GameContext`.
+- Inherent-to-the-ruling caveat (not an implementation choice): the region is **per target** — an
+  oblique shot down a long wall exits far from the shooter, so hugging the wall doesn't void cover
+  for that target. The truthful visual is per selected/hovered target (union over its models), like
+  the existing aim-line preview; any target-independent band is an approximation and must be labeled
+  as such.
+
 ### Explicitly out of scope (recorded, not silently cut)
 
 - Blocking/sight-blocker proximity (shooter's line clipping a blocking corner at their own muzzle) —
@@ -265,12 +282,32 @@ lobby -> old behavior; forest brawl <6" -> no cover).
 - Field-texture (`PolarSightMap`) proximity awareness — see S4 note, lives with #162.
 - Any depth/shoot-through degradation (ruled out above).
 
+## GUI hand-verify checklist
+
+1. Lobby: "Cover Proximity Rules" checkbox under Turn Style, host-editable, tooltip readable; on a
+   client it shows but is greyed; toggling on the host updates the client's view.
+2. In game, line a unit up flush against a thin cover wall and shoot a unit in the open: no cover
+   tag on the target option card, no +1 in the save roll, and the movement-preview aim line to that
+   enemy shows no dashed-cover styling from a hugging position.
+3. Defender hugging the far side of the same wall (amendment): cover tag + the +1 both present.
+4. Two units inside one forest under 6" apart: no cover; walk them past 6": cover returns.
+5. Toggle OFF in lobby, repeat check 2: the old behavior (cover granted) is back.
+6. Tactical overlay pips: from a wall-hugging ghost position the pip is Lit (not Hatched); known
+   benign divergence: the field texture may still tint that spot as cover (documented, pips win).
+
 ## Notes
 
+- 2026-07-21 (later): Implemented all four slices on `201-cover-proximity` (Fable), amendment
+  included. Engine commits: GetLastSegmentExit (+18 tests), proximity rules + stage/targeting wiring
+  (+13 tests incl. settings round-trip), lobby viewmodel setting; app commits: lobby checkbox +
+  pointer bump, preview truthfulness (aim lines + pips; field texture stays raw, divergence
+  documented in PolarSightMap header). Engine 1791/1791, app 393/393, full build clean, headless
+  smoke exit 0. Awaiting GUI hand-verify.
 - 2026-07-21: Ruling received from owner; assessment + S1-S4 plan written (Fable). Branches
-  `201-cover-proximity` cut in superproject and submodule. One amendment flagged for sign-off
-  (defender also hugging the voided wall keeps cover) — plan implements the ruling as stated unless
-  told otherwise.
+  `201-cover-proximity` cut in superproject and submodule. Owner approved the rule-1 amendment
+  (defender also hugging the voided wall keeps cover) and requested forward-compatibility with a
+  future "stand here to shoot over this cover" visual (see section above; satisfied by the pure
+  `VoidsCover` predicate).
 - 2026-07-09: Filed from playtest feedback. Root cause confirmed by reading `CoverCheckStage` +
   `EvaluateSightLine`; the segment is evaluated as an unordered set of intersections. Deliberately
   **not** fixed in the same pass as the other playtest bugs — the fix is a rules decision, not an
