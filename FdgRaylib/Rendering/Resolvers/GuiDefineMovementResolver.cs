@@ -116,11 +116,17 @@ public class GuiDefineMovementResolver
     private static readonly uint DangerPathCol    = ImGui.ColorConvertFloat4ToU32(new Vector4(1.00f, 0.20f, 0.20f, 0.95f));
     private static readonly uint DifficultPathCol = ImGui.ColorConvertFloat4ToU32(new Vector4(0.62f, 0.62f, 0.62f, 0.95f));
 
-    public GuiDefineMovementResolver(ITableState tableState, FormationModeState formationMode)
+    public GuiDefineMovementResolver(ITableState tableState, FormationModeState formationMode,
+        bool coverProximityExceptions = true)
     {
         _tableState = tableState;
         _formationMode = formationMode;
+        _coverProximityExceptions = coverProximityExceptions;
     }
+
+    // #201: the launched game's cover-proximity-exceptions setting, so the aim-line preview's
+    // cover verdict (dashed line / cover tag) matches what CoverCheckStage will actually roll.
+    private readonly bool _coverProximityExceptions;
 
     public void UpdateLayout(float scale, int originX, int originY, float tableH)
     {
@@ -1694,7 +1700,12 @@ public class GuiDefineMovementResolver
                             selPos, em.Position, attacker.BaseShape, attacker.Facing, em.BaseShape, em.Facing);
                         if (b2b > EffectiveWeaponRange(w, enemyUnit)) continue;
                         if (b2b < nearestInRangeB2B) { nearestInRangeB2B = b2b; nearestInRange = em; }
-                        var effect = LineOfSightUtilities.EvaluateSightLine(selPos, em.Position, unitBlockers);
+                        // #201: evaluate with the proximity exceptions so a hypothetical position
+                        // hugging a wall previews the same no-cover verdict the cover stage rolls.
+                        var effect = LineOfSightUtilities.EvaluateSightLine(selPos, em.Position, unitBlockers,
+                            new CoverContext(selPos, attacker.BaseShape, attacker.Facing,
+                                em.Position, em.BaseShape, em.Facing),
+                            _coverProximityExceptions);
                         // #042 Indirect/Takedown ignore LoS (a blocked line still hits); Blast/Indirect/Takedown
                         // ignore cover (no dashed cover line). Normalise the effect so the shot draws as clear.
                         if (ignoresLoS && effect == ESightLineEffect.Blocking) effect = ESightLineEffect.Clear;

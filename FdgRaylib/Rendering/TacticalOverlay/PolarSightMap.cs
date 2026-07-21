@@ -23,6 +23,11 @@ namespace FdgRaylib.Rendering.TacticalOverlay;
 /// under half a texel. The engine's zone tree is reduced via <see cref="ZoneExtensions.Primitives"/> to
 /// exactly three leaf kinds (rect, circle, rotated rect), which is the whole "silhouette adapter".
 ///
+/// #201 divergence: the map mirrors the 3-arg EvaluateSightLine overload, which does NOT apply the
+/// cover proximity exceptions (they depend on BOTH endpoints, which a per-source radial map cannot
+/// encode). With the house rules on, the field may paint cover in spots where a proximity exception
+/// voids it; pips stay authoritative (RulesProbe.EvaluatePip applies the exceptions).
+///
 /// Used ONLY by the field/picture pipeline. Pips, counts and the promoted measurement keep calling the
 /// real engine functions (spec section 0); the fidelity sampler now genuinely referees this map against
 /// them.

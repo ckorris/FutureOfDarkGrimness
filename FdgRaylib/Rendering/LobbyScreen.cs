@@ -634,7 +634,9 @@ public class LobbyScreen : IAppScreen
         GameGuiWiring.Launch(game, players, saveGame,
             (tableState, colorForPlayer, log, overlay, taskDisplay, presentationPlayer, save, playerMessageUI) =>
                 OnGameLaunched?.Invoke(tableState, colorForPlayer, log, overlay, taskDisplay, presentationPlayer, save, playerMessageUI),
-            colorChoiceForPlayer: pid => colorPicks.TryGetValue(pid, out int idx) && idx >= 0 ? idx : null);
+            colorChoiceForPlayer: pid => colorPicks.TryGetValue(pid, out int idx) && idx >= 0 ? idx : null,
+            // #201: the synced lobby setting (host-set, broadcast to clients) so previews match the engine.
+            coverProximityExceptions: _viewModel!.CoverProximityExceptions);
     }
 
     private static void DrawIntField(string label, int current, Action<int> setter)

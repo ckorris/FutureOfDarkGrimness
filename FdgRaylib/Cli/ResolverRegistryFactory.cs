@@ -42,9 +42,12 @@ public static class ResolverRegistryFactory
     }
 
     /// <summary>GUI build — interactive resolvers where implemented, CLI fallback otherwise.</summary>
-    public static (IStageResolverRegistry Registry, GuiResolverOverlay Overlay) BuildGui(ITableState tableState)
+    /// <param name="coverProximityExceptions">The launched game's #201 setting (lobby toggle,
+    /// default on) so cover previews match what the host's cover stage will roll.</param>
+    public static (IStageResolverRegistry Registry, GuiResolverOverlay Overlay) BuildGui(ITableState tableState,
+        bool coverProximityExceptions = true)
     {
-        var overlay = new GuiResolverOverlay();
+        var overlay = new GuiResolverOverlay { CoverProximityExceptions = coverProximityExceptions };
 
         // Shared Group/Single preference: one instance so flipping the mode in deployment carries
         // to movement and vice-versa, remembered for the whole game.
@@ -63,7 +66,7 @@ public static class ResolverRegistryFactory
         var deployZone    = new GuiChooseDeploymentZoneResolver();
         var rangedAttack  = new GuiChooseRangedAttackResolver(tableState);
         var assignWounds  = new GuiAssignWoundsResolver();
-        var movement      = new GuiDefineMovementResolver(tableState, formationMode);
+        var movement      = new GuiDefineMovementResolver(tableState, formationMode, coverProximityExceptions);
         var aircraftMove  = new GuiAircraftAdvanceResolver();
         var consolidate   = new GuiConsolidationMoveResolver(tableState, formationMode);
         var placeObjects  = new GuiPlaceObjectsResolver<ModelData>(tableState, formationMode);

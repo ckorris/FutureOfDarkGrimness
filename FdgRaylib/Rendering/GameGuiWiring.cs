@@ -27,9 +27,12 @@ public static class GameGuiWiring
     /// <param name="colorChoiceForPlayer">A player's lobby colour pick (#221) as an index into
     /// <see cref="PlayerColorOptions.Options"/>, or null for no pick. Null / omitted entirely (the
     /// --scenario direct launch) means every slot takes the palette defaults in order.</param>
+    /// <param name="coverProximityExceptions">The launched game's #201 cover setting (lobby toggle,
+    /// default on), threaded into the GUI resolvers/overlay so cover previews match the engine.</param>
     public static void Launch(IFDGGame game, IReadOnlyList<(PlayerID ID, string Name)> players,
         Func<string?>? saveGameToJson, GameLaunchedHandler? onLaunched,
-        Func<PlayerID, int?>? colorChoiceForPlayer = null)
+        Func<PlayerID, int?>? colorChoiceForPlayer = null,
+        bool coverProximityExceptions = true)
     {
         // Player -> palette colour (#221: lobby picks win, unpicked slots fill with the free defaults),
         // by both PlayerID (table models) and display name (chat sender lines).
@@ -49,7 +52,7 @@ public static class GameGuiWiring
 
         var log   = new GameLog();
         var logUI = new GuiLogMessageUI(log);
-        var (resolvers, overlay) = ResolverRegistryFactory.BuildGui(game.TableState);
+        var (resolvers, overlay) = ResolverRegistryFactory.BuildGui(game.TableState, coverProximityExceptions);
 
         var taskDisplay = new GuiOutstandingTaskDisplay();
         var presentationPlayer = new PresentationPlayer();

@@ -22,9 +22,16 @@ public sealed class RulesProbe
 {
     private readonly ITableState _tableState;
 
-    public RulesProbe(ITableState tableState)
+    // #201: the launched game's cover-proximity-exceptions setting. Pips apply it (a pip may never
+    // be wrong); BestSight deliberately does NOT - it feeds the field texture, whose polar shadow
+    // maps cannot encode a two-endpoint rule, so the field keeps raw cover semantics and may paint
+    // cover in spots where a proximity exception voids it. Recorded in WorkItems/201 + #162.
+    private readonly bool _coverProximityExceptions;
+
+    public RulesProbe(ITableState tableState, bool coverProximityExceptions = true)
     {
         _tableState = tableState;
+        _coverProximityExceptions = coverProximityExceptions;
     }
 
     /// <summary>
@@ -115,7 +122,11 @@ public sealed class RulesProbe
             if (d > effRange) continue;
 
             anyInRange = true;
-            ESightLineEffect eff = LineOfSightUtilities.EvaluateSightLine(shooterPos, tp, blockers);
+            // #201: pips use the proximity-exception overload so "hatched" (cover) only shows where
+            // the cover stage would actually grant the bonus from this (possibly ghost) position.
+            ESightLineEffect eff = LineOfSightUtilities.EvaluateSightLine(shooterPos, tp, blockers,
+                new CoverContext(shooterPos, shooter.BaseShape, shooterFacing, tp, tm.BaseShape, tm.Facing),
+                _coverProximityExceptions);
             if (eff < best) best = eff;
             if (best == ESightLineEffect.Clear) break;
         }
