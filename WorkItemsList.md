@@ -26,7 +26,7 @@ When closing an item: write the Outcome in its detail file, tick the line, and m
 
 ## Shooting & cover
 
-- [ ] 201 — Shooting *out of* cover grants the defender cover: `EvaluateSightLine` folds every terrain piece on the segment into one worst-effect with no notion of *where* it sits, so the attacker's own wall counts. Blocked on a rules ruling (proximity to defender, shoot-through depth). ([WorkItems/201](WorkItems/201-cover-attacker-side.md))
+- [ ] 201 — Shooting *out of* cover grants the defender cover. Ruling received 2026-07-21 (lobby-toggled house rules, default on: 2" exit + 6" shared-cover); plan written, branch `201-cover-proximity`, one amendment awaiting sign-off. ([WorkItems/201](WorkItems/201-cover-attacker-side.md))
 
 ## Model bases & geometry
 
