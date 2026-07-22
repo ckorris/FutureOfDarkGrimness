@@ -7,6 +7,32 @@
 User has spotted multiple upgrade options in-app that should cost points but show/charge 0. Scope: audit the bundled `.fdgbook` catalog (and the `OprBookImporter` mapping that produced it) for options with a missing or zero `Cost` where the source OPR data has a nonzero price, and fix the importer/data. Done = a sweep across all bundled books turns up the offending options, root cause identified (importer mapping gap vs. source data vs. compiler), and costs corrected.
 
 ## Notes
+- 2026-07-22 (later): **PREMISE OVERTURNED - prices ARE recoverable; pivoted to importing them.** A user
+  test list (Elven Noble, HEF, share id FA1WupGBc2ka) + an Army Forge screenshot showed Army Forge itself
+  DISPLAYING per-option prices (Master Laser Pistol 5, Elemental Hexer 30, ...). Dug into the book endpoint:
+  every option carries a `costs` array (plural) - `[{cost, unitId, exactCost}, ...]` - that our importer
+  never read (it read only the singular `cost`, which OPR omits). The price is keyed PER UNIT because the
+  same shared option costs differently on different units (Master Shard Pistol+CCW = 10 on the Noble id
+  9zCsahE, 5 on the Elite Protector id Uvc9UHr). Recovery is 100% (HEF 47/47 cost-absent options, Alien
+  Hives 81/81 - none genuinely unpriced). So #219 is not "disclose an unfixable gap" - it is FIXABLE.
+  Signed off (user): import the real prices, amend forward.
+  - **Slice 3 DONE (engine ddb6998):** `OprBookImporter` threads the unit id through MapSection/MapOption
+    and resolves `Cost = o.Cost ?? costs[].firstWhere(unitId).Cost`; `CostUnpriced` only when BOTH absent.
+    +1 engine test (per-unit costs[] recovery). Engine 1807/1807.
+  - **Slice 4 DONE (app-side + bump cd12155):** `ArmyForgeBookService.RefreshCosts` (renamed from
+    RefreshCostFlags) now transfers the resolved per-unit Cost + flag onto the bundled book, keyed by
+    (unit Id, option Id) - NOT option Id alone (that would smear one unit's price across all). `--import-book`
+    re-priced the catalog: **47/47 books, 3467 options given a real recovered price, 0 repriced, 0 unmatched,
+    0 genuinely-unpriced remaining.** HEF Elven Noble upgrades now read 10/5/30/30 etc., matching the
+    screenshot exactly. Catalog diff = `cost` + `costUnpriced` only. +3 app tests. Build clean, app 396/396,
+    smoke exit 0. Slice 1's ListValidator warning stays as a safety net (now fires ~never on the bundled
+    catalog, still fires on a share list carrying a truly-unpriced option).
+  - **RESIDUAL (not cut, relates #241):** the VERBATIM share-import path (`OprListImporter`, behind
+    `--import-army` / the Forge screen's raw Save As) still stores base cost per unit + parks upgrades in
+    `ArmyListFile.UnattributedPoints` (Elven Noble saves as 45 + 75 unattributed). The army TOTAL is correct
+    (120, "points check: OK both ways") and the "Open in Forge" reconstruction now prices per-unit correctly;
+    only the verbatim per-unit attribution is unmoved. The data to attribute it now exists (book costs[] +
+    the list's selections) - a contained `OprListImporter` follow-up. Filed as a fork below.
 - 2026-07-22: **Premise correction + Slice 1 shipped.** Signed-off plan: (decision) warn on lists
   carrying unpriced upgrades (not the "+? pts" disclosure, not a hard block); (decision) light up the
   bundled catalog via a surgical flag-transfer, NOT a destructive raw re-import.
@@ -67,9 +93,11 @@ User has spotted multiple upgrade options in-app that should cost points but sho
   Forge's reads as a known data limit and not as a #218-class arithmetic bug.
 
 ## Open fork (needs sign-off)
-Since OPR never publishes these prices, an in-app Forge list containing unpriced upgrades cannot be
-costed exactly. Options: (a) show them as "+? pts" and mark the list's total approximate; (b) hand-author
-prices in `GdfRuleSupplement.json`-style data, accurate but a maintenance burden that drifts each OPR
-release; (c) block/warn on lists carrying them. No work until this is decided.
+~~Since OPR never publishes these prices...~~ **RESOLVED 2026-07-22: prices ARE published (per-unit
+`costs[]`), now imported - see Slices 3/4.** Superseded.
+
+Remaining follow-up (relates #241): attribute the verbatim share-import's upgrade points per unit instead
+of parking them in `UnattributedPoints`. The total is already correct; this is a display-fidelity change to
+`OprListImporter.MapUnit`. Optional - surface before building.
 
 ## Outcome
