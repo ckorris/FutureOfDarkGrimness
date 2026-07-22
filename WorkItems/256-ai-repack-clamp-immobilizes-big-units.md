@@ -1,6 +1,6 @@
 # 256 — AI movement: repack clamp + stacking backoff immobilize big/clustered units
 
-**Status**: todo
+**Status**: done (GUI-verified by Chris 2026-07-22: "It did much, much better")
 **Related**: #216 (solo-fallback residual), #211 (solo mover impassible), #191 (Tactician umbrella), #170 (deploy sibling)
 
 ## Goal
@@ -217,4 +217,26 @@ moves the pinned solo baseline (#191 D1 hashes). **Benchmark rerun deliberately 
 
 ## Outcome
 
-(open)
+All three stuck classes fixed; **GUI-verified by Chris 2026-07-22** ("It did much, much better").
+
+- **S1** - measure-and-correct candidate budgets replaced the worst-case repack pre-clamp
+  (+ bottleneck-2-opt pairing cleanup): big combined units spend ~their full budget (engine
+  `eb38407`). Real-save numbers: Warriors 0.12" -> 3.2-3.4", Dwarf Warriors 0.1" -> 3.9-4.0".
+- **S2** - re-aim instead of halve when ending stacked on a friendly is the sole ladder fault:
+  budget-circle side-step (forward = sqrt(step^2 - lat^2)), half-width offset schedule to 4 base
+  widths, forward-progress gate, RepackCorrectionAttempts 4 -> 8; wired at all three ladder call
+  sites (engine `9679a58`, `64131b2`, `356df03`). Reconstruction scenario committed
+  (`Scenarios/256-friendly-in-lane.json`): blocked advance 3.11" -> 4.40" (4.71" control).
+- **S3** - refuted by evidence, not built: forward-driving the real save showed the walled unit
+  stayed stuck AFTER every blocker vacated - corridor width, not activation order, was binding.
+- **S4** - on-path snake fallback for corridors narrower than the formation (destinations ON the
+  pathfound polyline, parallel files past the 9" rule; engine `19ce09e`). The WayTooManyInBack
+  pocket drains over rounds 3-4: tank parks on objective (9,16), both infantry units out/moving.
+- **D1 benchmark re-pinned** (engine `f7b6d78`): builtin mirror `3674C906996F34CC`,
+  builtin vs builtin-basic `CE3DC8150005FF2C` - zero faults, reproducible at DOP 16 (recorded in
+  #191). The rerun also caught + fixed a latent G3 gap (unvalidated stand-still early-outs).
+- Spun off and closed along the way: **#258** (rule-definition identity broke every
+  `Definition ==` check on resumed saves; root-fixed as name equality).
+
+Follow-ups live elsewhere: #211 (solo impassible leak), #216 (Tactician solo-fallback drift),
+#210 (dop>1 bench nondeterminism).

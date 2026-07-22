@@ -23,7 +23,6 @@ When closing an item: write the Outcome in its detail file, tick the line, and m
 - [ ] 211 — Solo AI mover submits a path through impassible terrain (~1/1800; #159's family, impassible flavor). Fix with one validate-or-decline ladder on the solo mover alongside #159. ([WorkItems/211](WorkItems/211-solo-mover-impassible-terrain.md))
 - [ ] 214 — Teleport (#197) doesn't draw a range-of-motion circle like movement does; placement is bounded correctly, just add the reach-circle visual. ([WorkItems/214](WorkItems/214-teleport-range-circle.md))
 - [ ] 216 — Tactician plans rejected by the #205 friendly-stacking check silently fall back to the SOLO resolver (suspected DE/RL mirror-drift driver); charge candidate made friendly-aware, resolver-level repair + drift attribution still open. ([WorkItems/216](WorkItems/216-tactician-solo-fallback-on-stacked-plans.md))
-- [~] 256 — AI multi-model units barely move (WayTooManyInBack stuck bots, solo + Tactician alike). S1 (measure-and-correct budgets) + S2 (re-aim vs halve on friendly stacking) + S4 (on-path snake through narrow corridors) landed 2026-07-22, verified on the real save (pocket drains rounds 3-4); S3 refuted by evidence; D1 benchmark re-pinned (zero faults, new hashes in #191). Residual: Chris GUI session only. ([WorkItems/256](WorkItems/256-ai-repack-clamp-immobilizes-big-units.md))
 
 ## Shooting & cover
 
