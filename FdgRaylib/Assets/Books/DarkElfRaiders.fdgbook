@@ -6997,6 +6997,59 @@
       "description": "Counts as having Defense X\u002B in place of the model\u0027s own Defense stat."
     },
     {
+      "name": "Piercing Frenzy",
+      "passive": [
+        {
+          "hookID": "Shooting_OnUnitDestroyed",
+          "condition": {
+            "kind": "always"
+          },
+          "effect": {
+            "kind": "grantToken",
+            "tType": {
+              "id": "PiercingFrenzyMarker"
+            },
+            "count": {
+              "kind": "literal",
+              "value": 1
+            },
+            "clear": {
+              "kind": "manualOnly"
+            },
+            "maxTotal": 2
+          },
+          "lifetime": "ThisRound",
+          "seat": "Actor"
+        },
+        {
+          "hookID": "Shooting_OnHitRollComplete",
+          "condition": {
+            "kind": "tokenPresent",
+            "tType": {
+              "id": "PiercingFrenzyMarker"
+            },
+            "minCount": 1
+          },
+          "effect": {
+            "kind": "tokenScaledRollModifier",
+            "tType": {
+              "id": "PiercingFrenzyMarker"
+            },
+            "rollKind": "Save",
+            "delta": -1,
+            "perMarkers": 1
+          },
+          "lifetime": "ThisAttack",
+          "seat": "Actor"
+        }
+      ],
+      "activated": [],
+      "scope": "Unit",
+      "engineArgumentCount": 0,
+      "valence": "Positive",
+      "description": "Gains a marker when it fully destroys an enemy unit (max 2); each marker adds AP(\u002B1) to its attacks for the rest of the game."
+    },
+    {
       "name": "Precision Fighting",
       "passive": [
         {

@@ -8881,6 +8881,105 @@
       "engineArgumentCount": 0,
       "valence": "Positive",
       "description": "Once per activation, before attacking, pick one friendly unit within 12\u0022, which gets Stealth once (next time the effect would apply)."
+    },
+    {
+      "name": "Piercing Growth",
+      "passive": [
+        {
+          "hookID": "Round_OnRoundStart",
+          "condition": {
+            "kind": "and",
+            "left": {
+              "kind": "not",
+              "inner": {
+                "kind": "tokenPresent",
+                "tType": {
+                  "id": "Shaken"
+                },
+                "minCount": 1
+              }
+            },
+            "right": {
+              "kind": "and",
+              "left": {
+                "kind": "not",
+                "inner": {
+                  "kind": "tokenPresent",
+                  "tType": {
+                    "id": "InReserve"
+                  },
+                  "minCount": 1
+                }
+              },
+              "right": {
+                "kind": "and",
+                "left": {
+                  "kind": "not",
+                  "inner": {
+                    "kind": "tokenPresent",
+                    "tType": {
+                      "id": "EmbarkedIn"
+                    },
+                    "minCount": 1
+                  }
+                },
+                "right": {
+                  "kind": "not",
+                  "inner": {
+                    "kind": "tokenPresent",
+                    "tType": {
+                      "id": "OffTableFromForcedMove"
+                    },
+                    "minCount": 1
+                  }
+                }
+              }
+            }
+          },
+          "effect": {
+            "kind": "grantToken",
+            "tType": {
+              "id": "PiercingGrowthMarker"
+            },
+            "count": {
+              "kind": "literal",
+              "value": 1
+            },
+            "clear": {
+              "kind": "manualOnly"
+            },
+            "maxTotal": 4
+          },
+          "lifetime": "ThisRound",
+          "seat": "Actor"
+        },
+        {
+          "hookID": "Shooting_OnHitRollComplete",
+          "condition": {
+            "kind": "tokenPresent",
+            "tType": {
+              "id": "PiercingGrowthMarker"
+            },
+            "minCount": 2
+          },
+          "effect": {
+            "kind": "tokenScaledRollModifier",
+            "tType": {
+              "id": "PiercingGrowthMarker"
+            },
+            "rollKind": "Save",
+            "delta": -1,
+            "perMarkers": 2
+          },
+          "lifetime": "ThisAttack",
+          "seat": "Actor"
+        }
+      ],
+      "activated": [],
+      "scope": "Unit",
+      "engineArgumentCount": 0,
+      "valence": "Positive",
+      "description": "Gains a marker at the start of each round while on the table and not Shaken (max 4); every two markers add AP(\u002B1) to its attacks."
     }
   ],
   "spells": [

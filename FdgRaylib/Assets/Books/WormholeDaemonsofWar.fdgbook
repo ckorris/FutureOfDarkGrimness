@@ -4092,6 +4092,65 @@
       "description": "Counts as having Defense X\u002B in place of the model\u0027s own Defense stat."
     },
     {
+      "name": "Defensive Frenzy",
+      "passive": [
+        {
+          "hookID": "Shooting_OnUnitDestroyed",
+          "condition": {
+            "kind": "allModelsHaveThisRule"
+          },
+          "effect": {
+            "kind": "grantToken",
+            "tType": {
+              "id": "DefensiveFrenzyMarker"
+            },
+            "count": {
+              "kind": "literal",
+              "value": 1
+            },
+            "clear": {
+              "kind": "manualOnly"
+            },
+            "maxTotal": 2
+          },
+          "lifetime": "ThisRound",
+          "seat": "Actor"
+        },
+        {
+          "hookID": "Shooting_OnHitRollComplete",
+          "condition": {
+            "kind": "and",
+            "left": {
+              "kind": "allModelsHaveThisRule"
+            },
+            "right": {
+              "kind": "tokenPresent",
+              "tType": {
+                "id": "DefensiveFrenzyMarker"
+              },
+              "minCount": 1
+            }
+          },
+          "effect": {
+            "kind": "tokenScaledRollModifier",
+            "tType": {
+              "id": "DefensiveFrenzyMarker"
+            },
+            "rollKind": "Save",
+            "delta": 1,
+            "perMarkers": 1
+          },
+          "lifetime": "ThisAttack",
+          "seat": "Subject"
+        }
+      ],
+      "activated": [],
+      "scope": "Unit",
+      "engineArgumentCount": 0,
+      "valence": "Positive",
+      "description": "If all models have this rule: gains a marker when it fully destroys an enemy unit (max 2); each marker adds \u002B1 to Defense rolls for the rest of the game."
+    },
+    {
       "name": "Piercing Fighter",
       "passive": [
         {

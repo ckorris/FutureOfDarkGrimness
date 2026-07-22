@@ -8000,6 +8000,59 @@
       "engineArgumentCount": 0,
       "valence": "Positive",
       "description": "This model and its unit gain Infiltrate."
+    },
+    {
+      "name": "Precision Frenzy",
+      "passive": [
+        {
+          "hookID": "Shooting_OnUnitDestroyed",
+          "condition": {
+            "kind": "always"
+          },
+          "effect": {
+            "kind": "grantToken",
+            "tType": {
+              "id": "PrecisionFrenzyMarker"
+            },
+            "count": {
+              "kind": "literal",
+              "value": 1
+            },
+            "clear": {
+              "kind": "manualOnly"
+            },
+            "maxTotal": 2
+          },
+          "lifetime": "ThisRound",
+          "seat": "Actor"
+        },
+        {
+          "hookID": "Shooting_OnHitRollModifier",
+          "condition": {
+            "kind": "tokenPresent",
+            "tType": {
+              "id": "PrecisionFrenzyMarker"
+            },
+            "minCount": 1
+          },
+          "effect": {
+            "kind": "tokenScaledRollModifier",
+            "tType": {
+              "id": "PrecisionFrenzyMarker"
+            },
+            "rollKind": "Hit",
+            "delta": 1,
+            "perMarkers": 1
+          },
+          "lifetime": "ThisAttack",
+          "seat": "Actor"
+        }
+      ],
+      "activated": [],
+      "scope": "Unit",
+      "engineArgumentCount": 0,
+      "valence": "Positive",
+      "description": "Gains a marker when it fully destroys an enemy unit (max 2); each marker adds \u002B1 to its hit rolls for the rest of the game."
     }
   ],
   "spells": [

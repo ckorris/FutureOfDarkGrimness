@@ -5265,6 +5265,28 @@
       "description": "This model and its unit gain Bounding."
     },
     {
+      "name": "Defensive Growth Aura",
+      "passive": [
+        {
+          "hookID": "Lifecycle_OnUnitCreated",
+          "condition": {
+            "kind": "always"
+          },
+          "effect": {
+            "kind": "aura",
+            "ruleName": "Defensive Growth"
+          },
+          "lifetime": "UntilEndOfGame",
+          "seat": "Actor"
+        }
+      ],
+      "activated": [],
+      "scope": "Unit",
+      "engineArgumentCount": 0,
+      "valence": "Positive",
+      "description": "This model and its unit gain Defensive Growth."
+    },
+    {
       "name": "Precision Fighter",
       "passive": [
         {
@@ -5312,6 +5334,117 @@
       "engineArgumentCount": 0,
       "valence": "Positive",
       "description": "\u002B1 to hit rolls when shooting."
+    },
+    {
+      "name": "Defensive Growth",
+      "passive": [
+        {
+          "hookID": "Round_OnRoundStart",
+          "condition": {
+            "kind": "and",
+            "left": {
+              "kind": "allModelsHaveThisRule"
+            },
+            "right": {
+              "kind": "and",
+              "left": {
+                "kind": "not",
+                "inner": {
+                  "kind": "tokenPresent",
+                  "tType": {
+                    "id": "Shaken"
+                  },
+                  "minCount": 1
+                }
+              },
+              "right": {
+                "kind": "and",
+                "left": {
+                  "kind": "not",
+                  "inner": {
+                    "kind": "tokenPresent",
+                    "tType": {
+                      "id": "InReserve"
+                    },
+                    "minCount": 1
+                  }
+                },
+                "right": {
+                  "kind": "and",
+                  "left": {
+                    "kind": "not",
+                    "inner": {
+                      "kind": "tokenPresent",
+                      "tType": {
+                        "id": "EmbarkedIn"
+                      },
+                      "minCount": 1
+                    }
+                  },
+                  "right": {
+                    "kind": "not",
+                    "inner": {
+                      "kind": "tokenPresent",
+                      "tType": {
+                        "id": "OffTableFromForcedMove"
+                      },
+                      "minCount": 1
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "effect": {
+            "kind": "grantToken",
+            "tType": {
+              "id": "DefensiveGrowthMarker"
+            },
+            "count": {
+              "kind": "literal",
+              "value": 1
+            },
+            "clear": {
+              "kind": "manualOnly"
+            },
+            "maxTotal": 4
+          },
+          "lifetime": "ThisRound",
+          "seat": "Actor"
+        },
+        {
+          "hookID": "Shooting_OnHitRollComplete",
+          "condition": {
+            "kind": "and",
+            "left": {
+              "kind": "allModelsHaveThisRule"
+            },
+            "right": {
+              "kind": "tokenPresent",
+              "tType": {
+                "id": "DefensiveGrowthMarker"
+              },
+              "minCount": 2
+            }
+          },
+          "effect": {
+            "kind": "tokenScaledRollModifier",
+            "tType": {
+              "id": "DefensiveGrowthMarker"
+            },
+            "rollKind": "Save",
+            "delta": 1,
+            "perMarkers": 2
+          },
+          "lifetime": "ThisAttack",
+          "seat": "Subject"
+        }
+      ],
+      "activated": [],
+      "scope": "Unit",
+      "engineArgumentCount": 0,
+      "valence": "Positive",
+      "description": "If all models have this rule: gains a marker at the start of each round while on the table and not Shaken (max 4); every two markers add \u002B1 to Defense rolls."
     }
   ],
   "spells": [

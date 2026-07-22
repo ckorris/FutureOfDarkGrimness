@@ -4789,5 +4789,593 @@
     "engineArgumentCount": 1,
     "valence": "Positive",
     "description": "Counts as having Defense X+ in place of the model's own Defense stat."
+  },
+  {
+    "name": "Piercing Frenzy",
+    "passive": [
+      {
+        "hookID": "Shooting_OnUnitDestroyed",
+        "condition": {
+          "kind": "always"
+        },
+        "effect": {
+          "kind": "grantToken",
+          "tType": {
+            "id": "PiercingFrenzyMarker"
+          },
+          "count": {
+            "kind": "literal",
+            "value": 1
+          },
+          "clear": {
+            "kind": "manualOnly"
+          },
+          "maxTotal": 2
+        },
+        "lifetime": "ThisRound",
+        "seat": "Actor"
+      },
+      {
+        "hookID": "Shooting_OnHitRollComplete",
+        "condition": {
+          "kind": "tokenPresent",
+          "tType": {
+            "id": "PiercingFrenzyMarker"
+          },
+          "minCount": 1
+        },
+        "effect": {
+          "kind": "tokenScaledRollModifier",
+          "tType": {
+            "id": "PiercingFrenzyMarker"
+          },
+          "rollKind": "Save",
+          "delta": -1,
+          "perMarkers": 1
+        },
+        "lifetime": "ThisAttack",
+        "seat": "Actor"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "Gains a marker when it fully destroys an enemy unit (max 2); each marker adds AP(+1) to its attacks for the rest of the game."
+  },
+  {
+    "name": "Precision Frenzy",
+    "passive": [
+      {
+        "hookID": "Shooting_OnUnitDestroyed",
+        "condition": {
+          "kind": "always"
+        },
+        "effect": {
+          "kind": "grantToken",
+          "tType": {
+            "id": "PrecisionFrenzyMarker"
+          },
+          "count": {
+            "kind": "literal",
+            "value": 1
+          },
+          "clear": {
+            "kind": "manualOnly"
+          },
+          "maxTotal": 2
+        },
+        "lifetime": "ThisRound",
+        "seat": "Actor"
+      },
+      {
+        "hookID": "Shooting_OnHitRollModifier",
+        "condition": {
+          "kind": "tokenPresent",
+          "tType": {
+            "id": "PrecisionFrenzyMarker"
+          },
+          "minCount": 1
+        },
+        "effect": {
+          "kind": "tokenScaledRollModifier",
+          "tType": {
+            "id": "PrecisionFrenzyMarker"
+          },
+          "rollKind": "Hit",
+          "delta": 1,
+          "perMarkers": 1
+        },
+        "lifetime": "ThisAttack",
+        "seat": "Actor"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "Gains a marker when it fully destroys an enemy unit (max 2); each marker adds +1 to its hit rolls for the rest of the game."
+  },
+  {
+    "name": "Defensive Frenzy",
+    "passive": [
+      {
+        "hookID": "Shooting_OnUnitDestroyed",
+        "condition": {
+          "kind": "allModelsHaveThisRule"
+        },
+        "effect": {
+          "kind": "grantToken",
+          "tType": {
+            "id": "DefensiveFrenzyMarker"
+          },
+          "count": {
+            "kind": "literal",
+            "value": 1
+          },
+          "clear": {
+            "kind": "manualOnly"
+          },
+          "maxTotal": 2
+        },
+        "lifetime": "ThisRound",
+        "seat": "Actor"
+      },
+      {
+        "hookID": "Shooting_OnHitRollComplete",
+        "condition": {
+          "kind": "and",
+          "left": {
+            "kind": "allModelsHaveThisRule"
+          },
+          "right": {
+            "kind": "tokenPresent",
+            "tType": {
+              "id": "DefensiveFrenzyMarker"
+            },
+            "minCount": 1
+          }
+        },
+        "effect": {
+          "kind": "tokenScaledRollModifier",
+          "tType": {
+            "id": "DefensiveFrenzyMarker"
+          },
+          "rollKind": "Save",
+          "delta": 1,
+          "perMarkers": 1
+        },
+        "lifetime": "ThisAttack",
+        "seat": "Subject"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "If all models have this rule: gains a marker when it fully destroys an enemy unit (max 2); each marker adds +1 to Defense rolls for the rest of the game."
+  },
+  {
+    "name": "Piercing Growth",
+    "passive": [
+      {
+        "hookID": "Round_OnRoundStart",
+        "condition": {
+          "kind": "and",
+          "left": {
+            "kind": "not",
+            "inner": {
+              "kind": "tokenPresent",
+              "tType": {
+                "id": "Shaken"
+              },
+              "minCount": 1
+            }
+          },
+          "right": {
+            "kind": "and",
+            "left": {
+              "kind": "not",
+              "inner": {
+                "kind": "tokenPresent",
+                "tType": {
+                  "id": "InReserve"
+                },
+                "minCount": 1
+              }
+            },
+            "right": {
+              "kind": "and",
+              "left": {
+                "kind": "not",
+                "inner": {
+                  "kind": "tokenPresent",
+                  "tType": {
+                    "id": "EmbarkedIn"
+                  },
+                  "minCount": 1
+                }
+              },
+              "right": {
+                "kind": "not",
+                "inner": {
+                  "kind": "tokenPresent",
+                  "tType": {
+                    "id": "OffTableFromForcedMove"
+                  },
+                  "minCount": 1
+                }
+              }
+            }
+          }
+        },
+        "effect": {
+          "kind": "grantToken",
+          "tType": {
+            "id": "PiercingGrowthMarker"
+          },
+          "count": {
+            "kind": "literal",
+            "value": 1
+          },
+          "clear": {
+            "kind": "manualOnly"
+          },
+          "maxTotal": 4
+        },
+        "lifetime": "ThisRound",
+        "seat": "Actor"
+      },
+      {
+        "hookID": "Shooting_OnHitRollComplete",
+        "condition": {
+          "kind": "tokenPresent",
+          "tType": {
+            "id": "PiercingGrowthMarker"
+          },
+          "minCount": 2
+        },
+        "effect": {
+          "kind": "tokenScaledRollModifier",
+          "tType": {
+            "id": "PiercingGrowthMarker"
+          },
+          "rollKind": "Save",
+          "delta": -1,
+          "perMarkers": 2
+        },
+        "lifetime": "ThisAttack",
+        "seat": "Actor"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "Gains a marker at the start of each round while on the table and not Shaken (max 4); every two markers add AP(+1) to its attacks."
+  },
+  {
+    "name": "Precision Growth",
+    "passive": [
+      {
+        "hookID": "Round_OnRoundStart",
+        "condition": {
+          "kind": "and",
+          "left": {
+            "kind": "not",
+            "inner": {
+              "kind": "tokenPresent",
+              "tType": {
+                "id": "Shaken"
+              },
+              "minCount": 1
+            }
+          },
+          "right": {
+            "kind": "and",
+            "left": {
+              "kind": "not",
+              "inner": {
+                "kind": "tokenPresent",
+                "tType": {
+                  "id": "InReserve"
+                },
+                "minCount": 1
+              }
+            },
+            "right": {
+              "kind": "and",
+              "left": {
+                "kind": "not",
+                "inner": {
+                  "kind": "tokenPresent",
+                  "tType": {
+                    "id": "EmbarkedIn"
+                  },
+                  "minCount": 1
+                }
+              },
+              "right": {
+                "kind": "not",
+                "inner": {
+                  "kind": "tokenPresent",
+                  "tType": {
+                    "id": "OffTableFromForcedMove"
+                  },
+                  "minCount": 1
+                }
+              }
+            }
+          }
+        },
+        "effect": {
+          "kind": "grantToken",
+          "tType": {
+            "id": "PrecisionGrowthMarker"
+          },
+          "count": {
+            "kind": "literal",
+            "value": 1
+          },
+          "clear": {
+            "kind": "manualOnly"
+          },
+          "maxTotal": 4
+        },
+        "lifetime": "ThisRound",
+        "seat": "Actor"
+      },
+      {
+        "hookID": "Shooting_OnHitRollModifier",
+        "condition": {
+          "kind": "tokenPresent",
+          "tType": {
+            "id": "PrecisionGrowthMarker"
+          },
+          "minCount": 2
+        },
+        "effect": {
+          "kind": "tokenScaledRollModifier",
+          "tType": {
+            "id": "PrecisionGrowthMarker"
+          },
+          "rollKind": "Hit",
+          "delta": 1,
+          "perMarkers": 2
+        },
+        "lifetime": "ThisAttack",
+        "seat": "Actor"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "Gains a marker at the start of each round while on the table and not Shaken (max 4); every two markers add +1 to its hit rolls."
+  },
+  {
+    "name": "Defensive Growth",
+    "passive": [
+      {
+        "hookID": "Round_OnRoundStart",
+        "condition": {
+          "kind": "and",
+          "left": {
+            "kind": "allModelsHaveThisRule"
+          },
+          "right": {
+            "kind": "and",
+            "left": {
+              "kind": "not",
+              "inner": {
+                "kind": "tokenPresent",
+                "tType": {
+                  "id": "Shaken"
+                },
+                "minCount": 1
+              }
+            },
+            "right": {
+              "kind": "and",
+              "left": {
+                "kind": "not",
+                "inner": {
+                  "kind": "tokenPresent",
+                  "tType": {
+                    "id": "InReserve"
+                  },
+                  "minCount": 1
+                }
+              },
+              "right": {
+                "kind": "and",
+                "left": {
+                  "kind": "not",
+                  "inner": {
+                    "kind": "tokenPresent",
+                    "tType": {
+                      "id": "EmbarkedIn"
+                    },
+                    "minCount": 1
+                  }
+                },
+                "right": {
+                  "kind": "not",
+                  "inner": {
+                    "kind": "tokenPresent",
+                    "tType": {
+                      "id": "OffTableFromForcedMove"
+                    },
+                    "minCount": 1
+                  }
+                }
+              }
+            }
+          }
+        },
+        "effect": {
+          "kind": "grantToken",
+          "tType": {
+            "id": "DefensiveGrowthMarker"
+          },
+          "count": {
+            "kind": "literal",
+            "value": 1
+          },
+          "clear": {
+            "kind": "manualOnly"
+          },
+          "maxTotal": 4
+        },
+        "lifetime": "ThisRound",
+        "seat": "Actor"
+      },
+      {
+        "hookID": "Shooting_OnHitRollComplete",
+        "condition": {
+          "kind": "and",
+          "left": {
+            "kind": "allModelsHaveThisRule"
+          },
+          "right": {
+            "kind": "tokenPresent",
+            "tType": {
+              "id": "DefensiveGrowthMarker"
+            },
+            "minCount": 2
+          }
+        },
+        "effect": {
+          "kind": "tokenScaledRollModifier",
+          "tType": {
+            "id": "DefensiveGrowthMarker"
+          },
+          "rollKind": "Save",
+          "delta": 1,
+          "perMarkers": 2
+        },
+        "lifetime": "ThisAttack",
+        "seat": "Subject"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "If all models have this rule: gains a marker at the start of each round while on the table and not Shaken (max 4); every two markers add +1 to Defense rolls."
+  },
+  {
+    "name": "Defensive Growth Aura",
+    "passive": [
+      {
+        "hookID": "Lifecycle_OnUnitCreated",
+        "condition": {
+          "kind": "always"
+        },
+        "effect": {
+          "kind": "aura",
+          "ruleName": "Defensive Growth"
+        },
+        "lifetime": "UntilEndOfGame",
+        "seat": "Actor"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "This model and its unit gain Defensive Growth."
+  },
+  {
+    "name": "Fortified Growth",
+    "passive": [
+      {
+        "hookID": "Round_OnRoundEnd",
+        "condition": {
+          "kind": "and",
+          "left": {
+            "kind": "not",
+            "inner": {
+              "kind": "tokenPresent",
+              "tType": {
+                "id": "InReserve"
+              },
+              "minCount": 1
+            }
+          },
+          "right": {
+            "kind": "and",
+            "left": {
+              "kind": "not",
+              "inner": {
+                "kind": "tokenPresent",
+                "tType": {
+                  "id": "EmbarkedIn"
+                },
+                "minCount": 1
+              }
+            },
+            "right": {
+              "kind": "not",
+              "inner": {
+                "kind": "tokenPresent",
+                "tType": {
+                  "id": "OffTableFromForcedMove"
+                },
+                "minCount": 1
+              }
+            }
+          }
+        },
+        "effect": {
+          "kind": "grantToken",
+          "tType": {
+            "id": "FortifiedGrowthMarker"
+          },
+          "count": {
+            "kind": "literal",
+            "value": 1
+          },
+          "clear": {
+            "kind": "customHook",
+            "hook": "Morale_OnShakenApplied"
+          },
+          "maxTotal": 4
+        },
+        "lifetime": "ThisRound",
+        "seat": "Actor"
+      },
+      {
+        "hookID": "Shooting_OnHitRollComplete",
+        "condition": {
+          "kind": "and",
+          "left": {
+            "kind": "allModelsHaveThisRule"
+          },
+          "right": {
+            "kind": "tokenPresent",
+            "tType": {
+              "id": "FortifiedGrowthMarker"
+            },
+            "minCount": 1
+          }
+        },
+        "effect": {
+          "kind": "tokenScaledReduceArmorPenetration",
+          "tType": {
+            "id": "FortifiedGrowthMarker"
+          },
+          "perMarkers": 1,
+          "maxReduction": 2
+        },
+        "lifetime": "ThisAttack",
+        "seat": "Subject"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "Gains a marker at the end of each round while on the table (max 4). If all models have this rule, each marker reduces attackers' AP by 1 (min AP(0), up to 2). Becoming Shaken removes all its markers."
   }
 ]
