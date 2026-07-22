@@ -23,7 +23,7 @@ When closing an item: write the Outcome in its detail file, tick the line, and m
 - [ ] 211 — Solo AI mover submits a path through impassible terrain (~1/1800; #159's family, impassible flavor). Fix with one validate-or-decline ladder on the solo mover alongside #159. ([WorkItems/211](WorkItems/211-solo-mover-impassible-terrain.md))
 - [ ] 214 — Teleport (#197) doesn't draw a range-of-motion circle like movement does; placement is bounded correctly, just add the reach-circle visual. ([WorkItems/214](WorkItems/214-teleport-range-circle.md))
 - [ ] 216 — Tactician plans rejected by the #205 friendly-stacking check silently fall back to the SOLO resolver (suspected DE/RL mirror-drift driver); charge candidate made friendly-aware, resolver-level repair + drift attribution still open. ([WorkItems/216](WorkItems/216-tactician-solo-fallback-on-stacked-plans.md))
-- [~] 256 — AI multi-model units barely move: worst-case repack clamp zeroed big units' advances + stacking backoff halves instead of re-aiming + activation order never moves blockers first (WayTooManyInBack stuck bots, solo + Tactician alike). S1 (measure-and-correct budgets) landed 2026-07-22; S2 re-aim next. ([WorkItems/256](WorkItems/256-ai-repack-clamp-immobilizes-big-units.md))
+- [~] 256 — AI multi-model units barely move (WayTooManyInBack stuck bots, solo + Tactician alike). S1 (measure-and-correct budgets) + S2 (re-aim vs halve on friendly stacking) + S4 (on-path snake through narrow corridors) landed 2026-07-22, verified on the real save (pocket drains rounds 3-4); S3 refuted by evidence; D1 benchmark re-pinned (zero faults, new hashes in #191). Residual: Chris GUI session only. ([WorkItems/256](WorkItems/256-ai-repack-clamp-immobilizes-big-units.md))
 
 ## Shooting & cover
 
@@ -40,11 +40,10 @@ When closing an item: write the Outcome in its detail file, tick the line, and m
 - [ ] 087 — Custom special-rule authoring + standalone rules files (author new rules as data in the builder; import/export rule sets independent of armies). Builds on #059. ([WorkItems/087](WorkItems/087-custom-rule-authoring.md))
 - [~] 100 — Special-rule engine primitives umbrella: Part 1 + cross-unit pre-attack targeting done; open: dormant hooks, RangeModifier/Strider, Part-2/3 primitives (deferred-debuff, dice-pool, markers). Corpus reference is off-repo (`../GDF Armies/`, do not commit). ([WorkItems/100](WorkItems/100-special-rule-primitive-gaps.md))
 - [ ] 104 — Single-unit `Evaluate` doesn't consume `NextTrigger` grants — correct today; build the opt-in when a rule needs it. ([WorkItems/104](WorkItems/104-single-unit-evaluate-grant-consume.md))
-- [ ] 196 — Faction rule coverage pt.1: author the 107 dead rule names (1,243 refs) that are clones of live primitives, as data in `GdfRuleSupplement.json`. App-side only, no engine changes. **Done except F16** (48 refs blocked on owner input re: wargear mechanics); 1,169/1,243 resolved, 26 moved to #197. ([WorkItems/196](WorkItems/196-faction-rule-data-authoring.md))
-- [ ] 197 — Faction rule coverage pt.2: the 97 dead names (942 refs) needing new engine primitives. DONE: slice 0 (145 refs), the ">9in shot or charged" gate (+10, also fixed 3 defect classes in #196's data), P5a's activation-choice hook (+154), P5b's round-start recovery (+66), reposition-at-activation (+96), Teleport (+19, via #206's proximity Pass gate), Delayed Action (+47), Darkborn (+59, naming-only - mechanics already built), P15 Unpredictable (+48, decisive per-action branch die; 2 Mark variants deferred), and RuleFireLint's operation-consumption check. ([WorkItems/197](WorkItems/197-faction-rule-engine-primitives.md))
+- [ ] 197 — Faction rule coverage pt.2: the dead names needing new engine primitives (now incl. #196's F16 handoff: Sergeant per-model attribution, Armor(X) defense floor). DONE: slice 0 (145 refs), the ">9in shot or charged" gate (+10, also fixed 3 defect classes in #196's data), P5a's activation-choice hook (+154), P5b's round-start recovery (+66), reposition-at-activation (+96), Teleport (+19, via #206's proximity Pass gate), Delayed Action (+47), Darkborn (+59, naming-only - mechanics already built), P15 Unpredictable (+48, decisive per-action branch die; 2 Mark variants deferred), and RuleFireLint's operation-consumption check. ([WorkItems/197](WorkItems/197-faction-rule-engine-primitives.md))
 
 All 33 GF v3.5.1 core special rules are implemented (verified 2026-06-30; see archive #029-#032/#051).
-Corpus coverage is a different story: 528 of 13,870 book rule references (3.8%) do nothing today — see #196/#197.
+Corpus coverage is a different story: 492 of 13,870 book rule references (3.5%) do nothing today — see #197 (#196, the data-only half, closed 2026-07-22).
 
 ## Casting
 
@@ -61,6 +60,10 @@ Corpus coverage is a different story: 528 of 13,870 book rule references (3.8%) 
 - [~] 236 — Freeform builder silently stripped a Forge army's embedded book/selections on save; now gated behind an explicit "Save detached" confirm. Implemented + tested; modal awaits GUI hand-verify. ([WorkItems/236](WorkItems/236-freeform-save-strips-forge-block.md))
 - [~] 241 — Army Forge share-link importer: paste an army-forge.onepagerules.com share link -> preview -> .fdgarmy (engine `OprListImporter` + Forge-screen UI + `--import-army`); gates on OPR version 3.5.x. Points model corrected 2026-07-19 (per-unit `cost` is BASE, total comes from `listPoints` - imports were light); GUI modal still awaits hand-verify. ([WorkItems/241](WorkItems/241-army-forge-share-import.md))
 - [ ] 242 — Import campaign/narrative list features (XP, traits, campaign mode) that #241's importer warns about and drops. ([WorkItems/242](WorkItems/242-campaign-import-features.md))
+
+## Victory & scoring
+
+- [~] 257 — Team-based victory scoring: teammates pool objectives, unique top team wins, banner names every winning player ("Alpha and Bravo win!"); `GameResult.WinnerPlayers` added, 1v1 results byte-identical. Implemented + tested; awaiting GUI hand-verify. ([WorkItems/257](WorkItems/257-team-victory-scoring.md))
 
 ## Transport
 

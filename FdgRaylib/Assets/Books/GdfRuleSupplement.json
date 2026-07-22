@@ -4702,5 +4702,92 @@
     "engineArgumentCount": 0,
     "valence": "Positive",
     "description": "This model and its unit gain Rapid Blink Boost."
+  },
+  {
+    "name": "Banner",
+    "passive": [
+      {
+        "hookID": "Morale_OnPreMoraleTest",
+        "condition": {
+          "kind": "always"
+        },
+        "effect": {
+          "kind": "rollModifier",
+          "rollKind": "Morale",
+          "delta": 1
+        },
+        "lifetime": "ThisActivation",
+        "seat": "Actor"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "The unit gets +1 to morale test rolls."
+  },
+  {
+    "name": "Musician",
+    "passive": [
+      {
+        "hookID": "Movement_OnMoveActionDeclared",
+        "condition": {
+          "kind": "actionTypeIs",
+          "actionType": "Advance"
+        },
+        "effect": {
+          "kind": "movementBonus",
+          "actionType": "Advance",
+          "distanceInches": 1,
+          "minResultInches": 0
+        },
+        "lifetime": "ThisActivation",
+        "seat": "Actor"
+      },
+      {
+        "hookID": "Movement_OnMoveActionDeclared",
+        "condition": {
+          "kind": "actionTypeIs",
+          "actionType": "Rush"
+        },
+        "effect": {
+          "kind": "movementBonus",
+          "actionType": "Rush",
+          "distanceInches": 1,
+          "minResultInches": 0
+        },
+        "lifetime": "ThisActivation",
+        "seat": "Actor"
+      },
+      {
+        "hookID": "Movement_OnMoveActionDeclared",
+        "condition": {
+          "kind": "actionTypeIs",
+          "actionType": "Charge"
+        },
+        "effect": {
+          "kind": "movementBonus",
+          "actionType": "Charge",
+          "distanceInches": 1,
+          "minResultInches": 0
+        },
+        "lifetime": "ThisActivation",
+        "seat": "Actor"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "The unit moves +1 inch on Advance, Rush and Charge actions."
+  },
+  {
+    "name": "Armor",
+    "passive": [],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 1,
+    "valence": "Positive",
+    "description": "Counts as having Defense X+ in place of the model's own Defense stat."
   }
 ]

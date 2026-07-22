@@ -82,6 +82,96 @@ moves the pinned solo baseline (#191 D1 hashes). **Benchmark rerun deliberately 
 
 ## Notes
 
+- 2026-07-22 (evening, powerful desktop): **D1 benchmark rerun DONE** (engine `f7b6d78`). First run
+  surfaced a REGRESSION-shaped fault (seed 1051, both swap sides: DefinePathStage "Ends stacked on
+  top of a friendly unit") - traced with a temp stage/ladder diagnostic to a LATENT pre-#256 G3 gap
+  the new trajectories exposed: the solo resolver's early-outs (all enemies dead - objectives keep
+  the game going - or already-at-target) answered with an UNVALIDATED `StayInPlace` reform whose
+  re-pack slot landed on an adjacent friendly. (The reform slot set is identical pre/post #256; the
+  old baseline simply never wiped a side at those seeds.) Fixed: `MovementPlanner.StayInPlaceValidated`
+  (reform validated, degrades to hold-exact) + the resolver early-outs use it; pin test copies the
+  fault geometry (`Resolve_AllEnemiesDead_StandStillNextToFriendly_ResultIsEngineValid`). Suite
+  1816/1816. **New D1 pins** (200 games, DOP 16, reproducible across duplicate runs, ZERO faults):
+  builtin mirror `3674C906996F34CC` (29/29 wins, 142 ties; old `B05AA1D810364C6B` was 37/37/125 -
+  slightly tie-heavier, still perfectly symmetric), builtin vs builtin-basic `CE3DC8150005FF2C`
+  (40/25/135; old `F4318EF0D91161F5`). Hash change is EXPECTED - S1/S2/S4 deliberately moved the
+  baseline. 14.3 games/s on the Threadripper (old note: 5.25). MovementPlanner's doc comment updated
+  to the new hashes. **Remaining residual: only Chris's GUI session.**
+
+- 2026-07-22 (later still): **real-save re-probe done; S3 refuted by evidence; S4 landed.** Chris
+  dropped `WayTooManyInBack.fdgsave` in the repo root (untracked). Real-save S2 verification:
+  Warriors (Combined) advances 3.2-3.4" + ChooseAction Move (was 0.12" + shoot-in-place), Dwarf
+  Warriors 3-4", Battle Brothers #2's best advance 5.4". Forward-driving the save all-AI (scratchpad
+  DriveProbe: ScenarioLauncher-style resume, Tactician on every slot) first hit the #258 sniper
+  crash (fixed, see that item), then showed rounds 3-4 drain everything EXCEPT the walled Battle
+  Brothers - which stayed frozen even after every blocker vacated. End-state rung probe: every arc
+  toward both objectives failed ONLY MovingThroughImpassibleTerrain - stuck class 3 (corridor
+  width), NOT activation order. **S3 decision: refuted as the binding constraint, not built** (the
+  cheap deprioritize-jammed-movers version would not have freed the unit). S4 probes: a straight
+  end-line column still clips (tail sticks through walls when the path bends); per-model A* repair
+  fails because the packers place flank SLOTS inside walls (unreachable goals); the on-path snake
+  (destinations ON the pathfound polyline, staggered by base-width) validates at arc 3 where the
+  grid pack needed 0.19". Landed as `BuildSnakeCandidate` + an impassible-only ladder fallback
+  (mirrors the S2 re-aim gate; head must thread >= half the step + real centroid progress; >8-model
+  units wrap into parallel files under the 9" rule). Re-driven on the real save: pocket DRAINS -
+  BB#2 (7.7,0.5) -> (14.7,19.3), tank parks ON objective (9,16), APC out to (28.5,9.2), the walled
+  BB moving out at (8.1,4.8) and its end-state snake rungs valid from arc 6 down. Verified:
+  1815/1815 green (2 new pins: corridor-narrower-than-formation snakes through > 3" head progress;
+  11-model snake wraps files and stays cohesive), full build, smoke exit 0. Remaining: #191 D1
+  benchmark rerun (still deferred, low-power PC) + Chris's own GUI session as the human-eye check.
+
+- 2026-07-22 (later): **S2 re-probed and tuned.** The original `WayTooManyInBack.fdgsave` is NOT on
+  this machine (full-disk + old-drive search: zero .fdgsave anywhere), so the re-probe ran on a
+  reconstruction: `Scenarios/256-friendly-in-lane.json` (committed) - two spread 11-model Warriors
+  units, one with a friendly APC parked ~6" up its advance lane, `fdglab analyze` + a recreated
+  instrumented rung-replay (scratchpad-only, per the handoff note). Findings, each fixed in-session:
+  (1) as-landed, the re-aim NEVER fired on the reconstruction - the +/-1/+/-2-base-width offsets all
+  clipped the blocker because an 11-model pack is ~1.7 widths from center to edge (blocked advance:
+  3.1" via one halving vs 4.7" control); (2) naively widening the schedule to +/-3/+/-4 made it WORSE
+  (0.1" stays): stacking the offset on top of the full step made the measure-and-correct loop absorb
+  the whole lateral cost, blow the budget, and degrade to a valid-but-useless StayInPlace which the
+  ladder happily returned. Fixes: (a) a forward-progress gate in TryLateralReaim (accept only >= half
+  the blocked candidate's forward progress - never trade an advance for a stay); (b) probe at
+  forward = sqrt(step^2 - lat^2), trading forward for lateral INSIDE the budget circle; (c) offset
+  schedule densified to half-width steps past 2 (probe showed the clearing window can be < half a
+  width wide: 2.2 collided, 2.8 cleared); (d) RepackCorrectionAttempts 4 -> 8 - with a lateral
+  offset the step<->move response flattens and pairing flips bump the measure mid-descent, so 4
+  attempts gave up on feasible side-steps (engine-wide constant; centered candidates converge in <= 2
+  attempts, so S1 behavior is unchanged). Result on the reconstruction: blocked advance 3.11" -> 
+  **4.40" with a 2.8" side-step** (control 4.71"), candidate score 0.0409 -> 0.0557; clean-lane unit
+  byte-identical. Verified: 1811/1811 green, full build, headless smoke exit 0. The committed
+  scenario + `fdglab analyze` is now the cheap re-probe loop; re-running against the REAL save when
+  it's copied over remains open (and the walled Battle Brothers pocket still wants S3/S4).
+
+- 2026-07-22: **S2 landed** (engine, app-side pointer bump pending): `ValidateWithBackoff` now
+  side-steps the pack anchor before halving when a candidate's SOLE fault is ending stacked on a
+  friendly (`EErrorReasonType.EndedOnFriendlyUnit`). Mechanics: `BuildCandidate` gained a
+  `lateralOffsetInches` param that shifts the anchor perpendicular to the move (`(-ndz, ndx)`); the
+  ladder, at each rung where friendly-stacking is the only error, probes offsets of +/-1 and +/-2
+  base widths (nearest-first, alternating sides) at the SAME step and returns the first that
+  validates. The measure-and-correct loop absorbs the extra travel (a side-step trades forward
+  advance for clearance, never exceeding the per-model budget), so the G3 always-valid fallbacks are
+  untouched. Wired at ALL THREE ladder call sites: the two straight-candidate ones (solo
+  `AiDefineMovementResolver` + Tactician charge in `MacroActionGenerator`) and `PlanMoveToward`'s
+  path candidate (`BuildPathCandidate` gained the same param; the offset shifts the endpoint fan-out
+  anchor perpendicular to the path's FINAL segment while the funnelled waypoints stay on-route).
+  The path-candidate wiring matters most: the Tactician's objective advances - the actual
+  Warriors-toward-(7,30) acceptance row - route through PlanMoveToward even in an open field (trivial
+  2-point path), so a straight-candidate-only re-aim would have missed the headline case (caught
+  in-session before push; an earlier draft of this note wrongly deferred it to S4 - S4 remains only
+  the corridor-WIDTH problem, mid-path clipping of wide formations). A "sole obstacle" gate keeps
+  every non-stacking case byte-identical, so the solo-bot behavior pins are unaffected (benchmark
+  rerun still deferred per S1). Verified: 1811/1811 engine tests green (2 new pins:
+  `ValidateWithBackoff_FriendlyBlocksCenteredAdvance_SideStepsAndKeepsAdvance` - 6-model unit, centered
+  4" advance lands on a friendly, re-aims to >2.5" net with a real lateral component, within budget;
+  `PlanMoveToward_FriendlyOnArrivalSpot_SideStepsAndKeepsAdvance` - same via the path route end-to-end,
+  where pre-fix the ladder halves to ~1"), full `dotnet build` clean, headless smoke exit 0.
+  **Save-level re-probe deferred**: `WayTooManyInBack.fdgsave` + screenshot live on the OLD desktop,
+  not copied to this machine yet - the S2/S3 acceptance rows (Warriors toward (7,30): 4" -> was
+  halved to 0.96"; the Battle Brothers corner pocket) still want a `fdglab analyze` re-run once the
+  save is here. Remaining: the walled Battle Brothers pocket needs S3 (activation order) and/or S4
+  (corridor width) - a lateral side-step alone can't drain a fully boxed cluster.
+
 - 2026-07-22 (handoff, Chris switching machines): renumbered 254 -> 256 (reconciliation 18;
   origin's #254 wound-morale + #255 lobby-team landed first). Everything S1 is pushed on
   both masters. **Next: S2** - re-aim instead of halve on the "Ends stacked on top of a
@@ -121,7 +211,9 @@ moves the pinned solo baseline (#191 D1 hashes). **Benchmark rerun deliberately 
 
 ## Decisions
 
-(none yet)
+- 2026-07-22 (Chris): evidence-first bar for S3 - only build it if the pocket demonstrably fails to
+  drain under S1+S2. The forward-run showed the walled unit stays stuck for corridor-width reasons
+  with all blockers gone, so S3 was refuted and S4 built instead.
 
 ## Outcome
 
