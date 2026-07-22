@@ -4331,6 +4331,98 @@
       "description": "The unit moves \u002B1 inch on Advance, Rush and Charge actions."
     },
     {
+      "name": "Fortified Growth",
+      "passive": [
+        {
+          "hookID": "Round_OnRoundEnd",
+          "condition": {
+            "kind": "and",
+            "left": {
+              "kind": "not",
+              "inner": {
+                "kind": "tokenPresent",
+                "tType": {
+                  "id": "InReserve"
+                },
+                "minCount": 1
+              }
+            },
+            "right": {
+              "kind": "and",
+              "left": {
+                "kind": "not",
+                "inner": {
+                  "kind": "tokenPresent",
+                  "tType": {
+                    "id": "EmbarkedIn"
+                  },
+                  "minCount": 1
+                }
+              },
+              "right": {
+                "kind": "not",
+                "inner": {
+                  "kind": "tokenPresent",
+                  "tType": {
+                    "id": "OffTableFromForcedMove"
+                  },
+                  "minCount": 1
+                }
+              }
+            }
+          },
+          "effect": {
+            "kind": "grantToken",
+            "tType": {
+              "id": "FortifiedGrowthMarker"
+            },
+            "count": {
+              "kind": "literal",
+              "value": 1
+            },
+            "clear": {
+              "kind": "customHook",
+              "hook": "Morale_OnShakenApplied"
+            },
+            "maxTotal": 4
+          },
+          "lifetime": "ThisRound",
+          "seat": "Actor"
+        },
+        {
+          "hookID": "Shooting_OnHitRollComplete",
+          "condition": {
+            "kind": "and",
+            "left": {
+              "kind": "allModelsHaveThisRule"
+            },
+            "right": {
+              "kind": "tokenPresent",
+              "tType": {
+                "id": "FortifiedGrowthMarker"
+              },
+              "minCount": 1
+            }
+          },
+          "effect": {
+            "kind": "tokenScaledReduceArmorPenetration",
+            "tType": {
+              "id": "FortifiedGrowthMarker"
+            },
+            "perMarkers": 1,
+            "maxReduction": 2
+          },
+          "lifetime": "ThisAttack",
+          "seat": "Subject"
+        }
+      ],
+      "activated": [],
+      "scope": "Unit",
+      "engineArgumentCount": 0,
+      "valence": "Positive",
+      "description": "Gains a marker at the end of each round while on the table (max 4). If all models have this rule, each marker reduces attackers\u0027 AP by 1 (min AP(0), up to 2). Becoming Shaken removes all its markers."
+    },
+    {
       "name": "Precision Attacks",
       "passive": [
         {
