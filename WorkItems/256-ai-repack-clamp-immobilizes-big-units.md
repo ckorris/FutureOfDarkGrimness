@@ -82,6 +82,28 @@ moves the pinned solo baseline (#191 D1 hashes). **Benchmark rerun deliberately 
 
 ## Notes
 
+- 2026-07-22 (later still): **real-save re-probe done; S3 refuted by evidence; S4 landed.** Chris
+  dropped `WayTooManyInBack.fdgsave` in the repo root (untracked). Real-save S2 verification:
+  Warriors (Combined) advances 3.2-3.4" + ChooseAction Move (was 0.12" + shoot-in-place), Dwarf
+  Warriors 3-4", Battle Brothers #2's best advance 5.4". Forward-driving the save all-AI (scratchpad
+  DriveProbe: ScenarioLauncher-style resume, Tactician on every slot) first hit the #258 sniper
+  crash (fixed, see that item), then showed rounds 3-4 drain everything EXCEPT the walled Battle
+  Brothers - which stayed frozen even after every blocker vacated. End-state rung probe: every arc
+  toward both objectives failed ONLY MovingThroughImpassibleTerrain - stuck class 3 (corridor
+  width), NOT activation order. **S3 decision: refuted as the binding constraint, not built** (the
+  cheap deprioritize-jammed-movers version would not have freed the unit). S4 probes: a straight
+  end-line column still clips (tail sticks through walls when the path bends); per-model A* repair
+  fails because the packers place flank SLOTS inside walls (unreachable goals); the on-path snake
+  (destinations ON the pathfound polyline, staggered by base-width) validates at arc 3 where the
+  grid pack needed 0.19". Landed as `BuildSnakeCandidate` + an impassible-only ladder fallback
+  (mirrors the S2 re-aim gate; head must thread >= half the step + real centroid progress; >8-model
+  units wrap into parallel files under the 9" rule). Re-driven on the real save: pocket DRAINS -
+  BB#2 (7.7,0.5) -> (14.7,19.3), tank parks ON objective (9,16), APC out to (28.5,9.2), the walled
+  BB moving out at (8.1,4.8) and its end-state snake rungs valid from arc 6 down. Verified:
+  1815/1815 green (2 new pins: corridor-narrower-than-formation snakes through > 3" head progress;
+  11-model snake wraps files and stays cohesive), full build, smoke exit 0. Remaining: #191 D1
+  benchmark rerun (still deferred, low-power PC) + Chris's own GUI session as the human-eye check.
+
 - 2026-07-22 (later): **S2 re-probed and tuned.** The original `WayTooManyInBack.fdgsave` is NOT on
   this machine (full-disk + old-drive search: zero .fdgsave anywhere), so the re-probe ran on a
   reconstruction: `Scenarios/256-friendly-in-lane.json` (committed) - two spread 11-model Warriors
@@ -173,7 +195,9 @@ moves the pinned solo baseline (#191 D1 hashes). **Benchmark rerun deliberately 
 
 ## Decisions
 
-(none yet)
+- 2026-07-22 (Chris): evidence-first bar for S3 - only build it if the pocket demonstrably fails to
+  drain under S1+S2. The forward-run showed the walled unit stays stuck for corridor-width reasons
+  with all blockers gone, so S3 was refuted and S4 built instead.
 
 ## Outcome
 
