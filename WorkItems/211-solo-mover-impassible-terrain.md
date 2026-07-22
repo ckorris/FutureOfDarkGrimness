@@ -77,7 +77,9 @@ validated, zero-length (impassible-exempt), or declined by the #208 strict gate.
 change landed for this item, so the D1 pin requirement is satisfied by #256's own re-pin.
 Verified with a 3200-game gate-replica bench (0 faults, 0 timeouts; hash `6D36F2D7603BCC45`).
 
-Suggested (not done - engine submodule, needs sign-off): a regression test pinning the
-impassible FLAVOR of the stand-still early-out (all enemies dead, unit parked against an
-impassible wall whose re-pack would sweep through it), mirroring
-`Resolve_AllEnemiesDead_StandStillNextToFriendly_ResultIsEngineValid`.
+Regression test added post-close with Chris's sign-off (engine `e414daa`):
+`Resolve_AllEnemiesDead_StandStillAgainstImpassibleWall_ResultIsEngineValid` - a casualty-holed
+unit parked against an impassible wall with every enemy dead, whose reform would sweep a
+survivor through the wall. Includes a geometry guard asserting the RAW (unvalidated) reform
+really is engine-invalid, so the test cannot pass vacuously. Test-only change (behavior
+untouched), so no D1 re-pin needed. Engine suite 1841/1841.
