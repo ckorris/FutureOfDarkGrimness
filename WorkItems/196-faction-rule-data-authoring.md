@@ -1,6 +1,6 @@
 # 196 — Faction rule coverage, part 1: data-only clone rules
 
-**Status**: done (F16 excepted — blocked on owner input; see F16 row and Outcome)
+**Status**: done (closed 2026-07-22 — F16 resolved: Banner/Musician/Armor authored, Sergeant -> #197)
 **Related**: #197 (engine-work half of the same audit), #100 (primitive catalog), #042 (rule architecture), #087 (custom rule authoring), #166a (`RuleFireLint`), #153 (`--apply-rules` / `--validate-rules`), SYS-5 in `SpecialRulesAudit.md`
 
 ## Goal
@@ -150,7 +150,7 @@ Families are independent of each other; F1 is the single biggest win.
 | F6 | extra hit on unmodified 6 | 80 | **DONE** (80/80) | core `Furious` / `Surge` (`addExtraHit`) | Ferocious, Devout, Point-Blank Surge, Devout Boost, Ferocious Boost, Devout Boost Aura, Ferocious Boost Aura, Point-Blank Piercing Aura, Surge when Shooting, Brutal Fighter |
 | F8 | offensive conditional modifiers | 63 | **DONE** (63/63) | core `Good Shot` + `distanceGreaterThan` / `isCharging` | Havocbound, Targeting Visor, Bad Shot, Havocbound Boost Aura, Targeting Visor Boost Aura |
 | F12 | Mark family | 58 | **DONE** (58/58) | `markTarget` (built, #100 pt.14a) | Unstoppable Mark, Rending Mark, Bane Mark, Furious Mark, Relentless Mark, Precision Fighting Mark, Piercing Shooting Mark, Precision Shooting Mark |
-| F16 | **BLOCKED** wargear names | 48 | **BLOCKED** (0/48) - needs owner input | -- | Banner, Sergeant, Musician, Armor |
+| F16 | wargear names | 48 | **DONE** (36/48, 12 -> #197) 2026-07-22 | `Hive Bond` (Banner), `Highborn` (Musician), `Unique`/`Transport` zero-hook marker (Armor) | Banner, Sergeant, Musician, Armor |
 | F10 | reroll sinks | 41 | **PARTIAL** (35/41, 6 -> #197) | core rules using `reroll` (`RerollSink`) | Mischievous, Scrapper, Mischievous Boost Aura, Scrapper Boost Aura |
 | F9 | morale +1 | 33 | **DONE** (33/33) | supplement `Hive Bond` / `Hive Bond Boost` | Hold the Line, Hold the Line Boost Aura, Courage Buff |
 | F14 | aura wrappers of live rules | 30 | **DONE** (30/30) | `aura` + `CoreRuleCatalog`'s aura factory | Rending when Shooting Aura, Precision Fighter Aura, Precision Shooter Aura, Piercing Fighter Aura, Piercing Shooter Aura, Thrust in Melee Aura, Precision Charge Aura, Strider Aura, Increased Shooting Range Mark |
@@ -209,6 +209,33 @@ engine work. `Thrust in Melee Aura` and `Strider Aura` needed no new base — th
 
 ## Notes
 
+- 2026-07-22: **F16 unblocked and closed.** The mechanics turned out to be discoverable without guessing:
+  all four names are OPR *common* rules, absent from army-book glossaries because they live in the shared
+  rulebook layer. Found via the local Army Forge JSON snapshots (`../GDF Armies/opr-json-snapshots/`, which
+  carry `Sergeant`/`Armor` definitions inline) cross-confirmed against OPR's common-rules API
+  (`army-forge.onepagerules.com/api/rules/common/2`) with matching stable rule IDs (Banner `ywXKQKPOLjTF`,
+  Musician `qrG_DXJez5Dg`, Sergeant `8HWdOwMYcI0p`, Armor `74RjQ1k41DoO`). Verdicts:
+  - **Banner** = unit +1 to morale test rolls -> authored as data (exact `Hive Bond` clone; option
+    `rulesGained` attaches at unit level, and the effect is unit-wide anyway, so no aura wrapper needed).
+    The owner's aura-like-buff theory was right.
+  - **Musician** = unit +1" on move actions -> authored as data (`Highborn` movementBonus shape,
+    +1 on Advance/Rush/Charge).
+  - **Sergeant** = "when **this model** attacks, unmodified 6s to hit deal 1 extra hit" (a one-model
+    champion upgrade; F3's addExtraHit shape otherwise). `ListCompiler` attaches gained rules unit-wide
+    and hit rolls fold over the whole unit's pool, so a data definition would over-grant ~10x on a
+    10-model unit. Owner ruled 2026-07-22: per-model only, as written -> **12 refs moved to #197**
+    (per-model rule attribution slice).
+  - **Armor(X)** = "counts as having Defense X+" — a stat SET with a varying rating; no Defense-floor
+    effect kind exists and data effects can't read args -> unbuildable as data. Owner-approved handling:
+    zero-hook marker-with-arg definition (the `Unique`/`Transport` precedent, `EngineArgumentCount: 1`,
+    lint-allowlisted with reason) so the name resolves and the description shows in the UI; the actual
+    Defense-set mechanic is **filed as a #197 slice** (11 refs counted resolved by coverage, mechanic
+    honestly deferred and recorded in both ledgers).
+  Corpus dead references: 528 -> 492 (-36, exactly Banner 13 + Musician 12 + Armor 11; Sergeant's 12
+  remain and are #197's). Full verification loop green: 162 supplement definitions validate, app suite
+  396 green (incl. fire-lint with the new Armor allowlist entry), engine suite 1804 green (untouched),
+  all 47 books rebaked (only the 10 expected books changed), full build, headless smoke on a
+  Wormhole-Daemons-of-War army exit 0.
 - 2026-07-09: **Three defect classes found in this item's shipped data while building #197's shoot-or-charge
   gate.** All three were fixed there (app `27c55c4`); recorded here because this is where they were authored.
   - **A Boost is the INCREMENT, not the boosted rule.** The corpus writes "gets extra hits on 5-6, instead of
@@ -298,6 +325,13 @@ engine work. `Thrust in Melee Aura` and `Strider Aura` needed no new base — th
   to find if either one ever misbehaves.
 
 ## Outcome
+
+**Fully closed 2026-07-22.** F16, the last open family, resolved after the wargear mechanics were pinned to
+OPR's common-rules layer (see the 2026-07-22 note): Banner + Musician authored as data, Armor as an
+owner-approved zero-hook marker (mechanic -> #197), Sergeant's 12 refs moved to #197 (owner ruled per-model
+fidelity is required and the seam doesn't exist). Final tally: **1,205 of 1,243 refs (97%) resolve**;
+corpus-wide dead references 2,197 -> 492 over the item's life. 38 refs total live on in #197 (26 from
+2026-07-09 + Sergeant's 12).
 
 **Closed 2026-07-09** for everything except F16 (blocked on owner input on wargear mechanics — see the F16
 row above; can reopen as a small follow-up once that's answered).
