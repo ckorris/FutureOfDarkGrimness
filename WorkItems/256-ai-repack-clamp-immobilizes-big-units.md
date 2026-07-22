@@ -82,6 +82,27 @@ moves the pinned solo baseline (#191 D1 hashes). **Benchmark rerun deliberately 
 
 ## Notes
 
+- 2026-07-22: **S2 landed** (engine, app-side pointer bump pending): `ValidateWithBackoff` now
+  side-steps the pack anchor before halving when a candidate's SOLE fault is ending stacked on a
+  friendly (`EErrorReasonType.EndedOnFriendlyUnit`). Mechanics: `BuildCandidate` gained a
+  `lateralOffsetInches` param that shifts the anchor perpendicular to the move (`(-ndz, ndx)`); the
+  ladder, at each rung where friendly-stacking is the only error, probes offsets of +/-1 and +/-2
+  base widths (nearest-first, alternating sides) at the SAME step and returns the first that
+  validates. The measure-and-correct loop absorbs the extra travel (a side-step trades forward
+  advance for clearance, never exceeding the per-model budget), so the G3 always-valid fallbacks are
+  untouched. Wired at both straight-candidate call sites (solo `AiDefineMovementResolver` +
+  Tactician charge in `MacroActionGenerator`); `PlanMoveToward`'s path candidate passes no reaim
+  (corridor width is S4). A "sole obstacle" gate keeps every non-stacking case byte-identical, so the
+  solo-bot behavior pins are unaffected (benchmark rerun still deferred per S1). Verified: 1805/1805
+  engine tests green (new pin `ValidateWithBackoff_FriendlyBlocksCenteredAdvance_SideStepsAndKeepsAdvance`:
+  a 6-model unit whose centered 4" advance lands on a friendly re-aims to keep >2.5" net move, still
+  within budget, with a real lateral component), full `dotnet build` clean, headless smoke exit 0.
+  **Save-level re-probe deferred**: `WayTooManyInBack.fdgsave` + screenshot live on the OLD desktop,
+  not copied to this machine yet - the S2/S3 acceptance rows (Warriors toward (7,30): 4" -> was
+  halved to 0.96"; the Battle Brothers corner pocket) still want a `fdglab analyze` re-run once the
+  save is here. Remaining: the walled Battle Brothers pocket needs S3 (activation order) and/or S4
+  (corridor width) - a lateral side-step alone can't drain a fully boxed cluster.
+
 - 2026-07-22 (handoff, Chris switching machines): renumbered 254 -> 256 (reconciliation 18;
   origin's #254 wound-morale + #255 lobby-team landed first). Everything S1 is pushed on
   both masters. **Next: S2** - re-aim instead of halve on the "Ends stacked on top of a
