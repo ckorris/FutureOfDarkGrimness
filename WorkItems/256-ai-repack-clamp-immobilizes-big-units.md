@@ -82,6 +82,22 @@ moves the pinned solo baseline (#191 D1 hashes). **Benchmark rerun deliberately 
 
 ## Notes
 
+- 2026-07-22 (evening, powerful desktop): **D1 benchmark rerun DONE** (engine `f7b6d78`). First run
+  surfaced a REGRESSION-shaped fault (seed 1051, both swap sides: DefinePathStage "Ends stacked on
+  top of a friendly unit") - traced with a temp stage/ladder diagnostic to a LATENT pre-#256 G3 gap
+  the new trajectories exposed: the solo resolver's early-outs (all enemies dead - objectives keep
+  the game going - or already-at-target) answered with an UNVALIDATED `StayInPlace` reform whose
+  re-pack slot landed on an adjacent friendly. (The reform slot set is identical pre/post #256; the
+  old baseline simply never wiped a side at those seeds.) Fixed: `MovementPlanner.StayInPlaceValidated`
+  (reform validated, degrades to hold-exact) + the resolver early-outs use it; pin test copies the
+  fault geometry (`Resolve_AllEnemiesDead_StandStillNextToFriendly_ResultIsEngineValid`). Suite
+  1816/1816. **New D1 pins** (200 games, DOP 16, reproducible across duplicate runs, ZERO faults):
+  builtin mirror `3674C906996F34CC` (29/29 wins, 142 ties; old `B05AA1D810364C6B` was 37/37/125 -
+  slightly tie-heavier, still perfectly symmetric), builtin vs builtin-basic `CE3DC8150005FF2C`
+  (40/25/135; old `F4318EF0D91161F5`). Hash change is EXPECTED - S1/S2/S4 deliberately moved the
+  baseline. 14.3 games/s on the Threadripper (old note: 5.25). MovementPlanner's doc comment updated
+  to the new hashes. **Remaining residual: only Chris's GUI session.**
+
 - 2026-07-22 (later still): **real-save re-probe done; S3 refuted by evidence; S4 landed.** Chris
   dropped `WayTooManyInBack.fdgsave` in the repo root (untracked). Real-save S2 verification:
   Warriors (Combined) advances 3.2-3.4" + ChooseAction Move (was 0.12" + shoot-in-place), Dwarf

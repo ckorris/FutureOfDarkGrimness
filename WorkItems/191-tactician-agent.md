@@ -20,6 +20,15 @@ pin tests.
 
 ## Notes (newest first)
 
+**2026-07-22 — D1 BASELINE RE-PINNED after #256 (S1 measure-and-correct budgets, S2 friendly
+re-aim, S4 corridor snake deliberately moved solo-bot movement).** New 200-game outcome hashes,
+DOP 16, reproducible across duplicate runs, zero faults: builtin mirror `3674C906996F34CC`
+(29/29 wins, 142 ties; previous `B05AA1D810364C6B` was 37/37/125), builtin vs builtin-basic
+`CE3DC8150005FF2C` (40/25/135; previous `F4318EF0D91161F5`). The rerun also caught and fixed a
+latent G3 gap (the solo resolver's stand-still early-outs bypassed validation - see #256's
+2026-07-22 evening note; engine `f7b6d78`). Every hash reference below this note refers to the
+OLD baseline.
+
 **2026-07-11 — GARRISON RELEASE + FOCUS-FIRE DILUTION shipped (Chris: "I agree. Let's do
 that." on the game-3 fork; the dilution fix was the standing recommendation from games 1-2).**
 Two `TacticianPlanner.Score` changes, both in Ai/Tactician:
