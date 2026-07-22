@@ -6,6 +6,16 @@ from origin/master. Standing precedent: numbers are never reused, and when two p
 claim the same number, the *unmerged local* item yields to the *merged* one and takes a fresh number.
 A per-clone pre-push hook blocks duplicate numbers across the index and the archive.
 
+> **2026-07-22 — reconciliation 19.** The push of #255's follow-on (team-based victory scoring,
+> locally filed as **256**) found origin/master had meanwhile landed reconciliation 18's
+> **256 = AI repack clamp immobilizes big/clustered units** (merged, S1 shipped). Per merged-wins
+> precedent the local item yields: **team victory scoring 256 -> 257** (`WorkItems/257-team-victory-scoring.md`;
+> 257 free on index + archive). Nothing had been pushed, so the renumber landed everywhere before
+> publication - detail file, index line, engine source comments (`GameResult.cs`,
+> `VictoryCalculationStage.cs`, its tests), and the engine commit message was amended to #257 on
+> rebase. The two sessions' engine changes (Ai/Tactician vs GameModel/StateMachine) did not overlap;
+> combined suite 1809/0 before push.
+>
 > **2026-07-22 — reconciliation 18.** Pre-push fetch (before a machine switch) found origin/master
 > had meanwhile landed reconciliation 17's **254 = wound-driven morale** and **255 = lobby team
 > selection** (both merged and archived), colliding with this session's locally-filed **254 = AI

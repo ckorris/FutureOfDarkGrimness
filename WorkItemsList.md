@@ -62,6 +62,10 @@ Corpus coverage is a different story: 528 of 13,870 book rule references (3.8%) 
 - [~] 241 — Army Forge share-link importer: paste an army-forge.onepagerules.com share link -> preview -> .fdgarmy (engine `OprListImporter` + Forge-screen UI + `--import-army`); gates on OPR version 3.5.x. Points model corrected 2026-07-19 (per-unit `cost` is BASE, total comes from `listPoints` - imports were light); GUI modal still awaits hand-verify. ([WorkItems/241](WorkItems/241-army-forge-share-import.md))
 - [ ] 242 — Import campaign/narrative list features (XP, traits, campaign mode) that #241's importer warns about and drops. ([WorkItems/242](WorkItems/242-campaign-import-features.md))
 
+## Victory & scoring
+
+- [~] 257 — Team-based victory scoring: teammates pool objectives, unique top team wins, banner names every winning player ("Alpha and Bravo win!"); `GameResult.WinnerPlayers` added, 1v1 results byte-identical. Implemented + tested; awaiting GUI hand-verify. ([WorkItems/257](WorkItems/257-team-victory-scoring.md))
+
 ## Transport
 
 - [ ] 097 — Disembark/embark full movement: replace the Advance-equivalent simplifications (disembark-then-Rush/Charge from the 6" drop; real move-into-contact to embark). ([WorkItems/097](WorkItems/097-transport-full-movement.md))
