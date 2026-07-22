@@ -1,6 +1,6 @@
 # 256 — AI movement: repack clamp + stacking backoff immobilize big/clustered units
 
-**Status**: todo
+**Status**: done (GUI-verified by Chris 2026-07-22: "It did much, much better")
 **Related**: #216 (solo-fallback residual), #211 (solo mover impassible), #191 (Tactician umbrella), #170 (deploy sibling)
 
 ## Goal
@@ -81,6 +81,44 @@ moves the pinned solo baseline (#191 D1 hashes). **Benchmark rerun deliberately 
 (low-power PC right now); the D1 pins are stale from S1 onward until it runs.
 
 ## Notes
+
+- 2026-07-22 (evening, powerful desktop): **D1 benchmark rerun DONE** (engine `f7b6d78`). First run
+  surfaced a REGRESSION-shaped fault (seed 1051, both swap sides: DefinePathStage "Ends stacked on
+  top of a friendly unit") - traced with a temp stage/ladder diagnostic to a LATENT pre-#256 G3 gap
+  the new trajectories exposed: the solo resolver's early-outs (all enemies dead - objectives keep
+  the game going - or already-at-target) answered with an UNVALIDATED `StayInPlace` reform whose
+  re-pack slot landed on an adjacent friendly. (The reform slot set is identical pre/post #256; the
+  old baseline simply never wiped a side at those seeds.) Fixed: `MovementPlanner.StayInPlaceValidated`
+  (reform validated, degrades to hold-exact) + the resolver early-outs use it; pin test copies the
+  fault geometry (`Resolve_AllEnemiesDead_StandStillNextToFriendly_ResultIsEngineValid`). Suite
+  1816/1816. **New D1 pins** (200 games, DOP 16, reproducible across duplicate runs, ZERO faults):
+  builtin mirror `3674C906996F34CC` (29/29 wins, 142 ties; old `B05AA1D810364C6B` was 37/37/125 -
+  slightly tie-heavier, still perfectly symmetric), builtin vs builtin-basic `CE3DC8150005FF2C`
+  (40/25/135; old `F4318EF0D91161F5`). Hash change is EXPECTED - S1/S2/S4 deliberately moved the
+  baseline. 14.3 games/s on the Threadripper (old note: 5.25). MovementPlanner's doc comment updated
+  to the new hashes. **Remaining residual: only Chris's GUI session.**
+
+- 2026-07-22 (later still): **real-save re-probe done; S3 refuted by evidence; S4 landed.** Chris
+  dropped `WayTooManyInBack.fdgsave` in the repo root (untracked). Real-save S2 verification:
+  Warriors (Combined) advances 3.2-3.4" + ChooseAction Move (was 0.12" + shoot-in-place), Dwarf
+  Warriors 3-4", Battle Brothers #2's best advance 5.4". Forward-driving the save all-AI (scratchpad
+  DriveProbe: ScenarioLauncher-style resume, Tactician on every slot) first hit the #258 sniper
+  crash (fixed, see that item), then showed rounds 3-4 drain everything EXCEPT the walled Battle
+  Brothers - which stayed frozen even after every blocker vacated. End-state rung probe: every arc
+  toward both objectives failed ONLY MovingThroughImpassibleTerrain - stuck class 3 (corridor
+  width), NOT activation order. **S3 decision: refuted as the binding constraint, not built** (the
+  cheap deprioritize-jammed-movers version would not have freed the unit). S4 probes: a straight
+  end-line column still clips (tail sticks through walls when the path bends); per-model A* repair
+  fails because the packers place flank SLOTS inside walls (unreachable goals); the on-path snake
+  (destinations ON the pathfound polyline, staggered by base-width) validates at arc 3 where the
+  grid pack needed 0.19". Landed as `BuildSnakeCandidate` + an impassible-only ladder fallback
+  (mirrors the S2 re-aim gate; head must thread >= half the step + real centroid progress; >8-model
+  units wrap into parallel files under the 9" rule). Re-driven on the real save: pocket DRAINS -
+  BB#2 (7.7,0.5) -> (14.7,19.3), tank parks ON objective (9,16), APC out to (28.5,9.2), the walled
+  BB moving out at (8.1,4.8) and its end-state snake rungs valid from arc 6 down. Verified:
+  1815/1815 green (2 new pins: corridor-narrower-than-formation snakes through > 3" head progress;
+  11-model snake wraps files and stays cohesive), full build, smoke exit 0. Remaining: #191 D1
+  benchmark rerun (still deferred, low-power PC) + Chris's own GUI session as the human-eye check.
 
 - 2026-07-22 (later): **S2 re-probed and tuned.** The original `WayTooManyInBack.fdgsave` is NOT on
   this machine (full-disk + old-drive search: zero .fdgsave anywhere), so the re-probe ran on a
@@ -173,8 +211,32 @@ moves the pinned solo baseline (#191 D1 hashes). **Benchmark rerun deliberately 
 
 ## Decisions
 
-(none yet)
+- 2026-07-22 (Chris): evidence-first bar for S3 - only build it if the pocket demonstrably fails to
+  drain under S1+S2. The forward-run showed the walled unit stays stuck for corridor-width reasons
+  with all blockers gone, so S3 was refuted and S4 built instead.
 
 ## Outcome
 
-(open)
+All three stuck classes fixed; **GUI-verified by Chris 2026-07-22** ("It did much, much better").
+
+- **S1** - measure-and-correct candidate budgets replaced the worst-case repack pre-clamp
+  (+ bottleneck-2-opt pairing cleanup): big combined units spend ~their full budget (engine
+  `eb38407`). Real-save numbers: Warriors 0.12" -> 3.2-3.4", Dwarf Warriors 0.1" -> 3.9-4.0".
+- **S2** - re-aim instead of halve when ending stacked on a friendly is the sole ladder fault:
+  budget-circle side-step (forward = sqrt(step^2 - lat^2)), half-width offset schedule to 4 base
+  widths, forward-progress gate, RepackCorrectionAttempts 4 -> 8; wired at all three ladder call
+  sites (engine `9679a58`, `64131b2`, `356df03`). Reconstruction scenario committed
+  (`Scenarios/256-friendly-in-lane.json`): blocked advance 3.11" -> 4.40" (4.71" control).
+- **S3** - refuted by evidence, not built: forward-driving the real save showed the walled unit
+  stayed stuck AFTER every blocker vacated - corridor width, not activation order, was binding.
+- **S4** - on-path snake fallback for corridors narrower than the formation (destinations ON the
+  pathfound polyline, parallel files past the 9" rule; engine `19ce09e`). The WayTooManyInBack
+  pocket drains over rounds 3-4: tank parks on objective (9,16), both infantry units out/moving.
+- **D1 benchmark re-pinned** (engine `f7b6d78`): builtin mirror `3674C906996F34CC`,
+  builtin vs builtin-basic `CE3DC8150005FF2C` - zero faults, reproducible at DOP 16 (recorded in
+  #191). The rerun also caught + fixed a latent G3 gap (unvalidated stand-still early-outs).
+- Spun off and closed along the way: **#258** (rule-definition identity broke every
+  `Definition ==` check on resumed saves; root-fixed as name equality).
+
+Follow-ups live elsewhere: #211 (solo impassible leak), #216 (Tactician solo-fallback drift),
+#210 (dop>1 bench nondeterminism).

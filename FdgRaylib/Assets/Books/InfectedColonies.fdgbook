@@ -138,7 +138,7 @@
             {
               "id": "cj9Pu",
               "label": "Chitinous Strain (Fortified Aura)",
-              "cost": 0,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -159,7 +159,7 @@
             {
               "id": "pvxFd",
               "label": "Frenzy Virus (Fast Aura)",
-              "cost": 0,
+              "cost": 30,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -180,7 +180,7 @@
             {
               "id": "skpcm",
               "label": "Terror Genus (Thrust in Melee Aura)",
-              "cost": 0,
+              "cost": 30,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -201,7 +201,7 @@
             {
               "id": "mZQq17VPhK",
               "label": "Spore Carrier (Infected Boost Aura)",
-              "cost": 0,
+              "cost": 45,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -222,7 +222,7 @@
             {
               "id": "EQdk1Bx",
               "label": "Enlarged Brain (Caster(3))",
-              "cost": 0,
+              "cost": 75,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -340,7 +340,7 @@
             {
               "id": "hsx2B",
               "label": "Great Sharp Claw (A4, AP(1), Rending)",
-              "cost": 0,
+              "cost": 20,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -395,7 +395,7 @@
             {
               "id": "XuOab1oY",
               "label": "Chitinous Strain (Fortified Aura)",
-              "cost": 0,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -416,7 +416,7 @@
             {
               "id": "ylXEW_8s",
               "label": "Frenzy Virus (Fast Aura)",
-              "cost": 0,
+              "cost": 30,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -437,7 +437,7 @@
             {
               "id": "uPEIKzW1",
               "label": "Terror Genus (Thrust in Melee Aura)",
-              "cost": 0,
+              "cost": 30,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -458,7 +458,7 @@
             {
               "id": "a7QclcZown",
               "label": "Colony Leader (No Retreat Aura)",
-              "cost": 0,
+              "cost": 35,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -479,7 +479,7 @@
             {
               "id": "HwaMjJEx",
               "label": "Spore Carrier (Infected Boost Aura)",
-              "cost": 0,
+              "cost": 45,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -566,7 +566,7 @@
             {
               "id": "9gvLs",
               "label": "Leader Carbine (18\u0022, A3)",
-              "cost": 0,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -750,7 +750,7 @@
             {
               "id": "12_KbbQEi-",
               "label": "Evolving Strain (Precision Growth)",
-              "cost": 0,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -783,7 +783,7 @@
             {
               "id": "M3vWkJFUlX",
               "label": "Runners Leader (Fearless, Strider)",
-              "cost": 0,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -808,7 +808,7 @@
             {
               "id": "QxpdRcUdk8",
               "label": "Zombies Leader (Fearless, Regeneration, Slow)",
-              "cost": 0,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -849,7 +849,7 @@
             {
               "id": "ruFFsnn9",
               "label": "Chitinous Strain (Fortified Aura)",
-              "cost": 0,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -870,7 +870,7 @@
             {
               "id": "kDqiDZ-V",
               "label": "Terror Genus (Thrust in Melee Aura)",
-              "cost": 0,
+              "cost": 30,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -891,7 +891,7 @@
             {
               "id": "daAWHHtc2j",
               "label": "Colony Leader (No Retreat Aura)",
-              "cost": 0,
+              "cost": 35,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -912,7 +912,7 @@
             {
               "id": "4zyy7Cz0",
               "label": "Rapid Mutator (Unpredictable Shooter Aura)",
-              "cost": 0,
+              "cost": 40,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -933,7 +933,7 @@
             {
               "id": "2ORAmSG9",
               "label": "Spore Carrier (Infected Boost Aura)",
-              "cost": 0,
+              "cost": 45,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -954,7 +954,7 @@
             {
               "id": "CfCAPSdd",
               "label": "Enlarged Brain (Caster(2))",
-              "cost": 0,
+              "cost": 50,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -1031,7 +1031,7 @@
             {
               "id": "qI70F",
               "label": "Evolving Strain (Precision Growth)",
-              "cost": 0,
+              "cost": 25,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -1111,7 +1111,7 @@
             {
               "id": "qI70F",
               "label": "Evolving Strain (Precision Growth)",
-              "cost": 0,
+              "cost": 25,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -1263,7 +1263,7 @@
             {
               "id": "AkwNo",
               "label": "Spore Shooter (18\u0022, A1, AP(1), Blast(3), Lacerate)",
-              "cost": 0,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -1612,7 +1612,7 @@
             {
               "id": "e41R-xamAH",
               "label": "Spore Mortar (30\u0022, A1, AP(1), Blast(3), Indirect, Lacerate)",
-              "cost": 0,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -1737,7 +1737,7 @@
             {
               "id": "0RFjgRyy_b",
               "label": "Spore Shooter (18\u0022, A1, AP(1), Blast(3), Lacerate)",
-              "cost": 0,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -1766,7 +1766,7 @@
             {
               "id": "WK39r",
               "label": "Shred Rifle (18\u0022, A2, Rending)",
-              "cost": 0,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -1900,7 +1900,7 @@
             {
               "id": "SxDBv",
               "label": "Sharp Claw (A2, AP(1), Rending)",
-              "cost": 0,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -2092,7 +2092,7 @@
             {
               "id": "qI70F",
               "label": "Evolving Strain (Precision Growth)",
-              "cost": 0,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -2169,7 +2169,7 @@
             {
               "id": "qI70F",
               "label": "Evolving Strain (Precision Growth)",
-              "cost": 0,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -2255,7 +2255,7 @@
             {
               "id": "gsznEf4eSJ",
               "label": "Frenzied Advance (Scout)",
-              "cost": 0,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -2596,7 +2596,7 @@
             {
               "id": "kvpvw",
               "label": "Contamination Cloud (Precision Debuff)",
-              "cost": 0,
+              "cost": 45,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -2690,7 +2690,7 @@
             {
               "id": "3JSD6",
               "label": "Twin Heavy Machinegun (30\u0022, A6, AP(1))",
-              "cost": 0,
+              "cost": 25,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -2765,7 +2765,7 @@
             {
               "id": "ZgXj2ew",
               "label": "Cargo Extension (Transport(11))",
-              "cost": 0,
+              "cost": 35,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -2787,7 +2787,7 @@
             {
               "id": "8hc86vH7Zi",
               "label": "Contamination Cloud (Precision Debuff)",
-              "cost": 0,
+              "cost": 45,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -2929,7 +2929,7 @@
             {
               "id": "-4rtV",
               "label": "Heavy Spore Mortar (30\u0022, A3, AP(1), Blast(3), Indirect, Lacerate)",
-              "cost": 0,
+              "cost": 70,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -3035,7 +3035,7 @@
             {
               "id": "v6ChMzz",
               "label": "Heavy Flamer (12\u0022, A1, AP(1), Blast(3), Reliable), Walker Chainsaw (A6, AP(1))",
-              "cost": 0,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -3181,7 +3181,7 @@
             {
               "id": "kvpvw",
               "label": "Contamination Cloud (Precision Debuff)",
-              "cost": 0,
+              "cost": 45,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],

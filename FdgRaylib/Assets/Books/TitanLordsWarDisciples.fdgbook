@@ -90,7 +90,7 @@
             {
               "id": "WK9Rtjst",
               "label": "Heavy Hammer (A1, AP(1), Blast(3))",
-              "cost": 0,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -173,7 +173,7 @@
             {
               "id": "EC7upA65",
               "label": "Heavy Lance (A3, Thrust)",
-              "cost": 0,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -287,7 +287,7 @@
             {
               "id": "SmOOPJVW",
               "label": "Fusion Blaster (24\u0022, A1, AP(4), Deadly(6))",
-              "cost": 0,
+              "cost": 90,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -367,7 +367,7 @@
             {
               "id": "gBSzk3DdhQ",
               "label": "Psychic Lord (Caster(1))",
-              "cost": 0,
+              "cost": 20,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -410,7 +410,7 @@
             {
               "id": "At4ll3Sehm",
               "label": "Titan Core (Delayed Action)",
-              "cost": 0,
+              "cost": 35,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -431,7 +431,7 @@
             {
               "id": "BMrLgDtZ6D",
               "label": "Vanguard Config (Scout, Strider)",
-              "cost": 0,
+              "cost": 55,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -627,7 +627,7 @@
             {
               "id": "jk6Wr",
               "label": "Titan Core (Delayed Action)",
-              "cost": 0,
+              "cost": 35,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -648,7 +648,7 @@
             {
               "id": "1BABw5X-in",
               "label": "Psychic Lord (Caster(2))",
-              "cost": 0,
+              "cost": 40,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -691,7 +691,7 @@
             {
               "id": "3SA99wHR0S",
               "label": "Assault Config (Fast, Strider)",
-              "cost": 0,
+              "cost": 70,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -774,7 +774,7 @@
             {
               "id": "UnQgw",
               "label": "Heavy Lance (A6, Thrust)",
-              "cost": 0,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -888,7 +888,7 @@
             {
               "id": "5EFD5sbMpr",
               "label": "Heavy Hammer (A2, AP(1), Blast(3))",
-              "cost": 0,
+              "cost": 30,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -1080,7 +1080,7 @@
             {
               "id": "jk6Wr",
               "label": "Titan Core (Delayed Action)",
-              "cost": 0,
+              "cost": 35,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -1101,7 +1101,7 @@
             {
               "id": "1BABw5X-in",
               "label": "Psychic Lord (Caster(2))",
-              "cost": 0,
+              "cost": 40,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -1144,7 +1144,7 @@
             {
               "id": "3SA99wHR0S",
               "label": "Assault Config (Fast, Strider)",
-              "cost": 0,
+              "cost": 70,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -1227,7 +1227,7 @@
             {
               "id": "UnQgw",
               "label": "Heavy Lance (A6, Thrust)",
-              "cost": 0,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -1341,7 +1341,7 @@
             {
               "id": "5EFD5sbMpr",
               "label": "Heavy Hammer (A2, AP(1), Blast(3))",
-              "cost": 0,
+              "cost": 30,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -1583,7 +1583,7 @@
             {
               "id": "jk6Wr",
               "label": "Titan Core (Delayed Action)",
-              "cost": 0,
+              "cost": 35,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -1604,7 +1604,7 @@
             {
               "id": "1BABw5X-in",
               "label": "Psychic Lord (Caster(2))",
-              "cost": 0,
+              "cost": 40,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -1647,7 +1647,7 @@
             {
               "id": "3SA99wHR0S",
               "label": "Assault Config (Fast, Strider)",
-              "cost": 0,
+              "cost": 70,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -1827,7 +1827,7 @@
             {
               "id": "zJUVbDj5",
               "label": "Heavy Hammer (A2, AP(1), Blast(3))",
-              "cost": 0,
+              "cost": 20,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -1934,7 +1934,7 @@
             {
               "id": "2qzEFIn0",
               "label": "Heavy Lance (A6, Thrust)",
-              "cost": 0,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -2024,7 +2024,7 @@
             {
               "id": "vza2jJKzXL",
               "label": "Frag-Blaster (12\u0022, A16, AP(1), Rending)",
-              "cost": 0,
+              "cost": 150,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -2048,7 +2048,7 @@
             {
               "id": "8FEgvrhY",
               "label": "Fusion Blaster (24\u0022, A2, AP(4), Deadly(6))",
-              "cost": 0,
+              "cost": 180,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -2130,7 +2130,7 @@
             {
               "id": "bPWbh_ZSH2",
               "label": "Hull-Machinegun (30\u0022, A3, AP(1))",
-              "cost": 0,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -2161,7 +2161,7 @@
             {
               "id": "bIS2hl1S",
               "label": "Titan Core (Delayed Action)",
-              "cost": 0,
+              "cost": 35,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -2182,7 +2182,7 @@
             {
               "id": "fW2zJNKo",
               "label": "Psychic Lord (Caster(3))",
-              "cost": 0,
+              "cost": 65,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -2225,7 +2225,7 @@
             {
               "id": "RGYcEVf6",
               "label": "Vanguard Config (Scout, Strider)",
-              "cost": 0,
+              "cost": 110,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -2473,7 +2473,7 @@
             {
               "id": "4P7xg",
               "label": "Titan Core (Delayed Action)",
-              "cost": 0,
+              "cost": 35,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -2494,7 +2494,7 @@
             {
               "id": "T-Q93JL55O",
               "label": "Exploration Config (Strider)",
-              "cost": 0,
+              "cost": 60,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -2515,7 +2515,7 @@
             {
               "id": "RhG2EvmQps",
               "label": "Psychic Lord (Caster(4))",
-              "cost": 0,
+              "cost": 85,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -2616,7 +2616,7 @@
             {
               "id": "nPT2F",
               "label": "Titan Lance (A12, Thrust)",
-              "cost": 0,
+              "cost": 35,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -2730,7 +2730,7 @@
             {
               "id": "Osop2",
               "label": "Titan Hammer (A4, AP(1), Blast(3))",
-              "cost": 0,
+              "cost": 60,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -2974,7 +2974,7 @@
             {
               "id": "4P7xg",
               "label": "Titan Core (Delayed Action)",
-              "cost": 0,
+              "cost": 35,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -2995,7 +2995,7 @@
             {
               "id": "T-Q93JL55O",
               "label": "Exploration Config (Strider)",
-              "cost": 0,
+              "cost": 60,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -3016,7 +3016,7 @@
             {
               "id": "RhG2EvmQps",
               "label": "Psychic Lord (Caster(4))",
-              "cost": 0,
+              "cost": 85,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -3117,7 +3117,7 @@
             {
               "id": "nPT2F",
               "label": "Titan Lance (A12, Thrust)",
-              "cost": 0,
+              "cost": 35,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -3231,7 +3231,7 @@
             {
               "id": "Osop2",
               "label": "Titan Hammer (A4, AP(1), Blast(3))",
-              "cost": 0,
+              "cost": 55,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -3303,7 +3303,7 @@
             {
               "id": "NAT56",
               "label": "Titan Laser Cannon (36\u0022, A3, AP(3), Deadly(3))",
-              "cost": 0,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -3626,7 +3626,7 @@
             {
               "id": "4P7xg",
               "label": "Titan Core (Delayed Action)",
-              "cost": 0,
+              "cost": 35,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -3647,7 +3647,7 @@
             {
               "id": "T-Q93JL55O",
               "label": "Exploration Config (Strider)",
-              "cost": 0,
+              "cost": 60,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -3668,7 +3668,7 @@
             {
               "id": "RhG2EvmQps",
               "label": "Psychic Lord (Caster(4))",
-              "cost": 0,
+              "cost": 85,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -3758,7 +3758,7 @@
             {
               "id": "NAT56",
               "label": "Titan Laser Cannon (36\u0022, A3, AP(3), Deadly(3))",
-              "cost": 0,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -3970,7 +3970,7 @@
             {
               "id": "5ciWa",
               "label": "Titan Triple Flamer (18\u0022, A3, AP(1), Blast(3), Reliable)",
-              "cost": 0,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -4162,7 +4162,7 @@
             {
               "id": "R5YEL",
               "label": "Titan Core (Delayed Action)",
-              "cost": 0,
+              "cost": 35,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -4183,7 +4183,7 @@
             {
               "id": "Z4unLQizd8",
               "label": "Exploration Config (Strider)",
-              "cost": 0,
+              "cost": 75,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -4204,7 +4204,7 @@
             {
               "id": "qHr-BSnLq5",
               "label": "Psychic Lord (Caster(5))",
-              "cost": 0,
+              "cost": 110,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],

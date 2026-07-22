@@ -78,7 +78,7 @@
             {
               "id": "VAu1Y",
               "label": "Great Electro-Flail (A2, AP(1), Blast(3), Surge)",
-              "cost": 0,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -107,7 +107,7 @@
             {
               "id": "xtekR",
               "label": "Great Electro-Spear (A2, AP(2), Deadly(3))",
-              "cost": 0,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -132,7 +132,7 @@
             {
               "id": "dA7vh",
               "label": "Dual Great Electro-Swords (A8, AP(1), Rending)",
-              "cost": 0,
+              "cost": 40,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -156,7 +156,7 @@
             {
               "id": "1SwAn",
               "label": "Great Burst Carbine (18\u0022, A6, AP(1)), Bash (A2), Combat Shield (Shielded)",
-              "cost": 0,
+              "cost": 40,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -194,7 +194,7 @@
             {
               "id": "lqCXy",
               "label": "Great Fist-Gun (12\u0022, A6, AP(1)), Great Electro-Sword (A4, AP(1), Rending)",
-              "cost": 0,
+              "cost": 40,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -226,7 +226,7 @@
             {
               "id": "ZkBCn",
               "label": "Dual Great Electro-Fists (A8, AP(4))",
-              "cost": 0,
+              "cost": 60,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -259,7 +259,7 @@
             {
               "id": "GguSP",
               "label": "Great Fist-Flamer (12\u0022, A2, Blast(3), Reliable)",
-              "cost": 0,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -302,7 +302,7 @@
             {
               "id": "s1I8K",
               "label": "Great Electro-Fist (A4, AP(4))",
-              "cost": 0,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -333,7 +333,7 @@
             {
               "id": "3ZYTf2to",
               "label": "Raid Master (Scurry Boost Aura)",
-              "cost": 0,
+              "cost": 25,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -354,7 +354,7 @@
             {
               "id": "kAGulMMenL",
               "label": "Technician (Melee Evasion Aura)",
-              "cost": 0,
+              "cost": 30,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -375,7 +375,7 @@
             {
               "id": "fn4DEF28",
               "label": "Agitator (Piercing Assault Aura)",
-              "cost": 0,
+              "cost": 35,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -396,7 +396,7 @@
             {
               "id": "rSM2b-ks",
               "label": "Director (Precision Shooter Aura)",
-              "cost": 0,
+              "cost": 35,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -565,7 +565,7 @@
             {
               "id": "k31n0",
               "label": "Elite Shotgun (12\u0022, A3, AP(1))",
-              "cost": 0,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -641,7 +641,7 @@
             {
               "id": "_TWBqVy",
               "label": "Electro-Hammer (A1, Blast(3))",
-              "cost": 0,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -666,7 +666,7 @@
             {
               "id": "GiV81",
               "label": "Electro-Flail (A2, AP(1), Surge)",
-              "cost": 0,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -690,7 +690,7 @@
             {
               "id": "3q3YFu6",
               "label": "Electro-Sword (A2, AP(1), Rending)",
-              "cost": 0,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -714,7 +714,7 @@
             {
               "id": "4wVyq",
               "label": "Electro-Whip (A2, AP(1), Bane)",
-              "cost": 0,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -738,7 +738,7 @@
             {
               "id": "GS5kLLmwaV",
               "label": "Electro-Lance (A2, AP(1), Thrust)",
-              "cost": 0,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -762,7 +762,7 @@
             {
               "id": "E5Ng9",
               "label": "Electro-Spear (A1, AP(2), Deadly(3))",
-              "cost": 0,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -787,7 +787,7 @@
             {
               "id": "KjE6G",
               "label": "Electro-Fist (A2, AP(4))",
-              "cost": 0,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -818,7 +818,7 @@
             {
               "id": "igPNxPue",
               "label": "Mecha-Beast (Fast, Ravage(1), Strider)",
-              "cost": 0,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -848,7 +848,7 @@
             {
               "id": "AtWqh_bGUG",
               "label": "Master Infiltrator (Scout, Stealth, Strider)",
-              "cost": 0,
+              "cost": 20,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -889,7 +889,7 @@
             {
               "id": "MqBAVGEeW_",
               "label": "Spy-Assassin Hitman (Takedown Strike)",
-              "cost": 0,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -910,7 +910,7 @@
             {
               "id": "8d3f5fw",
               "label": "Icon Bearer (Fear(2))",
-              "cost": 0,
+              "cost": 20,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -932,7 +932,7 @@
             {
               "id": "4glLm",
               "label": "Raid Master (Scurry Boost Aura)",
-              "cost": 0,
+              "cost": 25,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -953,7 +953,7 @@
             {
               "id": "gR1OKQR",
               "label": "Agitator (Piercing Assault Aura)",
-              "cost": 0,
+              "cost": 35,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -974,7 +974,7 @@
             {
               "id": "APNduhX",
               "label": "Intelligence Officer (Ambush Aura)",
-              "cost": 0,
+              "cost": 35,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -995,7 +995,7 @@
             {
               "id": "IncoYic",
               "label": "Director (Precision Shooter Aura)",
-              "cost": 0,
+              "cost": 35,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -1016,7 +1016,7 @@
             {
               "id": "bPFmwzb",
               "label": "Psy-Hacker (Caster(2))",
-              "cost": 0,
+              "cost": 45,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -1038,7 +1038,7 @@
             {
               "id": "X1ERfNF",
               "label": "Master Psy-Hacker (Caster(3))",
-              "cost": 0,
+              "cost": 70,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -1126,7 +1126,7 @@
             {
               "id": "NaACa",
               "label": "Shotgun (12\u0022, A2, AP(1))",
-              "cost": 0,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -1169,7 +1169,7 @@
             {
               "id": "9Ftu1",
               "label": "Plas-Burst Pistol (12\u0022, A2, Hazardous)",
-              "cost": 0,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -1266,7 +1266,7 @@
             {
               "id": "rpt2X",
               "label": "Elite Sniper Carbine (18\u0022, A2, AP(1), Reliable, Takedown)",
-              "cost": 0,
+              "cost": 35,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -1294,7 +1294,7 @@
             {
               "id": "0oNCjELTb6",
               "label": "Elite Plas-Burst Sniper Carbine (18\u0022, A2, Reliable, Hazardous, Takedown)",
-              "cost": 0,
+              "cost": 45,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -1340,7 +1340,7 @@
             {
               "id": "Pd6ff",
               "label": "Electro-Hammer (A1, Blast(3))",
-              "cost": 0,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -1365,7 +1365,7 @@
             {
               "id": "XjkW1dk",
               "label": "Electro-Sword (A2, AP(1), Rending)",
-              "cost": 0,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -1389,7 +1389,7 @@
             {
               "id": "CDDf2",
               "label": "Electro-Whip (A2, AP(1), Bane)",
-              "cost": 0,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -1413,7 +1413,7 @@
             {
               "id": "FGVEU",
               "label": "Electro-Flail (A2, AP(1), Surge)",
-              "cost": 0,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -1437,7 +1437,7 @@
             {
               "id": "PjSSD",
               "label": "Electro-Lance (A2, AP(1), Thrust)",
-              "cost": 0,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -1461,7 +1461,7 @@
             {
               "id": "2hmEq",
               "label": "Electro-Spear (A1, AP(2), Deadly(3))",
-              "cost": 0,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -1486,7 +1486,7 @@
             {
               "id": "WM7gZSg",
               "label": "Electro-Fist (A2, AP(4))",
-              "cost": 0,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -1517,7 +1517,7 @@
             {
               "id": "UbBUK",
               "label": "Mecha-Beast (Fast, Ravage(1), Strider)",
-              "cost": 0,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -1547,7 +1547,7 @@
             {
               "id": "8ii9T",
               "label": "Master Infiltrator (Scout, Stealth, Strider)",
-              "cost": 0,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -1588,7 +1588,7 @@
             {
               "id": "p8ZMgYQB",
               "label": "Icon Bearer (Fear(2))",
-              "cost": 0,
+              "cost": 20,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -1610,7 +1610,7 @@
             {
               "id": "7FRf03COMC",
               "label": "Spy-Assassin Sniper (Takedown Shot)",
-              "cost": 0,
+              "cost": 20,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -1631,7 +1631,7 @@
             {
               "id": "3mk4dwY9",
               "label": "Raid Master (Scurry Boost Aura)",
-              "cost": 0,
+              "cost": 25,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -1652,7 +1652,7 @@
             {
               "id": "xj523Dru",
               "label": "Technician (Melee Evasion Aura)",
-              "cost": 0,
+              "cost": 30,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -1673,7 +1673,7 @@
             {
               "id": "WOK0OtIL",
               "label": "Intelligence Officer (Ambush Aura)",
-              "cost": 0,
+              "cost": 35,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -1694,7 +1694,7 @@
             {
               "id": "ba_TIvkm",
               "label": "Director (Precision Shooter Aura)",
-              "cost": 0,
+              "cost": 35,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -1715,7 +1715,7 @@
             {
               "id": "exhFZrdX",
               "label": "Psy-Hacker (Caster(2))",
-              "cost": 0,
+              "cost": 45,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -1795,7 +1795,7 @@
             {
               "id": "bGFWO",
               "label": "Dual CCWs (A2)",
-              "cost": 0,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -1814,7 +1814,7 @@
             {
               "id": "Ifjko",
               "label": "Electro-Whip (A1, AP(1), Bane)",
-              "cost": 0,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -1852,7 +1852,7 @@
             {
               "id": "Of96g",
               "label": "Electro-Hammer (A1, Blast(3))",
-              "cost": 0,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -1877,7 +1877,7 @@
             {
               "id": "Aqa-8",
               "label": "Electro-Spear (A1, AP(2), Deadly(3))",
-              "cost": 0,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -1902,7 +1902,7 @@
             {
               "id": "E9jB0",
               "label": "Electro-Sword (A2, AP(1), Rending)",
-              "cost": 0,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -1926,7 +1926,7 @@
             {
               "id": "1u9nr",
               "label": "Electro-Fist (A2, AP(4))",
-              "cost": 0,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -1957,7 +1957,7 @@
             {
               "id": "r3_zW",
               "label": "Clan Backup (Reinforcement)",
-              "cost": 0,
+              "cost": 65,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -2036,7 +2036,7 @@
             {
               "id": "ZNjjb",
               "label": "Carbine (18\u0022, A2), CCW (A1)",
-              "cost": 0,
+              "cost": 25,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -2078,7 +2078,7 @@
             {
               "id": "HDLBK",
               "label": "Shotgun (12\u0022, A2, AP(1)), CCW (A1)",
-              "cost": 0,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -2105,7 +2105,7 @@
             {
               "id": "4BQu60J",
               "label": "Shred Rifle (18\u0022, A2, Rending), CCW (A1)",
-              "cost": 0,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -2137,7 +2137,7 @@
             {
               "id": "4mIH7JP",
               "label": "Plas-Burst Rifle (24\u0022, A2, Hazardous), CCW (A1)",
-              "cost": 0,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -2169,7 +2169,7 @@
             {
               "id": "SZI4k28",
               "label": "Flamer (12\u0022, A1, Blast(3), Reliable), CCW (A1)",
-              "cost": 0,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -2206,7 +2206,7 @@
             {
               "id": "pR93dOG",
               "label": "Rocket Launcher (18\u0022, A1, AP(2), Deadly(3)), CCW (A1)",
-              "cost": 0,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -2239,7 +2239,7 @@
             {
               "id": "dNTYp",
               "label": "Heavy Machinegun (30\u0022, A3, AP(1)), CCW (A1)",
-              "cost": 0,
+              "cost": 20,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -2351,7 +2351,7 @@
             {
               "id": "30Kupmrw",
               "label": "Plas-Burst Pistol (12\u0022, A2, Hazardous)",
-              "cost": 0,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -2389,7 +2389,7 @@
             {
               "id": "WIhE3KK3",
               "label": "Electro-Fist (A2, AP(4))",
-              "cost": 0,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -2420,7 +2420,7 @@
             {
               "id": "r3_zW",
               "label": "Clan Backup (Reinforcement)",
-              "cost": 0,
+              "cost": 80,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -2511,7 +2511,7 @@
             {
               "id": "ZRQt9",
               "label": "Sling-Bombs (12\u0022, A2, AP(1), Indirect)",
-              "cost": 0,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -2535,7 +2535,7 @@
             {
               "id": "mxOtYRhHFE",
               "label": "Plas-Bombs (12\u0022, A2, Indirect, Hazardous)",
-              "cost": 0,
+              "cost": 20,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -2575,7 +2575,7 @@
             {
               "id": "r3_zW",
               "label": "Clan Backup (Reinforcement)",
-              "cost": 0,
+              "cost": 45,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -2666,7 +2666,7 @@
             {
               "id": "CQUSkuZ",
               "label": "Shotgun (12\u0022, A2, AP(1)), CCW (A1)",
-              "cost": 0,
+              "cost": 20,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -2693,7 +2693,7 @@
             {
               "id": "sYduc",
               "label": "Carbine (18\u0022, A2), CCW (A1)",
-              "cost": 0,
+              "cost": 20,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -2732,7 +2732,7 @@
             {
               "id": "SaQi8",
               "label": "Smoke Grenades (Evasive Aura)",
-              "cost": 0,
+              "cost": 40,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -2815,7 +2815,7 @@
             {
               "id": "o5zAY",
               "label": "Shotgun (12\u0022, A2, AP(1)), CCW (A1)",
-              "cost": 0,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -2842,7 +2842,7 @@
             {
               "id": "pDlzW",
               "label": "Heavy Carbine (18\u0022, A2, AP(1)), CCW (A1)",
-              "cost": 0,
+              "cost": 35,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -2884,7 +2884,7 @@
             {
               "id": "z-C0XWj",
               "label": "Shred Rifle (18\u0022, A2, Rending), CCW (A1)",
-              "cost": 0,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -2916,7 +2916,7 @@
             {
               "id": "lOXlsCT",
               "label": "Flamer (12\u0022, A1, Blast(3), Reliable), CCW (A1)",
-              "cost": 0,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -2953,7 +2953,7 @@
             {
               "id": "NI5J_eR",
               "label": "Plas-Burst Rifle (24\u0022, A2, Hazardous), CCW (A1)",
-              "cost": 0,
+              "cost": 20,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -2985,7 +2985,7 @@
             {
               "id": "Ii4JbhG",
               "label": "Rocket Launcher (18\u0022, A1, AP(2), Deadly(3)), CCW (A1)",
-              "cost": 0,
+              "cost": 20,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -3018,7 +3018,7 @@
             {
               "id": "SXXxH",
               "label": "Heavy Machinegun (30\u0022, A3, AP(1)), CCW (A1)",
-              "cost": 0,
+              "cost": 30,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -3130,7 +3130,7 @@
             {
               "id": "6nabctQe",
               "label": "Plas-Burst Pistol (12\u0022, A2, Hazardous)",
-              "cost": 0,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -3168,7 +3168,7 @@
             {
               "id": "wa_9tY_L",
               "label": "Electro-Fist (A2, AP(4))",
-              "cost": 0,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -3199,7 +3199,7 @@
             {
               "id": "r3_zW",
               "label": "Clan Backup (Reinforcement)",
-              "cost": 0,
+              "cost": 70,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -3298,7 +3298,7 @@
             {
               "id": "HnDlQE4Afl",
               "label": "Plas-Burst Sniper Carbine (18\u0022, A1, Reliable, Hazardous, Takedown)",
-              "cost": 0,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -3406,7 +3406,7 @@
             {
               "id": "9fOazho",
               "label": "Rocket Launcher (18\u0022, A1, AP(2), Deadly(3))",
-              "cost": 0,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -3431,7 +3431,7 @@
             {
               "id": "i0Op9",
               "label": "Plas-Burst Cannon (30\u0022, A1, Blast(3), Hazardous)",
-              "cost": 0,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -3479,7 +3479,7 @@
             {
               "id": "lTwxjTM",
               "label": "Shred Cannon (24\u0022, A4, Rending)",
-              "cost": 0,
+              "cost": 30,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -3574,7 +3574,7 @@
             {
               "id": "lPbLf",
               "label": "Shotgun (12\u0022, A2, AP(1)), CCW (A1)",
-              "cost": 0,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -3601,7 +3601,7 @@
             {
               "id": "RVz6j",
               "label": "Electro-Lance (A2, AP(1), Thrust)",
-              "cost": 0,
+              "cost": 25,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -3639,7 +3639,7 @@
             {
               "id": "W3708",
               "label": "Electro-Hammer (A1, Blast(3))",
-              "cost": 0,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -3664,7 +3664,7 @@
             {
               "id": "dLnRJ",
               "label": "Electro-Sword (A2, AP(1), Rending)",
-              "cost": 0,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -3688,7 +3688,7 @@
             {
               "id": "vpFaz",
               "label": "Electro-Whip (A2, AP(1), Bane)",
-              "cost": 0,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -3712,7 +3712,7 @@
             {
               "id": "G8emo",
               "label": "Electro-Spear (A1, AP(2), Deadly(3))",
-              "cost": 0,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -3737,7 +3737,7 @@
             {
               "id": "XTUfu",
               "label": "Electro-Fist (A2, AP(4))",
-              "cost": 0,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -3824,7 +3824,7 @@
             {
               "id": "2qX-B",
               "label": "Heavy Electro-Flail (A1, AP(1), Blast(3), Surge)",
-              "cost": 0,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -3853,7 +3853,7 @@
             {
               "id": "0XBGY",
               "label": "Electro-Spear (A1, AP(2), Deadly(3))",
-              "cost": 0,
+              "cost": 20,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -3878,7 +3878,7 @@
             {
               "id": "E8TFU",
               "label": "Heavy Burst Carbine (18\u0022, A3, AP(1)), Bash (A1), Combat Shield (Shielded)",
-              "cost": 0,
+              "cost": 60,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -4011,7 +4011,7 @@
             {
               "id": "q0jz5",
               "label": "Dual Electro-Fists (A4, AP(4))",
-              "cost": 0,
+              "cost": 25,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -4044,7 +4044,7 @@
             {
               "id": "DWysm",
               "label": "Fist-Flamer (12\u0022, A1, Blast(3), Reliable)",
-              "cost": 0,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -4087,7 +4087,7 @@
             {
               "id": "7K0IE",
               "label": "Electro-Fist (A2, AP(4))",
-              "cost": 0,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -4205,7 +4205,7 @@
             {
               "id": "NDR-Rbj5W_",
               "label": "Pathfinder Rat Master (Vanguard)",
-              "cost": 0,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -4226,7 +4226,7 @@
             {
               "id": "Yma-f",
               "label": "Combat Rat Master (Unpredictable Fighter)",
-              "cost": 0,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -4302,7 +4302,7 @@
             {
               "id": "NDR-Rbj5W_",
               "label": "Pathfinder Rat Master (Vanguard)",
-              "cost": 0,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -4323,7 +4323,7 @@
             {
               "id": "Yma-f",
               "label": "Combat Rat Master (Unpredictable Fighter)",
-              "cost": 0,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -4410,7 +4410,7 @@
             {
               "id": "HrZgY",
               "label": "Twin Heavy Flamer (12\u0022, A2, AP(1), Blast(3), Reliable), Heavy Wheel (Impact(3))",
-              "cost": 0,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -4451,7 +4451,7 @@
             {
               "id": "Vqd0h",
               "label": "Twin Heavy Machinegun (30\u0022, A6, AP(1)), Heavy Wheel (Impact(3))",
-              "cost": 0,
+              "cost": 25,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -4494,7 +4494,7 @@
             {
               "id": "wIQO6QPH",
               "label": "Weak Spot Triangulator (Defense Debuff)",
-              "cost": 0,
+              "cost": 35,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -4583,7 +4583,7 @@
             {
               "id": "akMeDwwbuR",
               "label": "Heavy Burrower (A8, AP(4))",
-              "cost": 0,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -4602,7 +4602,7 @@
             {
               "id": "9o7YyerK-Y",
               "label": "Twin AA-Cannon (30\u0022, A6, AP(1), Unstoppable)",
-              "cost": 0,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -4638,7 +4638,7 @@
             {
               "id": "6dQUAgtiRW",
               "label": "Twin Heavy Flamer (12\u0022, A2, AP(1), Blast(3), Reliable)",
-              "cost": 0,
+              "cost": 55,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -4802,7 +4802,7 @@
             {
               "id": "8vShp",
               "label": "Heavy Mortar Gun (30\u0022, A2, AP(1), Blast(3), Indirect)",
-              "cost": 0,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -4831,7 +4831,7 @@
             {
               "id": "I1Gn1",
               "label": "Twin AA-Cannon (30\u0022, A6, AP(1), Unstoppable)",
-              "cost": 0,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -4869,7 +4869,7 @@
             {
               "id": "sQPuq",
               "label": "Twin Heavy Machinegun (30\u0022, A6, AP(1))",
-              "cost": 0,
+              "cost": 20,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -4961,7 +4961,7 @@
             {
               "id": "2jVSv",
               "label": "Combat Scythes (Ravage(3))",
-              "cost": 0,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -5012,7 +5012,7 @@
             {
               "id": "w0S_q",
               "label": "Mine-Drone Launcher (Spawn(Mine-Drones [5]))",
-              "cost": 0,
+              "cost": 65,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -5045,7 +5045,7 @@
             {
               "id": "wIQO6QPH",
               "label": "Weak Spot Triangulator (Defense Debuff)",
-              "cost": 0,
+              "cost": 35,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -5168,7 +5168,7 @@
             {
               "id": "OMI8K",
               "label": "Twin Heavy Machinegun (30\u0022, A6, AP(1))",
-              "cost": 0,
+              "cost": 20,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -5187,7 +5187,7 @@
             {
               "id": "Cw0e6",
               "label": "Twin Plas-Burst Cannon (30\u0022, A2, Blast(3), Hazardous)",
-              "cost": 0,
+              "cost": 25,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -5216,7 +5216,7 @@
             {
               "id": "3Uqml",
               "label": "Twin Shred Cannon (24\u0022, A8, Rending)",
-              "cost": 0,
+              "cost": 45,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -5252,7 +5252,7 @@
             {
               "id": "wIQO6QPH",
               "label": "Weak Spot Triangulator (Defense Debuff)",
-              "cost": 0,
+              "cost": 35,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -5362,7 +5362,7 @@
             {
               "id": "Q--6g",
               "label": "Twin Shred Cannon (24\u0022, A8, Rending)",
-              "cost": 0,
+              "cost": 30,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -5386,7 +5386,7 @@
             {
               "id": "PY6K2",
               "label": "Heavy Claws (A6, AP(1)), Spawn(Mine-Drones [5])",
-              "cost": 0,
+              "cost": 35,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -5410,7 +5410,7 @@
             {
               "id": "HOhwI",
               "label": "Heavy Rocket Array (24\u0022, A3, AP(2), Deadly(3))",
-              "cost": 0,
+              "cost": 40,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -5435,7 +5435,7 @@
             {
               "id": "cBihU",
               "label": "Triple Flamer Cannon (18\u0022, A3, AP(1), Blast(3), Reliable)",
-              "cost": 0,
+              "cost": 55,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -5478,7 +5478,7 @@
             {
               "id": "Bd23U",
               "label": "Twin Heavy Machinegun (30\u0022, A6, AP(1))",
-              "cost": 0,
+              "cost": 20,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -5586,7 +5586,7 @@
             {
               "id": "bFugyizzgh",
               "label": "Heavy Claws (A9, AP(2)), Mine-Drone Carrier (Spawn(Mine-Drones [5]))",
-              "cost": 0,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -5616,7 +5616,7 @@
             {
               "id": "F3azx",
               "label": "Twin Heavy Rocket Array (24\u0022, A4, AP(2), Deadly(3))",
-              "cost": 0,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -5641,7 +5641,7 @@
             {
               "id": "U9ezy",
               "label": "Quad Flamer Cannon (18\u0022, A4, AP(1), Blast(3), Reliable)",
-              "cost": 0,
+              "cost": 30,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -5670,7 +5670,7 @@
             {
               "id": "hikrE",
               "label": "Twin Heavy Shred Cannon (24\u0022, A12, AP(1), Rending)",
-              "cost": 0,
+              "cost": 55,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -5708,7 +5708,7 @@
             {
               "id": "No873",
               "label": "Rapid Heavy Machinegun (30\u0022, A12, AP(1))",
-              "cost": 0,
+              "cost": 45,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -5739,7 +5739,7 @@
             {
               "id": "M2L-0",
               "label": "Mine-Drone Launcher (Spawn(Mine-Drones [5]))",
-              "cost": 0,
+              "cost": 65,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -5855,7 +5855,7 @@
             {
               "id": "Q-EEs",
               "label": "Titan Flamer Cannons (18\u0022, A3, AP(1), Blast(6), Reliable)",
-              "cost": 0,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -5884,7 +5884,7 @@
             {
               "id": "sb74E",
               "label": "Titan Heavy Machineguns (30\u0022, A18, AP(1))",
-              "cost": 0,
+              "cost": 65,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -5903,7 +5903,7 @@
             {
               "id": "x9NFo",
               "label": "Titan Heavy Plas-Burst Cannons (30\u0022, A6, Blast(3), Hazardous)",
-              "cost": 0,
+              "cost": 70,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -5932,7 +5932,7 @@
             {
               "id": "dSfsXPnqRA",
               "label": "Twin AA-Cannon (30\u0022, A18, AP(1), Unstoppable)",
-              "cost": 0,
+              "cost": 90,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -5956,7 +5956,7 @@
             {
               "id": "3Hagq",
               "label": "Titan Heavy Shred Cannons (24\u0022, A18, AP(1), Rending)",
-              "cost": 0,
+              "cost": 115,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -5980,7 +5980,7 @@
             {
               "id": "sRIvvPzoPC",
               "label": "Heavy Mortar (36\u0022, A6, AP(1), Blast(3), Indirect)",
-              "cost": 0,
+              "cost": 120,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -6023,7 +6023,7 @@
             {
               "id": "qDqHn",
               "label": "Twin Heavy Machinegun (30\u0022, A6, AP(1))",
-              "cost": 0,
+              "cost": 20,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -6118,7 +6118,7 @@
             {
               "id": "mkYWE",
               "label": "Mortar Gun (24\u0022, A2, Blast(3), Indirect)",
-              "cost": 0,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -6147,7 +6147,7 @@
             {
               "id": "48-5liQAGB",
               "label": "Heavy Plas-Burst Cannon (30\u0022, A2, Blast(3), Hazardous)",
-              "cost": 0,
+              "cost": 40,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -6176,7 +6176,7 @@
             {
               "id": "PY5JoNgL_8",
               "label": "Twin Heavy Machinegun (30\u0022, A6, AP(1))",
-              "cost": 0,
+              "cost": 40,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -6219,7 +6219,7 @@
             {
               "id": "RLi4nIOa3z",
               "label": "Twin Hail-Cannon (24\u0022, A6, AP(1), Indirect)",
-              "cost": 0,
+              "cost": 50,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -6243,7 +6243,7 @@
             {
               "id": "2sV-55F0C-",
               "label": "Twin Shred Cannon (24\u0022, A8, Rending)",
-              "cost": 0,
+              "cost": 55,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -6267,7 +6267,7 @@
             {
               "id": "lDbsCCwDDn",
               "label": "Twin Rocket Launcher Array (24\u0022, A2, AP(2), Deadly(3), Indirect)",
-              "cost": 0,
+              "cost": 60,
               "costUnpriced": false,
               "weaponsGained": [
                 {

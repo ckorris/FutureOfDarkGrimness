@@ -76,7 +76,7 @@
             {
               "id": "ZP5Xs",
               "label": "Master Annoyer (Mischievous Boost Aura)",
-              "cost": 0,
+              "cost": 20,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -97,7 +97,7 @@
             {
               "id": "6u6DD",
               "label": "Scrap Protector (Melee Evasion Aura)",
-              "cost": 0,
+              "cost": 30,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -118,7 +118,7 @@
             {
               "id": "2ppNqeHIiv",
               "label": "Junk Technician (Quick Shot Aura)",
-              "cost": 0,
+              "cost": 35,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -139,7 +139,7 @@
             {
               "id": "_Z12uyk",
               "label": "Weirdo (Caster(2))",
-              "cost": 0,
+              "cost": 45,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -161,7 +161,7 @@
             {
               "id": "RFuPL",
               "label": "Grand Strategist (Re-Deployment)",
-              "cost": 0,
+              "cost": 65,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -244,7 +244,7 @@
             {
               "id": "XZdDXzx3",
               "label": "Heavy Bubble Cannon (30\u0022, A1, AP(4), Blast(6))",
-              "cost": 0,
+              "cost": 30,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -269,7 +269,7 @@
             {
               "id": "mwHXLrAo",
               "label": "Heavy Chucker Cannon (24\u0022, A8, Rending)",
-              "cost": 0,
+              "cost": 55,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -406,7 +406,7 @@
             {
               "id": "ZP5Xs",
               "label": "Master Annoyer (Mischievous Boost Aura)",
-              "cost": 0,
+              "cost": 20,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -427,7 +427,7 @@
             {
               "id": "6u6DD",
               "label": "Scrap Protector (Melee Evasion Aura)",
-              "cost": 0,
+              "cost": 30,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -448,7 +448,7 @@
             {
               "id": "2ppNqeHIiv",
               "label": "Junk Technician (Quick Shot Aura)",
-              "cost": 0,
+              "cost": 35,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -469,7 +469,7 @@
             {
               "id": "_Z12uyk",
               "label": "Weirdo (Caster(2))",
-              "cost": 0,
+              "cost": 45,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -491,7 +491,7 @@
             {
               "id": "RFuPL",
               "label": "Grand Strategist (Re-Deployment)",
-              "cost": 0,
+              "cost": 65,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -574,7 +574,7 @@
             {
               "id": "XZdDXzx3",
               "label": "Heavy Bubble Cannon (30\u0022, A1, AP(4), Blast(6))",
-              "cost": 0,
+              "cost": 30,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -599,7 +599,7 @@
             {
               "id": "mwHXLrAo",
               "label": "Heavy Chucker Cannon (24\u0022, A8, Rending)",
-              "cost": 0,
+              "cost": 55,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -635,7 +635,7 @@
             {
               "id": "8u5hxirlMD",
               "label": "Self-Destruction Payload (Deathstrike(6))",
-              "cost": 0,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -721,7 +721,7 @@
             {
               "id": "ZP5Xs",
               "label": "Master Annoyer (Mischievous Boost Aura)",
-              "cost": 0,
+              "cost": 20,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -742,7 +742,7 @@
             {
               "id": "6u6DD",
               "label": "Scrap Protector (Melee Evasion Aura)",
-              "cost": 0,
+              "cost": 30,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -763,7 +763,7 @@
             {
               "id": "2ppNqeHIiv",
               "label": "Junk Technician (Quick Shot Aura)",
-              "cost": 0,
+              "cost": 35,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -784,7 +784,7 @@
             {
               "id": "_Z12uyk",
               "label": "Weirdo (Caster(2))",
-              "cost": 0,
+              "cost": 45,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -806,7 +806,7 @@
             {
               "id": "RFuPL",
               "label": "Grand Strategist (Re-Deployment)",
-              "cost": 0,
+              "cost": 65,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -842,7 +842,7 @@
             {
               "id": "p4NFQ2FG",
               "label": "Dual Killer Claws (A4, Rending)",
-              "cost": 0,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -880,7 +880,7 @@
             {
               "id": "FEzD5gBU",
               "label": "Chucker Pistol (9\u0022, A2, Rending)",
-              "cost": 0,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -933,7 +933,7 @@
             {
               "id": "ttMEqgLw",
               "label": "Boss Carbine (18\u0022, A2)",
-              "cost": 0,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -952,7 +952,7 @@
             {
               "id": "L8L4zf3l",
               "label": "Bubble Pistol (12\u0022, A1, AP(4))",
-              "cost": 0,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -971,7 +971,7 @@
             {
               "id": "4WvA3lmR40",
               "label": "Smasher Pistol (6\u0022, A1, AP(4), Deadly(3))",
-              "cost": 0,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -996,7 +996,7 @@
             {
               "id": "bCgvXAEn",
               "label": "Boss Shotgun (12\u0022, A3, AP(1))",
-              "cost": 0,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -1015,7 +1015,7 @@
             {
               "id": "AeV7i43H",
               "label": "Bolt-Smasher Pistol (9\u0022, A1, Deadly(3), Tear)",
-              "cost": 0,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -1058,7 +1058,7 @@
             {
               "id": "agThjcUV",
               "label": "Chucker-Mod (18\u0022, A2, Limited, Rending)",
-              "cost": 0,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -1086,7 +1086,7 @@
             {
               "id": "62mWt70J",
               "label": "Flamer-Mod (12\u0022, A1, Blast(3), Limited, Reliable)",
-              "cost": 0,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -1119,7 +1119,7 @@
             {
               "id": "75qUJ8Vu",
               "label": "Bubble-Mod (24\u0022, A1, AP(4), Limited)",
-              "cost": 0,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -1143,7 +1143,7 @@
             {
               "id": "uQMPM076",
               "label": "Bolt-Smasher-Mod (18\u0022, A1, Deadly(3), Limited, Tear)",
-              "cost": 0,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -1190,7 +1190,7 @@
             {
               "id": "C7kqs3bd",
               "label": "Killer Hammer (A1, Blast(3))",
-              "cost": 0,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -1239,7 +1239,7 @@
             {
               "id": "byJ5fUzj",
               "label": "Killer Saw (A1, AP(2), Deadly(3))",
-              "cost": 0,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -1295,7 +1295,7 @@
             {
               "id": "YT8WZuPU",
               "label": "Trekker Bike (Agile, Scout)",
-              "cost": 0,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -1320,7 +1320,7 @@
             {
               "id": "qGpTDY7pFI",
               "label": "Speeder Bike (Fast, Vanguard)",
-              "cost": 0,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -1345,7 +1345,7 @@
             {
               "id": "Hu154QrA",
               "label": "Commando Leader (Scout, Strider)",
-              "cost": 0,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -1370,7 +1370,7 @@
             {
               "id": "nD-JFOR5",
               "label": "Jetpack (Ambush, Flying)",
-              "cost": 0,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -1395,7 +1395,7 @@
             {
               "id": "gXHCt3hC",
               "label": "Combat Bug (Rending Claws (A2, Rending), Bounding, Regeneration, Strider, Tough(3))",
-              "cost": 0,
+              "cost": 85,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -1510,7 +1510,7 @@
             {
               "id": "9EMxe",
               "label": "Dual Killer Claws (A4, Rending)",
-              "cost": 0,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -1548,7 +1548,7 @@
             {
               "id": "Lmyrr",
               "label": "Bubble Pistol (12\u0022, A1, AP(4))",
-              "cost": 0,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -1567,7 +1567,7 @@
             {
               "id": "oYv_l",
               "label": "Chucker Pistol (9\u0022, A2, Rending)",
-              "cost": 0,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -1591,7 +1591,7 @@
             {
               "id": "dkl5v",
               "label": "Boss Carbine (18\u0022, A2)",
-              "cost": 0,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -1639,7 +1639,7 @@
             {
               "id": "mH09Msqg1N",
               "label": "Smasher Pistol (6\u0022, A1, AP(4), Deadly(3))",
-              "cost": 0,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -1664,7 +1664,7 @@
             {
               "id": "eo-E58kohz",
               "label": "Boss Shotgun (12\u0022, A3, AP(1))",
-              "cost": 0,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -1683,7 +1683,7 @@
             {
               "id": "MFvOq",
               "label": "Bolt-Smasher Pistol (9\u0022, A1, Deadly(3), Tear)",
-              "cost": 0,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -1726,7 +1726,7 @@
             {
               "id": "QH-sL",
               "label": "Killer Hammer (A1, Blast(3))",
-              "cost": 0,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -1751,7 +1751,7 @@
             {
               "id": "dThnA",
               "label": "Killer Saw (A1, AP(2), Deadly(3))",
-              "cost": 0,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -1831,7 +1831,7 @@
             {
               "id": "INHaJBUV",
               "label": "Trash Goggles (Good Shot)",
-              "cost": 0,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -1864,7 +1864,7 @@
             {
               "id": "SzeCRDvP",
               "label": "Trekker Bike (Agile, Scout)",
-              "cost": 0,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -1889,7 +1889,7 @@
             {
               "id": "IBvoWHLSkW",
               "label": "Speeder Bike (Fast, Vanguard)",
-              "cost": 0,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -1914,7 +1914,7 @@
             {
               "id": "t2DqyJYK",
               "label": "Commando Leader (Scout, Strider)",
-              "cost": 0,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -1939,7 +1939,7 @@
             {
               "id": "GTtTgwFa",
               "label": "Jetpack (Ambush, Flying)",
-              "cost": 0,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -1964,7 +1964,7 @@
             {
               "id": "2TNdMx1_",
               "label": "Combat Bug (Rending Claws (A2, Rending), Armor(5), Bounding, Regeneration, Strider, Tough(3))",
-              "cost": 0,
+              "cost": 75,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -2029,7 +2029,7 @@
             {
               "id": "74CHQEfv",
               "label": "Expert Tactician (Precision Fighter Aura)",
-              "cost": 0,
+              "cost": 20,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -2050,7 +2050,7 @@
             {
               "id": "qUTGrFwa",
               "label": "Master Annoyer (Mischievous Boost Aura)",
-              "cost": 0,
+              "cost": 20,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -2071,7 +2071,7 @@
             {
               "id": "4Q07ch5U",
               "label": "Junk Technician (Quick Shot Aura)",
-              "cost": 0,
+              "cost": 35,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -2092,7 +2092,7 @@
             {
               "id": "errQpt5U",
               "label": "Weirdo (Caster(2))",
-              "cost": 0,
+              "cost": 45,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -2114,7 +2114,7 @@
             {
               "id": "TFjwBbNSu6",
               "label": "Grand Strategist (Re-Deployment)",
-              "cost": 0,
+              "cost": 65,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -2192,7 +2192,7 @@
             {
               "id": "ewFMy",
               "label": "Bubble Rifle (24\u0022, A1, AP(4))",
-              "cost": 0,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -2211,7 +2211,7 @@
             {
               "id": "Fjjm0",
               "label": "Chucker Rifle (18\u0022, A2, Rending)",
-              "cost": 0,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -2235,7 +2235,7 @@
             {
               "id": "HXTvVJSN0Z",
               "label": "Smasher Rifle (12\u0022, A1, AP(4), Deadly(3))",
-              "cost": 0,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -2260,7 +2260,7 @@
             {
               "id": "YKbhz",
               "label": "Flamer (12\u0022, A1, Blast(3), Reliable)",
-              "cost": 0,
+              "cost": 20,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -2289,7 +2289,7 @@
             {
               "id": "6SV3-",
               "label": "Bolt-Smasher Rifle (18\u0022, A1, Deadly(3), Tear)",
-              "cost": 0,
+              "cost": 20,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -2330,7 +2330,7 @@
             {
               "id": "MYqHu",
               "label": "Junk Banner (Courage Aura)",
-              "cost": 0,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -2351,7 +2351,7 @@
             {
               "id": "8AQiM",
               "label": "Medical Training (Regeneration Aura)",
-              "cost": 0,
+              "cost": 40,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -2384,7 +2384,7 @@
             {
               "id": "KTxABr9zbd",
               "label": "Trash Goggles (Good Shot)",
-              "cost": 0,
+              "cost": 20,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -2417,7 +2417,7 @@
             {
               "id": "2o8kY",
               "label": "Ramshackle Crew (Instinctive)",
-              "cost": 0,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -2495,7 +2495,7 @@
             {
               "id": "WFwk3",
               "label": "Chucker Pistol (9\u0022, A2, Rending)",
-              "cost": 0,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -2519,7 +2519,7 @@
             {
               "id": "ie3B0Ka",
               "label": "Bubble Pistol (12\u0022, A1, AP(4))",
-              "cost": 0,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -2538,7 +2538,7 @@
             {
               "id": "dGbeWNVNdC",
               "label": "Smasher Pistol (6\u0022, A1, AP(4), Deadly(3))",
-              "cost": 0,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -2592,7 +2592,7 @@
             {
               "id": "PZwYCZ2",
               "label": "Bolt-Smasher Pistol (9\u0022, A1, Deadly(3), Tear)",
-              "cost": 0,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -2636,7 +2636,7 @@
             {
               "id": "bAlX8",
               "label": "Pistol (12\u0022, A1), Killer Hammer (A1, Blast(3))",
-              "cost": 0,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -2669,7 +2669,7 @@
             {
               "id": "knlxn",
               "label": "Pistol (12\u0022, A1), Killer Saw (A1, AP(2), Deadly(3))",
-              "cost": 0,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -2702,7 +2702,7 @@
             {
               "id": "pkVty",
               "label": "Pistol (12\u0022, A1), Killer Sword (A2, AP(1), Rending)",
-              "cost": 0,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -2734,7 +2734,7 @@
             {
               "id": "kwyAF",
               "label": "Pistol (12\u0022, A1), Killer Fist (A2, AP(4))",
-              "cost": 0,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -2761,7 +2761,7 @@
             {
               "id": "Cs3R7",
               "label": "Dual Killer Claws (A4, Rending)",
-              "cost": 0,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -2797,7 +2797,7 @@
             {
               "id": "_KDeo",
               "label": "Jetpack (Ambush, Flying)",
-              "cost": 0,
+              "cost": 35,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -2834,7 +2834,7 @@
             {
               "id": "KTxABr9zbd",
               "label": "Trash Goggles (Good Shot)",
-              "cost": 0,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -2867,7 +2867,7 @@
             {
               "id": "2o8kY",
               "label": "Ramshackle Crew (Instinctive)",
-              "cost": 0,
+              "cost": 20,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -2944,7 +2944,7 @@
             {
               "id": "quBL5",
               "label": "Rapid Mutations (Regeneration)",
-              "cost": 0,
+              "cost": 25,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -2977,7 +2977,7 @@
             {
               "id": "2o8kY",
               "label": "Ramshackle Crew (Instinctive)",
-              "cost": 0,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -3064,7 +3064,7 @@
             {
               "id": "ysWHI",
               "label": "Pistol (12\u0022, A1), CCW (A2)",
-              "cost": 0,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -3091,7 +3091,7 @@
             {
               "id": "jrRFp",
               "label": "Shotgun (12\u0022, A2, AP(1)), CCW (A1)",
-              "cost": 0,
+              "cost": 20,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -3132,7 +3132,7 @@
             {
               "id": "wHJ75",
               "label": "Bubble Rifle (24\u0022, A1, AP(4))",
-              "cost": 0,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -3151,7 +3151,7 @@
             {
               "id": "a3jTz",
               "label": "Chucker Rifle (18\u0022, A2, Rending)",
-              "cost": 0,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -3175,7 +3175,7 @@
             {
               "id": "jAVtXklxhb",
               "label": "Smasher Rifle (12\u0022, A1, AP(4), Deadly(3))",
-              "cost": 0,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -3200,7 +3200,7 @@
             {
               "id": "hC6NZ",
               "label": "Flamer (12\u0022, A1, Blast(3), Reliable)",
-              "cost": 0,
+              "cost": 20,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -3229,7 +3229,7 @@
             {
               "id": "DboyO",
               "label": "Bolt-Smasher Rifle (18\u0022, A1, Deadly(3), Tear)",
-              "cost": 0,
+              "cost": 20,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -3272,7 +3272,7 @@
             {
               "id": "x3h9J",
               "label": "Scrap Sniper (24\u0022, A1, AP(1), Reliable, Takedown)",
-              "cost": 0,
+              "cost": 30,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -3312,7 +3312,7 @@
             {
               "id": "JBskd",
               "label": "Camo Cloaks (Stealth)",
-              "cost": 0,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -3345,7 +3345,7 @@
             {
               "id": "KTxABr9zbd",
               "label": "Trash Goggles (Good Shot)",
-              "cost": 0,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -3423,7 +3423,7 @@
             {
               "id": "6X3ky",
               "label": "Shotgun (12\u0022, A2, AP(1))",
-              "cost": 0,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -3442,7 +3442,7 @@
             {
               "id": "8_i7T",
               "label": "Boss Carbine (18\u0022, A2)",
-              "cost": 0,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -3475,7 +3475,7 @@
             {
               "id": "93oGe",
               "label": "Flamer (12\u0022, A1, Blast(3), Reliable)",
-              "cost": 0,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -3504,7 +3504,7 @@
             {
               "id": "YEaTw",
               "label": "Chucker Rifle (18\u0022, A2, Rending)",
-              "cost": 0,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -3528,7 +3528,7 @@
             {
               "id": "yfdOI",
               "label": "Bubble Rifle (24\u0022, A1, AP(4))",
-              "cost": 0,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -3547,7 +3547,7 @@
             {
               "id": "Px5xtll_g3",
               "label": "Smasher Rifle (12\u0022, A1, AP(4), Deadly(3))",
-              "cost": 0,
+              "cost": 20,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -3572,7 +3572,7 @@
             {
               "id": "ncJ1S",
               "label": "Bolt-Smasher Rifle (18\u0022, A1, Deadly(3), Tear)",
-              "cost": 0,
+              "cost": 30,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -3615,7 +3615,7 @@
             {
               "id": "eDmK_",
               "label": "Chucker-Mod (18\u0022, A2, Limited, Rending)",
-              "cost": 0,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -3643,7 +3643,7 @@
             {
               "id": "ipRUW",
               "label": "Flamer-Mod (12\u0022, A1, Blast(3), Limited, Reliable)",
-              "cost": 0,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -3676,7 +3676,7 @@
             {
               "id": "YLwsE",
               "label": "Bubble-Mod (24\u0022, A1, AP(4), Limited)",
-              "cost": 0,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -3700,7 +3700,7 @@
             {
               "id": "Tm3oH",
               "label": "Bolt-Smasher-Mod (18\u0022, A1, Deadly(3), Limited, Tear)",
-              "cost": 0,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -3747,7 +3747,7 @@
             {
               "id": "Y_par",
               "label": "Killer Hammer (A1, Blast(3))",
-              "cost": 0,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -3772,7 +3772,7 @@
             {
               "id": "eluIl",
               "label": "Killer Sword (A2, AP(1), Rending)",
-              "cost": 0,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -3796,7 +3796,7 @@
             {
               "id": "zRA4p",
               "label": "Killer Saw (A1, AP(2), Deadly(3))",
-              "cost": 0,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -3821,7 +3821,7 @@
             {
               "id": "EfCS0",
               "label": "Killer Fist (A2, AP(4))",
-              "cost": 0,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -3852,7 +3852,7 @@
             {
               "id": "MYqHu",
               "label": "Junk Banner (Courage Aura)",
-              "cost": 0,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -3873,7 +3873,7 @@
             {
               "id": "8AQiM",
               "label": "Medical Training (Regeneration Aura)",
-              "cost": 0,
+              "cost": 20,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -3966,7 +3966,7 @@
             {
               "id": "mvMxB",
               "label": "Chucker Pistol (9\u0022, A2, Rending)",
-              "cost": 0,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -3990,7 +3990,7 @@
             {
               "id": "slcIW",
               "label": "Bubble Pistol (12\u0022, A1, AP(4))",
-              "cost": 0,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -4009,7 +4009,7 @@
             {
               "id": "2x1rxXUNUR",
               "label": "Smasher Pistol (6\u0022, A1, AP(4), Deadly(3))",
-              "cost": 0,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -4063,7 +4063,7 @@
             {
               "id": "Quogw",
               "label": "Bolt-Smasher Pistol (9\u0022, A1, Deadly(3), Tear)",
-              "cost": 0,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -4107,7 +4107,7 @@
             {
               "id": "UkwfB",
               "label": "Pistol (12\u0022, A1), Killer Hammer (A1, Blast(3))",
-              "cost": 0,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -4140,7 +4140,7 @@
             {
               "id": "gvlk7",
               "label": "Pistol (12\u0022, A1), Killer Saw (A1, AP(2), Deadly(3))",
-              "cost": 0,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -4173,7 +4173,7 @@
             {
               "id": "AsLcp",
               "label": "Pistol (12\u0022, A1), Killer Sword (A2, AP(1), Rending)",
-              "cost": 0,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -4205,7 +4205,7 @@
             {
               "id": "-ji6w",
               "label": "Pistol (12\u0022, A1), Killer Fist (A2, AP(4))",
-              "cost": 0,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -4246,7 +4246,7 @@
             {
               "id": "7kWlwutvoY",
               "label": "Speeder Tires (Fast, Vanguard)",
-              "cost": 0,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -4283,7 +4283,7 @@
             {
               "id": "KTxABr9zbd",
               "label": "Trash Goggles (Good Shot)",
-              "cost": 0,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -4316,7 +4316,7 @@
             {
               "id": "2o8kY",
               "label": "Ramshackle Crew (Instinctive)",
-              "cost": 0,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -4398,7 +4398,7 @@
             {
               "id": "0ndkmRka8Q",
               "label": "Heavy Flamer (12\u0022, A1, AP(1), Blast(3), Reliable)",
-              "cost": 0,
+              "cost": -5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -4427,7 +4427,7 @@
             {
               "id": "FqQ3izwHZz",
               "label": "Heavy Smasher Rifle (18\u0022, A1, AP(4), Deadly(3))",
-              "cost": 0,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -4452,7 +4452,7 @@
             {
               "id": "f0kWw0lzEN",
               "label": "Heavy Bolt-Smasher Rifle (24\u0022, A1, Deadly(3), Tear)",
-              "cost": 0,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -4481,7 +4481,7 @@
             {
               "id": "_HtLW",
               "label": "Bubble Cannon (30\u0022, A1, AP(4), Blast(3))",
-              "cost": 0,
+              "cost": 20,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -4506,7 +4506,7 @@
             {
               "id": "oFj9A",
               "label": "Chucker Cannon (24\u0022, A4, Rending)",
-              "cost": 0,
+              "cost": 25,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -4542,7 +4542,7 @@
             {
               "id": "KTxABr9zbd",
               "label": "Trash Goggles (Good Shot)",
-              "cost": 0,
+              "cost": 30,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -4650,7 +4650,7 @@
             {
               "id": "83uQb",
               "label": "Bubble Rifle (24\u0022, A1, AP(4))",
-              "cost": 0,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -4669,7 +4669,7 @@
             {
               "id": "c9bw8",
               "label": "Chucker Rifle (18\u0022, A2, Rending)",
-              "cost": 0,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -4693,7 +4693,7 @@
             {
               "id": "cv8ZC2DwhP",
               "label": "Smasher Rifle (12\u0022, A1, AP(4), Deadly(3))",
-              "cost": 0,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -4718,7 +4718,7 @@
             {
               "id": "SjZMV",
               "label": "Flamer (12\u0022, A1, Blast(3), Reliable)",
-              "cost": 0,
+              "cost": 20,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -4747,7 +4747,7 @@
             {
               "id": "ycK2H",
               "label": "Bolt-Smasher Rifle (18\u0022, A1, Deadly(3), Tear)",
-              "cost": 0,
+              "cost": 20,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -4788,7 +4788,7 @@
             {
               "id": "KTxABr9zbd",
               "label": "Trash Goggles (Good Shot)",
-              "cost": 0,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -4900,7 +4900,7 @@
             {
               "id": "u9ctj",
               "label": "Heavy Flamer (12\u0022, A1, AP(1), Blast(3), Reliable)",
-              "cost": 0,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -4929,7 +4929,7 @@
             {
               "id": "CCOKd",
               "label": "Chucker Cannon (24\u0022, A4, Rending)",
-              "cost": 0,
+              "cost": 25,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -4953,7 +4953,7 @@
             {
               "id": "qb-0-",
               "label": "Bubble Cannon (30\u0022, A1, AP(4), Blast(3))",
-              "cost": 0,
+              "cost": 25,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -4990,7 +4990,7 @@
             {
               "id": "KTxABr9zbd",
               "label": "Trash Goggles (Good Shot)",
-              "cost": 0,
+              "cost": 25,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -5023,7 +5023,7 @@
             {
               "id": "_-B03WtttC",
               "label": "Self-Destruction Payload (Deathstrike(3))",
-              "cost": 0,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -5171,7 +5171,7 @@
             {
               "id": "u9ctj",
               "label": "Heavy Flamer (12\u0022, A1, AP(1), Blast(3), Reliable)",
-              "cost": 0,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -5200,7 +5200,7 @@
             {
               "id": "CCOKd",
               "label": "Chucker Cannon (24\u0022, A4, Rending)",
-              "cost": 0,
+              "cost": 25,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -5224,7 +5224,7 @@
             {
               "id": "qb-0-",
               "label": "Bubble Cannon (30\u0022, A1, AP(4), Blast(3))",
-              "cost": 0,
+              "cost": 25,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -5261,7 +5261,7 @@
             {
               "id": "KTxABr9zbd",
               "label": "Trash Goggles (Good Shot)",
-              "cost": 0,
+              "cost": 25,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -5386,7 +5386,7 @@
             {
               "id": "u9ctj",
               "label": "Heavy Flamer (12\u0022, A1, AP(1), Blast(3), Reliable)",
-              "cost": 0,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -5415,7 +5415,7 @@
             {
               "id": "CCOKd",
               "label": "Chucker Cannon (24\u0022, A4, Rending)",
-              "cost": 0,
+              "cost": 25,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -5439,7 +5439,7 @@
             {
               "id": "qb-0-",
               "label": "Bubble Cannon (30\u0022, A1, AP(4), Blast(3))",
-              "cost": 0,
+              "cost": 25,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -5476,7 +5476,7 @@
             {
               "id": "6g7LTKRK",
               "label": "Trash Goggles (Good Shot)",
-              "cost": 0,
+              "cost": 20,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -5497,7 +5497,7 @@
             {
               "id": "VeG05e0wR-",
               "label": "Targeted Frenzy (Unpredictable Shooter Mark)",
-              "cost": 0,
+              "cost": 40,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -5613,7 +5613,7 @@
             {
               "id": "jXIapjRJ",
               "label": "Heavy Tractor Beam (36\u0022, A4, AP(2), Unstoppable)",
-              "cost": 0,
+              "cost": 30,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -5637,7 +5637,7 @@
             {
               "id": "nm84xa6KUu",
               "label": "Heavy Smasher Cannon (24\u0022, A1, AP(4), Deadly(6))",
-              "cost": 0,
+              "cost": 30,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -5662,7 +5662,7 @@
             {
               "id": "RdZf615a",
               "label": "Heavy Bubble Cannon (30\u0022, A1, AP(4), Blast(6))",
-              "cost": 0,
+              "cost": 40,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -5687,7 +5687,7 @@
             {
               "id": "NAPz5jHR",
               "label": "Heavy Bolt-Smasher Cannon (30\u0022, A2, Deadly(3), Tear)",
-              "cost": 0,
+              "cost": 55,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -5716,7 +5716,7 @@
             {
               "id": "q2-PgCAa",
               "label": "Heavy Chucker Cannon (24\u0022, A8, Rending)",
-              "cost": 0,
+              "cost": 60,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -5754,7 +5754,7 @@
             {
               "id": "jlzVI",
               "label": "Sponson-MGs (30\u0022, A6, AP(1))",
-              "cost": 0,
+              "cost": 45,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -5785,7 +5785,7 @@
             {
               "id": "SLTE6",
               "label": "Pintle-Gun (30\u0022, A1, AP(2))",
-              "cost": 0,
+              "cost": 20,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -5804,7 +5804,7 @@
             {
               "id": "ABooa",
               "label": "Dozer Blade (Strider)",
-              "cost": 0,
+              "cost": 20,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -5825,7 +5825,7 @@
             {
               "id": "O3u6UHHtRP",
               "label": "Self-Destruction Payload (Deathstrike(12))",
-              "cost": 0,
+              "cost": 20,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -5847,7 +5847,7 @@
             {
               "id": "Zp5Pm",
               "label": "Cargo Hold (Transport(11))",
-              "cost": 0,
+              "cost": 35,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -5869,7 +5869,7 @@
             {
               "id": "Z8S_YcQ3P7",
               "label": "Targeted Frenzy (Unpredictable Shooter Mark)",
-              "cost": 0,
+              "cost": 40,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -6060,7 +6060,7 @@
             {
               "id": "P3fkn200",
               "label": "Heavy Tractor Beam (36\u0022, A4, AP(2), Unstoppable)",
-              "cost": 0,
+              "cost": 25,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -6084,7 +6084,7 @@
             {
               "id": "ai_Sw1VZl1",
               "label": "Heavy Smasher Cannon (24\u0022, A1, AP(4), Deadly(6))",
-              "cost": 0,
+              "cost": 25,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -6109,7 +6109,7 @@
             {
               "id": "mcZt0a62",
               "label": "Heavy Bubble Mortar (24\u0022, A1, AP(4), Blast(6), Indirect)",
-              "cost": 0,
+              "cost": 45,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -6138,7 +6138,7 @@
             {
               "id": "M_6gA0R3",
               "label": "Heavy Bolt-Smasher Cannon (30\u0022, A2, Deadly(3), Tear)",
-              "cost": 0,
+              "cost": 45,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -6167,7 +6167,7 @@
             {
               "id": "amhGUene",
               "label": "Boosted Chucker Cannon (24\u0022, A6, Indirect, Rending)",
-              "cost": 0,
+              "cost": 50,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -6207,7 +6207,7 @@
             {
               "id": "8uUWfsHOr_",
               "label": "Trash Goggles (Good Shot)",
-              "cost": 0,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],

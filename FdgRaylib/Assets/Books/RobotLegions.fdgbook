@@ -102,7 +102,7 @@
             {
               "id": "-X9uv",
               "label": "Re-Animator (Reanimation Aura)",
-              "cost": 0,
+              "cost": 30,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -123,7 +123,7 @@
             {
               "id": "VHtYlsj",
               "label": "Psychomancer (Stealth Aura)",
-              "cost": 0,
+              "cost": 30,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -144,7 +144,7 @@
             {
               "id": "a-G2qj8",
               "label": "Controller (Piercing Assault Aura)",
-              "cost": 0,
+              "cost": 35,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -165,7 +165,7 @@
             {
               "id": "iUPolg0",
               "label": "Chronomancer (Ambush Aura)",
-              "cost": 0,
+              "cost": 35,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -186,7 +186,7 @@
             {
               "id": "o9XTNqDKhH",
               "label": "Overseer (No Retreat Aura)",
-              "cost": 0,
+              "cost": 35,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -283,7 +283,7 @@
             {
               "id": "PuKT0nUIL-",
               "label": "Dual Hyper Swords (A4, AP(1), Rending)",
-              "cost": 0,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -361,7 +361,7 @@
             {
               "id": "3IcMq",
               "label": "Combat Shield (Shielded)",
-              "cost": 0,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -430,7 +430,7 @@
             {
               "id": "nvflTmAnRV",
               "label": "Heavy Gauss Cannon (30\u0022, A6, Destructive)",
-              "cost": 0,
+              "cost": 80,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -573,7 +573,7 @@
             {
               "id": "Vc8Jxy2P7J",
               "label": "Phase Core (Ambush)",
-              "cost": 0,
+              "cost": 20,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -606,7 +606,7 @@
             {
               "id": "hZ4c-_MS",
               "label": "Warden (Relentless Aura)",
-              "cost": 0,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -627,7 +627,7 @@
             {
               "id": "KXpsDa_L",
               "label": "Re-Animator (Reanimation Aura)",
-              "cost": 0,
+              "cost": 30,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -648,7 +648,7 @@
             {
               "id": "s53tnvC-",
               "label": "Psychomancer (Stealth Aura)",
-              "cost": 0,
+              "cost": 30,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -691,7 +691,7 @@
             {
               "id": "YL3SK4gW",
               "label": "Controller (Piercing Assault Aura)",
-              "cost": 0,
+              "cost": 35,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -712,7 +712,7 @@
             {
               "id": "YpAyrQtc7X",
               "label": "Overseer (No Retreat Aura)",
-              "cost": 0,
+              "cost": 35,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -848,7 +848,7 @@
             {
               "id": "xSDaM3DEcn",
               "label": "Lord Gauss Pistol (12\u0022, A2, Destructive)",
-              "cost": 0,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -920,7 +920,7 @@
             {
               "id": "XqYUO6IwXg",
               "label": "Lord Reaper Rifle (18\u0022, A2, AP(1), Shred)",
-              "cost": 0,
+              "cost": 20,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -944,7 +944,7 @@
             {
               "id": "fsyf5DWYdy",
               "label": "Lord Gauss Rifle (24\u0022, A2, Destructive)",
-              "cost": 0,
+              "cost": 20,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -968,7 +968,7 @@
             {
               "id": "lAp_fGh0",
               "label": "Gauss Blaster (18\u0022, A4, Destructive)",
-              "cost": 0,
+              "cost": 35,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -1111,7 +1111,7 @@
             {
               "id": "XqEVp42Ws4",
               "label": "Pet Technoaide (Repel Ambushers)",
-              "cost": 0,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -1132,7 +1132,7 @@
             {
               "id": "bBzY0Z8RwI",
               "label": "Jetpack (Ambush, Flying, Swift)",
-              "cost": 0,
+              "cost": 25,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -1173,7 +1173,7 @@
             {
               "id": "j6HM1Sbi",
               "label": "Warden (Relentless Aura)",
-              "cost": 0,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -1194,7 +1194,7 @@
             {
               "id": "IX0ogKsR",
               "label": "Re-Animator (Reanimation Aura)",
-              "cost": 0,
+              "cost": 30,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -1215,7 +1215,7 @@
             {
               "id": "iG8fpXPdzR",
               "label": "Psychomancer (Stealth Aura)",
-              "cost": 0,
+              "cost": 30,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -1258,7 +1258,7 @@
             {
               "id": "7lxEwwHb",
               "label": "Chronomancer (Ambush Aura)",
-              "cost": 0,
+              "cost": 35,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -1279,7 +1279,7 @@
             {
               "id": "nwoVXhKvN_",
               "label": "Overseer (No Retreat Aura)",
-              "cost": 0,
+              "cost": 35,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -1366,7 +1366,7 @@
             {
               "id": "C12ZlroNdj",
               "label": "Gauss Rifle (24\u0022, A1, Destructive)",
-              "cost": 0,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -1740,7 +1740,7 @@
             {
               "id": "kDpZSflgHy",
               "label": "Machine-Horror (Fear(1))",
-              "cost": 0,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -2057,7 +2057,7 @@
             {
               "id": "SBY8c9UtjY",
               "label": "2x Metal Fangs (A2, Rending)",
-              "cost": 0,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -2081,7 +2081,7 @@
             {
               "id": "i9ceKIhrwI",
               "label": "Shock Whips (A4, AP(1), Surge)",
-              "cost": 0,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -2294,7 +2294,7 @@
             {
               "id": "Jk7LdYM44E",
               "label": "Elite Vanguard (Scout)",
-              "cost": 0,
+              "cost": 35,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -2484,7 +2484,7 @@
             {
               "id": "gKxEYw8PlK",
               "label": "Phase Core (Ambush)",
-              "cost": 0,
+              "cost": 35,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -2714,7 +2714,7 @@
             {
               "id": "PESiOrcX",
               "label": "Networked Target Lock (Indirect Mark)",
-              "cost": 0,
+              "cost": 35,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -2825,7 +2825,7 @@
             {
               "id": "PgpX2FajxI",
               "label": "Repair Nanobots (Self-Repair Boost Buff)",
-              "cost": 0,
+              "cost": 20,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -2846,7 +2846,7 @@
             {
               "id": "CxZjZn5",
               "label": "Bot Fabricator (Spawn(Bot Swarms [3]))",
-              "cost": 0,
+              "cost": 100,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -3043,7 +3043,7 @@
             {
               "id": "tkZJFj0w-n",
               "label": "Phase Core (Ambush)",
-              "cost": 0,
+              "cost": 20,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -3064,7 +3064,7 @@
             {
               "id": "aThzg0k_HO",
               "label": "Networked Target Lock (Indirect Mark)",
-              "cost": 0,
+              "cost": 35,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -3160,7 +3160,7 @@
             {
               "id": "KUvdZXo",
               "label": "Rapid Gauss Rifle (24\u0022, A3, Destructive)",
-              "cost": 0,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -3274,7 +3274,7 @@
             {
               "id": "2jOGNDdDac",
               "label": "Repair Nanobots (Self-Repair Boost Buff)",
-              "cost": 0,
+              "cost": 20,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -3509,7 +3509,7 @@
             {
               "id": "mleTL7p",
               "label": "Gauss Cannon (24\u0022, A4, Destructive)",
-              "cost": 0,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -3547,7 +3547,7 @@
             {
               "id": "O55As",
               "label": "Twin Flux Cannon (24\u0022, A6, AP(1), Surge)",
-              "cost": 0,
+              "cost": 80,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -3583,7 +3583,7 @@
             {
               "id": "GfO7FOyKPo",
               "label": "Repair Nanobots (Self-Repair Boost Buff)",
-              "cost": 0,
+              "cost": 20,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -3604,7 +3604,7 @@
             {
               "id": "QuWegInD",
               "label": "Networked Target Lock (Indirect Mark)",
-              "cost": 0,
+              "cost": 35,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -3767,7 +3767,7 @@
             {
               "id": "vUKoS",
               "label": "Tripod Queen (Swift Buff)",
-              "cost": 0,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -3824,7 +3824,7 @@
             {
               "id": "sOYgKbI3",
               "label": "Repair Nanobots (Self-Repair Boost Buff)",
-              "cost": 0,
+              "cost": 20,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -3845,7 +3845,7 @@
             {
               "id": "yIlIlnXS7F",
               "label": "Networked Target Lock (Indirect Mark)",
-              "cost": 0,
+              "cost": 35,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -3951,7 +3951,7 @@
             {
               "id": "YM-OZBomHx",
               "label": "Twin Heavy Gauss Cannon (24\u0022, A12, Destructive)",
-              "cost": 0,
+              "cost": 20,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -4358,7 +4358,7 @@
             {
               "id": "KBsG2FBwFa",
               "label": "Monolith Beam (18\u0022, A3, AP(3), Deadly(6))",
-              "cost": 0,
+              "cost": 55,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -4395,7 +4395,7 @@
             {
               "id": "KWVm-",
               "label": "Technoward (Casting Buff)",
-              "cost": 0,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -4540,7 +4540,7 @@
             {
               "id": "y-E4k48c3I",
               "label": "Gauss Arc Array (24\u0022, A12, Destructive)",
-              "cost": 0,
+              "cost": 25,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -4764,7 +4764,7 @@
             {
               "id": "swLo3",
               "label": "Great Wraith (Wraith Spear (A2, AP(4), Deadly(3)), Flying)",
-              "cost": 0,
+              "cost": 135,
               "costUnpriced": false,
               "weaponsGained": [
                 {

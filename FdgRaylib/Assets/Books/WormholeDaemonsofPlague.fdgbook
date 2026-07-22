@@ -91,7 +91,7 @@
             {
               "id": "BU-8LGNplf",
               "label": "Exalted Infected Sword (A9, Surge)",
-              "cost": 0,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -168,7 +168,7 @@
             {
               "id": "JPm-HhH",
               "label": "Exalted Plague Sword (A9, Rending, Bane)",
-              "cost": 0,
+              "cost": 50,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -196,7 +196,7 @@
             {
               "id": "7x50WcpjAE",
               "label": "Exalted Sling (18\u0022, A6, AP(1), Bane)",
-              "cost": 0,
+              "cost": 60,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -256,7 +256,7 @@
             {
               "id": "JiBFnW19",
               "label": "Daemonic Incursion (Ambush)",
-              "cost": 0,
+              "cost": 100,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -289,7 +289,7 @@
             {
               "id": "WZd2GUaN",
               "label": "Plague God\u0027s Power (Storm of Plague)",
-              "cost": 0,
+              "cost": 35,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -310,7 +310,7 @@
             {
               "id": "dMOSnQL-",
               "label": "Plague Favour (Plaguebound Boost)",
-              "cost": 0,
+              "cost": 45,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -331,7 +331,7 @@
             {
               "id": "AMflaRzq",
               "label": "Envoy of Plague (Rending in Melee)",
-              "cost": 0,
+              "cost": 55,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -352,7 +352,7 @@
             {
               "id": "GIdUquAu",
               "label": "Gift of Plague (Regeneration)",
-              "cost": 0,
+              "cost": 70,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -373,7 +373,7 @@
             {
               "id": "-wpoMGra",
               "label": "Lore of Plague (Caster(5))",
-              "cost": 0,
+              "cost": 120,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -476,7 +476,7 @@
             {
               "id": "3qEuT",
               "label": "Great Infected Sword (A6, Surge)",
-              "cost": 0,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -553,7 +553,7 @@
             {
               "id": "i8DBNO1OQ7",
               "label": "Great Sling (18\u0022, A4, AP(1), Bane)",
-              "cost": 0,
+              "cost": 25,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -577,7 +577,7 @@
             {
               "id": "MlgVBHq",
               "label": "Great Plague Sword (A6, Rending, Bane)",
-              "cost": 0,
+              "cost": 25,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -641,7 +641,7 @@
             {
               "id": "RbJ6Fpms",
               "label": "Daemonic Incursion (Ambush)",
-              "cost": 0,
+              "cost": 45,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -674,7 +674,7 @@
             {
               "id": "49Irqe6C",
               "label": "Curse of Plague (Difficult Terrain Debuff)",
-              "cost": 0,
+              "cost": 20,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -695,7 +695,7 @@
             {
               "id": "w98evRVd",
               "label": "Symbol of Plague (Steadfast)",
-              "cost": 0,
+              "cost": 25,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -716,7 +716,7 @@
             {
               "id": "BhAjBL_w",
               "label": "Plague Favour (Plaguebound Boost)",
-              "cost": 0,
+              "cost": 25,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -737,7 +737,7 @@
             {
               "id": "jlHoMRAQ",
               "label": "Gift of Plague (Regeneration)",
-              "cost": 0,
+              "cost": 45,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -758,7 +758,7 @@
             {
               "id": "j9UI_swr",
               "label": "Lore of Plague (Caster(4))",
-              "cost": 0,
+              "cost": 95,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -861,7 +861,7 @@
             {
               "id": "V826f",
               "label": "Heavy Infected Sword (A3, Surge)",
-              "cost": 0,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -909,7 +909,7 @@
             {
               "id": "WuI3a1bGgW",
               "label": "Sling (18\u0022, A2, AP(1), Bane)",
-              "cost": 0,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -933,7 +933,7 @@
             {
               "id": "ES-5c",
               "label": "Heavy Plague Sword (A3, Rending, Bane)",
-              "cost": 0,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -1026,7 +1026,7 @@
             {
               "id": "X67C8FJjZj",
               "label": "Plague Boon (Fortified Growth)",
-              "cost": 0,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -1068,7 +1068,7 @@
             {
               "id": "Jt4vwD_y3J",
               "label": "Daemonic Incursion (Ambush Aura)",
-              "cost": 0,
+              "cost": 35,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -1089,7 +1089,7 @@
             {
               "id": "hhwNs9uZ6s",
               "label": "Fury Wings (Flying, Scout)",
-              "cost": 0,
+              "cost": 45,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -1126,7 +1126,7 @@
             {
               "id": "tfQ-yoL6",
               "label": "Symbol of Plague (Steadfast Aura)",
-              "cost": 0,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -1147,7 +1147,7 @@
             {
               "id": "-Lj5r9tB",
               "label": "Plague Favour (Plaguebound Boost Aura)",
-              "cost": 0,
+              "cost": 20,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -1168,7 +1168,7 @@
             {
               "id": "CI6DI-L6",
               "label": "Gift of Plague (Regeneration Aura)",
-              "cost": 0,
+              "cost": 30,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -1189,7 +1189,7 @@
             {
               "id": "X-DblyWd",
               "label": "Envoy of Plague (Rending in Melee Aura)",
-              "cost": 0,
+              "cost": 40,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -1210,7 +1210,7 @@
             {
               "id": "3fZ8gBl9",
               "label": "Lore of Plague (Caster(3))",
-              "cost": 0,
+              "cost": 70,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -1314,7 +1314,7 @@
             {
               "id": "qsJqu2UCEg",
               "label": "2x Infected Sword (A2, Surge)",
-              "cost": 0,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -1338,7 +1338,7 @@
             {
               "id": "vR02H",
               "label": "Scatter-Sling (12\u0022, A4, Bane), Infected Sword (A2, Surge)",
-              "cost": 0,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -1417,7 +1417,7 @@
             {
               "id": "IeB_bOXGf6",
               "label": "Sling (18\u0022, A2, AP(1), Bane), Infected Sword (A2, Surge)",
-              "cost": 0,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -1492,7 +1492,7 @@
             {
               "id": "Id1w_",
               "label": "Plague Sword (A2, Rending, Bane)",
-              "cost": 0,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -1532,7 +1532,7 @@
             {
               "id": "6ACP33yrqh",
               "label": "Plague Boon (Fortified Growth)",
-              "cost": 0,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -1553,7 +1553,7 @@
             {
               "id": "vlbMVI7Y74",
               "label": "Daemonic Incursion (Ambush Aura)",
-              "cost": 0,
+              "cost": 35,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -1574,7 +1574,7 @@
             {
               "id": "gXvfp",
               "label": "Throne of Plague (Claws (A3, Bane), Tough(3))",
-              "cost": 0,
+              "cost": 45,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -1610,7 +1610,7 @@
             {
               "id": "2y4Kn",
               "label": "Giant Snail (Toxic Maw (A6, AP(1), Bane), Slow, Tough(6))",
-              "cost": 0,
+              "cost": 90,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -1662,7 +1662,7 @@
             {
               "id": "LY6LF",
               "label": "Icon of Plague (Relentless Aura)",
-              "cost": 0,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -1683,7 +1683,7 @@
             {
               "id": "oZ48U",
               "label": "Symbol of Plague (Steadfast Aura)",
-              "cost": 0,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -1704,7 +1704,7 @@
             {
               "id": "Pp_T0",
               "label": "Army Standard Bearer (Fear(2))",
-              "cost": 0,
+              "cost": 20,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -1726,7 +1726,7 @@
             {
               "id": "ZF5HO",
               "label": "Plague Favour (Plaguebound Boost Aura)",
-              "cost": 0,
+              "cost": 20,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -1747,7 +1747,7 @@
             {
               "id": "ZnSII",
               "label": "Envoy of Plague (Rending in Melee Aura)",
-              "cost": 0,
+              "cost": 40,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -1768,7 +1768,7 @@
             {
               "id": "r8vZa",
               "label": "Lore of Plague (Caster(2))",
-              "cost": 0,
+              "cost": 45,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -1880,7 +1880,7 @@
             {
               "id": "MTJ21k8ivf",
               "label": "2x Infected Sword (A2, Surge)",
-              "cost": 0,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -1946,7 +1946,7 @@
             {
               "id": "1aLnZ",
               "label": "Scatter-Sling (12\u0022, A4, Bane), Infected Sword (A2, Surge)",
-              "cost": 0,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -1983,7 +1983,7 @@
             {
               "id": "QcKs42kSsH",
               "label": "Sling (18\u0022, A2, AP(1), Bane), Infected Sword (A2, Surge)",
-              "cost": 0,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -2058,7 +2058,7 @@
             {
               "id": "qyM8D",
               "label": "Plague Sword (A2, Rending, Bane)",
-              "cost": 0,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -2098,7 +2098,7 @@
             {
               "id": "DkquMmCs",
               "label": "Icon of Plague (Relentless Aura)",
-              "cost": 0,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -2119,7 +2119,7 @@
             {
               "id": "zT-mw4HV",
               "label": "Symbol of Plague (Steadfast Aura)",
-              "cost": 0,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -2140,7 +2140,7 @@
             {
               "id": "3AYdlDJC",
               "label": "Gift of Plague (Regeneration Aura)",
-              "cost": 0,
+              "cost": 30,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -2161,7 +2161,7 @@
             {
               "id": "yW0YlfnR",
               "label": "Envoy of Plague (Rending in Melee Aura)",
-              "cost": 0,
+              "cost": 40,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -2264,7 +2264,7 @@
             {
               "id": "LZ8SF99M",
               "label": "Plague Boon (Fortified Growth)",
-              "cost": 0,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -2347,7 +2347,7 @@
             {
               "id": "qxB3U",
               "label": "Armblades (A2, AP(1), Bane)",
-              "cost": 0,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -2371,7 +2371,7 @@
             {
               "id": "vKFQcI-",
               "label": "Rending Claws (A2, Rending, Bane)",
-              "cost": 0,
+              "cost": 25,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -2510,7 +2510,7 @@
             {
               "id": "6nxW3c887Q",
               "label": "Hand Weapon (A1, Bane)",
-              "cost": 0,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -2650,7 +2650,7 @@
             {
               "id": "dje6qK7M",
               "label": "Plague Boon (Fortified Growth)",
-              "cost": 0,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -2683,7 +2683,7 @@
             {
               "id": "BwVd6",
               "label": "Banner of Plague (Rending in Melee Aura)",
-              "cost": 0,
+              "cost": 30,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -2774,7 +2774,7 @@
             {
               "id": "txpkDnOhkn",
               "label": "Sling (18\u0022, A1, AP(1), Bane)",
-              "cost": 0,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -2917,7 +2917,7 @@
             {
               "id": "BeLzCRDE",
               "label": "Sling (18\u0022, A1, AP(1), Bane)",
-              "cost": 0,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -2953,7 +2953,7 @@
             {
               "id": "SmPNI",
               "label": "Plague Boon (Fortified Growth)",
-              "cost": 0,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -3093,7 +3093,7 @@
             {
               "id": "M_rVibQvVE",
               "label": "Mutated Claws (A4, Bane)",
-              "cost": 0,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -3117,7 +3117,7 @@
             {
               "id": "hwtOOaNz94",
               "label": "Heavy Plague Sword (A3, Rending, Bane)",
-              "cost": 0,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -3347,7 +3347,7 @@
             {
               "id": "9nKHQOAxk4",
               "label": "Plague Boon (Fortified Growth)",
-              "cost": 0,
+              "cost": 20,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -3466,7 +3466,7 @@
             {
               "id": "BZWIFS1Fa5",
               "label": "Toxic Spit (18\u0022, A2, Deadly(3), Bane, Unstoppable)",
-              "cost": 0,
+              "cost": 35,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -3499,7 +3499,7 @@
             {
               "id": "7oB4jrdOTR",
               "label": "Toxic Vomit (12\u0022, A2, Blast(3), Reliable, Bane)",
-              "cost": 0,
+              "cost": 45,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -3544,7 +3544,7 @@
             {
               "id": "zouQw",
               "label": "Curse of Plague (Difficult Terrain Debuff)",
-              "cost": 0,
+              "cost": 20,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -3640,7 +3640,7 @@
             {
               "id": "zouQw",
               "label": "Curse of Plague (Difficult Terrain Debuff)",
-              "cost": 0,
+              "cost": 20,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -3750,7 +3750,7 @@
             {
               "id": "9KOwW8ygX_",
               "label": "Plague Sword (A18, Bane)",
-              "cost": 0,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -3774,7 +3774,7 @@
             {
               "id": "xL2zb",
               "label": "Heavy Plague Gauntlet (A12, AP(2), Bane)",
-              "cost": 0,
+              "cost": 45,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -3812,7 +3812,7 @@
             {
               "id": "OwGAJvd",
               "label": "Heavy Plague Cannon (24\u0022, A6, AP(2), Bane)",
-              "cost": 0,
+              "cost": 30,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -3836,7 +3836,7 @@
             {
               "id": "nqGoY",
               "label": "Infected Cannon (18\u0022, A18, Surge)",
-              "cost": 0,
+              "cost": 35,
               "costUnpriced": false,
               "weaponsGained": [
                 {

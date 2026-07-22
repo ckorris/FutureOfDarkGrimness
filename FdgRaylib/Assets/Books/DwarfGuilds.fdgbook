@@ -113,7 +113,7 @@
             {
               "id": "j-H8d",
               "label": "Champion Iron Pistol (9\u0022, A4, AP(1))",
-              "cost": 0,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -305,7 +305,7 @@
             {
               "id": "oV1zx",
               "label": "Guild Lord (Sturdy Boost Aura)",
-              "cost": 0,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -326,7 +326,7 @@
             {
               "id": "uwL9C",
               "label": "Foreman (Swift Aura)",
-              "cost": 0,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -347,7 +347,7 @@
             {
               "id": "KgDA_MFUYn",
               "label": "Runesmith (Stealth Aura)",
-              "cost": 0,
+              "cost": 30,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -368,7 +368,7 @@
             {
               "id": "EsB6q",
               "label": "Forge Master (Increased Shooting Range Aura)",
-              "cost": 0,
+              "cost": 35,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -512,7 +512,7 @@
             {
               "id": "SSt07Yzsb8",
               "label": "Great Heat Hammer (A1, AP(2), Blast(3), Shred)",
-              "cost": 0,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -555,7 +555,7 @@
             {
               "id": "4gDNfHK",
               "label": "Champion Pistol (12\u0022, A2)",
-              "cost": 0,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -873,7 +873,7 @@
             {
               "id": "am6Lbn40m6",
               "label": "Heat Spear (A3, Counter, Shred)",
-              "cost": 0,
+              "cost": 20,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -901,7 +901,7 @@
             {
               "id": "E9k-iSklbE",
               "label": "Heavy Spear (A3, AP(1), Counter)",
-              "cost": 0,
+              "cost": 25,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -937,7 +937,7 @@
             {
               "id": "HTJrjzqsTc",
               "label": "Guild Bounty (Precision Frenzy)",
-              "cost": 0,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -958,7 +958,7 @@
             {
               "id": "tUTsV4Aq",
               "label": "Elite (Fearless, Fortified)",
-              "cost": 0,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -983,7 +983,7 @@
             {
               "id": "2ezGQEZR",
               "label": "Mining Gear (Infiltrate)",
-              "cost": 0,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -1004,7 +1004,7 @@
             {
               "id": "6OU6g_9Z",
               "label": "Jetpack (Ambush, Flying, Swift)",
-              "cost": 0,
+              "cost": 25,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -1033,7 +1033,7 @@
             {
               "id": "J7ZxXY_Y",
               "label": "Combat Bike (Auto-Gun (24\u0022, A2, AP(1)), Fast, Swift, Tough(3))",
-              "cost": 0,
+              "cost": 100,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -1072,7 +1072,7 @@
             {
               "id": "bC6VjBjw",
               "label": "Pioneer Bike (Auto-Gun (24\u0022, A2, AP(1)), Scout, Swift, Tough(3))",
-              "cost": 0,
+              "cost": 100,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -1123,7 +1123,7 @@
             {
               "id": "xuIy8tub1G",
               "label": "Artillerist (Re-Position Artillery)",
-              "cost": 0,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -1144,7 +1144,7 @@
             {
               "id": "Peds60sn",
               "label": "Guild Lord (Sturdy Boost Aura)",
-              "cost": 0,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -1165,7 +1165,7 @@
             {
               "id": "nhvYk2VOhX",
               "label": "Foreman (Swift Aura)",
-              "cost": 0,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -1186,7 +1186,7 @@
             {
               "id": "Q7demrNO",
               "label": "Rage Lord (Unpredictable Fighter Aura)",
-              "cost": 0,
+              "cost": 30,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -1207,7 +1207,7 @@
             {
               "id": "B_mMMb9d",
               "label": "Forge Master (Increased Shooting Range Aura)",
-              "cost": 0,
+              "cost": 35,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -1351,7 +1351,7 @@
             {
               "id": "o4eVcxtkSS",
               "label": "Great Heat Hammer (A1, AP(2), Blast(3), Shred)",
-              "cost": 0,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -1399,7 +1399,7 @@
             {
               "id": "zALg7tM8pw",
               "label": "Dual Heavy Heat Axes (A4, AP(1), Shred)",
-              "cost": 0,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -1435,7 +1435,7 @@
             {
               "id": "R3KEvd9uhl",
               "label": "Guild Bounty (Precision Frenzy)",
-              "cost": 0,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -1489,7 +1489,7 @@
             {
               "id": "Nh4o7SckkI",
               "label": "Guild Lord (Sturdy Boost Aura)",
-              "cost": 0,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -1510,7 +1510,7 @@
             {
               "id": "XfDpTAnj",
               "label": "Foreman (Swift Aura)",
-              "cost": 0,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -1531,7 +1531,7 @@
             {
               "id": "yE5ng-3W",
               "label": "Rage Lord (Unpredictable Fighter Aura)",
-              "cost": 0,
+              "cost": 30,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -1552,7 +1552,7 @@
             {
               "id": "eHp4rONp",
               "label": "Runesmith (Stealth Aura)",
-              "cost": 0,
+              "cost": 30,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -1658,7 +1658,7 @@
             {
               "id": "2R-TS",
               "label": "Heat Spear (A1, Counter, Shred)",
-              "cost": 0,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -2009,7 +2009,7 @@
             {
               "id": "l6rCeN6",
               "label": "Spectrum Scanner (Ignores Cover when Shooting Aura)",
-              "cost": 0,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -2030,7 +2030,7 @@
             {
               "id": "W10ba",
               "label": "Medical Training (Regeneration Aura)",
-              "cost": 0,
+              "cost": 20,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -2272,7 +2272,7 @@
             {
               "id": "mBB0G",
               "label": "Heavy Heat Axe (A1, AP(1), Shred)",
-              "cost": 0,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -2329,7 +2329,7 @@
             {
               "id": "wSDr_kd",
               "label": "Assault Grenade Launcher (18\u0022, A1, Blast(3)), CCW (A2)",
-              "cost": 0,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -2407,7 +2407,7 @@
             {
               "id": "pOhXs",
               "label": "Guild Bounty (Precision Frenzy)",
-              "cost": 0,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -2637,7 +2637,7 @@
             {
               "id": "zPA6C",
               "label": "Spectrum Scanner (Ignores Cover when Shooting Aura)",
-              "cost": 0,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -2658,7 +2658,7 @@
             {
               "id": "VNn48",
               "label": "Medical Training (Regeneration Aura)",
-              "cost": 0,
+              "cost": 20,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -3186,7 +3186,7 @@
             {
               "id": "pOhXs",
               "label": "Guild Bounty (Precision Frenzy)",
-              "cost": 0,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -3547,7 +3547,7 @@
             {
               "id": "pOhXs",
               "label": "Guild Bounty (Precision Frenzy)",
-              "cost": 0,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -3777,7 +3777,7 @@
             {
               "id": "MtW-S52",
               "label": "Beamer Ammo (Surge when Shooting)",
-              "cost": 0,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -3798,7 +3798,7 @@
             {
               "id": "2-eMqN4",
               "label": "Heat Ammo (Shred when Shooting)",
-              "cost": 0,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -4122,7 +4122,7 @@
             {
               "id": "PLyYu",
               "label": "Iron Pistol (9\u0022, A2, AP(1))",
-              "cost": 0,
+              "cost": 20,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -4504,7 +4504,7 @@
             {
               "id": "tHVOLHJaTb",
               "label": "Heavy Burst Pistol (12\u0022, A3, AP(1)), Plasma Sword (A3, AP(1), Rending)",
-              "cost": 0,
+              "cost": 30,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -4536,7 +4536,7 @@
             {
               "id": "oDHazkMo2k",
               "label": "Heavy Burst Pistol (12\u0022, A3, AP(1)), Shock Gauntlet (A3, AP(4))",
-              "cost": 0,
+              "cost": 65,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -4729,7 +4729,7 @@
             {
               "id": "pOhXs",
               "label": "Guild Bounty (Precision Frenzy)",
-              "cost": 0,
+              "cost": 20,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -5012,7 +5012,7 @@
             {
               "id": "LpGnm",
               "label": "Spectrum Scanner (Ignores Cover when Shooting)",
-              "cost": 0,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -5045,7 +5045,7 @@
             {
               "id": "yiz6I",
               "label": "Deceleration Rune (Speed Debuff)",
-              "cost": 0,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -5336,7 +5336,7 @@
             {
               "id": "LRqlyLIk-C",
               "label": "Rail M-Cannon (36\u0022, A1, AP(2), Deadly(6), Shred)",
-              "cost": 0,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -5384,7 +5384,7 @@
             {
               "id": "y-wu5R-gux",
               "label": "Twin Autocannon (36\u0022, A6, AP(2))",
-              "cost": 0,
+              "cost": 35,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -5415,7 +5415,7 @@
             {
               "id": "yiz6I",
               "label": "Deceleration Rune (Speed Debuff)",
-              "cost": 0,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -6012,7 +6012,7 @@
             {
               "id": "LvVpzl7G4D",
               "label": "Twin Light Fusion AA-Gun (24\u0022, A2, AP(4), Deadly(3), Unstoppable)",
-              "cost": 0,
+              "cost": 20,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -6430,7 +6430,7 @@
             {
               "id": "M525c",
               "label": "Iron Cannon (24\u0022, A3, AP(1), Blast(3))",
-              "cost": 0,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -6973,7 +6973,7 @@
             {
               "id": "zilYSLY36-",
               "label": "Twin Heavy Hail-Gun (24\u0022, A6, AP(1), Indirect)",
-              "cost": 0,
+              "cost": 20,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -7021,7 +7021,7 @@
             {
               "id": "PSWNRxEJbp",
               "label": "Twin Fusion AA-Gun (24\u0022, A2, AP(4), Deadly(3), Unstoppable)",
-              "cost": 0,
+              "cost": 45,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -7515,7 +7515,7 @@
             {
               "id": "LvVpzl7G4D",
               "label": "Twin Light Fusion AA-Gun (24\u0022, A2, AP(4), Deadly(3), Unstoppable)",
-              "cost": 0,
+              "cost": 20,
               "costUnpriced": false,
               "weaponsGained": [
                 {

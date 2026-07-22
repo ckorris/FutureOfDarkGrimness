@@ -23,7 +23,6 @@ When closing an item: write the Outcome in its detail file, tick the line, and m
 - [ ] 211 — Solo AI mover submits a path through impassible terrain (~1/1800; #159's family, impassible flavor). Fix with one validate-or-decline ladder on the solo mover alongside #159. ([WorkItems/211](WorkItems/211-solo-mover-impassible-terrain.md))
 - [ ] 214 — Teleport (#197) doesn't draw a range-of-motion circle like movement does; placement is bounded correctly, just add the reach-circle visual. ([WorkItems/214](WorkItems/214-teleport-range-circle.md))
 - [ ] 216 — Tactician plans rejected by the #205 friendly-stacking check silently fall back to the SOLO resolver (suspected DE/RL mirror-drift driver); charge candidate made friendly-aware, resolver-level repair + drift attribution still open. ([WorkItems/216](WorkItems/216-tactician-solo-fallback-on-stacked-plans.md))
-- [~] 256 — AI multi-model units barely move: worst-case repack clamp zeroed big units' advances + stacking backoff halves instead of re-aiming + activation order never moves blockers first (WayTooManyInBack stuck bots, solo + Tactician alike). S1 (measure-and-correct budgets) + S2 (re-aim vs halve on friendly stacking) landed 2026-07-22; S3/S4 (activation order + corridor width for the walled pocket) deferred. ([WorkItems/256](WorkItems/256-ai-repack-clamp-immobilizes-big-units.md))
 
 ## Shooting & cover
 
@@ -55,7 +54,6 @@ Corpus coverage is a different story: 423 of 13,870 book rule references (3.0%) 
 ## Army Forge
 
 - [~] 218 — "Replace All" charged per model instead of flat. Convention confirmed from a real share list and fixed 2026-07-19 (Havoc list reconciles 1120 both ways; 200 priced All options were overcharging). Open: `Affects.Any` pricing unverified (1185 options ride on it) + GUI hand-verify. ([WorkItems/218](WorkItems/218-army-forge-replace-all-cost.md))
-- [ ] 219 — Bundled `.fdgbook` upgrades that should cost points charge 0. Root-caused 2026-07-19: OPR omits `cost` on options it prices internally and the importer coerced absent->0; now flagged, but the real prices are unrecoverable from OPR - design fork + book re-import open. ([WorkItems/219](WorkItems/219-army-forge-zero-cost-upgrades.md))
 - [ ] 220 — Version control for Army Forge lists (undo/revision history); mechanism not yet decided, surface the design fork first. ([WorkItems/220](WorkItems/220-army-forge-list-version-control.md))
 - [~] 236 — Freeform builder silently stripped a Forge army's embedded book/selections on save; now gated behind an explicit "Save detached" confirm. Implemented + tested; modal awaits GUI hand-verify. ([WorkItems/236](WorkItems/236-freeform-save-strips-forge-block.md))
 - [~] 241 — Army Forge share-link importer: paste an army-forge.onepagerules.com share link -> preview -> .fdgarmy (engine `OprListImporter` + Forge-screen UI + `--import-army`); gates on OPR version 3.5.x. Points model corrected 2026-07-19 (per-unit `cost` is BASE, total comes from `listPoints` - imports were light); GUI modal still awaits hand-verify. ([WorkItems/241](WorkItems/241-army-forge-share-import.md))
