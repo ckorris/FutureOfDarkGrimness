@@ -4,6 +4,8 @@ Completed and closed work items, moved verbatim out of `WorkItemsList.md` (2026-
 always-read index lean. Numbers are permanent and never reused — the per-clone pre-push hook checks
 this file as well as the index when blocking duplicate numbers.
 
+- [x] 254 — Wound-driven (ranged) morale tested only on the blow that CROSSED into half strength, so a unit already at half or less (e.g. a Tough-18 Great Monolith at 8 remaining) never tested again when shot. Live-play report 2026-07-21; rule keys on wounds leaving the unit at half or less, not on crossing. `CrossedIntoHalfStrength` -> `WoundsLeftUnitAtHalfStrength` (took wounds this action + now at half or less); targeted-but-unwounded still doesn't test, multi-weapon actions still test once. Engine-only; 1793/0 rebased onto #201. ([WorkItems/254](254-wound-morale-every-activation.md))
+
 - [x] 232 — Saved-hits beat removed + casualty cascade. **GUI-verified 2026-07-18.** The `SaveBeat` deflection pings + ping sound are no longer emitted (save dice-roll captions keep the info; class kept wire-compatible but dead). v2: a volley's deaths/flinches overlap on a 150ms `CasualtyStagger` (Overlap/Held casualty beats, `ApplyWoundsStage` flags all but the last, `PresentationPlayer` cascade track) so 5 kills play as rapid-fire deaths in ~1.1s with the last running out fully; `ModelWounded` stays 300ms. Engine 1689/0, app 378/0. ([WorkItems/232](232-remove-save-hit-beat.md))
 
 - [x] 235 — Game Over card polish. **GUI-verified 2026-07-18.** Title/result text centered; card draggable (position forced only on appear, `NoMove` dropped) so the final board is inspectable before returning to the menu. App-side only. ([WorkItems/235](235-game-over-box-polish.md))

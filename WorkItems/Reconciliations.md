@@ -6,6 +6,16 @@ from origin/master. Standing precedent: numbers are never reused, and when two p
 claim the same number, the *unmerged local* item yields to the *merged* one and takes a fresh number.
 A per-clone pre-push hook blocks duplicate numbers across the index and the archive.
 
+> **2026-07-21 — reconciliation 17.** The push of the wound-driven-morale fix found origin/master had
+> meanwhile landed the #201 cover-proximity work and filed **252 = field-texture cover proximity** and
+> **253 = cover-bonus placement visual** (both merged), colliding with this session's locally-filed
+> **252 = wound-driven morale at half or less** (unpushed, one engine commit + one superproject
+> commit). Per merged-wins precedent the local item yields: **wound-driven morale 252 → 254**
+> (`WorkItems/254-wound-morale-every-activation.md`; 254 free on index + archive). Nothing had been
+> pushed, so the renumber landed everywhere before publication — detail file, archive entry, engine
+> source comments, and the amended engine commit message (rebased onto the #201 merge with
+> `-c core.commentChar=';'` per reconciliation 16's hazard note; no file overlap, 1793 tests green).
+>
 > **2026-07-18 — reconciliation 16.** The push of the dice-caption-strip work found origin/master had
 > meanwhile landed reconciliation 15's **244 = caster self-boost** (merged), colliding with this
 > session's locally-filed **244 = dice caption strip** (unpushed, three superproject commits + one
