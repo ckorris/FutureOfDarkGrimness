@@ -7,6 +7,16 @@
 User has spotted multiple upgrade options in-app that should cost points but show/charge 0. Scope: audit the bundled `.fdgbook` catalog (and the `OprBookImporter` mapping that produced it) for options with a missing or zero `Cost` where the source OPR data has a nonzero price, and fix the importer/data. Done = a sweep across all bundled books turns up the offending options, root cause identified (importer mapping gap vs. source data vs. compiler), and costs corrected.
 
 ## Notes
+- 2026-07-22 (latest): **Residual CLOSED - verbatim share-import now attributes per-unit upgrade costs.**
+  The share list's `selectedUpgrades[].option` carries the price directly (a flat `cost` or a per-unit
+  `costs[]` array keyed by unit id - the SAME data as the book), so no book lookup was needed.
+  `OprListImporter.MapUnit` now sums each selection's cost (matched to `unit.Id`) into the unit's PointCost;
+  `OprOptionCost` made internal + reused via a new `Costs` field on the list's OprSelectedOption. Residual
+  `UnattributedPoints` is now just genuinely-unpriceable leftovers (warning reworded). Re-imported the HEF
+  link: Elven Noble now saves as **pointCost 120, unattributedPoints 0** (was 45 + 75). +1 engine test
+  (per-unit attribution), warning-text test updated; the no-selection GapList tests still hold (that gap is
+  legitimately unattributable). Engine 1808/1808, app 396/396, build clean, smoke 0. Commit 33c9f99 / bump
+  cba8fae.
 - 2026-07-22 (later): **PREMISE OVERTURNED - prices ARE recoverable; pivoted to importing them.** A user
   test list (Elven Noble, HEF, share id FA1WupGBc2ka) + an Army Forge screenshot showed Army Forge itself
   DISPLAYING per-option prices (Master Laser Pistol 5, Elemental Hexer 30, ...). Dug into the book endpoint:
@@ -96,8 +106,7 @@ User has spotted multiple upgrade options in-app that should cost points but sho
 ~~Since OPR never publishes these prices...~~ **RESOLVED 2026-07-22: prices ARE published (per-unit
 `costs[]`), now imported - see Slices 3/4.** Superseded.
 
-Remaining follow-up (relates #241): attribute the verbatim share-import's upgrade points per unit instead
-of parking them in `UnattributedPoints`. The total is already correct; this is a display-fidelity change to
-`OprListImporter.MapUnit`. Optional - surface before building.
+~~Remaining follow-up (relates #241): attribute the verbatim share-import's upgrade points per unit...~~
+**DONE 2026-07-22** (see latest note). Nothing left open here.
 
 ## Outcome
