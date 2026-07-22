@@ -82,6 +82,29 @@ moves the pinned solo baseline (#191 D1 hashes). **Benchmark rerun deliberately 
 
 ## Notes
 
+- 2026-07-22 (later): **S2 re-probed and tuned.** The original `WayTooManyInBack.fdgsave` is NOT on
+  this machine (full-disk + old-drive search: zero .fdgsave anywhere), so the re-probe ran on a
+  reconstruction: `Scenarios/256-friendly-in-lane.json` (committed) - two spread 11-model Warriors
+  units, one with a friendly APC parked ~6" up its advance lane, `fdglab analyze` + a recreated
+  instrumented rung-replay (scratchpad-only, per the handoff note). Findings, each fixed in-session:
+  (1) as-landed, the re-aim NEVER fired on the reconstruction - the +/-1/+/-2-base-width offsets all
+  clipped the blocker because an 11-model pack is ~1.7 widths from center to edge (blocked advance:
+  3.1" via one halving vs 4.7" control); (2) naively widening the schedule to +/-3/+/-4 made it WORSE
+  (0.1" stays): stacking the offset on top of the full step made the measure-and-correct loop absorb
+  the whole lateral cost, blow the budget, and degrade to a valid-but-useless StayInPlace which the
+  ladder happily returned. Fixes: (a) a forward-progress gate in TryLateralReaim (accept only >= half
+  the blocked candidate's forward progress - never trade an advance for a stay); (b) probe at
+  forward = sqrt(step^2 - lat^2), trading forward for lateral INSIDE the budget circle; (c) offset
+  schedule densified to half-width steps past 2 (probe showed the clearing window can be < half a
+  width wide: 2.2 collided, 2.8 cleared); (d) RepackCorrectionAttempts 4 -> 8 - with a lateral
+  offset the step<->move response flattens and pairing flips bump the measure mid-descent, so 4
+  attempts gave up on feasible side-steps (engine-wide constant; centered candidates converge in <= 2
+  attempts, so S1 behavior is unchanged). Result on the reconstruction: blocked advance 3.11" -> 
+  **4.40" with a 2.8" side-step** (control 4.71"), candidate score 0.0409 -> 0.0557; clean-lane unit
+  byte-identical. Verified: 1811/1811 green, full build, headless smoke exit 0. The committed
+  scenario + `fdglab analyze` is now the cheap re-probe loop; re-running against the REAL save when
+  it's copied over remains open (and the walled Battle Brothers pocket still wants S3/S4).
+
 - 2026-07-22: **S2 landed** (engine, app-side pointer bump pending): `ValidateWithBackoff` now
   side-steps the pack anchor before halving when a candidate's SOLE fault is ending stacked on a
   friendly (`EErrorReasonType.EndedOnFriendlyUnit`). Mechanics: `BuildCandidate` gained a
