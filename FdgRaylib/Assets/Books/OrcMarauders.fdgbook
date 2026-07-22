@@ -74,8 +74,8 @@
             {
               "id": "s2F5w",
               "label": "Carbine (18\u0022, A2), Heavy Flamer-Mod (12\u0022, A1, AP(1), Blast(3), Limited, Reliable)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 5,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Carbine",
@@ -148,8 +148,8 @@
             {
               "id": "3Iyd0",
               "label": "Rocket-Mod (18\u0022, A1, AP(2), Deadly(3), Limited)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 5,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Rocket-Mod",
@@ -309,8 +309,8 @@
             {
               "id": "KvUWtnGgcY",
               "label": "Shoulder-MG (30\u0022, A3, AP(1))",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 40,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Shoulder-MG",
@@ -340,8 +340,8 @@
             {
               "id": "-itxO",
               "label": "Pet Beast (Repel Ambushers)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 15,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -394,8 +394,8 @@
             {
               "id": "5VPtp_vn",
               "label": "Battle Chief (Ferocious Boost Aura)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 15,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -415,8 +415,8 @@
             {
               "id": "zJJdm2HO",
               "label": "Customizer (Ranged Shrouding Aura)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 35,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -436,8 +436,8 @@
             {
               "id": "1lkxR-pJ",
               "label": "Stomper (Piercing Fighter Aura)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 35,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -478,8 +478,8 @@
             {
               "id": "Cbbx9g2m",
               "label": "Gun Master (Unpredictable Shooter Aura)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 40,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -588,8 +588,8 @@
             {
               "id": "I_GtGxgBK6",
               "label": "Pet Beast (Repel Ambushers)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 15,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -609,8 +609,8 @@
             {
               "id": "i5T2NlZ",
               "label": "Jump Pack (Ambush, Flying)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 20,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -634,8 +634,8 @@
             {
               "id": "OZATy",
               "label": "Infiltrator Gear (Scout, Stealth, Strider)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 25,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -712,8 +712,8 @@
             {
               "id": "Fl7EG",
               "label": "Leader Shotgun (12\u0022, A3, AP(1))",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 10,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Leader Shotgun",
@@ -731,8 +731,8 @@
             {
               "id": "FMPml",
               "label": "Carbine (18\u0022, A2), Heavy Flamer-Mod (12\u0022, A1, AP(1), Blast(3), Limited, Reliable)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 10,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Carbine",
@@ -772,8 +772,8 @@
             {
               "id": "TbCEC",
               "label": "Carbine (18\u0022, A2), Rocket-Mod (18\u0022, A1, AP(2), Deadly(3), Limited)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 15,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Carbine",
@@ -809,8 +809,8 @@
             {
               "id": "_rDQr",
               "label": "Carbine (18\u0022, A2), Carbine-Mod (18\u0022, A2)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 15,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Carbine",
@@ -957,8 +957,8 @@
             {
               "id": "81Sxr",
               "label": "Killer-Rocket Pod (12\u0022, A1, Deadly(3), Tear)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 15,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Killer-Rocket Pod",
@@ -1059,8 +1059,8 @@
             {
               "id": "pEGB8DY",
               "label": "Rapid Plasma Rifle (24\u0022, A2, AP(4))",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 35,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Rapid Plasma Rifle",
@@ -1090,8 +1090,8 @@
             {
               "id": "8mcVaBo_",
               "label": "Banner Bearer (Hit \u0026 Run Fighter Aura)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 10,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1111,8 +1111,8 @@
             {
               "id": "ixK4JuDZ",
               "label": "Battle Chief (Ferocious Boost Aura)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 15,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1132,8 +1132,8 @@
             {
               "id": "qUh3Jya2",
               "label": "Customizer (Ranged Shrouding Aura)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 35,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1153,8 +1153,8 @@
             {
               "id": "BvbjDfUw",
               "label": "Psy-Shaman (Caster(2))",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 35,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1196,8 +1196,8 @@
             {
               "id": "sF34D10A",
               "label": "Gun Master (Unpredictable Shooter Aura)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 40,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1289,8 +1289,8 @@
             {
               "id": "S1-nKpSgor",
               "label": "Dual Hand Weapons (A4)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 5,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Dual Hand Weapons",
@@ -1308,8 +1308,8 @@
             {
               "id": "_D4aF",
               "label": "Spear (A2, Counter), Combat Shield (Shielded)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 5,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Spear",
@@ -1343,8 +1343,8 @@
             {
               "id": "cK10tBCuwA",
               "label": "Lance (A2, Thrust), Combat Shield (Shielded)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": -5,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Lance",
@@ -1378,8 +1378,8 @@
             {
               "id": "gLKFXNLygE",
               "label": "Berserker Claws (A3, AP(4))",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 15,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Berserker Claws",
@@ -1409,8 +1409,8 @@
             {
               "id": "dv7nw",
               "label": "Combat Beast (Beast Jaws (A3, AP(1)), Bounding, Tough(3))",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 65,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Beast Jaws",
@@ -1444,8 +1444,8 @@
             {
               "id": "nLchs",
               "label": "Great Combat Beast (Beast Jaws (A3, AP(1)), Stomp (A2, AP(1)), Bounding, Ravage(1), Tough(6))",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 115,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Beast Jaws",
@@ -1504,8 +1504,8 @@
             {
               "id": "_P19jHjO",
               "label": "Banner Bearer (Hit \u0026 Run Fighter Aura)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 10,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1525,8 +1525,8 @@
             {
               "id": "bW2P6fFk",
               "label": "Battle Chief (Ferocious Boost Aura)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 15,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1546,8 +1546,8 @@
             {
               "id": "47jGQJgT",
               "label": "Customizer (Ranged Shrouding Aura)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 35,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1567,8 +1567,8 @@
             {
               "id": "RXn6evTN",
               "label": "Stomper (Piercing Fighter Aura)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 35,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1588,8 +1588,8 @@
             {
               "id": "BP7qSkvC",
               "label": "Psy-Shaman (Caster(2))",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 35,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1610,8 +1610,8 @@
             {
               "id": "QlqbQsyF",
               "label": "Master Psy-Shaman (Caster(3))",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 55,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1702,8 +1702,8 @@
             {
               "id": "SMSXI",
               "label": "Flamer Pistol (6\u0022, A1, Blast(3), Reliable)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 5,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Flamer Pistol",
@@ -1731,8 +1731,8 @@
             {
               "id": "1UR2C",
               "label": "Rocket Pistol (9\u0022, A1, AP(2), Deadly(3))",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 5,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Rocket Pistol",
@@ -1756,8 +1756,8 @@
             {
               "id": "a0jCH",
               "label": "Leader Shotgun (12\u0022, A3, AP(1))",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 5,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Leader Shotgun",
@@ -1775,8 +1775,8 @@
             {
               "id": "jB0k1",
               "label": "Leader Plasma Pistol (12\u0022, A2, AP(4))",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 10,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Leader Plasma Pistol",
@@ -1794,8 +1794,8 @@
             {
               "id": "QCx_X",
               "label": "Carbine (18\u0022, A2), Heavy Flamer-Mod (12\u0022, A1, AP(1), Blast(3), Limited, Reliable)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 10,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Carbine",
@@ -1835,8 +1835,8 @@
             {
               "id": "gqKhF",
               "label": "Leader Lightning Pistol (12\u0022, A3, Rending, Unstoppable)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 10,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Leader Lightning Pistol",
@@ -1877,8 +1877,8 @@
             {
               "id": "m2wfT",
               "label": "Carbine-Mod (18\u0022, A2)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 5,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Carbine-Mod",
@@ -1896,8 +1896,8 @@
             {
               "id": "1ijQ2",
               "label": "Rocket-Mod (18\u0022, A1, AP(2), Deadly(3), Limited)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 5,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Rocket-Mod",
@@ -2065,8 +2065,8 @@
             {
               "id": "I_GtGxgBK6",
               "label": "Pet Beast (Repel Ambushers)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 15,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -2086,8 +2086,8 @@
             {
               "id": "i5T2NlZ",
               "label": "Jump Pack (Ambush, Flying)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 15,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -2111,8 +2111,8 @@
             {
               "id": "OZATy",
               "label": "Infiltrator Gear (Scout, Stealth, Strider)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 20,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -2187,8 +2187,8 @@
             {
               "id": "0hjepBGfKy",
               "label": "Banner Bearer (Hit \u0026 Run Fighter Aura)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 10,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -2208,8 +2208,8 @@
             {
               "id": "16Vv0hM",
               "label": "Customizer (Ranged Shrouding Aura)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 35,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -2229,8 +2229,8 @@
             {
               "id": "3k4bk",
               "label": "Stomper (Piercing Fighter Aura)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 35,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -2250,8 +2250,8 @@
             {
               "id": "_Z12uyk",
               "label": "Psy-Shaman (Caster(2))",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 35,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -2293,8 +2293,8 @@
             {
               "id": "rqOmYGd",
               "label": "Gun Master (Unpredictable Shooter Aura)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 40,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -2328,8 +2328,8 @@
             {
               "id": "81Sxr",
               "label": "Killer-Rocket Pod (12\u0022, A1, Deadly(3), Tear)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 10,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Killer-Rocket Pod",
@@ -2430,8 +2430,8 @@
             {
               "id": "pEGB8DY",
               "label": "Rapid Plasma Rifle (24\u0022, A2, AP(4))",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 25,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Rapid Plasma Rifle",
@@ -2511,8 +2511,8 @@
             {
               "id": "VreUI",
               "label": "Carbine (18\u0022, A2), CCW (A1)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 15,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Carbine",
@@ -2600,8 +2600,8 @@
             {
               "id": "uq7rL",
               "label": "Killer-Rocket Pod (12\u0022, A1, Deadly(3), Tear)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 15,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Killer-Rocket Pod",
@@ -2820,8 +2820,8 @@
             {
               "id": "G4Qxt",
               "label": "Scary Banner (Fear(2))",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 20,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -2842,8 +2842,8 @@
             {
               "id": "1q98h",
               "label": "War Banner (Speed Feat Aura)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 20,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -2863,8 +2863,8 @@
             {
               "id": "ed4kY",
               "label": "Field Doctor (Regeneration Aura)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 40,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -2939,8 +2939,8 @@
             {
               "id": "G4Qxt",
               "label": "Scary Banner (Fear(2))",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 20,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -2961,8 +2961,8 @@
             {
               "id": "1q98h",
               "label": "War Banner (Speed Feat Aura)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 10,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -2982,8 +2982,8 @@
             {
               "id": "ed4kY",
               "label": "Field Doctor (Regeneration Aura)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 20,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -3018,7 +3018,7 @@
               "id": "iV73cQXVsn",
               "label": "Spear (A1, Counter), Combat Shield (Shielded)",
               "cost": 0,
-              "costUnpriced": true,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Spear",
@@ -3053,7 +3053,7 @@
               "id": "WnrH5",
               "label": "Dual Hand Weapons (A2)",
               "cost": 0,
-              "costUnpriced": true,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Dual Hand Weapons",
@@ -3379,8 +3379,8 @@
             {
               "id": "G4Qxt",
               "label": "Scary Banner (Fear(2))",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 20,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -3401,8 +3401,8 @@
             {
               "id": "1q98h",
               "label": "War Banner (Speed Feat Aura)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 15,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -3422,8 +3422,8 @@
             {
               "id": "ed4kY",
               "label": "Field Doctor (Regeneration Aura)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 20,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -3723,8 +3723,8 @@
             {
               "id": "lLY5V",
               "label": "Killer-Rocket Pod (12\u0022, A1, Deadly(3), Tear)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 15,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Killer-Rocket Pod",
@@ -4042,8 +4042,8 @@
             {
               "id": "Snaki",
               "label": "Shotgun (12\u0022, A2, AP(1))",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 30,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Shotgun",
@@ -4251,8 +4251,8 @@
             {
               "id": "XD8Sr",
               "label": "Killer-Rocket Pod (12\u0022, A1, Deadly(3), Tear)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 15,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Killer-Rocket Pod",
@@ -4280,8 +4280,8 @@
             {
               "id": "19gui0O",
               "label": "Rocket Launcher (18\u0022, A1, AP(2), Deadly(3))",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 30,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Rocket Launcher",
@@ -4484,8 +4484,8 @@
             {
               "id": "pTRnV",
               "label": "Killer-Rocket Pod (12\u0022, A1, Deadly(3), Tear)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 5,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Killer-Rocket Pod",
@@ -4513,8 +4513,8 @@
             {
               "id": "uFPAgXa",
               "label": "Rocket Launcher (18\u0022, A1, AP(2), Deadly(3))",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 10,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Rocket Launcher",
@@ -4538,8 +4538,8 @@
             {
               "id": "s9uk1",
               "label": "Heavy Machinegun (30\u0022, A3, AP(1))",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 25,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Heavy Machinegun",
@@ -4557,8 +4557,8 @@
             {
               "id": "Zmp9N",
               "label": "Shock Cannon (18\u0022, A4, AP(1), Surge)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 20,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Shock Cannon",
@@ -4581,8 +4581,8 @@
             {
               "id": "N7Z-E",
               "label": "Plasma Cannon (30\u0022, A1, AP(4), Blast(3))",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 45,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Plasma Cannon",
@@ -4618,8 +4618,8 @@
             {
               "id": "Homzo",
               "label": "Bomb Drone (18\u0022, A1, Blast(3), Limited)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 5,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Bomb Drone",
@@ -4760,8 +4760,8 @@
             {
               "id": "F95pC9l",
               "label": "Rocket-Mod (18\u0022, A1, AP(2), Deadly(3), Limited)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 5,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Rocket-Mod",
@@ -4924,8 +4924,8 @@
             {
               "id": "xjL93",
               "label": "Scary Banner (Fear(2))",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 20,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -4946,8 +4946,8 @@
             {
               "id": "veSuz",
               "label": "War Banner (Speed Feat Aura)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 30,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -5042,7 +5042,7 @@
               "id": "Wkkd-",
               "label": "Dual Hand Weapons (A2)",
               "cost": 0,
-              "costUnpriced": true,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Dual Hand Weapons",
@@ -5060,8 +5060,8 @@
             {
               "id": "4mYB9",
               "label": "Lance (A1, Thrust), Combat Shield (Shielded)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 5,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Lance",
@@ -5529,8 +5529,8 @@
             {
               "id": "SqCBzeBCCb",
               "label": "Twin Mini-MG (18\u0022, A3, AP(1))",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 5,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Twin Mini-MG",
@@ -5628,8 +5628,8 @@
             {
               "id": "aWEoo1z",
               "label": "Bomb Spear (A1, AP(4), Deadly(3))",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 20,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Bomb Spear",
@@ -5668,8 +5668,8 @@
             {
               "id": "Q3W3WFsIg-",
               "label": "Explosive Payload (A1, AP(1), Blast(3), Strafing)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 5,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Explosive Payload",
@@ -5763,8 +5763,8 @@
             {
               "id": "3qVKm",
               "label": "Rapid Killer-Rocket Pod (12\u0022, A2, Deadly(3), Tear)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 10,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Rapid Killer-Rocket Pod",
@@ -5792,8 +5792,8 @@
             {
               "id": "ZLN9d",
               "label": "Rapid Heavy Flamer (12\u0022, A2, AP(1), Blast(3), Reliable)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 20,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Rapid Heavy Flamer",
@@ -5821,8 +5821,8 @@
             {
               "id": "ujP0G",
               "label": "Rapid Rocket Launcher (18\u0022, A2, AP(2), Deadly(3))",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 25,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Rapid Rocket Launcher",
@@ -5846,8 +5846,8 @@
             {
               "id": "RB2bzJH",
               "label": "Rapid Heavy Machinegun (30\u0022, A6, AP(1))",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 45,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Rapid Heavy Machinegun",
@@ -5877,8 +5877,8 @@
             {
               "id": "myUsB",
               "label": "Overclocked Engine (Agile)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 10,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -5898,8 +5898,8 @@
             {
               "id": "HHlRQXj",
               "label": "Tire Chains (Strider)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 10,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -5931,8 +5931,8 @@
             {
               "id": "m-Amlhow",
               "label": "Blood Mark (Rending Mark)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 95,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -6033,8 +6033,8 @@
             {
               "id": "myUsB",
               "label": "Overclocked Engine (Agile)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 10,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -6054,8 +6054,8 @@
             {
               "id": "HHlRQXj",
               "label": "Tire Chains (Strider)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 15,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -6129,8 +6129,8 @@
             {
               "id": "F9CzQLD",
               "label": "Snazzy Gun-Array (24\u0022, A6), Boom-MG (18\u0022, A3, AP(1), Unstoppable)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 25,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Snazzy Gun-Array",
@@ -6161,8 +6161,8 @@
             {
               "id": "x1xrXay",
               "label": "Jump-Rocket Pod (18\u0022, A3, AP(1), Indirect), Shock Launcher (18\u0022, A6, AP(1), Surge)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 40,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Jump-Rocket Pod",
@@ -6243,8 +6243,8 @@
             {
               "id": "m-Amlhow",
               "label": "Blood Mark (Rending Mark)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 95,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -6340,8 +6340,8 @@
             {
               "id": "myUsB",
               "label": "Overclocked Engine (Agile)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 10,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -6361,8 +6361,8 @@
             {
               "id": "HHlRQXj",
               "label": "Tire Chains (Strider)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 10,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -6396,8 +6396,8 @@
             {
               "id": "66MXVPhaFh",
               "label": "Rapid Rocket Launcher (18\u0022, A2, AP(2), Deadly(3))",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 15,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Rapid Rocket Launcher",
@@ -6421,8 +6421,8 @@
             {
               "id": "SMv7S",
               "label": "Rapid Heavy Machinegun (30\u0022, A6, AP(1))",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 35,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Rapid Heavy Machinegun",
@@ -6452,8 +6452,8 @@
             {
               "id": "XJAPU",
               "label": "Boarding Rig (Transport(6))",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 20,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -6474,8 +6474,8 @@
             {
               "id": "FDehc",
               "label": "Wrecking Ram (Impact(5))",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 30,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -6593,8 +6593,8 @@
             {
               "id": "myUsB",
               "label": "Overclocked Engine (Agile)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 15,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -6614,8 +6614,8 @@
             {
               "id": "HHlRQXj",
               "label": "Tire Chains (Strider)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 20,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -6649,8 +6649,8 @@
             {
               "id": "XNOlo0-LVg",
               "label": "Heavy Rocket Launcher (24\u0022, A2, AP(2), Deadly(3))",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 10,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Heavy Rocket Launcher",
@@ -6674,8 +6674,8 @@
             {
               "id": "xZ6v6",
               "label": "Heavy Cannon (30\u0022, A2, AP(2), Blast(3))",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 15,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Heavy Cannon",
@@ -6713,8 +6713,8 @@
             {
               "id": "66MXVPhaFh",
               "label": "Rapid Rocket Launcher (18\u0022, A2, AP(2), Deadly(3))",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 15,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Rapid Rocket Launcher",
@@ -6738,8 +6738,8 @@
             {
               "id": "SMv7S",
               "label": "Rapid Heavy Machinegun (30\u0022, A6, AP(1))",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 35,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Rapid Heavy Machinegun",
@@ -6769,8 +6769,8 @@
             {
               "id": "XJAPU",
               "label": "Boarding Rig (Transport(6))",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 20,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -6791,8 +6791,8 @@
             {
               "id": "FDehc",
               "label": "Wrecking Ram (Impact(5))",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 30,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -6923,8 +6923,8 @@
             {
               "id": "myUsB",
               "label": "Overclocked Engine (Agile)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 25,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -6944,8 +6944,8 @@
             {
               "id": "HHlRQXj",
               "label": "Tire Chains (Strider)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 35,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -7046,8 +7046,8 @@
             {
               "id": "aM9Rh",
               "label": "Heavy Mortar (24\u0022, A1, AP(1), Blast(6), Indirect)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 20,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Heavy Mortar",
@@ -7089,8 +7089,8 @@
             {
               "id": "66MXVPhaFh",
               "label": "Rapid Rocket Launcher (18\u0022, A2, AP(2), Deadly(3))",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 15,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Rapid Rocket Launcher",
@@ -7114,8 +7114,8 @@
             {
               "id": "SMv7S",
               "label": "Rapid Heavy Machinegun (30\u0022, A6, AP(1))",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 35,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Rapid Heavy Machinegun",
@@ -7145,8 +7145,8 @@
             {
               "id": "XJAPU",
               "label": "Boarding Rig (Transport(6))",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 20,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -7167,8 +7167,8 @@
             {
               "id": "FDehc",
               "label": "Wrecking Ram (Impact(5))",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 30,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -7286,8 +7286,8 @@
             {
               "id": "w_A9pxvsWe",
               "label": "Great Harpoon Cannon (18\u0022, A1, AP(4), Deadly(6))",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 10,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Great Harpoon Cannon",
@@ -7325,8 +7325,8 @@
             {
               "id": "fN53X",
               "label": "Psy-Totem (Caster(2))",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 5,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -7347,8 +7347,8 @@
             {
               "id": "3vWov",
               "label": "Twin Killer-Rocket Pod (12\u0022, A2, Deadly(3), Tear)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 10,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Twin Killer-Rocket Pod",
@@ -7376,8 +7376,8 @@
             {
               "id": "xMTeP",
               "label": "Twin Rocket Launcher (18\u0022, A2, AP(2), Deadly(3))",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 25,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Twin Rocket Launcher",
@@ -7401,8 +7401,8 @@
             {
               "id": "S_s1u",
               "label": "Twin Heavy Machinegun (30\u0022, A6, AP(1))",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 50,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Twin Heavy Machinegun",
@@ -7493,8 +7493,8 @@
             {
               "id": "CoZw8",
               "label": "Walker Claw (A4, AP(4))",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 5,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Walker Claw",
@@ -7524,8 +7524,8 @@
             {
               "id": "W1-3R",
               "label": "Disposable Killer-Rocket Pod (12\u0022, A2, Deadly(3), Limited, Tear)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 15,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Disposable Killer-Rocket Pod",
@@ -7557,8 +7557,8 @@
             {
               "id": "oxXpA",
               "label": "Disposable Heavy Flamer (12\u0022, A2, AP(1), Blast(3), Limited, Reliable)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 20,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Disposable Heavy Flamer",
@@ -7590,8 +7590,8 @@
             {
               "id": "OEaZk",
               "label": "Disposable Rocket Launcher (18\u0022, A2, AP(2), Deadly(3), Limited)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 20,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Disposable Rocket Launcher",
@@ -7619,8 +7619,8 @@
             {
               "id": "5oIkx",
               "label": "Disposable Heavy Machinegun (30\u0022, A6, AP(1), Limited)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 30,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Disposable Heavy Machinegun",
@@ -7643,8 +7643,8 @@
             {
               "id": "1_3d7",
               "label": "Disposable Plasma Cannon (30\u0022, A2, AP(4), Blast(3), Limited)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 40,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Disposable Plasma Cannon",
@@ -7684,8 +7684,8 @@
             {
               "id": "m-Amlhow",
               "label": "Blood Mark (Rending Mark)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 95,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -7786,8 +7786,8 @@
             {
               "id": "kVV3n7FKWG",
               "label": "Rapid Heavy Flamer (12\u0022, A2, AP(1), Blast(3), Reliable)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 5,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Rapid Heavy Flamer",
@@ -7896,8 +7896,8 @@
             {
               "id": "m-Amlhow",
               "label": "Blood Mark (Rending Mark)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 95,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -8020,8 +8020,8 @@
             {
               "id": "qRNTcaEhCw",
               "label": "Buster Cannon (30\u0022, A1, AP(3), Deadly(3))",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 10,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Buster Cannon",
@@ -8084,8 +8084,8 @@
             {
               "id": "L2V3sdcAB3",
               "label": "Heavy Bombs (A1, AP(3), Deadly(6), Strafing)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 15,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Heavy Bombs",
@@ -8323,8 +8323,8 @@
             {
               "id": "7mCKzvdS3L",
               "label": "Deathstorm Plasma Cannon (30\u0022, A3, AP(4), Blast(3))",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 10,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Deathstorm Plasma Cannon",
@@ -8362,8 +8362,8 @@
             {
               "id": "l0yIE",
               "label": "Great Walker Claw (A6, AP(4))",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 5,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Great Walker Claw",
@@ -8395,8 +8395,8 @@
             {
               "id": "fZDIA",
               "label": "Heavy Machinegun Array (30\u0022, A6, AP(1))",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 25,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Heavy Machinegun Array",
@@ -8426,8 +8426,8 @@
             {
               "id": "eDSeXAm",
               "label": "Disposable Heavy Flamer (12\u0022, A2, AP(1), Blast(3), Limited, Reliable)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 20,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Disposable Heavy Flamer",
@@ -8459,8 +8459,8 @@
             {
               "id": "JNLfD_u",
               "label": "Disposable Plasma Rifle (24\u0022, A4, AP(4), Limited)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 30,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Disposable Plasma Rifle",
@@ -8495,8 +8495,8 @@
             {
               "id": "GZXdf",
               "label": "Boarding Rig (Transport(11))",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 35,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -8751,8 +8751,8 @@
             {
               "id": "gS6BB9_ccp",
               "label": "Killer Buster Cannon (30\u0022, A2, AP(3), Deadly(3), Indirect)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 65,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Killer Buster Cannon",
@@ -8794,8 +8794,8 @@
             {
               "id": "M8vGgj39eb",
               "label": "Great Harpoon Cannon (18\u0022, A1, AP(4), Deadly(6))",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 10,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Great Harpoon Cannon",
@@ -8833,8 +8833,8 @@
             {
               "id": "uprPz0-F",
               "label": "Psy-Totem (Caster(2))",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 5,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -8855,8 +8855,8 @@
             {
               "id": "xhlBuFht",
               "label": "Twin Killer-Rocket Pod (12\u0022, A2, Deadly(3), Tear)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 10,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Twin Killer-Rocket Pod",
@@ -8884,8 +8884,8 @@
             {
               "id": "ilK_swl5",
               "label": "Twin Rocket Launcher (18\u0022, A2, AP(2), Deadly(3))",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 25,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Twin Rocket Launcher",
@@ -8909,8 +8909,8 @@
             {
               "id": "mNM48_nS",
               "label": "Twin Heavy Machinegun (30\u0022, A6, AP(1))",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 50,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Twin Heavy Machinegun",
@@ -8942,8 +8942,8 @@
             {
               "id": "66MXVPhaFh",
               "label": "Rapid Rocket Launcher (18\u0022, A2, AP(2), Deadly(3))",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 15,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Rapid Rocket Launcher",
@@ -8967,8 +8967,8 @@
             {
               "id": "SMv7S",
               "label": "Rapid Heavy Machinegun (30\u0022, A6, AP(1))",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 35,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Rapid Heavy Machinegun",
@@ -8998,8 +8998,8 @@
             {
               "id": "XJAPU",
               "label": "Boarding Rig (Transport(6))",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 20,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -9020,8 +9020,8 @@
             {
               "id": "FDehc",
               "label": "Wrecking Ram (Impact(5))",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 30,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -9123,8 +9123,8 @@
             {
               "id": "aM9Rh",
               "label": "Heavy Mortar (24\u0022, A1, AP(1), Blast(6), Indirect)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 20,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Heavy Mortar",
@@ -9268,8 +9268,8 @@
             {
               "id": "GjPH5CQx",
               "label": "Heavy Rocket Launcher (24\u0022, A4, AP(2), Deadly(3))",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 20,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Heavy Rocket Launcher",
@@ -9293,8 +9293,8 @@
             {
               "id": "a93085WU",
               "label": "Heavy Cannon (30\u0022, A4, AP(2), Blast(3))",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 30,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Heavy Cannon",
@@ -9332,8 +9332,8 @@
             {
               "id": "F6PJ89Mi",
               "label": "Rocket Launcher (18\u0022, A1, AP(2), Deadly(3))",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 5,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Rocket Launcher",
@@ -9357,8 +9357,8 @@
             {
               "id": "N8YzlL1L",
               "label": "Heavy Machinegun (30\u0022, A3, AP(1))",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 20,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Heavy Machinegun",
@@ -9390,8 +9390,8 @@
             {
               "id": "bM7mQ9mcxI",
               "label": "Great Psy-Totem (Caster(3))",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 5,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -9412,8 +9412,8 @@
             {
               "id": "ypHazOX9fl",
               "label": "Heavy Mortar (24\u0022, A1, AP(1), Blast(6), Indirect)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 5,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Heavy Mortar",
@@ -9453,8 +9453,8 @@
             {
               "id": "00DIFhVQGk",
               "label": "Boarding Rig (Transport(6))",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 20,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -9475,8 +9475,8 @@
             {
               "id": "4Nw-0oj4",
               "label": "Overclocked Engine (Agile)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 30,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -9496,8 +9496,8 @@
             {
               "id": "UCwFU-LEF5",
               "label": "Wrecking Ram (Impact(5))",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 30,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -9518,8 +9518,8 @@
             {
               "id": "ymQ1CPmy",
               "label": "Tire Chains (Strider)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 45,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [

@@ -84,8 +84,8 @@
             {
               "id": "D8t0PJs",
               "label": "Dual Energy Claws (A8, Rending)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 20,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Dual Energy Claws",
@@ -108,8 +108,8 @@
             {
               "id": "P1GV-es",
               "label": "Dual Energy Falchions (A8, Reliable)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 20,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Dual Energy Falchions",
@@ -198,8 +198,8 @@
             {
               "id": "ggRn1H4",
               "label": "Energy Staff (A4, AP(1), Bane)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 15,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Energy Staff",
@@ -246,8 +246,8 @@
             {
               "id": "jhwD8bO",
               "label": "Energy Halberd (A4, AP(1), Reliable)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 25,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Energy Halberd",
@@ -314,8 +314,8 @@
             {
               "id": "bfU5SXq",
               "label": "Slayer Hammer (A2, AP(2), Deadly(3), Rending)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 35,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Slayer Hammer",
@@ -355,8 +355,8 @@
             {
               "id": "5HpHlih2",
               "label": "Guardian (Melee Shrouding Aura)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 5,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -376,8 +376,8 @@
             {
               "id": "rNnBn077",
               "label": "Preacher (Bane in Melee Aura)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 15,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -397,8 +397,8 @@
             {
               "id": "-PTZ7awpKY",
               "label": "Lieutenant (Rapid Rush Aura)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 25,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -418,8 +418,8 @@
             {
               "id": "7tAvKHMu",
               "label": "Captain (Bane when Shooting Aura)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 25,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -439,8 +439,8 @@
             {
               "id": "zrQdU7Xmvw",
               "label": "Knight Champion (Unpredictable Fighter Aura)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 30,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -516,8 +516,8 @@
             {
               "id": "5Y_6Q",
               "label": "Paladin (Ravage(1))",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 5,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -638,8 +638,8 @@
             {
               "id": "BD72T",
               "label": "Combat Bike (Twin Heavy Rifle (24\u0022, A2, AP(1)), Fast, Tough(3))",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 115,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Twin Heavy Rifle",
@@ -685,8 +685,8 @@
             {
               "id": "sa762ggwGb",
               "label": "Artillerist (Re-Position Artillery)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 10,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -706,8 +706,8 @@
             {
               "id": "11eUUG4e",
               "label": "Preacher (Bane in Melee Aura)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 15,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -727,8 +727,8 @@
             {
               "id": "a8DRWXDe",
               "label": "Lieutenant (Rapid Rush Aura)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 25,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -748,8 +748,8 @@
             {
               "id": "2C37BHv-",
               "label": "Captain (Bane when Shooting Aura)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 25,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -769,8 +769,8 @@
             {
               "id": "jYmIYrH51K",
               "label": "Knight Champion (Unpredictable Fighter Aura)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 30,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -833,8 +833,8 @@
             {
               "id": "xBNeUxnAHp",
               "label": "Commander (Re-Deployment)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 65,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -891,8 +891,8 @@
             {
               "id": "a4EWOPWxhg",
               "label": "Flamer Pistol (6\u0022, A1, Blast(3), Reliable), CCW (A2)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 5,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "CCW",
@@ -928,8 +928,8 @@
             {
               "id": "TNRyK0JQPD",
               "label": "Flamer Pistol (6\u0022, A1, Blast(3), Reliable), Combat Shield (Bash (A1), Shielded)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 5,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Flamer Pistol",
@@ -1058,8 +1058,8 @@
             {
               "id": "D_iD_jqd",
               "label": "Master Heavy Pistol (12\u0022, A2, AP(1))",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 10,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Master Heavy Pistol",
@@ -1177,8 +1177,8 @@
             {
               "id": "nzcC_NyV",
               "label": "Flamer-Mod (12\u0022, A1, Blast(3), Limited, Reliable)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 10,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Flamer-Mod",
@@ -1415,8 +1415,8 @@
             {
               "id": "jfcQB",
               "label": "Purifier (Ravage(1))",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 5,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1603,8 +1603,8 @@
             {
               "id": "RRpl4rl",
               "label": "Dual Energy Falchions (A4, Reliable)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 5,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Dual Energy Falchions",
@@ -1641,8 +1641,8 @@
             {
               "id": "XIIJB",
               "label": "Master Heavy Pistol (12\u0022, A2, AP(1))",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 5,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Master Heavy Pistol",
@@ -1685,8 +1685,8 @@
             {
               "id": "fX19QXFN36",
               "label": "Gravity Pistol (9\u0022, A1, AP(1), Blast(3), Lacerate)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 5,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Gravity Pistol",
@@ -1785,8 +1785,8 @@
             {
               "id": "JXo_1",
               "label": "Flamer-Mod (12\u0022, A1, Blast(3), Limited, Reliable)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 5,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Flamer-Mod",
@@ -1967,8 +1967,8 @@
             {
               "id": "5ShBoiI",
               "label": "Energy Staff (A2, AP(1), Bane)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 10,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Energy Staff",
@@ -1991,8 +1991,8 @@
             {
               "id": "EzyJqGt",
               "label": "Energy Halberd (A2, AP(1), Reliable)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 10,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Energy Halberd",
@@ -2059,8 +2059,8 @@
             {
               "id": "F5HAGFy",
               "label": "Slayer Hammer (A1, AP(2), Deadly(3), Rending)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 20,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Slayer Hammer",
@@ -2125,8 +2125,8 @@
             {
               "id": "BD72T",
               "label": "Combat Bike (Twin Heavy Rifle (24\u0022, A2, AP(1)), Fast, Tough(3))",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 95,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Twin Heavy Rifle",
@@ -2172,8 +2172,8 @@
             {
               "id": "sa762ggwGb",
               "label": "Artillerist (Re-Position Artillery)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 10,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -2193,8 +2193,8 @@
             {
               "id": "11eUUG4e",
               "label": "Preacher (Bane in Melee Aura)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 15,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -2214,8 +2214,8 @@
             {
               "id": "a8DRWXDe",
               "label": "Lieutenant (Rapid Rush Aura)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 25,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -2235,8 +2235,8 @@
             {
               "id": "2C37BHv-",
               "label": "Captain (Bane when Shooting Aura)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 25,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -2256,8 +2256,8 @@
             {
               "id": "jYmIYrH51K",
               "label": "Knight Champion (Unpredictable Fighter Aura)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 30,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -2320,8 +2320,8 @@
             {
               "id": "xBNeUxnAHp",
               "label": "Commander (Re-Deployment)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 65,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -2375,8 +2375,8 @@
             {
               "id": "jfcQB",
               "label": "Purifier (Ravage(1))",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 5,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -2777,8 +2777,8 @@
             {
               "id": "Jl9eK",
               "label": "Purifiers (Ravage(1))",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 15,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -2853,8 +2853,8 @@
             {
               "id": "HL-09",
               "label": "The Founder\u0027s Banner (Versatile Reach Aura)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 10,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -2874,8 +2874,8 @@
             {
               "id": "jN7Gysn7So",
               "label": "Detachment Banner (Courage Aura)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 10,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -2895,8 +2895,8 @@
             {
               "id": "hGIiK",
               "label": "Medical Training (Regeneration Aura)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 20,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -3025,8 +3025,8 @@
             {
               "id": "ZzRVK",
               "label": "Assault Storm Rifle (24\u0022, A2, AP(1))",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 10,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Assault Storm Rifle",
@@ -3179,8 +3179,8 @@
             {
               "id": "CG3g6",
               "label": "Slayer Hammer (A1, AP(2), Deadly(3), Rending)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 30,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Slayer Hammer",
@@ -3208,8 +3208,8 @@
             {
               "id": "dahLT",
               "label": "Dual Energy Falchions (A4, Reliable)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 30,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Dual Energy Falchions",
@@ -3244,8 +3244,8 @@
             {
               "id": "nL4N0",
               "label": "Purifiers (Ravage(1))",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 10,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -3320,8 +3320,8 @@
             {
               "id": "HL-09",
               "label": "The Founder\u0027s Banner (Versatile Reach Aura)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 5,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -3341,8 +3341,8 @@
             {
               "id": "jN7Gysn7So",
               "label": "Detachment Banner (Courage Aura)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 5,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -3362,8 +3362,8 @@
             {
               "id": "hGIiK",
               "label": "Medical Training (Regeneration Aura)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 15,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -3888,8 +3888,8 @@
             {
               "id": "5JVgb",
               "label": "Paladins (Ravage(1))",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 10,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -3922,8 +3922,8 @@
             {
               "id": "HL-09",
               "label": "The Founder\u0027s Banner (Versatile Reach Aura)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 15,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -3943,8 +3943,8 @@
             {
               "id": "jN7Gysn7So",
               "label": "Detachment Banner (Courage Aura)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 30,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -3964,8 +3964,8 @@
             {
               "id": "hGIiK",
               "label": "Medical Training (Regeneration Aura)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 55,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -4177,8 +4177,8 @@
             {
               "id": "XGAxqyqy",
               "label": "Targeting Array (Unstoppable Mark)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 25,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -4421,8 +4421,8 @@
             {
               "id": "XGAxqyqy",
               "label": "Targeting Array (Unstoppable Mark)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 25,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -4532,8 +4532,8 @@
             {
               "id": "hlVasEmIgQ",
               "label": "Twin Heavy Rifle Array (24\u0022, A12, AP(1))",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 15,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Twin Heavy Rifle Array",
@@ -4802,8 +4802,8 @@
             {
               "id": "OAsGaS8",
               "label": "Twin Heavy Flamer (12\u0022, A2, AP(1), Blast(3), Reliable)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 5,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Twin Heavy Flamer",
@@ -5182,8 +5182,8 @@
             {
               "id": "OAsGaS8",
               "label": "Twin Heavy Flamer (12\u0022, A2, AP(1), Blast(3), Reliable)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": -5,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Twin Heavy Flamer",
@@ -5734,8 +5734,8 @@
             {
               "id": "wpqUg",
               "label": "Teleport Engine (Teleport)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 100,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -6238,8 +6238,8 @@
             {
               "id": "iQjjP",
               "label": "Heavy Flak Cannon (30\u0022, A2, AP(3), Deadly(3), Unstoppable)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 60,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Heavy Flak Cannon",

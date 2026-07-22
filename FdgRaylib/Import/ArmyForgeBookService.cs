@@ -29,12 +29,13 @@ public static class ArmyForgeBookService
 
     private static readonly HttpClient Http = new() { Timeout = TimeSpan.FromSeconds(30) };
 
-    /// <summary>What one book's refresh changed. <see cref="Unmatched"/> options had an Id absent from the
-    /// live endpoint (OPR renamed/removed the option since the snapshot) and were left untouched;
-    /// <see cref="Deltas"/> are informational base-cost differences on priced options - reported, not applied
-    /// (that would be a separate #218-class change).</summary>
+    /// <summary>What one book's refresh changed. <see cref="Priced"/> options were flagged unpriced and now
+    /// carry a real cost recovered from OPR's per-unit costs[] (the core #219 fix); <see cref="Repriced"/>
+    /// already-priced options whose number moved; <see cref="Unmatched"/> options had a (unit, option) key
+    /// absent from the live book (OPR renamed/removed it) and were left untouched. <see cref="Samples"/> shows
+    /// a few concrete before/after lines.</summary>
     public sealed record BookCostRefreshReport(
-        string BookName, int Flagged, int Cleared, int Unmatched, IReadOnlyList<string> Deltas);
+        string BookName, int Priced, int Repriced, int Unmatched, IReadOnlyList<string> Samples);
 
     /// <summary>OPR official-books listing for Grimdark Future, as a case-insensitive book-name -> uid map.</summary>
     public static async Task<IReadOnlyDictionary<string, string>> FetchBookIndexAsync(CancellationToken ct = default)
@@ -57,40 +58,44 @@ public static class ArmyForgeBookService
         GetAsync($"{BaseUrl}/api/army-books/{Uri.EscapeDataString(uid)}?gameSystem={GameSystem}",
             $"army book '{uid}'", ct);
 
-    /// <summary>Pure, network-free core: re-import <paramref name="rawBookJson"/> and copy only the
-    /// costUnpriced flags onto <paramref name="bundled"/>, matched by option Id. Mutates <paramref name="bundled"/>
-    /// in place and returns what changed. Priced options keep their existing cost (any drift is reported, not
-    /// applied).</summary>
-    public static BookCostRefreshReport RefreshCostFlags(BookFile bundled, string rawBookJson)
+    /// <summary>Pure, network-free core: re-import <paramref name="rawBookJson"/> (now cost-aware) and copy the
+    /// resolved per-unit Cost + costUnpriced onto <paramref name="bundled"/>, matched by (unit Id, option Id) -
+    /// the SAME option Id costs differently on different units, so a flat option-Id match would smear one price
+    /// across all of them. Mutates <paramref name="bundled"/> in place and returns what changed.</summary>
+    public static BookCostRefreshReport RefreshCosts(BookFile bundled, string rawBookJson)
     {
         BookFile fresh = OprBookImporter.Import(rawBookJson, bundled.Source, bundled.License);
 
-        var freshUnpriced = new HashSet<string>();
-        var freshCost = new Dictionary<string, int>();
-        foreach (UpgradeOption o in Options(fresh))
-        {
-            if (o.CostUnpriced) freshUnpriced.Add(o.Id);
-            else freshCost[o.Id] = o.Cost;
-        }
+        var freshByKey = new Dictionary<(string Unit, string Option), UpgradeOption>();
+        foreach (RosterUnit u in fresh.Units)
+            foreach (UpgradeOption o in u.Sections.SelectMany(s => s.Options))
+                freshByKey[(u.Id, o.Id)] = o;
 
-        int flagged = 0, cleared = 0, unmatched = 0;
-        var deltas = new List<string>();
-        foreach (UpgradeOption o in Options(bundled))
-        {
-            bool shouldBeUnpriced = freshUnpriced.Contains(o.Id);
-            if (!shouldBeUnpriced && !freshCost.ContainsKey(o.Id)) { unmatched++; continue; }
+        int priced = 0, repriced = 0, unmatched = 0;
+        var samples = new List<string>();
+        foreach (RosterUnit u in bundled.Units)
+            foreach (UpgradeOption o in u.Sections.SelectMany(s => s.Options))
+            {
+                if (!freshByKey.TryGetValue((u.Id, o.Id), out UpgradeOption? f)) { unmatched++; continue; }
 
-            if (shouldBeUnpriced && !o.CostUnpriced) { o.CostUnpriced = true; flagged++; }
-            else if (!shouldBeUnpriced && o.CostUnpriced) { o.CostUnpriced = false; cleared++; }
+                bool wasUnpriced = o.CostUnpriced;
+                int oldCost = o.Cost;
+                o.Cost = f.Cost;
+                o.CostUnpriced = f.CostUnpriced;
 
-            if (!shouldBeUnpriced && freshCost.TryGetValue(o.Id, out int fc) && fc != o.Cost)
-                deltas.Add($"{o.Label}: bundled {o.Cost} pts, OPR {fc} pts");
-        }
-        return new BookCostRefreshReport(bundled.Name, flagged, cleared, unmatched, deltas);
+                if (wasUnpriced && !f.CostUnpriced)
+                {
+                    priced++;
+                    if (samples.Count < 8) samples.Add($"{u.Name} / {o.Label}: was unpriced -> {f.Cost} pts");
+                }
+                else if (!wasUnpriced && oldCost != f.Cost)
+                {
+                    repriced++;
+                    if (samples.Count < 8) samples.Add($"{u.Name} / {o.Label}: {oldCost} -> {f.Cost} pts");
+                }
+            }
+        return new BookCostRefreshReport(bundled.Name, priced, repriced, unmatched, samples);
     }
-
-    private static IEnumerable<UpgradeOption> Options(BookFile book) =>
-        book.Units.SelectMany(u => u.Sections).SelectMany(s => s.Options);
 
     private static async Task<string> GetAsync(string url, string what, CancellationToken ct)
     {

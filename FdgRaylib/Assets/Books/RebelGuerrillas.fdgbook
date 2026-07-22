@@ -99,8 +99,8 @@
             {
               "id": "ZWP-Crp",
               "label": "Resistance Spirit (Shielded Aura)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 15,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -120,8 +120,8 @@
             {
               "id": "WfE1__1",
               "label": "Pathfinder (Strider Aura)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 20,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -141,8 +141,8 @@
             {
               "id": "pWqWIhGokH",
               "label": "Revolutionary (Guerrilla Boost Aura)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 25,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -162,8 +162,8 @@
             {
               "id": "kfW0lVR",
               "label": "Captain (Rending in Melee Aura)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 40,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -450,8 +450,8 @@
             {
               "id": "dKOZLs-GS_",
               "label": "Energy Lance (A2, AP(1), Thrust)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 10,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Energy Lance",
@@ -505,8 +505,8 @@
             {
               "id": "zLIdQDDYoF",
               "label": "Pioneer Leader (Ambush, Counter-Attack)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 10,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -530,8 +530,8 @@
             {
               "id": "H0WHN",
               "label": "Wings (Ambush, Flying)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 15,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -555,8 +555,8 @@
             {
               "id": "UlJtKrfmQn",
               "label": "Elites Leader (Fearless, Stealth)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 15,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -580,8 +580,8 @@
             {
               "id": "09XT4",
               "label": "Spotter Leader (Scout, Stealth)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 15,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -605,8 +605,8 @@
             {
               "id": "ADmoO",
               "label": "Combat Bike (Fast, Tough(3))",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 40,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -643,8 +643,8 @@
             {
               "id": "0VTietnJ1U",
               "label": "Bounty Hunter (Takedown Strike)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 15,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -664,8 +664,8 @@
             {
               "id": "vgH9nBfZ",
               "label": "Pathfinder (Strider Aura)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 20,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -685,8 +685,8 @@
             {
               "id": "Df3XKhnM",
               "label": "Revolutionary (Guerrilla Boost Aura)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 25,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -706,8 +706,8 @@
             {
               "id": "GqYrohet",
               "label": "Sergeant (Bane when Shooting Aura)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 25,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -727,8 +727,8 @@
             {
               "id": "m2R78z1c",
               "label": "Captain (Rending in Melee Aura)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 40,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -996,8 +996,8 @@
             {
               "id": "ltlKD",
               "label": "Cluster-GL (24\u0022, A1, Blast(3), Lacerate, Precise)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 15,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Cluster-GL",
@@ -1084,8 +1084,8 @@
             {
               "id": "UJvS1m9dMH",
               "label": "Spotting Beacon (Piercing Tag(1))",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 25,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1106,8 +1106,8 @@
             {
               "id": "xnJSctQ",
               "label": "Medical Training (Regeneration Aura)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 40,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1791,8 +1791,8 @@
             {
               "id": "PGpoT-aV",
               "label": "Spotting Beacon (Piercing Tag(1))",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 25,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -2043,8 +2043,8 @@
             {
               "id": "2nK9A",
               "label": "Cluster-GL (24\u0022, A1, Blast(3), Lacerate, Precise)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 20,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Cluster-GL",
@@ -2107,8 +2107,8 @@
             {
               "id": "8Gs25",
               "label": "Medical Training (Regeneration Aura)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 20,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -2128,8 +2128,8 @@
             {
               "id": "9lgOsCnjN-",
               "label": "Spotting Beacon (Piercing Tag(1))",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 25,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -2704,8 +2704,8 @@
             {
               "id": "WaQLgsUiQI",
               "label": "Light Cluster-GL (18\u0022, A1, Blast(3), Lacerate, Precise)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 15,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Light Cluster-GL",
@@ -2938,8 +2938,8 @@
             {
               "id": "01QXWMr",
               "label": "Cluster-GL (24\u0022, A1, Blast(3), Lacerate, Precise)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 15,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Cluster-GL",
@@ -3183,8 +3183,8 @@
             {
               "id": "CFu_2KAzQX",
               "label": "Rebel Radio (Courage Buff)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 5,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -3295,8 +3295,8 @@
             {
               "id": "XNa9d5CuU4",
               "label": "Rebel Assault (Furious Mark)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 5,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -3316,8 +3316,8 @@
             {
               "id": "10m-Qn5",
               "label": "Extra Seats (Transport(6))",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 20,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -3338,8 +3338,8 @@
             {
               "id": "llWBh1efTF",
               "label": "Spotting Beacon (Piercing Tag(1))",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 25,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -3429,8 +3429,8 @@
             {
               "id": "CFu_2KAzQX",
               "label": "Rebel Radio (Courage Buff)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 5,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -3486,7 +3486,7 @@
               "id": "XezCQopjG3",
               "label": "Light Cluster Cannon (30\u0022, A1, Blast(3), Lacerate, Precise)",
               "cost": 0,
-              "costUnpriced": true,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Light Cluster Cannon",
@@ -3518,8 +3518,8 @@
             {
               "id": "8I6DjNk",
               "label": "Light Battle Cannon (24\u0022, A1, AP(2), Blast(3))",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 5,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Light Battle Cannon",
@@ -3693,8 +3693,8 @@
             {
               "id": "CFu_2KAzQX",
               "label": "Rebel Radio (Courage Buff)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 5,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -3749,8 +3749,8 @@
             {
               "id": "IFyRUi7",
               "label": "Heavy Flamer (12\u0022, A1, AP(1), Blast(3), Reliable), Walker Chainsaw (A6, AP(1))",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 5,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Heavy Flamer",
@@ -3842,8 +3842,8 @@
             {
               "id": "h5-WnHhM",
               "label": "Rebel Assault (Furious Mark)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 5,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [

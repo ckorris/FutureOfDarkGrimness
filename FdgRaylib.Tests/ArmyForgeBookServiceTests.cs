@@ -5,86 +5,87 @@ using NUnit.Framework;
 
 namespace FdgRaylib.Tests;
 
-// #219 Slice 2 — the pure, network-free core of --import-book: transfer OPR's "cost absent" distinction onto
-// a bundled book's costUnpriced flags by option Id, without disturbing anything else. OPR omits the `cost`
-// key on options it prices in its own algorithm (o2 below) and writes a number on the rest (o1); the bundled
-// snapshots lost that distinction (all costUnpriced=false), and this restores it.
+// #219 — the pure, network-free core of --import-book: re-import OPR's book (now cost-aware) and copy the
+// resolved per-unit Cost + costUnpriced onto a bundled book, matched by (unit Id, option Id). OPR omits the
+// flat `cost` on options it prices per unit in a `costs[]` array; the bundled snapshots lost that (all showed
+// 0 / costUnpriced), and this restores the real numbers - keyed per unit, since the SAME option costs
+// differently on different units.
 [TestFixture]
 public class ArmyForgeBookServiceTests
 {
-    // Minimal OPR army-book JSON: o1 is priced (cost:10), o2 omits `cost` entirely (unpriced), o3 is an
-    // explicit free option (cost:0 - genuinely free, must NOT be flagged).
+    // Two units share package P1. "pistol" omits `cost` but is priced per unit in `costs[]` (10 on the noble,
+    // 5 on the protector). "free" is an explicit 0. "mystery" has neither - genuinely unpriced.
     private const string OprJson = """
     {
-      "name": "Test Legion", "versionString": "3.5.3",
+      "name": "Cost Legion", "versionString": "3.5.3",
       "units": [
-        { "id": "u1", "name": "Grunts", "size": 5, "cost": 100, "quality": 4, "defense": 4,
-          "weapons": [ { "name": "Blade", "count": 5, "range": null, "attacks": 2, "specialRules": [] } ],
-          "rules": [], "upgrades": ["P1"] }
+        { "id": "noble",    "name": "Noble",    "size": 1, "cost": 45, "quality": 3, "defense": 4, "upgrades": ["P1"] },
+        { "id": "protector","name": "Protector","size": 1, "cost": 35, "quality": 4, "defense": 5, "upgrades": ["P1"] }
       ],
       "upgradePackages": [
         { "uid": "P1", "sections": [
-          { "id":"s1", "label":"Wargear", "affects":{"type":"any"},
+          { "id":"s1", "label":"Wargear",
             "options":[
-              { "id":"o1", "label":"Paid Blade", "cost":10 },
-              { "id":"o2", "label":"Hexer" },
-              { "id":"o3", "label":"Free Trinket", "cost":0 }
+              { "id":"pistol", "label":"Master Laser Pistol",
+                "costs":[ {"cost":10,"unitId":"noble"}, {"cost":5,"unitId":"protector"} ] },
+              { "id":"free", "label":"Trinket", "cost":0 },
+              { "id":"mystery", "label":"Unknowable" }
             ] }
         ] }
       ]
     }
     """;
 
-    private static BookFile BundledFromOpr()
+    // Simulate the shipped catalog state before this fix (post Slice-2): the cost-blind importer read no
+    // per-unit price, so the shared "pistol" option sat at 0 / flagged unpriced on every unit.
+    private static BookFile StaleBundled()
     {
-        // Simulate the shipped catalog state: imported once, then a later re-serialize stamped every flag false.
         BookFile book = OprBookImporter.Import(OprJson, "OnePageRules", "CC-BY-SA 4.0");
         foreach (UpgradeOption o in book.Units.SelectMany(u => u.Sections).SelectMany(s => s.Options))
-            o.CostUnpriced = false;
+        {
+            if (o.Id == "pistol") { o.Cost = 0; o.CostUnpriced = true; }
+        }
         return book;
     }
 
-    private static UpgradeOption Opt(BookFile book, string id) =>
-        book.Units.SelectMany(u => u.Sections).SelectMany(s => s.Options).First(o => o.Id == id);
+    private static UpgradeOption Opt(BookFile book, string unit, string id) =>
+        book.Units.Single(u => u.Name == unit).Sections.SelectMany(s => s.Options).First(o => o.Id == id);
 
     [Test]
-    public void RefreshCostFlags_FlagsOnlyTheCostAbsentOption()
+    public void RefreshCosts_RecoversPerUnitPrices()
     {
-        BookFile book = BundledFromOpr();
+        BookFile book = StaleBundled();
 
-        var report = ArmyForgeBookService.RefreshCostFlags(book, OprJson);
+        var report = ArmyForgeBookService.RefreshCosts(book, OprJson);
 
-        Assert.That(Opt(book, "o2").CostUnpriced, Is.True, "the option OPR left without a cost is now flagged");
-        Assert.That(Opt(book, "o1").CostUnpriced, Is.False, "a priced option stays priced");
-        Assert.That(Opt(book, "o3").CostUnpriced, Is.False, "an explicit 0 (genuinely free) stays unflagged");
-        Assert.That(report.Flagged, Is.EqualTo(1));
-        Assert.That(report.Cleared, Is.EqualTo(0));
+        Assert.That(Opt(book, "Noble", "pistol").Cost, Is.EqualTo(10), "the noble's price, not the protector's");
+        Assert.That(Opt(book, "Protector", "pistol").Cost, Is.EqualTo(5), "same option Id, different unit, different price");
+        Assert.That(Opt(book, "Noble", "pistol").CostUnpriced, Is.False);
+        Assert.That(report.Priced, Is.EqualTo(2), "one recovered cost per unit");
         Assert.That(report.Unmatched, Is.EqualTo(0));
     }
 
     [Test]
-    public void RefreshCostFlags_LeavesUnknownOptionsUntouchedAndCountsThem()
+    public void RefreshCosts_LeavesGenuinelyUnpricedAndFreeAlone()
     {
-        BookFile book = BundledFromOpr();
-        // An option the live endpoint no longer has (OPR renamed/removed it since the snapshot).
-        book.Units[0].Sections[0].Options.Add(new UpgradeOption { Id = "gone", Label = "Legacy", Cost = 5 });
+        BookFile book = StaleBundled();
 
-        var report = ArmyForgeBookService.RefreshCostFlags(book, OprJson);
+        ArmyForgeBookService.RefreshCosts(book, OprJson);
 
-        Assert.That(Opt(book, "gone").CostUnpriced, Is.False, "an unmatched option is left exactly as-is");
-        Assert.That(report.Unmatched, Is.EqualTo(1));
-        Assert.That(report.Flagged, Is.EqualTo(1));
+        Assert.That(Opt(book, "Noble", "mystery").CostUnpriced, Is.True, "no cost and no costs[] stays flagged");
+        Assert.That(Opt(book, "Noble", "free").Cost, Is.EqualTo(0));
+        Assert.That(Opt(book, "Noble", "free").CostUnpriced, Is.False, "an explicit 0 stays a real free option");
     }
 
     [Test]
-    public void RefreshCostFlags_ClearsAStaleTrueFlag()
+    public void RefreshCosts_CountsUnmatchedOptionsWithoutTouchingThem()
     {
-        BookFile book = BundledFromOpr();
-        Opt(book, "o1").CostUnpriced = true; // wrongly marked unpriced; the live book prices it
+        BookFile book = StaleBundled();
+        book.Units[0].Sections[0].Options.Add(new UpgradeOption { Id = "gone", Label = "Legacy", Cost = 5 });
 
-        var report = ArmyForgeBookService.RefreshCostFlags(book, OprJson);
+        var report = ArmyForgeBookService.RefreshCosts(book, OprJson);
 
-        Assert.That(Opt(book, "o1").CostUnpriced, Is.False);
-        Assert.That(report.Cleared, Is.EqualTo(1));
+        Assert.That(Opt(book, "Noble", "gone").Cost, Is.EqualTo(5), "an option the live book lacks is untouched");
+        Assert.That(report.Unmatched, Is.EqualTo(1));
     }
 }

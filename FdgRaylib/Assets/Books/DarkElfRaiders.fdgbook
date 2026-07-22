@@ -145,8 +145,8 @@
             {
               "id": "OF9Sx",
               "label": "Elite Barb Rifle (24\u0022, A2, Lacerate)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 10,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Elite Barb Rifle",
@@ -269,8 +269,8 @@
             {
               "id": "72YCO",
               "label": "Alchemist (Melee Shrouding Aura)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 5,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -290,8 +290,8 @@
             {
               "id": "zI_fAj026V",
               "label": "Agoniser (Furious Aura)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 5,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -311,8 +311,8 @@
             {
               "id": "CInxn",
               "label": "Raid Leader (Harassing Boost Aura)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 25,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -332,8 +332,8 @@
             {
               "id": "V2DHs8gWPS",
               "label": "Tormentor (Piercing Hunter Aura)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 40,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -365,8 +365,8 @@
             {
               "id": "tqqvOv1r3k",
               "label": "Expert Raider (Piercing Frenzy)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 5,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -386,8 +386,8 @@
             {
               "id": "Tad3IZSL",
               "label": "Witch Master (Melee Evasion)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 5,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -407,8 +407,8 @@
             {
               "id": "K828nk68",
               "label": "Wings (Ambush, Flying)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 20,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -432,8 +432,8 @@
             {
               "id": "tlYrY5aW",
               "label": "Hoverboard (Agile, Scout, Strider)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 25,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -461,8 +461,8 @@
             {
               "id": "dlmDvq9R",
               "label": "Jetbike (Twin Barb Rifle (24\u0022, A2, Lacerate), Fast, Strider, Tough(3))",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 95,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Twin Barb Rifle",
@@ -644,8 +644,8 @@
             {
               "id": "OF9Sx",
               "label": "Elite Barb Rifle (24\u0022, A2, Lacerate)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 10,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Elite Barb Rifle",
@@ -875,8 +875,8 @@
             {
               "id": "19TEz0xrtA",
               "label": "Expert Raider (Piercing Frenzy)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 5,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -896,8 +896,8 @@
             {
               "id": "z9aKVy9a",
               "label": "Witch Master (Melee Evasion)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 5,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -917,8 +917,8 @@
             {
               "id": "1fuYgfzG",
               "label": "Wings (Ambush, Flying)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 20,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -942,8 +942,8 @@
             {
               "id": "2KU97-IA",
               "label": "Hoverboard (Agile, Scout, Strider)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 25,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -971,8 +971,8 @@
             {
               "id": "cpR6iStC",
               "label": "Jetbike (Twin Barb Rifle (24\u0022, A2, Lacerate), Armor(4), Fast, Strider, Tough(3))",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 100,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Twin Barb Rifle",
@@ -1032,8 +1032,8 @@
             {
               "id": "oO52Kz1P6z",
               "label": "Alchemist (Melee Shrouding Aura)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 5,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1053,8 +1053,8 @@
             {
               "id": "GB29mXG5",
               "label": "Dread Ruler (Courage Aura)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 5,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1074,8 +1074,8 @@
             {
               "id": "HSPRqQ81",
               "label": "Agoniser (Furious Aura)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 5,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1095,8 +1095,8 @@
             {
               "id": "m4uv7izx",
               "label": "Tormentor (Piercing Hunter Aura)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 40,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1255,8 +1255,8 @@
             {
               "id": "OF9Sx",
               "label": "Elite Barb Rifle (24\u0022, A2, Lacerate)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 10,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Elite Barb Rifle",
@@ -1486,8 +1486,8 @@
             {
               "id": "19TEz0xrtA",
               "label": "Expert Raider (Piercing Frenzy)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 5,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1507,8 +1507,8 @@
             {
               "id": "z9aKVy9a",
               "label": "Witch Master (Melee Evasion)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 5,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1528,8 +1528,8 @@
             {
               "id": "1fuYgfzG",
               "label": "Wings (Ambush, Flying)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 15,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1553,8 +1553,8 @@
             {
               "id": "2KU97-IA",
               "label": "Hoverboard (Agile, Scout, Strider)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 20,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1582,8 +1582,8 @@
             {
               "id": "cpR6iStC",
               "label": "Jetbike (Twin Barb Rifle (24\u0022, A2, Lacerate), Armor(4), Fast, Strider, Tough(3))",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 80,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Twin Barb Rifle",
@@ -1643,8 +1643,8 @@
             {
               "id": "oO52Kz1P6z",
               "label": "Alchemist (Melee Shrouding Aura)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 5,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1664,8 +1664,8 @@
             {
               "id": "GB29mXG5",
               "label": "Dread Ruler (Courage Aura)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 5,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1685,8 +1685,8 @@
             {
               "id": "HSPRqQ81",
               "label": "Agoniser (Furious Aura)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 5,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1706,8 +1706,8 @@
             {
               "id": "m4uv7izx",
               "label": "Tormentor (Piercing Hunter Aura)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 40,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1789,8 +1789,8 @@
             {
               "id": "aD8YT",
               "label": "Syringe Pistol (12\u0022, A1, Deadly(3)), CCW (A2)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 5,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Syringe Pistol",
@@ -1837,7 +1837,7 @@
               "id": "VYb40",
               "label": "Elite Barb Pistol (12\u0022, A2, Lacerate)",
               "cost": 0,
-              "costUnpriced": true,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Elite Barb Pistol",
@@ -2088,8 +2088,8 @@
             {
               "id": "YZaA7WAn",
               "label": "Alchemist (Melee Shrouding Aura)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 5,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -2109,8 +2109,8 @@
             {
               "id": "rF1vmNX7",
               "label": "Dread Ruler (Courage Aura)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 5,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -2130,8 +2130,8 @@
             {
               "id": "Sw86xIJG",
               "label": "Agoniser (Furious Aura)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 5,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -2151,8 +2151,8 @@
             {
               "id": "rqpT_rM1Dj",
               "label": "Raid Leader (Harassing Boost Aura)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 25,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -2172,8 +2172,8 @@
             {
               "id": "uEZu5yf7",
               "label": "Soul Carrier (Caster(2))",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 35,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -2194,8 +2194,8 @@
             {
               "id": "3ASVkOOA",
               "label": "Master Soul Carrier (Caster(3))",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 55,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -2874,8 +2874,8 @@
             {
               "id": "FX7hM",
               "label": "Expert Raider (Piercing Frenzy)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 15,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -3223,8 +3223,8 @@
             {
               "id": "FX7hM",
               "label": "Expert Raider (Piercing Frenzy)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 15,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -3524,8 +3524,8 @@
             {
               "id": "FX7hM",
               "label": "Expert Raider (Piercing Frenzy)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 10,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -3873,8 +3873,8 @@
             {
               "id": "FX7hM",
               "label": "Expert Raider (Piercing Frenzy)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 10,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -3952,8 +3952,8 @@
             {
               "id": "m4bwF",
               "label": "Ghoulish Claws (A4, Rending)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 5,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Ghoulish Claws",
@@ -4257,8 +4257,8 @@
             {
               "id": "FX7hM",
               "label": "Expert Raider (Piercing Frenzy)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 25,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -4658,8 +4658,8 @@
             {
               "id": "FX7hM",
               "label": "Expert Raider (Piercing Frenzy)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 20,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -4819,8 +4819,8 @@
             {
               "id": "0vdHm",
               "label": "Dual Scissor Claws (A4, AP(4))",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 5,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Dual Scissor Claws",
@@ -5092,8 +5092,8 @@
             {
               "id": "z3Kcy3jFEd",
               "label": "Pathfinder Beast Handler (Vanguard)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 10,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -5113,8 +5113,8 @@
             {
               "id": "izIXABk",
               "label": "Combat Beast Handler (Unpredictable Fighter)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 15,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -5190,8 +5190,8 @@
             {
               "id": "z3Kcy3jFEd",
               "label": "Pathfinder Beast Handler (Vanguard)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 10,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -5211,8 +5211,8 @@
             {
               "id": "izIXABk",
               "label": "Combat Beast Handler (Unpredictable Fighter)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 20,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -5288,8 +5288,8 @@
             {
               "id": "z3Kcy3jFEd",
               "label": "Pathfinder Beast Handler (Vanguard)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 15,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -5309,8 +5309,8 @@
             {
               "id": "izIXABk",
               "label": "Combat Beast Handler (Unpredictable Fighter)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 20,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -5410,8 +5410,8 @@
             {
               "id": "P5OSd",
               "label": "Soul Vortex (18\u0022, A2, AP(1), Deadly(3), Bane)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 10,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Soul Vortex",
@@ -5439,8 +5439,8 @@
             {
               "id": "JlvnqeanaI",
               "label": "Soul Blaster (24\u0022, A2, AP(1), Blast(3), Bane)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 25,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Soul Blaster",
@@ -5480,8 +5480,8 @@
             {
               "id": "sR0IekidGx",
               "label": "Widow Maker (Precision Fighting Mark)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 20,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -5501,8 +5501,8 @@
             {
               "id": "5-UGrEh",
               "label": "Soul Conductor (Regeneration Buff)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 30,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -5607,8 +5607,8 @@
             {
               "id": "4Ztb0atvro",
               "label": "Twin EMP Rifle (18\u0022, A4, Rending)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 25,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Twin EMP Rifle",
@@ -5798,8 +5798,8 @@
             {
               "id": "zCAwIqIWzZ",
               "label": "Pain Fueled (Regenerative Strength)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 10,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -5819,8 +5819,8 @@
             {
               "id": "syd5dBBpqT",
               "label": "Widow Maker (Precision Fighting Mark)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 20,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -5985,8 +5985,8 @@
             {
               "id": "HjVnYuj9q2",
               "label": "Dark-Sails (Agile)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 10,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -6006,8 +6006,8 @@
             {
               "id": "4NBgs7__i5",
               "label": "Shield of Darkness (Stealth)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 15,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -6027,8 +6027,8 @@
             {
               "id": "u7ZGwAeEJg",
               "label": "Open Deck (Transport(6))",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 20,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -6049,8 +6049,8 @@
             {
               "id": "3uXyAKkqil",
               "label": "Energy Ram (Impact(5))",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 30,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -6249,8 +6249,8 @@
             {
               "id": "XgdsG8kxSQ",
               "label": "Barb Cannon (30\u0022, A3, Lacerate)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 15,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Barb Cannon",
@@ -6273,8 +6273,8 @@
             {
               "id": "5ulld7-1NK",
               "label": "Laser Cannon (36\u0022, A1, AP(3), Deadly(3))",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 50,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Laser Cannon",
@@ -6509,8 +6509,8 @@
             {
               "id": "jm-YygKyNA",
               "label": "Laser Cannon (36\u0022, A1, AP(3), Deadly(3))",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 35,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Laser Cannon",

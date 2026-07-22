@@ -163,7 +163,7 @@ if (importBookIdx >= 0 && importBookIdx + 1 < args.Length)
         if (bookPaths.Length == 0) { Console.WriteLine($"No {BookFile.EXTENSION_WITH_PERIOD} files in '{target}'."); return; }
 
         var index = FdgRaylib.Import.ArmyForgeBookService.FetchBookIndexAsync().GetAwaiter().GetResult();
-        int totalFlagged = 0, missing = 0;
+        int totalPriced = 0, missing = 0;
         foreach (string path in bookPaths)
         {
             BookFile book = JsonSerializer.Deserialize<BookFile>(File.ReadAllText(path), RuleJson.Options)!;
@@ -174,16 +174,15 @@ if (importBookIdx >= 0 && importBookIdx + 1 < args.Length)
                 continue;
             }
             string raw = FdgRaylib.Import.ArmyForgeBookService.FetchBookJsonAsync(uid).GetAwaiter().GetResult();
-            var report = FdgRaylib.Import.ArmyForgeBookService.RefreshCostFlags(book, raw);
+            var report = FdgRaylib.Import.ArmyForgeBookService.RefreshCosts(book, raw);
             File.WriteAllText(path, JsonSerializer.Serialize(book, RuleJson.Options));
-            totalFlagged += report.Flagged;
-            Console.WriteLine($"  {report.BookName}: flagged {report.Flagged} unpriced, cleared {report.Cleared}, "
-                + $"{report.Unmatched} option(s) not in the live book"
-                + (report.Deltas.Count > 0 ? $", {report.Deltas.Count} base-cost delta(s)" : "") + ".");
-            foreach (string d in report.Deltas.Take(20)) Console.WriteLine($"      delta: {d}");
+            totalPriced += report.Priced;
+            Console.WriteLine($"  {report.BookName}: recovered {report.Priced} previously-unpriced cost(s), "
+                + $"repriced {report.Repriced}, {report.Unmatched} option(s) not in the live book.");
+            foreach (string s in report.Samples) Console.WriteLine($"      {s}");
         }
         Console.WriteLine($"Done: {bookPaths.Length - missing}/{bookPaths.Length} book(s) refreshed, "
-            + $"{totalFlagged} option(s) flagged unpriced.");
+            + $"{totalPriced} option(s) got a recovered price.");
     }
     catch (Exception ex)
     {

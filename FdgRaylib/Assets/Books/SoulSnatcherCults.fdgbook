@@ -89,8 +89,8 @@
             {
               "id": "Djni3N3Z_K",
               "label": "Heavy Claws (A4, AP(1), Rending)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 10,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Heavy Claws",
@@ -160,8 +160,8 @@
             {
               "id": "aR1LzKvY0r",
               "label": "Patient Stalker (Scout, Strider)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 5,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -185,8 +185,8 @@
             {
               "id": "hztPOe-bPQ",
               "label": "Displacer Glands (Ambush, Regeneration)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 5,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -210,8 +210,8 @@
             {
               "id": "IvXaes82zb",
               "label": "Spasmic Glands (Bounding, Regeneration)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 5,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -247,8 +247,8 @@
             {
               "id": "S1ztEJoc",
               "label": "Psy-Warden (Grounded Reinforcement Aura)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 5,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -268,8 +268,8 @@
             {
               "id": "EbUkZe3X",
               "label": "Psychic Idol (Spell Conduit)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 10,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -289,8 +289,8 @@
             {
               "id": "Y2I6nisT",
               "label": "Prime (Melee Slayer Aura)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 25,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -310,8 +310,8 @@
             {
               "id": "7NwyrabEOw",
               "label": "Psychic Affinity (Caster(2))",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 40,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -332,8 +332,8 @@
             {
               "id": "T6PSKxJ9mI",
               "label": "Master Psychic Affinity (Caster(3))",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 60,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -354,8 +354,8 @@
             {
               "id": "VwKzsRUlPt",
               "label": "Tactical Master (Re-Deployment)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 65,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -443,7 +443,7 @@
               "id": "AC1dEDqR8G",
               "label": "Massive Heavy Hammer (A1, AP(2), Blast(3))",
               "cost": 0,
-              "costUnpriced": true,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Massive Heavy Hammer",
@@ -467,8 +467,8 @@
             {
               "id": "bRZWewuiRN",
               "label": "Massive Heavy Great Weapon (A2, AP(4))",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 5,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Massive Heavy Great Weapon",
@@ -486,8 +486,8 @@
             {
               "id": "cDSncCnZv0",
               "label": "Massive Pick Hammer (A1, AP(3), Deadly(3))",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 5,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Massive Pick Hammer",
@@ -556,8 +556,8 @@
             {
               "id": "jRBJQz0b",
               "label": "Psy-Warden (Grounded Reinforcement Aura)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 5,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -577,8 +577,8 @@
             {
               "id": "S_wcvqaT",
               "label": "Psychic Idol (Spell Conduit)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 10,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -598,8 +598,8 @@
             {
               "id": "kfme4Gin",
               "label": "Mad Scientist (Regeneration Aura)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 30,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -619,8 +619,8 @@
             {
               "id": "6i3sS-NG",
               "label": "Tactical Master (Re-Deployment)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 65,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -728,8 +728,8 @@
             {
               "id": "4xYmo",
               "label": "Cult Pistol (12\u0022, A2), CCW (A2)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 5,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Cult Pistol",
@@ -837,8 +837,8 @@
             {
               "id": "yACOKuP3eE",
               "label": "Cult Rifle (24\u0022, A2)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 5,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Cult Rifle",
@@ -856,8 +856,8 @@
             {
               "id": "1S7Q6WEf-m",
               "label": "Cult Shotgun (12\u0022, A3, AP(1))",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 10,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Cult Shotgun",
@@ -915,8 +915,8 @@
             {
               "id": "y09tN",
               "label": "Combat Bike (Fast)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 10,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -969,8 +969,8 @@
             {
               "id": "R3h7auaOKT",
               "label": "Psy-Warden (Grounded Reinforcement Aura)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 5,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -990,8 +990,8 @@
             {
               "id": "TPWZF",
               "label": "Cult Banner (Fear(2))",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 20,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1012,8 +1012,8 @@
             {
               "id": "WL9Vl",
               "label": "Mad Scientist (Regeneration Aura)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 30,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1033,8 +1033,8 @@
             {
               "id": "X9_-q",
               "label": "Propagandist (Quick Shot Aura)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 35,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1054,8 +1054,8 @@
             {
               "id": "BuvY_",
               "label": "Mage (Caster(2))",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 40,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1076,8 +1076,8 @@
             {
               "id": "gfrbK",
               "label": "Tactical Master (Re-Deployment)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 65,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1306,8 +1306,8 @@
             {
               "id": "kzKKhAaaCk",
               "label": "Assassin (Takedown Strike)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 15,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1518,8 +1518,8 @@
             {
               "id": "vbmGzRjk",
               "label": "Cult Standard (Grounded Precision Aura)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 30,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1984,8 +1984,8 @@
             {
               "id": "QEdhTq7X",
               "label": "Cult Standard (Grounded Precision Aura)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 15,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -2093,8 +2093,8 @@
             {
               "id": "jD7KB",
               "label": "Sharp Claw (A2, Disintegrate)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 5,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Sharp Claw",
@@ -2402,8 +2402,8 @@
             {
               "id": "p3X3QzKf",
               "label": "Cult Standard (Grounded Precision Aura)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 20,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -2484,8 +2484,8 @@
             {
               "id": "v5l7j",
               "label": "Blade Claw (A2, AP(1), Rending)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 5,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Blade Claw",
@@ -2732,8 +2732,8 @@
             {
               "id": "aiPwkUh_",
               "label": "Spasmic Glands (Bounding)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 5,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -2856,8 +2856,8 @@
             {
               "id": "HMGN9uwblI",
               "label": "Patient Stalker (Scout)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 5,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -2977,8 +2977,8 @@
             {
               "id": "r_IPmjw",
               "label": "Burst Pistol (12\u0022, A3)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 5,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Burst Pistol",
@@ -3079,8 +3079,8 @@
             {
               "id": "Xh2gB",
               "label": "Sharp Claw (A2, Disintegrate)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 5,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Sharp Claw",
@@ -3255,8 +3255,8 @@
             {
               "id": "7DUgdd4",
               "label": "Mining Laser (18\u0022, A1, AP(3), Deadly(3))",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 5,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Mining Laser",
@@ -3311,8 +3311,8 @@
             {
               "id": "QYrrrgdm",
               "label": "Propaganda Megaphone (Mind Control)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 35,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -3450,8 +3450,8 @@
             {
               "id": "eR1i1Si",
               "label": "Flare Gun (Speed Buff)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 30,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -3471,8 +3471,8 @@
             {
               "id": "bxpDTid",
               "label": "Spotter (Increased Shooting Range Buff)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 35,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -3492,8 +3492,8 @@
             {
               "id": "vYm8iFn",
               "label": "Survey Vehicle (Precision Shooting Mark)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 35,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -4025,8 +4025,8 @@
             {
               "id": "yxR-N",
               "label": "Propaganda Megaphone (Mind Control)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 35,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [

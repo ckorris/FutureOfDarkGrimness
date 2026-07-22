@@ -74,8 +74,8 @@
             {
               "id": "W2Y-b",
               "label": "Warlord (Precision Fighter Aura)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 20,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -95,8 +95,8 @@
             {
               "id": "5fOzQ0PH26",
               "label": "Wasteland Survivor (Scrapper Boost Aura)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 20,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -159,8 +159,8 @@
             {
               "id": "vfX1a",
               "label": "Merchant (Unpredictable Shooter Aura)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 40,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -196,7 +196,7 @@
               "id": "L0iISLa41A",
               "label": "Hunting Hook (A3, Rending)",
               "cost": 0,
-              "costUnpriced": true,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Hunting Hook",
@@ -262,8 +262,8 @@
             {
               "id": "CyPGn",
               "label": "Goad-Spear (A3, Precise, Shatter)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 10,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Goad-Spear",
@@ -304,8 +304,8 @@
             {
               "id": "AQFJs",
               "label": "Elite Energy Rifle (24\u0022, A2, AP(1))",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 5,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Elite Energy Rifle",
@@ -335,8 +335,8 @@
             {
               "id": "mgC7vFIA",
               "label": "Stalker (Furious, Melee Evasion)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 5,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -381,8 +381,8 @@
             {
               "id": "Mdywcpxn",
               "label": "Jetpack (Ambush, Crossing Attack(1), Flying)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 20,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -411,8 +411,8 @@
             {
               "id": "vUNcCoH5",
               "label": "Gunner Beast (Bounding, Fortified, Tough(3))",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 60,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -441,8 +441,8 @@
             {
               "id": "QNa60ZQX",
               "label": "Assault Beast (Bounding, Impact(2), Tough(3))",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 60,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -586,8 +586,8 @@
             {
               "id": "eazGK",
               "label": "Hunting Hook (A3, Rending)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 10,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Hunting Hook",
@@ -652,8 +652,8 @@
             {
               "id": "XErG3",
               "label": "Elite Scrap Rifle (24\u0022, A2)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 5,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Elite Scrap Rifle",
@@ -846,8 +846,8 @@
             {
               "id": "9OxQPFPq",
               "label": "Warlord (Precision Fighter Aura)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 20,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -867,8 +867,8 @@
             {
               "id": "bhW24qjY",
               "label": "Wasteland Survivor (Scrapper Boost Aura)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 20,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -931,8 +931,8 @@
             {
               "id": "MVFaZNhw",
               "label": "Pathfinder (Scout Aura)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 35,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -964,8 +964,8 @@
             {
               "id": "mgC7vFIA",
               "label": "Stalker (Furious, Melee Evasion)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 5,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1010,8 +1010,8 @@
             {
               "id": "Mdywcpxn",
               "label": "Jetpack (Ambush, Crossing Attack(1), Flying)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 15,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1040,8 +1040,8 @@
             {
               "id": "vUNcCoH5",
               "label": "Gunner Beast (Bounding, Fortified, Tough(3))",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 40,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1070,8 +1070,8 @@
             {
               "id": "QNa60ZQX",
               "label": "Assault Beast (Bounding, Impact(2), Tough(3))",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 45,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1418,8 +1418,8 @@
             {
               "id": "0aSn2zr7",
               "label": "Hunter\u0027s Mark (Precision Tag(1))",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 15,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1836,8 +1836,8 @@
             {
               "id": "0aSn2zr7",
               "label": "Hunter\u0027s Mark (Precision Tag(1))",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 15,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -2255,8 +2255,8 @@
             {
               "id": "MZw86xjhD-",
               "label": "Charged Ammo (Ambushing Piercing Shot)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 20,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -2309,8 +2309,8 @@
             {
               "id": "0aSn2zr7",
               "label": "Hunter\u0027s Mark (Precision Tag(1))",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 15,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -2395,8 +2395,8 @@
             {
               "id": "jnd0AJduQ0",
               "label": "Sharp Claws (A2, Shatter)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 25,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Sharp Claws",
@@ -2433,8 +2433,8 @@
             {
               "id": "_ipXdfGPgC",
               "label": "Territorial Beast (Scout)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 5,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -2599,8 +2599,8 @@
             {
               "id": "fGqBKZFubx",
               "label": "Hunting Hook (A2, Rending)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 5,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Hunting Hook",
@@ -2790,8 +2790,8 @@
             {
               "id": "0aSn2zr7",
               "label": "Hunter\u0027s Mark (Precision Tag(1))",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 15,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -2885,8 +2885,8 @@
             {
               "id": "Gd8DciFe9Y",
               "label": "Transport Platform (Transport(11))",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 35,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -2963,8 +2963,8 @@
             {
               "id": "pA4NhTC8Aq",
               "label": "Fearsome Roar (Morale Debuff)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 5,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -3104,8 +3104,8 @@
             {
               "id": "8SaXCMasW0",
               "label": "Heavy Rail Cannon (30\u0022, A6, AP(2), Deadly(3), Unstoppable)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 30,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Heavy Rail Cannon",
@@ -3170,8 +3170,8 @@
             {
               "id": "wBQ7Zz8_",
               "label": "Fearsome Roar (Morale Debuff)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 5,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -3302,8 +3302,8 @@
             {
               "id": "6wXXSodCnJ",
               "label": "Scatter Cannon (30\u0022, A6, AP(2), Blast(3), Indirect)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": -20,
+              "costUnpriced": false,
               "weaponsGained": [
                 {
                   "name": "Scatter Cannon",
@@ -3374,8 +3374,8 @@
             {
               "id": "SrFlGFFI",
               "label": "Fearsome Roar (Morale Debuff)",
-              "cost": 0,
-              "costUnpriced": true,
+              "cost": 5,
+              "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
