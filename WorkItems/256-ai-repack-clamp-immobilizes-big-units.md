@@ -90,13 +90,21 @@ moves the pinned solo baseline (#191 D1 hashes). **Benchmark rerun deliberately 
   base widths (nearest-first, alternating sides) at the SAME step and returns the first that
   validates. The measure-and-correct loop absorbs the extra travel (a side-step trades forward
   advance for clearance, never exceeding the per-model budget), so the G3 always-valid fallbacks are
-  untouched. Wired at both straight-candidate call sites (solo `AiDefineMovementResolver` +
-  Tactician charge in `MacroActionGenerator`); `PlanMoveToward`'s path candidate passes no reaim
-  (corridor width is S4). A "sole obstacle" gate keeps every non-stacking case byte-identical, so the
-  solo-bot behavior pins are unaffected (benchmark rerun still deferred per S1). Verified: 1805/1805
-  engine tests green (new pin `ValidateWithBackoff_FriendlyBlocksCenteredAdvance_SideStepsAndKeepsAdvance`:
-  a 6-model unit whose centered 4" advance lands on a friendly re-aims to keep >2.5" net move, still
-  within budget, with a real lateral component), full `dotnet build` clean, headless smoke exit 0.
+  untouched. Wired at ALL THREE ladder call sites: the two straight-candidate ones (solo
+  `AiDefineMovementResolver` + Tactician charge in `MacroActionGenerator`) and `PlanMoveToward`'s
+  path candidate (`BuildPathCandidate` gained the same param; the offset shifts the endpoint fan-out
+  anchor perpendicular to the path's FINAL segment while the funnelled waypoints stay on-route).
+  The path-candidate wiring matters most: the Tactician's objective advances - the actual
+  Warriors-toward-(7,30) acceptance row - route through PlanMoveToward even in an open field (trivial
+  2-point path), so a straight-candidate-only re-aim would have missed the headline case (caught
+  in-session before push; an earlier draft of this note wrongly deferred it to S4 - S4 remains only
+  the corridor-WIDTH problem, mid-path clipping of wide formations). A "sole obstacle" gate keeps
+  every non-stacking case byte-identical, so the solo-bot behavior pins are unaffected (benchmark
+  rerun still deferred per S1). Verified: 1811/1811 engine tests green (2 new pins:
+  `ValidateWithBackoff_FriendlyBlocksCenteredAdvance_SideStepsAndKeepsAdvance` - 6-model unit, centered
+  4" advance lands on a friendly, re-aims to >2.5" net with a real lateral component, within budget;
+  `PlanMoveToward_FriendlyOnArrivalSpot_SideStepsAndKeepsAdvance` - same via the path route end-to-end,
+  where pre-fix the ladder halves to ~1"), full `dotnet build` clean, headless smoke exit 0.
   **Save-level re-probe deferred**: `WayTooManyInBack.fdgsave` + screenshot live on the OLD desktop,
   not copied to this machine yet - the S2/S3 acceptance rows (Warriors toward (7,30): 4" -> was
   halved to 0.96"; the Battle Brothers corner pocket) still want a `fdglab analyze` re-run once the
