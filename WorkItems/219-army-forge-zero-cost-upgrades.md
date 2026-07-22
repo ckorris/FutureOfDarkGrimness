@@ -1,6 +1,6 @@
 # 219 — Audit Army Forge upgrades for missing point costs
 
-**Status**: todo
+**Status**: done (validated 2026-07-22)
 **Related**: #156 (Army Forge builder), #218 (adjacent Replace-All cost bug), `OprBookImporter.cs`, `FdgRaylib/Assets/Books/*.fdgbook`
 
 ## Goal
@@ -110,3 +110,21 @@ User has spotted multiple upgrade options in-app that should cost points but sho
 **DONE 2026-07-22** (see latest note). Nothing left open here.
 
 ## Outcome
+**Validated 2026-07-22 (Chris).** The premise the item was filed on was twice wrong and the real fix is
+better than either fork we discussed: OPR DOES publish these prices, in a per-unit `costs[]` array (keyed by
+unit id, because the same option costs differently on different units) that our importer never read - it read
+only the singular `cost`, which OPR omits on internally-priced options. Fixed end to end:
+
+- **Builder / catalog** - `OprBookImporter` now resolves `Cost` from `costs[]` by unit id (engine); `--import-book`
+  (new CLI + `ArmyForgeBookService`) re-priced all 47 bundled books, 3467 real prices recovered, 0 left unpriced.
+  Cross-checked every option against live OPR: 8434/8434 match.
+- **Verbatim share-import** - `OprListImporter.MapUnit` attributes each selection's per-unit price to the unit
+  (the cost rides on `selectedUpgrades[].option`), so an imported unit reads base+upgrades with nothing parked
+  in `UnattributedPoints`. Chris's HEF Elven Noble imports as 120 pts / 0 unattributed, matching Army Forge.
+- **Safety net** - `ListValidator` warns on any selection that is ever genuinely unpriced (now ~never on the
+  bundled catalog). Kept.
+
+Shipped across engine commits `3651174`/`ddb6998`/`d568b77` and app commits; merged with concurrent
+#256/#196/#257/#258 work (9 books auto-merged clean - their rule-authoring + my costs) and pushed to
+origin/master `8d32b5a`. Engine 1820/1820, app 399/399, smoke 0.
+Follow-on ideas noted but out of scope here: none open.
