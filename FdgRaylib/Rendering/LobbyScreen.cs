@@ -220,16 +220,17 @@ public class LobbyScreen : IAppScreen
             chosen[i] = players[i].ColorIndex >= 0 ? players[i].ColorIndex : null;
         int[] effectiveColor = PlayerColorOptions.ResolveIndices(chosen);
 
-        if (ImGui.BeginTable("##ptable", 7,
+        if (ImGui.BeginTable("##ptable", 8,
             ImGuiTableFlags.Borders | ImGuiTableFlags.RowBg | ImGuiTableFlags.SizingStretchProp))
         {
-            ImGui.TableSetupColumn("Name",    ImGuiTableColumnFlags.WidthStretch, 0.17f);
+            ImGui.TableSetupColumn("Name",    ImGuiTableColumnFlags.WidthStretch, 0.16f);
             ImGui.TableSetupColumn("Type",    ImGuiTableColumnFlags.WidthStretch, 0.07f);
-            ImGui.TableSetupColumn("Army",    ImGuiTableColumnFlags.WidthStretch, 0.20f);
-            ImGui.TableSetupColumn("Faction", ImGuiTableColumnFlags.WidthStretch, 0.16f);
+            ImGui.TableSetupColumn("Army",    ImGuiTableColumnFlags.WidthStretch, 0.18f);
+            ImGui.TableSetupColumn("Faction", ImGuiTableColumnFlags.WidthStretch, 0.14f);
             ImGui.TableSetupColumn("Pts",     ImGuiTableColumnFlags.WidthStretch, 0.06f);
-            ImGui.TableSetupColumn("Color",   ImGuiTableColumnFlags.WidthStretch, 0.13f);
-            ImGui.TableSetupColumn("Actions", ImGuiTableColumnFlags.WidthStretch, 0.21f);
+            ImGui.TableSetupColumn("Team",    ImGuiTableColumnFlags.WidthStretch, 0.10f);
+            ImGui.TableSetupColumn("Color",   ImGuiTableColumnFlags.WidthStretch, 0.12f);
+            ImGui.TableSetupColumn("Actions", ImGuiTableColumnFlags.WidthStretch, 0.17f);
             ImGui.PushStyleColor(ImGuiCol.Text, HeaderAccent);
             ImGui.TableHeadersRow();
             ImGui.PopStyleColor();
@@ -256,6 +257,9 @@ public class LobbyScreen : IAppScreen
                 if (overPoints) ImGui.PushStyleColor(ImGuiCol.Text, new Vector4(1f, 0.3f, 0.3f, 1f));
                 ImGui.TextUnformatted(info.ArmyListSummary.PointCost.ToString());
                 if (overPoints) ImGui.PopStyleColor();
+
+                ImGui.TableNextColumn();
+                DrawTeamCell(i, info, players.Count);
 
                 ImGui.TableNextColumn();
                 DrawColorCell(i, info, players, effectiveColor);
@@ -340,6 +344,29 @@ public class LobbyScreen : IAppScreen
                 if (ImGui.Selectable(takenByOther ? $"{name} (taken)" : name, j == effectiveColor[rowIdx],
                         takenByOther ? ImGuiSelectableFlags.Disabled : ImGuiSelectableFlags.None))
                     _viewModel.SetPlayerColor(info.PlayerID, j);
+            }
+            ImGui.EndCombo();
+        }
+        ImGui.EndDisabled();
+    }
+
+    // #255: the team cell - a dropdown of Team 1..Team N, N = player count (as many teams as players;
+    // multiple players per team is the point, but launch is blocked while ALL share one team). The
+    // current value renders faithfully even when out of range (a stale team left by a departed player -
+    // kept by design). Picks write through the view model (host: applies + rebroadcasts; client:
+    // requests its own row from the host), same gate as Load Army / Color. Disabled when resuming -
+    // saved games keep their saved teams.
+    private void DrawTeamCell(int rowIdx, LobbyPlayerInfoSummary info, int playerCount)
+    {
+        bool canModify = _viewModel!.CheckCanModifyPlayerIDInfo(info.PlayerID) && !_viewModel.IsResumeMode;
+        ImGui.BeginDisabled(!canModify);
+        ImGui.SetNextItemWidth(ImGui.GetContentRegionAvail().X);
+        if (ImGui.BeginCombo($"##team{rowIdx}", $"Team {(int)info.TeamNumber}"))
+        {
+            for (int n = 1; n <= playerCount; n++)
+            {
+                if (ImGui.Selectable($"Team {n}", n == (int)info.TeamNumber))
+                    _viewModel.SetPlayerTeam(info.PlayerID, (ETeamOption)n);
             }
             ImGui.EndCombo();
         }
