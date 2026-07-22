@@ -328,6 +328,7 @@ public class ArmyForgeScreen : IAppScreen
         if (roster is null) return;
         _list.Units.Add(new BuilderUnit { RosterUnitId = roster.Id, ModelCount = roster.BaseModelCount });
         _selectedListIndex = _list.Units.Count - 1;
+        _selectedRosterId = null; // list + roster selection are mutually exclusive (the config pane shows one)
     }
 
     internal void RemoveFromList(int index)
@@ -477,7 +478,11 @@ public class ArmyForgeScreen : IAppScreen
             bool selected = unit.Id == _selectedRosterId;
             if (ImGui.Selectable($"{unit.Name}##roster-{unit.Id}", selected, ImGuiSelectableFlags.AllowDoubleClick))
             {
+                // Selecting a roster ("available") unit shows its read-only preview in the config pane; clear
+                // any list selection so the preview isn't masked by a still-selected list unit (list takes
+                // precedence in DrawConfigPane).
                 _selectedRosterId = unit.Id;
+                _selectedListIndex = null;
                 if (ImGui.IsMouseDoubleClicked(ImGuiMouseButton.Left)) AddToList(unit.Id);
             }
             ImGui.SameLine(ImGui.GetContentRegionAvail().X - ImGui.CalcTextSize($"{unit.BasePointCost}").X);
@@ -586,7 +591,10 @@ public class ArmyForgeScreen : IAppScreen
         Vector2 rowStart = ImGui.GetCursorPos();
         ImGui.SetNextItemAllowOverlap();
         if (ImGui.Selectable($"##li{i}", selected, ImGuiSelectableFlags.None, new Vector2(0, lines * lineH)))
+        {
             _selectedListIndex = i;
+            _selectedRosterId = null; // mutually exclusive with the roster preview
+        }
         ImGui.SetCursorPos(rowStart);
 
         if (issues.Any(x => x.UnitIndex == i && x.Severity == ListIssueSeverity.Error))
@@ -926,7 +934,12 @@ public class ArmyForgeScreen : IAppScreen
         return ListCompiler.AvailableApplications(unit.Weapons, items, section.Targets);
     }
 
-    private static void DrawRosterPreview(RosterUnit unit)
+    // Read-only profile of an available (roster) unit, mirroring what the real Army Forge shows in its config
+    // column when you select a unit on the left: stats, default gear, rules, base, the caster spell list (for
+    // caster units), and every upgrade section with all its options - all non-interactive. The upgrade option
+    // labels already bake in the full gained profile (e.g. "Energy Spear (A2, AP(4))"), so OptionSummary alone
+    // shows the gear each option grants; no need to re-list WeaponsGained/RulesGained.
+    private void DrawRosterPreview(RosterUnit unit)
     {
         ImGui.TextUnformatted(RosterStatLine(unit));
         ImGui.Separator();
@@ -937,7 +950,21 @@ public class ArmyForgeScreen : IAppScreen
             ImGui.TextDisabled(ItemSummary(item));
         if (unit.Rules.Count > 0)
             ImGui.TextDisabled(string.Join(", ", unit.Rules.Select(r => r.PrintableName)));
+        ImGui.TextDisabled($"Base: {BaseSummary(unit.Base)}");
         ImGui.Unindent();
+
+        // Caster units draw from the army-wide spell list; show it here (the roster pane lists it once for the
+        // whole book, but the real Army Forge surfaces it per caster unit).
+        if (IsCaster(unit) && _book.Spells.Count > 0)
+        {
+            ImGui.Spacing();
+            ImGui.TextDisabled("SPELLS");
+            ImGui.Separator();
+            ImGui.PushTextWrapPos(0f);
+            foreach (FDG.Rules.Definitions.SpellDefinition spell in _book.Spells)
+                ImGui.TextDisabled($"{spell.Name} ({spell.Threshold}): {FDG.Stages.SpellText.Describe(spell)}");
+            ImGui.PopTextWrapPos();
+        }
 
         if (unit.Sections.Count == 0) return;
         ImGui.Spacing();
@@ -994,6 +1021,23 @@ public class ArmyForgeScreen : IAppScreen
 
     internal static string OptionSummary(UpgradeOption o) =>
         o.Cost == 0 ? o.Label : $"{o.Label}  (+{o.Cost} pts)";
+
+    private const float MmPerInch = 25.4f;
+
+    // Base footprint in mm, the unit modellers author in: "25mm" for a circle, "25 x 50mm" for a rectangle.
+    // Bases persist in inches (BaseFileEntry); round to the nearest mm so 0.984252" reads back as the 25mm it
+    // was authored as rather than 24.99...mm.
+    internal static string BaseSummary(BaseFileEntry b) =>
+        b.Shape == EBaseShapeKind.Rectangle
+            ? $"{Mm(b.WidthInches)} x {Mm(b.HeightInches)}mm"
+            : $"{Mm(b.DiameterInches)}mm";
+
+    private static int Mm(float inches) => (int)MathF.Round(inches * MmPerInch);
+
+    // A unit can cast if it carries any Caster rule - "Caster(X)" or the squad-wide "Caster Group" (#033);
+    // both drive the per-unit spell list in the roster preview, matching the real Army Forge.
+    internal static bool IsCaster(RosterUnit unit) =>
+        unit.Rules.Any(r => r.PrintableName.StartsWith("Caster", StringComparison.Ordinal));
 
     // Wargear line in the same style as WeaponSummary: "5x Combat Shield (Shield Wall)".
     internal static string ItemSummary(ItemEntry i) =>
