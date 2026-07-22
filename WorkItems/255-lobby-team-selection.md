@@ -1,6 +1,6 @@
 # 255 — Lobby team selection
 
-**Status**: Implemented + tested 2026-07-21; awaiting GUI hand-verify (checklist below).
+**Status**: DONE 2026-07-21 — implemented, suite green, GUI-verified by owner same day.
 **Related**: #221 (color picker — the sync triad this clones), #188 (multi-remote-client roster/team edge cases), #052 (resume lobby).
 
 ## Goal
@@ -36,10 +36,10 @@ player was silently placed on their own team (`count + 1`) with no way to change
   gate pass. Engine 1801/0, full build clean, headless smoke exit 0.
 
 ## GUI hand-verify checklist
-- [ ] Host + Add Local Player + a bot: teams default 1, 2, 3; Team column shows dropdowns.
-- [ ] Move players between teams via the dropdown; only Team 1..Team N offered.
-- [ ] Put everyone on one team -> LAUNCH shows the inline red "same team" message and does not start.
-- [ ] Split teams -> launches; two players on one team alternate activations as a team in-game.
-- [ ] Two-machine (or two-instance) check: client can change only its own row; the pick syncs to the
-      host and back; host can change Local/AI rows but not the client's.
-- [ ] Resume a save: Team dropdowns disabled.
+Verified by owner 2026-07-21 ("It works!").
+
+## Outcome
+2026-07-21: Done. The lobby has a per-row Team dropdown (Team 1..N, N = player count); new players
+default to the first empty team; all-players-one-team launch is hard-blocked with an inline reason;
+picks sync host/client through `PlayerTeamUpdateMessage` (protocol v4). Behavior pinned by
+`LobbyTeamSyncTests` (8). Engine `2cffa11`, superproject `abc7a04`.

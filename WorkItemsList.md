@@ -115,7 +115,6 @@ detection, host-IP display, DNS host entry. See `NetworkingHandoff-2026-07-08.md
 - [~] 251 — Ruler overlay measured rectangular bases as circles (inscribed radius): edge reading and snapping now use the engine's facing-aware shape geometry; nose-to-nose bikes were reading ~0.98in too far. Implemented 2026-07-19; awaiting GUI hand-verify. ([WorkItems/251](WorkItems/251-ruler-shape-aware-measurement.md))
 - [ ] 252 — Anchored field texture ignores the #201 cover proximity rules (tint over-paints cover; pips/aim lines already truthful): needs per-piece polar cover intervals, target-anchored mode first; approach + estimate in the detail file. ([WorkItems/252](WorkItems/252-field-cover-proximity-truthfulness.md))
 - [ ] 253 — New movement visual: colored area showing where ending your move earns the cover bonus vs a pinned enemy (#201-aware, samples `VoidsCover`); attacker-side "shoot over this wall" sibling facet awaiting owner call. ([WorkItems/253](WorkItems/253-cover-bonus-placement-visual.md))
-- [~] 255 — Lobby team selection: per-row Team dropdown (as many teams as players, default = first empty team, all-one-team launch hard-blocked; protocol v4). Implemented + tested; awaiting GUI hand-verify. ([WorkItems/255](WorkItems/255-lobby-team-selection.md))
 
 ## 2026-06-10 audit follow-ups
 
