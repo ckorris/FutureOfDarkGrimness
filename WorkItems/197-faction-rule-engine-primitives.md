@@ -401,7 +401,7 @@ Reference counts are corpus-wide (44 books). Primitive numbers are #100's.
 | 7 | **P16** one-shot special-attack injection | Once per game, inject one extra attack with an authored weapon profile. | Takedown Strike (5), Takedown Shot (2) |
 | 12 | **Strafing** (out of slice 0) | Make `Strafing` the weapon rule the source says it is: movement-hook access to the bearer's weapons, a mid-move "attack with *this* weapon" primitive replacing the fixed 3-hit `InvokeDealHits`, and a once-per-activation weapon-use restriction. Currently allowlisted in `BookRuleScopeTests`. | Strafing (12) |
 | 3 | **P19** reactivate another unit | Generalize the live self-`reactivate` to a chosen friendly unit. | Coordinate (3) |
-| 2 | **P12** attack-count producer | A producer at the existing `Shooting_OnPreHitRollCount` seam (seam exists, no producer). Pairs with P13. | Regenerative Strength (2) |
+| 2 | **P12** attack-count producer — **DEFERRED 2026-07-22** (owner ruling) | Regenerative Strength's marker GAIN is "one marker per ignored wound", but the Regeneration ignore roll is a histogram: under the probabilistic roller the ignored count is fractional, and token counts are integers — bridging them means int-locking a roll-derived value. Owner chose to keep the dice invariant pristine over a round-per-attack approximation; the 2 refs stay dead until fractional token counts (or another exact mechanism) exist. The attack-count producer seam itself (a fold at `DetermineHitRollStage`'s attackCount, where the code comment already marks the spot) was NOT built unused, per grow-on-demand. The read side's design is settled when this reopens: melee Yes/No prompt per weapon volley ("add +X attacks to this weapon?"), once-gated per activation — the player picks the weapon by accepting on it (owner ruled 2026-07-22 the pick must be prompted, not auto). | Regenerative Strength (2) |
 | 98 | **Misc** small primitives | Each is a one-off; triage before building. Several may collapse into P5/P13. | Repel Ambushers (24, enemy Ambush placement constraint), Inquisitorial Agent (20, once-per-game reactivate), Hazardous (15, self-wound on unmodified 1), Extended Buff Range (9), Protection Feat (8) + Aura (1), Instinctive (4, forced action at activation), Speed Feat Aura (4) + Buff (1), Heavy Impact (3, Impact with AP), Grounded Reinforcement Aura (3), Grounded Precision Aura (3), Grounded Stealth (2, "within 1in of terrain" condition), Screened Aura (1) |
 
 ## Suggested sequencing
@@ -418,6 +418,20 @@ Reference counts are corpus-wide (44 books). Primitive numbers are #100's.
 
 ## Notes
 
+- 2026-07-22: **The marker cluster shipped as one coherent mechanic** (P13 + P14b together, per this
+  file's own sequencing warning; P12 deferred): corpus dead count **492 -> 423** (-69 of the cluster's
+  71; Regenerative Strength's 2 remain). Details in the three slice rows. Fork decisions made with
+  Chris this session, all on the fidelity side:
+  - **Tag/Spotter marker spend is PROMPTED**, not auto-spent (a `StringSelectionRequest` to the
+    attacking player, spend-all first so automated resolvers default aggressively). No new request
+    type or app-side resolver was needed — CLI/GUI/AI all already resolve string selections.
+  - **Regenerative Strength's weapon pick must be prompted too**; design settled (per-volley Yes/No,
+    once-gated) but the rule itself then hit the dice invariant — fractional ignored wounds cannot
+    become integer markers without int-locking — and Chris chose deferral over a rounding
+    approximation. See the P12 row.
+  - Sequencing note for whoever picks up P12: token-scaled magnitudes (P13's effects), the
+    attacker-bonus claim (`TargetMarkerSpend`), and `grantTokenOnRoll` now exist — Vengeance (the
+    other P13 coupling) still additionally needs its model-count magnitude source.
 - 2026-07-11: **P15 (Unpredictable) shipped** (48 of 53 refs; engine only). A per-attack-action decisive
   die (1-3 -> AP(+1), 4-6 -> +1 to hit), rolled once per action and threaded to both the hit hook (72) and
   the save hook (73) via a new `IHasUnpredictableBranch` capability so both arms read the SAME roll. Forks
