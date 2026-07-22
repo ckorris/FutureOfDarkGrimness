@@ -147,6 +147,52 @@ if (importArmyIdx >= 0 && importArmyIdx + 2 < args.Length)
     return;
 }
 
+// --import-book <book.fdgbook | dir>  (#219): refresh the "unpriced upgrade" flags on a bundled book (or
+// every .fdgbook in a directory) from OPR's live army-book endpoint. Re-imports to a throwaway book and
+// copies only costUnpriced onto the existing snapshot by option Id - all other curation (effect sets,
+// embedded rules, base retrofits) is preserved. Writes in place. Exit 0 on success, 1 on any failure.
+int importBookIdx = Array.IndexOf(args, "--import-book");
+if (importBookIdx >= 0 && importBookIdx + 1 < args.Length)
+{
+    try
+    {
+        string target = args[importBookIdx + 1];
+        string[] bookPaths = Directory.Exists(target)
+            ? Directory.EnumerateFiles(target, "*" + BookFile.EXTENSION_WITH_PERIOD).OrderBy(p => p).ToArray()
+            : new[] { target };
+        if (bookPaths.Length == 0) { Console.WriteLine($"No {BookFile.EXTENSION_WITH_PERIOD} files in '{target}'."); return; }
+
+        var index = FdgRaylib.Import.ArmyForgeBookService.FetchBookIndexAsync().GetAwaiter().GetResult();
+        int totalFlagged = 0, missing = 0;
+        foreach (string path in bookPaths)
+        {
+            BookFile book = JsonSerializer.Deserialize<BookFile>(File.ReadAllText(path), RuleJson.Options)!;
+            if (!index.TryGetValue(book.Name, out string? uid))
+            {
+                Console.WriteLine($"  {book.Name}: no OPR official book by that name - skipped.");
+                missing++;
+                continue;
+            }
+            string raw = FdgRaylib.Import.ArmyForgeBookService.FetchBookJsonAsync(uid).GetAwaiter().GetResult();
+            var report = FdgRaylib.Import.ArmyForgeBookService.RefreshCostFlags(book, raw);
+            File.WriteAllText(path, JsonSerializer.Serialize(book, RuleJson.Options));
+            totalFlagged += report.Flagged;
+            Console.WriteLine($"  {report.BookName}: flagged {report.Flagged} unpriced, cleared {report.Cleared}, "
+                + $"{report.Unmatched} option(s) not in the live book"
+                + (report.Deltas.Count > 0 ? $", {report.Deltas.Count} base-cost delta(s)" : "") + ".");
+            foreach (string d in report.Deltas.Take(20)) Console.WriteLine($"      delta: {d}");
+        }
+        Console.WriteLine($"Done: {bookPaths.Length - missing}/{bookPaths.Length} book(s) refreshed, "
+            + $"{totalFlagged} option(s) flagged unpriced.");
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"Book refresh failed: {ex.Message}");
+        Environment.Exit(1);
+    }
+    return;
+}
+
 // --apply-rules <book.fdgbook> <supplement.json>  (#153): merge curated rule definitions into an existing
 // book snapshot in place — the definitions the book references (plus what those grant) embed into the
 // book's ruleDefinitions, replace-by-name, so re-applying after editing the supplement is idempotent.

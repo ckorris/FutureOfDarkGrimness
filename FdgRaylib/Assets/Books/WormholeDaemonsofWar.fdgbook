@@ -92,7 +92,7 @@
               "id": "6RF1L",
               "label": "Exalted Blood Sword (A9, Crack)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Exalted Blood Sword",
@@ -116,7 +116,7 @@
               "id": "sFF2gtstOH",
               "label": "Exalted Long Whip (18\u0022, A6, AP(2))",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Exalted Long Whip",
@@ -135,7 +135,7 @@
               "id": "KBY7tnd",
               "label": "Exalted Flame Axe (A9, AP(1), Rending)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Exalted Flame Axe",
@@ -234,7 +234,7 @@
               "id": "RiTY3efJ",
               "label": "Daemonic Incursion (Ambush)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -267,7 +267,7 @@
               "id": "NFoksqgv",
               "label": "Envoy of War (Furious)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -288,7 +288,7 @@
               "id": "-7oZhGpR",
               "label": "Gift of War (Shielded)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -309,7 +309,7 @@
               "id": "5QbtnKs_",
               "label": "War God\u0027s Power (Storm of War)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -330,7 +330,7 @@
               "id": "Dr1ioOLj",
               "label": "War Favour (Warbound Boost)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -351,7 +351,7 @@
               "id": "psbJyJby",
               "label": "Lore of War (Caster(5))",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -450,7 +450,7 @@
               "id": "PwGy4",
               "label": "Great Blood Sword (A6, Crack)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Great Blood Sword",
@@ -474,7 +474,7 @@
               "id": "z1fdxuVSVM",
               "label": "Great Long Whip (18\u0022, A4, AP(2))",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Great Long Whip",
@@ -518,7 +518,7 @@
               "id": "NucZXky",
               "label": "Great Flame Axe (A6, AP(1), Rending)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Great Flame Axe",
@@ -592,7 +592,7 @@
               "id": "l3COpVoQET",
               "label": "Daemonic Incursion (Ambush)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -613,7 +613,7 @@
               "id": "nAngmzB",
               "label": "Wings (Flying)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -646,7 +646,7 @@
               "id": "ZsXigUb3",
               "label": "Symbol of War (Rapid Charge)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -667,7 +667,7 @@
               "id": "qdvoQ70x",
               "label": "Gift of War (Shielded)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -688,7 +688,7 @@
               "id": "C_UAHzRPdZ",
               "label": "Curse of War (Fatigue Debuff)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -709,7 +709,7 @@
               "id": "pB9WJEkC",
               "label": "War Favour (Warbound Boost)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -730,7 +730,7 @@
               "id": "IDwBMGu1",
               "label": "Lore of War (Caster(4))",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -829,7 +829,7 @@
               "id": "Q1-3U",
               "label": "Flame Hammer (A1, AP(1), Blast(3))",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Flame Hammer",
@@ -878,7 +878,7 @@
               "id": "4otRd",
               "label": "Heavy Flame Axe (A3, AP(1), Rending)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Heavy Flame Axe",
@@ -902,7 +902,7 @@
               "id": "Qfl7ePy3Xh",
               "label": "Long Whip (18\u0022, A2, AP(2))",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Long Whip",
@@ -971,7 +971,7 @@
               "id": "oGr-v1lMNm",
               "label": "War Boon (Defensive Frenzy)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1013,7 +1013,7 @@
               "id": "lmgPY38zMB",
               "label": "Daemonic Incursion (Ambush Aura)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1034,7 +1034,7 @@
               "id": "1QQchK__e4",
               "label": "Fury Wings (Flying, Scout)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1071,7 +1071,7 @@
               "id": "m0TEqFhx",
               "label": "Envoy of War (Furious Aura)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1092,7 +1092,7 @@
               "id": "BcOdrSTz",
               "label": "Symbol of War (Rapid Charge Aura)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1113,7 +1113,7 @@
               "id": "4N77P1tj",
               "label": "Gift of War (Shielded Aura)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1134,7 +1134,7 @@
               "id": "rlrNr3Zr",
               "label": "War Favour (Warbound Boost Aura)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1155,7 +1155,7 @@
               "id": "ZkAPsvkH",
               "label": "Lore of War (Caster(3))",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1250,7 +1250,7 @@
               "id": "i8bQg0nTcy",
               "label": "Axe (A1, AP(1)), Flame Hammer (A1, AP(1), Blast(3))",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Flame Hammer",
@@ -1307,7 +1307,7 @@
               "id": "YQ6n-FVjEP",
               "label": "Long Whip (18\u0022, A2, AP(2)), Blood Sword (A2, Crack)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Long Whip",
@@ -1339,7 +1339,7 @@
               "id": "DVGFK",
               "label": "War Whip (12\u0022, A4, AP(1)), Blood Sword (A2, Crack)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "War Whip",
@@ -1385,7 +1385,7 @@
               "id": "-51Ip",
               "label": "Flame Axe (A2, AP(1), Rending)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Flame Axe",
@@ -1440,7 +1440,7 @@
               "id": "eBIXnXQzJE",
               "label": "War Boon (Defensive Frenzy)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1461,7 +1461,7 @@
               "id": "Z951q4nmX1",
               "label": "Daemonic Incursion (Ambush Aura)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1482,7 +1482,7 @@
               "id": "riUJi",
               "label": "Great Beast (Heavy Claws (A1, AP(1)), Armor(3), Fast, Impact(2), Tough(3))",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Heavy Claws",
@@ -1527,7 +1527,7 @@
               "id": "xwhSK",
               "label": "Throne of Blood (Claws (A6, AP(1)), Armor(3), Fear(1), Tough(6))",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Claws",
@@ -1580,7 +1580,7 @@
               "id": "f_6St",
               "label": "Envoy of War (Furious Aura)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1601,7 +1601,7 @@
               "id": "p4PbD",
               "label": "Symbol of War (Rapid Charge Aura)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1622,7 +1622,7 @@
               "id": "9Py7A",
               "label": "Army Standard Bearer (Fear(2))",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1644,7 +1644,7 @@
               "id": "ZrMm_",
               "label": "Lore of War (Caster(2))",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1666,7 +1666,7 @@
               "id": "1164d",
               "label": "War Favour (Warbound Boost Aura)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1687,7 +1687,7 @@
               "id": "Yxld0",
               "label": "Icon of War (Piercing Shooter Aura)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1789,7 +1789,7 @@
               "id": "n1l9V9owt4",
               "label": "Axe (A1, AP(1)), Flame Hammer (A1, AP(1), Blast(3))",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Axe",
@@ -1846,7 +1846,7 @@
               "id": "YhzQyGgNDO",
               "label": "Long Whip (18\u0022, A2, AP(2)), Blood Sword (A2, Crack)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Long Whip",
@@ -1878,7 +1878,7 @@
               "id": "J4cT9",
               "label": "War Whip (12\u0022, A4, AP(1)), Blood Sword (A2, Crack)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "War Whip",
@@ -1924,7 +1924,7 @@
               "id": "DW-Eh",
               "label": "Flame Axe (A2, AP(1), Rending)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Flame Axe",
@@ -1979,7 +1979,7 @@
               "id": "SfI6j7JS",
               "label": "Envoy of War (Furious Aura)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -2000,7 +2000,7 @@
               "id": "JhkKDlJM",
               "label": "Symbol of War (Rapid Charge Aura)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -2021,7 +2021,7 @@
               "id": "xCL_-RtI",
               "label": "Gift of War (Shielded Aura)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -2042,7 +2042,7 @@
               "id": "07Qf1Umj",
               "label": "Icon of War (Piercing Shooter Aura)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -2135,7 +2135,7 @@
               "id": "t4gFJgCC7E",
               "label": "War Boon (Defensive Frenzy)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -2156,7 +2156,7 @@
               "id": "SAxzitc",
               "label": "Spiked Collar (Ravage(3))",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -2234,7 +2234,7 @@
               "id": "2s7hAXHqiq",
               "label": "Bounding Advance (Scout)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -2317,7 +2317,7 @@
               "id": "KTr50",
               "label": "Armblades (A2, AP(2))",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Armblades",
@@ -2336,7 +2336,7 @@
               "id": "EfnMybJ",
               "label": "Rending Claws (A2, AP(1), Rending)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Rending Claws",
@@ -2471,7 +2471,7 @@
               "id": "X2JIN",
               "label": "Hand Weapon (A1, AP(1))",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Hand Weapon",
@@ -2588,7 +2588,7 @@
               "id": "eyWNJa5T",
               "label": "War Boon (Defensive Frenzy)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -2621,7 +2621,7 @@
               "id": "gNzidJP",
               "label": "Banner of War (Piercing Fighter Aura)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -2707,7 +2707,7 @@
               "id": "ugqlMwmx0N",
               "label": "War Whip (12\u0022, A2, AP(1))",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "War Whip",
@@ -2840,7 +2840,7 @@
               "id": "tN-80w0Y",
               "label": "War Whip (12\u0022, A2, AP(1))",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "War Whip",
@@ -2871,7 +2871,7 @@
               "id": "GExTl",
               "label": "War Boon (Defensive Frenzy)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -2950,7 +2950,7 @@
               "id": "hKJeJnKYtq",
               "label": "War Boon (Defensive Frenzy)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -2971,7 +2971,7 @@
               "id": "ynkiu",
               "label": "Anti-Wizard Collar (Resistance)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -3028,7 +3028,7 @@
               "id": "kl6XEXNghG",
               "label": "Bounding Advance (Scout)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -3182,7 +3182,7 @@
               "id": "R7R5t",
               "label": "Hand Weapon (A1, AP(1))",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Hand Weapon",
@@ -3256,7 +3256,7 @@
               "id": "66Z0I5cd",
               "label": "War Boon (Defensive Frenzy)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -3344,7 +3344,7 @@
               "id": "psBJg",
               "label": "Heavy Flame Axe (A3, AP(1), Rending)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Heavy Flame Axe",
@@ -3368,7 +3368,7 @@
               "id": "-9VKJ",
               "label": "Mutated Claws (A4, AP(1))",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Mutated Claws",
@@ -3464,7 +3464,7 @@
               "id": "pZ46ycnLFd",
               "label": "Skull-Shot Cannon (30\u0022, A2, AP(2), Blast(3))",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Skull-Shot Cannon",
@@ -3501,7 +3501,7 @@
               "id": "9RETH",
               "label": "Curse of War (Fatigue Debuff)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -3587,7 +3587,7 @@
               "id": "9RETH",
               "label": "Curse of War (Fatigue Debuff)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -3620,7 +3620,7 @@
               "id": "uw0aZAML",
               "label": "Spiked Collar (Ravage(3))",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -3642,7 +3642,7 @@
               "id": "k1qD1s1U",
               "label": "War Boon (Defensive Frenzy)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -3813,7 +3813,7 @@
               "id": "Ui1LN",
               "label": "War Sword (A18, AP(1))",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "War Sword",
@@ -3846,7 +3846,7 @@
               "id": "T-jUc",
               "label": "War Cannon (24\u0022, A12, AP(1), Rending)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "War Cannon",

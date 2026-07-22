@@ -85,7 +85,7 @@
               "id": "D8t0PJs",
               "label": "Dual Energy Claws (A8, Rending)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Dual Energy Claws",
@@ -255,7 +255,7 @@
               "id": "5HpHlih2",
               "label": "Guardian (Melee Shrouding Aura)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -276,7 +276,7 @@
               "id": "rNnBn077",
               "label": "Preacher (Bane in Melee Aura)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -297,7 +297,7 @@
               "id": "-PTZ7awpKY",
               "label": "Lieutenant (Rapid Rush Aura)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -318,7 +318,7 @@
               "id": "7tAvKHMu",
               "label": "Captain (Bane when Shooting Aura)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -339,7 +339,7 @@
               "id": "z9eh_DiRrP",
               "label": "Watch Munitioner (Shred when Shooting Aura)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -491,7 +491,7 @@
               "id": "KA6o-",
               "label": "Heavy Energy Hammer (A1, AP(2), Blast(3))",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Heavy Energy Hammer",
@@ -516,7 +516,7 @@
               "id": "jPQxc",
               "label": "Flamer (12\u0022, A1, Blast(3), Reliable), CCW (A1)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Flamer",
@@ -708,7 +708,7 @@
               "id": "rmi6T",
               "label": "Master Heavy Rifle (24\u0022, A2, AP(1))",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Master Heavy Rifle",
@@ -952,7 +952,7 @@
               "id": "eIt-W",
               "label": "Master Heavy Pistol (12\u0022, A2, AP(1))",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Master Heavy Pistol",
@@ -1190,7 +1190,7 @@
               "id": "grcKj",
               "label": "Combat Bike (Twin Heavy Rifle (24\u0022, A2, AP(1)), Fast, Tough(3))",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Twin Heavy Rifle",
@@ -1237,7 +1237,7 @@
               "id": "qt6M5ssF7w",
               "label": "Artillerist (Re-Position Artillery)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1258,7 +1258,7 @@
               "id": "4V8eWeopt2",
               "label": "Preacher (Bane in Melee Aura)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1279,7 +1279,7 @@
               "id": "nUsckhHmJt",
               "label": "Commander (Rapid Rush Aura)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1300,7 +1300,7 @@
               "id": "q_m5T8l62X",
               "label": "Captain (Bane when Shooting Aura)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1321,7 +1321,7 @@
               "id": "8J3PZXCbf_",
               "label": "Lieutenant (Rapid Rush Aura)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1342,7 +1342,7 @@
               "id": "tP2prbNyiV",
               "label": "Watch Munitioner (Shred when Shooting Aura)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1363,7 +1363,7 @@
               "id": "2SGwZm1JTl",
               "label": "Engineer (Mend)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1384,7 +1384,7 @@
               "id": "9P-DP6PUtd",
               "label": "Archivist (Caster(2))",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1406,7 +1406,7 @@
               "id": "5bZZDBLHGz",
               "label": "Master Archivist (Caster(3))",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -2010,7 +2010,7 @@
               "id": "aPM4c",
               "label": "Flamer-Mod (12\u0022, A1, Blast(3), Limited, Reliable)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Flamer-Mod",
@@ -2306,7 +2306,7 @@
               "id": "bgv7l",
               "label": "The Founder\u0027s Banner (Versatile Reach Aura)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -2327,7 +2327,7 @@
               "id": "SHtGWKf6_g",
               "label": "Detachment Banner (Courage Aura)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -2348,7 +2348,7 @@
               "id": "aaeYD",
               "label": "Medical Training (Regeneration Aura)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -2751,7 +2751,7 @@
               "id": "bgv7l",
               "label": "The Founder\u0027s Banner (Versatile Reach Aura)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -2772,7 +2772,7 @@
               "id": "SHtGWKf6_g",
               "label": "Detachment Banner (Courage Aura)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -2793,7 +2793,7 @@
               "id": "aaeYD",
               "label": "Medical Training (Regeneration Aura)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -2888,7 +2888,7 @@
               "id": "e7Md_H4",
               "label": "Dual Energy Claws (A4, Rending)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Dual Energy Claws",
@@ -3157,7 +3157,7 @@
               "id": "bgv7l",
               "label": "The Founder\u0027s Banner (Versatile Reach Aura)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -3178,7 +3178,7 @@
               "id": "SHtGWKf6_g",
               "label": "Detachment Banner (Courage Aura)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -3199,7 +3199,7 @@
               "id": "aaeYD",
               "label": "Medical Training (Regeneration Aura)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -3522,7 +3522,7 @@
               "id": "aQi8zX5w",
               "label": "Gravity Pistol (9\u0022, A1, AP(1), Blast(3), Lacerate)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Gravity Pistol",
@@ -3776,7 +3776,7 @@
               "id": "uSBxCXb0s0",
               "label": "Targeting Array (Unstoppable Mark)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -4020,7 +4020,7 @@
               "id": "uSBxCXb0s0",
               "label": "Targeting Array (Unstoppable Mark)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -4149,7 +4149,7 @@
               "id": "3yXVaN_A",
               "label": "Targeting Array (Unstoppable Mark)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -4182,7 +4182,7 @@
               "id": "uSBxCXb0s0",
               "label": "Targeting Array (Unstoppable Mark)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -4293,7 +4293,7 @@
               "id": "hlVasEmIgQ",
               "label": "Twin Heavy Rifle Array (24\u0022, A12, AP(1))",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Twin Heavy Rifle Array",
@@ -4563,7 +4563,7 @@
               "id": "OAsGaS8",
               "label": "Twin Heavy Flamer (12\u0022, A2, AP(1), Blast(3), Reliable)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Twin Heavy Flamer",
@@ -4987,7 +4987,7 @@
               "id": "jZUM3aC3hQ",
               "label": "Storm Missiles (36\u0022, A1, AP(3), Deadly(3))",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Storm Missiles",
@@ -5142,7 +5142,7 @@
               "id": "iQjjP",
               "label": "Heavy Flak Cannon (30\u0022, A2, AP(3), Deadly(3), Unstoppable)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Heavy Flak Cannon",

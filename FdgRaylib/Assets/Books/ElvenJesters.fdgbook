@@ -221,7 +221,7 @@
               "id": "vG-EHi2qrA",
               "label": "2x CCW (A2)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "CCW",
@@ -342,7 +342,7 @@
               "id": "bt3UaC_8",
               "label": "Twisted Illusion (Ambush Re-Deployment)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -375,7 +375,7 @@
               "id": "3Xy0FrTy5e",
               "label": "Joker Hoverpack (Flying, Point-Blank Surge)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -400,7 +400,7 @@
               "id": "iZ8BlN_LPm",
               "label": "Prankster Suit (Ambush, Regeneration)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -481,7 +481,7 @@
               "id": "-bQNR",
               "label": "Stage Master (Shielded Aura)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -502,7 +502,7 @@
               "id": "iE0JQj09Gt",
               "label": "Solitaire Assassin (Takedown Strike)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -523,7 +523,7 @@
               "id": "4kL02NYN-h",
               "label": "Death Dealer (Shred when Shooting Aura)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -544,7 +544,7 @@
               "id": "8fydS",
               "label": "Troupe Lord (Rapid Blink Boost Aura)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -565,7 +565,7 @@
               "id": "Z0UV7",
               "label": "Apex Killer (Unpredictable Fighter Aura)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -707,7 +707,7 @@
               "id": "63Z8NNSs",
               "label": "Stage Master (Shielded Aura)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -728,7 +728,7 @@
               "id": "fGCgLFDh",
               "label": "Death Dealer (Shred when Shooting Aura)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -749,7 +749,7 @@
               "id": "4WMBoEP2Vt",
               "label": "Troupe Lord (Rapid Blink Boost Aura)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -792,7 +792,7 @@
               "id": "Yyz_0me6",
               "label": "Harlequin (Teleport Aura)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1134,7 +1134,7 @@
               "id": "NUHZ1",
               "label": "Twisted Illusion (Ambush Re-Deployment)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1223,7 +1223,7 @@
               "id": "NUHZ1",
               "label": "Twisted Illusion (Ambush Re-Deployment)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1321,7 +1321,7 @@
               "id": "NUHZ1",
               "label": "Twisted Illusion (Ambush Re-Deployment)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1439,7 +1439,7 @@
               "id": "WI6kVsPqdP",
               "label": "Energy Glaive (A2, AP(1), Thrust)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Energy Glaive",
@@ -1463,7 +1463,7 @@
               "id": "kmggBz1BuT",
               "label": "Light EMP Cannon (24\u0022, A3, Rending)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Light EMP Cannon",
@@ -1487,7 +1487,7 @@
               "id": "G-sDIWr",
               "label": "Fragment Cannon (24\u0022, A3, AP(1), Disintegrate)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Fragment Cannon",
@@ -1604,7 +1604,7 @@
               "id": "vcWkzrkkA5",
               "label": "Twin Light Fragment Cannon (24\u0022, A4, AP(1), Disintegrate)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Twin Light Fragment Cannon",
@@ -1642,7 +1642,7 @@
               "id": "XH7Dxk4aJT",
               "label": "Light EMP Cannon (24\u0022, A3, Rending)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Light EMP Cannon",
@@ -1666,7 +1666,7 @@
               "id": "iohEw2cMnf",
               "label": "Focus Cannon (24\u0022, A1, AP(2), Blast(3))",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Focus Cannon",
@@ -1691,7 +1691,7 @@
               "id": "1RvKm0tAz3",
               "label": "Light Laser Cannon (24\u0022, A1, AP(3), Deadly(3))",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Light Laser Cannon",
@@ -1728,7 +1728,7 @@
               "id": "SpMyLGg9gH",
               "label": "Open Back (Transport(6))",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1750,7 +1750,7 @@
               "id": "CJX9zCdqu9",
               "label": "Spectacle of Death (Slayer Mark)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [

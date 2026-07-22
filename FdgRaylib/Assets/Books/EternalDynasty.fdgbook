@@ -114,7 +114,7 @@
               "id": "De_GruT",
               "label": "2x Heavy Flame-Fist (12\u0022, A1, AP(1), Blast(3), Reliable)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Heavy Flame-Fist",
@@ -243,7 +243,7 @@
               "id": "nDYS0VP",
               "label": "Heavy Fist (A3, AP(4))",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Heavy Fist",
@@ -442,7 +442,7 @@
               "id": "7LDvJ",
               "label": "Energy Drone (Ignores Cover Aura)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -475,7 +475,7 @@
               "id": "s4jtQSvi",
               "label": "Captain (Clan Warrior Boost Aura)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -496,7 +496,7 @@
               "id": "uTUI-y3T",
               "label": "Spirit-Core Bearer (Rapid Charge Aura)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -517,7 +517,7 @@
               "id": "WAhquGUQ",
               "label": "Sentinel (Fearless Aura)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -538,7 +538,7 @@
               "id": "eZc7qKDwPT",
               "label": "Sergeant (Piercing Hunter Aura)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -657,7 +657,7 @@
               "id": "7LDvJ",
               "label": "Energy Drone (Ignores Cover Aura)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -693,7 +693,7 @@
               "id": "sI-nC",
               "label": "2x Leader Auto-Gun (12\u0022, A2, Rending), Martial Arts (A1)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Leader Auto-Gun",
@@ -749,7 +749,7 @@
               "id": "wD4-2",
               "label": "2x Royal Sickle (A2, AP(2))",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Royal Sickle",
@@ -809,7 +809,7 @@
               "id": "_tz4n",
               "label": "Leader Shotgun (12\u0022, A3, AP(1))",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Leader Shotgun",
@@ -880,7 +880,7 @@
               "id": "-rDhY",
               "label": "Royal Sickle (A2, AP(2))",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Royal Sickle",
@@ -899,7 +899,7 @@
               "id": "jXiwN",
               "label": "Royal Sword (A2, AP(1), Rending)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Royal Sword",
@@ -923,7 +923,7 @@
               "id": "9GWPz",
               "label": "Hook Sword (A1, AP(2), Deadly(3))",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Hook Sword",
@@ -960,7 +960,7 @@
               "id": "pfGozCg",
               "label": "Hover Alert-Drone (Repel Ambushers)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -981,7 +981,7 @@
               "id": "NhLWmJuVsQ",
               "label": "Royal Guard Master (Regeneration, Versatile Attack)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1006,7 +1006,7 @@
               "id": "tACrG",
               "label": "Ninja Master (Ambush, Stealth, Teleport)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1047,7 +1047,7 @@
               "id": "WHfDf",
               "label": "Captain (Clan Warrior Boost Aura)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1068,7 +1068,7 @@
               "id": "5g_uQuGyY8",
               "label": "Sentinel (Fearless Aura)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1089,7 +1089,7 @@
               "id": "c2hPm",
               "label": "Warlord (Counter-Attack Aura)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1132,7 +1132,7 @@
               "id": "mKMzc",
               "label": "Sergeant (Piercing Hunter Aura)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1242,7 +1242,7 @@
               "id": "LA6wLd5",
               "label": "Energy Drone (Ignores Cover Aura)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1263,7 +1263,7 @@
               "id": "US-KuV2",
               "label": "Shield Drone (Stealth Aura)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1598,7 +1598,7 @@
               "id": "8_8b0uLdkr",
               "label": "Honor-Bound (Vengeance)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1712,7 +1712,7 @@
               "id": "LA6wLd5",
               "label": "Energy Drone (Ignores Cover Aura)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1733,7 +1733,7 @@
               "id": "US-KuV2",
               "label": "Shield Drone (Stealth Aura)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1860,7 +1860,7 @@
               "id": "HdF_Tbl",
               "label": "Dynastic Triangulator (Ambush Beacon)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1961,7 +1961,7 @@
               "id": "-iI0H_1-k5",
               "label": "Auto-Gun (12\u0022, A1, Rending), Sickle (A1, AP(2))",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Auto-Gun",
@@ -2017,7 +2017,7 @@
               "id": "I6JwNYkW-4",
               "label": "2x Sickle (A1, AP(2))",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Sickle",
@@ -2036,7 +2036,7 @@
               "id": "Y5M4AZtMUW",
               "label": "2x Auto-Gun (12\u0022, A1, Rending), Martial Arts (A1)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Auto-Gun",
@@ -2255,7 +2255,7 @@
               "id": "8_8b0uLdkr",
               "label": "Honor-Bound (Vengeance)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -2767,7 +2767,7 @@
               "id": "LA6wLd5",
               "label": "Energy Drone (Ignores Cover Aura)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -2788,7 +2788,7 @@
               "id": "US-KuV2",
               "label": "Shield Drone (Stealth Aura)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -2821,7 +2821,7 @@
               "id": "8_8b0uLdkr",
               "label": "Honor-Bound (Vengeance)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -2903,7 +2903,7 @@
               "id": "8pkC9NI3fY",
               "label": "Vanguard Hunt Master (Scout)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -2924,7 +2924,7 @@
               "id": "EE3I2k_",
               "label": "Combat Hunt Master (Unpredictable Fighter)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -3001,7 +3001,7 @@
               "id": "8pkC9NI3fY",
               "label": "Vanguard Hunt Master (Scout)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -3022,7 +3022,7 @@
               "id": "EE3I2k_",
               "label": "Combat Hunt Master (Unpredictable Fighter)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -3099,7 +3099,7 @@
               "id": "8pkC9NI3fY",
               "label": "Vanguard Hunt Master (Scout)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -3120,7 +3120,7 @@
               "id": "EE3I2k_",
               "label": "Combat Hunt Master (Unpredictable Fighter)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -3223,7 +3223,7 @@
               "id": "vaMM5",
               "label": "Heavy Auto-Gun (18\u0022, A4, Rending)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Heavy Auto-Gun",
@@ -3371,7 +3371,7 @@
               "id": "vaMM5",
               "label": "Heavy Auto-Gun (18\u0022, A4, Rending)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Heavy Auto-Gun",
@@ -3695,7 +3695,7 @@
               "id": "SOrxHcd-",
               "label": "Targeting Beam (Increased Shooting Range Mark)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -3918,7 +3918,7 @@
               "id": "SOrxHcd-",
               "label": "Targeting Beam (Increased Shooting Range Mark)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -4348,7 +4348,7 @@
               "id": "t8BChtR",
               "label": "Force Field (Stealth)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [

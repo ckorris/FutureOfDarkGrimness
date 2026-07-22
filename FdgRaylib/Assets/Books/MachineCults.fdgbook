@@ -233,7 +233,7 @@
               "id": "p5tKI",
               "label": "Machine-Preserver (Melee Shrouding Aura)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -254,7 +254,7 @@
               "id": "7Ch1QrX",
               "label": "Preacher (Unpredictable Fighter Aura)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -275,7 +275,7 @@
               "id": "WMrFSXc",
               "label": "Engineer (Mend)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -296,7 +296,7 @@
               "id": "8-_4e_gBKu",
               "label": "Canticle Chanter (Machine-Fog Boost Aura)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -317,7 +317,7 @@
               "id": "VC9Z-lM",
               "label": "Psy-Hacker (Caster(2))",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -339,7 +339,7 @@
               "id": "5ccN_w1",
               "label": "Deacon (Rending when Shooting Aura)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -360,7 +360,7 @@
               "id": "DwEgGb9",
               "label": "Master Psy-Hacker (Caster(3))",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -394,7 +394,7 @@
               "id": "TdAV29qe",
               "label": "Cult Assault (Versatile Attack)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -491,7 +491,7 @@
               "id": "k69C1",
               "label": "Leader Dual S-Blades (A4, AP(1), Rending)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Leader Dual S-Blades",
@@ -578,7 +578,7 @@
               "id": "wVbuf",
               "label": "Stalker (Fast, Furious)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -603,7 +603,7 @@
               "id": "0XC7g",
               "label": "Infiltrator (Grounded Stealth, Scout)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -640,7 +640,7 @@
               "id": "loK0gkeQ",
               "label": "Machine-Preserver (Melee Shrouding Aura)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -661,7 +661,7 @@
               "id": "d9RSrpPW",
               "label": "Preacher (Unpredictable Fighter Aura)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -682,7 +682,7 @@
               "id": "9A7l1WAe",
               "label": "Machine-Modifier (Teleport Aura)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -703,7 +703,7 @@
               "id": "9s2Wa1ky",
               "label": "Psy-Hacker (Caster(2))",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -725,7 +725,7 @@
               "id": "sROOzUu3",
               "label": "Deacon (Rending when Shooting Aura)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -888,7 +888,7 @@
               "id": "YB6PM",
               "label": "Leader R-Fusil (18\u0022, A2, Shred)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Leader R-Fusil",
@@ -931,7 +931,7 @@
               "id": "hIOUu",
               "label": "Leader Uranium Rifle (30\u0022, A2, AP(1), Reliable, Shred, Takedown)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Leader Uranium Rifle",
@@ -963,7 +963,7 @@
               "id": "uG0jS",
               "label": "Leader R-Jezzail (30\u0022, A4, Reliable, Shred, Takedown)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Leader R-Jezzail",
@@ -1112,7 +1112,7 @@
               "id": "oPUiGoZsP8",
               "label": "Shock Priests Leader (Furious, Melee Slayer, Regeneration)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1141,7 +1141,7 @@
               "id": "xYE5m",
               "label": "Stalker Wings (Ambush, Crossing Attack(1), Flying)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1171,7 +1171,7 @@
               "id": "14ncT",
               "label": "Sentinel Stilts (Bounding, Stealth)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1196,7 +1196,7 @@
               "id": "-5lOG",
               "label": "Cyborg Horse (Fast, Tough(3))",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1222,7 +1222,7 @@
               "id": "pMWBu2Mxxt",
               "label": "Raider Horse (Scout, Tough(3))",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1260,7 +1260,7 @@
               "id": "SsJIOwZm",
               "label": "Machine-Preserver (Melee Shrouding Aura)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1281,7 +1281,7 @@
               "id": "8G0OHZVD",
               "label": "Engineer (Mend)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1302,7 +1302,7 @@
               "id": "MhHCUawf",
               "label": "Canticle Chanter (Machine-Fog Boost Aura)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1323,7 +1323,7 @@
               "id": "sVXlWfZN",
               "label": "Machine-Modifier (Teleport Aura)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1344,7 +1344,7 @@
               "id": "Uwg9QiMn",
               "label": "Psy-Hacker (Caster(2))",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1366,7 +1366,7 @@
               "id": "8Ds53YCZ",
               "label": "Deacon (Rending when Shooting Aura)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1399,7 +1399,7 @@
               "id": "TdAV29qe",
               "label": "Cult Assault (Versatile Attack)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1893,7 +1893,7 @@
               "id": "5g0IQ",
               "label": "Machine-Creed Canticles (Versatile Attack)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -2029,7 +2029,7 @@
               "id": "5g0IQ",
               "label": "Machine-Creed Canticles (Versatile Attack)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -2116,7 +2116,7 @@
               "id": "eC3RKIUt9T",
               "label": "S-Razor \u0026 Claw (A2, AP(2))",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "S-Razor \u0026 Claw",
@@ -2435,7 +2435,7 @@
               "id": "g4hlgzF",
               "label": "Sky-Grenadier (Crossing Attack(1))",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -2539,7 +2539,7 @@
               "id": "RnJQJ",
               "label": "G-Carbine (18\u0022, A2, AP(1))",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "G-Carbine",
@@ -2729,7 +2729,7 @@
               "id": "5Uc8dq0RXJ",
               "label": "Raider Hooves (Scout)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -2762,7 +2762,7 @@
               "id": "5g0IQ",
               "label": "Machine-Creed Canticles (Versatile Attack)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -2854,7 +2854,7 @@
               "id": "a8e1OD3dDx",
               "label": "Neutron Laser (36\u0022, A1, AP(3), Deadly(3))",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Neutron Laser",
@@ -2891,7 +2891,7 @@
               "id": "kY_eWSiVSO",
               "label": "Light P-Pistol (9\u0022, A1, Lacerate)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Light P-Pistol",
@@ -2915,7 +2915,7 @@
               "id": "fRcjmVAZ4q",
               "label": "Light Arc Pistol (9\u0022, A1, Rending)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Light Arc Pistol",
@@ -2951,7 +2951,7 @@
               "id": "5g0IQ",
               "label": "Machine-Creed Canticles (Versatile Attack)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -3228,7 +3228,7 @@
               "id": "WSVAbnkthh",
               "label": "Heavy Arc Gun (36\u0022, A3, Rending)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Heavy Arc Gun",
@@ -3551,7 +3551,7 @@
               "id": "TdAV29qe",
               "label": "Cult Assault (Versatile Attack)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -3796,7 +3796,7 @@
               "id": "TdAV29qe",
               "label": "Cult Assault (Versatile Attack)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -3981,7 +3981,7 @@
               "id": "bXifW0eA",
               "label": "Power Hacker (Piercing Debuff)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -4187,7 +4187,7 @@
               "id": "hfqwgiWgyT",
               "label": "Power Hacker (Piercing Debuff)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -4320,7 +4320,7 @@
               "id": "bXifW0eA",
               "label": "Power Hacker (Piercing Debuff)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -4420,7 +4420,7 @@
               "id": "vRCmqYEufe",
               "label": "Assault Module (Transport(11))",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [

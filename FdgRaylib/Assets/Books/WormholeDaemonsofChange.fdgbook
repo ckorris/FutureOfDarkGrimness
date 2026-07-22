@@ -96,7 +96,7 @@
               "id": "T4qO-",
               "label": "Exalted Hexed Chakram (18\u0022, A9, Surge)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Exalted Hexed Chakram",
@@ -149,7 +149,7 @@
               "id": "s46JxeT",
               "label": "Exalted Power Staff (A9, Rending, Shred)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Exalted Power Staff",
@@ -177,7 +177,7 @@
               "id": "8J0CiduOvb",
               "label": "Exalted Magic Bolt (18\u0022, A6, AP(1), Shred)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Exalted Magic Bolt",
@@ -261,7 +261,7 @@
               "id": "xDKfSJ7T",
               "label": "Daemonic Incursion (Ambush)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -294,7 +294,7 @@
               "id": "CpoasQP3ge",
               "label": "Envoy of Change (Unstoppable in Melee)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -315,7 +315,7 @@
               "id": "wB4iODNVMB",
               "label": "Change God\u0027s Power (Storm of Change)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -336,7 +336,7 @@
               "id": "ITRs0D4M",
               "label": "Gift of Change (Resistance)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -357,7 +357,7 @@
               "id": "wwxZFuQh",
               "label": "Change Favour (Changebound Boost)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -378,7 +378,7 @@
               "id": "cfpbaHfP",
               "label": "Lore of Change (Caster(5))",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -485,7 +485,7 @@
               "id": "MVgWa",
               "label": "Great Hexed Chakram (18\u0022, A6, Surge)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Great Hexed Chakram",
@@ -538,7 +538,7 @@
               "id": "v3Gw3MhYbl",
               "label": "Great Magic Bolt (18\u0022, A4, AP(1), Shred)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Great Magic Bolt",
@@ -586,7 +586,7 @@
               "id": "9eUytD1",
               "label": "Great Power Staff (A6, Rending, Shred)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Great Power Staff",
@@ -650,7 +650,7 @@
               "id": "lp7rxJyn",
               "label": "Daemonic Incursion (Ambush)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -683,7 +683,7 @@
               "id": "Yu7tccYA",
               "label": "Curse of Change (Casting Debuff)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -704,7 +704,7 @@
               "id": "mdDirv8C",
               "label": "Symbol of Change (Fearless)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -725,7 +725,7 @@
               "id": "Tb-mDSgG",
               "label": "Gift of Change (Resistance)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -746,7 +746,7 @@
               "id": "MqkiG1_p",
               "label": "Change Favour (Changebound Boost)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -767,7 +767,7 @@
               "id": "4tQtDx1v",
               "label": "Lore of Change (Caster(4))",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -899,7 +899,7 @@
               "id": "9CJkU",
               "label": "Heavy Hexed Chakram (18\u0022, A3, Surge)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Heavy Hexed Chakram",
@@ -923,7 +923,7 @@
               "id": "NSZNoEyusd",
               "label": "Magic Bolt (18\u0022, A2, AP(1), Shred)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Magic Bolt",
@@ -947,7 +947,7 @@
               "id": "2iTr0vc",
               "label": "Heavy Power Staff (A3, Rending, Shred)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Heavy Power Staff",
@@ -1035,7 +1035,7 @@
               "id": "XJlNNFwW",
               "label": "Change Boon (Spell Accumulator(1))",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1090,7 +1090,7 @@
               "id": "gU7RH8WOlN",
               "label": "Daemonic Incursion (Ambush Aura)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1111,7 +1111,7 @@
               "id": "BewDGtFF0p",
               "label": "Fury Wings (Flying, Scout)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1148,7 +1148,7 @@
               "id": "82aHu8eT",
               "label": "Envoy of Change (Unstoppable in Melee Aura)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1169,7 +1169,7 @@
               "id": "fNzEy5ph",
               "label": "Symbol of Change (Fearless Aura)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1190,7 +1190,7 @@
               "id": "8GoTP6wq",
               "label": "Gift of Change (Resistance Aura)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1211,7 +1211,7 @@
               "id": "xRY5xIsW",
               "label": "Change Favour (Changebound Boost Aura)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1232,7 +1232,7 @@
               "id": "qWbrUAmp",
               "label": "Lore of Change (Caster(3))",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1378,7 +1378,7 @@
               "id": "OEEyMKOMyF",
               "label": "2x Power Staff (A2, Rending, Shred)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Power Staff",
@@ -1406,7 +1406,7 @@
               "id": "YCnNlNX5fW",
               "label": "Magic Bolt (18\u0022, A2, AP(1), Shred), Power Staff (A2, Rending, Shred)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Magic Bolt",
@@ -1447,7 +1447,7 @@
               "id": "iLstcYi63D",
               "label": "Hexed Chakram (18\u0022, A3, Surge), Power Staff (A2, Rending, Shred)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Hexed Chakram",
@@ -1488,7 +1488,7 @@
               "id": "Iw_PB",
               "label": "Magic Blast (12\u0022, A4, Shred), Power Staff (A2, Rending, Shred)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Magic Blast",
@@ -1579,7 +1579,7 @@
               "id": "qj5pSMgI",
               "label": "Change Boon (Spell Accumulator(1))",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1613,7 +1613,7 @@
               "id": "ns98dpGOBK",
               "label": "Daemonic Incursion (Ambush Aura)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1634,7 +1634,7 @@
               "id": "NuPAk",
               "label": "Disc of Change (Fast, Strider, Tough(3))",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1664,7 +1664,7 @@
               "id": "gwiTt",
               "label": "Screecher Chariot (Sharp Beak (A6, AP(2)), Armor(3), Fast, Strider, Tough(6))",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Sharp Beak",
@@ -1720,7 +1720,7 @@
               "id": "BAxa3k6k",
               "label": "Envoy of Change (Unstoppable in Melee Aura)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1741,7 +1741,7 @@
               "id": "DwNzkbb6",
               "label": "Army Standard Bearer (Fear(2))",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1763,7 +1763,7 @@
               "id": "em8gBv7h",
               "label": "Symbol of Change (Fearless Aura)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1784,7 +1784,7 @@
               "id": "g1UYxI6Y",
               "label": "Icon of Change (Indirect when Shooting Aura)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1805,7 +1805,7 @@
               "id": "VPdkY3XG",
               "label": "Change Favour (Changebound Boost Aura)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1826,7 +1826,7 @@
               "id": "pudrwamS",
               "label": "Lore of Change (Caster(2))",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1980,7 +1980,7 @@
               "id": "VK1El",
               "label": "2x Power Staff (A2, Rending, Shred)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Power Staff",
@@ -2008,7 +2008,7 @@
               "id": "fgPSNPLUoT",
               "label": "Magic Bolt (18\u0022, A2, AP(1), Shred), Power Staff (A2, Rending, Shred)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Magic Bolt",
@@ -2049,7 +2049,7 @@
               "id": "42Xkj",
               "label": "Magic Blast (12\u0022, A4, Shred), Power Staff (A2, Rending, Shred)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Magic Blast",
@@ -2090,7 +2090,7 @@
               "id": "6OVaESBdlC",
               "label": "Hexed Chakram (18\u0022, A3, Surge), Power Staff (A2, Rending, Shred)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Hexed Chakram",
@@ -2181,7 +2181,7 @@
               "id": "9l4M5XPa",
               "label": "Envoy of Change (Unstoppable in Melee Aura)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -2202,7 +2202,7 @@
               "id": "1rS-_HUE",
               "label": "Symbol of Change (Fearless Aura)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -2223,7 +2223,7 @@
               "id": "O1NPpRZ_",
               "label": "Icon of Change (Indirect when Shooting Aura)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -2244,7 +2244,7 @@
               "id": "yQ7wRJur",
               "label": "Gift of Change (Resistance Aura)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -2393,7 +2393,7 @@
               "id": "MhjDm5-4_S",
               "label": "2x Power Staff (A2, Rending, Shred)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Power Staff",
@@ -2421,7 +2421,7 @@
               "id": "0UJJ55sJGr",
               "label": "Magic Bolt (18\u0022, A2, AP(1), Shred), Power Staff (A2, Rending, Shred)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Magic Bolt",
@@ -2462,7 +2462,7 @@
               "id": "xqzYLfjW6M",
               "label": "Hexed Chakram (18\u0022, A3, Surge), Power Staff (A2, Rending, Shred)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Hexed Chakram",
@@ -2503,7 +2503,7 @@
               "id": "VMMKs",
               "label": "Magic Blast (12\u0022, A4, Shred), Power Staff (A2, Rending, Shred)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Magic Blast",
@@ -2594,7 +2594,7 @@
               "id": "N3rVJji8",
               "label": "Change Boon (Spell Accumulator(1))",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -2678,7 +2678,7 @@
               "id": "z-HLG",
               "label": "Rending Claws (A2, Rending, Shred)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Rending Claws",
@@ -2975,7 +2975,7 @@
               "id": "09zImCC1_6",
               "label": "Change Boon (Spell Accumulator(1))",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -2997,7 +2997,7 @@
               "id": "i1PyNAO",
               "label": "Banner of Change (Bounding Aura)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -3139,7 +3139,7 @@
               "id": "ZSbX8",
               "label": "Change Boon (Spell Accumulator(1))",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -3329,7 +3329,7 @@
               "id": "pdQW8Idg",
               "label": "Magic Bolt (18\u0022, A1, AP(1), Shred)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Magic Bolt",
@@ -3353,7 +3353,7 @@
               "id": "3exDEe9C",
               "label": "Hexed Chakram (18\u0022, A2, Surge)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Hexed Chakram",
@@ -3496,7 +3496,7 @@
               "id": "WKlFjw8lFn",
               "label": "Magic Blast (12\u0022, A2, Shred)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Magic Blast",
@@ -3520,7 +3520,7 @@
               "id": "-hjtF2PJ1d",
               "label": "Hexed Chakram (18\u0022, A2, Surge)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Hexed Chakram",
@@ -3556,7 +3556,7 @@
               "id": "6MY5gvzd",
               "label": "Change Boon (Spell Accumulator(1))",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -3654,7 +3654,7 @@
               "id": "hCVO87Kt6Y",
               "label": "Mutated Claws (A4, Shred)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Mutated Claws",
@@ -3678,7 +3678,7 @@
               "id": "7JZun",
               "label": "Magic Blast (12\u0022, A4, Shred), Claws (A1)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Magic Blast",
@@ -3893,7 +3893,7 @@
               "id": "lE0Eby6o",
               "label": "Curse of Change (Casting Debuff)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -3999,7 +3999,7 @@
               "id": "1QRzSmLcAA",
               "label": "Great Scorcher Flame (18\u0022, A2, AP(1), Blast(3), Reliable)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Great Scorcher Flame",
@@ -4040,7 +4040,7 @@
               "id": "lE0Eby6o",
               "label": "Curse of Change (Casting Debuff)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -4212,7 +4212,7 @@
               "id": "IbkFD",
               "label": "Hexed Cannon (18\u0022, A18, Surge)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Hexed Cannon",

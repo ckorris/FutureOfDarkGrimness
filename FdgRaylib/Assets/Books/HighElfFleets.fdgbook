@@ -77,7 +77,7 @@
               "id": "Z6uyu",
               "label": "Master Shard Pistol (12\u0022, A2, Crack), CCW (A2)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Master Shard Pistol",
@@ -123,7 +123,7 @@
               "id": "c24_B",
               "label": "Master Laser Pistol (9\u0022, A2, AP(2))",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Master Laser Pistol",
@@ -504,7 +504,7 @@
               "id": "q6-XQkI",
               "label": "Shield Projector (Stealth Aura)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -537,7 +537,7 @@
               "id": "erdxLZEfZi",
               "label": "Retributor Leader (Fearless)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -668,7 +668,7 @@
               "id": "vOCR2cZ",
               "label": "Jetbike (Mounted Shardguns (12\u0022, A2, Crack), Fast, Strider, Tough(3))",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Mounted Shardguns",
@@ -724,7 +724,7 @@
               "id": "tFWuW",
               "label": "High Avenger (Hit \u0026 Run Shooter Aura)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -745,7 +745,7 @@
               "id": "MIC-qfX",
               "label": "Ancient Commander (Highborn Boost Aura)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -766,7 +766,7 @@
               "id": "vwfhd",
               "label": "Elemental Hexer (Shred in Melee Aura)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -787,7 +787,7 @@
               "id": "fQICibOiZC",
               "label": "Guardian Cleric (Resistance Aura)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -922,7 +922,7 @@
               "id": "Z6uyu",
               "label": "Master Shard Pistol (12\u0022, A2, Crack), CCW (A2)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Master Shard Pistol",
@@ -968,7 +968,7 @@
               "id": "c24_B",
               "label": "Master Laser Pistol (9\u0022, A2, AP(2))",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Master Laser Pistol",
@@ -1349,7 +1349,7 @@
               "id": "q6-XQkI",
               "label": "Shield Projector (Stealth Aura)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1382,7 +1382,7 @@
               "id": "qhtgXd0BPz",
               "label": "Striker Leader (Scout)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1403,7 +1403,7 @@
               "id": "dORI8Oc2Xj",
               "label": "Sniper Leader (Scout, Stealth, Strider)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1432,7 +1432,7 @@
               "id": "odKU4XZ",
               "label": "Jetbike (Mounted Shardguns (12\u0022, A2, Crack), Fast, Strider, Tough(3))",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Mounted Shardguns",
@@ -1488,7 +1488,7 @@
               "id": "AHyLLGgvXk",
               "label": "Psy-Artillerist (Re-Position Artillery)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1509,7 +1509,7 @@
               "id": "fKYNE92WKs",
               "label": "Acolyte Psy-Seer (Spell Conduit)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1530,7 +1530,7 @@
               "id": "H32jSODl",
               "label": "High Avenger (Hit \u0026 Run Shooter Aura)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1551,7 +1551,7 @@
               "id": "KnPwafyVA5",
               "label": "Elemental Hexer (Shred in Melee Aura)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1572,7 +1572,7 @@
               "id": "iQ5k7_mR",
               "label": "Guardian Cleric (Resistance Aura)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1593,7 +1593,7 @@
               "id": "R3F2gEdi",
               "label": "Psy-Weaver (Increased Shooting Range Aura)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -2256,7 +2256,7 @@
               "id": "kfdtL",
               "label": "Shard Carbine (18\u0022, A2, Crack), CCW (A1)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Shard Carbine",
@@ -2452,7 +2452,7 @@
               "id": "ZFzRPUA",
               "label": "Flicker Shield (Regeneration Aura)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -2485,7 +2485,7 @@
               "id": "m6HtKFM8",
               "label": "Psy-Marker (Piercing Spotter)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -2572,7 +2572,7 @@
               "id": "eZ7Qo",
               "label": "Laser Blaster (18\u0022, A1, AP(2)), CCW (A1)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Laser Blaster",
@@ -2752,7 +2752,7 @@
               "id": "-wLwrmv",
               "label": "Grenade Packs (Crossing Attack(1))",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -2786,7 +2786,7 @@
               "id": "rN8Bq_jL",
               "label": "Psy-Marker (Piercing Spotter)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -3627,7 +3627,7 @@
               "id": "sjdvj",
               "label": "Psy-Marker (Piercing Spotter)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -3818,7 +3818,7 @@
               "id": "0rzxIIq_",
               "label": "Psy-Marker (Piercing Spotter)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -4014,7 +4014,7 @@
               "id": "apZ_h",
               "label": "Dual Energy Swords (A4, AP(1), Rending)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Dual Energy Swords",
@@ -4052,7 +4052,7 @@
               "id": "5h9lX",
               "label": "Energy Sword (A3, AP(1), Rending)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Energy Sword",
@@ -4076,7 +4076,7 @@
               "id": "T9a88",
               "label": "Energy Spear (A3, AP(4))",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Energy Spear",
@@ -4181,7 +4181,7 @@
               "id": "UuwP_XU0Bz",
               "label": "Sniper Rifle (30\u0022, A1, AP(1), Reliable, Takedown)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Sniper Rifle",
@@ -4300,7 +4300,7 @@
               "id": "plVtT_aDVy",
               "label": "Flicker Shield (Regeneration Aura)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -4415,7 +4415,7 @@
               "id": "D-dveY0Dfo",
               "label": "Energy Lance (A2, AP(1), Thrust)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Energy Lance",
@@ -4497,7 +4497,7 @@
               "id": "qUq2jUscg2",
               "label": "Energy Sword (A3, AP(1), Rending)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Energy Sword",
@@ -4533,7 +4533,7 @@
               "id": "KARJkX2gbv",
               "label": "Hologram Field (Stealth Aura)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -4554,7 +4554,7 @@
               "id": "AJ-fA",
               "label": "Master-Crafted Engines (Scout Aura)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -4688,7 +4688,7 @@
               "id": "SpMTFWvWWv",
               "label": "2x Shard Cannon (24\u0022, A3, AP(1), Crack)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Shard Cannon",
@@ -5076,7 +5076,7 @@
               "id": "PnuA3aK",
               "label": "Rapid Burst Laser (30\u0022, A6, AP(2))",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Rapid Burst Laser",
@@ -5291,7 +5291,7 @@
               "id": "HxXQyQk",
               "label": "Burst Laser (30\u0022, A3, AP(2))",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Burst Laser",
@@ -5733,7 +5733,7 @@
               "id": "BSuIND5Wri",
               "label": "2x Great Claw (A4, Rending)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Great Claw",
@@ -5757,7 +5757,7 @@
               "id": "LbcA6",
               "label": "Great Elemental Sword (A6, AP(1), Rending), Great Shield (Fortified)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Great Elemental Sword",
@@ -5792,7 +5792,7 @@
               "id": "Rnrl1",
               "label": "2x Great Axe (A1, AP(2), Deadly(6))",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Great Axe",
@@ -5817,7 +5817,7 @@
               "id": "epSYx",
               "label": "Great Spear (A6, AP(4)), Great Shield (Fortified)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Great Spear",
@@ -5847,7 +5847,7 @@
               "id": "LOEH4",
               "label": "2x Great Elemental Sword (A6, AP(1), Rending)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Great Elemental Sword",
@@ -6059,7 +6059,7 @@
               "id": "x-R7ruX2yO",
               "label": "Elemental Curse (Unwieldy Debuff)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -6412,7 +6412,7 @@
               "id": "ba6o5nAD",
               "label": "Elemental Curse (Unwieldy Debuff)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -6525,7 +6525,7 @@
               "id": "_I85T",
               "label": "Great Avatar (Gaze of Doom (12\u0022, A3, AP(4), Deadly(3)))",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Gaze of Doom",
@@ -6568,7 +6568,7 @@
               "id": "kNJTwjA9",
               "label": "Elemental Curse (Unwieldy Debuff)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [

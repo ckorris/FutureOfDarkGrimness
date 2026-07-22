@@ -81,7 +81,7 @@
               "id": "j5gim",
               "label": "Blessed Flamer (12\u0022, A1, Blast(3), Reliable, Disintegrate)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Blessed Flamer",
@@ -267,7 +267,7 @@
               "id": "dK23rFon",
               "label": "Superior (Devout Boost)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -288,7 +288,7 @@
               "id": "eFnesNrU",
               "label": "Priestess (Shred in Melee)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -309,7 +309,7 @@
               "id": "OkqAxoi1t8",
               "label": "Abbess (Fast)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -330,7 +330,7 @@
               "id": "KmYHVp9X42",
               "label": "Reverend (Fortified)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -469,7 +469,7 @@
               "id": "_8ger",
               "label": "Dual Energy Claws (A8, Rending)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Dual Energy Claws",
@@ -639,7 +639,7 @@
               "id": "gkbA6386",
               "label": "Superior (Devout Boost Aura)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -660,7 +660,7 @@
               "id": "2AxNOyo5",
               "label": "Priestess (Shred in Melee Aura)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -681,7 +681,7 @@
               "id": "9IPdpzAihf",
               "label": "Abbess (Fast Aura)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -724,7 +724,7 @@
               "id": "2y2DbQLJ",
               "label": "Canoness (Point-Blank Piercing Aura)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -923,7 +923,7 @@
               "id": "KXgY-",
               "label": "Master Heavy Pistol (12\u0022, A2, AP(1))",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Master Heavy Pistol",
@@ -1132,7 +1132,7 @@
               "id": "z0mEC",
               "label": "Flamer-Mod (12\u0022, A1, Blast(3), Limited, Reliable)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Flamer-Mod",
@@ -1357,7 +1357,7 @@
               "id": "idFlTwuHpT",
               "label": "Procession Sword (A2, AP(1), Reliable, Rending)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Procession Sword",
@@ -1447,7 +1447,7 @@
               "id": "WDVDp",
               "label": "Holy Wings (Ambush, Flying, Tough(3))",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1524,7 +1524,7 @@
               "id": "sdRHDdbO",
               "label": "Reverend (Fortified Aura)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1545,7 +1545,7 @@
               "id": "43GX-hVc",
               "label": "Superior (Devout Boost Aura)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1566,7 +1566,7 @@
               "id": "xJgwmPHlUC",
               "label": "Priestess (Shred in Melee Aura)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1609,7 +1609,7 @@
               "id": "M0t79fcd",
               "label": "Canoness (Point-Blank Piercing Aura)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1808,7 +1808,7 @@
               "id": "KXgY-",
               "label": "Master Heavy Pistol (12\u0022, A2, AP(1))",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Master Heavy Pistol",
@@ -2017,7 +2017,7 @@
               "id": "z0mEC",
               "label": "Flamer-Mod (12\u0022, A1, Blast(3), Limited, Reliable)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Flamer-Mod",
@@ -2242,7 +2242,7 @@
               "id": "idFlTwuHpT",
               "label": "Procession Sword (A2, AP(1), Reliable, Rending)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Procession Sword",
@@ -2332,7 +2332,7 @@
               "id": "WDVDp",
               "label": "Holy Wings (Ambush, Flying, Tough(3))",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -2409,7 +2409,7 @@
               "id": "sdRHDdbO",
               "label": "Reverend (Fortified Aura)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -2430,7 +2430,7 @@
               "id": "43GX-hVc",
               "label": "Superior (Devout Boost Aura)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -2451,7 +2451,7 @@
               "id": "xJgwmPHlUC",
               "label": "Priestess (Shred in Melee Aura)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -2494,7 +2494,7 @@
               "id": "M0t79fcd",
               "label": "Canoness (Point-Blank Piercing Aura)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -2722,7 +2722,7 @@
               "id": "sicT9TR0Ls",
               "label": "Reverend (Fortified Aura)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -2743,7 +2743,7 @@
               "id": "MJRXeoqXrY",
               "label": "Deacon (Spell Conduit)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -2764,7 +2764,7 @@
               "id": "IJLtqfK",
               "label": "Superior (Devout Boost Aura)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -2785,7 +2785,7 @@
               "id": "zRrf2l7",
               "label": "Priestess (Shred in Melee Aura)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -2806,7 +2806,7 @@
               "id": "hm4r7",
               "label": "Abbess (Fast Aura)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -2983,7 +2983,7 @@
               "id": "KXgY-",
               "label": "Master Heavy Pistol (12\u0022, A2, AP(1))",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Master Heavy Pistol",
@@ -3192,7 +3192,7 @@
               "id": "z0mEC",
               "label": "Flamer-Mod (12\u0022, A1, Blast(3), Limited, Reliable)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Flamer-Mod",
@@ -3417,7 +3417,7 @@
               "id": "idFlTwuHpT",
               "label": "Procession Sword (A2, AP(1), Reliable, Rending)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Procession Sword",
@@ -3457,7 +3457,7 @@
               "id": "zDO2Tl7k",
               "label": "Reverend (Fortified Aura)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -3478,7 +3478,7 @@
               "id": "vxWIvyu_yK",
               "label": "Deacon (Spell Conduit)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -3499,7 +3499,7 @@
               "id": "-_IFTrYc",
               "label": "Priestess (Shred in Melee Aura)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -3520,7 +3520,7 @@
               "id": "4e9J98_-",
               "label": "Abbess (Fast Aura)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -3563,7 +3563,7 @@
               "id": "L9rBb7BuaS",
               "label": "Canoness (Point-Blank Piercing Aura)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -3660,7 +3660,7 @@
               "id": "nFjVm",
               "label": "Pistol (12\u0022, A1), CCW (A2)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Pistol",
@@ -3786,7 +3786,7 @@
               "id": "bqAyz",
               "label": "Sacred Banner (Courage Aura)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -3807,7 +3807,7 @@
               "id": "vazXO",
               "label": "Canticle Megaphone (Precision Target(1))",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -3829,7 +3829,7 @@
               "id": "tAcKy",
               "label": "Medical Training (Regeneration Aura)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -4118,7 +4118,7 @@
               "id": "hfylDEE",
               "label": "Blessed Flamer (12\u0022, A1, Blast(3), Reliable, Disintegrate)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Blessed Flamer",
@@ -4363,7 +4363,7 @@
               "id": "bqAyz",
               "label": "Sacred Banner (Courage Aura)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -4384,7 +4384,7 @@
               "id": "vazXO",
               "label": "Canticle Megaphone (Precision Target(1))",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -4406,7 +4406,7 @@
               "id": "tAcKy",
               "label": "Medical Training (Regeneration Aura)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -5118,7 +5118,7 @@
               "id": "66sJAaSZAi",
               "label": "Procession Banner (Fear(2))",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -5152,7 +5152,7 @@
               "id": "bqAyz",
               "label": "Sacred Banner (Courage Aura)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -5173,7 +5173,7 @@
               "id": "vazXO",
               "label": "Canticle Megaphone (Precision Target(1))",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -5195,7 +5195,7 @@
               "id": "tAcKy",
               "label": "Medical Training (Regeneration Aura)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -5761,7 +5761,7 @@
               "id": "AlZjA",
               "label": "Blessed Flamer (12\u0022, A1, Blast(3), Reliable, Disintegrate)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Blessed Flamer",
@@ -6031,7 +6031,7 @@
               "id": "bqAyz",
               "label": "Sacred Banner (Courage Aura)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -6052,7 +6052,7 @@
               "id": "vazXO",
               "label": "Canticle Megaphone (Precision Target(1))",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -6074,7 +6074,7 @@
               "id": "tAcKy",
               "label": "Medical Training (Regeneration Aura)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -6284,7 +6284,7 @@
               "id": "21BKIbE",
               "label": "Dual Energy Claws (A4, Rending)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Dual Energy Claws",
@@ -6349,7 +6349,7 @@
               "id": "-eYOQfd",
               "label": "Twin Blessed Flamer (12\u0022, A2, Blast(3), Reliable, Disintegrate)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Twin Blessed Flamer",
@@ -6551,7 +6551,7 @@
               "id": "bqAyz",
               "label": "Sacred Banner (Courage Aura)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -6572,7 +6572,7 @@
               "id": "vazXO",
               "label": "Canticle Megaphone (Precision Target(1))",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -6594,7 +6594,7 @@
               "id": "tAcKy",
               "label": "Medical Training (Regeneration Aura)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -7342,7 +7342,7 @@
               "id": "tk7M-Sx3g7",
               "label": "Holy Statue\u0027s Flame Blasts (12\u0022, A2, Blast(3), Reliable, Disintegrate), Holy Statue of Retribution (Precision Shooter Buff)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Holy Statue\u0027s Flame Blasts",
@@ -7398,7 +7398,7 @@
               "id": "KABNYn5AC5",
               "label": "God-Queen\u0027s Curse (Casting Debuff)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -7419,7 +7419,7 @@
               "id": "BrhDEDNbvl",
               "label": "Extended Cargo (Transport(6))",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -7710,7 +7710,7 @@
               "id": "GSfg_",
               "label": "Twin Blessed Flamer Cannon (18\u0022, A2, Blast(3), Reliable, Disintegrate)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Twin Blessed Flamer Cannon",
@@ -8165,7 +8165,7 @@
               "id": "fEoga",
               "label": "God-Queen\u0027s Curse (Casting Debuff)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -8707,7 +8707,7 @@
               "id": "atM9G",
               "label": "Blessed Flamer (12\u0022, A1, Blast(3), Reliable, Disintegrate)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Blessed Flamer",
@@ -8852,7 +8852,7 @@
               "id": "fEoga",
               "label": "God-Queen\u0027s Curse (Casting Debuff)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -9600,7 +9600,7 @@
               "id": "f0kH_",
               "label": "Titan Claw (A12, AP(1))",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Titan Claw",
@@ -9619,7 +9619,7 @@
               "id": "At5kw",
               "label": "Titan Sword (A10, AP(1), Rending)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Titan Sword",
@@ -9799,7 +9799,7 @@
               "id": "qxXI0Nzqln",
               "label": "Heavy Hull-Flamer (12\u0022, A1, AP(1), Blast(3), Reliable)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Heavy Hull-Flamer",

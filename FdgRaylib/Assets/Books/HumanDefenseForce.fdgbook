@@ -317,7 +317,7 @@
               "id": "lomKCp4CnP",
               "label": "Vehicle Radio (Extended Buff Range)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -558,7 +558,7 @@
               "id": "cS1ZqZny",
               "label": "Commander (Rapid Advance Buff)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -579,7 +579,7 @@
               "id": "6rVpgmqx",
               "label": "Forward Observer (Entrenched Buff)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -600,7 +600,7 @@
               "id": "9OhvRtzt",
               "label": "General (Coordinate)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -734,7 +734,7 @@
               "id": "jruZQ",
               "label": "Master Heavy Rifle (24\u0022, A2, AP(1))",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Master Heavy Rifle",
@@ -753,7 +753,7 @@
               "id": "vw14s",
               "label": "Master Sniper Rifle (30\u0022, A2, AP(1), Reliable, Takedown)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Master Sniper Rifle",
@@ -819,7 +819,7 @@
               "id": "SKHoadM",
               "label": "Energy Axe (A2, AP(4))",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Energy Axe",
@@ -850,7 +850,7 @@
               "id": "dvifGO13Pl",
               "label": "Orbital Drop (Ambush)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -871,7 +871,7 @@
               "id": "ehbibeaKIi",
               "label": "Wolf-Dog Companion (Repel Ambushers)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -904,7 +904,7 @@
               "id": "m2Hf98ZSaW",
               "label": "Drill Sergeant (Bane in Melee Buff)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -925,7 +925,7 @@
               "id": "iNKJEXLk",
               "label": "Commander (Rapid Advance Buff)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -946,7 +946,7 @@
               "id": "HQnhm5pW",
               "label": "Forward Observer (Entrenched Buff)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -967,7 +967,7 @@
               "id": "NhwUpvaS",
               "label": "Psy-Hacker (Caster(2))",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -989,7 +989,7 @@
               "id": "nUSDwLu8",
               "label": "Munitioner (Precision Shooter Buff)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1010,7 +1010,7 @@
               "id": "YjjdDgyP",
               "label": "General (Coordinate)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1097,7 +1097,7 @@
               "id": "VGHRM",
               "label": "Master Rifle (24\u0022, A2)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Master Rifle",
@@ -1140,7 +1140,7 @@
               "id": "qZen4",
               "label": "Master Shotgun (12\u0022, A3, AP(1))",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Master Shotgun",
@@ -1178,7 +1178,7 @@
               "id": "DwVFS",
               "label": "Master Sniper Rifle (30\u0022, A2, AP(1), Reliable, Takedown)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Master Sniper Rifle",
@@ -1244,7 +1244,7 @@
               "id": "6NhJc",
               "label": "Hunting Lance (A2, AP(1), Thrust)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Hunting Lance",
@@ -1268,7 +1268,7 @@
               "id": "yKOK0P1",
               "label": "Energy Axe (A2, AP(4))",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Energy Axe",
@@ -1287,7 +1287,7 @@
               "id": "MdH0R",
               "label": "Heavy Lance (A3, AP(2))",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Heavy Lance",
@@ -1318,7 +1318,7 @@
               "id": "eQ8lpF3YHh",
               "label": "Demo Charge (A1, AP(4), Limited)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Demo Charge",
@@ -1342,7 +1342,7 @@
               "id": "6omIv",
               "label": "Heavy Armor (Armor(4))",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1364,7 +1364,7 @@
               "id": "UfWmtfP37F",
               "label": "Recon Training (Scout)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1385,7 +1385,7 @@
               "id": "C7spwQhB2W",
               "label": "Camo Gear (Stealth)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1406,7 +1406,7 @@
               "id": "pu4A7",
               "label": "Combat Bike (Fast, Impact(1))",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1432,7 +1432,7 @@
               "id": "_2qr3AVuCF",
               "label": "Wolf-Dog Companion (Repel Ambushers)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1453,7 +1453,7 @@
               "id": "WmDBMvcEjW",
               "label": "Sniper Leader (Scout, Stealth)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1490,7 +1490,7 @@
               "id": "uYmIyIN",
               "label": "Drill Sergeant (Bane in Melee Buff)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1511,7 +1511,7 @@
               "id": "wiz5LqW",
               "label": "Commander (Rapid Advance Buff)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1532,7 +1532,7 @@
               "id": "8reDsp0",
               "label": "Forward Observer (Entrenched Buff)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1553,7 +1553,7 @@
               "id": "OZdBEjq",
               "label": "Psy-Hacker (Caster(2))",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1575,7 +1575,7 @@
               "id": "EUJTz",
               "label": "Enforcer (No Retreat Buff)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1596,7 +1596,7 @@
               "id": "EExu_Lq",
               "label": "Munitioner (Precision Shooter Buff)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1617,7 +1617,7 @@
               "id": "sqQKk",
               "label": "General (Coordinate)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1743,7 +1743,7 @@
               "id": "v_OAm",
               "label": "Field Radio (Extended Buff Range)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1840,7 +1840,7 @@
               "id": "_lsbp",
               "label": "Laser Rifle (30\u0022, A1, AP(3))",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Laser Rifle",
@@ -2142,7 +2142,7 @@
               "id": "Ey5BN",
               "label": "Weapon Team (HE Autocannon (36\u0022, A3, AP(1), Crack), Crew (A2), Tough(3))",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "HE Autocannon",
@@ -2368,7 +2368,7 @@
               "id": "qkWITzHA",
               "label": "Energy Axe (A2, AP(4))",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Energy Axe",
@@ -2399,7 +2399,7 @@
               "id": "0WqP6",
               "label": "Field Radio (Extended Buff Range)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -2420,7 +2420,7 @@
               "id": "rEzyL",
               "label": "Company Standard (Hold the Line Boost Aura)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -2441,7 +2441,7 @@
               "id": "vn9Q1",
               "label": "Medical Training (Regeneration Aura)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -2519,7 +2519,7 @@
               "id": "sZuAD",
               "label": "Shotgun (12\u0022, A2, AP(1))",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Shotgun",
@@ -2868,7 +2868,7 @@
               "id": "wL2Sr",
               "label": "Weapon Team (HE Autocannon (36\u0022, A3, AP(1), Crack), Crew (A2), Tough(3))",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "HE Autocannon",
@@ -2969,7 +2969,7 @@
               "id": "LUtwt65npZ",
               "label": "Heavy Armor (Armor(4))",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -2991,7 +2991,7 @@
               "id": "euo9AZvoJc",
               "label": "Recon Training (Scout)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -3012,7 +3012,7 @@
               "id": "CHdI0lWy4B",
               "label": "Camo Gear (Stealth)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -3033,7 +3033,7 @@
               "id": "RBS-aXB_SC",
               "label": "Demo Charge (A1, AP(4), Limited)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Demo Charge",
@@ -3194,7 +3194,7 @@
               "id": "RWTV9I1v",
               "label": "Energy Axe (A2, AP(4))",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Energy Axe",
@@ -3225,7 +3225,7 @@
               "id": "0WqP6",
               "label": "Field Radio (Extended Buff Range)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -3246,7 +3246,7 @@
               "id": "rEzyL",
               "label": "Company Standard (Hold the Line Boost Aura)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -3267,7 +3267,7 @@
               "id": "vn9Q1",
               "label": "Medical Training (Regeneration Aura)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -3544,7 +3544,7 @@
               "id": "WWiLcZqcbL",
               "label": "Orbital Drop (Ambush)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -3702,7 +3702,7 @@
               "id": "SM0UPJ1V",
               "label": "Energy Axe (A2, AP(4))",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Energy Axe",
@@ -3733,7 +3733,7 @@
               "id": "0WqP6",
               "label": "Field Radio (Extended Buff Range)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -3754,7 +3754,7 @@
               "id": "rEzyL",
               "label": "Company Standard (Hold the Line Boost Aura)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -3775,7 +3775,7 @@
               "id": "vn9Q1",
               "label": "Medical Training (Regeneration Aura)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -3917,7 +3917,7 @@
               "id": "wBi3zhiSr7",
               "label": "Drum Rifle (18\u0022, A2, Rending)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Drum Rifle",
@@ -3960,7 +3960,7 @@
               "id": "XlhjY",
               "label": "Rapid Laser Rifle (30\u0022, A2, AP(3))",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Rapid Laser Rifle",
@@ -4158,7 +4158,7 @@
               "id": "ArjAYJv",
               "label": "HE Autocannon (36\u0022, A3, AP(1), Crack)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "HE Autocannon",
@@ -4278,7 +4278,7 @@
               "id": "l6GHu",
               "label": "Light Grenade Launcher (18\u0022, A1, Blast(3)), Bash (A1), Combat Shield (Shielded)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Light Grenade Launcher",
@@ -4445,7 +4445,7 @@
               "id": "7aKH6",
               "label": "Hunting Lance (A1, AP(1), Thrust)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Hunting Lance",
@@ -4507,7 +4507,7 @@
               "id": "y_k6Di0uyl",
               "label": "Anti-Tank Lance (A1, AP(1), Deadly(3), Thrust)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Anti-Tank Lance",
@@ -4569,7 +4569,7 @@
               "id": "xTCW8",
               "label": "Laser Rifle (30\u0022, A1, AP(3))",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Laser Rifle",
@@ -4770,7 +4770,7 @@
               "id": "NuM86VbyQd",
               "label": "Twin Storm Machinegun (24\u0022, A4, AP(1)), Cargo Space (Transport(6))",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Twin Storm Machinegun",
@@ -4851,7 +4851,7 @@
               "id": "ziDEH",
               "label": "Pintle-Machinegun (30\u0022, A2, AP(1))",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Pintle-Machinegun",
@@ -4931,7 +4931,7 @@
               "id": "t54eLhtgCM",
               "label": "Targeting Sights (Relentless Mark)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -4952,7 +4952,7 @@
               "id": "bPKYq",
               "label": "Recon Vehicle (Scout)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -5114,7 +5114,7 @@
               "id": "pY516",
               "label": "Heavy Machinegun (30\u0022, A3, AP(1))",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Heavy Machinegun",
@@ -5228,7 +5228,7 @@
               "id": "lomKCp4CnP",
               "label": "Vehicle Radio (Extended Buff Range)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -5372,7 +5372,7 @@
               "id": "kA9wWAawSc",
               "label": "Acid Cannon (18\u0022, A6, Bane)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Acid Cannon",
@@ -5421,7 +5421,7 @@
               "id": "0ect9VZiQ2",
               "label": "Battle Cannon (30\u0022, A2, AP(2), Blast(3))",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Battle Cannon",
@@ -5446,7 +5446,7 @@
               "id": "RYpxI",
               "label": "Twin Flamer Cannon (18\u0022, A2, AP(1), Blast(3), Reliable)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Twin Flamer Cannon",
@@ -5475,7 +5475,7 @@
               "id": "7ig9wAEpu2",
               "label": "Heavy Laser Cannon (36\u0022, A1, AP(3), Deadly(6))",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Heavy Laser Cannon",
@@ -5570,7 +5570,7 @@
               "id": "lomKCp4CnP",
               "label": "Vehicle Radio (Extended Buff Range)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -5769,7 +5769,7 @@
               "id": "h1XSo2OzDD",
               "label": "Shard Mortar (24\u0022, A3, Blast(3), Indirect, Rending)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Shard Mortar",
@@ -5937,7 +5937,7 @@
               "id": "lomKCp4CnP",
               "label": "Vehicle Radio (Extended Buff Range)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -6298,7 +6298,7 @@
               "id": "lomKCp4CnP",
               "label": "Vehicle Radio (Extended Buff Range)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -6618,7 +6618,7 @@
               "id": "70e2x_v",
               "label": "HE Autocannon (36\u0022, A3, AP(1), Crack), Oppression Cannon (36\u0022, A1, AP(4), Deadly(3))",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "HE Autocannon",
@@ -6989,7 +6989,7 @@
               "id": "p12itWnR",
               "label": "Cluster Missiles (24\u0022, A1, Blast(3), Limited)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Cluster Missiles",
@@ -7018,7 +7018,7 @@
               "id": "DNLp2B8X",
               "label": "Rocket Salvo (18\u0022, A3, AP(1), Limited)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Rocket Salvo",
@@ -7042,7 +7042,7 @@
               "id": "5T0awd3k",
               "label": "AA-Warheads (24\u0022, A2, AP(2), Limited, Unstoppable)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "AA-Warheads",
@@ -7082,7 +7082,7 @@
               "id": "g8Fls",
               "label": "Forward Observer (Scout)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -7103,7 +7103,7 @@
               "id": "axnXF",
               "label": "Camouflage Netting (Stealth)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -7136,7 +7136,7 @@
               "id": "azDg5P0h",
               "label": "Targeting Sights (Relentless Mark)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -7239,7 +7239,7 @@
               "id": "a1WfU",
               "label": "Rapid Grenade Launcher (24\u0022, A2, Blast(3))",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Rapid Grenade Launcher",
@@ -7264,7 +7264,7 @@
               "id": "NGzjS",
               "label": "Energy Sword (A6, AP(1), Rending)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Energy Sword",
@@ -7288,7 +7288,7 @@
               "id": "NRYqA",
               "label": "Energy Axe (A6, AP(4))",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Energy Axe",
@@ -7321,7 +7321,7 @@
               "id": "zTdtf",
               "label": "Energy Sword (A6, AP(1), Rending)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Energy Sword",
@@ -7345,7 +7345,7 @@
               "id": "MCwnR",
               "label": "Energy Axe (A6, AP(4))",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Energy Axe",
@@ -7376,7 +7376,7 @@
               "id": "GBAKh",
               "label": "Flamer (12\u0022, A1, Blast(3), Reliable)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Flamer",
@@ -7405,7 +7405,7 @@
               "id": "KPs3f",
               "label": "Fusion Rifle (12\u0022, A1, AP(4), Deadly(3))",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Fusion Rifle",
@@ -7430,7 +7430,7 @@
               "id": "xecdw",
               "label": "Heavy Machinegun (30\u0022, A3, AP(1))",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Heavy Machinegun",
@@ -7526,7 +7526,7 @@
               "id": "NkDFO",
               "label": "Walker Heavy Machinegun (30\u0022, A12, AP(1))",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Walker Heavy Machinegun",
@@ -7545,7 +7545,7 @@
               "id": "nVKTE",
               "label": "Walker Missile Launcher (30\u0022, A4, AP(2), Deadly(3), Unstoppable)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Walker Missile Launcher",
@@ -7574,7 +7574,7 @@
               "id": "Lojas",
               "label": "Walker HE Autocannon (36\u0022, A12, AP(1), Crack)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Walker HE Autocannon",
@@ -7598,7 +7598,7 @@
               "id": "I-cOX",
               "label": "Walker Laser Cannon (36\u0022, A4, AP(3), Deadly(3))",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Walker Laser Cannon",
@@ -7623,7 +7623,7 @@
               "id": "j4Jzt",
               "label": "Walker Plasma Cannon (30\u0022, A4, AP(4), Blast(3))",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Walker Plasma Cannon",
@@ -7648,7 +7648,7 @@
               "id": "xnIZf",
               "label": "Walker Laser Machinegun (30\u0022, A12, AP(3))",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Walker Laser Machinegun",
@@ -7679,7 +7679,7 @@
               "id": "dqCT3UDk",
               "label": "Cluster Missiles (24\u0022, A1, Blast(3), Limited)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Cluster Missiles",
@@ -7708,7 +7708,7 @@
               "id": "60zV-Ooj",
               "label": "Rocket Salvo (18\u0022, A3, AP(1), Limited)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Rocket Salvo",
@@ -7732,7 +7732,7 @@
               "id": "p2ymwUju",
               "label": "AA-Warheads (24\u0022, A2, AP(2), Limited, Unstoppable)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "AA-Warheads",
@@ -7855,7 +7855,7 @@
               "id": "yiV-_",
               "label": "Walker Heavy Machinegun (30\u0022, A12, AP(1))",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Walker Heavy Machinegun",
@@ -7874,7 +7874,7 @@
               "id": "OT-UF",
               "label": "Walker Missile Launcher (30\u0022, A4, AP(2), Deadly(3), Unstoppable)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Walker Missile Launcher",
@@ -7903,7 +7903,7 @@
               "id": "_igFq",
               "label": "Walker HE Autocannon (36\u0022, A12, AP(1), Crack)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Walker HE Autocannon",
@@ -7927,7 +7927,7 @@
               "id": "jIG05",
               "label": "Walker Laser Cannon (36\u0022, A4, AP(3), Deadly(3))",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Walker Laser Cannon",
@@ -7952,7 +7952,7 @@
               "id": "QUyne",
               "label": "Walker Plasma Cannon (30\u0022, A4, AP(4), Blast(3))",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Walker Plasma Cannon",
@@ -7977,7 +7977,7 @@
               "id": "Vi7mW",
               "label": "Walker Laser Machinegun (30\u0022, A12, AP(3))",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Walker Laser Machinegun",
@@ -8010,7 +8010,7 @@
               "id": "mEpOQ",
               "label": "Rocket Salvo Array (18\u0022, A6, AP(1))",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Rocket Salvo Array",
@@ -8029,7 +8029,7 @@
               "id": "XUnHd",
               "label": "AA-Warheads Array (24\u0022, A4, AP(2), Unstoppable)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "AA-Warheads Array",
@@ -8167,7 +8167,7 @@
               "id": "0hfhmkQ88M",
               "label": "Hell Cannon (24\u0022, A4, AP(1), Blast(3), Unstoppable), Siege Mortar (24\u0022, A2, AP(3), Blast(3), Indirect)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Hell Cannon",
@@ -8342,7 +8342,7 @@
               "id": "_vs6B4m",
               "label": "HE Autocannon (36\u0022, A3, AP(1), Crack), Bane Cannon (30\u0022, A4, AP(2), Blast(3)), Siege Mortar (24\u0022, A2, AP(3), Blast(3), Indirect)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "HE Autocannon",
@@ -8410,7 +8410,7 @@
               "id": "melhM",
               "label": "Heavy Flamer (12\u0022, A1, AP(1), Blast(3), Reliable)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Heavy Flamer",
@@ -8470,7 +8470,7 @@
               "id": "iMhko",
               "label": "Sponson-Array (Laser Cannon (36\u0022, A1, AP(3), Deadly(3)), Heavy Flamer (12\u0022, A1, AP(1), Blast(3), Reliable), Tough(6))",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Heavy Flamer",
@@ -8525,7 +8525,7 @@
               "id": "BzwQV",
               "label": "Sponson-Array (Laser Cannon (36\u0022, A1, AP(3), Deadly(3)), Heavy Machinegun (30\u0022, A3, AP(1)), Tough(6))",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Heavy Machinegun",
@@ -8677,7 +8677,7 @@
               "id": "eGslM1d",
               "label": "Laser Machinegun (30\u0022, A3, AP(3))",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Laser Machinegun",
@@ -8985,7 +8985,7 @@
               "id": "AlVd1",
               "label": "Rocket Battery (24\u0022, A2, AP(1), Blast(3), Indirect)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Rocket Battery",
@@ -9014,7 +9014,7 @@
               "id": "3xu2X",
               "label": "Field Cannon (30\u0022, A2, AP(2), Blast(3))",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Field Cannon",
@@ -9064,7 +9064,7 @@
               "id": "7OaY9",
               "label": "Light AA-Cannon (30\u0022, A6, AP(1), Unstoppable)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Light AA-Cannon",

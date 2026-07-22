@@ -540,7 +540,7 @@
               "id": "XW9LACWs",
               "label": "Guard Dog (Repel Ambushers)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -594,7 +594,7 @@
               "id": "8KusnvMM",
               "label": "Witch Hunter (Resistance Aura)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -615,7 +615,7 @@
               "id": "ZZ3YD2UC",
               "label": "Tactical Master (Delayed Action)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -636,7 +636,7 @@
               "id": "2RRRJ0nM",
               "label": "Alien Hunter (Precision Shooter Aura)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -657,7 +657,7 @@
               "id": "GyPa-3He",
               "label": "Forbidden Loremaster (Caster(2))",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -994,7 +994,7 @@
               "id": "2p-KQI3w",
               "label": "Guard Dog (Repel Ambushers)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1027,7 +1027,7 @@
               "id": "spfl-XGE",
               "label": "High Priest (Spell Accumulator(1))",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1049,7 +1049,7 @@
               "id": "U5y6LjTf",
               "label": "Tactical Master (Delayed Action)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1070,7 +1070,7 @@
               "id": "934nLGL5",
               "label": "Forbidden Loremaster (Caster(2))",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1092,7 +1092,7 @@
               "id": "65_kC12E",
               "label": "Navigator (Bounding Aura)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1472,7 +1472,7 @@
               "id": "Ww-dhLGYP_",
               "label": "Shotgun (12\u0022, A2, AP(1))",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Shotgun",
@@ -1627,7 +1627,7 @@
               "id": "aVFb58pFdn",
               "label": "Heavy Machinegun (30\u0022, A3, AP(1))",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Heavy Machinegun",
@@ -1814,7 +1814,7 @@
               "id": "au7HS3m5mj",
               "label": "Inquisitorial Standard (Courage Aura)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1835,7 +1835,7 @@
               "id": "jgVIXiDreQ",
               "label": "Medical Training (Regeneration Aura)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1917,7 +1917,7 @@
               "id": "iut_tXPgOU",
               "label": "Heavy Pistol (12\u0022, A1, AP(1)), Riot Shield (Bash (A1), Fortified)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Heavy Pistol",
@@ -1955,7 +1955,7 @@
               "id": "_G2acn-iJm",
               "label": "Heavy Pistol (12\u0022, A1, AP(1)), CCW (A2)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "CCW",
@@ -1982,7 +1982,7 @@
               "id": "dsqFP3Tsrd",
               "label": "Heavy Rifle (24\u0022, A1, AP(1)), CCW (A1)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Heavy Rifle",
@@ -2023,7 +2023,7 @@
               "id": "QzYwvzcDpw",
               "label": "Shotgun (12\u0022, A2, AP(1))",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Shotgun",
@@ -2056,7 +2056,7 @@
               "id": "TJtGSujV_E",
               "label": "Energy Sword (A2, AP(1), Rending)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Energy Sword",
@@ -2080,7 +2080,7 @@
               "id": "XlIUkptPjH",
               "label": "Chainsaw Sword (A2, AP(2))",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Chainsaw Sword",
@@ -2162,7 +2162,7 @@
               "id": "IWZYzTq9wC",
               "label": "Sniper Rifle (30\u0022, A1, AP(1), Reliable, Takedown)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Sniper Rifle",
@@ -2190,7 +2190,7 @@
               "id": "RbhCHfyhvN",
               "label": "Heavy Machinegun (30\u0022, A3, AP(1))",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Heavy Machinegun",
@@ -2221,7 +2221,7 @@
               "id": "h8TNrzYbsc",
               "label": "Guard Dog (Repel Ambushers)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -2242,7 +2242,7 @@
               "id": "dGLZBlAmOC",
               "label": "Riot Paramedic (Regeneration Aura)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -2348,7 +2348,7 @@
               "id": "5bk2Blcq",
               "label": "Shred Pistol (9\u0022, A2, Rending)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Shred Pistol",
@@ -2372,7 +2372,7 @@
               "id": "xUqftPh2mU",
               "label": "Fusion Pistol (6\u0022, A1, AP(4), Deadly(3))",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Fusion Pistol",
@@ -2397,7 +2397,7 @@
               "id": "AZcqqFK-",
               "label": "Flamer Pistol (6\u0022, A1, Blast(3), Reliable)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Flamer Pistol",
@@ -2440,7 +2440,7 @@
               "id": "6zpBa9p7",
               "label": "Energy Fist (A1, AP(4))",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Energy Fist",
@@ -2459,7 +2459,7 @@
               "id": "dU6suYG6e4",
               "label": "Needle Sword (A2, Bane)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Needle Sword",
@@ -2483,7 +2483,7 @@
               "id": "Z0dMFfmg",
               "label": "Chainsaw Sword (A2, AP(2))",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Chainsaw Sword",
@@ -2538,7 +2538,7 @@
               "id": "QT4ZYzMv",
               "label": "Bearer of the Text (Shred in Melee Aura)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -2678,7 +2678,7 @@
               "id": "dkTNrvprkK",
               "label": "Rifle (24\u0022, A1), CCW (A1)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Rifle",
@@ -2705,7 +2705,7 @@
               "id": "cWB98xA38-",
               "label": "Needle Rifle (24\u0022, A1, Bane), CCW (A1)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Needle Rifle",
@@ -2751,7 +2751,7 @@
               "id": "q_8TkrDk6R",
               "label": "Shotgun (12\u0022, A2, AP(1))",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Shotgun",
@@ -2770,7 +2770,7 @@
               "id": "TDtMsrUlm-",
               "label": "Plasma Rifle (24\u0022, A1, AP(4))",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Plasma Rifle",
@@ -2789,7 +2789,7 @@
               "id": "bajr_Fj0mx",
               "label": "Fusion Rifle (12\u0022, A1, AP(4), Deadly(3))",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Fusion Rifle",
@@ -2814,7 +2814,7 @@
               "id": "1WaZ7SX8Fh",
               "label": "Flamer (12\u0022, A1, Blast(3), Reliable)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Flamer",
@@ -2855,7 +2855,7 @@
               "id": "YFxVcFX6FG",
               "label": "Bearer of the Flame (Repel Ambushers)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -2956,7 +2956,7 @@
               "id": "W3vAEqmO-H",
               "label": "Shred Pistol (9\u0022, A2, Rending)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Shred Pistol",
@@ -2999,7 +2999,7 @@
               "id": "dx1z_e0v8G",
               "label": "Fusion Pistol (6\u0022, A1, AP(4), Deadly(3))",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Fusion Pistol",
@@ -3024,7 +3024,7 @@
               "id": "jF4H884rJL",
               "label": "Flamer Pistol (6\u0022, A1, Blast(3), Reliable)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Flamer Pistol",
@@ -3067,7 +3067,7 @@
               "id": "WZ6TsPb6ad",
               "label": "Chainsaw Sword (A2, AP(2))",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Chainsaw Sword",
@@ -3122,7 +3122,7 @@
               "id": "Ucho0kLW7X",
               "label": "Bearer of the Icon (Casting Debuff)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -3201,7 +3201,7 @@
               "id": "e4pREiSc",
               "label": "Energy Fist (A1, AP(4))",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Energy Fist",
@@ -3220,7 +3220,7 @@
               "id": "iM5aiLSN",
               "label": "Chainsaw Sword (A2, AP(2))",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Chainsaw Sword",
@@ -3239,7 +3239,7 @@
               "id": "9Ue6nFmX",
               "label": "Energy Sword (A2, AP(1), Rending)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Energy Sword",
@@ -3275,7 +3275,7 @@
               "id": "jKLh5sts",
               "label": "Bearer of the Chain (Furious Aura)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -3357,7 +3357,7 @@
               "id": "EM0_xDrdCL",
               "label": "Long Rifle (30\u0022, A1)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Long Rifle",
@@ -3376,7 +3376,7 @@
               "id": "Jro0hVXn",
               "label": "Shotgun (12\u0022, A2, AP(1))",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Shotgun",
@@ -3395,7 +3395,7 @@
               "id": "I1g3SFb5HX",
               "label": "Needle Rifle (24\u0022, A1, Bane)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Needle Rifle",
@@ -3419,7 +3419,7 @@
               "id": "bqGt5tDZjH",
               "label": "Carbine (18\u0022, A2)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Carbine",
@@ -3450,7 +3450,7 @@
               "id": "hD9M4_35",
               "label": "Bearer of the Core (Piercing Tag(1))",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -3557,7 +3557,7 @@
               "id": "wZrFTT1R",
               "label": "Shred Pistol (9\u0022, A2, Rending)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Shred Pistol",
@@ -3595,7 +3595,7 @@
               "id": "94Tr3gt2",
               "label": "Needle Sword (A2, Bane)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Needle Sword",
@@ -3655,7 +3655,7 @@
               "id": "gcYFN3Ro",
               "label": "Bearer of the Sceptre (Spell Conduit)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -3734,7 +3734,7 @@
               "id": "49ULBSuocJ",
               "label": "Toxin-Whip (A3, Bane)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Toxin-Whip",
@@ -3758,7 +3758,7 @@
               "id": "1GbNNXh7jm",
               "label": "Barb-Whip (A3, Shred)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Barb-Whip",
@@ -3782,7 +3782,7 @@
               "id": "a0uQZW2kqX",
               "label": "Chain-Whip (A3, AP(1))",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Chain-Whip",
@@ -3813,7 +3813,7 @@
               "id": "RdIXCMjjV4",
               "label": "Bearer of the Mask (Fear(1))",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -3905,7 +3905,7 @@
               "id": "FACFXjPpF5",
               "label": "Daemon Burst (12\u0022, A1, Blast(3), Indirect)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Daemon Burst",
@@ -3934,7 +3934,7 @@
               "id": "4nWDXaVWqF",
               "label": "Daemon Strike (12\u0022, A2, AP(1), Indirect)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Daemon Strike",
@@ -3958,7 +3958,7 @@
               "id": "pNTJQIl-5g",
               "label": "Daemon Beam (12\u0022, A1, AP(2), Deadly(3), Indirect)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Daemon Beam",
@@ -3999,7 +3999,7 @@
               "id": "un140vpJMs",
               "label": "Bearer of the Lock (Defensive Growth Aura)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -4078,7 +4078,7 @@
               "id": "vHdZbflfVy",
               "label": "Dual Needle Swords (A4, Bane)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Dual Needle Swords",
@@ -4102,7 +4102,7 @@
               "id": "O6pdTJG-6K",
               "label": "Dual Barb-Whips (A4, Shred)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Dual Barb-Whips",
@@ -4126,7 +4126,7 @@
               "id": "0Yi-tcFNAC",
               "label": "Dual Energy Swords (A4, AP(1), Rending)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Dual Energy Swords",
@@ -4162,7 +4162,7 @@
               "id": "bT5RHcEO6E",
               "label": "Needle Pistol (12\u0022, A1, Bane)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Needle Pistol",
@@ -4198,7 +4198,7 @@
               "id": "mdHtYnRQIO",
               "label": "Warfare Ministry Agent (Fast, Regeneration)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -4223,7 +4223,7 @@
               "id": "k3ABYhHNJ9",
               "label": "Terrorism Ministry Agent (Resistance, Teleport)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -4248,7 +4248,7 @@
               "id": "cW6whrzjri",
               "label": "Surveillance Ministry Agent (Fortified, Scout, Strider)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -4277,7 +4277,7 @@
               "id": "4PlcCFamRA",
               "label": "Espionage Ministry Agent (Hit \u0026 Run, Infiltrate, Protected)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -4392,7 +4392,7 @@
               "id": "u0obp-4sVp",
               "label": "Shred Cannon (24\u0022, A4, Rending)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Shred Cannon",
@@ -4441,7 +4441,7 @@
               "id": "xLgACDDdo-",
               "label": "Laser Cannon (36\u0022, A1, AP(3), Deadly(3))",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Laser Cannon",
@@ -4478,7 +4478,7 @@
               "id": "2aM23tfNb9",
               "label": "Bearer of the Coil (Stealth Aura)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -4951,7 +4951,7 @@
               "id": "bnOVR7G3iE",
               "label": "Fusion Cannon (24\u0022, A1, AP(4), Deadly(6))",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Fusion Cannon",
@@ -4976,7 +4976,7 @@
               "id": "KKxODh4-W1",
               "label": "Twin Flamer Cannon (18\u0022, A2, AP(1), Blast(3), Reliable)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Twin Flamer Cannon",
@@ -5019,7 +5019,7 @@
               "id": "A3gmNm33Gt",
               "label": "Heavy Fusion Rifle (18\u0022, A1, AP(4), Deadly(3))",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Heavy Fusion Rifle",
@@ -5044,7 +5044,7 @@
               "id": "-NqwG85S2B",
               "label": "Heavy Machinegun (30\u0022, A3, AP(1))",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Heavy Machinegun",

@@ -245,7 +245,7 @@
               "id": "OP-w3",
               "label": "Destructor-Mount (24\u0022, A2, Tear)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Destructor-Mount",
@@ -386,7 +386,7 @@
               "id": "wS6PHTlO",
               "label": "Guardian Banner (Steadfast)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -407,7 +407,7 @@
               "id": "tx3Wv3PcVW",
               "label": "The Founder\u0027s Warding (Regeneration)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -428,7 +428,7 @@
               "id": "dLfGY8gy",
               "label": "Envoy Banner (Dash)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -461,7 +461,7 @@
               "id": "uUj0iCTL",
               "label": "Warden (Unstoppable in Melee)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -482,7 +482,7 @@
               "id": "axz_H59y",
               "label": "Captain (Guardian Boost)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -503,7 +503,7 @@
               "id": "U5FlAKaxzK",
               "label": "Accuser (Shred when Shooting)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -524,7 +524,7 @@
               "id": "0YV6ierw2L",
               "label": "Watcher (Hit \u0026 Run Shooter)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -545,7 +545,7 @@
               "id": "Ln2FDBOE",
               "label": "Army Standard Bearer (Fear(2))",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -567,7 +567,7 @@
               "id": "wmPqXhJo",
               "label": "Disruptor (Stealth)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -691,7 +691,7 @@
               "id": "Z7zhyYj",
               "label": "Custodian Jetbike (Heavy Rifle Array (24\u0022, A6, AP(1)), Fast, Strider, Tough(3))",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Heavy Rifle Array",
@@ -744,7 +744,7 @@
               "id": "BAYne4XQkx",
               "label": "Twin Devastator (24\u0022, A4, AP(3))",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Twin Devastator",
@@ -1028,7 +1028,7 @@
               "id": "cYN4g",
               "label": "Destructor-Mount (24\u0022, A2, Tear)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Destructor-Mount",
@@ -1169,7 +1169,7 @@
               "id": "w75mgqtK",
               "label": "Captain (Guardian Boost Aura)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1190,7 +1190,7 @@
               "id": "HuV2S2k5",
               "label": "Warden (Unstoppable in Melee Aura)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1211,7 +1211,7 @@
               "id": "KGOaZUz0",
               "label": "Watcher (Hit \u0026 Run Shooter Aura)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1232,7 +1232,7 @@
               "id": "iTIWHaV1",
               "label": "Army Standard Bearer (Fear(2))",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1254,7 +1254,7 @@
               "id": "lqiK5pHnkQ",
               "label": "Disruptor (Stealth Aura)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1374,7 +1374,7 @@
               "id": "Z7zhyYj",
               "label": "Custodian Jetbike (Heavy Rifle Array (24\u0022, A6, AP(1)), Fast, Strider, Tough(3))",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Heavy Rifle Array",
@@ -1427,7 +1427,7 @@
               "id": "BAYne4XQkx",
               "label": "Twin Devastator (24\u0022, A4, AP(3))",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Twin Devastator",
@@ -1711,7 +1711,7 @@
               "id": "cYN4g",
               "label": "Destructor-Mount (24\u0022, A2, Tear)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Destructor-Mount",
@@ -1852,7 +1852,7 @@
               "id": "w75mgqtK",
               "label": "Captain (Guardian Boost Aura)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1873,7 +1873,7 @@
               "id": "HuV2S2k5",
               "label": "Warden (Unstoppable in Melee Aura)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1894,7 +1894,7 @@
               "id": "KGOaZUz0",
               "label": "Watcher (Hit \u0026 Run Shooter Aura)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1915,7 +1915,7 @@
               "id": "iTIWHaV1",
               "label": "Army Standard Bearer (Fear(2))",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -1937,7 +1937,7 @@
               "id": "lqiK5pHnkQ",
               "label": "Disruptor (Stealth Aura)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -2172,7 +2172,7 @@
               "id": "JoroorjX",
               "label": "Captain (Guardian Boost Aura)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -2193,7 +2193,7 @@
               "id": "kBPMI_Hy4D",
               "label": "Warden (Unstoppable in Melee Aura)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -2214,7 +2214,7 @@
               "id": "rtPDtW0i",
               "label": "Accuser (Shred when Shooting Aura)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -2235,7 +2235,7 @@
               "id": "TN8PdGTE",
               "label": "Disruptor (Stealth Aura)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -2256,7 +2256,7 @@
               "id": "gB7jBZLF",
               "label": "Sorceress (Caster(2))",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -2278,7 +2278,7 @@
               "id": "7k5EozSm",
               "label": "Master Sorceress (Caster(3))",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -2516,7 +2516,7 @@
               "id": "PtHL6",
               "label": "Destructor-Mount (24\u0022, A2, Tear)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Destructor-Mount",
@@ -2657,7 +2657,7 @@
               "id": "mqLL3NIb",
               "label": "Guardian Banner (Steadfast Aura)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -2678,7 +2678,7 @@
               "id": "75OEgan9Fv",
               "label": "The Founder\u0027s Warding (Regeneration Aura)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -2699,7 +2699,7 @@
               "id": "Dt3TSWxB",
               "label": "Envoy Banner (Dash Aura)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -2940,7 +2940,7 @@
               "id": "PtHL6",
               "label": "Destructor-Mount (24\u0022, A2, Tear)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Destructor-Mount",
@@ -3081,7 +3081,7 @@
               "id": "mqLL3NIb",
               "label": "Guardian Banner (Steadfast Aura)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -3102,7 +3102,7 @@
               "id": "75OEgan9Fv",
               "label": "The Founder\u0027s Warding (Regeneration Aura)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -3123,7 +3123,7 @@
               "id": "Dt3TSWxB",
               "label": "Envoy Banner (Dash Aura)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -3219,7 +3219,7 @@
               "id": "qT5suX6",
               "label": "Burst Shot-Mount (12\u0022, A3, AP(1)), Heavy Hand Weapon (A1, AP(1))",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Burst Shot-Mount",
@@ -3372,7 +3372,7 @@
               "id": "Jicek25X",
               "label": "Inhibitor Array (Ranged Shrouding Aura)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -3405,7 +3405,7 @@
               "id": "mqLL3NIb",
               "label": "Guardian Banner (Steadfast Aura)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -3426,7 +3426,7 @@
               "id": "75OEgan9Fv",
               "label": "The Founder\u0027s Warding (Regeneration Aura)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -3447,7 +3447,7 @@
               "id": "Dt3TSWxB",
               "label": "Envoy Banner (Dash Aura)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -3540,7 +3540,7 @@
               "id": "mqLL3NIb",
               "label": "Guardian Banner (Steadfast Aura)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -3561,7 +3561,7 @@
               "id": "75OEgan9Fv",
               "label": "The Founder\u0027s Warding (Regeneration Aura)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -3582,7 +3582,7 @@
               "id": "Dt3TSWxB",
               "label": "Envoy Banner (Dash Aura)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -3615,7 +3615,7 @@
               "id": "MRQo61yk",
               "label": "Inhibitor Array (Ranged Shrouding Aura)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -3692,7 +3692,7 @@
               "id": "eTUvW",
               "label": "Heretic Spotter (Piercing Target(1))",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -3773,7 +3773,7 @@
               "id": "eTUvW",
               "label": "Heretic Spotter (Piercing Target(1))",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -3864,7 +3864,7 @@
               "id": "eTUvW",
               "label": "Heretic Spotter (Piercing Target(1))",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -4120,7 +4120,7 @@
               "id": "NVLr1",
               "label": "Destructor-Mount (24\u0022, A2, Tear)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Destructor-Mount",
@@ -4261,7 +4261,7 @@
               "id": "wS6PHTlO",
               "label": "Guardian Banner (Steadfast)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -4282,7 +4282,7 @@
               "id": "tx3Wv3PcVW",
               "label": "The Founder\u0027s Warding (Regeneration)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -4303,7 +4303,7 @@
               "id": "dLfGY8gy",
               "label": "Envoy Banner (Dash)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -4679,7 +4679,7 @@
               "id": "wZdI2JBfIR",
               "label": "Storm Rifle (24\u0022, A3, AP(1))",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Storm Rifle",
@@ -4698,7 +4698,7 @@
               "id": "n58Mxo5gzV",
               "label": "Heavy Fusion Rifle (18\u0022, A1, AP(4), Deadly(3))",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Heavy Fusion Rifle",
@@ -4735,7 +4735,7 @@
               "id": "7bq1GFfvoQ",
               "label": "Dozer Blade (Strider)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -4756,7 +4756,7 @@
               "id": "QxHV8SqLHG",
               "label": "Hunter Missiles (24\u0022, A1, AP(2), Deadly(3), Limited, Unstoppable)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Hunter Missiles",
@@ -4868,7 +4868,7 @@
               "id": "BAYne4XQkx",
               "label": "Twin Devastator (24\u0022, A4, AP(3))",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Twin Devastator",
@@ -5522,7 +5522,7 @@
               "id": "I7G2Rq6D",
               "label": "Super-Charging Array  (Shred Mark)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -5639,7 +5639,7 @@
               "id": "_BK8c",
               "label": "2x Flamer (12\u0022, A1, Blast(3), Reliable), Heavy Custodian Spear (A4, AP(3), Deadly(3))",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Flamer",
@@ -5725,7 +5725,7 @@
               "id": "8M1Z9",
               "label": "Rapid Destructor-Mount (24\u0022, A4, Tear)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [
                 {
                   "name": "Rapid Destructor-Mount",
@@ -5837,7 +5837,7 @@
               "id": "q6nv_RKi",
               "label": "Super-Charging Array  (Shred Mark)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
@@ -6013,7 +6013,7 @@
               "id": "uq8MBs2U",
               "label": "Super-Charging Array  (Shred Mark)",
               "cost": 0,
-              "costUnpriced": false,
+              "costUnpriced": true,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
