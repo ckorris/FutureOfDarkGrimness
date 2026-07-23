@@ -1,6 +1,6 @@
 # 264 — Tactician: unit behind impassible terrain rushes sideways/backwards instead of advancing
 
-**Status**: in-progress (investigation complete 2026-07-23; fixes not started)
+**Status**: in-progress (all 9 pins green 2026-07-23; awaiting Chris's GUI eyeball check + two sign-offs)
 **Related**: #256 (prior stuck-unit pass), #216 (silent solo fallback residual), #211 (solo impassible),
 #191 (Tactician umbrella), #167 (scenario terrain = enabling tooling), #170 (deploy sibling)
 
@@ -182,6 +182,79 @@ one in GUI. When done: merge cadence 167-scenario-terrain -> 264-walled-unit-pin
 Chris still owes the GUI terrain-render hand pass (#167 note).
 
 ## Notes
+
+- 2026-07-23 (implementation, slices 2-6): **ALL 9 PINS GREEN.** `Category("Pending264")` removed;
+  full suite 1937/1937 with no filter. Engine `693d1d2`..`d6c22de`. Slice order was CHANGED mid-run
+  on evidence - see below.
+  - **Slice 2 = issue 3** (`693d1d2`). `GridPathfinder.FindPath` returned null whenever the GOAL's
+    own cell was inflation-blocked; the grid tests CELL CENTRES, so that fires for goals a base can
+    legally stand on. It now retargets to the nearest cell a base can centre in (bounded ring
+    search) and keeps the true goal as the last hop when that hop is walkable. New
+    `FindPathToNearestReachable` (uniform-cost flood) handles the sealed-pocket case, so
+    `PlanMoveToward` never concedes to the wall-piercing straight line. Its pin did NOT flip on this
+    slice: the unit went from crawling into the wall face to ROUNDING the wall and stopping 6.65"
+    short, because each 12" move only netted ~6.4".
+  - **ORDER CHANGE (call made, flagging it):** that residue was issue 4, and issue 4 turned out to
+    gate THREE pins. Taken next, ahead of the planned 5/6. The handoff's order was a proposal made
+    before the fixes existed; the evidence promoted 4.
+  - **Slice 3 = issue 4** (`c02a6b2`). The handoff called this a funnel burning the budget.
+    Measurement says the consequence is worse: the moves were ILLEGAL, not merely long. Two
+    mechanisms. (a) Every model was prefixed with the same traversed-waypoint list - told to hop to
+    the route's first bend - and for a rank drawn up across the route's mouth that hop CLIPS the
+    piece the route detours around. Each model now joins the route at the point nearest it,
+    string-pulled. (b) The snake's parallel files STRADDLED the route, but a pathfound route only
+    guarantees one base-width of clearance, so at a corner the inboard file sits inside the wall.
+    File 0 now rides the route; the rest fan to whichever side a terrain check says is open.
+    Measured on the pin geometry: pack and snake both faulted at 12", 6" and 3", the snake
+    validating only at a 1.06" shuffle; now it validates at full arc and travels 7.04".
+    Flipped FOUR pins: WideFormationAtWallCorner, GoalCellInsideWallInflation, ThreeActivations
+    (the unit now rounds the 20" wall and takes the marker), WallAndFriendlyMixedErrors.
+  - **ISSUE 5 IS NOT FIXED - only unpinned. Needs Chris's call.** Its pin went green as a side
+    effect of slice 3: that scene no longer reaches the rescue gates. The gates themselves are
+    still all-or-nothing (`ValidateWithBackoff`: S2 needs `errors.All(EndedOnFriendlyUnit)`, S4
+    needs `errors.All(MovingThroughImpassibleTerrain)`), so a candidate carrying both error types
+    still disables both rescues. Either fix the gate on the filtered error subset as originally
+    planned, or write a pin that reaches it. Not cut, not done.
+  - **Slice 4 = issue 7** (`76c3c48`). Both ends, because they fail independently: new public
+    `MovementRuleQueries.PerModelMoveBudgets` lets the generator plan at the SLOWEST model's
+    allowance and validate each model against its OWN cap (the unit scalars take the MAX across
+    models, which is the whole bug); and `TacticianMovementResolver` now RE-PLANS toward the same
+    destination under the request's budgets before conceding to solo (#216's repair pass). The
+    resolver half is what covers budgets the planner cannot derive - the request is authoritative.
+  - **Slice 5 = issue 6** (`39c2c49`). Solo skirt capped at +/-60 degrees (was +/-100 - past
+    perpendicular a "skirt" is a retreat, taken at the FULL rush budget). Plus the two diagnostics:
+    a log line whenever the Tactician degrades to solo, with the reason, and #256's stuck detector
+    ("every movement candidate nets < 1 inch"). **Caveat: both ride `TacticianOptions.DecisionLog`,
+    the only sink the AI resolvers have, so they appear under fdglab and `--log-decisions` but NOT
+    in an ordinary GUI game log.** Routing them to the normal log needs a channel the AI resolvers
+    do not receive today (the same gap the registry factory already notes for the rule evaluator).
+  - **D1 BASELINE RE-PINNED** (the skirt change is deliberately solo-bot behavior), 200 games DOP
+    16, reproducible across duplicate runs, zero faults, zero timeouts:
+    builtin mirror `F82D5A91B0119955` (27/27/146; was `3674C906996F34CC`, 29/29/142) and builtin vs
+    builtin-basic `A7EEB33FD9CEFC6A` (36/25/139; was `CE3DC8150005FF2C`, 40/25/135). The mirror
+    staying perfectly symmetric is the sanity check. MovementPlanner's file header updated; #191
+    ledger note added. Every hash reference older than this refers to the previous pins.
+  - **Slice 6 = issue 8a** (`d6c22de`). `TacticianPlaceObjectsResolver` scores a candidate lane by
+    path distance vs straight-line distance to its aim and probes laterally for one under a 4"
+    detour - the same measure the movement gradient uses, so deployment and movement now agree
+    about what "toward the marker" means.
+  - **Issue 8b (cross-activation hysteresis) NOT built.** The ThreeActivations pin covers 8b
+    behaviorally - no oscillation across three activations - so the commitment-bonus term was not
+    needed to make the metric, and adding an unpinned scoring term was not worth the benchmark
+    risk. Deliberate deferral, Chris's call whether it is still wanted.
+  - **Still owed / open questions for Chris:**
+    1. Sign-off on the `MoveReachableBonus` gate (slice 1) and on issue 5's disposition.
+    2. The GUI eyeball check on the walled scenario (`--scenario Scenarios/example-walled-advance.json`)
+       and the real Knight-Brothers-behind-wall game shape - the Goal's second half, which no test
+       can settle. #167 also still owes the GUI terrain-render hand pass.
+    3. `BuildCharge` still grades its blocked-lane approach with straight-line progress (noted in
+       slice 1) - issue 1's mechanism on the melee side, never folded in.
+  - **Verification across the slices**: full suite green at every commit (1928 -> 1930 -> 1937 as
+    pins joined it); solo D1 hashes bit-identical through slices 1-4, then deliberately re-pinned at
+    slice 5 and confirmed unchanged at slice 6. Tactician vs SoloRules, builtin mirror 200 games:
+    93.8% baseline -> 94.5% after slice 1 -> 93.5% after all six (180/6/14), 0 faults - flat within
+    noise, as expected: the builtin bench army has no terrain, so these fixes barely engage there.
+    Decision cost mean 15.5 -> 16.3ms, worst p95 369 -> 360ms, well inside the ~0.5s budget.
 
 - 2026-07-23 (implementation, slice 1): **issues 1 + 2 fixed** (engine `f025819`). New
   `Ai/Tactician/RouteMetrics.cs` measures WALKING distance around impassible terrain: one route per
