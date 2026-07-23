@@ -2,8 +2,10 @@ using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Numerics;
+using FDG.Network;
 using FDG.Network.Connection;
 using FDG.Network.Connection.Lobby;
+using FdgRaylib.ListServer;
 using ImGuiNET;
 
 namespace FdgRaylib.Rendering;
@@ -19,14 +21,31 @@ public class ClientModal : IAppScreen
     private string _status    = "";
     private bool   _isConnecting = false;
 
-    private const float DialogWidthFraction  = 0.30f;
-    private const float DialogHeightFraction = 0.44f;
+    // ── Server browser state (#264). The browser is the default tab when a list server is
+    // configured; direct connect lives on the second tab (and is the whole modal otherwise).
+    private readonly object _browseLock = new();
+    private IReadOnlyList<ServerListing> _listings = Array.Empty<ServerListing>();
+    private string _browseStatus   = "";
+    private bool   _isFetching     = false;
+    private bool   _browseFetched  = false;
+    private ServerListing? _pendingPasswordJoin = null;
+    private long   _lastFetchMs    = 0;
+    private ListServerClient? _browseClient;
+
+    private const double BrowseAutoRefreshSeconds = 15;
+
+    private const float DialogWidthFraction        = 0.30f;
+    private const float DialogHeightFraction       = 0.44f;
+    private const float BrowseDialogWidthFraction  = 0.52f;
+    private const float BrowseDialogHeightFraction = 0.60f;
 
     // How long to wait for the host's accept/reject handshake before giving up (#075).
     private const double JoinTimeoutSeconds = 8.0;
 
     public void Draw(int screenW, int screenH)
     {
+        bool browserAvailable = ListServerConfig.IsConfigured;
+
         // Dark translucent backdrop
         ImGui.SetNextWindowPos(Vector2.Zero, ImGuiCond.Always);
         ImGui.SetNextWindowSize(new Vector2(screenW, screenH), ImGuiCond.Always);
@@ -36,8 +55,12 @@ public class ClientModal : IAppScreen
             ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoScrollbar);
         ImGui.PopStyleColor();
 
-        float dw    = screenW * DialogWidthFraction;
-        float dh    = screenH * DialogHeightFraction;
+        // The browser needs a wider dialog than the three direct-connect fields.
+        float widthFraction  = browserAvailable ? BrowseDialogWidthFraction  : DialogWidthFraction;
+        float heightFraction = browserAvailable ? BrowseDialogHeightFraction : DialogHeightFraction;
+
+        float dw    = screenW * widthFraction;
+        float dh    = screenH * heightFraction;
         float dx    = (screenW - dw) * 0.5f;
         float dy    = (screenH - dh) * 0.5f;
         float scale = Math.Min(screenW / 1920f, screenH / 1080f);
@@ -53,9 +76,232 @@ public class ClientModal : IAppScreen
         float pad = 32f * scale;
 
         ImGui.PushFont(RaylibRenderer.LargeFont);
-        CenterText("CONNECT TO SERVER", dw);
+        CenterText(browserAvailable ? "JOIN GAME" : "CONNECT TO SERVER", dw);
         ImGui.PopFont();
 
+        if (browserAvailable)
+        {
+            if (ImGui.BeginTabBar("##JoinTabs"))
+            {
+                if (ImGui.BeginTabItem("SERVER BROWSER"))
+                {
+                    DrawBrowseTab(dw, dh, scale, pad);
+                    ImGui.EndTabItem();
+                }
+
+                if (ImGui.BeginTabItem("DIRECT CONNECT"))
+                {
+                    DrawDirectTab(dw, dh, scale, pad);
+                    ImGui.EndTabItem();
+                }
+
+                ImGui.EndTabBar();
+            }
+        }
+        else
+        {
+            DrawDirectTab(dw, dh, scale, pad);
+        }
+
+        ImGui.EndChild();
+        ImGui.End();
+    }
+
+    // ── Server browser tab (#264) ──────────────────────────────────────────────────────────
+
+    private void DrawBrowseTab(float dw, float dh, float scale, float pad)
+    {
+        // First open (or first open after Reset) fetches immediately; after that, refresh on a
+        // timer or the button.
+        if (!_browseFetched)
+        {
+            _browseFetched = true;
+            _ = RefreshServersAsync();
+        }
+        else if (!_isFetching &&
+                 Environment.TickCount64 - _lastFetchMs > BrowseAutoRefreshSeconds * 1000)
+        {
+            _ = RefreshServersAsync();
+        }
+
+        ImGui.Spacing();
+        ImGui.SetCursorPosX(pad);
+        ImGui.SetNextItemWidth(dw * 0.35f);
+        ImGui.InputText("##BrowseName", ref _yourName, 64);
+        ImGui.SameLine();
+        ImGui.Text("Your Name");
+
+        IReadOnlyList<ServerListing> listings;
+        lock (_browseLock) listings = _listings;
+
+        float tableH = dh - ImGui.GetCursorPosY() - 90f * scale;
+        if (ImGui.BeginTable("##Servers", 6,
+                ImGuiTableFlags.Borders | ImGuiTableFlags.RowBg | ImGuiTableFlags.ScrollY,
+                new Vector2(dw - pad * 2f, tableH)))
+        {
+            ImGui.TableSetupScrollFreeze(0, 1);
+            ImGui.TableSetupColumn("Server", ImGuiTableColumnFlags.WidthStretch);
+            ImGui.TableSetupColumn("Players", ImGuiTableColumnFlags.WidthFixed, 70f * scale);
+            ImGui.TableSetupColumn("Access", ImGuiTableColumnFlags.WidthFixed, 90f * scale);
+            ImGui.TableSetupColumn("Build", ImGuiTableColumnFlags.WidthFixed, 90f * scale);
+            ImGui.TableSetupColumn("Port", ImGuiTableColumnFlags.WidthFixed, 70f * scale);
+            ImGui.TableSetupColumn("", ImGuiTableColumnFlags.WidthFixed, 70f * scale);
+            ImGui.TableHeadersRow();
+
+            foreach (ServerListing listing in listings)
+            {
+                ImGui.TableNextRow();
+                ImGui.PushID(listing.ServerId);
+
+                bool compatible = listing.ProtocolVersion == NetworkProtocol.Version &&
+                                  string.Equals(listing.TypeMapHash, NetworkProtocol.LocalTypeMapHash,
+                                      StringComparison.OrdinalIgnoreCase);
+                bool inGame   = listing.State == "in-game";
+                bool joinable = compatible && !inGame && !_isConnecting;
+
+                ImGui.TableNextColumn();
+                ImGui.TextUnformatted(inGame ? $"{listing.Name} (in game)" : listing.Name);
+
+                ImGui.TableNextColumn();
+                ImGui.TextUnformatted($"{listing.PlayerCount}/{listing.MaxPlayers}");
+
+                ImGui.TableNextColumn();
+                ImGui.TextUnformatted(listing.HasPassword ? "Password" : "Open");
+
+                ImGui.TableNextColumn();
+                if (compatible) ImGui.TextUnformatted("OK");
+                else ImGui.TextColored(new Vector4(1f, 0.6f, 0.3f, 1f), "Mismatch");
+
+                ImGui.TableNextColumn();
+                // The registry TCP-probes the host's port at registration; null means it couldn't
+                // probe (e.g. local dev), which is unknown rather than bad.
+                ImGui.TextUnformatted(listing.Reachable switch
+                {
+                    true => "Open",
+                    false => "Blocked?",
+                    null => "?",
+                });
+
+                ImGui.TableNextColumn();
+                ImGui.BeginDisabled(!joinable);
+                if (ImGui.Button("JOIN", new Vector2(-1f, 0f)))
+                    JoinListing(listing);
+                ImGui.EndDisabled();
+
+                ImGui.PopID();
+            }
+
+            ImGui.EndTable();
+        }
+
+        string statusLine = _isFetching ? "Refreshing..."
+            : _browseStatus.Length > 0 ? _browseStatus
+            : listings.Count == 0 ? "No servers are currently listed."
+            : _status;
+        CenterText(statusLine, dw);
+
+        float btnW  = dw * 0.24f;
+        float btnH  = 50f * scale;
+        float gap   = dw * 0.04f;
+        float firstX = (dw - btnW * 2 - gap) * 0.5f;
+        ImGui.SetCursorPos(new Vector2(firstX, dh - pad - btnH - 40f * scale));
+
+        if (ImGui.Button("CANCEL", new Vector2(btnW, btnH)))
+        {
+            Reset();
+            OnCancel?.Invoke();
+        }
+
+        ImGui.SameLine(0, gap);
+        ImGui.BeginDisabled(_isFetching);
+        if (ImGui.Button("REFRESH", new Vector2(btnW, btnH)))
+            _ = RefreshServersAsync();
+        ImGui.EndDisabled();
+
+        DrawPasswordPopup();
+    }
+
+    private void JoinListing(ServerListing listing)
+    {
+        _ipAddress = listing.Host;
+
+        if (listing.HasPassword)
+        {
+            // Ask for the password in place (the popup is opened by DrawPasswordPopup at dialog
+            // scope - opening it here, inside the row's PushID, would put it under a different
+            // ImGui ID). The password only ever travels to the host in the join greeting - the
+            // list server never sees it.
+            _pendingPasswordJoin = listing;
+            _password = "";
+            return;
+        }
+
+        _password = "";
+        _ = AttemptConnect();
+    }
+
+    private void DrawPasswordPopup()
+    {
+        if (_pendingPasswordJoin == null) return;
+
+        if (!ImGui.IsPopupOpen("##JoinPassword"))
+            ImGui.OpenPopup("##JoinPassword");
+
+        if (ImGui.BeginPopupModal("##JoinPassword", ImGuiWindowFlags.AlwaysAutoResize))
+        {
+            ImGui.Text($"Password for {_pendingPasswordJoin.Name}:");
+            ImGui.SetNextItemWidth(260f);
+            bool submitted = ImGui.InputText("##JoinPasswordInput", ref _password, 64,
+                ImGuiInputTextFlags.Password | ImGuiInputTextFlags.EnterReturnsTrue);
+
+            if (ImGui.Button("JOIN", new Vector2(120f, 0f)) || submitted)
+            {
+                _pendingPasswordJoin = null;
+                ImGui.CloseCurrentPopup();
+                _ = AttemptConnect();
+            }
+            ImGui.SameLine();
+            if (ImGui.Button("CANCEL", new Vector2(120f, 0f)))
+            {
+                _pendingPasswordJoin = null;
+                _password = "";
+                ImGui.CloseCurrentPopup();
+            }
+            ImGui.EndPopup();
+        }
+    }
+
+    private async Task RefreshServersAsync()
+    {
+        if (_isFetching) return;
+        string? baseUrl = ListServerConfig.BaseUrl;
+        if (baseUrl == null) return;
+
+        _isFetching = true;
+        _browseStatus = "";
+        try
+        {
+            _browseClient ??= new ListServerClient(baseUrl);
+            using var timeout = new CancellationTokenSource(TimeSpan.FromSeconds(10));
+            IReadOnlyList<ServerListing> fetched = await _browseClient.GetServersAsync(timeout.Token)
+                .ConfigureAwait(false);
+            lock (_browseLock) _listings = fetched;
+        }
+        catch (Exception)
+        {
+            _browseStatus = "Could not reach the server list.";
+        }
+        finally
+        {
+            _lastFetchMs = Environment.TickCount64;
+            _isFetching = false;
+        }
+    }
+
+    // ── Direct connect tab (the pre-#264 modal body) ───────────────────────────────────────
+
+    private void DrawDirectTab(float dw, float dh, float scale, float pad)
+    {
         ImGui.BeginDisabled(_isConnecting);
         ImGui.SetCursorPosX(pad);
         DrawLabeledInput("Your Name",  ref _yourName,  dw, scale);
@@ -70,11 +316,11 @@ public class ClientModal : IAppScreen
 
         CenterText(_status, dw);
 
-        float btnW  = dw * 0.38f;
+        float btnW  = dw * 0.24f;
         float btnH  = 50f * scale;
         float gap   = dw * 0.04f;
         float firstX = (dw - btnW * 2 - gap) * 0.5f;
-        float btnY  = dh - pad - btnH;
+        float btnY  = dh - pad - btnH - (ListServerConfig.IsConfigured ? 40f * scale : 0f);
         ImGui.SetCursorPos(new Vector2(firstX, btnY));
 
         // CANCEL is always available
@@ -89,9 +335,6 @@ public class ClientModal : IAppScreen
         if (ImGui.Button("CONNECT", new Vector2(btnW, btnH)))
             _ = AttemptConnect();
         ImGui.EndDisabled();
-
-        ImGui.EndChild();
-        ImGui.End();
     }
 
     private static void CenterText(string txt, float availWidth)
@@ -214,10 +457,14 @@ public class ClientModal : IAppScreen
 
     private void Reset()
     {
-        _yourName     = "Mrs. Client";
-        _ipAddress    = "127.0.0.1";
-        _password     = "";
-        _status       = "";
-        _isConnecting = false;
+        _yourName      = "Mrs. Client";
+        _ipAddress     = "127.0.0.1";
+        _password      = "";
+        _status        = "";
+        _isConnecting  = false;
+        _browseFetched = false;
+        _browseStatus  = "";
+        _pendingPasswordJoin = null;
+        lock (_browseLock) _listings = Array.Empty<ServerListing>();
     }
 }
