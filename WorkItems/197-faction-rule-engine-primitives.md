@@ -426,6 +426,41 @@ Strafing but auto-wounds instead of hits. Shipped:
   (Crossing Attack(2) -> 2 dice), unsaveable wound through the real stage, Regeneration still applying,
   decline, and the Strafing/Crossing offer-isolation split. Corpus dead **392 -> 384**.
 
+## Slice P10b: Storm of X (decisive rolled multi-target hit burst) — **DONE 2026-07-22** (5 refs)
+
+The other half of P10: a rolled HIT-count, not auto-wounds. "Once per game, when activated before
+attacking, roll 3 dice; for each 2+ pick an enemy unit within 12in that takes 3 hits with [rule]"
+(Change=Shred, Lust=Surge, Plague=Bane, War=AP(1)).
+
+**Owner sign-off (2026-07-22):** per-success target picking (each 2+ independently picks an enemy, up to
+3 different units) - NOT one target taking the scaled hits. That choice forced two consequences, both
+signed off:
+- **The pool roll is DECISIVE.** You cannot pick a fractional number of targets, so the 3 dice commit to
+  concrete faces (integer successes) even under the probabilistic roller - the same dice-invariant call as
+  P15's branch die and P5b's recovery. Only the pick-COUNT is decisive; each target's 3 hits still flow
+  through the fractional hit pipeline, so the invariant holds. (Had it been single-target, the pool could
+  have stayed fully fractional.)
+- **It needs a looping stage.** Up to 3 separate target+hit batches, each its own save/wound pipeline -
+  which the one-shot pre-attack path (Breath Attack) cannot do.
+
+Shipped (engine `dcace2d`):
+- **`Effect.StormOfHits`** (config: pool dice, threshold, hits-per-success, WithRules, AP, range) ->
+  **`RuleOperation.InvokeStorm`**. Config-only; the stage does the rolling and targeting.
+- **`StormStage`** - offered in Choose Action and routed from `ChooseActionStage` (the Teleport pattern,
+  detected by effect type since four rule names share it; `Cost.OncePerGame`; gated `!HasAttacked`; fully
+  layered). On first entry it pays the cost, rolls the pool with `RollDecisiveFace` in a loop -> integer
+  successes, and prompts one enemy-within-12in pick per success (a success with no enemy in range is lost).
+  Each picked target's 3 hits run the real `SyntheticHitResolution` fold (so Shred/Surge/Bane/AP apply,
+  #164) through the `DetermineSaveRolls -> RollToSave -> AssignWounds -> ApplyWounds` child pipeline. The
+  per-target batches LOOP: `OnBatchDone` re-enters the stage (dequeue next), `OnAllDone` returns to the
+  menu when the queue drains - the melee-swing loop pattern, but self-looping with the queue encapsulated
+  as a stage field.
+- **Arg-driven abilities** already worked (Crossing Attack's `AbilityOffer.Arguments`), though Storm takes
+  no (X). `RuleFireLint` ability-hook arm extended for `InvokeStorm` at `Activation_OnActionChoice`.
+- Tests: `StormRuleIntegrationTests` (5) through the real stage - 3 successes -> 3 independent target picks
+  -> each takes its 3-hit batch (the loop), 0-successes-but-cost-spent, probabilistic-mode integer picks,
+  Choose Action routing, and the once-per-game gate. Engine 1863/1863. Corpus dead **384 -> 379**.
+
 ## Slices — by leverage
 
 Reference counts are corpus-wide (44 books). Primitive numbers are #100's.
@@ -443,7 +478,7 @@ Reference counts are corpus-wide (44 books). Primitive numbers are #100's.
 | 60 | **P21** setup-phase re-deploy | Remove + re-place a unit during/after deployment. | Re-Deployment (27), Fanatic (19), Dash Aura (4), Ambush Re-Deployment (4), Dash (2), Mobile Artillery (2), Quick Readjustment (2) |
 | 59 | ~~**Darkborn** (#102 residual)~~ **DONE 2026-07-11** | It was **only the naming bug** - both mechanics were already built (the "per-target charge debuff doesn't exist" note was stale; #029/#183's `EffectiveChargeDistanceAgainst` powers it). The importer now disambiguates the bare `Darkborn` by army; books patched. See the Darkborn write-up above. | Darkborn (59) |
 | 53 | ~~**P15** randomized-branch effect~~ **DONE 2026-07-11** (48/53) | Decisive per-attack-action die (Option A), once per action, threaded via a new `IHasUnpredictableBranch` capability. See the P15 write-up above. **The 2 Mark variants (5 refs) are deferred** - a mark grants after the action-level roll. | Unpredictable Fighter (26), Unpredictable Fighter Aura (11), Unpredictable (5), Unpredictable Shooter Aura (5), Unpredictable Shooter (1) done; Unpredictable Fighter Mark (3) + Unpredictable Shooter Mark (2) deferred |
-| 44 | **P10** dice-pool -> hits / auto-wounds (auto-wound half DONE 2026-07-22, 39/44) | It is TWO primitives, not one: an AUTO-WOUND pool (Ravage, Crossing Attack - roll X, each 6+ a direct unsaveable wound) and a rolled HIT-count (Storm of X - roll 3, each 2+ deals 3 hits with a rule). The auto-wound half shipped in full - Ravage (melee) + Crossing Attack (movement) (see write-up below). Only Storm (5, rides the pre-attack + #164 hit fold) remains. | Ravage (31) + Crossing Attack (8) DONE; Storm of Lust (2)/Change (1)/Plague (1)/War (1) open |
+| 44 | ~~**P10** dice-pool -> hits / auto-wounds~~ **DONE 2026-07-22** (44/44) | It was TWO primitives: an AUTO-WOUND pool (Ravage, Crossing Attack - roll X, each 6+ a direct unsaveable wound) and a rolled multi-target HIT burst (Storm of X - roll 3 decisively, each 2+ picks an enemy taking 3 hits with a rule). Both shipped (write-ups below). Also retired the #164 `dealHits.WithRules` seam's remaining generality (Storm rides the same fold). | Ravage (31) + Crossing Attack (8) + Storm of Change/Lust/Plague/War (5) all DONE |
 | 41 | ~~**P13** marker-scaled magnitude~~ **DONE 2026-07-22** (41/41) | Shipped WITHOUT touching `ValueSource` (its context-free `Resolve` stays pure): new effects `tokenScaledRollModifier` / `tokenScaledReduceArmorPenetration` read the bearer's token count at Apply time (steps = count / perMarkers, Fortified's read-side `maxReduction` cap), `GrantToken` gained a grant-time `maxTotal` clamp (the "up to a max. of X markers" clause, spell-token-cap pattern), `ReconcileObjectivesStage` now fires `Round_OnRoundEnd` rules for every living unit before the token sweep (new `RoundEndContext`, reflection-registered), and both Shaken-application sites clear `CustomHook(Morale_OnShakenApplied)` tokens (Fortified's lose-all-on-Shaken, pure data). "On the table" composes from existing conditions: `not(InReserve) and not(EmbarkedIn) and not(OffTableFromForcedMove)`. Authored behind `tokenPresent(marker, minCount: perMarkers)` so RuleFireLint's existing token seeding proves each entry fires. 8 definitions (incl. support base `Defensive Growth`); engine 1820/1820, `TokenScaledMarkerTests` (9, incl. a real-stage round-end firing pin per the #196 consumption lesson). Engine `2efc06e`. | Piercing Frenzy (9), Defensive Frenzy (8), Piercing Growth (6), Precision Frenzy (6), Fortified Growth (6), Precision Growth (5), Defensive Growth Aura (1) |
 | 28 | ~~**P14b** spend-for-bonus markers~~ **DONE 2026-07-22** (28/28) | Two marker classes on the ENEMY unit, bonus kind in the token type (mirroring the roll-modifier trio): persistent (`Persistent{Hit,Ap}BonusMarker` — the Target family, counted every attack, never removed) and spendable (`Spendable{Hit,Ap}BonusMarker` — Tag/Spotter). **Owner-ruled 2026-07-22: the spend is PROMPTED, not auto-spent** — `TargetMarkerSpend` asks the attacking player how many to remove (a `StringSelectionRequest`, spend-all listed first so the CLI EOF default and the AI first-option fallback both take the aggressive default; zero-marker attacks never prompt), folded into `DetermineHitRollStage` (skipped while fatigued, like granted buffs) and `DetermineSaveRollsNeededStage` (+net raises the defender's threshold). Placement is data: `Activation_OnPreAttack` abilities over the existing `TargetSelector`/`Cost` machinery; Spotter's "on a 4+ place a marker" is the new `grantTokenOnRoll` effect (decisive die, `InvokeGrantTokenOnRoll` executable, ClearTokenOnRoll's mirror). Engine 1831/1831, `TargetBonusMarkerTests` (11). Engine `d0985e2`. | Precision Target (7), Piercing Tag (6), Precision Spotter (4), Piercing Spotter (4), Precision Tag (4), Piercing Target (3) |
 | 27 | **P11** reflect damage | On-wound-taken / on-death hook + deal-hits-at-attacker. | Retaliate (20), Deathstrike (4), Self-Destruct (3) |
@@ -465,7 +500,7 @@ Reference counts are corpus-wide (44 books). Primitive numbers are #100's.
 2. **P5b** (round-start) then **P5a** (activation-choice) — P5a alone is 175 refs, the largest single
    engine win, and P5b is the cheapest dormant-hook exercise to prove the pattern.
 3. **P13 + P14b + P12 together** — one coherent marker mechanic, or three incompatible ones.
-4. **P10** — also retires the `dealHits.WithRules` seam (#164).
+4. ~~**P10**~~ **DONE 2026-07-22** (Ravage + Crossing Attack + Storm; write-ups above).
 5. **P22 / P21** — deployment cluster; share a placement resolver.
 6. Then the long tail (P6, P8, P11, P15, P17, P20, P7, P16, P19), Darkborn, and the misc triage.
 
@@ -473,6 +508,13 @@ Reference counts are corpus-wide (44 books). Primitive numbers are #100's.
 
 ## Notes
 
+- 2026-07-22: **P10b Storm of X shipped** (5 refs; engine `dcace2d`), completing P10 (44/44). A rolled
+  multi-target hit burst: a new `StormStage` (routed from Choose Action like Teleport) rolls a 3-dice pool
+  DECISIVELY - integer successes, since you cannot pick a fractional target (the dice invariant, per P15) -
+  then per success the player picks an enemy within 12in that takes 3 hits with the storm's rule through
+  the #164 fold, the per-target batches looping via `OnBatchDone` re-entering the stage. Owner-ruled
+  per-success distinct targeting (not one scaled target). New `Effect.StormOfHits` + `InvokeStorm`; catalog
+  Storm of Change/Lust/Plague/War. Corpus dead **384 -> 379**. See the P10b write-up above.
 - 2026-07-22: **P10a Crossing Attack shipped** (8 refs; engine `3ee6896`), completing the auto-wound half
   of P10 (Ravage + Crossing = 39/44). Reuses Ravage's `DealAutoWounds` primitive on the movement trigger:
   a new `CrossingAttackStage` beside `StrafingStage`, each filtering offers to its own effect type

@@ -39,10 +39,10 @@ When closing an item: write the Outcome in its detail file, tick the line, and m
 - [ ] 087 — Custom special-rule authoring + standalone rules files (author new rules as data in the builder; import/export rule sets independent of armies). Builds on #059. ([WorkItems/087](WorkItems/087-custom-rule-authoring.md))
 - [~] 100 — Special-rule engine primitives umbrella: Part 1 + cross-unit pre-attack targeting done; open: dormant hooks, RangeModifier/Strider, Part-2/3 primitives (deferred-debuff, dice-pool, markers). Corpus reference is off-repo (`../GDF Armies/`, do not commit). ([WorkItems/100](WorkItems/100-special-rule-primitive-gaps.md))
 - [ ] 104 — Single-unit `Evaluate` doesn't consume `NextTrigger` grants — correct today; build the opt-in when a rule needs it. ([WorkItems/104](WorkItems/104-single-unit-evaluate-grant-consume.md))
-- [ ] 197 — Faction rule coverage pt.2: the dead names needing new engine primitives (incl. #196's F16 handoff: Sergeant per-model attribution, Armor(X) defense floor). DONE: slice 0, the ">9in" gate, P5a, P5b, reposition-at-activation, Teleport, Delayed Action, Darkborn, P15 Unpredictable, RuleFireLint consumption check, and (2026-07-22) the marker cluster - P13 token-scaled Frenzy/Growth (+41) + P14b prompted-spend Tag/Target/Spotter (+28); P12 deferred (dice invariant, owner-ruled); P10a auto-wound pool - Ravage + Crossing Attack (+39). ([WorkItems/197](WorkItems/197-faction-rule-engine-primitives.md))
+- [ ] 197 — Faction rule coverage pt.2: the dead names needing new engine primitives (incl. #196's F16 handoff: Sergeant per-model attribution, Armor(X) defense floor). DONE: slice 0, the ">9in" gate, P5a, P5b, reposition-at-activation, Teleport, Delayed Action, Darkborn, P15 Unpredictable, RuleFireLint consumption check, and (2026-07-22) the marker cluster - P13 token-scaled Frenzy/Growth (+41) + P14b prompted-spend Tag/Target/Spotter (+28); P12 deferred (dice invariant, owner-ruled); P10 DONE - Ravage + Crossing Attack + Storm of X (+44). ([WorkItems/197](WorkItems/197-faction-rule-engine-primitives.md))
 
 All 33 GF v3.5.1 core special rules are implemented (verified 2026-06-30; see archive #029-#032/#051).
-Corpus coverage is a different story: 384 of 13,870 book rule references (2.8%) do nothing today — see #197 (#196, the data-only half, closed 2026-07-22).
+Corpus coverage is a different story: 379 of 13,870 book rule references (2.7%) do nothing today — see #197 (#196, the data-only half, closed 2026-07-22).
 
 ## Casting
 
