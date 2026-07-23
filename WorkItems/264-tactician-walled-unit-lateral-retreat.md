@@ -1,6 +1,7 @@
 # 264 — Tactician: unit behind impassible terrain rushes sideways/backwards instead of advancing
 
-**Status**: in-progress (all 9 pins green 2026-07-23; awaiting Chris's GUI eyeball check + two sign-offs)
+**Status**: in-progress (10 pins green 2026-07-23; issue 5 now fixed for real; awaiting Chris's GUI
+eyeball check + the MoveReachableBonus sign-off)
 **Related**: #256 (prior stuck-unit pass), #216 (silent solo fallback residual), #211 (solo impassible),
 #191 (Tactician umbrella), #167 (scenario terrain = enabling tooling), #170 (deploy sibling)
 
@@ -183,6 +184,42 @@ Chris still owes the GUI terrain-render hand pass (#167 note).
 
 ## Notes
 
+- 2026-07-23 (issue 5, the real fix): **ISSUE 5 FIXED - the mixed-error rescue gate.** Engine
+  `50dce66`. `MovementPlanner.ValidateWithBackoff`'s two #256 rescues were all-or-nothing: the S4
+  snake fired only when `errors.All(MovingThroughImpassibleTerrain)` and the S2 re-aim only when
+  `errors.All(EndedOnFriendlyUnit)`, so a candidate carrying BOTH faults (round-1 density: a wall
+  plus a friendly parked in the pocket) shut both gates and the ladder halved. Now: the snake goes
+  FIRST and fires on the PRESENCE of any impassible fault (`errors.Any`), and the re-aim fires on
+  sole-friendly (unchanged) OR - only when a snake exists to have taken the impassible fault first -
+  on the friendly RESIDUE of a mixed fault. Both rescues already re-validate their candidate, so
+  widening when they fire can never submit an illegal move; it only gives them a chance in a mixed
+  round instead of surrendering to halving.
+  - **Solo bot bit-identical, NO D1 re-pin.** The solo resolver (`AiDefineMovementResolver`) passes
+    `reaimAt` but NEVER `snakeAt`. The mixed re-aim arm is gated on `snakeAt != null`, so for the solo
+    bot the re-aim predicate collapses to exactly the old `FriendlyStackingIsSoleObstacle` and the
+    snake block never runs. Confirmed: builtin mirror `F82D5A91B0119955` and builtin vs builtin-basic
+    `A7EEB33FD9CEFC6A` (200 games DOP 16) - both bit-identical to the slice-5 baseline, re-run against
+    a fresh Release build that links the change. The fix is Tactician-only.
+  - **New pin, reached the gate directly.** `TacticianWalledUnitTests.
+    PlanMoveToward_MixedFaultsAtFullArc_ThreadsWithoutSurrenderingBudget`. The old issue-5 pin
+    (`WallAndFriendlyMixedErrors`) had gone green only as a slice-3 side effect: in a tight corridor
+    halving eventually separates the two faults (the grid endpoint climbs past the friendly), so the
+    snake still fires - just at a shorter arc - and the pin passed without ever exercising the mixed
+    gate. The new scene parks the friendly UP the corridor at the far end (east wall), so the
+    FULL-BUDGET pack carries both faults at once. Old code: 9 of the 10 pins pass, this one nets only
+    3.3" of 12" (rounds the corner but surrenders most of its budget to halving); the fix threads the
+    corridor single-file at the top arc and nets 9.25". Assert: net >= 6". Verified red-by-design
+    (stash the fix -> only this pin fails, other 9 stay green) and green with it. Geometry guard
+    asserts the full-budget pack really carries BOTH fault types, so a refactor cannot make it
+    vacuously pass. Full suite 1938/1938 (was 1937).
+  - **"Re-aim on the residue" - built but not separately pinned.** The mixed re-aim arm (side-step
+    the pack when a friendly fault remains after the snake could not thread) is in place, but the new
+    pin is rescued by the SNAKE alone (the friendly is off the single file's lane). A scene where the
+    snake's own lane is blocked by a friendly AND lateral room exists to side-step it is the residual
+    case; in a tight corridor there is no such room (a friendly within one base-width of the route
+    cannot be cleared laterally - you cannot walk through it), so that case is often genuinely
+    unsolvable that turn. Left unpinned deliberately; flag if a natural scene turns up.
+
 - 2026-07-23 (implementation, slices 2-6): **ALL 9 PINS GREEN.** `Category("Pending264")` removed;
   full suite 1937/1937 with no filter. Engine `693d1d2`..`d6c22de`. Slice order was CHANGED mid-run
   on evidence - see below.
@@ -209,7 +246,8 @@ Chris still owes the GUI terrain-render hand pass (#167 note).
     validating only at a 1.06" shuffle; now it validates at full arc and travels 7.04".
     Flipped FOUR pins: WideFormationAtWallCorner, GoalCellInsideWallInflation, ThreeActivations
     (the unit now rounds the 20" wall and takes the marker), WallAndFriendlyMixedErrors.
-  - **ISSUE 5 IS NOT FIXED - only unpinned. Needs Chris's call.** Its pin went green as a side
+  - **ISSUE 5 IS NOT FIXED - only unpinned. Needs Chris's call.** [SUPERSEDED 2026-07-23 - fixed,
+    see the top note "issue 5, the real fix".] Its pin went green as a side
     effect of slice 3: that scene no longer reaches the rescue gates. The gates themselves are
     still all-or-nothing (`ValidateWithBackoff`: S2 needs `errors.All(EndedOnFriendlyUnit)`, S4
     needs `errors.All(MovingThroughImpassibleTerrain)`), so a candidate carrying both error types
@@ -251,7 +289,8 @@ Chris still owes the GUI terrain-render hand pass (#167 note).
     changed nothing in all 1937 tests, so it was dead code with a tunable constant that a future
     reader would take for load-bearing.
   - **Still owed / open questions for Chris:**
-    1. Sign-off on the `MoveReachableBonus` gate (slice 1) and on issue 5's disposition.
+    1. Sign-off on the `MoveReachableBonus` gate (slice 1). (Issue 5's disposition is now resolved -
+       fixed 2026-07-23, see the top note.)
     2. The GUI eyeball check on the walled scenario (`--scenario Scenarios/example-walled-advance.json`)
        and the real Knight-Brothers-behind-wall game shape - the Goal's second half, which no test
        can settle. #167 also still owes the GUI terrain-render hand pass.
