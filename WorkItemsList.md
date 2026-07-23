@@ -81,7 +81,6 @@ Internet-play readiness pass (QF1-10) landed 2026-07-08 — password gate, keepa
 frames, targeted PlayerID assignment, greeting-timeout eviction, post-launch join gate, client host-loss
 detection, host-IP display, DNS host entry. See `NetworkingHandoff-2026-07-08.md`. Remainders below.
 
-- [ ] 186 — Harden network deserialization: allowlist binder for the wire path (no `DefaultSerializationBinder` fallback from untrusted `$type`); saves keep the permissive fallback. **Now a prerequisite for announcing #264 public listing** (strangers connect). ([WorkItems/186](WorkItems/186-network-deserialization-hardening.md))
 - [ ] 187 — Disconnect recovery: auto-save on `PlayerDisconnectedException` game-end + live-test #052's networked resume-rejoin. ([WorkItems/187](WorkItems/187-disconnect-recovery.md))
 - [ ] 188 — Multi-remote-client support: live-test 3+ players / 2+ remote clients (QF5 enabled it; roster/team/routing edge cases). ([WorkItems/188](WorkItems/188-multi-remote-client.md))
 - [ ] 189 — Broadcast gating (roster-only, not every connection) + configurable listen/connect port. ([WorkItems/189](WorkItems/189-broadcast-gating-configurable-port.md))

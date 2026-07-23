@@ -167,9 +167,10 @@ unless the transport changes or a relay exists. v1 stance: **direct connect only
 - **Live two-machine internet test** after deploy (reachability probe result on a real WAN host).
 - Loaded-game lobbies (`LoadGameFlow`) are never listed — deliberate v1 scope.
 - `maxPlayers` advertised as a constant 8 (the #221 color-palette ceiling); no real lobby cap exists.
-- Security follow-ups filed separately: #265 (untrusted content files, open), #266 (FDGHost
-  pre-auth limits — DONE 2026-07-23, engine `842c43b`); #186 elevated to a prerequisite for
-  announcing public listing.
+- Security follow-ups: #266 (FDGHost pre-auth limits — DONE 2026-07-23, `842c43b`) and #186 (wire
+  `$type` allowlist, the announce-prerequisite — DONE 2026-07-23, `2ecf201`+`e292e18`) both closed.
+  #265 (the same hole on FILES — `.fdgarmy`/`.fdgsave`/terrain) remains open; not a blocker for
+  listing itself, but must precede any in-app file-sharing channel.
 
 ## Decisions
 
