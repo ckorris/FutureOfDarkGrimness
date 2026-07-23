@@ -6440,5 +6440,31 @@
     "engineArgumentCount": 0,
     "valence": "Positive",
     "description": "When this unit uses a Hold action and shoots at enemies over 9 inches away, it gets +1 to hit rolls. As long as this unit hasn't moved during the round, when enemies shoot at it from over 9 inches away, they get -2 to hit rolls."
+  },
+  {
+    "name": "Heavy Impact",
+    "passive": [
+      {
+        "hookID": "Melee_OnChargeContact",
+        "condition": {
+          "kind": "always"
+        },
+        "effect": {
+          "kind": "chargeImpactHits",
+          "diceCount": {
+            "kind": "arg",
+            "index": 0
+          },
+          "armorPenetration": 1
+        },
+        "lifetime": "ThisAttack",
+        "seat": "Actor"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 1,
+    "valence": "Positive",
+    "description": "On charging into contact, rolls X bonus dice that score automatic hits with AP(1) before melee swings."
   }
 ]
