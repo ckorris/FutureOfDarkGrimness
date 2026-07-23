@@ -371,6 +371,209 @@ happened, so the mark-granted rule is invisible to the once-per-action resolver.
 resolver to also scan the DEFENDER for an Unpredictable-granting mark at action time - its own small slice.
 Left dead (not silently), tracked in the by-leverage table below.
 
+## Slice P10a: the auto-wound dice pool (Ravage + Crossing Attack) — **DONE 2026-07-22** (39 refs)
+
+**The reading that reshaped the slice:** P10's dead names split into two unrelated mechanics once the
+source text was checked (it is not stored in the repo - the book data carries only the name + numeric
+arg). Ravage / Crossing Attack are "roll X dice; for each 6+ the target takes one **wound**" - an
+AUTO-WOUND (no to-hit, no save). Storm of Change/Lust/Plague/War are "roll 3 dice; for each 2+ an enemy
+takes 3 **hits** with [rule]" - a rolled HIT-count that rides the existing pre-attack + #164 fold. So
+P10 is two primitives; this slice built the auto-wound one, proven on Ravage.
+
+**Owner sign-off (2026-07-22):** the wounds skip the armor save but stay **regenerable** (Regeneration /
+Tough still apply), matching the rulebook "takes a wound"; build the auto-wound primitive first (Ravage),
+then Crossing Attack, then Storm.
+
+Ravage is structurally **Impact with a threshold of 6 and the save skipped** - so it mirrors
+`ResolveImpactHitsStage` almost exactly. Shipped (engine `1340496`):
+- **`Effect.DealAutoWounds(ValueSource DiceCountPerModel, int SuccessThreshold=6)`** ->
+  **`RuleOperation.InvokeDealAutoWounds`** (a plain op, enacted stage-side like `InvokeDealHits`). The
+  effect resolves X x living carriers (weapon-aware, the `ReduceImpactDicePerModel` pattern) because the
+  text is per model. There is **no output-attribution problem** (unlike Sergeant): the wounds land on the
+  enemy, and the evaluator dedups the rule once per unit, so a single pool summed across carriers is exact.
+- **`SyntheticWoundResolution`** (next to `SyntheticHitResolution`): rolls the pool, keeps the success
+  count as the sub-histogram's fractional `TotalRolls` (never int-locked - the #100 invariant, same
+  discipline Impact's `AtOrAbove` already uses), and wraps it as a `RollToSaveResults` whose FAILURES are
+  every wound and successes are empty. That lets the wounds enter `AssignWoundsStage` directly - **skipping
+  `DetermineSaveRollsNeededStage` and `RollToSaveStage`** (which also sidesteps the P14b marker-spend
+  prompt, correct since there is no save to block) while Regeneration/Tough run untouched.
+- **`ResolveRavageWoundsStage`** fires at `Melee_OnChargeContact` (melee is only ever entered via Charge),
+  folds the `InvokeDealAutoWounds` dice, and runs an `AssignWounds -> ApplyWounds` child pipeline. Wired
+  into `MeleeStage` right after Impact. `CoreRuleCatalog.Ravage` (in `All`); `RuleFireLint` consumption arm
+  extended so the op lints as read at its hook.
+- Tests: `RavageRuleIntegrationTests` (6) through the REAL stage - save-skipped (a rolled-6 defense-4 save
+  would block all, yet the wounds land), below-threshold no-op, per-model carrier scaling (2x3=6),
+  Regeneration still ignoring the wounds, and the probabilistic-mode fractional invariant (3 dice -> 0.5).
+  Engine 1847/1847, app build clean, headless smoke exit 0. Corpus dead **423 -> 392**.
+
+**DEFERRED (recorded, not silently cut):** a Ravage unit that is CHARGED does not roll on its strike-back
+- only the charger triggers the stage, mirroring Impact's charge-only scope. Its own small follow-up if
+the strike-back case matters in play.
+
+**Crossing Attack (8 refs, engine `3ee6896`)** reuses the same primitive on the movement trigger - it is
+Strafing but auto-wounds instead of hits. Shipped:
+- **`CrossingAttackStage`** (next to `StrafingStage` in the movement flow, right after it): same
+  move-through-enemy detection and YesNo offer, but it offers ONLY `DealAutoWounds` abilities and runs the
+  save-skipping `AssignWounds -> ApplyWounds` pipeline. `StrafingStage` was filtered to offer only
+  `DealHits` abilities, so the two never double-offer or double-charge a rule at the shared
+  `Movement_OnMoveThroughEnemy` hook.
+- **Arg threading:** Crossing Attack(X) is the FIRST activated ability whose effect reads
+  `ValueSource.Arg`. `ResolveAbility` previously passed empty arguments (a `// thread ... when one does`
+  TODO); `AbilityOffer` now carries the bearing rule's `Arguments` and `ResolveAbility` resolves against
+  them, so `DealAutoWounds(Arg(0))` reads the real X. Backward-compatible (the param defaults to null).
+- `CoreRuleCatalog.CrossingAttack` (fly-over passive + the ability, like Strafing); `RuleFireLint`
+  ability-hook arm extended. Tests: `CrossingAttackRuleIntegrationTests` (7) - offer + arg threading
+  (Crossing Attack(2) -> 2 dice), unsaveable wound through the real stage, Regeneration still applying,
+  decline, and the Strafing/Crossing offer-isolation split. Corpus dead **392 -> 384**.
+
+## Slice P10b: Storm of X (decisive rolled multi-target hit burst) — **DONE 2026-07-22** (5 refs)
+
+The other half of P10: a rolled HIT-count, not auto-wounds. "Once per game, when activated before
+attacking, roll 3 dice; for each 2+ pick an enemy unit within 12in that takes 3 hits with [rule]"
+(Change=Shred, Lust=Surge, Plague=Bane, War=AP(1)).
+
+**Owner sign-off (2026-07-22):** per-success target picking (each 2+ independently picks an enemy, up to
+3 different units) - NOT one target taking the scaled hits. That choice forced two consequences, both
+signed off:
+- **The pool roll is DECISIVE.** You cannot pick a fractional number of targets, so the 3 dice commit to
+  concrete faces (integer successes) even under the probabilistic roller - the same dice-invariant call as
+  P15's branch die and P5b's recovery. Only the pick-COUNT is decisive; each target's 3 hits still flow
+  through the fractional hit pipeline, so the invariant holds. (Had it been single-target, the pool could
+  have stayed fully fractional.)
+- **It needs a looping stage.** Up to 3 separate target+hit batches, each its own save/wound pipeline -
+  which the one-shot pre-attack path (Breath Attack) cannot do.
+
+Shipped (engine `dcace2d`):
+- **`Effect.StormOfHits`** (config: pool dice, threshold, hits-per-success, WithRules, AP, range) ->
+  **`RuleOperation.InvokeStorm`**. Config-only; the stage does the rolling and targeting.
+- **`StormStage`** - offered in Choose Action and routed from `ChooseActionStage` (the Teleport pattern,
+  detected by effect type since four rule names share it; `Cost.OncePerGame`; gated `!HasAttacked`; fully
+  layered). On first entry it pays the cost, rolls the pool with `RollDecisiveFace` in a loop -> integer
+  successes, and prompts one enemy-within-12in pick per success (a success with no enemy in range is lost).
+  Each picked target's 3 hits run the real `SyntheticHitResolution` fold (so Shred/Surge/Bane/AP apply,
+  #164) through the `DetermineSaveRolls -> RollToSave -> AssignWounds -> ApplyWounds` child pipeline. The
+  per-target batches LOOP: `OnBatchDone` re-enters the stage (dequeue next), `OnAllDone` returns to the
+  menu when the queue drains - the melee-swing loop pattern, but self-looping with the queue encapsulated
+  as a stage field.
+- **Arg-driven abilities** already worked (Crossing Attack's `AbilityOffer.Arguments`), though Storm takes
+  no (X). `RuleFireLint` ability-hook arm extended for `InvokeStorm` at `Activation_OnActionChoice`.
+- Tests: `StormRuleIntegrationTests` (5) through the real stage - 3 successes -> 3 independent target picks
+  -> each takes its 3-hit batch (the loop), 0-successes-but-cost-spent, probabilistic-mode integer picks,
+  Choose Action routing, and the once-per-game gate. Engine 1863/1863. Corpus dead **384 -> 379**.
+
+## Slice P21 — re-scoped: it was never one slice (2026-07-22)
+
+Like P22 before it, the P21 row bundled unrelated mechanics under a title ("setup-phase re-deploy")
+that fits only two of its seven rules. Reading the source text (off-repo, from the army markdown), the
+60 refs decompose as:
+
+| Rule | Refs | Actual mechanic | Home |
+|------|-----:|-----------------|------|
+| Re-Deployment | 27 | Post-deployment sub-phase: remove up to 2 units, redeploy, players alternate | **Genuine new stage** - this slice |
+| Fanatic | 19 | "After this model deploys, place it within 9in" | **Rides the existing `Deployment_OnUnitDeployed` hook** (Vanguard's seam) - DONE below |
+| Dash + Dash Aura | 6 | "At END of activation, place models within D3+1in" | Reposition-at-activation's twin at a different trigger - re-filed (own row) |
+| Ambush Re-Deployment | 4 | "At end of activation, remove and redeploy as Ambush next round" | Ambush variants (round-N arrival) - re-filed |
+| Mobile Artillery | 2 | ">9in Hold+shoot +1 / hasnt-moved enemy -2 hit" | Pure data on the built `AttackedFromOverInches` gate - re-filed (Misc) |
+| Quick Readjustment | 2 | "Ignore move-shoot penalty for Indirect weapons" | Small penalty-ignore - re-filed (Misc) |
+
+Only **Re-Deployment (27) + Fanatic (19) = 46 refs** are genuine deploy-phase work. The other 14 were
+re-filed to their natural rows with reasons (not silently dropped). Owner signed off the decomposition,
+Fanatic-as-placement, and 2-per-Re-Deployment-unit budget on 2026-07-22.
+
+### Fanatic (19 refs) - DONE 2026-07-22, engine `599be98`
+
+Two discoveries shrank this to near-data. There is already a `Deployment_OnUnitDeployed` hook that fires
+after a unit's placement and offers activated abilities (`DeployUnitStage.OfferPostDeploymentAbilities`) -
+**Vanguard** already rides it ("once per game, after deploy, move up to 9in", `Effect.TriggeredMove`).
+Fanatic is Vanguard-shaped but a PLACEMENT not a move (owner's reposition-is-a-placement ruling, and the
+corpus word "placed"), so it reuses the reposition-placement machinery the DONE reposition-at-activation
+slice built. Shipped:
+- **`Effect.RepositionOnDeploy(float MaxInches)`** -> emits the shared `RuleOperation.RepositionModels`
+  op. Flat (no dice) rather than reusing `RepositionAtActivation` with a degenerate die, since every
+  `DiceExpression` rolls at least one die and Fanatic's range is fixed.
+- **`RepositionPlacement`** (new shared helper) - the "you MAY place all models within Nin" fold, extracted
+  verbatim from `ActivationStartStage.OfferReposition` so both the activation-start and the deploy path run
+  ONE implementation. `DeployUnitStage.OfferPostDeploymentAbilities` now folds `RepositionModels` from the
+  resolved ops into the placement after the executor runs (the executor ignores it - it is stage-folded,
+  not an `ExecutableOperation`).
+- **`CoreRuleCatalog.Fanatic`** (in `All`): a `Deployment_OnUnitDeployed` activated ability, `Cost.OncePerGame`
+  (deployment happens once, so the gate is naturally spent - matching Vanguard, and it also stops a re-offer
+  on a later Scout/Ambush placement), Self target, `RepositionOnDeploy(9)`. `RuleFireLint` ability arm
+  extended (`RepositionModels` handled at the deploy hook).
+- Tests: `FanaticRuleIntegrationTests` (6) - catalog shape, the flat op emission, the once-per-game gate,
+  and through the REAL `DeployUnitStage`: accept -> repositions within 9in (radius + allowCancel reach the
+  resolver), decline -> stays at its deploy position, non-Fanatic -> no prompt. Engine 1870/1870, app build
+  clean, headless smoke exit 0. Corpus dead **379 -> 360**.
+
+### Re-Deployment (27 refs) - DONE 2026-07-22, engine `3c2d340`
+
+The genuine new deploy-phase work: "after all other units are deployed (excluding units that were set
+aside), you may remove up to two friendly units from the table and deploy them again; players alternate in
+placing, starting with the player that activates next." Shipped:
+- **`ReDeploymentStage`** - a new child of `DeployAllUnitsStage`, inserted after the normal deploy loop
+  (`OnFinishedDeployingAllUnits`) and BEFORE `PlaceDeferredUnitsStage`, so set-aside (Scout) units are still
+  off-table and therefore ineligible - which is exactly "excluding units that were set aside" (eligibility is
+  `GetIsOnBattlefield`).
+- **Budget (owner ruling): 2 per Re-Deployment unit owned, stacking** (2 units -> 4 redeploys). Detected by
+  name (`unit.RuleDefinitions.Any(r => r.Definition == ReDeployment)`, the Caster-detection pattern) over the
+  player's living units.
+- **Alternation:** players go one unit at a time in activation order. "The player that activates next" is the
+  head of `FirstDeploymentRollOrder` - `MainPhaseContext` seeds its turn order from that same list, so the
+  deployment-roll-order head both deploys and activates first. A round-robin over the player order spends one
+  redeploy (or takes a pass) per player per cycle; a pass ends that player's participation; the sub-phase ends
+  when everyone has passed or exhausted budget. Terminates because each cycle either marks a player done or
+  spends one of a finite budget. (Faithful team-alternation for the 1v1 corpus; multi-player is an
+  approximation over the flat activation order.)
+- **The redeploy** picks a friendly on-table unit (a `CancellableSelectionRequest<UnitData>`, Cancelled =
+  pass; already-redeployed units excluded so "two units" stays distinct) and re-places its models anywhere in
+  the owner's deployment zone via the normal `PlacementRequesting.RequestMandatoryPlacement` flow -
+  `DeployUnitStage`'s placement, reused. Re-Deployment is a marker rule (no hooks), allowlisted in the catalog
+  fire-lint like Delayed Action.
+- Tests: `ReDeploymentRuleIntegrationTests` (6) through the REAL stage - no-rule -> no prompt, budget of 2 per
+  unit, budget stacks to 4, pass ends participation, set-aside units never offered, and two-player alternation
+  starting with the roll-order head with each unit landing in its own zone. Engine 1877/1877, app build clean,
+  headless smoke exit 0. Corpus dead **360 -> 333** (Ambush Re-Deployment's 4 correctly stay dead - re-filed).
+
+## Slice P11: reflect damage (Retaliate + Deathstrike + Self-Destruct) — DONE 2026-07-22, engine `163a2f3` + `9a4dbeb`
+
+"When this model takes a wound / is killed in melee, the attacker takes X hits." Three rules share a
+"deal X hits back at the melee attacker" primitive; slice 1 built Retaliate + Deathstrike, slice 2
+(engine `9a4dbeb`) added Self-Destruct.
+
+**Owner rulings (2026-07-22):** per-model attribution (exact, not unit-level - the harder path that also
+defers Sergeant); build Retaliate + Deathstrike first, then Self-Destruct.
+
+The reading that shaped it: all three reflect AFTER the melee resolves (Self-Destruct's text says so
+explicitly), so this is a post-melee TALLY, not a per-wound hook. The engine already snapshots per-unit
+start-wounds on the combat context; adding a per-model snapshot made per-model attribution exact by simple
+before/after comparison - no per-wound tracking, sidestepping the mechanism that stalled Sergeant. Shipped:
+- **Per-model start-wounds snapshot** on `CombatActionContext` (`ModelRemainingWoundsAtStart`, keyed by
+  model reference so a Counter swap needs no re-keying), captured before the first swing (attacker at
+  construction, defender at `SetDefender`), melee-only.
+- **`ResolveMeleeReflectStage`** - a new child of `MeleeStage` after consolidation (before the post-melee
+  Harassing move). For each of the two combatants as bearer, it counts per rule-bearing MODEL: Retaliate's
+  wounds-taken (`start - current`) x X, and Deathstrike's kills (start > 0, now dead) x X, then deals that
+  many plain hits at the other unit through the real `DetermineSaveRolls -> RollToSave -> AssignWounds ->
+  ApplyWounds` pipeline (so the target's armor / Regeneration apply). The per-bearer batches LOOP via
+  `OnBatchDone` re-entering the stage, the StormStage pattern. A model has the rule if it or its unit carries
+  it (Arg(0) = X), so a unit-wide rule counts every model and a champion-only rule counts just that model.
+- **Fractional-safe:** the hit count is `X x woundsTaken` built directly as a synthetic histogram (not an
+  int `Roll`), so probabilistic mode's fractional wounds flow through without int-locking - the #100 dice
+  invariant, the same discipline Ravage used.
+- `Retaliate` / `Deathstrike` are marker rules (no hooks; detected by name at the stage, like Delayed
+  Action / Re-Deployment), allowlisted in the catalog fire-lint. Tests: `ReflectRuleIntegrationTests` (6)
+  through the real stage - X-per-wound, X-per-kill, survive/no-wound/no-rule no-ops, and the per-model
+  attribution pin (a champion's wound reflects, the grunt's does not). Engine 1886/1886, app build clean,
+  headless smoke exit 0. Corpus dead **333 -> 309**.
+
+**Self-Destruct (3 refs, engine `9a4dbeb`)** extends the same stage: X hits at the enemy per rule-bearing
+model that ENTERED the melee alive (whether it died fighting or not - keyed on the start snapshot so the
+count is stable), and every survivor "is immediately killed" now, routed through the same
+`UnitDestructionNotifier` choke a melee kill uses (marks cleared, hook fired, enemy credited). The two hit
+terms don't double: a model killed fighting counts once for its X and isn't re-killed. Tests: 2 more in
+`ReflectRuleIntegrationTests` (8 total) - a survivor self-kills AND deals X, a killed-in-melee model deals
+X once. Engine 1889/1889, app build clean, headless smoke exit 0. Corpus dead **309 -> 306**; P11 complete.
+
 ## Slices — by leverage
 
 Reference counts are corpus-wide (44 books). Primitive numbers are #100's.
@@ -381,17 +584,17 @@ Reference counts are corpus-wide (44 books). Primitive numbers are #100's.
 | 21 | **Versatile Defense** (out of P5a) | A new `ELifetime.UntilNextActivation` + a `TokenClearTrigger` firing at activation **start**, and a second trigger at `Deployment_OnUnitDeployed`. Everything else (labelled abilities, the choice request) already exists. | Versatile Defense Aura (21) |
 | 47 | ~~**Delayed Action** (was P22)~~ **DONE 2026-07-11** | Shipped at unit-selection (pick-then-confirm hold-back), NOT the next-activator seam - see the Delayed Action write-up above. Fork resolved with Chris: holding back does NOT activate the unit (it stays in the pool) and the turn passes to the opponent; once per round per player. | Delayed Action (47) |
 | 15 | ~~**Teleport** (was P22)~~ **DONE 2026-07-11** (15 + Teleport Aura 4) | Shipped as a flat-6in menu action - see the Teleport write-up below. The pre-attack-hook / 3in-vs-6in reading was wrong (see write-up); Chris corrected the design in-conversation. | Teleport (15), Teleport Aura (4) |
-| 14 | **Ambush variants** (the real P22) | The only genuine deploy-timing work. `Rapid Ambush` (deployable from round 1 — a new `EDeferTiming`), `Ambush Beacon` (relaxes the >9in enemy restriction for OTHER friendly Ambushers within 6in — a cross-unit deployment constraint), `Ambushing Piercing Shot` (Ambush + AP(+1) during the round it arrives — needs deploy-round state). | Rapid Ambush (4), Ambush Beacon (6), Ambushing Piercing Shot (4) |
+| 18 | **Ambush variants** (the real P22, + a P21 re-file) | The only genuine deploy-timing work. `Rapid Ambush` (deployable from round 1 — a new `EDeferTiming`), `Ambush Beacon` (relaxes the >9in enemy restriction for OTHER friendly Ambushers within 6in — a cross-unit deployment constraint), `Ambushing Piercing Shot` (Ambush + AP(+1) during the round it arrives — needs deploy-round state). **`Ambush Re-Deployment` (4, re-filed from P21):** "once per game, when this unit ends its activation, remove it and redeploy as if it had Ambush at the start of the next round" - not deploy-phase at all; needs the round-N Ambush arrival these rules build plus an end-of-activation trigger. | Rapid Ambush (4), Ambush Beacon (6), Ambushing Piercing Shot (4), Ambush Re-Deployment (4) |
 | 2 | **Surprise Attack** (was P22) | Infiltrate + "the first time this unit is activated, pick one enemy within 6in in LoS and roll X dice; each 2+ deals a hit with AP(1)". Blocked on **P10**'s dice-pool primitive regardless. | Surprise Attack (2) |
 | 96 | ~~**New** reposition-at-activation~~ **DONE 2026-07-09** (96/96) | Owner's ruling: a **placement**, not a move — nothing is asked of the path, only of the destination. `PlaceObjectsRequest` gained `MaxDistanceFromStartInches`, a *per-model* radius (0 = unconstrained, so deployment is untouched), honoured by all three resolvers. `Effect.RepositionAtActivation` rolls its die at Apply (Heal's shape) so the op carries a concrete distance; several **sum**, which is how `Rapid Blink Boost` widens D3 to 2D3 as an increment rather than a second prompt. The AI declines by standing still. Engine `5f3c4df`. | Wolfborn (60), Bounding (22), Rapid Blink (8), Bounding Aura (4), Rapid Blink Boost Aura (2) |
 | 66 | ~~**P5b** round-start Shaken recovery~~ **DONE 2026-07-09** (66/66) | **The premise was wrong:** `Round_OnRoundStart` is not dormant — `StartOfRoundExtraActionStage.GrantSpellTokens` fires it every round for every living unit (Caster token grants), applying token ops and running executables. So this needed only the effect. New `Effect.ClearTokenOnRoll` -> `InvokeClearTokenOnRoll`, an executable resolved through `IOperationServices`. Rolls with `RollDecisiveFace`, never `Roll(1)` — the outcome is binary, so a histogram would want to remove a *fraction* of a token. Engine `05eb91e`. | Steadfast Aura (28), Battleborn (26), Honor Code (9), Steadfast (3) |
-| 60 | **P21** setup-phase re-deploy | Remove + re-place a unit during/after deployment. | Re-Deployment (27), Fanatic (19), Dash Aura (4), Ambush Re-Deployment (4), Dash (2), Mobile Artillery (2), Quick Readjustment (2) |
+| 46 | ~~**P21** setup-phase re-deploy~~ **DONE 2026-07-22** (46/46; was 60, 14 refs re-filed) | **Misfiled like P22.** Only two of the seven rules were deploy-phase work, both now shipped (write-ups below): **Fanatic (19)** rides the existing `Deployment_OnUnitDeployed` hook (Vanguard's seam) as a placement; **Re-Deployment (27)** is a new post-deployment alternating sub-phase (`ReDeploymentStage`). The other 14 refs were re-filed with reasons (see the re-scope note). | Fanatic (19) + Re-Deployment (27) DONE |
 | 59 | ~~**Darkborn** (#102 residual)~~ **DONE 2026-07-11** | It was **only the naming bug** - both mechanics were already built (the "per-target charge debuff doesn't exist" note was stale; #029/#183's `EffectiveChargeDistanceAgainst` powers it). The importer now disambiguates the bare `Darkborn` by army; books patched. See the Darkborn write-up above. | Darkborn (59) |
 | 53 | ~~**P15** randomized-branch effect~~ **DONE 2026-07-11** (48/53) | Decisive per-attack-action die (Option A), once per action, threaded via a new `IHasUnpredictableBranch` capability. See the P15 write-up above. **The 2 Mark variants (5 refs) are deferred** - a mark grants after the action-level roll. | Unpredictable Fighter (26), Unpredictable Fighter Aura (11), Unpredictable (5), Unpredictable Shooter Aura (5), Unpredictable Shooter (1) done; Unpredictable Fighter Mark (3) + Unpredictable Shooter Mark (2) deferred |
-| 44 | **P10** dice-pool -> hits / auto-wounds | Generalize `dealHits` to a rolled count and to wounds-without-to-hit. Unblocks the `dealHits.WithRules` resolver seam (#164) too. | Ravage (31), Crossing Attack (8), Storm of Lust (2), Storm of Change (1), Storm of Plague (1), Storm of War (1) |
+| 44 | ~~**P10** dice-pool -> hits / auto-wounds~~ **DONE 2026-07-22** (44/44) | It was TWO primitives: an AUTO-WOUND pool (Ravage, Crossing Attack - roll X, each 6+ a direct unsaveable wound) and a rolled multi-target HIT burst (Storm of X - roll 3 decisively, each 2+ picks an enemy taking 3 hits with a rule). Both shipped (write-ups below). Also retired the #164 `dealHits.WithRules` seam's remaining generality (Storm rides the same fold). | Ravage (31) + Crossing Attack (8) + Storm of Change/Lust/Plague/War (5) all DONE |
 | 41 | ~~**P13** marker-scaled magnitude~~ **DONE 2026-07-22** (41/41) | Shipped WITHOUT touching `ValueSource` (its context-free `Resolve` stays pure): new effects `tokenScaledRollModifier` / `tokenScaledReduceArmorPenetration` read the bearer's token count at Apply time (steps = count / perMarkers, Fortified's read-side `maxReduction` cap), `GrantToken` gained a grant-time `maxTotal` clamp (the "up to a max. of X markers" clause, spell-token-cap pattern), `ReconcileObjectivesStage` now fires `Round_OnRoundEnd` rules for every living unit before the token sweep (new `RoundEndContext`, reflection-registered), and both Shaken-application sites clear `CustomHook(Morale_OnShakenApplied)` tokens (Fortified's lose-all-on-Shaken, pure data). "On the table" composes from existing conditions: `not(InReserve) and not(EmbarkedIn) and not(OffTableFromForcedMove)`. Authored behind `tokenPresent(marker, minCount: perMarkers)` so RuleFireLint's existing token seeding proves each entry fires. 8 definitions (incl. support base `Defensive Growth`); engine 1820/1820, `TokenScaledMarkerTests` (9, incl. a real-stage round-end firing pin per the #196 consumption lesson). Engine `2efc06e`. | Piercing Frenzy (9), Defensive Frenzy (8), Piercing Growth (6), Precision Frenzy (6), Fortified Growth (6), Precision Growth (5), Defensive Growth Aura (1) |
 | 28 | ~~**P14b** spend-for-bonus markers~~ **DONE 2026-07-22** (28/28) | Two marker classes on the ENEMY unit, bonus kind in the token type (mirroring the roll-modifier trio): persistent (`Persistent{Hit,Ap}BonusMarker` — the Target family, counted every attack, never removed) and spendable (`Spendable{Hit,Ap}BonusMarker` — Tag/Spotter). **Owner-ruled 2026-07-22: the spend is PROMPTED, not auto-spent** — `TargetMarkerSpend` asks the attacking player how many to remove (a `StringSelectionRequest`, spend-all listed first so the CLI EOF default and the AI first-option fallback both take the aggressive default; zero-marker attacks never prompt), folded into `DetermineHitRollStage` (skipped while fatigued, like granted buffs) and `DetermineSaveRollsNeededStage` (+net raises the defender's threshold). Placement is data: `Activation_OnPreAttack` abilities over the existing `TargetSelector`/`Cost` machinery; Spotter's "on a 4+ place a marker" is the new `grantTokenOnRoll` effect (decisive die, `InvokeGrantTokenOnRoll` executable, ClearTokenOnRoll's mirror). Engine 1831/1831, `TargetBonusMarkerTests` (11). Engine `d0985e2`. | Precision Target (7), Piercing Tag (6), Precision Spotter (4), Piercing Spotter (4), Precision Tag (4), Piercing Target (3) |
-| 27 | **P11** reflect damage | On-wound-taken / on-death hook + deal-hits-at-attacker. | Retaliate (20), Deathstrike (4), Self-Destruct (3) |
+| 27 | ~~**P11** reflect damage~~ **DONE 2026-07-22** (27/27) | A post-melee reflect (write-up below): Retaliate (X hits per wound taken), Deathstrike (X hits per killed model), Self-Destruct (X per participating model + self-kill any survivor), all per-model attribution. | Retaliate (20) + Deathstrike (4) + Self-Destruct (3) DONE |
 | 24 | **P17** place / restore a unit | Create a unit or restore destroyed models mid-game. Touches deployment + table-state lifecycle + networking sync. | Spawn (14), Reinforcement (4), Reanimation Aura (3), Split (3) |
 | 21 | **P23** casting support | Rides #034. Caster-pool sharing, cast-roll modifiers, transfer-on-death. | Spell Conduit (9), Spell Accumulator (7), Caster Group (3), Casting Buff (2) |
 | 20 | **P6** deferred debuff token | The debuff mirror of the built `FirstTrigger` buff grant: a one-shot roll penalty on a chosen enemy's next relevant action. | Casting Debuff (8), Morale Debuff (4), Piercing Debuff (3), Defense Debuff (3), Speed Debuff (2) |
@@ -402,7 +605,8 @@ Reference counts are corpus-wide (44 books). Primitive numbers are #100's.
 | 12 | **Strafing** (out of slice 0) | Make `Strafing` the weapon rule the source says it is: movement-hook access to the bearer's weapons, a mid-move "attack with *this* weapon" primitive replacing the fixed 3-hit `InvokeDealHits`, and a once-per-activation weapon-use restriction. Currently allowlisted in `BookRuleScopeTests`. | Strafing (12) |
 | 3 | **P19** reactivate another unit | Generalize the live self-`reactivate` to a chosen friendly unit. | Coordinate (3) |
 | 2 | **P12** attack-count producer — **DEFERRED 2026-07-22** (owner ruling) | Regenerative Strength's marker GAIN is "one marker per ignored wound", but the Regeneration ignore roll is a histogram: under the probabilistic roller the ignored count is fractional, and token counts are integers — bridging them means int-locking a roll-derived value. Owner chose to keep the dice invariant pristine over a round-per-attack approximation; the 2 refs stay dead until fractional token counts (or another exact mechanism) exist. The attack-count producer seam itself (a fold at `DetermineHitRollStage`'s attackCount, where the code comment already marks the spot) was NOT built unused, per grow-on-demand. The read side's design is settled when this reopens: melee Yes/No prompt per weapon volley ("add +X attacks to this weapon?"), once-gated per activation — the player picks the weapon by accepting on it (owner ruled 2026-07-22 the pick must be prompted, not auto). | Regenerative Strength (2) |
-| 98 | **Misc** small primitives | Each is a one-off; triage before building. Several may collapse into P5/P13. | Repel Ambushers (24, enemy Ambush placement constraint), Inquisitorial Agent (20, once-per-game reactivate), Hazardous (15, self-wound on unmodified 1), Extended Buff Range (9), Protection Feat (8) + Aura (1), Instinctive (4, forced action at activation), Speed Feat Aura (4) + Buff (1), Heavy Impact (3, Impact with AP), Grounded Reinforcement Aura (3), Grounded Precision Aura (3), Grounded Stealth (2, "within 1in of terrain" condition), Screened Aura (1) |
+| 6 | **Dash** end-of-activation reposition (re-filed from P21) | Reposition-at-activation's twin at a different trigger: "at the END of this unit's activation, once per round, place all models with this rule within D3+1in of their position." The DONE reposition slice fires the SAME `RepositionAtActivation` placement at activation START (`ActivationStartStage`); Dash needs it at end-of-activation (`Activation_OnEndOfActivation`, a hook that already carries token lifecycle) with a once-per-round gate. Small delta on shipped machinery - not deploy-phase. | Dash (2), Dash Aura (4) |
+| 102 | **Misc** small primitives | Each is a one-off; triage before building. Several may collapse into P5/P13. | Repel Ambushers (24, enemy Ambush placement constraint), Inquisitorial Agent (20, once-per-game reactivate), Hazardous (15, self-wound on unmodified 1), Extended Buff Range (9), Protection Feat (8) + Aura (1), Instinctive (4, forced action at activation), Speed Feat Aura (4) + Buff (1), Heavy Impact (3, Impact with AP), Grounded Reinforcement Aura (3), Grounded Precision Aura (3), Mobile Artillery (2, re-filed from P21 - >9in Hold+shoot / hasnt-moved defensive hit mods; likely pure DATA on the built `AttackedFromOverInches` + Hold-action + moved-this-round primitives - verify on build), Quick Readjustment (2, re-filed from P21 - ignore the shoot-after-move penalty for Indirect weapons; a small penalty-ignore), Grounded Stealth (2, "within 1in of terrain" condition), Screened Aura (1) |
 
 ## Suggested sequencing
 
@@ -410,14 +614,55 @@ Reference counts are corpus-wide (44 books). Primitive numbers are #100's.
 2. **P5b** (round-start) then **P5a** (activation-choice) — P5a alone is 175 refs, the largest single
    engine win, and P5b is the cheapest dormant-hook exercise to prove the pattern.
 3. **P13 + P14b + P12 together** — one coherent marker mechanic, or three incompatible ones.
-4. **P10** — also retires the `dealHits.WithRules` seam (#164).
-5. **P22 / P21** — deployment cluster; share a placement resolver.
+4. ~~**P10**~~ **DONE 2026-07-22** (Ravage + Crossing Attack + Storm; write-ups above).
+5. ~~**P21**~~ **DONE 2026-07-22** (Fanatic + Re-Deployment; write-ups above). P22 (Ambush variants) remains.
 6. Then the long tail (P6, P8, P11, P15, P17, P20, P7, P16, P19), Darkborn, and the misc triage.
 
 `#196` can run fully in parallel — it touches no engine file.
 
 ## Notes
 
+- 2026-07-22: **P11 reflect damage DONE (27/27)** across two slices (engine `163a2f3` + `9a4dbeb`). A
+  post-melee reflect: `ResolveMeleeReflectStage` (new `MeleeStage` child after consolidation) deals X hits
+  back at the melee attacker through the real save/wound pipeline, batches looping like Storm - Retaliate
+  per wound taken, Deathstrike per killed model, Self-Destruct per participating model (also self-killing any
+  survivor via the destruction choke). Owner ruled PER-MODEL attribution, made exact by a new per-model
+  start-wounds snapshot on `CombatActionContext`; hit count stays fractional (dice invariant). Marker rules,
+  fire-lint allowlisted. Corpus dead **333 -> 306**. See the P11 write-up above.
+- 2026-07-22: **P21 DONE (46/46), after re-scoping it (misfiled like P22).** The row's 60 refs were not
+  one mechanic: only Re-Deployment (27) and Fanatic (19) were deploy-phase work; the other 14 were re-filed
+  (Dash/Dash Aura 6 -> end-of-activation reposition; Ambush Re-Deployment 4 -> Ambush variants; Mobile
+  Artillery 2 + Quick Readjustment 2 -> Misc/data). Both deploy-phase rules shipped (write-ups above):
+  **Fanatic** (engine `599be98`) rides the existing `Deployment_OnUnitDeployed` hook (Vanguard's seam) as a
+  placement - new `Effect.RepositionOnDeploy` -> the shared `RepositionModels` op, folded into a within-9in
+  placement by `DeployUnitStage` via a new shared `RepositionPlacement` helper extracted from
+  `ActivationStartStage`. **Re-Deployment** (engine `3c2d340`) is a new post-deployment alternating sub-phase
+  (`ReDeploymentStage`): 2 redeploys per Re-Deployment unit (stacking), players alternate in roll order,
+  set-aside units ineligible. Corpus dead **379 -> 333**. See the P21 re-scope note and both write-ups.
+- 2026-07-22: **P10b Storm of X shipped** (5 refs; engine `dcace2d`), completing P10 (44/44). A rolled
+  multi-target hit burst: a new `StormStage` (routed from Choose Action like Teleport) rolls a 3-dice pool
+  DECISIVELY - integer successes, since you cannot pick a fractional target (the dice invariant, per P15) -
+  then per success the player picks an enemy within 12in that takes 3 hits with the storm's rule through
+  the #164 fold, the per-target batches looping via `OnBatchDone` re-entering the stage. Owner-ruled
+  per-success distinct targeting (not one scaled target). New `Effect.StormOfHits` + `InvokeStorm`; catalog
+  Storm of Change/Lust/Plague/War. Corpus dead **384 -> 379**. See the P10b write-up above.
+- 2026-07-22: **P10a Crossing Attack shipped** (8 refs; engine `3ee6896`), completing the auto-wound half
+  of P10 (Ravage + Crossing = 39/44). Reuses Ravage's `DealAutoWounds` primitive on the movement trigger:
+  a new `CrossingAttackStage` beside `StrafingStage`, each filtering offers to its own effect type
+  (`DealHits` vs `DealAutoWounds`) so they don't cross-consume. Also threaded activated-ability arguments
+  through `ResolveAbility` (Crossing Attack(X) is the first arg-driven ability) - a small, backward-
+  compatible `AbilityOffer.Arguments` addition. Only Storm of X (5, rolled hit-count) remains in P10.
+  Corpus dead **392 -> 384**. See the P10a write-up above.
+- 2026-07-22: **P10a Ravage shipped** (31 refs; engine `1340496`). Building the slice surfaced that P10
+  is two primitives, not one - an auto-wound pool (Ravage, Crossing Attack) and a rolled hit-count (Storm
+  of X) - because the source text (off-repo, not in the book data) reads "takes one wound" for the first
+  and "takes 3 hits with [rule]" for the second. Built the auto-wound primitive on Ravage: it mirrors
+  Impact (`ResolveImpactHitsStage`) but at threshold 6 and skipping the save, so the wounds are unsaveable
+  yet still regenerable (owner ruling). New `DealAutoWounds` effect + `InvokeDealAutoWounds` op +
+  `SyntheticWoundResolution` helper; per-model scaling via the carrier-count pattern (no Sergeant-style
+  attribution problem - wounds hit the enemy). Fractional-count invariant pinned in probabilistic mode.
+  Crossing Attack (8, same primitive, movement trigger) and Storm (5) remain. Corpus dead **423 -> 392**.
+  See the P10a write-up above.
 - 2026-07-22: **The marker cluster shipped as one coherent mechanic** (P13 + P14b together, per this
   file's own sequencing warning; P12 deferred): corpus dead count **492 -> 423** (-69 of the cluster's
   71; Regenerative Strength's 2 remain). Details in the three slice rows. Fork decisions made with
