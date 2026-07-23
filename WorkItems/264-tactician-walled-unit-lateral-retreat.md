@@ -110,6 +110,77 @@ possible oscillation (snake-stretch then re-grid; left-vs-right around the piece
 - Add #256's stuck-detector log ("every movement candidate nets < 1 inch") so future games
   self-report this class.
 
+## Handoff: implementing the fixes (written 2026-07-23 for a fresh session)
+
+Everything needed is in this file + the code; no conversation context required.
+
+**State.** Superproject AND the `FutureOfDarkGrimness` submodule are both on branch
+`264-walled-unit-pins` (stacked on `167-scenario-terrain`; neither pushed nor merged - master has
+NO pins and NO scenario terrain). A fresh session opens the repo already on these branches.
+The pins: `FutureOfDarkGrimness/Tests/TacticianWalledUnitTests.cs` - 9 tests, all red, tagged
+`Category("Pending264")`. Their failure messages embed the planner's full scored candidate table.
+
+**Authorization + rules of the road.**
+- Chris authorized engine-submodule changes for this item (fixes live in `Ai/Tactician/` and
+  `Ai/Resolvers/`). Submodule-first commit cadence per CLAUDE.md.
+- Read `docs/ResolverGuide.md` BEFORE touching movement/resolver code (CLAUDE.md requirement).
+- Exit gate per slice: its pin(s) flip green WITHOUT weakening any assert; move green tests out
+  of the Pending264 category so they join the main suite. Until all slices land, verify with
+  `dotnet test FutureOfDarkGrimness/FutureOfDarkGrimness.csproj --filter TestCategory!=Pending264`
+  (1928 green today) plus a targeted run of the pin fixture.
+- Any `TacticianWeights` constant change needs Chris's explicit sign-off AND a benchmark run
+  attached to the commit (file-header policy).
+- One slice per commit; update this file's Notes (newest on top) each slice; never silently cut.
+
+**Slice order and concrete notes** (pin name in parentheses):
+1. Issues 1+2 (`WalledUnit_ArgmaxMove...`, `WalledUnit_RushingTheObjective...`,
+   `WalledUnit_ThreeActivations...`): `TacticianPlanner.ObjectiveApproach` (~line 584) measures
+   the objective gap as straight-line Distance; make the gradient pathfound-route-aware (reuse
+   `TerrainGrid.Build` + `GridPathfinder.FindPath`; cache per activation like
+   MacroActionGenerator's `sharedGrid` - decisions have a ~0.5s budget, so avoid a fresh
+   pathfind per (candidate x objective); one route per objective from the START, then measure
+   candidate ends against that polyline, is likely enough). `MacroActionGenerator.Plan` (~374)
+   grades progress/feasibility straight-line too. The Reachable-bonus half (issue 2): gate
+   `MoveReachableBonus` on substantive terms > 0 (or demote to epsilon tie-break) - that is a
+   weights-policy change, see above. CRITICAL refinement from the pin run: forward candidates
+   also pay ~0.04 retaliation that the retreat dodges, so the pathwise approach credit must
+   outweigh that asymmetry or fixing the bonus just converts retreat into freeze.
+2. Issue 3 (`PlanMoveToward_GoalCellInsideWallInflation...`): `GridPathfinder.FindPath` (~107)
+   returns null when the GOAL cell is inflation-blocked - retarget to the nearest unblocked
+   cell instead. `MovementPlanner.PlanMoveToward` (~560) falls back to the straight
+   `{start, goal}` line on null - plan toward the nearest REACHABLE point instead (never the
+   wall-piercing straight line; it also structurally kills the S4 snake).
+3. Issue 5 (`...MixedErrors_StillThreadsTheCorridor`): `ValidateWithBackoff` (~202-226) - the S2
+   gate needs `errors.All(EndedOnFriendlyUnit)`, S4 needs `errors.All(MovingThroughImpassible)`;
+   run the gates on the RELEVANT error subset instead (snake when impassible errors are present,
+   then re-aim on the residue).
+4. Issue 6 (`SoloResolver_OnlyWideSkirtAngles...`): `AiDefineMovementResolver.
+   SkirtAngleOffsetsDegrees` (~187) tries up to +/-100 deg at full budget - cap ~+/-60 and/or
+   scale the step by the forward component. CAUTION: this moves the pinned solo D1 baseline -
+   re-pin the benchmark hashes (current: 3674C906996F34CC mirror / CE3DC8150005FF2C vs basic,
+   200 games, DOP 16 - see the MovementPlanner file header and the #191 ledger;
+   `dotnet run --project FdgLab -- bench ...`). Same slice: add the #216 log line whenever the
+   Tactician silently degrades to the solo resolver, and #256's stuck-detector log ("every
+   movement candidate nets < 1 inch").
+5. Issue 4 (`...WideFormationAtWallCorner...`): `BuildPathCandidate` (~519) prepends the SAME
+   passed-waypoint list to every model's path - have each model join the polyline at its nearest
+   point AHEAD instead. Note the pin's geometry: the burn only bites when the first bend is
+   inside the budget (corner-hugging); don't regress the centered case that works today.
+6. Issue 7 (`PlannedMove_UnitWithASlowModel...`): `MacroActionGenerator.Plan`/`BuildCharge`
+   validate with a flat `_ => new ModelMoveBudget(budget, budget)`; thread a request-accurate
+   per-model budget function in (derive from the same `MovementRuleQueries` DefinePathStage
+   uses, or plan at the min per-model budget - the resolver re-checks per-model and silently
+   solo-falls-back on any mismatch).
+7. Issue 8 (`Deployment_ObjectiveLaneWalledOff...` + the ThreeActivations pin doubles as 8b):
+   `TacticianPlaceObjectsResolver` - penalize candidate centers whose route to their aim point
+   crosses impassible terrain (path-distance vs Euclid, like the pin's PathDistance helper);
+   cross-activation hysteresis = small commitment bonus toward the previous intent/goal.
+
+**Tools.** `Scenarios/example-walled-advance.json` -> `--make-scenario` -> `fdglab analyze`
+prints the same candidate table as the pin failures, for eyeballing scenes; `--scenario` launches
+one in GUI. When done: merge cadence 167-scenario-terrain -> 264-walled-unit-pins -> master, and
+Chris still owes the GUI terrain-render hand pass (#167 note).
+
 ## Notes
 
 - 2026-07-23 (later still): **failing pins landed** - `Tests/TacticianWalledUnitTests.cs` (engine,
