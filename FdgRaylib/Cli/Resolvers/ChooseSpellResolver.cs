@@ -17,6 +17,16 @@ public class ChooseSpellResolver : IStageResolver<ChooseSpellRequest, ChooseSpel
         Console.WriteLine($"Choose a spell to cast - {caster} has {request.AvailableTokens} spell token" +
             $"{(request.AvailableTokens == 1 ? "" : "s")}");
 
+        // #197 P23 — a Spell Conduit in range changes what is reachable and makes the roll easier. No
+        // choice to make here (the origin follows the targets), but the player should know the bonus is on
+        // the table before deciding a spell is not worth casting; the target list then says which targets
+        // actually get it.
+        foreach (ChooseSpellRequest.RelayOption relay in request.RelaysInRange)
+        {
+            Console.WriteLine($"  {relay.UnitName} relays: spells cast from its position get " +
+                $"+{relay.RollBonus} to the roll and measure range from it.");
+        }
+
         // Number only the castable rows; disabled rows print with their reason, un-numbered.
         var castableIndices = new List<int>();
         for (int i = 0; i < request.Spells.Count; i++)

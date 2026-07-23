@@ -95,6 +95,36 @@
     "description": "Gets X accumulator tokens at the start of each round, but can't hold more than 6 tokens at once. Casters from other friendly units within 12\" may spend this unit's accumulator tokens as if they were their own spell tokens. Friendly casters may only use this rule if this unit isn't Shaken."
   },
   {
+    "name": "Spell Conduit",
+    "passive": [
+      {
+        "hookID": "Lifecycle_OnCapabilityQuery",
+        "condition": {
+          "kind": "not",
+          "inner": {
+            "kind": "tokenPresent",
+            "tType": {
+              "id": "Shaken"
+            },
+            "minCount": 1
+          }
+        },
+        "effect": {
+          "kind": "enableSpellRelay",
+          "rangeInches": 12.0,
+          "castRollBonus": 1
+        },
+        "lifetime": "UntilEndOfGame",
+        "seat": "Actor"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "Casters within 12\" that are from other friendly units may cast spells as if they were in this unit's position, and get +1 to casting rolls when doing so. Friendly casters may only use this rule if this unit isn't Shaken."
+  },
+  {
     "name": "Highborn",
     "passive": [
       {

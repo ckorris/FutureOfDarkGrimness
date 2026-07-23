@@ -280,6 +280,66 @@ reverting the menu routing and reverting `IsTransport`.
 probe army produced a 5.8 GB log before the timeout). It should abort at EOF like every other resolver.
 Worth its own item.
 
+## Slice: P23 Spell Conduit — **DONE 2026-07-23** (9 refs; P23 DONE 19/19)
+
+> "Casters within 12" that are from other friendly units may cast spells as if they were in this model's
+> position, and get +1 to casting rolls when doing so. Friendly casters may only use this rule if this
+> unit isn't Shaken."
+
+**Same capability shape as Accumulator, different payload.** The gating half is identical - a capability
+entry at `Lifecycle_OnCapabilityQuery`, 12", `if !Shaken` - so it was settled before building. What is new
+is that the offer changes a property of the whole cast (where range and line of sight are measured from,
+plus the roll) rather than lending a resource. `Effect`/`RuleOperation.EnableSpellRelay(range, bonus)`,
+read by a new `SpellRelay` helper. `SpellPurse`'s neighbour scan was lifted into a shared `CastSupport`
+(both rules are worded "... other friendly units within 12" ...", so they share the eligibility test).
+
+**A relay moves the spell, not the caster.** Only the origin point of range/LoS changes (including which
+models are discounted as blockers - the relay's own, not the caster's). Affinity is still judged against
+the caster (a Friend spell means the caster's side, however relayed), the #103 assist scan still measures
+18" from the casting unit, and the caster's own eligibility (has it attacked, is it embarked) is
+unchanged. The narrow reading, and the one the wording supports.
+
+**Design fork (owner call): no origin prompt; the origin is derived, made visible.** A relay origin is
+never worse than the caster's own - it only adds reach and adds +1 - so the only real question is which
+origin reaches the targets the player picked. `CastSpellStage` therefore offers the UNION of every
+origin's legal targets (`RelayedTargeting`), narrows the viable origins as targets are chosen, and casts
+from a relay if one still covers them all, relays preferred. The owner's concern with "it just happens"
+was answered by making the relay visible at every step rather than by adding a prompt:
+
+- the spell picker carries a relay note ("Synaptic Relay relays: cast from its position for +1 ...") -
+  `ChooseSpellRequest.RelaysInRange`, rendered by both resolvers;
+- every target row names the origin it would use ("Dummies (via Synaptic Relay, +1)") - the honest place
+  for it, since at spell-pick time the origin is not yet decided and this is exactly what a player needs
+  to aim for the bonus;
+- the cast is announced ("... casts Sky Blaze through Synaptic Relay (+1)") and the roll breakdown lists
+  "relay +1" first, as the modifier the player did not ask for by name.
+
+With no conduit on the table there is one origin (the caster's own) and every path degrades to the exact
+prior single-list behaviour.
+
+Data (app-side, supplement): `Spell Conduit`, no argument, embedded into AlienHives, BlessedSisters,
+HighElfFleets, HumanInquisition, SaurianStarhost, SoulSnatcherCults. Corpus ledger 252 -> 243.
+
+Tests: `SpellConduitRuleIntegrationTests` (15) - who relays (nearby friendly yes; the conduit itself no;
+enemy no; past 12" no; Shaken no and recovering yes; destroyed no); reach extended to a target the caster
+can't reach; affinity still judged from the caster; the +1 on a relayed cast and NONE on a self-reached
+one (same board, same dice); relays-preferred when both origins reach; the no-conduit degrade; and the two
+visibility strings (picker note + per-target origin). `SpellConduitShippedDataTests` (5) pin the shipped
+JSON: one capability entry and nothing else, the 12"/+1 values, the Shaken condition, an end-to-end relay
+offer, and that every book referencing the rule embeds it. Engine 1991/1991, app 504/504.
+
+Mutation-checked, seven mutations each redding exactly its own test: dropping the relay bonus from the
+roll, measuring targeting from the caster instead of the origin, the ChooseAction reach ignoring relays,
+dropping the other-unit gate, flattening the target label, and taking the last viable origin instead of
+the first (relays-preferred). That last mutation initially survived - my tests only covered
+single-origin-reachable targets - so `WhenBothOriginsReachTheTarget_TheRelayIsPreferredForItsBonus` was
+added to close it.
+
+In play (headless scenario probe): an enemy 24" from the caster (outside its own 18" spell) but 14" from
+the conduit made Cast available where it otherwise would not be, and the log carried every visibility
+surface: the picker note, "Dummies (via Synaptic Relay, +1)", "casts Sky Blaze through Synaptic Relay
+(+1)", and "rolled 2, needed 3+ (base 4+, relay +1)".
+
 ## Slice: P23 Spell Accumulator — **DONE 2026-07-23** (7 of P23's 19 live refs)
 
 > "Gets X accumulator tokens at the start of each round, but can't hold more than 6 tokens at once.
@@ -939,7 +999,7 @@ Reference counts are corpus-wide (44 books). Primitive numbers are #100's.
 | 28 | ~~**P14b** spend-for-bonus markers~~ **DONE 2026-07-22** (28/28) | Two marker classes on the ENEMY unit, bonus kind in the token type (mirroring the roll-modifier trio): persistent (`Persistent{Hit,Ap}BonusMarker` — the Target family, counted every attack, never removed) and spendable (`Spendable{Hit,Ap}BonusMarker` — Tag/Spotter). **Owner-ruled 2026-07-22: the spend is PROMPTED, not auto-spent** — `TargetMarkerSpend` asks the attacking player how many to remove (a `StringSelectionRequest`, spend-all listed first so the CLI EOF default and the AI first-option fallback both take the aggressive default; zero-marker attacks never prompt), folded into `DetermineHitRollStage` (skipped while fatigued, like granted buffs) and `DetermineSaveRollsNeededStage` (+net raises the defender's threshold). Placement is data: `Activation_OnPreAttack` abilities over the existing `TargetSelector`/`Cost` machinery; Spotter's "on a 4+ place a marker" is the new `grantTokenOnRoll` effect (decisive die, `InvokeGrantTokenOnRoll` executable, ClearTokenOnRoll's mirror). Engine 1831/1831, `TargetBonusMarkerTests` (11). Engine `d0985e2`. | Precision Target (7), Piercing Tag (6), Precision Spotter (4), Piercing Spotter (4), Precision Tag (4), Piercing Target (3) |
 | 27 | ~~**P11** reflect damage~~ **DONE 2026-07-22** (27/27) | A post-melee reflect (write-up below): Retaliate (X hits per wound taken), Deathstrike (X hits per killed model), Self-Destruct (X per participating model + self-kill any survivor), all per-model attribution. | Retaliate (20) + Deathstrike (4) + Self-Destruct (3) DONE |
 | 24 | **P17** place / restore a unit | Create a unit or restore destroyed models mid-game. Touches deployment + table-state lifecycle + networking sync. | Spawn (14), Reinforcement (4), Reanimation Aura (3), Split (3) |
-| 21 | **P23** casting support — **Caster Group + Spell Accumulator DONE 2026-07-23** (10/19 live; Casting Buff shipped as a P6 rider) | Rides #034. Both shipped rules have write-ups above; Accumulator needed no new hook or stage, only the capability seam plus the shared `SpellPurse`. Remaining: the cast-origin relay (Conduit), signed off to fold into the spell picker rather than add a prompt. | Spell Conduit (9) remains; Spell Accumulator (7) + Caster Group (3) DONE, Casting Buff (2) done under P6 |
+| 21 | **P23** casting support — **DONE 2026-07-23 (19/19)** | Rides #034. Caster Group, Spell Accumulator and Spell Conduit all shipped on the capability seam (write-ups above); Casting Buff/Debuff landed under P6. Conduit relays the cast origin, no prompt - the origin is derived from the targets and made visible in the picker, the target rows, the banner and the roll breakdown. | Spell Conduit (9) + Spell Accumulator (7) + Caster Group (3) DONE; Casting Buff/Debuff (2+X) under P6 |
 | 20 | ~~**P6** deferred debuff token~~ **DONE 2026-07-23** (20/20, +3 riders) | **The row's premise was mostly wrong** - only 8 of the 20 refs needed a primitive. Four of the five rules ride seams that were already built AND already consumed (Morale/Save granted modifiers, the #153 movement-grant seam, Fortified's AP reduction on the Actor seat) and shipped as pure data. Only `Casting Debuff` had no carrier: new `ERollKind.Cast` + `TokenType.CastRollModifier`, folded into `CastSpellStage`'s threshold. See the P6 write-up above. | Casting Debuff (8), Morale Debuff (4), Piercing Debuff (3), Defense Debuff (3), Speed Debuff (2) DONE + riders Casting Buff (2), Speed Buff (1) |
 | 14 | **P8** apply terrain state to target | Force a Dangerous-terrain test / count as standing in terrain. Builds on `countAsInTerrain` + `ApplyNonMovementTerrainEffectsStage`. | Dangerous Terrain Debuff (11), Difficult Terrain Debuff (3) |
 | 12 | **P20** action-permission modifiers | (a) allow shooting after Rush; (b) "strikes last", the inverse of live `strikeFirst`. | Quick Shot Aura (5), Quick Shot Mark (4), Unwieldy Debuff (3) |
@@ -965,6 +1025,13 @@ Reference counts are corpus-wide (44 books). Primitive numbers are #100's.
 
 ## Notes
 
+- 2026-07-23: **P23 Spell Conduit DONE (9 refs) - P23 closed at 19/19.** The relay half is a new payload
+  on the capability seam (`EnableSpellRelay`), changing where a cast is measured from rather than lending
+  a resource; the gating half is Accumulator's exactly. Owner fork resolved by deriving the origin from
+  the chosen targets (a relay is never worse than casting unaided) and making it visible at every step -
+  picker note, per-target origin label, cast banner, roll breakdown - instead of adding a prompt. New
+  shared `CastSupport` neighbour scan (Accumulator + Conduit share the "other friendly unit in range"
+  test). Corpus dead count **252 -> 243**. See the write-up above.
 - 2026-07-23: **P23 Spell Accumulator DONE (7 refs)** — the first slice built entirely on the capability
   seam: no new hook, no new stage, the whole rule authored as two data entries. New `TokenType`
   (`AccumulatorTokens`, separate for a load-bearing reason), `Effect`/`RuleOperation.EnableSpellLending`,
