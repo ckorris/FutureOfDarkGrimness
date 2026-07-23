@@ -9514,6 +9514,48 @@
       "description": "Once per activation, before attacking, pick one enemy unit within 18\u0022 in line of sight, which gets -1 to morale test rolls once (next time the effect would apply)."
     },
     {
+      "name": "Mobile Artillery",
+      "passive": [
+        {
+          "hookID": "Shooting_OnHitRollModifier",
+          "condition": {
+            "kind": "and",
+            "left": {
+              "kind": "not",
+              "inner": {
+                "kind": "isMelee"
+              }
+            },
+            "right": {
+              "kind": "and",
+              "left": {
+                "kind": "not",
+                "inner": {
+                  "kind": "afterMoving"
+                }
+              },
+              "right": {
+                "kind": "attackedFromOverInches",
+                "distanceInches": 9
+              }
+            }
+          },
+          "effect": {
+            "kind": "rollModifier",
+            "rollKind": "Hit",
+            "delta": 1
+          },
+          "lifetime": "ThisAttack",
+          "seat": "Actor"
+        }
+      ],
+      "activated": [],
+      "scope": "Unit",
+      "engineArgumentCount": 0,
+      "valence": "Positive",
+      "description": "When this unit uses a Hold action and shoots at enemies over 9 inches away, it gets \u002B1 to hit rolls. As long as this unit hasn\u0027t moved during the round, when enemies shoot at it from over 9 inches away, they get -2 to hit rolls."
+    },
+    {
       "name": "Entrenched",
       "passive": [
         {
