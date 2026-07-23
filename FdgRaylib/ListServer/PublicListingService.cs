@@ -13,11 +13,6 @@ namespace FdgRaylib.ListServer;
 /// </summary>
 public sealed class PublicListingService : IDisposable
 {
-    // Mirrors CommandProtocol.TEMP_PORT (engine-internal). One hardcoded listen port is a known
-    // limitation tracked as #189; the listing API already carries the port so #189 slots in here
-    // without a wire change.
-    private const int GamePort = 6389;
-
     // The lobby has no explicit player cap today; 8 is the color-palette ceiling (#221) and serves
     // as the advertised capacity until a real cap exists.
     private const int AdvertisedMaxPlayers = 8;
@@ -26,6 +21,7 @@ public sealed class PublicListingService : IDisposable
 
     private readonly ILobbyViewModel _lobby;
     private readonly bool _hasPassword;
+    private readonly int _port;
     private readonly ListServerClient _client;
     private readonly CancellationTokenSource _cancel = new();
     private readonly object _stateLock = new();
@@ -39,10 +35,11 @@ public sealed class PublicListingService : IDisposable
     /// "List server unreachable"), for surfacing in the lobby UI. ASCII only.</summary>
     public string Status { get; private set; } = "Registering...";
 
-    public PublicListingService(ILobbyViewModel lobby, string listServerBaseUrl, bool hasPassword)
+    public PublicListingService(ILobbyViewModel lobby, string listServerBaseUrl, bool hasPassword, int port)
     {
         _lobby = lobby;
         _hasPassword = hasPassword;
+        _port = port;
         _client = new ListServerClient(listServerBaseUrl);
 
         // Flip the advertised state when the game launches; the browse tab greys in-game entries
@@ -75,7 +72,7 @@ public sealed class PublicListingService : IDisposable
                 {
                     lock (_stateLock) { _serverId = reply.ServerId; _token = reply.Token; }
                     Status = reply.Reachable == false
-                        ? $"Listed, but port {GamePort} looks unreachable from the internet - " +
+                        ? $"Listed, but port {_port} looks unreachable from the internet - " +
                           "players may not be able to join. See port forwarding help."
                         : "Listed publicly.";
                 }
@@ -113,7 +110,7 @@ public sealed class PublicListingService : IDisposable
 
         return new RegistrationPayload(
             Name: _lobby.ServerName,
-            Port: GamePort,
+            Port: _port,
             ProtocolVersion: NetworkProtocol.Version,
             TypeMapHash: NetworkProtocol.LocalTypeMapHash,
             HasPassword: _hasPassword,

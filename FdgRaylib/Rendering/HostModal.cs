@@ -1,4 +1,5 @@
 using System.Numerics;
+using FDG.Network;
 using FDG.Network.Connection;
 using FDG.Network.Connection.Lobby;
 using FdgRaylib.ListServer;
@@ -17,11 +18,12 @@ public class HostModal : IAppScreen
     private string _yourName      = "Mr. Host";
     private string _serverName    = "The Table";
     private string _password      = "";
+    private string _port          = NetworkProtocol.DefaultPort.ToString();
     private bool   _listPublicly  = false;
     private string _error         = "";
 
     private const float DialogWidthFraction  = 0.30f;
-    private const float DialogHeightFraction = 0.42f;
+    private const float DialogHeightFraction = 0.52f;
 
     public void Draw(int screenW, int screenH)
     {
@@ -62,6 +64,9 @@ public class HostModal : IAppScreen
         DrawLabeledInput("Server Name", ref _serverName, dw, scale);
         ImGui.SetCursorPosX(pad);
         DrawLabeledInput("Password",    ref _password,   dw, scale, ImGuiInputTextFlags.Password);
+        ImGui.SetCursorPosX(pad);
+        // Listen port (#189). Default 6389; players behind a fixed-port conflict can change it.
+        DrawLabeledInput("Port",        ref _port,       dw, scale);
 
         // Public listing (#264). Only offered when a list server is configured; hosting itself
         // never depends on the registry.
@@ -135,24 +140,33 @@ public class HostModal : IAppScreen
             _error = "Name and server name are required.";
             return false;
         }
+        // Ports below 1024 are privileged/reserved; reject them and non-numbers up front (#189).
+        if (!int.TryParse(_port.Trim(), out int port) || port < 1024 || port > 65535)
+        {
+            _error = "Port must be a number from 1024 to 65535.";
+            return false;
+        }
         _error = "";
         return true;
     }
 
     private void CreateServer()
     {
-        FDGHost host = new FDGHost();
+        int port = int.Parse(_port.Trim()); // Validated in Validate() before we get here.
+
+        FDGHost host = new FDGHost(port: port);
         _ = host.StartAsync();
 
         var viewModel = new LobbyViewModel_Host(_yourName, _serverName, _password, host);
 
-        // Start the public-listing heartbeat (#264) alongside the host. The password itself never
-        // leaves this machine — only a has-password flag is advertised.
+        // Start the public-listing heartbeat (#264) alongside the host, advertising the actual
+        // listen port (#189). The password itself never leaves this machine - only a has-password
+        // flag is advertised.
         PublicListingService? listing = null;
         if (_listPublicly && ListServerConfig.BaseUrl is string baseUrl)
         {
             listing = new PublicListingService(viewModel, baseUrl,
-                hasPassword: !string.IsNullOrEmpty(_password));
+                hasPassword: !string.IsNullOrEmpty(_password), port: port);
         }
 
         Reset();
@@ -164,6 +178,7 @@ public class HostModal : IAppScreen
         _yourName     = "Mr. Host";
         _serverName   = "The Table";
         _password     = "";
+        _port         = NetworkProtocol.DefaultPort.ToString();
         _listPublicly = false;
         _error        = "";
     }

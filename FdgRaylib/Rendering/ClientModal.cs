@@ -17,6 +17,7 @@ public class ClientModal : IAppScreen
 
     private string _yourName  = "Mrs. Client";
     private string _ipAddress = "127.0.0.1";
+    private string _port      = NetworkProtocol.DefaultPort.ToString();
     private string _password  = "";
     private string _status    = "";
     private bool   _isConnecting = false;
@@ -224,6 +225,7 @@ public class ClientModal : IAppScreen
     private void JoinListing(ServerListing listing)
     {
         _ipAddress = listing.Host;
+        _port = listing.Port.ToString(); // the browser join uses the advertised port (#189)
 
         if (listing.HasPassword)
         {
@@ -311,6 +313,10 @@ public class ClientModal : IAppScreen
         // Tailscale hostname couldn't be typed (QF10).
         DrawLabeledInput("Host Address", ref _ipAddress, dw, scale);
         ImGui.SetCursorPosX(pad);
+        // Connect port (#189). Matches the host's listen port; a browser join fills this in from the
+        // listing, so a manual entry is only needed for a direct connect to a non-default port.
+        DrawLabeledInput("Port", ref _port, dw, scale);
+        ImGui.SetCursorPosX(pad);
         DrawLabeledInput("Password", ref _password, dw, scale, ImGuiInputTextFlags.Password);
         ImGui.EndDisabled();
 
@@ -374,6 +380,12 @@ public class ClientModal : IAppScreen
             return;
         }
 
+        if (!int.TryParse(_port.Trim(), out int port) || port < 1024 || port > 65535)
+        {
+            _status = "Port must be a number from 1024 to 65535.";
+            return;
+        }
+
         _isConnecting = true;
         _status = "Resolving host...";
 
@@ -389,7 +401,7 @@ public class ClientModal : IAppScreen
             _status = "Attempting to connect...";
 
             FDGClient client = new();
-            bool connected = await client.ConnectAsync(ip).ConfigureAwait(false);
+            bool connected = await client.ConnectAsync(ip, port).ConfigureAwait(false);
             if (!connected)
             {
                 _status = "Failed to connect.";
@@ -459,6 +471,7 @@ public class ClientModal : IAppScreen
     {
         _yourName      = "Mrs. Client";
         _ipAddress     = "127.0.0.1";
+        _port          = NetworkProtocol.DefaultPort.ToString();
         _password      = "";
         _status        = "";
         _isConnecting  = false;

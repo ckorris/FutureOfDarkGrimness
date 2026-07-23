@@ -83,7 +83,7 @@ detection, host-IP display, DNS host entry. See `NetworkingHandoff-2026-07-08.md
 
 - [ ] 187 — Disconnect recovery: auto-save on `PlayerDisconnectedException` game-end + live-test #052's networked resume-rejoin. ([WorkItems/187](WorkItems/187-disconnect-recovery.md))
 - [ ] 188 — Multi-remote-client support: live-test 3+ players / 2+ remote clients (QF5 enabled it; roster/team/routing edge cases). ([WorkItems/188](WorkItems/188-multi-remote-client.md))
-- [ ] 189 — Broadcast gating (roster-only, not every connection) + configurable listen/connect port. ([WorkItems/189](WorkItems/189-broadcast-gating-configurable-port.md))
+- [~] 189 — Broadcast gating (roster-only) DONE + tested; configurable listen/connect port DONE (both modals, `NetworkProtocol.DefaultPort`, browser auto-fills from listing). Engine `46f387d`; awaiting GUI hand-verify of the port fields. ([WorkItems/189](WorkItems/189-broadcast-gating-configurable-port.md))
 - [ ] 190 — Networked clients never receive mid-game token updates (in-place `TokenContainer` mutations bypass the data-sync path; join snapshot only). ([WorkItems/190](WorkItems/190-networked-token-sync.md))
 - [~] 264 — Server browser: $0-tier master list server (Cloudflare Worker registry, TTL heartbeats) + "List publicly" host checkbox + browser-first join UI. P1-P3 implemented + verified locally 2026-07-23; remaining: deploy + default URL, lobby status surface, GUI hand-verify, live 2-machine test. ([WorkItems/264](WorkItems/264-server-browser.md))
 - [ ] 058 — (low) Migrate message/save serialization off Newtonsoft onto System.Text.Json; pure consolidation. ([WorkItems/058](WorkItems/058-stj-migration.md))
