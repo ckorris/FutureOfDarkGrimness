@@ -86,7 +86,6 @@ detection, host-IP display, DNS host entry. See `NetworkingHandoff-2026-07-08.md
 - [ ] 189 — Broadcast gating (roster-only, not every connection) + configurable listen/connect port. ([WorkItems/189](WorkItems/189-broadcast-gating-configurable-port.md))
 - [ ] 190 — Networked clients never receive mid-game token updates (in-place `TokenContainer` mutations bypass the data-sync path; join snapshot only). ([WorkItems/190](WorkItems/190-networked-token-sync.md))
 - [~] 264 — Server browser: $0-tier master list server (Cloudflare Worker registry, TTL heartbeats) + "List publicly" host checkbox + browser-first join UI. P1-P3 implemented + verified locally 2026-07-23; remaining: deploy + default URL, lobby status surface, GUI hand-verify, live 2-machine test. ([WorkItems/264](WorkItems/264-server-browser.md))
-- [ ] 265 — (security, high-impact) Untrusted content files (`.fdgarmy`/`.fdgsave`/terrain JSON) deserialize with permissive `$type` fallback - RCE-class if a stranger's file is opened; allowlist the binder before any file-sharing channel exists. ([WorkItems/265](WorkItems/265-untrusted-content-file-deserialization.md))
 - [ ] 058 — (low) Migrate message/save serialization off Newtonsoft onto System.Text.Json; pure consolidation. ([WorkItems/058](WorkItems/058-stj-migration.md))
 - [ ] 057 — (low) Make state-machine contexts store-backed/serializable so #052's `GameProgressData` mirror can be deleted; deferred for risk.
 - [ ] 054 — (low) Client-initiated save: host produces the `.fdgsave` on the client's behalf. Follow-up to #052.
