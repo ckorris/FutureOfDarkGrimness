@@ -26,7 +26,8 @@ public sealed class RuleGlossary
     private RuleGlossary(Dictionary<string, string> byName) => _byName = byName;
 
     /// <summary>An empty glossary (every lookup misses). For screens with no book in hand.</summary>
-    public static RuleGlossary Empty { get; } = new(new Dictionary<string, string>(StringComparer.Ordinal));
+    public static RuleGlossary Empty { get; } =
+        new(new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase));
 
     /// <summary>
     /// Core catalog first, then the book's embedded definitions overriding by name — the same
@@ -34,13 +35,15 @@ public sealed class RuleGlossary
     /// so what the tooltip describes is the definition that will actually fire in play.
     /// </summary>
     /// <remarks>
-    /// Lookup is case-SENSITIVE on purpose: the engine's <c>RuleResolver</c> is, so a book name that
-    /// differs from the catalog's only by case ("Bane in Melee" vs the catalog's "Bane in melee") really
-    /// is inert, and must read as unknown here rather than be quietly papered over with the right text.
+    /// Lookup is case-INSENSITIVE, matching <c>RuleResolver</c>'s own <c>OrdinalIgnoreCase</c> dictionary
+    /// (#100). The corpus is not consistent about casing - the books say "Bane in Melee" where the catalog
+    /// says "Bane in melee" - and the engine resolves those to the same rule, so the tooltip must describe
+    /// it rather than claim the rule does nothing. Same comparer as the resolver means the glossary is
+    /// silent exactly when army load would also fail to resolve the name.
     /// </remarks>
     public static RuleGlossary Build(BookFile? book)
     {
-        var byName = new Dictionary<string, string>(StringComparer.Ordinal);
+        var byName = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
         foreach (SpecialRuleDefinition definition in CoreRuleCatalog.All)
             byName[definition.Name] = definition.Description;
         if (book is not null)

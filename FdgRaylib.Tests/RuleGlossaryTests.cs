@@ -86,14 +86,45 @@ public class RuleGlossaryTests
         Assert.That(glossary.Describe("Silent Rule"), Is.Null);
     }
 
-    // The engine's RuleResolver is case-sensitive, so a book name that differs only by case genuinely does
-    // not resolve and is inert in play. The tooltip must report that, not paper over it with the right text.
+    // #260: the corpus is inconsistent about casing - the bundled books say "Bane in Melee" where the
+    // catalog says "Bane in melee" - and RuleResolver has matched case-insensitively since #100, so these
+    // rules DO fire in play. The glossary must describe them, not report them as inert.
     [Test]
-    public void Describe_IsCaseSensitive_LikeTheEnginesResolver()
+    public void Describe_IsCaseInsensitive_LikeTheEnginesResolver()
     {
         RuleGlossary glossary = RuleGlossary.Build(BookWith());
-        Assert.That(glossary.Describe("Bane in melee"), Is.Not.Null, "the catalog's spelling");
-        Assert.That(glossary.Describe("Bane in Melee"), Is.Null, "the books' spelling - inert in play");
+        foreach (string bookSpelling in new[]
+                 {
+                     "Bane in Melee", "Rending in Melee", "Shred in Melee",
+                     "Shred when Shooting", "Unstoppable in Melee",
+                 })
+            Assert.That(glossary.Describe(bookSpelling), Is.Not.Null, bookSpelling);
+    }
+
+    // The guard that keeps the two from drifting apart again: the glossary must be silent exactly when
+    // army load would also fail to resolve the name, so a tooltip never contradicts what the engine does.
+    [Test]
+    public void Describe_IsSilentExactlyWhenTheResolverCannotResolve()
+    {
+        RuleResolver resolver = CoreRuleCatalog.CreateResolver();
+        RuleGlossary glossary = RuleGlossary.Build(BookWith());
+
+        foreach (string name in new[]
+                 {
+                     "Stealth", "stealth", "STEALTH", "Bane in melee", "Bane in Melee",
+                     "Shred when Shooting", "Repel Ambushers", "Not A Rule At All",
+                 })
+            Assert.That(glossary.Describe(name) is not null, Is.EqualTo(resolver.TryResolve(name, out _)),
+                $"glossary and resolver disagree about '{name}'");
+    }
+
+    [Test]
+    public void Build_BookDefinition_OverridesCoreEvenWhenItsCasingDiffers()
+    {
+        // RegisterOrReplace overrides through the same case-insensitive dictionary at army load, so the
+        // glossary must not end up describing the core rule while the engine runs the book's version.
+        RuleGlossary glossary = RuleGlossary.Build(BookWith(Definition("Bane in Melee", "This book's own.")));
+        Assert.That(glossary.Describe("Bane in melee"), Is.EqualTo("This book's own."));
     }
 
     [Test]

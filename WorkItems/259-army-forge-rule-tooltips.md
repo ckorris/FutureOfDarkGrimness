@@ -2,8 +2,8 @@
 
 **Status**: in-progress (implemented + suite green; awaiting GUI hand-verify)
 **Related**: #151 (authored the `SpecialRuleDefinition.Description` field this reads), #153/#156 (the Forge
-itself), #241 (import modal's "rules not enforced by the engine" list — the same inert-rule set), #260
-(case-mismatched book rule names, split out of this work)
+itself), #241 (import modal's "rules not enforced by the engine" list — the same unimplemented-rule set),
+#260 (closed as not-a-defect; its investigation fixed this item's case-sensitivity bug)
 
 ## Goal
 
@@ -27,9 +27,13 @@ their rule names and tooltip them, with no regression to row selection or to cli
   - Upgrade option labels are free text from the imported book, so their rules are found by scanning — but
     only against the rules that option actually grants, never the whole ~316-name corpus, so an unrelated
     word can never light up.
-  - Coverage measured over all 47 bundled books before starting: ~94% of rule references resolve to a
-    description (1815/1936). The remainder are rules OPR emits that the engine does not implement.
+  - Coverage measured over all 47 bundled books: 94.3% of rule references resolve to a description
+    (1825/1936). The remainder are rules OPR emits that the engine does not implement.
   - Verified: `dotnet build` 0 errors; engine 1892/1892; app-side 445/445 (30 new); headless smoke exits 0.
+- 2026-07-23 (follow-up): **the glossary's case-sensitivity was a bug**, fixed. See #260 — `RuleResolver`
+  has been case-insensitive since #100, so the five book/catalog casing divergences resolve fine, and the
+  tooltip was wrongly reporting them as inert. The glossary now uses the resolver's `OrdinalIgnoreCase`
+  comparer, with a test pinning that the two agree name-for-name.
 
 ## Decisions
 
@@ -37,9 +41,10 @@ their rule names and tooltip them, with no regression to row selection or to cli
   description on every `SpecialRuleDefinition` for the granted-rule token hovers, and `BookRuleSupplement`
   already embeds the faction subset into each `.fdgbook`. The glossary was the only missing piece — no new
   data, and the tooltip necessarily agrees with what the engine will do.
-- **Case-sensitive lookup, deliberately.** The engine's `RuleResolver` is case-sensitive, so a book name
-  differing only by case really is inert. Matching it case-insensitively would have shown correct-looking
-  text for a rule that does nothing in play. Instead those read as unknown — which is how #260 surfaced.
+- **The glossary tracks `RuleResolver`'s lookup semantics** (case-insensitive, `OrdinalIgnoreCase`), so it
+  is silent exactly when army load would also fail to resolve a name and a tooltip can never contradict
+  what the engine does. This was initially built case-SENSITIVE on the strength of a stale doc comment —
+  see #260 for the correction and the regression guard.
 - **Unimplemented rules underline faintly and say so** (user sign-off, 2026-07-23) rather than rendering
   plain. Same fact the #241 import modal reports in bulk, now per rule at the point of use.
 - **Interactive controls keep their clickable label** (user sign-off, 2026-07-23). Re-drawing a radio's

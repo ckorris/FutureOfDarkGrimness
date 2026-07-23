@@ -58,7 +58,6 @@ Corpus coverage is a different story: 306 of 13,870 book rule references (2.2%) 
 - [~] 241 — Army Forge share-link importer: paste an army-forge.onepagerules.com share link -> preview -> .fdgarmy (engine `OprListImporter` + Forge-screen UI + `--import-army`); gates on OPR version 3.5.x. Points model corrected 2026-07-19 (per-unit `cost` is BASE, total comes from `listPoints` - imports were light); GUI modal still awaits hand-verify. ([WorkItems/241](WorkItems/241-army-forge-share-import.md))
 - [ ] 242 — Import campaign/narrative list features (XP, traits, campaign mode) that #241's importer warns about and drops. ([WorkItems/242](WorkItems/242-campaign-import-features.md))
 - [~] 259 — Special rules in the Forge are underlined and explain themselves on hover (all four rule-bearing surfaces), reading `SpecialRuleDefinition.Description` via a per-book glossary. Implemented + suite green; awaits GUI hand-verify. ([WorkItems/259](WorkItems/259-army-forge-rule-tooltips.md))
-- [ ] 260 — Five bundled-book rule names ("Bane in Melee" vs the catalog's "Bane in melee", +4) differ only by case, so the case-sensitive resolver drops them and they are inert in play. Fork between renaming, aliasing, or case-insensitive resolution needs sign-off. ([WorkItems/260](WorkItems/260-book-rule-names-case-mismatch.md))
 
 ## Victory & scoring
 

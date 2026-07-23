@@ -1,47 +1,51 @@
-# 260 — Five bundled-book rule names differ from the catalog only by case, so they never resolve
+# 260 — Five bundled-book rule names differ from the catalog only by case
 
-**Status**: todo (found, not fixed — needs a fork decision, and the likely fix is engine-side)
-**Related**: #259 (surfaced it — the rule-tooltip glossary reads these as unknown), #241 (its import modal
-already reports the same rules as "not enforced by the engine")
+**Status**: done — **not a defect**; the premise was wrong. The real bug it exposed was in #259's glossary,
+fixed here.
+**Related**: #259 (filed this, and carried the actual bug), #100 (made rule resolution case-insensitive)
 
-## Goal
+## Goal (as originally filed)
 
-A rule the bundled books put on a unit should fire in play. Done = these five names resolve at army load
-(or are deliberately, visibly declared unimplemented), with a lint test that fails if a bundled book ever
-again references a name that differs from a catalog/supplement name only by case.
-
-## Evidence (2026-07-23)
-
-`CoreRuleCatalog` spells these in sentence case; every bundled `.fdgbook` spells them in title case. The
-engine's `RuleResolver` is case-sensitive (documented on `CoreRuleCatalog.UnitAura`), and
-`ArmyListRuleResolution` skips a name it cannot resolve, so each of these is inert in play today:
-
-| Book spelling | Catalog spelling | Book references |
-|---|---|---|
-| `Bane in Melee` | `Bane in melee` | 8 |
-| `Rending in Melee` | `Rending in melee` | 3 |
-| `Shred when Shooting` | `Shred when shooting` | 3 |
-| `Unstoppable in Melee` | `Unstoppable in melee` | 2 |
-| `Shred in Melee` | `Shred in melee` | 1 |
-
-Neither `GdfRuleSupplement.json` nor any book's own `ruleDefinitions` defines the title-case spelling, and
-nothing normalizes case at import (`OprBookImporter`) or at load — checked both.
-
-Not to be confused with `Rending when shooting`, which the supplement defines in lower case and which does
-resolve.
-
-## Fork (needs sign-off before building)
-
-1. **Rename the catalog rules to title case** — engine change (submodule; needs explicit authorization),
-   touches integration tests that reference the names, and any saved army carrying the old spelling would
-   then stop resolving.
-2. **Add title-case aliases to the supplement** — app-side data only, no engine change, but leaves two
-   spellings live forever.
-3. **Case-insensitive resolution in `RuleResolver`** — fixes this whole class of drift at once; the widest
-   blast radius, and the case-sensitivity looks deliberate.
-
-Whichever wins, add the lint test (app-side, alongside `RuleSupplementLintTests`) so it cannot recur.
+Make five book rule names that differ from the catalog only by case resolve at army load, since they were
+believed to be silently inert in play.
 
 ## Outcome
 
-_(open)_
+**They already resolve. Nothing was inert.** `RuleResolver` backs its registry with a
+`Dictionary<string, SpecialRuleDefinition>(StringComparer.OrdinalIgnoreCase)` and has since engine commit
+`390ae86` ("#100: case-insensitive rule-name resolution"), so `Bane in Melee` resolves to the catalog's
+`Bane in melee`. Verified empirically against `CoreRuleCatalog.CreateResolver()` for all five names before
+changing anything. The three-way fork this item was opened to decide (rename / alias / case-insensitive
+resolution) is moot — option 3 shipped two years of commits ago.
+
+**What actually was broken:** #259's `RuleGlossary` was written case-SENSITIVE *on purpose*, on the
+strength of a stale doc comment, so the Forge tooltip told the user those five rules were "not enforced by
+the engine and do nothing in play" — false, and worse than showing nothing. Fixed by matching the
+resolver's comparer (`OrdinalIgnoreCase`), which also makes a book definition override a core rule of
+differing case exactly as `RegisterOrReplace` does at load.
+
+Regression guard added (`RuleGlossaryTests.Describe_IsSilentExactlyWhenTheResolverCannotResolve`): for a
+sample spanning casings, the divergent names, and genuine unknowns, the glossary must be silent exactly
+when `RuleResolver.TryResolve` fails. A tooltip can no longer contradict what the engine does.
+
+Corpus coverage restated with the right comparer: **94.3%** of book rule references resolve to a
+description (1825/1936), up from the 93.8% measured case-sensitively.
+
+## Decisions
+
+- **The source of the error was trusting a comment over the code.** `CoreRuleCatalog.UnitAura`'s doc block
+  still says "the resolver is case-sensitive" — written in `564e37b`, before #100 changed it. It is the
+  only place in the tree that asserts case sensitivity, and it is wrong. Left unfixed here because it is
+  submodule text and this session has no engine-change authorization; see the follow-up below.
+- **Matching the resolver's comparer is the invariant, not case-insensitivity per se.** The glossary's job
+  is to describe what will actually happen in play, so it should track `RuleResolver`'s lookup semantics
+  whatever they are. The new test pins the relationship rather than the current answer.
+
+## Follow-ups (not done here)
+
+1. **Stale comment in `CoreRuleCatalog.UnitAura`** (submodule, comment-only): delete the "the resolver is
+   case-sensitive" clause. It cost this session a wrongly-filed work item and a shipped-then-fixed UI bug.
+2. **`SpecialRuleRegistry.GetPickerEntries` uses `StringComparer.Ordinal`** for its override-by-name
+   dictionary while army load overrides case-insensitively. A book definition whose casing differs from
+   core would show as two entries in the freeform builder's rule picker but override at load. Pre-existing,
+   cosmetic, engine-side — worth its own item if the picker ever matters more.
