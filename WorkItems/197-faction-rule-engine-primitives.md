@@ -371,7 +371,7 @@ happened, so the mark-granted rule is invisible to the once-per-action resolver.
 resolver to also scan the DEFENDER for an Unpredictable-granting mark at action time - its own small slice.
 Left dead (not silently), tracked in the by-leverage table below.
 
-## Slice P10a: Ravage (auto-wound dice pool) — **DONE 2026-07-22** (31 refs)
+## Slice P10a: the auto-wound dice pool (Ravage + Crossing Attack) — **DONE 2026-07-22** (39 refs)
 
 **The reading that reshaped the slice:** P10's dead names split into two unrelated mechanics once the
 source text was checked (it is not stored in the repo - the book data carries only the name + numeric
@@ -410,6 +410,22 @@ Ravage is structurally **Impact with a threshold of 6 and the save skipped** - s
 - only the charger triggers the stage, mirroring Impact's charge-only scope. Its own small follow-up if
 the strike-back case matters in play.
 
+**Crossing Attack (8 refs, engine `3ee6896`)** reuses the same primitive on the movement trigger - it is
+Strafing but auto-wounds instead of hits. Shipped:
+- **`CrossingAttackStage`** (next to `StrafingStage` in the movement flow, right after it): same
+  move-through-enemy detection and YesNo offer, but it offers ONLY `DealAutoWounds` abilities and runs the
+  save-skipping `AssignWounds -> ApplyWounds` pipeline. `StrafingStage` was filtered to offer only
+  `DealHits` abilities, so the two never double-offer or double-charge a rule at the shared
+  `Movement_OnMoveThroughEnemy` hook.
+- **Arg threading:** Crossing Attack(X) is the FIRST activated ability whose effect reads
+  `ValueSource.Arg`. `ResolveAbility` previously passed empty arguments (a `// thread ... when one does`
+  TODO); `AbilityOffer` now carries the bearing rule's `Arguments` and `ResolveAbility` resolves against
+  them, so `DealAutoWounds(Arg(0))` reads the real X. Backward-compatible (the param defaults to null).
+- `CoreRuleCatalog.CrossingAttack` (fly-over passive + the ability, like Strafing); `RuleFireLint`
+  ability-hook arm extended. Tests: `CrossingAttackRuleIntegrationTests` (7) - offer + arg threading
+  (Crossing Attack(2) -> 2 dice), unsaveable wound through the real stage, Regeneration still applying,
+  decline, and the Strafing/Crossing offer-isolation split. Corpus dead **392 -> 384**.
+
 ## Slices — by leverage
 
 Reference counts are corpus-wide (44 books). Primitive numbers are #100's.
@@ -427,7 +443,7 @@ Reference counts are corpus-wide (44 books). Primitive numbers are #100's.
 | 60 | **P21** setup-phase re-deploy | Remove + re-place a unit during/after deployment. | Re-Deployment (27), Fanatic (19), Dash Aura (4), Ambush Re-Deployment (4), Dash (2), Mobile Artillery (2), Quick Readjustment (2) |
 | 59 | ~~**Darkborn** (#102 residual)~~ **DONE 2026-07-11** | It was **only the naming bug** - both mechanics were already built (the "per-target charge debuff doesn't exist" note was stale; #029/#183's `EffectiveChargeDistanceAgainst` powers it). The importer now disambiguates the bare `Darkborn` by army; books patched. See the Darkborn write-up above. | Darkborn (59) |
 | 53 | ~~**P15** randomized-branch effect~~ **DONE 2026-07-11** (48/53) | Decisive per-attack-action die (Option A), once per action, threaded via a new `IHasUnpredictableBranch` capability. See the P15 write-up above. **The 2 Mark variants (5 refs) are deferred** - a mark grants after the action-level roll. | Unpredictable Fighter (26), Unpredictable Fighter Aura (11), Unpredictable (5), Unpredictable Shooter Aura (5), Unpredictable Shooter (1) done; Unpredictable Fighter Mark (3) + Unpredictable Shooter Mark (2) deferred |
-| 44 | **P10** dice-pool -> hits / auto-wounds (Ravage DONE 2026-07-22, 31/44) | It is TWO primitives, not one: an AUTO-WOUND pool (Ravage, Crossing Attack - roll X, each 6+ a direct unsaveable wound) and a rolled HIT-count (Storm of X - roll 3, each 2+ deals 3 hits with a rule). Ravage shipped (see write-up below); Crossing Attack (8, same primitive, movement trigger) and Storm (5, rides pre-attack + #164 fold) remain. | Ravage (31) DONE; Crossing Attack (8) + Storm of Lust (2)/Change (1)/Plague (1)/War (1) open |
+| 44 | **P10** dice-pool -> hits / auto-wounds (auto-wound half DONE 2026-07-22, 39/44) | It is TWO primitives, not one: an AUTO-WOUND pool (Ravage, Crossing Attack - roll X, each 6+ a direct unsaveable wound) and a rolled HIT-count (Storm of X - roll 3, each 2+ deals 3 hits with a rule). The auto-wound half shipped in full - Ravage (melee) + Crossing Attack (movement) (see write-up below). Only Storm (5, rides the pre-attack + #164 hit fold) remains. | Ravage (31) + Crossing Attack (8) DONE; Storm of Lust (2)/Change (1)/Plague (1)/War (1) open |
 | 41 | ~~**P13** marker-scaled magnitude~~ **DONE 2026-07-22** (41/41) | Shipped WITHOUT touching `ValueSource` (its context-free `Resolve` stays pure): new effects `tokenScaledRollModifier` / `tokenScaledReduceArmorPenetration` read the bearer's token count at Apply time (steps = count / perMarkers, Fortified's read-side `maxReduction` cap), `GrantToken` gained a grant-time `maxTotal` clamp (the "up to a max. of X markers" clause, spell-token-cap pattern), `ReconcileObjectivesStage` now fires `Round_OnRoundEnd` rules for every living unit before the token sweep (new `RoundEndContext`, reflection-registered), and both Shaken-application sites clear `CustomHook(Morale_OnShakenApplied)` tokens (Fortified's lose-all-on-Shaken, pure data). "On the table" composes from existing conditions: `not(InReserve) and not(EmbarkedIn) and not(OffTableFromForcedMove)`. Authored behind `tokenPresent(marker, minCount: perMarkers)` so RuleFireLint's existing token seeding proves each entry fires. 8 definitions (incl. support base `Defensive Growth`); engine 1820/1820, `TokenScaledMarkerTests` (9, incl. a real-stage round-end firing pin per the #196 consumption lesson). Engine `2efc06e`. | Piercing Frenzy (9), Defensive Frenzy (8), Piercing Growth (6), Precision Frenzy (6), Fortified Growth (6), Precision Growth (5), Defensive Growth Aura (1) |
 | 28 | ~~**P14b** spend-for-bonus markers~~ **DONE 2026-07-22** (28/28) | Two marker classes on the ENEMY unit, bonus kind in the token type (mirroring the roll-modifier trio): persistent (`Persistent{Hit,Ap}BonusMarker` — the Target family, counted every attack, never removed) and spendable (`Spendable{Hit,Ap}BonusMarker` — Tag/Spotter). **Owner-ruled 2026-07-22: the spend is PROMPTED, not auto-spent** — `TargetMarkerSpend` asks the attacking player how many to remove (a `StringSelectionRequest`, spend-all listed first so the CLI EOF default and the AI first-option fallback both take the aggressive default; zero-marker attacks never prompt), folded into `DetermineHitRollStage` (skipped while fatigued, like granted buffs) and `DetermineSaveRollsNeededStage` (+net raises the defender's threshold). Placement is data: `Activation_OnPreAttack` abilities over the existing `TargetSelector`/`Cost` machinery; Spotter's "on a 4+ place a marker" is the new `grantTokenOnRoll` effect (decisive die, `InvokeGrantTokenOnRoll` executable, ClearTokenOnRoll's mirror). Engine 1831/1831, `TargetBonusMarkerTests` (11). Engine `d0985e2`. | Precision Target (7), Piercing Tag (6), Precision Spotter (4), Piercing Spotter (4), Precision Tag (4), Piercing Target (3) |
 | 27 | **P11** reflect damage | On-wound-taken / on-death hook + deal-hits-at-attacker. | Retaliate (20), Deathstrike (4), Self-Destruct (3) |
@@ -457,6 +473,13 @@ Reference counts are corpus-wide (44 books). Primitive numbers are #100's.
 
 ## Notes
 
+- 2026-07-22: **P10a Crossing Attack shipped** (8 refs; engine `3ee6896`), completing the auto-wound half
+  of P10 (Ravage + Crossing = 39/44). Reuses Ravage's `DealAutoWounds` primitive on the movement trigger:
+  a new `CrossingAttackStage` beside `StrafingStage`, each filtering offers to its own effect type
+  (`DealHits` vs `DealAutoWounds`) so they don't cross-consume. Also threaded activated-ability arguments
+  through `ResolveAbility` (Crossing Attack(X) is the first arg-driven ability) - a small, backward-
+  compatible `AbilityOffer.Arguments` addition. Only Storm of X (5, rolled hit-count) remains in P10.
+  Corpus dead **392 -> 384**. See the P10a write-up above.
 - 2026-07-22: **P10a Ravage shipped** (31 refs; engine `1340496`). Building the slice surfaced that P10
   is two primitives, not one - an auto-wound pool (Ravage, Crossing Attack) and a rolled hit-count (Storm
   of X) - because the source text (off-repo, not in the book data) reads "takes one wound" for the first
