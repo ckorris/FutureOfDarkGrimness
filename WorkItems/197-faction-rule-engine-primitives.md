@@ -1058,6 +1058,57 @@ ops today; no executable runs there). That is a wound-subsystem hook, not a smal
 own slice. **Balance note: until it lands, Hazardous is upside-only** (AP with no self-harm). Corpus dead
 **227 -> 212** (name resolves; self-wound arm partial).
 
+**Speed Feat (4 refs) - DONE 2026-07-23 (engine `82cdea7`, super `a413385`).** "Once per game, when this
+unit moves ... you may move +2in on Advance / +4in on Rush/Charge." **Engine change:** `ActivationStartStage`
+now offers a SINGLE-ability activation-start rule as an optional Yes/No (declining saves it), mirroring
+`DeployUnitStage`; multi-ability rules stay a mandatory pick. Safe because all 4 existing activation-start
+rules are multi-ability. Data: `Speed Feat` (once-per-game ability granting `Speed Feat Boost` for the
+activation), `Speed Feat Boost` (3 movementBonus entries), `Speed Feat Aura`, into OrcMarauders. Fork
+(surfaced): offered at activation start (brace-your-moves) rather than a per-move prompt. Tests: engine
+`SpeedFeatRuleIntegrationTests` (3), app `SpeedFeatShippedDataTests` (3). Dead **212 -> 208**. `Speed Feat
+Buff` (1, a spell-buff variant) still open.
+
+**Protection Feat (9 refs) - DONE 2026-07-23 (app-side `6dabbc7`, engine test `893e76b`/`daea39b`).** "Once
+per game, when this unit takes wounds ... you may roll one die per wound, ignoring each on a 5+." **No engine
+change** - reuses Speed Feat's optional-activation machinery + Regeneration's `IgnoreWoundOnRoll`. Fork
+(surfaced): a reactive wound-stage prompt would need new interactive infra in the hot combat path (and
+`SaveRollCompleteContext` in `AssignWoundsStage` doesn't apply token ops, so a token-consume auto-use model
+also needs an engine change AND wastes charges on all-saved attacks). Modelled instead as a **proactive
+optional brace**: a once-per-game Yes/No at activation start granting an `UntilNextActivation` roll-per-wound
+5+ ignore that covers the opponent's turn. Effect faithful (once-per-game, per-wound 5+, all-models,
+optional); only the timing shifts reactive -> brace-in-advance. Into SaurianStarhost + RobotLegions. Tests:
+engine `ProtectionFeatRuleIntegrationTests` (3), app `ProtectionFeatShippedDataTests` (3). Dead **208 -> 199**.
+
+**Instinctive (4 refs) - DEFERRED 2026-07-23 (recorded + flagged, not built).** "When activated, if able to
+shoot/charge an enemy, this model MUST immediately attack the CLOSEST valid target and gets +1 to hit for
+that attack." The defining mechanic is **forced target selection** (must attack the closest), which
+`RestrictActions` cannot express (it gates action TYPES - Advance/Rush/Charge/Hold - not targets) and which
+would need to override both the human Choose-Action/target flow AND the AI target resolver - genuinely
+feature-sized. Shipping only the +1-to-hit rider would invert the rule's character (a mindless compelled
+creature becomes a pure buff), so it was NOT shipped buff-only. Filed for its own slice.
+
+### Re-filed OUT of Misc into their own slices (surfaced 2026-07-23, not built here)
+
+Per the triage, three "misc" rules are not small primitives and are re-filed:
+- **Repel Ambushers (24)** - "enemy Ambush must set up >12in from this unit." A cross-unit Ambush-arrival
+  keep-away constraint, the sibling of `Ambush Beacon` in the open **P22 Ambush variants** slice (same seam:
+  Ambush arrival consulting other units' rules). Build with P22.
+- **Inquisitorial Agent (20)** - once-per-game self-`reactivate` (the effect exists) PLUS an army-wide "up to
+  one third of units with this rule, rounding up, per round" quota - novel army-global state. Own slice.
+- **Extended Buff Range (9)** - relay non-spell Hero picks across 24in via another friendly unit with the
+  rule. A relational aura-relay (generalized Spell Conduit for non-spell "pick friendly within 12in" rules).
+  Own slice.
+
+### Misc slice outcome (2026-07-23)
+
+Shipped or partially shipped 10 of the 13 triaged rules; corpus dead **243 -> 199** (-44). New primitives:
+`MostModelsWithinInchesOfTerrain` + `IHasTerrain`, `WeaponHasRule`, `ChargeImpactHits` AP, optional
+single-ability activation-start abilities. Deferred sub-arms / rules with recorded reasons + owner flags:
+Mobile Artillery defensive arm (moved-this-round state), Hazardous self-wound (mid-attack wound subsystem;
+**Hazardous is upside-only until then**), Instinctive (forced target selection). Re-filed: Repel Ambushers,
+Inquisitorial Agent, Extended Buff Range. Still open in Misc: Speed Feat Buff (1), and the untouched-this-pass
+tail (Grounded auras all done; Screened done). Engine 2023/2023, app 548/548, smokes exit 0.
+
 ## Slices — by leverage
 
 Reference counts are corpus-wide (44 books). Primitive numbers are #100's.
