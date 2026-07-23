@@ -13,6 +13,16 @@ The harder pieces are the **target-perspective** debuffs — "enemies get −N m
 (Melee Shrouding, defensive Darkborn) — and the bundle rules Aircraft / Flying.
 
 ## Notes
+- 2026-07-22: **Aircraft "must move each turn" obligation enforced (follow-up).** The forced-move machinery
+  existed, but `ChooseActionStage` still offered Shoot and Pass on a *pristine* Aircraft activation, so an
+  Aircraft could shoot-without-moving or idle in place - violating "Aircraft may only Advance, and must move
+  each turn." Fix: `GetCanShoot` / `GetCanPass` now gate on `!HasMoved && AircraftRules.IsAircraft` -> only
+  Move (+ Back) is offered until the forced Advance completes; Shoot/Pass unlock afterward. Charge was already
+  correctly gated by the existing `RestrictActions([Advance])` hook. Both bots verified end-to-end: AI's
+  `ChooseAction` prioritises Move (the only option) then `AiAircraftAdvanceResolver` flies it; CLI EOF default
+  takes the first valid option (Move) then `AircraftAdvanceResolver` flies it - no resolver changes needed.
+  Tests: 3 new in `ForcedAircraftMoveTests` (pristine=Move-only, post-move unlocks Shoot+Pass, GetCanPass
+  gate); full engine suite green (1844); AI-vs-CLI aircraft scenario ran a 4-round game, exit 0, no faults.
 - 2026-07-01: **Aircraft UX pass (hand-verification findings + user-requested rework).** Rule text verified
   against the OPR wiki: *"Aircraft may only use Advance actions, moving in a straight line by 30"-36" without
   turning. If it moves off-table, its activation ends, and it must be deployed on any table edge at the

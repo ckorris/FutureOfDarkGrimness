@@ -116,7 +116,7 @@
             {
               "id": "grMJt",
               "label": "Shaman (Caster(2))",
-              "cost": 40,
+              "cost": 30,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -138,7 +138,7 @@
             {
               "id": "kxI3l",
               "label": "Hunt Master (Ranged Shrouding Aura)",
-              "cost": 25,
+              "cost": 35,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -238,7 +238,7 @@
             {
               "id": "BN-UP",
               "label": "Harpoon (A3, Thrust)",
-              "cost": 5,
+              "cost": -5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -360,7 +360,7 @@
             {
               "id": "cvR41s79",
               "label": "Satellite Backpack (Repel Ambushers)",
-              "cost": 10,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -543,7 +543,7 @@
             {
               "id": "Q3uGZdY",
               "label": "Explosive Spear (A3, AP(2))",
-              "cost": 20,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -562,7 +562,7 @@
             {
               "id": "pEzTUFc",
               "label": "Harpoon (A3, Thrust)",
-              "cost": 10,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -610,7 +610,7 @@
             {
               "id": "W714SZq",
               "label": "Goad-Spear (A3, Precise, Shatter)",
-              "cost": 5,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -695,7 +695,7 @@
             {
               "id": "NPbACac",
               "label": "Elite Hunting Rifle (24\u0022, A1, Reliable, Shatter, Takedown)",
-              "cost": 30,
+              "cost": 35,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -766,7 +766,7 @@
             {
               "id": "g5a5mtt",
               "label": "Jagged Hook (A1, AP(2), Deadly(3))",
-              "cost": 15,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -888,7 +888,7 @@
             {
               "id": "7fZiX5K4",
               "label": "Shaman (Caster(2))",
-              "cost": 40,
+              "cost": 30,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -910,7 +910,7 @@
             {
               "id": "Rm1ZPt1w",
               "label": "Hunt Master (Ranged Shrouding Aura)",
-              "cost": 25,
+              "cost": 35,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -989,7 +989,7 @@
             {
               "id": "cvR41s79",
               "label": "Satellite Backpack (Repel Ambushers)",
-              "cost": 10,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -1163,7 +1163,7 @@
             {
               "id": "bUJ1tl-",
               "label": "Scrap Pistol (12\u0022, A1), CCW (A2)",
-              "cost": 15,
+              "cost": 0,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -1252,7 +1252,7 @@
             {
               "id": "XjfTraC",
               "label": "Force Blaster (24\u0022, A1, AP(4))",
-              "cost": 5,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -1271,7 +1271,7 @@
             {
               "id": "ynOJ40m",
               "label": "Power Spiker (18\u0022, A2, Rending)",
-              "cost": 5,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -1353,7 +1353,7 @@
             {
               "id": "Jt6y7B7",
               "label": "Hunting Rifle (24\u0022, A1, Reliable, Shatter, Takedown)",
-              "cost": 30,
+              "cost": 35,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -1397,7 +1397,7 @@
             {
               "id": "MAzU_mSs",
               "label": "Satellite Backpack (Repel Ambushers)",
-              "cost": 10,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -1702,7 +1702,7 @@
             {
               "id": "Fk4KScM",
               "label": "Heavy Shred Rifle (18\u0022, A2, AP(1), Rending)",
-              "cost": 5,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -1726,7 +1726,7 @@
             {
               "id": "C-mkPJ0",
               "label": "Heavy Plasma Rifle (30\u0022, A1, AP(4))",
-              "cost": 10,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -1745,7 +1745,7 @@
             {
               "id": "CLjKAWt",
               "label": "Heavy Flamer (12\u0022, A1, AP(1), Blast(3), Reliable)",
-              "cost": 10,
+              "cost": 20,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -1774,7 +1774,7 @@
             {
               "id": "CkWfS5C",
               "label": "Missile Launcher (30\u0022, A1, AP(2), Deadly(3), Unstoppable)",
-              "cost": 45,
+              "cost": 35,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -1815,7 +1815,7 @@
             {
               "id": "MAzU_mSs",
               "label": "Satellite Backpack (Repel Ambushers)",
-              "cost": 10,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -1929,7 +1929,7 @@
             {
               "id": "LNQJk",
               "label": "Explosive Spear (A2, AP(2))",
-              "cost": 40,
+              "cost": 20,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -1962,7 +1962,7 @@
             {
               "id": "a8CET",
               "label": "Energy Rifle (24\u0022, A1, AP(1))",
-              "cost": 35,
+              "cost": 45,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -2038,7 +2038,7 @@
             {
               "id": "9Iy_Rqy",
               "label": "Hunting Shotgun (9\u0022, A2, Shatter)",
-              "cost": 5,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -2158,7 +2158,7 @@
             {
               "id": "ALsE8",
               "label": "Jagged Hook (A1, AP(2), Deadly(3))",
-              "cost": 15,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -2288,7 +2288,7 @@
             {
               "id": "MAzU_mSs",
               "label": "Satellite Backpack (Repel Ambushers)",
-              "cost": 10,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -2575,7 +2575,7 @@
             {
               "id": "bh_sNTx",
               "label": "Harpoon (A2, Thrust)",
-              "cost": 5,
+              "cost": 0,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -2769,7 +2769,7 @@
             {
               "id": "MAzU_mSs",
               "label": "Satellite Backpack (Repel Ambushers)",
-              "cost": 10,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -2907,7 +2907,7 @@
             {
               "id": "WYJMZwL",
               "label": "Harpoon Launcher (12\u0022, A1, AP(4), Deadly(6))",
-              "cost": 40,
+              "cost": 45,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -2932,7 +2932,7 @@
             {
               "id": "nSIh3fI",
               "label": "Spear Launcher (12\u0022, A6, AP(2))",
-              "cost": 45,
+              "cost": 50,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -2984,7 +2984,7 @@
             {
               "id": "ymHwUtP",
               "label": "Brutal Charge (Impact(6))",
-              "cost": 30,
+              "cost": 35,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -3133,7 +3133,7 @@
             {
               "id": "sb7CVLc",
               "label": "Heavy Energy Cannon (36\u0022, A3, AP(4), Deadly(6))",
-              "cost": 5,
+              "cost": 70,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -3343,7 +3343,7 @@
             {
               "id": "QSSOu",
               "label": "Heavy Machinegun (30\u0022, A3, AP(1))",
-              "cost": 40,
+              "cost": 45,
               "costUnpriced": false,
               "weaponsGained": [
                 {

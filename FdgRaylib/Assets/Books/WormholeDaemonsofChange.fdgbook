@@ -119,7 +119,7 @@
             {
               "id": "hvyqJoG",
               "label": "Exalted Power Spear (A3, AP(1), Deadly(3), Shred)",
-              "cost": -10,
+              "cost": 35,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -200,7 +200,7 @@
             {
               "id": "14nS6",
               "label": "Exalted Magic Blast (12\u0022, A12, Shred)",
-              "cost": 5,
+              "cost": 45,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -224,7 +224,7 @@
             {
               "id": "CWCaqx4",
               "label": "Exalted Power Gauntlet (A9, AP(3), Shred)",
-              "cost": 65,
+              "cost": 105,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -508,7 +508,7 @@
             {
               "id": "rej8Nod",
               "label": "Great Power Spear (A2, AP(1), Deadly(3), Shred)",
-              "cost": -5,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -561,7 +561,7 @@
             {
               "id": "ZQkfU",
               "label": "Great Magic Blast (12\u0022, A8, Shred)",
-              "cost": 5,
+              "cost": 20,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -869,7 +869,7 @@
             {
               "id": "DShv5BG",
               "label": "Power Spear (A1, AP(1), Deadly(3), Shred)",
-              "cost": -5,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -974,7 +974,7 @@
             {
               "id": "8IfRQ",
               "label": "Magic Blast (12\u0022, A4, Shred)",
-              "cost": 0,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -998,7 +998,7 @@
             {
               "id": "Stf-yjZ",
               "label": "Heavy Power Gauntlet (A3, AP(3), Shred)",
-              "cost": 15,
+              "cost": 25,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -1068,7 +1068,7 @@
             {
               "id": "svDYy",
               "label": "Wings (Flying)",
-              "cost": 15,
+              "cost": 20,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -1335,7 +1335,7 @@
             {
               "id": "-pR2v",
               "label": "Power Spear (A1, AP(1), Deadly(3), Shred), Staff (A1, Shred)",
-              "cost": -5,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -1937,7 +1937,7 @@
             {
               "id": "DXVRl",
               "label": "Power Spear (A1, AP(1), Deadly(3), Shred), Staff (A1, Shred)",
-              "cost": -5,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -2350,7 +2350,7 @@
             {
               "id": "EarM1",
               "label": "Power Spear (A1, AP(1), Deadly(3), Shred), Staff (A1, Shred)",
-              "cost": -5,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -2780,7 +2780,7 @@
             {
               "id": "8kxkNy_",
               "label": "Banner",
-              "cost": 15,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [
@@ -2852,7 +2852,7 @@
             {
               "id": "vol24hM",
               "label": "Spear (A1, Counter, Shred)",
-              "cost": 25,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -3096,7 +3096,7 @@
             {
               "id": "8kxkNy_",
               "label": "Banner",
-              "cost": 15,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [
@@ -3451,7 +3451,7 @@
             {
               "id": "8kxkNy_",
               "label": "Banner",
-              "cost": 15,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [
@@ -4149,7 +4149,7 @@
             {
               "id": "j4xCv",
               "label": "Heavy Change Axe (A12, AP(2), Shred)",
-              "cost": 20,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [
                 {

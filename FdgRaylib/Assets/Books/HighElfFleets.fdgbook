@@ -141,7 +141,7 @@
             {
               "id": "cg-mpiM",
               "label": "Master Shard Carbine (18\u0022, A3, Crack)",
-              "cost": 20,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -165,7 +165,7 @@
             {
               "id": "i5bHXFP",
               "label": "Master Laser Blaster (18\u0022, A2, AP(2))",
-              "cost": 10,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -213,7 +213,7 @@
             {
               "id": "wJlyPOX",
               "label": "Great Fusion Axe (12\u0022, A1, AP(4), Deadly(3))",
-              "cost": 15,
+              "cost": 20,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -238,7 +238,7 @@
             {
               "id": "VuwodlW",
               "label": "Master Web Spinner (12\u0022, A3, AP(4))",
-              "cost": 20,
+              "cost": 30,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -292,7 +292,7 @@
             {
               "id": "UyaM0",
               "label": "Master Sniper Rifle (30\u0022, A2, AP(1), Reliable, Takedown)",
-              "cost": 65,
+              "cost": 50,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -320,7 +320,7 @@
             {
               "id": "Q1cOZlA",
               "label": "Impact Rockets (30\u0022, A1, AP(3), Deadly(3)), Vanquisher Leader (Relentless)",
-              "cost": 50,
+              "cost": 55,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -463,7 +463,7 @@
             {
               "id": "3WWP1",
               "label": "Master Stinger Blade (A3, Reliable, Bane)",
-              "cost": 20,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -557,7 +557,7 @@
             {
               "id": "O0gOJ",
               "label": "Stinger Leader (Scout, Stealth)",
-              "cost": 15,
+              "cost": 20,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -612,7 +612,7 @@
             {
               "id": "vS8WiQS",
               "label": "Glider Leader (Ambush, Crossing Attack(1), Flying)",
-              "cost": 15,
+              "cost": 25,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -642,7 +642,7 @@
             {
               "id": "IO6jvVd",
               "label": "Shifter Leader (Ambush, Teleport)",
-              "cost": 25,
+              "cost": 30,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -807,7 +807,7 @@
             {
               "id": "0RGgR",
               "label": "High Oracle (Caster(2))",
-              "cost": 40,
+              "cost": 50,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -829,7 +829,7 @@
             {
               "id": "M-7Wbqi",
               "label": "Master High Oracle (Caster(3))",
-              "cost": 60,
+              "cost": 80,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -986,7 +986,7 @@
             {
               "id": "cg-mpiM",
               "label": "Master Shard Carbine (18\u0022, A3, Crack)",
-              "cost": 20,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -1102,7 +1102,7 @@
             {
               "id": "OdGNYcF",
               "label": "Surge Rockets (24\u0022, A3, AP(1), Unstoppable), Vanquisher Leader (Relentless)",
-              "cost": 40,
+              "cost": 35,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -1137,7 +1137,7 @@
             {
               "id": "UyaM0",
               "label": "Master Sniper Rifle (30\u0022, A2, AP(1), Reliable, Takedown)",
-              "cost": 65,
+              "cost": 55,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -1165,7 +1165,7 @@
             {
               "id": "Q1cOZlA",
               "label": "Impact Rockets (30\u0022, A1, AP(3), Deadly(3)), Vanquisher Leader (Relentless)",
-              "cost": 50,
+              "cost": 45,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -1264,7 +1264,7 @@
             {
               "id": "xhJ7j1l",
               "label": "Killing Axe (A1, AP(2), Deadly(3))",
-              "cost": 15,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -1613,7 +1613,7 @@
             {
               "id": "8PxpsKiu",
               "label": "High Oracle (Caster(2))",
-              "cost": 40,
+              "cost": 50,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -1737,7 +1737,7 @@
             {
               "id": "W8n42LJ",
               "label": "Jetbike (Mounted Shardguns (12\u0022, A2, Crack), Fast, Strider, Tough(3))",
-              "cost": 130,
+              "cost": 125,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -1873,7 +1873,7 @@
             {
               "id": "eqqJZow",
               "label": "Gun Platform (Missile Launcher (30\u0022, A1, AP(2), Deadly(3), Unstoppable))",
-              "cost": 40,
+              "cost": 30,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -1908,7 +1908,7 @@
             {
               "id": "A7GSjCU",
               "label": "Gun Platform (Burst Laser (30\u0022, A3, AP(2)))",
-              "cost": 25,
+              "cost": 40,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -1933,7 +1933,7 @@
             {
               "id": "SsRYM4Q",
               "label": "Gun Platform (Laser Cannon (36\u0022, A1, AP(3), Deadly(3)))",
-              "cost": 40,
+              "cost": 45,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -1964,7 +1964,7 @@
             {
               "id": "Qo0Pmx7",
               "label": "Gun Platform (Shatter Cannon (36\u0022, A3, AP(1), Rending))",
-              "cost": 40,
+              "cost": 50,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -2089,7 +2089,7 @@
             {
               "id": "zeRBFZl",
               "label": "Fusion Rifle (12\u0022, A1, AP(4), Deadly(3))",
-              "cost": 15,
+              "cost": 20,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -2128,7 +2128,7 @@
             {
               "id": "REOgiUy",
               "label": "Energy Sword (A2, AP(1), Rending)",
-              "cost": 5,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -2164,7 +2164,7 @@
             {
               "id": "YoNqH",
               "label": "Hologram Platform (Stealth Aura)",
-              "cost": 10,
+              "cost": 25,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -2340,7 +2340,7 @@
             {
               "id": "50tnOTQ",
               "label": "Shard Pistol (12\u0022, A1, Crack), Dire Sword (A1, Blast(3)), Sgt. Armor (Shielded)",
-              "cost": -5,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -2389,7 +2389,7 @@
             {
               "id": "MfHsG",
               "label": "Shard Pistol (12\u0022, A1, Crack), Energy Sword (A2, AP(1), Rending), Sgt. Armor (Shielded)",
-              "cost": 0,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -2613,7 +2613,7 @@
             {
               "id": "b41kBHz",
               "label": "Laser Pistol (9\u0022, A1, AP(2)), Energy Sword (A2, AP(1), Rending)",
-              "cost": 5,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -2645,7 +2645,7 @@
             {
               "id": "eMSic",
               "label": "Shred Blaster Pistol (12\u0022, A2, Rending), Energy Sword (A2, AP(1), Rending)",
-              "cost": 10,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -2696,7 +2696,7 @@
             {
               "id": "PYxxg",
               "label": "Heavy Laser Blaster (18\u0022, A3, AP(2))",
-              "cost": 20,
+              "cost": 35,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -2715,7 +2715,7 @@
             {
               "id": "pJX7g",
               "label": "Shred Blaster (24\u0022, A4, Rending)",
-              "cost": 45,
+              "cost": 50,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -3169,7 +3169,7 @@
             {
               "id": "tFc3nCs",
               "label": "Dual Energy Swords (A4, AP(1), Rending)",
-              "cost": 10,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -3343,7 +3343,7 @@
             {
               "id": "to_o1D-",
               "label": "Spinner Carbine (18\u0022, A2, AP(4))",
-              "cost": 10,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -3486,7 +3486,7 @@
             {
               "id": "Ocn1J",
               "label": "Fusion Rifle (12\u0022, A1, AP(4), Deadly(3))",
-              "cost": 10,
+              "cost": 20,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -3525,7 +3525,7 @@
             {
               "id": "HolmHJ3",
               "label": "Fusion Pike (18\u0022, A1, AP(4), Deadly(3))",
-              "cost": 20,
+              "cost": 25,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -3713,7 +3713,7 @@
             {
               "id": "ES8Gf",
               "label": "Impact Rockets (30\u0022, A1, AP(3), Deadly(3))",
-              "cost": 10,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -3752,7 +3752,7 @@
             {
               "id": "YpkLio0",
               "label": "Shard Cannon (24\u0022, A3, AP(1), Crack)",
-              "cost": 0,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -3776,7 +3776,7 @@
             {
               "id": "ND-fpEp",
               "label": "Arcing Rockets (30\u0022, A1, AP(1), Blast(3), Indirect)",
-              "cost": -10,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -3914,7 +3914,7 @@
             {
               "id": "Ez4Us",
               "label": "Wraith Cannon (12\u0022, A3, AP(4))",
-              "cost": 40,
+              "cost": 55,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -4247,7 +4247,7 @@
             {
               "id": "yyF4R",
               "label": "Burst Laser (30\u0022, A3, AP(2))",
-              "cost": 0,
+              "cost": 20,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -4278,7 +4278,7 @@
             {
               "id": "TxxNG",
               "label": "Hologram Field (Stealth Aura)",
-              "cost": 25,
+              "cost": 45,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -4452,7 +4452,7 @@
             {
               "id": "ZEy8d",
               "label": "Energy Spear (A2, AP(4))",
-              "cost": 10,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -4471,7 +4471,7 @@
             {
               "id": "Jncs-",
               "label": "Killing Axe (A1, AP(2), Deadly(3))",
-              "cost": 10,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -4725,7 +4725,7 @@
             {
               "id": "0cahdxb",
               "label": "Missile Launcher (30\u0022, A1, AP(2), Deadly(3), Unstoppable)",
-              "cost": 15,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -4754,7 +4754,7 @@
             {
               "id": "1a-fgYG",
               "label": "Burst Laser (30\u0022, A3, AP(2))",
-              "cost": 5,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -4834,7 +4834,7 @@
             {
               "id": "U6Ar8",
               "label": "Hologram Field (Stealth)",
-              "cost": 65,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -4978,7 +4978,7 @@
             {
               "id": "s7mp3",
               "label": "Prism Cannon (36\u0022, A2, AP(4), Deadly(6))",
-              "cost": 55,
+              "cost": 45,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -5003,7 +5003,7 @@
             {
               "id": "R9rGe",
               "label": "Spinner Cannon (30\u0022, A4, AP(4), Blast(3), Indirect)",
-              "cost": 190,
+              "cost": 195,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -5046,7 +5046,7 @@
             {
               "id": "FTnaOuj",
               "label": "Rapid Missile Launcher (30\u0022, A2, AP(2), Deadly(3), Unstoppable)",
-              "cost": 25,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -5094,7 +5094,7 @@
             {
               "id": "qb_mzHA",
               "label": "Rapid Shatter Cannon (36\u0022, A6, AP(1), Rending)",
-              "cost": 35,
+              "cost": 40,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -5118,7 +5118,7 @@
             {
               "id": "lZLatol",
               "label": "Rapid Laser Cannon (36\u0022, A2, AP(3), Deadly(3))",
-              "cost": 30,
+              "cost": 45,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -5155,7 +5155,7 @@
             {
               "id": "U6Ar8",
               "label": "Hologram Field (Stealth)",
-              "cost": 65,
+              "cost": 30,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -5261,7 +5261,7 @@
             {
               "id": "cPejSh1",
               "label": "Missile Launcher (30\u0022, A1, AP(2), Deadly(3), Unstoppable)",
-              "cost": 10,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -5309,7 +5309,7 @@
             {
               "id": "QVUSs",
               "label": "Shatter Cannon (36\u0022, A3, AP(1), Rending)",
-              "cost": 15,
+              "cost": 20,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -5333,7 +5333,7 @@
             {
               "id": "xkrwti1",
               "label": "Laser Cannon (36\u0022, A1, AP(3), Deadly(3))",
-              "cost": 15,
+              "cost": 20,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -5408,7 +5408,7 @@
             {
               "id": "U6Ar8",
               "label": "Hologram Field (Stealth)",
-              "cost": 65,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -5498,7 +5498,7 @@
             {
               "id": "U6Ar8",
               "label": "Hologram Field (Stealth)",
-              "cost": 65,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -5533,7 +5533,7 @@
             {
               "id": "_8hNV",
               "label": "Rapid Missile Launcher (30\u0022, A2, AP(2), Deadly(3), Unstoppable)",
-              "cost": 35,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -5562,7 +5562,7 @@
             {
               "id": "-Dfvt",
               "label": "Rapid Burst Laser (30\u0022, A6, AP(2))",
-              "cost": 10,
+              "cost": 30,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -5581,7 +5581,7 @@
             {
               "id": "4n4Ei",
               "label": "Rapid Shatter Cannon (36\u0022, A6, AP(1), Rending)",
-              "cost": 45,
+              "cost": 40,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -5605,7 +5605,7 @@
             {
               "id": "TPHyj",
               "label": "Rapid Laser Cannon (36\u0022, A2, AP(3), Deadly(3))",
-              "cost": 40,
+              "cost": 45,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -5925,7 +5925,7 @@
             {
               "id": "aKC3E",
               "label": "Rapid Shard Cannon (24\u0022, A6, AP(1), Crack)",
-              "cost": 110,
+              "cost": 100,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -5949,7 +5949,7 @@
             {
               "id": "bghpy",
               "label": "Rapid Missile Launcher (30\u0022, A2, AP(2), Deadly(3), Unstoppable)",
-              "cost": 135,
+              "cost": 110,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -5978,7 +5978,7 @@
             {
               "id": "v5qAr",
               "label": "Rapid Burst Laser (30\u0022, A6, AP(2))",
-              "cost": 100,
+              "cost": 130,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -6021,7 +6021,7 @@
             {
               "id": "7fN9T",
               "label": "Rapid Laser Cannon (36\u0022, A2, AP(3), Deadly(3))",
-              "cost": 140,
+              "cost": 145,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -6079,7 +6079,7 @@
             {
               "id": "BaoYSe7",
               "label": "Elemental Seer (Caster(2))",
-              "cost": 40,
+              "cost": 50,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -6177,7 +6177,7 @@
             {
               "id": "m4MimEf",
               "label": "Titan Axe (A6, AP(2), Deadly(3)), Titan Shield (Fortified)",
-              "cost": 55,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -6213,7 +6213,7 @@
             {
               "id": "v-5-Zyz",
               "label": "Twin Heavy Wraith Cannon (24\u0022, A2, AP(4), Deadly(9))",
-              "cost": 165,
+              "cost": 125,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -6252,7 +6252,7 @@
             {
               "id": "eAfeR",
               "label": "Titan Sword (A20, AP(1), Rending)",
-              "cost": 40,
+              "cost": 45,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -6276,7 +6276,7 @@
             {
               "id": "M5Sc9",
               "label": "Titan Spear (A16, AP(4))",
-              "cost": 50,
+              "cost": 70,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -6295,7 +6295,7 @@
             {
               "id": "j0zuo",
               "label": "Sun Cannon (36\u0022, A3, AP(2), Blast(6))",
-              "cost": 180,
+              "cost": 100,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -6332,7 +6332,7 @@
             {
               "id": "vv4TWBw",
               "label": "Rapid Shard Cannon (24\u0022, A6, AP(1), Crack)",
-              "cost": 110,
+              "cost": 100,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -6356,7 +6356,7 @@
             {
               "id": "hqEQJA1",
               "label": "Rapid Burst Laser (30\u0022, A6, AP(2))",
-              "cost": 100,
+              "cost": 130,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -6718,7 +6718,7 @@
             {
               "id": "sPZVl",
               "label": "Twin Laser Cannon (36\u0022, A2, AP(3), Deadly(3))",
-              "cost": 5,
+              "cost": 0,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -6815,7 +6815,7 @@
             {
               "id": "cPgJi",
               "label": "Heavy Mortar (24\u0022, A1, AP(2), Deadly(6), Indirect)",
-              "cost": 60,
+              "cost": 25,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -6844,7 +6844,7 @@
             {
               "id": "tjdHO",
               "label": "AA-Cannon (36\u0022, A6, AP(1), Unstoppable)",
-              "cost": 30,
+              "cost": 60,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -6880,7 +6880,7 @@
             {
               "id": "U6Ar8",
               "label": "Hologram Field (Stealth)",
-              "cost": 65,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],

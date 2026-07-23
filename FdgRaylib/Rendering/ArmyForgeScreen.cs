@@ -39,7 +39,12 @@ public class ArmyForgeScreen : IAppScreen
     private readonly List<BookFile> _library;
     private readonly string[] _libraryNames;
     private int _bookIndex;
-    private BookFile _book;
+    private BookFile _book = null!; // always set through UseBook() before any read (both ctors call it)
+
+    // #259 rule tooltips: name -> description for the CURRENT book (core catalog + the book's embedded
+    // definitions). Rebuilt whenever _book changes - a switch, a load, or a share-link import - since a
+    // faction's own rules only exist in its own book.
+    private RuleGlossary _glossary = RuleGlossary.Empty;
     private BuilderList _list;
     private string? _selectedRosterId;
     private int? _selectedListIndex;
@@ -59,7 +64,7 @@ public class ArmyForgeScreen : IAppScreen
         _library = LoadLibrary();
         _libraryNames = _library.Select(b => b.Name).ToArray();
         _bookIndex = 0;
-        _book = _library[0];
+        UseBook(_library[0]);
         _list = new BuilderList { PointsLimit = DefaultPointsLimit, BookName = _book.Name };
     }
 
@@ -70,8 +75,16 @@ public class ArmyForgeScreen : IAppScreen
         _library = new List<BookFile> { book };
         _libraryNames = new[] { book.Name };
         _bookIndex = 0;
-        _book = book;
+        UseBook(book);
         _list = new BuilderList { PointsLimit = DefaultPointsLimit, BookName = _book.Name };
+    }
+
+    /// <summary>Adopt a book as the one being edited against, rebuilding the rule glossary the #259 hover
+    /// tooltips read. Every assignment to <c>_book</c> goes through here so the two can never drift.</summary>
+    private void UseBook(BookFile book)
+    {
+        _book = book;
+        _glossary = RuleGlossary.Build(book);
     }
 
     // Every .fdgbook bundled under Assets/Books/ (the imported OPR snapshots). The hand-authored demo book
@@ -101,7 +114,7 @@ public class ArmyForgeScreen : IAppScreen
     {
         if (index < 0 || index >= _library.Count) return;
         _bookIndex = index;
-        _book = _library[index];
+        UseBook(_library[index]);
         _list = new BuilderList { PointsLimit = _list.PointsLimit, BookName = _book.Name };
         _selectedListIndex = null;
         _selectedRosterId = null;
@@ -357,7 +370,7 @@ public class ArmyForgeScreen : IAppScreen
     internal bool AdoptLoaded(BuiltArmyFile loaded)
     {
         if (loaded.Selections is null || loaded.Book is null) return false;
-        _book = loaded.Book;
+        UseBook(loaded.Book);
         _list = loaded.Selections;
         _selectedListIndex = _list.Units.Count == 0 ? null : 0;
         _selectedRosterId = null;
@@ -586,8 +599,15 @@ public class ArmyForgeScreen : IAppScreen
         // Full-row hit target: an invisible Selectable spanning the row's whole block (name + stat lines),
         // drawn FIRST with AllowOverlap so the remove button and the overlaid text on top of it still receive
         // their own clicks. Clicking anywhere else in the rectangle selects the unit.
+        // The stat lines wrap (#259 segments them per rule), so their height is measured, not assumed: an
+        // under-sized rectangle would leave the bottom of a wrapped row unclickable.
         float lineH = ImGui.GetTextLineHeightWithSpacing();
-        int lines = 2 + unit.Weapons.Count + (unit.SpecialRules.Count > 0 ? 1 : 0);
+        float statWrapW = MathF.Max(1f, ImGui.GetContentRegionAvail().X - ImGui.GetStyle().IndentSpacing);
+        int lines = 2; // name + "Qua X+ Def Y+"
+        foreach (WeaponFileEntry weapon in unit.Weapons)
+            lines += RuleTextFlow.MeasureLines(RuleTextFlow.WeaponLine(weapon), statWrapW);
+        if (unit.SpecialRules.Count > 0)
+            lines += RuleTextFlow.MeasureLines(RuleTextFlow.RuleList(unit.SpecialRules), statWrapW);
         Vector2 rowStart = ImGui.GetCursorPos();
         ImGui.SetNextItemAllowOverlap();
         if (ImGui.Selectable($"##li{i}", selected, ImGuiSelectableFlags.None, new Vector2(0, lines * lineH)))
@@ -613,9 +633,9 @@ public class ArmyForgeScreen : IAppScreen
         ImGui.Indent();
         ImGui.TextDisabled($"Qua {unit.Quality}+ Def {unit.Defense}+");
         foreach (WeaponFileEntry weapon in unit.Weapons)
-            ImGui.TextDisabled(ArmyBuilderScreen.WeaponSummary(weapon));
+            RuleTextFlow.Draw(RuleTextFlow.WeaponLine(weapon), _glossary, ImGuiCol.TextDisabled);
         if (unit.SpecialRules.Count > 0)
-            ImGui.TextDisabled(string.Join(", ", unit.SpecialRules.Select(r => r.PrintableName)));
+            RuleTextFlow.Draw(RuleTextFlow.RuleList(unit.SpecialRules), _glossary, ImGuiCol.TextDisabled);
         ImGui.Unindent();
         ImGui.Separator();
     }
@@ -649,11 +669,11 @@ public class ArmyForgeScreen : IAppScreen
 
         ImGui.Indent();
         foreach (WeaponFileEntry weapon in unit.Weapons)
-            ImGui.TextDisabled(ArmyBuilderScreen.WeaponSummary(weapon));
+            RuleTextFlow.Draw(RuleTextFlow.WeaponLine(weapon), _glossary, ImGuiCol.TextDisabled);
         foreach (ItemEntry item in items)
-            ImGui.TextDisabled(ItemSummary(item));
+            RuleTextFlow.Draw(RuleTextFlow.ItemLine(item), _glossary, ImGuiCol.TextDisabled);
         if (unit.SpecialRules.Count > 0)
-            ImGui.TextDisabled(string.Join(", ", unit.SpecialRules.Select(r => r.PrintableName)));
+            RuleTextFlow.Draw(RuleTextFlow.RuleList(unit.SpecialRules), _glossary, ImGuiCol.TextDisabled);
         ImGui.Unindent();
 
         DrawHeroJoin(idx, unit, rows);
@@ -665,7 +685,7 @@ public class ArmyForgeScreen : IAppScreen
             // When combined, the partner copy is the mirror target for whole-unit (Affects=All) upgrades.
             int partnerIdx = CombinePartnerIndex(idx);
             BuilderUnit? mirror = partnerIdx >= 0 ? _list.Units[partnerIdx] : null;
-            DrawUpgradeEditors(_book, bu, roster, unit, items, mirror);
+            DrawUpgradeEditors(_book, _glossary, bu, roster, unit, items, mirror);
         }
     }
 
@@ -812,7 +832,7 @@ public class ArmyForgeScreen : IAppScreen
     // When <paramref name="mirror"/> is non-null this unit is combined, and whole-unit (Affects=All) sections
     // are shared: any edit to one is copied to the partner copy (marked "[linked]"), so a "Replace all X" swap
     // applies to both halves and is paid on both. Per-model/one/any sections stay independent per copy.
-    private static void DrawUpgradeEditors(BookFile book, BuilderUnit bu, RosterUnit roster,
+    private static void DrawUpgradeEditors(BookFile book, RuleGlossary glossary, BuilderUnit bu, RosterUnit roster,
         UnitFileEntry compiledUnit, List<ItemEntry> items, BuilderUnit? mirror = null)
     {
         if (roster.Sections.Count == 0) return;
@@ -859,7 +879,7 @@ public class ArmyForgeScreen : IAppScreen
                         : isReplace ? available + v
                         : compiledUnit.ModelCount;
                     int max = Math.Min(hardBound, poolBound);
-                    DrawStepper(bu, section, option, v, max);
+                    DrawStepper(bu, glossary, section, option, v, max);
                 }
             }
             else if (section.MaxPicks <= 1 && section.Options.Count >= 2) // pick one of several → radios
@@ -873,6 +893,9 @@ public class ArmyForgeScreen : IAppScreen
                     ImGui.BeginDisabled(isReplace && switchAvailable == 0 && !chosen);
                     if (ImGui.RadioButton($"{OptionSummary(option)}##{section.Id}-{option.Id}", chosen))
                         ApplyChoice(bu, mirror, section, option.Id, 1);
+                    // Inside the disabled scope so the underline picks up the same dimmed text color.
+                    RuleTextFlow.DecorateControlLabel(
+                        RuleTextFlow.OptionLabel(option, OptionSummary(option)), glossary);
                     ImGui.EndDisabled();
                 }
             }
@@ -884,6 +907,8 @@ public class ArmyForgeScreen : IAppScreen
                     ImGui.BeginDisabled(isReplace && available == 0 && !chosen);
                     if (ImGui.Checkbox($"{OptionSummary(option)}##{section.Id}-{option.Id}", ref chosen))
                         ApplyChoice(bu, mirror, section, option.Id, chosen ? 1 : 0);
+                    RuleTextFlow.DecorateControlLabel(
+                        RuleTextFlow.OptionLabel(option, OptionSummary(option)), glossary);
                     ImGui.EndDisabled();
                 }
             }
@@ -893,7 +918,8 @@ public class ArmyForgeScreen : IAppScreen
 
     // Counted-section control: [-] [count] [+] label. The buttons gray individually at their bound (- at 0,
     // + at max) and the type-in box has no internal step buttons (step 0), so it's wide enough for the number.
-    private static void DrawStepper(BuilderUnit bu, UpgradeSection section, UpgradeOption option, int v, int max)
+    private static void DrawStepper(BuilderUnit bu, RuleGlossary glossary, UpgradeSection section,
+        UpgradeOption option, int v, int max)
     {
         string id = $"{section.Id}-{option.Id}";
         float frameH = ImGui.GetFrameHeight();
@@ -917,7 +943,7 @@ public class ArmyForgeScreen : IAppScreen
             SetChoice(bu, section, option.Id, v + 1);
         ImGui.EndDisabled();
         ImGui.SameLine();
-        ImGui.TextUnformatted(OptionSummary(option));
+        RuleTextFlow.Draw(RuleTextFlow.OptionLabel(option, OptionSummary(option)), glossary, ImGuiCol.Text);
     }
 
     /// <summary>Replace-target availability computed WITHOUT this section's own choices — the pool an
@@ -945,11 +971,11 @@ public class ArmyForgeScreen : IAppScreen
         ImGui.Separator();
         ImGui.Indent();
         foreach (WeaponFileEntry weapon in unit.Weapons)
-            ImGui.TextDisabled(ArmyBuilderScreen.WeaponSummary(weapon));
+            RuleTextFlow.Draw(RuleTextFlow.WeaponLine(weapon), _glossary, ImGuiCol.TextDisabled);
         foreach (ItemEntry item in unit.Items)
-            ImGui.TextDisabled(ItemSummary(item));
+            RuleTextFlow.Draw(RuleTextFlow.ItemLine(item), _glossary, ImGuiCol.TextDisabled);
         if (unit.Rules.Count > 0)
-            ImGui.TextDisabled(string.Join(", ", unit.Rules.Select(r => r.PrintableName)));
+            RuleTextFlow.Draw(RuleTextFlow.RuleList(unit.Rules), _glossary, ImGuiCol.TextDisabled);
         ImGui.TextDisabled($"Base: {BaseSummary(unit.Base)}");
         ImGui.Unindent();
 
@@ -975,7 +1001,8 @@ public class ArmyForgeScreen : IAppScreen
             ImGui.TextUnformatted(section.Label);
             ImGui.Indent();
             foreach (UpgradeOption option in section.Options)
-                ImGui.TextDisabled(OptionSummary(option));
+                RuleTextFlow.Draw(RuleTextFlow.OptionLabel(option, OptionSummary(option)), _glossary,
+                    ImGuiCol.TextDisabled);
             ImGui.Unindent();
         }
     }

@@ -101,7 +101,7 @@
             {
               "id": "4N4am48",
               "label": "Phantom-GL (18\u0022, A1, Blast(3))",
-              "cost": 10,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -126,7 +126,7 @@
             {
               "id": "rPtgfUY",
               "label": "Elite Plas-Blaster Pistol (6\u0022, A3, AP(4))",
-              "cost": 5,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -183,7 +183,7 @@
             {
               "id": "mhoxgf6",
               "label": "Agony Whip (A1, Blast(3))",
-              "cost": 10,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -208,7 +208,7 @@
             {
               "id": "bYPD0nr",
               "label": "Energy Sword (A2, AP(1), Rending)",
-              "cost": 15,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -232,7 +232,7 @@
             {
               "id": "4dLxzLX",
               "label": "Shell Sword (A1, AP(2), Deadly(3))",
-              "cost": 20,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -600,7 +600,7 @@
             {
               "id": "4N4am48",
               "label": "Phantom-GL (18\u0022, A1, Blast(3))",
-              "cost": 10,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -625,7 +625,7 @@
             {
               "id": "rPtgfUY",
               "label": "Elite Plas-Blaster Pistol (6\u0022, A3, AP(4))",
-              "cost": 5,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -682,7 +682,7 @@
             {
               "id": "mhoxgf6",
               "label": "Agony Whip (A1, Blast(3))",
-              "cost": 10,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -707,7 +707,7 @@
             {
               "id": "bYPD0nr",
               "label": "Energy Sword (A2, AP(1), Rending)",
-              "cost": 15,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -731,7 +731,7 @@
             {
               "id": "4dLxzLX",
               "label": "Shell Sword (A1, AP(2), Deadly(3))",
-              "cost": 20,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -771,7 +771,7 @@
             {
               "id": "z4MOSmr",
               "label": "Dual Sword-Flails (A1, AP(2), Blast(3))",
-              "cost": -5,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -796,7 +796,7 @@
             {
               "id": "pDO63",
               "label": "Net \u0026 Spear (A3, Thrust)",
-              "cost": -5,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -820,7 +820,7 @@
             {
               "id": "V46vhs0",
               "label": "Dual Crystal Claws (A4, Rending)",
-              "cost": 5,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -844,7 +844,7 @@
             {
               "id": "8-Uk1-4",
               "label": "Energy Glaive (A4, AP(1))",
-              "cost": 5,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -1211,7 +1211,7 @@
             {
               "id": "4N4am48",
               "label": "Phantom-GL (18\u0022, A1, Blast(3))",
-              "cost": 10,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -1293,7 +1293,7 @@
             {
               "id": "mhoxgf6",
               "label": "Agony Whip (A1, Blast(3))",
-              "cost": 10,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -1318,7 +1318,7 @@
             {
               "id": "bYPD0nr",
               "label": "Energy Sword (A2, AP(1), Rending)",
-              "cost": 15,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -1342,7 +1342,7 @@
             {
               "id": "4dLxzLX",
               "label": "Shell Sword (A1, AP(2), Deadly(3))",
-              "cost": 20,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -1382,7 +1382,7 @@
             {
               "id": "z4MOSmr",
               "label": "Dual Sword-Flails (A1, AP(2), Blast(3))",
-              "cost": -5,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -1407,7 +1407,7 @@
             {
               "id": "pDO63",
               "label": "Net \u0026 Spear (A3, Thrust)",
-              "cost": -5,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -1431,7 +1431,7 @@
             {
               "id": "V46vhs0",
               "label": "Dual Crystal Claws (A4, Rending)",
-              "cost": 5,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -1893,7 +1893,7 @@
             {
               "id": "3FybPqM",
               "label": "Arcane Rifle (30\u0022, A1, AP(1), Reliable, Takedown)",
-              "cost": 30,
+              "cost": 20,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -1984,7 +1984,7 @@
             {
               "id": "xW-lSFB",
               "label": "Electro-Corroder (A2, AP(1), Bane)",
-              "cost": 0,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -2008,7 +2008,7 @@
             {
               "id": "Pev2125",
               "label": "Leech Claw (A2, AP(1), Rending)",
-              "cost": 5,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -2057,7 +2057,7 @@
             {
               "id": "_Ub5I5b",
               "label": "Scissor Claw (A2, AP(4))",
-              "cost": 10,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -2411,7 +2411,7 @@
             {
               "id": "ipxUV",
               "label": "Arcane Rifle (30\u0022, A1, AP(1), Reliable, Takedown)",
-              "cost": 35,
+              "cost": 25,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -2502,7 +2502,7 @@
             {
               "id": "DfO1C",
               "label": "Electro-Corroder (A2, AP(1), Bane)",
-              "cost": 0,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -2526,7 +2526,7 @@
             {
               "id": "kRxsE",
               "label": "Leech Claw (A2, AP(1), Rending)",
-              "cost": 5,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -2575,7 +2575,7 @@
             {
               "id": "e6iOx",
               "label": "Scissor Claw (A2, AP(4))",
-              "cost": 10,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -2768,7 +2768,7 @@
             {
               "id": "4Qn9nWvc",
               "label": "Sgt. Barb Pistol (12\u0022, A1, Lacerate), Energy Sword (A2, AP(1), Rending)",
-              "cost": 0,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -3117,7 +3117,7 @@
             {
               "id": "qD_S6mu-",
               "label": "Sgt. Barb Pistol (12\u0022, A1, Lacerate), Energy Sword (A2, AP(1), Rending)",
-              "cost": 0,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -3336,7 +3336,7 @@
             {
               "id": "eEGgH",
               "label": "Net \u0026 Spear (A3, Thrust)",
-              "cost": 5,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -3360,7 +3360,7 @@
             {
               "id": "OhqrV",
               "label": "Dual Crystal Claws (A4, Rending)",
-              "cost": 10,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -3384,7 +3384,7 @@
             {
               "id": "GQmlN",
               "label": "Energy Glaive (A4, AP(1))",
-              "cost": 10,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -3418,7 +3418,7 @@
             {
               "id": "TUz8ZCxQ",
               "label": "Sgt. Barb Pistol (12\u0022, A1, Lacerate), Energy Sword (A2, AP(1), Rending)",
-              "cost": 0,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -3493,7 +3493,7 @@
             {
               "id": "oeezpa0J",
               "label": "Plas-Blaster Pistol (6\u0022, A2, AP(4))",
-              "cost": 5,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -3607,7 +3607,7 @@
             {
               "id": "yeLiL",
               "label": "Scrapper (12\u0022, A1, Blast(3), Reliable)",
-              "cost": 10,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -3684,7 +3684,7 @@
             {
               "id": "_wsTN",
               "label": "Barb Cannon (30\u0022, A3, Lacerate)",
-              "cost": 20,
+              "cost": 25,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -3708,7 +3708,7 @@
             {
               "id": "mzzzX",
               "label": "Plas-Blaster (18\u0022, A2, AP(4))",
-              "cost": 20,
+              "cost": 30,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -3727,7 +3727,7 @@
             {
               "id": "5E7v-",
               "label": "Laser Cannon (36\u0022, A1, AP(3), Deadly(3))",
-              "cost": 45,
+              "cost": 60,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -3767,7 +3767,7 @@
             {
               "id": "8wJKxcH-",
               "label": "Sgt. Barb Pistol (12\u0022, A1, Lacerate), Energy Sword (A2, AP(1), Rending)",
-              "cost": 0,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -3842,7 +3842,7 @@
             {
               "id": "5wdoELqS",
               "label": "Plas-Blaster Pistol (6\u0022, A2, AP(4))",
-              "cost": 5,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -3976,7 +3976,7 @@
             {
               "id": "XRU9M",
               "label": "Naga Guns (18\u0022, A4, Lacerate), Barb Dagger (A1, Lacerate)",
-              "cost": 15,
+              "cost": 20,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -4013,7 +4013,7 @@
             {
               "id": "-_x8S",
               "label": "Medusa\u0027s Gaze (12\u0022, A4, AP(3)), Barb Dagger (A1, Lacerate)",
-              "cost": 25,
+              "cost": 35,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -4119,7 +4119,7 @@
             {
               "id": "v9R-yJF",
               "label": "Agony Whip (A1, Blast(3))",
-              "cost": 0,
+              "cost": -5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -4487,7 +4487,7 @@
             {
               "id": "jcDO4",
               "label": "Heavy Fusion Gun (18\u0022, A1, AP(4), Deadly(3))",
-              "cost": 20,
+              "cost": 25,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -4552,7 +4552,7 @@
             {
               "id": "h5yoNd_D",
               "label": "Sgt. Barb Pistol (12\u0022, A1, Lacerate), Energy Sword (A2, AP(1), Rending)",
-              "cost": -5,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -4926,7 +4926,7 @@
             {
               "id": "kVu4vOF",
               "label": "Plas-Blaster (18\u0022, A2, AP(4))",
-              "cost": 10,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -4945,7 +4945,7 @@
             {
               "id": "2tLM41D",
               "label": "Heavy Fusion Gun (18\u0022, A1, AP(4), Deadly(3))",
-              "cost": 15,
+              "cost": 20,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -5631,7 +5631,7 @@
             {
               "id": "Hd3aq5T",
               "label": "Stinger Cannon (24\u0022, A2, Blast(3))",
-              "cost": 45,
+              "cost": 25,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -5656,7 +5656,7 @@
             {
               "id": "mm_Kw4c",
               "label": "Rapid Barb Cannon (30\u0022, A6, Lacerate)",
-              "cost": 25,
+              "cost": 50,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -5680,7 +5680,7 @@
             {
               "id": "O2kBY26",
               "label": "Twin Heavy Fusion Gun (18\u0022, A2, AP(4), Deadly(3))",
-              "cost": 35,
+              "cost": 65,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -5762,7 +5762,7 @@
             {
               "id": "OzlpAMM",
               "label": "Shred Flail (A3, Rending)",
-              "cost": 5,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -6146,7 +6146,7 @@
             {
               "id": "K2trSrp",
               "label": "Dark-Sails (Agile)",
-              "cost": 25,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -6192,7 +6192,7 @@
             {
               "id": "YoqFyOM",
               "label": "Shield of Darkness (Stealth)",
-              "cost": 45,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -6213,7 +6213,7 @@
             {
               "id": "n4CSR6Y",
               "label": "Energy Ram (Impact(5))",
-              "cost": 25,
+              "cost": 30,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -6298,7 +6298,7 @@
             {
               "id": "ziWN8lHM",
               "label": "Destroyer Cannon (36\u0022, A3, AP(2))",
-              "cost": 5,
+              "cost": 50,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -6387,7 +6387,7 @@
             {
               "id": "K2trSrp",
               "label": "Dark-Sails (Agile)",
-              "cost": 25,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -6433,7 +6433,7 @@
             {
               "id": "YoqFyOM",
               "label": "Shield of Darkness (Stealth)",
-              "cost": 45,
+              "cost": 25,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -6454,7 +6454,7 @@
             {
               "id": "n4CSR6Y",
               "label": "Energy Ram (Impact(5))",
-              "cost": 25,
+              "cost": 30,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -6490,7 +6490,7 @@
             {
               "id": "U2E_wXOA",
               "label": "Destroyer Cannon (36\u0022, A3, AP(2))",
-              "cost": 5,
+              "cost": 35,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -6626,7 +6626,7 @@
             {
               "id": "6Umnqt1",
               "label": "Void Missiles (36\u0022, A1, AP(3), Deadly(3))",
-              "cost": 10,
+              "cost": 25,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -6813,7 +6813,7 @@
             {
               "id": "8SaMRVB",
               "label": "Shatter Missiles (36\u0022, A1, Blast(6))",
-              "cost": 25,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -6838,7 +6838,7 @@
             {
               "id": "apn7K",
               "label": "Scythe Missiles (36\u0022, A2, AP(3), Unstoppable)",
-              "cost": 35,
+              "cost": 25,
               "costUnpriced": false,
               "weaponsGained": [
                 {

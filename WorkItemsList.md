@@ -57,6 +57,8 @@ Corpus coverage is a different story: 283 of 13,870 book rule references (2.0%) 
 - [~] 236 — Freeform builder silently stripped a Forge army's embedded book/selections on save; now gated behind an explicit "Save detached" confirm. Implemented + tested; modal awaits GUI hand-verify. ([WorkItems/236](WorkItems/236-freeform-save-strips-forge-block.md))
 - [~] 241 — Army Forge share-link importer: paste an army-forge.onepagerules.com share link -> preview -> .fdgarmy (engine `OprListImporter` + Forge-screen UI + `--import-army`); gates on OPR version 3.5.x. Points model corrected 2026-07-19 (per-unit `cost` is BASE, total comes from `listPoints` - imports were light); GUI modal still awaits hand-verify. ([WorkItems/241](WorkItems/241-army-forge-share-import.md))
 - [ ] 242 — Import campaign/narrative list features (XP, traits, campaign mode) that #241's importer warns about and drops. ([WorkItems/242](WorkItems/242-campaign-import-features.md))
+- [~] 261 — Import mispriced 39% of upgrades (flat generic cost read in preference to OPR's per-unit `costs[]`) and never matched quantity-prefixed replace targets ("2x Rapid Shard Cannon"), which also greyed the swap out as "none to replace". Both fixed, 47 books re-priced; awaits GUI hand-verify. ([WorkItems/261](WorkItems/261-opr-per-unit-costs-and-quantity-targets.md))
+- [~] 259 — Special rules in the Forge are underlined and explain themselves on hover (all four rule-bearing surfaces), reading `SpecialRuleDefinition.Description` via a per-book glossary. Implemented + suite green; awaits GUI hand-verify. ([WorkItems/259](WorkItems/259-army-forge-rule-tooltips.md))
 
 ## Victory & scoring
 

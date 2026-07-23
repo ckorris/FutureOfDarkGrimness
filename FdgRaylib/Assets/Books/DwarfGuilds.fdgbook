@@ -89,7 +89,7 @@
             {
               "id": "J4o6I",
               "label": "Champion H-Pistol (9\u0022, A3, Rending)",
-              "cost": -5,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -132,7 +132,7 @@
             {
               "id": "fWz0j",
               "label": "Champion Plasma Pistol (12\u0022, A2, AP(4))",
-              "cost": 5,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -151,7 +151,7 @@
             {
               "id": "A_xFd",
               "label": "Rapid Storm Rifle (24\u0022, A6, AP(1))",
-              "cost": 65,
+              "cost": 80,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -184,7 +184,7 @@
             {
               "id": "AHtrO",
               "label": "Plasma Sword (A4, AP(1), Rending)",
-              "cost": 10,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -208,7 +208,7 @@
             {
               "id": "6e9Ts",
               "label": "Plasma Axe (A2, AP(2), Deadly(3))",
-              "cost": 20,
+              "cost": 25,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -233,7 +233,7 @@
             {
               "id": "4wreH",
               "label": "Shock Gauntlet (A4, AP(4))",
-              "cost": 20,
+              "cost": 30,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -389,7 +389,7 @@
             {
               "id": "u0HDt",
               "label": "Rune Master (Caster(2))",
-              "cost": 40,
+              "cost": 45,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -485,7 +485,7 @@
             {
               "id": "8BjaW",
               "label": "Champion Twin Glove-Pistols (12\u0022, A4), Bash (A1)",
-              "cost": 5,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -574,7 +574,7 @@
             {
               "id": "jCVO8",
               "label": "Flamer Pistol (6\u0022, A1, Blast(3), Reliable)",
-              "cost": 0,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -603,7 +603,7 @@
             {
               "id": "CAFo5",
               "label": "Fusion Pistol (6\u0022, A1, AP(4), Deadly(3))",
-              "cost": 5,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -628,7 +628,7 @@
             {
               "id": "HzELH",
               "label": "Champion H-Pistol (9\u0022, A3, Rending)",
-              "cost": 5,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -652,7 +652,7 @@
             {
               "id": "a7F4FyA",
               "label": "Champion Iron Shotgun (6\u0022, A4, AP(2))",
-              "cost": 10,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -671,7 +671,7 @@
             {
               "id": "GA9PO",
               "label": "Champion Rifle (24\u0022, A2)",
-              "cost": 10,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -690,7 +690,7 @@
             {
               "id": "HaZCa",
               "label": "Champion Iron Pistol (9\u0022, A4, AP(1))",
-              "cost": 10,
+              "cost": 20,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -709,7 +709,7 @@
             {
               "id": "ig2Hc",
               "label": "Champion Shotgun (12\u0022, A3, AP(1))",
-              "cost": 10,
+              "cost": 20,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -728,7 +728,7 @@
             {
               "id": "Hsg_Hsd",
               "label": "Champion Plasma Pistol (12\u0022, A2, AP(4))",
-              "cost": 15,
+              "cost": 20,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -747,7 +747,7 @@
             {
               "id": "JyFH0",
               "label": "Champion Iron Blaster (18\u0022, A3, AP(1))",
-              "cost": 25,
+              "cost": 30,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -1228,7 +1228,7 @@
             {
               "id": "vEHebTHW",
               "label": "Engineer (Mend)",
-              "cost": 35,
+              "cost": 40,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -1249,7 +1249,7 @@
             {
               "id": "UDT4U-sy",
               "label": "Rune Master (Caster(2))",
-              "cost": 40,
+              "cost": 45,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -1380,7 +1380,7 @@
             {
               "id": "aPEg6",
               "label": "Dual Heavy Berserker Axes (A4, AP(1))",
-              "cost": 10,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -1686,7 +1686,7 @@
             {
               "id": "GfdRF",
               "label": "Heavy Spear (A1, AP(1), Counter)",
-              "cost": 15,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -1771,7 +1771,7 @@
             {
               "id": "U2Nq-cg",
               "label": "Shotgun (12\u0022, A2, AP(1))",
-              "cost": 15,
+              "cost": 20,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -1876,7 +1876,7 @@
             {
               "id": "csUa0-0",
               "label": "Plasma Rifle (24\u0022, A1, AP(4))",
-              "cost": 10,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -1895,7 +1895,7 @@
             {
               "id": "7a4VKNc",
               "label": "Fusion Rifle (12\u0022, A1, AP(4), Deadly(3))",
-              "cost": 15,
+              "cost": 20,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -1939,7 +1939,7 @@
             {
               "id": "x37WY",
               "label": "Rail M-Rifle (24\u0022, A1, AP(2), Deadly(3), Shred)",
-              "cost": 40,
+              "cost": 35,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -1968,7 +1968,7 @@
             {
               "id": "iu7uT",
               "label": "Missile Launcher (30\u0022, A1, AP(2), Deadly(3), Unstoppable)",
-              "cost": 45,
+              "cost": 35,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -2066,7 +2066,7 @@
             {
               "id": "VapjPgdX",
               "label": "Sgt. Pistol (12\u0022, A1), Plasma Sword (A2, AP(1), Rending)",
-              "cost": 0,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -2188,7 +2188,7 @@
             {
               "id": "0tZ_PTCV",
               "label": "Shock Gauntlet (A2, AP(4))",
-              "cost": 10,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -2296,7 +2296,7 @@
             {
               "id": "-qMbA",
               "label": "Dual Berserker Axes (A2)",
-              "cost": 15,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -2374,7 +2374,7 @@
             {
               "id": "1k0OH",
               "label": "Cyber-Augments (Regeneration)",
-              "cost": 15,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -2522,7 +2522,7 @@
             {
               "id": "TNADo",
               "label": "Heavy Flamer (12\u0022, A1, AP(1), Blast(3), Reliable)",
-              "cost": 5,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -2551,7 +2551,7 @@
             {
               "id": "1LZ2a",
               "label": "Heavy Fusion Rifle (18\u0022, A1, AP(4), Deadly(3))",
-              "cost": 25,
+              "cost": 40,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -2576,7 +2576,7 @@
             {
               "id": "lM64E",
               "label": "C-Beamer (24\u0022, A3, AP(1), Surge)",
-              "cost": 15,
+              "cost": 40,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -2600,7 +2600,7 @@
             {
               "id": "3u32p",
               "label": "Plasma Cannon (30\u0022, A1, AP(4), Blast(3))",
-              "cost": 45,
+              "cost": 65,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -2694,7 +2694,7 @@
             {
               "id": "Fzgmg8yO",
               "label": "Sgt. Iron Pistol (9\u0022, A2, AP(1)), Plasma Sword (A2, AP(1), Rending)",
-              "cost": 5,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -2740,7 +2740,7 @@
             {
               "id": "ydsqK-xr",
               "label": "H-Pistol (9\u0022, A2, Rending)",
-              "cost": 5,
+              "cost": 0,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -2797,7 +2797,7 @@
             {
               "id": "JXBpK5nC",
               "label": "Shock Gauntlet (A2, AP(4))",
-              "cost": 15,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -2968,7 +2968,7 @@
             {
               "id": "-7Quv",
               "label": "Drill M-Platform (18\u0022, A1, AP(2), Deadly(3), Shred)",
-              "cost": 30,
+              "cost": 25,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -3012,7 +3012,7 @@
             {
               "id": "Qe4Om",
               "label": "Drill A-Platform (A1, AP(4), Deadly(3))",
-              "cost": 5,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -3052,7 +3052,7 @@
             {
               "id": "mcwZj8Nq",
               "label": "Sgt. Iron Pistol (9\u0022, A2, AP(1)), Plasma Sword (A2, AP(1), Rending)",
-              "cost": 0,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -3155,7 +3155,7 @@
             {
               "id": "IoTmM-ET",
               "label": "Shock Gauntlet (A2, AP(4))",
-              "cost": 10,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -3428,7 +3428,7 @@
             {
               "id": "fu0V2",
               "label": "Plasma Sword (A2, AP(1), Rending)",
-              "cost": 5,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -3452,7 +3452,7 @@
             {
               "id": "5W1O6",
               "label": "Shock Gauntlet (A2, AP(4))",
-              "cost": 10,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -3672,7 +3672,7 @@
             {
               "id": "LmJzT",
               "label": "Great Heat Hammer (A1, AP(2), Blast(3), Shred)",
-              "cost": 20,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -3895,7 +3895,7 @@
             {
               "id": "b2U1R",
               "label": "Heavy Machinegun (30\u0022, A3, AP(1))",
-              "cost": 5,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -3914,7 +3914,7 @@
             {
               "id": "TL65t",
               "label": "C-Beamer (24\u0022, A3, AP(1), Surge)",
-              "cost": -5,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -3967,7 +3967,7 @@
             {
               "id": "g9qd-Wu",
               "label": "Gravity H-Cannon (24\u0022, A4, Rending)",
-              "cost": 15,
+              "cost": 20,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -3991,7 +3991,7 @@
             {
               "id": "_xbZ7Xv",
               "label": "Autocannon (36\u0022, A3, AP(2))",
-              "cost": 20,
+              "cost": 25,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -4155,7 +4155,7 @@
             {
               "id": "YBSAa",
               "label": "H-Pistol (9\u0022, A2, Rending)",
-              "cost": 5,
+              "cost": 0,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -4231,7 +4231,7 @@
             {
               "id": "pwUvjMb",
               "label": "Heavy Machinegun (30\u0022, A3, AP(1))",
-              "cost": 5,
+              "cost": 40,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -4250,7 +4250,7 @@
             {
               "id": "AAEHy",
               "label": "Rail M-Rifle (24\u0022, A1, AP(2), Deadly(3), Shred)",
-              "cost": 20,
+              "cost": 45,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -4279,7 +4279,7 @@
             {
               "id": "iFzFL",
               "label": "Plasma Cannon (30\u0022, A1, AP(4), Blast(3))",
-              "cost": 25,
+              "cost": 65,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -4318,7 +4318,7 @@
             {
               "id": "q28b1gU",
               "label": "Plasma Axe (A1, AP(2), Deadly(3))",
-              "cost": 10,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -4367,7 +4367,7 @@
             {
               "id": "ucneU",
               "label": "Shock Gauntlet (A3, AP(4))",
-              "cost": 25,
+              "cost": 30,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -4398,7 +4398,7 @@
             {
               "id": "QplU9",
               "label": "Exo-GL (18\u0022, A1, Blast(3), Limited)",
-              "cost": 15,
+              "cost": 20,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -4696,7 +4696,7 @@
             {
               "id": "tJm0o",
               "label": "Pioneer (Scout)",
-              "cost": 20,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -4849,7 +4849,7 @@
             {
               "id": "PJi2OIr",
               "label": "Heavy Fusion Rifle (18\u0022, A1, AP(4), Deadly(3))",
-              "cost": 5,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -4893,7 +4893,7 @@
             {
               "id": "UhJ2n7J",
               "label": "C-Beamer (24\u0022, A3, AP(1), Surge)",
-              "cost": 5,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -4917,7 +4917,7 @@
             {
               "id": "24QA_8g",
               "label": "Missile Launcher (30\u0022, A1, AP(2), Deadly(3), Unstoppable)",
-              "cost": 25,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -4946,7 +4946,7 @@
             {
               "id": "0UVmq",
               "label": "Minigun (24\u0022, A4, AP(1))",
-              "cost": 15,
+              "cost": 20,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -4979,7 +4979,7 @@
             {
               "id": "0FjfCfoz8Z",
               "label": "Pioneer (Scout)",
-              "cost": 10,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -5161,7 +5161,7 @@
             {
               "id": "XoNee",
               "label": "Missile Launcher (30\u0022, A1, AP(2), Deadly(3), Unstoppable)",
-              "cost": 15,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -5190,7 +5190,7 @@
             {
               "id": "Es4Hk",
               "label": "H-Beam Cannon (18\u0022, A3, AP(4), Surge)",
-              "cost": 0,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -5214,7 +5214,7 @@
             {
               "id": "3Pk2J",
               "label": "Sagittarius Missiles (36\u0022, A2, AP(4), Unstoppable)",
-              "cost": 20,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -5238,7 +5238,7 @@
             {
               "id": "CNOPd",
               "label": "Super-Heavy Fusion Rifle (18\u0022, A1, AP(4), Deadly(6))",
-              "cost": 25,
+              "cost": 20,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -5365,7 +5365,7 @@
             {
               "id": "t_YXd",
               "label": "Quad Attack Machinegun (30\u0022, A8, AP(1))",
-              "cost": 30,
+              "cost": 25,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -5523,7 +5523,7 @@
             {
               "id": "3rTVF",
               "label": "Anti-Tank Cannon (30\u0022, A1, AP(3), Deadly(6))",
-              "cost": 15,
+              "cost": 0,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -5548,7 +5548,7 @@
             {
               "id": "VCdvlX5",
               "label": "Battle Cannon (30\u0022, A2, AP(2), Blast(3))",
-              "cost": 10,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -5573,7 +5573,7 @@
             {
               "id": "GMAMfnO",
               "label": "Flame Cannon (18\u0022, A2, AP(1), Blast(3), Reliable)",
-              "cost": 15,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -5602,7 +5602,7 @@
             {
               "id": "-aL_Tq9",
               "label": "Quad Attack Machinegun (30\u0022, A8, AP(1))",
-              "cost": 30,
+              "cost": 25,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -5621,7 +5621,7 @@
             {
               "id": "mDfrx",
               "label": "Twin AA-Cannon (30\u0022, A6, AP(3), Unstoppable)",
-              "cost": 75,
+              "cost": 50,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -5857,7 +5857,7 @@
             {
               "id": "5SHlr",
               "label": "Transport Carriage (Tough(6), Transport(11))",
-              "cost": 165,
+              "cost": 160,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -5884,7 +5884,7 @@
             {
               "id": "49tbM",
               "label": "Transport Carriage (Heavy Machinegun (30\u0022, A3, AP(1)), Tough(6), Transport(6))",
-              "cost": 190,
+              "cost": 180,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -5957,7 +5957,7 @@
             {
               "id": "g-6cr",
               "label": "Weapon Carriage (Twin Fusion AA-Gun (24\u0022, A2, AP(4), Deadly(3), Unstoppable), Tough(6))",
-              "cost": 220,
+              "cost": 230,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -6074,7 +6074,7 @@
             {
               "id": "XoNee",
               "label": "Missile Launcher (30\u0022, A1, AP(2), Deadly(3), Unstoppable)",
-              "cost": 15,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -6103,7 +6103,7 @@
             {
               "id": "Es4Hk",
               "label": "H-Beam Cannon (18\u0022, A3, AP(4), Surge)",
-              "cost": 0,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -6127,7 +6127,7 @@
             {
               "id": "3Pk2J",
               "label": "Sagittarius Missiles (36\u0022, A2, AP(4), Unstoppable)",
-              "cost": 20,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -6151,7 +6151,7 @@
             {
               "id": "CNOPd",
               "label": "Super-Heavy Fusion Rifle (18\u0022, A1, AP(4), Deadly(6))",
-              "cost": 25,
+              "cost": 20,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -6190,7 +6190,7 @@
             {
               "id": "3rTVF",
               "label": "Anti-Tank Cannon (30\u0022, A1, AP(3), Deadly(6))",
-              "cost": 15,
+              "cost": 0,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -6215,7 +6215,7 @@
             {
               "id": "VCdvlX5",
               "label": "Battle Cannon (30\u0022, A2, AP(2), Blast(3))",
-              "cost": 10,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -6240,7 +6240,7 @@
             {
               "id": "GMAMfnO",
               "label": "Flame Cannon (18\u0022, A2, AP(1), Blast(3), Reliable)",
-              "cost": 15,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -6269,7 +6269,7 @@
             {
               "id": "-aL_Tq9",
               "label": "Quad Attack Machinegun (30\u0022, A8, AP(1))",
-              "cost": 30,
+              "cost": 25,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -6288,7 +6288,7 @@
             {
               "id": "mDfrx",
               "label": "Twin AA-Cannon (30\u0022, A6, AP(3), Unstoppable)",
-              "cost": 75,
+              "cost": 50,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -6401,7 +6401,7 @@
             {
               "id": "xU7_j",
               "label": "Rail M-Cannon (36\u0022, A1, AP(2), Deadly(6), Shred)",
-              "cost": 25,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -6505,7 +6505,7 @@
             {
               "id": "HErmSMt",
               "label": "Swarm Mortar (24\u0022, A3, Indirect)",
-              "cost": 35,
+              "cost": 30,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -6529,7 +6529,7 @@
             {
               "id": "UQvmc",
               "label": "Rocket Mortar (24\u0022, A1, AP(1), Blast(3), Indirect)",
-              "cost": 40,
+              "cost": 35,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -6558,7 +6558,7 @@
             {
               "id": "9Q5V-",
               "label": "Drill Mortar (24\u0022, A1, AP(2), Deadly(3), Indirect)",
-              "cost": 50,
+              "cost": 45,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -6660,7 +6660,7 @@
             {
               "id": "yRJ3cEe",
               "label": "Plasma Sword (A4, AP(1), Rending)",
-              "cost": 10,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -6684,7 +6684,7 @@
             {
               "id": "brl66",
               "label": "Light Walker Fist (A4, AP(2))",
-              "cost": 10,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -6703,7 +6703,7 @@
             {
               "id": "f8rwmQk",
               "label": "Plasma Axe (A2, AP(2), Deadly(3))",
-              "cost": 20,
+              "cost": 25,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -6728,7 +6728,7 @@
             {
               "id": "m2GGsQo",
               "label": "Shock Gauntlet (A4, AP(4))",
-              "cost": 20,
+              "cost": 30,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -6747,7 +6747,7 @@
             {
               "id": "9g9H0PK",
               "label": "Twin Heavy Fusion Rifle (18\u0022, A2, AP(4), Deadly(3))",
-              "cost": 65,
+              "cost": 80,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -6772,7 +6772,7 @@
             {
               "id": "NIeYk",
               "label": "Twin Heavy Machinegun (30\u0022, A6, AP(1))",
-              "cost": 75,
+              "cost": 80,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -6791,7 +6791,7 @@
             {
               "id": "q7liwBx",
               "label": "Twin Autocannon (36\u0022, A6, AP(2))",
-              "cost": 115,
+              "cost": 120,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -6853,7 +6853,7 @@
             {
               "id": "dsMl2",
               "label": "Fusion Rifle (12\u0022, A1, AP(4), Deadly(3))",
-              "cost": 30,
+              "cost": 35,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -6997,7 +6997,7 @@
             {
               "id": "Eq071rR",
               "label": "Twin Heavy AA-Gun (30\u0022, A6, AP(1), Unstoppable)",
-              "cost": 35,
+              "cost": 20,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -7244,7 +7244,7 @@
             {
               "id": "3rTVF",
               "label": "Anti-Tank Cannon (30\u0022, A1, AP(3), Deadly(6))",
-              "cost": 15,
+              "cost": 0,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -7269,7 +7269,7 @@
             {
               "id": "VCdvlX5",
               "label": "Battle Cannon (30\u0022, A2, AP(2), Blast(3))",
-              "cost": 10,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -7294,7 +7294,7 @@
             {
               "id": "GMAMfnO",
               "label": "Flame Cannon (18\u0022, A2, AP(1), Blast(3), Reliable)",
-              "cost": 15,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -7323,7 +7323,7 @@
             {
               "id": "-aL_Tq9",
               "label": "Quad Attack Machinegun (30\u0022, A8, AP(1))",
-              "cost": 30,
+              "cost": 25,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -7342,7 +7342,7 @@
             {
               "id": "mDfrx",
               "label": "Twin AA-Cannon (30\u0022, A6, AP(3), Unstoppable)",
-              "cost": 75,
+              "cost": 50,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -7399,7 +7399,7 @@
             {
               "id": "XoNee",
               "label": "Missile Launcher (30\u0022, A1, AP(2), Deadly(3), Unstoppable)",
-              "cost": 15,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -7428,7 +7428,7 @@
             {
               "id": "Es4Hk",
               "label": "H-Beam Cannon (18\u0022, A3, AP(4), Surge)",
-              "cost": 0,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -7452,7 +7452,7 @@
             {
               "id": "3Pk2J",
               "label": "Sagittarius Missiles (36\u0022, A2, AP(4), Unstoppable)",
-              "cost": 20,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -7476,7 +7476,7 @@
             {
               "id": "CNOPd",
               "label": "Super-Heavy Fusion Rifle (18\u0022, A1, AP(4), Deadly(6))",
-              "cost": 25,
+              "cost": 20,
               "costUnpriced": false,
               "weaponsGained": [
                 {

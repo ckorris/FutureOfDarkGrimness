@@ -119,7 +119,7 @@
             {
               "id": "JlRhb",
               "label": "Exalted Arm-Crossbow (12\u0022, A12, Surge)",
-              "cost": 5,
+              "cost": 55,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -143,7 +143,7 @@
             {
               "id": "bw6hhmX",
               "label": "Exalted Ritual Spear (A3, AP(2), Deadly(3), Surge)",
-              "cost": 20,
+              "cost": 60,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -220,7 +220,7 @@
             {
               "id": "lOe1IOa",
               "label": "Exalted Ritual Gauntlet (A9, AP(3), Surge)",
-              "cost": 70,
+              "cost": 110,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -476,7 +476,7 @@
             {
               "id": "8GwxTfo",
               "label": "Great Ritual Spear (A2, AP(1), Deadly(3), Surge)",
-              "cost": -5,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -557,7 +557,7 @@
             {
               "id": "rBZeg",
               "label": "Great Arm-Crossbow (12\u0022, A8, Surge)",
-              "cost": 5,
+              "cost": 30,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -605,7 +605,7 @@
             {
               "id": "8pDhn-w",
               "label": "Great Ritual Gauntlet (A6, AP(3), Surge)",
-              "cost": 45,
+              "cost": 50,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -861,7 +861,7 @@
             {
               "id": "zTUca",
               "label": "Ritual Spear (A1, AP(1), Deadly(3), Surge)",
-              "cost": -5,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -942,7 +942,7 @@
             {
               "id": "SRcmF",
               "label": "Arm-Crossbow (12\u0022, A4, Surge)",
-              "cost": 0,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -990,7 +990,7 @@
             {
               "id": "aKapG",
               "label": "Heavy Ritual Gauntlet (A3, AP(3), Surge)",
-              "cost": 15,
+              "cost": 25,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -1060,7 +1060,7 @@
             {
               "id": "JQVhi",
               "label": "Wings (Flying)",
-              "cost": 15,
+              "cost": 20,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -1327,7 +1327,7 @@
             {
               "id": "r6gPU",
               "label": "Blade (A1, Surge), Ritual Spear (A1, AP(1), Deadly(3), Surge)",
-              "cost": -5,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -1952,7 +1952,7 @@
             {
               "id": "n3jlA",
               "label": "Blade (A1, Surge), Ritual Spear (A1, AP(1), Deadly(3), Surge)",
-              "cost": -5,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -2480,7 +2480,7 @@
             {
               "id": "Vw0GFp-",
               "label": "Banner",
-              "cost": 15,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [
@@ -2998,7 +2998,7 @@
             {
               "id": "Vw0GFp-",
               "label": "Banner",
-              "cost": 15,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [
@@ -3184,7 +3184,7 @@
             {
               "id": "Vw0GFp-",
               "label": "Banner",
-              "cost": 15,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [
@@ -3940,7 +3940,7 @@
             {
               "id": "3tmbFSw",
               "label": "Heavy Lust Sword (A12, AP(2), Surge)",
-              "cost": 20,
+              "cost": 30,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -4002,7 +4002,7 @@
             {
               "id": "BIgs9KA",
               "label": "Heavy Lust Cannon (24\u0022, A6, AP(2), Surge)",
-              "cost": 20,
+              "cost": 25,
               "costUnpriced": false,
               "weaponsGained": [
                 {

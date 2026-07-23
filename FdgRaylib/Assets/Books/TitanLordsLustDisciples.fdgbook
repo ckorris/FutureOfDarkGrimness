@@ -153,7 +153,7 @@
             {
               "id": "uE-MTGru",
               "label": "Heavy Chainsaw (A1, AP(2), Deadly(3))",
-              "cost": 10,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -178,7 +178,7 @@
             {
               "id": "iqqOZef8",
               "label": "Heavy Fist (A2, AP(4))",
-              "cost": 35,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -197,7 +197,7 @@
             {
               "id": "voP2MEpX",
               "label": "Heavy Sword (A3, AP(1), Rending)",
-              "cost": 20,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -221,7 +221,7 @@
             {
               "id": "6NIhWRwC",
               "label": "Heavy Flail (A3, Reliable, Rending)",
-              "cost": 25,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -249,7 +249,7 @@
             {
               "id": "WZZf-Bhl",
               "label": "Heavy Claw (A3, AP(1), Reliable)",
-              "cost": 30,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -312,7 +312,7 @@
             {
               "id": "8lNsaGtX",
               "label": "Gatling Cannon (30\u0022, A6, AP(1), Rending)",
-              "cost": 15,
+              "cost": 115,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -336,7 +336,7 @@
             {
               "id": "ArEBlsyG",
               "label": "Hell Autocannon (36\u0022, A6, AP(2))",
-              "cost": 35,
+              "cost": 130,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -389,7 +389,7 @@
             {
               "id": "9Q2QZg0p",
               "label": "Energy Field (Regeneration)",
-              "cost": 50,
+              "cost": 30,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -567,7 +567,7 @@
             {
               "id": "HSqlb",
               "label": "Top-Launcher (36\u0022, A1, Blast(3), Indirect)",
-              "cost": 60,
+              "cost": 45,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -596,7 +596,7 @@
             {
               "id": "3qBGx",
               "label": "Top-Machinegun (30\u0022, A3, AP(1))",
-              "cost": 55,
+              "cost": 50,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -648,7 +648,7 @@
             {
               "id": "aG4SOBv",
               "label": "Energy Field (Regeneration)",
-              "cost": 50,
+              "cost": 45,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -730,7 +730,7 @@
             {
               "id": "fgUpF",
               "label": "Heavy Chainsaw (A2, AP(2), Deadly(3))",
-              "cost": 10,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -779,7 +779,7 @@
             {
               "id": "z-vHs",
               "label": "Heavy Fist (A4, AP(4))",
-              "cost": 35,
+              "cost": 20,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -798,7 +798,7 @@
             {
               "id": "OwfwV",
               "label": "Heavy Sword (A6, AP(1), Rending)",
-              "cost": 20,
+              "cost": 25,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -822,7 +822,7 @@
             {
               "id": "ocLg_",
               "label": "Heavy Flail (A6, Reliable, Rending)",
-              "cost": 25,
+              "cost": 30,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -850,7 +850,7 @@
             {
               "id": "WYPox",
               "label": "Heavy Claw (A6, AP(1), Reliable)",
-              "cost": 30,
+              "cost": 35,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -1020,7 +1020,7 @@
             {
               "id": "HSqlb",
               "label": "Top-Launcher (36\u0022, A1, Blast(3), Indirect)",
-              "cost": 60,
+              "cost": 45,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -1049,7 +1049,7 @@
             {
               "id": "3qBGx",
               "label": "Top-Machinegun (30\u0022, A3, AP(1))",
-              "cost": 55,
+              "cost": 50,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -1101,7 +1101,7 @@
             {
               "id": "aG4SOBv",
               "label": "Energy Field (Regeneration)",
-              "cost": 50,
+              "cost": 45,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -1183,7 +1183,7 @@
             {
               "id": "fgUpF",
               "label": "Heavy Chainsaw (A2, AP(2), Deadly(3))",
-              "cost": 10,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -1232,7 +1232,7 @@
             {
               "id": "z-vHs",
               "label": "Heavy Fist (A4, AP(4))",
-              "cost": 35,
+              "cost": 20,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -1251,7 +1251,7 @@
             {
               "id": "OwfwV",
               "label": "Heavy Sword (A6, AP(1), Rending)",
-              "cost": 20,
+              "cost": 25,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -1275,7 +1275,7 @@
             {
               "id": "ocLg_",
               "label": "Heavy Flail (A6, Reliable, Rending)",
-              "cost": 25,
+              "cost": 30,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -1303,7 +1303,7 @@
             {
               "id": "WYPox",
               "label": "Heavy Claw (A6, AP(1), Reliable)",
-              "cost": 30,
+              "cost": 35,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -1380,7 +1380,7 @@
             {
               "id": "L89A3",
               "label": "Gatling Cannon (30\u0022, A6, AP(1), Rending)",
-              "cost": 15,
+              "cost": 30,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -1404,7 +1404,7 @@
             {
               "id": "T3Nug",
               "label": "Hell Autocannon (36\u0022, A6, AP(2))",
-              "cost": 35,
+              "cost": 50,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -1523,7 +1523,7 @@
             {
               "id": "HSqlb",
               "label": "Top-Launcher (36\u0022, A1, Blast(3), Indirect)",
-              "cost": 60,
+              "cost": 45,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -1604,7 +1604,7 @@
             {
               "id": "aG4SOBv",
               "label": "Energy Field (Regeneration)",
-              "cost": 50,
+              "cost": 45,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -1686,7 +1686,7 @@
             {
               "id": "L89A3",
               "label": "Gatling Cannon (30\u0022, A6, AP(1), Rending)",
-              "cost": 15,
+              "cost": 40,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -1710,7 +1710,7 @@
             {
               "id": "T3Nug",
               "label": "Hell Autocannon (36\u0022, A6, AP(2))",
-              "cost": 35,
+              "cost": 50,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -1890,7 +1890,7 @@
             {
               "id": "6kbqddJD",
               "label": "Heavy Chainsaw (A2, AP(2), Deadly(3))",
-              "cost": 10,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -1915,7 +1915,7 @@
             {
               "id": "ovTWiBZQ",
               "label": "Heavy Fist (A4, AP(4))",
-              "cost": 35,
+              "cost": 20,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -1934,7 +1934,7 @@
             {
               "id": "8biw-JWS",
               "label": "Heavy Sword (A6, AP(1), Rending)",
-              "cost": 20,
+              "cost": 25,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -1958,7 +1958,7 @@
             {
               "id": "j_N-TbRO",
               "label": "Heavy Flail (A6, Reliable, Rending)",
-              "cost": 25,
+              "cost": 30,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -1986,7 +1986,7 @@
             {
               "id": "AjUoac2Z",
               "label": "Heavy Claw (A6, AP(1), Reliable)",
-              "cost": 30,
+              "cost": 35,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -2073,7 +2073,7 @@
             {
               "id": "TbFrMNvd",
               "label": "Gatling Cannon (30\u0022, A12, AP(1), Rending)",
-              "cost": 15,
+              "cost": 230,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -2097,7 +2097,7 @@
             {
               "id": "XQIlHBlo",
               "label": "Hell Autocannon (36\u0022, A12, AP(2))",
-              "cost": 35,
+              "cost": 265,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -2182,7 +2182,7 @@
             {
               "id": "p1wtEvmu",
               "label": "Energy Field (Regeneration)",
-              "cost": 50,
+              "cost": 70,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -2352,7 +2352,7 @@
             {
               "id": "8lys0",
               "label": "Hull-Machinegun (30\u0022, A3, AP(1))",
-              "cost": 20,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -2383,7 +2383,7 @@
             {
               "id": "ljbaU4G",
               "label": "Top-Rocket (36\u0022, A1, Blast(3), Indirect)",
-              "cost": 60,
+              "cost": 45,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -2412,7 +2412,7 @@
             {
               "id": "39m0E",
               "label": "Top-Missile (36\u0022, A1, AP(2), Deadly(3))",
-              "cost": 65,
+              "cost": 60,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -2437,7 +2437,7 @@
             {
               "id": "V3Q7Q",
               "label": "Top-Anti-Air (36\u0022, A3, AP(1), Unstoppable)",
-              "cost": 75,
+              "cost": 65,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -2537,7 +2537,7 @@
             {
               "id": "r2-9d7S",
               "label": "Energy Field (Regeneration)",
-              "cost": 120,
+              "cost": 100,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -2572,7 +2572,7 @@
             {
               "id": "gjcQ_",
               "label": "Titan Chainsaw (A4, AP(2), Deadly(3))",
-              "cost": 20,
+              "cost": 30,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -2621,7 +2621,7 @@
             {
               "id": "dWnSF",
               "label": "Titan Sword (A12, AP(1), Rending)",
-              "cost": 10,
+              "cost": 55,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -2645,7 +2645,7 @@
             {
               "id": "09w2O",
               "label": "Titan Fist (A9, AP(4))",
-              "cost": 35,
+              "cost": 55,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -2664,7 +2664,7 @@
             {
               "id": "rb2TQ",
               "label": "Titan Flail (A12, Reliable, Rending)",
-              "cost": 50,
+              "cost": 60,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -2692,7 +2692,7 @@
             {
               "id": "sg0CG",
               "label": "Titan Claw (A12, AP(1), Reliable)",
-              "cost": 60,
+              "cost": 65,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -2853,7 +2853,7 @@
             {
               "id": "8lys0",
               "label": "Hull-Machinegun (30\u0022, A3, AP(1))",
-              "cost": 20,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -2884,7 +2884,7 @@
             {
               "id": "ljbaU4G",
               "label": "Top-Rocket (36\u0022, A1, Blast(3), Indirect)",
-              "cost": 60,
+              "cost": 45,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -2913,7 +2913,7 @@
             {
               "id": "39m0E",
               "label": "Top-Missile (36\u0022, A1, AP(2), Deadly(3))",
-              "cost": 65,
+              "cost": 60,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -2938,7 +2938,7 @@
             {
               "id": "V3Q7Q",
               "label": "Top-Anti-Air (36\u0022, A3, AP(1), Unstoppable)",
-              "cost": 75,
+              "cost": 65,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -3038,7 +3038,7 @@
             {
               "id": "r2-9d7S",
               "label": "Energy Field (Regeneration)",
-              "cost": 120,
+              "cost": 100,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -3073,7 +3073,7 @@
             {
               "id": "gjcQ_",
               "label": "Titan Chainsaw (A4, AP(2), Deadly(3))",
-              "cost": 20,
+              "cost": 30,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -3122,7 +3122,7 @@
             {
               "id": "dWnSF",
               "label": "Titan Sword (A12, AP(1), Rending)",
-              "cost": 10,
+              "cost": 45,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -3146,7 +3146,7 @@
             {
               "id": "09w2O",
               "label": "Titan Fist (A9, AP(4))",
-              "cost": 35,
+              "cost": 55,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -3165,7 +3165,7 @@
             {
               "id": "rb2TQ",
               "label": "Titan Flail (A12, Reliable, Rending)",
-              "cost": 50,
+              "cost": 55,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -3193,7 +3193,7 @@
             {
               "id": "sg0CG",
               "label": "Titan Claw (A12, AP(1), Reliable)",
-              "cost": 60,
+              "cost": 65,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -3270,7 +3270,7 @@
             {
               "id": "09WrV",
               "label": "Heavy Machinegun (30\u0022, A3, AP(1)), Titan Battle Cannon (30\u0022, A3, AP(2), Blast(3))",
-              "cost": 0,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -3328,7 +3328,7 @@
             {
               "id": "UBfuL",
               "label": "Titan Plasma Cannon (30\u0022, A3, AP(4), Blast(3))",
-              "cost": -5,
+              "cost": 25,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -3353,7 +3353,7 @@
             {
               "id": "XoCgR",
               "label": "Titan Gatling Cannon (30\u0022, A9, AP(1), Rending), Heavy Flamer (12\u0022, A1, AP(1), Blast(3), Reliable)",
-              "cost": 10,
+              "cost": 25,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -3395,7 +3395,7 @@
             {
               "id": "O-hsw",
               "label": "Titan Pulse Laser (30\u0022, A9, AP(3))",
-              "cost": 15,
+              "cost": 40,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -3536,7 +3536,7 @@
             {
               "id": "ljbaU4G",
               "label": "Top-Rocket (36\u0022, A1, Blast(3), Indirect)",
-              "cost": 60,
+              "cost": 45,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -3590,7 +3590,7 @@
             {
               "id": "V3Q7Q",
               "label": "Top-Anti-Air (36\u0022, A3, AP(1), Unstoppable)",
-              "cost": 75,
+              "cost": 70,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -3690,7 +3690,7 @@
             {
               "id": "r2-9d7S",
               "label": "Energy Field (Regeneration)",
-              "cost": 120,
+              "cost": 100,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -3725,7 +3725,7 @@
             {
               "id": "09WrV",
               "label": "Heavy Machinegun (30\u0022, A3, AP(1)), Titan Battle Cannon (30\u0022, A3, AP(2), Blast(3))",
-              "cost": 0,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -3783,7 +3783,7 @@
             {
               "id": "UBfuL",
               "label": "Titan Plasma Cannon (30\u0022, A3, AP(4), Blast(3))",
-              "cost": -5,
+              "cost": 25,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -3808,7 +3808,7 @@
             {
               "id": "XoCgR",
               "label": "Titan Gatling Cannon (30\u0022, A9, AP(1), Rending), Heavy Flamer (12\u0022, A1, AP(1), Blast(3), Reliable)",
-              "cost": 10,
+              "cost": 35,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -3850,7 +3850,7 @@
             {
               "id": "O-hsw",
               "label": "Titan Pulse Laser (30\u0022, A9, AP(3))",
-              "cost": 15,
+              "cost": 40,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -3999,7 +3999,7 @@
             {
               "id": "luvx-",
               "label": "Titan Volcano Cannon (30\u0022, A3, AP(3), Deadly(3))",
-              "cost": 65,
+              "cost": 85,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -4024,7 +4024,7 @@
             {
               "id": "UgjZm",
               "label": "Plasma Battle Cannon (30\u0022, A3, AP(4), Blast(3))",
-              "cost": 80,
+              "cost": 115,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -4063,7 +4063,7 @@
             {
               "id": "qMEUN",
               "label": "Twin Shoulder-Missile (24\u0022, A2, AP(3), Deadly(3))",
-              "cost": 35,
+              "cost": 45,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -4125,7 +4125,7 @@
             {
               "id": "NZMpyHy",
               "label": "Top-Missile (24\u0022, A2, AP(3), Deadly(3))",
-              "cost": 110,
+              "cost": 115,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -4226,7 +4226,7 @@
             {
               "id": "7a4uz",
               "label": "Energy Field (Regeneration)",
-              "cost": 160,
+              "cost": 135,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],

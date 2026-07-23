@@ -584,7 +584,7 @@
             {
               "id": "MnyhS",
               "label": "Elite Plas-Burst Pistol (12\u0022, A3, Hazardous)",
-              "cost": 5,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -2281,7 +2281,7 @@
             {
               "id": "h_gc8YH7",
               "label": "Sgt. Pistol (12\u0022, A1), Electro-Sword (A2, AP(1), Rending)",
-              "cost": -5,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -3060,7 +3060,7 @@
             {
               "id": "3CupZNBD",
               "label": "Sgt. Heavy Pistol (12\u0022, A1, AP(1)), Electro-Sword (A2, AP(1), Rending)",
-              "cost": -5,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -4667,7 +4667,7 @@
             {
               "id": "gfxFzu3",
               "label": "Twin Heavy Machinegun (30\u0022, A6, AP(1))",
-              "cost": 20,
+              "cost": 75,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -4983,7 +4983,7 @@
             {
               "id": "9QGekxI",
               "label": "Heavy Flamer (12\u0022, A1, AP(1), Blast(3), Reliable)",
-              "cost": 30,
+              "cost": 25,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -6195,7 +6195,7 @@
             {
               "id": "L-EDT",
               "label": "Twin AA-Cannon (30\u0022, A6, AP(1), Unstoppable)",
-              "cost": 40,
+              "cost": 50,
               "costUnpriced": false,
               "weaponsGained": [
                 {

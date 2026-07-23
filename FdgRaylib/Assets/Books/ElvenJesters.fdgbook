@@ -173,7 +173,7 @@
             {
               "id": "a08lo",
               "label": "Jester Sniper Rifle (24\u0022, A2, Reliable, Disintegrate, Takedown)",
-              "cost": 40,
+              "cost": 35,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -239,7 +239,7 @@
             {
               "id": "MrAeY",
               "label": "Dagger (A1), Deathly Kiss (A1, AP(2), Deadly(3))",
-              "cost": 10,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -310,7 +310,7 @@
             {
               "id": "3dK0V",
               "label": "Deathly Embrace (A2, AP(4))",
-              "cost": 15,
+              "cost": 20,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -424,7 +424,7 @@
             {
               "id": "XOaf1OI",
               "label": "Jetbike (Fragment Cannon (24\u0022, A3, AP(1), Disintegrate), Fast, Strider, Tough(3))",
-              "cost": 125,
+              "cost": 135,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -585,7 +585,7 @@
             {
               "id": "IF6uP",
               "label": "Jester Seer (Caster(2))",
-              "cost": 40,
+              "cost": 45,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -607,7 +607,7 @@
             {
               "id": "IebOQAo",
               "label": "Master Jester Seer (Caster(3))",
-              "cost": 60,
+              "cost": 75,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -769,7 +769,7 @@
             {
               "id": "INTCopeN",
               "label": "Jester Seer (Caster(2))",
-              "cost": 40,
+              "cost": 45,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -1038,7 +1038,7 @@
             {
               "id": "tD1bdD3",
               "label": "Deathly Embrace (A2, AP(4))",
-              "cost": 15,
+              "cost": 20,
               "costUnpriced": false,
               "weaponsGained": [
                 {

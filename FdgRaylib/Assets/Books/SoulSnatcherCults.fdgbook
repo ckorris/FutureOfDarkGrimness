@@ -125,7 +125,7 @@
             {
               "id": "MWIWMUsh",
               "label": "Pet Familiar (Repel Ambushers)",
-              "cost": 10,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -523,7 +523,7 @@
             {
               "id": "8N2L5Rp9",
               "label": "Pet Familiar (Repel Ambushers)",
-              "cost": 10,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -703,7 +703,7 @@
             {
               "id": "5W_Y9",
               "label": "Sabotage Charges (A1, AP(1), Blast(3))",
-              "cost": 0,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -755,7 +755,7 @@
             {
               "id": "61Cd5HU",
               "label": "Syringe Goad (A1, AP(2), Deadly(3))",
-              "cost": 5,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -780,7 +780,7 @@
             {
               "id": "lsCPX6a",
               "label": "Array of CCWs (A3, AP(1), Bane)",
-              "cost": 5,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -818,7 +818,7 @@
             {
               "id": "NRFJM",
               "label": "Cult Burst Pistol (12\u0022, A4)",
-              "cost": 10,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -875,7 +875,7 @@
             {
               "id": "KqZ8V",
               "label": "Cult Sniper Rifle (30\u0022, A2, AP(1), Reliable, Takedown)",
-              "cost": 70,
+              "cost": 55,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -936,7 +936,7 @@
             {
               "id": "fq5-7T7-I9",
               "label": "Pet Familiar (Repel Ambushers)",
-              "cost": 10,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -1182,7 +1182,7 @@
             {
               "id": "EHIPKa_",
               "label": "Duelist Pistols (12\u0022, A2, AP(1), Reliable, Takedown)",
-              "cost": 25,
+              "cost": 20,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -1225,7 +1225,7 @@
             {
               "id": "iaYBroJ",
               "label": "Toxin Blades (A4, AP(1), Bane)",
-              "cost": 10,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -1249,7 +1249,7 @@
             {
               "id": "OLB347p",
               "label": "Dual Swords (A4, AP(1), Rending)",
-              "cost": 15,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -1285,7 +1285,7 @@
             {
               "id": "4krfngt5fL",
               "label": "Pet Familiar (Repel Ambushers)",
-              "cost": 10,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -1384,7 +1384,7 @@
             {
               "id": "78Y-2K1",
               "label": "Plasma Rifle (24\u0022, A1, AP(4))",
-              "cost": 5,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -1678,7 +1678,7 @@
             {
               "id": "cN08eDk",
               "label": "Laser Cannon (36\u0022, A1, AP(3), Deadly(3))",
-              "cost": 10,
+              "cost": 20,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -1925,7 +1925,7 @@
             {
               "id": "c_QU9",
               "label": "Sniper Rifle (30\u0022, A1, AP(1), Reliable, Takedown)",
-              "cost": 30,
+              "cost": 25,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -2265,7 +2265,7 @@
             {
               "id": "tFGcnId",
               "label": "Demo-Charges (A1, AP(2), Blast(3))",
-              "cost": -5,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -2315,7 +2315,7 @@
             {
               "id": "NhbHlYK",
               "label": "Heavy Drill (A3, AP(1), Rending)",
-              "cost": 5,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -2339,7 +2339,7 @@
             {
               "id": "tlqBUoW",
               "label": "Heavy Buzz Saw (A3, AP(4))",
-              "cost": 10,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -2438,7 +2438,7 @@
             {
               "id": "kbBXj",
               "label": "Sgt. Pistol (12\u0022, A1), Sharp Claw (A2, Disintegrate)",
-              "cost": -5,
+              "cost": 0,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -2594,7 +2594,7 @@
             {
               "id": "uANPSii",
               "label": "Heavy Hammer (A1, AP(1), Blast(3))",
-              "cost": -5,
+              "cost": 0,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -2619,7 +2619,7 @@
             {
               "id": "6AKQA",
               "label": "Heavy Great Weapon (A2, AP(3))",
-              "cost": 20,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -2765,7 +2765,7 @@
             {
               "id": "Yba-4XAQ",
               "label": "Mind Snatcher (Caster(1))",
-              "cost": 20,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -2889,7 +2889,7 @@
             {
               "id": "YJcOaiD",
               "label": "Mind Snatcher (Caster(1))",
-              "cost": 20,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -2996,7 +2996,7 @@
             {
               "id": "rNvcpT3",
               "label": "Shotgun (12\u0022, A2, AP(1))",
-              "cost": 0,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -3015,7 +3015,7 @@
             {
               "id": "noqnN6s",
               "label": "Grenade Launcher (24\u0022, A1, Blast(3))",
-              "cost": 5,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -3103,7 +3103,7 @@
             {
               "id": "pqW8nJd",
               "label": "Heavy Pick (A2, AP(1), Rending)",
-              "cost": 5,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -3127,7 +3127,7 @@
             {
               "id": "_kS_q91",
               "label": "Heavy Axe (A1, AP(2), Deadly(3))",
-              "cost": 5,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -3152,7 +3152,7 @@
             {
               "id": "wSuDaQd",
               "label": "Heavy Mace (A2, AP(4))",
-              "cost": 5,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -3280,7 +3280,7 @@
             {
               "id": "L803bko",
               "label": "Heavy Machinegun (30\u0022, A3, AP(1))",
-              "cost": -5,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -3409,7 +3409,7 @@
             {
               "id": "BzrBd4q",
               "label": "Heavy Mortar (36\u0022, A1, AP(1), Blast(3), Indirect)",
-              "cost": 15,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -3610,7 +3610,7 @@
             {
               "id": "truLDJ3",
               "label": "Camouflage Netting (Stealth)",
-              "cost": 60,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -3643,7 +3643,7 @@
             {
               "id": "J49G6",
               "label": "Hunter Missiles (24\u0022, A1, AP(2), Deadly(3), Limited, Unstoppable)",
-              "cost": 10,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -3863,7 +3863,7 @@
             {
               "id": "tjFWd",
               "label": "Heavy Incinerator (18\u0022, A2, AP(1), Blast(3), Reliable)",
-              "cost": 25,
+              "cost": 20,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -3892,7 +3892,7 @@
             {
               "id": "Ijpb1fK",
               "label": "Rapid Heavy Mining Laser (24\u0022, A2, AP(3), Deadly(3))",
-              "cost": 25,
+              "cost": 30,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -3929,7 +3929,7 @@
             {
               "id": "sPtME",
               "label": "Great Grinder (Impact(5))",
-              "cost": 25,
+              "cost": 30,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -4131,7 +4131,7 @@
             {
               "id": "wMwlMso",
               "label": "Dozer Blade (Strider)",
-              "cost": 10,
+              "cost": 20,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -4152,7 +4152,7 @@
             {
               "id": "truLDJ3",
               "label": "Camouflage Netting (Stealth)",
-              "cost": 60,
+              "cost": 30,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -4185,7 +4185,7 @@
             {
               "id": "J49G6",
               "label": "Hunter Missiles (24\u0022, A1, AP(2), Deadly(3), Limited, Unstoppable)",
-              "cost": 10,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -4232,7 +4232,7 @@
             {
               "id": "uT-2yz0",
               "label": "Anti-Tank Cannon (30\u0022, A1, AP(3), Deadly(6))",
-              "cost": 20,
+              "cost": 25,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -4257,7 +4257,7 @@
             {
               "id": "eiX5T2w",
               "label": "Punisher Gatling Cannon (24\u0022, A6, Rending)",
-              "cost": 10,
+              "cost": 25,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -4281,7 +4281,7 @@
             {
               "id": "NHMCR2F",
               "label": "Battle Cannon (30\u0022, A2, AP(2), Blast(3))",
-              "cost": 20,
+              "cost": 30,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -4306,7 +4306,7 @@
             {
               "id": "8cp93Dm",
               "label": "Heavy Plasma Cannon (30\u0022, A1, AP(4), Blast(6))",
-              "cost": 30,
+              "cost": 35,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -4360,7 +4360,7 @@
             {
               "id": "YZl4pcI",
               "label": "Heavy Autocannon (36\u0022, A6, AP(2))",
-              "cost": 45,
+              "cost": 60,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -4393,7 +4393,7 @@
             {
               "id": "vIEpvX5",
               "label": "Twin Heavy Fusion Rifle (18\u0022, A2, AP(4), Deadly(3))",
-              "cost": 15,
+              "cost": 20,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -4437,7 +4437,7 @@
             {
               "id": "YbA4H8_",
               "label": "Twin Plasma Cannon (30\u0022, A2, AP(4), Blast(3))",
-              "cost": 50,
+              "cost": 60,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -4474,7 +4474,7 @@
             {
               "id": "FD3_6mr",
               "label": "Heavy Flamer (12\u0022, A1, AP(1), Blast(3), Reliable)",
-              "cost": 30,
+              "cost": 25,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -4643,7 +4643,7 @@
             {
               "id": "WPac8F4",
               "label": "Twin Missile Launcher (30\u0022, A2, AP(2), Deadly(3), Unstoppable)",
-              "cost": 45,
+              "cost": 30,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -4672,7 +4672,7 @@
             {
               "id": "Dm1G248",
               "label": "Twin Laser Cannon (36\u0022, A2, AP(3), Deadly(3))",
-              "cost": 50,
+              "cost": 55,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -4697,7 +4697,7 @@
             {
               "id": "l0T2oNK",
               "label": "Twin Autocannon (36\u0022, A6, AP(2))",
-              "cost": 50,
+              "cost": 55,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -4716,7 +4716,7 @@
             {
               "id": "je3evYC",
               "label": "Twin Plasma Cannon (30\u0022, A2, AP(4), Blast(3))",
-              "cost": 50,
+              "cost": 60,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -4741,7 +4741,7 @@
             {
               "id": "o_D0WyN",
               "label": "Twin Laser Machinegun (30\u0022, A6, AP(3))",
-              "cost": 55,
+              "cost": 65,
               "costUnpriced": false,
               "weaponsGained": [
                 {
