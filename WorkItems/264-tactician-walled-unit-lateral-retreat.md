@@ -112,6 +112,41 @@ possible oscillation (snake-stretch then re-grid; left-vs-right around the piece
 
 ## Notes
 
+- 2026-07-23 (later still): **failing pins landed** - `Tests/TacticianWalledUnitTests.cs` (engine,
+  branch `264-walled-unit-pins`), 9 tests, ALL RED BY DESIGN, `[Category("Pending264")]`. The rest
+  of the suite stays green via `dotnet test --filter TestCategory!=Pending264` (1928/1928). The
+  pass/fail metric for the fixes; do not "fix" a pin by weakening its assert. Suspect verdicts
+  from the runs:
+  - **1 TRUE + refined**: in the 11-behind-20"-wall scene the argmax is FallBack at exactly 0.0500
+    (the Reachable bonus), the unit rushes backward to the table edge, then Holds there forever.
+    Refinement: the retaliation ASYMMETRY co-drives it (forward endpoints sit in the enemy's
+    reach, the retreat endpoint does not: every forward candidate scores ~-0.04) - so removing
+    the bonus alone would only convert retreat into freeze; the path-length gradient must pay
+    real approach value for rounding the wall.
+  - **2 TRUE**: the bonus is precisely what lifts FallBack (0.0500) over Hold (0.0036) - it picks
+    WHICH bad candidate wins.
+  - **3 TRUE**: goal 0.7" past the wall's far face is legally standable but its grid cell is
+    inflation-blocked -> FindPath null -> straight-line fallback -> ladder crawls half the gap
+    into the near wall face each activation; 3x12" moves end 4.6" short at the face, never
+    rounding the 14"-detour corner.
+  - **4 TRUE but corner-hugging-specific**: with the route's first bend INSIDE the budget (rank's
+    east end at the corner), the shared-waypoint funnel nets 1.06" of a 12" rush. Centered under
+    the wall (bend outside budget) the #256 measure-and-correct loop degrades gracefully and the
+    unit advances fine - probed both.
+  - **5 TRUE**: corridor walls + a friendly on the centerline produce mixed
+    MovingThroughImpassible + EndedOnFriendly errors (guard-asserted), both rescue gates stay
+    shut, net move 0.375" of 12".
+  - **6 TRUE**: with only >=80-degree skirts clear, the solo resolver rushes the FULL 12" at
+    +100 degrees - ends north-west of start, negative component toward the enemy.
+  - **7 TRUE (latent)**: a per-model budget of rush 8 on one model (the Slow-hero request shape)
+    makes the flat-budget plan fail TacticianMovementResolver's re-check -> silent solo fallback.
+  - **8a TRUE**: deployment parks the 11-model block at (23.9,10.3) squarely behind the wall -
+    16.0" detour penalty to the objective it aimed at. **8b TRUE**: see 1 - re-argmax freezes at
+    the pocket edge across activations.
+  Next: implement fixes in the agreed order 1 -> 2 -> 3 (one slice per fix, pins flipping green
+  as the exit gate), then 5/6 (solo D1 re-pin needed), then 4, 7, 8. Weight changes need Chris's
+  sign-off + a benchmark run.
+
 - 2026-07-23 (later): **scenario terrain landed** (#167 facet, branch `167-scenario-terrain`) and
   the repro loop already works: `Scenarios/example-walled-advance.json` (5-model Dummies behind a
   20x2 impassible wall, objectives beyond it) -> `--make-scenario` -> `fdglab analyze --unit

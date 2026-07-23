@@ -74,7 +74,7 @@ Corpus coverage is a different story: 283 of 13,870 book rule references (2.0%) 
 Master plan: `docs/ai-agent-plan.md` (heuristics -> MCTS -> learned value net; gates, invariants, vocabulary).
 
 - [ ] 191 — Tactician AI agent umbrella: challenge-level game-playing AI as a new profile alongside the solo-rules bot; phased A-D, benchmark-gated. ([WorkItems/191](WorkItems/191-tactician-agent.md))
-- [~] 264 — Tactician unit behind large impassible terrain rushes sideways/backwards round 1 (Knight Brothers game): 8 candidate causes identified with repro + fix sketches (headline: Euclidean objective gradient + Reachable bonus make retreat the argmax); test-first plan, scenario-terrain (#167 facet) is the enabling slice. ([WorkItems/264](WorkItems/264-tactician-walled-unit-lateral-retreat.md))
+- [~] 264 — Tactician unit behind large impassible terrain rushes sideways/backwards round 1: 8 causes confirmed by 9 red-by-design pins (`TacticianWalledUnitTests`, branch `264-walled-unit-pins`, Category Pending264); fixes next in order 1->2->3, 5/6, 4, 7, 8. ([WorkItems/264](WorkItems/264-tactician-walled-unit-lateral-retreat.md))
 
 ## Networking & infrastructure
 
