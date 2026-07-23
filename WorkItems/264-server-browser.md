@@ -1,6 +1,6 @@
 # 264 — Server browser (public game listing via a master list server)
 
-**Status**: todo (design filed; awaiting sign-off on the forks below — nothing built)
+**Status**: in-progress (P1-P3 implemented + locally verified on branch `264-server-browser`)
 **Related**: #189 (configurable port — soft prerequisite), #186 (wire deserialization hardening — should land before advertising servers to strangers), #065 (networking tests), #075 handshake (`NewLobbyClientGreeting` / `NetworkProtocol.TryValidateJoin`), #226 (bug reporting — could share the same Worker later)
 
 ## Goal
@@ -127,15 +127,60 @@ unless the transport changes or a relay exists. v1 stance: **direct connect only
 
 ## Notes
 
-- 2026-07-23: Filed. Design + API sketch + cost analysis written; explicitly not started — awaiting
-  fork sign-off. Grounding checked in-repo: `FDGHost` TCP on `CommandProtocol.TEMP_PORT` 6389
-  (hardcoded, #189); #075 greeting carries `ProtocolVersion` + `TypeMapHash`; ClientModal already
-  resolves DNS names and runs the accept/reject handshake with timeout — the browser only needs to
-  feed it an address.
+- 2026-07-23 (later): P1-P3 implemented on `264-server-browser`:
+  - **P1** `tools/list-server/` — Worker + single `Registry` Durable Object (SQLite class, free
+    plan), all three endpoints, 90s TTL lazy sweep, token auth, per-IP rate limit (3s) + caps
+    (4/IP, 200 total), 4KB body cap, ASCII name fold, observed-IP-only listing + probe.
+    Verified: `npm run typecheck` clean; `smoke.sh` (18 asserts incl. token-leak, rate-limit,
+    validation, delete) green against `wrangler dev`.
+  - **P2** `FdgRaylib/ListServer/` — `ListServerConfig` (env var -> `listserver.url` file ->
+    compiled default; empty = feature hidden), `ListServerClient` (System.Text.Json plain DTOs,
+    deliberately no Newtonsoft/$type on this internet-facing path), `PublicListingService`
+    (30s heartbeat, re-register on 404, in-game state flip via `OnLaunched`, best-effort delist
+    on dispose). HostModal "List publicly" checkbox (label warns the IP becomes visible);
+    Program.cs disposes on lobby back / game exit (`RaylibRenderer.OnGameExited`, new seam at the
+    end of `ExitGame`) / app exit.
+  - **P3** ClientModal — when a list server is configured the modal becomes "JOIN GAME" with the
+    SERVER BROWSER as the default tab (Server/Players/Access/Build/Port columns, 15s
+    auto-refresh, compat check against `NetworkProtocol.Version` + `LocalTypeMapHash`, in-game
+    rows disabled) and DIRECT CONNECT as the second tab; unconfigured builds render exactly the
+    old modal. Locked servers get an inline password popup (popup opened at dialog scope — an
+    `OpenPopup` inside the row's `PushID` never matches).
+  - Verified: engine suite 1991/1991 green; headless smoke exit 0; a scratch C# harness ran the
+    real `ListServerClient` against `wrangler dev` end-to-end (register -> list -> heartbeat
+    state/count update -> delete) — CONTRACT CHECK PASSED.
+- 2026-07-23: Filed. Design + API sketch + cost analysis written. Grounding checked in-repo:
+  `FDGHost` TCP on `CommandProtocol.TEMP_PORT` 6389 (hardcoded, #189); #075 greeting carries
+  `ProtocolVersion` + `TypeMapHash`; ClientModal already resolves DNS names and runs the
+  accept/reject handshake with timeout — the browser only needs to feed it an address.
+
+## Remaining (explicit, not silently dropped)
+
+- **Deploy**: owner runs `npx wrangler login` + `npx wrangler deploy` (tools/list-server/README),
+  then bakes the printed URL into `ListServerConfig.DefaultBaseUrl` (or ships `listserver.url`).
+  Until then the feature is invisible in shipped builds. Dev testing: `FDG_LIST_SERVER_URL=http://localhost:8787`.
+- **P4 status surface**: `PublicListingService.Status` (incl. the "port unreachable" warning from
+  the probe) is computed but not yet shown anywhere — needs a line on the lobby screen. Port
+  forwarding help text also unwritten.
+- **GUI hand-verify** (no display in the implementing session): host checkbox flow, browse tab
+  layout/join, password popup, teardown on all exit paths.
+- **Live two-machine internet test** after deploy (reachability probe result on a real WAN host).
+- Loaded-game lobbies (`LoadGameFlow`) are never listed — deliberate v1 scope.
+- `maxPlayers` advertised as a constant 8 (the #221 color-palette ceiling); no real lobby cap exists.
+- Security follow-ups filed separately: #265 (untrusted content files), #266 (FDGHost pre-auth
+  limits); #186 elevated to a prerequisite for announcing public listing.
 
 ## Decisions
 
-(none yet — see forks)
+- Forks resolved by owner 2026-07-23: Cloudflare Worker + TypeScript; browser is the DEFAULT join
+  surface (direct connect demoted to second tab); v1 NAT stance = direct connect + honest
+  reachability labeling, no relay.
+- Password entry for locked listings is an inline popup on the browse tab, not a jump to the
+  direct tab — the installed ImGui.NET lacks the `BeginTabItem(label, flags)` overload needed for
+  a programmatic `SetSelected` switch, and the popup is better UX anyway.
+- `package-lock.json` is committed (pins wrangler/toolchain — supply-chain hygiene).
+- Listing keeps heartbeating during play with `state: "in-game"` so the browser can show the
+  server as occupied rather than having it vanish.
 
 ## Outcome
 
