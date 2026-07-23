@@ -110,6 +110,22 @@ units minus any marked `Activated`, `CurrentRoundTeamFinishOrder` empty, `Settin
   networked resume).
 
 ## Notes
+- 2026-07-23: **terrain facet DONE** (branch `167-scenario-terrain`, engine + app). Scenario JSON
+  gains an optional `terrain` array — `type` = ETerrainType flags ('|' or ',' separated), `shape` =
+  Rectangle (center + size + optional rotationDegrees, rotated via the live placement's
+  TerrainTemplateUtilities) or Circle (center + diameter), optional heightInches; strict validation
+  (unknown type/shape, missing dims, rotation-on-circle all rejected with messages). Compiles to
+  plain TerrainData in the store, so movement/cover/LoS see it exactly like player-placed pieces.
+  3 new tests (round-trip geometry probes incl. rotation, error messages); suite 1928/1928; full
+  build; `--make-scenario` + headless `--scenario` on the new `Scenarios/example-walled-advance.json`
+  play to completion; `fdglab analyze` on the compiled save prints the walled unit's candidate
+  table (and already shows the #264 pathology in miniature - see that item). Auto-placed units
+  remain terrain-blind (documented). GUI `--scenario` terrain render: needs a hand pass.
+  Deferred: referencing an .fdgterrain layout file from a scenario (inline entries only for now).
+- 2026-07-23: **starting the deferred terrain facet** (TerrainData synthesis in ScenarioCompiler +
+  a `terrain` array in the scenario JSON) as the enabling slice for #264 (Tactician walled-unit
+  repros need impassible terrain in one-command scenarios). Branch `167-scenario-terrain`,
+  engine work authorized by Chris's direct request to start on this facet.
 - 2026-07-08 (cont.): **GUI `--scenario` first hand-run segfaulted at launch - fixed (`1ec69c9`).**
   Silent exit, no window: the `--scenario` block called `TransitionToGame` before `Run()` opened the
   window, and TransitionToGame attaches the #162 tactical overlay whose `GpuFieldRenderer.TryInit`
