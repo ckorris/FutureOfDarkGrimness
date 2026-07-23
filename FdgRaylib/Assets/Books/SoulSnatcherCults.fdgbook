@@ -4917,6 +4917,41 @@
       "description": "When this unit is activated, it may place all its models anywhere fully within D3\u002B1 inches of their position."
     },
     {
+      "name": "Speed Buff",
+      "passive": [],
+      "activated": [
+        {
+          "triggerHook": "Activation_OnPreAttack",
+          "cost": {
+            "kind": "oncePerActivation"
+          },
+          "targetSelector": {
+            "rangeInches": 12,
+            "minCount": 1,
+            "maxCount": 1,
+            "targetAffinity": "Friend",
+            "requireLineOfSight": false,
+            "requiredToken": null,
+            "singleModel": false,
+            "requiredRule": null
+          },
+          "effect": {
+            "kind": "addRule",
+            "ruleName": "Fast",
+            "scope": "NextTrigger"
+          },
+          "availableWhen": {
+            "kind": "always"
+          },
+          "label": ""
+        }
+      ],
+      "scope": "Unit",
+      "engineArgumentCount": 0,
+      "valence": "Positive",
+      "description": "Once per activation, before attacking, pick one friendly unit within 12\u0022, which moves \u002B2\u0022 when using Advance actions and \u002B4\u0022 when using Rush/Charge actions once (next time the effect would apply)."
+    },
+    {
       "name": "Melee Slayer",
       "passive": [
         {

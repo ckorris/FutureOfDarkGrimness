@@ -1,6 +1,6 @@
 # 262 — Army Forge charges a "Replace X" whose X the unit doesn't have; we charge 0
 
-**Status**: todo — needs a ruling on which behavior is right before anything is built
+**Status**: closed — ruled an upstream Army Forge bug (Chris, 2026-07-23). Our behavior stands; no change.
 **Related**: #261 (found while reconciling the same list), #218/#219 (pricing reconciliation family)
 
 ## Goal
@@ -45,4 +45,11 @@ Whichever wins, the import preview should name the affected selections instead o
 
 ## Outcome
 
-_(open)_
+**Closed 2026-07-23 as an upstream Army Forge defect** (Chris's ruling): Army Forge is billing for a swap
+whose target the unit does not carry, so the 80-pt gap is its error, not ours. Option 1 stands by default -
+`ListCompiler` keeps clamping applications to the matched target count, so an inapplicable Replace applies
+nothing and costs nothing. No code change.
+
+Left undone deliberately: the import preview still reports only a total, so a gap of this kind shows up as
+an unexplained number rather than a named selection. Worth revisiting if it bites again - it would have cut
+this investigation short - but not worth building on one upstream-buggy list.

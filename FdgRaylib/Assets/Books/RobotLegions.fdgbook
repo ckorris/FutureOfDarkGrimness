@@ -5301,6 +5301,42 @@
       "engineArgumentCount": 0,
       "valence": "Positive",
       "description": "Fires at targets out of line of sight and ignores cover when shooting; -1 to hit if the unit moved this activation."
+    },
+    {
+      "name": "Casting Buff",
+      "passive": [],
+      "activated": [
+        {
+          "triggerHook": "Activation_OnPreAttack",
+          "cost": {
+            "kind": "oncePerActivation"
+          },
+          "targetSelector": {
+            "rangeInches": 12,
+            "minCount": 1,
+            "maxCount": 1,
+            "targetAffinity": "Friend",
+            "requireLineOfSight": false,
+            "requiredToken": null,
+            "singleModel": false,
+            "requiredRule": "Caster"
+          },
+          "effect": {
+            "kind": "statModifier",
+            "roll": "Cast",
+            "delta": 1,
+            "lifetimeScope": "NextTrigger"
+          },
+          "availableWhen": {
+            "kind": "always"
+          },
+          "label": ""
+        }
+      ],
+      "scope": "Unit",
+      "engineArgumentCount": 0,
+      "valence": "Positive",
+      "description": "Once per activation, before attacking, pick one friendly unit within 12\u0022 with Caster, which gets \u002B1 to casting rolls once (next time the effect would apply)."
     }
   ],
   "spells": [
