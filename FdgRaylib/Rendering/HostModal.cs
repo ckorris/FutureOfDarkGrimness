@@ -1,19 +1,24 @@
 using System.Numerics;
 using FDG.Network.Connection;
 using FDG.Network.Connection.Lobby;
+using FdgRaylib.ListServer;
 using ImGuiNET;
 
 namespace FdgRaylib.Rendering;
 
 public class HostModal : IAppScreen
 {
-    public Action<ILobbyViewModel>? OnCreated;
+    // The second argument is the public-listing heartbeat (#264), or null when the host didn't tick
+    // "List publicly" (or no list server is configured). The receiver (Program.cs) owns its
+    // lifetime: dispose on lobby close / game end / app exit.
+    public Action<ILobbyViewModel, PublicListingService?>? OnCreated;
     public Action? OnCancel;
 
-    private string _yourName   = "Mr. Host";
-    private string _serverName = "The Table";
-    private string _password   = "";
-    private string _error      = "";
+    private string _yourName      = "Mr. Host";
+    private string _serverName    = "The Table";
+    private string _password      = "";
+    private bool   _listPublicly  = false;
+    private string _error         = "";
 
     private const float DialogWidthFraction  = 0.30f;
     private const float DialogHeightFraction = 0.42f;
@@ -57,6 +62,17 @@ public class HostModal : IAppScreen
         DrawLabeledInput("Server Name", ref _serverName, dw, scale);
         ImGui.SetCursorPosX(pad);
         DrawLabeledInput("Password",    ref _password,   dw, scale, ImGuiInputTextFlags.Password);
+
+        // Public listing (#264). Only offered when a list server is configured; hosting itself
+        // never depends on the registry.
+        if (ListServerConfig.IsConfigured)
+        {
+            string label = "List publicly (your IP becomes visible in the server browser)";
+            float checkW = ImGui.CalcTextSize(label).X + ImGui.GetFrameHeight() + 8f * scale;
+            ImGui.SetCursorPosX((dw - checkW) * 0.5f);
+            ImGui.Checkbox(label, ref _listPublicly);
+            ImGui.Spacing();
+        }
 
         ImGui.SetWindowFontScale(1.0f * scale);
         CenterText(_error, dw);
@@ -129,15 +145,26 @@ public class HostModal : IAppScreen
         _ = host.StartAsync();
 
         var viewModel = new LobbyViewModel_Host(_yourName, _serverName, _password, host);
+
+        // Start the public-listing heartbeat (#264) alongside the host. The password itself never
+        // leaves this machine — only a has-password flag is advertised.
+        PublicListingService? listing = null;
+        if (_listPublicly && ListServerConfig.BaseUrl is string baseUrl)
+        {
+            listing = new PublicListingService(viewModel, baseUrl,
+                hasPassword: !string.IsNullOrEmpty(_password));
+        }
+
         Reset();
-        OnCreated?.Invoke(viewModel);
+        OnCreated?.Invoke(viewModel, listing);
     }
 
     private void Reset()
     {
-        _yourName   = "Mr. Host";
-        _serverName = "The Table";
-        _password   = "";
-        _error      = "";
+        _yourName     = "Mr. Host";
+        _serverName   = "The Table";
+        _password     = "";
+        _listPublicly = false;
+        _error        = "";
     }
 }

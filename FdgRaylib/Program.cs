@@ -1,5 +1,6 @@
 using System.Text.Json;
 using FdgRaylib.Cli;
+using FdgRaylib.ListServer;
 using FdgRaylib.Rendering;
 using FDG;
 using FDG.ArmyBuilding;
@@ -477,8 +478,20 @@ else
     renderer.HostModal.OnCancel = () =>
         renderer.NavigateTo(renderer.MainMenu);
 
-    renderer.HostModal.OnCreated = lobby =>
+    // The public-listing heartbeat (#264), when the host ticked "List publicly". Stopped on every
+    // lobby/game exit path below; a missed path only means the entry lingers until the registry's
+    // 90s TTL, so this is belt-and-braces rather than load-bearing.
+    PublicListingService? activeListing = null;
+    void StopListing()
     {
+        activeListing?.Dispose();
+        activeListing = null;
+    }
+
+    renderer.HostModal.OnCreated = (lobby, listing) =>
+    {
+        StopListing();
+        activeListing = listing;
         renderer.LobbyScreen.SetViewModel(lobby);
         renderer.NavigateTo(renderer.LobbyScreen);
     };
@@ -495,7 +508,13 @@ else
 
     // ── Lobby ──────────────────────────────────────────────────────────────────
     renderer.LobbyScreen.OnBack = () =>
+    {
+        StopListing();
         renderer.NavigateTo(renderer.MainMenu);
+    };
+
+    // Covers game-over, escape-menu quit-to-menu, and escape-menu load (#264).
+    renderer.OnGameExited = StopListing;
 
     renderer.LobbyScreen.OnGameLaunched = (tableState, colorFunc, log, overlay, taskDisplay, presentationPlayer, saveGame, chatUI) =>
         renderer.TransitionToGame(tableState, colorFunc, log, overlay, taskDisplay, presentationPlayer, saveGame, chatUI);
@@ -557,5 +576,10 @@ else
         Console.Error.WriteLine("Press Enter to exit.");
         Console.ReadLine();
         throw;
+    }
+    finally
+    {
+        // App exit: send the polite delist so the entry vanishes now, not at TTL (#264).
+        StopListing();
     }
 }
