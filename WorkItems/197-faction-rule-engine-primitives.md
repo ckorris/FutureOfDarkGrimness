@@ -505,6 +505,35 @@ slice built. Shipped:
   resolver), decline -> stays at its deploy position, non-Fanatic -> no prompt. Engine 1870/1870, app build
   clean, headless smoke exit 0. Corpus dead **379 -> 360**.
 
+### Re-Deployment (27 refs) - DONE 2026-07-22, engine `3c2d340`
+
+The genuine new deploy-phase work: "after all other units are deployed (excluding units that were set
+aside), you may remove up to two friendly units from the table and deploy them again; players alternate in
+placing, starting with the player that activates next." Shipped:
+- **`ReDeploymentStage`** - a new child of `DeployAllUnitsStage`, inserted after the normal deploy loop
+  (`OnFinishedDeployingAllUnits`) and BEFORE `PlaceDeferredUnitsStage`, so set-aside (Scout) units are still
+  off-table and therefore ineligible - which is exactly "excluding units that were set aside" (eligibility is
+  `GetIsOnBattlefield`).
+- **Budget (owner ruling): 2 per Re-Deployment unit owned, stacking** (2 units -> 4 redeploys). Detected by
+  name (`unit.RuleDefinitions.Any(r => r.Definition == ReDeployment)`, the Caster-detection pattern) over the
+  player's living units.
+- **Alternation:** players go one unit at a time in activation order. "The player that activates next" is the
+  head of `FirstDeploymentRollOrder` - `MainPhaseContext` seeds its turn order from that same list, so the
+  deployment-roll-order head both deploys and activates first. A round-robin over the player order spends one
+  redeploy (or takes a pass) per player per cycle; a pass ends that player's participation; the sub-phase ends
+  when everyone has passed or exhausted budget. Terminates because each cycle either marks a player done or
+  spends one of a finite budget. (Faithful team-alternation for the 1v1 corpus; multi-player is an
+  approximation over the flat activation order.)
+- **The redeploy** picks a friendly on-table unit (a `CancellableSelectionRequest<UnitData>`, Cancelled =
+  pass; already-redeployed units excluded so "two units" stays distinct) and re-places its models anywhere in
+  the owner's deployment zone via the normal `PlacementRequesting.RequestMandatoryPlacement` flow -
+  `DeployUnitStage`'s placement, reused. Re-Deployment is a marker rule (no hooks), allowlisted in the catalog
+  fire-lint like Delayed Action.
+- Tests: `ReDeploymentRuleIntegrationTests` (6) through the REAL stage - no-rule -> no prompt, budget of 2 per
+  unit, budget stacks to 4, pass ends participation, set-aside units never offered, and two-player alternation
+  starting with the roll-order head with each unit landing in its own zone. Engine 1877/1877, app build clean,
+  headless smoke exit 0. Corpus dead **360 -> 333** (Ambush Re-Deployment's 4 correctly stay dead - re-filed).
+
 ## Slices — by leverage
 
 Reference counts are corpus-wide (44 books). Primitive numbers are #100's.
@@ -519,7 +548,7 @@ Reference counts are corpus-wide (44 books). Primitive numbers are #100's.
 | 2 | **Surprise Attack** (was P22) | Infiltrate + "the first time this unit is activated, pick one enemy within 6in in LoS and roll X dice; each 2+ deals a hit with AP(1)". Blocked on **P10**'s dice-pool primitive regardless. | Surprise Attack (2) |
 | 96 | ~~**New** reposition-at-activation~~ **DONE 2026-07-09** (96/96) | Owner's ruling: a **placement**, not a move — nothing is asked of the path, only of the destination. `PlaceObjectsRequest` gained `MaxDistanceFromStartInches`, a *per-model* radius (0 = unconstrained, so deployment is untouched), honoured by all three resolvers. `Effect.RepositionAtActivation` rolls its die at Apply (Heal's shape) so the op carries a concrete distance; several **sum**, which is how `Rapid Blink Boost` widens D3 to 2D3 as an increment rather than a second prompt. The AI declines by standing still. Engine `5f3c4df`. | Wolfborn (60), Bounding (22), Rapid Blink (8), Bounding Aura (4), Rapid Blink Boost Aura (2) |
 | 66 | ~~**P5b** round-start Shaken recovery~~ **DONE 2026-07-09** (66/66) | **The premise was wrong:** `Round_OnRoundStart` is not dormant — `StartOfRoundExtraActionStage.GrantSpellTokens` fires it every round for every living unit (Caster token grants), applying token ops and running executables. So this needed only the effect. New `Effect.ClearTokenOnRoll` -> `InvokeClearTokenOnRoll`, an executable resolved through `IOperationServices`. Rolls with `RollDecisiveFace`, never `Roll(1)` — the outcome is binary, so a histogram would want to remove a *fraction* of a token. Engine `05eb91e`. | Steadfast Aura (28), Battleborn (26), Honor Code (9), Steadfast (3) |
-| 46 | **P21** setup-phase re-deploy (was 60; 14 refs re-filed) | **Misfiled like P22.** Only two of the seven rules are deploy-phase work. **Fanatic (19) DONE 2026-07-22** - rides the existing `Deployment_OnUnitDeployed` hook (Vanguard's seam) as a placement (write-up below). Re-Deployment (27) - the genuine new sub-phase - building. The other 14 refs re-filed with reasons (see the re-scope note). | Fanatic (19) DONE; Re-Deployment (27) building |
+| 46 | ~~**P21** setup-phase re-deploy~~ **DONE 2026-07-22** (46/46; was 60, 14 refs re-filed) | **Misfiled like P22.** Only two of the seven rules were deploy-phase work, both now shipped (write-ups below): **Fanatic (19)** rides the existing `Deployment_OnUnitDeployed` hook (Vanguard's seam) as a placement; **Re-Deployment (27)** is a new post-deployment alternating sub-phase (`ReDeploymentStage`). The other 14 refs were re-filed with reasons (see the re-scope note). | Fanatic (19) + Re-Deployment (27) DONE |
 | 59 | ~~**Darkborn** (#102 residual)~~ **DONE 2026-07-11** | It was **only the naming bug** - both mechanics were already built (the "per-target charge debuff doesn't exist" note was stale; #029/#183's `EffectiveChargeDistanceAgainst` powers it). The importer now disambiguates the bare `Darkborn` by army; books patched. See the Darkborn write-up above. | Darkborn (59) |
 | 53 | ~~**P15** randomized-branch effect~~ **DONE 2026-07-11** (48/53) | Decisive per-attack-action die (Option A), once per action, threaded via a new `IHasUnpredictableBranch` capability. See the P15 write-up above. **The 2 Mark variants (5 refs) are deferred** - a mark grants after the action-level roll. | Unpredictable Fighter (26), Unpredictable Fighter Aura (11), Unpredictable (5), Unpredictable Shooter Aura (5), Unpredictable Shooter (1) done; Unpredictable Fighter Mark (3) + Unpredictable Shooter Mark (2) deferred |
 | 44 | ~~**P10** dice-pool -> hits / auto-wounds~~ **DONE 2026-07-22** (44/44) | It was TWO primitives: an AUTO-WOUND pool (Ravage, Crossing Attack - roll X, each 6+ a direct unsaveable wound) and a rolled multi-target HIT burst (Storm of X - roll 3 decisively, each 2+ picks an enemy taking 3 hits with a rule). Both shipped (write-ups below). Also retired the #164 `dealHits.WithRules` seam's remaining generality (Storm rides the same fold). | Ravage (31) + Crossing Attack (8) + Storm of Change/Lust/Plague/War (5) all DONE |
@@ -546,21 +575,23 @@ Reference counts are corpus-wide (44 books). Primitive numbers are #100's.
    engine win, and P5b is the cheapest dormant-hook exercise to prove the pattern.
 3. **P13 + P14b + P12 together** — one coherent marker mechanic, or three incompatible ones.
 4. ~~**P10**~~ **DONE 2026-07-22** (Ravage + Crossing Attack + Storm; write-ups above).
-5. **P22 / P21** — deployment cluster; share a placement resolver.
+5. ~~**P21**~~ **DONE 2026-07-22** (Fanatic + Re-Deployment; write-ups above). P22 (Ambush variants) remains.
 6. Then the long tail (P6, P8, P11, P15, P17, P20, P7, P16, P19), Darkborn, and the misc triage.
 
 `#196` can run fully in parallel — it touches no engine file.
 
 ## Notes
 
-- 2026-07-22: **P21 re-scoped (misfiled like P22); Fanatic shipped** (19 refs; engine `599be98`). The
-  P21 row's 60 refs are not one mechanic: only Re-Deployment (27) and Fanatic (19) are deploy-phase work;
-  the other 14 were re-filed (Dash/Dash Aura 6 -> end-of-activation reposition; Ambush Re-Deployment 4 ->
-  Ambush variants; Mobile Artillery 2 + Quick Readjustment 2 -> Misc/data). See the P21 re-scope note
-  above. Fanatic rides the existing `Deployment_OnUnitDeployed` hook (Vanguard's seam) as a placement
-  (owner ruling): new `Effect.RepositionOnDeploy` -> the shared `RepositionModels` op, folded into a
-  within-9in placement by `DeployUnitStage` via a new shared `RepositionPlacement` helper (extracted from
-  `ActivationStartStage`). Corpus dead **379 -> 360**. Re-Deployment (27) is next. See the Fanatic write-up.
+- 2026-07-22: **P21 DONE (46/46), after re-scoping it (misfiled like P22).** The row's 60 refs were not
+  one mechanic: only Re-Deployment (27) and Fanatic (19) were deploy-phase work; the other 14 were re-filed
+  (Dash/Dash Aura 6 -> end-of-activation reposition; Ambush Re-Deployment 4 -> Ambush variants; Mobile
+  Artillery 2 + Quick Readjustment 2 -> Misc/data). Both deploy-phase rules shipped (write-ups above):
+  **Fanatic** (engine `599be98`) rides the existing `Deployment_OnUnitDeployed` hook (Vanguard's seam) as a
+  placement - new `Effect.RepositionOnDeploy` -> the shared `RepositionModels` op, folded into a within-9in
+  placement by `DeployUnitStage` via a new shared `RepositionPlacement` helper extracted from
+  `ActivationStartStage`. **Re-Deployment** (engine `3c2d340`) is a new post-deployment alternating sub-phase
+  (`ReDeploymentStage`): 2 redeploys per Re-Deployment unit (stacking), players alternate in roll order,
+  set-aside units ineligible. Corpus dead **379 -> 333**. See the P21 re-scope note and both write-ups.
 - 2026-07-22: **P10b Storm of X shipped** (5 refs; engine `dcace2d`), completing P10 (44/44). A rolled
   multi-target hit burst: a new `StormStage` (routed from Choose Action like Teleport) rolls a 3-dice pool
   DECISIVELY - integer successes, since you cannot pick a fractional target (the dice invariant, per P15) -
