@@ -20,6 +20,8 @@ public class GuiChooseSpellResolver : IStageResolver<ChooseSpellRequest, ChooseS
     private static readonly Vector4 AccentRgba   = new(0.30f, 0.60f, 1.00f, 1.00f); // cast blue (matches assist)
     private static readonly Vector4 DimTextRgba  = new(0.62f, 0.66f, 0.74f, 1f);
     private static readonly Vector4 WarnTextRgba = new(1.00f, 0.60f, 0.15f, 1f);    // hedge/cap note orange
+    // Friendly-support blue, matching the #103 assist banner - a relay is help from your own side.
+    private static readonly Vector4 RelayTextRgba = new(0.30f, 0.60f, 1.00f, 1f);
 
     private readonly object _lock = new();
     private ChooseSpellRequest? _request;
@@ -120,6 +122,22 @@ public class GuiChooseSpellResolver : IStageResolver<ChooseSpellRequest, ChooseS
         ImGui.PopStyleColor();
 
         float y = pad + 44f;
+
+        // ── #197 P23 relay note ────────────────────────────────────────────────
+        // A Spell Conduit in range extends what is reachable and eases the roll. Nothing to choose here -
+        // the origin follows the targets - but the bonus must be visible where the player decides whether
+        // a spell is worth casting. The target list then names the origin per target.
+        foreach (ChooseSpellRequest.RelayOption relay in request.RelaysInRange)
+        {
+            ImGui.SetCursorPos(new Vector2(pad, y));
+            ImGui.PushStyleColor(ImGuiCol.Text, RelayTextRgba);
+            ImGui.TextUnformatted($"{relay.UnitName} relays: cast from its position for +{relay.RollBonus} " +
+                "and measure range from it.");
+            ImGui.PopStyleColor();
+            y += 20f;
+        }
+
+        if (request.RelaysInRange.Count > 0) y += 6f;
 
         // ── Spell rows: click to highlight; disabled rows show why ──────────────
         float descWrapMeasure = (btnW - descIndent) / descScale;

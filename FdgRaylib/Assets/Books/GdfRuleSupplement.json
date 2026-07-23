@@ -1,5 +1,130 @@
 [
   {
+    "name": "Caster Group",
+    "passive": [
+      {
+        "hookID": "Lifecycle_OnCapabilityQuery",
+        "condition": {
+          "kind": "always"
+        },
+        "effect": {
+          "kind": "enableCasting"
+        },
+        "lifetime": "UntilEndOfGame",
+        "seat": "Actor"
+      },
+      {
+        "hookID": "Round_OnRoundStart",
+        "condition": {
+          "kind": "always"
+        },
+        "effect": {
+          "kind": "grantToken",
+          "tType": {
+            "id": "SpellTokens"
+          },
+          "count": {
+            "kind": "ruleCarrierCount"
+          },
+          "clear": {
+            "kind": "roundEnd"
+          }
+        },
+        "lifetime": "UntilEndOfGame",
+        "seat": "Actor"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "One model in this unit casts spells with as many spell tokens per round as there are models with this rule in the unit. Unspent tokens are lost at the end of the round."
+  },
+  {
+    "name": "Spell Accumulator",
+    "passive": [
+      {
+        "hookID": "Round_OnRoundStart",
+        "condition": {
+          "kind": "always"
+        },
+        "effect": {
+          "kind": "grantToken",
+          "tType": {
+            "id": "AccumulatorTokens"
+          },
+          "count": {
+            "kind": "arg",
+            "index": 0
+          },
+          "clear": {
+            "kind": "manualOnly"
+          },
+          "maxTotal": 6
+        },
+        "lifetime": "UntilEndOfGame",
+        "seat": "Actor"
+      },
+      {
+        "hookID": "Lifecycle_OnCapabilityQuery",
+        "condition": {
+          "kind": "not",
+          "inner": {
+            "kind": "tokenPresent",
+            "tType": {
+              "id": "Shaken"
+            },
+            "minCount": 1
+          }
+        },
+        "effect": {
+          "kind": "enableSpellLending",
+          "pool": {
+            "id": "AccumulatorTokens"
+          },
+          "rangeInches": 12.0
+        },
+        "lifetime": "UntilEndOfGame",
+        "seat": "Actor"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 1,
+    "valence": "Positive",
+    "description": "Gets X accumulator tokens at the start of each round, but can't hold more than 6 tokens at once. Casters from other friendly units within 12\" may spend this unit's accumulator tokens as if they were their own spell tokens. Friendly casters may only use this rule if this unit isn't Shaken."
+  },
+  {
+    "name": "Spell Conduit",
+    "passive": [
+      {
+        "hookID": "Lifecycle_OnCapabilityQuery",
+        "condition": {
+          "kind": "not",
+          "inner": {
+            "kind": "tokenPresent",
+            "tType": {
+              "id": "Shaken"
+            },
+            "minCount": 1
+          }
+        },
+        "effect": {
+          "kind": "enableSpellRelay",
+          "rangeInches": 12.0,
+          "castRollBonus": 1
+        },
+        "lifetime": "UntilEndOfGame",
+        "seat": "Actor"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "Casters within 12\" that are from other friendly units may cast spells as if they were in this unit's position, and get +1 to casting rolls when doing so. Friendly casters may only use this rule if this unit isn't Shaken."
+  },
+  {
     "name": "Highborn",
     "passive": [
       {
@@ -4279,6 +4404,198 @@
     "engineArgumentCount": 0,
     "valence": "Positive",
     "description": "When this unit is activated, pick one effect until the end of the activation: when shooting or charging enemies over 9 inches away, it gets either AP(+1) or +1 to hit rolls."
+  },
+  {
+    "name": "Versatile Defense (Guard)",
+    "passive": [
+      {
+        "hookID": "Shooting_OnHitRollComplete",
+        "condition": {
+          "kind": "and",
+          "left": {
+            "kind": "attackedFromOverInches",
+            "distanceInches": 9
+          },
+          "right": {
+            "kind": "allModelsHaveThisRule"
+          }
+        },
+        "effect": {
+          "kind": "rollModifier",
+          "rollKind": "Save",
+          "delta": 1
+        },
+        "lifetime": "ThisAttack",
+        "seat": "Subject"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "This unit gets +1 to defense rolls when shot or charged from over 9 inches away."
+  },
+  {
+    "name": "Versatile Defense (Evasion)",
+    "passive": [
+      {
+        "hookID": "Shooting_OnHitRollModifier",
+        "condition": {
+          "kind": "and",
+          "left": {
+            "kind": "attackedFromOverInches",
+            "distanceInches": 9
+          },
+          "right": {
+            "kind": "allModelsHaveThisRule"
+          }
+        },
+        "effect": {
+          "kind": "rollModifier",
+          "rollKind": "Hit",
+          "delta": -1
+        },
+        "lifetime": "ThisAttack",
+        "seat": "Subject"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "Enemies shooting or charging this unit from over 9 inches away get -1 to hit."
+  },
+  {
+    "name": "Versatile Defense",
+    "passive": [],
+    "activated": [
+      {
+        "triggerHook": "Deployment_OnUnitDeployed",
+        "cost": {
+          "kind": "free"
+        },
+        "targetSelector": {
+          "rangeInches": 0,
+          "minCount": 1,
+          "maxCount": 1,
+          "targetAffinity": "Self",
+          "requireLineOfSight": false,
+          "requiredToken": null,
+          "singleModel": false,
+          "requiredRule": null
+        },
+        "effect": {
+          "kind": "addRule",
+          "ruleName": "Versatile Defense (Guard)",
+          "scope": "UntilNextActivation"
+        },
+        "availableWhen": {
+          "kind": "allModelsHaveThisRule"
+        },
+        "label": "+1 to defense rolls"
+      },
+      {
+        "triggerHook": "Deployment_OnUnitDeployed",
+        "cost": {
+          "kind": "free"
+        },
+        "targetSelector": {
+          "rangeInches": 0,
+          "minCount": 1,
+          "maxCount": 1,
+          "targetAffinity": "Self",
+          "requireLineOfSight": false,
+          "requiredToken": null,
+          "singleModel": false,
+          "requiredRule": null
+        },
+        "effect": {
+          "kind": "addRule",
+          "ruleName": "Versatile Defense (Evasion)",
+          "scope": "UntilNextActivation"
+        },
+        "availableWhen": {
+          "kind": "allModelsHaveThisRule"
+        },
+        "label": "-1 to enemy hit rolls"
+      },
+      {
+        "triggerHook": "Activation_OnActivationStart",
+        "cost": {
+          "kind": "oncePerActivation"
+        },
+        "targetSelector": {
+          "rangeInches": 0,
+          "minCount": 1,
+          "maxCount": 1,
+          "targetAffinity": "Self",
+          "requireLineOfSight": false,
+          "requiredToken": null,
+          "singleModel": false,
+          "requiredRule": null
+        },
+        "effect": {
+          "kind": "addRule",
+          "ruleName": "Versatile Defense (Guard)",
+          "scope": "UntilNextActivation"
+        },
+        "availableWhen": {
+          "kind": "allModelsHaveThisRule"
+        },
+        "label": "+1 to defense rolls"
+      },
+      {
+        "triggerHook": "Activation_OnActivationStart",
+        "cost": {
+          "kind": "oncePerActivation"
+        },
+        "targetSelector": {
+          "rangeInches": 0,
+          "minCount": 1,
+          "maxCount": 1,
+          "targetAffinity": "Self",
+          "requireLineOfSight": false,
+          "requiredToken": null,
+          "singleModel": false,
+          "requiredRule": null
+        },
+        "effect": {
+          "kind": "addRule",
+          "ruleName": "Versatile Defense (Evasion)",
+          "scope": "UntilNextActivation"
+        },
+        "availableWhen": {
+          "kind": "allModelsHaveThisRule"
+        },
+        "label": "-1 to enemy hit rolls"
+      }
+    ],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "When a unit where all models have this rule is deployed or activated, pick one effect until the unit's next activation: when shot or charged from over 9 inches away, it either gets +1 to defense rolls, or enemies get -1 to hit rolls against it."
+  },
+  {
+    "name": "Versatile Defense Aura",
+    "passive": [
+      {
+        "hookID": "Lifecycle_OnUnitCreated",
+        "condition": {
+          "kind": "always"
+        },
+        "effect": {
+          "kind": "aura",
+          "ruleName": "Versatile Defense"
+        },
+        "lifetime": "UntilEndOfGame",
+        "seat": "Actor"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "This model and its unit gain Versatile Defense."
   },
   {
     "name": "Versatile Reach (Range)",

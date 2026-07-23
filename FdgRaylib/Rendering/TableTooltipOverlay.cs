@@ -35,6 +35,12 @@ public class TableTooltipOverlay
     // army-embedded rules (#059) aren't in here and fall back to Neutral/no-description.
     private readonly IRuleResolver _ruleResolver = CoreRuleCatalog.CreateResolver();
 
+    // Capabilities (transport, casting, ...) are answered by the rule graph rather than by testing for a
+    // named rule, so the tooltip needs an evaluator to ask. Read-only and non-logging: the dice roller is
+    // never reached, since a capability entry's effect rolls nothing.
+    private readonly RuleEvaluator _capabilityEvaluator =
+        new RuleEvaluator(new ProbabilisticDiceRoller(), ruleResolver: CoreRuleCatalog.CreateResolver());
+
     public void Attach(ITableState tableState, Func<PlayerID, Color> colorForPlayer,
         PresentationPlayer? presentationPlayer = null)
     {
@@ -135,7 +141,7 @@ public class TableTooltipOverlay
 
         // Transport cargo (#096): occupants ride off-table, so the on-table badge only shows "X/Y" spaces;
         // spell out who's aboard here.
-        if (TransportUtilities.IsTransport(unit))
+        if (TransportUtilities.IsTransport(unit, _capabilityEvaluator))
         {
             var allUnits = _tableState!.Units.Objects;
             var occupants = TransportUtilities.GetOccupants(unit, allUnits).ToList();
@@ -144,7 +150,7 @@ public class TableTooltipOverlay
             ImGui.TextUnformatted(TransportBadgeRenderer.FormatAboardHeader(
                 occupants.Count,
                 TransportUtilities.GetOccupiedSpaces(unit, allUnits),
-                TransportUtilities.GetCapacity(unit)));
+                TransportUtilities.GetCapacity(unit, _capabilityEvaluator)));
             if (occupants.Count > 0)
             {
                 ImGui.Indent();
@@ -385,11 +391,11 @@ public class TableTooltipOverlay
             // Transport occupancy badge (#096) — "Carrying X/Y" above the name. Shown for any transport
             // (empty included, so remaining capacity always reads) regardless of the label toggle, like
             // chips/health — status at a glance. Occupants ride off-table, so this is the only on-table cue.
-            if (TransportUtilities.IsTransport(unit))
+            if (TransportUtilities.IsTransport(unit, _capabilityEvaluator))
             {
                 string badge = TransportBadgeRenderer.FormatBadge(
                     TransportUtilities.GetOccupiedSpaces(unit, _tableState!.Units.Objects),
-                    TransportUtilities.GetCapacity(unit));
+                    TransportUtilities.GetCapacity(unit, _capabilityEvaluator));
 
                 Vector2 bSize = ImGui.CalcTextSize(badge);
                 float bx = cx - bSize.X * 0.5f;

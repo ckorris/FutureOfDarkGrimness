@@ -210,12 +210,333 @@ always resolved `RuleGrant` tokens back to definitions via `CollectGrantedRules`
 Latent until now (no shipped aura granted an ability-bearing rule); `Versatile Reach Aura` (56 refs) is the
 first. Fixed by mirroring the passive path's screening exactly, and mutation-checked.
 
-### Deferred: `Versatile Defense Aura` (21 refs)
+### Deferred here, shipped as its own slice — `Versatile Defense Aura` (21 refs)
 
-Triggers on **deployment or activation** and lasts **until the unit's next activation** — a lifetime
-`ELifetime` doesn't have (`ThisRound` is wrong; it must span the opponent's turns). Needs a new lifetime plus a
-`TokenClearTrigger` that fires at activation **start** rather than end, and a second trigger hook at deployment.
-Its own slice; mixing a token-lifecycle change into a hook/resolver slice was the thing the sign-off avoided.
+See **Slice: Versatile Defense** below (DONE 2026-07-23). The deferral was right: it needed a token-lifecycle
+change, which is exactly what the P5a sign-off kept out of a hook/resolver slice.
+
+## Capability seam — **DONE 2026-07-23** (no refs; an architecture fix Chris called)
+
+Building Caster Group hit `SpellTargeting.IsCaster` comparing against `CoreRuleCatalog.Caster` — an
+identity check standing in for a capability. Chris's ruling: represent "this unit can open the cast
+prompt" as an effect a rule declares at a hook, not as a check for a named rule, and **do the same
+everywhere else the engine does this**. Two things an identity check cannot do, both of which bit here:
+
+- A SECOND rule conferring the same thing is invisible. `Caster Group` is not `Caster` and can never be
+  granted as one (its X is a live model count; granted rules carry no arguments, so `GrantedRules`
+  screens them out).
+- A capability that depends on LIVE STATE cannot be expressed at all — which the remaining P23 rules
+  need, since both read "friendly casters may only use this rule if this unit isn't Shaken".
+
+**The seam.** One hook, `EHookID.Lifecycle_OnCapabilityQuery` + `CapabilityQueryContext`, read through
+`CapabilityRuleQueries` (the `RangeRuleQueries`/`SightRuleQueries`/`MovementRuleQueries` pattern). A rule
+answers by emitting an `Enable*` operation; nothing applies it, its presence in the queue IS the answer.
+One hook rather than one per capability: the operations already discriminate, and being an ordinary hook
+each answer respects the entry's `Condition` and rule suppression.
+
+**Converted (full audit of the codebase):**
+
+| Site | Was | Now |
+|---|---|---|
+| `SpellTargeting.IsCaster` | `Definition == CoreRuleCatalog.Caster` | `Effect.EnableCasting` (Caster, Caster Group) |
+| `TransportUtilities.IsTransport` / `GetCapacity` | `Definition == Transport` + read `Arg(0)` | `Effect.EnableTransport(ValueSource)`, capacity riding the answer |
+| `ReDeploymentStage.HasReDeployment` | `Definition == ReDeployment` | `Effect.EnableReDeployment` |
+| `ChooseActionStage` Disembark/Embark/Teleport routing | `offer.RuleName == <name>` | `offer.Ability.Effect is Effect.X` |
+
+The routing one was the most galling: all three already carried a marker `Effect` that exists for
+exactly that purpose, and **the same method already routed `StormOfHits` by effect** — the three name
+checks were the outliers, not the pattern.
+
+`IsTransport`/`GetCapacity` now take a `RuleEvaluator`, threaded through the AI (`TacticalAnalysis`,
+`MacroActionGenerator`, `TacticianActivationResolver`, `TacticianPlanner`, `TacticianRangedAttackResolver`),
+the deploy/embark stages, `SpilloutExecutor`, and app-side `TableTooltipOverlay` (which builds its own
+read-only evaluator, as it already built its own resolver).
+
+**Deliberately NOT converted**, with reasons, so this isn't a silent cut:
+- **`Hero`** (`HeroJoinResolver`, 3 sites). Army-BUILD-time structural marker, resolved before any rule
+  dispatch exists, and deliberately hook-less per #006 slice F. One of the three sites isn't even a
+  capability check — it's "skip the marker itself when relocating the hero's rules onto its model".
+  Converting would mean threading a rule evaluator into army construction for a marker no second rule
+  confers.
+- **`Condition.UnitHasRule` / `TargetHasRule` / `TargetSelector.RequiredRule` / `Effect.IgnoreRule`.**
+  These name a rule because the CORPUS TEXT does ("vs units with Tough", "ignores Regeneration").
+  Authored data, not an engine assumption.
+- **`ListValidator`, `DefaultBaseEstimator`, `ArmyForgeScreen.IsCaster`.** Book/roster data, where no
+  rule graph exists yet.
+
+Tests: `CapabilityRuleQueriesTests` (9) confer each capability from a rule that is NOT the core one —
+exactly what an identity check cannot see, and what tests over the core rules can never catch — plus
+live-state gating, capability isolation, largest-capacity-wins, and the by-effect menu routing under a
+differently-named rule. Engine 1962/1962, app 491/491.
+
+**Mutation testing found two holes in my own tests**, both the same shape: the query-level tests called
+`CapabilityRuleQueries` directly, so reverting `IsCaster` (and later `HasReDeployment`) to their identity
+checks left everything green while the STAGES silently lost the behaviour. Added
+`TheStagesAskForTheCapability_NotForTheCasterRule` and
+`ARuleOtherThanReDeployment_ThatConfersTheCapability_AlsoGrantsRedeploys`; both mutations now red, as do
+reverting the menu routing and reverting `IsTransport`.
+
+**Noted, not fixed:** the CLI army-file prompt loops forever on EOF when the file fails to load (a stale
+probe army produced a 5.8 GB log before the timeout). It should abort at EOF like every other resolver.
+Worth its own item.
+
+## Slice: P23 Spell Conduit — **DONE 2026-07-23** (9 refs; P23 DONE 19/19)
+
+> "Casters within 12" that are from other friendly units may cast spells as if they were in this model's
+> position, and get +1 to casting rolls when doing so. Friendly casters may only use this rule if this
+> unit isn't Shaken."
+
+**Same capability shape as Accumulator, different payload.** The gating half is identical - a capability
+entry at `Lifecycle_OnCapabilityQuery`, 12", `if !Shaken` - so it was settled before building. What is new
+is that the offer changes a property of the whole cast (where range and line of sight are measured from,
+plus the roll) rather than lending a resource. `Effect`/`RuleOperation.EnableSpellRelay(range, bonus)`,
+read by a new `SpellRelay` helper. `SpellPurse`'s neighbour scan was lifted into a shared `CastSupport`
+(both rules are worded "... other friendly units within 12" ...", so they share the eligibility test).
+
+**A relay moves the spell, not the caster.** Only the origin point of range/LoS changes (including which
+models are discounted as blockers - the relay's own, not the caster's). Affinity is still judged against
+the caster (a Friend spell means the caster's side, however relayed), the #103 assist scan still measures
+18" from the casting unit, and the caster's own eligibility (has it attacked, is it embarked) is
+unchanged. The narrow reading, and the one the wording supports.
+
+**Design fork (owner call): no origin prompt; the origin is derived, made visible.** A relay origin is
+never worse than the caster's own - it only adds reach and adds +1 - so the only real question is which
+origin reaches the targets the player picked. `CastSpellStage` therefore offers the UNION of every
+origin's legal targets (`RelayedTargeting`), narrows the viable origins as targets are chosen, and casts
+from a relay if one still covers them all, relays preferred. The owner's concern with "it just happens"
+was answered by making the relay visible at every step rather than by adding a prompt:
+
+- the spell picker carries a relay note ("Synaptic Relay relays: cast from its position for +1 ...") -
+  `ChooseSpellRequest.RelaysInRange`, rendered by both resolvers;
+- every target row names the origin it would use ("Dummies (via Synaptic Relay, +1)") - the honest place
+  for it, since at spell-pick time the origin is not yet decided and this is exactly what a player needs
+  to aim for the bonus;
+- the cast is announced ("... casts Sky Blaze through Synaptic Relay (+1)") and the roll breakdown lists
+  "relay +1" first, as the modifier the player did not ask for by name.
+
+With no conduit on the table there is one origin (the caster's own) and every path degrades to the exact
+prior single-list behaviour.
+
+Data (app-side, supplement): `Spell Conduit`, no argument, embedded into AlienHives, BlessedSisters,
+HighElfFleets, HumanInquisition, SaurianStarhost, SoulSnatcherCults. Corpus ledger 252 -> 243.
+
+Tests: `SpellConduitRuleIntegrationTests` (15) - who relays (nearby friendly yes; the conduit itself no;
+enemy no; past 12" no; Shaken no and recovering yes; destroyed no); reach extended to a target the caster
+can't reach; affinity still judged from the caster; the +1 on a relayed cast and NONE on a self-reached
+one (same board, same dice); relays-preferred when both origins reach; the no-conduit degrade; and the two
+visibility strings (picker note + per-target origin). `SpellConduitShippedDataTests` (5) pin the shipped
+JSON: one capability entry and nothing else, the 12"/+1 values, the Shaken condition, an end-to-end relay
+offer, and that every book referencing the rule embeds it. Engine 1991/1991, app 504/504.
+
+Mutation-checked, seven mutations each redding exactly its own test: dropping the relay bonus from the
+roll, measuring targeting from the caster instead of the origin, the ChooseAction reach ignoring relays,
+dropping the other-unit gate, flattening the target label, and taking the last viable origin instead of
+the first (relays-preferred). That last mutation initially survived - my tests only covered
+single-origin-reachable targets - so `WhenBothOriginsReachTheTarget_TheRelayIsPreferredForItsBonus` was
+added to close it.
+
+In play (headless scenario probe): an enemy 24" from the caster (outside its own 18" spell) but 14" from
+the conduit made Cast available where it otherwise would not be, and the log carried every visibility
+surface: the picker note, "Dummies (via Synaptic Relay, +1)", "casts Sky Blaze through Synaptic Relay
+(+1)", and "rolled 2, needed 3+ (base 4+, relay +1)".
+
+## Slice: P23 Spell Accumulator — **DONE 2026-07-23** (7 of P23's 19 live refs)
+
+> "Gets X accumulator tokens at the start of each round, but can't hold more than 6 tokens at once.
+> Casters from other friendly units within 12" may spend this model's accumulator tokens as if they were
+> their own spell tokens. Friendly casters may only use this rule if this unit isn't Shaken."
+
+**No new hook and no new stage** — this is the first slice to be built entirely on the capability seam
+from Caster Group, which is what that seam was for. The two halves are plain data:
+
+| Half | Authored as |
+|---|---|
+| the pool | `grantToken(AccumulatorTokens, arg0, manualOnly, maxTotal 6)` @ `Round_OnRoundStart` |
+| who may draw on it | `enableSpellLending(AccumulatorTokens, 12)` @ `Lifecycle_OnCapabilityQuery`, `if !Shaken` |
+
+The Shaken clause is the payoff predicted when the seam was built: a `Condition` on the entry, re-asked
+on every ask, not a special case in the cast stage. The cap rides `Effect.GrantToken.MaxTotal`, which
+already existed for the #100 #13 marker family — the rule states its own 6 rather than borrowing the
+engine's `MAX_SPELL_TOKENS`, so the two can differ.
+
+**Its own token type, and that is load-bearing.** `TokenType.AccumulatorTokens`, not `SpellTokens`. The
+corpus puts the Change Boon upgrade on units that are themselves casters, and the rule says *other*
+friendly units — one shared type would let the holder spend its own pool. It also keeps a full pool from
+making its holder look like a caster to the #103 assist scan.
+
+**New: `SpellPurse`** (beside `SpellTargeting`) — "everything this caster may spend as a spell token right
+now". Five sites used to read `unit.Tokens.GetTokenCount(SpellTokens)` directly and now ask it, because
+"as if they were their own spell tokens" means *every* use a spell token has: the spell's cost, the #244
+self-boost, and a #103 assist on someone else's cast. `ChooseActionStage`'s Cast gate and both AI
+affordability checks (`MacroActionGenerator`, `TacticianPlanner`) ask the same purse, so the menu, the
+picker and the planner cannot price a spell differently.
+
+**Own tokens are spent first, then lenders in table order.** A caster's own tokens are usable by nobody
+else while a lender's pool is shared with every friendly caster in range, so draining the restricted
+resource first leaves the team the most options — and a caster that can already afford its spell behaves
+exactly as it did before accumulators existed. Stated as a decision, not an accident; a one-line change if
+play argues otherwise.
+
+**Deliberately simplified, recorded rather than built:** the rule says "this *model's* accumulator tokens"
+and the pool is held by the UNIT — the same accommodation Caster Group needed, and for the same reason
+(there is no per-model token pool). No corpus entry puts two Change Boons on one unit, so nothing
+observable rides on it.
+
+Data (app-side, supplement): `Spell Accumulator`, `engineArgumentCount: 1`, embedded into
+HumanInquisition + WormholeDaemonsofChange. Corpus ledger 259 -> 252.
+
+Tests: `SpellAccumulatorRuleIntegrationTests` (14) — the pool fills / caps at 6 / carries over / is not
+spell tokens; who may draw on it (nearby friendly yes, the holder itself no, enemy no, past 12" no,
+Shaken no and recovering yes, destroyed no); own-before-borrowed, several lenders, one caster's spend
+leaving less for the next; plus two STAGE-level tests so reverting either stage to its own pool reds.
+`SpellAccumulatorShippedDataTests` (6) pin the shipped JSON: token type, `MaxTotal`, `ManualOnly`, the
+12" range, the Shaken condition, that both halves name the SAME pool (authored separately — funding one
+pool and lending another would do nothing at all), and that every book referencing the rule embeds it.
+Engine 1976/1976, app 498/498.
+
+Mutation-checked, six mutations, each redding exactly its own test: reverting the `ChooseActionStage`
+gate, reverting `CastSpellStage`'s price+spend, dropping the other-unit / friendly / range gates, and
+spending borrowed tokens before own.
+
+In play (headless scenario probe, `--trace-rules`): the capability fires as
+`Spell Accumulator(3) at Lifecycle_OnCapabilityQuery/Actor: fired -> EnableSpellLending`, round start
+fires `GrantTokenToUnit`, Cast goes from *"Not enough spell tokens (0)"* to offered once the pool exists,
+the boost prompt correctly reads 1 affordable (4 in the purse minus a 3-token spell), and the cast logs
+**"Psy-Seer draws on nearby accumulators to cast Sky Blaze (Change Boon Host lends 2)"** — 1 of its own
+first, then 2 borrowed.
+
+**Found while building: two stale lint allowlist entries.** `RuleFireLint`'s capability arm listed only
+`EnableCasting`, so `EnableTransport` / `EnableReDeployment` would have reported as unread had they been
+each rule's first producing entry; widening it revealed that `Transport` and `Re-Deployment` were still
+allowlisted in `RuleCatalogLintTests` as "engine-marker: detected by name", which stopped being true when
+they gained capability entries. Both entries removed — their absence is now the assertion.
+
+**Noted, not fixed:** `RuleFireLint.Check` returns at the FIRST passive entry that produces operations,
+so a rule's later entries are never lint-checked. That is consistent with what it claims to test ("does
+this rule fire at all"), but it means a dead second entry on a live rule is invisible. Worth its own item
+if the per-entry check is wanted.
+
+## Slice: P23 Caster Group — **DONE 2026-07-23** (3 of P23's 19 live refs)
+
+> "Pick one model with this rule in this unit to have Caster(X), where X is the total number of models
+> with this rule in this unit. If the model is killed, pick another to be the new caster, and transfer all
+> spell tokens to it. The caster loses all unspent spell tokens at the end of the round."
+
+**Two of those three sentences were already true and needed no code.** Spell tokens are held by the
+UNIT, not by a model, so "pick a model to be the caster" and "transfer its tokens when it dies" have no
+observable content in this engine - there is no per-model pool to move, and the designation is invisible.
+Recorded here rather than built, so a future reader doesn't go looking for the bookkeeping.
+
+**The capability, not the rule.** Casting was detected by `SpellTargeting.IsCaster` comparing against
+`CoreRuleCatalog.Caster` - an identity check standing in for a capability. Caster Group confers casting
+and is not `Caster`, and can never be granted as one: its X is a live model count, and granted rules carry
+no arguments (`GrantedRules` screens argumented rules out). Owner call (2026-07-23, mid-slice) was to fix
+the shape rather than special-case it:
+
+- New `EHookID.Casting_OnCastCapability` + `CastCapabilityContext` + `Effect.EnableCasting` ->
+  `RuleOperation.EnableCasting`, read by `CastingRuleQueries.CanCast` - the
+  `RangeRuleQueries`/`SightRuleQueries`/`MovementRuleQueries` pattern. A capability HOOK, not an event:
+  nothing applies the operation, its presence in the queue IS the answer.
+- Core `Caster` authors the entry like any other rule; `SpellTargeting.IsCaster` delegates. A second
+  caster-conferring rule now needs no engine change at all.
+- Two things fall out, both needed by the rest of P23: the answer is **live**, so an entry's `Condition`
+  gates the capability (which is how Conduit's and Accumulator's "only if this unit isn't Shaken" clauses
+  will be expressed), and rule **suppression** applies - an `IgnoreRule` cancelling casting now works.
+
+**Also new: `ValueSource.RuleCarrierCount`** - living models of the bearer's unit carrying the firing rule.
+`ValueSource.Resolve` now takes the whole `RuleInvocation` rather than just the arguments, deliberately as
+the ONLY entry point (an arguments-only overload would be the easy thing to reach for and would silently
+return a wrong answer for any state-reading variant). `UnitHasGrantedRule` was lifted out of
+`Condition.AllModelsHaveThisRule` into a shared `RuleGrantQueries` so the gate and the count cannot
+disagree about what "has" means.
+
+Data (app-side, supplement): `Caster Group` = the capability entry + `grantToken(SpellTokens,
+ruleCarrierCount, roundEnd)`. The `RoundEnd` clear is the "loses all unspent tokens" clause and rides the
+TOKEN, so core Caster's pool still carries over.
+
+Tests: `CasterGroupRuleIntegrationTests` (11) - the capability with and without the rule, carried by a
+MODEL (the #093 joined-hero corner), gated live by a `Condition`, the stage wiring through
+`SpellTargeting.IsCaster`, pool sized by carriers, shrinking with casualties, mixed units, round-end loss,
+and core Caster's carry-over left intact. Engine 1952/1952, app 491/491.
+
+Mutation-checked. The first pass found a **hole in my own tests**: reverting `IsCaster` to the identity
+check left everything green, because the tests called `CastingRuleQueries.CanCast` directly and nothing
+pinned the STAGES to it. Added `TheStagesAskForTheCapability_NotForTheCasterRule`; the mutation now reds.
+Dropping the living-model filter reds the casualty test; dropping core `Caster`'s capability entry reds 7
+tests across the cast stages.
+
+Verified in play: a headless game with a Caster Group army traces
+`Caster Group at Casting_OnCastCapability/Actor: fired -> EnableCasting`, offers **Cast** in the action
+menu, and reports "No spell has a target in range" rather than "Not enough spell tokens" - i.e. the pool
+was funded and the affordability gate passed. Corpus dead references **262 -> 259**.
+
+## Slice: Versatile Defense — **DONE 2026-07-23** (21/21, the P5a residual)
+
+> "When a unit where all models have this rule is deployed or activated, pick one effect: when shot or
+> charged from over 9in away, the unit either gets +1 to defense rolls, or enemy units get -1 to hit rolls
+> against it. This effect lasts until the units' next activation."
+> — plus `Versatile Defense Aura`: "This model and its unit get Versatile Defense."
+
+All 21 refs are the Aura form, reached through the **Icon of Havoc** wargear option in five books
+(Havoc Brothers + the four Disciples).
+
+**The filed premise was right, with one correction and one thing it missed.**
+
+- **Right:** `ELifetime` had no "until my next activation" — `ThisActivation` dies before the opponent ever
+  shoots, `ThisRound` dies at the wrong moment for a unit that activates late. New `ELifetime.UntilNextActivation`.
+- **Correction — no new `TokenClearTrigger` variant.** `CustomHook(hook)` already means "clears when hook X
+  fires" and `TokenClearService.ClearsAtHook` already sweeps it, so the lifetime maps straight onto
+  `CustomHook(Activation_OnActivationStart)`. The only engine wiring is one `ClearForHook` call at the top of
+  `ActivationStartStage` (mirroring `ReconcileEndOfActivationStage` at the other end), which must run BEFORE
+  the offers are gathered or a unit that re-picks would hold both effects.
+- **Missed — the deployment arm needs a cost that doesn't exist.** The once-per-X "used" marker is keyed on
+  the RULE name, so it is shared by every ability of the rule at every hook. `OncePerActivation` paid at
+  deployment leaves an `ActivationEnd` marker that only clears at the end of the unit's FIRST activation, so
+  the unit would arrive at that activation's start with its own gate already shut. `OncePerRound` blocks
+  round 1; `OncePerGame` blocks forever. New **`Cost.Free`** — no gate, because the deployment hook fires
+  exactly once per unit and the stage resolves the rule's group exactly once.
+
+**Latent defect found and fixed: an ability's `AllModelsHaveThisRule` gate was no gate at all.**
+`RuleEvaluator.GatherOffersFromRules` built its `RuleInvocation` without a `Definition`, so the
+self-referential `Condition.AllModelsHaveThisRule` took its "no rule identity to check" arm and returned
+**true**. Versatile Defense is the first corpus rule that puts the all-models gate on the CHOICE rather than
+on the effect — and it has to, because the effect's own gate is satisfied vacuously by the unit-held grant
+that confers it. Fixed by passing `rule.Definition` through. Safe by survey: every `availableWhen` authored
+across the catalog and the supplement today is `Always` or `TokenPresent`, neither of which reads it.
+
+**Shipped:**
+- Engine: `ELifetime.UntilNextActivation` + its `ClearTriggerFor` mapping; `Cost.Free`; the
+  `ActivationStartStage` sweep; the `GatherOffers` `Definition` fix; a `TokenDisplay` phrase for the one
+  named `CustomHook`.
+- Engine: **`AbilityEffectChoice`** (next to `RepositionPlacement`, the shared-stage-helper precedent) —
+  the "group a hook's offers by rule -> ask which effect -> resolve/apply/execute" block lifted out of
+  `ActivationStartStage`. `DeployUnitStage` now routes MULTI-ability groups through it (mandatory, no
+  Yes/No) and keeps its Yes/No prompt for the single-ability "you MAY" rules (Vanguard, Fanatic). Same
+  resolution at both of the rule's hooks, by construction.
+- Data (app-side): four definitions — `Versatile Defense (Guard)` (= Sturdy's body verbatim),
+  `Versatile Defense (Evasion)` (= Changebound's), `Versatile Defense` (four labelled abilities: both
+  effects at both hooks), `Versatile Defense Aura`. Embedded into the five books via `--apply-rules`.
+  **The two effects were already shipped and covered under other names**, which is why this slice was
+  lifetime-and-plumbing work, not rules work.
+
+Tests: `VersatileDefenseRuleIntegrationTests` (15) — lifetime survives activation-end AND round-end but dies
+at activation start; both effects net the right modifier and only beyond 9in; the all-models gate on the
+choice (incl. the offer returning once the odd model out is dead); the deployment arm leaves the activation
+pick open; and both stages driven for real (`DeployUnitStage` asks the choice not a Yes/No;
+`ActivationStartStage` sweeps the previous pick; deploy-then-activate holds only the latest).
+`VersatileDefenseShippedDataTests` (8, app-side) pin the same over the DATA as authored. `Cost.Free`
+round-trip added to `CostSerializationTests`. Engine 1933/1933, app 490/490.
+
+Mutation-checked all three engine changes independently: dropping the `Definition` pass-through reds exactly
+the two gate tests; dropping the `ActivationStartStage` sweep reds the two "only the latest is held" tests;
+mapping the lifetime to `ActivationEnd` reds the three lifetime tests.
+
+**Verified in play, not just by lint** (the repeated #197 lesson): a headless game with a probe army
+carrying `Versatile Defense Aura` prompts `pick one effect on deployment`, prompts again
+`for this activation` each time the unit activates, and logs
+`Versatile Defense (Guard) added +1 to Save rolls` on an incoming volley. A second run with the two
+abilities swapped (so the EOF default lands on the other arm) logs
+`Versatile Defense (Evasion) added -1 to Hit rolls`. Corpus dead references **283 -> 262**.
 
 ## Slice: Teleport — **DONE 2026-07-11** (15 + Teleport Aura 4)
 
@@ -662,8 +983,8 @@ Reference counts are corpus-wide (44 books). Primitive numbers are #100's.
 
 | Refs | Slice | Needs | Rules |
 |-----:|-------|-------|-------|
-| 175 | ~~**P5a** activation-choice hook~~ **DONE 2026-07-09** (154/175) | Shipped: see the P5a write-up above. `Versatile Defense Aura` (21) deferred — needs an until-next-activation lifetime. | Versatile Attack (56), Versatile Reach Aura (56), Watchborn (42) done; Versatile Defense Aura (21) deferred |
-| 21 | **Versatile Defense** (out of P5a) | A new `ELifetime.UntilNextActivation` + a `TokenClearTrigger` firing at activation **start**, and a second trigger at `Deployment_OnUnitDeployed`. Everything else (labelled abilities, the choice request) already exists. | Versatile Defense Aura (21) |
+| 175 | ~~**P5a** activation-choice hook~~ **DONE 2026-07-23** (175/175) | Shipped: see the P5a write-up above. The deferred `Versatile Defense Aura` (21) closed 2026-07-23 — see the Versatile Defense write-up. | Versatile Attack (56), Versatile Reach Aura (56), Watchborn (42), Versatile Defense Aura (21) |
+| 21 | ~~**Versatile Defense** (out of P5a)~~ **DONE 2026-07-23** (21/21) | The filed premise held, with one correction and one addition: no new `TokenClearTrigger` variant was needed (`CustomHook` already says "clears at hook X"), and the deployment arm needed a new `Cost.Free` because the once-per-X "used" marker is keyed on the RULE. Both effects were Sturdy's and Changebound's bodies verbatim. See the write-up above. | Versatile Defense Aura (21) |
 | 47 | ~~**Delayed Action** (was P22)~~ **DONE 2026-07-11** | Shipped at unit-selection (pick-then-confirm hold-back), NOT the next-activator seam - see the Delayed Action write-up above. Fork resolved with Chris: holding back does NOT activate the unit (it stays in the pool) and the turn passes to the opponent; once per round per player. | Delayed Action (47) |
 | 15 | ~~**Teleport** (was P22)~~ **DONE 2026-07-11** (15 + Teleport Aura 4) | Shipped as a flat-6in menu action - see the Teleport write-up below. The pre-attack-hook / 3in-vs-6in reading was wrong (see write-up); Chris corrected the design in-conversation. | Teleport (15), Teleport Aura (4) |
 | 18 | **Ambush variants** (the real P22, + a P21 re-file) | The only genuine deploy-timing work. `Rapid Ambush` (deployable from round 1 — a new `EDeferTiming`), `Ambush Beacon` (relaxes the >9in enemy restriction for OTHER friendly Ambushers within 6in — a cross-unit deployment constraint), `Ambushing Piercing Shot` (Ambush + AP(+1) during the round it arrives — needs deploy-round state). **`Ambush Re-Deployment` (4, re-filed from P21):** "once per game, when this unit ends its activation, remove it and redeploy as if it had Ambush at the start of the next round" - not deploy-phase at all; needs the round-N Ambush arrival these rules build plus an end-of-activation trigger. | Rapid Ambush (4), Ambush Beacon (6), Ambushing Piercing Shot (4), Ambush Re-Deployment (4) |
@@ -678,7 +999,7 @@ Reference counts are corpus-wide (44 books). Primitive numbers are #100's.
 | 28 | ~~**P14b** spend-for-bonus markers~~ **DONE 2026-07-22** (28/28) | Two marker classes on the ENEMY unit, bonus kind in the token type (mirroring the roll-modifier trio): persistent (`Persistent{Hit,Ap}BonusMarker` — the Target family, counted every attack, never removed) and spendable (`Spendable{Hit,Ap}BonusMarker` — Tag/Spotter). **Owner-ruled 2026-07-22: the spend is PROMPTED, not auto-spent** — `TargetMarkerSpend` asks the attacking player how many to remove (a `StringSelectionRequest`, spend-all listed first so the CLI EOF default and the AI first-option fallback both take the aggressive default; zero-marker attacks never prompt), folded into `DetermineHitRollStage` (skipped while fatigued, like granted buffs) and `DetermineSaveRollsNeededStage` (+net raises the defender's threshold). Placement is data: `Activation_OnPreAttack` abilities over the existing `TargetSelector`/`Cost` machinery; Spotter's "on a 4+ place a marker" is the new `grantTokenOnRoll` effect (decisive die, `InvokeGrantTokenOnRoll` executable, ClearTokenOnRoll's mirror). Engine 1831/1831, `TargetBonusMarkerTests` (11). Engine `d0985e2`. | Precision Target (7), Piercing Tag (6), Precision Spotter (4), Piercing Spotter (4), Precision Tag (4), Piercing Target (3) |
 | 27 | ~~**P11** reflect damage~~ **DONE 2026-07-22** (27/27) | A post-melee reflect (write-up below): Retaliate (X hits per wound taken), Deathstrike (X hits per killed model), Self-Destruct (X per participating model + self-kill any survivor), all per-model attribution. | Retaliate (20) + Deathstrike (4) + Self-Destruct (3) DONE |
 | 24 | **P17** place / restore a unit | Create a unit or restore destroyed models mid-game. Touches deployment + table-state lifecycle + networking sync. | Spawn (14), Reinforcement (4), Reanimation Aura (3), Split (3) |
-| 21 | **P23** casting support | Rides #034. Caster-pool sharing, cast-roll modifiers, transfer-on-death. | Spell Conduit (9), Spell Accumulator (7), Caster Group (3), Casting Buff (2) |
+| 21 | **P23** casting support — **DONE 2026-07-23 (19/19)** | Rides #034. Caster Group, Spell Accumulator and Spell Conduit all shipped on the capability seam (write-ups above); Casting Buff/Debuff landed under P6. Conduit relays the cast origin, no prompt - the origin is derived from the targets and made visible in the picker, the target rows, the banner and the roll breakdown. | Spell Conduit (9) + Spell Accumulator (7) + Caster Group (3) DONE; Casting Buff/Debuff (2+X) under P6 |
 | 20 | ~~**P6** deferred debuff token~~ **DONE 2026-07-23** (20/20, +3 riders) | **The row's premise was mostly wrong** - only 8 of the 20 refs needed a primitive. Four of the five rules ride seams that were already built AND already consumed (Morale/Save granted modifiers, the #153 movement-grant seam, Fortified's AP reduction on the Actor seat) and shipped as pure data. Only `Casting Debuff` had no carrier: new `ERollKind.Cast` + `TokenType.CastRollModifier`, folded into `CastSpellStage`'s threshold. See the P6 write-up above. | Casting Debuff (8), Morale Debuff (4), Piercing Debuff (3), Defense Debuff (3), Speed Debuff (2) DONE + riders Casting Buff (2), Speed Buff (1) |
 | 14 | **P8** apply terrain state to target | Force a Dangerous-terrain test / count as standing in terrain. Builds on `countAsInTerrain` + `ApplyNonMovementTerrainEffectsStage`. | Dangerous Terrain Debuff (11), Difficult Terrain Debuff (3) |
 | 12 | **P20** action-permission modifiers | (a) allow shooting after Rush; (b) "strikes last", the inverse of live `strikeFirst`. | Quick Shot Aura (5), Quick Shot Mark (4), Unwieldy Debuff (3) |
@@ -704,6 +1025,38 @@ Reference counts are corpus-wide (44 books). Primitive numbers are #100's.
 
 ## Notes
 
+- 2026-07-23: **P23 Spell Conduit DONE (9 refs) - P23 closed at 19/19.** The relay half is a new payload
+  on the capability seam (`EnableSpellRelay`), changing where a cast is measured from rather than lending
+  a resource; the gating half is Accumulator's exactly. Owner fork resolved by deriving the origin from
+  the chosen targets (a relay is never worse than casting unaided) and making it visible at every step -
+  picker note, per-target origin label, cast banner, roll breakdown - instead of adding a prompt. New
+  shared `CastSupport` neighbour scan (Accumulator + Conduit share the "other friendly unit in range"
+  test). Corpus dead count **252 -> 243**. See the write-up above.
+- 2026-07-23: **P23 Spell Accumulator DONE (7 refs)** — the first slice built entirely on the capability
+  seam: no new hook, no new stage, the whole rule authored as two data entries. New `TokenType`
+  (`AccumulatorTokens`, separate for a load-bearing reason), `Effect`/`RuleOperation.EnableSpellLending`,
+  and a shared `SpellPurse` that five sites now ask instead of reading a unit's own spell tokens. Also
+  removed two stale `RuleCatalogLintTests` allowlist entries the widened lint arm exposed. Corpus dead
+  count **259 -> 252**. See the write-up above.
+- 2026-07-23: **The capability seam** (write-up above), Chris's call mid-slice and then extended by him
+  to the whole codebase: every in-play "does this unit have rule X?" check became "what can this unit
+  do?", asked at `Lifecycle_OnCapabilityQuery` and answered by an `Enable*` effect. Covers casting,
+  transport, re-deployment, and ChooseActionStage's menu routing (which had marker effects available and
+  matched rule NAMES anyway, in a method that already routed StormOfHits by effect). Hero stays a
+  build-time structural marker, with the reason recorded rather than dropped.
+- 2026-07-23: **P23 Caster Group DONE (3 refs)**. Two of its three sentences needed no code (spell tokens
+  are unit-scoped, so the "designate a model / transfer on death" half has no observable content). Two of Caster Group's three sentences needed no code (spell tokens are unit-scoped, so the
+  "designate a model / transfer on death" half has no observable content). Also new
+  `ValueSource.RuleCarrierCount`. Corpus dead count **262 -> 259**. See the write-up above.
+- 2026-07-23: **Versatile Defense DONE (21/21)**, which closes **P5a at 175/175** - the largest slice in
+  this item, and the last of its deferred residuals. Two new vocabulary items
+  (`ELifetime.UntilNextActivation`, `Cost.Free`), one shared stage helper (`AbilityEffectChoice`, so the
+  rule resolves identically at both its hooks), and one latent defect fixed: an ability's
+  `AllModelsHaveThisRule` availability gate was silently always-true because `GatherOffers` never handed
+  the invocation its `Definition`. The row's premise about a new `TokenClearTrigger` was wrong -
+  `CustomHook` already expressed it - and the row missed the cost collision that forced `Cost.Free`. Both
+  effects turned out to be Sturdy's and Changebound's bodies verbatim, so no rules work at all. Corpus
+  dead count **283 -> 262**. See the Versatile Defense write-up above.
 - 2026-07-23: **P6 DONE (20/20, +3 riders)**, and like P21/P22 the row was misfiled - it claimed all five
   rules needed a new one-shot debuff primitive; only `Casting Debuff` (8) did. The other four ride seams
   already built and already consumed and shipped as pure data, which also pulled in `Casting Buff` (2)
