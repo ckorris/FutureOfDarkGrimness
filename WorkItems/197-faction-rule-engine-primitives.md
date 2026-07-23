@@ -215,6 +215,60 @@ first. Fixed by mirroring the passive path's screening exactly, and mutation-che
 See **Slice: Versatile Defense** below (DONE 2026-07-23). The deferral was right: it needed a token-lifecycle
 change, which is exactly what the P5a sign-off kept out of a hook/resolver slice.
 
+## Slice: P23 Caster Group — **DONE 2026-07-23** (3 of P23's 19 live refs)
+
+> "Pick one model with this rule in this unit to have Caster(X), where X is the total number of models
+> with this rule in this unit. If the model is killed, pick another to be the new caster, and transfer all
+> spell tokens to it. The caster loses all unspent spell tokens at the end of the round."
+
+**Two of those three sentences were already true and needed no code.** Spell tokens are held by the
+UNIT, not by a model, so "pick a model to be the caster" and "transfer its tokens when it dies" have no
+observable content in this engine - there is no per-model pool to move, and the designation is invisible.
+Recorded here rather than built, so a future reader doesn't go looking for the bookkeeping.
+
+**The capability, not the rule.** Casting was detected by `SpellTargeting.IsCaster` comparing against
+`CoreRuleCatalog.Caster` - an identity check standing in for a capability. Caster Group confers casting
+and is not `Caster`, and can never be granted as one: its X is a live model count, and granted rules carry
+no arguments (`GrantedRules` screens argumented rules out). Owner call (2026-07-23, mid-slice) was to fix
+the shape rather than special-case it:
+
+- New `EHookID.Casting_OnCastCapability` + `CastCapabilityContext` + `Effect.EnableCasting` ->
+  `RuleOperation.EnableCasting`, read by `CastingRuleQueries.CanCast` - the
+  `RangeRuleQueries`/`SightRuleQueries`/`MovementRuleQueries` pattern. A capability HOOK, not an event:
+  nothing applies the operation, its presence in the queue IS the answer.
+- Core `Caster` authors the entry like any other rule; `SpellTargeting.IsCaster` delegates. A second
+  caster-conferring rule now needs no engine change at all.
+- Two things fall out, both needed by the rest of P23: the answer is **live**, so an entry's `Condition`
+  gates the capability (which is how Conduit's and Accumulator's "only if this unit isn't Shaken" clauses
+  will be expressed), and rule **suppression** applies - an `IgnoreRule` cancelling casting now works.
+
+**Also new: `ValueSource.RuleCarrierCount`** - living models of the bearer's unit carrying the firing rule.
+`ValueSource.Resolve` now takes the whole `RuleInvocation` rather than just the arguments, deliberately as
+the ONLY entry point (an arguments-only overload would be the easy thing to reach for and would silently
+return a wrong answer for any state-reading variant). `UnitHasGrantedRule` was lifted out of
+`Condition.AllModelsHaveThisRule` into a shared `RuleGrantQueries` so the gate and the count cannot
+disagree about what "has" means.
+
+Data (app-side, supplement): `Caster Group` = the capability entry + `grantToken(SpellTokens,
+ruleCarrierCount, roundEnd)`. The `RoundEnd` clear is the "loses all unspent tokens" clause and rides the
+TOKEN, so core Caster's pool still carries over.
+
+Tests: `CasterGroupRuleIntegrationTests` (11) - the capability with and without the rule, carried by a
+MODEL (the #093 joined-hero corner), gated live by a `Condition`, the stage wiring through
+`SpellTargeting.IsCaster`, pool sized by carriers, shrinking with casualties, mixed units, round-end loss,
+and core Caster's carry-over left intact. Engine 1952/1952, app 491/491.
+
+Mutation-checked. The first pass found a **hole in my own tests**: reverting `IsCaster` to the identity
+check left everything green, because the tests called `CastingRuleQueries.CanCast` directly and nothing
+pinned the STAGES to it. Added `TheStagesAskForTheCapability_NotForTheCasterRule`; the mutation now reds.
+Dropping the living-model filter reds the casualty test; dropping core `Caster`'s capability entry reds 7
+tests across the cast stages.
+
+Verified in play: a headless game with a Caster Group army traces
+`Caster Group at Casting_OnCastCapability/Actor: fired -> EnableCasting`, offers **Cast** in the action
+menu, and reports "No spell has a target in range" rather than "Not enough spell tokens" - i.e. the pool
+was funded and the affordability gate passed. Corpus dead references **262 -> 259**.
+
 ## Slice: Versatile Defense — **DONE 2026-07-23** (21/21, the P5a residual)
 
 > "When a unit where all models have this rule is deployed or activated, pick one effect: when shot or
@@ -744,7 +798,7 @@ Reference counts are corpus-wide (44 books). Primitive numbers are #100's.
 | 28 | ~~**P14b** spend-for-bonus markers~~ **DONE 2026-07-22** (28/28) | Two marker classes on the ENEMY unit, bonus kind in the token type (mirroring the roll-modifier trio): persistent (`Persistent{Hit,Ap}BonusMarker` — the Target family, counted every attack, never removed) and spendable (`Spendable{Hit,Ap}BonusMarker` — Tag/Spotter). **Owner-ruled 2026-07-22: the spend is PROMPTED, not auto-spent** — `TargetMarkerSpend` asks the attacking player how many to remove (a `StringSelectionRequest`, spend-all listed first so the CLI EOF default and the AI first-option fallback both take the aggressive default; zero-marker attacks never prompt), folded into `DetermineHitRollStage` (skipped while fatigued, like granted buffs) and `DetermineSaveRollsNeededStage` (+net raises the defender's threshold). Placement is data: `Activation_OnPreAttack` abilities over the existing `TargetSelector`/`Cost` machinery; Spotter's "on a 4+ place a marker" is the new `grantTokenOnRoll` effect (decisive die, `InvokeGrantTokenOnRoll` executable, ClearTokenOnRoll's mirror). Engine 1831/1831, `TargetBonusMarkerTests` (11). Engine `d0985e2`. | Precision Target (7), Piercing Tag (6), Precision Spotter (4), Piercing Spotter (4), Precision Tag (4), Piercing Target (3) |
 | 27 | ~~**P11** reflect damage~~ **DONE 2026-07-22** (27/27) | A post-melee reflect (write-up below): Retaliate (X hits per wound taken), Deathstrike (X hits per killed model), Self-Destruct (X per participating model + self-kill any survivor), all per-model attribution. | Retaliate (20) + Deathstrike (4) + Self-Destruct (3) DONE |
 | 24 | **P17** place / restore a unit | Create a unit or restore destroyed models mid-game. Touches deployment + table-state lifecycle + networking sync. | Spawn (14), Reinforcement (4), Reanimation Aura (3), Split (3) |
-| 21 | **P23** casting support | Rides #034. Caster-pool sharing, cast-roll modifiers, transfer-on-death. | Spell Conduit (9), Spell Accumulator (7), Caster Group (3), Casting Buff (2) |
+| 21 | **P23** casting support — **Caster Group DONE 2026-07-23** (3/19 live; Casting Buff shipped as a P6 rider) | Rides #034. Caster Group shipped: see the write-up above. Remaining: cross-unit token pool (Accumulator) and cast-origin relay (Conduit), both signed off to fold into the spell picker rather than add prompts. | Spell Conduit (9), Spell Accumulator (7) remain; Caster Group (3) DONE, Casting Buff (2) done under P6 |
 | 20 | ~~**P6** deferred debuff token~~ **DONE 2026-07-23** (20/20, +3 riders) | **The row's premise was mostly wrong** - only 8 of the 20 refs needed a primitive. Four of the five rules ride seams that were already built AND already consumed (Morale/Save granted modifiers, the #153 movement-grant seam, Fortified's AP reduction on the Actor seat) and shipped as pure data. Only `Casting Debuff` had no carrier: new `ERollKind.Cast` + `TokenType.CastRollModifier`, folded into `CastSpellStage`'s threshold. See the P6 write-up above. | Casting Debuff (8), Morale Debuff (4), Piercing Debuff (3), Defense Debuff (3), Speed Debuff (2) DONE + riders Casting Buff (2), Speed Buff (1) |
 | 14 | **P8** apply terrain state to target | Force a Dangerous-terrain test / count as standing in terrain. Builds on `countAsInTerrain` + `ApplyNonMovementTerrainEffectsStage`. | Dangerous Terrain Debuff (11), Difficult Terrain Debuff (3) |
 | 12 | **P20** action-permission modifiers | (a) allow shooting after Rush; (b) "strikes last", the inverse of live `strikeFirst`. | Quick Shot Aura (5), Quick Shot Mark (4), Unwieldy Debuff (3) |
@@ -770,6 +824,14 @@ Reference counts are corpus-wide (44 books). Primitive numbers are #100's.
 
 ## Notes
 
+- 2026-07-23: **P23 Caster Group DONE (3 refs)**, and the slice turned into an architecture fix Chris
+  called mid-build: casting was detected by testing for the `Caster` rule by IDENTITY, which a second
+  caster-conferring rule can never satisfy. Now a capability the rule graph answers
+  (`Casting_OnCastCapability` -> `Effect.EnableCasting` -> `CastingRuleQueries.CanCast`), which also makes
+  the answer live-gated by `Condition` and subject to suppression - both needed by the two P23 rules still
+  to come. Two of Caster Group's three sentences needed no code (spell tokens are unit-scoped, so the
+  "designate a model / transfer on death" half has no observable content). Also new
+  `ValueSource.RuleCarrierCount`. Corpus dead count **262 -> 259**. See the write-up above.
 - 2026-07-23: **Versatile Defense DONE (21/21)**, which closes **P5a at 175/175** - the largest slice in
   this item, and the last of its deferred residuals. Two new vocabulary items
   (`ELifetime.UntilNextActivation`, `Cost.Free`), one shared stage helper (`AbilityEffectChoice`, so the

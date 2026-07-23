@@ -6988,6 +6988,48 @@
   ],
   "ruleDefinitions": [
     {
+      "name": "Caster Group",
+      "passive": [
+        {
+          "hookID": "Casting_OnCastCapability",
+          "condition": {
+            "kind": "always"
+          },
+          "effect": {
+            "kind": "enableCasting"
+          },
+          "lifetime": "UntilEndOfGame",
+          "seat": "Actor"
+        },
+        {
+          "hookID": "Round_OnRoundStart",
+          "condition": {
+            "kind": "always"
+          },
+          "effect": {
+            "kind": "grantToken",
+            "tType": {
+              "id": "SpellTokens"
+            },
+            "count": {
+              "kind": "ruleCarrierCount"
+            },
+            "clear": {
+              "kind": "roundEnd"
+            },
+            "maxTotal": 0
+          },
+          "lifetime": "UntilEndOfGame",
+          "seat": "Actor"
+        }
+      ],
+      "activated": [],
+      "scope": "Unit",
+      "engineArgumentCount": 0,
+      "valence": "Positive",
+      "description": "One model in this unit casts spells with as many spell tokens per round as there are models with this rule in the unit. Unspent tokens are lost at the end of the round."
+    },
+    {
       "name": "Highborn",
       "passive": [
         {
