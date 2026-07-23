@@ -215,6 +215,71 @@ first. Fixed by mirroring the passive path's screening exactly, and mutation-che
 See **Slice: Versatile Defense** below (DONE 2026-07-23). The deferral was right: it needed a token-lifecycle
 change, which is exactly what the P5a sign-off kept out of a hook/resolver slice.
 
+## Capability seam — **DONE 2026-07-23** (no refs; an architecture fix Chris called)
+
+Building Caster Group hit `SpellTargeting.IsCaster` comparing against `CoreRuleCatalog.Caster` — an
+identity check standing in for a capability. Chris's ruling: represent "this unit can open the cast
+prompt" as an effect a rule declares at a hook, not as a check for a named rule, and **do the same
+everywhere else the engine does this**. Two things an identity check cannot do, both of which bit here:
+
+- A SECOND rule conferring the same thing is invisible. `Caster Group` is not `Caster` and can never be
+  granted as one (its X is a live model count; granted rules carry no arguments, so `GrantedRules`
+  screens them out).
+- A capability that depends on LIVE STATE cannot be expressed at all — which the remaining P23 rules
+  need, since both read "friendly casters may only use this rule if this unit isn't Shaken".
+
+**The seam.** One hook, `EHookID.Lifecycle_OnCapabilityQuery` + `CapabilityQueryContext`, read through
+`CapabilityRuleQueries` (the `RangeRuleQueries`/`SightRuleQueries`/`MovementRuleQueries` pattern). A rule
+answers by emitting an `Enable*` operation; nothing applies it, its presence in the queue IS the answer.
+One hook rather than one per capability: the operations already discriminate, and being an ordinary hook
+each answer respects the entry's `Condition` and rule suppression.
+
+**Converted (full audit of the codebase):**
+
+| Site | Was | Now |
+|---|---|---|
+| `SpellTargeting.IsCaster` | `Definition == CoreRuleCatalog.Caster` | `Effect.EnableCasting` (Caster, Caster Group) |
+| `TransportUtilities.IsTransport` / `GetCapacity` | `Definition == Transport` + read `Arg(0)` | `Effect.EnableTransport(ValueSource)`, capacity riding the answer |
+| `ReDeploymentStage.HasReDeployment` | `Definition == ReDeployment` | `Effect.EnableReDeployment` |
+| `ChooseActionStage` Disembark/Embark/Teleport routing | `offer.RuleName == <name>` | `offer.Ability.Effect is Effect.X` |
+
+The routing one was the most galling: all three already carried a marker `Effect` that exists for
+exactly that purpose, and **the same method already routed `StormOfHits` by effect** — the three name
+checks were the outliers, not the pattern.
+
+`IsTransport`/`GetCapacity` now take a `RuleEvaluator`, threaded through the AI (`TacticalAnalysis`,
+`MacroActionGenerator`, `TacticianActivationResolver`, `TacticianPlanner`, `TacticianRangedAttackResolver`),
+the deploy/embark stages, `SpilloutExecutor`, and app-side `TableTooltipOverlay` (which builds its own
+read-only evaluator, as it already built its own resolver).
+
+**Deliberately NOT converted**, with reasons, so this isn't a silent cut:
+- **`Hero`** (`HeroJoinResolver`, 3 sites). Army-BUILD-time structural marker, resolved before any rule
+  dispatch exists, and deliberately hook-less per #006 slice F. One of the three sites isn't even a
+  capability check — it's "skip the marker itself when relocating the hero's rules onto its model".
+  Converting would mean threading a rule evaluator into army construction for a marker no second rule
+  confers.
+- **`Condition.UnitHasRule` / `TargetHasRule` / `TargetSelector.RequiredRule` / `Effect.IgnoreRule`.**
+  These name a rule because the CORPUS TEXT does ("vs units with Tough", "ignores Regeneration").
+  Authored data, not an engine assumption.
+- **`ListValidator`, `DefaultBaseEstimator`, `ArmyForgeScreen.IsCaster`.** Book/roster data, where no
+  rule graph exists yet.
+
+Tests: `CapabilityRuleQueriesTests` (9) confer each capability from a rule that is NOT the core one —
+exactly what an identity check cannot see, and what tests over the core rules can never catch — plus
+live-state gating, capability isolation, largest-capacity-wins, and the by-effect menu routing under a
+differently-named rule. Engine 1962/1962, app 491/491.
+
+**Mutation testing found two holes in my own tests**, both the same shape: the query-level tests called
+`CapabilityRuleQueries` directly, so reverting `IsCaster` (and later `HasReDeployment`) to their identity
+checks left everything green while the STAGES silently lost the behaviour. Added
+`TheStagesAskForTheCapability_NotForTheCasterRule` and
+`ARuleOtherThanReDeployment_ThatConfersTheCapability_AlsoGrantsRedeploys`; both mutations now red, as do
+reverting the menu routing and reverting `IsTransport`.
+
+**Noted, not fixed:** the CLI army-file prompt loops forever on EOF when the file fails to load (a stale
+probe army produced a 5.8 GB log before the timeout). It should abort at EOF like every other resolver.
+Worth its own item.
+
 ## Slice: P23 Caster Group — **DONE 2026-07-23** (3 of P23's 19 live refs)
 
 > "Pick one model with this rule in this unit to have Caster(X), where X is the total number of models
@@ -824,12 +889,14 @@ Reference counts are corpus-wide (44 books). Primitive numbers are #100's.
 
 ## Notes
 
-- 2026-07-23: **P23 Caster Group DONE (3 refs)**, and the slice turned into an architecture fix Chris
-  called mid-build: casting was detected by testing for the `Caster` rule by IDENTITY, which a second
-  caster-conferring rule can never satisfy. Now a capability the rule graph answers
-  (`Casting_OnCastCapability` -> `Effect.EnableCasting` -> `CastingRuleQueries.CanCast`), which also makes
-  the answer live-gated by `Condition` and subject to suppression - both needed by the two P23 rules still
-  to come. Two of Caster Group's three sentences needed no code (spell tokens are unit-scoped, so the
+- 2026-07-23: **The capability seam** (write-up above), Chris's call mid-slice and then extended by him
+  to the whole codebase: every in-play "does this unit have rule X?" check became "what can this unit
+  do?", asked at `Lifecycle_OnCapabilityQuery` and answered by an `Enable*` effect. Covers casting,
+  transport, re-deployment, and ChooseActionStage's menu routing (which had marker effects available and
+  matched rule NAMES anyway, in a method that already routed StormOfHits by effect). Hero stays a
+  build-time structural marker, with the reason recorded rather than dropped.
+- 2026-07-23: **P23 Caster Group DONE (3 refs)**. Two of its three sentences needed no code (spell tokens
+  are unit-scoped, so the "designate a model / transfer on death" half has no observable content). Two of Caster Group's three sentences needed no code (spell tokens are unit-scoped, so the
   "designate a model / transfer on death" half has no observable content). Also new
   `ValueSource.RuleCarrierCount`. Corpus dead count **262 -> 259**. See the write-up above.
 - 2026-07-23: **Versatile Defense DONE (21/21)**, which closes **P5a at 175/175** - the largest slice in

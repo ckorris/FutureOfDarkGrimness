@@ -5124,7 +5124,7 @@
       "name": "Caster Group",
       "passive": [
         {
-          "hookID": "Casting_OnCastCapability",
+          "hookID": "Lifecycle_OnCapabilityQuery",
           "condition": {
             "kind": "always"
           },
