@@ -37,6 +37,33 @@ public class ArmyForgeScreenTests
     }
 
     [Test]
+    public void BaseSummary_RoundsInchesToAuthoredMm()
+    {
+        var circle = new BaseFileEntry { Shape = EBaseShapeKind.Circle, DiameterInches = 0.984252f };
+        var rect = new BaseFileEntry
+        {
+            Shape = EBaseShapeKind.Rectangle, WidthInches = 0.984252f, HeightInches = 1.968504f,
+        };
+        Assert.That(ArmyForgeScreen.BaseSummary(circle), Is.EqualTo("25mm"));
+        Assert.That(ArmyForgeScreen.BaseSummary(rect), Is.EqualTo("25 x 50mm"));
+    }
+
+    [Test]
+    public void IsCaster_TrueForCasterRules_FalseOtherwise()
+    {
+        RosterUnit Make(params string[] rules) => new()
+        {
+            Rules = rules.Select(r => (SpecialRuleEntry)new SpecialRuleEntry_Core(r)).ToList(),
+        };
+        Assert.That(ArmyForgeScreen.IsCaster(Make("Caster Group", "Highborn")), Is.True);
+        Assert.That(ArmyForgeScreen.IsCaster(new RosterUnit
+        {
+            Rules = { new SpecialRuleEntry_CoreNumeric("Caster", 2) },
+        }), Is.True);
+        Assert.That(ArmyForgeScreen.IsCaster(Make("Highborn", "Tough")), Is.False);
+    }
+
+    [Test]
     public void DemoBook_HasExpectedRosterAndUpgrades()
     {
         BookFile book = DemoBook.Build();
