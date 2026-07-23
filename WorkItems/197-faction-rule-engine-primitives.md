@@ -461,6 +461,50 @@ Shipped (engine `dcace2d`):
   -> each takes its 3-hit batch (the loop), 0-successes-but-cost-spent, probabilistic-mode integer picks,
   Choose Action routing, and the once-per-game gate. Engine 1863/1863. Corpus dead **384 -> 379**.
 
+## Slice P21 — re-scoped: it was never one slice (2026-07-22)
+
+Like P22 before it, the P21 row bundled unrelated mechanics under a title ("setup-phase re-deploy")
+that fits only two of its seven rules. Reading the source text (off-repo, from the army markdown), the
+60 refs decompose as:
+
+| Rule | Refs | Actual mechanic | Home |
+|------|-----:|-----------------|------|
+| Re-Deployment | 27 | Post-deployment sub-phase: remove up to 2 units, redeploy, players alternate | **Genuine new stage** - this slice |
+| Fanatic | 19 | "After this model deploys, place it within 9in" | **Rides the existing `Deployment_OnUnitDeployed` hook** (Vanguard's seam) - DONE below |
+| Dash + Dash Aura | 6 | "At END of activation, place models within D3+1in" | Reposition-at-activation's twin at a different trigger - re-filed (own row) |
+| Ambush Re-Deployment | 4 | "At end of activation, remove and redeploy as Ambush next round" | Ambush variants (round-N arrival) - re-filed |
+| Mobile Artillery | 2 | ">9in Hold+shoot +1 / hasnt-moved enemy -2 hit" | Pure data on the built `AttackedFromOverInches` gate - re-filed (Misc) |
+| Quick Readjustment | 2 | "Ignore move-shoot penalty for Indirect weapons" | Small penalty-ignore - re-filed (Misc) |
+
+Only **Re-Deployment (27) + Fanatic (19) = 46 refs** are genuine deploy-phase work. The other 14 were
+re-filed to their natural rows with reasons (not silently dropped). Owner signed off the decomposition,
+Fanatic-as-placement, and 2-per-Re-Deployment-unit budget on 2026-07-22.
+
+### Fanatic (19 refs) - DONE 2026-07-22, engine `599be98`
+
+Two discoveries shrank this to near-data. There is already a `Deployment_OnUnitDeployed` hook that fires
+after a unit's placement and offers activated abilities (`DeployUnitStage.OfferPostDeploymentAbilities`) -
+**Vanguard** already rides it ("once per game, after deploy, move up to 9in", `Effect.TriggeredMove`).
+Fanatic is Vanguard-shaped but a PLACEMENT not a move (owner's reposition-is-a-placement ruling, and the
+corpus word "placed"), so it reuses the reposition-placement machinery the DONE reposition-at-activation
+slice built. Shipped:
+- **`Effect.RepositionOnDeploy(float MaxInches)`** -> emits the shared `RuleOperation.RepositionModels`
+  op. Flat (no dice) rather than reusing `RepositionAtActivation` with a degenerate die, since every
+  `DiceExpression` rolls at least one die and Fanatic's range is fixed.
+- **`RepositionPlacement`** (new shared helper) - the "you MAY place all models within Nin" fold, extracted
+  verbatim from `ActivationStartStage.OfferReposition` so both the activation-start and the deploy path run
+  ONE implementation. `DeployUnitStage.OfferPostDeploymentAbilities` now folds `RepositionModels` from the
+  resolved ops into the placement after the executor runs (the executor ignores it - it is stage-folded,
+  not an `ExecutableOperation`).
+- **`CoreRuleCatalog.Fanatic`** (in `All`): a `Deployment_OnUnitDeployed` activated ability, `Cost.OncePerGame`
+  (deployment happens once, so the gate is naturally spent - matching Vanguard, and it also stops a re-offer
+  on a later Scout/Ambush placement), Self target, `RepositionOnDeploy(9)`. `RuleFireLint` ability arm
+  extended (`RepositionModels` handled at the deploy hook).
+- Tests: `FanaticRuleIntegrationTests` (6) - catalog shape, the flat op emission, the once-per-game gate,
+  and through the REAL `DeployUnitStage`: accept -> repositions within 9in (radius + allowCancel reach the
+  resolver), decline -> stays at its deploy position, non-Fanatic -> no prompt. Engine 1870/1870, app build
+  clean, headless smoke exit 0. Corpus dead **379 -> 360**.
+
 ## Slices — by leverage
 
 Reference counts are corpus-wide (44 books). Primitive numbers are #100's.
@@ -471,11 +515,11 @@ Reference counts are corpus-wide (44 books). Primitive numbers are #100's.
 | 21 | **Versatile Defense** (out of P5a) | A new `ELifetime.UntilNextActivation` + a `TokenClearTrigger` firing at activation **start**, and a second trigger at `Deployment_OnUnitDeployed`. Everything else (labelled abilities, the choice request) already exists. | Versatile Defense Aura (21) |
 | 47 | ~~**Delayed Action** (was P22)~~ **DONE 2026-07-11** | Shipped at unit-selection (pick-then-confirm hold-back), NOT the next-activator seam - see the Delayed Action write-up above. Fork resolved with Chris: holding back does NOT activate the unit (it stays in the pool) and the turn passes to the opponent; once per round per player. | Delayed Action (47) |
 | 15 | ~~**Teleport** (was P22)~~ **DONE 2026-07-11** (15 + Teleport Aura 4) | Shipped as a flat-6in menu action - see the Teleport write-up below. The pre-attack-hook / 3in-vs-6in reading was wrong (see write-up); Chris corrected the design in-conversation. | Teleport (15), Teleport Aura (4) |
-| 14 | **Ambush variants** (the real P22) | The only genuine deploy-timing work. `Rapid Ambush` (deployable from round 1 — a new `EDeferTiming`), `Ambush Beacon` (relaxes the >9in enemy restriction for OTHER friendly Ambushers within 6in — a cross-unit deployment constraint), `Ambushing Piercing Shot` (Ambush + AP(+1) during the round it arrives — needs deploy-round state). | Rapid Ambush (4), Ambush Beacon (6), Ambushing Piercing Shot (4) |
+| 18 | **Ambush variants** (the real P22, + a P21 re-file) | The only genuine deploy-timing work. `Rapid Ambush` (deployable from round 1 — a new `EDeferTiming`), `Ambush Beacon` (relaxes the >9in enemy restriction for OTHER friendly Ambushers within 6in — a cross-unit deployment constraint), `Ambushing Piercing Shot` (Ambush + AP(+1) during the round it arrives — needs deploy-round state). **`Ambush Re-Deployment` (4, re-filed from P21):** "once per game, when this unit ends its activation, remove it and redeploy as if it had Ambush at the start of the next round" - not deploy-phase at all; needs the round-N Ambush arrival these rules build plus an end-of-activation trigger. | Rapid Ambush (4), Ambush Beacon (6), Ambushing Piercing Shot (4), Ambush Re-Deployment (4) |
 | 2 | **Surprise Attack** (was P22) | Infiltrate + "the first time this unit is activated, pick one enemy within 6in in LoS and roll X dice; each 2+ deals a hit with AP(1)". Blocked on **P10**'s dice-pool primitive regardless. | Surprise Attack (2) |
 | 96 | ~~**New** reposition-at-activation~~ **DONE 2026-07-09** (96/96) | Owner's ruling: a **placement**, not a move — nothing is asked of the path, only of the destination. `PlaceObjectsRequest` gained `MaxDistanceFromStartInches`, a *per-model* radius (0 = unconstrained, so deployment is untouched), honoured by all three resolvers. `Effect.RepositionAtActivation` rolls its die at Apply (Heal's shape) so the op carries a concrete distance; several **sum**, which is how `Rapid Blink Boost` widens D3 to 2D3 as an increment rather than a second prompt. The AI declines by standing still. Engine `5f3c4df`. | Wolfborn (60), Bounding (22), Rapid Blink (8), Bounding Aura (4), Rapid Blink Boost Aura (2) |
 | 66 | ~~**P5b** round-start Shaken recovery~~ **DONE 2026-07-09** (66/66) | **The premise was wrong:** `Round_OnRoundStart` is not dormant — `StartOfRoundExtraActionStage.GrantSpellTokens` fires it every round for every living unit (Caster token grants), applying token ops and running executables. So this needed only the effect. New `Effect.ClearTokenOnRoll` -> `InvokeClearTokenOnRoll`, an executable resolved through `IOperationServices`. Rolls with `RollDecisiveFace`, never `Roll(1)` — the outcome is binary, so a histogram would want to remove a *fraction* of a token. Engine `05eb91e`. | Steadfast Aura (28), Battleborn (26), Honor Code (9), Steadfast (3) |
-| 60 | **P21** setup-phase re-deploy | Remove + re-place a unit during/after deployment. | Re-Deployment (27), Fanatic (19), Dash Aura (4), Ambush Re-Deployment (4), Dash (2), Mobile Artillery (2), Quick Readjustment (2) |
+| 46 | **P21** setup-phase re-deploy (was 60; 14 refs re-filed) | **Misfiled like P22.** Only two of the seven rules are deploy-phase work. **Fanatic (19) DONE 2026-07-22** - rides the existing `Deployment_OnUnitDeployed` hook (Vanguard's seam) as a placement (write-up below). Re-Deployment (27) - the genuine new sub-phase - building. The other 14 refs re-filed with reasons (see the re-scope note). | Fanatic (19) DONE; Re-Deployment (27) building |
 | 59 | ~~**Darkborn** (#102 residual)~~ **DONE 2026-07-11** | It was **only the naming bug** - both mechanics were already built (the "per-target charge debuff doesn't exist" note was stale; #029/#183's `EffectiveChargeDistanceAgainst` powers it). The importer now disambiguates the bare `Darkborn` by army; books patched. See the Darkborn write-up above. | Darkborn (59) |
 | 53 | ~~**P15** randomized-branch effect~~ **DONE 2026-07-11** (48/53) | Decisive per-attack-action die (Option A), once per action, threaded via a new `IHasUnpredictableBranch` capability. See the P15 write-up above. **The 2 Mark variants (5 refs) are deferred** - a mark grants after the action-level roll. | Unpredictable Fighter (26), Unpredictable Fighter Aura (11), Unpredictable (5), Unpredictable Shooter Aura (5), Unpredictable Shooter (1) done; Unpredictable Fighter Mark (3) + Unpredictable Shooter Mark (2) deferred |
 | 44 | ~~**P10** dice-pool -> hits / auto-wounds~~ **DONE 2026-07-22** (44/44) | It was TWO primitives: an AUTO-WOUND pool (Ravage, Crossing Attack - roll X, each 6+ a direct unsaveable wound) and a rolled multi-target HIT burst (Storm of X - roll 3 decisively, each 2+ picks an enemy taking 3 hits with a rule). Both shipped (write-ups below). Also retired the #164 `dealHits.WithRules` seam's remaining generality (Storm rides the same fold). | Ravage (31) + Crossing Attack (8) + Storm of Change/Lust/Plague/War (5) all DONE |
@@ -492,7 +536,8 @@ Reference counts are corpus-wide (44 books). Primitive numbers are #100's.
 | 12 | **Strafing** (out of slice 0) | Make `Strafing` the weapon rule the source says it is: movement-hook access to the bearer's weapons, a mid-move "attack with *this* weapon" primitive replacing the fixed 3-hit `InvokeDealHits`, and a once-per-activation weapon-use restriction. Currently allowlisted in `BookRuleScopeTests`. | Strafing (12) |
 | 3 | **P19** reactivate another unit | Generalize the live self-`reactivate` to a chosen friendly unit. | Coordinate (3) |
 | 2 | **P12** attack-count producer — **DEFERRED 2026-07-22** (owner ruling) | Regenerative Strength's marker GAIN is "one marker per ignored wound", but the Regeneration ignore roll is a histogram: under the probabilistic roller the ignored count is fractional, and token counts are integers — bridging them means int-locking a roll-derived value. Owner chose to keep the dice invariant pristine over a round-per-attack approximation; the 2 refs stay dead until fractional token counts (or another exact mechanism) exist. The attack-count producer seam itself (a fold at `DetermineHitRollStage`'s attackCount, where the code comment already marks the spot) was NOT built unused, per grow-on-demand. The read side's design is settled when this reopens: melee Yes/No prompt per weapon volley ("add +X attacks to this weapon?"), once-gated per activation — the player picks the weapon by accepting on it (owner ruled 2026-07-22 the pick must be prompted, not auto). | Regenerative Strength (2) |
-| 98 | **Misc** small primitives | Each is a one-off; triage before building. Several may collapse into P5/P13. | Repel Ambushers (24, enemy Ambush placement constraint), Inquisitorial Agent (20, once-per-game reactivate), Hazardous (15, self-wound on unmodified 1), Extended Buff Range (9), Protection Feat (8) + Aura (1), Instinctive (4, forced action at activation), Speed Feat Aura (4) + Buff (1), Heavy Impact (3, Impact with AP), Grounded Reinforcement Aura (3), Grounded Precision Aura (3), Grounded Stealth (2, "within 1in of terrain" condition), Screened Aura (1) |
+| 6 | **Dash** end-of-activation reposition (re-filed from P21) | Reposition-at-activation's twin at a different trigger: "at the END of this unit's activation, once per round, place all models with this rule within D3+1in of their position." The DONE reposition slice fires the SAME `RepositionAtActivation` placement at activation START (`ActivationStartStage`); Dash needs it at end-of-activation (`Activation_OnEndOfActivation`, a hook that already carries token lifecycle) with a once-per-round gate. Small delta on shipped machinery - not deploy-phase. | Dash (2), Dash Aura (4) |
+| 102 | **Misc** small primitives | Each is a one-off; triage before building. Several may collapse into P5/P13. | Repel Ambushers (24, enemy Ambush placement constraint), Inquisitorial Agent (20, once-per-game reactivate), Hazardous (15, self-wound on unmodified 1), Extended Buff Range (9), Protection Feat (8) + Aura (1), Instinctive (4, forced action at activation), Speed Feat Aura (4) + Buff (1), Heavy Impact (3, Impact with AP), Grounded Reinforcement Aura (3), Grounded Precision Aura (3), Mobile Artillery (2, re-filed from P21 - >9in Hold+shoot / hasnt-moved defensive hit mods; likely pure DATA on the built `AttackedFromOverInches` + Hold-action + moved-this-round primitives - verify on build), Quick Readjustment (2, re-filed from P21 - ignore the shoot-after-move penalty for Indirect weapons; a small penalty-ignore), Grounded Stealth (2, "within 1in of terrain" condition), Screened Aura (1) |
 
 ## Suggested sequencing
 
@@ -508,6 +553,14 @@ Reference counts are corpus-wide (44 books). Primitive numbers are #100's.
 
 ## Notes
 
+- 2026-07-22: **P21 re-scoped (misfiled like P22); Fanatic shipped** (19 refs; engine `599be98`). The
+  P21 row's 60 refs are not one mechanic: only Re-Deployment (27) and Fanatic (19) are deploy-phase work;
+  the other 14 were re-filed (Dash/Dash Aura 6 -> end-of-activation reposition; Ambush Re-Deployment 4 ->
+  Ambush variants; Mobile Artillery 2 + Quick Readjustment 2 -> Misc/data). See the P21 re-scope note
+  above. Fanatic rides the existing `Deployment_OnUnitDeployed` hook (Vanguard's seam) as a placement
+  (owner ruling): new `Effect.RepositionOnDeploy` -> the shared `RepositionModels` op, folded into a
+  within-9in placement by `DeployUnitStage` via a new shared `RepositionPlacement` helper (extracted from
+  `ActivationStartStage`). Corpus dead **379 -> 360**. Re-Deployment (27) is next. See the Fanatic write-up.
 - 2026-07-22: **P10b Storm of X shipped** (5 refs; engine `dcace2d`), completing P10 (44/44). A rolled
   multi-target hit burst: a new `StormStage` (routed from Choose Action like Teleport) rolls a 3-dice pool
   DECISIVELY - integer successes, since you cannot pick a fractional target (the dice invariant, per P15) -
