@@ -977,6 +977,87 @@ core `Slow` grant survives. Affects all 15 shipped `* Buff` rules plus `Piercing
 authored (consistent with its siblings and correct in normal play) rather than papering over one
 instance; filed against **#095**.
 
+## Slice: Misc small primitives — IN PROGRESS (started 2026-07-23)
+
+The 102-ref "Misc" row, triaged rule-by-rule (each is a one-off). Full wording pulled from the corpus
+doc. Build order: pure-data wins first, then shared-condition clusters, then the genuine one-offs.
+Three heavier rules RE-FILED out of misc into their own slices (surfaced, not silently cut) - see the
+re-file note at the end of this section.
+
+**Screened / Screened Aura (1 ref) - DONE 2026-07-23 (app-side `2279a95`).** "When units where all
+models have this rule are shot or charged from over 9in away, enemy units get -1 to hit." Byte-identical
+to the already-shipped `Machine-Fog` / `Changebound` on the DONE `AttackedFromOverInches` gate +
+`Shooting_OnHitRollModifier`. **Pure data, no engine change.** Authored `Screened` (Machine-Fog verbatim)
++ `Screened Aura` (the only corpus form, in Wormhole Daemons of Plague) into the supplement, embedded via
+`--apply-rules`. Tests: `ScreenedShippedDataTests` (4) - nets -1 only beyond 9in (hook-correctness pin),
+fires for a long charge not just shooting, the aura confers the rule, and end-to-end aura -> conferred
+rule -> live -1. App 510/510; headless smoke exit 0. Corpus dead **243 -> 242**.
+
+**Grounded family - Reinforcement / Precision / Stealth (8 refs) - DONE 2026-07-23 (engine `2d90fac`,
+super `94bdaa3`).** "If a unit where all models have this rule has most of them within 1in of terrain, ..."
+- Reinforcement +1 defense, Precision +1 to hit attacking, Stealth enemies -1 to hit. **One shared new
+primitive: `Condition.MostModelsWithinInchesOfTerrain`.** Terrain reaches the condition as a new
+`IHasTerrain` capability on the two hit contexts, populated from `GameContext.TableState.Terrain` in
+`DetermineHitRollStage` / `RollToHitStage` (empty on AI-valuation / synthetic-hit paths - a conservative
+default: the bonus is only ever omitted). The condition reads `invocation.Bearer` (the fact is about the
+firing unit; the same context serves both seats) against the terrain list; shared `TerrainProximityQueries`
+measures from the base EDGE (bounding-radius inflation, as `SweptBaseGeometry` does), strict living-model
+majority. `HookContextCatalog` is reflection-based, so implementing `IHasTerrain` auto-registered it - no
+validator table to touch. Lint seeds one origin-terrain hit-context variant so the rules prove fireable.
+Design note: terrain-as-capability (not cached unit state) keeps rules stateless and avoids staleness; the
+alternative was strictly worse. Data: 3 base + 2 auras (Precision is Aura-only in corpus; Stealth base-only),
+embedded into MachineCults + SoulSnatcherCults. Tests: engine `GroundedTerrainRuleIntegrationTests` (7 -
+fires/no-terrain/far/strict-majority/living-only/base-edge-not-centre/empty), app `GroundedShippedDataTests`
+(8 - hook+seat+gate+effect pins, aura links, net +1def/+1hit/-1enemy-hit only in terrain). Engine 2011/2011,
+app 523/523, smoke exit 0. Corpus dead **242 -> 234**.
+
+**Mobile Artillery (2 refs) - attacker arm DONE, defensive arm DEFERRED 2026-07-23 (app-side `79999ab`).**
+"When this unit uses a Hold action and shoots at enemies over 9in away, +1 to hit. As long as this unit
+hasn't moved during the round, when enemies shoot at it from over 9in away, they get -2 to hit."
+- **Attacker arm: pure data** on shipped primitives - `Not(IsMelee)` + `Not(AfterMoving)` (= Hold, i.e.
+did not move this activation) + `AttackedFromOverInches(9)`, Actor seat, +1 Hit. Embedded into RobotLegions
++ HumanDefenseForce. `MobileArtilleryShippedDataTests` (5). **Defensive arm DEFERRED, recorded not cut:**
+"hasn't moved during the ROUND" needs round-persistent per-unit moved-this-round state readable at the
+DEFENSIVE hit hook (fired during the enemy's activation). `UnitActionContext.HasMoved` is per-activation and
+about the ACTING unit; `AfterMoving` reads the attacker, not the bearer; and a token granted at
+`Movement_OnMoveActionDeclared` is not applied (`ExecuteMoveStage` only *consumes* one-shot grants there, it
+doesn't apply new token ops). The arm needs a stage-level "grant a MovedThisRound token when a unit moves"
+primitive + a `Not(TokenPresent)` defensive gate - a real change, filed for its own slice. Corpus dead
+**234 -> 232** (name now resolves; defensive arm partial).
+
+**Heavy Impact (3 refs) - DONE 2026-07-23 (engine `f739d2c`, super `27fcf08`).** "Counts as Impact(X) with
+hits that have AP(1)." `Effect`/`RuleOperation.ChargeImpactHits` gained an `ArmorPenetration` (default 0);
+`ImpactSink` folds it as a MAX across sources (the single impact pool can't separate per-source AP - an
+edge case no corpus unit hits, since Heavy Impact replaces Impact), and `ResolveImpactHitsStage` builds the
+synthetic impact weapon with that AP instead of the hardcoded 0. Data: `Heavy Impact` (engineArgumentCount 1)
+into SaurianStarhost + RatmenClans. Tests: engine `ImpactRuleIntegrationTests` +2 (a save of 4 vs Def 4 HOLDS
+at AP 0 but FAILS at AP 1 - the contrast pins the AP threading), app `HeavyImpactShippedDataTests` (1, AP=1
+pinned). Corpus dead **232 -> 229**.
+
+**Quick Readjustment (2 refs) - DONE 2026-07-23 (engine `e82ec55`, super `46eb0cd`).** "This model ignores
+the shoot-after-move penalty when using Indirect weapons." Indirect's penalty is a weapon-scoped -1 gated on
+`And(AfterMoving, Not(IsMelee))`. New `Condition.WeaponHasRule` reads the FIRING weapon
+(`invocation.Weapon`, meaningful only for a weapon-scoped rule); Quick Readjustment is authored weapon-scoped
+(routed onto every weapon by slice 0) and fires its +1 only on the weapon that also carries Indirect,
+netting the -1 to 0. Lint's `SatisfyCondition` seeds the named companion rule onto the lint weapon. Data into
+HumanInquisition + RatmenClans. Tests: engine `QuickReadjustmentRuleIntegrationTests` (4 - penalty stands
+alone, cancelled with QR, QR does NOTHING on a non-Indirect weapon or when stationary), app
+`QuickReadjustmentShippedDataTests` (1). Corpus dead **229 -> 227**.
+
+**Hazardous (15 refs) - AP arm DONE, self-wound arm DEFERRED 2026-07-23 (app-side `29f854b`).** "Gets AP(4),
+but this weapon's unit takes one wound on unmodified rolls of 1 to hit." The corpus weapons carry
+`armorPenetration: 0` in-profile with a bare `Hazardous` rule, so the AP MUST come from the rule.
+- **AP(4): pure data** - weapon-scoped Actor-seat `rollModifier(Save, -4)` at `Shooting_OnHitRollComplete`
+(Thrust's AP pattern; verified sign against Thrust). Into RatmenClans. Tests `HazardousShippedDataTests` (2).
+**Self-wound arm DEFERRED, recorded + flagged:** "takes one wound on unmodified 1s to hit" needs a
+mid-attack wound application against the ATTACKER's own unit - a new `Effect.SelfWoundOnUnmodifiedRoll(1)`
+reading the hit histogram at face 1, a `RuleOperation.InvokeDealWoundsToUnit` executable, a new
+`IOperationServices.DealWoundsToUnit` (mirroring `ApplyWoundsStage`'s DealWounds + `UnitDestructionNotifier`
+choke), AND a new `OperationExecutor.Execute` point in `RollToHitStage` (the hit-roll stages fold only sink
+ops today; no executable runs there). That is a wound-subsystem hook, not a small primitive - filed for its
+own slice. **Balance note: until it lands, Hazardous is upside-only** (AP with no self-harm). Corpus dead
+**227 -> 212** (name resolves; self-wound arm partial).
+
 ## Slices — by leverage
 
 Reference counts are corpus-wide (44 books). Primitive numbers are #100's.
