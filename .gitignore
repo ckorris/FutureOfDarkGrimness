@@ -14,3 +14,7 @@ imgui.ini
 # #162 field harness artifacts (written to CWD by --field-harness)
 FieldHarnessOut/
 FdgLab/reports/
+
+# List server (#264) local artifacts
+tools/list-server/node_modules/
+tools/list-server/.wrangler/

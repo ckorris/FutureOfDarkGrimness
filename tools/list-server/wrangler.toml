@@ -1,0 +1,16 @@
+# FDG list server (#264): the master-server registry behind the in-game server browser.
+# Deploy: npx wrangler deploy   (needs a Cloudflare account; free plan is sufficient)
+# Local:  npx wrangler dev      (then tools/list-server/smoke.sh against http://localhost:8787)
+name = "fdg-list-server"
+main = "src/index.ts"
+compatibility_date = "2026-07-01"
+
+# All state lives in a single Durable Object instance ("global"): strong consistency for
+# register/heartbeat/expire without a separate database. SQLite-backed DOs are on the free plan.
+[[durable_objects.bindings]]
+name = "REGISTRY"
+class_name = "Registry"
+
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["Registry"]
