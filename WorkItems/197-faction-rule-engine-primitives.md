@@ -534,6 +534,37 @@ placing, starting with the player that activates next." Shipped:
   starting with the roll-order head with each unit landing in its own zone. Engine 1877/1877, app build clean,
   headless smoke exit 0. Corpus dead **360 -> 333** (Ambush Re-Deployment's 4 correctly stay dead - re-filed).
 
+## Slice P11: reflect damage (Retaliate + Deathstrike) — DONE 2026-07-22, engine `163a2f3`
+
+"When this model takes a wound / is killed in melee, the attacker takes X hits." Three rules share a
+"deal X hits back at the melee attacker" primitive; slice 1 built two, slice 2 is Self-Destruct.
+
+**Owner rulings (2026-07-22):** per-model attribution (exact, not unit-level - the harder path that also
+defers Sergeant); build Retaliate + Deathstrike first, then Self-Destruct.
+
+The reading that shaped it: all three reflect AFTER the melee resolves (Self-Destruct's text says so
+explicitly), so this is a post-melee TALLY, not a per-wound hook. The engine already snapshots per-unit
+start-wounds on the combat context; adding a per-model snapshot made per-model attribution exact by simple
+before/after comparison - no per-wound tracking, sidestepping the mechanism that stalled Sergeant. Shipped:
+- **Per-model start-wounds snapshot** on `CombatActionContext` (`ModelRemainingWoundsAtStart`, keyed by
+  model reference so a Counter swap needs no re-keying), captured before the first swing (attacker at
+  construction, defender at `SetDefender`), melee-only.
+- **`ResolveMeleeReflectStage`** - a new child of `MeleeStage` after consolidation (before the post-melee
+  Harassing move). For each of the two combatants as bearer, it counts per rule-bearing MODEL: Retaliate's
+  wounds-taken (`start - current`) x X, and Deathstrike's kills (start > 0, now dead) x X, then deals that
+  many plain hits at the other unit through the real `DetermineSaveRolls -> RollToSave -> AssignWounds ->
+  ApplyWounds` pipeline (so the target's armor / Regeneration apply). The per-bearer batches LOOP via
+  `OnBatchDone` re-entering the stage, the StormStage pattern. A model has the rule if it or its unit carries
+  it (Arg(0) = X), so a unit-wide rule counts every model and a champion-only rule counts just that model.
+- **Fractional-safe:** the hit count is `X x woundsTaken` built directly as a synthetic histogram (not an
+  int `Roll`), so probabilistic mode's fractional wounds flow through without int-locking - the #100 dice
+  invariant, the same discipline Ravage used.
+- `Retaliate` / `Deathstrike` are marker rules (no hooks; detected by name at the stage, like Delayed
+  Action / Re-Deployment), allowlisted in the catalog fire-lint. Tests: `ReflectRuleIntegrationTests` (6)
+  through the real stage - X-per-wound, X-per-kill, survive/no-wound/no-rule no-ops, and the per-model
+  attribution pin (a champion's wound reflects, the grunt's does not). Engine 1886/1886, app build clean,
+  headless smoke exit 0. Corpus dead **333 -> 309**.
+
 ## Slices — by leverage
 
 Reference counts are corpus-wide (44 books). Primitive numbers are #100's.
@@ -554,7 +585,7 @@ Reference counts are corpus-wide (44 books). Primitive numbers are #100's.
 | 44 | ~~**P10** dice-pool -> hits / auto-wounds~~ **DONE 2026-07-22** (44/44) | It was TWO primitives: an AUTO-WOUND pool (Ravage, Crossing Attack - roll X, each 6+ a direct unsaveable wound) and a rolled multi-target HIT burst (Storm of X - roll 3 decisively, each 2+ picks an enemy taking 3 hits with a rule). Both shipped (write-ups below). Also retired the #164 `dealHits.WithRules` seam's remaining generality (Storm rides the same fold). | Ravage (31) + Crossing Attack (8) + Storm of Change/Lust/Plague/War (5) all DONE |
 | 41 | ~~**P13** marker-scaled magnitude~~ **DONE 2026-07-22** (41/41) | Shipped WITHOUT touching `ValueSource` (its context-free `Resolve` stays pure): new effects `tokenScaledRollModifier` / `tokenScaledReduceArmorPenetration` read the bearer's token count at Apply time (steps = count / perMarkers, Fortified's read-side `maxReduction` cap), `GrantToken` gained a grant-time `maxTotal` clamp (the "up to a max. of X markers" clause, spell-token-cap pattern), `ReconcileObjectivesStage` now fires `Round_OnRoundEnd` rules for every living unit before the token sweep (new `RoundEndContext`, reflection-registered), and both Shaken-application sites clear `CustomHook(Morale_OnShakenApplied)` tokens (Fortified's lose-all-on-Shaken, pure data). "On the table" composes from existing conditions: `not(InReserve) and not(EmbarkedIn) and not(OffTableFromForcedMove)`. Authored behind `tokenPresent(marker, minCount: perMarkers)` so RuleFireLint's existing token seeding proves each entry fires. 8 definitions (incl. support base `Defensive Growth`); engine 1820/1820, `TokenScaledMarkerTests` (9, incl. a real-stage round-end firing pin per the #196 consumption lesson). Engine `2efc06e`. | Piercing Frenzy (9), Defensive Frenzy (8), Piercing Growth (6), Precision Frenzy (6), Fortified Growth (6), Precision Growth (5), Defensive Growth Aura (1) |
 | 28 | ~~**P14b** spend-for-bonus markers~~ **DONE 2026-07-22** (28/28) | Two marker classes on the ENEMY unit, bonus kind in the token type (mirroring the roll-modifier trio): persistent (`Persistent{Hit,Ap}BonusMarker` — the Target family, counted every attack, never removed) and spendable (`Spendable{Hit,Ap}BonusMarker` — Tag/Spotter). **Owner-ruled 2026-07-22: the spend is PROMPTED, not auto-spent** — `TargetMarkerSpend` asks the attacking player how many to remove (a `StringSelectionRequest`, spend-all listed first so the CLI EOF default and the AI first-option fallback both take the aggressive default; zero-marker attacks never prompt), folded into `DetermineHitRollStage` (skipped while fatigued, like granted buffs) and `DetermineSaveRollsNeededStage` (+net raises the defender's threshold). Placement is data: `Activation_OnPreAttack` abilities over the existing `TargetSelector`/`Cost` machinery; Spotter's "on a 4+ place a marker" is the new `grantTokenOnRoll` effect (decisive die, `InvokeGrantTokenOnRoll` executable, ClearTokenOnRoll's mirror). Engine 1831/1831, `TargetBonusMarkerTests` (11). Engine `d0985e2`. | Precision Target (7), Piercing Tag (6), Precision Spotter (4), Piercing Spotter (4), Precision Tag (4), Piercing Target (3) |
-| 27 | **P11** reflect damage | On-wound-taken / on-death hook + deal-hits-at-attacker. | Retaliate (20), Deathstrike (4), Self-Destruct (3) |
+| 27 | **P11** reflect damage - **Retaliate + Deathstrike DONE 2026-07-22** (24/27) | A post-melee reflect (write-up below): Retaliate (X hits per wound taken) + Deathstrike (X hits per killed model) shipped, per-model attribution. **Self-Destruct (3) is slice 2** (adds the survive-branch self-kill). | Retaliate (20) + Deathstrike (4) DONE; Self-Destruct (3) building |
 | 24 | **P17** place / restore a unit | Create a unit or restore destroyed models mid-game. Touches deployment + table-state lifecycle + networking sync. | Spawn (14), Reinforcement (4), Reanimation Aura (3), Split (3) |
 | 21 | **P23** casting support | Rides #034. Caster-pool sharing, cast-roll modifiers, transfer-on-death. | Spell Conduit (9), Spell Accumulator (7), Caster Group (3), Casting Buff (2) |
 | 20 | **P6** deferred debuff token | The debuff mirror of the built `FirstTrigger` buff grant: a one-shot roll penalty on a chosen enemy's next relevant action. | Casting Debuff (8), Morale Debuff (4), Piercing Debuff (3), Defense Debuff (3), Speed Debuff (2) |
@@ -582,6 +613,13 @@ Reference counts are corpus-wide (44 books). Primitive numbers are #100's.
 
 ## Notes
 
+- 2026-07-22: **P11 reflect damage - Retaliate + Deathstrike shipped** (24 refs; engine `163a2f3`). A
+  post-melee reflect: `ResolveMeleeReflectStage` (new `MeleeStage` child after consolidation) deals X hits
+  back at the melee attacker - Retaliate per wound taken, Deathstrike per killed model - through the real
+  save/wound pipeline, batches looping like Storm. Owner ruled PER-MODEL attribution, made exact by a new
+  per-model start-wounds snapshot on `CombatActionContext`; hit count stays fractional (dice invariant).
+  Marker rules, fire-lint allowlisted. Self-Destruct (3, the survive-branch self-kill) is slice 2. Corpus
+  dead **333 -> 309**. See the P11 write-up above.
 - 2026-07-22: **P21 DONE (46/46), after re-scoping it (misfiled like P22).** The row's 60 refs were not
   one mechanic: only Re-Deployment (27) and Fanatic (19) were deploy-phase work; the other 14 were re-filed
   (Dash/Dash Aura 6 -> end-of-activation reposition; Ambush Re-Deployment 4 -> Ambush variants; Mobile
