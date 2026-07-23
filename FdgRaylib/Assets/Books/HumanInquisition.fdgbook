@@ -5493,6 +5493,45 @@
       "description": "Once per activation, before attacking, pick one enemy unit within 18\u0022 in line of sight with Caster, which gets -1 to casting rolls once (next time the effect would apply)."
     },
     {
+      "name": "Quick Readjustment",
+      "passive": [
+        {
+          "hookID": "Shooting_OnHitRollModifier",
+          "condition": {
+            "kind": "and",
+            "left": {
+              "kind": "weaponHasRule",
+              "ruleName": "Indirect"
+            },
+            "right": {
+              "kind": "and",
+              "left": {
+                "kind": "afterMoving"
+              },
+              "right": {
+                "kind": "not",
+                "inner": {
+                  "kind": "isMelee"
+                }
+              }
+            }
+          },
+          "effect": {
+            "kind": "rollModifier",
+            "rollKind": "Hit",
+            "delta": 1
+          },
+          "lifetime": "ThisAttack",
+          "seat": "Actor"
+        }
+      ],
+      "activated": [],
+      "scope": "Weapon",
+      "engineArgumentCount": 0,
+      "valence": "Positive",
+      "description": "This unit ignores the -1 to hit penalty for shooting after moving when firing Indirect weapons."
+    },
+    {
       "name": "Precision Fighter",
       "passive": [
         {
