@@ -574,6 +574,82 @@ terms don't double: a model killed fighting counts once for its X and isn't re-k
 `ReflectRuleIntegrationTests` (8 total) - a survivor self-kills AND deals X, a killed-in-melee model deals
 X once. Engine 1889/1889, app build clean, headless smoke exit 0. Corpus dead **309 -> 306**; P11 complete.
 
+## Slice P6: the deferred buff/debuff family — DONE 2026-07-23, engine `6121b13` + `c83b1fd` (+ `4a8e767` tooling)
+
+"Once per activation, before attacking, pick one enemy unit within 18in in line of sight, which gets X
+once (next time the effect would apply)." Five debuffs; two friendly-facing riders came along free.
+
+**The row's premise was mostly wrong.** It filed all five as needing "the debuff mirror of the built
+`FirstTrigger` buff grant". Checked against the engine, four of the five ride seams that were already
+built AND already consumed - the corpus just had nobody author them:
+
+| Rule | Refs | What it actually needed |
+|------|-----:|-------------------------|
+| Morale Debuff | 4 | `statModifier(Morale, -1, NextTrigger)` - `MoraleUtilities` already calls `ConsumeNet` |
+| Defense Debuff | 3 | `statModifier(Save, -1, NextTrigger)` - `DetermineSaveRollsNeededStage` already consumes it |
+| Speed Debuff | 2 | `addRule("Slow", NextTrigger)` - core `Slow` IS exactly -2in/-4in, and `ExecuteMoveStage` already spends one-shot movement grants (the #153 seam) while the budget projection stays read-only |
+| Piercing Debuff | 3 | Fortified's `reduceArmorPenetration(1)` on the **Actor** seat, so it blunts the bearer's own weapon AP instead of protecting it. Ungated by `isMelee` ("when attacking", not "when shooting") |
+| Casting Debuff | 8 | **The only real gap** - no cast-roll modifier carrier existed |
+
+Riders authored on the same shapes: **Casting Buff (2)** (the +1 mirror, unblocked by the same
+primitive) and **Speed Buff (1)** (`addRule("Fast")`), both previously dead under Misc/P23.
+
+### Shipped
+
+- **`ERollKind.Cast`** (a fourth roll kind) + **`TokenType.CastRollModifier`** + the
+  `RollModifierTokens` map entry. `CastSpellStage` folds `GrantedRollModifiers.ConsumeNet(caster, Cast)`
+  into its existing `netModifier`, so the delta shifts the 4+ **threshold** exactly as boost and assists
+  do - never a post-roll adjustment, so the dice invariant holds. Consumed once per attempt after the
+  cost is spent (a browsed-and-cancelled spell never burns the debuff), success or failure alike. The
+  roll breakdown gained a `granted +/-N` term; `TokenDefinitionCatalog`/`TokenDisplay`/`SpellText` name it.
+- **`TargetSelector.RequiredRule` now scans the unit's MODELS too** (engine `c83b1fd`). A joined hero
+  keeps its rules on its model (#006/#093), so the unit-only scan was blind to hero Casters - which is
+  every practical target for "pick one enemy with Caster". Only `Artillery` used the filter before, so
+  the widening is behaviour-preserving there.
+- **Data:** 8 definitions into `GdfRuleSupplement.json`, re-applied to the 11 carrying books via
+  `--apply-rules` (additive diffs only, no reformatting). `Piercing Debuff Effect` is the support rule
+  `Piercing Debuff` grants.
+- **Tests:** engine `CasterRuleIntegrationTests` +3 (debuff spoils / buff rescues through the real
+  `CastSpellStage`, and per-kind carrier isolation), `PreAttackRuleIntegrationTests` +1 (joined-model
+  RequiredRule); app `DeferredDebuffCompositionTests` (16) drives the **real shipped supplement** through
+  the real evaluator and sinks - the seat pin (Actor blunts, Subject would buff), the melee arm, the
+  granted-distance nets, and the offer shape. Engine 1895/1895, app 439/439, headless smoke exit 0.
+- **Mutation-checked both halves:** dropping the `granted` fold reddens exactly the two new cast tests;
+  flipping the authored seat to Subject / the granted rule to Very Fast / the cast roll kind to Hit
+  reddens exactly 4 app tests.
+
+Corpus dead references **306 -> 283**.
+
+### Verified in play, not just by lint
+
+A headless scenario (`--scenario`, seeded Realistic) showed the ability offered and gated correctly
+(`--trace-rules`: `offered` once, then `not offered (cannot pay OncePerActivation)`), with the
+`requiredRule: Caster` filter finding the enemy caster. Same seed, same roll of 3, three runs:
+
+| Scenario | Log |
+|----------|-----|
+| control | `failed to cast Hex: rolled 3, needed 4+` |
+| Casting Debuff | `failed to cast Hex: rolled 3, needed 5+ (base 4+, granted -1)` |
+| Casting Buff | `cast Hex: rolled 3, needed 3+ (base 4+, granted +1)` |
+
+Closing that loop needed a **#167 tooling gap** fixed first (engine `4a8e767`): `ScenarioToken` had no
+way to express a payload, so a placed `CastRollModifier` token carried no delta and netted zero - it
+looked exactly like the modifier not working. It now takes an optional `delta` for the four carrier
+types, and a `delta` on any other type is a compile error rather than a silent drop. `Scenarios/README.md`
+documents it; 2 tests.
+
+### Found, NOT fixed: supplement-rule grants die across a save/load resume
+
+`addRule` grants of a **supplement** rule resolve in a normal game (`GameBootstrap.BuildRuleResolver`
+registers every player's embedded definitions into one shared resolver, so cross-army grants are fine),
+but a resumed game logs `Granted rule 'X' has no definition in the registry - the grant does nothing`.
+`FDGServer.BuildRuleResolver`'s own doc names the cause: on resume the army files may be vestigial, so
+only core-rule grants survive. Confirmed **pre-existing and class-wide**, not introduced here: a control
+scenario carrying the already-shipped `Precision Fighter Buff` fails identically, while `Speed Debuff`'s
+core `Slow` grant survives. Affects all 15 shipped `* Buff` rules plus `Piercing Debuff`. Left as
+authored (consistent with its siblings and correct in normal play) rather than papering over one
+instance; filed against **#095**.
+
 ## Slices — by leverage
 
 Reference counts are corpus-wide (44 books). Primitive numbers are #100's.
@@ -597,7 +673,7 @@ Reference counts are corpus-wide (44 books). Primitive numbers are #100's.
 | 27 | ~~**P11** reflect damage~~ **DONE 2026-07-22** (27/27) | A post-melee reflect (write-up below): Retaliate (X hits per wound taken), Deathstrike (X hits per killed model), Self-Destruct (X per participating model + self-kill any survivor), all per-model attribution. | Retaliate (20) + Deathstrike (4) + Self-Destruct (3) DONE |
 | 24 | **P17** place / restore a unit | Create a unit or restore destroyed models mid-game. Touches deployment + table-state lifecycle + networking sync. | Spawn (14), Reinforcement (4), Reanimation Aura (3), Split (3) |
 | 21 | **P23** casting support | Rides #034. Caster-pool sharing, cast-roll modifiers, transfer-on-death. | Spell Conduit (9), Spell Accumulator (7), Caster Group (3), Casting Buff (2) |
-| 20 | **P6** deferred debuff token | The debuff mirror of the built `FirstTrigger` buff grant: a one-shot roll penalty on a chosen enemy's next relevant action. | Casting Debuff (8), Morale Debuff (4), Piercing Debuff (3), Defense Debuff (3), Speed Debuff (2) |
+| 20 | ~~**P6** deferred debuff token~~ **DONE 2026-07-23** (20/20, +3 riders) | **The row's premise was mostly wrong** - only 8 of the 20 refs needed a primitive. Four of the five rules ride seams that were already built AND already consumed (Morale/Save granted modifiers, the #153 movement-grant seam, Fortified's AP reduction on the Actor seat) and shipped as pure data. Only `Casting Debuff` had no carrier: new `ERollKind.Cast` + `TokenType.CastRollModifier`, folded into `CastSpellStage`'s threshold. See the P6 write-up above. | Casting Debuff (8), Morale Debuff (4), Piercing Debuff (3), Defense Debuff (3), Speed Debuff (2) DONE + riders Casting Buff (2), Speed Buff (1) |
 | 14 | **P8** apply terrain state to target | Force a Dangerous-terrain test / count as standing in terrain. Builds on `countAsInTerrain` + `ApplyNonMovementTerrainEffectsStage`. | Dangerous Terrain Debuff (11), Difficult Terrain Debuff (3) |
 | 12 | **P20** action-permission modifiers | (a) allow shooting after Rush; (b) "strikes last", the inverse of live `strikeFirst`. | Quick Shot Aura (5), Quick Shot Mark (4), Unwieldy Debuff (3) |
 | 9 | **P7** morale-outcome override | Convert a failed morale test into a pass, then take unignorable self-wounds. | No Retreat Aura (5), No Retreat (3), No Retreat Buff (1) |
@@ -622,6 +698,18 @@ Reference counts are corpus-wide (44 books). Primitive numbers are #100's.
 
 ## Notes
 
+- 2026-07-23: **P6 DONE (20/20, +3 riders)**, and like P21/P22 the row was misfiled - it claimed all five
+  rules needed a new one-shot debuff primitive; only `Casting Debuff` (8) did. The other four ride seams
+  already built and already consumed and shipped as pure data, which also pulled in `Casting Buff` (2)
+  and `Speed Buff` (1). The one primitive is a fourth roll kind: `ERollKind.Cast` +
+  `TokenType.CastRollModifier`, folded into `CastSpellStage`'s threshold (engine `6121b13`). Building it
+  surfaced two further things: `TargetSelector.RequiredRule` never scanned MODELS, so "pick an enemy with
+  Caster" was blind to every hero caster (fixed, engine `c83b1fd`); and scenario tokens could not carry a
+  payload, so the live check of a granted modifier was impossible (fixed as #167 tooling, engine
+  `4a8e767`). Verified in play at three seeds-identical runs: the same roll of 3 needs 4+ / 5+ / 3+.
+  Recorded but NOT fixed: supplement-rule grants die across a save/load resume - pre-existing and
+  class-wide (proved with a shipped-Buff control), filed against #095. Corpus dead **306 -> 283**.
+  See the P6 write-up above.
 - 2026-07-22: **P11 reflect damage DONE (27/27)** across two slices (engine `163a2f3` + `9a4dbeb`). A
   post-melee reflect: `ResolveMeleeReflectStage` (new `MeleeStage` child after consolidation) deals X hits
   back at the melee attacker through the real save/wound pipeline, batches looping like Storm - Retaliate

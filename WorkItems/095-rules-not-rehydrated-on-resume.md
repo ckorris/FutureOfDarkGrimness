@@ -29,6 +29,17 @@ Re-attaching rules needs to map each loaded unit back to its army-list entry (wh
 - #035: a resumed game can still disembark an embarked unit, and a transport still reports its capacity.
 
 ## Notes
+- 2026-07-23 (found while verifying #197 P6 in play): **residual - GRANTED supplement rules die on resume.**
+  Approach B rehydrates rules *attached* to a carrier, but a `RuleGrant` token names a rule the evaluator
+  must look up in the shared `RuleResolver`, and on resume that resolver is built from the per-slot
+  `ArmyListFile`s - which this file already records as vestigial. So only CORE definitions are registered,
+  and a resumed game logs `Granted rule 'X' on <unit> has no definition in the registry - the grant does
+  nothing`. Class-wide, not specific to any one rule: proved with a scenario carrying the shipped
+  `Precision Fighter Buff` (grants supplement `Precision Fighter` -> dead) beside `Speed Debuff` (grants
+  core `Slow` -> works). Affects all 15 shipped `* Buff` rules plus #197 P6's `Piercing Debuff`. The
+  natural fix is the same shape as Approach B: persist the embedded definitions with the save (or blob
+  them per army) so `BuildRuleResolver` has something real to register on resume. Not attempted here -
+  recorded so P6's data choice isn't mistaken for the cause.
 - 2026-06-22: Started. Branch `095-rules-rehydration-on-resume` (both repos), off master `b5e71aa` / submodule `a0ab822`.
   - **Failing tests written** (`FutureOfDarkGrimness/Tests/RuleRehydrationOnResumeTests.cs`, real `GameSaveSerializer` round-trip): unit-scoped (`Stealth`), weapon-scoped (`Surge`, #027), and per-model hero (`Furious`, #006 slice F) rules **all come back empty after save→load** — 3 RED, confirming the bug. Two control tests are **GREEN**: a self-owned `Shaken` token and the cross-unit `EmbarkedIn` token (#035, incl. its `OwnerUnitID` back-ref) both survive — so **tokens are NOT in scope** (they live on the `[JsonProperty] TokenContainer`, which round-trips even the polymorphic `ClearTrigger`). Not committed (red).
   - **Key constraint discovered:** on resume the per-slot `ArmyListFile` is **vestigial** (`LobbyViewModel_Host.cs:400-403` — falls back to a temp test army), so re-running army-load resolution / rebuilding the embedded-rules resolver from slots (option b) is **not viable**. The fix must be self-contained in the save.

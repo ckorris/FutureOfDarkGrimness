@@ -65,6 +65,11 @@ Notes:
 - Token types are the engine IDs (`Shaken`, `Fatigued`, `SpellTokens`, ...); clear triggers:
   `ManualOnly` (default), `RoundEnd`, `ActivationEnd`, `AttackEnd`, `FirstTrigger`,
   `UnitDestroyed`, `OwnerDestroyed`.
+- The four granted roll-modifier tokens (`HitRollModifier`, `SaveRollModifier`, `MoraleRollModifier`,
+  `CastRollModifier`) take a signed `"delta"` — the roll stages read that payload, so without it the
+  token nets zero and reads as the modifier silently not working. `delta` on any other token type is
+  a compile error rather than a silent drop.
+  `{ "type": "CastRollModifier", "count": 1, "clearTrigger": "FirstTrigger", "delta": -1 }`
 - No terrain yet (open table); scenario terrain is a recorded follow-up facet on #167.
 
 ## Testing workflow (from SpecialRulesAudit.md section 3)

@@ -4767,6 +4767,41 @@
       "description": "When this unit is activated, it may place all its models anywhere fully within D3\u002B1 inches of their position."
     },
     {
+      "name": "Piercing Debuff",
+      "passive": [],
+      "activated": [
+        {
+          "triggerHook": "Activation_OnPreAttack",
+          "cost": {
+            "kind": "oncePerActivation"
+          },
+          "targetSelector": {
+            "rangeInches": 18,
+            "minCount": 1,
+            "maxCount": 1,
+            "targetAffinity": "Foe",
+            "requireLineOfSight": true,
+            "requiredToken": null,
+            "singleModel": false,
+            "requiredRule": null
+          },
+          "effect": {
+            "kind": "addRule",
+            "ruleName": "Piercing Debuff Effect",
+            "scope": "NextTrigger"
+          },
+          "availableWhen": {
+            "kind": "always"
+          },
+          "label": ""
+        }
+      ],
+      "scope": "Unit",
+      "engineArgumentCount": 0,
+      "valence": "Positive",
+      "description": "Once per activation, before attacking, pick one enemy unit within 18\u0022 in line of sight, which loses AP(\u002B1) when attacking once (next time the effect would apply)."
+    },
+    {
       "name": "Rending when shooting",
       "passive": [
         {
@@ -4861,6 +4896,28 @@
       "engineArgumentCount": 0,
       "valence": "Positive",
       "description": "\u002B1 to hit when shooting or charging enemies over 9 inches away, for this activation."
+    },
+    {
+      "name": "Piercing Debuff Effect",
+      "passive": [
+        {
+          "hookID": "Shooting_OnHitRollComplete",
+          "condition": {
+            "kind": "always"
+          },
+          "effect": {
+            "kind": "reduceArmorPenetration",
+            "amount": 1
+          },
+          "lifetime": "ThisAttack",
+          "seat": "Actor"
+        }
+      ],
+      "activated": [],
+      "scope": "Unit",
+      "engineArgumentCount": 0,
+      "valence": "Negative",
+      "description": "This unit\u0027s attacks have their AP reduced by 1, to a minimum of AP(0)."
     }
   ],
   "spells": [

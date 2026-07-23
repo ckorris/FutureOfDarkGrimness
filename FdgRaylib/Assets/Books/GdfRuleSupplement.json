@@ -5631,5 +5631,269 @@
     "engineArgumentCount": 0,
     "valence": "Positive",
     "description": "Once per activation: pick one enemy within 30 inches in line of sight and roll one die; on a 4+ place a marker on it. Attackers may remove markers from it before rolling to hit, gaining +1 to hit per removed marker."
+  },
+  {
+    "name": "Morale Debuff",
+    "passive": [],
+    "activated": [
+      {
+        "triggerHook": "Activation_OnPreAttack",
+        "cost": {
+          "kind": "oncePerActivation"
+        },
+        "targetSelector": {
+          "rangeInches": 18,
+          "minCount": 1,
+          "maxCount": 1,
+          "targetAffinity": "Foe",
+          "requireLineOfSight": true,
+          "requiredToken": null,
+          "singleModel": false,
+          "requiredRule": null
+        },
+        "effect": {
+          "kind": "statModifier",
+          "roll": "Morale",
+          "delta": -1,
+          "lifetimeScope": "NextTrigger"
+        },
+        "availableWhen": {
+          "kind": "always"
+        }
+      }
+    ],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "Once per activation, before attacking, pick one enemy unit within 18\" in line of sight, which gets -1 to morale test rolls once (next time the effect would apply)."
+  },
+  {
+    "name": "Defense Debuff",
+    "passive": [],
+    "activated": [
+      {
+        "triggerHook": "Activation_OnPreAttack",
+        "cost": {
+          "kind": "oncePerActivation"
+        },
+        "targetSelector": {
+          "rangeInches": 18,
+          "minCount": 1,
+          "maxCount": 1,
+          "targetAffinity": "Foe",
+          "requireLineOfSight": true,
+          "requiredToken": null,
+          "singleModel": false,
+          "requiredRule": null
+        },
+        "effect": {
+          "kind": "statModifier",
+          "roll": "Save",
+          "delta": -1,
+          "lifetimeScope": "NextTrigger"
+        },
+        "availableWhen": {
+          "kind": "always"
+        }
+      }
+    ],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "Once per activation, before attacking, pick one enemy unit within 18\" in line of sight, which gets -1 to defense rolls once (next time the effect would apply)."
+  },
+  {
+    "name": "Speed Debuff",
+    "passive": [],
+    "activated": [
+      {
+        "triggerHook": "Activation_OnPreAttack",
+        "cost": {
+          "kind": "oncePerActivation"
+        },
+        "targetSelector": {
+          "rangeInches": 18,
+          "minCount": 1,
+          "maxCount": 1,
+          "targetAffinity": "Foe",
+          "requireLineOfSight": true,
+          "requiredToken": null,
+          "singleModel": false,
+          "requiredRule": null
+        },
+        "effect": {
+          "kind": "addRule",
+          "ruleName": "Slow",
+          "scope": "NextTrigger"
+        },
+        "availableWhen": {
+          "kind": "always"
+        }
+      }
+    ],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "Once per activation, before attacking, pick one enemy unit within 18\" in line of sight, which moves -2\" when using Advance actions and -4\" when using Rush/Charge actions once (next time the effect would apply)."
+  },
+  {
+    "name": "Speed Buff",
+    "passive": [],
+    "activated": [
+      {
+        "triggerHook": "Activation_OnPreAttack",
+        "cost": {
+          "kind": "oncePerActivation"
+        },
+        "targetSelector": {
+          "rangeInches": 12,
+          "minCount": 1,
+          "maxCount": 1,
+          "targetAffinity": "Friend",
+          "requireLineOfSight": false,
+          "requiredToken": null,
+          "singleModel": false,
+          "requiredRule": null
+        },
+        "effect": {
+          "kind": "addRule",
+          "ruleName": "Fast",
+          "scope": "NextTrigger"
+        },
+        "availableWhen": {
+          "kind": "always"
+        }
+      }
+    ],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "Once per activation, before attacking, pick one friendly unit within 12\", which moves +2\" when using Advance actions and +4\" when using Rush/Charge actions once (next time the effect would apply)."
+  },
+  {
+    "name": "Piercing Debuff Effect",
+    "passive": [
+      {
+        "hookID": "Shooting_OnHitRollComplete",
+        "condition": {
+          "kind": "always"
+        },
+        "effect": {
+          "kind": "reduceArmorPenetration",
+          "amount": 1
+        },
+        "lifetime": "ThisAttack",
+        "seat": "Actor"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Negative",
+    "description": "This unit's attacks have their AP reduced by 1, to a minimum of AP(0)."
+  },
+  {
+    "name": "Piercing Debuff",
+    "passive": [],
+    "activated": [
+      {
+        "triggerHook": "Activation_OnPreAttack",
+        "cost": {
+          "kind": "oncePerActivation"
+        },
+        "targetSelector": {
+          "rangeInches": 18,
+          "minCount": 1,
+          "maxCount": 1,
+          "targetAffinity": "Foe",
+          "requireLineOfSight": true,
+          "requiredToken": null,
+          "singleModel": false,
+          "requiredRule": null
+        },
+        "effect": {
+          "kind": "addRule",
+          "ruleName": "Piercing Debuff Effect",
+          "scope": "NextTrigger"
+        },
+        "availableWhen": {
+          "kind": "always"
+        }
+      }
+    ],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "Once per activation, before attacking, pick one enemy unit within 18\" in line of sight, which loses AP(+1) when attacking once (next time the effect would apply)."
+  },
+  {
+    "name": "Casting Debuff",
+    "passive": [],
+    "activated": [
+      {
+        "triggerHook": "Activation_OnPreAttack",
+        "cost": {
+          "kind": "oncePerActivation"
+        },
+        "targetSelector": {
+          "rangeInches": 18,
+          "minCount": 1,
+          "maxCount": 1,
+          "targetAffinity": "Foe",
+          "requireLineOfSight": true,
+          "requiredToken": null,
+          "singleModel": false,
+          "requiredRule": "Caster"
+        },
+        "effect": {
+          "kind": "statModifier",
+          "roll": "Cast",
+          "delta": -1,
+          "lifetimeScope": "NextTrigger"
+        },
+        "availableWhen": {
+          "kind": "always"
+        }
+      }
+    ],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "Once per activation, before attacking, pick one enemy unit within 18\" in line of sight with Caster, which gets -1 to casting rolls once (next time the effect would apply)."
+  },
+  {
+    "name": "Casting Buff",
+    "passive": [],
+    "activated": [
+      {
+        "triggerHook": "Activation_OnPreAttack",
+        "cost": {
+          "kind": "oncePerActivation"
+        },
+        "targetSelector": {
+          "rangeInches": 12,
+          "minCount": 1,
+          "maxCount": 1,
+          "targetAffinity": "Friend",
+          "requireLineOfSight": false,
+          "requiredToken": null,
+          "singleModel": false,
+          "requiredRule": "Caster"
+        },
+        "effect": {
+          "kind": "statModifier",
+          "roll": "Cast",
+          "delta": 1,
+          "lifetimeScope": "NextTrigger"
+        },
+        "availableWhen": {
+          "kind": "always"
+        }
+      }
+    ],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "Once per activation, before attacking, pick one friendly unit within 12\" with Caster, which gets +1 to casting rolls once (next time the effect would apply)."
   }
 ]
