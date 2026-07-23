@@ -86,6 +86,7 @@ detection, host-IP display, DNS host entry. See `NetworkingHandoff-2026-07-08.md
 - [ ] 188 — Multi-remote-client support: live-test 3+ players / 2+ remote clients (QF5 enabled it; roster/team/routing edge cases). ([WorkItems/188](WorkItems/188-multi-remote-client.md))
 - [ ] 189 — Broadcast gating (roster-only, not every connection) + configurable listen/connect port. ([WorkItems/189](WorkItems/189-broadcast-gating-configurable-port.md))
 - [ ] 190 — Networked clients never receive mid-game token updates (in-place `TokenContainer` mutations bypass the data-sync path; join snapshot only). ([WorkItems/190](WorkItems/190-networked-token-sync.md))
+- [ ] 264 — Server browser: $0-tier master list server (Cloudflare Worker registry, TTL heartbeats) + "List publicly" host checkbox + Browse-to-connect UI; design + API sketch filed, awaiting fork sign-off (provider / UI surface / NAT stance). ([WorkItems/264](WorkItems/264-server-browser.md))
 - [ ] 058 — (low) Migrate message/save serialization off Newtonsoft onto System.Text.Json; pure consolidation. ([WorkItems/058](WorkItems/058-stj-migration.md))
 - [ ] 057 — (low) Make state-machine contexts store-backed/serializable so #052's `GameProgressData` mirror can be deleted; deferred for risk.
 - [ ] 054 — (low) Client-initiated save: host produces the `.fdgsave` on the client's behalf. Follow-up to #052.
