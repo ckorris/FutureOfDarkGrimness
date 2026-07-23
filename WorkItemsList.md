@@ -177,7 +177,7 @@ Tick and move to the archive once verified. The detail files carry the full ledg
 - [~] 035 — Transport(X) core. Verify: deploy-time embark, mid-game embark/disembark, destruction spillout. ([WorkItems/035](WorkItems/035-transport.md))
 - [~] 096 — Transport visuals. Verify: cyan `Carrying X/Y` badge + hover cargo breakdown; spillout beats (wreck banner, Shaken banners, dangerous-terrain d6). ([WorkItems/096](WorkItems/096-transport-visuals.md))
 - [~] 052 — Save/load a game in progress. Verify (with #095): save mid-game -> load -> lobby re-crew -> resume; state intact. ([WorkItems/052](WorkItems/052-save-load.md))
-- [~] 095 — Special rules re-attached on save/load resume. Verify: in the same #052 session, rules still fire after resume. ([WorkItems/095](WorkItems/095-rules-not-rehydrated-on-resume.md))
+- [~] 095 — Special rules re-attached on save/load resume; army-level residual (granted supplement rules + spell lists) fixed 2026-07-23. Verify: in the same #052 session, rules still fire and a Caster still has spells after resume. ([WorkItems/095](WorkItems/095-rules-not-rehydrated-on-resume.md))
 - [~] 156 — Army Forge catalog builder. Verify: remaining hand-verify rounds (all core facets landed). ([WorkItems/156](WorkItems/156-army-forge-builder.md))
 - [~] 106 — Army builder authoring UX. Verify: read-only stat block, per-unit Duplicate, auto-unfold of new units/weapons/spells. ([WorkItems/106](WorkItems/106-army-builder-ux.md))
 - [~] 053 — Sound cues on the beat stream. Verify: hear the placeholder tone per beat; real `.wav`s drop into `FdgRaylib/Assets/Sounds/` by filename. ([WorkItems/053](WorkItems/053-sound.md))
