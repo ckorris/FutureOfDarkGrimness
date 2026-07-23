@@ -225,7 +225,7 @@
             {
               "id": "YiZ65vow",
               "label": "Rapid Heavy Machinegun (30\u0022, A6, AP(1))",
-              "cost": 15,
+              "cost": 25,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -555,7 +555,7 @@
             {
               "id": "YiZ65vow",
               "label": "Rapid Heavy Machinegun (30\u0022, A6, AP(1))",
-              "cost": 15,
+              "cost": 25,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -1215,7 +1215,7 @@
             {
               "id": "Pq2hW3QA",
               "label": "Killer Sword (A2, AP(1), Rending)",
-              "cost": 5,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -1264,7 +1264,7 @@
             {
               "id": "JaAiKqqV",
               "label": "Killer Fist (A2, AP(4))",
-              "cost": 5,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -1776,7 +1776,7 @@
             {
               "id": "gG55-",
               "label": "Killer Sword (A2, AP(1), Rending)",
-              "cost": 5,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -1800,7 +1800,7 @@
             {
               "id": "6DyQQ",
               "label": "Killer Fist (A2, AP(4))",
-              "cost": 5,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -2563,7 +2563,7 @@
             {
               "id": "h3BGMum",
               "label": "Flamer Pistol (6\u0022, A1, Blast(3), Reliable)",
-              "cost": 5,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -4034,7 +4034,7 @@
             {
               "id": "czAjK",
               "label": "Flamer Pistol (6\u0022, A1, Blast(3), Reliable)",
-              "cost": 5,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -4881,7 +4881,7 @@
             {
               "id": "VPw-8Da",
               "label": "Heavy Machinegun (30\u0022, A3, AP(1))",
-              "cost": 15,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -5152,7 +5152,7 @@
             {
               "id": "VPw-8Da",
               "label": "Heavy Machinegun (30\u0022, A3, AP(1))",
-              "cost": 15,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -5367,7 +5367,7 @@
             {
               "id": "VPw-8Da",
               "label": "Heavy Machinegun (30\u0022, A3, AP(1))",
-              "cost": 15,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {

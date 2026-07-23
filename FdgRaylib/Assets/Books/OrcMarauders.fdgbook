@@ -191,7 +191,7 @@
             {
               "id": "XYNqS",
               "label": "Heavy Saw (A1, AP(2), Deadly(3))",
-              "cost": 10,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -216,7 +216,7 @@
             {
               "id": "PiFff",
               "label": "Heavy Axe (A4, AP(1), Rending)",
-              "cost": 25,
+              "cost": 30,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -240,7 +240,7 @@
             {
               "id": "DG-Qb",
               "label": "Heavy Claw (A4, AP(4))",
-              "cost": 40,
+              "cost": 45,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -457,7 +457,7 @@
             {
               "id": "PHj55yn7",
               "label": "Mechanic (Mend)",
-              "cost": 35,
+              "cost": 40,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -663,7 +663,7 @@
             {
               "id": "INwGAxJ",
               "label": "Combat Bike (Twin Mini-MG (18\u0022, A3, AP(1)), Fast, Tough(3))",
-              "cost": 60,
+              "cost": 75,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -924,7 +924,7 @@
             {
               "id": "Sc6rS",
               "label": "Heavy Claw (A2, AP(4))",
-              "cost": 15,
+              "cost": 20,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -986,7 +986,7 @@
             {
               "id": "Xl3sj4v",
               "label": "Rocket Launcher (18\u0022, A1, AP(2), Deadly(3))",
-              "cost": 15,
+              "cost": 20,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -1011,7 +1011,7 @@
             {
               "id": "BJQo7jT",
               "label": "Portal Gun (18\u0022, A4, Shred)",
-              "cost": 10,
+              "cost": 25,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -1175,7 +1175,7 @@
             {
               "id": "T8uJlvJy",
               "label": "Mechanic (Mend)",
-              "cost": 35,
+              "cost": 40,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -1988,7 +1988,7 @@
             {
               "id": "2_eyT",
               "label": "Heavy Saw (A1, AP(2), Deadly(3))",
-              "cost": 15,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -2140,7 +2140,7 @@
             {
               "id": "INwGAxJ",
               "label": "Combat Bike (Twin Mini-MG (18\u0022, A3, AP(1)), Fast, Tough(3))",
-              "cost": 60,
+              "cost": 55,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -2272,7 +2272,7 @@
             {
               "id": "bMeScXQ",
               "label": "Mechanic (Mend)",
-              "cost": 35,
+              "cost": 40,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -2382,7 +2382,7 @@
             {
               "id": "BJQo7jT",
               "label": "Portal Gun (18\u0022, A4, Shred)",
-              "cost": 10,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -2406,7 +2406,7 @@
             {
               "id": "Y2VtEMG",
               "label": "Shock Cannon (18\u0022, A4, AP(1), Surge)",
-              "cost": 30,
+              "cost": 25,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -2552,7 +2552,7 @@
             {
               "id": "vRBcBJ8",
               "label": "Flamer (12\u0022, A1, Blast(3), Reliable)",
-              "cost": 15,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -2581,7 +2581,7 @@
             {
               "id": "HXE4FZe",
               "label": "Plasma Rifle (24\u0022, A1, AP(4))",
-              "cost": 10,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -2657,7 +2657,7 @@
             {
               "id": "2NQOSq1",
               "label": "Rocket Launcher (18\u0022, A1, AP(2), Deadly(3))",
-              "cost": 15,
+              "cost": 20,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -2682,7 +2682,7 @@
             {
               "id": "3oc83dT",
               "label": "Heavy Machinegun (30\u0022, A3, AP(1))",
-              "cost": 20,
+              "cost": 25,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -2740,7 +2740,7 @@
             {
               "id": "JnLsq",
               "label": "Heavy Axe (A2, AP(1), Rending)",
-              "cost": 5,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -2789,7 +2789,7 @@
             {
               "id": "uX6oy",
               "label": "Heavy Claw (A2, AP(4))",
-              "cost": 10,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -3132,7 +3132,7 @@
             {
               "id": "apAIg_S",
               "label": "Carbine (18\u0022, A2)",
-              "cost": 5,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -3165,7 +3165,7 @@
             {
               "id": "3gxrD1p",
               "label": "Heavy Flamer-Mod (12\u0022, A1, AP(1), Blast(3), Limited, Reliable)",
-              "cost": 15,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -3284,7 +3284,7 @@
             {
               "id": "br2YI",
               "label": "Heavy Claw (A2, AP(4))",
-              "cost": 15,
+              "cost": 20,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -3516,7 +3516,7 @@
             {
               "id": "Ky8yB-D",
               "label": "Heavy Club (A1, Blast(3))",
-              "cost": 10,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -3541,7 +3541,7 @@
             {
               "id": "QWhnPqr",
               "label": "Heavy Axe (A2, AP(1), Rending)",
-              "cost": 15,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -3565,7 +3565,7 @@
             {
               "id": "GN_cisd",
               "label": "Heavy Saw (A1, AP(2), Deadly(3))",
-              "cost": 20,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -3590,7 +3590,7 @@
             {
               "id": "5YSm2w7",
               "label": "Heavy Claw (A2, AP(4))",
-              "cost": 20,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -3623,7 +3623,7 @@
             {
               "id": "YwjeD",
               "label": "Shotgun (12\u0022, A2, AP(1))",
-              "cost": 25,
+              "cost": 30,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -3642,7 +3642,7 @@
             {
               "id": "wp2DI",
               "label": "Carbine (18\u0022, A2)",
-              "cost": 25,
+              "cost": 30,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -3675,7 +3675,7 @@
             {
               "id": "hY4a0",
               "label": "Flamer (12\u0022, A1, Blast(3), Reliable)",
-              "cost": 15,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -3704,7 +3704,7 @@
             {
               "id": "bAO21",
               "label": "Plasma Rifle (24\u0022, A1, AP(4))",
-              "cost": 10,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -3780,7 +3780,7 @@
             {
               "id": "Vl6it",
               "label": "Rocket Launcher (18\u0022, A1, AP(2), Deadly(3))",
-              "cost": 15,
+              "cost": 20,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -3805,7 +3805,7 @@
             {
               "id": "hyuTm",
               "label": "Heavy Machinegun (30\u0022, A3, AP(1))",
-              "cost": 20,
+              "cost": 25,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -3838,7 +3838,7 @@
             {
               "id": "D7vg-",
               "label": "Sniper Carbine (18\u0022, A1, AP(1), Reliable, Takedown)",
-              "cost": 25,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -3935,7 +3935,7 @@
             {
               "id": "Ky8yB-D",
               "label": "Heavy Club (A1, Blast(3))",
-              "cost": 10,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -3960,7 +3960,7 @@
             {
               "id": "QWhnPqr",
               "label": "Heavy Axe (A2, AP(1), Rending)",
-              "cost": 15,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -3984,7 +3984,7 @@
             {
               "id": "GN_cisd",
               "label": "Heavy Saw (A1, AP(2), Deadly(3))",
-              "cost": 20,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -4009,7 +4009,7 @@
             {
               "id": "5YSm2w7",
               "label": "Heavy Claw (A2, AP(4))",
-              "cost": 20,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -4123,7 +4123,7 @@
             {
               "id": "sefMv",
               "label": "Rocket Pistol (9\u0022, A1, AP(2), Deadly(3))",
-              "cost": 5,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -4305,7 +4305,7 @@
             {
               "id": "45YB9",
               "label": "Railgun (30\u0022, A3, AP(2), Unstoppable)",
-              "cost": 95,
+              "cost": 85,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -4343,7 +4343,7 @@
             {
               "id": "lLdXJMA",
               "label": "Bomb Spear (A1, AP(4), Deadly(3))",
-              "cost": 5,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -4803,7 +4803,7 @@
             {
               "id": "bGJ5Z",
               "label": "Heavy Saw (A1, AP(2), Deadly(3))",
-              "cost": 10,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -4828,7 +4828,7 @@
             {
               "id": "jsgCx",
               "label": "Heavy Axe (A3, AP(1), Rending)",
-              "cost": 15,
+              "cost": 20,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -4852,7 +4852,7 @@
             {
               "id": "c7iVR",
               "label": "Heavy Claw (A3, AP(4))",
-              "cost": 25,
+              "cost": 30,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -4887,7 +4887,7 @@
             {
               "id": "4p64xJq",
               "label": "Dual Heavy Saws (A2, AP(2), Deadly(3))",
-              "cost": 20,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -5173,7 +5173,7 @@
             {
               "id": "Ky8yB-D",
               "label": "Heavy Club (A1, Blast(3))",
-              "cost": 10,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -5198,7 +5198,7 @@
             {
               "id": "QWhnPqr",
               "label": "Heavy Axe (A2, AP(1), Rending)",
-              "cost": 15,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -5222,7 +5222,7 @@
             {
               "id": "GN_cisd",
               "label": "Heavy Saw (A1, AP(2), Deadly(3))",
-              "cost": 20,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -5247,7 +5247,7 @@
             {
               "id": "5YSm2w7",
               "label": "Heavy Claw (A2, AP(4))",
-              "cost": 20,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -5344,7 +5344,7 @@
             {
               "id": "Ky8yB-D",
               "label": "Heavy Club (A1, Blast(3))",
-              "cost": 10,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -5369,7 +5369,7 @@
             {
               "id": "QWhnPqr",
               "label": "Heavy Axe (A2, AP(1), Rending)",
-              "cost": 15,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -5393,7 +5393,7 @@
             {
               "id": "GN_cisd",
               "label": "Heavy Saw (A1, AP(2), Deadly(3))",
-              "cost": 20,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -5573,7 +5573,7 @@
             {
               "id": "4LX5rDz",
               "label": "Rapid Plasma Rifle (24\u0022, A2, AP(4))",
-              "cost": 10,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -5606,7 +5606,7 @@
             {
               "id": "wy1-ka6",
               "label": "Rotor Blade Attack (Impact(3))",
-              "cost": 5,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -6090,7 +6090,7 @@
             {
               "id": "QGq9C_O",
               "label": "Ruck-Drone Launcher (24\u0022, A2, AP(1), Deadly(3)), Truck-Killer RPG (12\u0022, A1, AP(1), Deadly(3))",
-              "cost": -5,
+              "cost": 25,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -6198,7 +6198,7 @@
             {
               "id": "YSTi8Jy",
               "label": "Mega-MG (36\u0022, A3, AP(2)), Track-Loader RPG (18\u0022, A2, AP(2), Deadly(3))",
-              "cost": 50,
+              "cost": 70,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -6979,7 +6979,7 @@
             {
               "id": "mfiX91s",
               "label": "Buster Cannon (30\u0022, A1, AP(3), Deadly(3))",
-              "cost": 45,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -7004,7 +7004,7 @@
             {
               "id": "mO-Yc",
               "label": "Lightning Cannon (36\u0022, A6, Rending, Unstoppable)",
-              "cost": 115,
+              "cost": 65,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -7815,7 +7815,7 @@
             {
               "id": "tiwuW",
               "label": "Rapid Rocket Launcher (18\u0022, A2, AP(2), Deadly(3))",
-              "cost": 35,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -7840,7 +7840,7 @@
             {
               "id": "10b0Z",
               "label": "Rapid Heavy Machinegun (30\u0022, A6, AP(1))",
-              "cost": 55,
+              "cost": 40,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -8060,7 +8060,7 @@
             {
               "id": "ITlir",
               "label": "Portal Cannon (30\u0022, A6, Shred)",
-              "cost": 65,
+              "cost": 0,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -8113,7 +8113,7 @@
             {
               "id": "xJhKqLo",
               "label": "Twin Plasma Cannon (30\u0022, A2, AP(4), Blast(3))",
-              "cost": 85,
+              "cost": 50,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -8517,7 +8517,7 @@
             {
               "id": "E_Iy5WA",
               "label": "Force Field (Regeneration)",
-              "cost": 120,
+              "cost": 70,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -9056,7 +9056,7 @@
             {
               "id": "mfiX91s",
               "label": "Buster Cannon (30\u0022, A1, AP(3), Deadly(3))",
-              "cost": 45,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -9081,7 +9081,7 @@
             {
               "id": "mO-Yc",
               "label": "Lightning Cannon (36\u0022, A6, Rending, Unstoppable)",
-              "cost": 115,
+              "cost": 65,
               "costUnpriced": false,
               "weaponsGained": [
                 {

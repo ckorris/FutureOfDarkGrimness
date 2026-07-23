@@ -146,7 +146,7 @@
             {
               "id": "VxhwWq9",
               "label": "Plasma Pistol (12\u0022, A1, AP(4))",
-              "cost": 5,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -165,7 +165,7 @@
             {
               "id": "Sdj-D3e",
               "label": "Heavy Rifle (24\u0022, A1, AP(1))",
-              "cost": 5,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -184,7 +184,7 @@
             {
               "id": "dCVSh",
               "label": "Shotgun (12\u0022, A2, AP(1))",
-              "cost": 5,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -257,7 +257,7 @@
             {
               "id": "M72jGXo",
               "label": "Plasma Rifle (24\u0022, A1, AP(4))",
-              "cost": 15,
+              "cost": 25,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -276,7 +276,7 @@
             {
               "id": "7qrIthJ",
               "label": "Fusion Rifle (12\u0022, A1, AP(4), Deadly(3))",
-              "cost": 25,
+              "cost": 35,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -301,7 +301,7 @@
             {
               "id": "9TJun",
               "label": "Storm Rifle (24\u0022, A3, AP(1))",
-              "cost": 35,
+              "cost": 50,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -483,7 +483,7 @@
             {
               "id": "7RvAOMZ",
               "label": "Energy Fist (A2, AP(4))",
-              "cost": 15,
+              "cost": 20,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -502,7 +502,7 @@
             {
               "id": "zF1Ma0A",
               "label": "Chain-Fist (A1, AP(2), Deadly(3))",
-              "cost": 15,
+              "cost": 20,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -572,7 +572,7 @@
             {
               "id": "HiXhlLEw",
               "label": "Daemon Hunter (Precision Fighter Aura)",
-              "cost": 10,
+              "cost": 30,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -765,7 +765,7 @@
             {
               "id": "QUiSXdj1",
               "label": "Needle Pistol (12\u0022, A1, Bane)",
-              "cost": 0,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -837,7 +837,7 @@
             {
               "id": "1BHDWgDP",
               "label": "Plasma Pistol (12\u0022, A1, AP(4))",
-              "cost": 5,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -895,7 +895,7 @@
             {
               "id": "7m6ulFj6",
               "label": "Needle Sword (A2, Bane)",
-              "cost": 15,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -943,7 +943,7 @@
             {
               "id": "8tkvE7-3",
               "label": "Chainsaw Sword (A2, AP(2))",
-              "cost": 5,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -1504,7 +1504,7 @@
             {
               "id": "uu7-XQ2",
               "label": "Plasma Rifle (24\u0022, A1, AP(4))",
-              "cost": 5,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -1572,7 +1572,7 @@
             {
               "id": "pe7y9hR",
               "label": "Fusion Rifle (12\u0022, A1, AP(4), Deadly(3))",
-              "cost": 10,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -1597,7 +1597,7 @@
             {
               "id": "V3Hk5cS",
               "label": "Flamer (12\u0022, A1, Blast(3), Reliable)",
-              "cost": 15,
+              "cost": 20,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -2501,7 +2501,7 @@
             {
               "id": "5gXRQfGy",
               "label": "Energy Sword (A2, AP(1), Rending)",
-              "cost": 5,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -2638,7 +2638,7 @@
             {
               "id": "TEIXE",
               "label": "Shred Pistol (9\u0022, A2, Rending)",
-              "cost": 10,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -3085,7 +3085,7 @@
             {
               "id": "hMX9z",
               "label": "Energy Sword (A2, AP(1), Rending)",
-              "cost": 5,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -3618,7 +3618,7 @@
             {
               "id": "yI7kj96E",
               "label": "Energy Sword (A2, AP(1), Rending)",
-              "cost": 5,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -4372,7 +4372,7 @@
             {
               "id": "xS1FU",
               "label": "Heavy Machinegun (30\u0022, A3, AP(1))",
-              "cost": 25,
+              "cost": 0,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -4415,7 +4415,7 @@
             {
               "id": "zFBKw",
               "label": "Plasma Cannon (30\u0022, A1, AP(4), Blast(3))",
-              "cost": 35,
+              "cost": 25,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -4576,7 +4576,7 @@
             {
               "id": "k0NGRCe",
               "label": "Heavy Machinegun (30\u0022, A3, AP(1))",
-              "cost": 10,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -4609,7 +4609,7 @@
             {
               "id": "Wf_NCrY",
               "label": "Laser Machinegun (30\u0022, A3, AP(3))",
-              "cost": 30,
+              "cost": 40,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -4640,7 +4640,7 @@
             {
               "id": "ET-rZ0ww",
               "label": "Dozer Blade (Strider)",
-              "cost": 5,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -4661,7 +4661,7 @@
             {
               "id": "nQ6NDwdp",
               "label": "Camouflage Netting (Stealth)",
-              "cost": 30,
+              "cost": 20,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -4694,7 +4694,7 @@
             {
               "id": "8YaAS12W",
               "label": "Hunter Missiles (24\u0022, A1, AP(2), Deadly(3), Limited, Unstoppable)",
-              "cost": 10,
+              "cost": 20,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -4727,7 +4727,7 @@
             {
               "id": "bh8SX3Za",
               "label": "Pintle-Machinegun (30\u0022, A2, AP(1))",
-              "cost": 25,
+              "cost": 35,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -4830,7 +4830,7 @@
             {
               "id": "ET-rZ0ww",
               "label": "Dozer Blade (Strider)",
-              "cost": 5,
+              "cost": 20,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -4884,7 +4884,7 @@
             {
               "id": "8YaAS12W",
               "label": "Hunter Missiles (24\u0022, A1, AP(2), Deadly(3), Limited, Unstoppable)",
-              "cost": 10,
+              "cost": 20,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -4917,7 +4917,7 @@
             {
               "id": "bh8SX3Za",
               "label": "Pintle-Machinegun (30\u0022, A2, AP(1))",
-              "cost": 25,
+              "cost": 35,
               "costUnpriced": false,
               "weaponsGained": [
                 {

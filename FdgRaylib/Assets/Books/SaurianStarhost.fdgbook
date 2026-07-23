@@ -90,7 +90,7 @@
             {
               "id": "35vAMyq",
               "label": "Magic Blast (12\u0022, A3, Rending)",
-              "cost": 5,
+              "cost": 0,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -470,7 +470,7 @@
             {
               "id": "s8P_7",
               "label": "Power Spike (A1, AP(4), Deadly(3))",
-              "cost": 5,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -1158,7 +1158,7 @@
             {
               "id": "0jOHu",
               "label": "Shock Lance (A3, AP(4)), Energy Shield (Shielded)",
-              "cost": 5,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -1188,7 +1188,7 @@
             {
               "id": "6QXb3",
               "label": "Champion Sniper Rifle (30\u0022, A2, AP(1), Reliable, Takedown), Dagger (A1)",
-              "cost": 60,
+              "cost": 50,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -1257,7 +1257,7 @@
             {
               "id": "dj1io",
               "label": "Champion Shock Rifle (18\u0022, A2, AP(4))",
-              "cost": 5,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -2306,7 +2306,7 @@
             {
               "id": "j3kba",
               "label": "Mace-Shots (12\u0022, A2, AP(1)), Mace (A2)",
-              "cost": 35,
+              "cost": 30,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -2718,7 +2718,7 @@
             {
               "id": "GQGc-",
               "label": "Power Claw (A2, AP(1), Rending)",
-              "cost": 5,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -2742,7 +2742,7 @@
             {
               "id": "Dzz8Acd",
               "label": "Power Mace (A2, AP(4))",
-              "cost": 10,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -2867,7 +2867,7 @@
             {
               "id": "f1qoe4Y3",
               "label": "Shock Pistol (12\u0022, A1, AP(4)), Energy Shields (Shielded)",
-              "cost": 5,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -3040,7 +3040,7 @@
             {
               "id": "ClHI7lK9",
               "label": "Shock Pistol (12\u0022, A1, AP(4)), Energy Shields (Shielded)",
-              "cost": 5,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -3830,7 +3830,7 @@
             {
               "id": "tYYeW",
               "label": "Gecko Crew (18\u0022, A6, AP(1)), Gecko Priest (Caster(2))",
-              "cost": 40,
+              "cost": 50,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -3861,7 +3861,7 @@
             {
               "id": "iQnC6Bl",
               "label": "Heavy Rocket Launcher (24\u0022, A4, AP(1), Blast(3), Indirect)",
-              "cost": 105,
+              "cost": 110,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -3890,7 +3890,7 @@
             {
               "id": "Ne80vKZ",
               "label": "Heavy Missile Launcher (30\u0022, A4, AP(2), Deadly(3), Unstoppable)",
-              "cost": 150,
+              "cost": 140,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -4181,7 +4181,7 @@
             {
               "id": "F9z5W",
               "label": "Heavy Plasma Burster (30\u0022, A4, AP(4), Blast(3))",
-              "cost": 40,
+              "cost": 105,
               "costUnpriced": false,
               "weaponsGained": [
                 {

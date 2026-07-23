@@ -94,7 +94,7 @@
             {
               "id": "Nln2tjI",
               "label": "Smashing Club (A1, AP(2), Blast(3))",
-              "cost": 5,
+              "cost": 0,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -196,7 +196,7 @@
             {
               "id": "Hew0ygN",
               "label": "Serrated Blade (A3, AP(4))",
-              "cost": 15,
+              "cost": 20,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -248,7 +248,7 @@
             {
               "id": "iUCjrNH",
               "label": "Spitter Cannon (24\u0022, A2, Blast(3))",
-              "cost": 10,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -298,7 +298,7 @@
             {
               "id": "S_6R6",
               "label": "Heavy Smashing Club (A2, AP(2), Blast(3), Reliable)",
-              "cost": 25,
+              "cost": 20,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -327,7 +327,7 @@
             {
               "id": "sMqyK",
               "label": "Heavy Piercing Spike (A2, AP(2), Deadly(3), Reliable)",
-              "cost": 25,
+              "cost": 30,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -380,7 +380,7 @@
             {
               "id": "6x55-nX",
               "label": "Heavy Slashing Blade (A6, AP(1), Reliable, Rending)",
-              "cost": 35,
+              "cost": 40,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -408,7 +408,7 @@
             {
               "id": "O-auvUz",
               "label": "Acid Cannon (36\u0022, A1, AP(2), Deadly(6), Unstoppable)",
-              "cost": 90,
+              "cost": 50,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -437,7 +437,7 @@
             {
               "id": "Z6fpHJF",
               "label": "Heavy Serrated Blade (A6, AP(4), Reliable)",
-              "cost": 65,
+              "cost": 75,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -473,7 +473,7 @@
             {
               "id": "a7-Dy",
               "label": "Wings (Ambush, Flying)",
-              "cost": 65,
+              "cost": 90,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -698,7 +698,7 @@
             {
               "id": "RmyozDO",
               "label": "Spitter Gun (24\u0022, A1, Blast(3))",
-              "cost": 10,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -723,7 +723,7 @@
             {
               "id": "WqEowcx",
               "label": "Twin Spine Guns (12\u0022, A4, AP(1))",
-              "cost": 10,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -742,7 +742,7 @@
             {
               "id": "9pGbddW",
               "label": "Heavy Ravager Gun (18\u0022, A3, AP(1), Destructive)",
-              "cost": 20,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -766,7 +766,7 @@
             {
               "id": "xYQxVE8",
               "label": "Barb Gun (30\u0022, A1, AP(2), Blast(3))",
-              "cost": 30,
+              "cost": 20,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -791,7 +791,7 @@
             {
               "id": "Kn0hvKM",
               "label": "Acid Launcher (30\u0022, A1, AP(2), Deadly(3), Unstoppable)",
-              "cost": 40,
+              "cost": 25,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -832,7 +832,7 @@
             {
               "id": "RS4rKkQ",
               "label": "Wings (Ambush, Flying)",
-              "cost": 25,
+              "cost": 35,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -1831,7 +1831,7 @@
             {
               "id": "Kz0oZ4M",
               "label": "Toxic Cysts (Bane in Melee)",
-              "cost": 5,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -2135,7 +2135,7 @@
             {
               "id": "lf5nM",
               "label": "Bio-Ravager (18\u0022, A1, AP(1))",
-              "cost": 25,
+              "cost": 20,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -2265,7 +2265,7 @@
             {
               "id": "_9KIH",
               "label": "Bio-Spiker (18\u0022, A1, AP(1), Reliable, Takedown)",
-              "cost": 20,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -2374,7 +2374,7 @@
             {
               "id": "Kz0oZ4M",
               "label": "Toxic Cysts (Bane in Melee)",
-              "cost": 5,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -2529,7 +2529,7 @@
             {
               "id": "lf5nM",
               "label": "Bio-Ravager (18\u0022, A1, AP(1))",
-              "cost": 25,
+              "cost": 20,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -2659,7 +2659,7 @@
             {
               "id": "_9KIH",
               "label": "Bio-Spiker (18\u0022, A1, AP(1), Reliable, Takedown)",
-              "cost": 20,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -3067,7 +3067,7 @@
             {
               "id": "ifL1POY",
               "label": "Mind Snatcher (Caster(1))",
-              "cost": 20,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -3150,7 +3150,7 @@
             {
               "id": "0izCR",
               "label": "Spine Shooter (12\u0022, A4, AP(1))",
-              "cost": 20,
+              "cost": 45,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -3247,7 +3247,7 @@
             {
               "id": "nOtx_Bj",
               "label": "Razor Whip (A2, Bane, Precise)",
-              "cost": 10,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -3308,7 +3308,7 @@
             {
               "id": "A0zKA",
               "label": "Smashing Club (A1, AP(2), Blast(3))",
-              "cost": 15,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -3333,7 +3333,7 @@
             {
               "id": "tUSWo",
               "label": "Piercing Spike (A1, AP(2), Deadly(3))",
-              "cost": 15,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -3497,7 +3497,7 @@
             {
               "id": "8s-6qvX",
               "label": "Barb Gun (30\u0022, A1, AP(2), Blast(3))",
-              "cost": 25,
+              "cost": 20,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -3522,7 +3522,7 @@
             {
               "id": "wJ1ZRc0",
               "label": "Acid Launcher (30\u0022, A1, AP(2), Deadly(3), Unstoppable)",
-              "cost": 35,
+              "cost": 25,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -3563,7 +3563,7 @@
             {
               "id": "pRH6ELq",
               "label": "Wings (Ambush, Flying)",
-              "cost": 35,
+              "cost": 50,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -3681,7 +3681,7 @@
             {
               "id": "nOtx_Bj",
               "label": "Razor Whip (A2, Bane, Precise)",
-              "cost": 10,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -3742,7 +3742,7 @@
             {
               "id": "A0zKA",
               "label": "Smashing Club (A1, AP(2), Blast(3))",
-              "cost": 15,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -3767,7 +3767,7 @@
             {
               "id": "tUSWo",
               "label": "Piercing Spike (A1, AP(2), Deadly(3))",
-              "cost": 15,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -3806,7 +3806,7 @@
             {
               "id": "WrcB_YW",
               "label": "Burrowing Strike (Ambush)",
-              "cost": 20,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -4113,7 +4113,7 @@
             {
               "id": "A0zKA",
               "label": "Smashing Club (A1, AP(2), Blast(3))",
-              "cost": 15,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -4226,7 +4226,7 @@
             {
               "id": "a-gTK",
               "label": "Skewer Cannon (30\u0022, A2, AP(4), Unstoppable)",
-              "cost": 65,
+              "cost": 60,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -4401,7 +4401,7 @@
             {
               "id": "A0zKA",
               "label": "Smashing Club (A1, AP(2), Blast(3))",
-              "cost": 15,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -5270,7 +5270,7 @@
             {
               "id": "JkeBJ_4",
               "label": "Heavy Shredder Cannon (18\u0022, A8, Rending)",
-              "cost": 20,
+              "cost": 25,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -5294,7 +5294,7 @@
             {
               "id": "aIoYoYB",
               "label": "Heavy Spitter Cannon (24\u0022, A4, Blast(3))",
-              "cost": 30,
+              "cost": 25,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -5319,7 +5319,7 @@
             {
               "id": "_X_hmP3",
               "label": "Heavy Barb Cannon (36\u0022, A2, AP(2), Blast(6))",
-              "cost": 110,
+              "cost": 75,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -5344,7 +5344,7 @@
             {
               "id": "XgRLaSX",
               "label": "Rapid Heavy Ravager Cannon (18\u0022, A12, AP(1), Destructive)",
-              "cost": 80,
+              "cost": 85,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -5368,7 +5368,7 @@
             {
               "id": "n4fW6Iw",
               "label": "Heavy Acid Cannon (36\u0022, A2, AP(2), Deadly(6), Unstoppable)",
-              "cost": 150,
+              "cost": 90,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -5446,7 +5446,7 @@
             {
               "id": "EGx3D3_",
               "label": "Smashing Claws (A1, AP(2), Blast(3))",
-              "cost": 5,
+              "cost": 0,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -5520,7 +5520,7 @@
             {
               "id": "P1CRz",
               "label": "Whip Limbs (A4, Bane, Precise)",
-              "cost": 20,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -5548,7 +5548,7 @@
             {
               "id": "43qrfkW",
               "label": "Serrated Claws (A3, AP(4))",
-              "cost": 10,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -5990,7 +5990,7 @@
             {
               "id": "EGx3D3_",
               "label": "Smashing Claws (A1, AP(2), Blast(3))",
-              "cost": 5,
+              "cost": 0,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -6064,7 +6064,7 @@
             {
               "id": "P1CRz",
               "label": "Whip Limbs (A4, Bane, Precise)",
-              "cost": 20,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -6092,7 +6092,7 @@
             {
               "id": "43qrfkW",
               "label": "Serrated Claws (A3, AP(4))",
-              "cost": 10,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -6373,7 +6373,7 @@
             {
               "id": "vdzed-2",
               "label": "Fracture Cannon (30\u0022, A2, AP(3), Deadly(6))",
-              "cost": 105,
+              "cost": 60,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -6437,7 +6437,7 @@
             {
               "id": "5pBRSWoo",
               "label": "Acid Spike Launcher (18\u0022, A2, AP(2), Deadly(3), Unstoppable)",
-              "cost": 55,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -6650,7 +6650,7 @@
             {
               "id": "5pBRSWoo",
               "label": "Acid Spike Launcher (18\u0022, A2, AP(2), Deadly(3), Unstoppable)",
-              "cost": 55,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -6768,7 +6768,7 @@
             {
               "id": "EGx3D3_",
               "label": "Smashing Claws (A1, AP(2), Blast(3))",
-              "cost": 5,
+              "cost": 0,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -6842,7 +6842,7 @@
             {
               "id": "P1CRz",
               "label": "Whip Limbs (A4, Bane, Precise)",
-              "cost": 20,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -6870,7 +6870,7 @@
             {
               "id": "43qrfkW",
               "label": "Serrated Claws (A3, AP(4))",
-              "cost": 10,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -6974,7 +6974,7 @@
             {
               "id": "YTn2_bV",
               "label": "Spitter Bio-Artillery (36\u0022, A6, AP(1), Blast(3), Indirect)",
-              "cost": 10,
+              "cost": 60,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -7003,7 +7003,7 @@
             {
               "id": "b2tHbDv",
               "label": "Acid Bio-Artillery (36\u0022, A3, AP(3), Deadly(6), Indirect)",
-              "cost": 125,
+              "cost": 120,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -7032,7 +7032,7 @@
             {
               "id": "fX8c0oo",
               "label": "Plasma Bio-Artillery (36\u0022, A3, AP(4), Blast(6), Indirect)",
-              "cost": 170,
+              "cost": 155,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -7175,7 +7175,7 @@
             {
               "id": "iSkEvsI",
               "label": "Barb Cannon Array (30\u0022, A2, AP(2), Blast(3))",
-              "cost": 80,
+              "cost": 75,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -7200,7 +7200,7 @@
             {
               "id": "dMYEx89",
               "label": "Acid Launcher Array (30\u0022, A2, AP(2), Deadly(3), Unstoppable)",
-              "cost": 100,
+              "cost": 85,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -7333,7 +7333,7 @@
             {
               "id": "W6LlqTZ",
               "label": "Shredder Gun Array (18\u0022, A4, Rending)",
-              "cost": 35,
+              "cost": 40,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -7357,7 +7357,7 @@
             {
               "id": "UfsOJuh",
               "label": "Spitter Gun Array (24\u0022, A2, Blast(3))",
-              "cost": 40,
+              "cost": 45,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -7382,7 +7382,7 @@
             {
               "id": "iSkEvsI",
               "label": "Barb Cannon Array (30\u0022, A2, AP(2), Blast(3))",
-              "cost": 80,
+              "cost": 95,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -7407,7 +7407,7 @@
             {
               "id": "dMYEx89",
               "label": "Acid Launcher Array (30\u0022, A2, AP(2), Deadly(3), Unstoppable)",
-              "cost": 100,
+              "cost": 105,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -7647,7 +7647,7 @@
             {
               "id": "AEfvVBk",
               "label": "Twin Acid Launchers (30\u0022, A2, AP(3), Deadly(3), Unstoppable)",
-              "cost": 80,
+              "cost": 60,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -7690,7 +7690,7 @@
             {
               "id": "xAyAJwz",
               "label": "Missile Bugs (36\u0022, A2, AP(3), Unstoppable)",
-              "cost": 25,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [
                 {

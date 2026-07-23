@@ -74,7 +74,7 @@
             {
               "id": "h7nsn",
               "label": "Macro Pistol (12\u0022, A3)",
-              "cost": 15,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -93,7 +93,7 @@
             {
               "id": "twMAC",
               "label": "P-Repeater (18\u0022, A2, Lacerate)",
-              "cost": 20,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -117,7 +117,7 @@
             {
               "id": "EfxfRzv",
               "label": "Supersonic Cannon (12\u0022, A1, AP(1), Blast(3), Reliable)",
-              "cost": 30,
+              "cost": 25,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -146,7 +146,7 @@
             {
               "id": "s5489-S",
               "label": "Eradicator (24\u0022, A1, AP(1), Blast(3))",
-              "cost": 35,
+              "cost": 25,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -171,7 +171,7 @@
             {
               "id": "flEV7Ce",
               "label": "Rail Gun (18\u0022, A1, AP(3), Deadly(3))",
-              "cost": 40,
+              "cost": 35,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -196,7 +196,7 @@
             {
               "id": "q4RQjlT",
               "label": "V-Blaster (24\u0022, A3, Rending)",
-              "cost": 45,
+              "cost": 35,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -514,7 +514,7 @@
             {
               "id": "cRHu0",
               "label": "Leader S-Razor \u0026 Claw (A4, AP(2))",
-              "cost": 5,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -533,7 +533,7 @@
             {
               "id": "6zZdj",
               "label": "Leader Burst Carbine (18\u0022, A3), Energy Sword (A3, AP(1), Rending)",
-              "cost": 15,
+              "cost": 25,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -911,7 +911,7 @@
             {
               "id": "O8kvKQo",
               "label": "Leader G-Rifle (30\u0022, A2, AP(1))",
-              "cost": 20,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -1056,7 +1056,7 @@
             {
               "id": "Hl2hA60",
               "label": "Arc Sword (A2, AP(1), Rending)",
-              "cost": 5,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -1080,7 +1080,7 @@
             {
               "id": "eYS1WmJ",
               "label": "Axe-Halberd (A2, AP(4))",
-              "cost": 10,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -1485,7 +1485,7 @@
             {
               "id": "AYpCI",
               "label": "G-Rifle (30\u0022, A1, AP(1))",
-              "cost": 30,
+              "cost": 25,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -1542,7 +1542,7 @@
             {
               "id": "9-I4Ari",
               "label": "Flamer (12\u0022, A1, Blast(3), Reliable)",
-              "cost": 15,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -1571,7 +1571,7 @@
             {
               "id": "W50lpJz",
               "label": "Fusion Rifle (12\u0022, A1, AP(4), Deadly(3))",
-              "cost": 15,
+              "cost": 20,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -1596,7 +1596,7 @@
             {
               "id": "t_PxoPu",
               "label": "Plasma Carbine (18\u0022, A2, AP(4))",
-              "cost": 20,
+              "cost": 25,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -1615,7 +1615,7 @@
             {
               "id": "re-VF2_",
               "label": "Uranium Rifle (30\u0022, A1, AP(1), Reliable, Shred, Takedown)",
-              "cost": 35,
+              "cost": 25,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -1737,7 +1737,7 @@
             {
               "id": "VVsJd7y1",
               "label": "Revolver (12\u0022, A1, AP(1))",
-              "cost": 0,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -1780,7 +1780,7 @@
             {
               "id": "MHoynE-g",
               "label": "G-Rifle (30\u0022, A1, AP(1))",
-              "cost": 5,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -1979,7 +1979,7 @@
             {
               "id": "GHBWIHw",
               "label": "Gauntlet Shocks (12\u0022, A2, Surge), Taser Gauntlet (A2, Surge)",
-              "cost": 40,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -2250,7 +2250,7 @@
             {
               "id": "G4xJj",
               "label": "Burst Carbine (18\u0022, A2), Energy Sword (A2, AP(1), Rending)",
-              "cost": 70,
+              "cost": 80,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -2347,7 +2347,7 @@
             {
               "id": "XQok6",
               "label": "P-Thrower (12\u0022, A2, Reliable, Lacerate)",
-              "cost": 20,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -2390,7 +2390,7 @@
             {
               "id": "zAlCozi",
               "label": "F-Blaster (9\u0022, A2), Taser Sword (A2, Surge)",
-              "cost": -5,
+              "cost": 0,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -2571,7 +2571,7 @@
             {
               "id": "sIy0rqo",
               "label": "Twin P-Blaster (18\u0022, A4, Lacerate)",
-              "cost": 15,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -3039,7 +3039,7 @@
             {
               "id": "4zNP2Uv",
               "label": "Plasma Cannon (30\u0022, A1, AP(4), Blast(3))",
-              "cost": 5,
+              "cost": 20,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -3078,7 +3078,7 @@
             {
               "id": "0klSalP",
               "label": "Plasma Cannon (30\u0022, A1, AP(4), Blast(3)), P-Blaster (18\u0022, A2, Lacerate)",
-              "cost": 20,
+              "cost": 35,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -3116,7 +3116,7 @@
             {
               "id": "83FypDf",
               "label": "Plasma Cannon (30\u0022, A1, AP(4), Blast(3)), Flamer (12\u0022, A1, Blast(3), Reliable)",
-              "cost": 25,
+              "cost": 40,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -3265,7 +3265,7 @@
             {
               "id": "P0e2phD",
               "label": "Arc Claw (A3, AP(1), Rending)",
-              "cost": 30,
+              "cost": 35,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -3364,7 +3364,7 @@
             {
               "id": "CpbGg",
               "label": "Twin P-Machinegun (30\u0022, A4, Lacerate)",
-              "cost": 60,
+              "cost": 40,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -3478,7 +3478,7 @@
             {
               "id": "Oc4oV",
               "label": "Iron Cannon (36\u0022, A2, AP(2), Deadly(3), Unstoppable)",
-              "cost": 60,
+              "cost": 40,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -3519,7 +3519,7 @@
             {
               "id": "kC_8rPY",
               "label": "Disruption Missile (24\u0022, A3, AP(1))",
-              "cost": 45,
+              "cost": 35,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -3664,7 +3664,7 @@
             {
               "id": "E8RSs",
               "label": "Twin P-Cannon (24\u0022, A8, Lacerate)",
-              "cost": -15,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -3688,7 +3688,7 @@
             {
               "id": "Ui5gL",
               "label": "Heavy Neutron Laser (36\u0022, A2, AP(3), Deadly(3)), P-Machinegun (30\u0022, A2, Lacerate)",
-              "cost": 65,
+              "cost": 60,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -3726,7 +3726,7 @@
             {
               "id": "5pkyh",
               "label": "Icarus AA-System (36\u0022, A6, AP(3), Unstoppable)",
-              "cost": 105,
+              "cost": 75,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -3762,7 +3762,7 @@
             {
               "id": "N9e2L7V",
               "label": "Repair Arm (Regeneration)",
-              "cost": 50,
+              "cost": 45,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -3900,7 +3900,7 @@
             {
               "id": "v6R3TLi",
               "label": "R-Jezzail (30\u0022, A3, Reliable, Shred, Takedown)",
-              "cost": 55,
+              "cost": 35,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -3944,7 +3944,7 @@
             {
               "id": "afHLtxQ",
               "label": "P-Repeater (18\u0022, A2, Lacerate)",
-              "cost": 20,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -4091,7 +4091,7 @@
             {
               "id": "UULEYJo",
               "label": "Twin P-Cannon (24\u0022, A8, Lacerate)",
-              "cost": 30,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -4129,7 +4129,7 @@
             {
               "id": "pLk5-vM",
               "label": "P-Cannon (24\u0022, A4, Lacerate)",
-              "cost": 25,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -4288,7 +4288,7 @@
             {
               "id": "EWUNe",
               "label": "Twin Autocannon (36\u0022, A6, AP(2))",
-              "cost": 5,
+              "cost": 0,
               "costUnpriced": false,
               "weaponsGained": [
                 {

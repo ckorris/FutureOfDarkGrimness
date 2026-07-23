@@ -115,7 +115,7 @@
             {
               "id": "scA_fan",
               "label": "Exalted Plague Spear (A3, AP(1), Deadly(3), Bane)",
-              "cost": -10,
+              "cost": 40,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -144,7 +144,7 @@
             {
               "id": "jfiui",
               "label": "Exalted Scatter-Sling (12\u0022, A12, Bane)",
-              "cost": 5,
+              "cost": 50,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -220,7 +220,7 @@
             {
               "id": "gc6Y7BW",
               "label": "Exalted Plague Gauntlet (A9, AP(3), Bane)",
-              "cost": 65,
+              "cost": 125,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -500,7 +500,7 @@
             {
               "id": "d4Gcx20",
               "label": "Great Plague Spear (A2, AP(1), Deadly(3), Bane)",
-              "cost": -5,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -529,7 +529,7 @@
             {
               "id": "-RO0F",
               "label": "Great Scatter-Sling (12\u0022, A8, Bane)",
-              "cost": 5,
+              "cost": 20,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -605,7 +605,7 @@
             {
               "id": "3ZoINf-",
               "label": "Great Plague Gauntlet (A6, AP(3), Bane)",
-              "cost": 40,
+              "cost": 55,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -885,7 +885,7 @@
             {
               "id": "AzxWr",
               "label": "Scatter-Sling (12\u0022, A4, Bane)",
-              "cost": 0,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -961,7 +961,7 @@
             {
               "id": "hnhLQ",
               "label": "Plague Spear (A1, AP(2), Deadly(3), Bane)",
-              "cost": 5,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -990,7 +990,7 @@
             {
               "id": "1z3rE",
               "label": "Heavy Plague Gauntlet (A3, AP(3), Bane)",
-              "cost": 10,
+              "cost": 30,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -1047,7 +1047,7 @@
             {
               "id": "cIGLG",
               "label": "Wings (Flying)",
-              "cost": 15,
+              "cost": 20,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -1375,7 +1375,7 @@
             {
               "id": "fNoGq",
               "label": "Sword (A1, Bane), Plague Spear (A1, AP(2), Deadly(3), Bane)",
-              "cost": 0,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -1468,7 +1468,7 @@
             {
               "id": "Rspuh",
               "label": "Plague Gauntlet (A2, AP(1), Bane)",
-              "cost": 0,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -1904,7 +1904,7 @@
             {
               "id": "_fXYt",
               "label": "Sword (A1, Bane), Plague Spear (A1, AP(2), Deadly(3), Bane)",
-              "cost": 0,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -2034,7 +2034,7 @@
             {
               "id": "ZwK7t",
               "label": "Plague Gauntlet (A2, AP(1), Bane)",
-              "cost": 0,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -2466,7 +2466,7 @@
             {
               "id": "F5EVMBY",
               "label": "Banner",
-              "cost": 15,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [
@@ -2534,7 +2534,7 @@
             {
               "id": "cFcMLkc",
               "label": "Halberd (A1, Rending, Bane)",
-              "cost": 10,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -2562,7 +2562,7 @@
             {
               "id": "cYLog-U",
               "label": "Spear (A1, Counter, Bane)",
-              "cost": 25,
+              "cost": 20,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -2590,7 +2590,7 @@
             {
               "id": "iE4pWv4",
               "label": "Dual Hand Weapons (A2, Bane)",
-              "cost": 20,
+              "cost": 25,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -2614,7 +2614,7 @@
             {
               "id": "1i_Y1yi",
               "label": "Great Weapon (A1, AP(2), Bane)",
-              "cost": 20,
+              "cost": 25,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -2873,7 +2873,7 @@
             {
               "id": "F5EVMBY",
               "label": "Banner",
-              "cost": 15,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [
@@ -3244,7 +3244,7 @@
             {
               "id": "rg4oiEw",
               "label": "Musician",
-              "cost": 10,
+              "cost": 20,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [
@@ -3311,7 +3311,7 @@
             {
               "id": "2pIo6DL",
               "label": "Poisoned Stinger (A3, AP(1), Bane)",
-              "cost": 5,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {

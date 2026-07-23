@@ -66,7 +66,7 @@
             {
               "id": "ygpVz2R",
               "label": "Claw Gauntlets (Bane in Melee)",
-              "cost": 30,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -365,7 +365,7 @@
             {
               "id": "Bp2Zhle",
               "label": "Leader Plasma Pistol (12\u0022, A2, AP(4))",
-              "cost": 10,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -384,7 +384,7 @@
             {
               "id": "JVrd9rF",
               "label": "Leader Sniper Rifle (30\u0022, A2, AP(1), Reliable, Takedown)",
-              "cost": 70,
+              "cost": 55,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -426,7 +426,7 @@
             {
               "id": "Q18r1RW",
               "label": "Energy Sword (A2, AP(1), Rending)",
-              "cost": 5,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -474,7 +474,7 @@
             {
               "id": "4MDA0zL",
               "label": "Energy Fist (A2, AP(4))",
-              "cost": 10,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -748,7 +748,7 @@
             {
               "id": "eOKAmKXo",
               "label": "Psy-Monk (Caster(2))",
-              "cost": 40,
+              "cost": 45,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -917,7 +917,7 @@
             {
               "id": "ow6Mq",
               "label": "Fusion Rifle (12\u0022, A1, AP(4), Deadly(3))",
-              "cost": 5,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -1142,7 +1142,7 @@
             {
               "id": "mr7PrmBT",
               "label": "Sgt. Pistol (12\u0022, A1), Energy Sword (A2, AP(1), Rending)",
-              "cost": -5,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -1245,7 +1245,7 @@
             {
               "id": "m6rBRB9b",
               "label": "Energy Fist (A2, AP(4))",
-              "cost": 10,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -1452,7 +1452,7 @@
             {
               "id": "6t55QQW",
               "label": "Wings (Ambush, Flying)",
-              "cost": 25,
+              "cost": 35,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -1492,7 +1492,7 @@
             {
               "id": "TzDirclK",
               "label": "Sgt. Pistol (12\u0022, A1), Energy Sword (A2, AP(1), Rending)",
-              "cost": 0,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -1679,7 +1679,7 @@
             {
               "id": "DJ1kh",
               "label": "Sniper Rifle (30\u0022, A1, AP(1), Reliable, Takedown)",
-              "cost": 30,
+              "cost": 25,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -1721,7 +1721,7 @@
             {
               "id": "gRqzFan",
               "label": "Piercing Rifle (30\u0022, A1, AP(4), Deadly(3))",
-              "cost": -10,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -1746,7 +1746,7 @@
             {
               "id": "k98D0ll",
               "label": "Cluster Power Rifle (30\u0022, A1, AP(4), Blast(3), Lacerate, Precise)",
-              "cost": -15,
+              "cost": 35,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -1931,7 +1931,7 @@
             {
               "id": "nsah1",
               "label": "Plasma Rifle (24\u0022, A1, AP(4))",
-              "cost": 5,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -1993,7 +1993,7 @@
             {
               "id": "MVrso",
               "label": "Fusion Rifle (12\u0022, A1, AP(4), Deadly(3))",
-              "cost": 10,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -2162,7 +2162,7 @@
             {
               "id": "FIcWH",
               "label": "Camo Cloaks (Stealth)",
-              "cost": 10,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -2198,7 +2198,7 @@
             {
               "id": "IQE8T-UY",
               "label": "Sgt. Pistol (12\u0022, A1), Energy Sword (A2, AP(1), Rending)",
-              "cost": -5,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -2301,7 +2301,7 @@
             {
               "id": "umjOgOco",
               "label": "Energy Fist (A2, AP(4))",
-              "cost": 10,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -2410,7 +2410,7 @@
             {
               "id": "QcKew4N",
               "label": "Flamer (12\u0022, A1, Blast(3), Reliable)",
-              "cost": 15,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -2453,7 +2453,7 @@
             {
               "id": "jcxfWjY",
               "label": "Energy Sword (A2, AP(1), Rending)",
-              "cost": 10,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -2607,7 +2607,7 @@
             {
               "id": "pxLMx_Ky",
               "label": "Claw Gauntlets (Bane in Melee)",
-              "cost": 30,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -2803,7 +2803,7 @@
             {
               "id": "Lr3uq",
               "label": "Energy Lance (A2, AP(1), Thrust)",
-              "cost": 10,
+              "cost": 20,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -2841,7 +2841,7 @@
             {
               "id": "fRWgfic",
               "label": "Plasma Rifle (24\u0022, A1, AP(4))",
-              "cost": 10,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -2860,7 +2860,7 @@
             {
               "id": "xH3dAXe",
               "label": "Shred Rifle (18\u0022, A2, Rending)",
-              "cost": 10,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -2884,7 +2884,7 @@
             {
               "id": "ClHJzMs",
               "label": "Fusion Rifle (12\u0022, A1, AP(4), Deadly(3))",
-              "cost": 15,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -2909,7 +2909,7 @@
             {
               "id": "h_txrTq",
               "label": "Flamer (12\u0022, A1, Blast(3), Reliable)",
-              "cost": 15,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -2986,7 +2986,7 @@
             {
               "id": "avLbZr_F",
               "label": "Sgt. Pistol (12\u0022, A1), Energy Sword (A2, AP(1), Rending)",
-              "cost": 0,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -3204,7 +3204,7 @@
             {
               "id": "ks5F3",
               "label": "Heavy Plating (Fortified)",
-              "cost": 15,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -3264,7 +3264,7 @@
             {
               "id": "r-aIy",
               "label": "Twin Heavy Machinegun (30\u0022, A6, AP(1))",
-              "cost": 35,
+              "cost": 40,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -3450,7 +3450,7 @@
             {
               "id": "ks5F3",
               "label": "Heavy Plating (Fortified)",
-              "cost": 15,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -3572,7 +3572,7 @@
             {
               "id": "lpUM7kp",
               "label": "Laser Cannon (36\u0022, A1, AP(3), Deadly(3))",
-              "cost": 15,
+              "cost": 20,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -3597,7 +3597,7 @@
             {
               "id": "tpruz3H",
               "label": "Fusion Cannon (24\u0022, A1, AP(4), Deadly(6))",
-              "cost": 45,
+              "cost": 40,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -3714,7 +3714,7 @@
             {
               "id": "ks5F3",
               "label": "Heavy Plating (Fortified)",
-              "cost": 15,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -3786,7 +3786,7 @@
             {
               "id": "Oa-2bwd",
               "label": "Twin Plasma Cannon (30\u0022, A2, AP(4), Blast(3))",
-              "cost": 40,
+              "cost": 55,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -3811,7 +3811,7 @@
             {
               "id": "R2uvn",
               "label": "Twin Laser Machinegun (30\u0022, A6, AP(3))",
-              "cost": 50,
+              "cost": 60,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -3930,7 +3930,7 @@
             {
               "id": "750NrZc",
               "label": "Twin Missile Launcher (30\u0022, A2, AP(2), Deadly(3), Unstoppable)",
-              "cost": 25,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {

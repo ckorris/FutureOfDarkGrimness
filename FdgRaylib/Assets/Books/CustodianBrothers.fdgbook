@@ -105,7 +105,7 @@
             {
               "id": "Mn2GA",
               "label": "Rapid Wrist-GL (18\u0022, A2, Blast(3)), Burst Shot-Mount (12\u0022, A3, AP(1))",
-              "cost": 15,
+              "cost": 20,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -152,7 +152,7 @@
             {
               "id": "oiDDi",
               "label": "Burst Shot-Mount (12\u0022, A3, AP(1))",
-              "cost": 0,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -171,7 +171,7 @@
             {
               "id": "27prqxA",
               "label": "Fuse-Mount (12\u0022, A1, AP(4), Deadly(3))",
-              "cost": 10,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -196,7 +196,7 @@
             {
               "id": "pUiX_",
               "label": "Bolt-Mount (18\u0022, A3, Rending)",
-              "cost": 10,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -220,7 +220,7 @@
             {
               "id": "bQ2MJ",
               "label": "Needler-Mount (24\u0022, A3, Bane)",
-              "cost": 15,
+              "cost": 20,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -268,7 +268,7 @@
             {
               "id": "PFW71",
               "label": "Storm-Mount (24\u0022, A3, AP(1))",
-              "cost": 20,
+              "cost": 25,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -301,7 +301,7 @@
             {
               "id": "RzFuz",
               "label": "Custodian Halberd (A2, Deadly(3), Tear)",
-              "cost": 20,
+              "cost": 30,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -330,7 +330,7 @@
             {
               "id": "0VYZf",
               "label": "Custodian Sword (A6, AP(1), Rending)",
-              "cost": 30,
+              "cost": 35,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -665,7 +665,7 @@
             {
               "id": "OckhIFQ",
               "label": "Jetpack (Ambush, Flying)",
-              "cost": 30,
+              "cost": 45,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -762,7 +762,7 @@
             {
               "id": "s-IZCrC",
               "label": "Twin Laser Pulser (24\u0022, A2, AP(2), Blast(3))",
-              "cost": 5,
+              "cost": 0,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -812,7 +812,7 @@
             {
               "id": "8w5XEkW",
               "label": "Twin Heavy Machinegun (30\u0022, A6, AP(1))",
-              "cost": 10,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -846,7 +846,7 @@
             {
               "id": "gRTyl",
               "label": "Wrist-GL (18\u0022, A1, Blast(3)), Burst Shot-Mount (12\u0022, A3, AP(1)), Heavy CCW (A2, AP(1))",
-              "cost": 15,
+              "cost": 25,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -887,7 +887,7 @@
             {
               "id": "nuAmB",
               "label": "Energy Lance (A6, AP(1), Thrust)",
-              "cost": 5,
+              "cost": 30,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -954,7 +954,7 @@
             {
               "id": "4Qv-a",
               "label": "Fuse-Mount (12\u0022, A1, AP(4), Deadly(3))",
-              "cost": 15,
+              "cost": 20,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -979,7 +979,7 @@
             {
               "id": "hfx1v",
               "label": "Bolt-Mount (18\u0022, A3, Rending)",
-              "cost": 20,
+              "cost": 25,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -1003,7 +1003,7 @@
             {
               "id": "VNDt5",
               "label": "Needler-Mount (24\u0022, A3, Bane)",
-              "cost": 20,
+              "cost": 30,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -1051,7 +1051,7 @@
             {
               "id": "DuzfR",
               "label": "Storm-Mount (24\u0022, A3, AP(1))",
-              "cost": 30,
+              "cost": 40,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -1084,7 +1084,7 @@
             {
               "id": "KND4C",
               "label": "Custodian Halberd (A2, Deadly(3), Tear)",
-              "cost": 20,
+              "cost": 40,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -1113,7 +1113,7 @@
             {
               "id": "UDtGF",
               "label": "Custodian Sword (A6, AP(1), Rending)",
-              "cost": 30,
+              "cost": 40,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -1137,7 +1137,7 @@
             {
               "id": "TPESS",
               "label": "Custodian Spear (A6, AP(3))",
-              "cost": 45,
+              "cost": 55,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -1348,7 +1348,7 @@
             {
               "id": "OckhIFQ",
               "label": "Jetpack (Ambush, Flying)",
-              "cost": 30,
+              "cost": 45,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -1470,7 +1470,7 @@
             {
               "id": "fOT7SH6",
               "label": "Fusion Missiles (18\u0022, A2, AP(4), Deadly(3))",
-              "cost": 5,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -1529,7 +1529,7 @@
             {
               "id": "gRTyl",
               "label": "Wrist-GL (18\u0022, A1, Blast(3)), Burst Shot-Mount (12\u0022, A3, AP(1)), Heavy CCW (A2, AP(1))",
-              "cost": 15,
+              "cost": 20,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -1570,7 +1570,7 @@
             {
               "id": "nuAmB",
               "label": "Energy Lance (A6, AP(1), Thrust)",
-              "cost": 5,
+              "cost": 30,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -1637,7 +1637,7 @@
             {
               "id": "4Qv-a",
               "label": "Fuse-Mount (12\u0022, A1, AP(4), Deadly(3))",
-              "cost": 15,
+              "cost": 20,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -1767,7 +1767,7 @@
             {
               "id": "KND4C",
               "label": "Custodian Halberd (A2, Deadly(3), Tear)",
-              "cost": 20,
+              "cost": 30,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -1796,7 +1796,7 @@
             {
               "id": "UDtGF",
               "label": "Custodian Sword (A6, AP(1), Rending)",
-              "cost": 30,
+              "cost": 35,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -2020,7 +2020,7 @@
             {
               "id": "yZI5v",
               "label": "Prosecution Rifle (24\u0022, A2), CCW (A4)",
-              "cost": 5,
+              "cost": 0,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -2138,7 +2138,7 @@
             {
               "id": "WnIC5lI",
               "label": "Hunter Instincts (Scout)",
-              "cost": 5,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -2372,7 +2372,7 @@
             {
               "id": "pD45I",
               "label": "Burst Shot-Mount (12\u0022, A3, AP(1)), Heavy CCW (A1, AP(1))",
-              "cost": 25,
+              "cost": 35,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -2413,7 +2413,7 @@
             {
               "id": "bTd7Q",
               "label": "Flame-Mount (12\u0022, A1, Blast(3), Reliable)",
-              "cost": 15,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -2572,7 +2572,7 @@
             {
               "id": "6bQnq",
               "label": "Custodian Halberd (A1, Deadly(3), Tear)",
-              "cost": 10,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -2796,7 +2796,7 @@
             {
               "id": "pD45I",
               "label": "Burst Shot-Mount (12\u0022, A3, AP(1)), Heavy CCW (A1, AP(1))",
-              "cost": 25,
+              "cost": 40,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -2866,7 +2866,7 @@
             {
               "id": "Q9Chn",
               "label": "Fuse-Mount (12\u0022, A1, AP(4), Deadly(3))",
-              "cost": 25,
+              "cost": 30,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -2891,7 +2891,7 @@
             {
               "id": "GO-t_",
               "label": "Bolt-Mount (18\u0022, A3, Rending)",
-              "cost": 25,
+              "cost": 35,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -2915,7 +2915,7 @@
             {
               "id": "C1MzA",
               "label": "Needler-Mount (24\u0022, A3, Bane)",
-              "cost": 30,
+              "cost": 40,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -2963,7 +2963,7 @@
             {
               "id": "w-evR",
               "label": "Storm-Mount (24\u0022, A3, AP(1))",
-              "cost": 35,
+              "cost": 50,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -2996,7 +2996,7 @@
             {
               "id": "6bQnq",
               "label": "Custodian Halberd (A1, Deadly(3), Tear)",
-              "cost": 10,
+              "cost": 20,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -3025,7 +3025,7 @@
             {
               "id": "m50Lb",
               "label": "Custodian Sword (A3, AP(1), Rending)",
-              "cost": 15,
+              "cost": 20,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -3049,7 +3049,7 @@
             {
               "id": "BvEeV",
               "label": "Custodian Spear (A3, AP(3))",
-              "cost": 25,
+              "cost": 30,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -4070,7 +4070,7 @@
             {
               "id": "F-61_",
               "label": "Fuse-Mount (12\u0022, A1, AP(4), Deadly(3))",
-              "cost": 15,
+              "cost": 20,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -4176,7 +4176,7 @@
             {
               "id": "d1kuA",
               "label": "Custodian Halberd (A2, Deadly(3), Tear)",
-              "cost": 20,
+              "cost": 30,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -4205,7 +4205,7 @@
             {
               "id": "Z3VcX",
               "label": "Custodian Sword (A6, AP(1), Rending)",
-              "cost": 30,
+              "cost": 35,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -4446,7 +4446,7 @@
             {
               "id": "n4sJa",
               "label": "Twin Destructor (24\u0022, A4, Tear)",
-              "cost": 25,
+              "cost": 40,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -4503,7 +4503,7 @@
             {
               "id": "-tsI3",
               "label": "Twin Heavy Flamer (12\u0022, A2, AP(1), Blast(3), Reliable)",
-              "cost": 30,
+              "cost": 25,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -4532,7 +4532,7 @@
             {
               "id": "coV_W",
               "label": "Twin Destructor (24\u0022, A4, Tear)",
-              "cost": 50,
+              "cost": 60,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -4589,7 +4589,7 @@
             {
               "id": "8xw7P",
               "label": "Energy Fist (A3, AP(4))",
-              "cost": 15,
+              "cost": 20,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -4911,7 +4911,7 @@
             {
               "id": "fOT7SH6",
               "label": "Fusion Missiles (18\u0022, A2, AP(4), Deadly(3))",
-              "cost": 5,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -5102,7 +5102,7 @@
             {
               "id": "coakjxI",
               "label": "Twin Accelerator (36\u0022, A6, Tear)",
-              "cost": 5,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -5432,7 +5432,7 @@
             {
               "id": "-irp-",
               "label": "Super-Heavy Fusion Rifle (18\u0022, A1, AP(4), Deadly(6))",
-              "cost": 35,
+              "cost": 20,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -5457,7 +5457,7 @@
             {
               "id": "S1ep4",
               "label": "Heavy Minigun (24\u0022, A6, AP(2))",
-              "cost": 65,
+              "cost": 60,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -5951,7 +5951,7 @@
             {
               "id": "V8L95",
               "label": "Storm Cannon (30\u0022, A2, AP(3), Deadly(3))",
-              "cost": 20,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {

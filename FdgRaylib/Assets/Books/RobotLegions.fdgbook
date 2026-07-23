@@ -307,7 +307,7 @@
             {
               "id": "-3YN10I",
               "label": "Staff-Shots (12\u0022, A3, AP(1)), Hyper Sword (A3, AP(1), Rending), Combat Staff (A3, AP(1))",
-              "cost": 15,
+              "cost": 40,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -411,7 +411,7 @@
             {
               "id": "uiYOefY",
               "label": "Wrist-Plasma (24\u0022, A1, AP(4))",
-              "cost": 35,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -468,7 +468,7 @@
             {
               "id": "bbWMZnA",
               "label": "Void Sword (A1, Blast(3))",
-              "cost": -5,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -493,7 +493,7 @@
             {
               "id": "cYskqiN",
               "label": "Doom Scythe (A1, AP(2), Deadly(3))",
-              "cost": 10,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -518,7 +518,7 @@
             {
               "id": "pX4Pg2c",
               "label": "Hyper Sword (A3, AP(1), Rending)",
-              "cost": 10,
+              "cost": 20,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -542,7 +542,7 @@
             {
               "id": "0UFj8Wn",
               "label": "Phase Glaive (A3, AP(4))",
-              "cost": 20,
+              "cost": 30,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -669,7 +669,7 @@
             {
               "id": "5JBuIEot",
               "label": "Technomancer (Caster(2))",
-              "cost": 40,
+              "cost": 35,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -807,7 +807,7 @@
             {
               "id": "naOtTU7I",
               "label": "Staff-Shots (12\u0022, A3, AP(1)), Combat Staff (A3, AP(1))",
-              "cost": 15,
+              "cost": 25,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -872,7 +872,7 @@
             {
               "id": "ZreTSK6T",
               "label": "Wrist-Flamer (12\u0022, A1, Blast(3), Reliable)",
-              "cost": 5,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -901,7 +901,7 @@
             {
               "id": "AGPRbyVn",
               "label": "Wrist-Plasma (24\u0022, A1, AP(4))",
-              "cost": 35,
+              "cost": 20,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -1006,7 +1006,7 @@
             {
               "id": "CrvwnnNr",
               "label": "Void Sword (A1, Blast(3))",
-              "cost": -5,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -1031,7 +1031,7 @@
             {
               "id": "M--NkSUw",
               "label": "Doom Scythe (A1, AP(2), Deadly(3))",
-              "cost": 10,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -1056,7 +1056,7 @@
             {
               "id": "lpum77Fl",
               "label": "Hyper Sword (A3, AP(1), Rending)",
-              "cost": 10,
+              "cost": 20,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -1080,7 +1080,7 @@
             {
               "id": "v6oAy26N",
               "label": "Phase Glaive (A3, AP(4))",
-              "cost": 20,
+              "cost": 30,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -1236,7 +1236,7 @@
             {
               "id": "H9PNM4jf",
               "label": "Technomancer (Caster(2))",
-              "cost": 40,
+              "cost": 35,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -1404,7 +1404,7 @@
             {
               "id": "4Tdkvna",
               "label": "Plasma Caster (24\u0022, A1, AP(4))",
-              "cost": 5,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -1452,7 +1452,7 @@
             {
               "id": "vzTRYEt",
               "label": "Fusion Caster (12\u0022, A1, AP(4), Deadly(3))",
-              "cost": 10,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -1477,7 +1477,7 @@
             {
               "id": "bhUJI",
               "label": "Ray Caster (18\u0022, A2, AP(4), Unstoppable)",
-              "cost": 50,
+              "cost": 20,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -1563,7 +1563,7 @@
             {
               "id": "iJb_1pk",
               "label": "War Scythe (A2, AP(2))",
-              "cost": 5,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -1609,7 +1609,7 @@
             {
               "id": "dCcieks",
               "label": "Hyper Sword (A2, AP(1), Rending), Combat Shields (Shielded)",
-              "cost": 10,
+              "cost": 20,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -1656,7 +1656,7 @@
             {
               "id": "CqbkQoJ",
               "label": "Jetpacks (Ambush, Flying, Swift)",
-              "cost": 40,
+              "cost": 45,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -1828,7 +1828,7 @@
             {
               "id": "4wl6uX1",
               "label": "Heavy Gauss Rifle (24\u0022, A2, Destructive)",
-              "cost": 55,
+              "cost": 60,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -1920,7 +1920,7 @@
             {
               "id": "zI794Cc",
               "label": "Hyperspace Reapers (Ambushing Piercing Shot)",
-              "cost": 35,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -2138,7 +2138,7 @@
             {
               "id": "8axTRpf",
               "label": "Death Gaze (12\u0022, A2, AP(4))",
-              "cost": 5,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -2220,7 +2220,7 @@
             {
               "id": "qScEKgrw",
               "label": "Heavy Reaper Blade (A1, AP(3), Deadly(6), Shred)",
-              "cost": -10,
+              "cost": 20,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -2261,7 +2261,7 @@
             {
               "id": "dS1iaKPR",
               "label": "Plasmabot (Rending in Melee)",
-              "cost": 45,
+              "cost": 25,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -2378,7 +2378,7 @@
             {
               "id": "4cbFIbx",
               "label": "Gauss Cannon (24\u0022, A4, Destructive), CCW (A1)",
-              "cost": 115,
+              "cost": 70,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -2424,7 +2424,7 @@
             {
               "id": "ACs7O",
               "label": "Ray Cannon (24\u0022, A2, AP(4), Unstoppable)",
-              "cost": 45,
+              "cost": 0,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -2448,7 +2448,7 @@
             {
               "id": "3G2M1",
               "label": "Heavy Gauss Cannon (30\u0022, A6, Destructive)",
-              "cost": 25,
+              "cost": 40,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -2580,7 +2580,7 @@
             {
               "id": "eDUyrWE",
               "label": "Heavy Reaper Blade (A1, AP(3), Deadly(6), Shred)",
-              "cost": -10,
+              "cost": 20,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -2621,7 +2621,7 @@
             {
               "id": "CuaPMH-",
               "label": "Plasmabot (Rending in Melee)",
-              "cost": 45,
+              "cost": 25,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -2804,7 +2804,7 @@
             {
               "id": "--D-J",
               "label": "Widowmaker (Ambush)",
-              "cost": 25,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -2982,7 +2982,7 @@
             {
               "id": "5rbjt",
               "label": "Exterminator Cannon (30\u0022, A2, AP(2), Blast(3))",
-              "cost": 20,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -3184,7 +3184,7 @@
             {
               "id": "MA2pB-p",
               "label": "Atom-Beamer (24\u0022, A3, AP(1))",
-              "cost": -5,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -3377,7 +3377,7 @@
             {
               "id": "i0Cst",
               "label": "Heavy Doom Cannon (30\u0022, A3, AP(3), Deadly(3))",
-              "cost": 25,
+              "cost": 40,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -3485,7 +3485,7 @@
             {
               "id": "ysN0D",
               "label": "Flux Cannon (24\u0022, A3, AP(1), Surge)",
-              "cost": 20,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -3731,7 +3731,7 @@
             {
               "id": "MEdz-w1",
               "label": "Rapid Ray Caster (18\u0022, A4, AP(4), Unstoppable)",
-              "cost": 105,
+              "cost": 30,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -3975,7 +3975,7 @@
             {
               "id": "xip22",
               "label": "Twin Atom-Shredder (24\u0022, A12, AP(1))",
-              "cost": 15,
+              "cost": 30,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -3994,7 +3994,7 @@
             {
               "id": "NYSw1",
               "label": "Twin Exterminator Cannon (30\u0022, A4, AP(2), Blast(3))",
-              "cost": 50,
+              "cost": 55,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -4118,7 +4118,7 @@
             {
               "id": "-m-fy",
               "label": "Void Shard (24\u0022, A12, AP(2))",
-              "cost": 95,
+              "cost": 85,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -4507,7 +4507,7 @@
             {
               "id": "gz0nP",
               "label": "Atom-Scourge (24\u0022, A9, AP(4))",
-              "cost": 5,
+              "cost": 45,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -4576,7 +4576,7 @@
             {
               "id": "2ifV25v",
               "label": "Warp Gate (Transport(21))",
-              "cost": 65,
+              "cost": 70,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -4598,7 +4598,7 @@
             {
               "id": "NILpP",
               "label": "Wraith-Shard Vault (Caster(4), Tough(6))",
-              "cost": 270,
+              "cost": 250,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -4731,7 +4731,7 @@
             {
               "id": "7sNyuXMx",
               "label": "Void Shard (24\u0022, A12, AP(2))",
-              "cost": 95,
+              "cost": 85,
               "costUnpriced": false,
               "weaponsGained": [
                 {

@@ -158,7 +158,7 @@
             {
               "id": "fUmEf",
               "label": "Exalted Flame Spear (A3, AP(3), Deadly(3))",
-              "cost": 10,
+              "cost": 55,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -183,7 +183,7 @@
             {
               "id": "YJDle",
               "label": "Exalted War Whip (12\u0022, A12, AP(1))",
-              "cost": 5,
+              "cost": 65,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -202,7 +202,7 @@
             {
               "id": "RGp-Rab",
               "label": "Exalted Flame Gauntlet (A9, AP(4))",
-              "cost": 50,
+              "cost": 105,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -492,7 +492,7 @@
             {
               "id": "HH8lcjE",
               "label": "Great Flame Spear (A2, AP(3), Deadly(3))",
-              "cost": 5,
+              "cost": 25,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -541,7 +541,7 @@
             {
               "id": "2SllI",
               "label": "Great War Whip (12\u0022, A8, AP(1))",
-              "cost": 5,
+              "cost": 30,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -560,7 +560,7 @@
             {
               "id": "kJ2s0om",
               "label": "Great Flame Gauntlet (A6, AP(4))",
-              "cost": 35,
+              "cost": 45,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -920,7 +920,7 @@
             {
               "id": "r7IAt",
               "label": "War Whip (12\u0022, A4, AP(1))",
-              "cost": 0,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -939,7 +939,7 @@
             {
               "id": "eVxru",
               "label": "Heavy Flame Gauntlet (A3, AP(4))",
-              "cost": 10,
+              "cost": 20,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -991,7 +991,7 @@
             {
               "id": "flNGf",
               "label": "Wings (Flying)",
-              "cost": 15,
+              "cost": 20,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -1282,7 +1282,7 @@
             {
               "id": "XBxqW",
               "label": "2x Blood Sword (A2, Crack)",
-              "cost": 0,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -1408,7 +1408,7 @@
             {
               "id": "dsTcp",
               "label": "Flame Gauntlet (A2, AP(4))",
-              "cost": 5,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -1821,7 +1821,7 @@
             {
               "id": "778Ti",
               "label": "2x Blood Sword (A2, Crack)",
-              "cost": 0,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -2177,7 +2177,7 @@
             {
               "id": "8Gw4z",
               "label": "Guard Beast (Repel Ambushers)",
-              "cost": 10,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -2426,7 +2426,7 @@
             {
               "id": "vR4Qvvz",
               "label": "Banner",
-              "cost": 15,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [
@@ -2489,7 +2489,7 @@
             {
               "id": "z8uJfVm",
               "label": "Halberd (A1, AP(1), Rending)",
-              "cost": 10,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -2532,7 +2532,7 @@
             {
               "id": "EbbYYHJ",
               "label": "Spear (A1, AP(1), Counter)",
-              "cost": 30,
+              "cost": 20,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -2556,7 +2556,7 @@
             {
               "id": "T7vfJVp",
               "label": "Dual Hand Weapons (A2, AP(1))",
-              "cost": 30,
+              "cost": 35,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -2795,7 +2795,7 @@
             {
               "id": "vR4Qvvz",
               "label": "Banner",
-              "cost": 15,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [
@@ -2991,7 +2991,7 @@
             {
               "id": "MqVqATW",
               "label": "Spiked Collars (Ravage(1))",
-              "cost": 10,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -3152,7 +3152,7 @@
             {
               "id": "B8jhWQO",
               "label": "Musician",
-              "cost": 10,
+              "cost": 20,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [
@@ -3200,7 +3200,7 @@
             {
               "id": "XBDL7H4",
               "label": "Halberd (A1, AP(1), Rending)",
-              "cost": 5,
+              "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -3662,7 +3662,7 @@
             {
               "id": "xUP11l4m",
               "label": "Guard Beast (Repel Ambushers)",
-              "cost": 10,
+              "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -3683,7 +3683,7 @@
             {
               "id": "7J-mDUmO",
               "label": "Anti-Wizard Collar (Resistance)",
-              "cost": 20,
+              "cost": 30,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
@@ -3793,7 +3793,7 @@
             {
               "id": "OBq1p21",
               "label": "Heavy War Axe (A12, AP(3))",
-              "cost": 0,
+              "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
                 {
@@ -3869,7 +3869,7 @@
             {
               "id": "tJA_DXG",
               "label": "Heavy War Cannon (24\u0022, A12, AP(3))",
-              "cost": 45,
+              "cost": 90,
               "costUnpriced": false,
               "weaponsGained": [
                 {
