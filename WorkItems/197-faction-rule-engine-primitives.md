@@ -210,12 +210,78 @@ always resolved `RuleGrant` tokens back to definitions via `CollectGrantedRules`
 Latent until now (no shipped aura granted an ability-bearing rule); `Versatile Reach Aura` (56 refs) is the
 first. Fixed by mirroring the passive path's screening exactly, and mutation-checked.
 
-### Deferred: `Versatile Defense Aura` (21 refs)
+### Deferred here, shipped as its own slice — `Versatile Defense Aura` (21 refs)
 
-Triggers on **deployment or activation** and lasts **until the unit's next activation** — a lifetime
-`ELifetime` doesn't have (`ThisRound` is wrong; it must span the opponent's turns). Needs a new lifetime plus a
-`TokenClearTrigger` that fires at activation **start** rather than end, and a second trigger hook at deployment.
-Its own slice; mixing a token-lifecycle change into a hook/resolver slice was the thing the sign-off avoided.
+See **Slice: Versatile Defense** below (DONE 2026-07-23). The deferral was right: it needed a token-lifecycle
+change, which is exactly what the P5a sign-off kept out of a hook/resolver slice.
+
+## Slice: Versatile Defense — **DONE 2026-07-23** (21/21, the P5a residual)
+
+> "When a unit where all models have this rule is deployed or activated, pick one effect: when shot or
+> charged from over 9in away, the unit either gets +1 to defense rolls, or enemy units get -1 to hit rolls
+> against it. This effect lasts until the units' next activation."
+> — plus `Versatile Defense Aura`: "This model and its unit get Versatile Defense."
+
+All 21 refs are the Aura form, reached through the **Icon of Havoc** wargear option in five books
+(Havoc Brothers + the four Disciples).
+
+**The filed premise was right, with one correction and one thing it missed.**
+
+- **Right:** `ELifetime` had no "until my next activation" — `ThisActivation` dies before the opponent ever
+  shoots, `ThisRound` dies at the wrong moment for a unit that activates late. New `ELifetime.UntilNextActivation`.
+- **Correction — no new `TokenClearTrigger` variant.** `CustomHook(hook)` already means "clears when hook X
+  fires" and `TokenClearService.ClearsAtHook` already sweeps it, so the lifetime maps straight onto
+  `CustomHook(Activation_OnActivationStart)`. The only engine wiring is one `ClearForHook` call at the top of
+  `ActivationStartStage` (mirroring `ReconcileEndOfActivationStage` at the other end), which must run BEFORE
+  the offers are gathered or a unit that re-picks would hold both effects.
+- **Missed — the deployment arm needs a cost that doesn't exist.** The once-per-X "used" marker is keyed on
+  the RULE name, so it is shared by every ability of the rule at every hook. `OncePerActivation` paid at
+  deployment leaves an `ActivationEnd` marker that only clears at the end of the unit's FIRST activation, so
+  the unit would arrive at that activation's start with its own gate already shut. `OncePerRound` blocks
+  round 1; `OncePerGame` blocks forever. New **`Cost.Free`** — no gate, because the deployment hook fires
+  exactly once per unit and the stage resolves the rule's group exactly once.
+
+**Latent defect found and fixed: an ability's `AllModelsHaveThisRule` gate was no gate at all.**
+`RuleEvaluator.GatherOffersFromRules` built its `RuleInvocation` without a `Definition`, so the
+self-referential `Condition.AllModelsHaveThisRule` took its "no rule identity to check" arm and returned
+**true**. Versatile Defense is the first corpus rule that puts the all-models gate on the CHOICE rather than
+on the effect — and it has to, because the effect's own gate is satisfied vacuously by the unit-held grant
+that confers it. Fixed by passing `rule.Definition` through. Safe by survey: every `availableWhen` authored
+across the catalog and the supplement today is `Always` or `TokenPresent`, neither of which reads it.
+
+**Shipped:**
+- Engine: `ELifetime.UntilNextActivation` + its `ClearTriggerFor` mapping; `Cost.Free`; the
+  `ActivationStartStage` sweep; the `GatherOffers` `Definition` fix; a `TokenDisplay` phrase for the one
+  named `CustomHook`.
+- Engine: **`AbilityEffectChoice`** (next to `RepositionPlacement`, the shared-stage-helper precedent) —
+  the "group a hook's offers by rule -> ask which effect -> resolve/apply/execute" block lifted out of
+  `ActivationStartStage`. `DeployUnitStage` now routes MULTI-ability groups through it (mandatory, no
+  Yes/No) and keeps its Yes/No prompt for the single-ability "you MAY" rules (Vanguard, Fanatic). Same
+  resolution at both of the rule's hooks, by construction.
+- Data (app-side): four definitions — `Versatile Defense (Guard)` (= Sturdy's body verbatim),
+  `Versatile Defense (Evasion)` (= Changebound's), `Versatile Defense` (four labelled abilities: both
+  effects at both hooks), `Versatile Defense Aura`. Embedded into the five books via `--apply-rules`.
+  **The two effects were already shipped and covered under other names**, which is why this slice was
+  lifetime-and-plumbing work, not rules work.
+
+Tests: `VersatileDefenseRuleIntegrationTests` (15) — lifetime survives activation-end AND round-end but dies
+at activation start; both effects net the right modifier and only beyond 9in; the all-models gate on the
+choice (incl. the offer returning once the odd model out is dead); the deployment arm leaves the activation
+pick open; and both stages driven for real (`DeployUnitStage` asks the choice not a Yes/No;
+`ActivationStartStage` sweeps the previous pick; deploy-then-activate holds only the latest).
+`VersatileDefenseShippedDataTests` (8, app-side) pin the same over the DATA as authored. `Cost.Free`
+round-trip added to `CostSerializationTests`. Engine 1933/1933, app 490/490.
+
+Mutation-checked all three engine changes independently: dropping the `Definition` pass-through reds exactly
+the two gate tests; dropping the `ActivationStartStage` sweep reds the two "only the latest is held" tests;
+mapping the lifetime to `ActivationEnd` reds the three lifetime tests.
+
+**Verified in play, not just by lint** (the repeated #197 lesson): a headless game with a probe army
+carrying `Versatile Defense Aura` prompts `pick one effect on deployment`, prompts again
+`for this activation` each time the unit activates, and logs
+`Versatile Defense (Guard) added +1 to Save rolls` on an incoming volley. A second run with the two
+abilities swapped (so the EOF default lands on the other arm) logs
+`Versatile Defense (Evasion) added -1 to Hit rolls`. Corpus dead references **283 -> 262**.
 
 ## Slice: Teleport — **DONE 2026-07-11** (15 + Teleport Aura 4)
 
@@ -662,8 +728,8 @@ Reference counts are corpus-wide (44 books). Primitive numbers are #100's.
 
 | Refs | Slice | Needs | Rules |
 |-----:|-------|-------|-------|
-| 175 | ~~**P5a** activation-choice hook~~ **DONE 2026-07-09** (154/175) | Shipped: see the P5a write-up above. `Versatile Defense Aura` (21) deferred — needs an until-next-activation lifetime. | Versatile Attack (56), Versatile Reach Aura (56), Watchborn (42) done; Versatile Defense Aura (21) deferred |
-| 21 | **Versatile Defense** (out of P5a) | A new `ELifetime.UntilNextActivation` + a `TokenClearTrigger` firing at activation **start**, and a second trigger at `Deployment_OnUnitDeployed`. Everything else (labelled abilities, the choice request) already exists. | Versatile Defense Aura (21) |
+| 175 | ~~**P5a** activation-choice hook~~ **DONE 2026-07-23** (175/175) | Shipped: see the P5a write-up above. The deferred `Versatile Defense Aura` (21) closed 2026-07-23 — see the Versatile Defense write-up. | Versatile Attack (56), Versatile Reach Aura (56), Watchborn (42), Versatile Defense Aura (21) |
+| 21 | ~~**Versatile Defense** (out of P5a)~~ **DONE 2026-07-23** (21/21) | The filed premise held, with one correction and one addition: no new `TokenClearTrigger` variant was needed (`CustomHook` already says "clears at hook X"), and the deployment arm needed a new `Cost.Free` because the once-per-X "used" marker is keyed on the RULE. Both effects were Sturdy's and Changebound's bodies verbatim. See the write-up above. | Versatile Defense Aura (21) |
 | 47 | ~~**Delayed Action** (was P22)~~ **DONE 2026-07-11** | Shipped at unit-selection (pick-then-confirm hold-back), NOT the next-activator seam - see the Delayed Action write-up above. Fork resolved with Chris: holding back does NOT activate the unit (it stays in the pool) and the turn passes to the opponent; once per round per player. | Delayed Action (47) |
 | 15 | ~~**Teleport** (was P22)~~ **DONE 2026-07-11** (15 + Teleport Aura 4) | Shipped as a flat-6in menu action - see the Teleport write-up below. The pre-attack-hook / 3in-vs-6in reading was wrong (see write-up); Chris corrected the design in-conversation. | Teleport (15), Teleport Aura (4) |
 | 18 | **Ambush variants** (the real P22, + a P21 re-file) | The only genuine deploy-timing work. `Rapid Ambush` (deployable from round 1 — a new `EDeferTiming`), `Ambush Beacon` (relaxes the >9in enemy restriction for OTHER friendly Ambushers within 6in — a cross-unit deployment constraint), `Ambushing Piercing Shot` (Ambush + AP(+1) during the round it arrives — needs deploy-round state). **`Ambush Re-Deployment` (4, re-filed from P21):** "once per game, when this unit ends its activation, remove it and redeploy as if it had Ambush at the start of the next round" - not deploy-phase at all; needs the round-N Ambush arrival these rules build plus an end-of-activation trigger. | Rapid Ambush (4), Ambush Beacon (6), Ambushing Piercing Shot (4), Ambush Re-Deployment (4) |
@@ -704,6 +770,15 @@ Reference counts are corpus-wide (44 books). Primitive numbers are #100's.
 
 ## Notes
 
+- 2026-07-23: **Versatile Defense DONE (21/21)**, which closes **P5a at 175/175** - the largest slice in
+  this item, and the last of its deferred residuals. Two new vocabulary items
+  (`ELifetime.UntilNextActivation`, `Cost.Free`), one shared stage helper (`AbilityEffectChoice`, so the
+  rule resolves identically at both its hooks), and one latent defect fixed: an ability's
+  `AllModelsHaveThisRule` availability gate was silently always-true because `GatherOffers` never handed
+  the invocation its `Definition`. The row's premise about a new `TokenClearTrigger` was wrong -
+  `CustomHook` already expressed it - and the row missed the cost collision that forced `Cost.Free`. Both
+  effects turned out to be Sturdy's and Changebound's bodies verbatim, so no rules work at all. Corpus
+  dead count **283 -> 262**. See the Versatile Defense write-up above.
 - 2026-07-23: **P6 DONE (20/20, +3 riders)**, and like P21/P22 the row was misfiled - it claimed all five
   rules needed a new one-shot debuff primitive; only `Casting Debuff` (8) did. The other four ride seams
   already built and already consumed and shipped as pure data, which also pulled in `Casting Buff` (2)
