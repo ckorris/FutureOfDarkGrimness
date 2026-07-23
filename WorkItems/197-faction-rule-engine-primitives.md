@@ -638,7 +638,13 @@ looked exactly like the modifier not working. It now takes an optional `delta` f
 types, and a `delta` on any other type is a compile error rather than a silent drop. `Scenarios/README.md`
 documents it; 2 tests.
 
-### Found, NOT fixed: supplement-rule grants die across a save/load resume
+### Found here, fixed under #095 later the same day: supplement-rule grants die across a save/load resume
+
+**Resolved 2026-07-23** — `ArmyData` now persists the army file's embedded `RuleDefinitions` (and its
+`Spells`, a second casualty found with it) into the save, and the resume path replays them into the shared
+resolver. The `Precision Fighter Buff` control scenario below now runs clean. The data authored in this
+slice needed no change. See #095's 2026-07-23 note. Original finding, for the record:
+
 
 `addRule` grants of a **supplement** rule resolve in a normal game (`GameBootstrap.BuildRuleResolver`
 registers every player's embedded definitions into one shared resolver, so cross-army grants are fine),

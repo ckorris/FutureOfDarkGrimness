@@ -34,6 +34,11 @@ public class GuiPlaceObjectsResolver<T>
 
     private static readonly float GroupRotationStep = MathF.PI / 12f; // 15° per wheel notch / key press
 
+    // #214 reach rings. Green like the movement resolver's Advance ring — this IS a reach preview, so it
+    // should read as the same kind of thing; dimmer for the models whose turn to be placed hasn't come.
+    private static readonly uint ActiveReachRingCol  = ImGui.ColorConvertFloat4ToU32(new Vector4(0.25f, 0.95f, 0.25f, 0.75f));
+    private static readonly uint PendingReachRingCol = ImGui.ColorConvertFloat4ToU32(new Vector4(0.25f, 0.95f, 0.25f, 0.30f));
+
     // Rotates a facing (unit normal) by `radians`, matching the position rotation matrix
     // (rx = dx·cos − dz·sin, rz = dx·sin + dz·cos). The deploy rotation applies relative to the zone's
     // default facing (toward the table centre — see PlacementUtilities.DefaultDeployFacing).
@@ -104,6 +109,7 @@ public class GuiPlaceObjectsResolver<T>
         bool wantInput = !io.WantCaptureMouse && !io.WantCaptureKeyboard;
 
         DrawZone(dl, zone);
+        DrawReachRings(dl, request);
         DrawPlacedSoFar(dl, _dragIndex ?? -1);
 
         // G toggles Group/Single for the rest of the game (shared with movement).
@@ -364,6 +370,42 @@ public class GuiPlaceObjectsResolver<T>
         uint fill    = ImGui.ColorConvertFloat4ToU32(new Vector4(0.20f, 0.60f, 1.00f, 0.12f));
         uint outline = ImGui.ColorConvertFloat4ToU32(new Vector4(0.20f, 0.60f, 1.00f, 0.80f));
         ZoneRenderer.DrawFilled(zone, dl, _scale, _originX, _originY, _tableH, fill, outline);
+    }
+
+    /// <summary>
+    /// #214: the reach circle for a reposition-style placement (Teleport, Fanatic, reposition-at-
+    /// activation). Those requests are bounded per MODEL by <c>MaxDistanceFromStartInches</c> around each
+    /// model's own start, not by the deployment zone - they pass the whole table as the zone - so
+    /// <see cref="DrawZone"/> alone showed no constraint at all and the radius was invisible until a click
+    /// was rejected. Disembark looked right only because it happens to express its 6" as a
+    /// <c>CircularZone</c>, which the zone renderer already draws.
+    /// <para>
+    /// One ring per model still to place, since each model is bounded by its own start — see
+    /// <see cref="ReachRingPlan"/>, which owns the selection rules.
+    /// </para>
+    /// </summary>
+    private void DrawReachRings(ImDrawListPtr dl, PlaceObjectsRequest<T> request)
+    {
+        float reach = request.MaxDistanceFromStartInches;
+        if (reach <= 0f) return;
+
+        bool groupDrop = _formationMode.IsGroup && _placed.Count == 0 && !_dragIndex.HasValue;
+
+        foreach (ReachRingPlan.Ring ring in
+                 ReachRingPlan.Build(request.ModelsToPlace.Count, _placed.Count, _dragIndex, groupDrop))
+        {
+            // A dragged model is indexed into _placed; everything else into the request's list. Both hold
+            // the same binding at the same index (placements are appended in order), so either works for
+            // the dragged one — read it from _placed to stay honest about where the index came from.
+            DataBinding<T> binding = ring.ModelIndex < _placed.Count
+                ? _placed[ring.ModelIndex].Binding
+                : request.ModelsToPlace[ring.ModelIndex];
+
+            Position start = StartPositionOf(binding.GetValue());
+            var (px, py) = InchesToPixel(start.x, start.z);
+            dl.AddCircle(new Vector2(px, py), reach * _scale,
+                ring.IsActive ? ActiveReachRingCol : PendingReachRingCol, 64, ring.IsActive ? 2f : 1.5f);
+        }
     }
 
     private void DrawPlacedSoFar(ImDrawListPtr dl, int skipIndex)

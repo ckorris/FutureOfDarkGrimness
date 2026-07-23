@@ -1,6 +1,6 @@
 # 095 — Special rules not re-attached on save/load resume (HIGH PRIORITY)
 
-**Status**: implemented (Approach B) — engine green, build clean, headless exit 0; awaiting commit + GUI hand-verification
+**Status**: implemented (Approach B + the 2026-07-23 army-level residual) — engine 1903/1903, app 439/439, build clean, headless exit 0, both residual bugs verified in play on a real `.fdgsave` resume; awaiting GUI hand-verification of a save->resume in the #052 session
 **Related**: #052 (save/load — this is a gap in it), #042 (rule framework), #035 (Transport — disembark + capacity depend on this surviving a resume)
 
 > **Renumbered 094→095 (2026-06-21).** Filed as #094 this session, but origin/master had meanwhile assigned #094 to "group-move coherency repair" (merged). Per the never-reuse rule the unmerged item yields; this is now #095. The `035-transport.md` cross-references were updated; commit messages that say "#094" predate the renumber.
@@ -29,6 +29,40 @@ Re-attaching rules needs to map each loaded unit back to its army-list entry (wh
 - #035: a resumed game can still disembark an embarked unit, and a transport still reports its capacity.
 
 ## Notes
+- 2026-07-23 (later the same day): **residual FIXED - army-level rule data now persists with the save.**
+  Approach B covered rules *attached* to a carrier; two things an army carries are **named**, not attached,
+  and so were still lost. `ArmyData` gains a `[JsonProperty] _armyRuleDataJson` (STJ blob via the new
+  `Rules/Serialization/ArmyRuleDataPersistence`, the same Newtonsoft-sees-a-string division
+  `RuleAttachmentPersistence` uses) holding the army file's embedded `RuleDefinitions` (#059) **and** its
+  `Spells` (#033). `GameBootstrap.CreateArmy` writes it (the only place the file is in hand);
+  `GameBootstrap.RestoreArmyRuleData` replays it and the resume `FDGServer` ctor calls it right after
+  `BuildRuleResolver`. Registration order preserved: core -> slots -> persisted, all armies' definitions
+  registered before any spell list resolves (a spell's `DealHits.WithRules` can name an embedded weapon
+  rule). Deliberately **not** re-validated - the definitions passed validation at army load in the session
+  that wrote the save, and a resume must not fail on data the original game accepted.
+  - **Second bug found and fixed with it:** `ArmyData.Spells` is `[JsonIgnore]` and only ever set at army
+    load, so a resumed **Caster was offered an empty spell list** (`Cast (No spells available.)`). Never
+    recorded anywhere before; it hid because `--scenario <file.json>` builds the store in memory, so
+    `_spells` survives as a live object - only a real save/load (`--scenario <file.fdgsave>`, or any
+    in-game resume) exposes it.
+  - **Tests:** `Tests/ArmyRuleDataResumeTests.cs` (8) - grant inert without restore / fires with it (a
+    4+ wound-ignore, deliberately not core Regeneration's 5+, so it can't pass by reading a core rule),
+    embedded definition still overrides a same-named core rule, spell list empty on load then restored,
+    a spell's embedded weapon rules resolve (pins the ordering), `CreateArmy` writes the blob, and two
+    no-op tolerances (no blob / no armies). Mutation-checked both halves: dropping the definition
+    registration reddens exactly 3, dropping the spell restore reddens exactly 2.
+  - **Verified in play** on the same repro that found it, pre-fix vs post-fix, `--make-scenario` then
+    `--scenario <fdgsave>` (a genuine resume):
+
+    | | pre-fix | post-fix |
+    |---|---|---|
+    | shipped `Precision Fighter Buff` | `[rules] Granted rule 'Precision Fighter' on Buffers has no definition in the registry - the grant does nothing.` | 0 registry warnings; `Buffers used Precision Fighter Buff before attacking.` / `Buffers's Precision Fighter grant is spent.` |
+    | Wizards (Caster) with spell `Hex` | `Cast (No spells available.)` | `[1] Hex (1)` offered, targeted, `Wizards cast Hex: rolled 3, needed 3+ (base 4+, self +1); spent 2 tokens` |
+
+    Engine 1903/1903, app 439/439, build clean, headless smoke exit 0.
+  - **Known limit (by construction):** a save written by a pre-fix build carries no blob, so resuming one
+    behaves exactly as before. `RestoreArmyRuleData` skips it quietly rather than throwing - pinned by
+    `RestoreArmyRuleData_WithNoPersistedBlob_IsANoOp`. No save-version bump for the same reason.
 - 2026-07-23 (found while verifying #197 P6 in play): **residual - GRANTED supplement rules die on resume.**
   Approach B rehydrates rules *attached* to a carrier, but a `RuleGrant` token names a rule the evaluator
   must look up in the shared `RuleResolver`, and on resume that resolver is built from the per-slot
