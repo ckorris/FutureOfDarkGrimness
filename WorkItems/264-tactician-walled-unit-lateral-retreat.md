@@ -249,6 +249,23 @@ Chris still owes the GUI terrain-render hand pass (#167 note).
        can settle. #167 also still owes the GUI terrain-render hand pass.
     3. `BuildCharge` still grades its blocked-lane approach with straight-line progress (noted in
        slice 1) - issue 1's mechanism on the melee side, never folded in.
+  - **Behavioral check on the committed repro** (`Scenarios/example-walled-advance.json` ->
+    `--make-scenario` -> `fdglab analyze --unit Dummies`), against the pre-fix table recorded in the
+    2026-07-23 "scenario terrain landed" note below:
+    - BEFORE: `RushObjective(24,24)` came back **Blocked with NEGATIVE Euclidean progress** (its
+      end (33.6,9.2) is farther from the marker than the start), Hold and a full-8" backwards
+      FallBack scored IDENTICALLY at 0.0300 (the reachable bonus), and the top three candidates sat
+      within 0.0008 of each other - noise.
+    - AFTER: the SAME endpoint (33.6,9.2) - the correct detour around the wall's east end - is now
+      graded `BudgetClipped` and scores **0.1027, top of the table**; FallBack is now the WORST
+      candidate at **-0.0200** (bonus gone) and Hold is -0.0165. The spread from best to retreat is
+      0.12 instead of 0.0008. Exactly the inversion the issue described, inverted back.
+  - **Pool re-gate, 8-army pool, Tactician vs SoloRules, 64 matchups x 50 games = 3200 games each
+    side, DOP 12** (pre-#264 `CB789773649FF9E9` vs slice-1 `3C9390C7F2F9B747`): aggregate **82.8%
+    -> 82.8%**, 0 faults both runs. Per-army rows move within +/-1.1 (HEF +1.1, HDF +0.8, RL +0.6;
+    Dwarf -0.5, Orks -0.6, DE -0.4), no cell collapse. Flat is the expected and correct result: this
+    pool's terrain barely exercises the walled pathology, so the gate is a no-regression check, not
+    a win. A pool run of the FINAL state is recorded separately below.
   - **Verification across the slices**: full suite green at every commit (1928 -> 1930 -> 1937 as
     pins joined it); solo D1 hashes bit-identical through slices 1-4, then deliberately re-pinned at
     slice 5 and confirmed unchanged at slice 6. Tactician vs SoloRules, builtin mirror 200 games:
