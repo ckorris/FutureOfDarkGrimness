@@ -183,6 +183,45 @@ Chris still owes the GUI terrain-render hand pass (#167 note).
 
 ## Notes
 
+- 2026-07-23 (implementation, slice 1): **issues 1 + 2 fixed** (engine `f025819`). New
+  `Ai/Tactician/RouteMetrics.cs` measures WALKING distance around impassible terrain: one route per
+  goal (not per candidate x goal - the ~0.5s decision budget), candidate endpoints priced against
+  that polyline as offset-onto-route + route remainder. `TacticianPlanner.ObjectiveApproach` and
+  `MacroActionGenerator.Plan`'s progress grade both use it; `MovementPlanner.PlanMoveAlongRoute`
+  hands back the route it already computed (`PlanMoveToward` delegates, behavior-identical).
+  `MoveReachableBonus` now applies only when the substantive terms are positive.
+  - **Gotcha found while building it:** the naive "nearest point on the route" metric lets a point
+    on the WRONG side of a wall join a later segment by teleporting through the wall. That handed
+    Hold a fat slice of a detour it had not walked (Hold jumped to 0.0872 and won the argmax - the
+    predicted "freeze" outcome, arriving by an unexpected route). The offset leg is now required to
+    be clear of impassible terrain, with the unconstrained value kept only as a sealed-pocket
+    fallback.
+  - **Pins green, out of `Pending264`**: `WalledUnit_ArgmaxMove_MakesRealProgressTowardTheObjective`,
+    `WalledUnit_RushingTheObjective_OutscoresFullDistanceRetreat`. The category moved from the
+    fixture to the seven still-red tests individually, so green pins guard their fix in the main
+    suite.
+  - **`WalledUnit_ThreeActivations` stays red, and its diagnosis has MOVED**: scoring now picks
+    RushObjective in activation 1 (the unit leaves the pocket), but activation 2 from (18.0,8.4) -
+    hard by the wall's west corner - plans a 0.3" move, so every forward candidate scores negative
+    and FallBack (0.0) wins again. That is issue 4's corner-hugging waypoint funnel (the route's
+    first bend inside the budget), not the gradient. Expect it to flip with slice 5 (issue 4),
+    possibly needing slice 2 (issue 3) as well; re-check after each.
+  - **Deferred, NOT cut**: `MacroActionGenerator.BuildCharge` still grades its blocked-lane approach
+    with straight-line progress (`Distance(start,enemyPos) - Distance(end,enemyPos)`, ~line 350) -
+    the same issue-1 mechanism on the melee side. Left out to keep the slice from moving the melee
+    benchmark at the same time as the objective one. Worth folding into slice 4 or 5.
+  - **Policy flag for Chris**: gating `MoveReachableBonus` is a scoring-policy change (no
+    `TacticianWeights` CONSTANT changed, so the file-header rule is not literally triggered, but the
+    handoff called this a weights-policy call needing explicit sign-off). Landed with a benchmark
+    attached rather than blocking the slice; say the word and it reverts independently of the
+    route-distance half.
+  - **Verification**: suite 1928/1928 green (`--filter TestCategory!=Pending264`). Solo D1 baselines
+    BIT-IDENTICAL - `3674C906996F34CC` (builtin mirror) / `CE3DC8150005FF2C` (vs builtin-basic),
+    200 games DOP 16, confirming the MovementPlanner refactor is behavior-neutral for the solo bot.
+    Tactician vs SoloRules, builtin mirror 200 games: 93.8% -> 94.5% (180/5/15 -> 181/3/16), 0
+    faults; decision cost mean 15.5 -> 15.9ms, worst p95 369 -> 415ms (the extra pathfinds, still
+    inside budget). Full 8-army pool re-gate: see the follow-up note.
+
 - 2026-07-23 (later still): **failing pins landed** - `Tests/TacticianWalledUnitTests.cs` (engine,
   branch `264-walled-unit-pins`), 9 tests, ALL RED BY DESIGN, `[Category("Pending264")]`. The rest
   of the suite stays green via `dotnet test --filter TestCategory!=Pending264` (1928/1928). The
