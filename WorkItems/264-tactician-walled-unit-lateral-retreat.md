@@ -242,6 +242,14 @@ Chris still owes the GUI terrain-render hand pass (#167 note).
     behaviorally - no oscillation across three activations - so the commitment-bonus term was not
     needed to make the metric, and adding an unpinned scoring term was not worth the benchmark
     risk. Deliberate deferral, Chris's call whether it is still wanted.
+  - **Two cleanups after the slices** (engine `142bb4f`, `6302993`): the six slices each grew their
+    own copy of the same impassible-sweep predicate, now one public `GridPathfinder.SegmentClear`
+    (routing, leg joins and the score gradient MUST agree on what "clear" means). And slice 3's
+    early-snake funnel guard (`FunnelStallFraction`/`routeBends`/`CentroidTravel`) was REMOVED: it
+    encoded the first hypothesis for issue 4 - that funnelled moves were short but legal - which
+    measurement disproved (they were illegal). Setting its fraction to 0, disabling it entirely,
+    changed nothing in all 1937 tests, so it was dead code with a tunable constant that a future
+    reader would take for load-bearing.
   - **Still owed / open questions for Chris:**
     1. Sign-off on the `MoveReachableBonus` gate (slice 1) and on issue 5's disposition.
     2. The GUI eyeball check on the walled scenario (`--scenario Scenarios/example-walled-advance.json`)
@@ -265,7 +273,14 @@ Chris still owes the GUI terrain-render hand pass (#167 note).
     -> 82.8%**, 0 faults both runs. Per-army rows move within +/-1.1 (HEF +1.1, HDF +0.8, RL +0.6;
     Dwarf -0.5, Orks -0.6, DE -0.4), no cell collapse. Flat is the expected and correct result: this
     pool's terrain barely exercises the walled pathology, so the gate is a no-regression check, not
-    a win. A pool run of the FINAL state is recorded separately below.
+    a win. Same gate on the FINAL state (all six slices, `F8EF5299BC0D4115`, DOP 16) is a real
+    improvement: aggregate **82.8% -> 84.7%**, 0 faults, worst single cell **52% -> 57%**, and
+    SEVEN of the eight army rows up - HDF +3.5, DE +3.1, RL +2.6, HEF +2.5, BB +1.8, Hives +1.5,
+    Orks +1.2; only Dwarf Guilds down (-1.1). Best cells RL-vs-Orks +13, BB-vs-Orks +12,
+    HDF-vs-RL +11; worst Dwarf-vs-Hives -6. That the win comes from slices 2-6 rather than slice 1
+    is the expected shape: slice 1 is scoring (it only bites behind a wall), while the movement
+    fixes - blocked-goal pathfinding, per-model route joins, snake side selection, per-model
+    budgets, the solo skirt cap - apply in every game with terrain on the table.
   - **Verification across the slices**: full suite green at every commit (1928 -> 1930 -> 1937 as
     pins joined it); solo D1 hashes bit-identical through slices 1-4, then deliberately re-pinned at
     slice 5 and confirmed unchanged at slice 6. Tactician vs SoloRules, builtin mirror 200 games:
