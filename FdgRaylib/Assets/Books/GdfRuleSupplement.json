@@ -41,6 +41,60 @@
     "description": "One model in this unit casts spells with as many spell tokens per round as there are models with this rule in the unit. Unspent tokens are lost at the end of the round."
   },
   {
+    "name": "Spell Accumulator",
+    "passive": [
+      {
+        "hookID": "Round_OnRoundStart",
+        "condition": {
+          "kind": "always"
+        },
+        "effect": {
+          "kind": "grantToken",
+          "tType": {
+            "id": "AccumulatorTokens"
+          },
+          "count": {
+            "kind": "arg",
+            "index": 0
+          },
+          "clear": {
+            "kind": "manualOnly"
+          },
+          "maxTotal": 6
+        },
+        "lifetime": "UntilEndOfGame",
+        "seat": "Actor"
+      },
+      {
+        "hookID": "Lifecycle_OnCapabilityQuery",
+        "condition": {
+          "kind": "not",
+          "inner": {
+            "kind": "tokenPresent",
+            "tType": {
+              "id": "Shaken"
+            },
+            "minCount": 1
+          }
+        },
+        "effect": {
+          "kind": "enableSpellLending",
+          "pool": {
+            "id": "AccumulatorTokens"
+          },
+          "rangeInches": 12.0
+        },
+        "lifetime": "UntilEndOfGame",
+        "seat": "Actor"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 1,
+    "valence": "Positive",
+    "description": "Gets X accumulator tokens at the start of each round, but can't hold more than 6 tokens at once. Casters from other friendly units within 12\" may spend this unit's accumulator tokens as if they were their own spell tokens. Friendly casters may only use this rule if this unit isn't Shaken."
+  },
+  {
     "name": "Highborn",
     "passive": [
       {

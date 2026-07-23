@@ -280,6 +280,82 @@ reverting the menu routing and reverting `IsTransport`.
 probe army produced a 5.8 GB log before the timeout). It should abort at EOF like every other resolver.
 Worth its own item.
 
+## Slice: P23 Spell Accumulator — **DONE 2026-07-23** (7 of P23's 19 live refs)
+
+> "Gets X accumulator tokens at the start of each round, but can't hold more than 6 tokens at once.
+> Casters from other friendly units within 12" may spend this model's accumulator tokens as if they were
+> their own spell tokens. Friendly casters may only use this rule if this unit isn't Shaken."
+
+**No new hook and no new stage** — this is the first slice to be built entirely on the capability seam
+from Caster Group, which is what that seam was for. The two halves are plain data:
+
+| Half | Authored as |
+|---|---|
+| the pool | `grantToken(AccumulatorTokens, arg0, manualOnly, maxTotal 6)` @ `Round_OnRoundStart` |
+| who may draw on it | `enableSpellLending(AccumulatorTokens, 12)` @ `Lifecycle_OnCapabilityQuery`, `if !Shaken` |
+
+The Shaken clause is the payoff predicted when the seam was built: a `Condition` on the entry, re-asked
+on every ask, not a special case in the cast stage. The cap rides `Effect.GrantToken.MaxTotal`, which
+already existed for the #100 #13 marker family — the rule states its own 6 rather than borrowing the
+engine's `MAX_SPELL_TOKENS`, so the two can differ.
+
+**Its own token type, and that is load-bearing.** `TokenType.AccumulatorTokens`, not `SpellTokens`. The
+corpus puts the Change Boon upgrade on units that are themselves casters, and the rule says *other*
+friendly units — one shared type would let the holder spend its own pool. It also keeps a full pool from
+making its holder look like a caster to the #103 assist scan.
+
+**New: `SpellPurse`** (beside `SpellTargeting`) — "everything this caster may spend as a spell token right
+now". Five sites used to read `unit.Tokens.GetTokenCount(SpellTokens)` directly and now ask it, because
+"as if they were their own spell tokens" means *every* use a spell token has: the spell's cost, the #244
+self-boost, and a #103 assist on someone else's cast. `ChooseActionStage`'s Cast gate and both AI
+affordability checks (`MacroActionGenerator`, `TacticianPlanner`) ask the same purse, so the menu, the
+picker and the planner cannot price a spell differently.
+
+**Own tokens are spent first, then lenders in table order.** A caster's own tokens are usable by nobody
+else while a lender's pool is shared with every friendly caster in range, so draining the restricted
+resource first leaves the team the most options — and a caster that can already afford its spell behaves
+exactly as it did before accumulators existed. Stated as a decision, not an accident; a one-line change if
+play argues otherwise.
+
+**Deliberately simplified, recorded rather than built:** the rule says "this *model's* accumulator tokens"
+and the pool is held by the UNIT — the same accommodation Caster Group needed, and for the same reason
+(there is no per-model token pool). No corpus entry puts two Change Boons on one unit, so nothing
+observable rides on it.
+
+Data (app-side, supplement): `Spell Accumulator`, `engineArgumentCount: 1`, embedded into
+HumanInquisition + WormholeDaemonsofChange. Corpus ledger 259 -> 252.
+
+Tests: `SpellAccumulatorRuleIntegrationTests` (14) — the pool fills / caps at 6 / carries over / is not
+spell tokens; who may draw on it (nearby friendly yes, the holder itself no, enemy no, past 12" no,
+Shaken no and recovering yes, destroyed no); own-before-borrowed, several lenders, one caster's spend
+leaving less for the next; plus two STAGE-level tests so reverting either stage to its own pool reds.
+`SpellAccumulatorShippedDataTests` (6) pin the shipped JSON: token type, `MaxTotal`, `ManualOnly`, the
+12" range, the Shaken condition, that both halves name the SAME pool (authored separately — funding one
+pool and lending another would do nothing at all), and that every book referencing the rule embeds it.
+Engine 1976/1976, app 498/498.
+
+Mutation-checked, six mutations, each redding exactly its own test: reverting the `ChooseActionStage`
+gate, reverting `CastSpellStage`'s price+spend, dropping the other-unit / friendly / range gates, and
+spending borrowed tokens before own.
+
+In play (headless scenario probe, `--trace-rules`): the capability fires as
+`Spell Accumulator(3) at Lifecycle_OnCapabilityQuery/Actor: fired -> EnableSpellLending`, round start
+fires `GrantTokenToUnit`, Cast goes from *"Not enough spell tokens (0)"* to offered once the pool exists,
+the boost prompt correctly reads 1 affordable (4 in the purse minus a 3-token spell), and the cast logs
+**"Psy-Seer draws on nearby accumulators to cast Sky Blaze (Change Boon Host lends 2)"** — 1 of its own
+first, then 2 borrowed.
+
+**Found while building: two stale lint allowlist entries.** `RuleFireLint`'s capability arm listed only
+`EnableCasting`, so `EnableTransport` / `EnableReDeployment` would have reported as unread had they been
+each rule's first producing entry; widening it revealed that `Transport` and `Re-Deployment` were still
+allowlisted in `RuleCatalogLintTests` as "engine-marker: detected by name", which stopped being true when
+they gained capability entries. Both entries removed — their absence is now the assertion.
+
+**Noted, not fixed:** `RuleFireLint.Check` returns at the FIRST passive entry that produces operations,
+so a rule's later entries are never lint-checked. That is consistent with what it claims to test ("does
+this rule fire at all"), but it means a dead second entry on a live rule is invisible. Worth its own item
+if the per-entry check is wanted.
+
 ## Slice: P23 Caster Group — **DONE 2026-07-23** (3 of P23's 19 live refs)
 
 > "Pick one model with this rule in this unit to have Caster(X), where X is the total number of models
@@ -863,7 +939,7 @@ Reference counts are corpus-wide (44 books). Primitive numbers are #100's.
 | 28 | ~~**P14b** spend-for-bonus markers~~ **DONE 2026-07-22** (28/28) | Two marker classes on the ENEMY unit, bonus kind in the token type (mirroring the roll-modifier trio): persistent (`Persistent{Hit,Ap}BonusMarker` — the Target family, counted every attack, never removed) and spendable (`Spendable{Hit,Ap}BonusMarker` — Tag/Spotter). **Owner-ruled 2026-07-22: the spend is PROMPTED, not auto-spent** — `TargetMarkerSpend` asks the attacking player how many to remove (a `StringSelectionRequest`, spend-all listed first so the CLI EOF default and the AI first-option fallback both take the aggressive default; zero-marker attacks never prompt), folded into `DetermineHitRollStage` (skipped while fatigued, like granted buffs) and `DetermineSaveRollsNeededStage` (+net raises the defender's threshold). Placement is data: `Activation_OnPreAttack` abilities over the existing `TargetSelector`/`Cost` machinery; Spotter's "on a 4+ place a marker" is the new `grantTokenOnRoll` effect (decisive die, `InvokeGrantTokenOnRoll` executable, ClearTokenOnRoll's mirror). Engine 1831/1831, `TargetBonusMarkerTests` (11). Engine `d0985e2`. | Precision Target (7), Piercing Tag (6), Precision Spotter (4), Piercing Spotter (4), Precision Tag (4), Piercing Target (3) |
 | 27 | ~~**P11** reflect damage~~ **DONE 2026-07-22** (27/27) | A post-melee reflect (write-up below): Retaliate (X hits per wound taken), Deathstrike (X hits per killed model), Self-Destruct (X per participating model + self-kill any survivor), all per-model attribution. | Retaliate (20) + Deathstrike (4) + Self-Destruct (3) DONE |
 | 24 | **P17** place / restore a unit | Create a unit or restore destroyed models mid-game. Touches deployment + table-state lifecycle + networking sync. | Spawn (14), Reinforcement (4), Reanimation Aura (3), Split (3) |
-| 21 | **P23** casting support — **Caster Group DONE 2026-07-23** (3/19 live; Casting Buff shipped as a P6 rider) | Rides #034. Caster Group shipped: see the write-up above. Remaining: cross-unit token pool (Accumulator) and cast-origin relay (Conduit), both signed off to fold into the spell picker rather than add prompts. | Spell Conduit (9), Spell Accumulator (7) remain; Caster Group (3) DONE, Casting Buff (2) done under P6 |
+| 21 | **P23** casting support — **Caster Group + Spell Accumulator DONE 2026-07-23** (10/19 live; Casting Buff shipped as a P6 rider) | Rides #034. Both shipped rules have write-ups above; Accumulator needed no new hook or stage, only the capability seam plus the shared `SpellPurse`. Remaining: the cast-origin relay (Conduit), signed off to fold into the spell picker rather than add a prompt. | Spell Conduit (9) remains; Spell Accumulator (7) + Caster Group (3) DONE, Casting Buff (2) done under P6 |
 | 20 | ~~**P6** deferred debuff token~~ **DONE 2026-07-23** (20/20, +3 riders) | **The row's premise was mostly wrong** - only 8 of the 20 refs needed a primitive. Four of the five rules ride seams that were already built AND already consumed (Morale/Save granted modifiers, the #153 movement-grant seam, Fortified's AP reduction on the Actor seat) and shipped as pure data. Only `Casting Debuff` had no carrier: new `ERollKind.Cast` + `TokenType.CastRollModifier`, folded into `CastSpellStage`'s threshold. See the P6 write-up above. | Casting Debuff (8), Morale Debuff (4), Piercing Debuff (3), Defense Debuff (3), Speed Debuff (2) DONE + riders Casting Buff (2), Speed Buff (1) |
 | 14 | **P8** apply terrain state to target | Force a Dangerous-terrain test / count as standing in terrain. Builds on `countAsInTerrain` + `ApplyNonMovementTerrainEffectsStage`. | Dangerous Terrain Debuff (11), Difficult Terrain Debuff (3) |
 | 12 | **P20** action-permission modifiers | (a) allow shooting after Rush; (b) "strikes last", the inverse of live `strikeFirst`. | Quick Shot Aura (5), Quick Shot Mark (4), Unwieldy Debuff (3) |
@@ -889,6 +965,12 @@ Reference counts are corpus-wide (44 books). Primitive numbers are #100's.
 
 ## Notes
 
+- 2026-07-23: **P23 Spell Accumulator DONE (7 refs)** — the first slice built entirely on the capability
+  seam: no new hook, no new stage, the whole rule authored as two data entries. New `TokenType`
+  (`AccumulatorTokens`, separate for a load-bearing reason), `Effect`/`RuleOperation.EnableSpellLending`,
+  and a shared `SpellPurse` that five sites now ask instead of reading a unit's own spell tokens. Also
+  removed two stale `RuleCatalogLintTests` allowlist entries the widened lint arm exposed. Corpus dead
+  count **259 -> 252**. See the write-up above.
 - 2026-07-23: **The capability seam** (write-up above), Chris's call mid-slice and then extended by him
   to the whole codebase: every in-play "does this unit have rule X?" check became "what can this unit
   do?", asked at `Lifecycle_OnCapabilityQuery` and answered by an `Enable*` effect. Covers casting,
