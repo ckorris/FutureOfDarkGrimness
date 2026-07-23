@@ -6661,6 +6661,29 @@
       "description": "This unit ignores the -1 to hit penalty for shooting after moving when firing Indirect weapons."
     },
     {
+      "name": "Hazardous",
+      "passive": [
+        {
+          "hookID": "Shooting_OnHitRollComplete",
+          "condition": {
+            "kind": "always"
+          },
+          "effect": {
+            "kind": "rollModifier",
+            "rollKind": "Save",
+            "delta": -4
+          },
+          "lifetime": "ThisAttack",
+          "seat": "Actor"
+        }
+      ],
+      "activated": [],
+      "scope": "Weapon",
+      "engineArgumentCount": 0,
+      "valence": "Positive",
+      "description": "Attacks with this weapon get AP(4), but this weapon\u0027s unit takes one wound on unmodified rolls of 1 to hit."
+    },
+    {
       "name": "Predator Shooter",
       "passive": [
         {
