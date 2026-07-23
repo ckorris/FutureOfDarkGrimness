@@ -1,7 +1,7 @@
 # 264 — Tactician: unit behind impassible terrain rushes sideways/backwards instead of advancing
 
-**Status**: in-progress (10 pins green 2026-07-23; issue 5 now fixed for real; awaiting Chris's GUI
-eyeball check + the MoveReachableBonus sign-off)
+**Status**: in-progress (10 pins green 2026-07-23; issue 5 fixed; MoveReachableBonus gate signed off
+by Chris 2026-07-23; only the GUI eyeball check remains)
 **Related**: #256 (prior stuck-unit pass), #216 (silent solo fallback residual), #211 (solo impassible),
 #191 (Tactician umbrella), #167 (scenario terrain = enabling tooling), #170 (deploy sibling)
 
@@ -289,8 +289,9 @@ Chris still owes the GUI terrain-render hand pass (#167 note).
     changed nothing in all 1937 tests, so it was dead code with a tunable constant that a future
     reader would take for load-bearing.
   - **Still owed / open questions for Chris:**
-    1. Sign-off on the `MoveReachableBonus` gate (slice 1). (Issue 5's disposition is now resolved -
-       fixed 2026-07-23, see the top note.)
+    1. ~~Sign-off on the `MoveReachableBonus` gate (slice 1).~~ SIGNED OFF (Chris, 2026-07-23) - the
+       gate stays: the bonus is a tie-break among positive-scoring plans, not a flat reward for any
+       reachable goal. (Issue 5's disposition is also resolved - fixed 2026-07-23, see the top note.)
     2. The GUI eyeball check on the walled scenario (`--scenario Scenarios/example-walled-advance.json`)
        and the real Knight-Brothers-behind-wall game shape - the Goal's second half, which no test
        can settle. #167 also still owes the GUI terrain-render hand pass.
