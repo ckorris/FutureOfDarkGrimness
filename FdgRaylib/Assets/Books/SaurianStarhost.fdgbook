@@ -4920,6 +4920,41 @@
       "description": "On charging into contact, rolls X bonus dice that score automatic hits with AP(1) before melee swings."
     },
     {
+      "name": "Protection Feat",
+      "passive": [],
+      "activated": [
+        {
+          "triggerHook": "Activation_OnActivationStart",
+          "cost": {
+            "kind": "oncePerGame"
+          },
+          "targetSelector": {
+            "rangeInches": 0,
+            "minCount": 1,
+            "maxCount": 1,
+            "targetAffinity": "Self",
+            "requireLineOfSight": false,
+            "requiredToken": null,
+            "singleModel": false,
+            "requiredRule": null
+          },
+          "effect": {
+            "kind": "addRule",
+            "ruleName": "Protection Feat Guard",
+            "scope": "UntilNextActivation"
+          },
+          "availableWhen": {
+            "kind": "allModelsHaveThisRule"
+          },
+          "label": "Protection Feat"
+        }
+      ],
+      "scope": "Unit",
+      "engineArgumentCount": 0,
+      "valence": "Positive",
+      "description": "Once per game, when this unit activates, it may brace: until its next activation it rolls one die per wound it takes, ignoring each on a 5\u002B."
+    },
+    {
       "name": "Rending when shooting",
       "passive": [
         {
@@ -4966,6 +5001,28 @@
       "engineArgumentCount": 0,
       "valence": "Positive",
       "description": "When shooting, an unmodified 6 to hit gives the attack AP(\u002B4), and the attack ignores Regeneration."
+    },
+    {
+      "name": "Protection Feat Guard",
+      "passive": [
+        {
+          "hookID": "Shooting_OnSaveRollComplete",
+          "condition": {
+            "kind": "allModelsHaveThisRule"
+          },
+          "effect": {
+            "kind": "ignoreWoundOnRoll",
+            "minRoll": 5
+          },
+          "lifetime": "ThisAttack",
+          "seat": "Subject"
+        }
+      ],
+      "activated": [],
+      "scope": "Unit",
+      "engineArgumentCount": 0,
+      "valence": "Positive",
+      "description": "This unit rolls one die per wound it takes, ignoring each on a 5\u002B."
     }
   ],
   "spells": [

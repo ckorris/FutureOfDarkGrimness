@@ -6603,5 +6603,66 @@
     "engineArgumentCount": 0,
     "valence": "Positive",
     "description": "This model and its unit gain Speed Feat."
+  },
+  {
+    "name": "Protection Feat Guard",
+    "passive": [
+      {
+        "hookID": "Shooting_OnSaveRollComplete",
+        "condition": { "kind": "allModelsHaveThisRule" },
+        "effect": { "kind": "ignoreWoundOnRoll", "minRoll": 5 },
+        "lifetime": "ThisAttack",
+        "seat": "Subject"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "This unit rolls one die per wound it takes, ignoring each on a 5+."
+  },
+  {
+    "name": "Protection Feat",
+    "passive": [],
+    "activated": [
+      {
+        "triggerHook": "Activation_OnActivationStart",
+        "cost": { "kind": "oncePerGame" },
+        "targetSelector": {
+          "rangeInches": 0,
+          "minCount": 1,
+          "maxCount": 1,
+          "targetAffinity": "Self",
+          "requireLineOfSight": false,
+          "requiredToken": null,
+          "singleModel": false,
+          "requiredRule": null
+        },
+        "effect": { "kind": "addRule", "ruleName": "Protection Feat Guard", "scope": "UntilNextActivation" },
+        "availableWhen": { "kind": "allModelsHaveThisRule" },
+        "label": "Protection Feat"
+      }
+    ],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "Once per game, when this unit activates, it may brace: until its next activation it rolls one die per wound it takes, ignoring each on a 5+."
+  },
+  {
+    "name": "Protection Feat Aura",
+    "passive": [
+      {
+        "hookID": "Lifecycle_OnUnitCreated",
+        "condition": { "kind": "always" },
+        "effect": { "kind": "aura", "ruleName": "Protection Feat" },
+        "lifetime": "UntilEndOfGame",
+        "seat": "Actor"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "This model and its unit gain Protection Feat."
   }
 ]
