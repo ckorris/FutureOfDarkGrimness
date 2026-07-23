@@ -22,6 +22,7 @@ When closing an item: write the Outcome in its detail file, tick the line, and m
 - [ ] 210 — Residual bench nondeterminism at --dop > 1 (scattered per-game flips under CPU contention; serial runs exact after #209). Needs the #198 tracer wired into bench to isolate. ([WorkItems/210](WorkItems/210-dop-concurrency-nondeterminism.md))
 - [ ] 214 — Teleport (#197) doesn't draw a range-of-motion circle like movement does; placement is bounded correctly, just add the reach-circle visual. ([WorkItems/214](WorkItems/214-teleport-range-circle.md))
 - [ ] 216 — Tactician plans rejected by the #205 friendly-stacking check silently fall back to the SOLO resolver (suspected DE/RL mirror-drift driver); charge candidate made friendly-aware, resolver-level repair + drift attribution still open. ([WorkItems/216](WorkItems/216-tactician-solo-fallback-on-stacked-plans.md))
+- [~] 263 — Off-table (Ambush reserve) units were chargeable at the origin (round-1 charge on undeployed Shifters): melee family now gated at the AreUnitsInMeleeRange chokepoint + standoff filter + off-table wound diagnostic; implemented + tested, awaiting GUI hand-verify. ([WorkItems/263](WorkItems/263-off-table-units-chargeable.md))
 
 ## Shooting & cover
 
