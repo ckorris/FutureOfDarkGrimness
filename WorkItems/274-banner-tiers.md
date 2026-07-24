@@ -12,6 +12,10 @@ existing announce sites re-tiered deliberately rather than inheriting the loudes
 
 ## Notes
 
+- 2026-07-24: Headline and Notice cues swapped on owner call. Final pairing: **Headline** = the
+  original two-note chime (C5 -> G5), **Notice** = the low struck hit. The familiar chime is what the
+  game has always sounded like when announcing something, so it earns the rare tier; the low hit is
+  non-melodic and sits underneath it, which suits the tier that fires most often.
 - 2026-07-24: Headline cue retuned on owner feedback ("too happy and big"). The first pass was a
   rising major arpeggio (C4-C5-G5-C6, ~0.69s), which reads as a victory fanfare — wrong for a phase
   change, and wrong for the setting. Replaced with a struck low hit: 30ms noise transient into a low

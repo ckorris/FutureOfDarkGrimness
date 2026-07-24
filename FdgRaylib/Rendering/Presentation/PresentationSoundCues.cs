@@ -195,19 +195,19 @@ public static class PresentationSoundCues
         // Longer, slow descending tone.
         Death => ToneSynth.Tone(420f, 120f, 0.42f, 4.5f, ToneSynth.Waveform.Triangle, 0.40f),
 
-        // #274 Headline: a struck low hit - a short noise transient into a low body that sags from B2
-        // toward F2 and rings out. Deliberately NOT a motif: a rising major arpeggio read as a victory
-        // fanfare, which is the wrong feeling four times a game in a setting called Dark Grimness. The
-        // weight here comes from pitch and the transient, not from length or volume.
+        // #274 Headline: the pre-tier banner voice - a rising two-note chime (C5 -> G5). This is the
+        // sound the game has always made when it announces something, so it belongs on the handful of
+        // moments that are actually worth announcing rather than on the ones that merely happen often.
         BannerHeadline => ToneSynth.Concat(
-            ToneSynth.Noise(0.03f, 45f, 0.26f, seed: 71),
-            ToneSynth.Tone(124f, 88f, 0.44f, 3.2f, ToneSynth.Waveform.Sine, 0.42f)),
-
-        // #274 Notice: the pre-tier banner voice, unchanged - a rising two-note sting (C5 -> G5). The
-        // game keeps the sound it always had for the tier that carries most of its announcements.
-        BannerNotice => ToneSynth.Concat(
             ToneSynth.Tone(523f, 523f, 0.11f, 7f, ToneSynth.Waveform.Sine, 0.32f),
             ToneSynth.Tone(784f, 784f, 0.24f, 4.5f, ToneSynth.Waveform.Sine, 0.34f)),
+
+        // #274 Notice: a struck low hit - a short noise transient into a low body that sags from B2
+        // toward F2 and rings out. Non-melodic on purpose, and low enough to sit under the chime above
+        // it: this is the busiest tier, so it has to register without asking for the whole room.
+        BannerNotice => ToneSynth.Concat(
+            ToneSynth.Noise(0.03f, 45f, 0.26f, seed: 71),
+            ToneSynth.Tone(124f, 88f, 0.44f, 3.2f, ToneSynth.Waveform.Sine, 0.42f)),
 
         // #274 Toast: a single soft high blip, quiet and quick. Deliberately the least interesting
         // sound in the game - five of them in a row should read as texture, not as an alarm.
