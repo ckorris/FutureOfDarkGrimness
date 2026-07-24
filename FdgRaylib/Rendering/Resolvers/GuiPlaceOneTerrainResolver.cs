@@ -33,9 +33,11 @@ public class GuiPlaceOneTerrainResolver
     private TaskCompletionSource<TerrainPlacementResult>? _tcs;
     private int? _selectedTemplate;
     private Float2? _pendingCenter;
-    private float _rotationDegrees;  // 0..315 in 45° steps; reset on template change.
+    private float _rotationDegrees;  // 0..359 in 15° steps; reset on template change.
 
-    private const float RotationStepDegrees = 45f;
+    // 15° per notch — same increment as the movement/deploy resolvers' group rotation (PI/12 rad),
+    // so the wheel feels identical everywhere on the table.
+    private const float RotationStepDegrees = 15f;
 
     public GuiPlaceOneTerrainResolver(ITableState tableState) => _tableState = tableState;
 
@@ -80,10 +82,21 @@ public class GuiPlaceOneTerrainResolver
 
         if (selected.HasValue)
         {
-            // R rotates regardless of whether we're awaiting-click or awaiting-confirm.
-            if (ImGui.IsKeyPressed(ImGuiKey.R))
+            // Rotation input, live in both awaiting-click and awaiting-confirm. Matches the
+            // movement/deploy convention: wheel both ways, R clockwise, Shift+R counter-clockwise.
+            // Ctrl+wheel is the renderer's zoom, so leave it alone.
+            bool ctrl = ImGui.IsKeyDown(ImGuiKey.LeftCtrl) || ImGui.IsKeyDown(ImGuiKey.RightCtrl);
+            float delta = 0f;
+            if (io.MouseWheel != 0f && !ctrl && !io.WantCaptureMouse)
+                delta += io.MouseWheel > 0f ? RotationStepDegrees : -RotationStepDegrees;
+            if (ImGui.IsKeyPressed(ImGuiKey.R) && !io.WantCaptureKeyboard)
             {
-                rotation = (rotation + RotationStepDegrees) % 360f;
+                bool shift = ImGui.IsKeyDown(ImGuiKey.LeftShift) || ImGui.IsKeyDown(ImGuiKey.RightShift);
+                delta += shift ? RotationStepDegrees : -RotationStepDegrees;
+            }
+            if (delta != 0f)
+            {
+                rotation = ((rotation + delta) % 360f + 360f) % 360f;
                 lock (_lock) _rotationDegrees = rotation;
             }
 
@@ -192,7 +205,7 @@ public class GuiPlaceOneTerrainResolver
         {
             ImGui.TextWrapped($"Place {DescribeTemplate(request.Pool[selected.Value])} here?");
             ImGui.TextDisabled($"Center: ({pending.Value.X:F1}\", {pending.Value.Y:F1}\")  Rotation: {rotationDegrees:F0} deg");
-            ImGui.TextDisabled("Press R to rotate 45 deg.");
+            ImGui.TextDisabled("Mouse wheel or R / Shift+R to rotate 15 deg.");
             ImGui.Spacing();
 
             // Primary: Confirm (accent + Enter). Cancel is de-emphasized.
@@ -208,7 +221,7 @@ public class GuiPlaceOneTerrainResolver
         else if (selected.HasValue)
         {
             ImGui.TextWrapped($"Placing: {DescribeTemplate(request.Pool[selected.Value])}");
-            ImGui.TextDisabled($"Rotation: {rotationDegrees:F0} deg (R = rotate 45 deg)");
+            ImGui.TextDisabled($"Rotation: {rotationDegrees:F0} deg (wheel or R / Shift+R = 15 deg)");
             ImGui.TextDisabled("Hover to preview. Left-click to place. Right-click or Esc to switch template.");
         }
         else
