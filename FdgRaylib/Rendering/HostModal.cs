@@ -44,7 +44,9 @@ public class HostModal : IAppScreen
         float scale = Math.Min(screenW / 1920f, screenH / 1080f);
 
         ImGui.SetCursorPos(new Vector2(dx, dy));
-        ImGui.PushStyleColor(ImGuiCol.ChildBg, new Vector4(0.20f, 0.27f, 0.45f, 0.97f));
+        // Charcoal panel from the app theme (same tone as the lobby's panels) so the dialog reads as the
+        // same surface as the rest of the UI, not a bespoke blue slab.
+        ImGui.PushStyleColor(ImGuiCol.ChildBg, ImGuiTheme.DialogPanelBg);
         ImGui.PushStyleVar(ImGuiStyleVar.ChildRounding, 6f);
         ImGui.BeginChild("##HostDialog", new Vector2(dw, dh), ImGuiChildFlags.Borders,
             ImGuiWindowFlags.NoScrollbar);
@@ -54,9 +56,11 @@ public class HostModal : IAppScreen
         float pad = 32f * scale;
         ImGui.SetCursorPos(new Vector2(pad, pad));
 
-        // Title
+        // Title — light-blue header accent, echoing the lobby's section headers.
         ImGui.PushFont(RaylibRenderer.LargeFont);
+        ImGui.PushStyleColor(ImGuiCol.Text, ImGuiTheme.HeaderAccent);
         CenterText("HOST SERVER", dw);
+        ImGui.PopStyleColor();
         ImGui.PopFont();
 
         ImGui.SetCursorPosX(pad);

@@ -50,8 +50,9 @@ public class LobbyScreen : IAppScreen
     private volatile string _publicAddress = "checking...";
     private bool _publicFetchStarted;
 
-    // Light-blue accent (matches ImGuiTheme) used to make section/column headers read as headers.
-    private static readonly Vector4 HeaderAccent = new(0.50f, 0.73f, 1.0f, 1f);
+    // Light-blue accent used to make section/column headers read as headers. Shared with the
+    // Host/Client dialogs via ImGuiTheme so every screen uses one accent.
+    private static readonly Vector4 HeaderAccent = ImGuiTheme.HeaderAccent;
 
     public void SetViewModel(ILobbyViewModel viewModel)
     {

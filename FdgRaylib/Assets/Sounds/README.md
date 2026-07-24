@@ -11,6 +11,24 @@ Presentation sound cues load from this folder at runtime. Each cue maps to a fil
 | `banner.wav`  | stage sting    | `BannerBeat`        |
 | `move.wav`    | footsteps      | `UnitMovedBeat`     |
 
+## Spell sounds (#274 — per cast moment)
+
+Casting is voiced per `SpellEffectBeat` variant. All six fire from `CastSpellStage`, in this order:
+the assist spends, then the cast outcome, then the landing on each target.
+
+| File                | Cue                    | Fires when                                              |
+|---------------------|------------------------|---------------------------------------------------------|
+| `spell-boost.wav`   | odds pushed up         | tokens spent to make the cast MORE likely (friendly assist / self-boost) |
+| `spell-hinder.wav`  | odds pushed down       | tokens spent by an enemy Caster to make it LESS likely   |
+| `spell-cast.wav`    | the spell takes hold   | the cast roll succeeded (always, on the caster)          |
+| `spell-fail.wav`    | the spell gutters out  | the cast roll failed (always, on the caster)             |
+| `spell-boon.wav`    | a good spell lands     | a successful spell reaching a target it means to help    |
+| `spell-bane.wav`    | a bad spell lands      | a successful spell reaching a target it means to harm    |
+
+Boon vs bane is the spell's own disposition, not the target's allegiance: target affinity decides it
+(`Friend`/`Self` -> boon, `Foe` -> bane), and only an `Any`-affinity spell falls through to its effect.
+See `SpellDisposition` in the engine.
+
 ## Attack sounds (#239 — per weapon effect set)
 
 Attacks are voiced per **weapon effect set** (the `effectSet` keys in army/book data). Each ranged

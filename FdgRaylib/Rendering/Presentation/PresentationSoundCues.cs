@@ -33,12 +33,25 @@ public static class PresentationSoundCues
 
     // #275: one voice per banner tier. Volume and weight fall off with the tier, so a Toast can fire
     // five times in a row without grating and a Headline still means something when it does land.
+    // These replace the single "banner" cue, which no longer exists.
     public const string BannerHeadline = "banner-headline";
     public const string BannerNotice   = "banner-notice";
     public const string BannerToast    = "banner-toast";
 
+    // #274 spell voices — one per SpellEffectBeat variant.
+    public const string SpellCast   = "spell-cast";
+    public const string SpellFail   = "spell-fail";
+    public const string SpellBoon   = "spell-boon";
+    public const string SpellBane   = "spell-bane";
+    public const string SpellBoost  = "spell-boost";
+    public const string SpellHinder = "spell-hinder";
+
     private static readonly string[] BaseCues =
-        { Dice, Save, Wound, Death, Move, BannerHeadline, BannerNotice, BannerToast };
+    {
+        Dice, Save, Wound, Death, Move,
+        BannerHeadline, BannerNotice, BannerToast,
+        SpellCast, SpellFail, SpellBoon, SpellBane, SpellBoost, SpellHinder,
+    };
 
     /// <summary>The firing cue key for a RESOLVED ranged set key (see <see cref="WeaponEffectCatalog"/>).</summary>
     public static string FireCue(string rangedKey) => "fire-" + rangedKey;
@@ -88,7 +101,20 @@ public static class PresentationSoundCues
             _                  => BannerHeadline,
         },
         UnitMovedBeat      => Move,
+        // #274: one voice per spell moment — the visual and the sound are picked from the same enum.
+        SpellEffectBeat s  => SpellCue(s.Visual),
         _                  => null,
+    };
+
+    /// <summary>The sound-cue key for one spell-effect variant (#274).</summary>
+    public static string SpellCue(ESpellVisual visual) => visual switch
+    {
+        ESpellVisual.CastSuccess  => SpellCast,
+        ESpellVisual.CastFailure  => SpellFail,
+        ESpellVisual.TargetBoon   => SpellBoon,
+        ESpellVisual.TargetBane   => SpellBane,
+        ESpellVisual.AssistBoost  => SpellBoost,
+        _                         => SpellHinder,
     };
 
     /// <summary>The firing/swing cue for one volley of an attack (#238), voiced by its weapon
@@ -222,6 +248,43 @@ public static class PresentationSoundCues
 
         // Soft, short, quiet blip.
         Move => ToneSynth.Tone(300f, 360f, 0.10f, 16f, ToneSynth.Waveform.Sine, 0.20f),
+
+        // ---------------- spell moments (#274) ----------------
+
+        // Cast lands: a swelling chime that climbs and opens out into a bright shimmer.
+        SpellCast => ToneSynth.Concat(
+            ToneSynth.Tone(330f, 660f, 0.16f, 4f, ToneSynth.Waveform.Triangle, 0.26f),
+            ToneSynth.Tone(880f, 1320f, 0.14f, 7f, ToneSynth.Waveform.Sine, 0.24f),
+            ToneSynth.Tone(1760f, 1760f, 0.10f, 13f, ToneSynth.Waveform.Sine, 0.14f)),
+
+        // Cast fails: the same energy sliding DOWN and dying in a dull puff — the inverse of the above.
+        SpellFail => ToneSynth.Concat(
+            ToneSynth.Tone(620f, 150f, 0.20f, 6f, ToneSynth.Waveform.Triangle, 0.26f),
+            ToneSynth.Noise(0.10f, 26f, 0.20f, seed: 161),
+            ToneSynth.Tone(105f, 78f, 0.10f, 14f, ToneSynth.Waveform.Sine, 0.22f)),
+
+        // Boon lands: a warm, open two-note bell (fifth up), soft attack.
+        SpellBoon => ToneSynth.Concat(
+            ToneSynth.Tone(587f, 587f, 0.13f, 6f, ToneSynth.Waveform.Sine, 0.26f),
+            ToneSynth.Tone(880f, 880f, 0.22f, 5f, ToneSynth.Waveform.Sine, 0.24f)),
+
+        // Bane lands: a downward smear into a low buzzing bite.
+        SpellBane => ToneSynth.Concat(
+            ToneSynth.Tone(520f, 165f, 0.12f, 9f, ToneSynth.Waveform.Triangle, 0.28f),
+            ToneSynth.Tone(112f, 92f, 0.18f, 8f, ToneSynth.Waveform.Square, 0.22f),
+            ToneSynth.Noise(0.05f, 34f, 0.18f, seed: 162)),
+
+        // Odds pushed up: a quick, clean rising double blip.
+        SpellBoost => ToneSynth.Concat(
+            ToneSynth.Tone(440f, 560f, 0.06f, 18f, ToneSynth.Waveform.Sine, 0.24f),
+            ToneSynth.Silence(0.02f),
+            ToneSynth.Tone(660f, 840f, 0.09f, 14f, ToneSynth.Waveform.Sine, 0.26f)),
+
+        // Odds pushed down: the mirror — falling, and sour (square wave, minor-ish drop).
+        SpellHinder => ToneSynth.Concat(
+            ToneSynth.Tone(560f, 430f, 0.06f, 18f, ToneSynth.Waveform.Square, 0.20f),
+            ToneSynth.Silence(0.02f),
+            ToneSynth.Tone(400f, 260f, 0.11f, 12f, ToneSynth.Waveform.Square, 0.22f)),
 
         // ---------------- ranged firing (#239) ----------------
 
