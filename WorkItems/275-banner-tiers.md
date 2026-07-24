@@ -1,4 +1,4 @@
-# 274 — Banner tiers (Headline / Notice / Toast)
+# 275 — Banner tiers (Headline / Notice / Toast)
 
 **Status**: in-progress (implemented + tested; awaiting GUI hand-verify)
 **Related**: #056 (presentation beat stream), #053 (sound cues), #232 (casualty cascade — same "Held means its own track" shape), #245 (dice caption strip)
@@ -54,7 +54,7 @@ existing announce sites re-tiered deliberately rather than inheriting the loudes
 
 - **Tier is a property on `BannerBeat`, not new beat types.** One overlay, one sound-cue switch, one
   wire payload. Follows `ERollBeatCategory` on `DiceRolledBeat` (#245).
-- **`Headline = 0`.** A beat that somehow arrives without a tier reads as the pre-#274 behavior rather
+- **`Headline = 0`.** A beat that somehow arrives without a tier reads as the pre-#275 behavior rather
   than silently becoming a toast. Both ends of the wire are version-pinned by the #075 handshake, so
   this is belt-and-braces, not a compatibility requirement.
 - **`Announce`'s default is Notice, not Headline.** The failure mode being fixed is that stopping the

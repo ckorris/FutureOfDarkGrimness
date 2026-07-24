@@ -7,12 +7,12 @@ using Raylib_cs;
 namespace FdgRaylib.Rendering.Presentation;
 
 /// <summary>
-/// Draws <see cref="BannerBeat"/> announcements, in three sizes at three places on screen (#274). One
+/// Draws <see cref="BannerBeat"/> announcements, in three sizes at three places on screen (#275). One
 /// size for everything meant every announcement had the weight of a phase change, so the phase changes
 /// stopped landing and nothing else could be announced at all without adding to the noise.
 ///
 /// <list type="bullet">
-/// <item><b>Headline</b> — big flashing letters in the upper-center forefront (the pre-#274 banner,
+/// <item><b>Headline</b> — big flashing letters in the upper-center forefront (the pre-#275 banner,
 /// unchanged). Reserved for the game's structural spine. This is the only tier that stops play.</item>
 /// <item><b>Notice</b> — mid-size, its own band below the headline band, so a Notice and a Headline can
 /// never collide. At most one is on screen: a new Notice supersedes the last.</item>

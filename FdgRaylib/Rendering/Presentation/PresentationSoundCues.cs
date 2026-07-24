@@ -31,7 +31,7 @@ public static class PresentationSoundCues
     public const string Death   = "death";
     public const string Move    = "move";
 
-    // #274: one voice per banner tier. Volume and weight fall off with the tier, so a Toast can fire
+    // #275: one voice per banner tier. Volume and weight fall off with the tier, so a Toast can fire
     // five times in a row without grating and a Headline still means something when it does land.
     public const string BannerHeadline = "banner-headline";
     public const string BannerNotice   = "banner-notice";
@@ -80,7 +80,7 @@ public static class PresentationSoundCues
         ModelWoundedBeat   => Wound,
         ModelDiedBeat      => Death,
         UnitRoutedBeat     => Death,
-        // #274: the banner's tier picks its voice.
+        // #275: the banner's tier picks its voice.
         BannerBeat banner  => banner.Tier switch
         {
             EBannerTier.Notice => BannerNotice,
@@ -195,14 +195,14 @@ public static class PresentationSoundCues
         // Longer, slow descending tone.
         Death => ToneSynth.Tone(420f, 120f, 0.42f, 4.5f, ToneSynth.Waveform.Triangle, 0.40f),
 
-        // #274 Headline: the pre-tier banner voice - a rising two-note chime (C5 -> G5). This is the
+        // #275 Headline: the pre-tier banner voice - a rising two-note chime (C5 -> G5). This is the
         // sound the game has always made when it announces something, so it belongs on the handful of
         // moments that are actually worth announcing rather than on the ones that merely happen often.
         BannerHeadline => ToneSynth.Concat(
             ToneSynth.Tone(523f, 523f, 0.11f, 7f, ToneSynth.Waveform.Sine, 0.32f),
             ToneSynth.Tone(784f, 784f, 0.24f, 4.5f, ToneSynth.Waveform.Sine, 0.34f)),
 
-        // #274 Notice: a struck low hit - a short noise transient into a low body that sags from B2
+        // #275 Notice: a struck low hit - a short noise transient into a low body that sags from B2
         // toward F2. Non-melodic on purpose, and low enough to sit under the chime above it: this is
         // the busiest tier, so it has to register without asking for the whole room.
         //
@@ -216,7 +216,7 @@ public static class PresentationSoundCues
             ToneSynth.Noise(0.025f, 55f, 0.16f, seed: 71),
             ToneSynth.Tone(124f, 88f, 0.38f, 4.2f, ToneSynth.Waveform.Sine, 0.30f)),
 
-        // #274 Toast: a single soft high blip, quiet and quick. Deliberately the least interesting
+        // #275 Toast: a single soft high blip, quiet and quick. Deliberately the least interesting
         // sound in the game - five of them in a row should read as texture, not as an alarm.
         BannerToast => ToneSynth.Tone(1046f, 1046f, 0.07f, 26f, ToneSynth.Waveform.Sine, 0.14f),
 

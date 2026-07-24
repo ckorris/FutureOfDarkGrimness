@@ -6,7 +6,7 @@ using NUnit.Framework;
 
 namespace FdgRaylib.Tests;
 
-// #274 banner tiers - the app-side half of the contract. A Headline still holds the active slot and
+// #275 banner tiers - the app-side half of the contract. A Headline still holds the active slot and
 // blocks everything behind it; a Notice or Toast transfers to the player's concurrent held-banner
 // track instead, so play carries on underneath while the words are still up. Mirrors
 // CasualtyCascadePlayerTests, which pins the same "Held means its own track" shape for casualties.
