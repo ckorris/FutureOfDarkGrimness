@@ -156,9 +156,13 @@ unless the transport changes or a relay exists. v1 stance: **direct connect only
 
 ## Remaining (explicit, not silently dropped)
 
-- **Deploy**: owner runs `npx wrangler login` + `npx wrangler deploy` (tools/list-server/README),
-  then bakes the printed URL into `ListServerConfig.DefaultBaseUrl` (or ships `listserver.url`).
-  Until then the feature is invisible in shipped builds. Dev testing: `FDG_LIST_SERVER_URL=http://localhost:8787`.
+- **Deploy: DONE 2026-07-23.** Live at `https://fdg-list-server.ckorris.workers.dev`, baked into
+  `ListServerConfig.DefaultBaseUrl` (commit a8085bf). Deployed smoke (18 checks) green. Two Worker
+  fixes surfaced during verification: (1) rate limit moved in-memory Map -> DO storage (Cloudflare
+  evicts idle DOs, so the in-memory limiter was a production no-op); (2) reachability probe made
+  non-blocking via `waitUntil` (an inline 3s probe on an unreachable host delayed every registration
+  and, through DO request serialization, spaced requests past the rate window). Node was installed
+  to `/home/chris/.local/node-v22.17.0-linux-x64` (portable, no sudo) for wrangler.
 - **P4 status surface**: `PublicListingService.Status` (incl. the "port unreachable" warning from
   the probe) is computed but not yet shown anywhere — needs a line on the lobby screen. Port
   forwarding help text also unwritten.
