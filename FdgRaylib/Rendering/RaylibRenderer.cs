@@ -448,6 +448,14 @@ public class RaylibRenderer
                     SaveOverlay.Draw(saveBeat, saveProgress, layout.Scale, layout.OriginX, layout.OriginY, TableHIn);
                 }
 
+                // #274: cast success/failure, the per-target landing, and the assist streams that
+                // swayed the roll — all world-space, over the models they belong to.
+                if (_presentationPlayer != null &&
+                    _presentationPlayer.TryGetActiveSpell(out var spellBeat, out var spellProgress))
+                {
+                    SpellOverlay.Draw(spellBeat, spellProgress, layout.Scale, layout.OriginX, layout.OriginY, TableHIn);
+                }
+
                 if (_presentationPlayer != null &&
                     _presentationPlayer.TryGetActiveDice(out var diceBeat, out var diceProgress, out var diceAlpha))
                 {

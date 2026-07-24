@@ -93,6 +93,12 @@ public class PresentationPlayer : IPresentationSink
     private SaveBeat? _activeSave;
     private float _saveProgress;
 
+    // #274 world-space spell effect (cast success/failure, per-target landing, assist streams) for the
+    // currently-active SpellEffectBeat (null when none). Non-held, so it owns the active slot for its
+    // full duration — that ordering IS the feature: assists, then the outcome, then the targets.
+    private SpellEffectBeat? _activeSpell;
+    private float _spellProgress;
+
     private static readonly TextColor DeathTint = new(220, 40, 40, 255);  // red, fades out
     private static readonly TextColor HurtTint  = new(255, 170, 60, 255); // orange flinch, no fade
 
@@ -400,6 +406,10 @@ public class PresentationPlayer : IPresentationSink
                 _activeSave = save;
                 _saveProgress = t;
                 break;
+            case SpellEffectBeat spell:
+                _activeSpell = spell;
+                _spellProgress = t;
+                break;
             // ModelWoundedBeat is a presence flag (registered at enqueue, cleared on finish) — no per-frame work.
         }
     }
@@ -436,6 +446,9 @@ public class PresentationPlayer : IPresentationSink
                 break;
             case SaveBeat:
                 _activeSave = null;
+                break;
+            case SpellEffectBeat:
+                _activeSpell = null;
                 break;
             case ModelWoundedBeat wounded:
                 _wounded.Remove(wounded.Model.ID); // back to normal color
@@ -499,6 +512,17 @@ public class PresentationPlayer : IPresentationSink
             beat = _activeSave!;
             progress = _saveProgress;
             return _activeSave != null;
+        }
+    }
+
+    /// <summary>The spell effect being shown this frame, if any, with its 0..1 progress (#274).</summary>
+    public bool TryGetActiveSpell(out SpellEffectBeat beat, out float progress)
+    {
+        lock (_lock)
+        {
+            beat = _activeSpell!;
+            progress = _spellProgress;
+            return _activeSpell != null;
         }
     }
 
