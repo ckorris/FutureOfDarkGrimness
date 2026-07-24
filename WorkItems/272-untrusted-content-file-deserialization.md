@@ -1,7 +1,10 @@
-# 265 — Untrusted content files deserialize with permissive $type handling (RCE-class)
+# 272 — Untrusted content files deserialize with permissive $type handling (RCE-class)
+
+**Renumbered 265 -> 272 on 2026-07-23 (reconciliation 22)** - origin/master had independently used
+#265 for the lobby Battlefield dropdown. Pre-renumber engine/app commit messages keep #265.
 
 **Status**: done
-**Related**: #186 (same hole on the wire path — this shares its binder), #264 (the server browser
+**Related**: #186 (same hole on the wire path — this shares its binder), #271 (the server browser
 makes stranger-to-stranger sharing likely), #160/#070 (stable-type binder background), #058 (STJ
 migration would subsume this). Engine commit `f432c03` + superproject app-side terrain loader.
 
@@ -23,9 +26,9 @@ types keep loading; only unknown-type payloads are refused.
 
 ## Why filed now (2026-07-23)
 
-Before #264, content files came from friends and the risk was theoretical. A public server browser
+Before #271, content files came from friends and the risk was theoretical. A public server browser
 creates a community of strangers, and "here, try my army list" is the natural next interaction —
-the file format must not be a code-execution vector when that happens. Filed during #264's
+the file format must not be a code-execution vector when that happens. Filed during #271's
 security review; owner is aware they are less familiar with security specifics, so the summary
 above spells out the mechanism.
 
@@ -38,7 +41,7 @@ file-sharing feature, and ideally before publicly announcing the server browser.
 - 2026-07-23 (later): Implemented (owner authorized; owner explicitly accepted save breakage and
   asked for this sooner because it touches saves). Engine `f432c03` + the app-side terrain loader
   in the superproject bump.
-- 2026-07-23: Filed from #264's security review. The engine is a submodule (read-only by default)
+- 2026-07-23: Filed from #271's security review. The engine is a submodule (read-only by default)
   — the binder change needs the same authorization/cadence as #186.
 
 ## Decisions

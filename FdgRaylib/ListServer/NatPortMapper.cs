@@ -3,7 +3,7 @@ using Mono.Nat;
 namespace FdgRaylib.ListServer;
 
 /// <summary>
-/// Best-effort UPnP / NAT-PMP port forwarding for a host (#264). On <see cref="Start"/> it discovers
+/// Best-effort UPnP / NAT-PMP port forwarding for a host (#271). On <see cref="Start"/> it discovers
 /// the local router and asks it to forward the game's listen port to this machine, so a friend on the
 /// internet can reach a host that never manually port-forwarded. Created by
 /// <see cref="Rendering.HostModal"/> whenever a host is started; Program.cs disposes it (removing the
@@ -12,7 +12,7 @@ namespace FdgRaylib.ListServer;
 /// This is BEST-EFFORT by nature and failure is normal, not exceptional: many routers ship with UPnP
 /// disabled, and carrier-grade NAT / double-NAT defeat it entirely. A failure never affects hosting -
 /// it just means the host still needs manual port forwarding or Tailscale. The list server's
-/// reachability probe (#264) remains the source of truth for whether the port is actually open from
+/// reachability probe (#271) remains the source of truth for whether the port is actually open from
 /// the outside; this only improves the odds. All status text is ASCII (CLAUDE.md).
 /// </summary>
 public sealed class NatPortMapper : IDisposable

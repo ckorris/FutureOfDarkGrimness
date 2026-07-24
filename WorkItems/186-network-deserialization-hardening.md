@@ -2,7 +2,7 @@
 
 **Status**: done
 **Related**: #070 (StableTypeSerializationBinder), QF1 password gate, NetworkingHandoff-2026-07-08.md,
-#264 (public listing made this a prerequisite), #266 (transport limits, done), #265 (SAME hole on
+#271 (public listing made this a prerequisite), #273 (transport limits, done), #272 (SAME hole on
 files - still open). Engine commits `2ecf201` (envelope) + `e292e18` (request/reply bodies).
 
 ## Goal
@@ -22,7 +22,7 @@ permissive fallback (local trusted input) — this is network-path-only.
   - `e292e18` — **completion.** During review found the envelope was only half the surface: the
     inner stage request/reply JSON bodies are deserialized SEPARATELY, with the store's permissive
     settings, at `StageResolverRegistry.ResolveRequestAsJson_Typed` (request body -> attacked by a
-    malicious HOST, i.e. the #264 stranger-server case) and `RequestMessageSender.DeserializeAndReturnReply`
+    malicious HOST, i.e. the #271 stranger-server case) and `RequestMessageSender.DeserializeAndReturnReply`
     (reply body -> attacked by a malicious CLIENT). Both routed through the same factory; +2 tests
     exercising a hostile `$type` in a request body. This was the load-bearing half.
 - 2026-07-08: Filed. Deferred from the QF1-10 tonight-batch because a correct allowlist is fiddly (generic
@@ -56,6 +56,6 @@ request bodies, reply bodies - resolves `$type` only to registered stable IDs, e
 collections; framework types (the entire gadget class) throw `JsonSerializationException`, which the
 read loop turns into a disconnect. 12 tests (`WireSerializationBinderTests`) incl. hand-crafted hostile
 frames and a hostile request body. Full suite 2008/2008; `NetworkedFullStateSyncTests` exercises the
-binder against the full store sync. Clears the #264-announcement prerequisite. The identical hole on
-FILES (`.fdgarmy`/`.fdgsave`/terrain) is #265, still open - saves deliberately keep the permissive
+binder against the full store sync. Clears the #271-announcement prerequisite. The identical hole on
+FILES (`.fdgarmy`/`.fdgsave`/terrain) is #272, still open - saves deliberately keep the permissive
 fallback here.

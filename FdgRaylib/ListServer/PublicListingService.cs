@@ -4,7 +4,7 @@ using FDG.Network.Connection.Lobby;
 namespace FdgRaylib.ListServer;
 
 /// <summary>
-/// Owns the host side of the server browser (#264): a background loop that registers this lobby
+/// Owns the host side of the server browser (#271): a background loop that registers this lobby
 /// with the list server and heartbeats every 30 seconds until disposed. Created by
 /// <see cref="Rendering.HostModal"/> when "List publicly" is ticked; Program.cs disposes it when
 /// the lobby closes, the game ends, or the app exits. Every failure mode is tolerated — a dead or

@@ -1,4 +1,8 @@
-# 264 — Server browser (public game listing via a master list server)
+# 271 — Server browser (public game listing via a master list server)
+
+**Renumbered 264 -> 271 on 2026-07-23 (reconciliation 22)** - origin/master had independently used
+#264 for the Tactician walled-unit item. Branch name `264-server-browser` and pre-renumber commit
+messages keep #264 per precedent.
 
 **Status**: in-progress (P1-P3 implemented + locally verified on branch `264-server-browser`)
 **Related**: #189 (configurable port — soft prerequisite), #186 (wire deserialization hardening — should land before advertising servers to strangers), #065 (networking tests), #075 handshake (`NewLobbyClientGreeting` / `NetworkProtocol.TryValidateJoin`), #226 (bug reporting — could share the same Worker later)
@@ -193,9 +197,9 @@ unless the transport changes or a relay exists. v1 stance: **direct connect only
 - **Live two-machine internet test** after deploy (reachability probe result on a real WAN host).
 - Loaded-game lobbies (`LoadGameFlow`) are never listed — deliberate v1 scope.
 - `maxPlayers` advertised as a constant 8 (the #221 color-palette ceiling); no real lobby cap exists.
-- Security follow-ups: #266 (FDGHost pre-auth limits — DONE 2026-07-23, `842c43b`) and #186 (wire
+- Security follow-ups: #273 (FDGHost pre-auth limits — DONE 2026-07-23, `842c43b`) and #186 (wire
   `$type` allowlist, the announce-prerequisite — DONE 2026-07-23, `2ecf201`+`e292e18`) both closed.
-  #265 (the same hole on FILES — `.fdgarmy`/`.fdgsave`/terrain) remains open; not a blocker for
+  #272 (the same hole on FILES — `.fdgarmy`/`.fdgsave`/terrain) remains open; not a blocker for
   listing itself, but must precede any in-app file-sharing channel.
 
 ## Decisions

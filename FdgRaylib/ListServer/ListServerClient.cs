@@ -5,7 +5,7 @@ using System.Text.Json.Serialization;
 
 namespace FdgRaylib.ListServer;
 
-// DTOs for the list-server API (#264). Deserialized with System.Text.Json into plain records on
+// DTOs for the list-server API (#271). Deserialized with System.Text.Json into plain records on
 // purpose: the list server is an internet-facing service whose responses must never drive
 // polymorphic ($type-style) deserialization — see #186 for why that class of deserializer is a
 // code-execution hazard on untrusted input. Keep Newtonsoft and the store's JsonSettings away
@@ -50,7 +50,7 @@ public sealed record RegistrationReply(
 internal sealed record ServerListResponse(List<ServerListing> Servers);
 
 /// <summary>
-/// Thin HTTP client for the list server (#264). All calls are failure-tolerant at the signature
+/// Thin HTTP client for the list server (#271). All calls are failure-tolerant at the signature
 /// level (exceptions bubble; callers decide whether a dead registry matters — for the host
 /// heartbeat it never does).
 /// </summary>

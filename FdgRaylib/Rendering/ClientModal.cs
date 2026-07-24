@@ -22,7 +22,7 @@ public class ClientModal : IAppScreen
     private string _status    = "";
     private bool   _isConnecting = false;
 
-    // ── Server browser state (#264). The browser is the default tab when a list server is
+    // ── Server browser state (#271). The browser is the default tab when a list server is
     // configured; direct connect lives on the second tab (and is the whole modal otherwise).
     private readonly object _browseLock = new();
     private IReadOnlyList<ServerListing> _listings = Array.Empty<ServerListing>();
@@ -108,7 +108,7 @@ public class ClientModal : IAppScreen
         ImGui.End();
     }
 
-    // ── Server browser tab (#264) ──────────────────────────────────────────────────────────
+    // ── Server browser tab (#271) ──────────────────────────────────────────────────────────
 
     private void DrawBrowseTab(float dw, float dh, float scale, float pad)
     {
@@ -306,7 +306,7 @@ public class ClientModal : IAppScreen
         }
     }
 
-    // ── Direct connect tab (the pre-#264 modal body) ───────────────────────────────────────
+    // ── Direct connect tab (the pre-#271 modal body) ───────────────────────────────────────
 
     private void DrawDirectTab(float dw, float dh, float scale, float pad)
     {

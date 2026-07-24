@@ -1,14 +1,17 @@
-# 266 — FDGHost pre-authentication connection limits (public-exposure hardening)
+# 273 — FDGHost pre-authentication connection limits (public-exposure hardening)
+
+**Renumbered 266 -> 273 on 2026-07-23 (reconciliation 22)** - origin/master had independently used
+#266 for the console word-wrap item. Pre-renumber engine/app commit messages keep #266.
 
 **Status**: done
-**Related**: #264 (public listing = strangers and scanners will connect), #189 (broadcast gating +
+**Related**: #271 (public listing = strangers and scanners will connect), #189 (broadcast gating +
 configurable port), #186 (what those connections' bytes feed into), QF2/QF6 (greeting-timeout
 eviction + post-launch join gate — already done), #065 (transport tests — first dent made here).
 Engine commit `842c43b`.
 
 ## Goal
 
-A host that lists itself publicly (#264) exposes port 6389 to the internet; drive-by scanners and
+A host that lists itself publicly (#271) exposes port 6389 to the internet; drive-by scanners and
 hostile clients will connect. `FDGHost` already evicts connections that never complete the greeting
 (QF2) and caps frames at 16MB (`CommandProtocol.MAX_PAYLOAD_BYTES`), but before a connection has
 authenticated it can still:
@@ -31,7 +34,7 @@ hostile stranger from wedging a host's memory or socket table while the lobby si
 
 - 2026-07-23 (later): Implemented (engine `842c43b`), same day as filing — engine changes
   authorized by owner. Suite 1996/1996 green (5 new); full build + headless smoke clean.
-- 2026-07-23: Filed from #264's security review after reading `FDGHost.StartAsync` (no accept
+- 2026-07-23: Filed from #271's security review after reading `FDGHost.StartAsync` (no accept
   cap) and `CommandProtocol.ReadCommandAsync` (single 16MB cap regardless of auth state).
 
 ## Decisions
@@ -59,6 +62,6 @@ Shipped in engine `842c43b`: accepts beyond 32 total / 4 per-IP concurrent conne
 immediately; un-greeted connections are capped at 64KB frames (`MAX_PREAUTH_PAYLOAD_BYTES`) and
 lifted to the full 16MB at join acceptance on both the new-game and resume paths. Five new
 real-TCP loopback tests (`FdgHostConnectionLimitTests`) — the first transport tests against
-`FDGHost` (#065 remains open for the wider gap). Live WAN behavior rides on #264's two-machine
+`FDGHost` (#065 remains open for the wider gap). Live WAN behavior rides on #271's two-machine
 test. Caps are compile-time defaults; making them user-configurable was deliberately skipped
 (no realistic lobby approaches them).

@@ -478,7 +478,7 @@ else
     renderer.HostModal.OnCancel = () =>
         renderer.NavigateTo(renderer.MainMenu);
 
-    // The public-listing heartbeat (#264), when the host ticked "List publicly". Stopped on every
+    // The public-listing heartbeat (#271), when the host ticked "List publicly". Stopped on every
     // lobby/game exit path below; a missed path only means the entry lingers until the registry's
     // 90s TTL, so this is belt-and-braces rather than load-bearing.
     PublicListingService? activeListing = null;
@@ -487,7 +487,7 @@ else
     {
         activeListing?.Dispose();
         activeListing = null;
-        // Removes the UPnP port mapping too (#264), so we don't leave a router port open past the
+        // Removes the UPnP port mapping too (#271), so we don't leave a router port open past the
         // session. Best-effort; a missed path just leaves the mapping to the router's lease TTL.
         activeMapper?.Dispose();
         activeMapper = null;
@@ -519,7 +519,7 @@ else
         renderer.NavigateTo(renderer.MainMenu);
     };
 
-    // Covers game-over, escape-menu quit-to-menu, and escape-menu load (#264).
+    // Covers game-over, escape-menu quit-to-menu, and escape-menu load (#271).
     renderer.OnGameExited = StopListing;
 
     renderer.LobbyScreen.OnGameLaunched = (tableState, colorFunc, log, overlay, taskDisplay, presentationPlayer, saveGame, chatUI) =>
@@ -585,7 +585,7 @@ else
     }
     finally
     {
-        // App exit: send the polite delist so the entry vanishes now, not at TTL (#264).
+        // App exit: send the polite delist so the entry vanishes now, not at TTL (#271).
         StopListing();
     }
 }

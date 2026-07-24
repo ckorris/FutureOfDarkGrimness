@@ -1,11 +1,11 @@
-# FDG list server (#264)
+# FDG list server (#271)
 
 The master-server registry behind the in-game server browser. A tiny Cloudflare Worker +
 one Durable Object: hosts heartbeat `POST /servers` every ~30s, browsers read
 `GET /servers`, entries expire 90s after the last heartbeat. Game traffic never touches
 this — it only brokers "who is hosting right now".
 
-Design, API table, and security posture: `WorkItems/264-server-browser.md`.
+Design, API table, and security posture: `WorkItems/271-server-browser.md`.
 
 ## Endpoints
 

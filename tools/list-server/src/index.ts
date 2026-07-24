@@ -1,11 +1,11 @@
-// FDG list server (#264) — the master-server registry behind the in-game server browser.
+// FDG list server (#271) — the master-server registry behind the in-game server browser.
 //
 // Three endpoints, all JSON over HTTPS:
 //   POST   /servers        register (no id/token) or heartbeat/update (id + token)
 //   GET    /servers        list live entries (never includes tokens)
 //   DELETE /servers/:id    polite removal (X-Token header); TTL expiry is the real cleanup
 //
-// Security posture (see WorkItems/264-server-browser.md):
+// Security posture (see WorkItems/271-server-browser.md):
 //   - The advertised host address is ALWAYS the observed source IP of the registrant
 //     (CF-Connecting-IP). A client never gets to claim an address, so the list can't be
 //     poisoned with a victim's IP to aim other players' connections at it.

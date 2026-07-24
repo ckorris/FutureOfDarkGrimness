@@ -6,6 +6,22 @@ from origin/master. Standing precedent: numbers are never reused, and when two p
 claim the same number, the *unmerged local* item yields to the *merged* one and takes a fresh number.
 A per-clone pre-push hook blocks duplicate numbers across the index and the archive.
 
+> **2026-07-23 — reconciliation 22.** Bringing origin/master into the long-lived `264-server-browser`
+> branch (14 ahead / 32 behind) surfaced a *triple* collision: master had independently used **264**
+> (Tactician walled-unit lateral retreat, `264-walled-unit-pins`), **265** (lobby Battlefield dropdown),
+> and **266** (console word-wrap + panel height) - all merged - while this branch had used the same three
+> for the server-browser epic (264) and its two security prerequisites (265 = file-load `$type` allowlist,
+> 266 = FDGHost pre-auth connection limits). Master also self-reconciled its own 265->267 and 266->270 in
+> reconciliations 20/21. Per merged-wins precedent this branch's three unpushed items yield to the next
+> free numbers (master's highest is 270): **server browser 264 -> 271**, **file-load allowlist 265 -> 272**,
+> **FDGHost pre-auth limits 266 -> 273** (`WorkItems/271-*`, `272-*`, `273-*`). The renumber landed
+> everywhere before the merge - the three detail files (renamed + titled), the index line, the two Archive
+> entries, cross-references in #186/#189, and all `#264/#265/#266` source-comment tags across `FdgRaylib/`,
+> `tools/list-server/`, and the tests. **Left as-is on purpose:** the branch name `264-server-browser`, the
+> pre-renumber commit messages (superproject and the 5 engine security commits), and the engine-side source
+> comments in the read-only submodule - all predating the renumber, per every prior reconciliation. The
+> merge and submodule resolution follow in the same session; nothing was pushed.
+>
 > **2026-07-22 — reconciliation 19.** The push of #255's follow-on (team-based victory scoring,
 > locally filed as **256**) found origin/master had meanwhile landed reconciliation 18's
 > **256 = AI repack clamp immobilizes big/clustered units** (merged, S1 shipped). Per merged-wins

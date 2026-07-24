@@ -1,5 +1,5 @@
 #!/bin/sh
-# Smoke test for the FDG list server (#264). Run against `npx wrangler dev` (default) or a
+# Smoke test for the FDG list server (#271). Run against `npx wrangler dev` (default) or a
 # deployed URL:  ./smoke.sh [base-url]
 # Exercises: health, register, list, heartbeat, token auth, delete, validation rejects.
 set -eu

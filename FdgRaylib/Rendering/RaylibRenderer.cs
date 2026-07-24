@@ -93,7 +93,7 @@ public class RaylibRenderer
     // tearing the current game down and returning to the menu.
     public Action? OnLoadGameRequested;
 
-    // Fired at the end of ExitGame() — i.e. on every path that tears a running game down (#264).
+    // Fired at the end of ExitGame() — i.e. on every path that tears a running game down (#271).
     public Action? OnGameExited;
     // Set from the engine thread when the game ends (see ShowGameOver); read on the main thread to draw
     // the game-over overlay. Non-null = game finished, result string to display.
@@ -307,7 +307,7 @@ public class RaylibRenderer
         _inGame                = false;
 
         // Every game teardown funnels through here (game-over card, escape-menu quit-to-menu,
-        // escape-menu load). Program.cs uses this to stop the public-listing heartbeat (#264).
+        // escape-menu load). Program.cs uses this to stop the public-listing heartbeat (#271).
         OnGameExited?.Invoke();
     }
 
