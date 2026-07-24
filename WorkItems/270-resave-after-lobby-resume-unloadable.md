@@ -1,4 +1,4 @@
-# 266 — A game resumed through the lobby cannot be saved and loaded again
+# 270 — A game resumed through the lobby cannot be saved and loaded again
 
 **Status**: todo
 **Related**: #052 (save/load), #054 (client-initiated saving), found while hand-verifying #265

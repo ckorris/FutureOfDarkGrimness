@@ -6,6 +6,19 @@ from origin/master. Standing precedent: numbers are never reused, and when two p
 claim the same number, the *unmerged local* item yields to the *merged* one and takes a fresh number.
 A per-clone pre-push hook blocks duplicate numbers across the index and the archive.
 
+> **2026-07-23 — reconciliation 21.** The other half of reconciliation 20's crossing. The
+> table-background session filed **266 = "a game resumed through the lobby cannot be saved and loaded
+> again"** (found while hand-verifying #265) against a local master at `2275ef0`, where 265 was the
+> highest number in use and 266 looked free. It was: the five-issue session had already claimed
+> **266 = console word-wrap + resolver panel height** and pushed it. Same precedent, other direction this
+> time - the console-wrap item was merged, the resave item was not, so **resave-after-lobby-resume
+> 266 -> 270** (`WorkItems/270-resave-after-lobby-resume-unloadable.md`; 267-269 were taken by the same
+> session, so 270 was the lowest free number). The detail file, its title, the index line, and #265's
+> forward reference to it were repointed. Nothing in the source referenced #266 - the bug is filed, not
+> fixed. **Left as-is on purpose:** the commit message that filed it as #266, which predates the renumber.
+> Net effect of 20 + 21: the table background keeps **265**, console wrap keeps **266**, and the two
+> yielding items are **267** (all-models gate) and **270** (resave-after-resume).
+
 > **2026-07-23 — reconciliation 20.** A five-issue session (console wrap, resolver panel height, reposition
 > placement, terrain palette, all-models gate) filed **265-269** against a local master whose tip was
 > `d517b59`, where 264 was the highest number in use. While it was in progress origin/master landed

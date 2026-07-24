@@ -87,5 +87,5 @@ two machines** — the host->client sync is covered by the loopback test only.
 One verification step could not be completed and is NOT a #265 defect: reopening the save written from
 a resumed game aborts on load. That is a pre-existing save/resume/save-again bug in
 `LobbyViewModel_Host.LaunchResume`, reproduced deterministically with this work's changes removed, and
-filed as **#266**. The written file is correct — the field is in it and every other setting is
+filed as **#270**. The written file is correct — the field is in it and every other setting is
 untouched — and `ResumeSettingsOverrideTests` covers the read-back side.
