@@ -1,6 +1,6 @@
 # 274 — Spell cast animations + sounds
 
-**Status**: in-progress
+**Status**: done
 **Related**: #033 (Caster), #103 (cast assist), #244 (self-boost), #233 (cast-roll dice beat), #056 (beat stream), #053/#239 (sound cues)
 
 ## Goal
@@ -12,6 +12,9 @@ looking at the log, the beats round-trip to networked clients, and headless/CLI 
 
 ## Notes
 
+- 2026-07-24: **GUI hand-verify PASSED (Chris).** All six variants confirmed in the app; item closed.
+  Merged to master: engine `befce91`, superproject `dbf51ba` (rebased onto `41b6170`, which had landed
+  upstream mid-work and touched only the Host/Client modal theming - no overlap).
 - 2026-07-24: Built as one new beat type rather than six. `SpellEffectBeat(ESpellVisual, Positions,
   SpellName, Sources, Magnitude)` in `Presentation/Beats/`; the six variants are the same shape (an
   effect at a set of model positions, optionally fed by a set of source positions), so the front-end
@@ -53,3 +56,25 @@ looking at the log, the beats round-trip to networked clients, and headless/CLI 
   yields no positions; emitting anyway would pace real engine time for nothing on screen.
 
 ## Outcome
+
+Shipped whole and GUI-verified 2026-07-24. Casting now has its own visual language: one
+`SpellEffectBeat` type with six variants, emitted from `CastSpellStage` as assist boost -> assist
+hinder (batched before the roll) -> cast success/failure (after the result banner) -> per-target
+boon/bane. Success and failure are deliberate visual inverses (ring blooming outward vs collapsing
+inward, motes rising vs sparks falling), as are boost and hinder (streams flowing in vs away). Six
+synthesized cues, drop-in replaceable from `Assets/Sounds/` like every other cue.
+
+No rules behaviour changed: `CollectCastAssist` returns a `CastAssistResult` now, but the roll still
+reads only `Net`. Headless/CLI play is unaffected (the beats project no `Text`).
+
+Nothing was deferred. Two things worth knowing for whoever touches this next:
+
+- The **enemy-hinder variant has integration-test coverage but was never exercised in a live run**
+  before verification - `AiCastAssistResolver` declines by default, so a scenario run never spends
+  enemy tokens. Only a human-vs-human cast within 18" of an enemy Caster draws those orange streams.
+- `SpellDisposition` is **presentation-only** by design. If a future rule ever wants to read
+  "is this spell helping?", it needs its own answer - this one is allowed to be wrong for the price
+  of a mismatched colour.
+
+Engine `befce91`, superproject `dbf51ba`. Engine 2099 green, app 574 green (17 new tests), headless
+smoke exits 0 - re-run on the rebased tree, not just pre-rebase.
