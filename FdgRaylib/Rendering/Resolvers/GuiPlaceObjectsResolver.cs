@@ -3,6 +3,7 @@ using FDG;
 using FDG.Data;
 using FDG.StageResolution;
 using FDG.StageResolution.Requests;
+using FdgRaylib.Placement;
 using ImGuiNET;
 
 namespace FdgRaylib.Rendering.Resolvers;
@@ -27,6 +28,15 @@ public class GuiPlaceObjectsResolver<T>
 
     // Index into _placed of the model currently being re-placed by drag (single mode); null = none.
     private int? _dragIndex;
+
+    // #269 — the models THIS request is placing, by reference. They are excluded from the on-table occupancy
+    // scan: a reposition placement (Teleport / Fanatic / reposition-at-activation) starts with every model
+    // still standing at its old spot, and PlacedObjectEntry defers the writes until the whole placement is
+    // accepted, so an un-excluded scan has the unit blocking itself out of the very ground it is vacating.
+    // Each model is still accounted for exactly once - at its NEW position, via the _placed overlap loop.
+    // A no-op for deployment, where the models to place sit at the unplaced (0,0) sentinel and are skipped
+    // anyway. Assigned under _lock in Resolve, alongside _request.
+    private HashSet<object> _selfModels = new(ReferenceEqualityComparer.Instance);
     // Group-mode pending rotation (radians) about the formation centroid; reset on drop and on Resolve.
     private float _groupRotationDeploy;
     // Single-mode pending facing rotation (radians) applied to the model being placed / dragged (#150).
@@ -78,6 +88,11 @@ public class GuiPlaceObjectsResolver<T>
             _groupRotationDeploy = 0f;
             _singleRotationDeploy = 0f;
             _errorMessage = null;
+            _selfModels = new HashSet<object>(ReferenceEqualityComparer.Instance);
+            foreach (DataBinding<T> binding in request.ModelsToPlace)
+            {
+                if (binding.GetValue() is ModelData model) _selfModels.Add(model);
+            }
             _request = request;
         }
         return tcs.Task;
@@ -337,7 +352,13 @@ public class GuiPlaceObjectsResolver<T>
         string? overlap = CheckOverlap(cand, shape, facing, excludeIndex);
         if (overlap != null) { reason = $"Bases overlap ({overlap})."; return false; }
 
-        if (!IsInCohesion(cand, shape, facing, excludeIndex))
+        // #269: a reposition placement checks cohesion once over the FINISHED formation (the Done gate), not
+        // per click. Gating each click on "within 1in of an already-placed model" forces the unit to be
+        // rebuilt in list order and confines every model after the first to a thin band around model 1,
+        // however much of its own reach ring is free — which is what made Teleport feel broken. Deployment
+        // keeps the incremental check: there the unit is built from nothing and the running feedback is the
+        // only cohesion signal a player gets.
+        if (maxFromStart <= 0f && !IsInCohesion(cand, shape, facing, excludeIndex))
         { reason = $"Outside cohesion - must be within {GameWideConstants.MAX_MODEL_DISTANCE_FROM_ANY_OTHER_MODEL_INCHES}\" base-to-base of a placed model."; return false; }
 
         if (minEnemyDist > 0f && TooCloseToEnemy(cand, enemies, minEnemyDist))
@@ -490,6 +511,17 @@ public class GuiPlaceObjectsResolver<T>
             ImGui.PopStyleColor();
         }
 
+        // #269: for a reposition the cohesion verdict is about the finished formation, so it is reported
+        // here (and gates Done) rather than rejecting individual clicks. Only meaningful once every model
+        // is down — until then FinalCohesion reports nothing.
+        string? cohesionIssue = PlacementCohesion.Describe(FinalCohesion(request));
+        if (cohesionIssue != null)
+        {
+            ImGui.PushStyleColor(ImGuiCol.Text, new Vector4(0.95f, 0.75f, 0.3f, 1f));
+            ImGui.TextWrapped(cohesionIssue);
+            ImGui.PopStyleColor();
+        }
+
         // #029: edge-constrained placement (Aircraft redeploy) — surface the touch requirement live.
         if (request.MustTouchTableEdge)
         {
@@ -509,7 +541,8 @@ public class GuiPlaceObjectsResolver<T>
 
         // Primary: Done -- larger, accented, commits on click or Enter (gated on all models placed).
         bool canDone = _placed.Count == total && !_dragIndex.HasValue
-            && (!request.MustTouchTableEdge || PlacedTouchesEdge(request));
+            && (!request.MustTouchTableEdge || PlacedTouchesEdge(request))
+            && cohesionIssue == null;
         if (ResolverButtons.Primary("Done", new Vector2(fullW, 32f), enabled: canDone))
         {
             Complete(tcs, new List<PlacedObjectEntry<T>>(_placed));
@@ -568,6 +601,30 @@ public class GuiPlaceObjectsResolver<T>
         ImGui.EndDisabled();
 
         ImGui.End();
+    }
+
+    /// <summary>
+    /// #269 — cohesion of the FINISHED reposition. Reports "nothing wrong" when the check doesn't apply:
+    /// for a deployment (which gates per click instead) or while models are still to be placed, where a
+    /// half-built formation would raise a warning about a state the player is mid-way through fixing.
+    /// </summary>
+    private PlacementCohesion.Report FinalCohesion(PlaceObjectsRequest<T> request)
+    {
+        if (request.MaxDistanceFromStartInches <= 0f || _placed.Count != request.ModelsToPlace.Count)
+            return new PlacementCohesion.Report(0, 0, 0f);
+
+        var before = new List<PlacementCohesion.Footprint>(_placed.Count);
+        var after  = new List<PlacementCohesion.Footprint>(_placed.Count);
+        foreach (PlacedObjectEntry<T> entry in _placed)
+        {
+            T value = entry.Binding.GetValue();
+            IBaseShape shape = GetBaseShape(value);
+            Float2 startFacing = value is ModelData m ? m.Facing : new Float2(0f, 1f);
+            before.Add(new PlacementCohesion.Footprint(StartPositionOf(value), shape, startFacing));
+            after.Add(new PlacementCohesion.Footprint(entry.Position, shape, entry.Facing ?? startFacing));
+        }
+
+        return PlacementCohesion.Evaluate(before, after);
     }
 
     // The unit the placed models belong to, or null when placing non-model objects (objectives) or when it
@@ -735,6 +792,9 @@ public class GuiPlaceObjectsResolver<T>
             var pos = model.Position;
             // Default-constructed Position is (0,0,0); models there haven't been placed yet.
             if (pos.x == 0f && pos.z == 0f) continue;
+            // #269: a model this request is repositioning doesn't block its own placement — it is about to
+            // leave, and it is re-checked at its new position through the _placed loop.
+            if (_selfModels.Contains(model)) continue;
             yield return (pos, model.BaseShape, model.Facing);
         }
     }
