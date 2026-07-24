@@ -1,6 +1,6 @@
 # 275 — Banner tiers (Headline / Notice / Toast)
 
-**Status**: in-progress (implemented + tested; awaiting GUI hand-verify)
+**Status**: done — GUI-verified 2026-07-24
 **Related**: #056 (presentation beat stream), #053 (sound cues), #232 (casualty cascade — same "Held means its own track" shape), #245 (dice caption strip)
 
 ## Goal
@@ -81,9 +81,25 @@ existing announce sites re-tiered deliberately rather than inheriting the loudes
 
 ## Outcome
 
-_Open._ Deferred, explicitly: no NEW announce sites were added. The owner asked to see a candidate list
-of currently log-only events (objective seizure/contest in `ReconcileObjectivesStage` is the leading
-one) before any are added — that is a separate slice, not silently dropped scope.
+Shipped and merged to master 2026-07-24, GUI-verified by the owner. `BannerBeat` carries an
+`EBannerTier`; Headline blocks for its full 1300ms, Notice paces a 300ms lead-in, Toast paces nothing
+and rides a concurrent held-banner track in `PresentationPlayer` alongside #232's cascade and #238's
+attack track. Three screen bands (y=26% / y=40% / a ticker under the status HUD) and three sound
+voices. All 28 announce sites re-tiered 4/15/9; `Announce`'s default is Notice, so stopping the game
+is now the option a call site has to ask for. Engine 2104/2104, app 582/582, headless smoke exit 0.
+
+Filed as #274, renumbered to #275 on merge — see Reconciliations.md 23.
+
+**Deferred, explicitly:** no NEW announce sites were added. A candidate list of currently log-only
+events was produced for the owner (objective seizure/contest in `ReconcileObjectivesStage`, melee
+outcome, unit destroyed by damage, fatigue, special-rule fired, reflect/self-destruct, the Fearless
+save, aircraft leaving the table) and is awaiting a pick — a separate slice, not dropped scope.
+
+**Known follow-up:** master's #274 spell visuals batch assist beats right before the cast roll, while
+this item's per-assister lines became toasts. Both now fire for the same event through different
+channels (a `SpellEffectBeat` and a banner). They did not conflict in code and nothing is wrong, but
+whether that is one signal too many for an assisted cast is worth an eye during the next casting
+playtest.
 
 ## Hand-verify checklist (GUI)
 
