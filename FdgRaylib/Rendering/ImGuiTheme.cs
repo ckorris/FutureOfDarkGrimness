@@ -32,6 +32,17 @@ public static class ImGuiTheme
     private static readonly Vector4 AccentHot   = R(96, 165, 245);
     private static readonly Vector4 AccentDim   = R(34, 60, 100);
 
+    // Shared bits screens reach for directly (not part of the ImGui color table), kept here so every
+    // screen pulls one source of truth instead of redefining them.
+
+    // Light-blue accent for section/column headers and dialog titles — the "this is a header" blue used
+    // across the lobby and the Host/Client dialogs.
+    public static readonly Vector4 HeaderAccent = new(0.50f, 0.73f, 1.0f, 1f);
+
+    // Opaque panel fill for modal dialogs that float above a dimmed backdrop (Host/Client). Matches the
+    // lobby's panel tone (the theme window body) so the dialogs read as the same surface, not a blue slab.
+    public static readonly Vector4 DialogPanelBg = Panel;
+
     public static void Apply()
     {
         var style = ImGui.GetStyle();
