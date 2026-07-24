@@ -51,6 +51,8 @@ internal static class ResolverButtons
         bool enter = enabled && bindEnter && !ImGui.GetIO().WantTextInput && !EscapeRouter.MenuOpen
                      && (ImGui.IsKeyPressed(ImGuiKey.Enter, repeat: false)
                          || ImGui.IsKeyPressed(ImGuiKey.KeypadEnter, repeat: false));
+        // A commit (mouse OR the Enter shortcut) gets the positive/forward tone.
+        if (clicked || enter) UiSound.Confirm();
         return clicked || enter;
     }
 
@@ -62,6 +64,8 @@ internal static class ResolverButtons
         ImGui.PushStyleColor(ImGuiCol.ButtonActive, DestructiveActive);
         bool clicked = ImGui.Button(label, size);
         ImGui.PopStyleColor(3);
+        // Irreversible action -> the low buzz warn tone.
+        if (clicked) UiSound.Warn();
         return clicked;
     }
 
@@ -73,6 +77,8 @@ internal static class ResolverButtons
         ImGui.PushStyleColor(ImGuiCol.Text, new Vector4(0.66f, 0.66f, 0.70f, 1f));
         bool clicked = ImGui.Button(label, size);
         ImGui.PopStyleColor(2);
+        // Low-stakes / recede (Skip, Stay) -> the soft back tone.
+        if (clicked) UiSound.Back();
         return clicked;
     }
 }

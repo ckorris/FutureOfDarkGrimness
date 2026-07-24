@@ -133,7 +133,7 @@ public class LobbyScreen : IAppScreen
         float backW = ImGui.CalcTextSize("Back").X + 36f; // fit the text at the current scale
         float backH = headerH - 8f;
         ImGui.SetCursorPos(new Vector2(mainW - backW - 4f, 4f));
-        if (ImGui.Button("Back", new Vector2(backW, backH)))
+        if (UiButton.Back("Back", new Vector2(backW, backH)))
             OnBack?.Invoke();
 
         ImGui.EndChild();
@@ -179,7 +179,7 @@ public class LobbyScreen : IAppScreen
         ImGui.PopStyleVar();
 
         ImGui.SameLine();
-        if (ImGui.Button("Send", new Vector2(sendBtnW, chatInputH)) &&
+        if (UiButton.Navigate("Send", new Vector2(sendBtnW, chatInputH)) &&
             !string.IsNullOrWhiteSpace(_chatInput))
             SubmitChat();
 
@@ -270,13 +270,13 @@ public class LobbyScreen : IAppScreen
                 {
                     // Re-crew a saved slot. Host only; Local/bots today (networked client assignment TBD).
                     ImGui.BeginDisabled(!_viewModel.HasHostPrivileges);
-                    if (ImGui.SmallButton($"Local##{i}"))
+                    if (UiButton.NavigateSmall($"Local##{i}"))
                         _viewModel.SetSavedSlotPlayerType(info.PlayerID, EPlayerType.Local);
                     ImGui.SameLine();
-                    if (ImGui.SmallButton($"Tactician##{i}"))
+                    if (UiButton.NavigateSmall($"Tactician##{i}"))
                         _viewModel.SetSavedSlotPlayerType(info.PlayerID, EPlayerType.AI, EAiProfile.Tactician);
                     ImGui.SameLine();
-                    if (ImGui.SmallButton($"DerpBot##{i}"))
+                    if (UiButton.NavigateSmall($"DerpBot##{i}"))
                         _viewModel.SetSavedSlotPlayerType(info.PlayerID, EPlayerType.AI, EAiProfile.SoloRules);
                     ImGui.EndDisabled();
                 }
@@ -284,7 +284,7 @@ public class LobbyScreen : IAppScreen
                 {
                     bool canModify = _viewModel.CheckCanModifyPlayerIDInfo(info.PlayerID);
                     ImGui.BeginDisabled(!canModify);
-                    if (ImGui.SmallButton($"Load Army##{i}"))
+                    if (UiButton.NavigateSmall($"Load Army##{i}"))
                         TryLoadArmyForPlayer(info.PlayerID);
                     ImGui.EndDisabled();
                 }
@@ -299,15 +299,15 @@ public class LobbyScreen : IAppScreen
         if (_viewModel.HasHostPrivileges && !_viewModel.IsResumeMode)
         {
             ImGui.Spacing();
-            if (ImGui.Button("Add Local Player"))
+            if (UiButton.Navigate("Add Local Player"))
                 _viewModel.AddLocalPlayer();
             ImGui.SameLine();
             // #191 A6: two bot flavors - the Tactician (challenge AI) and the legacy
             // solo-rules bot, rechristened DerpBot (Chris's naming).
-            if (ImGui.Button("Add Tactician Bot"))
+            if (UiButton.Navigate("Add Tactician Bot"))
                 _viewModel.AddAiPlayer(EAiProfile.Tactician);
             ImGui.SameLine();
-            if (ImGui.Button("Add DerpBot"))
+            if (UiButton.Navigate("Add DerpBot"))
                 _viewModel.AddAiPlayer(EAiProfile.SoloRules);
         }
     }
@@ -455,7 +455,7 @@ public class LobbyScreen : IAppScreen
 
         // #201 cover proximity house rules (default on). Inside the disabled block: host-only.
         bool coverProximity = _viewModel.CoverProximityExceptions;
-        if (ImGui.Checkbox("Cover Proximity Rules", ref coverProximity))
+        if (UiButton.Checkbox("Cover Proximity Rules", ref coverProximity))
             _viewModel.SetCoverProximityExceptions(coverProximity);
         if (ImGui.IsItemHovered())
             ImGui.SetTooltip("House rule (default on): cover the shooter's muzzle hugs (< 2in to the exit)\n" +
@@ -484,12 +484,12 @@ public class LobbyScreen : IAppScreen
         string lan = _lanAddresses ?? "unavailable";
         ImGui.TextUnformatted($"LAN:    {lan}");
         ImGui.SameLine();
-        if (ImGui.SmallButton("Copy##lanip")) ImGui.SetClipboardText(lan);
+        if (UiButton.NavigateSmall("Copy##lanip")) ImGui.SetClipboardText(lan);
 
         string pub = _publicAddress;
         ImGui.TextUnformatted($"Public: {pub}");
         ImGui.SameLine();
-        if (ImGui.SmallButton("Copy##pubip")) ImGui.SetClipboardText(pub);
+        if (UiButton.NavigateSmall("Copy##pubip")) ImGui.SetClipboardText(pub);
 
         ImGui.TextUnformatted($"Port:   {ListenPort}");
     }
@@ -547,7 +547,7 @@ public class LobbyScreen : IAppScreen
         float errorLineH = _lastLaunchError != null ? ImGui.GetTextLineHeightWithSpacing() + 4f : 0f;
         Vector2 buttonSize = new Vector2(avail.X, MathF.Max(0f, avail.Y - errorLineH));
         bool resume = _viewModel.IsResumeMode;
-        if (ImGui.Button(resume ? "RESUME" : "LAUNCH", buttonSize))
+        if (UiButton.Confirm(resume ? "RESUME" : "LAUNCH", buttonSize))
         {
             // #153 launch gate (decision 9): validation Errors in any loaded army raise a confirm dialog
             // (warn + host override) instead of launching straight away. Resume skips the gate — the
@@ -601,13 +601,13 @@ public class LobbyScreen : IAppScreen
         ImGui.Spacing();
 
         // Cancel first and focused — the safe default. #240: edge-only Esc (stuck-key safe).
-        if (ImGui.Button("Cancel", new Vector2(140f, 0f)) || ImGui.IsKeyPressed(ImGuiKey.Escape, repeat: false))
+        if (UiButton.Back("Cancel", new Vector2(140f, 0f)) || ImGui.IsKeyPressed(ImGuiKey.Escape, repeat: false))
         {
             ImGui.CloseCurrentPopup();
         }
         ImGui.SetItemDefaultFocus();
         ImGui.SameLine();
-        if (ImGui.Button("Launch anyway", new Vector2(140f, 0f)))
+        if (UiButton.Confirm("Launch anyway", new Vector2(140f, 0f)))
         {
             ImGui.CloseCurrentPopup();
             DoLaunch(resume: false);
@@ -637,7 +637,7 @@ public class LobbyScreen : IAppScreen
         ImGui.TextUnformatted("Layout File");
         string display = string.IsNullOrEmpty(current) ? "(none selected)" : Path.GetFileName(current);
         ImGui.SameLine();
-        if (ImGui.Button($"{display}##LayoutPick", new Vector2(ImGui.GetContentRegionAvail().X, 0f)))
+        if (UiButton.Navigate($"{display}##LayoutPick", new Vector2(ImGui.GetContentRegionAvail().X, 0f)))
         {
             var (canceled, paths) = TinyDialogs.OpenFileDialog("Load Terrain Layout", "", false, TerrainFilter);
             if (!canceled)

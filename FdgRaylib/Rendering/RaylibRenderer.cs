@@ -387,6 +387,9 @@ public class RaylibRenderer
         // Assets/Sounds/). No-ops gracefully if no audio device is available.
         _audio = new AudioManager();
         PresentationSoundCues.LoadInto(_audio);
+        // UI chrome cues (button clicks, toggles, canvas commits) share the same device; the static
+        // UiSound facade lets any screen/resolver voice one without being handed the AudioManager.
+        UiSound.Attach(_audio);
 
         // Replace the default 13px bitmap font with DejaVuSans TTF.
         // Must clear the atlas first — Setup already added the pixel font at index 0;

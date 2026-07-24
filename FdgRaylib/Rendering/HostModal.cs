@@ -82,7 +82,7 @@ public class HostModal : IAppScreen
             const string label = "List publicly";
             float checkW = ImGui.CalcTextSize(label).X + ImGui.GetFrameHeight() + 8f * scale;
             ImGui.SetCursorPosX(Math.Max(pad, (dw - checkW) * 0.5f));
-            ImGui.Checkbox(label, ref _listPublicly);
+            UiButton.Checkbox(label, ref _listPublicly);
 
             ImGui.SetWindowFontScale(0.85f * scale);
             CenterText("(your IP becomes visible to others)", dw);
@@ -101,14 +101,14 @@ public class HostModal : IAppScreen
         float btnY = dh - pad - btnH;
         ImGui.SetCursorPos(new Vector2(firstX, btnY));
 
-        if (ImGui.Button("CANCEL", new Vector2(btnW, btnH)))
+        if (UiButton.Back("CANCEL", new Vector2(btnW, btnH)))
         {
             Reset();
             OnCancel?.Invoke();
         }
 
         ImGui.SameLine(0, gap);
-        if (ImGui.Button("CREATE", new Vector2(btnW, btnH)))
+        if (UiButton.Confirm("CREATE", new Vector2(btnW, btnH)))
         {
             if (Validate())
                 CreateServer();
