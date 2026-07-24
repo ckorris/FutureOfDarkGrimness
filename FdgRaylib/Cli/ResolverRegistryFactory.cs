@@ -44,10 +44,17 @@ public static class ResolverRegistryFactory
     /// <summary>GUI build — interactive resolvers where implemented, CLI fallback otherwise.</summary>
     /// <param name="coverProximityExceptions">The launched game's #201 setting (lobby toggle,
     /// default on) so cover previews match what the host's cover stage will roll.</param>
+    /// <param name="tableBackground">The launched game's #265 cosmetic table surface (lobby setting).
+    /// Passed through to the overlay purely so the renderer can pick it up at TransitionToGame.</param>
     public static (IStageResolverRegistry Registry, GuiResolverOverlay Overlay) BuildGui(ITableState tableState,
-        bool coverProximityExceptions = true)
+        bool coverProximityExceptions = true,
+        ETableBackground tableBackground = ETableBackground.Forest)
     {
-        var overlay = new GuiResolverOverlay { CoverProximityExceptions = coverProximityExceptions };
+        var overlay = new GuiResolverOverlay
+        {
+            CoverProximityExceptions = coverProximityExceptions,
+            TableBackground = tableBackground,
+        };
 
         // Shared Group/Single preference: one instance so flipping the mode in deployment carries
         // to movement and vice-versa, remembered for the whole game.

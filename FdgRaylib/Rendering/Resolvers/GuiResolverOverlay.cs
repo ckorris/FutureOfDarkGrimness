@@ -19,6 +19,14 @@ public class GuiResolverOverlay
     public bool CoverProximityExceptions { get; set; } = true;
 
     /// <summary>
+    /// The launched game's #265 table background (lobby setting, synced to every player, saved with
+    /// the game), stamped by <c>ResolverRegistryFactory.BuildGui</c>. Rides the overlay for the same
+    /// reason the cover setting above does: it is a per-launch setting the renderer needs, and the
+    /// overlay is what TransitionToGame already receives. Nothing in the resolvers reads it.
+    /// </summary>
+    public FDG.ETableBackground TableBackground { get; set; } = FDG.ETableBackground.Forest;
+
+    /// <summary>
     /// The movement resolver in this overlay, if one is registered (always, in a GUI build). The
     /// tactical overlay pulls the active move job off it and routes enemy pin-clicks back to it, so
     /// the renderer wires the two together once at game start.
