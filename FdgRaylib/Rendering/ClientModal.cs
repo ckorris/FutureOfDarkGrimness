@@ -135,7 +135,13 @@ public class ClientModal : IAppScreen
         IReadOnlyList<ServerListing> listings;
         lock (_browseLock) listings = _listings;
 
-        float tableH = dh - ImGui.GetCursorPosY() - 90f * scale;
+        // Fixed anchors for the bottom rows so the status line never lands under the buttons (the
+        // table shrinks to leave room for both).
+        float btnH     = 50f * scale;
+        float buttonsY = dh - pad - btnH;
+        float statusY  = buttonsY - 30f * scale;
+        float tableTop = ImGui.GetCursorPosY();
+        float tableH   = Math.Max(60f * scale, statusY - tableTop - 8f * scale);
         if (ImGui.BeginTable("##Servers", 6,
                 ImGuiTableFlags.Borders | ImGuiTableFlags.RowBg | ImGuiTableFlags.ScrollY,
                 new Vector2(dw - pad * 2f, tableH)))
@@ -199,13 +205,13 @@ public class ClientModal : IAppScreen
             : _browseStatus.Length > 0 ? _browseStatus
             : listings.Count == 0 ? "No servers are currently listed."
             : _status;
+        ImGui.SetCursorPos(new Vector2(0f, statusY));
         CenterText(statusLine, dw);
 
         float btnW  = dw * 0.24f;
-        float btnH  = 50f * scale;
         float gap   = dw * 0.04f;
         float firstX = (dw - btnW * 2 - gap) * 0.5f;
-        ImGui.SetCursorPos(new Vector2(firstX, dh - pad - btnH - 40f * scale));
+        ImGui.SetCursorPos(new Vector2(firstX, buttonsY));
 
         if (ImGui.Button("CANCEL", new Vector2(btnW, btnH)))
         {

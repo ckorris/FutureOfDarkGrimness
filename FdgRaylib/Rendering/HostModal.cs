@@ -69,13 +69,19 @@ public class HostModal : IAppScreen
         DrawLabeledInput("Port",        ref _port,       dw, scale);
 
         // Public listing (#264). Only offered when a list server is configured; hosting itself
-        // never depends on the registry.
+        // never depends on the registry. Short clickable label (the full sentence was wider than
+        // the dialog, so centering pushed the checkbox off the left edge); the warning rides below
+        // as a caption.
         if (ListServerConfig.IsConfigured)
         {
-            string label = "List publicly (your IP becomes visible in the server browser)";
+            const string label = "List publicly";
             float checkW = ImGui.CalcTextSize(label).X + ImGui.GetFrameHeight() + 8f * scale;
-            ImGui.SetCursorPosX((dw - checkW) * 0.5f);
+            ImGui.SetCursorPosX(Math.Max(pad, (dw - checkW) * 0.5f));
             ImGui.Checkbox(label, ref _listPublicly);
+
+            ImGui.SetWindowFontScale(0.85f * scale);
+            CenterText("(your IP becomes visible to others)", dw);
+            ImGui.SetWindowFontScale(1.0f * scale);
             ImGui.Spacing();
         }
 
