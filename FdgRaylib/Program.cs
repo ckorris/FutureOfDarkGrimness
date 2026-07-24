@@ -482,16 +482,22 @@ else
     // lobby/game exit path below; a missed path only means the entry lingers until the registry's
     // 90s TTL, so this is belt-and-braces rather than load-bearing.
     PublicListingService? activeListing = null;
+    NatPortMapper? activeMapper = null;
     void StopListing()
     {
         activeListing?.Dispose();
         activeListing = null;
+        // Removes the UPnP port mapping too (#264), so we don't leave a router port open past the
+        // session. Best-effort; a missed path just leaves the mapping to the router's lease TTL.
+        activeMapper?.Dispose();
+        activeMapper = null;
     }
 
-    renderer.HostModal.OnCreated = (lobby, listing) =>
+    renderer.HostModal.OnCreated = (lobby, listing, mapper) =>
     {
         StopListing();
         activeListing = listing;
+        activeMapper = mapper;
         renderer.LobbyScreen.SetViewModel(lobby);
         renderer.NavigateTo(renderer.LobbyScreen);
     };

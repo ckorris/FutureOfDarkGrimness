@@ -9,10 +9,11 @@ namespace FdgRaylib.Rendering;
 
 public class HostModal : IAppScreen
 {
-    // The second argument is the public-listing heartbeat (#264), or null when the host didn't tick
-    // "List publicly" (or no list server is configured). The receiver (Program.cs) owns its
-    // lifetime: dispose on lobby close / game end / app exit.
-    public Action<ILobbyViewModel, PublicListingService?>? OnCreated;
+    // Second arg: the public-listing heartbeat (#264), or null when the host didn't tick "List
+    // publicly" (or no list server is configured). Third arg: the UPnP port mapper (#264), always
+    // created for a host (best-effort - being reachable is the point of hosting), never null. The
+    // receiver (Program.cs) owns both lifetimes: dispose on lobby close / game end / app exit.
+    public Action<ILobbyViewModel, PublicListingService?, NatPortMapper?>? OnCreated;
     public Action? OnCancel;
 
     private string _yourName      = "Mr. Host";
@@ -165,6 +166,12 @@ public class HostModal : IAppScreen
 
         var viewModel = new LobbyViewModel_Host(_yourName, _serverName, _password, host);
 
+        // Best-effort UPnP port forwarding (#264), regardless of public listing: any internet host
+        // benefits from an auto-opened port, and it is removed again on teardown. Failure is normal
+        // (many routers disable UPnP) and never affects hosting.
+        var mapper = new NatPortMapper(port);
+        mapper.Start();
+
         // Start the public-listing heartbeat (#264) alongside the host, advertising the actual
         // listen port (#189). The password itself never leaves this machine - only a has-password
         // flag is advertised.
@@ -176,7 +183,7 @@ public class HostModal : IAppScreen
         }
 
         Reset();
-        OnCreated?.Invoke(viewModel, listing);
+        OnCreated?.Invoke(viewModel, listing, mapper);
     }
 
     private void Reset()

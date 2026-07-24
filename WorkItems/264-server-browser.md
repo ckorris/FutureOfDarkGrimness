@@ -127,6 +127,28 @@ unless the transport changes or a relay exists. v1 stance: **direct connect only
 
 ## Notes
 
+- 2026-07-23 (UPnP + license notices): added best-effort automatic port forwarding so a host on a
+  typical home router can be reached without manual port-forwarding, and shipped third-party license
+  notices required by the bundled MIT/BSD components.
+  - **UPnP/NAT-PMP**: `FdgRaylib/ListServer/NatPortMapper.cs` wraps `Mono.Nat` (3.0.4, MIT, pure
+    managed - no native deps, no impact on the Mac cross-build). `HostModal.CreateServer` always
+    creates + `Start()`s a mapper for a host (regardless of "List publicly" - any internet host wants
+    the port open; it is removed on teardown). `OnCreated` now carries the mapper as a 3rd arg;
+    Program.cs disposes it on the same lobby-back / game-exit / app-exit paths as the listing (removes
+    the router mapping so we never leave a port open past the session). Best-effort by design: many
+    routers disable UPnP and CGNAT/double-NAT defeat it entirely, so failure is normal and never
+    affects hosting - the list server's reachability probe stays the source of truth. `Status`/`State`
+    exposed for a future lobby UI surface.
+  - **DEFERRED (explicit, not silent)**: (a) the discovery/mapping/timeout path is NOT auto-tested -
+    `Start()` sends live SSDP/NAT-PMP traffic and could open a real port on the dev machine's router
+    during `dotnet test`; it is a manual real-router check (added to TESTING-CHECKLIST.md). Unit tests
+    cover only the network-free surface (initial Idle state, dispose-before-map idempotency).
+    (b) surfacing the mapper `Status` in the lobby UI is left for the same pass that surfaces the
+    listing `Status` (both already exposed as properties).
+  - **Third-party notices**: `THIRD-PARTY-NOTICES.txt` (repo root) reproduces the MIT/BSD notices for
+    Mono.Nat, Newtonsoft.Json, TinyDialogsNet, Dear ImGui/cimgui/ImGui.NET, and the zlib notices for
+    raylib/Raylib-cs/tinyfiledialogs. `build-dist.sh` copies it into every distributable so the
+    attribution travels with the binary (was a pre-existing gap for the other bundled libs too).
 - 2026-07-23 (later): P1-P3 implemented on `264-server-browser`:
   - **P1** `tools/list-server/` — Worker + single `Registry` Durable Object (SQLite class, free
     plan), all three endpoints, 90s TTL lazy sweep, token auth, per-IP rate limit (3s) + caps

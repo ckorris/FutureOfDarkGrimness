@@ -68,6 +68,15 @@ publish_one() {
 
   # Drop a recipient-facing README with the platform gotchas.
   write_readme "$rid" "$out"
+
+  # Ship the third-party license notices next to the binary. The bundled MIT/BSD
+  # components (Mono.Nat, Newtonsoft.Json, ImGui.NET, TinyDialogsNet) require their
+  # notices to travel with any distribution; keep this in the archive.
+  if [[ -f "$ROOT_DIR/THIRD-PARTY-NOTICES.txt" ]]; then
+    cp "$ROOT_DIR/THIRD-PARTY-NOTICES.txt" "$out/THIRD-PARTY-NOTICES.txt"
+  else
+    echo "!! THIRD-PARTY-NOTICES.txt missing at repo root - license notices will NOT ship" >&2
+  fi
 }
 
 write_readme() {
