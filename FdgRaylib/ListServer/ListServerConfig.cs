@@ -10,9 +10,10 @@ namespace FdgRaylib.ListServer;
 /// </summary>
 public static class ListServerConfig
 {
-    // Set this to the deployed Worker URL (e.g. "https://fdg-list-server.<account>.workers.dev")
-    // once `npx wrangler deploy` has been run — see tools/list-server/README.md. Empty until then.
-    private const string DefaultBaseUrl = "";
+    // The deployed list-server Worker (#264), live 2026-07-23. Overridable at runtime via the
+    // FDG_LIST_SERVER_URL env var or a listserver.url file; blank it to disable the feature. Redeploy
+    // with `npx wrangler deploy` in tools/list-server after changing the Worker.
+    private const string DefaultBaseUrl = "https://fdg-list-server.ckorris.workers.dev";
 
     private static string? _baseUrl;
     private static bool _resolved;

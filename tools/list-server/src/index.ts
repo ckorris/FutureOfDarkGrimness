@@ -69,11 +69,15 @@ interface ServerEntry {
   lastSeenMs: number;
 }
 
+// Storage-key prefix for per-IP rate-limit records (a stored timestamp per IP). Kept in the same
+// DO storage as server entries but under a distinct prefix so listings can skip them. MUST be
+// storage, not an in-memory Map: Cloudflare evicts idle Durable Objects between requests, so
+// in-memory rate state is empty on nearly every production request (it only "works" under the
+// always-warm `wrangler dev`). The per-IP/total ENTRY caps are storage-backed for the same reason.
+const RATE_PREFIX = "rate:";
+
 export class Registry {
   private readonly state: DurableObjectState;
-  // Last accepted POST per IP, for rate limiting. In-memory only: losing it on DO eviction
-  // just means one early heartbeat gets through, which is harmless.
-  private readonly lastPostByIp = new Map<string, number>();
 
   constructor(state: DurableObjectState) {
     this.state = state;
@@ -108,17 +112,13 @@ export class Registry {
 
     const now = Date.now();
 
-    // Per-IP rate limit. Applies to both register and heartbeat; the real client posts
-    // every ~30s, so anything under 3s apart is a bug or abuse.
-    const last = this.lastPostByIp.get(observedIp) ?? 0;
+    // Per-IP rate limit, storage-backed so it survives DO eviction (see RATE_PREFIX). Applies to
+    // both register and heartbeat; the real client posts every ~30s, so anything under 3s apart is
+    // a bug or abuse. The accepted-time write happens only after the request passes its checks.
+    const rateKey = RATE_PREFIX + observedIp;
+    const last = ((await this.state.storage.get(rateKey)) as number | undefined) ?? 0;
     if (now - last < MIN_POST_INTERVAL_MS) {
       return json({ error: "rate limited" }, 429);
-    }
-    // Opportunistically trim the rate map so it can't grow unbounded.
-    if (this.lastPostByIp.size > 1_000) {
-      for (const [ip, t] of this.lastPostByIp) {
-        if (now - t > 60_000) this.lastPostByIp.delete(ip);
-      }
     }
 
     const contentLength = Number(request.headers.get("Content-Length") ?? "0");
@@ -147,7 +147,7 @@ export class Registry {
       if (existing.token !== parsed.token || existing.host !== observedIp) {
         return json({ error: "forbidden" }, 403);
       }
-      this.lastPostByIp.set(observedIp, now);
+      await this.state.storage.put(rateKey, now);
 
       existing.name = parsed.name;
       existing.hasPassword = parsed.hasPassword;
@@ -158,10 +158,11 @@ export class Registry {
       existing.typeMapHash = parsed.typeMapHash;
       if (existing.port !== parsed.port) {
         existing.port = parsed.port;
-        existing.reachable = await probe(observedIp, parsed.port); // port changed: re-probe
+        existing.reachable = null; // port changed: re-probe in the background (below)
       }
       existing.lastSeenMs = now;
       await this.state.storage.put(existing.serverId, existing);
+      if (existing.reachable === null) this.probeInBackground(existing.serverId, observedIp, parsed.port);
       return json(registrationReply(existing), 200);
     }
 
@@ -173,7 +174,7 @@ export class Registry {
     }
     if (perIp >= MAX_ENTRIES_PER_IP) return json({ error: "too many servers from this address" }, 429);
 
-    this.lastPostByIp.set(observedIp, now);
+    await this.state.storage.put(rateKey, now);
 
     const entry: ServerEntry = {
       serverId: crypto.randomUUID(),
@@ -187,10 +188,11 @@ export class Registry {
       playerCount: parsed.playerCount,
       maxPlayers: parsed.maxPlayers,
       state: parsed.state,
-      reachable: await probe(observedIp, parsed.port),
+      reachable: null, // filled in by the background probe so registration returns immediately
       lastSeenMs: now,
     };
     await this.state.storage.put(entry.serverId, entry);
+    this.probeInBackground(entry.serverId, observedIp, parsed.port);
     return json(registrationReply(entry), 201);
   }
 
@@ -235,11 +237,35 @@ export class Registry {
   // ---- Storage helpers ----------------------------------------------------------------
 
   /** Loads all entries, deleting expired ones as a lazy sweep (no alarms needed). */
+  // Probe reachability WITHOUT blocking the register/heartbeat response. A dial to an unreachable
+  // host takes the full 3s timeout, and a Durable Object serializes requests - doing it inline made
+  // every registration hold the DO for ~3s (slow to appear in the browser, and it defeated the
+  // per-IP rate limit by spacing serialized requests past its window). waitUntil keeps the DO alive
+  // until the probe settles; the result lands on the entry for the next listing. Guarded against a
+  // racing re-register (host/port must still match).
+  private probeInBackground(serverId: string, ip: string, port: number): void {
+    this.state.waitUntil((async () => {
+      const reachable = await probe(ip, port);
+      const entry = (await this.state.storage.get(serverId)) as ServerEntry | undefined;
+      if (entry !== undefined && entry.host === ip && entry.port === port) {
+        entry.reachable = reachable;
+        await this.state.storage.put(serverId, entry);
+      }
+    })());
+  }
+
   private async loadLive(now: number): Promise<Map<string, ServerEntry>> {
-    const all = (await this.state.storage.list()) as Map<string, ServerEntry>;
+    const all = (await this.state.storage.list()) as Map<string, unknown>;
     const live = new Map<string, ServerEntry>();
     const expired: string[] = [];
-    for (const [key, entry] of all) {
+    for (const [key, value] of all) {
+      // Rate-limit records (rate:<ip> -> timestamp) share this storage but aren't server entries.
+      // Skip them here, and garbage-collect ones older than a minute so they can't accumulate.
+      if (key.startsWith(RATE_PREFIX)) {
+        if (now - (value as number) > 60_000) expired.push(key);
+        continue;
+      }
+      const entry = value as ServerEntry;
       if (now - entry.lastSeenMs > TTL_SECONDS * 1000) expired.push(key);
       else live.set(key, entry);
     }
