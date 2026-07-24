@@ -558,7 +558,8 @@ else
                 GameGuiWiring.Launch(parts.HumanGame, players,
                     saveGameToJson: () => GameSaveSerializer.Save(parts.Store),
                     onLaunched: renderer.TransitionToGame,
-                    coverProximityExceptions: scenarioSettings.CoverProximityExceptionsEnabled);
+                    coverProximityExceptions: scenarioSettings.CoverProximityExceptionsEnabled,
+                    tableBackground: scenarioSettings.TableBackground);
 
                 var scenarioServer = new FDGServer(parts.Store, parts.Bus, parts.Slots,
                     new RealtimePresentationClock());

@@ -30,10 +30,12 @@ public class RaylibRenderer
     private const float ReferenceUiScale  = 1.4f;
     private const float ReferenceHeightPx = 2160f;
 
-    private static readonly Color TableColor  = new(40, 100, 40, 255);
-    // Warm brown so the table edge reads clearly against both the green felt and the dark background.
-    private static readonly Color TableBorder = new(150, 105, 55, 255);
     private static readonly Color Background  = new(30, 30, 30, 255);
+
+    // The surface, grid tints and edge trim all come from the launched game's #265 table background
+    // (green forest felt unless the lobby says otherwise) — see TableBackgrounds.
+    private ETableBackground     _background = ETableBackground.Forest;
+    private TableBackgroundStyle _backgroundStyle = TableBackgrounds.For(ETableBackground.Forest);
 
     // Table grid: minor lines every 6", major every 12" (matches the game's inch measurements — a
     // major square is one charge move across). Lines are etched darker than the felt for an engraved
@@ -41,8 +43,6 @@ public class RaylibRenderer
     // construction, so it never bleeds onto terrain/objectives/models drawn after.
     private const float GridMinorInches = 6f;
     private const float GridMajorInches = 12f;
-    private static readonly Color GridMinorColor = new(33, 85, 33, 80);
-    private static readonly Color GridMajorColor = new(24, 66, 24, 150);
 
     public MainMenuScreen    MainMenu     { get; } = new();
     public ArmyBuilderScreen ArmyBuilder  { get; } = new();
@@ -109,12 +109,14 @@ public class RaylibRenderer
     private static readonly Color ExclusionFill = new(235, 95, 95, 255);
     private const byte ExclusionCompositeAlpha = 70;
 
-    // Subtle grass mottling over the felt: a small tileable Perlin-noise texture generated once, then
-    // tiled across the table rect (repeat wrap) and composited additively at a low green tint so it reads
-    // as faint grassy flecks rather than flat felt. Lazily generated on first draw; unloaded on shutdown.
-    private Texture2D _grassTex;
-    private bool      _grassReady;
-    private static readonly Color GrassTint = new(22, 44, 22, 60);
+    // Subtle mottling over the felt: a small tileable Perlin-noise texture generated once, then tiled
+    // across the table rect (repeat wrap) and composited additively at a low dark tint so it reads as
+    // faint flecks (grass, sand grain, slab staining) rather than a flat surface. Lazily generated on
+    // first draw; regenerated when the table background changes (each style has its own noise scale and
+    // sample offset, so the patterns differ); unloaded on shutdown.
+    private Texture2D _mottleTex;
+    private bool      _mottleReady;
+    private ETableBackground _mottleFor = ETableBackground.Forest;
 
     public RaylibRenderer()
     {
@@ -181,6 +183,10 @@ public class RaylibRenderer
         _taskDisplay        = taskDisplay;
         _presentationPlayer = presentationPlayer;
         _playerMessageUI    = playerMessageUI;
+        // #265: the launched game's table surface rides the overlay (stamped in BuildGui). The mottle
+        // texture is regenerated lazily on the next draw when this differs from what it was baked for.
+        _background         = resolverOverlay?.TableBackground ?? ETableBackground.Forest;
+        _backgroundStyle    = TableBackgrounds.For(_background);
         _tooltipOverlay.Attach(tableState, colorForPlayer, presentationPlayer);
         _escapeMenu.AttachSave(saveGameToJson);
         _measurementOverlay.Attach(tableState);
@@ -470,7 +476,7 @@ public class RaylibRenderer
                 // Right-column regions: resolver panel (top half) + log/chat console (bottom half).
                 int rightW    = RightColumnWidth(screenW);
                 int rightX    = screenW - rightW;
-                int panelH    = screenH / 2;
+                int panelH    = (int)(screenH * ResolverPanelLayout.ScreenHeightFraction);
                 ResolverPanelLayout.Set(rightX, 0, rightW, panelH);
 
                 rlImGui.Begin();
@@ -552,7 +558,7 @@ public class RaylibRenderer
 
         rlImGui.Shutdown();
         if (_exclusionRTReady) Raylib.UnloadRenderTexture(_exclusionRT);
-        if (_grassReady) Raylib.UnloadTexture(_grassTex);
+        if (_mottleReady) Raylib.UnloadTexture(_mottleTex);
         _audio?.Dispose();
         Raylib.CloseWindow();
     }
@@ -636,42 +642,49 @@ public class RaylibRenderer
     {
         int tw = (int)(TableWIn * l.Scale);
         int th = (int)(TableHIn * l.Scale);
-        Raylib.DrawRectangle(l.OriginX, l.OriginY, tw, th, TableColor);
-        DrawGrassTexture(l, tw, th);
+        Raylib.DrawRectangle(l.OriginX, l.OriginY, tw, th, _backgroundStyle.Surface);
+        DrawMottleTexture(l, tw, th);
         // A thin, defined frame around the felt (replaces the old edge vignette / "satin" sheen).
         Raylib.DrawRectangleLinesEx(new Rectangle(l.OriginX, l.OriginY, tw, th),
-            TableBorderThickness, TableBorder);
+            TableBorderThickness, _backgroundStyle.Border);
     }
 
-    // Tiles the grass-noise texture across the table at a constant on-screen density (source rect larger
+    // Tiles the mottle-noise texture across the table at a constant on-screen density (source rect larger
     // than the texture, repeat wrap) and blends it additively so only the lighter flecks show through.
-    private void DrawGrassTexture(Layout l, int tw, int th)
+    private void DrawMottleTexture(Layout l, int tw, int th)
     {
-        EnsureGrassTexture();
+        EnsureMottleTexture();
         var src = new Rectangle(0, 0, tw, th);
         var dst = new Rectangle(l.OriginX, l.OriginY, tw, th);
         Raylib.BeginBlendMode(BlendMode.Additive);
-        Raylib.DrawTexturePro(_grassTex, src, dst, Vector2.Zero, 0f, GrassTint);
+        Raylib.DrawTexturePro(_mottleTex, src, dst, Vector2.Zero, 0f, _backgroundStyle.MottleTint);
         Raylib.EndBlendMode();
     }
 
-    private void EnsureGrassTexture()
+    private void EnsureMottleTexture()
     {
-        if (_grassReady) return;
-        // 128px Perlin patch; fine scale for a close, organic grain. Bilinear + repeat so it tiles
-        // seamlessly and stays smooth when stretched.
-        Image img = Raylib.GenImagePerlinNoise(128, 128, 0, 0, 5f);
-        _grassTex = Raylib.LoadTextureFromImage(img);
+        if (_mottleReady && _mottleFor == _background) return;
+        if (_mottleReady) Raylib.UnloadTexture(_mottleTex);
+        // 128px Perlin patch; the style's scale sets the grain (fine and organic for grass, coarse and
+        // blotchy for concrete), its offset moves the sample window so no two surfaces share a pattern.
+        // Bilinear + repeat so it tiles seamlessly and stays smooth when stretched.
+        Image img = Raylib.GenImagePerlinNoise(128, 128,
+            _backgroundStyle.MottleOffset, _backgroundStyle.MottleOffset, _backgroundStyle.MottleScale);
+        _mottleTex = Raylib.LoadTextureFromImage(img);
         Raylib.UnloadImage(img);
-        Raylib.SetTextureFilter(_grassTex, TextureFilter.Bilinear);
-        Raylib.SetTextureWrap(_grassTex, TextureWrap.Repeat);
-        _grassReady = true;
+        Raylib.SetTextureFilter(_mottleTex, TextureFilter.Bilinear);
+        Raylib.SetTextureWrap(_mottleTex, TextureWrap.Repeat);
+        _mottleReady = true;
+        _mottleFor   = _background;
     }
 
     // Etched inch grid + a soft felt vignette, drawn only within the table rect (so it stays under
     // terrain/objectives/models, which draw afterward). Interior lines only — the border is the edge.
-    private static void DrawTableGrid(Layout l)
+    private void DrawTableGrid(Layout l)
     {
+        Color minor = _backgroundStyle.GridMinor;
+        Color major = _backgroundStyle.GridMajor;
+
         int tw = (int)(TableWIn * l.Scale);
         int th = (int)(TableHIn * l.Scale);
         int x0 = l.OriginX, y0 = l.OriginY;
@@ -680,12 +693,12 @@ public class RaylibRenderer
         for (float xi = GridMinorInches; xi < TableWIn; xi += GridMinorInches)
         {
             int px = x0 + (int)(xi * l.Scale);
-            Raylib.DrawLine(px, y0, px, y1, IsMajorGridLine(xi) ? GridMajorColor : GridMinorColor);
+            Raylib.DrawLine(px, y0, px, y1, IsMajorGridLine(xi) ? major : minor);
         }
         for (float zi = GridMinorInches; zi < TableHIn; zi += GridMinorInches)
         {
             int py = y0 + (int)(zi * l.Scale);
-            Raylib.DrawLine(x0, py, x1, py, IsMajorGridLine(zi) ? GridMajorColor : GridMinorColor);
+            Raylib.DrawLine(x0, py, x1, py, IsMajorGridLine(zi) ? major : minor);
         }
     }
 
@@ -1058,8 +1071,12 @@ public class RaylibRenderer
         if (_showChat) _chatUnread = false; // chat is visible
 
         float inputH = _showChat ? ImGui.GetFrameHeightWithSpacing() : 0f;
+        // No HorizontalScrollbar: with it set, ImGui widens the child's work rect to the content size, which
+        // is what RenderConsoleLine's TextWrapped wraps against - so nothing ever wrapped and every long line
+        // grew the scrollbar instead. Without the flag the wrap width is the visible column and long lines
+        // spill onto the next row, which is what a log/chat column should do.
         ImGui.BeginChild("##consolescroll", new Vector2(0, -inputH), ImGuiChildFlags.None,
-            ImGuiWindowFlags.HorizontalScrollbar);
+            ImGuiWindowFlags.None);
 
         // The engine log stream carries both normal and Debug-tagged lines; keep whichever categories are
         // toggled on (Debug is a developer view, off by default).

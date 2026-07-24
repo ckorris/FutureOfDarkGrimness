@@ -22,6 +22,39 @@ A per-clone pre-push hook blocks duplicate numbers across the index and the arch
 > comments in the read-only submodule - all predating the renumber, per every prior reconciliation. The
 > merge and submodule resolution follow in the same session; nothing was pushed.
 >
+> **2026-07-23 — reconciliation 21.** The other half of reconciliation 20's crossing. The
+> table-background session filed **266 = "a game resumed through the lobby cannot be saved and loaded
+> again"** (found while hand-verifying #265) against a local master at `2275ef0`, where 265 was the
+> highest number in use and 266 looked free. It was: the five-issue session had already claimed
+> **266 = console word-wrap + resolver panel height** and pushed it. Same precedent, other direction this
+> time - the console-wrap item was merged, the resave item was not, so **resave-after-lobby-resume
+> 266 -> 270** (`WorkItems/270-resave-after-lobby-resume-unloadable.md`; 267-269 were taken by the same
+> session, so 270 was the lowest free number). The detail file, its title, the index line, and #265's
+> forward reference to it were repointed. Nothing in the source referenced #266 - the bug is filed, not
+> fixed. **Left as-is on purpose:** the commit message that filed it as #266, which predates the renumber.
+> Net effect of 20 + 21: the table background keeps **265**, console wrap keeps **266**, and the two
+> yielding items are **267** (all-models gate) and **270** (resave-after-resume).
+
+> **2026-07-23 — reconciliation 20.** A five-issue session (console wrap, resolver panel height, reposition
+> placement, terrain palette, all-models gate) filed **265-269** against a local master whose tip was
+> `d517b59`, where 264 was the highest number in use. While it was in progress origin/master landed
+> **265 = lobby table background / Battlefield dropdown** (merged, and already moved to the archive). Per
+> merged-wins precedent the unmerged local item yields: **all-models gate on unit-wide abilities 265 -> 267**
+> (`WorkItems/267-all-models-gate-unit-wide-abilities.md`; 266/268/269 were free on both sides and kept their
+> numbers, and 267 was the lowest free number). The detail file, its title, the index line, and the **code
+> comments** in `CoreRuleCatalog`, `RuleValidator`, `BookRuleSupplement`, `UnitWideAbilityGateTests` and
+> `TeleportRuleIntegrationTests` were all repointed to #267 — the table-background side's own `#265`
+> comments (renderer, lobby, `GameSettings`, `ScenarioFile`, and their tests) were left alone. **Left as-is
+> on purpose:** the commit messages on both sides, which say "#265" for two different things and predate the
+> renumber, as in every prior reconciliation.
+>
+> **Note for the hook:** this collision would NOT have been caught by the pre-push hook, which only greps
+> `WorkItemsList.md` for duplicates *within that file*. Master's 265 had already been moved to
+> `WorkItems/Archive.md`, so the merged index contained exactly one 265 line and the hook passed; the clash
+> only shows up when the index and the archive are checked *together* — which the hook's own header claims
+> it does. Worth widening the hook to `cat WorkItemsList.md WorkItems/Archive.md` (the check that actually
+> found this one), since an archived-vs-open collision is now a demonstrated failure mode.
+>
 > **2026-07-22 — reconciliation 19.** The push of #255's follow-on (team-based victory scoring,
 > locally filed as **256**) found origin/master had meanwhile landed reconciliation 18's
 > **256 = AI repack clamp immobilizes big/clustered units** (merged, S1 shipped). Per merged-wins

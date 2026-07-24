@@ -20,6 +20,17 @@ pin tests.
 
 ## Notes (newest first)
 
+**2026-07-23 — D1 BASELINE RE-PINNED after #264 issue 6 (the solo skirt capped at +/-60 degrees,
+was +/-100: past perpendicular a "skirt" is a retreat, and it was taken at the FULL rush budget).**
+New 200-game outcome hashes, DOP 16, reproducible across duplicate runs, zero faults, zero
+timeouts: builtin mirror `F82D5A91B0119955` (27/27 wins, 146 ties; previous `3674C906996F34CC` was
+29/29/142), builtin vs builtin-basic `A7EEB33FD9CEFC6A` (36/25/139; previous `CE3DC8150005FF2C` was
+40/25/135). The mirror staying perfectly symmetric is the sanity check on the change. Every hash
+reference below this note refers to the OLD baseline. #264 also landed five other Tactician fixes
+(route-distance objective gradient, gated reachable bonus, blocked-goal pathfinding, per-model route
+joins + snake side selection, per-model move budgets with a resolver repair pass, route-aware
+deployment lanes) - see [WorkItems/264](264-tactician-walled-unit-lateral-retreat.md).
+
 **2026-07-22 — D1 BASELINE RE-PINNED after #256 (S1 measure-and-correct budgets, S2 friendly
 re-aim, S4 corridor snake deliberately moved solo-bot movement).** New 200-game outcome hashes,
 DOP 16, reproducible across duplicate runs, zero faults: builtin mirror `3674C906996F34CC`

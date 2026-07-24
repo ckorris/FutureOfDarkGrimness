@@ -4882,7 +4882,7 @@
       {
         "hookID": "Activation_OnActivationStart",
         "condition": {
-          "kind": "always"
+          "kind": "allModelsHaveThisRule"
         },
         "effect": {
           "kind": "repositionAtActivation",
@@ -4907,7 +4907,7 @@
       {
         "hookID": "Activation_OnActivationStart",
         "condition": {
-          "kind": "always"
+          "kind": "allModelsHaveThisRule"
         },
         "effect": {
           "kind": "repositionAtActivation",
@@ -4932,7 +4932,7 @@
       {
         "hookID": "Activation_OnActivationStart",
         "condition": {
-          "kind": "always"
+          "kind": "allModelsHaveThisRule"
         },
         "effect": {
           "kind": "repositionAtActivation",
@@ -4957,7 +4957,7 @@
       {
         "hookID": "Activation_OnActivationStart",
         "condition": {
-          "kind": "always"
+          "kind": "allModelsHaveThisRule"
         },
         "effect": {
           "kind": "repositionAtActivation",
@@ -6212,5 +6212,457 @@
     "engineArgumentCount": 0,
     "valence": "Positive",
     "description": "Once per activation, before attacking, pick one friendly unit within 12\" with Caster, which gets +1 to casting rolls once (next time the effect would apply)."
+  },
+  {
+    "name": "Screened",
+    "passive": [
+      {
+        "hookID": "Shooting_OnHitRollModifier",
+        "condition": {
+          "kind": "and",
+          "left": {
+            "kind": "attackedFromOverInches",
+            "distanceInches": 9
+          },
+          "right": {
+            "kind": "allModelsHaveThisRule"
+          }
+        },
+        "effect": {
+          "kind": "rollModifier",
+          "rollKind": "Hit",
+          "delta": -1
+        },
+        "lifetime": "ThisAttack",
+        "seat": "Subject"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "Enemies shooting or charging this unit from over 9 inches away get -1 to hit."
+  },
+  {
+    "name": "Screened Aura",
+    "passive": [
+      {
+        "hookID": "Lifecycle_OnUnitCreated",
+        "condition": {
+          "kind": "always"
+        },
+        "effect": {
+          "kind": "aura",
+          "ruleName": "Screened"
+        },
+        "lifetime": "UntilEndOfGame",
+        "seat": "Actor"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "This model and its unit gain Screened."
+  },
+  {
+    "name": "Grounded Reinforcement",
+    "passive": [
+      {
+        "hookID": "Shooting_OnHitRollComplete",
+        "condition": {
+          "kind": "and",
+          "left": {
+            "kind": "allModelsHaveThisRule"
+          },
+          "right": {
+            "kind": "mostModelsWithinInchesOfTerrain",
+            "distanceInches": 1
+          }
+        },
+        "effect": {
+          "kind": "rollModifier",
+          "rollKind": "Save",
+          "delta": 1
+        },
+        "lifetime": "ThisAttack",
+        "seat": "Subject"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "If most models in this unit are within 1 inch of terrain, this unit gets +1 to defense rolls."
+  },
+  {
+    "name": "Grounded Reinforcement Aura",
+    "passive": [
+      {
+        "hookID": "Lifecycle_OnUnitCreated",
+        "condition": {
+          "kind": "always"
+        },
+        "effect": {
+          "kind": "aura",
+          "ruleName": "Grounded Reinforcement"
+        },
+        "lifetime": "UntilEndOfGame",
+        "seat": "Actor"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "This model and its unit gain Grounded Reinforcement."
+  },
+  {
+    "name": "Grounded Precision",
+    "passive": [
+      {
+        "hookID": "Shooting_OnHitRollModifier",
+        "condition": {
+          "kind": "and",
+          "left": {
+            "kind": "allModelsHaveThisRule"
+          },
+          "right": {
+            "kind": "mostModelsWithinInchesOfTerrain",
+            "distanceInches": 1
+          }
+        },
+        "effect": {
+          "kind": "rollModifier",
+          "rollKind": "Hit",
+          "delta": 1
+        },
+        "lifetime": "ThisAttack",
+        "seat": "Actor"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "If most models in this unit are within 1 inch of terrain, this unit gets +1 to hit rolls when attacking."
+  },
+  {
+    "name": "Grounded Precision Aura",
+    "passive": [
+      {
+        "hookID": "Lifecycle_OnUnitCreated",
+        "condition": {
+          "kind": "always"
+        },
+        "effect": {
+          "kind": "aura",
+          "ruleName": "Grounded Precision"
+        },
+        "lifetime": "UntilEndOfGame",
+        "seat": "Actor"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "This model and its unit gain Grounded Precision."
+  },
+  {
+    "name": "Grounded Stealth",
+    "passive": [
+      {
+        "hookID": "Shooting_OnHitRollModifier",
+        "condition": {
+          "kind": "and",
+          "left": {
+            "kind": "allModelsHaveThisRule"
+          },
+          "right": {
+            "kind": "mostModelsWithinInchesOfTerrain",
+            "distanceInches": 1
+          }
+        },
+        "effect": {
+          "kind": "rollModifier",
+          "rollKind": "Hit",
+          "delta": -1
+        },
+        "lifetime": "ThisAttack",
+        "seat": "Subject"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "If most models in this unit are within 1 inch of terrain, enemies get -1 to hit rolls when attacking this unit."
+  },
+  {
+    "name": "Mobile Artillery",
+    "passive": [
+      {
+        "hookID": "Shooting_OnHitRollModifier",
+        "condition": {
+          "kind": "and",
+          "left": {
+            "kind": "not",
+            "inner": {
+              "kind": "isMelee"
+            }
+          },
+          "right": {
+            "kind": "and",
+            "left": {
+              "kind": "not",
+              "inner": {
+                "kind": "afterMoving"
+              }
+            },
+            "right": {
+              "kind": "attackedFromOverInches",
+              "distanceInches": 9
+            }
+          }
+        },
+        "effect": {
+          "kind": "rollModifier",
+          "rollKind": "Hit",
+          "delta": 1
+        },
+        "lifetime": "ThisAttack",
+        "seat": "Actor"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "When this unit uses a Hold action and shoots at enemies over 9 inches away, it gets +1 to hit rolls. As long as this unit hasn't moved during the round, when enemies shoot at it from over 9 inches away, they get -2 to hit rolls."
+  },
+  {
+    "name": "Heavy Impact",
+    "passive": [
+      {
+        "hookID": "Melee_OnChargeContact",
+        "condition": {
+          "kind": "always"
+        },
+        "effect": {
+          "kind": "chargeImpactHits",
+          "diceCount": {
+            "kind": "arg",
+            "index": 0
+          },
+          "armorPenetration": 1
+        },
+        "lifetime": "ThisAttack",
+        "seat": "Actor"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 1,
+    "valence": "Positive",
+    "description": "On charging into contact, rolls X bonus dice that score automatic hits with AP(1) before melee swings."
+  },
+  {
+    "name": "Quick Readjustment",
+    "passive": [
+      {
+        "hookID": "Shooting_OnHitRollModifier",
+        "condition": {
+          "kind": "and",
+          "left": {
+            "kind": "weaponHasRule",
+            "ruleName": "Indirect"
+          },
+          "right": {
+            "kind": "and",
+            "left": {
+              "kind": "afterMoving"
+            },
+            "right": {
+              "kind": "not",
+              "inner": {
+                "kind": "isMelee"
+              }
+            }
+          }
+        },
+        "effect": {
+          "kind": "rollModifier",
+          "rollKind": "Hit",
+          "delta": 1
+        },
+        "lifetime": "ThisAttack",
+        "seat": "Actor"
+      }
+    ],
+    "activated": [],
+    "scope": "Weapon",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "This unit ignores the -1 to hit penalty for shooting after moving when firing Indirect weapons."
+  },
+  {
+    "name": "Hazardous",
+    "passive": [
+      {
+        "hookID": "Shooting_OnHitRollComplete",
+        "condition": {
+          "kind": "always"
+        },
+        "effect": {
+          "kind": "rollModifier",
+          "rollKind": "Save",
+          "delta": -4
+        },
+        "lifetime": "ThisAttack",
+        "seat": "Actor"
+      }
+    ],
+    "activated": [],
+    "scope": "Weapon",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "Attacks with this weapon get AP(4), but this weapon's unit takes one wound on unmodified rolls of 1 to hit."
+  },
+  {
+    "name": "Speed Feat Boost",
+    "passive": [
+      {
+        "hookID": "Movement_OnMoveActionDeclared",
+        "condition": { "kind": "always" },
+        "effect": { "kind": "movementBonus", "actionType": "Advance", "distanceInches": 2, "minResultInches": 0 },
+        "lifetime": "ThisActivation",
+        "seat": "Actor"
+      },
+      {
+        "hookID": "Movement_OnMoveActionDeclared",
+        "condition": { "kind": "always" },
+        "effect": { "kind": "movementBonus", "actionType": "Rush", "distanceInches": 4, "minResultInches": 0 },
+        "lifetime": "ThisActivation",
+        "seat": "Actor"
+      },
+      {
+        "hookID": "Movement_OnMoveActionDeclared",
+        "condition": { "kind": "always" },
+        "effect": { "kind": "movementBonus", "actionType": "Charge", "distanceInches": 4, "minResultInches": 0 },
+        "lifetime": "ThisActivation",
+        "seat": "Actor"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "This unit moves +2 inches on Advance actions and +4 inches on Rush and Charge actions."
+  },
+  {
+    "name": "Speed Feat",
+    "passive": [],
+    "activated": [
+      {
+        "triggerHook": "Activation_OnActivationStart",
+        "cost": { "kind": "oncePerGame" },
+        "targetSelector": {
+          "rangeInches": 0,
+          "minCount": 1,
+          "maxCount": 1,
+          "targetAffinity": "Self",
+          "requireLineOfSight": false,
+          "requiredToken": null,
+          "singleModel": false,
+          "requiredRule": null
+        },
+        "effect": { "kind": "addRule", "ruleName": "Speed Feat Boost", "scope": "ThisActivation" },
+        "availableWhen": { "kind": "allModelsHaveThisRule" },
+        "label": "Speed Feat"
+      }
+    ],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "Once per game, at the start of its activation, this unit may move +2 inches on Advance actions and +4 inches on Rush and Charge actions for that activation."
+  },
+  {
+    "name": "Speed Feat Aura",
+    "passive": [
+      {
+        "hookID": "Lifecycle_OnUnitCreated",
+        "condition": { "kind": "always" },
+        "effect": { "kind": "aura", "ruleName": "Speed Feat" },
+        "lifetime": "UntilEndOfGame",
+        "seat": "Actor"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "This model and its unit gain Speed Feat."
+  },
+  {
+    "name": "Protection Feat Guard",
+    "passive": [
+      {
+        "hookID": "Shooting_OnSaveRollComplete",
+        "condition": { "kind": "allModelsHaveThisRule" },
+        "effect": { "kind": "ignoreWoundOnRoll", "minRoll": 5 },
+        "lifetime": "ThisAttack",
+        "seat": "Subject"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "This unit rolls one die per wound it takes, ignoring each on a 5+."
+  },
+  {
+    "name": "Protection Feat",
+    "passive": [],
+    "activated": [
+      {
+        "triggerHook": "Activation_OnActivationStart",
+        "cost": { "kind": "oncePerGame" },
+        "targetSelector": {
+          "rangeInches": 0,
+          "minCount": 1,
+          "maxCount": 1,
+          "targetAffinity": "Self",
+          "requireLineOfSight": false,
+          "requiredToken": null,
+          "singleModel": false,
+          "requiredRule": null
+        },
+        "effect": { "kind": "addRule", "ruleName": "Protection Feat Guard", "scope": "UntilNextActivation" },
+        "availableWhen": { "kind": "allModelsHaveThisRule" },
+        "label": "Protection Feat"
+      }
+    ],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "Once per game, when this unit activates, it may brace: until its next activation it rolls one die per wound it takes, ignoring each on a 5+."
+  },
+  {
+    "name": "Protection Feat Aura",
+    "passive": [
+      {
+        "hookID": "Lifecycle_OnUnitCreated",
+        "condition": { "kind": "always" },
+        "effect": { "kind": "aura", "ruleName": "Protection Feat" },
+        "lifetime": "UntilEndOfGame",
+        "seat": "Actor"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "This model and its unit gain Protection Feat."
   }
 ]

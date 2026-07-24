@@ -329,11 +329,15 @@ public class GuiPlaceOneTerrainResolver
 
     private static string DescribeTemplate(TerrainPieceEntry entry)
     {
+        // #268: named pieces lead with the name - the palette is 30 entries now, and several share a
+        // type + size label ("Blocking, Impassible (3.0"x3.0")" reads as nothing in particular).
+        // Layouts without names keep the old type-first label.
         string typeText = entry.TerrainType == ETerrainType.None ? "None" : entry.TerrainType.ToString();
+        string head = string.IsNullOrWhiteSpace(entry.Name) ? typeText : $"{entry.Name} - {typeText}";
         if (entry.Shape is CircularZone c)
-            return $"{typeText} (r={c.Radius:F1}\")";
+            return $"{head} (r={c.Radius:F1}\")";
         (float lx, float hx, float ly, float hy) = entry.Shape.GetAABB();
-        return $"{typeText} ({hx - lx:F1}\"x{hy - ly:F1}\")";
+        return $"{head} ({hx - lx:F1}\"x{hy - ly:F1}\")";
     }
 
     private void Complete(TaskCompletionSource<TerrainPlacementResult> tcs, TerrainPlacementResult result)

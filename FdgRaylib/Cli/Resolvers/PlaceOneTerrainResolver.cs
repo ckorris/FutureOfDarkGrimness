@@ -27,7 +27,11 @@ public class PlaceOneTerrainResolver : IStageResolver<PlaceOneTerrainRequest, Te
         for (int i = 0; i < request.Pool.Count; i++)
         {
             var entry = request.Pool[i];
-            Console.WriteLine($"  [{i}] {entry.TerrainType}  {DescribeShape(entry.Shape)}");
+            // #268: lead with the piece's name when it has one; unnamed layouts read as before.
+            string label = string.IsNullOrWhiteSpace(entry.Name)
+                ? $"{entry.TerrainType}"
+                : $"{entry.Name} - {entry.TerrainType}";
+            Console.WriteLine($"  [{i}] {label}  {DescribeShape(entry.Shape)}");
         }
         Console.Write("Enter <template_index> <x>,<z> [rotation_deg]: ");
 

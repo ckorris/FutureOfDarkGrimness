@@ -29,9 +29,21 @@ dotnet run --project FdgRaylib/FdgRaylib.csproj -- --headless --scenario Scenari
   "activePlayer": 0,                   // index into players: whose activation comes next
   "settings": {
     "randomness": "Probabilistic",     // Probabilistic (default; histogram dice - see below) or Realistic
-    "diceSeed": 42                     // optional: seeded Realistic dice for repeatable runs
+    "diceSeed": 42,                    // optional: seeded Realistic dice for repeatable runs
+    "background": "Desert"             // optional: table surface - Forest (default), Desert, Ice,
+                                       //           MarsLike, Urban, Barren. Cosmetic only.
   },
   "objectives": [[18, 24], [36, 24]],  // optional [x,z] markers; default = 3 across the midline
+  "terrain": [                         // optional; absent = open table
+    { "type": "Blocking|Impassible",   // ETerrainType flags, '|' or ',' separated:
+                                       //   Cover, Impassible, Difficult, Dangerous, Blocking, Elevated
+      "shape": "Rectangle",            // Rectangle (or Rect) / Circle
+      "center": [24, 11],              // [x,z] of the piece's center
+      "size": [20, 2],                 // rectangle: [width (x), depth (z)] inches
+      "rotationDegrees": 30,           // rectangle only: around the center (in-game dial convention)
+      "heightInches": 4 },             // optional, default 0
+    { "type": "Cover, Difficult", "shape": "Circle", "center": [30, 30], "diameter": 8 }
+  ],
   "players": [
     {
       "army": "armies/Marksmen.fdgarmy",   // path relative to this file
@@ -70,7 +82,11 @@ Notes:
   token nets zero and reads as the modifier silently not working. `delta` on any other token type is
   a compile error rather than a silent drop.
   `{ "type": "CastRollModifier", "count": 1, "clearTrigger": "FirstTrigger", "delta": -1 }`
-- No terrain yet (open table); scenario terrain is a recorded follow-up facet on #167.
+- Terrain pieces compile through the same construction the in-game placement uses, so movement
+  sweeps, cover, and LoS treat them exactly like player-placed terrain. **Auto-placed units are
+  rowed terrain-blind** — explicitly place any unit whose relation to terrain the scenario tests.
+  A circle takes `diameter` (no rotation); a rectangle takes `size` (+ optional `rotationDegrees`).
+  See `example-walled-advance.json`.
 
 ## Testing workflow (from SpecialRulesAudit.md section 3)
 

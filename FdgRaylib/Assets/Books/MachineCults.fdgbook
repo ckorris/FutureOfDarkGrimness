@@ -4747,7 +4747,7 @@
         {
           "hookID": "Activation_OnActivationStart",
           "condition": {
-            "kind": "always"
+            "kind": "allModelsHaveThisRule"
           },
           "effect": {
             "kind": "repositionAtActivation",
@@ -4800,6 +4800,36 @@
       "engineArgumentCount": 0,
       "valence": "Positive",
       "description": "Once per activation, before attacking, pick one enemy unit within 18\u0022 in line of sight, which loses AP(\u002B1) when attacking once (next time the effect would apply)."
+    },
+    {
+      "name": "Grounded Stealth",
+      "passive": [
+        {
+          "hookID": "Shooting_OnHitRollModifier",
+          "condition": {
+            "kind": "and",
+            "left": {
+              "kind": "allModelsHaveThisRule"
+            },
+            "right": {
+              "kind": "mostModelsWithinInchesOfTerrain",
+              "distanceInches": 1
+            }
+          },
+          "effect": {
+            "kind": "rollModifier",
+            "rollKind": "Hit",
+            "delta": -1
+          },
+          "lifetime": "ThisAttack",
+          "seat": "Subject"
+        }
+      ],
+      "activated": [],
+      "scope": "Unit",
+      "engineArgumentCount": 0,
+      "valence": "Positive",
+      "description": "If most models in this unit are within 1 inch of terrain, enemies get -1 to hit rolls when attacking this unit."
     },
     {
       "name": "Rending when shooting",

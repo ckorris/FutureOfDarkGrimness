@@ -389,6 +389,11 @@ public class LobbyScreen : IAppScreen
     private void DrawSettings(float panelW)
     {
         bool isHost = _viewModel!.HasHostPrivileges;
+        // #265: resuming a save launches from the SAVED settings - the setup ones are already spent and
+        // the rules ones would change a game in progress (see GameSettings.WithResumeOverridesFrom). The
+        // engine ignores edits to them either way; disabling the controls stops the panel implying
+        // otherwise. The battlefield is the one exception, drawn live below.
+        bool locked = !isHost || _viewModel.IsResumeMode;
 
         float innerPad = 8f;
         ImGui.SetCursorPos(new Vector2(innerPad, innerPad));
@@ -402,8 +407,15 @@ public class LobbyScreen : IAppScreen
             ImGui.Spacing();
         }
 
-        ImGui.BeginDisabled(!isHost);
+        if (isHost && _viewModel.IsResumeMode)
+        {
+            ImGui.PushStyleColor(ImGuiCol.Text, HeaderAccent);
+            ImGui.TextWrapped("Resuming a save - settings are fixed, except the battlefield.");
+            ImGui.PopStyleColor();
+        }
+
         ImGui.PushItemWidth(panelW - innerPad * 2);
+        ImGui.BeginDisabled(locked);
 
         DrawIntField("Army Points",    _viewModel.ArmyPoints,    _viewModel.SetArmyPoints);
         DrawEnumCombo("Terrain Mode",  _viewModel.TerrainPlacementMode, _viewModel.SetTerrainPlacementMode,
@@ -426,6 +438,19 @@ public class LobbyScreen : IAppScreen
 
         DrawEnumCombo("Randomness",    _viewModel.RandomnessType, _viewModel.SetRandomnessType);
         DrawEnumCombo("Turn Style",    _viewModel.TurnStyle,      _viewModel.SetTurnStyle);
+
+        ImGui.EndDisabled();
+
+        // #265 table surface: cosmetic only, but a synced lobby setting so everyone sees one board.
+        // Host-gated only - being cosmetic is exactly why a resumed game may still re-pick it.
+        ImGui.BeginDisabled(!isHost);
+        DrawEnumCombo("Battlefield",   _viewModel.TableBackground, _viewModel.SetTableBackground,
+            displayName: TableBackgrounds.Label);
+        if (ImGui.IsItemHovered())
+            ImGui.SetTooltip("The table's look. Cosmetic - no effect on terrain or any rule.");
+        ImGui.EndDisabled();
+
+        ImGui.BeginDisabled(locked);
 
         // #201 cover proximity house rules (default on). Inside the disabled block: host-only.
         bool coverProximity = _viewModel.CoverProximityExceptions;
@@ -663,7 +688,9 @@ public class LobbyScreen : IAppScreen
                 OnGameLaunched?.Invoke(tableState, colorForPlayer, log, overlay, taskDisplay, presentationPlayer, save, playerMessageUI),
             colorChoiceForPlayer: pid => colorPicks.TryGetValue(pid, out int idx) && idx >= 0 ? idx : null,
             // #201: the synced lobby setting (host-set, broadcast to clients) so previews match the engine.
-            coverProximityExceptions: _viewModel!.CoverProximityExceptions);
+            coverProximityExceptions: _viewModel!.CoverProximityExceptions,
+            // #265: likewise synced, so host and clients play on the same-looking board.
+            tableBackground: _viewModel!.TableBackground);
     }
 
     private static void DrawIntField(string label, int current, Action<int> setter)
