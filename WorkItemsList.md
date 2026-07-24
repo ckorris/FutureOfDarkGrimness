@@ -92,7 +92,6 @@ detection, host-IP display, DNS host entry. See `NetworkingHandoff-2026-07-08.md
 - [ ] 058 — (low) Migrate message/save serialization off Newtonsoft onto System.Text.Json; pure consolidation. ([WorkItems/058](WorkItems/058-stj-migration.md))
 - [ ] 057 — (low) Make state-machine contexts store-backed/serializable so #052's `GameProgressData` mirror can be deleted; deferred for risk.
 - [ ] 054 — (low) Client-initiated save: host produces the `.fdgsave` on the client's behalf. Follow-up to #052.
-- [ ] 270 — A game resumed through the lobby cannot be saved and loaded again: `LaunchResume` destroys + recreates `PlayerSlotInfo`, so the re-saved references carry a future generation and `StoreReplay` rejects them. Pre-existing; deterministic repro in the detail file. ([WorkItems/270](WorkItems/270-resave-after-lobby-resume-unloadable.md))
 
 ## Client / renderer
 

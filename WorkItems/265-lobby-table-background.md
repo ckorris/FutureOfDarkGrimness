@@ -84,8 +84,8 @@ checked on the palest one (Ice), the dropdown opened in a live lobby with a pick
 resume cycle (load a pre-#265 save -> re-pick -> resume -> save -> diff the file). **Not verified on
 two machines** — the host->client sync is covered by the loopback test only.
 
-One verification step could not be completed and is NOT a #265 defect: reopening the save written from
-a resumed game aborts on load. That is a pre-existing save/resume/save-again bug in
-`LobbyViewModel_Host.LaunchResume`, reproduced deterministically with this work's changes removed, and
-filed as **#270**. The written file is correct — the field is in it and every other setting is
-untouched — and `ResumeSettingsOverrideTests` covers the read-back side.
+One verification step initially could not be completed, and was NOT a #265 defect: reopening the save
+written from a resumed game aborted on load — a pre-existing save/resume/save-again bug, reproduced
+deterministically with this work's changes removed and filed as **#270**. #270 has since been fixed
+(the generation guard on snapshot replay, not the lobby), and that same file now reopens on its
+re-picked board, closing the loop: pre-#265 save -> resume -> re-pick -> save -> reopen.
