@@ -61,3 +61,22 @@ lives in `PresentationSoundCues` (`CueFor` / `VolleyCue` / `ImpactCue`); the set
 
 `.wav` is safest with Raylib; `.ogg`/`.mp3` also load but the cue keys assume `.wav` filenames
 (adjust `PresentationSoundCues.LoadInto` if you use another extension).
+
+## UI sounds (button clicks, toggles, canvas commits)
+
+Separate from the battle beats above, the UI "chrome" cues voice menu/lobby/resolver interactions.
+One tone per **action class** (not per widget), pitch carrying meaning. Same drop-in story: a `.wav`
+with the matching name wins over the synthesized placeholder, no code change.
+
+| File              | Cue      | Fires when                                                       |
+|-------------------|----------|-----------------------------------------------------------------|
+| `ui-navigate.wav` | navigate | a neutral menu button (Host, Client, Add Bot, Copy, Refresh...) |
+| `ui-confirm.wav`  | confirm  | a positive/forward commit (Create, Connect, Launch, resolver Done/Fire) |
+| `ui-back.wav`     | back     | Back / Cancel, and low-stakes resolver actions (Skip, Stay)     |
+| `ui-toggle.wav`   | toggle   | a checkbox / ready flip                                          |
+| `ui-warn.wav`     | warn     | a destructive resolver action (Clear, Restart)                  |
+
+The recipes live in `UiSoundCues.PlaceholderSamples`; the mapping is by call site via the `UiButton`
+helpers (menu screens) and `ResolverButtons` (in-game panels). Sounds are on **buttons only** - raw
+canvas interactions (placing terrain/objectives/models, picking a deployment zone, move waypoints) and
+combo/slider settings are intentionally unvoiced; those commit via a Confirm-toned button.

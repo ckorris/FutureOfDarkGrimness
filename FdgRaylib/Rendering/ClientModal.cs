@@ -196,7 +196,7 @@ public class ClientModal : IAppScreen
 
                 ImGui.TableNextColumn();
                 ImGui.BeginDisabled(!joinable);
-                if (ImGui.Button("JOIN", new Vector2(-1f, 0f)))
+                if (UiButton.Confirm("JOIN", new Vector2(-1f, 0f)))
                     JoinListing(listing);
                 ImGui.EndDisabled();
 
@@ -218,7 +218,7 @@ public class ClientModal : IAppScreen
         float firstX = (dw - btnW * 2 - gap) * 0.5f;
         ImGui.SetCursorPos(new Vector2(firstX, buttonsY));
 
-        if (ImGui.Button("CANCEL", new Vector2(btnW, btnH)))
+        if (UiButton.Back("CANCEL", new Vector2(btnW, btnH)))
         {
             Reset();
             OnCancel?.Invoke();
@@ -226,7 +226,7 @@ public class ClientModal : IAppScreen
 
         ImGui.SameLine(0, gap);
         ImGui.BeginDisabled(_isFetching);
-        if (ImGui.Button("REFRESH", new Vector2(btnW, btnH)))
+        if (UiButton.Navigate("REFRESH", new Vector2(btnW, btnH)))
             _ = RefreshServersAsync();
         ImGui.EndDisabled();
 
@@ -267,14 +267,14 @@ public class ClientModal : IAppScreen
             bool submitted = ImGui.InputText("##JoinPasswordInput", ref _password, 64,
                 ImGuiInputTextFlags.Password | ImGuiInputTextFlags.EnterReturnsTrue);
 
-            if (ImGui.Button("JOIN", new Vector2(120f, 0f)) || submitted)
+            if (UiButton.Confirm("JOIN", new Vector2(120f, 0f)) || submitted)
             {
                 _pendingPasswordJoin = null;
                 ImGui.CloseCurrentPopup();
                 _ = AttemptConnect();
             }
             ImGui.SameLine();
-            if (ImGui.Button("CANCEL", new Vector2(120f, 0f)))
+            if (UiButton.Back("CANCEL", new Vector2(120f, 0f)))
             {
                 _pendingPasswordJoin = null;
                 _password = "";
@@ -341,7 +341,7 @@ public class ClientModal : IAppScreen
         ImGui.SetCursorPos(new Vector2(firstX, btnY));
 
         // CANCEL is always available
-        if (ImGui.Button("CANCEL", new Vector2(btnW, btnH)))
+        if (UiButton.Back("CANCEL", new Vector2(btnW, btnH)))
         {
             Reset();
             OnCancel?.Invoke();
@@ -349,7 +349,7 @@ public class ClientModal : IAppScreen
 
         ImGui.SameLine(0, gap);
         ImGui.BeginDisabled(_isConnecting);
-        if (ImGui.Button("CONNECT", new Vector2(btnW, btnH)))
+        if (UiButton.Confirm("CONNECT", new Vector2(btnW, btnH)))
             _ = AttemptConnect();
         ImGui.EndDisabled();
     }

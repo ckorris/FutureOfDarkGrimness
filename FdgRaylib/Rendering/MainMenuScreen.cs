@@ -47,12 +47,15 @@ public class MainMenuScreen : IAppScreen
         float centerX = (screenW - btnW) * 0.5f;
         float startY  = screenH * 0.28f;
 
-        void DrawButton(string label, Action? action, int order)
+        // Navigation buttons click with the neutral Navigate tone; Quit recedes with the Back tone.
+        void DrawButton(string label, Action? action, int order, bool back = false)
         {
             ImGui.SetCursorPos(new Vector2(centerX, startY + order * (btnH + gapY)));
             ImGui.SetWindowFontScale(btnFontScale);
-            if (ImGui.Button(label, new Vector2(btnW, btnH)))
-                action?.Invoke();
+            bool clicked = back
+                ? UiButton.Back(label, new Vector2(btnW, btnH))
+                : UiButton.Navigate(label, new Vector2(btnW, btnH));
+            if (clicked) action?.Invoke();
             ImGui.SetWindowFontScale(1.0f);
         }
 
@@ -62,7 +65,7 @@ public class MainMenuScreen : IAppScreen
         DrawButton("Army Builder", OnArmyBuilderClicked, 2);
         DrawButton("Army Forge",   OnArmyForgeClicked,   3);
         DrawButton("Load Game",    OnLoadGameClicked,    4);
-        DrawButton("Quit",         OnQuitClicked,        5);
+        DrawButton("Quit",         OnQuitClicked,        5, back: true);
         ImGui.EndDisabled();
 
         if (useMenuFont) ImGui.PopFont();

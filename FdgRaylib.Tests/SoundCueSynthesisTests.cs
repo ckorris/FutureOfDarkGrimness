@@ -1,4 +1,5 @@
 using FdgRaylib.Audio;
+using FdgRaylib.Rendering;
 using FdgRaylib.Rendering.Presentation;
 using NUnit.Framework;
 
@@ -68,6 +69,35 @@ public class SoundCueSynthesisTests
     public void UnknownCue_StillSynthesizesTheFallbackVoice()
     {
         short[] clip = PresentationSoundCues.PlaceholderSamples("no-such-cue");
+        Assert.That(clip.Length, Is.GreaterThan(0));
+    }
+
+    // The UI chrome bank (button clicks, toggles, canvas commits) is a separate cue set: every action
+    // class must synthesize an audible placeholder, and no two may sound identical (a copy-paste would
+    // blur, say, Confirm and Back into one tone).
+    [Test]
+    public void EveryUiCue_HasAudibleAndDistinctPlaceholder()
+    {
+        string[] cues = System.Linq.Enumerable.ToArray(UiSoundCues.AllCueKeys());
+        Assert.That(cues.Length, Is.EqualTo(5), "navigate, confirm, back, toggle, warn");
+
+        var clips = new short[cues.Length][];
+        for (int i = 0; i < cues.Length; i++)
+        {
+            clips[i] = UiSoundCues.PlaceholderSamples(cues[i]);
+            Assert.That(clips[i].Length, Is.GreaterThan(0), $"{cues[i]} should produce samples");
+            Assert.That(System.Array.Exists(clips[i], x => x != 0), Is.True, $"{cues[i]} should be audible");
+        }
+
+        for (int i = 0; i < clips.Length; i++)
+            for (int j = i + 1; j < clips.Length; j++)
+                Assert.That(clips[i], Is.Not.EqualTo(clips[j]), $"{cues[i]} and {cues[j]} should differ");
+    }
+
+    [Test]
+    public void UnknownUiCue_StillSynthesizesTheFallbackVoice()
+    {
+        short[] clip = UiSoundCues.PlaceholderSamples("no-such-ui-cue");
         Assert.That(clip.Length, Is.GreaterThan(0));
     }
 }
