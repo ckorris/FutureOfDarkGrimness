@@ -10,6 +10,13 @@ Cosmetic only: no rule, terrain placement, or AI evaluation may read it.
 
 ## Notes
 
+- 2026-07-23 (second pass): resume path closed. A resumed game launched from the SAVE's settings, so a
+  background re-picked in a resume lobby showed on screen but was never persisted. `FDGServer`'s resume
+  constructor now takes the lobby's settings and merges them through
+  `GameSettings.WithResumeOverridesFrom` - cosmetic fields only, on Chris's call (option A of three;
+  see Decisions). The resume lobby greys out everything it cannot change and says so. Hand-verified end
+  to end: loaded a pre-#265 save, re-picked Mars-Like (the only live control), resumed onto the rust
+  board, saved, and diffed the file - byte-identical settings except `"TableBackground":"MarsLike"`.
 - 2026-07-23: Shipped. Six surfaces hand-verified in the running app (one `--scenario` launch each,
   screenshotted); the lobby dropdown verified open with all six labels and a pick sticking.
 
@@ -41,6 +48,19 @@ Cosmetic only: no rule, terrain placement, or AI evaluation may read it.
 - **Urban's edge trim is steel, not the shared warm brown.** The brown frame reads as a mistake
   against grey; the trim is per-style for that reason.
 
+- **A resume lobby may re-pick the background and nothing else** (Chris's call, 2026-07-23, from three
+  options: cosmetic only / cosmetic + house rules / whole settings struct). Everything else is either
+  already spent (points, terrain, objectives all happened during the saved game's setup) or would
+  change the rules of a game in progress. The policy lives in one place,
+  `GameSettings.WithResumeOverridesFrom`, so widening it later is a one-line decision with a test, not
+  an archaeology exercise. The lobby panel greys out what it cannot change rather than silently
+  discarding edits - matching the existing precedent that `SetPlayerTeam` is a no-op on resume.
+
+- **The resume constructor writes the merged settings back onto the progress record immediately.** The
+  rolling save point rewrites that record from `GameContext.Settings` at every activation boundary, so
+  this only matters for a save taken in the window before the first one - but that window is exactly
+  when someone checks whether their pick stuck.
+
 - **Scenario JSON gained an optional `settings.background`.** Not asked for, but the scenario tools
   (#167) are how a surface gets eyeballed without clicking through a lobby, and the field is how the
   six screenshots above were taken. Unknown names throw at compile time with the valid list.
@@ -60,5 +80,12 @@ default), `ScenarioCompilerTests` (case-insensitive parse, unknown throws), `Tab
 palette invariants + ASCII labels). Engine 2030 green, app 555 green, headless smoke exit 0.
 
 Verified by hand in the app: all six surfaces screenshotted via `--scenario`, terrain legibility
-checked on the palest one (Ice), and the dropdown opened in a live lobby with a pick applied. **Not
-verified on two machines** — the host->client sync is covered by the loopback test only.
+checked on the palest one (Ice), the dropdown opened in a live lobby with a pick applied, and the full
+resume cycle (load a pre-#265 save -> re-pick -> resume -> save -> diff the file). **Not verified on
+two machines** — the host->client sync is covered by the loopback test only.
+
+One verification step could not be completed and is NOT a #265 defect: reopening the save written from
+a resumed game aborts on load. That is a pre-existing save/resume/save-again bug in
+`LobbyViewModel_Host.LaunchResume`, reproduced deterministically with this work's changes removed, and
+filed as **#266**. The written file is correct — the field is in it and every other setting is
+untouched — and `ResumeSettingsOverrideTests` covers the read-back side.
