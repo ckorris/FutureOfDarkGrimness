@@ -427,6 +427,12 @@ public class LobbyScreen : IAppScreen
         DrawEnumCombo("Randomness",    _viewModel.RandomnessType, _viewModel.SetRandomnessType);
         DrawEnumCombo("Turn Style",    _viewModel.TurnStyle,      _viewModel.SetTurnStyle);
 
+        // #265 table surface: cosmetic only, but a synced lobby setting so everyone sees one board.
+        DrawEnumCombo("Battlefield",   _viewModel.TableBackground, _viewModel.SetTableBackground,
+            displayName: TableBackgrounds.Label);
+        if (ImGui.IsItemHovered())
+            ImGui.SetTooltip("The table's look. Cosmetic - no effect on terrain or any rule.");
+
         // #201 cover proximity house rules (default on). Inside the disabled block: host-only.
         bool coverProximity = _viewModel.CoverProximityExceptions;
         if (ImGui.Checkbox("Cover Proximity Rules", ref coverProximity))
@@ -663,7 +669,9 @@ public class LobbyScreen : IAppScreen
                 OnGameLaunched?.Invoke(tableState, colorForPlayer, log, overlay, taskDisplay, presentationPlayer, save, playerMessageUI),
             colorChoiceForPlayer: pid => colorPicks.TryGetValue(pid, out int idx) && idx >= 0 ? idx : null,
             // #201: the synced lobby setting (host-set, broadcast to clients) so previews match the engine.
-            coverProximityExceptions: _viewModel!.CoverProximityExceptions);
+            coverProximityExceptions: _viewModel!.CoverProximityExceptions,
+            // #265: likewise synced, so host and clients play on the same-looking board.
+            tableBackground: _viewModel!.TableBackground);
     }
 
     private static void DrawIntField(string label, int current, Action<int> setter)

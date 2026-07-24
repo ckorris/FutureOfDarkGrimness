@@ -29,7 +29,9 @@ dotnet run --project FdgRaylib/FdgRaylib.csproj -- --headless --scenario Scenari
   "activePlayer": 0,                   // index into players: whose activation comes next
   "settings": {
     "randomness": "Probabilistic",     // Probabilistic (default; histogram dice - see below) or Realistic
-    "diceSeed": 42                     // optional: seeded Realistic dice for repeatable runs
+    "diceSeed": 42,                    // optional: seeded Realistic dice for repeatable runs
+    "background": "Desert"             // optional: table surface - Forest (default), Desert, Ice,
+                                       //           MarsLike, Urban, Barren. Cosmetic only.
   },
   "objectives": [[18, 24], [36, 24]],  // optional [x,z] markers; default = 3 across the midline
   "terrain": [                         // optional; absent = open table

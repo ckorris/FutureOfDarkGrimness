@@ -29,10 +29,13 @@ public static class GameGuiWiring
     /// --scenario direct launch) means every slot takes the palette defaults in order.</param>
     /// <param name="coverProximityExceptions">The launched game's #201 cover setting (lobby toggle,
     /// default on), threaded into the GUI resolvers/overlay so cover previews match the engine.</param>
+    /// <param name="tableBackground">The launched game's #265 table surface (lobby setting, synced to
+    /// every player and saved with the game), carried on the overlay to the renderer.</param>
     public static void Launch(IFDGGame game, IReadOnlyList<(PlayerID ID, string Name)> players,
         Func<string?>? saveGameToJson, GameLaunchedHandler? onLaunched,
         Func<PlayerID, int?>? colorChoiceForPlayer = null,
-        bool coverProximityExceptions = true)
+        bool coverProximityExceptions = true,
+        ETableBackground tableBackground = ETableBackground.Forest)
     {
         // Player -> palette colour (#221: lobby picks win, unpicked slots fill with the free defaults),
         // by both PlayerID (table models) and display name (chat sender lines).
@@ -52,7 +55,8 @@ public static class GameGuiWiring
 
         var log   = new GameLog();
         var logUI = new GuiLogMessageUI(log);
-        var (resolvers, overlay) = ResolverRegistryFactory.BuildGui(game.TableState, coverProximityExceptions);
+        var (resolvers, overlay) = ResolverRegistryFactory.BuildGui(game.TableState, coverProximityExceptions,
+            tableBackground);
 
         var taskDisplay = new GuiOutstandingTaskDisplay();
         var presentationPlayer = new PresentationPlayer();
