@@ -203,11 +203,18 @@ public static class PresentationSoundCues
             ToneSynth.Tone(784f, 784f, 0.24f, 4.5f, ToneSynth.Waveform.Sine, 0.34f)),
 
         // #274 Notice: a struck low hit - a short noise transient into a low body that sags from B2
-        // toward F2 and rings out. Non-melodic on purpose, and low enough to sit under the chime above
-        // it: this is the busiest tier, so it has to register without asking for the whole room.
+        // toward F2. Non-melodic on purpose, and low enough to sit under the chime above it: this is
+        // the busiest tier, so it has to register without asking for the whole room.
+        //
+        // Levels are deliberate and were measured, not eyeballed. The first cut ran peak 41% / RMS 17%,
+        // LOUDER than the Headline chime it is supposed to sit beneath - an inverted hierarchy that
+        // fires ~18 times a game. Now peak 29% / RMS 11%, under the chime's 33% / 15% and well over the
+        // toast's 13% / 5%, so the three tiers descend monotonically. A snappier decay and a shorter
+        // tail keep a repeated thud from wearing on the ear. If real .wav assets ever replace these,
+        // mix them to the same descending order.
         BannerNotice => ToneSynth.Concat(
-            ToneSynth.Noise(0.03f, 45f, 0.26f, seed: 71),
-            ToneSynth.Tone(124f, 88f, 0.44f, 3.2f, ToneSynth.Waveform.Sine, 0.42f)),
+            ToneSynth.Noise(0.025f, 55f, 0.16f, seed: 71),
+            ToneSynth.Tone(124f, 88f, 0.38f, 4.2f, ToneSynth.Waveform.Sine, 0.30f)),
 
         // #274 Toast: a single soft high blip, quiet and quick. Deliberately the least interesting
         // sound in the game - five of them in a row should read as texture, not as an alarm.

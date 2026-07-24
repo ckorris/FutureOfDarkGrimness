@@ -12,6 +12,11 @@ existing announce sites re-tiered deliberately rather than inheriting the loudes
 
 ## Notes
 
+- 2026-07-24: Notice cue level fixed. Measuring the set showed the low hit at peak 41% / RMS 17% --
+  louder than the Headline chime (33% / 15%) it is meant to sit under, on the tier that fires most
+  often. Softened to peak 29% / RMS 11% (lower amplitude, snappier decay, shorter tail), giving a
+  monotonic Headline > Notice > Toast (13% / 5%). Numbers are in the source comment so a future
+  real-asset mix has the same target.
 - 2026-07-24: Headline and Notice cues swapped on owner call. Final pairing: **Headline** = the
   original two-note chime (C5 -> G5), **Notice** = the low struck hit. The familiar chime is what the
   game has always sounded like when announcing something, so it earns the rare tier; the low hit is
