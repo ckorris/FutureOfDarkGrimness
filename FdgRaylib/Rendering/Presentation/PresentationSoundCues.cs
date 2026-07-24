@@ -195,13 +195,13 @@ public static class PresentationSoundCues
         // Longer, slow descending tone.
         Death => ToneSynth.Tone(420f, 120f, 0.42f, 4.5f, ToneSynth.Waveform.Triangle, 0.40f),
 
-        // #274 Headline: the Notice sting with a low root under it and an octave on top - a three-note
-        // rise (C4 -> C5 -> G5 -> C6) with real weight, for the four moments that earn it.
+        // #274 Headline: a struck low hit - a short noise transient into a low body that sags from B2
+        // toward F2 and rings out. Deliberately NOT a motif: a rising major arpeggio read as a victory
+        // fanfare, which is the wrong feeling four times a game in a setting called Dark Grimness. The
+        // weight here comes from pitch and the transient, not from length or volume.
         BannerHeadline => ToneSynth.Concat(
-            ToneSynth.Tone(262f, 262f, 0.13f, 5f, ToneSynth.Waveform.Sine, 0.30f),
-            ToneSynth.Tone(523f, 523f, 0.12f, 6f, ToneSynth.Waveform.Sine, 0.34f),
-            ToneSynth.Tone(784f, 784f, 0.14f, 6f, ToneSynth.Waveform.Sine, 0.36f),
-            ToneSynth.Tone(1046f, 1046f, 0.30f, 4f, ToneSynth.Waveform.Sine, 0.34f)),
+            ToneSynth.Noise(0.03f, 45f, 0.26f, seed: 71),
+            ToneSynth.Tone(124f, 88f, 0.44f, 3.2f, ToneSynth.Waveform.Sine, 0.42f)),
 
         // #274 Notice: the pre-tier banner voice, unchanged - a rising two-note sting (C5 -> G5). The
         // game keeps the sound it always had for the tier that carries most of its announcements.

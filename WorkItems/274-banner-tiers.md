@@ -12,6 +12,13 @@ existing announce sites re-tiered deliberately rather than inheriting the loudes
 
 ## Notes
 
+- 2026-07-24: Headline cue retuned on owner feedback ("too happy and big"). The first pass was a
+  rising major arpeggio (C4-C5-G5-C6, ~0.69s), which reads as a victory fanfare — wrong for a phase
+  change, and wrong for the setting. Replaced with a struck low hit: 30ms noise transient into a low
+  sine sagging B2 -> F2 over 0.44s. Non-melodic on purpose. Candidates were rendered to .wav via a
+  throwaway test harness and auditioned before picking; rejected alternatives were a descending minor
+  two-note (still a motif), a plain low swell (no transient, too soft to read as an announcement), and
+  a transient + falling fifth (closest runner-up, slightly too cinematic).
 - 2026-07-24: Implemented. Engine: `EBannerTier { Headline, Notice, Toast }` on `BannerBeat`, driving
   `Held` / `HoldLeadIn` / `NominalDuration`; `PresentationDurations` gained `BannerNotice` (900ms),
   `BannerNoticeLeadIn` (300ms), `BannerToast` (2200ms). `Announce(...)` gained a `tier` parameter
