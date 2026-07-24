@@ -471,6 +471,13 @@ public class RaylibRenderer
                     BannerOverlay.Draw(bannerBeat, bannerProgress, layout.AreaW, screenH);
                 }
 
+                // #274: the Notice/Toast tiers ride their own concurrent track, so they draw every frame
+                // regardless of what holds the active slot - that is the whole point of them.
+                if (_presentationPlayer != null)
+                {
+                    BannerOverlay.DrawHeld(_presentationPlayer.GetHeldBanners(), layout.AreaW, screenH);
+                }
+
                 DrawStatusHud(layout);
 
                 // Right-column regions: resolver panel (top half) + log/chat console (bottom half).

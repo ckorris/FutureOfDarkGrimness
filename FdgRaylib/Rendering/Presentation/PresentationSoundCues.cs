@@ -29,10 +29,16 @@ public static class PresentationSoundCues
     public const string Save    = "save";
     public const string Wound   = "wound";
     public const string Death   = "death";
-    public const string Banner  = "banner";
     public const string Move    = "move";
 
-    private static readonly string[] BaseCues = { Dice, Save, Wound, Death, Banner, Move };
+    // #274: one voice per banner tier. Volume and weight fall off with the tier, so a Toast can fire
+    // five times in a row without grating and a Headline still means something when it does land.
+    public const string BannerHeadline = "banner-headline";
+    public const string BannerNotice   = "banner-notice";
+    public const string BannerToast    = "banner-toast";
+
+    private static readonly string[] BaseCues =
+        { Dice, Save, Wound, Death, Move, BannerHeadline, BannerNotice, BannerToast };
 
     /// <summary>The firing cue key for a RESOLVED ranged set key (see <see cref="WeaponEffectCatalog"/>).</summary>
     public static string FireCue(string rangedKey) => "fire-" + rangedKey;
@@ -74,7 +80,13 @@ public static class PresentationSoundCues
         ModelWoundedBeat   => Wound,
         ModelDiedBeat      => Death,
         UnitRoutedBeat     => Death,
-        BannerBeat         => Banner,
+        // #274: the banner's tier picks its voice.
+        BannerBeat banner  => banner.Tier switch
+        {
+            EBannerTier.Notice => BannerNotice,
+            EBannerTier.Toast  => BannerToast,
+            _                  => BannerHeadline,
+        },
         UnitMovedBeat      => Move,
         _                  => null,
     };
@@ -183,10 +195,23 @@ public static class PresentationSoundCues
         // Longer, slow descending tone.
         Death => ToneSynth.Tone(420f, 120f, 0.42f, 4.5f, ToneSynth.Waveform.Triangle, 0.40f),
 
-        // Rising two-note sting (C5 -> G5).
-        Banner => ToneSynth.Concat(
+        // #274 Headline: the Notice sting with a low root under it and an octave on top - a three-note
+        // rise (C4 -> C5 -> G5 -> C6) with real weight, for the four moments that earn it.
+        BannerHeadline => ToneSynth.Concat(
+            ToneSynth.Tone(262f, 262f, 0.13f, 5f, ToneSynth.Waveform.Sine, 0.30f),
+            ToneSynth.Tone(523f, 523f, 0.12f, 6f, ToneSynth.Waveform.Sine, 0.34f),
+            ToneSynth.Tone(784f, 784f, 0.14f, 6f, ToneSynth.Waveform.Sine, 0.36f),
+            ToneSynth.Tone(1046f, 1046f, 0.30f, 4f, ToneSynth.Waveform.Sine, 0.34f)),
+
+        // #274 Notice: the pre-tier banner voice, unchanged - a rising two-note sting (C5 -> G5). The
+        // game keeps the sound it always had for the tier that carries most of its announcements.
+        BannerNotice => ToneSynth.Concat(
             ToneSynth.Tone(523f, 523f, 0.11f, 7f, ToneSynth.Waveform.Sine, 0.32f),
             ToneSynth.Tone(784f, 784f, 0.24f, 4.5f, ToneSynth.Waveform.Sine, 0.34f)),
+
+        // #274 Toast: a single soft high blip, quiet and quick. Deliberately the least interesting
+        // sound in the game - five of them in a row should read as texture, not as an alarm.
+        BannerToast => ToneSynth.Tone(1046f, 1046f, 0.07f, 26f, ToneSynth.Waveform.Sine, 0.14f),
 
         // Soft, short, quiet blip.
         Move => ToneSynth.Tone(300f, 360f, 0.10f, 16f, ToneSynth.Waveform.Sine, 0.20f),
