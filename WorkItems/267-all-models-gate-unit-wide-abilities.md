@@ -1,4 +1,4 @@
-# 265 — Unit-wide abilities must require every model to have the rule
+# 267 — Unit-wide abilities must require every model to have the rule
 
 **Status:** implemented 2026-07-23, awaiting GUI hand-verify
 **Related:** #183 (the passive-defensive all-models gate this is the activated sibling of), #197 (Teleport,

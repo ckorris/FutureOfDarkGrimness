@@ -6,6 +6,26 @@ from origin/master. Standing precedent: numbers are never reused, and when two p
 claim the same number, the *unmerged local* item yields to the *merged* one and takes a fresh number.
 A per-clone pre-push hook blocks duplicate numbers across the index and the archive.
 
+> **2026-07-23 — reconciliation 20.** A five-issue session (console wrap, resolver panel height, reposition
+> placement, terrain palette, all-models gate) filed **265-269** against a local master whose tip was
+> `d517b59`, where 264 was the highest number in use. While it was in progress origin/master landed
+> **265 = lobby table background / Battlefield dropdown** (merged, and already moved to the archive). Per
+> merged-wins precedent the unmerged local item yields: **all-models gate on unit-wide abilities 265 -> 267**
+> (`WorkItems/267-all-models-gate-unit-wide-abilities.md`; 266/268/269 were free on both sides and kept their
+> numbers, and 267 was the lowest free number). The detail file, its title, the index line, and the **code
+> comments** in `CoreRuleCatalog`, `RuleValidator`, `BookRuleSupplement`, `UnitWideAbilityGateTests` and
+> `TeleportRuleIntegrationTests` were all repointed to #267 — the table-background side's own `#265`
+> comments (renderer, lobby, `GameSettings`, `ScenarioFile`, and their tests) were left alone. **Left as-is
+> on purpose:** the commit messages on both sides, which say "#265" for two different things and predate the
+> renumber, as in every prior reconciliation.
+>
+> **Note for the hook:** this collision would NOT have been caught by the pre-push hook, which only greps
+> `WorkItemsList.md` for duplicates *within that file*. Master's 265 had already been moved to
+> `WorkItems/Archive.md`, so the merged index contained exactly one 265 line and the hook passed; the clash
+> only shows up when the index and the archive are checked *together* — which the hook's own header claims
+> it does. Worth widening the hook to `cat WorkItemsList.md WorkItems/Archive.md` (the check that actually
+> found this one), since an archived-vs-open collision is now a demonstrated failure mode.
+>
 > **2026-07-22 — reconciliation 19.** The push of #255's follow-on (team-based victory scoring,
 > locally filed as **256**) found origin/master had meanwhile landed reconciliation 18's
 > **256 = AI repack clamp immobilizes big/clustered units** (merged, S1 shipped). Per merged-wins
