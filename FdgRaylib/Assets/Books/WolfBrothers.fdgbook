@@ -11498,7 +11498,7 @@
         {
           "hookID": "Activation_OnActivationStart",
           "condition": {
-            "kind": "always"
+            "kind": "allModelsHaveThisRule"
           },
           "effect": {
             "kind": "repositionAtActivation",

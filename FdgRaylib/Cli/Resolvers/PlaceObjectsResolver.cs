@@ -2,6 +2,7 @@ using FDG;
 using FDG.Data;
 using FDG.StageResolution;
 using FDG.StageResolution.Requests;
+using FdgRaylib.Placement;
 
 namespace FdgRaylib.Cli.Resolvers;
 
@@ -14,6 +15,12 @@ public class PlaceObjectsResolver<T> : IStageResolver<PlaceObjectsRequest<T>, Ca
 
     // Snapshot of impassible terrain for the current Resolve call; models can't be placed overlapping it.
     private IReadOnlyList<ITerrain> _impassibleTerrain = Array.Empty<ITerrain>();
+
+    // #269 — the models this request is placing, by reference, excluded from the on-table occupancy scan.
+    // A reposition placement (Teleport / Fanatic / reposition-at-activation) starts with every model still
+    // at its old spot, so without this the unit blocks itself out of the ground it is about to vacate.
+    // Each is still checked at its NEW position through the placed-so-far overlap loop.
+    private HashSet<object> _selfModels = new(ReferenceEqualityComparer.Instance);
 
     public PlaceObjectsResolver(ITableState? tableState = null)
     {
@@ -29,6 +36,12 @@ public class PlaceObjectsResolver<T> : IStageResolver<PlaceObjectsRequest<T>, Ca
         _impassibleTerrain = _tableState?.Terrain.Objects
             .Where(t => t.TerrainType.HasFlag(ETerrainType.Impassible))
             .ToList() ?? (IReadOnlyList<ITerrain>)Array.Empty<ITerrain>();
+
+        _selfModels = new HashSet<object>(ReferenceEqualityComparer.Instance);
+        foreach (var selfBinding in request.ModelsToPlace)
+        {
+            if (selfBinding.GetValue() is ModelData selfModel) _selfModels.Add(selfModel);
+        }
 
         float minEnemyDist = request.MinDistanceFromEnemiesInches;
         var enemies = minEnemyDist > 0f ? GetEnemyPositions(request.TargetPlayerID) : new List<Position>();
@@ -72,6 +85,11 @@ public class PlaceObjectsResolver<T> : IStageResolver<PlaceObjectsRequest<T>, Ca
             autoStepZ = MathF.Max(autoStepZ, 2f * hz + 0.1f);
         }
 
+        // One full pass over the unit. Returns null if the player typed 'back'. A local function (rather
+        // than a method) so it keeps capturing the placement locals set up above instead of taking a
+        // dozen parameters; #269 calls it more than once for a reposition, see below.
+        List<PlacedObjectEntry<T>>? PlaceEveryModel()
+        {
         var placed = new List<PlacedObjectEntry<T>>();
         for (int i = 0; i < request.ModelsToPlace.Count; i++)
         {
@@ -105,8 +123,7 @@ public class PlaceObjectsResolver<T> : IStageResolver<PlaceObjectsRequest<T>, Ca
                 }
 
                 if (request.AllowCancel && raw.Trim().Equals("back", StringComparison.OrdinalIgnoreCase))
-                    return Task.FromResult<CancellableResult<List<PlacedObjectEntry<T>>>>(
-                        new Cancelled<List<PlacedObjectEntry<T>>>());
+                    return null;
 
                 string[] parts = raw.Trim().Split(' ', StringSplitOptions.RemoveEmptyEntries);
                 if (parts.Length >= 2 && float.TryParse(parts[0], out float x) && float.TryParse(parts[1], out float z))
@@ -128,7 +145,11 @@ public class PlaceObjectsResolver<T> : IStageResolver<PlaceObjectsRequest<T>, Ca
                         continue;
                     }
 
-                    if (placed.Count > 0 && !IsInCohesion(newPos, r, placed))
+                    // #269: only DEPLOYMENT gates each entry on cohesion with the models placed so far. For a
+                    // reposition the unit already exists in a formation, and rebuilding it in list order
+                    // would pin every model after the first to a 1" band around model 1 - so cohesion is
+                    // judged once, over the finished formation, after this loop.
+                    if (request.MaxDistanceFromStartInches <= 0f && placed.Count > 0 && !IsInCohesion(newPos, r, placed))
                     {
                         Console.WriteLine($"    ! Outside cohesion - must be within {GameWideConstants.MAX_MODEL_DISTANCE_FROM_ANY_OTHER_MODEL_INCHES}\" base-to-base of a placed model.");
                         continue;
@@ -171,8 +192,51 @@ public class PlaceObjectsResolver<T> : IStageResolver<PlaceObjectsRequest<T>, Ca
             }
         }
 
-        return Task.FromResult<CancellableResult<List<PlacedObjectEntry<T>>>>(
-            new Selected<List<PlacedObjectEntry<T>>>(placed));
+        return placed;
+        }
+
+        while (true)
+        {
+            List<PlacedObjectEntry<T>>? attempt = PlaceEveryModel();
+            if (attempt == null)
+                return Task.FromResult<CancellableResult<List<PlacedObjectEntry<T>>>>(
+                    new Cancelled<List<PlacedObjectEntry<T>>>());
+
+            // #269: the reposition's one cohesion verdict, over the finished formation. Deployment is
+            // unaffected (it gated per entry above and reports nothing here).
+            string? issue = PlacementCohesion.Describe(FinalCohesion(request, attempt));
+            if (issue == null)
+                return Task.FromResult<CancellableResult<List<PlacedObjectEntry<T>>>>(
+                    new Selected<List<PlacedObjectEntry<T>>>(attempt));
+
+            // Terminating: the EOF branch stands every model still, which cannot worsen cohesion, so an
+            // automated (piped / EOF) run always leaves on the first pass.
+            Console.WriteLine($"    ! {issue}");
+            Console.WriteLine("    Placing the unit again - keep the models within cohesion of each other.");
+        }
+    }
+
+    /// <summary>
+    /// #269 — cohesion of a FINISHED reposition placement, or "nothing wrong" for a deployment (which gates
+    /// per entry instead). Mirrors the GUI resolver's Done gate.
+    /// </summary>
+    private static PlacementCohesion.Report FinalCohesion(PlaceObjectsRequest<T> request,
+        List<PlacedObjectEntry<T>> placed)
+    {
+        if (request.MaxDistanceFromStartInches <= 0f) return new PlacementCohesion.Report(0, 0, 0f);
+
+        var before = new List<PlacementCohesion.Footprint>(placed.Count);
+        var after  = new List<PlacementCohesion.Footprint>(placed.Count);
+        foreach (PlacedObjectEntry<T> entry in placed)
+        {
+            T value = entry.Binding.GetValue();
+            IBaseShape shape = ShapeOf(value);
+            Float2 startFacing = value is ModelData m ? m.Facing : new Float2(0f, 1f);
+            before.Add(new PlacementCohesion.Footprint(StartPositionOf(value), shape, startFacing));
+            after.Add(new PlacementCohesion.Footprint(entry.Position, shape, entry.Facing ?? startFacing));
+        }
+
+        return PlacementCohesion.Evaluate(before, after);
     }
 
     // Finds the next free auto-placement slot, scanning a compact grid (per-axis step so a wide rectangle
@@ -327,6 +391,8 @@ public class PlaceObjectsResolver<T> : IStageResolver<PlaceObjectsRequest<T>, Ca
             var pos = model.Position;
             // Default-constructed Position is (0,0,0); models there haven't been placed yet.
             if (pos.x == 0f && pos.z == 0f) continue;
+            // #269: a model this request is repositioning doesn't block its own placement.
+            if (_selfModels.Contains(model)) continue;
             yield return (pos, model.BaseShape, model.Facing);
         }
     }

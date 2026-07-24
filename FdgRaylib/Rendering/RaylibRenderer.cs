@@ -469,7 +469,7 @@ public class RaylibRenderer
                 // Right-column regions: resolver panel (top half) + log/chat console (bottom half).
                 int rightW    = RightColumnWidth(screenW);
                 int rightX    = screenW - rightW;
-                int panelH    = screenH / 2;
+                int panelH    = (int)(screenH * ResolverPanelLayout.ScreenHeightFraction);
                 ResolverPanelLayout.Set(rightX, 0, rightW, panelH);
 
                 rlImGui.Begin();
@@ -1064,8 +1064,12 @@ public class RaylibRenderer
         if (_showChat) _chatUnread = false; // chat is visible
 
         float inputH = _showChat ? ImGui.GetFrameHeightWithSpacing() : 0f;
+        // No HorizontalScrollbar: with it set, ImGui widens the child's work rect to the content size, which
+        // is what RenderConsoleLine's TextWrapped wraps against - so nothing ever wrapped and every long line
+        // grew the scrollbar instead. Without the flag the wrap width is the visible column and long lines
+        // spill onto the next row, which is what a log/chat column should do.
         ImGui.BeginChild("##consolescroll", new Vector2(0, -inputH), ImGuiChildFlags.None,
-            ImGuiWindowFlags.HorizontalScrollbar);
+            ImGuiWindowFlags.None);
 
         // The engine log stream carries both normal and Debug-tagged lines; keep whichever categories are
         // toggled on (Debug is a developer view, off by default).

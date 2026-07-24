@@ -4,13 +4,21 @@ using ImGuiNET;
 namespace FdgRaylib.Rendering.Resolvers;
 
 /// <summary>
-/// The screen-space rectangle that docked resolver panels fill: the top half of the in-game right column
-/// (the bottom half is the log/chat console). <see cref="RaylibRenderer"/> refreshes it every frame from
+/// The screen-space rectangle that docked resolver panels fill: the top of the in-game right column
+/// (the rest is the log/chat console). <see cref="RaylibRenderer"/> refreshes it every frame from
 /// the current layout; each GUI resolver pins its window to it via <see cref="BeginDocked"/> instead of
 /// floating as a popup. Content taller than the region scrolls (a vertical scrollbar appears).
 /// </summary>
 public static class ResolverPanelLayout
 {
+    /// <summary>
+    /// Share of the screen height the resolver panel takes; the console gets the remainder. The prompts
+    /// are the thing being read and acted on - the shooting resolver splits this height into three stacked
+    /// scrolling sections (weapon / target / detail) - so the panel gets the larger share and the console
+    /// keeps the bottom 40%.
+    /// </summary>
+    public const float ScreenHeightFraction = 0.60f;
+
     public static float X { get; private set; }
     public static float Y { get; private set; }
     public static float W { get; private set; } = 360f;
