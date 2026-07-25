@@ -251,7 +251,8 @@ public class ArmyForgeScreenTests
 
         Assert.That(army.Units, Has.Count.EqualTo(1));
         Assert.That(army.Units[0].ModelCount, Is.EqualTo(10));
-        Assert.That(army.Units[0].Name, Does.Contain("Combined"));
+        Assert.That(army.Units[0].Name, Is.EqualTo("Vanguard Warriors"),
+            "the merged pair keeps the plain unit name - no (Combined) suffix");
     }
 
     [Test]
