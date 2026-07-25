@@ -42,7 +42,11 @@ public class GuiPlaceObjectsResolver<T>
     // Single-mode pending facing rotation (radians) applied to the model being placed / dragged (#150).
     private float _singleRotationDeploy;
 
-    private static readonly float GroupRotationStep = MathF.PI / 12f; // 15° per wheel notch / key press
+    // #275: group-mode formation options for this request. For a reposition (Teleport / Fanatic /
+    // reposition-at-activation) index 0 is the unit's CURRENT shape, unchanged; a fresh deployment has
+    // no current shape, so index 0 is the first legal catalog entry (line when it fits the 9" span,
+    // else two rows — the old single default). Built lazily on the first group frame; reset on Resolve.
+    private FormationCycle? _formationCycle;
 
     // #214 reach rings. Green like the movement resolver's Advance ring — this IS a reach preview, so it
     // should read as the same kind of thing; dimmer for the models whose turn to be placed hasn't come.
@@ -87,6 +91,7 @@ public class GuiPlaceObjectsResolver<T>
             _dragIndex = null;
             _groupRotationDeploy = 0f;
             _singleRotationDeploy = 0f;
+            _formationCycle = null;
             _errorMessage = null;
             _selfModels = new HashSet<object>(ReferenceEqualityComparer.Instance);
             foreach (DataBinding<T> binding in request.ModelsToPlace)
@@ -160,15 +165,9 @@ public class GuiPlaceObjectsResolver<T>
 
         // Rotation input rotates the facing of the one model being placed / dragged (#150); the pending
         // rotation persists across placements (place several facing the same way) and resets on Resolve.
-        if (!io.WantCaptureMouse && !io.WantCaptureKeyboard)
-        {
-            if (io.MouseWheel != 0f) _singleRotationDeploy += io.MouseWheel > 0f ? GroupRotationStep : -GroupRotationStep;
-            if (ImGui.IsKeyPressed(ImGuiKey.R))
-            {
-                bool shift = ImGui.IsKeyDown(ImGuiKey.LeftShift) || ImGui.IsKeyDown(ImGuiKey.RightShift);
-                _singleRotationDeploy += shift ? GroupRotationStep : -GroupRotationStep;
-            }
-        }
+        // Shared GroupInput semantics (#275); the formation delta has no meaning in single mode.
+        var (singleRotationDelta, _) = GroupInput.Read(!io.WantCaptureMouse && !io.WantCaptureKeyboard);
+        _singleRotationDeploy += singleRotationDelta;
         Float2 facing = RotateFloat2(
             PlacementUtilities.DefaultDeployFacing(zone.Bounds, _tableH), _singleRotationDeploy);
 
@@ -232,17 +231,10 @@ public class GuiPlaceObjectsResolver<T>
         var models = request.ModelsToPlace;
         int n = models.Count;
 
-        // Rotation input: wheel both ways; R clockwise, Shift+R counter-clockwise.
-        if (wantInput)
-        {
-            if (io.MouseWheel != 0f)
-                _groupRotationDeploy += io.MouseWheel > 0f ? GroupRotationStep : -GroupRotationStep;
-            if (ImGui.IsKeyPressed(ImGuiKey.R))
-            {
-                bool shift = ImGui.IsKeyDown(ImGuiKey.LeftShift) || ImGui.IsKeyDown(ImGuiKey.RightShift);
-                _groupRotationDeploy += shift ? GroupRotationStep : -GroupRotationStep;
-            }
-        }
+        // Rotation input: wheel both ways; R clockwise, Shift+R counter-clockwise. Shift+Wheel cycles
+        // the formation (#275).
+        var (rotationDelta, formationDelta) = GroupInput.Read(wantInput);
+        _groupRotationDeploy += rotationDelta;
 
         // Per-axis half-extents at the un-rotated deploy facing so the formation layout packs a wide rectangle
         // tight on both axes (#150); the circumscribing radius is still used for overlap/zone checks.
@@ -256,10 +248,43 @@ public class GuiPlaceObjectsResolver<T>
             (halfXs[i], halfZs[i]) = HalfExtents(models[i].GetValue(), baseFacing);
         }
 
+        bool reposition = request.MaxDistanceFromStartInches > 0f;
+        _formationCycle ??= FormationCycle.Build(halfXs, halfZs, radii, includeCurrentShape: reposition);
+        if (formationDelta != 0) _formationCycle.Cycle(formationDelta);
+
         // Forward = toward table centre: longer/front row sits on that side.
         float forwardSign = zone.Bounds.CenterZ < _tableH * 0.5f ? 1f : -1f;
-        var offsets = GroupFormationUtilities.ComputeDeploymentOffsets(
-            halfXs, halfZs, 0.1f, GameWideConstants.MAX_MODEL_DISTANCE_FROM_ALL_OTHER_MODELS_INCHES, forwardSign);
+
+        var currentPositions = new Position[n];
+        for (int i = 0; i < n; i++) currentPositions[i] = StartPositionOf(models[i].GetValue());
+
+        // Offsets from the formation centroid + each model's facing BEFORE the user rotation: the
+        // current-shape option (#275 reposition index 0) keeps the standing layout and each model's own
+        // facing; generated shapes lay rows out per FormationLibrary, all facing the zone default.
+        (float dx, float dz)[] offsets;
+        var baseFacings = new Float2[n];
+        if (_formationCycle.IsCurrentShape)
+        {
+            Position c0 = GroupFormationUtilities.Centroid(currentPositions);
+            offsets = new (float dx, float dz)[n];
+            for (int i = 0; i < n; i++)
+            {
+                offsets[i] = (currentPositions[i].x - c0.x, currentPositions[i].z - c0.z);
+                baseFacings[i] = models[i].GetValue() is ModelData md ? md.Facing : baseFacing;
+            }
+        }
+        else
+        {
+            offsets = FormationLibrary.PlanFormationOffsets(currentPositions, halfXs, halfZs,
+                _formationCycle.Selected.RowCounts, gap: 0.1f);
+            // FormationLibrary lays the front (longer) row toward +z; mirror when the zone's forward
+            // direction is -z so it still leads toward the table centre (the old default's behavior).
+            // A reposition skips this — slots were assigned nearest-to-current, and mirroring after
+            // the fact would undo that.
+            if (!reposition && forwardSign < 0f)
+                for (int i = 0; i < n; i++) offsets[i] = (offsets[i].dx, -offsets[i].dz);
+            for (int i = 0; i < n; i++) baseFacings[i] = baseFacing;
+        }
 
         // Centroid follows the cursor (over table); otherwise preview at the zone's forward-centre.
         Position centroid;
@@ -276,9 +301,7 @@ public class GuiPlaceObjectsResolver<T>
         }
 
         float cos = MathF.Cos(_groupRotationDeploy), sin = MathF.Sin(_groupRotationDeploy);
-        // All models face the rotated direction (#150), starting from the zone's default (toward table centre).
-        Float2 groupFacing = RotateFloat2(
-            PlacementUtilities.DefaultDeployFacing(zone.Bounds, _tableH), _groupRotationDeploy);
+        var facings = new Float2[n];
         var positions = new Position[n];
         bool allValid = true;
         for (int i = 0; i < n; i++)
@@ -286,9 +309,10 @@ public class GuiPlaceObjectsResolver<T>
             float dx = offsets[i].dx, dz = offsets[i].dz;
             float rx = dx * cos - dz * sin, rz = dx * sin + dz * cos;
             positions[i] = new Position(centroid.x + rx, centroid.z + rz);
-            bool valid = IsGroupSlotValid(positions[i], radii[i], GetBaseShape(models[i].GetValue()), groupFacing,
+            facings[i] = RotateFloat2(baseFacings[i], _groupRotationDeploy);
+            bool valid = IsGroupSlotValid(positions[i], radii[i], GetBaseShape(models[i].GetValue()), facings[i],
                 zone, enemies, minEnemyDist, StartPositionOf(models[i].GetValue()), request.MaxDistanceFromStartInches);
-            DrawGhost(dl, GetBaseShape(models[i].GetValue()), ToPixelVec(positions[i]), _scale, valid, groupFacing);
+            DrawGhost(dl, GetBaseShape(models[i].GetValue()), ToPixelVec(positions[i]), _scale, valid, facings[i]);
             if (!valid) allValid = false;
         }
 
@@ -303,7 +327,7 @@ public class GuiPlaceObjectsResolver<T>
             if (allValid && touchOk)
             {
                 _placed.Clear();
-                for (int i = 0; i < n; i++) _placed.Add(new PlacedObjectEntry<T>(models[i], positions[i], groupFacing));
+                for (int i = 0; i < n; i++) _placed.Add(new PlacedObjectEntry<T>(models[i], positions[i], facings[i]));
                 _groupRotationDeploy = 0f;
                 _errorMessage = null;
             }
@@ -479,6 +503,11 @@ public class GuiPlaceObjectsResolver<T>
             _formationMode.Toggle();
             _dragIndex = null;
         }
+        if (dropping && _formationCycle != null)
+        {
+            ImGui.SameLine();
+            ImGui.TextUnformatted($"Formation: {_formationCycle.Label} ({_formationCycle.Index + 1}/{_formationCycle.Count})");
+        }
 
         // The unit's stats (weapons with special rules + unit special rules). Most needed for an Ambush
         // arrival, where the unit is coming on from reserve and isn't visible on the table to hover. Shown
@@ -502,7 +531,7 @@ public class GuiPlaceObjectsResolver<T>
         else
         {
             string hint =
-                dropping              ? "Position the unit in the blue zone. Wheel / R rotate. Click drops the whole unit." :
+                dropping              ? "Position the unit in the blue zone. Wheel / R rotate, Shift+Wheel changes formation. Click drops the whole unit." :
                 _dragIndex.HasValue   ? "Click to drop the picked-up model." :
                 _placed.Count < total ? "Click empty space to place the next model, or click a placed model to move it." :
                                         "Click any placed model to pick it up and move it.";

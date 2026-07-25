@@ -32,6 +32,11 @@ public class GuiDefineMovementResolver
     // faces its direction of travel rotated by this offset (not a fixed lock). Cleared each Resolve.
     private readonly Dictionary<IModel, float> _manualOffsets = new();
 
+    // #275: the group-mode formation options for this request (index 0 = current shape, unchanged).
+    // Built lazily on the first group frame; reset each Resolve, and back to "current" on each commit
+    // (a committed step bakes the picked shape into the unit's real waypoints).
+    private FormationCycle? _formationCycle;
+
     // Rotates an existing facing (unit normal) by `radians`, same matrix as the rigid position rotation.
     private static Float2 RotateFloat2(Float2 f, float radians)
     {
@@ -200,6 +205,7 @@ public class GuiDefineMovementResolver
             _groupFacingAngle = 0f;
             _groupGhostPositions = null;
             _manualOffsets.Clear();
+            _formationCycle = null;
         }
         return tcs.Task;
     }
@@ -303,8 +309,11 @@ public class GuiDefineMovementResolver
         // Shared pointer/keyboard state and the current placement mode.
         bool overTable = IsOverTable(io.MousePos.X, io.MousePos.Y);
         bool wantInput = !io.WantCaptureMouse && !io.WantCaptureKeyboard;
-        bool advanceOnly = _stayInAdvance || ImGui.IsKeyDown(ImGuiKey.LeftShift) || ImGui.IsKeyDown(ImGuiKey.RightShift);
         bool group = _formationMode.IsGroup;
+        // #275: in group mode Shift is the formation-cycle modifier (Shift+Wheel), so the advance-only
+        // hold rides the checkbox alone there; single mode keeps Shift-hold = stay within Advance.
+        bool advanceOnly = _stayInAdvance
+            || (!group && (ImGui.IsKeyDown(ImGuiKey.LeftShift) || ImGui.IsKeyDown(ImGuiKey.RightShift)));
 
         // #162: an enemy click pins a target for the tactical overlay. Checked once, before both mode
         // handlers, and consumed so it doesn't also select a model or drop a waypoint.
@@ -629,21 +638,17 @@ public class GuiDefineMovementResolver
         var models = paths.Keys.ToList();
         if (models.Count == 0) return;
 
-        // Rotation input: wheel both ways; R clockwise, Shift+R counter-clockwise.
-        if (wantInput)
+        // Rotation input: wheel both ways; R clockwise, Shift+R counter-clockwise. Shift+Wheel cycles
+        // the target formation (#275): index 0 keeps the unit's current shape (pure rigid move), the
+        // rest re-form the unit into a FormationLibrary shape as it moves.
+        var (rotationDelta, formationDelta) = GroupInput.Read(wantInput);
+        if (rotationDelta != 0f) { _groupRotation += rotationDelta; _groupFacingAngle += rotationDelta; }
+        if (_formationCycle == null)
         {
-            if (io.MouseWheel != 0f)
-            {
-                float d = io.MouseWheel > 0f ? GroupRotationStep : -GroupRotationStep;
-                _groupRotation += d; _groupFacingAngle += d;
-            }
-            if (ImGui.IsKeyPressed(ImGuiKey.R))
-            {
-                bool shift = ImGui.IsKeyDown(ImGuiKey.LeftShift) || ImGui.IsKeyDown(ImGuiKey.RightShift);
-                float d = shift ? GroupRotationStep : -GroupRotationStep;
-                _groupRotation += d; _groupFacingAngle += d;
-            }
+            var cycleRadii = models.Select(m => m.BaseShape.CircumscribedRadiusInches).ToList();
+            _formationCycle = FormationCycle.Build(cycleRadii, cycleRadii, cycleRadii, includeCurrentShape: true);
         }
+        if (formationDelta != 0) _formationCycle.Cycle(formationDelta);
 
         var lastPositions = new List<Position>(models.Count);
         var budgets = new List<float>(models.Count);
@@ -672,12 +677,26 @@ public class GuiDefineMovementResolver
         // move can never push any model past its cap. Coherent units skip this and keep the pure rigid path.
         var startPairs = new List<(IModel model, Position pos)>(models.Count);
         for (int i = 0; i < models.Count; i++) startPairs.Add((models[i], lastPositions[i]));
+        // Circumscribing radii: the layout/repair packs by a conservative bounding circle so rectangular
+        // bases don't overlap (the authoritative move is re-validated shape-aware by the server). #150.
+        var radii = models.Select(m => m.BaseShape.CircumscribedRadiusInches).ToList();
         IReadOnlyList<Position> basePositions = lastPositions;
-        if (CheckCohesion(startPairs).Any)
+        if (_formationCycle is { IsCurrentShape: false })
         {
-            // Circumscribing radii: the layout/repair packs by a conservative bounding circle so rectangular
-            // bases don't overlap (the authoritative move is re-validated shape-aware by the server). #150.
-            var radii = models.Select(m => m.BaseShape.CircumscribedRadiusInches).ToList();
+            // #275: a picked formation becomes the base shape; the rigid transform + budget solve then
+            // carry the unit into it. The two-array PlanGroupMove measures each model's travel from its
+            // real start — the same mechanism the coherency repair rides — so re-forming can never push
+            // a model past its cap. Slots are assigned nearest-first to keep the morph travel small.
+            var offsets = FormationLibrary.PlanFormationOffsets(
+                lastPositions, radii, radii, _formationCycle.Selected.RowCounts, gap: 0.1f);
+            Position c0 = GroupFormationUtilities.Centroid(lastPositions);
+            var formed = new Position[models.Count];
+            for (int i = 0; i < models.Count; i++)
+                formed[i] = new Position(c0.x + offsets[i].dx, c0.z + offsets[i].dz);
+            basePositions = formed;
+        }
+        else if (CheckCohesion(startPairs).Any)
+        {
             basePositions = GroupFormationUtilities.RepairCoherencyByContraction(
                 lastPositions, radii,
                 GameWideConstants.MAX_MODEL_DISTANCE_FROM_ANY_OTHER_MODEL_INCHES,
@@ -852,6 +871,9 @@ public class GuiDefineMovementResolver
             for (int i = 0; i < models.Count; i++)
                 pt.AddStep(models[i], newPositions[i]);
             _groupRotation = 0f;
+            // #275: the committed step baked the picked shape into the waypoints — it IS the current
+            // shape now, so further dragging is rigid until the player cycles again.
+            _formationCycle?.Reset();
         }
 
         // Right-click clears the last group waypoint (one per model), if any — mirrors single mode + Backspace
@@ -936,8 +958,11 @@ public class GuiDefineMovementResolver
         {
             float deg = _groupRotation * 180f / MathF.PI;
             deg -= 360f * MathF.Floor((deg + 180f) / 360f); // normalize to (-180, 180]
-            ImGui.TextUnformatted($"Group move - whole unit   rotation {deg:0} deg");
-            ImGui.TextDisabled("Wheel / R / Shift+R: rotate 15 deg   L-click: place step");
+            string formation = _formationCycle == null
+                ? "current"
+                : $"{_formationCycle.Label} ({_formationCycle.Index + 1}/{_formationCycle.Count})";
+            ImGui.TextUnformatted($"Group move - rotation {deg:0} deg   formation: {formation}");
+            ImGui.TextDisabled("Wheel / R / Shift+R: rotate 15 deg   Shift+Wheel: formation   L-click: place step");
         }
         else if (_selectedModel != null)
         {
@@ -965,7 +990,8 @@ public class GuiDefineMovementResolver
         ImGui.SameLine();
         ImGui.TextDisabled(group ? "whole unit moves together" : "one model at a time");
 
-        ImGui.Checkbox("Stay within Advance (hold Shift to force)", ref _stayInAdvance);
+        // #275: in group mode Shift belongs to the formation cycle, so the hold shortcut is single-mode only.
+        ImGui.Checkbox(group ? "Stay within Advance" : "Stay within Advance (hold Shift to force)", ref _stayInAdvance);
         ImGui.Checkbox("Show targeting", ref _showTargeting);
         if (ImGui.IsItemHovered())
             ImGui.SetTooltip("Show ranged weapons in range AND with line of sight to each enemy unit (green), how many of your models can charge it (yellow), fire lines from the selected model, and a charge line when the ghost is within melee range. Fire lines turn yellow and dashed when the shot passes through cover (+1 to the target's defense roll). When no enemy model is visible to a weapon, a red blocked-stub with an X marks where the shot would hit a wall. Ranged info hides if the unit has moved too far to shoot.");

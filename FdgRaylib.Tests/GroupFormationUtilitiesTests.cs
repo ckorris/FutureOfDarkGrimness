@@ -86,28 +86,39 @@ public class GroupFormationUtilitiesTests
         Assert.That(Dist(result.NewPositions[0], result.NewPositions[1]), Is.EqualTo(2f).Within(Tol));
     }
 
-    [Test]
-    public void Deployment_SmallUnit_StaysSingleRow()
+    // ---- #275: deployment layout now rides the engine FormationLibrary via FormationCycle. The old
+    // ComputeDeploymentOffsets defaults are pinned as "the cycle's first entry reproduces them": a line
+    // when it fits the 9" span, else the first legal (balanced-rows) partition. The forward-sign mirror
+    // moved into GuiPlaceObjectsResolver (front row 0 lays toward +z here; the resolver flips dz when
+    // the zone's forward direction is -z).
+
+    private static (float dx, float dz)[] DefaultDeployOffsets(int n, float radius)
     {
-        var radii = new[] { 0.5f, 0.5f, 0.5f };
-        var offsets = GroupFormationUtilities.ComputeDeploymentOffsets(radii, radii, 0.1f, 9f, 1f);
+        var radii = Enumerable.Repeat(radius, n).ToList();
+        var cycle = FormationCycle.Build(radii, radii, radii, includeCurrentShape: false);
+        Assert.That(cycle.Count, Is.GreaterThan(0), "catalog never empty for a deployable unit");
+        var unplaced = Enumerable.Repeat(new Position(0f, 0f), n).ToList();
+        return FormationLibrary.PlanFormationOffsets(unplaced, radii, radii, cycle.Selected.RowCounts, 0.1f);
+    }
+
+    [Test]
+    public void Deployment_SmallUnit_DefaultsToSingleRow()
+    {
+        var offsets = DefaultDeployOffsets(3, 0.5f);
 
         foreach (var o in offsets) Assert.That(o.dz, Is.EqualTo(0f).Within(Tol), "single row z");
-        // Centred on the centroid.
         Assert.That(offsets.Sum(o => o.dx) / 3f, Is.EqualTo(0f).Within(Tol), "centroid x");
     }
 
     [Test]
-    public void Deployment_WideUnit_WrapsToTwoBalancedRows()
+    public void Deployment_WideUnit_DefaultsToTwoBalancedRows()
     {
-        var radii = Enumerable.Repeat(0.5f, 12).ToArray(); // ~12" span > 9" → wraps
-        var offsets = GroupFormationUtilities.ComputeDeploymentOffsets(radii, radii, 0.1f, 9f, 1f);
+        var offsets = DefaultDeployOffsets(12, 0.5f); // line would span ~12" > 9" → filtered out
 
         var zs = offsets.Select(o => o.dz).Distinct().OrderBy(z => z).ToList();
         Assert.That(zs.Count, Is.EqualTo(2), "exactly two rows");
         Assert.That(offsets.Count(o => o.dz > 0f), Is.EqualTo(6), "front row count");
         Assert.That(offsets.Count(o => o.dz < 0f), Is.EqualTo(6), "back row count");
-        // Centroid at origin.
         Assert.That(offsets.Sum(o => o.dx) / offsets.Length, Is.EqualTo(0f).Within(Tol), "centroid x");
         Assert.That(offsets.Sum(o => o.dz) / offsets.Length, Is.EqualTo(0f).Within(Tol), "centroid z");
     }
@@ -115,9 +126,7 @@ public class GroupFormationUtilitiesTests
     [Test]
     public void Deployment_OddUnit_LongerRowIsForward()
     {
-        var radii = Enumerable.Repeat(0.5f, 13).ToArray();
-        // forwardZSign = +1 → the longer (7-model) row should sit on the +z (forward) side.
-        var offsets = GroupFormationUtilities.ComputeDeploymentOffsets(radii, radii, 0.1f, 9f, 1f);
+        var offsets = DefaultDeployOffsets(13, 0.5f);
 
         float frontZ = offsets.Max(o => o.dz);
         int frontCount = offsets.Count(o => o.dz > offsets.Min(o2 => o2.dz) + Tol);
@@ -126,12 +135,25 @@ public class GroupFormationUtilitiesTests
     }
 
     [Test]
-    public void Deployment_ForwardSignFlipsRowSide()
+    public void FormationCycle_Reposition_LeadsWithCurrentShape_AndWraps()
     {
-        var radii = Enumerable.Repeat(0.5f, 13).ToArray();
-        var back = GroupFormationUtilities.ComputeDeploymentOffsets(radii, radii, 0.1f, 9f, -1f);
-        // With forwardZSign = -1, the longer 7-model row sits on the -z side.
-        Assert.That(back.Count(o => o.dz < 0f), Is.EqualTo(7), "longer row toward -z when forward is -z");
+        var radii = Enumerable.Repeat(0.5f, 6).ToList();
+        var cycle = FormationCycle.Build(radii, radii, radii, includeCurrentShape: true);
+
+        Assert.That(cycle.IsCurrentShape, Is.True, "index 0 = current shape for a reposition");
+        Assert.That(cycle.Label, Is.EqualTo("current"));
+
+        cycle.Cycle(1);
+        Assert.That(cycle.IsCurrentShape, Is.False);
+        Assert.That(cycle.Label, Is.EqualTo("line (6)"), "first catalog entry is the line");
+
+        cycle.Cycle(-1);
+        Assert.That(cycle.IsCurrentShape, Is.True, "cycling back returns to current");
+        cycle.Cycle(-1);
+        Assert.That(cycle.IsCurrentShape, Is.False, "cycling wraps past the ends");
+
+        cycle.Reset();
+        Assert.That(cycle.IsCurrentShape, Is.True, "Reset returns to current shape");
     }
 
     // ---- #094: coherency repair (contract toward centroid) ----
