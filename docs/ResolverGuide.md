@@ -25,6 +25,10 @@ GUI resolvers implement `IGuiResolver`:
 
 Resolvers that need to interact with the table canvas (movement, placement) additionally implement `IGuiCanvasOverlay`, which receives `UpdateLayout(scale, originX, originY, tableH)` from the renderer each frame so they can do pixel-to-inch conversion. They draw rings, ghost models, and zone outlines via `ImGui.GetBackgroundDrawList()` — this puts shapes on top of the Raylib canvas but underneath ImGui windows. Mouse hit-testing uses `ImGui.GetIO().MousePos` and respects `WantCaptureMouse` so clicks on info panels don't bleed through to the table.
 
+### Networked previews (#277, opt-in)
+
+A resolver that wants OTHER players to watch its in-progress decision (ghosts, planned paths) implements `IPreviewSource` (`FdgRaylib/Rendering/Previews/`): return a `PreviewState` (payload object per named slot) from `BuildPreviewState()`; `PreviewPublisher` polls the active resolver at ~10 Hz, serializes each slot, and sends only what changed — the engine relays it and `RemotePreviewOverlay` draws it on every other client via a per-payload-type presenter. The movement family shares the `GhostPathBase`/`GhostPathGhosts` payloads ("base" slot = roster + committed waypoints at click cadence, "ghost" slot = live positions referencing the roster by index; `BaseVersion` pairs them) and `GhostPathPreviewPresenter`. New visual families = new payload records + a presenter registered in `GuiResolverOverlay.AttachPreviews`; the engine transport (`IPreviewChannel`/`IPreviewFeed` on `IFDGGame`) never changes. Quantize payload floats to 0.01" (`GhostPathPoint` convention) so the publisher's dedup absorbs mouse jitter.
+
 ## Resolver inventory
 
 | Request | CLI resolver | GUI resolver | Notes |

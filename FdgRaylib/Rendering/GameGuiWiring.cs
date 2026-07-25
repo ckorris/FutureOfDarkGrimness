@@ -66,6 +66,11 @@ public static class GameGuiWiring
             presentationSink: presentationPlayer,
             outstandingTaskDisplay: taskDisplay);
 
+        // #277: live decision-preview sharing - publish the local resolver's ghosts/paths while a
+        // request is pending, draw every other player's. Both halves ride the overlay to the
+        // renderer, like the per-launch settings above.
+        overlay.AttachPreviews(game.PreviewChannel, game.PreviewFeed, game.TableState);
+
         onLaunched?.Invoke(game.TableState, pid => colors.GetValueOrDefault(pid, Color.White), log,
             overlay, taskDisplay, presentationPlayer, saveGameToJson, playerMessageUI);
     }

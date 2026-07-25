@@ -4,12 +4,14 @@ using FDG.Data;
 using FDG.StageResolution;
 using FDG.StageResolution.Requests;
 using FDG.Stages;
+using FdgRaylib.Rendering.Previews;
 using ImGuiNET;
 
 namespace FdgRaylib.Rendering.Resolvers;
 
 public class GuiDefineMovementResolver
-    : IStageResolver<DefineMovementPathRequest, CancellableResult<List<ModelMoveEntry>>>, IGuiResolver, IGuiCanvasOverlay
+    : IStageResolver<DefineMovementPathRequest, CancellableResult<List<ModelMoveEntry>>>, IGuiResolver, IGuiCanvasOverlay,
+      IPreviewSource
 {
     private readonly ITableState _tableState;
     private readonly FormationModeState _formationMode;
@@ -78,6 +80,106 @@ public class GuiDefineMovementResolver
     private readonly Dictionary<IModel, Position> _ghostSnapshot = new();
     public IReadOnlyDictionary<IModel, Position> CommittedPositions => _committedSnapshot;
     public IReadOnlyDictionary<IModel, Position> GhostPositions => _ghostSnapshot;
+
+    // #277: the request the snapshots above were last written for - main-thread only, written at
+    // the end of Draw. BuildPreviewState trusts the ghost snapshot only when this matches the
+    // pending request, so a fresh request never streams the previous move's ghosts.
+    private DefineMovementPathRequest? _snapshotRequest;
+
+    // Below the on-wire 0.01" quantization step, so an omitted ghost really is indistinguishable
+    // from its committed endpoint.
+    private const float PreviewGhostEpsilonInches = 0.005f;
+
+    private static float QuantizePreview(float v) => MathF.Round(v * 100f) / 100f;
+
+    private static int BandCode(MoveBand band) => band switch
+    {
+        MoveBand.Advance => GhostPathBands.Advance,
+        MoveBand.Rush    => GhostPathBands.Rush,
+        _                => GhostPathBands.Charge,
+    };
+
+    /// <summary>
+    /// #277: the move being planned, as the shared ghost+path vocabulary - committed waypoints per
+    /// model in the "base" slot (click cadence), live ghost positions in the "ghost" slot (~10 Hz,
+    /// only models whose ghost left their committed endpoint). Called by the preview publisher on
+    /// the main thread after Draw, so the ghost snapshot is this frame's.
+    /// </summary>
+    public PreviewState? BuildPreviewState()
+    {
+        DefineMovementPathRequest? request;
+        PathTemplate? pt;
+        lock (_lock) { request = _request; pt = _pathTemplate; }
+        if (request == null || pt == null) return null;
+
+        bool group = _formationMode.IsGroup;
+        bool ghostSnapshotValid = ReferenceEquals(_snapshotRequest, request);
+        var paths = pt.CurrentPaths; // allocates per access - hold it
+
+        var baseModels = new List<GhostPathBaseModel>(paths.Count);
+        var ghosts = new List<GhostPathGhost>();
+        int contentHash = 17;
+        int index = 0;
+
+        foreach (var kvp in paths)
+        {
+            IModel m = kvp.Key;
+            IReadOnlyList<Position> waypoints = kvp.Value;
+            float facingOffset = group ? _groupFacingAngle : _manualOffsets.GetValueOrDefault(m);
+
+            var points = new List<GhostPathPoint>(waypoints.Count);
+            foreach (Position p in waypoints)
+                points.Add(new GhostPathPoint(QuantizePreview(p.x), QuantizePreview(p.z)));
+
+            // Facing at the committed endpoint - same derivation as the local final ghost (#150).
+            Float2 finalFacing = m.Facing;
+            if (waypoints.Count > 0)
+            {
+                Position beforeLast = waypoints.Count >= 2 ? waypoints[waypoints.Count - 2] : m.Position;
+                finalFacing = RotateFloat2(TravelFacing(beforeLast, waypoints[^1], m.Facing), facingOffset);
+            }
+
+            var (mAdvance, mRush, mCharge) = request.BudgetFor(m.ID);
+            bool hasChargeBand = mCharge > mRush + 0.0001f;
+            float committedDist = pt.GetTotalDistanceMoved(m);
+
+            baseModels.Add(new GhostPathBaseModel(m.ID.ID, points,
+                QuantizePreview(finalFacing.X), QuantizePreview(finalFacing.Y),
+                BandCode(ClassifyBand(committedDist, mAdvance, mRush, hasChargeBand))));
+
+            unchecked
+            {
+                contentHash = contentHash * 31 + m.ID.ID.GetHashCode();
+                foreach (GhostPathPoint p in points)
+                {
+                    contentHash = contentHash * 31 + p.X.GetHashCode();
+                    contentHash = contentHash * 31 + p.Z.GetHashCode();
+                }
+            }
+
+            // Live ghost, omitted when it sits on the committed endpoint (carries no information -
+            // in single mode that reduces the stream to just the selected model).
+            Position committed = pt.GetModelLastPathPosition(m);
+            if (ghostSnapshotValid && _ghostSnapshot.TryGetValue(m, out Position ghost))
+            {
+                float ghostDist = Position.GetDistance2D(committed, ghost);
+                if (ghostDist > PreviewGhostEpsilonInches)
+                {
+                    Float2 ghostFacing = RotateFloat2(TravelFacing(committed, ghost, m.Facing), facingOffset);
+                    int band = BandCode(ClassifyBand(committedDist + ghostDist, mAdvance, mRush, hasChargeBand));
+                    ghosts.Add(new GhostPathGhost(index, QuantizePreview(ghost.x), QuantizePreview(ghost.z),
+                        QuantizePreview(ghostFacing.X), QuantizePreview(ghostFacing.Y), band));
+                }
+            }
+            index++;
+        }
+
+        return new PreviewState(request.TargetPlayerID, new List<PreviewSlotPayload>
+        {
+            new PreviewSlotPayload(GhostPathSlots.Base, new GhostPathBase(contentHash, baseModels)),
+            new PreviewSlotPayload(GhostPathSlots.Ghost, new GhostPathGhosts(contentHash, ghosts)),
+        });
+    }
 
     // #155: per-frame difficult-terrain warning state, set where the ghost/phantoms clamp and read by the
     // info panel. Crossing = a model moves through difficult terrain (total move held to 6"); stopped = a
@@ -505,6 +607,10 @@ public class GuiDefineMovementResolver
                 ghost = ghostPos.Value;
             _ghostSnapshot[snapModel] = ghost;
         }
+        // #277: mark which request the snapshots belong to, so the preview publisher never pairs a
+        // new request's paths with a stale ghost snapshot (Draw can lag Resolve while animations
+        // hold the resolver overlay closed).
+        _snapshotRequest = request;
 
         // 4) Mouse / keyboard input (single mode — group mode handles its own clicks above)
         if (!group && overTable && !io.WantCaptureMouse)

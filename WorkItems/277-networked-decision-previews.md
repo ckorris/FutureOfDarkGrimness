@@ -27,6 +27,23 @@ covered by engine tests.
 
 ## Notes
 
+- 2026-07-25: Slice 2 landed (app side): `FdgRaylib/Rendering/Previews/` - `IPreviewSource` +
+  `PreviewState`, `PreviewPublisher` (10 Hz, serialize-and-compare dedup, clear on request end /
+  player handoff), `RemotePreviewOverlay` (feed-version-gated decode cache, registered-type
+  allowlist, per-family presenters), `GhostPathBase`/`GhostPathGhosts` payloads (base/ghost slot
+  split, roster indexing, 0.01" quantization, ghosts-equal-committed omitted) +
+  `GhostPathPreviewPresenter` (player-color paths/outlines, band-tinted ghost fills).
+  `GuiDefineMovementResolver` is the first source (BuildPreviewState mirrors the local
+  final-ghost facing math; `_snapshotRequest` guards against streaming a previous move's ghost
+  snapshot while animations hold Draw closed). Wired via `GuiResolverOverlay.AttachPreviews`
+  (GameGuiWiring) -> renderer picks both up at TransitionToGame, publisher ticks after resolver
+  Draw. 2129/2129 green, full build + headless smoke green. AWAITING GUI HAND-VERIFY (below).
+  Verify checklist: host + client on localhost, one moves a unit ->
+  (a) other player sees committed paths + live ghost in mover's color, band tint on the ghost;
+  (b) group mode: whole-unit phantoms + rotation visible remotely;
+  (c) preview vanishes when the mover clicks Done/Back/Skip;
+  (d) idle mouse = no network chatter (no visible effect - spot-check via debug log if desired);
+  (e) mover's own screen shows no double-draw of its own ghosts.
 - 2026-07-24: Slice 1 landed in the engine (submodule): `Network/Messages/StagePreviewMessages/`
   (Submit/broadcast x update/clear, chat-relay pattern so the host's own re-broadcast can't
   re-enter the relay), `StageResolution/Previews/` (`IPreviewChannel`/`PreviewChannel`,

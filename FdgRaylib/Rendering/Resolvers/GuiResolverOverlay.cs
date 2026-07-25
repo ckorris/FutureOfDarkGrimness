@@ -1,3 +1,6 @@
+using FDG.StageResolution.Previews;
+using FdgRaylib.Rendering.Previews;
+
 namespace FdgRaylib.Rendering.Resolvers;
 
 /// <summary>
@@ -9,6 +12,49 @@ public class GuiResolverOverlay
     private readonly List<IGuiResolver> _resolvers = new();
 
     public void Register(IGuiResolver resolver) => _resolvers.Add(resolver);
+
+    /// <summary>
+    /// The #277 preview publisher and remote-preview drawer, built by <see cref="AttachPreviews"/>
+    /// at launch. They ride the overlay for the same reason the settings above do: the overlay is
+    /// what TransitionToGame already receives, and both need pieces (the game's preview channel /
+    /// feed) that exist only once a game is launched. Null until then (and always in headless).
+    /// </summary>
+    public PreviewPublisher? PreviewPublisher { get; private set; }
+
+    public RemotePreviewOverlay? RemotePreviews { get; private set; }
+
+    /// <summary>
+    /// Wires live decision-preview sharing (#277) for a launched game: a publisher that streams
+    /// the active resolver's preview (when it opts into <see cref="IPreviewSource"/>) and a
+    /// remote overlay that draws every other player's, with the movement family's ghost+path
+    /// payloads registered. Called by GameGuiWiring right after the game's interfaces are
+    /// assigned; the renderer picks both up at TransitionToGame.
+    /// </summary>
+    public void AttachPreviews(IPreviewChannel channel, IPreviewFeed feed, FDG.ITableState tableState)
+    {
+        var remote = new RemotePreviewOverlay(feed, tableState);
+        remote.RegisterPayload<GhostPathBase>();
+        remote.RegisterPayload<GhostPathGhosts>();
+        remote.Register(new GhostPathPreviewPresenter());
+        RemotePreviews = remote;
+
+        PreviewPublisher = new PreviewPublisher(channel, () => ActivePreviewSource);
+    }
+
+    /// <summary>
+    /// The currently active resolver's preview source (#277), if it opts in. Null when no resolver
+    /// is pending or the active one shares no preview.
+    /// </summary>
+    public IPreviewSource? ActivePreviewSource
+    {
+        get
+        {
+            foreach (IGuiResolver r in _resolvers)
+                if (r.HasPendingRequest)
+                    return r as IPreviewSource;
+            return null;
+        }
+    }
 
     /// <summary>
     /// The launched game's #201 cover-proximity-exceptions setting, stamped by
