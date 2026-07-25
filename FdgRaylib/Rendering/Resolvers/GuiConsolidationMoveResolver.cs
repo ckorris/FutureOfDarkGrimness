@@ -9,8 +9,7 @@ using ImGuiNET;
 namespace FdgRaylib.Rendering.Resolvers;
 
 public class GuiConsolidationMoveResolver
-    : IStageResolver<ConsolidationMoveRequest, List<ModelMoveEntry>>, IGuiResolver, IGuiCanvasOverlay,
-      IFormationWheelConsumer
+    : IStageResolver<ConsolidationMoveRequest, List<ModelMoveEntry>>, IGuiResolver, IGuiCanvasOverlay
 {
     private readonly ITableState _tableState;
     // #215: shared Group/Single toggle (same instance the movement + deployment resolvers use).
@@ -39,12 +38,6 @@ public class GuiConsolidationMoveResolver
     // #275: group-mode formation options (index 0 = current shape). Built lazily per request; back to
     // "current" on each commit (the committed step bakes the picked shape into the waypoints).
     private FormationCycle? _formationCycle;
-
-    // #275: the renderer's Ctrl+wheel zoom yields while the group ghost is reading Ctrl+Wheel.
-    public bool FormationWheelActive
-    {
-        get { lock (_lock) return _request != null && _formationMode.IsGroup; }
-    }
 
     private static readonly uint MoveColor      = ImGui.ColorConvertFloat4ToU32(new Vector4(0.40f, 0.85f, 1.00f, 0.95f));
     private static readonly uint RangeRingCol   = ImGui.ColorConvertFloat4ToU32(new Vector4(0.40f, 0.85f, 1.00f, 0.55f));

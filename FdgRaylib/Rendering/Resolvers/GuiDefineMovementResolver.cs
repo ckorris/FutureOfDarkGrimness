@@ -9,8 +9,7 @@ using ImGuiNET;
 namespace FdgRaylib.Rendering.Resolvers;
 
 public class GuiDefineMovementResolver
-    : IStageResolver<DefineMovementPathRequest, CancellableResult<List<ModelMoveEntry>>>, IGuiResolver, IGuiCanvasOverlay,
-      IFormationWheelConsumer
+    : IStageResolver<DefineMovementPathRequest, CancellableResult<List<ModelMoveEntry>>>, IGuiResolver, IGuiCanvasOverlay
 {
     private readonly ITableState _tableState;
     private readonly FormationModeState _formationMode;
@@ -37,12 +36,6 @@ public class GuiDefineMovementResolver
     // Built lazily on the first group frame; reset each Resolve, and back to "current" on each commit
     // (a committed step bakes the picked shape into the unit's real waypoints).
     private FormationCycle? _formationCycle;
-
-    // #275: the renderer's Ctrl+wheel zoom yields while the group ghost is reading Ctrl+Wheel.
-    public bool FormationWheelActive
-    {
-        get { lock (_lock) return _request != null && _formationMode.IsGroup; }
-    }
 
     // Rotates an existing facing (unit normal) by `radians`, same matrix as the rigid position rotation.
     private static Float2 RotateFloat2(Float2 f, float radians)

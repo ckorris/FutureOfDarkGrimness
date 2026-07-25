@@ -10,7 +10,7 @@ namespace FdgRaylib.Rendering.Resolvers;
 
 public class GuiPlaceObjectsResolver<T>
     : IStageResolver<PlaceObjectsRequest<T>, CancellableResult<List<PlacedObjectEntry<T>>>>, IGuiResolver, IGuiCanvasOverlay,
-      IEnemyExclusionProvider, IFormationWheelConsumer
+      IEnemyExclusionProvider
 {
     private readonly ITableState _tableState;
     private readonly FormationModeState _formationMode;
@@ -47,13 +47,6 @@ public class GuiPlaceObjectsResolver<T>
     // no current shape, so index 0 is the first legal catalog entry (line when it fits the 9" span,
     // else two rows — the old single default). Built lazily on the first group frame; reset on Resolve.
     private FormationCycle? _formationCycle;
-
-    // #275: the renderer's Ctrl+wheel zoom yields while the whole-unit group ghost is reading
-    // Ctrl+Wheel — i.e. before the first drop; per-model editing afterwards has no formation cycle.
-    public bool FormationWheelActive
-    {
-        get { lock (_lock) return _request != null && _formationMode.IsGroup && _placed.Count == 0 && !_dragIndex.HasValue; }
-    }
 
     // #214 reach rings. Green like the movement resolver's Advance ring — this IS a reach preview, so it
     // should read as the same kind of thing; dimmer for the models whose turn to be placed hasn't come.

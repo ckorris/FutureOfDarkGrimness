@@ -5,9 +5,8 @@ namespace FdgRaylib.Rendering.Resolvers;
 /// <summary>
 /// Shared wheel / R input for the placement and movement overlays (#275), replacing three
 /// copy-pasted blocks. Plain Wheel and R / Shift+R rotate (15 deg per notch, unchanged semantics);
-/// Ctrl+Wheel is the formation cycle. Ctrl was freed for this by moving the ruler to Alt, and the
-/// renderer's Ctrl+wheel zoom yields while a group ghost is active (see
-/// <see cref="IFormationWheelConsumer"/>).
+/// Ctrl+Wheel is the formation cycle. Ctrl+Wheel is exclusively ours: the ruler and the zoom both
+/// live on Alt (Alt+drag / Alt+wheel), so no table gesture contends for Ctrl.
 /// </summary>
 internal static class GroupInput
 {
@@ -34,15 +33,4 @@ internal static class GroupInput
             rotation += shift ? RotationStep : -RotationStep;
         return (rotation, cycle);
     }
-}
-
-/// <summary>
-/// Opt-in for resolvers whose group ghost consumes Ctrl+Wheel as the formation cycle (#275).
-/// The renderer's Ctrl+wheel zoom checks <see cref="GuiResolverOverlay.FormationWheelActive"/> and
-/// yields while any pending resolver reports true, so cycling never zooms the table underneath.
-/// </summary>
-public interface IFormationWheelConsumer
-{
-    /// <summary>True while this resolver's group-formation ghost is live and reading Ctrl+Wheel.</summary>
-    bool FormationWheelActive { get; }
 }

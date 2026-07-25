@@ -173,7 +173,7 @@ public sealed class EscapeMenuOverlay
 
         SectionHeader("Controls");
         ImGui.TextDisabled("Alt+drag: measure");
-        ImGui.TextDisabled("Ctrl+wheel: zoom");
+        ImGui.TextDisabled("Alt+wheel: zoom");
         ImGui.TextDisabled("Middle-drag: pan");
         ImGui.TextDisabled("L labels   T tokens   F threat");
         ImGui.TextDisabled("G: cycle formation (during moves)");

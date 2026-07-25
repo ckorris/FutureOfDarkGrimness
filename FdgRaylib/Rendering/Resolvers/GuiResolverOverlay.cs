@@ -52,21 +52,6 @@ public class GuiResolverOverlay
         }
     }
 
-    /// <summary>
-    /// True while a pending resolver's group-formation ghost is consuming Ctrl+Wheel (#275). The
-    /// renderer's Ctrl+wheel zoom checks this each frame and yields, so cycling a formation never
-    /// zooms the table underneath it.
-    /// </summary>
-    public bool FormationWheelActive
-    {
-        get
-        {
-            foreach (IGuiResolver r in _resolvers)
-                if (r is IFormationWheelConsumer c && c.FormationWheelActive) return true;
-            return false;
-        }
-    }
-
     public void UpdateLayout(float scale, int originX, int originY, float tableH)
     {
         foreach (IGuiResolver r in _resolvers)

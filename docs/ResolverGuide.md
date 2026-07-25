@@ -57,10 +57,10 @@ rule; app-side state lives in `FormationCycle`, input in `GroupInput` (both
 - Movement/consolidation feed the picked shape as the base positions of the two-array
   `PlanGroupMove`, so per-model budgets and terrain clamps apply to the morph exactly as they do to
   the coherency repair. The index resets to "current" on every committed step.
-- **Ctrl+Wheel is shared with the renderer's zoom**: resolvers opt in via `IFormationWheelConsumer`
-  and the renderer's zoom yields while `GuiResolverOverlay.FormationWheelActive` is true (i.e. a
-  group ghost is live). The **ruler moved from Ctrl+drag to Alt+drag** for the same reason — holding
-  Ctrl used to raise `WantCaptureMouse`, which would have hidden the wheel from the resolvers.
+- **Ctrl+Wheel belongs exclusively to the formation cycle.** Alt is the camera/measure modifier:
+  the **ruler moved from Ctrl+drag to Alt+drag** (holding Ctrl used to raise `WantCaptureMouse`,
+  hiding the wheel from the resolvers) and the **zoom moved from Ctrl+wheel to Alt+wheel**, so
+  zooming keeps working while a group ghost is live and nothing contends for Ctrl.
 
 ## Validation gotchas
 

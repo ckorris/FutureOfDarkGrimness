@@ -20,10 +20,11 @@ plain Wheel keeps rotating.
   (a) the **ruler moved Ctrl+drag -> Alt+drag** (`MeasurementOverlay`) - holding Ctrl raised
   WantCaptureMouse over the table, which would have hidden Ctrl+Wheel from the resolvers entirely;
   note some Linux WMs grab Alt+drag for window-move (GNOME defaults to Super, so the owner's setup is
-  fine - re-pick the key if that ever bites). (b) **Ctrl+wheel zoom yields to the cycle**: resolvers
-  opt in via `IFormationWheelConsumer` and `RaylibRenderer.HandleTableViewInput` skips zoom while
-  `GuiResolverOverlay.FormationWheelActive` (a live group ghost) is true - zoom still works in single
-  mode, after the first drop of a placement, and outside resolver phases. Escape-menu hints updated.
+  fine - re-pick the key if that ever bites). (b) **Zoom moved Ctrl+wheel -> Alt+wheel too** (owner
+  request, same day): Alt is now the camera/measure modifier (Alt+drag / Alt+wheel don't collide -
+  one is a drag, one is a wheel), Ctrl+Wheel belongs exclusively to the cycle, and zoom keeps working
+  while a group ghost is live. The interim `IFormationWheelConsumer` zoom-yield plumbing this made
+  dead was removed the same day it landed. Escape-menu hints updated.
 - 2026-07-24: Implemented end to end. Engine: new `Helpers/FormationLibrary.cs` (namespace `FDG`) -
   `RowPartitions` (balanced splits, no lone-model rows per #159), `LayoutOffsets` (per-model row
   layout generalizing PackGrid's), `LegalFormations` (filters shapes whose circumscribed-radii span
