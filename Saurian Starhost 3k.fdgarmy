@@ -1,0 +1,6597 @@
+{
+  "selections": {
+    "name": "Saurian Starhost",
+    "bookName": "Saurian Starhost",
+    "pointsLimit": 3000,
+    "units": [
+      {
+        "rosterUnitId": "igyAK4c",
+        "modelCount": 1,
+        "choices": [
+          {
+            "sectionId": "ywoMoUi",
+            "optionId": "hluryzSt",
+            "count": 1
+          }
+        ],
+        "id": "vrXvp",
+        "joinsUnitId": "DoRoU",
+        "combinedWithId": null
+      },
+      {
+        "rosterUnitId": "d3_323-",
+        "modelCount": 5,
+        "choices": [
+          {
+            "sectionId": "OU6WNYi",
+            "optionId": "VKk18cA",
+            "count": 1
+          }
+        ],
+        "id": "DoRoU",
+        "joinsUnitId": null,
+        "combinedWithId": null
+      },
+      {
+        "rosterUnitId": "d3_323-",
+        "modelCount": 5,
+        "choices": [
+          {
+            "sectionId": "OU6WNYi",
+            "optionId": "VKk18cA",
+            "count": 1
+          }
+        ],
+        "id": "_1JJD",
+        "joinsUnitId": null,
+        "combinedWithId": "DoRoU"
+      },
+      {
+        "rosterUnitId": "d5xE-v0",
+        "modelCount": 1,
+        "choices": [
+          {
+            "sectionId": "S16Lptz",
+            "optionId": "1GDlchmL",
+            "count": 1
+          }
+        ],
+        "id": "1mFwm",
+        "joinsUnitId": "pcBdQ",
+        "combinedWithId": null
+      },
+      {
+        "rosterUnitId": "sd-Y62t",
+        "modelCount": 5,
+        "choices": [],
+        "id": "pcBdQ",
+        "joinsUnitId": null,
+        "combinedWithId": null
+      },
+      {
+        "rosterUnitId": "sd-Y62t",
+        "modelCount": 5,
+        "choices": [],
+        "id": "jR1a6",
+        "joinsUnitId": null,
+        "combinedWithId": "pcBdQ"
+      },
+      {
+        "rosterUnitId": "9-8Xg6h",
+        "modelCount": 5,
+        "choices": [
+          {
+            "sectionId": "7KrXROJ",
+            "optionId": "Dzz8Acd",
+            "count": 3
+          },
+          {
+            "sectionId": "7KrXROJ",
+            "optionId": "DLy8i",
+            "count": 2
+          }
+        ],
+        "id": "wUjNJ",
+        "joinsUnitId": null,
+        "combinedWithId": null
+      },
+      {
+        "rosterUnitId": "9-8Xg6h",
+        "modelCount": 5,
+        "choices": [
+          {
+            "sectionId": "7KrXROJ",
+            "optionId": "Dzz8Acd",
+            "count": 3
+          },
+          {
+            "sectionId": "7KrXROJ",
+            "optionId": "DLy8i",
+            "count": 2
+          },
+          {
+            "sectionId": "vBinfxK",
+            "optionId": "Z96jv8-",
+            "count": 2
+          }
+        ],
+        "id": "y3udB",
+        "joinsUnitId": null,
+        "combinedWithId": null
+      },
+      {
+        "rosterUnitId": "w3V96GX",
+        "modelCount": 3,
+        "choices": [
+          {
+            "sectionId": "MErWMFl",
+            "optionId": "ClHI7lK9",
+            "count": 1
+          },
+          {
+            "sectionId": "hQTMYvV",
+            "optionId": "cXvzmaDQoe",
+            "count": 1
+          }
+        ],
+        "id": "Q5QdO",
+        "joinsUnitId": null,
+        "combinedWithId": null
+      },
+      {
+        "rosterUnitId": "fyqjUBx",
+        "modelCount": 1,
+        "choices": [
+          {
+            "sectionId": "mmKWDn1",
+            "optionId": "8M4Qsmpww3",
+            "count": 1
+          }
+        ],
+        "id": "XZMZt",
+        "joinsUnitId": null,
+        "combinedWithId": null
+      },
+      {
+        "rosterUnitId": "_jdnOUr",
+        "modelCount": 1,
+        "choices": [],
+        "id": "b4Avp",
+        "joinsUnitId": null,
+        "combinedWithId": null
+      },
+      {
+        "rosterUnitId": "sd-Y62t",
+        "modelCount": 5,
+        "choices": [
+          {
+            "sectionId": "fWh4Rpn",
+            "optionId": "J8SWq",
+            "count": 1
+          },
+          {
+            "sectionId": "1gSPfjb",
+            "optionId": "aSO8wKf",
+            "count": 1
+          }
+        ],
+        "id": "SPv27",
+        "joinsUnitId": null,
+        "combinedWithId": null
+      },
+      {
+        "rosterUnitId": "sd-Y62t",
+        "modelCount": 5,
+        "choices": [
+          {
+            "sectionId": "fWh4Rpn",
+            "optionId": "J8SWq",
+            "count": 1
+          }
+        ],
+        "id": "qq0dM",
+        "joinsUnitId": null,
+        "combinedWithId": "SPv27"
+      },
+      {
+        "rosterUnitId": "_XxIYpx",
+        "modelCount": 3,
+        "choices": [],
+        "id": "LJq3q",
+        "joinsUnitId": null,
+        "combinedWithId": null
+      },
+      {
+        "rosterUnitId": "d3_323-",
+        "modelCount": 5,
+        "choices": [
+          {
+            "sectionId": "OU6WNYi",
+            "optionId": "VKk18cA",
+            "count": 1
+          }
+        ],
+        "id": "EGdOD",
+        "joinsUnitId": null,
+        "combinedWithId": null
+      },
+      {
+        "rosterUnitId": "d3_323-",
+        "modelCount": 5,
+        "choices": [
+          {
+            "sectionId": "OU6WNYi",
+            "optionId": "VKk18cA",
+            "count": 1
+          }
+        ],
+        "id": "y3Cqx",
+        "joinsUnitId": null,
+        "combinedWithId": "EGdOD"
+      },
+      {
+        "rosterUnitId": "uSPAW_e",
+        "modelCount": 3,
+        "choices": [],
+        "id": "JC3SC",
+        "joinsUnitId": null,
+        "combinedWithId": null
+      }
+    ]
+  },
+  "book": {
+    "name": "Saurian Starhost",
+    "faction": "Saurian Starhost",
+    "version": "OPR v3.5.3",
+    "source": "OnePageRules - Army Forge (army-forge.onepagerules.com)",
+    "license": "CC-BY-SA 4.0",
+    "defaultRangedEffectSet": "gauss-particle",
+    "defaultMeleeEffectSet": "claw-rend",
+    "units": [
+      {
+        "id": "igyAK4c",
+        "name": "Frog-Mage",
+        "quality": 3,
+        "defense": 3,
+        "baseModelCount": 1,
+        "minModels": 1,
+        "maxModels": 1,
+        "basePointCost": 200,
+        "base": {
+          "shape": "Circle",
+          "diameterInches": 2.3622048,
+          "widthInches": 0.984252,
+          "heightInches": 1.968504
+        },
+        "weapons": [
+          {
+            "name": "Magic Shock",
+            "quantity": 1,
+            "rangeInches": 18,
+            "attacks": 3,
+            "armorPenetration": 0,
+            "specialRules": []
+          },
+          {
+            "name": "Heavy Pulse",
+            "quantity": 1,
+            "rangeInches": 0,
+            "attacks": 6,
+            "armorPenetration": 0,
+            "specialRules": []
+          }
+        ],
+        "rules": [
+          {
+            "kind": "coreNumeric",
+            "name": "Caster",
+            "numericValue": 3
+          },
+          {
+            "kind": "coreNumeric",
+            "name": "Fear",
+            "numericValue": 1
+          },
+          {
+            "kind": "core",
+            "name": "Hero"
+          },
+          {
+            "kind": "core",
+            "name": "Strider"
+          },
+          {
+            "kind": "coreNumeric",
+            "name": "Tough",
+            "numericValue": 6
+          },
+          {
+            "kind": "core",
+            "name": "Primal"
+          },
+          {
+            "kind": "core",
+            "name": "Fearless"
+          }
+        ],
+        "items": [],
+        "sections": [
+          {
+            "id": "NrXIyjY",
+            "label": "Replace Magic Shock",
+            "variant": "Replace",
+            "affects": "One",
+            "targets": [
+              "Magic Shock"
+            ],
+            "maxApplications": 0,
+            "minPicks": 0,
+            "maxPicks": 1,
+            "options": [
+              {
+                "id": "35vAMyq",
+                "label": "Magic Blast (12\u0022, A3, Rending)",
+                "cost": 0,
+                "costUnpriced": false,
+                "weaponsGained": [
+                  {
+                    "name": "Magic Blast",
+                    "quantity": 1,
+                    "rangeInches": 12,
+                    "attacks": 3,
+                    "armorPenetration": 0,
+                    "specialRules": [
+                      {
+                        "kind": "core",
+                        "name": "Rending"
+                      }
+                    ]
+                  }
+                ],
+                "rulesGained": [],
+                "itemsGained": [],
+                "modelsGained": 0
+              },
+              {
+                "id": "_qi5gmT",
+                "label": "Magic Beam (12\u0022, A1, AP(2), Deadly(3), Disintegrate)",
+                "cost": 5,
+                "costUnpriced": false,
+                "weaponsGained": [
+                  {
+                    "name": "Magic Beam",
+                    "quantity": 1,
+                    "rangeInches": 12,
+                    "attacks": 1,
+                    "armorPenetration": 2,
+                    "specialRules": [
+                      {
+                        "kind": "coreNumeric",
+                        "name": "Deadly",
+                        "numericValue": 3
+                      },
+                      {
+                        "kind": "core",
+                        "name": "Disintegrate"
+                      }
+                    ]
+                  }
+                ],
+                "rulesGained": [],
+                "itemsGained": [],
+                "modelsGained": 0
+              }
+            ]
+          },
+          {
+            "id": "NQqUVan",
+            "label": "Upgrade with one",
+            "variant": "Upgrade",
+            "affects": "One",
+            "targets": [],
+            "maxApplications": 0,
+            "minPicks": 0,
+            "maxPicks": 1,
+            "options": [
+              {
+                "id": "o2tzANFw9m",
+                "label": "Sacred Destiny (Protection Feat)",
+                "cost": 10,
+                "costUnpriced": false,
+                "weaponsGained": [],
+                "rulesGained": [],
+                "itemsGained": [
+                  {
+                    "name": "Sacred Destiny",
+                    "quantity": 1,
+                    "rules": [
+                      {
+                        "kind": "core",
+                        "name": "Protection Feat"
+                      }
+                    ]
+                  }
+                ],
+                "modelsGained": 0
+              },
+              {
+                "id": "EKuk9",
+                "label": "Magic Protection (Fortified)",
+                "cost": 15,
+                "costUnpriced": false,
+                "weaponsGained": [],
+                "rulesGained": [],
+                "itemsGained": [
+                  {
+                    "name": "Magic Protection",
+                    "quantity": 1,
+                    "rules": [
+                      {
+                        "kind": "core",
+                        "name": "Fortified"
+                      }
+                    ]
+                  }
+                ],
+                "modelsGained": 0
+              },
+              {
+                "id": "taW-gG_08W",
+                "label": "Ancient Palanquin (Magic Pulse (A3), Caster(1), Tough(3))",
+                "cost": 80,
+                "costUnpriced": false,
+                "weaponsGained": [
+                  {
+                    "name": "Magic Pulse",
+                    "quantity": 1,
+                    "rangeInches": 0,
+                    "attacks": 3,
+                    "armorPenetration": 0,
+                    "specialRules": []
+                  }
+                ],
+                "rulesGained": [],
+                "itemsGained": [
+                  {
+                    "name": "Ancient Palanquin",
+                    "quantity": 1,
+                    "rules": [
+                      {
+                        "kind": "coreNumeric",
+                        "name": "Caster",
+                        "numericValue": 1
+                      },
+                      {
+                        "kind": "coreNumeric",
+                        "name": "Tough",
+                        "numericValue": 3
+                      }
+                    ]
+                  }
+                ],
+                "modelsGained": 0
+              }
+            ]
+          },
+          {
+            "id": "ywoMoUi",
+            "label": "Upgrade with one",
+            "variant": "Upgrade",
+            "affects": "One",
+            "targets": [],
+            "maxApplications": 0,
+            "minPicks": 0,
+            "maxPicks": 1,
+            "options": [
+              {
+                "id": "hluryzSt",
+                "label": "Primal Guidance (Primal Boost Buff)",
+                "cost": 10,
+                "costUnpriced": false,
+                "weaponsGained": [],
+                "rulesGained": [],
+                "itemsGained": [
+                  {
+                    "name": "Primal Guidance",
+                    "quantity": 1,
+                    "rules": [
+                      {
+                        "kind": "core",
+                        "name": "Primal Boost Buff"
+                      }
+                    ]
+                  }
+                ],
+                "modelsGained": 0
+              },
+              {
+                "id": "fWElA1me",
+                "label": "Enlightened Mage (Caster(1))",
+                "cost": 20,
+                "costUnpriced": false,
+                "weaponsGained": [],
+                "rulesGained": [],
+                "itemsGained": [
+                  {
+                    "name": "Enlightened Mage",
+                    "quantity": 1,
+                    "rules": [
+                      {
+                        "kind": "coreNumeric",
+                        "name": "Caster",
+                        "numericValue": 1
+                      }
+                    ]
+                  }
+                ],
+                "modelsGained": 0
+              },
+              {
+                "id": "mtPZfCvF",
+                "label": "Temple Guardian (Counter-Attack Aura)",
+                "cost": 35,
+                "costUnpriced": false,
+                "weaponsGained": [],
+                "rulesGained": [],
+                "itemsGained": [
+                  {
+                    "name": "Temple Guardian",
+                    "quantity": 1,
+                    "rules": [
+                      {
+                        "kind": "core",
+                        "name": "Counter-Attack Aura"
+                      }
+                    ]
+                  }
+                ],
+                "modelsGained": 0
+              },
+              {
+                "id": "0pjWBxF8",
+                "label": "Zealot (Scout Aura)",
+                "cost": 35,
+                "costUnpriced": false,
+                "weaponsGained": [],
+                "rulesGained": [],
+                "itemsGained": [
+                  {
+                    "name": "Zealot",
+                    "quantity": 1,
+                    "rules": [
+                      {
+                        "kind": "core",
+                        "name": "Scout Aura"
+                      }
+                    ]
+                  }
+                ],
+                "modelsGained": 0
+              },
+              {
+                "id": "yOtlu01_",
+                "label": "Crusader (Rending when Shooting Aura)",
+                "cost": 65,
+                "costUnpriced": false,
+                "weaponsGained": [],
+                "rulesGained": [],
+                "itemsGained": [
+                  {
+                    "name": "Crusader",
+                    "quantity": 1,
+                    "rules": [
+                      {
+                        "kind": "core",
+                        "name": "Rending when Shooting Aura"
+                      }
+                    ]
+                  }
+                ],
+                "modelsGained": 0
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "d5xE-v0",
+        "name": "Gator Veteran",
+        "quality": 4,
+        "defense": 3,
+        "baseModelCount": 1,
+        "minModels": 1,
+        "maxModels": 1,
+        "basePointCost": 115,
+        "base": {
+          "shape": "Circle",
+          "diameterInches": 1.968504,
+          "widthInches": 0.984252,
+          "heightInches": 1.968504
+        },
+        "weapons": [
+          {
+            "name": "Heavy Mace",
+            "quantity": 2,
+            "rangeInches": 0,
+            "attacks": 1,
+            "armorPenetration": 1,
+            "specialRules": [
+              {
+                "kind": "coreNumeric",
+                "name": "Blast",
+                "numericValue": 3
+              }
+            ]
+          },
+          {
+            "name": "Stomp",
+            "quantity": 1,
+            "rangeInches": 0,
+            "attacks": 2,
+            "armorPenetration": 1,
+            "specialRules": []
+          }
+        ],
+        "rules": [
+          {
+            "kind": "coreNumeric",
+            "name": "Fear",
+            "numericValue": 1
+          },
+          {
+            "kind": "core",
+            "name": "Fearless"
+          },
+          {
+            "kind": "core",
+            "name": "Hero"
+          },
+          {
+            "kind": "coreNumeric",
+            "name": "Tough",
+            "numericValue": 6
+          },
+          {
+            "kind": "core",
+            "name": "Primal"
+          }
+        ],
+        "items": [],
+        "sections": [
+          {
+            "id": "t52El8i",
+            "label": "Replace any Heavy Mace",
+            "variant": "Replace",
+            "affects": "Any",
+            "targets": [
+              "Heavy Mace"
+            ],
+            "maxApplications": 0,
+            "minPicks": 0,
+            "maxPicks": 1,
+            "options": [
+              {
+                "id": "C5b8B",
+                "label": "Power Knuckle (A3, AP(2))",
+                "cost": 10,
+                "costUnpriced": false,
+                "weaponsGained": [
+                  {
+                    "name": "Power Knuckle",
+                    "quantity": 1,
+                    "rangeInches": 0,
+                    "attacks": 3,
+                    "armorPenetration": 2,
+                    "specialRules": []
+                  }
+                ],
+                "rulesGained": [],
+                "itemsGained": [],
+                "modelsGained": 0
+              },
+              {
+                "id": "JcK1ECXAfg",
+                "label": "Heavy Shooter (12\u0022, A4, AP(1))",
+                "cost": 10,
+                "costUnpriced": false,
+                "weaponsGained": [
+                  {
+                    "name": "Heavy Shooter",
+                    "quantity": 1,
+                    "rangeInches": 12,
+                    "attacks": 4,
+                    "armorPenetration": 1,
+                    "specialRules": []
+                  }
+                ],
+                "rulesGained": [],
+                "itemsGained": [],
+                "modelsGained": 0
+              },
+              {
+                "id": "s8P_7",
+                "label": "Power Spike (A1, AP(4), Deadly(3))",
+                "cost": 15,
+                "costUnpriced": false,
+                "weaponsGained": [
+                  {
+                    "name": "Power Spike",
+                    "quantity": 1,
+                    "rangeInches": 0,
+                    "attacks": 1,
+                    "armorPenetration": 4,
+                    "specialRules": [
+                      {
+                        "kind": "coreNumeric",
+                        "name": "Deadly",
+                        "numericValue": 3
+                      }
+                    ]
+                  }
+                ],
+                "rulesGained": [],
+                "itemsGained": [],
+                "modelsGained": 0
+              }
+            ]
+          },
+          {
+            "id": "gI-bVyd",
+            "label": "Upgrade with",
+            "variant": "Upgrade",
+            "affects": "One",
+            "targets": [],
+            "maxApplications": 0,
+            "minPicks": 0,
+            "maxPicks": 1,
+            "options": [
+              {
+                "id": "6KHvK",
+                "label": "Rapid Missile Pod (18\u0022, A3, AP(1), Limited, Unstoppable)",
+                "cost": 10,
+                "costUnpriced": false,
+                "weaponsGained": [
+                  {
+                    "name": "Rapid Missile Pod",
+                    "quantity": 1,
+                    "rangeInches": 18,
+                    "attacks": 3,
+                    "armorPenetration": 1,
+                    "specialRules": [
+                      {
+                        "kind": "core",
+                        "name": "Unstoppable"
+                      },
+                      {
+                        "kind": "core",
+                        "name": "Limited"
+                      }
+                    ]
+                  }
+                ],
+                "rulesGained": [],
+                "itemsGained": [],
+                "modelsGained": 0
+              }
+            ]
+          },
+          {
+            "id": "KoqvzmK",
+            "label": "Upgrade with",
+            "variant": "Upgrade",
+            "affects": "One",
+            "targets": [],
+            "maxApplications": 0,
+            "minPicks": 0,
+            "maxPicks": 1,
+            "options": [
+              {
+                "id": "qEWMz_J4",
+                "label": "Sacred Destiny (Protection Feat)",
+                "cost": 10,
+                "costUnpriced": false,
+                "weaponsGained": [],
+                "rulesGained": [],
+                "itemsGained": [
+                  {
+                    "name": "Sacred Destiny",
+                    "quantity": 1,
+                    "rules": [
+                      {
+                        "kind": "core",
+                        "name": "Protection Feat"
+                      }
+                    ]
+                  }
+                ],
+                "modelsGained": 0
+              }
+            ]
+          },
+          {
+            "id": "S16Lptz",
+            "label": "Upgrade with one",
+            "variant": "Upgrade",
+            "affects": "One",
+            "targets": [],
+            "maxApplications": 0,
+            "minPicks": 0,
+            "maxPicks": 1,
+            "options": [
+              {
+                "id": "oSsw_Xtx",
+                "label": "Primal Roar (Primal Boost Buff)",
+                "cost": 10,
+                "costUnpriced": false,
+                "weaponsGained": [],
+                "rulesGained": [],
+                "itemsGained": [
+                  {
+                    "name": "Primal Roar",
+                    "quantity": 1,
+                    "rules": [
+                      {
+                        "kind": "core",
+                        "name": "Primal Boost Buff"
+                      }
+                    ]
+                  }
+                ],
+                "modelsGained": 0
+              },
+              {
+                "id": "1GDlchmL",
+                "label": "Storm Leader (Rapid Charge Aura)",
+                "cost": 15,
+                "costUnpriced": false,
+                "weaponsGained": [],
+                "rulesGained": [],
+                "itemsGained": [
+                  {
+                    "name": "Storm Leader",
+                    "quantity": 1,
+                    "rules": [
+                      {
+                        "kind": "core",
+                        "name": "Rapid Charge Aura"
+                      }
+                    ]
+                  }
+                ],
+                "modelsGained": 0
+              },
+              {
+                "id": "2XorpnZZ",
+                "label": "Zealot (Scout Aura)",
+                "cost": 35,
+                "costUnpriced": false,
+                "weaponsGained": [],
+                "rulesGained": [],
+                "itemsGained": [
+                  {
+                    "name": "Zealot",
+                    "quantity": 1,
+                    "rules": [
+                      {
+                        "kind": "core",
+                        "name": "Scout Aura"
+                      }
+                    ]
+                  }
+                ],
+                "modelsGained": 0
+              },
+              {
+                "id": "W2j62Pq0",
+                "label": "Crusader (Rending when Shooting Aura)",
+                "cost": 65,
+                "costUnpriced": false,
+                "weaponsGained": [],
+                "rulesGained": [],
+                "itemsGained": [
+                  {
+                    "name": "Crusader",
+                    "quantity": 1,
+                    "rules": [
+                      {
+                        "kind": "core",
+                        "name": "Rending when Shooting Aura"
+                      }
+                    ]
+                  }
+                ],
+                "modelsGained": 0
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "RpQgbmd",
+        "name": "Saurian Veteran",
+        "quality": 3,
+        "defense": 3,
+        "baseModelCount": 1,
+        "minModels": 1,
+        "maxModels": 1,
+        "basePointCost": 55,
+        "base": {
+          "shape": "Circle",
+          "diameterInches": 1.2598425,
+          "widthInches": 0.984252,
+          "heightInches": 1.968504
+        },
+        "weapons": [
+          {
+            "name": "Veteran Pistol",
+            "quantity": 1,
+            "rangeInches": 12,
+            "attacks": 2,
+            "armorPenetration": 0,
+            "specialRules": []
+          },
+          {
+            "name": "CCW",
+            "quantity": 1,
+            "rangeInches": 0,
+            "attacks": 2,
+            "armorPenetration": 0,
+            "specialRules": []
+          }
+        ],
+        "rules": [
+          {
+            "kind": "core",
+            "name": "Fearless"
+          },
+          {
+            "kind": "core",
+            "name": "Hero"
+          },
+          {
+            "kind": "coreNumeric",
+            "name": "Tough",
+            "numericValue": 3
+          },
+          {
+            "kind": "core",
+            "name": "Primal"
+          }
+        ],
+        "items": [],
+        "sections": [
+          {
+            "id": "fB8twcp",
+            "label": "Replace Veteran Pistol",
+            "variant": "Replace",
+            "affects": "One",
+            "targets": [
+              "Veteran Pistol"
+            ],
+            "maxApplications": 0,
+            "minPicks": 0,
+            "maxPicks": 1,
+            "options": [
+              {
+                "id": "qwBMVAQ",
+                "label": "Veteran Spike Pistol (9\u0022, A3, Rending)",
+                "cost": 5,
+                "costUnpriced": false,
+                "weaponsGained": [
+                  {
+                    "name": "Veteran Spike Pistol",
+                    "quantity": 1,
+                    "rangeInches": 9,
+                    "attacks": 3,
+                    "armorPenetration": 0,
+                    "specialRules": [
+                      {
+                        "kind": "core",
+                        "name": "Rending"
+                      }
+                    ]
+                  }
+                ],
+                "rulesGained": [],
+                "itemsGained": [],
+                "modelsGained": 0
+              },
+              {
+                "id": "Mk_OS",
+                "label": "Veteran Carbine (18\u0022, A3)",
+                "cost": 15,
+                "costUnpriced": false,
+                "weaponsGained": [
+                  {
+                    "name": "Veteran Carbine",
+                    "quantity": 1,
+                    "rangeInches": 18,
+                    "attacks": 3,
+                    "armorPenetration": 0,
+                    "specialRules": []
+                  }
+                ],
+                "rulesGained": [],
+                "itemsGained": [],
+                "modelsGained": 0
+              }
+            ]
+          },
+          {
+            "id": "BnHq5xm",
+            "label": "Replace CCW",
+            "variant": "Replace",
+            "affects": "One",
+            "targets": [
+              "CCW"
+            ],
+            "maxApplications": 0,
+            "minPicks": 0,
+            "maxPicks": 1,
+            "options": [
+              {
+                "id": "Wk6BoHw",
+                "label": "Power Spear (A2, Thrust)",
+                "cost": 5,
+                "costUnpriced": false,
+                "weaponsGained": [
+                  {
+                    "name": "Power Spear",
+                    "quantity": 1,
+                    "rangeInches": 0,
+                    "attacks": 2,
+                    "armorPenetration": 0,
+                    "specialRules": [
+                      {
+                        "kind": "core",
+                        "name": "Thrust"
+                      }
+                    ]
+                  }
+                ],
+                "rulesGained": [],
+                "itemsGained": [],
+                "modelsGained": 0
+              },
+              {
+                "id": "57Buyxq",
+                "label": "Power Claw (A2, AP(1), Rending)",
+                "cost": 10,
+                "costUnpriced": false,
+                "weaponsGained": [
+                  {
+                    "name": "Power Claw",
+                    "quantity": 1,
+                    "rangeInches": 0,
+                    "attacks": 2,
+                    "armorPenetration": 1,
+                    "specialRules": [
+                      {
+                        "kind": "core",
+                        "name": "Rending"
+                      }
+                    ]
+                  }
+                ],
+                "rulesGained": [],
+                "itemsGained": [],
+                "modelsGained": 0
+              },
+              {
+                "id": "sRWgXMG",
+                "label": "Power Mace (A2, AP(4))",
+                "cost": 15,
+                "costUnpriced": false,
+                "weaponsGained": [
+                  {
+                    "name": "Power Mace",
+                    "quantity": 1,
+                    "rangeInches": 0,
+                    "attacks": 2,
+                    "armorPenetration": 4,
+                    "specialRules": []
+                  }
+                ],
+                "rulesGained": [],
+                "itemsGained": [],
+                "modelsGained": 0
+              }
+            ]
+          },
+          {
+            "id": "Aab6xKj",
+            "label": "Upgrade with one",
+            "variant": "Upgrade",
+            "affects": "One",
+            "targets": [],
+            "maxApplications": 0,
+            "minPicks": 0,
+            "maxPicks": 1,
+            "options": [
+              {
+                "id": "Mfobs",
+                "label": "Hardened Elite (Fortified)",
+                "cost": 5,
+                "costUnpriced": false,
+                "weaponsGained": [],
+                "rulesGained": [],
+                "itemsGained": [
+                  {
+                    "name": "Hardened Elite",
+                    "quantity": 1,
+                    "rules": [
+                      {
+                        "kind": "core",
+                        "name": "Fortified"
+                      }
+                    ]
+                  }
+                ],
+                "modelsGained": 0
+              },
+              {
+                "id": "dI-MuUuGvb",
+                "label": "Sacred Destiny (Protection Feat)",
+                "cost": 5,
+                "costUnpriced": false,
+                "weaponsGained": [],
+                "rulesGained": [],
+                "itemsGained": [
+                  {
+                    "name": "Sacred Destiny",
+                    "quantity": 1,
+                    "rules": [
+                      {
+                        "kind": "core",
+                        "name": "Protection Feat"
+                      }
+                    ]
+                  }
+                ],
+                "modelsGained": 0
+              },
+              {
+                "id": "c8rhK",
+                "label": "Raptor (Fast, Ravage(1))",
+                "cost": 15,
+                "costUnpriced": false,
+                "weaponsGained": [],
+                "rulesGained": [],
+                "itemsGained": [
+                  {
+                    "name": "Raptor",
+                    "quantity": 1,
+                    "rules": [
+                      {
+                        "kind": "coreNumeric",
+                        "name": "Ravage",
+                        "numericValue": 1
+                      },
+                      {
+                        "kind": "core",
+                        "name": "Fast"
+                      }
+                    ]
+                  }
+                ],
+                "modelsGained": 0
+              },
+              {
+                "id": "U_2i3n-",
+                "label": "Tyrannosaur (Crushing Jaws (A6, AP(2)), Stomp (A4, AP(1)), Armor(2), Fear(2), Primal Boost Buff, Tough(12))",
+                "cost": 350,
+                "costUnpriced": false,
+                "weaponsGained": [
+                  {
+                    "name": "Crushing Jaws",
+                    "quantity": 1,
+                    "rangeInches": 0,
+                    "attacks": 6,
+                    "armorPenetration": 2,
+                    "specialRules": []
+                  },
+                  {
+                    "name": "Stomp",
+                    "quantity": 1,
+                    "rangeInches": 0,
+                    "attacks": 4,
+                    "armorPenetration": 1,
+                    "specialRules": []
+                  }
+                ],
+                "rulesGained": [],
+                "itemsGained": [
+                  {
+                    "name": "Tyrannosaur",
+                    "quantity": 1,
+                    "rules": [
+                      {
+                        "kind": "coreNumeric",
+                        "name": "Armor",
+                        "numericValue": 2
+                      },
+                      {
+                        "kind": "coreNumeric",
+                        "name": "Fear",
+                        "numericValue": 2
+                      },
+                      {
+                        "kind": "core",
+                        "name": "Primal Boost Buff"
+                      },
+                      {
+                        "kind": "coreNumeric",
+                        "name": "Tough",
+                        "numericValue": 12
+                      }
+                    ]
+                  }
+                ],
+                "modelsGained": 0
+              }
+            ]
+          },
+          {
+            "id": "0tXQ6em",
+            "label": "Upgrade with one",
+            "variant": "Upgrade",
+            "affects": "One",
+            "targets": [],
+            "maxApplications": 0,
+            "minPicks": 0,
+            "maxPicks": 1,
+            "options": [
+              {
+                "id": "mXws4pKO",
+                "label": "Storm Leader (Rapid Charge Aura)",
+                "cost": 15,
+                "costUnpriced": false,
+                "weaponsGained": [],
+                "rulesGained": [],
+                "itemsGained": [
+                  {
+                    "name": "Storm Leader",
+                    "quantity": 1,
+                    "rules": [
+                      {
+                        "kind": "core",
+                        "name": "Rapid Charge Aura"
+                      }
+                    ]
+                  }
+                ],
+                "modelsGained": 0
+              },
+              {
+                "id": "BD6e9k6c",
+                "label": "Temple Guardian (Counter-Attack Aura)",
+                "cost": 35,
+                "costUnpriced": false,
+                "weaponsGained": [],
+                "rulesGained": [],
+                "itemsGained": [
+                  {
+                    "name": "Temple Guardian",
+                    "quantity": 1,
+                    "rules": [
+                      {
+                        "kind": "core",
+                        "name": "Counter-Attack Aura"
+                      }
+                    ]
+                  }
+                ],
+                "modelsGained": 0
+              },
+              {
+                "id": "Zc_cd4VC",
+                "label": "Zealot (Scout Aura)",
+                "cost": 35,
+                "costUnpriced": false,
+                "weaponsGained": [],
+                "rulesGained": [],
+                "itemsGained": [
+                  {
+                    "name": "Zealot",
+                    "quantity": 1,
+                    "rules": [
+                      {
+                        "kind": "core",
+                        "name": "Scout Aura"
+                      }
+                    ]
+                  }
+                ],
+                "modelsGained": 0
+              },
+              {
+                "id": "9FOOoTN3",
+                "label": "Crusader (Rending when Shooting Aura)",
+                "cost": 65,
+                "costUnpriced": false,
+                "weaponsGained": [],
+                "rulesGained": [],
+                "itemsGained": [
+                  {
+                    "name": "Crusader",
+                    "quantity": 1,
+                    "rules": [
+                      {
+                        "kind": "core",
+                        "name": "Rending when Shooting Aura"
+                      }
+                    ]
+                  }
+                ],
+                "modelsGained": 0
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "X1af9wy",
+        "name": "Gecko Champion",
+        "quality": 5,
+        "defense": 5,
+        "baseModelCount": 1,
+        "minModels": 1,
+        "maxModels": 1,
+        "basePointCost": 35,
+        "base": {
+          "shape": "Circle",
+          "diameterInches": 1.2598425,
+          "widthInches": 0.984252,
+          "heightInches": 1.968504
+        },
+        "weapons": [
+          {
+            "name": "Champion Burst Gun",
+            "quantity": 1,
+            "rangeInches": 12,
+            "attacks": 3,
+            "armorPenetration": 1,
+            "specialRules": []
+          },
+          {
+            "name": "CCW",
+            "quantity": 1,
+            "rangeInches": 0,
+            "attacks": 2,
+            "armorPenetration": 0,
+            "specialRules": []
+          }
+        ],
+        "rules": [
+          {
+            "kind": "core",
+            "name": "Hero"
+          },
+          {
+            "kind": "core",
+            "name": "Strider"
+          },
+          {
+            "kind": "coreNumeric",
+            "name": "Tough",
+            "numericValue": 3
+          },
+          {
+            "kind": "core",
+            "name": "Primal"
+          }
+        ],
+        "items": [],
+        "sections": [
+          {
+            "id": "_WJ8T2d",
+            "label": "Replace Champion Burst Gun and CCW",
+            "variant": "Replace",
+            "affects": "One",
+            "targets": [
+              "Champion Burst Gun",
+              "CCW"
+            ],
+            "maxApplications": 0,
+            "minPicks": 0,
+            "maxPicks": 1,
+            "options": [
+              {
+                "id": "0jOHu",
+                "label": "Shock Lance (A3, AP(4)), Energy Shield (Shielded)",
+                "cost": 10,
+                "costUnpriced": false,
+                "weaponsGained": [
+                  {
+                    "name": "Shock Lance",
+                    "quantity": 1,
+                    "rangeInches": 0,
+                    "attacks": 3,
+                    "armorPenetration": 4,
+                    "specialRules": []
+                  }
+                ],
+                "rulesGained": [],
+                "itemsGained": [
+                  {
+                    "name": "Energy Shield",
+                    "quantity": 1,
+                    "rules": [
+                      {
+                        "kind": "core",
+                        "name": "Shielded"
+                      }
+                    ]
+                  }
+                ],
+                "modelsGained": 0
+              },
+              {
+                "id": "6QXb3",
+                "label": "Champion Sniper Rifle (30\u0022, A2, AP(1), Reliable, Takedown), Dagger (A1)",
+                "cost": 50,
+                "costUnpriced": false,
+                "weaponsGained": [
+                  {
+                    "name": "Champion Sniper Rifle",
+                    "quantity": 1,
+                    "rangeInches": 30,
+                    "attacks": 2,
+                    "armorPenetration": 1,
+                    "specialRules": [
+                      {
+                        "kind": "core",
+                        "name": "Takedown"
+                      },
+                      {
+                        "kind": "core",
+                        "name": "Reliable"
+                      }
+                    ]
+                  },
+                  {
+                    "name": "Dagger",
+                    "quantity": 1,
+                    "rangeInches": 0,
+                    "attacks": 1,
+                    "armorPenetration": 0,
+                    "specialRules": []
+                  }
+                ],
+                "rulesGained": [],
+                "itemsGained": [],
+                "modelsGained": 0
+              }
+            ]
+          },
+          {
+            "id": "4KkyHdS",
+            "label": "Replace Champion Burst Gun",
+            "variant": "Replace",
+            "affects": "One",
+            "targets": [
+              "Champion Burst Gun"
+            ],
+            "maxApplications": 0,
+            "minPicks": 0,
+            "maxPicks": 1,
+            "options": [
+              {
+                "id": "VuOaXBC",
+                "label": "Champion Shock Pistol (12\u0022, A2, AP(4))",
+                "cost": 5,
+                "costUnpriced": false,
+                "weaponsGained": [
+                  {
+                    "name": "Champion Shock Pistol",
+                    "quantity": 1,
+                    "rangeInches": 12,
+                    "attacks": 2,
+                    "armorPenetration": 4,
+                    "specialRules": []
+                  }
+                ],
+                "rulesGained": [],
+                "itemsGained": [],
+                "modelsGained": 0
+              },
+              {
+                "id": "dj1io",
+                "label": "Champion Shock Rifle (18\u0022, A2, AP(4))",
+                "cost": 10,
+                "costUnpriced": false,
+                "weaponsGained": [
+                  {
+                    "name": "Champion Shock Rifle",
+                    "quantity": 1,
+                    "rangeInches": 18,
+                    "attacks": 2,
+                    "armorPenetration": 4,
+                    "specialRules": []
+                  }
+                ],
+                "rulesGained": [],
+                "itemsGained": [],
+                "modelsGained": 0
+              },
+              {
+                "id": "oYommMwvUj",
+                "label": "Champion Precision Carbine (18\u0022, A2, AP(1), Precise)",
+                "cost": 5,
+                "costUnpriced": false,
+                "weaponsGained": [
+                  {
+                    "name": "Champion Precision Carbine",
+                    "quantity": 1,
+                    "rangeInches": 18,
+                    "attacks": 2,
+                    "armorPenetration": 1,
+                    "specialRules": [
+                      {
+                        "kind": "core",
+                        "name": "Precise"
+                      }
+                    ]
+                  }
+                ],
+                "rulesGained": [],
+                "itemsGained": [],
+                "modelsGained": 0
+              }
+            ]
+          },
+          {
+            "id": "FDda05X",
+            "label": "Replace CCW",
+            "variant": "Replace",
+            "affects": "One",
+            "targets": [
+              "CCW"
+            ],
+            "maxApplications": 0,
+            "minPicks": 0,
+            "maxPicks": 1,
+            "options": [
+              {
+                "id": "5qgoSXt",
+                "label": "Bash (A1), Energy Shield (Shielded)",
+                "cost": 5,
+                "costUnpriced": false,
+                "weaponsGained": [
+                  {
+                    "name": "Bash",
+                    "quantity": 1,
+                    "rangeInches": 0,
+                    "attacks": 1,
+                    "armorPenetration": 0,
+                    "specialRules": []
+                  }
+                ],
+                "rulesGained": [],
+                "itemsGained": [
+                  {
+                    "name": "Energy Shield",
+                    "quantity": 1,
+                    "rules": [
+                      {
+                        "kind": "core",
+                        "name": "Shielded"
+                      }
+                    ]
+                  }
+                ],
+                "modelsGained": 0
+              },
+              {
+                "id": "egONVO0",
+                "label": "Sacred Mace (A1, Blast(3))",
+                "cost": 5,
+                "costUnpriced": false,
+                "weaponsGained": [
+                  {
+                    "name": "Sacred Mace",
+                    "quantity": 1,
+                    "rangeInches": 0,
+                    "attacks": 1,
+                    "armorPenetration": 0,
+                    "specialRules": [
+                      {
+                        "kind": "coreNumeric",
+                        "name": "Blast",
+                        "numericValue": 3
+                      }
+                    ]
+                  }
+                ],
+                "rulesGained": [],
+                "itemsGained": [],
+                "modelsGained": 0
+              }
+            ]
+          },
+          {
+            "id": "zfXsiDr",
+            "label": "Upgrade with one",
+            "variant": "Upgrade",
+            "affects": "One",
+            "targets": [],
+            "maxApplications": 0,
+            "minPicks": 0,
+            "maxPicks": 1,
+            "options": [
+              {
+                "id": "GqwZ9_Axnx",
+                "label": "Sacred Destiny (Protection Feat)",
+                "cost": 5,
+                "costUnpriced": false,
+                "weaponsGained": [],
+                "rulesGained": [],
+                "itemsGained": [
+                  {
+                    "name": "Sacred Destiny",
+                    "quantity": 1,
+                    "rules": [
+                      {
+                        "kind": "core",
+                        "name": "Protection Feat"
+                      }
+                    ]
+                  }
+                ],
+                "modelsGained": 0
+              },
+              {
+                "id": "R3hf3SmgqC",
+                "label": "Phase Backpack (Teleport)",
+                "cost": 10,
+                "costUnpriced": false,
+                "weaponsGained": [],
+                "rulesGained": [],
+                "itemsGained": [
+                  {
+                    "name": "Phase Backpack",
+                    "quantity": 1,
+                    "rules": [
+                      {
+                        "kind": "core",
+                        "name": "Teleport"
+                      }
+                    ]
+                  }
+                ],
+                "modelsGained": 0
+              },
+              {
+                "id": "1Crar",
+                "label": "Deinonychus (Bounding, Impact(1))",
+                "cost": 15,
+                "costUnpriced": false,
+                "weaponsGained": [],
+                "rulesGained": [],
+                "itemsGained": [
+                  {
+                    "name": "Deinonychus",
+                    "quantity": 1,
+                    "rules": [
+                      {
+                        "kind": "coreNumeric",
+                        "name": "Impact",
+                        "numericValue": 1
+                      },
+                      {
+                        "kind": "core",
+                        "name": "Bounding"
+                      }
+                    ]
+                  }
+                ],
+                "modelsGained": 0
+              },
+              {
+                "id": "m_qsNt1eji",
+                "label": "Chameleon Breed (Evasive, Good Shot, Scout)",
+                "cost": 25,
+                "costUnpriced": false,
+                "weaponsGained": [],
+                "rulesGained": [],
+                "itemsGained": [
+                  {
+                    "name": "Chameleon Breed",
+                    "quantity": 1,
+                    "rules": [
+                      {
+                        "kind": "core",
+                        "name": "Good Shot"
+                      },
+                      {
+                        "kind": "core",
+                        "name": "Scout"
+                      },
+                      {
+                        "kind": "core",
+                        "name": "Evasive"
+                      }
+                    ]
+                  }
+                ],
+                "modelsGained": 0
+              },
+              {
+                "id": "f7aft",
+                "label": "Starseer Palanquin (Pulse (A3), Spell Conduit, Tough(3))",
+                "cost": 35,
+                "costUnpriced": false,
+                "weaponsGained": [
+                  {
+                    "name": "Pulse",
+                    "quantity": 1,
+                    "rangeInches": 0,
+                    "attacks": 3,
+                    "armorPenetration": 0,
+                    "specialRules": []
+                  }
+                ],
+                "rulesGained": [],
+                "itemsGained": [
+                  {
+                    "name": "Starseer Palanquin",
+                    "quantity": 1,
+                    "rules": [
+                      {
+                        "kind": "core",
+                        "name": "Spell Conduit"
+                      },
+                      {
+                        "kind": "coreNumeric",
+                        "name": "Tough",
+                        "numericValue": 3
+                      }
+                    ]
+                  }
+                ],
+                "modelsGained": 0
+              },
+              {
+                "id": "MLzm8lq",
+                "label": "Pterodactyl (Claws (A2), Disposable Bombs (A1, AP(1), Blast(3), Limited, Strafing), Ambush, Flying, Impact(1), Tough(3))",
+                "cost": 55,
+                "costUnpriced": false,
+                "weaponsGained": [
+                  {
+                    "name": "Claws",
+                    "quantity": 1,
+                    "rangeInches": 0,
+                    "attacks": 2,
+                    "armorPenetration": 0,
+                    "specialRules": []
+                  },
+                  {
+                    "name": "Disposable Bombs",
+                    "quantity": 1,
+                    "rangeInches": 0,
+                    "attacks": 1,
+                    "armorPenetration": 1,
+                    "specialRules": [
+                      {
+                        "kind": "coreNumeric",
+                        "name": "Blast",
+                        "numericValue": 3
+                      },
+                      {
+                        "kind": "core",
+                        "name": "Limited"
+                      },
+                      {
+                        "kind": "core",
+                        "name": "Strafing"
+                      }
+                    ]
+                  }
+                ],
+                "rulesGained": [],
+                "itemsGained": [
+                  {
+                    "name": "Pterodactyl",
+                    "quantity": 1,
+                    "rules": [
+                      {
+                        "kind": "core",
+                        "name": "Ambush"
+                      },
+                      {
+                        "kind": "core",
+                        "name": "Flying"
+                      },
+                      {
+                        "kind": "coreNumeric",
+                        "name": "Impact",
+                        "numericValue": 1
+                      },
+                      {
+                        "kind": "coreNumeric",
+                        "name": "Tough",
+                        "numericValue": 3
+                      }
+                    ]
+                  }
+                ],
+                "modelsGained": 0
+              },
+              {
+                "id": "scSksua",
+                "label": "Ripjawdactyl (Ambush, Flying, Heavy Impact(3), Precision Target(1), Tough(3))",
+                "cost": 90,
+                "costUnpriced": false,
+                "weaponsGained": [],
+                "rulesGained": [],
+                "itemsGained": [
+                  {
+                    "name": "Ripjawdactyl",
+                    "quantity": 1,
+                    "rules": [
+                      {
+                        "kind": "core",
+                        "name": "Ambush"
+                      },
+                      {
+                        "kind": "core",
+                        "name": "Flying"
+                      },
+                      {
+                        "kind": "coreNumeric",
+                        "name": "Heavy Impact",
+                        "numericValue": 3
+                      },
+                      {
+                        "kind": "coreNumeric",
+                        "name": "Precision Target",
+                        "numericValue": 1
+                      },
+                      {
+                        "kind": "coreNumeric",
+                        "name": "Tough",
+                        "numericValue": 3
+                      }
+                    ]
+                  }
+                ],
+                "modelsGained": 0
+              }
+            ]
+          },
+          {
+            "id": "w52OMaN",
+            "label": "Upgrade with one",
+            "variant": "Upgrade",
+            "affects": "One",
+            "targets": [],
+            "maxApplications": 0,
+            "minPicks": 0,
+            "maxPicks": 1,
+            "options": [
+              {
+                "id": "sCAcXREvFq",
+                "label": "Primal Hunter (Primal Boost Buff)",
+                "cost": 10,
+                "costUnpriced": false,
+                "weaponsGained": [],
+                "rulesGained": [],
+                "itemsGained": [
+                  {
+                    "name": "Primal Hunter",
+                    "quantity": 1,
+                    "rules": [
+                      {
+                        "kind": "core",
+                        "name": "Primal Boost Buff"
+                      }
+                    ]
+                  }
+                ],
+                "modelsGained": 0
+              },
+              {
+                "id": "6Wlng27d",
+                "label": "Storm Leader (Rapid Charge Aura)",
+                "cost": 15,
+                "costUnpriced": false,
+                "weaponsGained": [],
+                "rulesGained": [],
+                "itemsGained": [
+                  {
+                    "name": "Storm Leader",
+                    "quantity": 1,
+                    "rules": [
+                      {
+                        "kind": "core",
+                        "name": "Rapid Charge Aura"
+                      }
+                    ]
+                  }
+                ],
+                "modelsGained": 0
+              },
+              {
+                "id": "PM6VFDWa",
+                "label": "Sacred Priest (Caster(2))",
+                "cost": 30,
+                "costUnpriced": false,
+                "weaponsGained": [],
+                "rulesGained": [],
+                "itemsGained": [
+                  {
+                    "name": "Sacred Priest",
+                    "quantity": 1,
+                    "rules": [
+                      {
+                        "kind": "coreNumeric",
+                        "name": "Caster",
+                        "numericValue": 2
+                      }
+                    ]
+                  }
+                ],
+                "modelsGained": 0
+              },
+              {
+                "id": "uKiGGtjV",
+                "label": "Temple Guardian (Counter-Attack Aura)",
+                "cost": 35,
+                "costUnpriced": false,
+                "weaponsGained": [],
+                "rulesGained": [],
+                "itemsGained": [
+                  {
+                    "name": "Temple Guardian",
+                    "quantity": 1,
+                    "rules": [
+                      {
+                        "kind": "core",
+                        "name": "Counter-Attack Aura"
+                      }
+                    ]
+                  }
+                ],
+                "modelsGained": 0
+              },
+              {
+                "id": "FoIGHu87",
+                "label": "Zealot (Scout Aura)",
+                "cost": 35,
+                "costUnpriced": false,
+                "weaponsGained": [],
+                "rulesGained": [],
+                "itemsGained": [
+                  {
+                    "name": "Zealot",
+                    "quantity": 1,
+                    "rules": [
+                      {
+                        "kind": "core",
+                        "name": "Scout Aura"
+                      }
+                    ]
+                  }
+                ],
+                "modelsGained": 0
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "FfHElYl",
+        "name": "Gecko Cohort",
+        "quality": 5,
+        "defense": 5,
+        "baseModelCount": 5,
+        "minModels": 5,
+        "maxModels": 5,
+        "basePointCost": 80,
+        "base": {
+          "shape": "Circle",
+          "diameterInches": 1.2598425,
+          "widthInches": 0.984252,
+          "heightInches": 1.968504
+        },
+        "weapons": [
+          {
+            "name": "Shock Pistol",
+            "quantity": 5,
+            "rangeInches": 12,
+            "attacks": 1,
+            "armorPenetration": 4,
+            "specialRules": []
+          }
+        ],
+        "rules": [
+          {
+            "kind": "core",
+            "name": "Strider"
+          },
+          {
+            "kind": "core",
+            "name": "Primal"
+          }
+        ],
+        "items": [
+          {
+            "name": "Energy Shield",
+            "quantity": 5,
+            "rules": [
+              {
+                "kind": "core",
+                "name": "Shielded"
+              }
+            ]
+          }
+        ],
+        "sections": [
+          {
+            "id": "t0ZwTWE",
+            "label": "Replace all Energy Shields",
+            "variant": "Replace",
+            "affects": "All",
+            "targets": [
+              "Energy Shields"
+            ],
+            "maxApplications": 0,
+            "minPicks": 0,
+            "maxPicks": 1,
+            "options": [
+              {
+                "id": "VF82c",
+                "label": "CCW (A2)",
+                "cost": 10,
+                "costUnpriced": false,
+                "weaponsGained": [
+                  {
+                    "name": "CCW",
+                    "quantity": 1,
+                    "rangeInches": 0,
+                    "attacks": 2,
+                    "armorPenetration": 0,
+                    "specialRules": []
+                  }
+                ],
+                "rulesGained": [],
+                "itemsGained": [],
+                "modelsGained": 0
+              }
+            ]
+          },
+          {
+            "id": "YpMHRC6",
+            "label": "Upgrade all models with",
+            "variant": "Upgrade",
+            "affects": "All",
+            "targets": [],
+            "maxApplications": 0,
+            "minPicks": 0,
+            "maxPicks": 1,
+            "options": [
+              {
+                "id": "F3hHv",
+                "label": "Phase Backpacks (Teleport)",
+                "cost": 15,
+                "costUnpriced": false,
+                "weaponsGained": [],
+                "rulesGained": [],
+                "itemsGained": [
+                  {
+                    "name": "Phase Backpacks",
+                    "quantity": 1,
+                    "rules": [
+                      {
+                        "kind": "core",
+                        "name": "Teleport"
+                      }
+                    ]
+                  }
+                ],
+                "modelsGained": 0
+              }
+            ]
+          },
+          {
+            "id": "PXSe3U2",
+            "label": "Upgrade all models with",
+            "variant": "Upgrade",
+            "affects": "All",
+            "targets": [],
+            "maxApplications": 0,
+            "minPicks": 0,
+            "maxPicks": 1,
+            "options": [
+              {
+                "id": "3d8Dx",
+                "label": "Sacred Destiny (Protection Feat)",
+                "cost": 10,
+                "costUnpriced": false,
+                "weaponsGained": [],
+                "rulesGained": [],
+                "itemsGained": [
+                  {
+                    "name": "Sacred Destiny",
+                    "quantity": 1,
+                    "rules": [
+                      {
+                        "kind": "core",
+                        "name": "Protection Feat"
+                      }
+                    ]
+                  }
+                ],
+                "modelsGained": 0
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "d3_323-",
+        "name": "Saurian Warriors",
+        "quality": 4,
+        "defense": 4,
+        "baseModelCount": 5,
+        "minModels": 5,
+        "maxModels": 5,
+        "basePointCost": 95,
+        "base": {
+          "shape": "Circle",
+          "diameterInches": 1.2598425,
+          "widthInches": 0.984252,
+          "heightInches": 1.968504
+        },
+        "weapons": [
+          {
+            "name": "Pistol",
+            "quantity": 5,
+            "rangeInches": 12,
+            "attacks": 1,
+            "armorPenetration": 0,
+            "specialRules": []
+          },
+          {
+            "name": "CCW",
+            "quantity": 5,
+            "rangeInches": 0,
+            "attacks": 2,
+            "armorPenetration": 0,
+            "specialRules": []
+          }
+        ],
+        "rules": [
+          {
+            "kind": "core",
+            "name": "Fearless"
+          },
+          {
+            "kind": "core",
+            "name": "Primal"
+          }
+        ],
+        "items": [],
+        "sections": [
+          {
+            "id": "OU6WNYi",
+            "label": "Replace all Pistols and CCWs",
+            "variant": "Replace",
+            "affects": "All",
+            "targets": [
+              "Pistols",
+              "CCWs"
+            ],
+            "maxApplications": 0,
+            "minPicks": 0,
+            "maxPicks": 1,
+            "options": [
+              {
+                "id": "VKk18cA",
+                "label": "Carbine (18\u0022, A2), CCW (A1)",
+                "cost": 20,
+                "costUnpriced": false,
+                "weaponsGained": [
+                  {
+                    "name": "Carbine",
+                    "quantity": 1,
+                    "rangeInches": 18,
+                    "attacks": 2,
+                    "armorPenetration": 0,
+                    "specialRules": []
+                  },
+                  {
+                    "name": "CCW",
+                    "quantity": 1,
+                    "rangeInches": 0,
+                    "attacks": 1,
+                    "armorPenetration": 0,
+                    "specialRules": []
+                  }
+                ],
+                "rulesGained": [],
+                "itemsGained": [],
+                "modelsGained": 0
+              }
+            ]
+          },
+          {
+            "id": "rZTGFFJ",
+            "label": "Replace one Pistol",
+            "variant": "Replace",
+            "affects": "One",
+            "targets": [
+              "Pistol"
+            ],
+            "maxApplications": 0,
+            "minPicks": 0,
+            "maxPicks": 1,
+            "options": [
+              {
+                "id": "rBTsSkn",
+                "label": "Flamer (12\u0022, A1, Blast(3), Reliable)",
+                "cost": 15,
+                "costUnpriced": false,
+                "weaponsGained": [
+                  {
+                    "name": "Flamer",
+                    "quantity": 1,
+                    "rangeInches": 12,
+                    "attacks": 1,
+                    "armorPenetration": 0,
+                    "specialRules": [
+                      {
+                        "kind": "coreNumeric",
+                        "name": "Blast",
+                        "numericValue": 3
+                      },
+                      {
+                        "kind": "core",
+                        "name": "Reliable"
+                      }
+                    ]
+                  }
+                ],
+                "rulesGained": [],
+                "itemsGained": [],
+                "modelsGained": 0
+              },
+              {
+                "id": "6iuwtF4",
+                "label": "Spike Shooter (18\u0022, A2, Rending)",
+                "cost": 15,
+                "costUnpriced": false,
+                "weaponsGained": [
+                  {
+                    "name": "Spike Shooter",
+                    "quantity": 1,
+                    "rangeInches": 18,
+                    "attacks": 2,
+                    "armorPenetration": 0,
+                    "specialRules": [
+                      {
+                        "kind": "core",
+                        "name": "Rending"
+                      }
+                    ]
+                  }
+                ],
+                "rulesGained": [],
+                "itemsGained": [],
+                "modelsGained": 0
+              },
+              {
+                "id": "rICOlbL",
+                "label": "Shock Charger (24\u0022, A1, AP(4))",
+                "cost": 15,
+                "costUnpriced": false,
+                "weaponsGained": [
+                  {
+                    "name": "Shock Charger",
+                    "quantity": 1,
+                    "rangeInches": 24,
+                    "attacks": 1,
+                    "armorPenetration": 4,
+                    "specialRules": []
+                  }
+                ],
+                "rulesGained": [],
+                "itemsGained": [],
+                "modelsGained": 0
+              },
+              {
+                "id": "yTms4eH",
+                "label": "Beam Gun (12\u0022, A1, AP(2), Deadly(3), Disintegrate)",
+                "cost": 20,
+                "costUnpriced": false,
+                "weaponsGained": [
+                  {
+                    "name": "Beam Gun",
+                    "quantity": 1,
+                    "rangeInches": 12,
+                    "attacks": 1,
+                    "armorPenetration": 2,
+                    "specialRules": [
+                      {
+                        "kind": "coreNumeric",
+                        "name": "Deadly",
+                        "numericValue": 3
+                      },
+                      {
+                        "kind": "core",
+                        "name": "Disintegrate"
+                      }
+                    ]
+                  }
+                ],
+                "rulesGained": [],
+                "itemsGained": [],
+                "modelsGained": 0
+              }
+            ]
+          },
+          {
+            "id": "PXSe3U2",
+            "label": "Upgrade all models with",
+            "variant": "Upgrade",
+            "affects": "All",
+            "targets": [],
+            "maxApplications": 0,
+            "minPicks": 0,
+            "maxPicks": 1,
+            "options": [
+              {
+                "id": "3d8Dx",
+                "label": "Sacred Destiny (Protection Feat)",
+                "cost": 10,
+                "costUnpriced": false,
+                "weaponsGained": [],
+                "rulesGained": [],
+                "itemsGained": [
+                  {
+                    "name": "Sacred Destiny",
+                    "quantity": 1,
+                    "rules": [
+                      {
+                        "kind": "core",
+                        "name": "Protection Feat"
+                      }
+                    ]
+                  }
+                ],
+                "modelsGained": 0
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "Cet1xy8",
+        "name": "Chameleons",
+        "quality": 5,
+        "defense": 5,
+        "baseModelCount": 5,
+        "minModels": 5,
+        "maxModels": 5,
+        "basePointCost": 130,
+        "base": {
+          "shape": "Circle",
+          "diameterInches": 1.2598425,
+          "widthInches": 0.984252,
+          "heightInches": 1.968504
+        },
+        "weapons": [
+          {
+            "name": "Burst Gun",
+            "quantity": 5,
+            "rangeInches": 12,
+            "attacks": 2,
+            "armorPenetration": 1,
+            "specialRules": []
+          },
+          {
+            "name": "CCW",
+            "quantity": 5,
+            "rangeInches": 0,
+            "attacks": 1,
+            "armorPenetration": 0,
+            "specialRules": []
+          }
+        ],
+        "rules": [
+          {
+            "kind": "core",
+            "name": "Scout"
+          },
+          {
+            "kind": "core",
+            "name": "Strider"
+          },
+          {
+            "kind": "core",
+            "name": "Good Shot"
+          },
+          {
+            "kind": "core",
+            "name": "Primal"
+          },
+          {
+            "kind": "core",
+            "name": "Evasive"
+          }
+        ],
+        "items": [],
+        "sections": [
+          {
+            "id": "3yKL21n",
+            "label": "Replace all Burst Guns",
+            "variant": "Replace",
+            "affects": "All",
+            "targets": [
+              "Burst Guns"
+            ],
+            "maxApplications": 0,
+            "minPicks": 0,
+            "maxPicks": 1,
+            "options": [
+              {
+                "id": "m-KJZCljvv",
+                "label": "Precision Carbine (18\u0022, A1, AP(1), Precise)",
+                "cost": 0,
+                "costUnpriced": false,
+                "weaponsGained": [
+                  {
+                    "name": "Precision Carbine",
+                    "quantity": 1,
+                    "rangeInches": 18,
+                    "attacks": 1,
+                    "armorPenetration": 1,
+                    "specialRules": [
+                      {
+                        "kind": "core",
+                        "name": "Precise"
+                      }
+                    ]
+                  }
+                ],
+                "rulesGained": [],
+                "itemsGained": [],
+                "modelsGained": 0
+              }
+            ]
+          },
+          {
+            "id": "b8rO1Md",
+            "label": "Upgrade one model with",
+            "variant": "Upgrade",
+            "affects": "One",
+            "targets": [],
+            "maxApplications": 0,
+            "minPicks": 0,
+            "maxPicks": 1,
+            "options": [
+              {
+                "id": "EaqL4IFUqZ",
+                "label": "Advanced Locator (Ambush Beacon)",
+                "cost": 15,
+                "costUnpriced": false,
+                "weaponsGained": [],
+                "rulesGained": [],
+                "itemsGained": [
+                  {
+                    "name": "Advanced Locator",
+                    "quantity": 1,
+                    "rules": [
+                      {
+                        "kind": "core",
+                        "name": "Ambush Beacon"
+                      }
+                    ]
+                  }
+                ],
+                "modelsGained": 0
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "sd-Y62t",
+        "name": "Saurian Guardians",
+        "quality": 3,
+        "defense": 3,
+        "baseModelCount": 5,
+        "minModels": 5,
+        "maxModels": 5,
+        "basePointCost": 145,
+        "base": {
+          "shape": "Circle",
+          "diameterInches": 1.2598425,
+          "widthInches": 0.984252,
+          "heightInches": 1.968504
+        },
+        "weapons": [
+          {
+            "name": "Hammer",
+            "quantity": 5,
+            "rangeInches": 0,
+            "attacks": 2,
+            "armorPenetration": 2,
+            "specialRules": []
+          }
+        ],
+        "rules": [
+          {
+            "kind": "core",
+            "name": "Fearless"
+          },
+          {
+            "kind": "core",
+            "name": "Primal"
+          }
+        ],
+        "items": [],
+        "sections": [
+          {
+            "id": "nHTVSHc",
+            "label": "Replace all Hammers",
+            "variant": "Replace",
+            "affects": "All",
+            "targets": [
+              "Hammers"
+            ],
+            "maxApplications": 0,
+            "minPicks": 0,
+            "maxPicks": 1,
+            "options": [
+              {
+                "id": "j3kba",
+                "label": "Mace-Shots (12\u0022, A2, AP(1)), Mace (A2)",
+                "cost": 30,
+                "costUnpriced": false,
+                "weaponsGained": [
+                  {
+                    "name": "Mace-Shots",
+                    "quantity": 1,
+                    "rangeInches": 12,
+                    "attacks": 2,
+                    "armorPenetration": 1,
+                    "specialRules": []
+                  },
+                  {
+                    "name": "Mace",
+                    "quantity": 1,
+                    "rangeInches": 0,
+                    "attacks": 2,
+                    "armorPenetration": 0,
+                    "specialRules": []
+                  }
+                ],
+                "rulesGained": [],
+                "itemsGained": [],
+                "modelsGained": 0
+              }
+            ]
+          },
+          {
+            "id": "1gSPfjb",
+            "label": "Replace one Hammer",
+            "variant": "Replace",
+            "affects": "One",
+            "targets": [
+              "Hammer"
+            ],
+            "maxApplications": 0,
+            "minPicks": 0,
+            "maxPicks": 1,
+            "options": [
+              {
+                "id": "aSO8wKf",
+                "label": "Great Hammer (A1, AP(2), Blast(3))",
+                "cost": 5,
+                "costUnpriced": false,
+                "weaponsGained": [
+                  {
+                    "name": "Great Hammer",
+                    "quantity": 1,
+                    "rangeInches": 0,
+                    "attacks": 1,
+                    "armorPenetration": 2,
+                    "specialRules": [
+                      {
+                        "kind": "coreNumeric",
+                        "name": "Blast",
+                        "numericValue": 3
+                      }
+                    ]
+                  }
+                ],
+                "rulesGained": [],
+                "itemsGained": [],
+                "modelsGained": 0
+              }
+            ]
+          },
+          {
+            "id": "fWh4Rpn",
+            "label": "Upgrade all models with",
+            "variant": "Upgrade",
+            "affects": "All",
+            "targets": [],
+            "maxApplications": 0,
+            "minPicks": 0,
+            "maxPicks": 1,
+            "options": [
+              {
+                "id": "J8SWq",
+                "label": "Hardened Elites (Fortified)",
+                "cost": 10,
+                "costUnpriced": false,
+                "weaponsGained": [],
+                "rulesGained": [],
+                "itemsGained": [
+                  {
+                    "name": "Hardened Elites",
+                    "quantity": 1,
+                    "rules": [
+                      {
+                        "kind": "core",
+                        "name": "Fortified"
+                      }
+                    ]
+                  }
+                ],
+                "modelsGained": 0
+              }
+            ]
+          },
+          {
+            "id": "PXSe3U2",
+            "label": "Upgrade all models with",
+            "variant": "Upgrade",
+            "affects": "All",
+            "targets": [],
+            "maxApplications": 0,
+            "minPicks": 0,
+            "maxPicks": 1,
+            "options": [
+              {
+                "id": "3d8Dx",
+                "label": "Sacred Destiny (Protection Feat)",
+                "cost": 10,
+                "costUnpriced": false,
+                "weaponsGained": [],
+                "rulesGained": [],
+                "itemsGained": [
+                  {
+                    "name": "Sacred Destiny",
+                    "quantity": 1,
+                    "rules": [
+                      {
+                        "kind": "core",
+                        "name": "Protection Feat"
+                      }
+                    ]
+                  }
+                ],
+                "modelsGained": 0
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "_XxIYpx",
+        "name": "Gecko Snipers",
+        "quality": 5,
+        "defense": 5,
+        "baseModelCount": 3,
+        "minModels": 3,
+        "maxModels": 3,
+        "basePointCost": 120,
+        "base": {
+          "shape": "Circle",
+          "diameterInches": 0.984252,
+          "widthInches": 0.984252,
+          "heightInches": 1.968504
+        },
+        "weapons": [
+          {
+            "name": "Sniper Rifle",
+            "quantity": 3,
+            "rangeInches": 30,
+            "attacks": 1,
+            "armorPenetration": 1,
+            "specialRules": [
+              {
+                "kind": "core",
+                "name": "Reliable"
+              },
+              {
+                "kind": "core",
+                "name": "Takedown"
+              }
+            ]
+          },
+          {
+            "name": "CCW",
+            "quantity": 3,
+            "rangeInches": 0,
+            "attacks": 1,
+            "armorPenetration": 0,
+            "specialRules": []
+          }
+        ],
+        "rules": [
+          {
+            "kind": "core",
+            "name": "Strider"
+          },
+          {
+            "kind": "core",
+            "name": "Primal"
+          }
+        ],
+        "items": [],
+        "sections": []
+      },
+      {
+        "id": "GfTlKWo",
+        "name": "Deinonychus Riders",
+        "quality": 5,
+        "defense": 5,
+        "baseModelCount": 5,
+        "minModels": 5,
+        "maxModels": 5,
+        "basePointCost": 110,
+        "base": {
+          "shape": "Rectangle",
+          "diameterInches": 1.1023622,
+          "widthInches": 1.3779528,
+          "heightInches": 2.3622048
+        },
+        "weapons": [
+          {
+            "name": "Shock Lance",
+            "quantity": 5,
+            "rangeInches": 0,
+            "attacks": 1,
+            "armorPenetration": 4,
+            "specialRules": []
+          }
+        ],
+        "rules": [
+          {
+            "kind": "core",
+            "name": "Bounding"
+          },
+          {
+            "kind": "coreNumeric",
+            "name": "Impact",
+            "numericValue": 1
+          },
+          {
+            "kind": "core",
+            "name": "Shielded"
+          },
+          {
+            "kind": "core",
+            "name": "Strider"
+          },
+          {
+            "kind": "core",
+            "name": "Primal"
+          }
+        ],
+        "items": [],
+        "sections": [
+          {
+            "id": "bLTgwj4",
+            "label": "Replace all Shock Lances",
+            "variant": "Replace",
+            "affects": "All",
+            "targets": [
+              "Shock Lances"
+            ],
+            "maxApplications": 0,
+            "minPicks": 0,
+            "maxPicks": 1,
+            "options": [
+              {
+                "id": "t79T1",
+                "label": "Shock Pistol (12\u0022, A1, AP(4)), CCW (A1)",
+                "cost": 15,
+                "costUnpriced": false,
+                "weaponsGained": [
+                  {
+                    "name": "Shock Pistol",
+                    "quantity": 1,
+                    "rangeInches": 12,
+                    "attacks": 1,
+                    "armorPenetration": 4,
+                    "specialRules": []
+                  },
+                  {
+                    "name": "CCW",
+                    "quantity": 1,
+                    "rangeInches": 0,
+                    "attacks": 1,
+                    "armorPenetration": 0,
+                    "specialRules": []
+                  }
+                ],
+                "rulesGained": [],
+                "itemsGained": [],
+                "modelsGained": 0
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "9-8Xg6h",
+        "name": "Raptor Riders",
+        "quality": 4,
+        "defense": 3,
+        "baseModelCount": 5,
+        "minModels": 5,
+        "maxModels": 5,
+        "basePointCost": 130,
+        "base": {
+          "shape": "Rectangle",
+          "diameterInches": 1.1023622,
+          "widthInches": 1.3779528,
+          "heightInches": 2.3622048
+        },
+        "weapons": [
+          {
+            "name": "Pistol",
+            "quantity": 5,
+            "rangeInches": 12,
+            "attacks": 1,
+            "armorPenetration": 0,
+            "specialRules": []
+          },
+          {
+            "name": "CCW",
+            "quantity": 5,
+            "rangeInches": 0,
+            "attacks": 2,
+            "armorPenetration": 0,
+            "specialRules": []
+          }
+        ],
+        "rules": [
+          {
+            "kind": "coreNumeric",
+            "name": "Ravage",
+            "numericValue": 1
+          },
+          {
+            "kind": "core",
+            "name": "Fast"
+          },
+          {
+            "kind": "core",
+            "name": "Fearless"
+          },
+          {
+            "kind": "core",
+            "name": "Primal"
+          }
+        ],
+        "items": [],
+        "sections": [
+          {
+            "id": "vBinfxK",
+            "label": "Replace any Pistol",
+            "variant": "Replace",
+            "affects": "Any",
+            "targets": [
+              "Pistol"
+            ],
+            "maxApplications": 0,
+            "minPicks": 0,
+            "maxPicks": 1,
+            "options": [
+              {
+                "id": "Z96jv8-",
+                "label": "Spike Pistol (9\u0022, A2, Rending)",
+                "cost": 5,
+                "costUnpriced": false,
+                "weaponsGained": [
+                  {
+                    "name": "Spike Pistol",
+                    "quantity": 1,
+                    "rangeInches": 9,
+                    "attacks": 2,
+                    "armorPenetration": 0,
+                    "specialRules": [
+                      {
+                        "kind": "core",
+                        "name": "Rending"
+                      }
+                    ]
+                  }
+                ],
+                "rulesGained": [],
+                "itemsGained": [],
+                "modelsGained": 0
+              }
+            ]
+          },
+          {
+            "id": "7KrXROJ",
+            "label": "Replace any CCW",
+            "variant": "Replace",
+            "affects": "Any",
+            "targets": [
+              "CCW"
+            ],
+            "maxApplications": 0,
+            "minPicks": 0,
+            "maxPicks": 1,
+            "options": [
+              {
+                "id": "DLy8i",
+                "label": "Power Spear (A2, Thrust)",
+                "cost": 5,
+                "costUnpriced": false,
+                "weaponsGained": [
+                  {
+                    "name": "Power Spear",
+                    "quantity": 1,
+                    "rangeInches": 0,
+                    "attacks": 2,
+                    "armorPenetration": 0,
+                    "specialRules": [
+                      {
+                        "kind": "core",
+                        "name": "Thrust"
+                      }
+                    ]
+                  }
+                ],
+                "rulesGained": [],
+                "itemsGained": [],
+                "modelsGained": 0
+              },
+              {
+                "id": "GQGc-",
+                "label": "Power Claw (A2, AP(1), Rending)",
+                "cost": 10,
+                "costUnpriced": false,
+                "weaponsGained": [
+                  {
+                    "name": "Power Claw",
+                    "quantity": 1,
+                    "rangeInches": 0,
+                    "attacks": 2,
+                    "armorPenetration": 1,
+                    "specialRules": [
+                      {
+                        "kind": "core",
+                        "name": "Rending"
+                      }
+                    ]
+                  }
+                ],
+                "rulesGained": [],
+                "itemsGained": [],
+                "modelsGained": 0
+              },
+              {
+                "id": "Dzz8Acd",
+                "label": "Power Mace (A2, AP(4))",
+                "cost": 15,
+                "costUnpriced": false,
+                "weaponsGained": [
+                  {
+                    "name": "Power Mace",
+                    "quantity": 1,
+                    "rangeInches": 0,
+                    "attacks": 2,
+                    "armorPenetration": 4,
+                    "specialRules": []
+                  }
+                ],
+                "rulesGained": [],
+                "itemsGained": [],
+                "modelsGained": 0
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "0tlypaz",
+        "name": "Pterodactyl Riders",
+        "quality": 5,
+        "defense": 5,
+        "baseModelCount": 3,
+        "minModels": 3,
+        "maxModels": 3,
+        "basePointCost": 130,
+        "base": {
+          "shape": "Circle",
+          "diameterInches": 1.968504,
+          "widthInches": 0.984252,
+          "heightInches": 1.968504
+        },
+        "weapons": [
+          {
+            "name": "CCW",
+            "quantity": 3,
+            "rangeInches": 0,
+            "attacks": 1,
+            "armorPenetration": 0,
+            "specialRules": []
+          },
+          {
+            "name": "Claws",
+            "quantity": 3,
+            "rangeInches": 0,
+            "attacks": 2,
+            "armorPenetration": 0,
+            "specialRules": []
+          }
+        ],
+        "rules": [
+          {
+            "kind": "core",
+            "name": "Ambush"
+          },
+          {
+            "kind": "core",
+            "name": "Flying"
+          },
+          {
+            "kind": "coreNumeric",
+            "name": "Impact",
+            "numericValue": 1
+          },
+          {
+            "kind": "core",
+            "name": "Primal"
+          },
+          {
+            "kind": "coreNumeric",
+            "name": "Tough",
+            "numericValue": 3
+          }
+        ],
+        "items": [
+          {
+            "name": "Energy Shield",
+            "quantity": 3,
+            "rules": [
+              {
+                "kind": "core",
+                "name": "Shielded"
+              }
+            ]
+          }
+        ],
+        "sections": [
+          {
+            "id": "HA7pVJm",
+            "label": "Replace all Energy Shields and CCWS",
+            "variant": "Replace",
+            "affects": "All",
+            "targets": [
+              "Energy Shields",
+              "CCWS"
+            ],
+            "maxApplications": 0,
+            "minPicks": 0,
+            "maxPicks": 1,
+            "options": [
+              {
+                "id": "MrLetEMs",
+                "label": "Shock Rifle (18\u0022, A1, AP(4))",
+                "cost": 10,
+                "costUnpriced": false,
+                "weaponsGained": [
+                  {
+                    "name": "Shock Rifle",
+                    "quantity": 1,
+                    "rangeInches": 18,
+                    "attacks": 1,
+                    "armorPenetration": 4,
+                    "specialRules": []
+                  }
+                ],
+                "rulesGained": [],
+                "itemsGained": [],
+                "modelsGained": 0
+              },
+              {
+                "id": "f1qoe4Y3",
+                "label": "Shock Pistol (12\u0022, A1, AP(4)), Energy Shields (Shielded)",
+                "cost": 15,
+                "costUnpriced": false,
+                "weaponsGained": [
+                  {
+                    "name": "Shock Pistol",
+                    "quantity": 1,
+                    "rangeInches": 12,
+                    "attacks": 1,
+                    "armorPenetration": 4,
+                    "specialRules": []
+                  }
+                ],
+                "rulesGained": [],
+                "itemsGained": [
+                  {
+                    "name": "Energy Shields",
+                    "quantity": 1,
+                    "rules": [
+                      {
+                        "kind": "core",
+                        "name": "Shielded"
+                      }
+                    ]
+                  }
+                ],
+                "modelsGained": 0
+              }
+            ]
+          },
+          {
+            "id": "do6b8-H",
+            "label": "Upgrade all models with",
+            "variant": "Upgrade",
+            "affects": "All",
+            "targets": [],
+            "maxApplications": 0,
+            "minPicks": 0,
+            "maxPicks": 1,
+            "options": [
+              {
+                "id": "cmUEXLFMmw",
+                "label": "Disposable Bombs (A1, AP(1), Blast(3), Limited, Strafing)",
+                "cost": 15,
+                "costUnpriced": false,
+                "weaponsGained": [
+                  {
+                    "name": "Disposable Bombs",
+                    "quantity": 1,
+                    "rangeInches": 0,
+                    "attacks": 1,
+                    "armorPenetration": 1,
+                    "specialRules": [
+                      {
+                        "kind": "coreNumeric",
+                        "name": "Blast",
+                        "numericValue": 3
+                      },
+                      {
+                        "kind": "core",
+                        "name": "Limited"
+                      },
+                      {
+                        "kind": "core",
+                        "name": "Strafing"
+                      }
+                    ]
+                  }
+                ],
+                "rulesGained": [],
+                "itemsGained": [],
+                "modelsGained": 0
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "w3V96GX",
+        "name": "Ripjawdactyl Riders",
+        "quality": 5,
+        "defense": 5,
+        "baseModelCount": 3,
+        "minModels": 3,
+        "maxModels": 3,
+        "basePointCost": 170,
+        "base": {
+          "shape": "Circle",
+          "diameterInches": 1.968504,
+          "widthInches": 0.984252,
+          "heightInches": 1.968504
+        },
+        "weapons": [
+          {
+            "name": "CCW",
+            "quantity": 3,
+            "rangeInches": 0,
+            "attacks": 1,
+            "armorPenetration": 0,
+            "specialRules": []
+          }
+        ],
+        "rules": [
+          {
+            "kind": "core",
+            "name": "Ambush"
+          },
+          {
+            "kind": "core",
+            "name": "Flying"
+          },
+          {
+            "kind": "coreNumeric",
+            "name": "Heavy Impact",
+            "numericValue": 3
+          },
+          {
+            "kind": "core",
+            "name": "Primal"
+          },
+          {
+            "kind": "coreNumeric",
+            "name": "Tough",
+            "numericValue": 3
+          }
+        ],
+        "items": [
+          {
+            "name": "Energy Shield",
+            "quantity": 3,
+            "rules": [
+              {
+                "kind": "core",
+                "name": "Shielded"
+              }
+            ]
+          }
+        ],
+        "sections": [
+          {
+            "id": "MErWMFl",
+            "label": "Replace all Energy Shields and CCWS",
+            "variant": "Replace",
+            "affects": "All",
+            "targets": [
+              "Energy Shields",
+              "CCWS"
+            ],
+            "maxApplications": 0,
+            "minPicks": 0,
+            "maxPicks": 1,
+            "options": [
+              {
+                "id": "OJVEdxFO",
+                "label": "Shock Rifle (18\u0022, A1, AP(4))",
+                "cost": 10,
+                "costUnpriced": false,
+                "weaponsGained": [
+                  {
+                    "name": "Shock Rifle",
+                    "quantity": 1,
+                    "rangeInches": 18,
+                    "attacks": 1,
+                    "armorPenetration": 4,
+                    "specialRules": []
+                  }
+                ],
+                "rulesGained": [],
+                "itemsGained": [],
+                "modelsGained": 0
+              },
+              {
+                "id": "ClHI7lK9",
+                "label": "Shock Pistol (12\u0022, A1, AP(4)), Energy Shields (Shielded)",
+                "cost": 15,
+                "costUnpriced": false,
+                "weaponsGained": [
+                  {
+                    "name": "Shock Pistol",
+                    "quantity": 1,
+                    "rangeInches": 12,
+                    "attacks": 1,
+                    "armorPenetration": 4,
+                    "specialRules": []
+                  }
+                ],
+                "rulesGained": [],
+                "itemsGained": [
+                  {
+                    "name": "Energy Shields",
+                    "quantity": 1,
+                    "rules": [
+                      {
+                        "kind": "core",
+                        "name": "Shielded"
+                      }
+                    ]
+                  }
+                ],
+                "modelsGained": 0
+              }
+            ]
+          },
+          {
+            "id": "hQTMYvV",
+            "label": "Upgrade one model with",
+            "variant": "Upgrade",
+            "affects": "One",
+            "targets": [],
+            "maxApplications": 0,
+            "minPicks": 0,
+            "maxPicks": 1,
+            "options": [
+              {
+                "id": "cXvzmaDQoe",
+                "label": "Hunting Bait (Precision Target(1))",
+                "cost": 25,
+                "costUnpriced": false,
+                "weaponsGained": [],
+                "rulesGained": [],
+                "itemsGained": [
+                  {
+                    "name": "Hunting Bait",
+                    "quantity": 1,
+                    "rules": [
+                      {
+                        "kind": "coreNumeric",
+                        "name": "Precision Target",
+                        "numericValue": 1
+                      }
+                    ]
+                  }
+                ],
+                "modelsGained": 0
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "23TvtrB",
+        "name": "Gators",
+        "quality": 4,
+        "defense": 3,
+        "baseModelCount": 3,
+        "minModels": 3,
+        "maxModels": 3,
+        "basePointCost": 160,
+        "base": {
+          "shape": "Circle",
+          "diameterInches": 1.968504,
+          "widthInches": 0.984252,
+          "heightInches": 1.968504
+        },
+        "weapons": [
+          {
+            "name": "Bash",
+            "quantity": 3,
+            "rangeInches": 0,
+            "attacks": 2,
+            "armorPenetration": 0,
+            "specialRules": []
+          },
+          {
+            "name": "Bludgeon",
+            "quantity": 6,
+            "rangeInches": 0,
+            "attacks": 1,
+            "armorPenetration": 0,
+            "specialRules": [
+              {
+                "kind": "core",
+                "name": "Thrust"
+              }
+            ]
+          }
+        ],
+        "rules": [
+          {
+            "kind": "core",
+            "name": "Fearless"
+          },
+          {
+            "kind": "coreNumeric",
+            "name": "Tough",
+            "numericValue": 3
+          },
+          {
+            "kind": "core",
+            "name": "Primal"
+          }
+        ],
+        "items": [],
+        "sections": [
+          {
+            "id": "zlUtFTF",
+            "label": "Replace any Bludgeon",
+            "variant": "Replace",
+            "affects": "Any",
+            "targets": [
+              "Bludgeon"
+            ],
+            "maxApplications": 0,
+            "minPicks": 0,
+            "maxPicks": 1,
+            "options": [
+              {
+                "id": "YOlBmAc",
+                "label": "Power Knuckle (A1, AP(2))",
+                "cost": 5,
+                "costUnpriced": false,
+                "weaponsGained": [
+                  {
+                    "name": "Power Knuckle",
+                    "quantity": 1,
+                    "rangeInches": 0,
+                    "attacks": 1,
+                    "armorPenetration": 2,
+                    "specialRules": []
+                  }
+                ],
+                "rulesGained": [],
+                "itemsGained": [],
+                "modelsGained": 0
+              },
+              {
+                "id": "i-xoC",
+                "label": "Heavy Shooter (12\u0022, A2, AP(1))",
+                "cost": 5,
+                "costUnpriced": false,
+                "weaponsGained": [
+                  {
+                    "name": "Heavy Shooter",
+                    "quantity": 1,
+                    "rangeInches": 12,
+                    "attacks": 2,
+                    "armorPenetration": 1,
+                    "specialRules": []
+                  }
+                ],
+                "rulesGained": [],
+                "itemsGained": [],
+                "modelsGained": 0
+              },
+              {
+                "id": "9PBuKdX",
+                "label": "Power Claw (A1, AP(1), Rending)",
+                "cost": 5,
+                "costUnpriced": false,
+                "weaponsGained": [
+                  {
+                    "name": "Power Claw",
+                    "quantity": 1,
+                    "rangeInches": 0,
+                    "attacks": 1,
+                    "armorPenetration": 1,
+                    "specialRules": [
+                      {
+                        "kind": "core",
+                        "name": "Rending"
+                      }
+                    ]
+                  }
+                ],
+                "rulesGained": [],
+                "itemsGained": [],
+                "modelsGained": 0
+              }
+            ]
+          },
+          {
+            "id": "Mqp0nc3",
+            "label": "Upgrade any model with",
+            "variant": "Upgrade",
+            "affects": "Any",
+            "targets": [],
+            "maxApplications": 0,
+            "minPicks": 0,
+            "maxPicks": 1,
+            "options": [
+              {
+                "id": "kvoLB",
+                "label": "Missile Pod (18\u0022, A1, AP(1), Limited, Unstoppable)",
+                "cost": 5,
+                "costUnpriced": false,
+                "weaponsGained": [
+                  {
+                    "name": "Missile Pod",
+                    "quantity": 1,
+                    "rangeInches": 18,
+                    "attacks": 1,
+                    "armorPenetration": 1,
+                    "specialRules": [
+                      {
+                        "kind": "core",
+                        "name": "Unstoppable"
+                      },
+                      {
+                        "kind": "core",
+                        "name": "Limited"
+                      }
+                    ]
+                  }
+                ],
+                "rulesGained": [],
+                "itemsGained": [],
+                "modelsGained": 0
+              }
+            ]
+          },
+          {
+            "id": "PXSe3U2",
+            "label": "Upgrade all models with",
+            "variant": "Upgrade",
+            "affects": "All",
+            "targets": [],
+            "maxApplications": 0,
+            "minPicks": 0,
+            "maxPicks": 1,
+            "options": [
+              {
+                "id": "3d8Dx",
+                "label": "Sacred Destiny (Protection Feat)",
+                "cost": 20,
+                "costUnpriced": false,
+                "weaponsGained": [],
+                "rulesGained": [],
+                "itemsGained": [
+                  {
+                    "name": "Sacred Destiny",
+                    "quantity": 1,
+                    "rules": [
+                      {
+                        "kind": "core",
+                        "name": "Protection Feat"
+                      }
+                    ]
+                  }
+                ],
+                "modelsGained": 0
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "hHlo6_1",
+        "name": "Cyber Swarms",
+        "quality": 5,
+        "defense": 6,
+        "baseModelCount": 3,
+        "minModels": 3,
+        "maxModels": 3,
+        "basePointCost": 70,
+        "base": {
+          "shape": "Circle",
+          "diameterInches": 1.5748031,
+          "widthInches": 0.984252,
+          "heightInches": 1.968504
+        },
+        "weapons": [
+          {
+            "name": "Swarm Attacks",
+            "quantity": 3,
+            "rangeInches": 0,
+            "attacks": 3,
+            "armorPenetration": 0,
+            "specialRules": [
+              {
+                "kind": "core",
+                "name": "Bane"
+              }
+            ]
+          }
+        ],
+        "rules": [
+          {
+            "kind": "core",
+            "name": "Strider"
+          },
+          {
+            "kind": "coreNumeric",
+            "name": "Tough",
+            "numericValue": 3
+          },
+          {
+            "kind": "core",
+            "name": "Primal"
+          }
+        ],
+        "items": [],
+        "sections": []
+      },
+      {
+        "id": "uSPAW_e",
+        "name": "Vulturedactyls",
+        "quality": 5,
+        "defense": 6,
+        "baseModelCount": 3,
+        "minModels": 3,
+        "maxModels": 3,
+        "basePointCost": 130,
+        "base": {
+          "shape": "Circle",
+          "diameterInches": 1.5748031,
+          "widthInches": 0.984252,
+          "heightInches": 1.968504
+        },
+        "weapons": [
+          {
+            "name": "Claws",
+            "quantity": 3,
+            "rangeInches": 0,
+            "attacks": 3,
+            "armorPenetration": 0,
+            "specialRules": []
+          }
+        ],
+        "rules": [
+          {
+            "kind": "core",
+            "name": "Ambush"
+          },
+          {
+            "kind": "core",
+            "name": "Flying"
+          },
+          {
+            "kind": "core",
+            "name": "Primal"
+          },
+          {
+            "kind": "coreNumeric",
+            "name": "Tough",
+            "numericValue": 3
+          },
+          {
+            "kind": "core",
+            "name": "Evasive"
+          }
+        ],
+        "items": [],
+        "sections": []
+      },
+      {
+        "id": "G9Cu-8-",
+        "name": "Spiked Lizard",
+        "quality": 4,
+        "defense": 3,
+        "baseModelCount": 1,
+        "minModels": 1,
+        "maxModels": 1,
+        "basePointCost": 150,
+        "base": {
+          "shape": "Rectangle",
+          "diameterInches": 1.1023622,
+          "widthInches": 2.047244,
+          "heightInches": 3.543307
+        },
+        "weapons": [
+          {
+            "name": "Arch Rockets",
+            "quantity": 1,
+            "rangeInches": 18,
+            "attacks": 2,
+            "armorPenetration": 0,
+            "specialRules": [
+              {
+                "kind": "coreNumeric",
+                "name": "Blast",
+                "numericValue": 3
+              },
+              {
+                "kind": "core",
+                "name": "Indirect"
+              }
+            ]
+          },
+          {
+            "name": "Heavy Claws",
+            "quantity": 1,
+            "rangeInches": 0,
+            "attacks": 3,
+            "armorPenetration": 1,
+            "specialRules": []
+          }
+        ],
+        "rules": [
+          {
+            "kind": "core",
+            "name": "Fearless"
+          },
+          {
+            "kind": "core",
+            "name": "Fortified"
+          },
+          {
+            "kind": "coreNumeric",
+            "name": "Tough",
+            "numericValue": 6
+          },
+          {
+            "kind": "core",
+            "name": "Primal"
+          },
+          {
+            "kind": "core",
+            "name": "Strider"
+          }
+        ],
+        "items": [],
+        "sections": [
+          {
+            "id": "Z9_ROOl",
+            "label": "Upgrade with one",
+            "variant": "Upgrade",
+            "affects": "One",
+            "targets": [],
+            "maxApplications": 0,
+            "minPicks": 0,
+            "maxPicks": 1,
+            "options": [
+              {
+                "id": "hU6ov",
+                "label": "Combat Lizard Handlers (Relentless)",
+                "cost": 5,
+                "costUnpriced": false,
+                "weaponsGained": [],
+                "rulesGained": [],
+                "itemsGained": [
+                  {
+                    "name": "Combat Lizard Handlers",
+                    "quantity": 1,
+                    "rules": [
+                      {
+                        "kind": "core",
+                        "name": "Relentless"
+                      }
+                    ]
+                  }
+                ],
+                "modelsGained": 0
+              },
+              {
+                "id": "4cME-FaQTD",
+                "label": "Vanguard Lizard Handlers (Scout)",
+                "cost": 15,
+                "costUnpriced": false,
+                "weaponsGained": [],
+                "rulesGained": [],
+                "itemsGained": [
+                  {
+                    "name": "Vanguard Lizard Handlers",
+                    "quantity": 1,
+                    "rules": [
+                      {
+                        "kind": "core",
+                        "name": "Scout"
+                      }
+                    ]
+                  }
+                ],
+                "modelsGained": 0
+              }
+            ]
+          },
+          {
+            "id": "yT4zMBY",
+            "label": "Upgrade with",
+            "variant": "Upgrade",
+            "affects": "One",
+            "targets": [],
+            "maxApplications": 0,
+            "minPicks": 0,
+            "maxPicks": 1,
+            "options": [
+              {
+                "id": "p3LOaNzR",
+                "label": "Poison Flechettes (Bane Mark)",
+                "cost": 30,
+                "costUnpriced": false,
+                "weaponsGained": [],
+                "rulesGained": [],
+                "itemsGained": [
+                  {
+                    "name": "Poison Flechettes",
+                    "quantity": 1,
+                    "rules": [
+                      {
+                        "kind": "core",
+                        "name": "Bane Mark"
+                      }
+                    ]
+                  }
+                ],
+                "modelsGained": 0
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "Q6xnsW8",
+        "name": "Dragon Lizard",
+        "quality": 4,
+        "defense": 3,
+        "baseModelCount": 1,
+        "minModels": 1,
+        "maxModels": 1,
+        "basePointCost": 175,
+        "base": {
+          "shape": "Rectangle",
+          "diameterInches": 1.1023622,
+          "widthInches": 2.047244,
+          "heightInches": 3.543307
+        },
+        "weapons": [
+          {
+            "name": "Flame Burst",
+            "quantity": 1,
+            "rangeInches": 12,
+            "attacks": 2,
+            "armorPenetration": 1,
+            "specialRules": [
+              {
+                "kind": "coreNumeric",
+                "name": "Blast",
+                "numericValue": 3
+              },
+              {
+                "kind": "core",
+                "name": "Reliable"
+              }
+            ]
+          },
+          {
+            "name": "Heavy Claws",
+            "quantity": 1,
+            "rangeInches": 0,
+            "attacks": 3,
+            "armorPenetration": 1,
+            "specialRules": []
+          }
+        ],
+        "rules": [
+          {
+            "kind": "core",
+            "name": "Fearless"
+          },
+          {
+            "kind": "core",
+            "name": "Regeneration"
+          },
+          {
+            "kind": "coreNumeric",
+            "name": "Tough",
+            "numericValue": 6
+          },
+          {
+            "kind": "core",
+            "name": "Primal"
+          },
+          {
+            "kind": "core",
+            "name": "Strider"
+          }
+        ],
+        "items": [],
+        "sections": [
+          {
+            "id": "Z9_ROOl",
+            "label": "Upgrade with one",
+            "variant": "Upgrade",
+            "affects": "One",
+            "targets": [],
+            "maxApplications": 0,
+            "minPicks": 0,
+            "maxPicks": 1,
+            "options": [
+              {
+                "id": "hU6ov",
+                "label": "Combat Lizard Handlers (Relentless)",
+                "cost": 5,
+                "costUnpriced": false,
+                "weaponsGained": [],
+                "rulesGained": [],
+                "itemsGained": [
+                  {
+                    "name": "Combat Lizard Handlers",
+                    "quantity": 1,
+                    "rules": [
+                      {
+                        "kind": "core",
+                        "name": "Relentless"
+                      }
+                    ]
+                  }
+                ],
+                "modelsGained": 0
+              },
+              {
+                "id": "4cME-FaQTD",
+                "label": "Vanguard Lizard Handlers (Scout)",
+                "cost": 15,
+                "costUnpriced": false,
+                "weaponsGained": [],
+                "rulesGained": [],
+                "itemsGained": [
+                  {
+                    "name": "Vanguard Lizard Handlers",
+                    "quantity": 1,
+                    "rules": [
+                      {
+                        "kind": "core",
+                        "name": "Scout"
+                      }
+                    ]
+                  }
+                ],
+                "modelsGained": 0
+              }
+            ]
+          },
+          {
+            "id": "yT4zMBY",
+            "label": "Upgrade with",
+            "variant": "Upgrade",
+            "affects": "One",
+            "targets": [],
+            "maxApplications": 0,
+            "minPicks": 0,
+            "maxPicks": 1,
+            "options": [
+              {
+                "id": "p3LOaNzR",
+                "label": "Poison Flechettes (Bane Mark)",
+                "cost": 30,
+                "costUnpriced": false,
+                "weaponsGained": [],
+                "rulesGained": [],
+                "itemsGained": [
+                  {
+                    "name": "Poison Flechettes",
+                    "quantity": 1,
+                    "rules": [
+                      {
+                        "kind": "core",
+                        "name": "Bane Mark"
+                      }
+                    ]
+                  }
+                ],
+                "modelsGained": 0
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "_jdnOUr",
+        "name": "Triceratops",
+        "quality": 4,
+        "defense": 2,
+        "baseModelCount": 1,
+        "minModels": 1,
+        "maxModels": 1,
+        "basePointCost": 310,
+        "base": {
+          "shape": "Rectangle",
+          "diameterInches": 1.1023622,
+          "widthInches": 3.6220472,
+          "heightInches": 4.7244096
+        },
+        "weapons": [
+          {
+            "name": "Horns",
+            "quantity": 1,
+            "rangeInches": 0,
+            "attacks": 6,
+            "armorPenetration": 0,
+            "specialRules": [
+              {
+                "kind": "core",
+                "name": "Rending"
+              }
+            ]
+          },
+          {
+            "name": "Stomp",
+            "quantity": 1,
+            "rangeInches": 0,
+            "attacks": 4,
+            "armorPenetration": 1,
+            "specialRules": []
+          }
+        ],
+        "rules": [
+          {
+            "kind": "coreNumeric",
+            "name": "Fear",
+            "numericValue": 2
+          },
+          {
+            "kind": "core",
+            "name": "Fearless"
+          },
+          {
+            "kind": "coreNumeric",
+            "name": "Tough",
+            "numericValue": 12
+          },
+          {
+            "kind": "core",
+            "name": "Primal"
+          }
+        ],
+        "items": [
+          {
+            "name": "Carrier Platform",
+            "quantity": 1,
+            "rules": [
+              {
+                "kind": "coreNumeric",
+                "name": "Transport",
+                "numericValue": 11
+              }
+            ]
+          }
+        ],
+        "sections": [
+          {
+            "id": "7-IyzxY",
+            "label": "Replace Carrier Platform",
+            "variant": "Replace",
+            "affects": "One",
+            "targets": [
+              "Carrier Platform"
+            ],
+            "maxApplications": 0,
+            "minPicks": 0,
+            "maxPicks": 1,
+            "options": [
+              {
+                "id": "oft7x_T3Sq",
+                "label": "Gecko Crew (18\u0022, A6, AP(1))",
+                "cost": 15,
+                "costUnpriced": false,
+                "weaponsGained": [
+                  {
+                    "name": "Gecko Crew",
+                    "quantity": 1,
+                    "rangeInches": 18,
+                    "attacks": 6,
+                    "armorPenetration": 1,
+                    "specialRules": []
+                  }
+                ],
+                "rulesGained": [],
+                "itemsGained": [],
+                "modelsGained": 0
+              },
+              {
+                "id": "tYYeW",
+                "label": "Gecko Crew (18\u0022, A6, AP(1)), Gecko Priest (Caster(2))",
+                "cost": 50,
+                "costUnpriced": false,
+                "weaponsGained": [
+                  {
+                    "name": "Gecko Crew",
+                    "quantity": 1,
+                    "rangeInches": 18,
+                    "attacks": 6,
+                    "armorPenetration": 1,
+                    "specialRules": []
+                  }
+                ],
+                "rulesGained": [],
+                "itemsGained": [
+                  {
+                    "name": "Gecko Priest",
+                    "quantity": 1,
+                    "rules": [
+                      {
+                        "kind": "coreNumeric",
+                        "name": "Caster",
+                        "numericValue": 2
+                      }
+                    ]
+                  }
+                ],
+                "modelsGained": 0
+              },
+              {
+                "id": "iQnC6Bl",
+                "label": "Heavy Rocket Launcher (24\u0022, A4, AP(1), Blast(3), Indirect)",
+                "cost": 110,
+                "costUnpriced": false,
+                "weaponsGained": [
+                  {
+                    "name": "Heavy Rocket Launcher",
+                    "quantity": 1,
+                    "rangeInches": 24,
+                    "attacks": 4,
+                    "armorPenetration": 1,
+                    "specialRules": [
+                      {
+                        "kind": "coreNumeric",
+                        "name": "Blast",
+                        "numericValue": 3
+                      },
+                      {
+                        "kind": "core",
+                        "name": "Indirect"
+                      }
+                    ]
+                  }
+                ],
+                "rulesGained": [],
+                "itemsGained": [],
+                "modelsGained": 0
+              },
+              {
+                "id": "Ne80vKZ",
+                "label": "Heavy Missile Launcher (30\u0022, A4, AP(2), Deadly(3), Unstoppable)",
+                "cost": 140,
+                "costUnpriced": false,
+                "weaponsGained": [
+                  {
+                    "name": "Heavy Missile Launcher",
+                    "quantity": 1,
+                    "rangeInches": 30,
+                    "attacks": 4,
+                    "armorPenetration": 2,
+                    "specialRules": [
+                      {
+                        "kind": "coreNumeric",
+                        "name": "Deadly",
+                        "numericValue": 3
+                      },
+                      {
+                        "kind": "core",
+                        "name": "Unstoppable"
+                      }
+                    ]
+                  }
+                ],
+                "rulesGained": [],
+                "itemsGained": [],
+                "modelsGained": 0
+              }
+            ]
+          },
+          {
+            "id": "64qVh5I",
+            "label": "Upgrade with",
+            "variant": "Upgrade",
+            "affects": "One",
+            "targets": [],
+            "maxApplications": 0,
+            "minPicks": 0,
+            "maxPicks": 1,
+            "options": [
+              {
+                "id": "zRqqrb9jOy",
+                "label": "Trample (Impact(3))",
+                "cost": 15,
+                "costUnpriced": false,
+                "weaponsGained": [],
+                "rulesGained": [],
+                "itemsGained": [
+                  {
+                    "name": "Trample",
+                    "quantity": 1,
+                    "rules": [
+                      {
+                        "kind": "coreNumeric",
+                        "name": "Impact",
+                        "numericValue": 3
+                      }
+                    ]
+                  }
+                ],
+                "modelsGained": 0
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "FH30sw7",
+        "name": "Spinosaurus",
+        "quality": 4,
+        "defense": 2,
+        "baseModelCount": 1,
+        "minModels": 1,
+        "maxModels": 1,
+        "basePointCost": 305,
+        "base": {
+          "shape": "Rectangle",
+          "diameterInches": 1.1023622,
+          "widthInches": 3.6220472,
+          "heightInches": 4.7244096
+        },
+        "weapons": [
+          {
+            "name": "Spit Venom",
+            "quantity": 1,
+            "rangeInches": 18,
+            "attacks": 2,
+            "armorPenetration": 0,
+            "specialRules": [
+              {
+                "kind": "coreNumeric",
+                "name": "Blast",
+                "numericValue": 3
+              },
+              {
+                "kind": "core",
+                "name": "Bane"
+              }
+            ]
+          },
+          {
+            "name": "Stomp",
+            "quantity": 1,
+            "rangeInches": 0,
+            "attacks": 4,
+            "armorPenetration": 1,
+            "specialRules": []
+          },
+          {
+            "name": "Toxic Bite",
+            "quantity": 1,
+            "rangeInches": 0,
+            "attacks": 6,
+            "armorPenetration": 0,
+            "specialRules": [
+              {
+                "kind": "core",
+                "name": "Bane"
+              }
+            ]
+          }
+        ],
+        "rules": [
+          {
+            "kind": "coreNumeric",
+            "name": "Fear",
+            "numericValue": 2
+          },
+          {
+            "kind": "core",
+            "name": "Fearless"
+          },
+          {
+            "kind": "coreNumeric",
+            "name": "Tough",
+            "numericValue": 12
+          },
+          {
+            "kind": "core",
+            "name": "Primal"
+          }
+        ],
+        "items": [],
+        "sections": [
+          {
+            "id": "ewx89bq",
+            "label": "Upgrade with any",
+            "variant": "Upgrade",
+            "affects": "One",
+            "targets": [],
+            "maxApplications": 0,
+            "minPicks": 0,
+            "maxPicks": 2,
+            "options": [
+              {
+                "id": "rP4N9qjv_-",
+                "label": "Primal Roar (Primal Boost Buff)",
+                "cost": 10,
+                "costUnpriced": false,
+                "weaponsGained": [],
+                "rulesGained": [],
+                "itemsGained": [
+                  {
+                    "name": "Primal Roar",
+                    "quantity": 1,
+                    "rules": [
+                      {
+                        "kind": "core",
+                        "name": "Primal Boost Buff"
+                      }
+                    ]
+                  }
+                ],
+                "modelsGained": 0
+              },
+              {
+                "id": "E9rtIcG",
+                "label": "Chief Rider (Impact(3))",
+                "cost": 15,
+                "costUnpriced": false,
+                "weaponsGained": [],
+                "rulesGained": [],
+                "itemsGained": [
+                  {
+                    "name": "Chief Rider",
+                    "quantity": 1,
+                    "rules": [
+                      {
+                        "kind": "coreNumeric",
+                        "name": "Impact",
+                        "numericValue": 3
+                      }
+                    ]
+                  }
+                ],
+                "modelsGained": 0
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "fyqjUBx",
+        "name": "Ankylosaurus",
+        "quality": 4,
+        "defense": 2,
+        "baseModelCount": 1,
+        "minModels": 1,
+        "maxModels": 1,
+        "basePointCost": 415,
+        "base": {
+          "shape": "Rectangle",
+          "diameterInches": 1.1023622,
+          "widthInches": 3.6220472,
+          "heightInches": 4.7244096
+        },
+        "weapons": [
+          {
+            "name": "Twin Beam Cannon",
+            "quantity": 1,
+            "rangeInches": 24,
+            "attacks": 2,
+            "armorPenetration": 2,
+            "specialRules": [
+              {
+                "kind": "coreNumeric",
+                "name": "Deadly",
+                "numericValue": 6
+              },
+              {
+                "kind": "core",
+                "name": "Disintegrate"
+              }
+            ]
+          },
+          {
+            "name": "Mace Tail",
+            "quantity": 1,
+            "rangeInches": 0,
+            "attacks": 4,
+            "armorPenetration": 2,
+            "specialRules": []
+          },
+          {
+            "name": "Stomp",
+            "quantity": 1,
+            "rangeInches": 0,
+            "attacks": 4,
+            "armorPenetration": 1,
+            "specialRules": []
+          }
+        ],
+        "rules": [
+          {
+            "kind": "coreNumeric",
+            "name": "Fear",
+            "numericValue": 2
+          },
+          {
+            "kind": "core",
+            "name": "Fearless"
+          },
+          {
+            "kind": "core",
+            "name": "Fortified"
+          },
+          {
+            "kind": "coreNumeric",
+            "name": "Tough",
+            "numericValue": 12
+          },
+          {
+            "kind": "core",
+            "name": "Primal"
+          }
+        ],
+        "items": [],
+        "sections": [
+          {
+            "id": "N0UIt98",
+            "label": "Replace Twin Beam Cannon",
+            "variant": "Replace",
+            "affects": "One",
+            "targets": [
+              "Twin Beam Cannon"
+            ],
+            "maxApplications": 0,
+            "minPicks": 0,
+            "maxPicks": 1,
+            "options": [
+              {
+                "id": "F9z5W",
+                "label": "Heavy Plasma Burster (30\u0022, A4, AP(4), Blast(3))",
+                "cost": 105,
+                "costUnpriced": false,
+                "weaponsGained": [
+                  {
+                    "name": "Heavy Plasma Burster",
+                    "quantity": 1,
+                    "rangeInches": 30,
+                    "attacks": 4,
+                    "armorPenetration": 4,
+                    "specialRules": [
+                      {
+                        "kind": "coreNumeric",
+                        "name": "Blast",
+                        "numericValue": 3
+                      }
+                    ]
+                  }
+                ],
+                "rulesGained": [],
+                "itemsGained": [],
+                "modelsGained": 0
+              }
+            ]
+          },
+          {
+            "id": "mmKWDn1",
+            "label": "Upgrade with any",
+            "variant": "Upgrade",
+            "affects": "One",
+            "targets": [],
+            "maxApplications": 0,
+            "minPicks": 0,
+            "maxPicks": 2,
+            "options": [
+              {
+                "id": "TYPGiyDCfm",
+                "label": "Advanced Locator (Ambush Beacon)",
+                "cost": 15,
+                "costUnpriced": false,
+                "weaponsGained": [],
+                "rulesGained": [],
+                "itemsGained": [
+                  {
+                    "name": "Advanced Locator",
+                    "quantity": 1,
+                    "rules": [
+                      {
+                        "kind": "core",
+                        "name": "Ambush Beacon"
+                      }
+                    ]
+                  }
+                ],
+                "modelsGained": 0
+              },
+              {
+                "id": "8M4Qsmpww3",
+                "label": "Poison Flechettes (Bane Mark)",
+                "cost": 30,
+                "costUnpriced": false,
+                "weaponsGained": [],
+                "rulesGained": [],
+                "itemsGained": [
+                  {
+                    "name": "Poison Flechettes",
+                    "quantity": 1,
+                    "rules": [
+                      {
+                        "kind": "core",
+                        "name": "Bane Mark"
+                      }
+                    ]
+                  }
+                ],
+                "modelsGained": 0
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "kcGBHe3",
+        "name": "Dread Titan",
+        "quality": 3,
+        "defense": 2,
+        "baseModelCount": 1,
+        "minModels": 1,
+        "maxModels": 1,
+        "basePointCost": 840,
+        "base": {
+          "shape": "Rectangle",
+          "diameterInches": 1.1023622,
+          "widthInches": 4.92126,
+          "heightInches": 6.889764
+        },
+        "weapons": [
+          {
+            "name": "Stomp",
+            "quantity": 1,
+            "rangeInches": 0,
+            "attacks": 8,
+            "armorPenetration": 2,
+            "specialRules": []
+          },
+          {
+            "name": "Vicious Jaws",
+            "quantity": 1,
+            "rangeInches": 0,
+            "attacks": 4,
+            "armorPenetration": 4,
+            "specialRules": [
+              {
+                "kind": "coreNumeric",
+                "name": "Deadly",
+                "numericValue": 3
+              }
+            ]
+          }
+        ],
+        "rules": [
+          {
+            "kind": "coreNumeric",
+            "name": "Fear",
+            "numericValue": 4
+          },
+          {
+            "kind": "core",
+            "name": "Fearless"
+          },
+          {
+            "kind": "coreNumeric",
+            "name": "Tough",
+            "numericValue": 24
+          },
+          {
+            "kind": "core",
+            "name": "Primal"
+          }
+        ],
+        "items": [
+          {
+            "name": "Dread Gator",
+            "quantity": 1,
+            "rules": [
+              {
+                "kind": "coreNumeric",
+                "name": "Impact",
+                "numericValue": 6
+              },
+              {
+                "kind": "core",
+                "name": "Primal Boost Buff"
+              },
+              {
+                "kind": "core",
+                "name": "Unpredictable Fighter"
+              }
+            ]
+          }
+        ],
+        "sections": [
+          {
+            "id": "yeiJHly",
+            "label": "Replace Dread Gator",
+            "variant": "Replace",
+            "affects": "One",
+            "targets": [
+              "Dread Gator"
+            ],
+            "maxApplications": 0,
+            "minPicks": 0,
+            "maxPicks": 1,
+            "options": [
+              {
+                "id": "DYsxn",
+                "label": "Dread Tyrannosaur (Super-Heavy Laser Cannon (36\u0022, A1, AP(3), Deadly(9)), Heavy Arch Rockets (18\u0022, A4, AP(1), Blast(3), Indirect))",
+                "cost": 190,
+                "costUnpriced": false,
+                "weaponsGained": [
+                  {
+                    "name": "Heavy Arch Rockets",
+                    "quantity": 1,
+                    "rangeInches": 18,
+                    "attacks": 4,
+                    "armorPenetration": 1,
+                    "specialRules": [
+                      {
+                        "kind": "coreNumeric",
+                        "name": "Blast",
+                        "numericValue": 3
+                      },
+                      {
+                        "kind": "core",
+                        "name": "Indirect"
+                      }
+                    ]
+                  },
+                  {
+                    "name": "Super-Heavy Laser Cannon",
+                    "quantity": 1,
+                    "rangeInches": 36,
+                    "attacks": 1,
+                    "armorPenetration": 3,
+                    "specialRules": [
+                      {
+                        "kind": "coreNumeric",
+                        "name": "Deadly",
+                        "numericValue": 9
+                      }
+                    ]
+                  }
+                ],
+                "rulesGained": [],
+                "itemsGained": [
+                  {
+                    "name": "Dread Tyrannosaur",
+                    "quantity": 1,
+                    "rules": []
+                  }
+                ],
+                "modelsGained": 0
+              },
+              {
+                "id": "eq7hOAvwBP",
+                "label": "Dread Behemoth (Super-Heavy Beam Cannon (24\u0022, A2, AP(2), Deadly(12), Disintegrate))",
+                "cost": 230,
+                "costUnpriced": false,
+                "weaponsGained": [
+                  {
+                    "name": "Super-Heavy Beam Cannon",
+                    "quantity": 1,
+                    "rangeInches": 24,
+                    "attacks": 2,
+                    "armorPenetration": 2,
+                    "specialRules": [
+                      {
+                        "kind": "coreNumeric",
+                        "name": "Deadly",
+                        "numericValue": 12
+                      },
+                      {
+                        "kind": "core",
+                        "name": "Disintegrate"
+                      }
+                    ]
+                  }
+                ],
+                "rulesGained": [],
+                "itemsGained": [
+                  {
+                    "name": "Dread Behemoth",
+                    "quantity": 1,
+                    "rules": []
+                  }
+                ],
+                "modelsGained": 0
+              },
+              {
+                "id": "iWxmQoa",
+                "label": "Dread Scorcher (Scorcher Cannon (18\u0022, A8, AP(1), Blast(3), Reliable))",
+                "cost": 215,
+                "costUnpriced": false,
+                "weaponsGained": [
+                  {
+                    "name": "Scorcher Cannon",
+                    "quantity": 1,
+                    "rangeInches": 18,
+                    "attacks": 8,
+                    "armorPenetration": 1,
+                    "specialRules": [
+                      {
+                        "kind": "coreNumeric",
+                        "name": "Blast",
+                        "numericValue": 3
+                      },
+                      {
+                        "kind": "core",
+                        "name": "Reliable"
+                      }
+                    ]
+                  }
+                ],
+                "rulesGained": [],
+                "itemsGained": [
+                  {
+                    "name": "Dread Scorcher",
+                    "quantity": 1,
+                    "rules": []
+                  }
+                ],
+                "modelsGained": 0
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "ozQztyW",
+        "name": "Tehaxi",
+        "quality": 4,
+        "defense": 5,
+        "baseModelCount": 1,
+        "minModels": 1,
+        "maxModels": 1,
+        "basePointCost": 150,
+        "base": {
+          "shape": "Circle",
+          "diameterInches": 1.5748031,
+          "widthInches": 0.984252,
+          "heightInches": 1.968504
+        },
+        "weapons": [
+          {
+            "name": "Ornate Claws",
+            "quantity": 1,
+            "rangeInches": 0,
+            "attacks": 3,
+            "armorPenetration": 1,
+            "specialRules": [
+              {
+                "kind": "core",
+                "name": "Rending"
+              }
+            ]
+          }
+        ],
+        "rules": [
+          {
+            "kind": "coreNumeric",
+            "name": "Caster",
+            "numericValue": 2
+          },
+          {
+            "kind": "core",
+            "name": "Hero"
+          },
+          {
+            "kind": "core",
+            "name": "Strider"
+          },
+          {
+            "kind": "coreNumeric",
+            "name": "Tough",
+            "numericValue": 6
+          },
+          {
+            "kind": "core",
+            "name": "Unique"
+          },
+          {
+            "kind": "core",
+            "name": "Primal"
+          },
+          {
+            "kind": "core",
+            "name": "Spell Conduit"
+          }
+        ],
+        "items": [
+          {
+            "name": "Channel Flames",
+            "quantity": 1,
+            "rules": [
+              {
+                "kind": "core",
+                "name": "Breath Attack"
+              }
+            ]
+          }
+        ],
+        "sections": []
+      }
+    ],
+    "ruleDefinitions": [
+      {
+        "name": "Spell Conduit",
+        "passive": [
+          {
+            "hookID": "Lifecycle_OnCapabilityQuery",
+            "condition": {
+              "kind": "not",
+              "inner": {
+                "kind": "tokenPresent",
+                "tType": {
+                  "id": "Shaken"
+                },
+                "minCount": 1
+              }
+            },
+            "effect": {
+              "kind": "enableSpellRelay",
+              "rangeInches": 12,
+              "castRollBonus": 1
+            },
+            "lifetime": "UntilEndOfGame",
+            "seat": "Actor"
+          }
+        ],
+        "activated": [],
+        "scope": "Unit",
+        "engineArgumentCount": 0,
+        "valence": "Positive",
+        "description": "Casters within 12\u0022 that are from other friendly units may cast spells as if they were in this unit\u0027s position, and get \u002B1 to casting rolls when doing so. Friendly casters may only use this rule if this unit isn\u0027t Shaken."
+      },
+      {
+        "name": "Unique",
+        "passive": [],
+        "activated": [],
+        "scope": "Unit",
+        "engineArgumentCount": 0,
+        "valence": "Neutral",
+        "description": "Your army may only include one copy of this unit."
+      },
+      {
+        "name": "Breath Attack",
+        "passive": [],
+        "activated": [
+          {
+            "triggerHook": "Activation_OnPreAttack",
+            "cost": {
+              "kind": "oncePerActivation"
+            },
+            "targetSelector": {
+              "rangeInches": 6,
+              "minCount": 1,
+              "maxCount": 1,
+              "targetAffinity": "Foe",
+              "requireLineOfSight": true,
+              "requiredToken": null,
+              "singleModel": false,
+              "requiredRule": null
+            },
+            "effect": {
+              "kind": "dealHits",
+              "count": 1,
+              "withRules": [
+                "Blast(3)"
+              ],
+              "armorPenetration": 1
+            },
+            "availableWhen": {
+              "kind": "always"
+            },
+            "label": ""
+          }
+        ],
+        "scope": "Unit",
+        "engineArgumentCount": 0,
+        "valence": "Positive",
+        "description": "Once per activation, before attacking, one enemy unit within 6\u0022 in line of sight takes 1 hit with Blast(3) and AP(1)."
+      },
+      {
+        "name": "Disintegrate",
+        "passive": [
+          {
+            "hookID": "Shooting_OnSaveRollComplete",
+            "condition": {
+              "kind": "always"
+            },
+            "effect": {
+              "kind": "ignoreRule",
+              "ruleName": "Regeneration"
+            },
+            "lifetime": "ThisAttack",
+            "seat": "Actor"
+          },
+          {
+            "hookID": "Shooting_OnHitRollComplete",
+            "condition": {
+              "kind": "statGreaterOrEqualTo",
+              "stat": "Defense",
+              "statValue": 2
+            },
+            "effect": {
+              "kind": "rollModifier",
+              "rollKind": "Save",
+              "delta": -2
+            },
+            "lifetime": "ThisAttack",
+            "seat": "Actor"
+          }
+        ],
+        "activated": [],
+        "scope": "Weapon",
+        "engineArgumentCount": 0,
+        "valence": "Positive",
+        "description": "Ignores Regeneration. Against units with Defense 2\u002B, this weapon gets AP(\u002B2)."
+      },
+      {
+        "name": "Primal",
+        "passive": [
+          {
+            "hookID": "Shooting_OnHitRollComplete",
+            "condition": {
+              "kind": "unmodifiedRollEquals",
+              "dieValue": 6
+            },
+            "effect": {
+              "kind": "addExtraHit",
+              "onRollValue": 6,
+              "count": 1
+            },
+            "lifetime": "ThisAttack",
+            "seat": "Actor"
+          }
+        ],
+        "activated": [],
+        "scope": "Unit",
+        "engineArgumentCount": 0,
+        "valence": "Positive",
+        "description": "Each unmodified 6 to hit scores an extra hit."
+      },
+      {
+        "name": "Primal Boost",
+        "passive": [
+          {
+            "hookID": "Shooting_OnHitRollComplete",
+            "condition": {
+              "kind": "and",
+              "left": {
+                "kind": "unitHasRule",
+                "ruleName": "Primal"
+              },
+              "right": {
+                "kind": "unmodifiedRollEquals",
+                "dieValue": 5
+              }
+            },
+            "effect": {
+              "kind": "addExtraHit",
+              "onRollValue": 5,
+              "count": 1
+            },
+            "lifetime": "ThisAttack",
+            "seat": "Actor"
+          }
+        ],
+        "activated": [],
+        "scope": "Unit",
+        "engineArgumentCount": 0,
+        "valence": "Positive",
+        "description": "If this model has Primal, unmodified 5s or 6s to hit each score an extra hit (instead of only 6). The base rule already covers the 6s."
+      },
+      {
+        "name": "Primal Boost Buff",
+        "passive": [],
+        "activated": [
+          {
+            "triggerHook": "Activation_OnPreAttack",
+            "cost": {
+              "kind": "oncePerActivation"
+            },
+            "targetSelector": {
+              "rangeInches": 12,
+              "minCount": 1,
+              "maxCount": 1,
+              "targetAffinity": "Friend",
+              "requireLineOfSight": false,
+              "requiredToken": null,
+              "singleModel": false,
+              "requiredRule": null
+            },
+            "effect": {
+              "kind": "addRule",
+              "ruleName": "Primal Boost",
+              "scope": "NextTrigger"
+            },
+            "availableWhen": {
+              "kind": "always"
+            },
+            "label": ""
+          }
+        ],
+        "scope": "Unit",
+        "engineArgumentCount": 0,
+        "valence": "Positive",
+        "description": "Once per activation, before attacking, pick one friendly unit within 12 inches, which gains Primal Boost for its next relevant roll."
+      },
+      {
+        "name": "Bane Mark",
+        "passive": [],
+        "activated": [
+          {
+            "triggerHook": "Activation_OnPreAttack",
+            "cost": {
+              "kind": "oncePerActivation"
+            },
+            "targetSelector": {
+              "rangeInches": 18,
+              "minCount": 1,
+              "maxCount": 1,
+              "targetAffinity": "Foe",
+              "requireLineOfSight": true,
+              "requiredToken": null,
+              "singleModel": false,
+              "requiredRule": null
+            },
+            "effect": {
+              "kind": "markTarget",
+              "ruleName": "Bane"
+            },
+            "availableWhen": {
+              "kind": "always"
+            },
+            "label": ""
+          }
+        ],
+        "scope": "Unit",
+        "engineArgumentCount": 0,
+        "valence": "Positive",
+        "description": "Once per activation, before attacking, pick one enemy unit within 18 inches in line of sight. The first friendly attack against it this activation gets Bane."
+      },
+      {
+        "name": "Rending when Shooting Aura",
+        "passive": [
+          {
+            "hookID": "Lifecycle_OnUnitCreated",
+            "condition": {
+              "kind": "always"
+            },
+            "effect": {
+              "kind": "aura",
+              "ruleName": "Rending when shooting"
+            },
+            "lifetime": "UntilEndOfGame",
+            "seat": "Actor"
+          }
+        ],
+        "activated": [],
+        "scope": "Unit",
+        "engineArgumentCount": 0,
+        "valence": "Positive",
+        "description": "This model and its unit gain Rending when shooting."
+      },
+      {
+        "name": "Bounding",
+        "passive": [
+          {
+            "hookID": "Activation_OnActivationStart",
+            "condition": {
+              "kind": "always"
+            },
+            "effect": {
+              "kind": "repositionAtActivation",
+              "distance": {
+                "kind": "d3"
+              },
+              "plusInches": 1
+            },
+            "lifetime": "ThisActivation",
+            "seat": "Actor"
+          }
+        ],
+        "activated": [],
+        "scope": "Unit",
+        "engineArgumentCount": 0,
+        "valence": "Positive",
+        "description": "When this unit is activated, it may place all its models anywhere fully within D3\u002B1 inches of their position."
+      },
+      {
+        "name": "Armor",
+        "passive": [],
+        "activated": [],
+        "scope": "Unit",
+        "engineArgumentCount": 1,
+        "valence": "Positive",
+        "description": "Counts as having Defense X\u002B in place of the model\u0027s own Defense stat."
+      },
+      {
+        "name": "Precision Target",
+        "passive": [],
+        "activated": [
+          {
+            "triggerHook": "Activation_OnPreAttack",
+            "cost": {
+              "kind": "oncePerGame"
+            },
+            "targetSelector": {
+              "rangeInches": 18,
+              "minCount": 1,
+              "maxCount": 1,
+              "targetAffinity": "Foe",
+              "requireLineOfSight": true,
+              "requiredToken": null,
+              "singleModel": false,
+              "requiredRule": null
+            },
+            "effect": {
+              "kind": "grantToken",
+              "tType": {
+                "id": "PersistentHitBonusMarker"
+              },
+              "count": {
+                "kind": "arg",
+                "index": 0
+              },
+              "clear": {
+                "kind": "manualOnly"
+              },
+              "maxTotal": 0
+            },
+            "availableWhen": {
+              "kind": "always"
+            },
+            "label": ""
+          }
+        ],
+        "scope": "Unit",
+        "engineArgumentCount": 1,
+        "valence": "Positive",
+        "description": "Once per game during its activation: pick one enemy within 18 inches in line of sight and place X markers on it. Attackers get \u002B1 to hit per marker while they remain."
+      },
+      {
+        "name": "Rending when shooting",
+        "passive": [
+          {
+            "hookID": "Shooting_OnHitRollComplete",
+            "condition": {
+              "kind": "and",
+              "left": {
+                "kind": "not",
+                "inner": {
+                  "kind": "isMelee"
+                }
+              },
+              "right": {
+                "kind": "unmodifiedRollEquals",
+                "dieValue": 6
+              }
+            },
+            "effect": {
+              "kind": "perHitSaveModifier",
+              "onRollValue": 6,
+              "delta": -4
+            },
+            "lifetime": "ThisAttack",
+            "seat": "Actor"
+          },
+          {
+            "hookID": "Shooting_OnSaveRollComplete",
+            "condition": {
+              "kind": "not",
+              "inner": {
+                "kind": "isMelee"
+              }
+            },
+            "effect": {
+              "kind": "ignoreRule",
+              "ruleName": "Regeneration"
+            },
+            "lifetime": "ThisAttack",
+            "seat": "Actor"
+          }
+        ],
+        "activated": [],
+        "scope": "Weapon",
+        "engineArgumentCount": 0,
+        "valence": "Positive",
+        "description": "When shooting, an unmodified 6 to hit gives the attack AP(\u002B4), and the attack ignores Regeneration."
+      }
+    ],
+    "spells": [
+      {
+        "name": "Toxin Mist",
+        "threshold": 1,
+        "target": {
+          "rangeInches": 18,
+          "minCount": 1,
+          "maxCount": 1,
+          "targetAffinity": "Foe",
+          "requireLineOfSight": false,
+          "requiredToken": null,
+          "singleModel": false,
+          "requiredRule": null
+        },
+        "effect": {
+          "kind": "markTarget",
+          "ruleName": "Bane when attacking"
+        }
+      },
+      {
+        "name": "Serpent Comet",
+        "threshold": 1,
+        "target": {
+          "rangeInches": 12,
+          "minCount": 1,
+          "maxCount": 1,
+          "targetAffinity": "Foe",
+          "requireLineOfSight": true,
+          "requiredToken": null,
+          "singleModel": false,
+          "requiredRule": null
+        },
+        "effect": {
+          "kind": "dealHits",
+          "count": 2,
+          "withRules": [
+            "Disintegrate"
+          ],
+          "armorPenetration": 0
+        }
+      },
+      {
+        "name": "Fateful Guidance",
+        "threshold": 2,
+        "target": {
+          "rangeInches": 12,
+          "minCount": 1,
+          "maxCount": 2,
+          "targetAffinity": "Friend",
+          "requireLineOfSight": false,
+          "requiredToken": null,
+          "singleModel": false,
+          "requiredRule": null
+        },
+        "effect": {
+          "kind": "addRule",
+          "ruleName": "Furious",
+          "scope": "NextTrigger"
+        }
+      },
+      {
+        "name": "Piranha Curse",
+        "threshold": 2,
+        "target": {
+          "rangeInches": 9,
+          "minCount": 1,
+          "maxCount": 2,
+          "targetAffinity": "Foe",
+          "requireLineOfSight": true,
+          "requiredToken": null,
+          "singleModel": false,
+          "requiredRule": null
+        },
+        "effect": {
+          "kind": "dealHits",
+          "count": 4,
+          "withRules": [],
+          "armorPenetration": 0
+        }
+      },
+      {
+        "name": "Celestial Roar",
+        "threshold": 3,
+        "target": {
+          "rangeInches": 12,
+          "minCount": 1,
+          "maxCount": 3,
+          "targetAffinity": "Friend",
+          "requireLineOfSight": false,
+          "requiredToken": null,
+          "singleModel": false,
+          "requiredRule": null
+        },
+        "effect": {
+          "kind": "addRule",
+          "ruleName": "Primal Boost",
+          "scope": "NextTrigger"
+        }
+      },
+      {
+        "name": "Jaguar Blaze",
+        "threshold": 3,
+        "target": {
+          "rangeInches": 12,
+          "minCount": 1,
+          "maxCount": 1,
+          "targetAffinity": "Foe",
+          "requireLineOfSight": true,
+          "requiredToken": null,
+          "singleModel": false,
+          "requiredRule": null
+        },
+        "effect": {
+          "kind": "dealHits",
+          "count": 6,
+          "withRules": [
+            "Shred"
+          ],
+          "armorPenetration": 1
+        }
+      }
+    ]
+  },
+  "name": "Saurian Starhost",
+  "faction": "Saurian Starhost",
+  "pointsLimit": 3000,
+  "units": [
+    {
+      "name": "Frog-Mage",
+      "id": "vrXvp",
+      "joinsUnitId": "DoRoU",
+      "modelCount": 1,
+      "base": {
+        "shape": "Circle",
+        "diameterInches": 2.3622048,
+        "widthInches": 0.984252,
+        "heightInches": 1.968504
+      },
+      "quality": 3,
+      "defense": 3,
+      "specialRules": [
+        {
+          "kind": "coreNumeric",
+          "name": "Caster",
+          "numericValue": 3
+        },
+        {
+          "kind": "coreNumeric",
+          "name": "Fear",
+          "numericValue": 1
+        },
+        {
+          "kind": "core",
+          "name": "Hero"
+        },
+        {
+          "kind": "core",
+          "name": "Strider"
+        },
+        {
+          "kind": "coreNumeric",
+          "name": "Tough",
+          "numericValue": 6
+        },
+        {
+          "kind": "core",
+          "name": "Primal"
+        },
+        {
+          "kind": "core",
+          "name": "Fearless"
+        },
+        {
+          "kind": "core",
+          "name": "Primal Boost Buff"
+        }
+      ],
+      "weapons": [
+        {
+          "name": "Magic Shock",
+          "quantity": 1,
+          "rangeInches": 18,
+          "attacks": 3,
+          "armorPenetration": 0,
+          "effectSet": "gauss-particle",
+          "specialRules": []
+        },
+        {
+          "name": "Heavy Pulse",
+          "quantity": 1,
+          "rangeInches": 0,
+          "attacks": 6,
+          "armorPenetration": 0,
+          "specialRules": []
+        }
+      ],
+      "pointCost": 210
+    },
+    {
+      "name": "Saurian Warriors (Combined)",
+      "id": "DoRoU",
+      "joinsUnitId": null,
+      "modelCount": 10,
+      "base": {
+        "shape": "Circle",
+        "diameterInches": 1.2598425,
+        "widthInches": 0.984252,
+        "heightInches": 1.968504
+      },
+      "quality": 4,
+      "defense": 4,
+      "specialRules": [
+        {
+          "kind": "core",
+          "name": "Fearless"
+        },
+        {
+          "kind": "core",
+          "name": "Primal"
+        }
+      ],
+      "weapons": [
+        {
+          "name": "Carbine",
+          "quantity": 10,
+          "rangeInches": 18,
+          "attacks": 2,
+          "armorPenetration": 0,
+          "specialRules": []
+        },
+        {
+          "name": "CCW",
+          "quantity": 10,
+          "rangeInches": 0,
+          "attacks": 1,
+          "armorPenetration": 0,
+          "specialRules": []
+        }
+      ],
+      "pointCost": 230
+    },
+    {
+      "name": "Gator Veteran",
+      "id": "1mFwm",
+      "joinsUnitId": "pcBdQ",
+      "modelCount": 1,
+      "base": {
+        "shape": "Circle",
+        "diameterInches": 1.968504,
+        "widthInches": 0.984252,
+        "heightInches": 1.968504
+      },
+      "quality": 4,
+      "defense": 3,
+      "specialRules": [
+        {
+          "kind": "coreNumeric",
+          "name": "Fear",
+          "numericValue": 1
+        },
+        {
+          "kind": "core",
+          "name": "Fearless"
+        },
+        {
+          "kind": "core",
+          "name": "Hero"
+        },
+        {
+          "kind": "coreNumeric",
+          "name": "Tough",
+          "numericValue": 6
+        },
+        {
+          "kind": "core",
+          "name": "Primal"
+        },
+        {
+          "kind": "core",
+          "name": "Rapid Charge Aura"
+        }
+      ],
+      "weapons": [
+        {
+          "name": "Heavy Mace",
+          "quantity": 2,
+          "rangeInches": 0,
+          "attacks": 1,
+          "armorPenetration": 1,
+          "effectSet": "crude-melee",
+          "specialRules": [
+            {
+              "kind": "coreNumeric",
+              "name": "Blast",
+              "numericValue": 3
+            }
+          ]
+        },
+        {
+          "name": "Stomp",
+          "quantity": 1,
+          "rangeInches": 0,
+          "attacks": 2,
+          "armorPenetration": 1,
+          "effectSet": "titan-impact",
+          "specialRules": []
+        }
+      ],
+      "pointCost": 130
+    },
+    {
+      "name": "Saurian Guardians (Combined)",
+      "id": "pcBdQ",
+      "joinsUnitId": null,
+      "modelCount": 10,
+      "base": {
+        "shape": "Circle",
+        "diameterInches": 1.2598425,
+        "widthInches": 0.984252,
+        "heightInches": 1.968504
+      },
+      "quality": 3,
+      "defense": 3,
+      "specialRules": [
+        {
+          "kind": "core",
+          "name": "Fearless"
+        },
+        {
+          "kind": "core",
+          "name": "Primal"
+        }
+      ],
+      "weapons": [
+        {
+          "name": "Hammer",
+          "quantity": 10,
+          "rangeInches": 0,
+          "attacks": 2,
+          "armorPenetration": 2,
+          "effectSet": "crude-melee",
+          "specialRules": []
+        }
+      ],
+      "pointCost": 290
+    },
+    {
+      "name": "Raptor Riders",
+      "id": "wUjNJ",
+      "joinsUnitId": null,
+      "modelCount": 5,
+      "base": {
+        "shape": "Rectangle",
+        "diameterInches": 1.1023622,
+        "widthInches": 1.3779528,
+        "heightInches": 2.3622048
+      },
+      "quality": 4,
+      "defense": 3,
+      "specialRules": [
+        {
+          "kind": "coreNumeric",
+          "name": "Ravage",
+          "numericValue": 1
+        },
+        {
+          "kind": "core",
+          "name": "Fast"
+        },
+        {
+          "kind": "core",
+          "name": "Fearless"
+        },
+        {
+          "kind": "core",
+          "name": "Primal"
+        }
+      ],
+      "weapons": [
+        {
+          "name": "Pistol",
+          "quantity": 5,
+          "rangeInches": 12,
+          "attacks": 1,
+          "armorPenetration": 0,
+          "specialRules": []
+        },
+        {
+          "name": "Power Mace",
+          "quantity": 3,
+          "rangeInches": 0,
+          "attacks": 2,
+          "armorPenetration": 4,
+          "effectSet": "daemon-arcane-melee",
+          "specialRules": []
+        },
+        {
+          "name": "Power Spear",
+          "quantity": 2,
+          "rangeInches": 0,
+          "attacks": 2,
+          "armorPenetration": 0,
+          "effectSet": "daemon-arcane-melee",
+          "specialRules": [
+            {
+              "kind": "core",
+              "name": "Thrust"
+            }
+          ]
+        }
+      ],
+      "pointCost": 185
+    },
+    {
+      "name": "Raptor Riders",
+      "id": "y3udB",
+      "joinsUnitId": null,
+      "modelCount": 5,
+      "base": {
+        "shape": "Rectangle",
+        "diameterInches": 1.1023622,
+        "widthInches": 1.3779528,
+        "heightInches": 2.3622048
+      },
+      "quality": 4,
+      "defense": 3,
+      "specialRules": [
+        {
+          "kind": "coreNumeric",
+          "name": "Ravage",
+          "numericValue": 1
+        },
+        {
+          "kind": "core",
+          "name": "Fast"
+        },
+        {
+          "kind": "core",
+          "name": "Fearless"
+        },
+        {
+          "kind": "core",
+          "name": "Primal"
+        }
+      ],
+      "weapons": [
+        {
+          "name": "Pistol",
+          "quantity": 3,
+          "rangeInches": 12,
+          "attacks": 1,
+          "armorPenetration": 0,
+          "specialRules": []
+        },
+        {
+          "name": "Spike Pistol",
+          "quantity": 2,
+          "rangeInches": 9,
+          "attacks": 2,
+          "armorPenetration": 0,
+          "specialRules": [
+            {
+              "kind": "core",
+              "name": "Rending"
+            }
+          ]
+        },
+        {
+          "name": "Power Mace",
+          "quantity": 3,
+          "rangeInches": 0,
+          "attacks": 2,
+          "armorPenetration": 4,
+          "effectSet": "daemon-arcane-melee",
+          "specialRules": []
+        },
+        {
+          "name": "Power Spear",
+          "quantity": 2,
+          "rangeInches": 0,
+          "attacks": 2,
+          "armorPenetration": 0,
+          "effectSet": "daemon-arcane-melee",
+          "specialRules": [
+            {
+              "kind": "core",
+              "name": "Thrust"
+            }
+          ]
+        }
+      ],
+      "pointCost": 195
+    },
+    {
+      "name": "Ripjawdactyl Riders",
+      "id": "Q5QdO",
+      "joinsUnitId": null,
+      "modelCount": 3,
+      "base": {
+        "shape": "Circle",
+        "diameterInches": 1.968504,
+        "widthInches": 0.984252,
+        "heightInches": 1.968504
+      },
+      "quality": 5,
+      "defense": 5,
+      "specialRules": [
+        {
+          "kind": "core",
+          "name": "Ambush"
+        },
+        {
+          "kind": "core",
+          "name": "Flying"
+        },
+        {
+          "kind": "coreNumeric",
+          "name": "Heavy Impact",
+          "numericValue": 3
+        },
+        {
+          "kind": "core",
+          "name": "Primal"
+        },
+        {
+          "kind": "coreNumeric",
+          "name": "Tough",
+          "numericValue": 3
+        },
+        {
+          "kind": "core",
+          "name": "Shielded"
+        },
+        {
+          "kind": "coreNumeric",
+          "name": "Precision Target",
+          "numericValue": 1
+        }
+      ],
+      "weapons": [
+        {
+          "name": "Shock Pistol",
+          "quantity": 3,
+          "rangeInches": 12,
+          "attacks": 1,
+          "armorPenetration": 4,
+          "effectSet": "gauss-particle",
+          "specialRules": []
+        }
+      ],
+      "pointCost": 210
+    },
+    {
+      "name": "Ankylosaurus",
+      "id": "XZMZt",
+      "joinsUnitId": null,
+      "modelCount": 1,
+      "base": {
+        "shape": "Rectangle",
+        "diameterInches": 1.1023622,
+        "widthInches": 3.6220472,
+        "heightInches": 4.7244096
+      },
+      "quality": 4,
+      "defense": 2,
+      "specialRules": [
+        {
+          "kind": "coreNumeric",
+          "name": "Fear",
+          "numericValue": 2
+        },
+        {
+          "kind": "core",
+          "name": "Fearless"
+        },
+        {
+          "kind": "core",
+          "name": "Fortified"
+        },
+        {
+          "kind": "coreNumeric",
+          "name": "Tough",
+          "numericValue": 12
+        },
+        {
+          "kind": "core",
+          "name": "Primal"
+        },
+        {
+          "kind": "core",
+          "name": "Bane Mark"
+        }
+      ],
+      "weapons": [
+        {
+          "name": "Twin Beam Cannon",
+          "quantity": 1,
+          "rangeInches": 24,
+          "attacks": 2,
+          "armorPenetration": 2,
+          "effectSet": "laser-beam",
+          "specialRules": [
+            {
+              "kind": "coreNumeric",
+              "name": "Deadly",
+              "numericValue": 6
+            },
+            {
+              "kind": "core",
+              "name": "Disintegrate"
+            }
+          ]
+        },
+        {
+          "name": "Mace Tail",
+          "quantity": 1,
+          "rangeInches": 0,
+          "attacks": 4,
+          "armorPenetration": 2,
+          "effectSet": "crude-melee",
+          "specialRules": []
+        },
+        {
+          "name": "Stomp",
+          "quantity": 1,
+          "rangeInches": 0,
+          "attacks": 4,
+          "armorPenetration": 1,
+          "effectSet": "titan-impact",
+          "specialRules": []
+        }
+      ],
+      "pointCost": 445
+    },
+    {
+      "name": "Triceratops",
+      "id": "b4Avp",
+      "joinsUnitId": null,
+      "modelCount": 1,
+      "base": {
+        "shape": "Rectangle",
+        "diameterInches": 1.1023622,
+        "widthInches": 3.6220472,
+        "heightInches": 4.7244096
+      },
+      "quality": 4,
+      "defense": 2,
+      "specialRules": [
+        {
+          "kind": "coreNumeric",
+          "name": "Fear",
+          "numericValue": 2
+        },
+        {
+          "kind": "core",
+          "name": "Fearless"
+        },
+        {
+          "kind": "coreNumeric",
+          "name": "Tough",
+          "numericValue": 12
+        },
+        {
+          "kind": "core",
+          "name": "Primal"
+        },
+        {
+          "kind": "coreNumeric",
+          "name": "Transport",
+          "numericValue": 11
+        }
+      ],
+      "weapons": [
+        {
+          "name": "Horns",
+          "quantity": 1,
+          "rangeInches": 0,
+          "attacks": 6,
+          "armorPenetration": 0,
+          "specialRules": [
+            {
+              "kind": "core",
+              "name": "Rending"
+            }
+          ]
+        },
+        {
+          "name": "Stomp",
+          "quantity": 1,
+          "rangeInches": 0,
+          "attacks": 4,
+          "armorPenetration": 1,
+          "effectSet": "titan-impact",
+          "specialRules": []
+        }
+      ],
+      "pointCost": 310
+    },
+    {
+      "name": "Saurian Guardians (Combined)",
+      "id": "SPv27",
+      "joinsUnitId": null,
+      "modelCount": 10,
+      "base": {
+        "shape": "Circle",
+        "diameterInches": 1.2598425,
+        "widthInches": 0.984252,
+        "heightInches": 1.968504
+      },
+      "quality": 3,
+      "defense": 3,
+      "specialRules": [
+        {
+          "kind": "core",
+          "name": "Fearless"
+        },
+        {
+          "kind": "core",
+          "name": "Primal"
+        },
+        {
+          "kind": "core",
+          "name": "Fortified"
+        }
+      ],
+      "weapons": [
+        {
+          "name": "Hammer",
+          "quantity": 9,
+          "rangeInches": 0,
+          "attacks": 2,
+          "armorPenetration": 2,
+          "effectSet": "crude-melee",
+          "specialRules": []
+        },
+        {
+          "name": "Great Hammer",
+          "quantity": 1,
+          "rangeInches": 0,
+          "attacks": 1,
+          "armorPenetration": 2,
+          "effectSet": "crude-melee",
+          "specialRules": [
+            {
+              "kind": "coreNumeric",
+              "name": "Blast",
+              "numericValue": 3
+            }
+          ]
+        }
+      ],
+      "pointCost": 315
+    },
+    {
+      "name": "Gecko Snipers",
+      "id": "LJq3q",
+      "joinsUnitId": null,
+      "modelCount": 3,
+      "base": {
+        "shape": "Circle",
+        "diameterInches": 0.984252,
+        "widthInches": 0.984252,
+        "heightInches": 1.968504
+      },
+      "quality": 5,
+      "defense": 5,
+      "specialRules": [
+        {
+          "kind": "core",
+          "name": "Strider"
+        },
+        {
+          "kind": "core",
+          "name": "Primal"
+        }
+      ],
+      "weapons": [
+        {
+          "name": "Sniper Rifle",
+          "quantity": 3,
+          "rangeInches": 30,
+          "attacks": 1,
+          "armorPenetration": 1,
+          "specialRules": [
+            {
+              "kind": "core",
+              "name": "Reliable"
+            },
+            {
+              "kind": "core",
+              "name": "Takedown"
+            }
+          ]
+        },
+        {
+          "name": "CCW",
+          "quantity": 3,
+          "rangeInches": 0,
+          "attacks": 1,
+          "armorPenetration": 0,
+          "specialRules": []
+        }
+      ],
+      "pointCost": 120
+    },
+    {
+      "name": "Saurian Warriors (Combined)",
+      "id": "EGdOD",
+      "joinsUnitId": null,
+      "modelCount": 10,
+      "base": {
+        "shape": "Circle",
+        "diameterInches": 1.2598425,
+        "widthInches": 0.984252,
+        "heightInches": 1.968504
+      },
+      "quality": 4,
+      "defense": 4,
+      "specialRules": [
+        {
+          "kind": "core",
+          "name": "Fearless"
+        },
+        {
+          "kind": "core",
+          "name": "Primal"
+        }
+      ],
+      "weapons": [
+        {
+          "name": "Carbine",
+          "quantity": 10,
+          "rangeInches": 18,
+          "attacks": 2,
+          "armorPenetration": 0,
+          "specialRules": []
+        },
+        {
+          "name": "CCW",
+          "quantity": 10,
+          "rangeInches": 0,
+          "attacks": 1,
+          "armorPenetration": 0,
+          "specialRules": []
+        }
+      ],
+      "pointCost": 230
+    },
+    {
+      "name": "Vulturedactyls",
+      "id": "JC3SC",
+      "joinsUnitId": null,
+      "modelCount": 3,
+      "base": {
+        "shape": "Circle",
+        "diameterInches": 1.5748031,
+        "widthInches": 0.984252,
+        "heightInches": 1.968504
+      },
+      "quality": 5,
+      "defense": 6,
+      "specialRules": [
+        {
+          "kind": "core",
+          "name": "Ambush"
+        },
+        {
+          "kind": "core",
+          "name": "Flying"
+        },
+        {
+          "kind": "core",
+          "name": "Primal"
+        },
+        {
+          "kind": "coreNumeric",
+          "name": "Tough",
+          "numericValue": 3
+        },
+        {
+          "kind": "core",
+          "name": "Evasive"
+        }
+      ],
+      "weapons": [
+        {
+          "name": "Claws",
+          "quantity": 3,
+          "rangeInches": 0,
+          "attacks": 3,
+          "armorPenetration": 0,
+          "effectSet": "claw-rend",
+          "specialRules": []
+        }
+      ],
+      "pointCost": 130
+    }
+  ],
+  "defaultRangedEffectSet": "gauss-particle",
+  "defaultMeleeEffectSet": "claw-rend",
+  "ruleDefinitions": [
+    {
+      "name": "Spell Conduit",
+      "passive": [
+        {
+          "hookID": "Lifecycle_OnCapabilityQuery",
+          "condition": {
+            "kind": "not",
+            "inner": {
+              "kind": "tokenPresent",
+              "tType": {
+                "id": "Shaken"
+              },
+              "minCount": 1
+            }
+          },
+          "effect": {
+            "kind": "enableSpellRelay",
+            "rangeInches": 12,
+            "castRollBonus": 1
+          },
+          "lifetime": "UntilEndOfGame",
+          "seat": "Actor"
+        }
+      ],
+      "activated": [],
+      "scope": "Unit",
+      "engineArgumentCount": 0,
+      "valence": "Positive",
+      "description": "Casters within 12\u0022 that are from other friendly units may cast spells as if they were in this unit\u0027s position, and get \u002B1 to casting rolls when doing so. Friendly casters may only use this rule if this unit isn\u0027t Shaken."
+    },
+    {
+      "name": "Unique",
+      "passive": [],
+      "activated": [],
+      "scope": "Unit",
+      "engineArgumentCount": 0,
+      "valence": "Neutral",
+      "description": "Your army may only include one copy of this unit."
+    },
+    {
+      "name": "Breath Attack",
+      "passive": [],
+      "activated": [
+        {
+          "triggerHook": "Activation_OnPreAttack",
+          "cost": {
+            "kind": "oncePerActivation"
+          },
+          "targetSelector": {
+            "rangeInches": 6,
+            "minCount": 1,
+            "maxCount": 1,
+            "targetAffinity": "Foe",
+            "requireLineOfSight": true,
+            "requiredToken": null,
+            "singleModel": false,
+            "requiredRule": null
+          },
+          "effect": {
+            "kind": "dealHits",
+            "count": 1,
+            "withRules": [
+              "Blast(3)"
+            ],
+            "armorPenetration": 1
+          },
+          "availableWhen": {
+            "kind": "always"
+          },
+          "label": ""
+        }
+      ],
+      "scope": "Unit",
+      "engineArgumentCount": 0,
+      "valence": "Positive",
+      "description": "Once per activation, before attacking, one enemy unit within 6\u0022 in line of sight takes 1 hit with Blast(3) and AP(1)."
+    },
+    {
+      "name": "Disintegrate",
+      "passive": [
+        {
+          "hookID": "Shooting_OnSaveRollComplete",
+          "condition": {
+            "kind": "always"
+          },
+          "effect": {
+            "kind": "ignoreRule",
+            "ruleName": "Regeneration"
+          },
+          "lifetime": "ThisAttack",
+          "seat": "Actor"
+        },
+        {
+          "hookID": "Shooting_OnHitRollComplete",
+          "condition": {
+            "kind": "statGreaterOrEqualTo",
+            "stat": "Defense",
+            "statValue": 2
+          },
+          "effect": {
+            "kind": "rollModifier",
+            "rollKind": "Save",
+            "delta": -2
+          },
+          "lifetime": "ThisAttack",
+          "seat": "Actor"
+        }
+      ],
+      "activated": [],
+      "scope": "Weapon",
+      "engineArgumentCount": 0,
+      "valence": "Positive",
+      "description": "Ignores Regeneration. Against units with Defense 2\u002B, this weapon gets AP(\u002B2)."
+    },
+    {
+      "name": "Primal",
+      "passive": [
+        {
+          "hookID": "Shooting_OnHitRollComplete",
+          "condition": {
+            "kind": "unmodifiedRollEquals",
+            "dieValue": 6
+          },
+          "effect": {
+            "kind": "addExtraHit",
+            "onRollValue": 6,
+            "count": 1
+          },
+          "lifetime": "ThisAttack",
+          "seat": "Actor"
+        }
+      ],
+      "activated": [],
+      "scope": "Unit",
+      "engineArgumentCount": 0,
+      "valence": "Positive",
+      "description": "Each unmodified 6 to hit scores an extra hit."
+    },
+    {
+      "name": "Primal Boost",
+      "passive": [
+        {
+          "hookID": "Shooting_OnHitRollComplete",
+          "condition": {
+            "kind": "and",
+            "left": {
+              "kind": "unitHasRule",
+              "ruleName": "Primal"
+            },
+            "right": {
+              "kind": "unmodifiedRollEquals",
+              "dieValue": 5
+            }
+          },
+          "effect": {
+            "kind": "addExtraHit",
+            "onRollValue": 5,
+            "count": 1
+          },
+          "lifetime": "ThisAttack",
+          "seat": "Actor"
+        }
+      ],
+      "activated": [],
+      "scope": "Unit",
+      "engineArgumentCount": 0,
+      "valence": "Positive",
+      "description": "If this model has Primal, unmodified 5s or 6s to hit each score an extra hit (instead of only 6). The base rule already covers the 6s."
+    },
+    {
+      "name": "Primal Boost Buff",
+      "passive": [],
+      "activated": [
+        {
+          "triggerHook": "Activation_OnPreAttack",
+          "cost": {
+            "kind": "oncePerActivation"
+          },
+          "targetSelector": {
+            "rangeInches": 12,
+            "minCount": 1,
+            "maxCount": 1,
+            "targetAffinity": "Friend",
+            "requireLineOfSight": false,
+            "requiredToken": null,
+            "singleModel": false,
+            "requiredRule": null
+          },
+          "effect": {
+            "kind": "addRule",
+            "ruleName": "Primal Boost",
+            "scope": "NextTrigger"
+          },
+          "availableWhen": {
+            "kind": "always"
+          },
+          "label": ""
+        }
+      ],
+      "scope": "Unit",
+      "engineArgumentCount": 0,
+      "valence": "Positive",
+      "description": "Once per activation, before attacking, pick one friendly unit within 12 inches, which gains Primal Boost for its next relevant roll."
+    },
+    {
+      "name": "Bane Mark",
+      "passive": [],
+      "activated": [
+        {
+          "triggerHook": "Activation_OnPreAttack",
+          "cost": {
+            "kind": "oncePerActivation"
+          },
+          "targetSelector": {
+            "rangeInches": 18,
+            "minCount": 1,
+            "maxCount": 1,
+            "targetAffinity": "Foe",
+            "requireLineOfSight": true,
+            "requiredToken": null,
+            "singleModel": false,
+            "requiredRule": null
+          },
+          "effect": {
+            "kind": "markTarget",
+            "ruleName": "Bane"
+          },
+          "availableWhen": {
+            "kind": "always"
+          },
+          "label": ""
+        }
+      ],
+      "scope": "Unit",
+      "engineArgumentCount": 0,
+      "valence": "Positive",
+      "description": "Once per activation, before attacking, pick one enemy unit within 18 inches in line of sight. The first friendly attack against it this activation gets Bane."
+    },
+    {
+      "name": "Rending when Shooting Aura",
+      "passive": [
+        {
+          "hookID": "Lifecycle_OnUnitCreated",
+          "condition": {
+            "kind": "always"
+          },
+          "effect": {
+            "kind": "aura",
+            "ruleName": "Rending when shooting"
+          },
+          "lifetime": "UntilEndOfGame",
+          "seat": "Actor"
+        }
+      ],
+      "activated": [],
+      "scope": "Unit",
+      "engineArgumentCount": 0,
+      "valence": "Positive",
+      "description": "This model and its unit gain Rending when shooting."
+    },
+    {
+      "name": "Bounding",
+      "passive": [
+        {
+          "hookID": "Activation_OnActivationStart",
+          "condition": {
+            "kind": "always"
+          },
+          "effect": {
+            "kind": "repositionAtActivation",
+            "distance": {
+              "kind": "d3"
+            },
+            "plusInches": 1
+          },
+          "lifetime": "ThisActivation",
+          "seat": "Actor"
+        }
+      ],
+      "activated": [],
+      "scope": "Unit",
+      "engineArgumentCount": 0,
+      "valence": "Positive",
+      "description": "When this unit is activated, it may place all its models anywhere fully within D3\u002B1 inches of their position."
+    },
+    {
+      "name": "Armor",
+      "passive": [],
+      "activated": [],
+      "scope": "Unit",
+      "engineArgumentCount": 1,
+      "valence": "Positive",
+      "description": "Counts as having Defense X\u002B in place of the model\u0027s own Defense stat."
+    },
+    {
+      "name": "Precision Target",
+      "passive": [],
+      "activated": [
+        {
+          "triggerHook": "Activation_OnPreAttack",
+          "cost": {
+            "kind": "oncePerGame"
+          },
+          "targetSelector": {
+            "rangeInches": 18,
+            "minCount": 1,
+            "maxCount": 1,
+            "targetAffinity": "Foe",
+            "requireLineOfSight": true,
+            "requiredToken": null,
+            "singleModel": false,
+            "requiredRule": null
+          },
+          "effect": {
+            "kind": "grantToken",
+            "tType": {
+              "id": "PersistentHitBonusMarker"
+            },
+            "count": {
+              "kind": "arg",
+              "index": 0
+            },
+            "clear": {
+              "kind": "manualOnly"
+            },
+            "maxTotal": 0
+          },
+          "availableWhen": {
+            "kind": "always"
+          },
+          "label": ""
+        }
+      ],
+      "scope": "Unit",
+      "engineArgumentCount": 1,
+      "valence": "Positive",
+      "description": "Once per game during its activation: pick one enemy within 18 inches in line of sight and place X markers on it. Attackers get \u002B1 to hit per marker while they remain."
+    },
+    {
+      "name": "Rending when shooting",
+      "passive": [
+        {
+          "hookID": "Shooting_OnHitRollComplete",
+          "condition": {
+            "kind": "and",
+            "left": {
+              "kind": "not",
+              "inner": {
+                "kind": "isMelee"
+              }
+            },
+            "right": {
+              "kind": "unmodifiedRollEquals",
+              "dieValue": 6
+            }
+          },
+          "effect": {
+            "kind": "perHitSaveModifier",
+            "onRollValue": 6,
+            "delta": -4
+          },
+          "lifetime": "ThisAttack",
+          "seat": "Actor"
+        },
+        {
+          "hookID": "Shooting_OnSaveRollComplete",
+          "condition": {
+            "kind": "not",
+            "inner": {
+              "kind": "isMelee"
+            }
+          },
+          "effect": {
+            "kind": "ignoreRule",
+            "ruleName": "Regeneration"
+          },
+          "lifetime": "ThisAttack",
+          "seat": "Actor"
+        }
+      ],
+      "activated": [],
+      "scope": "Weapon",
+      "engineArgumentCount": 0,
+      "valence": "Positive",
+      "description": "When shooting, an unmodified 6 to hit gives the attack AP(\u002B4), and the attack ignores Regeneration."
+    }
+  ],
+  "spells": [
+    {
+      "name": "Toxin Mist",
+      "threshold": 1,
+      "target": {
+        "rangeInches": 18,
+        "minCount": 1,
+        "maxCount": 1,
+        "targetAffinity": "Foe",
+        "requireLineOfSight": false,
+        "requiredToken": null,
+        "singleModel": false,
+        "requiredRule": null
+      },
+      "effect": {
+        "kind": "markTarget",
+        "ruleName": "Bane when attacking"
+      }
+    },
+    {
+      "name": "Serpent Comet",
+      "threshold": 1,
+      "target": {
+        "rangeInches": 12,
+        "minCount": 1,
+        "maxCount": 1,
+        "targetAffinity": "Foe",
+        "requireLineOfSight": true,
+        "requiredToken": null,
+        "singleModel": false,
+        "requiredRule": null
+      },
+      "effect": {
+        "kind": "dealHits",
+        "count": 2,
+        "withRules": [
+          "Disintegrate"
+        ],
+        "armorPenetration": 0
+      }
+    },
+    {
+      "name": "Fateful Guidance",
+      "threshold": 2,
+      "target": {
+        "rangeInches": 12,
+        "minCount": 1,
+        "maxCount": 2,
+        "targetAffinity": "Friend",
+        "requireLineOfSight": false,
+        "requiredToken": null,
+        "singleModel": false,
+        "requiredRule": null
+      },
+      "effect": {
+        "kind": "addRule",
+        "ruleName": "Furious",
+        "scope": "NextTrigger"
+      }
+    },
+    {
+      "name": "Piranha Curse",
+      "threshold": 2,
+      "target": {
+        "rangeInches": 9,
+        "minCount": 1,
+        "maxCount": 2,
+        "targetAffinity": "Foe",
+        "requireLineOfSight": true,
+        "requiredToken": null,
+        "singleModel": false,
+        "requiredRule": null
+      },
+      "effect": {
+        "kind": "dealHits",
+        "count": 4,
+        "withRules": [],
+        "armorPenetration": 0
+      }
+    },
+    {
+      "name": "Celestial Roar",
+      "threshold": 3,
+      "target": {
+        "rangeInches": 12,
+        "minCount": 1,
+        "maxCount": 3,
+        "targetAffinity": "Friend",
+        "requireLineOfSight": false,
+        "requiredToken": null,
+        "singleModel": false,
+        "requiredRule": null
+      },
+      "effect": {
+        "kind": "addRule",
+        "ruleName": "Primal Boost",
+        "scope": "NextTrigger"
+      }
+    },
+    {
+      "name": "Jaguar Blaze",
+      "threshold": 3,
+      "target": {
+        "rangeInches": 12,
+        "minCount": 1,
+        "maxCount": 1,
+        "targetAffinity": "Foe",
+        "requireLineOfSight": true,
+        "requiredToken": null,
+        "singleModel": false,
+        "requiredRule": null
+      },
+      "effect": {
+        "kind": "dealHits",
+        "count": 6,
+        "withRules": [
+          "Shred"
+        ],
+        "armorPenetration": 1
+      }
+    }
+  ],
+  "unattributedPoints": 0
+}

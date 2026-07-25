@@ -54,9 +54,26 @@ public class PresentationPlayer : IPresentationSink
     private const float DiceFadeInSeconds  = 0.12f;
     private const float DiceFadeOutSeconds = 0.35f;
 
-    // Screen-space banner for the currently-active BannerBeat (null when none).
+    // Screen-space banner for the currently-active HEADLINE BannerBeat (null when none). Only the
+    // Headline tier reaches the active slot; the two lower tiers ride the concurrent track below.
     private BannerBeat? _activeBanner;
     private float _bannerProgress;
+
+    // #275 banner tiers: Notice/Toast banners are Held, so they transfer here the frame they are
+    // dequeued and animate over their full duration WHILE later beats play in the active slot. The
+    // engine paces only their lead-in (300ms for a Notice, nothing at all for a Toast), so the game
+    // keeps moving underneath them. Deliberately excluded from IsAnimating - a message that does not
+    // stop the engine must not stop an interactive prompt either.
+    private readonly List<HeldBannerState> _heldBanners = new();
+    // Toasts stack, so a burst needs a ceiling; the oldest drops out when a newer one arrives.
+    private const int MaxHeldBanners = 5;
+
+    private sealed class HeldBannerState
+    {
+        public readonly BannerBeat Beat;
+        public float Elapsed;
+        public HeldBannerState(BannerBeat beat) => Beat = beat;
+    }
 
     // Screen-space roll-off (labelled name+die stack) for the currently-active RollOffBeat (null when none).
     private RollOffBeat? _activeRollOff;
@@ -232,6 +249,13 @@ public class PresentationPlayer : IPresentationSink
                     _cascading.Add(new CascadeState(next));
                     continue;
                 }
+                // #275: same treatment for a Notice/Toast banner - it announces over the top of play
+                // instead of interrupting it.
+                if (next is BannerBeat heldBanner && heldBanner.Held)
+                {
+                    AddHeldBanner(heldBanner);
+                    continue;
+                }
                 _active = next;
                 _elapsedSeconds = 0f;
             }
@@ -275,6 +299,15 @@ public class PresentationPlayer : IPresentationSink
                     Finish(c.Beat);
                     _cascading.RemoveAt(i);
                 }
+            }
+
+            // #275: the held-banner track, likewise independent of the active slot. Pure display -
+            // nothing here touches model state, so it only ages and retires.
+            for (int i = _heldBanners.Count - 1; i >= 0; i--)
+            {
+                HeldBannerState b = _heldBanners[i];
+                b.Elapsed += dtSeconds;
+                if (b.Elapsed >= (float)b.Beat.NominalDuration.TotalSeconds) _heldBanners.RemoveAt(i);
             }
 
             // The concurrent attack track advances every frame, independent of the active slot.
@@ -329,6 +362,19 @@ public class PresentationPlayer : IPresentationSink
             foreach (PresentationBeat beat in started) BeatStarted?.Invoke(beat);
         if (volleyCued != null) AttackVolleyStarted?.Invoke(volleyCued);
         if (impactCued != null) AttackVolleyImpact?.Invoke(impactCued);
+    }
+
+    // #275. Called under the lock. A Notice supersedes any Notice already up: they share one band in
+    // the middle of the screen, and two of them there would overlap into mush - the newer statement is
+    // the one that matters. Toasts stack instead (that IS the tier), bounded by MaxHeldBanners.
+    private void AddHeldBanner(BannerBeat banner)
+    {
+        if (banner.Tier == EBannerTier.Notice)
+            _heldBanners.RemoveAll(b => b.Beat.Tier == EBannerTier.Notice);
+
+        _heldBanners.Add(new HeldBannerState(banner));
+
+        while (_heldBanners.Count > MaxHeldBanners) _heldBanners.RemoveAt(0);
     }
 
     // #238: how many volleys have begun by progress t. Volley v owns the slice starting at t = v/volleys
@@ -393,6 +439,8 @@ public class PresentationPlayer : IPresentationSink
                 }
                 _diceAlpha = Math.Min(fadeIn, fadeOut);
                 break;
+            // Headline only: a Held (Notice/Toast) banner was diverted to the held track at dequeue and
+            // never reaches the active slot (#275).
             case BannerBeat banner:
                 _activeBanner = banner;
                 _bannerProgress = t;
@@ -471,7 +519,10 @@ public class PresentationPlayer : IPresentationSink
         }
     }
 
-    /// <summary>The banner being shown this frame, if any, with its 0..1 progress.</summary>
+    /// <summary>
+    /// The HEADLINE banner being shown this frame, if any, with its 0..1 progress. Lower tiers never
+    /// reach the active slot — see <see cref="GetHeldBanners"/> (#275).
+    /// </summary>
     public bool TryGetActiveBanner(out BannerBeat beat, out float progress)
     {
         lock (_lock)
@@ -479,6 +530,24 @@ public class PresentationPlayer : IPresentationSink
             beat = _activeBanner!;
             progress = _bannerProgress;
             return _activeBanner != null;
+        }
+    }
+
+    /// <summary>
+    /// The Notice/Toast banners on screen this frame with their 0..1 progress, oldest first (#275) —
+    /// at most one Notice, plus however many toasts are stacked. Snapshot taken under the lock.
+    /// </summary>
+    public IReadOnlyList<(BannerBeat beat, float progress)> GetHeldBanners()
+    {
+        lock (_lock)
+        {
+            var live = new List<(BannerBeat, float)>(_heldBanners.Count);
+            foreach (HeldBannerState b in _heldBanners)
+            {
+                float dur = (float)b.Beat.NominalDuration.TotalSeconds;
+                live.Add((b.Beat, dur <= 0f ? 1f : Math.Clamp(b.Elapsed / dur, 0f, 1f)));
+            }
+            return live;
         }
     }
 

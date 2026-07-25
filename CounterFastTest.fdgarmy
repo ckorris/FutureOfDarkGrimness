@@ -1,0 +1,80 @@
+{
+  "name": "Counter",
+  "faction": "Test",
+  "pointsLimit": 1000,
+  "units": [
+    {
+      "name": "Counter Unit",
+      "id": null,
+      "joinsUnitId": null,
+      "modelCount": 5,
+      "base": {
+        "shape": "Circle",
+        "diameterInches": 1.1023622,
+        "widthInches": 0.984252,
+        "heightInches": 1.968504
+      },
+      "quality": 4,
+      "defense": 4,
+      "specialRules": [
+        {
+          "kind": "core",
+          "name": "Very Fast"
+        },
+        {
+          "kind": "core",
+          "name": "Strider"
+        }
+      ],
+      "weapons": [
+        {
+          "name": "Counter-Chopper",
+          "quantity": 5,
+          "rangeInches": 0,
+          "attacks": 1,
+          "armorPenetration": 0,
+          "specialRules": [
+            {
+              "kind": "core",
+              "name": "Counter"
+            }
+          ]
+        }
+      ],
+      "pointCost": 100
+    },
+    {
+      "name": "New Unit",
+      "id": null,
+      "joinsUnitId": null,
+      "modelCount": 5,
+      "base": {
+        "shape": "Circle",
+        "diameterInches": 1.1023622,
+        "widthInches": 0.984252,
+        "heightInches": 1.968504
+      },
+      "quality": 4,
+      "defense": 4,
+      "specialRules": [
+        {
+          "kind": "core",
+          "name": "Very Fast"
+        }
+      ],
+      "weapons": [
+        {
+          "name": "Bad Sticks",
+          "quantity": 3,
+          "rangeInches": 0,
+          "attacks": 1,
+          "armorPenetration": 0,
+          "specialRules": []
+        }
+      ],
+      "pointCost": 100
+    }
+  ],
+  "ruleDefinitions": [],
+  "spells": []
+}

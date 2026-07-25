@@ -6,15 +6,32 @@ from origin/master. Standing precedent: numbers are never reused, and when two p
 claim the same number, the *unmerged local* item yields to the *merged* one and takes a fresh number.
 A per-clone pre-push hook blocks duplicate numbers across the index and the archive.
 
-> **2026-07-24 — reconciliation 23.** The attack-animation session filed **275 = attack animation
+> **2026-07-24 — reconciliation 24.** The attack-animation session filed **275 = attack animation
 > truthfulness** (occluded-shooter dice trim + truthful beat endpoints) against a local master where
 > 274 was the highest number in use. Pre-push re-verification found the submodule's origin/master had
-> meanwhile gained `449310f` "**#275**: banner tiers (Headline / Notice / Toast)" from a parallel
-> session. Per merged-wins precedent the unpushed item yields: **attack-animation truthfulness
-> 275 -> 276** (`WorkItems/276-*`), renumbered in the detail file, the index line, and the engine
-> source-comment tags. Departing from the leave-messages-as-is precedent, the two unpushed commits
-> (one submodule, one superproject) were amended to say #276 — both were still local-only, so the
-> rewrite was free and keeps `#275` unambiguous in history.
+> meanwhile gained `449310f` "**#275**: banner tiers (Headline / Notice / Toast)" — reconciliation
+> 23's renumbered item, from the parallel session. Per merged-wins precedent the unpushed item
+> yields: **attack-animation truthfulness 275 -> 276** (`WorkItems/276-*`), renumbered in the detail
+> file, the index line, and the engine source-comment tags. The two unpushed commits (one submodule,
+> one superproject) were amended to say #276 — both were still local-only, so the rewrite was free
+> and keeps `#275` unambiguous in history (this entry was itself renumbered 23 -> 24 when the merge
+> surfaced reconciliation 23 below, written the same day by the other half of the collision).
+>
+> **2026-07-24 — reconciliation 23.** The banner-tier work was filed as **274** on a local master that
+> had gone 3 behind origin/master mid-session (it was level when the session started, so the number was
+> free when it was taken). By merge time origin/master had landed AND archived its own **274 = spell
+> cast visuals** (engine `befce91`, superproject `dbf51ba`, closed by `8e52d80`). Per merged-wins
+> precedent the local item yields: **banner tiers 274 -> 275** (`WorkItems/275-banner-tiers.md`; 275 was
+> free on both index and archive). Nothing had been pushed, so — as in reconciliations 12 and 13 — the
+> renumber landed everywhere *before* publication: detail file + its title, index line, all 26 engine and
+> app source comments, and the commit messages (engine commit amended; the four superproject messages
+> rewritten with `filter-branch --msg-filter`). **No reference anywhere still calls this work #274**,
+> which mattered more than usual here because the other #274 lives in the same repo's history.
+> The two efforts overlapped in code as well as in numbering — both touched `PresentationDurations`,
+> `CastSpellStage`, and `PresentationBeatSerializationTests`. Those auto-merged; the one real conflict
+> was `PresentationSoundCues.BaseCues`, where master's array still listed the single `Banner` cue that
+> #275 had split into three tiers. Resolved by keeping both sets (3 banner tiers + 6 spell voices) and
+> dropping the dead `Banner` key. Engine 2104/2104, app 582/582, headless smoke exit 0 after the merge.
 >
 > **2026-07-23 — reconciliation 22.** Bringing origin/master into the long-lived `264-server-browser`
 > branch (14 ahead / 32 behind) surfaced a *triple* collision: master had independently used **264**
