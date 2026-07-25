@@ -3,7 +3,7 @@ using ImGuiNET;
 namespace FdgRaylib.Rendering.Resolvers;
 
 /// <summary>
-/// Shared wheel / R input for the placement and movement overlays (#275), replacing three
+/// Shared wheel / R input for the placement and movement overlays (#277), replacing three
 /// copy-pasted blocks. Plain Wheel and R / Shift+R rotate (15 deg per notch, unchanged semantics);
 /// Ctrl+Wheel is the formation cycle. Ctrl+Wheel is exclusively ours: the ruler and the zoom both
 /// live on Alt (Alt+drag / Alt+wheel), so no table gesture contends for Ctrl.

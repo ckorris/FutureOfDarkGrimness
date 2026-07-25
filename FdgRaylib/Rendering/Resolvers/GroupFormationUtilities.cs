@@ -276,6 +276,6 @@ public static class GroupFormationUtilities
             }
     }
 
-    // #275: deployment row layout moved to the engine's FormationLibrary (shared with PackGrid and the
+    // #277: deployment row layout moved to the engine's FormationLibrary (shared with PackGrid and the
     // formation cycle), replacing the old ComputeDeploymentOffsets here.
 }

@@ -86,7 +86,7 @@ public class GroupFormationUtilitiesTests
         Assert.That(Dist(result.NewPositions[0], result.NewPositions[1]), Is.EqualTo(2f).Within(Tol));
     }
 
-    // ---- #275: deployment layout now rides the engine FormationLibrary via FormationCycle. The old
+    // ---- #277: deployment layout now rides the engine FormationLibrary via FormationCycle. The old
     // ComputeDeploymentOffsets defaults are pinned as "the cycle's first entry reproduces them": a line
     // when it fits the 9" span, else the first legal (balanced-rows) partition. The forward-sign mirror
     // moved into GuiPlaceObjectsResolver (front row 0 lays toward +z here; the resolver flips dz when

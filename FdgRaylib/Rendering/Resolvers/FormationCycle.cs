@@ -3,7 +3,7 @@ using FDG;
 namespace FdgRaylib.Rendering.Resolvers;
 
 /// <summary>
-/// Per-request formation cycling state for the group placement/movement overlays (#275): the unit's
+/// Per-request formation cycling state for the group placement/movement overlays (#277): the unit's
 /// legal <see cref="FormationLibrary"/> shapes, with an optional leading "current shape" entry at
 /// index 0 for units that already stand somewhere (movement, consolidation, teleport/reposition).
 /// Ctrl+Wheel cycles the index (see <see cref="GroupInput"/>); plain Wheel keeps rotating.

@@ -42,7 +42,7 @@ Resolvers that need to interact with the table canvas (movement, placement) addi
 
 (The table lists the original core set; later additions — `GuiUnitSelectionResolver`, `GuiCancellableUnitSelectionResolver`, `GuiCastAssistResolver`, aircraft-advance, terrain-placement, consolidation resolvers — follow the same pattern. See #161 for the consistency pass across them.)
 
-## Group formations (#275)
+## Group formations (#277)
 
 In Group mode (movement, consolidation, deployment/teleport placement) **Ctrl+Wheel cycles the
 unit's formation**; plain Wheel / R / Shift+R still rotate, and Shift-hold stays "stay within

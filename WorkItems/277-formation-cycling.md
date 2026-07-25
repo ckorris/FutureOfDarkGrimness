@@ -1,4 +1,4 @@
-# 275 — Formation cycling in group placement/movement (Ctrl+Wheel)
+# 277 — Formation cycling in group placement/movement (Ctrl+Wheel)
 
 **Status**: implemented, awaiting GUI hand-verify
 **Related**: #094 (coherency repair), #150 (base shapes), #159 (mixed-base packing), #170 (AI grid port), #214/#269 (reposition placement), #215 (consolidation group mode)
@@ -32,7 +32,7 @@ plain Wheel keeps rotating.
   (nearest-slot assignment + extent permutation so mixed bases keep per-model spacing),
   `Describe` ("line (10)" / "5x2" / "4-3-3", ASCII). `CohesiveFormation.PackGrid` now lays rows out
   through `LayoutOffsets` (block-center changed to centroid-center; all 7 existing tests still green).
-  Engine commit `a7e9f4d`, 2105/2105 green (6 new).
+  Engine commit `07c9457` (rebased from `a7e9f4d` onto the merged master), 2105/2105 green (6 new).
 - 2026-07-24: App: new `FormationCycle` (per-request catalog + index; index 0 = current shape for
   movement/consolidation/reposition, first legal partition for fresh deployment - which reproduces the
   old ComputeDeploymentOffsets default exactly) and `GroupInput` (shared Wheel/R reader, replacing

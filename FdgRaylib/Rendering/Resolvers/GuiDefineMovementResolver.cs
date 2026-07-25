@@ -32,7 +32,7 @@ public class GuiDefineMovementResolver
     // faces its direction of travel rotated by this offset (not a fixed lock). Cleared each Resolve.
     private readonly Dictionary<IModel, float> _manualOffsets = new();
 
-    // #275: the group-mode formation options for this request (index 0 = current shape, unchanged).
+    // #277: the group-mode formation options for this request (index 0 = current shape, unchanged).
     // Built lazily on the first group frame; reset each Resolve, and back to "current" on each commit
     // (a committed step bakes the picked shape into the unit's real waypoints).
     private FormationCycle? _formationCycle;
@@ -636,7 +636,7 @@ public class GuiDefineMovementResolver
         if (models.Count == 0) return;
 
         // Rotation input: wheel both ways; R clockwise, Shift+R counter-clockwise. Ctrl+Wheel cycles
-        // the target formation (#275): index 0 keeps the unit's current shape (pure rigid move), the
+        // the target formation (#277): index 0 keeps the unit's current shape (pure rigid move), the
         // rest re-form the unit into a FormationLibrary shape as it moves.
         var (rotationDelta, formationDelta) = GroupInput.Read(wantInput);
         if (rotationDelta != 0f) { _groupRotation += rotationDelta; _groupFacingAngle += rotationDelta; }
@@ -680,7 +680,7 @@ public class GuiDefineMovementResolver
         IReadOnlyList<Position> basePositions = lastPositions;
         if (_formationCycle is { IsCurrentShape: false })
         {
-            // #275: a picked formation becomes the base shape; the rigid transform + budget solve then
+            // #277: a picked formation becomes the base shape; the rigid transform + budget solve then
             // carry the unit into it. The two-array PlanGroupMove measures each model's travel from its
             // real start — the same mechanism the coherency repair rides — so re-forming can never push
             // a model past its cap. Slots are assigned nearest-first to keep the morph travel small.
@@ -868,7 +868,7 @@ public class GuiDefineMovementResolver
             for (int i = 0; i < models.Count; i++)
                 pt.AddStep(models[i], newPositions[i]);
             _groupRotation = 0f;
-            // #275: the committed step baked the picked shape into the waypoints — it IS the current
+            // #277: the committed step baked the picked shape into the waypoints — it IS the current
             // shape now, so further dragging is rigid until the player cycles again.
             _formationCycle?.Reset();
         }

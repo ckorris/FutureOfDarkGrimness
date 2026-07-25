@@ -35,7 +35,7 @@ public class GuiConsolidationMoveResolver
     private float _groupFacingAngle;
     private const float GroupMoveSafetyMargin = 0.005f;
 
-    // #275: group-mode formation options (index 0 = current shape). Built lazily per request; back to
+    // #277: group-mode formation options (index 0 = current shape). Built lazily per request; back to
     // "current" on each commit (the committed step bakes the picked shape into the waypoints).
     private FormationCycle? _formationCycle;
 
@@ -269,7 +269,7 @@ public class GuiConsolidationMoveResolver
         IUnit ownUnit = request.UnitDataBinding.GetValue();
         float maxDist = request.MaxDistanceInches;
 
-        // Wheel/R rotate; Ctrl+Wheel cycles the target formation (#275, shared GroupInput semantics).
+        // Wheel/R rotate; Ctrl+Wheel cycles the target formation (#277, shared GroupInput semantics).
         var (rotationDelta, formationDelta) = GroupInput.Read(wantInput);
         if (rotationDelta != 0f) { _groupRotation += rotationDelta; _groupFacingAngle += rotationDelta; }
         if (_formationCycle == null)
@@ -295,7 +295,7 @@ public class GuiConsolidationMoveResolver
         IReadOnlyList<Position> basePositions = lastPositions;
         if (_formationCycle is { IsCurrentShape: false })
         {
-            // #275: morph toward the picked formation; the consolidation cap still bounds every model
+            // #277: morph toward the picked formation; the consolidation cap still bounds every model
             // (an unreachable shape shows over-budget red phantoms rather than moving anyone illegally).
             var offsets = FormationLibrary.PlanFormationOffsets(
                 lastPositions, radii, radii, _formationCycle.Selected.RowCounts, gap: 0.1f);
@@ -362,7 +362,7 @@ public class GuiConsolidationMoveResolver
         {
             for (int i = 0; i < models.Count; i++) pt.AddStep(models[i], newPositions[i]);
             _groupRotation = 0f; // rotation is folded into _groupFacingAngle (baked into the committed facings)
-            _formationCycle?.Reset(); // #275: the committed step's shape is the current shape now
+            _formationCycle?.Reset(); // #277: the committed step's shape is the current shape now
         }
 
         // Right-click / Backspace undo the last committed group step (one per model).

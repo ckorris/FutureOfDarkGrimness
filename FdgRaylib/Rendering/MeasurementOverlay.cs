@@ -8,7 +8,7 @@ namespace FdgRaylib.Rendering;
 /// <summary>
 /// An ad-hoc ruler: hold Alt and drag on the table to measure inches between two points, snapping each
 /// end to the nearest model base. The ruler shows only while Alt or the left button is still held --
-/// releasing both makes it vanish. (Was Ctrl until #275 claimed Ctrl+Wheel for the formation cycle --
+/// releasing both makes it vanish. (Was Ctrl until #277 claimed Ctrl+Wheel for the formation cycle --
 /// and holding Ctrl raised WantCaptureMouse here, hiding the wheel from the resolvers. Note some Linux
 /// window managers grab Alt+drag to move windows; GNOME defaults to Super, so the owner's setup is fine.)
 ///

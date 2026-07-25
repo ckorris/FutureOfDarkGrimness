@@ -482,7 +482,7 @@ public class RaylibRenderer
                     BannerOverlay.Draw(bannerBeat, bannerProgress, layout.AreaW, screenH);
                 }
 
-                // #275: the Notice/Toast tiers ride their own concurrent track, so they draw every frame
+                // #277: the Notice/Toast tiers ride their own concurrent track, so they draw every frame
                 // regardless of what holds the active slot - that is the whole point of them.
                 if (_presentationPlayer != null)
                 {
@@ -605,7 +605,7 @@ public class RaylibRenderer
     // on the mouse being over the table viewport only (NOT WantCaptureMouse -- the Alt-held measurement
     // overlay raises that flag over the table, which would otherwise veto every zoom); pan additionally
     // respects WantCaptureMouse so dragging over the toolbar/panels doesn't scroll the board.
-    // #275: Alt is the camera/measure modifier (Alt+wheel zoom, Alt+drag measure) so Ctrl+Wheel belongs
+    // #277: Alt is the camera/measure modifier (Alt+wheel zoom, Alt+drag measure) so Ctrl+Wheel belongs
     // entirely to the group-formation cycle -- zoom keeps working while a group ghost is live.
     private void HandleTableViewInput(int screenW, int screenH)
     {

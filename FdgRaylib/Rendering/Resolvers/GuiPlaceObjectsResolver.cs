@@ -42,7 +42,7 @@ public class GuiPlaceObjectsResolver<T>
     // Single-mode pending facing rotation (radians) applied to the model being placed / dragged (#150).
     private float _singleRotationDeploy;
 
-    // #275: group-mode formation options for this request. For a reposition (Teleport / Fanatic /
+    // #277: group-mode formation options for this request. For a reposition (Teleport / Fanatic /
     // reposition-at-activation) index 0 is the unit's CURRENT shape, unchanged; a fresh deployment has
     // no current shape, so index 0 is the first legal catalog entry (line when it fits the 9" span,
     // else two rows — the old single default). Built lazily on the first group frame; reset on Resolve.
@@ -165,7 +165,7 @@ public class GuiPlaceObjectsResolver<T>
 
         // Rotation input rotates the facing of the one model being placed / dragged (#150); the pending
         // rotation persists across placements (place several facing the same way) and resets on Resolve.
-        // Shared GroupInput semantics (#275); the formation delta has no meaning in single mode.
+        // Shared GroupInput semantics (#277); the formation delta has no meaning in single mode.
         var (singleRotationDelta, _) = GroupInput.Read(!io.WantCaptureMouse && !io.WantCaptureKeyboard);
         _singleRotationDeploy += singleRotationDelta;
         Float2 facing = RotateFloat2(
@@ -232,7 +232,7 @@ public class GuiPlaceObjectsResolver<T>
         int n = models.Count;
 
         // Rotation input: wheel both ways; R clockwise, Shift+R counter-clockwise. Ctrl+Wheel cycles
-        // the formation (#275).
+        // the formation (#277).
         var (rotationDelta, formationDelta) = GroupInput.Read(wantInput);
         _groupRotationDeploy += rotationDelta;
 
@@ -259,7 +259,7 @@ public class GuiPlaceObjectsResolver<T>
         for (int i = 0; i < n; i++) currentPositions[i] = StartPositionOf(models[i].GetValue());
 
         // Offsets from the formation centroid + each model's facing BEFORE the user rotation: the
-        // current-shape option (#275 reposition index 0) keeps the standing layout and each model's own
+        // current-shape option (#277 reposition index 0) keeps the standing layout and each model's own
         // facing; generated shapes lay rows out per FormationLibrary, all facing the zone default.
         (float dx, float dz)[] offsets;
         var baseFacings = new Float2[n];
