@@ -52,8 +52,8 @@ public class GuiAircraftAdvanceResolver
         if (living.Count == 0) return null;
 
         Float2 h = request.HeadingNormal;
-        float qFacingX = GhostPathQuantize.Inches(h.X);
-        float qFacingZ = GhostPathQuantize.Inches(h.Y);
+        float qFacingX = PreviewQuantize.Inches(h.X);
+        float qFacingZ = PreviewQuantize.Inches(h.Y);
 
         var baseModels = new List<GhostPathBaseModel>(living.Count);
         var ghosts = new List<GhostPathGhost>(living.Count);
@@ -66,8 +66,8 @@ public class GuiAircraftAdvanceResolver
             unchecked { contentHash = contentHash * 31 + m.ID.ID.GetHashCode(); }
 
             ghosts.Add(new GhostPathGhost(i,
-                GhostPathQuantize.Inches(m.Position.x + h.X * distance),
-                GhostPathQuantize.Inches(m.Position.z + h.Y * distance),
+                PreviewQuantize.Inches(m.Position.x + h.X * distance),
+                PreviewQuantize.Inches(m.Position.z + h.Y * distance),
                 qFacingX, qFacingZ, GhostPathBands.Advance));
         }
 

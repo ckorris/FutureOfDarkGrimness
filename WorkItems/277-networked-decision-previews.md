@@ -23,11 +23,33 @@ covered by engine tests.
    indexing, 0.01" float quantization, omit ghosts equal to committed) +
    `GuiDefineMovementResolver` as first source.
 3. **Follow-ups** (model-based trio DONE 2026-07-25): consolidation, aircraft advance and
-   place-objects share the payload. Remaining: objective + terrain placement (non-model markers -
-   need their own payload family), then non-movement request types on demand.
+   place-objects share the payload. Remaining: non-movement request types on demand.
+4. **Marker family** (DONE 2026-07-25): objective + terrain placement previews via their own
+   payload family (non-model markers). Awaiting hand-verify alongside slice 3.
 
 ## Notes
 
+- 2026-07-25 (slice 4): objective + terrain placement previews - the deferred marker facet. New
+  "marker" payload family (`MarkerPreviewPayloads.cs`): `ObjectiveMarkerPreview` (number, center,
+  radii, Pending/Valid) and `TerrainFootprintPreview` (ETerrainType as int, footprint flattened to
+  wire circles + quads with rotation baked in - never the polymorphic IZone, #186), single
+  "marker" slot with NO base/ghost split (whole ghost is a few hundred bytes at 10 Hz, well under
+  the movement family's envelope; committed markers/terrain reach clients via synced table state).
+  `MarkerFootprints.Flatten` converts `ZoneExtensions.Primitives()` leaves (circle / rect /
+  rotated-rect only) to wire primitives. `MarkerPreviewPresenter`: local color language dimmed
+  (grey disc + number + seizure ring; terrain-type tint via `TerrainTypeColors`, now internal) in
+  a player-tinted outline that goes red when the placer hovers an illegal spot. Both resolvers
+  snapshot the drawn ghost in Draw (`_ghostSnapshot` + `_snapshotRequest` guard, same pattern as
+  consolidation): live-cursor AND frozen-pending ghosts stream; off-table mouse / template
+  selection = null preview = publisher clears. `GhostPathQuantize` renamed `PreviewQuantize` (own
+  file) - it is cross-family wire hygiene now. +3 PreviewSourceTests (objective/terrain null
+  contracts incl. no-Draw guard, rotated-composite flatten). 2129/2129 engine + 592/592 app,
+  build + headless smoke green.
+  HAND-VERIFY CHECKLIST (slice 4, two instances): (e) objective placement: hovering ghost with
+  number + 3" ring visible remotely, red outline when hovering an illegal spot, frozen ghost while
+  the Confirm dialog is up, nothing while mouse is off-table; (f) terrain placement: nothing
+  during template pick, footprint ghost with terrain tint + rotation remotely, red when
+  overlapping, frozen while confirming.
 - 2026-07-25 (later): Slice 2 GUI HAND-VERIFY PASSED (user, two instances on localhost). Slice 3
   landed: consolidation, aircraft advance and place-objects opted into the GhostPath payloads.
   Shared bits: `GhostPathQuantize` (0.01" + ghost epsilon, replaces the movement resolver's

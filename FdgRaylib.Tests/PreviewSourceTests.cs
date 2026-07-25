@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using FDG;
 using FDG.Data;
+using FDG.SaveLoad;
 using FDG.StageResolution.Requests;
 using FDG.Stages;
 using FdgRaylib.Rendering.Previews;
@@ -11,11 +12,13 @@ using NUnit.Framework;
 
 namespace FdgRaylib.Tests;
 
-// #277 slice 3 — the movement-family resolvers that opted into networked previews. Draw-side ghost
-// capture is ImGui (hand-verified); these pin the BuildPreviewState seams that hold the payloads
-// together across the wire: roster identity and ORDER (ghost entries reference the base roster by
+// #277 — the resolvers that opted into networked previews. Draw-side ghost capture is ImGui
+// (hand-verified); these pin the BuildPreviewState seams that hold the payloads together across
+// the wire. Movement family: roster identity and ORDER (ghost entries reference the base roster by
 // index - a mismatch composes ghosts onto the wrong models), the BaseVersion stamp both slots must
 // share, band codes, quantization, and the no-request -> null contract the publisher relies on.
+// Marker family (objective/terrain placement): the zone-tree -> wire-primitive flattening and the
+// same null contract (their ghosts exist only as Draw snapshots).
 [TestFixture]
 public class PreviewSourceTests
 {
@@ -45,8 +48,8 @@ public class PreviewSourceTests
     [Test]
     public void Quantize_RoundsToHundredthsOfAnInch()
     {
-        Assert.That(GhostPathQuantize.Inches(10.223f), Is.EqualTo(10.22f).Within(0.0001f));
-        Assert.That(GhostPathQuantize.Inches(10.228f), Is.EqualTo(10.23f).Within(0.0001f));
+        Assert.That(PreviewQuantize.Inches(10.223f), Is.EqualTo(10.22f).Within(0.0001f));
+        Assert.That(PreviewQuantize.Inches(10.228f), Is.EqualTo(10.23f).Within(0.0001f));
     }
 
     [Test]
@@ -118,6 +121,71 @@ public class PreviewSourceTests
         Assert.That(ghostPayload.Ghosts[1].X, Is.EqualTo(12.7f).Within(0.0001f));
         Assert.That(ghostPayload.Ghosts[1].Z, Is.EqualTo(38.4f).Within(0.0001f));
         Assert.That(ghostPayload.Ghosts.All(g => g.Band == GhostPathBands.Advance));
+    }
+
+    [Test]
+    public void Objective_SharesNothingWithoutRequestOrBeforeDraw()
+    {
+        var store = GameDataStore.GameDataStoreBuilder.GetDefault();
+        var resolver = new GuiPlaceObjectiveResolver(new TableState(store));
+        Assert.That(resolver.BuildPreviewState(), Is.Null, "no pending request");
+
+        _ = resolver.Resolve(new PlaceObjectiveRequest(new PlayerID(Guid.NewGuid()), "Objective",
+            markerIndex: 1, totalMarkers: 3, new RectangularZone(0f, 48f, 12f, 36f),
+            minSeparationInches: 9f));
+        Assert.That(resolver.BuildPreviewState(), Is.Null,
+            "the ghost exists only as a Draw snapshot - nothing to share before the first frame");
+    }
+
+    [Test]
+    public void Terrain_SharesNothingWithoutRequestOrBeforeDraw()
+    {
+        var store = GameDataStore.GameDataStoreBuilder.GetDefault();
+        var resolver = new GuiPlaceOneTerrainResolver(new TableState(store));
+        Assert.That(resolver.BuildPreviewState(), Is.Null, "no pending request");
+
+        var pool = new List<TerrainPieceEntry>
+        {
+            new TerrainPieceEntry
+            {
+                TerrainType = ETerrainType.Cover,
+                Shape = new RectangularZone(0f, 6f, 0f, 4f),
+            },
+        };
+        _ = resolver.Resolve(new PlaceOneTerrainRequest(new PlayerID(Guid.NewGuid()), "Terrain",
+            piecesPlaced: 0, totalPieces: 4, pool, tableWidthInches: 48f, tableHeightInches: 48f));
+        Assert.That(resolver.BuildPreviewState(), Is.Null,
+            "template selection has no canvas ghost - nothing to share before a Draw captures one");
+    }
+
+    [Test]
+    public void MarkerFootprints_FlattenRotatedCompositeToWirePrimitives()
+    {
+        // A composite of a rect and a circle, rotated 90 degrees the way the terrain resolver does
+        // it (around the template's own AABB center) - the leaf walk must yield the circle
+        // translated (rotation-invariant) and the rect as a rotated quad.
+        var inner = new CompositeZone(new List<IZone>
+        {
+            new RectangularZone(0f, 6f, 0f, 4f),
+            new CircularZone(new Float2(8f, 2f), 1.5f),
+        });
+        Float2 pivot = inner.GetAABBCenter();
+        IZone shape = TerrainTemplateUtilities.Rotate(inner, 90f);
+
+        (IReadOnlyList<MarkerCircle> circles, IReadOnlyList<MarkerQuad> quads) =
+            MarkerFootprints.Flatten(shape);
+
+        Assert.That(circles, Has.Count.EqualTo(1));
+        Assert.That(quads, Has.Count.EqualTo(1));
+        Assert.That(quads[0].Corners, Has.Count.EqualTo(4), "wire quads are always four corners");
+        Float2 expectedCircle = ZoneExtensions.RotateAround(new Float2(8f, 2f), pivot, 90f);
+        Assert.That(circles[0].X, Is.EqualTo(PreviewQuantize.Inches(expectedCircle.X)).Within(0.0001f));
+        Assert.That(circles[0].Z, Is.EqualTo(PreviewQuantize.Inches(expectedCircle.Y)).Within(0.0001f));
+        Assert.That(circles[0].Radius, Is.EqualTo(1.5f).Within(0.0001f));
+
+        Float2 expectedCorner = ZoneExtensions.RotateAround(new Float2(0f, 0f), pivot, 90f);
+        Assert.That(quads[0].Corners[0].X, Is.EqualTo(PreviewQuantize.Inches(expectedCorner.X)).Within(0.0001f));
+        Assert.That(quads[0].Corners[0].Z, Is.EqualTo(PreviewQuantize.Inches(expectedCorner.Y)).Within(0.0001f));
     }
 
     [Test]

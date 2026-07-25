@@ -81,12 +81,12 @@ public class GuiPlaceObjectsResolver<T>
             if (isPlaced)
             {
                 PlacedObjectEntry<T> entry = _placed[i];
-                points.Add(new GhostPathPoint(GhostPathQuantize.Inches(entry.Position.x),
-                    GhostPathQuantize.Inches(entry.Position.z)));
+                points.Add(new GhostPathPoint(PreviewQuantize.Inches(entry.Position.x),
+                    PreviewQuantize.Inches(entry.Position.z)));
                 facing = entry.Facing ?? facing;
             }
             baseModels.Add(new GhostPathBaseModel(m.ID.ID, points,
-                GhostPathQuantize.Inches(facing.X), GhostPathQuantize.Inches(facing.Y),
+                PreviewQuantize.Inches(facing.X), PreviewQuantize.Inches(facing.Y),
                 GhostPathBands.Neutral));
 
             unchecked
@@ -102,11 +102,11 @@ public class GuiPlaceObjectsResolver<T>
             if (ghostSnapshotValid && _ghostSnapshot.TryGetValue(i, out var ghost))
             {
                 Position committed = isPlaced ? _placed[i].Position : m.Position;
-                if (Position.GetDistance2D(committed, ghost.pos) > GhostPathQuantize.GhostEpsilonInches)
+                if (Position.GetDistance2D(committed, ghost.pos) > PreviewQuantize.GhostEpsilonInches)
                 {
-                    ghosts.Add(new GhostPathGhost(i, GhostPathQuantize.Inches(ghost.pos.x),
-                        GhostPathQuantize.Inches(ghost.pos.z), GhostPathQuantize.Inches(ghost.facing.X),
-                        GhostPathQuantize.Inches(ghost.facing.Y), GhostPathBands.Neutral));
+                    ghosts.Add(new GhostPathGhost(i, PreviewQuantize.Inches(ghost.pos.x),
+                        PreviewQuantize.Inches(ghost.pos.z), PreviewQuantize.Inches(ghost.facing.X),
+                        PreviewQuantize.Inches(ghost.facing.Y), GhostPathBands.Neutral));
                 }
             }
         }

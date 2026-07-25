@@ -123,7 +123,7 @@ public class GuiDefineMovementResolver
 
             var points = new List<GhostPathPoint>(waypoints.Count);
             foreach (Position p in waypoints)
-                points.Add(new GhostPathPoint(GhostPathQuantize.Inches(p.x), GhostPathQuantize.Inches(p.z)));
+                points.Add(new GhostPathPoint(PreviewQuantize.Inches(p.x), PreviewQuantize.Inches(p.z)));
 
             // Facing at the committed endpoint - same derivation as the local final ghost (#150).
             Float2 finalFacing = m.Facing;
@@ -138,7 +138,7 @@ public class GuiDefineMovementResolver
             float committedDist = pt.GetTotalDistanceMoved(m);
 
             baseModels.Add(new GhostPathBaseModel(m.ID.ID, points,
-                GhostPathQuantize.Inches(finalFacing.X), GhostPathQuantize.Inches(finalFacing.Y),
+                PreviewQuantize.Inches(finalFacing.X), PreviewQuantize.Inches(finalFacing.Y),
                 BandCode(ClassifyBand(committedDist, mAdvance, mRush, hasChargeBand))));
 
             unchecked
@@ -157,12 +157,12 @@ public class GuiDefineMovementResolver
             if (ghostSnapshotValid && _ghostSnapshot.TryGetValue(m, out Position ghost))
             {
                 float ghostDist = Position.GetDistance2D(committed, ghost);
-                if (ghostDist > GhostPathQuantize.GhostEpsilonInches)
+                if (ghostDist > PreviewQuantize.GhostEpsilonInches)
                 {
                     Float2 ghostFacing = RotateFloat2(TravelFacing(committed, ghost, m.Facing), facingOffset);
                     int band = BandCode(ClassifyBand(committedDist + ghostDist, mAdvance, mRush, hasChargeBand));
-                    ghosts.Add(new GhostPathGhost(index, GhostPathQuantize.Inches(ghost.x), GhostPathQuantize.Inches(ghost.z),
-                        GhostPathQuantize.Inches(ghostFacing.X), GhostPathQuantize.Inches(ghostFacing.Y), band));
+                    ghosts.Add(new GhostPathGhost(index, PreviewQuantize.Inches(ghost.x), PreviewQuantize.Inches(ghost.z),
+                        PreviewQuantize.Inches(ghostFacing.X), PreviewQuantize.Inches(ghostFacing.Y), band));
                 }
             }
             index++;

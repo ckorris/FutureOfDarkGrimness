@@ -3,6 +3,7 @@ using FDG;
 using FDG.Stages;
 using FDG.StageResolution;
 using FDG.StageResolution.Requests;
+using FdgRaylib.Rendering.Previews;
 using ImGuiNET;
 
 namespace FdgRaylib.Rendering.Resolvers;
@@ -22,7 +23,7 @@ namespace FdgRaylib.Rendering.Resolvers;
 /// move it once and the choice sticks.
 /// </summary>
 public class GuiPlaceObjectiveResolver
-    : IStageResolver<PlaceObjectiveRequest, Position>, IGuiResolver, IGuiCanvasOverlay
+    : IStageResolver<PlaceObjectiveRequest, Position>, IGuiResolver, IGuiCanvasOverlay, IPreviewSource
 {
     private readonly ITableState _tableState;
     private readonly object _lock = new();
@@ -37,6 +38,12 @@ public class GuiPlaceObjectiveResolver
     private TaskCompletionSource<Position>? _tcs;
     private Position? _pendingCandidate;
 
+    // #277: the ghost drawn this frame (live cursor or frozen pending), captured in Draw for
+    // BuildPreviewState. Main thread only; _snapshotRequest guards against publishing a previous
+    // request's ghost. Null when no ghost was drawn (mouse off-table) - remote sees nothing, WYSIWYG.
+    private (Position pos, bool valid, bool pending)? _ghostSnapshot;
+    private PlaceObjectiveRequest? _snapshotRequest;
+
     private const float ObjectiveBaseRadiusInches    = 0.5f;
     private const float ObjectiveSeizureRadiusInches = 3f;
 
@@ -48,6 +55,33 @@ public class GuiPlaceObjectiveResolver
     }
 
     public bool HasPendingRequest { get { lock (_lock) return _request != null; } }
+
+    /// <summary>
+    /// #277: the objective ghost being placed, as the marker preview vocabulary. Everything comes
+    /// from the per-frame Draw snapshot (both live-cursor and frozen-pending ghosts), so remote
+    /// players see exactly what the placer sees - including nothing while the mouse is off the
+    /// table. Committed markers already reach every client through synced table state.
+    /// </summary>
+    public PreviewState? BuildPreviewState()
+    {
+        PlaceObjectiveRequest? request;
+        lock (_lock) { request = _request; }
+        if (request == null) return null;
+        if (ReferenceEquals(_snapshotRequest, request) == false) return null;
+
+        (Position pos, bool valid, bool pending)? snapshot = _ghostSnapshot;
+        if (snapshot == null) return null;
+
+        var payload = new ObjectiveMarkerPreview(request.MarkerIndex,
+            PreviewQuantize.Inches(snapshot.Value.pos.x),
+            PreviewQuantize.Inches(snapshot.Value.pos.z),
+            ObjectiveBaseRadiusInches, ObjectiveSeizureRadiusInches,
+            snapshot.Value.pending, snapshot.Value.valid);
+        return new PreviewState(request.TargetPlayerID, new List<PreviewSlotPayload>
+        {
+            new PreviewSlotPayload(MarkerPreviewSlots.Marker, payload),
+        });
+    }
 
     public Task<Position> Resolve(PlaceObjectiveRequest request)
     {
@@ -69,6 +103,9 @@ public class GuiPlaceObjectiveResolver
         lock (_lock) { request = _request; tcs = _tcs; pending = _pendingCandidate; }
         if (request == null || tcs == null) return;
 
+        _ghostSnapshot = null;   // #277: rebuilt below from whatever ghost this frame draws
+        _snapshotRequest = request;
+
         var io = ImGui.GetIO();
         var dl = ImGui.GetBackgroundDrawList();
 
@@ -81,6 +118,7 @@ public class GuiPlaceObjectiveResolver
         {
             // Confirmation mode — frozen ghost, brighter, plus the Confirm/Cancel panel.
             DrawGhost(dl, pending.Value, markerNumber, valid: true, frozen: true);
+            _ghostSnapshot = (pending.Value, true, true); // #277
 
             // Backspace / right-click cancels the pending ghost (#248: the universal back key; Esc is
             // reserved for the in-game menu). #240: stuck-key safe (edge-only inside IsBackPressed).
@@ -103,7 +141,10 @@ public class GuiPlaceObjectiveResolver
             bool valid = validity == ObjectivePlacementValidity.Valid;
 
             if (overTable)
+            {
                 DrawGhost(dl, candidate, markerNumber, valid, frozen: false);
+                _ghostSnapshot = (candidate, valid, false); // #277
+            }
 
             if (overTable && !io.WantCaptureMouse && valid &&
                 ImGui.IsMouseClicked(ImGuiMouseButton.Left))

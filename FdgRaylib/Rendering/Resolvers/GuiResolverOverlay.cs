@@ -26,9 +26,9 @@ public class GuiResolverOverlay
     /// <summary>
     /// Wires live decision-preview sharing (#277) for a launched game: a publisher that streams
     /// the active resolver's preview (when it opts into <see cref="IPreviewSource"/>) and a
-    /// remote overlay that draws every other player's, with the movement family's ghost+path
-    /// payloads registered. Called by GameGuiWiring right after the game's interfaces are
-    /// assigned; the renderer picks both up at TransitionToGame.
+    /// remote overlay that draws every other player's, with the movement family's ghost+path and
+    /// the placement family's marker payloads registered. Called by GameGuiWiring right after the
+    /// game's interfaces are assigned; the renderer picks both up at TransitionToGame.
     /// </summary>
     public void AttachPreviews(IPreviewChannel channel, IPreviewFeed feed, FDG.ITableState tableState)
     {
@@ -36,6 +36,9 @@ public class GuiResolverOverlay
         remote.RegisterPayload<GhostPathBase>();
         remote.RegisterPayload<GhostPathGhosts>();
         remote.Register(new GhostPathPreviewPresenter());
+        remote.RegisterPayload<ObjectiveMarkerPreview>();
+        remote.RegisterPayload<TerrainFootprintPreview>();
+        remote.Register(new MarkerPreviewPresenter());
         RemotePreviews = remote;
 
         PreviewPublisher = new PreviewPublisher(channel, () => ActivePreviewSource);

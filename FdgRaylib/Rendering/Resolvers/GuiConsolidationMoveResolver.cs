@@ -74,13 +74,13 @@ public class GuiConsolidationMoveResolver
 
             var points = new List<GhostPathPoint>(waypoints.Count);
             foreach (Position p in waypoints)
-                points.Add(new GhostPathPoint(GhostPathQuantize.Inches(p.x), GhostPathQuantize.Inches(p.z)));
+                points.Add(new GhostPathPoint(PreviewQuantize.Inches(p.x), PreviewQuantize.Inches(p.z)));
 
             // Consolidation slides without rotating (#250); group mode's wheel rotation is the only
             // facing change, applied to the model's own facing rather than the travel direction.
             Float2 facing = group ? RotateFloat2(m.Facing, _groupFacingAngle) : m.Facing;
-            float qFacingX = GhostPathQuantize.Inches(facing.X);
-            float qFacingZ = GhostPathQuantize.Inches(facing.Y);
+            float qFacingX = PreviewQuantize.Inches(facing.X);
+            float qFacingZ = PreviewQuantize.Inches(facing.Y);
 
             baseModels.Add(new GhostPathBaseModel(m.ID.ID, points, qFacingX, qFacingZ, GhostPathBands.Neutral));
 
@@ -96,10 +96,10 @@ public class GuiConsolidationMoveResolver
 
             Position committed = pt.GetModelLastPathPosition(m);
             if (ghostSnapshotValid && _ghostSnapshot.TryGetValue(m, out Position ghost)
-                && Position.GetDistance2D(committed, ghost) > GhostPathQuantize.GhostEpsilonInches)
+                && Position.GetDistance2D(committed, ghost) > PreviewQuantize.GhostEpsilonInches)
             {
-                ghosts.Add(new GhostPathGhost(index, GhostPathQuantize.Inches(ghost.x),
-                    GhostPathQuantize.Inches(ghost.z), qFacingX, qFacingZ, GhostPathBands.Neutral));
+                ghosts.Add(new GhostPathGhost(index, PreviewQuantize.Inches(ghost.x),
+                    PreviewQuantize.Inches(ghost.z), qFacingX, qFacingZ, GhostPathBands.Neutral));
             }
             index++;
         }
