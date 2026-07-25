@@ -6,6 +6,16 @@ from origin/master. Standing precedent: numbers are never reused, and when two p
 claim the same number, the *unmerged local* item yields to the *merged* one and takes a fresh number.
 A per-clone pre-push hook blocks duplicate numbers across the index and the archive.
 
+> **2026-07-24 — reconciliation 23.** The attack-animation session filed **275 = attack animation
+> truthfulness** (occluded-shooter dice trim + truthful beat endpoints) against a local master where
+> 274 was the highest number in use. Pre-push re-verification found the submodule's origin/master had
+> meanwhile gained `449310f` "**#275**: banner tiers (Headline / Notice / Toast)" from a parallel
+> session. Per merged-wins precedent the unpushed item yields: **attack-animation truthfulness
+> 275 -> 276** (`WorkItems/276-*`), renumbered in the detail file, the index line, and the engine
+> source-comment tags. Departing from the leave-messages-as-is precedent, the two unpushed commits
+> (one submodule, one superproject) were amended to say #276 — both were still local-only, so the
+> rewrite was free and keeps `#275` unambiguous in history.
+>
 > **2026-07-23 — reconciliation 22.** Bringing origin/master into the long-lived `264-server-browser`
 > branch (14 ahead / 32 behind) surfaced a *triple* collision: master had independently used **264**
 > (Tactician walled-unit lateral retreat, `264-walled-unit-pins`), **265** (lobby Battlefield dropdown),
