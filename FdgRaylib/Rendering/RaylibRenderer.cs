@@ -151,7 +151,7 @@ public class RaylibRenderer
 
     // Table view transform (#8): _zoom is a multiplier over the fit-to-viewport scale (1 = ~100% of the
     // viewport, up to MaxZoom); _pan is a pixel offset from the centered position. Both default to the
-    // plain fit until the player zooms (Ctrl+wheel, toward the cursor) or pans (middle-drag).
+    // plain fit until the player zooms (Alt+wheel, toward the cursor) or pans (middle-drag).
     private const float MinZoom = 1f;   // fully zoomed out = table fills the viewport
     private const float MaxZoom = 3f;   // 300%
     // When zoomed in, allow panning this fraction of the table past each edge, so a strip of background
@@ -482,7 +482,7 @@ public class RaylibRenderer
                     BannerOverlay.Draw(bannerBeat, bannerProgress, layout.AreaW, screenH);
                 }
 
-                // #275: the Notice/Toast tiers ride their own concurrent track, so they draw every frame
+                // #277: the Notice/Toast tiers ride their own concurrent track, so they draw every frame
                 // regardless of what holds the active slot - that is the whole point of them.
                 if (_presentationPlayer != null)
                 {
@@ -600,11 +600,13 @@ public class RaylibRenderer
         return new Layout(scale, originX, originY, viewportW, screenH);
     }
 
-    // Ctrl+wheel to zoom toward the cursor (clamped MinZoom..MaxZoom), middle-drag to pan. Runs at the top
+    // Alt+wheel to zoom toward the cursor (clamped MinZoom..MaxZoom), middle-drag to pan. Runs at the top
     // of the frame, before ComputeLayout, so this frame renders with the updated transform. Zoom is gated
-    // on the mouse being over the table viewport only (NOT WantCaptureMouse -- the measurement overlay
-    // raises that flag whenever Ctrl is held over the table, which would otherwise veto every zoom); pan
-    // additionally respects WantCaptureMouse so dragging over the toolbar/panels doesn't scroll the board.
+    // on the mouse being over the table viewport only (NOT WantCaptureMouse -- the Alt-held measurement
+    // overlay raises that flag over the table, which would otherwise veto every zoom); pan additionally
+    // respects WantCaptureMouse so dragging over the toolbar/panels doesn't scroll the board.
+    // #277: Alt is the camera/measure modifier (Alt+wheel zoom, Alt+drag measure) so Ctrl+Wheel belongs
+    // entirely to the group-formation cycle -- zoom keeps working while a group ghost is live.
     private void HandleTableViewInput(int screenW, int screenH)
     {
         int rightW    = RightColumnWidth(screenW);
@@ -614,10 +616,10 @@ public class RaylibRenderer
         float mx = Raylib.GetMouseX(), my = Raylib.GetMouseY();
         bool overViewport = mx < viewportW && my < screenH;
 
-        // Ctrl + wheel: zoom, keeping the world point under the cursor pinned.
-        bool ctrl   = Raylib.IsKeyDown(KeyboardKey.LeftControl) || Raylib.IsKeyDown(KeyboardKey.RightControl);
+        // Alt + wheel: zoom, keeping the world point under the cursor pinned.
+        bool alt    = Raylib.IsKeyDown(KeyboardKey.LeftAlt) || Raylib.IsKeyDown(KeyboardKey.RightAlt);
         float wheel = Raylib.GetMouseWheelMove();
-        if (overViewport && ctrl && wheel != 0f)
+        if (overViewport && alt && wheel != 0f)
         {
             float scaleOld   = fit * _zoom;
             float originXOld = (viewportW - TableWIn * scaleOld) / 2f + _pan.X;

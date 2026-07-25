@@ -6,6 +6,21 @@ from origin/master. Standing precedent: numbers are never reused, and when two p
 claim the same number, the *unmerged local* item yields to the *merged* one and takes a fresh number.
 A per-clone pre-push hook blocks duplicate numbers across the index and the archive.
 
+> **2026-07-25 — reconciliation 25.** The formation-cycling session filed **275 = formation cycling
+> in Group mode** against a local master where 274 was the highest number in use (the same starting
+> point as reconciliations 23 and 24 — a three-way claim on the number). Pre-push re-verification
+> found origin/master had meanwhile landed AND closed **275 = banner tiers** (reconciliation 23's
+> renumbered item) plus **276 = attack-animation truthfulness** (reconciliation 24's). Per merged-wins
+> precedent the unpushed item yields, skipping the also-taken 276: **formation cycling 275 -> 277**
+> (`WorkItems/277-formation-cycling.md`; 277 free on index + archive). Nothing had been pushed, so the
+> renumber landed everywhere before publication: detail file + title, index line, all engine + app
+> source comments, `docs/ResolverGuide.md`, and the commit messages (engine commit amended during its
+> rebase onto the merged master; the three superproject messages rewritten with
+> `filter-branch --msg-filter` after theirs, per the reconciliation 23/24 free-while-local precedent).
+> The banner-tier work's own `#275` source tags were left strictly alone. The superproject rebase's
+> only conflict was the submodule pointer (both sides had bumped it); the reconciliation-15
+> `#NNN:`-subject hazard was pre-empted with `core.commentChar`.
+>
 > **2026-07-24 — reconciliation 24.** The attack-animation session filed **275 = attack animation
 > truthfulness** (occluded-shooter dice trim + truthful beat endpoints) against a local master where
 > 274 was the highest number in use. Pre-push re-verification found the submodule's origin/master had

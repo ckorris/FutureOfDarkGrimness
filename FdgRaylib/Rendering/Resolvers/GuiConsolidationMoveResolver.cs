@@ -33,8 +33,11 @@ public class GuiConsolidationMoveResolver
     // facing rotation across the whole move (baked into each committed step's facings). Reset per request.
     private float _groupRotation;
     private float _groupFacingAngle;
-    private static readonly float GroupRotationStep = MathF.PI / 12f; // 15 deg per wheel notch / R press
     private const float GroupMoveSafetyMargin = 0.005f;
+
+    // #277: group-mode formation options (index 0 = current shape). Built lazily per request; back to
+    // "current" on each commit (the committed step bakes the picked shape into the waypoints).
+    private FormationCycle? _formationCycle;
 
     private static readonly uint MoveColor      = ImGui.ColorConvertFloat4ToU32(new Vector4(0.40f, 0.85f, 1.00f, 0.95f));
     private static readonly uint RangeRingCol   = ImGui.ColorConvertFloat4ToU32(new Vector4(0.40f, 0.85f, 1.00f, 0.55f));
@@ -79,6 +82,7 @@ public class GuiConsolidationMoveResolver
             _selectedModel = first;
             _groupRotation = 0f;
             _groupFacingAngle = 0f;
+            _formationCycle = null;
         }
         return tcs.Task;
     }
@@ -265,20 +269,15 @@ public class GuiConsolidationMoveResolver
         IUnit ownUnit = request.UnitDataBinding.GetValue();
         float maxDist = request.MaxDistanceInches;
 
-        if (wantInput)
+        // Wheel/R rotate; Ctrl+Wheel cycles the target formation (#277, shared GroupInput semantics).
+        var (rotationDelta, formationDelta) = GroupInput.Read(wantInput);
+        if (rotationDelta != 0f) { _groupRotation += rotationDelta; _groupFacingAngle += rotationDelta; }
+        if (_formationCycle == null)
         {
-            if (io.MouseWheel != 0f)
-            {
-                float d = io.MouseWheel > 0f ? GroupRotationStep : -GroupRotationStep;
-                _groupRotation += d; _groupFacingAngle += d;
-            }
-            if (ImGui.IsKeyPressed(ImGuiKey.R))
-            {
-                bool shift = ImGui.IsKeyDown(ImGuiKey.LeftShift) || ImGui.IsKeyDown(ImGuiKey.RightShift);
-                float d = shift ? GroupRotationStep : -GroupRotationStep;
-                _groupRotation += d; _groupFacingAngle += d;
-            }
+            var cycleRadii = models.Select(m => m.BaseShape.CircumscribedRadiusInches).ToList();
+            _formationCycle = FormationCycle.Build(cycleRadii, cycleRadii, cycleRadii, includeCurrentShape: true);
         }
+        if (formationDelta != 0) _formationCycle.Cycle(formationDelta);
 
         var lastPositions = new List<Position>(models.Count);
         var budgets       = new List<float>(models.Count);
@@ -292,10 +291,22 @@ public class GuiConsolidationMoveResolver
         // so one drag can pull them back into cohesion; budgets are still measured from each real start.
         var startPairs = new List<(IModel model, Position pos)>(models.Count);
         for (int i = 0; i < models.Count; i++) startPairs.Add((models[i], lastPositions[i]));
+        var radii = models.Select(m => m.BaseShape.CircumscribedRadiusInches).ToList();
         IReadOnlyList<Position> basePositions = lastPositions;
-        if (CheckCohesion(startPairs).Any)
+        if (_formationCycle is { IsCurrentShape: false })
         {
-            var radii = models.Select(m => m.BaseShape.CircumscribedRadiusInches).ToList();
+            // #277: morph toward the picked formation; the consolidation cap still bounds every model
+            // (an unreachable shape shows over-budget red phantoms rather than moving anyone illegally).
+            var offsets = FormationLibrary.PlanFormationOffsets(
+                lastPositions, radii, radii, _formationCycle.Selected.RowCounts, gap: 0.1f);
+            Position c0 = GroupFormationUtilities.Centroid(lastPositions);
+            var formed = new Position[models.Count];
+            for (int i = 0; i < models.Count; i++)
+                formed[i] = new Position(c0.x + offsets[i].dx, c0.z + offsets[i].dz);
+            basePositions = formed;
+        }
+        else if (CheckCohesion(startPairs).Any)
+        {
             basePositions = GroupFormationUtilities.RepairCoherencyByContraction(
                 lastPositions, radii,
                 GameWideConstants.MAX_MODEL_DISTANCE_FROM_ANY_OTHER_MODEL_INCHES,
@@ -351,6 +362,7 @@ public class GuiConsolidationMoveResolver
         {
             for (int i = 0; i < models.Count; i++) pt.AddStep(models[i], newPositions[i]);
             _groupRotation = 0f; // rotation is folded into _groupFacingAngle (baked into the committed facings)
+            _formationCycle?.Reset(); // #277: the committed step's shape is the current shape now
         }
 
         // Right-click / Backspace undo the last committed group step (one per model).
@@ -418,7 +430,13 @@ public class GuiConsolidationMoveResolver
         if (ImGui.Button(_formationMode.IsGroup ? "Mode: Group (G)" : "Mode: Single (G)"))
             _formationMode.Toggle();
         if (_formationMode.IsGroup)
-            ImGui.TextDisabled("Drag: move unit   Wheel/R: rotate\nL-click: commit   R-click/Bksp: undo");
+        {
+            string formation = _formationCycle == null
+                ? "current"
+                : $"{_formationCycle.Label} ({_formationCycle.Index + 1}/{_formationCycle.Count})";
+            ImGui.TextUnformatted($"Formation: {formation}");
+            ImGui.TextDisabled("Drag: move unit   Wheel/R: rotate   Ctrl+Wheel: formation\nL-click: commit   R-click/Bksp: undo");
+        }
         else
             ImGui.TextDisabled("L-click: select/waypoint   R-click/Bksp: undo\nSpace: next model");
 
