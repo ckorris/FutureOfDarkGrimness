@@ -9,7 +9,8 @@ using ImGuiNET;
 namespace FdgRaylib.Rendering.Resolvers;
 
 public class GuiDefineMovementResolver
-    : IStageResolver<DefineMovementPathRequest, CancellableResult<List<ModelMoveEntry>>>, IGuiResolver, IGuiCanvasOverlay
+    : IStageResolver<DefineMovementPathRequest, CancellableResult<List<ModelMoveEntry>>>, IGuiResolver, IGuiCanvasOverlay,
+      IFormationWheelConsumer
 {
     private readonly ITableState _tableState;
     private readonly FormationModeState _formationMode;
@@ -36,6 +37,12 @@ public class GuiDefineMovementResolver
     // Built lazily on the first group frame; reset each Resolve, and back to "current" on each commit
     // (a committed step bakes the picked shape into the unit's real waypoints).
     private FormationCycle? _formationCycle;
+
+    // #275: the renderer's Ctrl+wheel zoom yields while the group ghost is reading Ctrl+Wheel.
+    public bool FormationWheelActive
+    {
+        get { lock (_lock) return _request != null && _formationMode.IsGroup; }
+    }
 
     // Rotates an existing facing (unit normal) by `radians`, same matrix as the rigid position rotation.
     private static Float2 RotateFloat2(Float2 f, float radians)
@@ -309,11 +316,8 @@ public class GuiDefineMovementResolver
         // Shared pointer/keyboard state and the current placement mode.
         bool overTable = IsOverTable(io.MousePos.X, io.MousePos.Y);
         bool wantInput = !io.WantCaptureMouse && !io.WantCaptureKeyboard;
+        bool advanceOnly = _stayInAdvance || ImGui.IsKeyDown(ImGuiKey.LeftShift) || ImGui.IsKeyDown(ImGuiKey.RightShift);
         bool group = _formationMode.IsGroup;
-        // #275: in group mode Shift is the formation-cycle modifier (Shift+Wheel), so the advance-only
-        // hold rides the checkbox alone there; single mode keeps Shift-hold = stay within Advance.
-        bool advanceOnly = _stayInAdvance
-            || (!group && (ImGui.IsKeyDown(ImGuiKey.LeftShift) || ImGui.IsKeyDown(ImGuiKey.RightShift)));
 
         // #162: an enemy click pins a target for the tactical overlay. Checked once, before both mode
         // handlers, and consumed so it doesn't also select a model or drop a waypoint.
@@ -638,7 +642,7 @@ public class GuiDefineMovementResolver
         var models = paths.Keys.ToList();
         if (models.Count == 0) return;
 
-        // Rotation input: wheel both ways; R clockwise, Shift+R counter-clockwise. Shift+Wheel cycles
+        // Rotation input: wheel both ways; R clockwise, Shift+R counter-clockwise. Ctrl+Wheel cycles
         // the target formation (#275): index 0 keeps the unit's current shape (pure rigid move), the
         // rest re-form the unit into a FormationLibrary shape as it moves.
         var (rotationDelta, formationDelta) = GroupInput.Read(wantInput);
@@ -962,7 +966,7 @@ public class GuiDefineMovementResolver
                 ? "current"
                 : $"{_formationCycle.Label} ({_formationCycle.Index + 1}/{_formationCycle.Count})";
             ImGui.TextUnformatted($"Group move - rotation {deg:0} deg   formation: {formation}");
-            ImGui.TextDisabled("Wheel / R / Shift+R: rotate 15 deg   Shift+Wheel: formation   L-click: place step");
+            ImGui.TextDisabled("Wheel / R / Shift+R: rotate 15 deg   Ctrl+Wheel: formation   L-click: place step");
         }
         else if (_selectedModel != null)
         {
@@ -990,8 +994,7 @@ public class GuiDefineMovementResolver
         ImGui.SameLine();
         ImGui.TextDisabled(group ? "whole unit moves together" : "one model at a time");
 
-        // #275: in group mode Shift belongs to the formation cycle, so the hold shortcut is single-mode only.
-        ImGui.Checkbox(group ? "Stay within Advance" : "Stay within Advance (hold Shift to force)", ref _stayInAdvance);
+        ImGui.Checkbox("Stay within Advance (hold Shift to force)", ref _stayInAdvance);
         ImGui.Checkbox("Show targeting", ref _showTargeting);
         if (ImGui.IsItemHovered())
             ImGui.SetTooltip("Show ranged weapons in range AND with line of sight to each enemy unit (green), how many of your models can charge it (yellow), fire lines from the selected model, and a charge line when the ghost is within melee range. Fire lines turn yellow and dashed when the shot passes through cover (+1 to the target's defense roll). When no enemy model is visible to a weapon, a red blocked-stub with an X marks where the shot would hit a wall. Ranged info hides if the unit has moved too far to shoot.");

@@ -602,9 +602,10 @@ public class RaylibRenderer
 
     // Ctrl+wheel to zoom toward the cursor (clamped MinZoom..MaxZoom), middle-drag to pan. Runs at the top
     // of the frame, before ComputeLayout, so this frame renders with the updated transform. Zoom is gated
-    // on the mouse being over the table viewport only (NOT WantCaptureMouse -- the measurement overlay
-    // raises that flag whenever Ctrl is held over the table, which would otherwise veto every zoom); pan
-    // additionally respects WantCaptureMouse so dragging over the toolbar/panels doesn't scroll the board.
+    // on the mouse being over the table viewport only (NOT WantCaptureMouse -- the Alt-held measurement
+    // overlay raises that flag over the table, which would otherwise veto every zoom); pan additionally
+    // respects WantCaptureMouse so dragging over the toolbar/panels doesn't scroll the board.
+    // #275: while a group-formation ghost is live, Ctrl+Wheel is the formation cycle -- zoom yields.
     private void HandleTableViewInput(int screenW, int screenH)
     {
         int rightW    = RightColumnWidth(screenW);
@@ -617,7 +618,8 @@ public class RaylibRenderer
         // Ctrl + wheel: zoom, keeping the world point under the cursor pinned.
         bool ctrl   = Raylib.IsKeyDown(KeyboardKey.LeftControl) || Raylib.IsKeyDown(KeyboardKey.RightControl);
         float wheel = Raylib.GetMouseWheelMove();
-        if (overViewport && ctrl && wheel != 0f)
+        bool formationWheel = _resolverOverlay?.FormationWheelActive ?? false;
+        if (overViewport && ctrl && wheel != 0f && !formationWheel)
         {
             float scaleOld   = fit * _zoom;
             float originXOld = (viewportW - TableWIn * scaleOld) / 2f + _pan.X;

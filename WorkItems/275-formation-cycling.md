@@ -1,4 +1,4 @@
-# 275 — Formation cycling in group placement/movement (Shift+Wheel)
+# 275 — Formation cycling in group placement/movement (Ctrl+Wheel)
 
 **Status**: implemented, awaiting GUI hand-verify
 **Related**: #094 (coherency repair), #150 (base shapes), #159 (mixed-base packing), #170 (AI grid port), #214/#269 (reposition placement), #215 (consolidation group mode)
@@ -6,14 +6,24 @@
 ## Goal
 When moving, deploying, or repositioning (Teleport/Fanatic), the only whole-unit options were "exact
 current shape" (moving) or one generated default (deploying). Give Group mode a set of simple tight
-formations to scroll through - line, 5x2, 4-3-3, ... - via Shift+Wheel, with "formation 0 = current
+formations to scroll through - line, 5x2, 4-3-3, ... - via Ctrl+Wheel, with "formation 0 = current
 shape, unchanged" wherever the unit already stands. Consolidate the formation-layout math (previously
 three independent implementations) into one engine home so the conventions live in one place.
-UI shape chosen with the user 2026-07-24: stay in Group mode, Shift+Wheel cycles (no third mode);
+UI shape chosen with the user 2026-07-24: stay in Group mode, Ctrl+Wheel cycles (no third mode; was Shift+Wheel for a day, re-picked by the user);
 plain Wheel keeps rotating.
 
 ## Notes
 
+- 2026-07-24 (later): **Hotkey re-pick after the user's first hands-on** (feedback: "awesome"). Cycle
+  moved Shift+Wheel -> **Ctrl+Wheel** everywhere; Shift-hold = "stay within Advance" restored in both
+  modes (the original conflict that had pushed the first pick to Shift). Two knock-ons handled:
+  (a) the **ruler moved Ctrl+drag -> Alt+drag** (`MeasurementOverlay`) - holding Ctrl raised
+  WantCaptureMouse over the table, which would have hidden Ctrl+Wheel from the resolvers entirely;
+  note some Linux WMs grab Alt+drag for window-move (GNOME defaults to Super, so the owner's setup is
+  fine - re-pick the key if that ever bites). (b) **Ctrl+wheel zoom yields to the cycle**: resolvers
+  opt in via `IFormationWheelConsumer` and `RaylibRenderer.HandleTableViewInput` skips zoom while
+  `GuiResolverOverlay.FormationWheelActive` (a live group ghost) is true - zoom still works in single
+  mode, after the first drop of a placement, and outside resolver phases. Escape-menu hints updated.
 - 2026-07-24: Implemented end to end. Engine: new `Helpers/FormationLibrary.cs` (namespace `FDG`) -
   `RowPartitions` (balanced splits, no lone-model rows per #159), `LayoutOffsets` (per-model row
   layout generalizing PackGrid's), `LegalFormations` (filters shapes whose circumscribed-radii span
@@ -25,7 +35,7 @@ plain Wheel keeps rotating.
 - 2026-07-24: App: new `FormationCycle` (per-request catalog + index; index 0 = current shape for
   movement/consolidation/reposition, first legal partition for fresh deployment - which reproduces the
   old ComputeDeploymentOffsets default exactly) and `GroupInput` (shared Wheel/R reader, replacing
-  three copy-pasted blocks; Shift+Wheel = cycle). Movement/consolidation feed the picked formation as
+  three copy-pasted blocks; Ctrl+Wheel = cycle). Movement/consolidation feed the picked formation as
   the base shape into the existing two-array `PlanGroupMove` (same mechanism as the #094 coherency
   repair), so per-model budgets, terrain clamps, and red-phantom feedback all apply unchanged; index
   resets to "current" on every committed step. `GuiPlaceObjectsResolver` group mode uses the cycle for
@@ -34,13 +44,13 @@ plain Wheel keeps rotating.
   and its private row helpers deleted; the forward-row mirror (front row toward table centre) moved
   into the resolver. App 576/576 green (5 ported/new in `GroupFormationUtilitiesTests`), full build
   clean, headless smoke exit 0.
-- 2026-07-24: **Shift conflict**: in the movement resolver Shift-hold was "stay within Advance" in both
-  modes. In group mode Shift now belongs to the formation cycle; the advance lock there rides the
-  checkbox alone (single mode keeps the Shift-hold shortcut, checkbox label says so only in single mode).
+- 2026-07-24: **Shift conflict** (superseded by the later Ctrl+Wheel re-pick above): Shift-hold =
+  "stay within Advance" clashed with Shift+Wheel, so the first cut made the hold single-mode only.
+  The re-pick restored it in both modes.
 
 ## Decisions
 
-- **No third mode.** Group mode + Shift+Wheel (user sign-off 2026-07-24). Plain Wheel rotation and G
+- **No third mode.** Group mode + Ctrl+Wheel (user sign-off 2026-07-24). Plain Wheel rotation and G
   toggle unchanged.
 - **Formation catalog = balanced row partitions only** (line, 2-row, ... rows of pairs). No lone-model
   rows (#159); shapes breaking the 9" span are filtered at catalog build, not at click time.

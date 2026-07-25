@@ -44,11 +44,12 @@ Resolvers that need to interact with the table canvas (movement, placement) addi
 
 ## Group formations (#275)
 
-In Group mode (movement, consolidation, deployment/teleport placement) **Shift+Wheel cycles the
-unit's formation**; plain Wheel / R / Shift+R still rotate. The shapes come from the engine's
-`FormationLibrary` (`RowPartitions` -> `LayoutOffsets`, shared with `CohesiveFormation.PackGrid`),
-filtered to those whose span respects the 9" all-pairs rule; app-side state lives in
-`FormationCycle`, input in `GroupInput` (both `FdgRaylib/Rendering/Resolvers/`). Conventions:
+In Group mode (movement, consolidation, deployment/teleport placement) **Ctrl+Wheel cycles the
+unit's formation**; plain Wheel / R / Shift+R still rotate, and Shift-hold stays "stay within
+Advance". The shapes come from the engine's `FormationLibrary` (`RowPartitions` -> `LayoutOffsets`,
+shared with `CohesiveFormation.PackGrid`), filtered to those whose span respects the 9" all-pairs
+rule; app-side state lives in `FormationCycle`, input in `GroupInput` (both
+`FdgRaylib/Rendering/Resolvers/`). Conventions:
 
 - **Index 0 = the unit's current shape, unchanged** wherever the unit already stands (movement,
   consolidation, teleport/reposition). A fresh deployment starts at the first legal partition, which
@@ -56,8 +57,10 @@ filtered to those whose span respects the 9" all-pairs rule; app-side state live
 - Movement/consolidation feed the picked shape as the base positions of the two-array
   `PlanGroupMove`, so per-model budgets and terrain clamps apply to the morph exactly as they do to
   the coherency repair. The index resets to "current" on every committed step.
-- **Shift-hold = "stay within Advance" is single-mode only** in the movement resolver; in group mode
-  Shift belongs to the formation cycle and the advance lock rides the checkbox.
+- **Ctrl+Wheel is shared with the renderer's zoom**: resolvers opt in via `IFormationWheelConsumer`
+  and the renderer's zoom yields while `GuiResolverOverlay.FormationWheelActive` is true (i.e. a
+  group ghost is live). The **ruler moved from Ctrl+drag to Alt+drag** for the same reason — holding
+  Ctrl used to raise `WantCaptureMouse`, which would have hidden the wheel from the resolvers.
 
 ## Validation gotchas
 

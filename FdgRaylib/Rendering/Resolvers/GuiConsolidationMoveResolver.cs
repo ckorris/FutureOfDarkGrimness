@@ -9,7 +9,8 @@ using ImGuiNET;
 namespace FdgRaylib.Rendering.Resolvers;
 
 public class GuiConsolidationMoveResolver
-    : IStageResolver<ConsolidationMoveRequest, List<ModelMoveEntry>>, IGuiResolver, IGuiCanvasOverlay
+    : IStageResolver<ConsolidationMoveRequest, List<ModelMoveEntry>>, IGuiResolver, IGuiCanvasOverlay,
+      IFormationWheelConsumer
 {
     private readonly ITableState _tableState;
     // #215: shared Group/Single toggle (same instance the movement + deployment resolvers use).
@@ -38,6 +39,12 @@ public class GuiConsolidationMoveResolver
     // #275: group-mode formation options (index 0 = current shape). Built lazily per request; back to
     // "current" on each commit (the committed step bakes the picked shape into the waypoints).
     private FormationCycle? _formationCycle;
+
+    // #275: the renderer's Ctrl+wheel zoom yields while the group ghost is reading Ctrl+Wheel.
+    public bool FormationWheelActive
+    {
+        get { lock (_lock) return _request != null && _formationMode.IsGroup; }
+    }
 
     private static readonly uint MoveColor      = ImGui.ColorConvertFloat4ToU32(new Vector4(0.40f, 0.85f, 1.00f, 0.95f));
     private static readonly uint RangeRingCol   = ImGui.ColorConvertFloat4ToU32(new Vector4(0.40f, 0.85f, 1.00f, 0.55f));
@@ -269,7 +276,7 @@ public class GuiConsolidationMoveResolver
         IUnit ownUnit = request.UnitDataBinding.GetValue();
         float maxDist = request.MaxDistanceInches;
 
-        // Wheel/R rotate; Shift+Wheel cycles the target formation (#275, shared GroupInput semantics).
+        // Wheel/R rotate; Ctrl+Wheel cycles the target formation (#275, shared GroupInput semantics).
         var (rotationDelta, formationDelta) = GroupInput.Read(wantInput);
         if (rotationDelta != 0f) { _groupRotation += rotationDelta; _groupFacingAngle += rotationDelta; }
         if (_formationCycle == null)
@@ -435,7 +442,7 @@ public class GuiConsolidationMoveResolver
                 ? "current"
                 : $"{_formationCycle.Label} ({_formationCycle.Index + 1}/{_formationCycle.Count})";
             ImGui.TextUnformatted($"Formation: {formation}");
-            ImGui.TextDisabled("Drag: move unit   Wheel/R: rotate   Shift+Wheel: formation\nL-click: commit   R-click/Bksp: undo");
+            ImGui.TextDisabled("Drag: move unit   Wheel/R: rotate   Ctrl+Wheel: formation\nL-click: commit   R-click/Bksp: undo");
         }
         else
             ImGui.TextDisabled("L-click: select/waypoint   R-click/Bksp: undo\nSpace: next model");
