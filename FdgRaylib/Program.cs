@@ -428,6 +428,33 @@ else
     renderer.MainMenu.OnClientClicked = () =>
         renderer.NavigateTo(renderer.ClientModal);
 
+    // The public-listing heartbeat (#271), when the host ticked "List publicly". Stopped on every
+    // lobby/game exit path below; a missed path only means the entry lingers until the registry's
+    // 90s TTL, so this is belt-and-braces rather than load-bearing.
+    PublicListingService? activeListing = null;
+    NatPortMapper? activeMapper = null;
+    // The live lobby view model, host or client (#279). Unlike the listing, tearing this down IS
+    // load-bearing: disposing it stops the host's listener (releasing the port for the next lobby)
+    // or closes the client's connection (freeing its roster slot on the host). Before this, an
+    // abandoned host lobby kept serving the port as a zombie while the next lobby's listener
+    // silently failed to bind - joins and chat went to a lobby no UI was bound to.
+    ILobbyViewModel? activeLobby = null;
+    void TeardownLobby()
+    {
+        StopListing();
+        activeLobby?.Dispose();
+        activeLobby = null;
+    }
+    void StopListing()
+    {
+        activeListing?.Dispose();
+        activeListing = null;
+        // Removes the UPnP port mapping too (#271), so we don't leave a router port open past the
+        // session. Best-effort; a missed path just leaves the mapping to the router's lease TTL.
+        activeMapper?.Dispose();
+        activeMapper = null;
+    }
+
     // ── Load Game (work item #052): open a .fdgsave, resume it as host ───────────
     // Shared by the main menu's Load Game and the in-game menu's Load (#246); the latter tears the
     // current game down and returns to the menu before calling this.
@@ -454,9 +481,22 @@ else
             return;
         }
 
+        // Release any previous lobby's listener/connection first (#279), so this host can bind.
+        TeardownLobby();
+
         FDGHost host = new FDGHost();
-        _ = host.StartAsync();
+        Task hostTask = host.StartAsync();
+
+        // Same silent-bind-failure guard as HostModal.CreateServer (#279): a port conflict faults the
+        // task before its first await, and discarding it would open a lobby around a dead server.
+        if (hostTask.IsFaulted)
+        {
+            Console.WriteLine($"Host failed to start: {hostTask.Exception?.GetBaseException().Message}");
+            return;
+        }
+
         var lobby = new LobbyViewModel_Host("Mr. Host", "Loaded Game", "", host, loadedStore);
+        activeLobby = lobby;
         renderer.LobbyScreen.SetViewModel(lobby);
         renderer.NavigateTo(renderer.LobbyScreen);
     }
@@ -478,24 +518,10 @@ else
     renderer.HostModal.OnCancel = () =>
         renderer.NavigateTo(renderer.MainMenu);
 
-    // The public-listing heartbeat (#271), when the host ticked "List publicly". Stopped on every
-    // lobby/game exit path below; a missed path only means the entry lingers until the registry's
-    // 90s TTL, so this is belt-and-braces rather than load-bearing.
-    PublicListingService? activeListing = null;
-    NatPortMapper? activeMapper = null;
-    void StopListing()
-    {
-        activeListing?.Dispose();
-        activeListing = null;
-        // Removes the UPnP port mapping too (#271), so we don't leave a router port open past the
-        // session. Best-effort; a missed path just leaves the mapping to the router's lease TTL.
-        activeMapper?.Dispose();
-        activeMapper = null;
-    }
-
     renderer.HostModal.OnCreated = (lobby, listing, mapper) =>
     {
-        StopListing();
+        TeardownLobby();
+        activeLobby = lobby;
         activeListing = listing;
         activeMapper = mapper;
         renderer.LobbyScreen.SetViewModel(lobby);
@@ -508,6 +534,8 @@ else
 
     renderer.ClientModal.OnConnected = lobby =>
     {
+        TeardownLobby();
+        activeLobby = lobby;
         renderer.LobbyScreen.SetViewModel(lobby);
         renderer.NavigateTo(renderer.LobbyScreen);
     };
@@ -515,12 +543,14 @@ else
     // ── Lobby ──────────────────────────────────────────────────────────────────
     renderer.LobbyScreen.OnBack = () =>
     {
-        StopListing();
+        // Backing out must actually shut the networking down (#279): stop the host's listener /
+        // close the client's connection, not just the listing heartbeat.
+        TeardownLobby();
         renderer.NavigateTo(renderer.MainMenu);
     };
 
-    // Covers game-over, escape-menu quit-to-menu, and escape-menu load (#271).
-    renderer.OnGameExited = StopListing;
+    // Covers game-over, escape-menu quit-to-menu, and escape-menu load (#271, #279).
+    renderer.OnGameExited = TeardownLobby;
 
     renderer.LobbyScreen.OnGameLaunched = (tableState, colorFunc, log, overlay, taskDisplay, presentationPlayer, saveGame, chatUI) =>
         renderer.TransitionToGame(tableState, colorFunc, log, overlay, taskDisplay, presentationPlayer, saveGame, chatUI);
