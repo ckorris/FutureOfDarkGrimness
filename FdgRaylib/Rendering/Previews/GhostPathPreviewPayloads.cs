@@ -28,6 +28,19 @@ public static class GhostPathBands
     public const int Advance = 0;
     public const int Rush = 1;
     public const int Charge = 2;
+    /// <summary>No band semantics - consolidation slides and placements. Cyan, the same "committed
+    /// move" color language those resolvers use locally.</summary>
+    public const int Neutral = 3;
+}
+
+/// <summary>Wire-float hygiene shared by every ghost-path source.</summary>
+public static class GhostPathQuantize
+{
+    /// <summary>Below the 0.01" wire quantization step, so an omitted ghost really is
+    /// indistinguishable from its committed endpoint.</summary>
+    public const float GhostEpsilonInches = 0.005f;
+
+    public static float Inches(float v) => MathF.Round(v * 100f) / 100f;
 }
 
 public sealed record GhostPathPoint(float X, float Z);

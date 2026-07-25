@@ -20,6 +20,7 @@ public class GhostPathPreviewPresenter : IRemotePreviewPresenter
     private static readonly uint AdvanceFill = ImGui.ColorConvertFloat4ToU32(new Vector4(0.25f, 0.95f, 0.25f, 0.30f));
     private static readonly uint RushFill    = ImGui.ColorConvertFloat4ToU32(new Vector4(1.00f, 0.92f, 0.20f, 0.30f));
     private static readonly uint ChargeFill  = ImGui.ColorConvertFloat4ToU32(new Vector4(1.00f, 0.55f, 0.10f, 0.30f));
+    private static readonly uint NeutralFill = ImGui.ColorConvertFloat4ToU32(new Vector4(0.40f, 0.85f, 1.00f, 0.30f));
 
     // Guid -> live model, lazily rebuilt when a lookup misses (models never change ID; the cache
     // only goes stale when it predates a model's creation, which a rebuild fixes).
@@ -56,12 +57,22 @@ public class GhostPathPreviewPresenter : IRemotePreviewPresenter
                 continue;
             }
 
-            // Committed path polyline from the model's live position through its waypoints.
+            // A model still at the (0,0) unplaced sentinel (deployment, reserve arrival) has no
+            // meaningful start - draw only endpoint footprints, never a line from the table corner.
+            bool onTable = model.Position.x != 0f || model.Position.z != 0f;
+
+            // Committed path polyline from the model's live position through its waypoints
+            // (skipping the first leg when the model has no start to anchor it).
+            bool anchored = onTable;
             (float prevX, float prevY) = ctx.InchesToPixel(model.Position.x, model.Position.z);
             foreach (GhostPathPoint point in entry.Waypoints)
             {
                 (float x, float y) = ctx.InchesToPixel(point.X, point.Z);
-                dl.AddLine(new Vector2(prevX, prevY), new Vector2(x, y), lineCol, 2f);
+                if (anchored)
+                {
+                    dl.AddLine(new Vector2(prevX, prevY), new Vector2(x, y), lineCol, 2f);
+                }
+                anchored = true;
                 (prevX, prevY) = (x, y);
             }
 
@@ -94,12 +105,18 @@ public class GhostPathPreviewPresenter : IRemotePreviewPresenter
                 continue;
             }
 
-            // Anchor at the committed endpoint (last waypoint, else the live position).
-            float fromX = entry.Waypoints.Count > 0 ? entry.Waypoints[^1].X : model.Position.x;
-            float fromZ = entry.Waypoints.Count > 0 ? entry.Waypoints[^1].Z : model.Position.z;
-            (float ax, float ay) = ctx.InchesToPixel(fromX, fromZ);
+            // Anchor at the committed endpoint (last waypoint, else the live position) - unless
+            // the model is unplaced with nothing committed, where there is no anchor at all.
             (float gx, float gy) = ctx.InchesToPixel(ghost.X, ghost.Z);
-            dl.AddLine(new Vector2(ax, ay), new Vector2(gx, gy), lineCol, 2f);
+            bool hasAnchor = entry.Waypoints.Count > 0
+                || model.Position.x != 0f || model.Position.z != 0f;
+            if (hasAnchor)
+            {
+                float fromX = entry.Waypoints.Count > 0 ? entry.Waypoints[^1].X : model.Position.x;
+                float fromZ = entry.Waypoints.Count > 0 ? entry.Waypoints[^1].Z : model.Position.z;
+                (float ax, float ay) = ctx.InchesToPixel(fromX, fromZ);
+                dl.AddLine(new Vector2(ax, ay), new Vector2(gx, gy), lineCol, 2f);
+            }
 
             Float2 facing = FacingOrFallback(ghost.FacingX, ghost.FacingZ, model);
             var ghostCenter = new Vector2(gx, gy);
@@ -113,6 +130,7 @@ public class GhostPathPreviewPresenter : IRemotePreviewPresenter
     {
         GhostPathBands.Rush => RushFill,
         GhostPathBands.Charge => ChargeFill,
+        GhostPathBands.Neutral => NeutralFill,
         _ => AdvanceFill,
     };
 

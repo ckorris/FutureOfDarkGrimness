@@ -3,6 +3,7 @@ using FDG;
 using FDG.StageResolution;
 using FDG.StageResolution.Requests;
 using FDG.Stages;
+using FdgRaylib.Rendering.Previews;
 using ImGuiNET;
 
 namespace FdgRaylib.Rendering.Resolvers;
@@ -15,7 +16,8 @@ namespace FdgRaylib.Rendering.Resolvers;
 /// click opens a confirm — Yes flies off the table (the activation ends, no shooting), No keeps placing.
 /// </summary>
 public class GuiAircraftAdvanceResolver
-    : IStageResolver<AircraftAdvanceRequest, AircraftAdvanceResult>, IGuiResolver, IGuiCanvasOverlay
+    : IStageResolver<AircraftAdvanceRequest, AircraftAdvanceResult>, IGuiResolver, IGuiCanvasOverlay,
+      IPreviewSource
 {
     private readonly object _lock = new();
 
@@ -31,6 +33,50 @@ public class GuiAircraftAdvanceResolver
     // The currently previewed distance along the heading; frozen while the fly-off confirm is open.
     private float _currentDistance;
     private bool _confirmOpen;
+
+    /// <summary>
+    /// #277: the forced move being previewed, as the shared ghost+path vocabulary - the unit's
+    /// living models as the "base" roster (no waypoints; the anchor line the presenter draws from
+    /// each live position IS the approach), ghosts at the previewed landing spot along the fixed
+    /// heading. No stale-snapshot guard needed: _currentDistance is reset in Resolve under the same
+    /// lock that publishes the request, so it always belongs to the request read with it.
+    /// </summary>
+    public PreviewState? BuildPreviewState()
+    {
+        AircraftAdvanceRequest? request;
+        float distance;
+        lock (_lock) { request = _request; distance = _currentDistance; }
+        if (request == null) return null;
+
+        var living = request.UnitDataBinding.GetValue().Models.Where(m => m.GetIsAlive()).ToList();
+        if (living.Count == 0) return null;
+
+        Float2 h = request.HeadingNormal;
+        float qFacingX = GhostPathQuantize.Inches(h.X);
+        float qFacingZ = GhostPathQuantize.Inches(h.Y);
+
+        var baseModels = new List<GhostPathBaseModel>(living.Count);
+        var ghosts = new List<GhostPathGhost>(living.Count);
+        int contentHash = 17;
+        for (int i = 0; i < living.Count; i++)
+        {
+            IModel m = living[i];
+            baseModels.Add(new GhostPathBaseModel(m.ID.ID, Array.Empty<GhostPathPoint>(),
+                qFacingX, qFacingZ, GhostPathBands.Advance));
+            unchecked { contentHash = contentHash * 31 + m.ID.ID.GetHashCode(); }
+
+            ghosts.Add(new GhostPathGhost(i,
+                GhostPathQuantize.Inches(m.Position.x + h.X * distance),
+                GhostPathQuantize.Inches(m.Position.z + h.Y * distance),
+                qFacingX, qFacingZ, GhostPathBands.Advance));
+        }
+
+        return new PreviewState(request.TargetPlayerID, new List<PreviewSlotPayload>
+        {
+            new PreviewSlotPayload(GhostPathSlots.Base, new GhostPathBase(contentHash, baseModels)),
+            new PreviewSlotPayload(GhostPathSlots.Ghost, new GhostPathGhosts(contentHash, ghosts)),
+        });
+    }
 
     private static readonly uint SegmentCol   = ImGui.ColorConvertFloat4ToU32(new Vector4(0.30f, 0.85f, 1.00f, 0.90f));
     private static readonly uint ApproachCol  = ImGui.ColorConvertFloat4ToU32(new Vector4(0.30f, 0.85f, 1.00f, 0.35f));

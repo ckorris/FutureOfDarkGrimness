@@ -86,12 +86,6 @@ public class GuiDefineMovementResolver
     // pending request, so a fresh request never streams the previous move's ghosts.
     private DefineMovementPathRequest? _snapshotRequest;
 
-    // Below the on-wire 0.01" quantization step, so an omitted ghost really is indistinguishable
-    // from its committed endpoint.
-    private const float PreviewGhostEpsilonInches = 0.005f;
-
-    private static float QuantizePreview(float v) => MathF.Round(v * 100f) / 100f;
-
     private static int BandCode(MoveBand band) => band switch
     {
         MoveBand.Advance => GhostPathBands.Advance,
@@ -129,7 +123,7 @@ public class GuiDefineMovementResolver
 
             var points = new List<GhostPathPoint>(waypoints.Count);
             foreach (Position p in waypoints)
-                points.Add(new GhostPathPoint(QuantizePreview(p.x), QuantizePreview(p.z)));
+                points.Add(new GhostPathPoint(GhostPathQuantize.Inches(p.x), GhostPathQuantize.Inches(p.z)));
 
             // Facing at the committed endpoint - same derivation as the local final ghost (#150).
             Float2 finalFacing = m.Facing;
@@ -144,7 +138,7 @@ public class GuiDefineMovementResolver
             float committedDist = pt.GetTotalDistanceMoved(m);
 
             baseModels.Add(new GhostPathBaseModel(m.ID.ID, points,
-                QuantizePreview(finalFacing.X), QuantizePreview(finalFacing.Y),
+                GhostPathQuantize.Inches(finalFacing.X), GhostPathQuantize.Inches(finalFacing.Y),
                 BandCode(ClassifyBand(committedDist, mAdvance, mRush, hasChargeBand))));
 
             unchecked
@@ -163,12 +157,12 @@ public class GuiDefineMovementResolver
             if (ghostSnapshotValid && _ghostSnapshot.TryGetValue(m, out Position ghost))
             {
                 float ghostDist = Position.GetDistance2D(committed, ghost);
-                if (ghostDist > PreviewGhostEpsilonInches)
+                if (ghostDist > GhostPathQuantize.GhostEpsilonInches)
                 {
                     Float2 ghostFacing = RotateFloat2(TravelFacing(committed, ghost, m.Facing), facingOffset);
                     int band = BandCode(ClassifyBand(committedDist + ghostDist, mAdvance, mRush, hasChargeBand));
-                    ghosts.Add(new GhostPathGhost(index, QuantizePreview(ghost.x), QuantizePreview(ghost.z),
-                        QuantizePreview(ghostFacing.X), QuantizePreview(ghostFacing.Y), band));
+                    ghosts.Add(new GhostPathGhost(index, GhostPathQuantize.Inches(ghost.x), GhostPathQuantize.Inches(ghost.z),
+                        GhostPathQuantize.Inches(ghostFacing.X), GhostPathQuantize.Inches(ghostFacing.Y), band));
                 }
             }
             index++;

@@ -4,13 +4,14 @@ using FDG.Data;
 using FDG.StageResolution;
 using FDG.StageResolution.Requests;
 using FdgRaylib.Placement;
+using FdgRaylib.Rendering.Previews;
 using ImGuiNET;
 
 namespace FdgRaylib.Rendering.Resolvers;
 
 public class GuiPlaceObjectsResolver<T>
     : IStageResolver<PlaceObjectsRequest<T>, CancellableResult<List<PlacedObjectEntry<T>>>>, IGuiResolver, IGuiCanvasOverlay,
-      IEnemyExclusionProvider
+      IEnemyExclusionProvider, IPreviewSource
 {
     private readonly ITableState _tableState;
     private readonly FormationModeState _formationMode;
@@ -43,6 +44,79 @@ public class GuiPlaceObjectsResolver<T>
     private float _singleRotationDeploy;
 
     private static readonly float GroupRotationStep = MathF.PI / 12f; // 15° per wheel notch / key press
+
+    // #277 remote-preview snapshot (main-thread only, rewritten each Draw): live cursor ghost /
+    // group phantoms, keyed by index into the request's ModelsToPlace roster. BuildPreviewState
+    // trusts it only while _snapshotRequest matches the pending request.
+    private readonly Dictionary<int, (Position pos, Float2 facing)> _ghostSnapshot = new();
+    private PlaceObjectsRequest<T>? _snapshotRequest;
+
+    /// <summary>
+    /// #277: the placement being planned, as the shared ghost+path vocabulary. Committed
+    /// placements ride the "base" slot as a single waypoint per placed model (click cadence);
+    /// the live cursor ghost / group phantoms ride the "ghost" slot. Placements are appended in
+    /// roster order, so _placed[i] pairs with ModelsToPlace[i] (the reach-ring code relies on the
+    /// same invariant). Unplaced deployment models sit at the (0,0) sentinel; the presenter
+    /// suppresses start-anchored lines for them. Model-only: a roster with any non-ModelData
+    /// entry shares nothing (index pairing must stay 1:1 with the roster).
+    /// </summary>
+    public PreviewState? BuildPreviewState()
+    {
+        PlaceObjectsRequest<T>? request;
+        lock (_lock) { request = _request; }
+        if (request == null || request.ModelsToPlace.Count == 0) return null;
+
+        bool ghostSnapshotValid = ReferenceEquals(_snapshotRequest, request);
+        var baseModels = new List<GhostPathBaseModel>(request.ModelsToPlace.Count);
+        var ghosts = new List<GhostPathGhost>();
+        int contentHash = 17;
+
+        for (int i = 0; i < request.ModelsToPlace.Count; i++)
+        {
+            if (request.ModelsToPlace[i].GetValue() is not ModelData m) return null;
+
+            bool isPlaced = i < _placed.Count;
+            var points = new List<GhostPathPoint>(isPlaced ? 1 : 0);
+            Float2 facing = m.Facing;
+            if (isPlaced)
+            {
+                PlacedObjectEntry<T> entry = _placed[i];
+                points.Add(new GhostPathPoint(GhostPathQuantize.Inches(entry.Position.x),
+                    GhostPathQuantize.Inches(entry.Position.z)));
+                facing = entry.Facing ?? facing;
+            }
+            baseModels.Add(new GhostPathBaseModel(m.ID.ID, points,
+                GhostPathQuantize.Inches(facing.X), GhostPathQuantize.Inches(facing.Y),
+                GhostPathBands.Neutral));
+
+            unchecked
+            {
+                contentHash = contentHash * 31 + m.ID.ID.GetHashCode();
+                foreach (GhostPathPoint p in points)
+                {
+                    contentHash = contentHash * 31 + p.X.GetHashCode();
+                    contentHash = contentHash * 31 + p.Z.GetHashCode();
+                }
+            }
+
+            if (ghostSnapshotValid && _ghostSnapshot.TryGetValue(i, out var ghost))
+            {
+                Position committed = isPlaced ? _placed[i].Position : m.Position;
+                if (Position.GetDistance2D(committed, ghost.pos) > GhostPathQuantize.GhostEpsilonInches)
+                {
+                    ghosts.Add(new GhostPathGhost(i, GhostPathQuantize.Inches(ghost.pos.x),
+                        GhostPathQuantize.Inches(ghost.pos.z), GhostPathQuantize.Inches(ghost.facing.X),
+                        GhostPathQuantize.Inches(ghost.facing.Y), GhostPathBands.Neutral));
+                }
+            }
+        }
+
+        return new PreviewState(request.TargetPlayerID, new List<PreviewSlotPayload>
+        {
+            new PreviewSlotPayload(GhostPathSlots.Base, new GhostPathBase(contentHash, baseModels)),
+            new PreviewSlotPayload(GhostPathSlots.Ghost, new GhostPathGhosts(contentHash, ghosts)),
+        });
+    }
 
     // #214 reach rings. Green like the movement resolver's Advance ring — this IS a reach preview, so it
     // should read as the same kind of thing; dimmer for the models whose turn to be placed hasn't come.
@@ -104,6 +178,10 @@ public class GuiPlaceObjectsResolver<T>
         TaskCompletionSource<CancellableResult<List<PlacedObjectEntry<T>>>>? tcs;
         lock (_lock) { request = _request; tcs = _tcs; }
         if (request == null || tcs == null) return;
+
+        // #277: rebuilt below from this frame's ghost/phantom positions.
+        _ghostSnapshot.Clear();
+        _snapshotRequest = request;
 
         // Edge case: zero models to place — finish immediately
         if (request.ModelsToPlace.Count == 0)
@@ -181,7 +259,11 @@ public class GuiPlaceObjectsResolver<T>
             var cand = new Position(mouseInX, mouseInZ);
             bool valid = IsPlacementValid(cand, r, GetBaseShape(binding.GetValue()), facing, zone, enemies,
                 minEnemyDist, k, StartPositionOf(binding.GetValue()), request.MaxDistanceFromStartInches, out string? why);
-            if (overTable) DrawGhost(dl, GetBaseShape(binding.GetValue()), io.MousePos, _scale, valid, facing);
+            if (overTable)
+            {
+                DrawGhost(dl, GetBaseShape(binding.GetValue()), io.MousePos, _scale, valid, facing);
+                _ghostSnapshot[k] = (cand, facing); // #277
+            }
             if (clicked)
             {
                 if (valid) { _placed[k] = new PlacedObjectEntry<T>(binding, cand, facing); _dragIndex = null; _errorMessage = null; }
@@ -212,7 +294,11 @@ public class GuiPlaceObjectsResolver<T>
         var candidate = new Position(mouseInX, mouseInZ);
         bool ok = IsPlacementValid(candidate, curR, GetBaseShape(currentBinding.GetValue()), facing, zone, enemies,
             minEnemyDist, -1, StartPositionOf(currentBinding.GetValue()), request.MaxDistanceFromStartInches, out string? reason);
-        if (overTable) DrawGhost(dl, GetBaseShape(currentBinding.GetValue()), io.MousePos, _scale, ok, facing);
+        if (overTable)
+        {
+            DrawGhost(dl, GetBaseShape(currentBinding.GetValue()), io.MousePos, _scale, ok, facing);
+            _ghostSnapshot[_placed.Count] = (candidate, facing); // #277
+        }
         if (clicked)
         {
             if (ok) { _placed.Add(new PlacedObjectEntry<T>(currentBinding, candidate, facing)); _errorMessage = null; }
@@ -289,6 +375,7 @@ public class GuiPlaceObjectsResolver<T>
             bool valid = IsGroupSlotValid(positions[i], radii[i], GetBaseShape(models[i].GetValue()), groupFacing,
                 zone, enemies, minEnemyDist, StartPositionOf(models[i].GetValue()), request.MaxDistanceFromStartInches);
             DrawGhost(dl, GetBaseShape(models[i].GetValue()), ToPixelVec(positions[i]), _scale, valid, groupFacing);
+            _ghostSnapshot[i] = (positions[i], groupFacing); // #277
             if (!valid) allValid = false;
         }
 

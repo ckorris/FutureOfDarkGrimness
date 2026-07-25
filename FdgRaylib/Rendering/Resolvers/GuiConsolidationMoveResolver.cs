@@ -4,12 +4,14 @@ using FDG.Data;
 using FDG.StageResolution;
 using FDG.StageResolution.Requests;
 using FDG.Stages;
+using FdgRaylib.Rendering.Previews;
 using ImGuiNET;
 
 namespace FdgRaylib.Rendering.Resolvers;
 
 public class GuiConsolidationMoveResolver
-    : IStageResolver<ConsolidationMoveRequest, List<ModelMoveEntry>>, IGuiResolver, IGuiCanvasOverlay
+    : IStageResolver<ConsolidationMoveRequest, List<ModelMoveEntry>>, IGuiResolver, IGuiCanvasOverlay,
+      IPreviewSource
 {
     private readonly ITableState _tableState;
     // #215: shared Group/Single toggle (same instance the movement + deployment resolvers use).
@@ -35,6 +37,79 @@ public class GuiConsolidationMoveResolver
     private float _groupFacingAngle;
     private static readonly float GroupRotationStep = MathF.PI / 12f; // 15 deg per wheel notch / R press
     private const float GroupMoveSafetyMargin = 0.005f;
+
+    // #277 remote-preview snapshot (main-thread only, rewritten each Draw): the live pending
+    // position per model - the mouse ghost in single mode, every phantom in group mode.
+    // BuildPreviewState trusts it only while _snapshotRequest matches the pending request, so a
+    // fresh request never streams the previous move's ghosts.
+    private readonly Dictionary<IModel, Position> _ghostSnapshot = new();
+    private ConsolidationMoveRequest? _snapshotRequest;
+
+    /// <summary>
+    /// #277: the consolidation being planned, as the shared ghost+path vocabulary - committed
+    /// waypoints per model in the "base" slot, live ghost/phantom positions in the "ghost" slot.
+    /// All Neutral band: consolidation has no advance/rush/charge semantics. Called by the preview
+    /// publisher on the main thread after Draw, so the ghost snapshot is this frame's.
+    /// </summary>
+    public PreviewState? BuildPreviewState()
+    {
+        ConsolidationMoveRequest? request;
+        PathTemplate? pt;
+        lock (_lock) { request = _request; pt = _pathTemplate; }
+        if (request == null || pt == null) return null;
+
+        bool group = _formationMode.IsGroup;
+        bool ghostSnapshotValid = ReferenceEquals(_snapshotRequest, request);
+        var paths = pt.CurrentPaths; // allocates per access - hold it
+
+        var baseModels = new List<GhostPathBaseModel>(paths.Count);
+        var ghosts = new List<GhostPathGhost>();
+        int contentHash = 17;
+        int index = 0;
+
+        foreach (var kvp in paths)
+        {
+            IModel m = kvp.Key;
+            IReadOnlyList<Position> waypoints = kvp.Value;
+
+            var points = new List<GhostPathPoint>(waypoints.Count);
+            foreach (Position p in waypoints)
+                points.Add(new GhostPathPoint(GhostPathQuantize.Inches(p.x), GhostPathQuantize.Inches(p.z)));
+
+            // Consolidation slides without rotating (#250); group mode's wheel rotation is the only
+            // facing change, applied to the model's own facing rather than the travel direction.
+            Float2 facing = group ? RotateFloat2(m.Facing, _groupFacingAngle) : m.Facing;
+            float qFacingX = GhostPathQuantize.Inches(facing.X);
+            float qFacingZ = GhostPathQuantize.Inches(facing.Y);
+
+            baseModels.Add(new GhostPathBaseModel(m.ID.ID, points, qFacingX, qFacingZ, GhostPathBands.Neutral));
+
+            unchecked
+            {
+                contentHash = contentHash * 31 + m.ID.ID.GetHashCode();
+                foreach (GhostPathPoint p in points)
+                {
+                    contentHash = contentHash * 31 + p.X.GetHashCode();
+                    contentHash = contentHash * 31 + p.Z.GetHashCode();
+                }
+            }
+
+            Position committed = pt.GetModelLastPathPosition(m);
+            if (ghostSnapshotValid && _ghostSnapshot.TryGetValue(m, out Position ghost)
+                && Position.GetDistance2D(committed, ghost) > GhostPathQuantize.GhostEpsilonInches)
+            {
+                ghosts.Add(new GhostPathGhost(index, GhostPathQuantize.Inches(ghost.x),
+                    GhostPathQuantize.Inches(ghost.z), qFacingX, qFacingZ, GhostPathBands.Neutral));
+            }
+            index++;
+        }
+
+        return new PreviewState(request.TargetPlayerID, new List<PreviewSlotPayload>
+        {
+            new PreviewSlotPayload(GhostPathSlots.Base, new GhostPathBase(contentHash, baseModels)),
+            new PreviewSlotPayload(GhostPathSlots.Ghost, new GhostPathGhosts(contentHash, ghosts)),
+        });
+    }
 
     private static readonly uint MoveColor      = ImGui.ColorConvertFloat4ToU32(new Vector4(0.40f, 0.85f, 1.00f, 0.95f));
     private static readonly uint RangeRingCol   = ImGui.ColorConvertFloat4ToU32(new Vector4(0.40f, 0.85f, 1.00f, 0.55f));
@@ -90,6 +165,10 @@ public class GuiConsolidationMoveResolver
         PathTemplate? pt;
         lock (_lock) { request = _request; tcs = _tcs; pt = _pathTemplate; }
         if (request == null || tcs == null || pt == null) return;
+
+        // #277: rebuilt below from this frame's ghost/phantom positions.
+        _ghostSnapshot.Clear();
+        _snapshotRequest = request;
 
         var io      = ImGui.GetIO();
         var dl      = ImGui.GetBackgroundDrawList();
@@ -180,6 +259,7 @@ public class GuiConsolidationMoveResolver
             // Clamp so the model's base stays inside the table (circumscribing radius: rotation-safe).
             (nx, nz) = ClampToTable(nx, nz, _selectedModel.BaseShape.CircumscribedRadiusInches);
             ghostPos = new Position(nx, nz);
+            _ghostSnapshot[_selectedModel] = ghostPos.Value; // #277
 
             // Consolidation slides without rotating, so the ghost keeps the model's facing.
             ghostOverlaps = WouldOverlapAnyModel(ghostPos.Value, _selectedModel.Facing, _selectedModel, request, paths);
@@ -329,6 +409,7 @@ public class GuiConsolidationMoveResolver
             groupFacings[i] = RotateFloat2(models[i].Facing, _groupFacingAngle);
             blocked[i] = PhantomOverlapsOtherUnit(newPositions[i], models[i].BaseShape, groupFacings[i], ownUnit);
             if (Position.GetDistance2D(lastPositions[i], newPositions[i]) > 0.001f) anyMovement = true;
+            _ghostSnapshot[models[i]] = newPositions[i]; // #277
         }
         bool allValid = plan.WithinBudget && !blocked.Any(b => b);
 

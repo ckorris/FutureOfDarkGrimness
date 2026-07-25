@@ -18,15 +18,40 @@ covered by engine tests.
 
 1. **Engine transport** (DONE 2026-07-24): wire messages, host relay w/ spoof+flood guards,
    channel/feed on `IFDGGame`, 15 tests.
-2. **App side**: `PreviewPublisher` (~10 Hz, dedup, clear-on-end) + `RemotePreviewOverlay` +
-   payload registry + `GhostPathPreview` (base/ghost slot split, roster indexing, 0.01" float
-   quantization, omit ghosts equal to committed) + `GuiDefineMovementResolver` as first source.
-   Manual verify: two instances on localhost.
-3. **Follow-ups**: other movement-family resolvers (consolidation, aircraft advance, placements)
-   implement the same payload; then non-movement request types on demand.
+2. **App side** (DONE 2026-07-25, hand-verified): `PreviewPublisher` (~10 Hz, dedup, clear-on-end)
+   + `RemotePreviewOverlay` + payload registry + `GhostPathPreview` (base/ghost slot split, roster
+   indexing, 0.01" float quantization, omit ghosts equal to committed) +
+   `GuiDefineMovementResolver` as first source.
+3. **Follow-ups** (model-based trio DONE 2026-07-25): consolidation, aircraft advance and
+   place-objects share the payload. Remaining: objective + terrain placement (non-model markers -
+   need their own payload family), then non-movement request types on demand.
 
 ## Notes
 
+- 2026-07-25 (later): Slice 2 GUI HAND-VERIFY PASSED (user, two instances on localhost). Slice 3
+  landed: consolidation, aircraft advance and place-objects opted into the GhostPath payloads.
+  Shared bits: `GhostPathQuantize` (0.01" + ghost epsilon, replaces the movement resolver's
+  privates), `GhostPathBands.Neutral` = 3 (cyan fill - consolidation slides / placements have no
+  band semantics), presenter suppresses start-anchored lines for models at the (0,0) unplaced
+  sentinel (deployment/reserve models aren't on the table yet). Per resolver:
+  `GuiConsolidationMoveResolver` mirrors movement (per-frame `_ghostSnapshot` + `_snapshotRequest`
+  guard; facing = model facing, group-rotated - #250 no travel rotation);
+  `GuiAircraftAdvanceResolver` publishes the living roster with no waypoints + ghosts at
+  position + heading x distance (the presenter's anchor line doubles as the approach; no snapshot
+  guard needed - `_currentDistance` resets in Resolve under the request lock);
+  `GuiPlaceObjectsResolver<ModelData>` rides `_placed[i]` <-> `ModelsToPlace[i]` index pairing
+  (same invariant as the reach rings): placements = single-waypoint base entries at click cadence,
+  cursor ghost / group phantoms = ghost slot; non-ModelData roster shares nothing.
+  NEW: `FdgRaylib.Tests` exists now (arrived from master) - added `PreviewSourceTests` (5 tests:
+  quantize, roster order/index pairing, Neutral/Advance bands, BaseVersion pairing, null
+  contract). 2129/2129 engine + 589/589 app green, build + headless smoke green.
+  DEFERRED (explicitly, not silently): objective + terrain placement previews - non-model markers
+  with no ModelId; need a small marker/footprint payload family + presenter of their own.
+  AWAITING GUI HAND-VERIFY (slice 3): two instances ->
+  (a) consolidation after wipeout/disengage: paths + cyan ghosts visible remotely, group rotation
+  included; (b) aircraft advance: ghost bases sliding along the heading remotely; (c) deployment:
+  placed models + cursor ghost/formation phantoms remotely, NO lines from the table corner;
+  (d) Teleport-style reposition: anchor lines from current positions to placements.
 - 2026-07-25: Slice 2 landed (app side): `FdgRaylib/Rendering/Previews/` - `IPreviewSource` +
   `PreviewState`, `PreviewPublisher` (10 Hz, serialize-and-compare dedup, clear on request end /
   player handoff), `RemotePreviewOverlay` (feed-version-gated decode cache, registered-type
