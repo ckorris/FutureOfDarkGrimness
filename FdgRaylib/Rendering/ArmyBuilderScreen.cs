@@ -278,7 +278,32 @@ public class ArmyBuilderScreen : IAppScreen
         // can still save and launch an over-cap army; this just flags it.
         foreach (string warning in ForceOrgValidator.Validate(_army))
             Warn(warning);
+
+        // #168: which of this list's rule references would silently do nothing at launch. Advisory like
+        // the force-org lines: unimplemented names aggregate to one line; misauthored references (each
+        // individually fixable here) get a line apiece. Recomputed per frame like RefreshRuleNames —
+        // the audit is dictionary lookups over this army's rule entries.
+        ArmyRuleAuditResult ruleAudit = ArmyRuleAudit.Audit(_army);
+
+        if (ruleAudit.EmbeddedDefinitionError != null)
+            Warn($"Embedded rule definitions are invalid - launching would reject this list: " +
+                 $"{ruleAudit.EmbeddedDefinitionError}");
+
+        string? unimplemented = RuleLoadWarnings.SummarizeUnimplemented(ruleAudit.Drops, "this list");
+        if (unimplemented != null)
+            Warn(unimplemented);
+
+        foreach (RuleDrop drop in ruleAudit.Drops.Where(d => d.Reason != ERuleDropReason.Unimplemented))
+            Warn($"'{drop.RuleName}' on {drop.Owner} will be dropped at launch: {Describe(drop.Reason)}.");
     }
+
+    private static string Describe(ERuleDropReason reason) => reason switch
+    {
+        ERuleDropReason.WrongScope => "wrong scope (unit rule on a weapon, or vice versa)",
+        ERuleDropReason.MissingArgument => "missing numeric value",
+        ERuleDropReason.NoWeaponsToAttach => "no weapon to carry it",
+        _ => reason.ToString(),
+    };
 
     private void DrawUnits()
     {

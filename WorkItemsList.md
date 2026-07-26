@@ -25,6 +25,8 @@ When closing an item: write the Outcome in its detail file, tick the line, and m
 - [ ] 216 — Tactician plans rejected by the #205 friendly-stacking check silently fall back to the SOLO resolver (suspected DE/RL mirror-drift driver); charge candidate made friendly-aware, resolver-level repair + drift attribution still open. ([WorkItems/216](WorkItems/216-tactician-solo-fallback-on-stacked-plans.md))
 - [~] 263 — Off-table (Ambush reserve) units were chargeable at the origin (round-1 charge on undeployed Shifters): melee family now gated at the AreUnitsInMeleeRange chokepoint + standoff filter + off-table wound diagnostic; implemented + tested, awaiting GUI hand-verify. ([WorkItems/263](WorkItems/263-off-table-units-chargeable.md))
 - [~] 277 — Formation cycling in Group mode (Ctrl+Wheel: line/5x2/4-3-3..., index 0 = current shape) for deploy/teleport/movement/consolidation, layout math consolidated into engine FormationLibrary; implemented + tested, awaiting GUI hand-verify. ([WorkItems/277](WorkItems/277-formation-cycling.md))
+- [~] 282 — Rotating mid-path (Wheel/R) re-oriented already-committed waypoints (single scalar offset applied to the whole path): PathTemplate now captures the offset per waypoint at placement, so rotation only shapes the next ghost; implemented + tested, awaiting GUI hand-verify. ([WorkItems/282](WorkItems/282-rotation-only-affects-ghost.md))
+- [~] 283 — Consolidation group rotation was preview-only (facing offsets silently dropped at Done AND ConsolidateStage never applied entry facings): executed via a new rotate-in-place derivation on #282's per-step offsets; implemented + tested, awaiting GUI hand-verify. ([WorkItems/283](WorkItems/283-consolidation-rotation-executes.md))
 
 ## Shooting & cover
 
@@ -86,10 +88,10 @@ Internet-play readiness pass (QF1-10) landed 2026-07-08 — password gate, keepa
 frames, targeted PlayerID assignment, greeting-timeout eviction, post-launch join gate, client host-loss
 detection, host-IP display, DNS host entry. See `NetworkingHandoff-2026-07-08.md`. Remainders below.
 
-- [ ] 187 — Disconnect recovery: auto-save on `PlayerDisconnectedException` game-end + live-test #052's networked resume-rejoin. ([WorkItems/187](WorkItems/187-disconnect-recovery.md))
+- [~] 187 — Disconnect recovery: a dropped connection now ends with its own `EGameOutcome.Disconnect`, and the host auto-writes `Saves/recovery-<utc>.fdgsave` (newest 5) named on the game-over card; rejoin covered by the suite's first real-socket tests (saved-PlayerID adoption, distinct slots). Implemented + tested; awaiting the two-machine hand-verify in the detail file. ([WorkItems/187](WorkItems/187-disconnect-recovery.md))
 - [ ] 188 — Multi-remote-client support: live-test 3+ players / 2+ remote clients (QF5 enabled it; roster/team/routing edge cases). ([WorkItems/188](WorkItems/188-multi-remote-client.md))
 - [~] 189 — Broadcast gating (roster-only) DONE + tested; configurable listen/connect port DONE (both modals, `NetworkProtocol.DefaultPort`, browser auto-fills from listing). Engine `46f387d`; awaiting GUI hand-verify of the port fields. ([WorkItems/189](WorkItems/189-broadcast-gating-configurable-port.md))
-- [ ] 190 — Networked clients never receive mid-game token updates (in-place `TokenContainer` mutations bypass the data-sync path; join snapshot only). ([WorkItems/190](WorkItems/190-networked-token-sync.md))
+- [~] 190 — Networked clients never received mid-game token updates: host-side `TokenChangeBroadcaster` re-Sets the owning UnitData/ModelData on any token add/count-change/removal (Option A, rides the existing update path). Implemented + tested 2026-07-26; awaiting GUI/live hand-verify. ([WorkItems/190](WorkItems/190-networked-token-sync.md))
 - [~] 271 — Server browser: $0-tier master list server (Cloudflare Worker registry, TTL heartbeats) + "List publicly" host checkbox + browser-first join UI. P1-P3 + deploy + UPnP auto-forward done 2026-07-23; remaining: lobby status surface, GUI hand-verify, live 2-machine + real-router UPnP test. ([WorkItems/271](WorkItems/271-server-browser.md))
 - [ ] 058 — (low) Migrate message/save serialization off Newtonsoft onto System.Text.Json; pure consolidation. ([WorkItems/058](WorkItems/058-stj-migration.md))
 - [ ] 057 — (low) Make state-machine contexts store-backed/serializable so #052's `GameProgressData` mirror can be deleted; deferred for risk.
@@ -146,7 +148,7 @@ From `Audit-6-10-2026.md`; `Audit-6-10-2026-Followup-2026-07-06.md` is the statu
 
 From `SpecialRulesAudit.md` (15 fixes already landed; plan detail, file paths, and approach live in its section 5).
 
-- [ ] 168 — Surface rule-load diagnostics in the UI: subscribe the engine `RuleDiagnostics` channel app-side; warn once per army load in the game log + an army-builder pane ("N rules on this list are not implemented: ...").
+- [~] 168 — Rule-load diagnostics surfaced in the UI: aggregated "N rules ... not implemented" in the game log at launch (buffered `RuleLoadWarnings`, GUI modes) + live army-builder pane lines on a store-free `ArmyRuleAudit` parity-pinned to the launch path. Implemented + tested; awaiting GUI hand-verify. ([WorkItems/168](WorkItems/168-rule-load-diagnostics-ui.md))
 - [~] 164 — `DealHits.WithRules` resolver seam so Blast(3) multiplies pre-attack/Strafing hits (Breath Attack residual). Shared `SyntheticHitResolution` fold + dispatch-time rule resolution landed 2026-07-19 (also fixed Strafing dropping the effect's AP); awaiting GUI hand-verify. ([WorkItems/164](WorkItems/164-dealhits-withrules-seam.md))
 - [ ] 165 — Dangerous-terrain deaths don't reach `UnitDestructionNotifier`: widen `ApplyDangerousTerrainEffects` to carry the moving unit; also decide/record rout kill-attribution.
 - [ ] 166 — Test-suite upgrades umbrella: fire-lint DONE 2026-07-08 (`RuleFireLint` over catalog + supplement); remaining: `RuleInteractionTests`, `SaveLoadRoundTrip` helper, probabilistic-dice variants, wire-crossing request, real Tough ordering test. [Notes](WorkItems/166-test-suite-upgrades.md)

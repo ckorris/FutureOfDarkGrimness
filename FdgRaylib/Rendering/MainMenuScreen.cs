@@ -62,10 +62,12 @@ public class MainMenuScreen : IAppScreen
         ImGui.BeginDisabled(_modalOpen);
         DrawButton("Host",         OnHostClicked,        0);
         DrawButton("Client",       OnClientClicked,      1);
-        DrawButton("Army Builder", OnArmyBuilderClicked, 2);
-        DrawButton("Army Forge",   OnArmyForgeClicked,   3);
-        DrawButton("Load Game",    OnLoadGameClicked,    4);
-        DrawButton("Quit",         OnQuitClicked,        5, back: true);
+        // Army Builder button temporarily hidden - re-enable by uncommenting this line and bumping the
+        // order arguments below back up by one (Army Forge -> 3, Load Game -> 4, Quit -> 5).
+        // DrawButton("Army Builder", OnArmyBuilderClicked, 2);
+        DrawButton("Army Forge",   OnArmyForgeClicked,   2);
+        DrawButton("Load Game",    OnLoadGameClicked,    3);
+        DrawButton("Quit",         OnQuitClicked,        4, back: true);
         ImGui.EndDisabled();
 
         if (useMenuFont) ImGui.PopFont();

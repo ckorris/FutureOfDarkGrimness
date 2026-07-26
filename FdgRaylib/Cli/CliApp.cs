@@ -105,6 +105,10 @@ public class CliApp
 
         var gameEnded = new TaskCompletionSource();
         var server = new FDGServer(_gameDataStore!, _messageBus!, gameSettings, playerSlots);
+        // #168: army loads just ran inside the server build - flush their buffered rule warnings
+        // into this mode's log as the aggregated summary (headless keeps the stdout fallback).
+        if (Log != null)
+            RuleLoadWarnings.AttachLog(Log);
         server.OnGameCompleted += PrintGameResult;
         server.OnGameEnded += result =>
         {

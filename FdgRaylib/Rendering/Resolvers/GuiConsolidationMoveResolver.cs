@@ -78,11 +78,17 @@ public class GuiConsolidationMoveResolver
 
             // Consolidation slides without rotating (#250); group mode's wheel rotation is the only
             // facing change, applied to the model's own facing rather than the travel direction.
-            Float2 facing = group ? RotateFloat2(m.Facing, _groupFacingAngle) : m.Facing;
-            float qFacingX = PreviewQuantize.Inches(facing.X);
-            float qFacingZ = PreviewQuantize.Inches(facing.Y);
+            // #283: the committed endpoint keeps the rotation its step was committed with; only the
+            // live ghost follows the wheel - mirrors the local draw.
+            IReadOnlyList<float> stored = pt.GetModelFacingOffsets(m);
+            Float2 committedFacing = RotateFloat2(m.Facing, stored.Count > 0 ? stored[^1] : 0f);
+            Float2 ghostFacing = group ? RotateFloat2(m.Facing, _groupFacingAngle) : m.Facing;
+            float qFacingX = PreviewQuantize.Inches(ghostFacing.X);
+            float qFacingZ = PreviewQuantize.Inches(ghostFacing.Y);
 
-            baseModels.Add(new GhostPathBaseModel(m.ID.ID, points, qFacingX, qFacingZ, GhostPathBands.Neutral));
+            baseModels.Add(new GhostPathBaseModel(m.ID.ID, points,
+                PreviewQuantize.Inches(committedFacing.X), PreviewQuantize.Inches(committedFacing.Y),
+                GhostPathBands.Neutral));
 
             unchecked
             {
@@ -209,8 +215,13 @@ public class GuiConsolidationMoveResolver
                 }
                 var last = pathPoints[^1];
                 var (lx, ly) = InchesToPixel(last.x, last.z);
+                // #283: the committed marker keeps the rotation its step was committed with (0 outside group
+                // mode = the model's own facing) - it no longer snaps back unrotated after a rotated commit,
+                // and a later wheel turn only moves the phantoms.
+                IReadOnlyList<float> storedOffsets = pt.GetModelFacingOffsets(model);
+                Float2 committedFacing = RotateFloat2(model.Facing, storedOffsets.Count > 0 ? storedOffsets[^1] : 0f);
                 ModelBaseRenderer.DrawFilledImGui(dl, model.BaseShape, new Vector2(lx, ly), _scale, FinalGhostCol, outline, thick,
-                    facing: model.Facing);
+                    facing: committedFacing);
             }
         }
 
@@ -442,7 +453,7 @@ public class GuiConsolidationMoveResolver
 
         if (overTable && !io.WantCaptureMouse && ImGui.IsMouseClicked(ImGuiMouseButton.Left) && allValid && anyMovement)
         {
-            for (int i = 0; i < models.Count; i++) pt.AddStep(models[i], newPositions[i]);
+            for (int i = 0; i < models.Count; i++) pt.AddStep(models[i], newPositions[i], _groupFacingAngle); // #283
             _groupRotation = 0f; // rotation is folded into _groupFacingAngle (baked into the committed facings)
             _formationCycle?.Reset(); // #277: the committed step's shape is the current shape now
         }
@@ -527,15 +538,10 @@ public class GuiConsolidationMoveResolver
         float pad     = ImGui.GetStyle().WindowPadding.X * 2;
         float fullW   = panelW - pad;
 
-        // #215: in group mode the accumulated rotation is baked into every committed step's facing.
-        IReadOnlyDictionary<IModel, float>? facingOffsets = null;
-        if (_formationMode.IsGroup && _groupFacingAngle != 0f)
-        {
-            var fo = new Dictionary<IModel, float>();
-            foreach (var m in pt.CurrentPaths.Keys) fo[m] = _groupFacingAngle;
-            facingOffsets = fo;
-        }
-        var results = pt.GetResultsAsList(facingOffsets);
+        // #283: the group-mode rotation reaches the executed move as rotate-in-place facings - the model's
+        // own facing rotated by the offset each step was committed with (matching the phantoms), never the
+        // travel direction. Unrotated paths carry identity facings, so single mode is unchanged.
+        var results = pt.GetResultsAsList(EPathFacingDerivation.RotateInPlace);
         // #090: enemy-check the consolidation preview so it matches the authoritative ConsolidateStage check.
         var enemyFootprints = GetEnemyFootprintsForRequest(request);
         bool engineValid = MovementUtilities.ValidatePaths(results, request.MaxDistanceInches,

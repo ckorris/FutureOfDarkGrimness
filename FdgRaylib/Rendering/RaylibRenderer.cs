@@ -103,6 +103,10 @@ public class RaylibRenderer
     // the game-over overlay. Non-null = game finished, result string to display.
     private volatile string? _gameOverResult = null;
 
+    // Optional second line under the result (#187: "Recovery save written to ..."). Same threading rules
+    // as _gameOverResult.
+    private volatile string? _gameOverNote = null;
+
     // Offscreen target for the Ambush enemy-exclusion blob: discs are painted opaque here (so overlaps
     // overwrite instead of stacking alpha), then composited once at a uniform light alpha. Lazily sized
     // to the window and recreated on resize; unloaded on shutdown.
@@ -279,6 +283,13 @@ public class RaylibRenderer
     public void ShowGameOver(string result) => _gameOverResult = result;
 
     /// <summary>
+    /// #187: a secondary line for the game-over card, used to tell the host where the recovery save for a
+    /// disconnected game was written. Set from the engine thread before <see cref="ShowGameOver"/>; the
+    /// card reads it on the main thread. Cleared by <see cref="ExitGame"/> with the result.
+    /// </summary>
+    public void SetGameOverNote(string? note) => _gameOverNote = note;
+
+    /// <summary>
     /// Tears down all in-game state so the renderer can return to the screen stack and a later launch
     /// starts clean. Unsubscribes the table-state event handlers wired in <see cref="TransitionToGame"/>
     /// and drops every per-game reference. Runs on the main thread.
@@ -322,6 +333,7 @@ public class RaylibRenderer
         _resolverOverlayFaulted = false;
         _lastLogCount          = 0;
         _gameOverResult        = null;
+        _gameOverNote          = null;
         _inGame                = false;
 
         // Every game teardown funnels through here (game-over card, escape-menu quit-to-menu,
@@ -994,7 +1006,9 @@ public class RaylibRenderer
         string? result = _gameOverResult;
         if (result == null) return;
 
-        var size = new Vector2(Math.Min(460f, screenW * 0.8f), 200f);
+        // A recovery note (#187) is a wrapped absolute path, so the card grows to hold it.
+        string? note = _gameOverNote;
+        var size = new Vector2(Math.Min(460f, screenW * 0.8f), note == null ? 200f : 290f);
         ImGui.SetNextWindowPos(new Vector2((screenW - size.X) / 2f, (screenH - size.Y) / 2f), ImGuiCond.Appearing);
         ImGui.SetNextWindowSize(size, ImGuiCond.Always);
         ImGui.Begin("Game Over##overlay",
@@ -1013,6 +1027,16 @@ public class RaylibRenderer
             ImGui.TextWrapped(result);
         ImGui.Spacing();
         ImGui.Spacing();
+
+        if (note != null)
+        {
+            ImGui.Separator();
+            ImGui.Spacing();
+            ImGui.PushTextWrapPos(0f);
+            ImGui.TextDisabled(note);
+            ImGui.PopTextWrapPos();
+            ImGui.Spacing();
+        }
 
         float btnH = 44f;
         // Pin the button to the bottom of the card.

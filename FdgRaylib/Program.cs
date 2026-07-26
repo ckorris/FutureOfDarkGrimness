@@ -11,6 +11,7 @@ using FDG.Network.Connection.Lobby;
 using FDG.Presentation;
 using FDG.Rules.Serialization;
 using FDG.SaveLoad;
+using FdgRaylib.SaveLoad;
 using TinyDialogsNet;
 
 string crashLogPath = Path.Combine(AppContext.BaseDirectory, "crash.log");
@@ -39,6 +40,14 @@ if (args.Contains("--field-harness"))
 }
 
 bool headless = args.Contains("--headless");
+
+// #168: in any windowed mode, collect the engine's rule-load warnings for the in-game log (they fire
+// before the log exists and would otherwise only reach stdout, invisible in a GUI session). Headless
+// keeps the channel's plain stdout fallback that automated runs grep.
+if (!headless)
+{
+    FdgRaylib.Rendering.RuleLoadWarnings.Install();
+}
 
 // --trace-rules (#163): narrate every live rule hook evaluation (fired / condition failed / suppressed /
 // ability offered) through the Debug log channel — printed as [LOG] lines headless, shown in the GUI
@@ -557,6 +566,21 @@ else
 
     renderer.LobbyScreen.OnGameEnded = result => renderer.ShowGameOver(result);
 
+    // #187: a game the engine ended because a player's connection dropped is not lost - the host writes a
+    // recovery save automatically (over the internet a brief drop is common, and nobody should have to
+    // have thought to save first). This runs on the engine thread, synchronously, before the game-over
+    // card is shown: the state machine has unwound but nothing has torn the game down yet, so it is the
+    // cleanest snapshot of the game there is. Host only - a client's SaveGameToJson returns null (#054).
+    renderer.LobbyScreen.OnGameCompleted = result =>
+    {
+        if (result.Outcome != EGameOutcome.Disconnect) return;
+
+        string? path = RecoverySave.TryWrite(activeLobby?.SaveGameToJson(), DateTime.UtcNow);
+        renderer.SetGameOverNote(path != null
+            ? $"Recovery save written to:\n{path}\nLoad Game from the main menu to resume it."
+            : "Could not write a recovery save (see the console for why).");
+    };
+
     // ── Local play (Host with no network players) also still works via CliApp ─
     // The old "Host" path now goes through the lobby. CliApp is only used
     // in headless mode above.
@@ -593,6 +617,9 @@ else
 
                 var scenarioServer = new FDGServer(parts.Store, parts.Bus, parts.Slots,
                     new RealtimePresentationClock());
+                // #168: this path builds the server (whose resume re-runs rule/spell resolution) after
+                // Launch attached the log - push any drops it just produced into the visible summary.
+                RuleLoadWarnings.FlushPending();
                 scenarioServer.OnGameEnded += result => renderer.ShowGameOver(result);
             };
         }
