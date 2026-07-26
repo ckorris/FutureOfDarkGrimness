@@ -11,6 +11,7 @@ using FDG.Network.Connection.Lobby;
 using FDG.Presentation;
 using FDG.Rules.Serialization;
 using FDG.SaveLoad;
+using FdgRaylib.SaveLoad;
 using TinyDialogsNet;
 
 string crashLogPath = Path.Combine(AppContext.BaseDirectory, "crash.log");
@@ -556,6 +557,21 @@ else
         renderer.TransitionToGame(tableState, colorFunc, log, overlay, taskDisplay, presentationPlayer, saveGame, chatUI);
 
     renderer.LobbyScreen.OnGameEnded = result => renderer.ShowGameOver(result);
+
+    // #187: a game the engine ended because a player's connection dropped is not lost - the host writes a
+    // recovery save automatically (over the internet a brief drop is common, and nobody should have to
+    // have thought to save first). This runs on the engine thread, synchronously, before the game-over
+    // card is shown: the state machine has unwound but nothing has torn the game down yet, so it is the
+    // cleanest snapshot of the game there is. Host only - a client's SaveGameToJson returns null (#054).
+    renderer.LobbyScreen.OnGameCompleted = result =>
+    {
+        if (result.Outcome != EGameOutcome.Disconnect) return;
+
+        string? path = RecoverySave.TryWrite(activeLobby?.SaveGameToJson(), DateTime.UtcNow);
+        renderer.SetGameOverNote(path != null
+            ? $"Recovery save written to:\n{path}\nLoad Game from the main menu to resume it."
+            : "Could not write a recovery save (see the console for why).");
+    };
 
     // ── Local play (Host with no network players) also still works via CliApp ─
     // The old "Host" path now goes through the lobby. CliApp is only used

@@ -27,6 +27,11 @@ public class LobbyScreen : IAppScreen
     public Action<ITableState, Func<PlayerID, Color>, GameLog?, GuiResolverOverlay, GuiOutstandingTaskDisplay, PresentationPlayer, Func<string?>?, GuiPlayerMessageUI>? OnGameLaunched;
     public Action<string>? OnGameEnded;
 
+    // The structured end-of-game record, forwarded from the host's FDGServer (#192). Fires just BEFORE
+    // OnGameEnded, while the game state is still whole - #187's recovery save is written from here.
+    // Never fires on a client (only the host has an FDGServer).
+    public Action<GameResult>? OnGameCompleted;
+
     private ILobbyViewModel? _viewModel;
     private string _chatInput = "";
 
@@ -63,6 +68,9 @@ public class LobbyScreen : IAppScreen
         viewModel.OnLaunched += game => _pendingGame = game;
         // Fires on the engine thread; the renderer just records it and reacts on the main thread.
         viewModel.OnGameEnded += result => OnGameEnded?.Invoke(result);
+        // Also the engine thread, and deliberately handled synchronously there: the recovery save must be
+        // taken before anything reacts to the game ending (#187).
+        viewModel.OnGameCompleted += result => OnGameCompleted?.Invoke(result);
     }
 
     public void Draw(int screenW, int screenH)
