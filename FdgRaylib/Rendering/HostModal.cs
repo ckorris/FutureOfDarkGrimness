@@ -166,7 +166,18 @@ public class HostModal : IAppScreen
         int port = int.Parse(_port.Trim()); // Validated in Validate() before we get here.
 
         FDGHost host = new FDGHost(port: port);
-        _ = host.StartAsync();
+        Task hostTask = host.StartAsync();
+
+        // A bind failure (port already in use) throws before StartAsync's first await, so the returned
+        // task is already faulted here. Without this check the discarded task swallowed the exception
+        // and the lobby opened around a server that wasn't listening (#279).
+        if (hostTask.IsFaulted)
+        {
+            // Reading Exception also marks the task's fault observed.
+            Console.WriteLine($"Host failed to start: {hostTask.Exception?.GetBaseException().Message}");
+            _error = $"Could not listen on port {port} - is it already in use?";
+            return;
+        }
 
         var viewModel = new LobbyViewModel_Host(_yourName, _serverName, _password, host);
 
