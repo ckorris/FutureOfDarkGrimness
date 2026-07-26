@@ -24,7 +24,10 @@ public sealed record BenchmarkOptions(
     // outcome in the name), so two same-options runs diff file by file; Trace additionally writes
     // the #198 position-write trace next to each log.
     string? DumpLogsDir = null,
-    bool Trace = false);
+    bool Trace = false,
+    // #191 automated tuning: the raw --weights spec already applied to TacticianWeights, recorded
+    // in the report header so a tuned run can never be mistaken for a default one.
+    string? WeightOverrides = null);
 
 /// <summary>
 /// The seeded, side-swapped benchmark matrix (#194; plan sec. 6.1). Scoring: for a matchup (A, B),
@@ -154,6 +157,8 @@ public static class Benchmark
         sb.AppendLine();
         sb.AppendLine($"- Games: {rows.Count} | Seeds from {options.SeedBase} | Dice: {options.Randomness} | DOP: {options.DegreeOfParallelism}");
         sb.AppendLine($"- Profiles: A = {options.ProfileA}, B = {options.ProfileB}");
+        if (options.WeightOverrides != null)
+            sb.AppendLine($"- Weight overrides: `{options.WeightOverrides}`");
         sb.AppendLine($"- Outcome hash (deterministic): `{outcomeHash}`");
         sb.AppendLine();
         sb.AppendLine("## Matchups");

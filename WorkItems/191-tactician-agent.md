@@ -20,6 +20,23 @@ pin tests.
 
 ## Notes (newest first)
 
+**2026-07-26 — TUNING INFRA (Chris: "do the automated weight tuning"): weights
+runtime-overridable, FdgLab --weights, campaign driver. Engine `7f30a82`.** TacticianWeights
+float consts -> public static floats + TrySet(name, value) (reflection, set before games only);
+the committed defaults remain the shipped policy and still change only with a benchmark
+attached. FdgLab bench/smoke take --weights "Name=V;..." (invariant culture; unknown name or
+bad value is a hard usage error - a silently-skipped override would corrupt a campaign;
+recorded in the report header so a tuned run can never pass as default). Verified: defaults at
+dop 1 reproduce the cache-slice hash 6267BEA2307042D2 exactly (const->static is value-neutral);
+--weights MoveRetaliation=99 flips the 4-game hash (the override reaches the planner); unknown
+name exits 2. Driver: FdgLab/tools/tune_weights.py - coordinate descent over {MoveRetaliation,
+RetaliationShareFloor, MoveProjectedThreat, PostureRetaliationRelief, PostureObjectiveBoost},
+x0.7/x1.3 candidates per round, 8-cell eval set (the three RL decision cells + the trio gate's
+sub-70 cells: HDF-Hives, DE-Hives, DE-Orks, BB-Hives, Dwarf-Orks), 50 games/cell paired seeds,
+adopt only at >= +3.0 eval-mean points (~1.2 sigma incl. #210 schedule noise), 2 rounds with
+early stop, every eval appended to evals.jsonl; the script never edits source - the full
+ordered-pool gate arbitrates before any default changes.
+
 **2026-07-26 — PERF: TerrainGrid per-game cache - the bot's move pause halved (2.2x decision
 mean, 2.6x p95). Engine `5fcecb4`.** Chris: "noticeable pause before it moves". dotnet-trace on
 a Hives-vs-Orks tactician smoke (seed 3000): ~HALF the game's busy CPU was TerrainGrid.Build -
