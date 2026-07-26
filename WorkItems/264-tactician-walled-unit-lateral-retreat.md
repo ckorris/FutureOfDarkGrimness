@@ -1,7 +1,8 @@
 # 264 — Tactician: unit behind impassible terrain rushes sideways/backwards instead of advancing
 
-**Status**: in-progress (10 pins green 2026-07-23; issue 5 fixed; MoveReachableBonus gate signed off
-by Chris 2026-07-23; only the GUI eyeball check remains)
+**Status**: in-progress (11 pins green; all 8 issues fixed and merged to master; issue 1's melee half
+folded in 2026-07-25. Remaining: issue 8b hysteresis - deliberate deferral, Chris's call - and the
+GUI eyeball check)
 **Related**: #256 (prior stuck-unit pass), #216 (silent solo fallback residual), #211 (solo impassible),
 #191 (Tactician umbrella), #167 (scenario terrain = enabling tooling), #170 (deploy sibling)
 
@@ -183,6 +184,62 @@ one in GUI. When done: merge cadence 167-scenario-terrain -> 264-walled-unit-pin
 Chris still owes the GUI terrain-render hand pass (#167 note).
 
 ## Notes
+
+- 2026-07-25 (issue 1, the melee half): **FIXED - the planner's melee APPROACH term is now
+  route-aware.** Slice 1 made `ObjectiveApproach` measure walking distance and deliberately left its
+  melee twin on straight-line distance ("still owed" item 3). Two findings while folding it in:
+  - **The residual as recorded was INERT, and the real one was a level up.** The owed item named
+    `MacroActionGenerator.BuildCharge`'s `progress` (~line 417). That value only ever separates
+    `Blocked` from `BudgetClipped`, and EVERY consumer tests `== Reachable`
+    (`ActionNameFor`, the offense branch of `Score`, the reachable tie-break) - while `Enumerate`
+    itself discards the charge candidate outright unless it is already Reachable, substituting a
+    rush-budget approach. So no straight-line grade there is observable, and "fixing" it would have
+    changed nothing. NOT changed, deliberately: adding route machinery to feed an unread value is
+    exactly the dead-tunable the slice-3 cleanup removed. The mechanism the note was reaching for
+    lives in `TacticianPlanner.Score`'s `approach` term - the ONLY term that pays a melee unit for
+    crossing the table - which measured the charge gap as `Distance(now/end, enemyPos)`.
+  - **The fix.** New `RouteToEnemy` (the melee twin of `RouteToObjective`, cached per enemy per
+    activation, sharing `_routeGrid`); `gapNow`/`gapEnd` measure along that route. The A5-6 stage gap
+    stays straight-line on purpose - it models weapon threat, which does not walk around walls - and
+    since route distance >= straight-line it can only hold the approach back, never flatter it.
+  - **Gated on an actual DETOUR (`routeLength > straight + 0.01`), and this mattered.** The first cut
+    used `RemainingFrom` unconditionally and moved the no-detour case too, because that measure is
+    "offset onto the route + route remainder": on a clear lane it charges LATERAL displacement as
+    distance not closed, so a flanking step reads as a wasted one. Straight-line is the exact answer
+    there, and `RemainingFrom` only earns its approximation error where the detour it approximates
+    exists. Gated, the slice is strictly additive - scoring is untouched wherever no impassible piece
+    stands between the unit and its target.
+  - **New pin**, red-by-design first: `TacticianWalledUnitTests.
+    WalledMeleeUnit_ApproachingItsTarget_OutscoresFullDistanceRetreat`. 11 blades behind the 20" wall,
+    an enemy gunline beyond it, and NO objectives on the table, so the melee gradient is the only
+    substantive term and the pin cannot pass on slice 1's objective fix. Old code: the detour ends at
+    (14.5,8.7), which LENGTHENS the straight-line gap, so approach paid exactly 0.0000 and the
+    retreat tied it at an identical -0.0612. Carries a geometry guard (route distance closed must
+    exceed 4x the straight-line distance closed) so a refactor cannot make it vacuously pass.
+    Suite 2145/2145; all 11 walled pins green; full `dotnet build` + headless smoke exit 0.
+  - **TWO RECORDED BASELINES IN THIS FILE ARE STALE - do not diff against them.** Master moved
+    through #266-#280 since the slice work. Re-derived on current master: solo D1 builtin mirror is
+    `0CBA6DA5E9DD658A` (NOT `F82D5A91B0119955`), builtin vs builtin-basic `F9B57FB951EE5F0A`, and the
+    8-army pool aggregate is 84.0% / hash `B33FC1161F52B3A0` (NOT 84.7%). Every benchmark below was
+    re-run as a matched control on current master rather than compared to the recorded numbers.
+  - **Solo D1 bit-identical**: `0CBA6DA5E9DD658A`, unchanged. Structural as well as measured - with
+    both profiles defaulting to SoloRules the `TacticianPlanner` is never constructed.
+  - **Correction to a premise this file implies**: the bench TABLE is not terrain-free.
+    `GameSettings.GetDefault()` places 20 pieces via `AutoFromLayout`; "the builtin bench army has no
+    terrain" is about the army list. So the Tactician mirror legitimately moves and bit-identity was
+    never achievable there: 92.7% (177/6/17) -> 92.0% (175/7/18), inside noise for 200 games.
+  - **Pool re-gate, 8-army pool, Tactician vs SoloRules, 64 matchups x 50 games = 3200 games each
+    side, DOP 12** (baseline `B33FC1161F52B3A0` vs `3E48E05C84E2F476`): aggregate **84.0% -> 84.2%**
+    (+0.2pp against a 0.65pp aggregate sigma - flat), faults **1 -> 0**, six of eight army rows up or
+    level (Hives +1.5, HEF +0.9, DE +0.6, BB/Dwarf +0.1, HDF 0.0; Orks -0.2, RL -1.4). Worst cell
+    57% -> 51% is RL-vs-Hives moving -9.0pp, which is 1.3 sigma on a 50-game cell (1 sigma = 6.9pp) -
+    noise, not a collapse. Flat is the expected shape and matches slice 1's own reading: this pool's
+    terrain barely exercises the walled pathology, so the pool is a NO-REGRESSION gate and the pin is
+    what evidences the fix. Decision cost mean 26.26 -> 25.38ms, worst p95 579.7 -> 572.2ms (the
+    per-enemy A* costs nothing measurable; both runs exceed the ~0.5s budget at p95, pre-existing).
+  - **Still owed after this slice**: issue 8b cross-activation hysteresis (unchanged deliberate
+    deferral, Chris's call) and the GUI eyeball check. The `BuildCharge` line item is now CLOSED as
+    not-a-defect per the inertness finding above, not by fixing it.
 
 - 2026-07-23 (issue 5, the real fix): **ISSUE 5 FIXED - the mixed-error rescue gate.** Engine
   `50dce66`. `MovementPlanner.ValidateWithBackoff`'s two #256 rescues were all-or-nothing: the S4
