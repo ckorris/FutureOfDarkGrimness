@@ -949,7 +949,13 @@ public class GuiDefineMovementResolver
             if (!blocked[i] && !request.IgnoresImpassibleTerrain && bindings.TryGetValue(models[i], out var gimpB))
             {
                 var gimpPath = new List<Position>(paths.TryGetValue(models[i], out var gp) ? gp : (IReadOnlyList<Position>)System.Array.Empty<Position>()) { newPositions[i] };
-                if (MovementUtilities.FindFirstImpassibleCrossing(new ModelMoveEntry(gimpB, gimpPath), terrain)
+                // #282: carry the per-waypoint facings (stored offsets + the live angle for the phantom node)
+                // so the swept-base check runs against the same oriented footprints the phantoms draw and the
+                // Done gate validates - without them a rotated rect base could preview legal and fail Done.
+                var gimpOffsets = new List<float>(pt.GetModelFacingOffsets(models[i])) { _groupFacingAngle };
+                var gimpFacings = MovementFacingUtilities.WaypointFacings(models[i].Position, gimpPath,
+                    models[i].Facing, gimpOffsets);
+                if (MovementUtilities.FindFirstImpassibleCrossing(new ModelMoveEntry(gimpB, gimpPath, gimpFacings), terrain)
                         is { } groupCrossing)
                 {
                     blocked[i] = true;

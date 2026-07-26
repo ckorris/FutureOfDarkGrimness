@@ -10,6 +10,10 @@ placed with, both on screen and in the executed move. Reported while navigating 
 after placing path markers visibly re-oriented the already-placed ones.
 
 ## Notes
+- 2026-07-26 (later): Adjacent finding 2 fixed on owner's go-ahead - the group-mode #213 per-phantom
+  impassible check now carries per-waypoint facings (stored offsets + live angle for the phantom
+  node), matching the single-mode check and the Done gate. Finding 1 (consolidation rotation
+  preview-only) became #283.
 - 2026-07-26: Confirmed and fixed. Root cause: the manual rotation was a single scalar — per model in
   single mode (`_manualOffsets`), per unit in group mode (`_groupFacingAngle`, accumulated across the
   whole move) — and `PathTemplate.GetResultsAsList`/`MovementFacingUtilities.WaypointFacings` applied
