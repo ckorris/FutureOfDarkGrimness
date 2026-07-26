@@ -20,6 +20,27 @@ pin tests.
 
 ## Notes (newest first)
 
+**2026-07-26 — ARRIVING PRESSURE (idea 2 of the approved trio) shipped. Engine `ec65f9a`.**
+New MoveProjectedThreat (0.15) term: enemies the current retaliation term ignores entirely
+(outside every this-round envelope) are projected one rush-budget step toward their nearest
+attractive goal (a marker their side does not own, or one of our units - deterministic,
+cached per activation) and the endpoint pays a low-weight forecast of their threat from
+there. Only zero-current-threat enemies are priced (no double count), a cached max-range
+precheck keeps the CombatMath cost off distant enemies, and projected MELEE pressure is
+EXEMPT when our melee margin against the arriver is positive - a staged charge must not be
+penalized for standing its ground (the A5-6 charging-beats-being-charged interaction).
+2 pins - ArrivingPressure_PricesAnEnemyTwoMovesOut (verified failing pre-fix) and
+ArrivingMeleePressure_IsAnOpportunityForAWillingBrawler (verified failing with the exemption
+disabled; first fixture draft was too weak to discriminate and was strengthened). Suite
+2163/2163. **50-game probes (seed 3000, 0 faults), same 5 cells (slice-1 -> this, with the
+pre-trio baseline in parens): RL-vs-Hives 47->51 (50), RL-vs-Orks 54->49 (49), RL-vs-HEF
+63->59 (68), Hives-vs-HEF 82->89 (86), BB-vs-Orks 73->80 (72) - net +2.2/cell over slice 1;
+the two target cases (elites camping in a horde's arrival path, melee flood vs gunline)
+respond exactly as designed. WATCH: RL-vs-HEF has drifted 68->63->59 across the trio's two
+slices (~1.3 sigma cumulative); G2 read of flipped seed 3016 shows NO degenerate behavior
+(forward marker play, Warriors advance + shoot, no SeekCover spiral, loss is an objective
+race 1-2) - full-gate row read decides whether it is real.**
+
 **2026-07-26 — ONE-PLY OPPONENT REPLY shipped (Chris approved ideas 1-3 of the smartness
 brainstorm; this is idea 1). Engine `3c4924f`.** Retaliation now prices each enemy's best
 single reply instead of a headcount discount: the per-sharer dilution divisor
