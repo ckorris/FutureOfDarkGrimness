@@ -6,16 +6,17 @@ using ImGuiNET;
 namespace FdgRaylib.Rendering;
 
 /// <summary>
-/// An ad-hoc ruler: hold Ctrl and drag on the table to measure inches between two points, snapping each
-/// end to the nearest model base. The ruler shows only while Ctrl or the left button is still held --
-/// releasing both makes it vanish. (Ctrl rather than Alt because most Linux window managers grab
-/// Alt+drag to move the window, so the app never sees the gesture.)
+/// An ad-hoc ruler: hold Alt and drag on the table to measure inches between two points, snapping each
+/// end to the nearest model base. The ruler shows only while Alt or the left button is still held --
+/// releasing both makes it vanish. (Was Ctrl until #277 claimed Ctrl+Wheel for the formation cycle --
+/// and holding Ctrl raised WantCaptureMouse here, hiding the wheel from the resolvers. Note some Linux
+/// window managers grab Alt+drag to move windows; GNOME defaults to Super, so the owner's setup is fine.)
 ///
 /// <para><b>Resolver coexistence (Model A).</b> Measuring is a modifier gesture, not a mode, so it shares
 /// no input with resolvers: a plain click still drives whatever resolver is active. The one precedence
-/// rule is that while Ctrl is held over the table this overlay sets <c>io.WantCaptureMouse = true</c>, and
+/// rule is that while Alt is held over the table this overlay sets <c>io.WantCaptureMouse = true</c>, and
 /// every table-click consumer (the hit tester and the canvas resolvers) already skips when that flag is
-/// set -- so a Ctrl-drag can never double as a place/move/select. Because the ruler holds no game state
+/// set -- so an Alt-drag can never double as a place/move/select. Because the ruler holds no game state
 /// and is tied to no request, a resolver appearing (or the turn changing) mid-measure can't corrupt it,
 /// and it can't corrupt the resolver.</para>
 ///
@@ -68,34 +69,34 @@ public class MeasurementOverlay
 
         var io = ImGui.GetIO();
         bool overPanel = io.WantCaptureMouse;          // an ImGui window owns the mouse (measured before our override)
-        // Robust modifier read: the legacy io.KeyCtrl isn't populated by every backend, so also check the keys.
-        bool ctrl     = io.KeyCtrl || ImGui.IsKeyDown(ImGuiKey.LeftCtrl) || ImGui.IsKeyDown(ImGuiKey.RightCtrl);
+        // Robust modifier read: the legacy io.KeyAlt isn't populated by every backend, so also check the keys.
+        bool alt      = io.KeyAlt || ImGui.IsKeyDown(ImGuiKey.LeftAlt) || ImGui.IsKeyDown(ImGuiKey.RightAlt);
         bool leftDown = ImGui.IsMouseDown(ImGuiMouseButton.Left);
 
-        // Begin a measurement on Ctrl+click over the table.
-        if (ctrl && !overPanel && ImGui.IsMouseClicked(ImGuiMouseButton.Left))
+        // Begin a measurement on Alt+click over the table.
+        if (alt && !overPanel && ImGui.IsMouseClicked(ImGuiMouseButton.Left))
         {
             _anchor    = Snap(io.MousePos);
             _cursor    = _anchor;
             _measuring = true;
             _hasRuler  = true;
         }
-        // Track the moving end while dragging (button held) with Ctrl.
+        // Track the moving end while dragging (button held) with Alt.
         else if (_measuring && leftDown && !overPanel)
         {
             _cursor = Snap(io.MousePos);
         }
 
-        // The ruler lives only while a button is still held; the instant BOTH Ctrl and the left button
+        // The ruler lives only while a button is still held; the instant BOTH Alt and the left button
         // are released, it disappears (no lingering / no Esc-to-clear).
-        if (!ctrl && !leftDown)
+        if (!alt && !leftDown)
         {
             _measuring = false;
             _hasRuler  = false;
         }
 
-        // Suppress table clicks while the Ctrl gesture is active over the table.
-        if (ctrl && !overPanel)
+        // Suppress table clicks while the Alt gesture is active over the table.
+        if (alt && !overPanel)
             io.WantCaptureMouse = true;
 
         if (_hasRuler)

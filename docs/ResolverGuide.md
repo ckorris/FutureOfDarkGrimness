@@ -50,6 +50,26 @@ The objective and terrain placement resolvers place non-model markers (no `Model
 
 (The table lists the original core set; later additions — `GuiUnitSelectionResolver`, `GuiCancellableUnitSelectionResolver`, `GuiCastAssistResolver`, aircraft-advance, terrain-placement, consolidation resolvers — follow the same pattern. See #161 for the consistency pass across them.)
 
+## Group formations (#277)
+
+In Group mode (movement, consolidation, deployment/teleport placement) **Ctrl+Wheel cycles the
+unit's formation**; plain Wheel / R / Shift+R still rotate, and Shift-hold stays "stay within
+Advance". The shapes come from the engine's `FormationLibrary` (`RowPartitions` -> `LayoutOffsets`,
+shared with `CohesiveFormation.PackGrid`), filtered to those whose span respects the 9" all-pairs
+rule; app-side state lives in `FormationCycle`, input in `GroupInput` (both
+`FdgRaylib/Rendering/Resolvers/`). Conventions:
+
+- **Index 0 = the unit's current shape, unchanged** wherever the unit already stands (movement,
+  consolidation, teleport/reposition). A fresh deployment starts at the first legal partition, which
+  reproduces the old default (line when it fits, else two balanced rows).
+- Movement/consolidation feed the picked shape as the base positions of the two-array
+  `PlanGroupMove`, so per-model budgets and terrain clamps apply to the morph exactly as they do to
+  the coherency repair. The index resets to "current" on every committed step.
+- **Ctrl+Wheel belongs exclusively to the formation cycle.** Alt is the camera/measure modifier:
+  the **ruler moved from Ctrl+drag to Alt+drag** (holding Ctrl used to raise `WantCaptureMouse`,
+  hiding the wheel from the resolvers) and the **zoom moved from Ctrl+wheel to Alt+wheel**, so
+  zooming keeps working while a group ghost is live and nothing contends for Ctrl.
+
 ## Validation gotchas
 
 - **Deployment spacing**: `MAX_MODEL_DISTANCE_FROM_ANY_OTHER_MODEL_INCHES` is 1.0" base-to-base. Auto-placement uses 0.1" gap, **not 1.0"** — at exactly 1.0", float accumulation during diagonal movement can push models fractionally over the cohesion limit.
