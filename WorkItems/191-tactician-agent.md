@@ -20,6 +20,24 @@ pin tests.
 
 ## Notes (newest first)
 
+**2026-07-26 — 200-GAME CONFIRMATION CELLS: THE FLOOR-CLEARING STORY DOES NOT SURVIVE G4
+RESOLUTION.** All six cells completed, 0 faults, seeds 3000+, 200 games/cell, paired seeds
+(sigma ~3.5/cell unpaired, less paired). Trio vs neutralized (`3c4924f~1`): RL-vs-Hives
+60.8 vs 57.3 (+3.5), RL-vs-Orks 53.2 vs 60.5 (-7.3), RL-vs-HEF 69.3 vs 74.5 (-5.2). Two
+findings. (1) The 50-game floor cells were NOISE: the neutralized engine's 49/49 on
+RL-vs-Hives/RL-vs-Orks reads 57.3/60.5 at 200 games - both comfortably above the A-gate
+line - so "the trio is what clears the floor" (previous entry) is RETRACTED; the trio's
+case now rests on full-matrix parity (83.9 vs 84.3 at 3200), the behavioral pins, and
+fault-freeness. (2) The trio reads net -9 across the three RL decision cells,
+concentrated in RL-vs-Orks (-7.3, ~2 sigma) - a real watch item, not noise-shrugged.
+The already-recorded candidate knobs (MoveRetaliation retune, sum-vs-max alternative
+aggregation) plus the new posture/projection weights go to the automated tuning campaign
+(Chris, 2026-07-26), whose cell set must include RL-vs-Orks and RL-vs-HEF. Process note:
+a mid-run status check misread the still-running script as crashed and briefly restored
+the submodule to master while its last two neutralized cells ran; both cells' outcomes
+differ from the trio run's same-seed cells, which (determinism, G5) proves they ran
+baseline code - the numbers stand.
+
 **2026-07-26 — TRIO GATE (one-ply reply + arriving pressure + risk posture): MATRIX 83.9 /
 MIRRORS 82.5, ZERO CELLS BELOW 50, ZERO FAULTS IN 3200 - AND THE ATTRIBUTION RUN SHOWS THE
 TRIO IS WHAT CLEARS THE FLOOR.** Full ordered gate (trio-gate, hash `E5B567EFFDAF2A6F`,
