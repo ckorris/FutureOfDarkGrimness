@@ -108,7 +108,10 @@ public class GuiAssignWoundsResolver
         ImGui.PushTextWrapPos(dw - pad);
         ImGui.TextUnformatted($"Assign Wounds: {unitName}");
         ImGui.Spacing();
-        ImGui.TextUnformatted($"{results.TotalAssignedWounds:F0} / {results.TotalWoundsToAssign:F0} wounds assigned");
+        // #287: F0 used to TRUNCATE - a 3.4-wound pool read "3 / 3 wounds assigned", which is not the
+        // number the engine is assigning.
+        ImGui.TextUnformatted($"{WoundFormat.Format(results.TotalAssignedWounds)} / " +
+                              $"{WoundFormat.Format(results.TotalWoundsToAssign)} wounds assigned");
         ImGui.PopTextWrapPos();
 
         // Model buttons (scrollable if many models)
@@ -144,9 +147,9 @@ public class GuiAssignWoundsResolver
             // Pre-assigned wounds (Tough ordering, locked) are surfaced with an "(N assigned)" note.
             uint mainCol = ImGui.GetColorU32(canTake ? ImGuiCol.Text : ImGuiCol.TextDisabled);
             uint wCol    = canTake ? WeaponTextCol : ImGui.GetColorU32(ImGuiCol.TextDisabled);
-            string assignedNote = pw.Wounds > 0f ? $"   ({pw.Wounds:F0} assigned)" : "";
+            string assignedNote = pw.Wounds > 0f ? $"   ({WoundFormat.Format(pw.Wounds)} assigned)" : "";
             // Show remaining/total only for multi-wound models; single-wound models need no counter.
-            string woundText = total > 1f ? $"   -   ({remaining:F0}/{total:F0})" : "";
+            string woundText = total > 1f ? $"   -   ({WoundFormat.Fraction(remaining, total)})" : "";
             float tx = origin.X + 8f;
             float ty = origin.Y + btnPadY;
             dl.AddText(new Vector2(tx, ty), mainCol, $"Model {i + 1}{woundText}{assignedNote}");
@@ -247,9 +250,9 @@ public class GuiAssignWoundsResolver
         var sb = new StringBuilder();
         // Show remaining/total only for multi-wound models; single-wound models need no counter.
         if (modelData.TotalWounds > 1f)
-            sb.AppendLine($"This model - ({remaining:F0}/{modelData.TotalWounds:F0})");
+            sb.AppendLine($"This model - ({WoundFormat.Fraction(remaining, modelData.TotalWounds)})");
         if (pw.Wounds > 0f)
-            sb.AppendLine($"({pw.Wounds:F0} already assigned)");
+            sb.AppendLine($"({WoundFormat.Format(pw.Wounds)} already assigned)");
         sb.AppendLine("Weapons:");
         foreach (string line in WeaponLines(modelData))
             sb.AppendLine($"  {line}");

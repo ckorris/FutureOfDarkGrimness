@@ -42,7 +42,7 @@ public class GuiModelSelectionResolver : GuiSelectionResolver<ModelData>, IGuiCa
     {
         ModelData model = option.GetValue();
         string wounds = model.TotalWounds > 1f
-            ? $"  ({model.TotalWounds - model.WoundsDealt:F0}/{model.TotalWounds:F0} wounds)"
+            ? $"  ({WoundFormat.Fraction(model.TotalWounds - model.WoundsDealt, model.TotalWounds)} wounds)"
             : "";
         return ($"{name}{wounds}", GuiAssignWoundsResolver.WeaponLines(model));
     }
@@ -68,7 +68,7 @@ public class GuiModelSelectionResolver : GuiSelectionResolver<ModelData>, IGuiCa
             if (!ReferenceEquals(candidate, model)) continue;
             _hoveredModel = candidate;
             string wounds = candidate.TotalWounds > 1f
-                ? $" ({candidate.TotalWounds - candidate.WoundsDealt:F0}/{candidate.TotalWounds:F0} wounds)"
+                ? $" ({WoundFormat.Fraction(candidate.TotalWounds - candidate.WoundsDealt, candidate.TotalWounds)} wounds)"
                 : "";
             return $"Click to select {opt.Name}{wounds}";
         }
