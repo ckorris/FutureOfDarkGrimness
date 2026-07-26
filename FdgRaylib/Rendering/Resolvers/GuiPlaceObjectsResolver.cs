@@ -238,10 +238,8 @@ public class GuiPlaceObjectsResolver<T>
             _dragIndex = null;
         }
 
-        // V toggles the #230 reach field. A view preference, so it lives in ViewSettings and persists
-        // across placements like the label / grid toggles do.
-        if (wantInput && ImGui.IsKeyPressed(ImGuiKey.V))
-            ViewSettings.ShowPlacementRanges = !ViewSettings.ShowPlacementRanges;
+        // #247: V is handled globally by the tactical overlay, not here — the same key must mean the same
+        // thing while moving, placing and idle. The panel checkbox below drives the same flag.
 
         // The group follow-formation ghost only shows before the first drop. Once anything is on the
         // table, both modes switch to per-model editing (drag a placed model, or place a missing one),
@@ -266,11 +264,14 @@ public class GuiPlaceObjectsResolver<T>
     /// #230 — rebuilds the by-model position map the tactical overlay anchors its field on, from this
     /// frame's ghosts and committed placements. Cleared when the placement isn't a unit's models
     /// (objectives, terrain) or nothing is on screen yet, so the field goes away with the ghosts.
+    /// <para>#247: this reports what there IS to anchor on, not what should be drawn — the V toggle and the
+    /// hover-beats-ghosts rule are the controller's call (<c>FieldAnchorPlan</c>), so the decision lives in
+    /// one place instead of being half-made here.</para>
     /// </summary>
     private void UpdateGhostField(PlaceObjectsRequest<T> request, IUnit? owner)
     {
         _ghostFieldPositions.Clear();
-        _ghostFieldUnit = ViewSettings.ShowPlacementRanges ? owner : null;
+        _ghostFieldUnit = owner;
         if (_ghostFieldUnit == null) return;
 
         for (int i = 0; i < request.ModelsToPlace.Count; i++)
@@ -665,10 +666,11 @@ public class GuiPlaceObjectsResolver<T>
         // offered where there is a unit to show reach for (not for objective / terrain placement).
         if (deploying != null)
         {
-            ImGui.Checkbox("Weapon reach (V)", ref ViewSettings.ShowPlacementRanges);
+            ImGui.Checkbox("Weapon reach (V)", ref ViewSettings.ShowReachOverlay);
             if (ImGui.IsItemHovered())
                 ImGui.SetTooltip("Show what this spot could hit from here: weapon-range bands, shaded for\n" +
-                                 "line of sight and cover from the pending positions.");
+                                 "line of sight and cover from the pending positions.\n" +
+                                 "Hovering any unit shows that unit's reach instead, while you hover it.");
         }
 
         // The unit's stats (weapons with special rules + unit special rules). Most needed for an Ambush

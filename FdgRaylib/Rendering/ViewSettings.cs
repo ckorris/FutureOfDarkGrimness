@@ -18,9 +18,10 @@ public static class ViewSettings
     public static bool ShowAllTokens = false;
 
     /// <summary>
-    /// #230 (hotkey V): anchor the tactical overlay's opportunity field on a placement's ghosts, so a
-    /// deployment / ambush arrival / teleport spot can be judged by what it would reach — LoS and cover
-    /// included — before it is committed. On by default; the placement panel carries the same toggle.
+    /// #230/#247 (hotkey V): the master switch for the tactical overlay's reach picture — the opportunity
+    /// field, with LoS and cover. One toggle covers every anchor it can take: the ghosts of a move or
+    /// placement in progress, and the unit under the cursor (which wins while hovering, so only ever one
+    /// field is on screen). Off means none of them draw. On by default.
     /// </summary>
-    public static bool ShowPlacementRanges = true;
+    public static bool ShowReachOverlay = true;
 }

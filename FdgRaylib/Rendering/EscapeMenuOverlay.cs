@@ -146,6 +146,9 @@ public sealed class EscapeMenuOverlay
         if (_tactical != null)
         {
             SectionHeader("Tactical overlay");
+            ImGui.Checkbox("Weapon reach (V)", ref ViewSettings.ShowReachOverlay);
+            ImGui.TextDisabled("Ghosts while moving/placing; any unit you hover.");
+
             bool threat = _tactical.ThreatToggledOn;
             if (ImGui.Checkbox("Threat frontiers (F)", ref threat))
                 _tactical.ToggleThreat();

@@ -66,6 +66,11 @@ During placement decisions (deployment, ambush arrival, disembark/embark placeme
 
 ## Open / follow-ups
 
+- **2026-07-26: extended by #247 slice 1.** The V toggle built here became the global reach toggle, the
+  placement anchor became one entry in `FieldAnchorPlan`'s contest, and hovering any unit now outranks the
+  placement ghosts. `ViewSettings.ShowPlacementRanges` was renamed `ShowReachOverlay` to match. The
+  placement-specific behaviour and its hand-verify list below still stand.
+
 - **#252 applies here too**: the anchored field's cover tint ignores #201's proximity rules, so a placement
   field over-paints cover exactly as the movement one does. Not made worse by this change; noted so the
   placement case is covered when #252 is done.

@@ -88,9 +88,14 @@ needs no change in the controller.
   meaning when there is no pin and the ghosts *are* the question.
 - Ghosts are read from the canvas pass, which runs **before** the resolver's own `Draw` — so they are one
   frame old, exactly as the movement resolver's always have been.
-- **Hotkey `V`** (`ViewSettings.ShowPlacementRanges`, default on) plus a checkbox in the placement panel.
+- **Hotkey `V`** (`ViewSettings.ShowReachOverlay`, default on) is handled globally in
+  `TacticalOverlayController.UpdateInput`, **not** in any resolver — the same key must mean the same thing
+  while moving, placing and idle. The placement panel and Esc → Options carry the same flag as checkboxes.
   `DrawBandLabels` gates on "a field was drawn this frame" (`_fieldActive`), not on a move request, or the
   band captions naming each weapon would vanish during placement.
+- **One anchor per frame** (#247): `FieldAnchorPlan.Resolve` picks a single winner from
+  hover / move-ghosts / placement-ghosts / pinned-target, which is what keeps two team-coloured washes off
+  the same ground. Resolvers report what they *have* to anchor on; the controller decides what draws.
 
 ## Validation gotchas
 

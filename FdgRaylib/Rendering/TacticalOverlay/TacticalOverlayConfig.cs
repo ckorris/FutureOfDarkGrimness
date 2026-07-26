@@ -60,7 +60,13 @@ internal static class TacticalOverlayConfig
     public static readonly (byte r, byte g, byte b) GhostInsideThreatTint = (232, 72, 72);
 
     // --- Interaction (spec section 4) -------------------------------------------------------------
-    public const double HoverPreviewDelaySeconds = 0.150;
+    // Hover dwell before a hovered unit's field appears. DISABLED (0) as of #247: the delay was meant to
+    // stop the field flickering as the cursor transits units mid-decision, but in the hand it doesn't read
+    // as deliberate restraint -- it reads as the picture being slow to bake, which is the one impression
+    // this overlay cannot afford. Restore by raising this (0.150 was the original) if flicker turns out to
+    // be the worse problem; the anti-flicker measure that survives is FieldAnchorPlan's rule that hovering
+    // the unit whose ghosts are live does NOT steal the anchor.
+    public const double HoverPreviewDelaySeconds = 0.0;
     public const float  SnapEpsilonInches        = 0.4f;  // drop within this of a boundary snaps
     public const float  SnapInsideMarginInches   = 0.05f; // band snap lands just inside
     public const float  MeasurementPromoteInches = 0.5f;  // draw the labeled measurement line within this
@@ -86,6 +92,9 @@ internal static class TacticalOverlayConfig
     // --- Hotkeys ----------------------------------------------------------------------------------
     // T is taken (dev token-reveal in TableTooltipOverlay); F is free. Alt is free.
     public const ImGuiKey ThreatToggleKey     = ImGuiKey.F;
+    // #247: master reach toggle (the opportunity field, whatever it is anchored on). V was free across the
+    // whole in-game key census (A/F/G/L/R/T, arrows, Enter, Backspace, Escape, Space, digits, F10).
+    public const ImGuiKey ReachToggleKey      = ImGuiKey.V;
     public const ImGuiKey ClearPinsKey        = ImGuiKey.Escape;
     public const ImGuiKey FidelitySamplerKey  = ImGuiKey.F10; // debug (spec section 6)
 }

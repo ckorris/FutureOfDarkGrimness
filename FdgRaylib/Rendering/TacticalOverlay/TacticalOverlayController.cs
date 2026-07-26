@@ -64,9 +64,13 @@ public class TacticalOverlayController
     private int _focusIndex = -1;                 // index into _pins; -1 when none
     private DefineMovementPathRequest? _lastSeenRequest; // pins are scoped to one move job
 
-    // Hover preview: an enemy hovered ~150ms with no pins shows a transient dimmed field.
+    // Hover preview: an enemy hovered with no pins shows a transient dimmed target-anchored field.
     private IUnit? _hoverCandidate;
     private double _hoverElapsed;
+
+    // #247: the unit under the cursor this frame, captured in UpdateInput and consumed by DrawField as the
+    // top-priority field anchor. Null while the pointer is over an ImGui panel.
+    private IUnit? _hoverUnit;
 
     private long _lastFieldSig;
     private bool _fieldBuiltOnce;
@@ -249,25 +253,57 @@ public class TacticalOverlayController
     {
         if (_tableState == null || _field == null || _bandMask == null || _probe == null) return;
 
-        // The opportunity field exists during the local player's move job (spec section 3) or, since #230,
-        // during a placement — the only other time the player is choosing ground for their own models.
+        // #247: one contest decides the anchor, so exactly one field can be on screen. Everything the
+        // decision needs is gathered here; FieldAnchorPlan owns the priority order.
         DefineMovementPathRequest? req = _moveResolver?.ActiveRequest;
-        if (req == null)
+        IGhostFieldSource? placement = req == null ? _resolverOverlay?.ActiveGhostField : null;
+        IUnit? placeUnit = null;
+        IReadOnlyDictionary<IModel, Position>? placeGhosts = null;
+        if (placement != null && placement.TryGetGhostField(out IUnit pu, out var pg))
         {
-            if (!TryDrawPlacementField()) { ClearFieldPictures(); return; }
+            placeUnit = pu;
+            placeGhosts = pg;
         }
-        else if (TacticalOverlayConfig.GhostAnchoredField)
+        bool placementGhosts = placeUnit != null;
+        IUnit? hoverUnit = ResolveHoverAnchor(req, placeUnit);
+        (IUnit? target, int accent, float alphaScale) = req != null
+            ? ResolveFieldTarget(req)
+            : (null, 0, 1f);
+
+        bool drew;
+        switch (FieldAnchorPlan.Resolve(
+                    showReach: ViewSettings.ShowReachOverlay,
+                    hoverAvailable: hoverUnit != null,
+                    moveJobActive: req != null,
+                    ghostAnchoredMode: TacticalOverlayConfig.GhostAnchoredField,
+                    pinnedTargetAvailable: target != null,
+                    placementGhostsAvailable: placementGhosts))
         {
-            // Ghost-anchored: rebuilt every frame, tracking the pending positions. No signature.
-            RebuildGhostField(req.UnitDataBinding.GetValue(), _moveResolver!.GhostPositions, req);
-        }
-        else
-        {
-            (IUnit? target, int accent, float alphaScale) = ResolveFieldTarget(req);
-            if (target == null) { ClearFieldPictures(); return; }
-            RebuildFieldIfNeeded(req, target, accent, alphaScale);
+            case FieldAnchorKind.Hover:
+                // Stationary anchor -> the signature gate inside turns this into one rebuild per hovered
+                // unit rather than one per frame.
+                drew = RebuildGhostField(hoverUnit!, LivePositions(hoverUnit!), req: null);
+                break;
+
+            case FieldAnchorKind.Ghost when req != null:
+                drew = RebuildGhostField(req.UnitDataBinding.GetValue(), _moveResolver!.GhostPositions, req);
+                break;
+
+            case FieldAnchorKind.Ghost:
+                drew = RebuildGhostField(placeUnit!, placeGhosts!, req: null);
+                break;
+
+            case FieldAnchorKind.Target:
+                RebuildFieldIfNeeded(req!, target!, accent, alphaScale);
+                drew = true;
+                break;
+
+            default:
+                ClearFieldPictures();
+                return;
         }
 
+        if (!drew) { ClearFieldPictures(); return; }
         _fieldActive = true;
         if (_gpuField != null && TacticalOverlayConfig.UseGpuField)
             _gpuField.DrawComposite(_originX, _originY,
@@ -280,20 +316,36 @@ public class TacticalOverlayController
     // ---- Ghost-anchored field (H4): "what can I hit from here", per frame --------------------------
 
     /// <summary>
-    /// #230 — the placement equivalent of a move job: a resolver with pending ghosts (deployment, ambush
-    /// arrival, disembark, teleport/reposition) anchors the same field on the spot being aimed at. Always
-    /// ghost-anchored regardless of <see cref="TacticalOverlayConfig.GhostAnchoredField"/>: that flag picks
-    /// between "where can I stand to shoot the pin" and "what can I hit from here", and the first has no
-    /// meaning here — pins are scoped to a move job, and during a placement the ghosts ARE the question.
-    /// Returns false when no placement is offering ghosts, so the caller clears the field.
+    /// #247 — the unit under the cursor, when inspecting it should take the field over whatever else is on
+    /// screen. Null when nothing is hovered, or when the hovered unit is the very one whose ghosts are
+    /// live: its models still stand at their ORIGINAL positions, so anchoring there mid-aim would replace
+    /// the picture the player is using with one about where they used to be. That exclusion is also what
+    /// keeps the field from flickering as the cursor transits its own unit, now that the hover dwell is
+    /// disabled (see <see cref="TacticalOverlayConfig.HoverPreviewDelaySeconds"/>).
     /// </summary>
-    private bool TryDrawPlacementField()
+    private IUnit? ResolveHoverAnchor(DefineMovementPathRequest? req, IUnit? placementUnit)
     {
-        IGhostFieldSource? source = _resolverOverlay?.ActiveGhostField;
-        if (source == null || !source.TryGetGhostField(out IUnit unit, out var ghosts)) return false;
+        IUnit? hovered = _hoverUnit;
+        if (hovered == null) return null;
 
-        RebuildGhostField(unit, ghosts, req: null);
-        return true;
+        IUnit? ghosting = req != null ? req.UnitDataBinding.GetValue() : placementUnit;
+        if (ghosting != null && ReferenceEquals(ghosting, hovered)) return null;
+
+        return hovered;
+    }
+
+    /// <summary>Where a unit's living, deployed models actually stand — the anchor for a hover field.</summary>
+    private static Dictionary<IModel, Position> LivePositions(IUnit unit)
+    {
+        var positions = new Dictionary<IModel, Position>();
+        foreach (IModel m in unit.Models)
+        {
+            if (!m.GetIsAlive()) continue;
+            Position p = m.Position;
+            if (p.x == 0f && p.z == 0f) continue;   // undeployed / in reserve
+            positions[m] = p;
+        }
+        return positions;
     }
 
     // Approximations, deliberate and documented: the reach discs inflate by each model's own base
@@ -302,10 +354,17 @@ public class TacticalOverlayController
     // per-target truth. Band labels are suppressed (they'd ride the cursor); pins keep chips/counts and
     // their secondary contours.
     //
-    // #230: `req` is null for a placement-anchored build. Everything it feeds is pin-related — the
-    // per-weapon range overrides and the secondary contours — and pins only exist during a move job, so
-    // a null request simply takes the no-pin path rather than needing a placement equivalent.
-    private void RebuildGhostField(IUnit movingUnit, IReadOnlyDictionary<IModel, Position> ghosts,
+    // #230: `req` is null for a placement- or hover-anchored build. Everything it feeds is pin-related —
+    // the per-weapon range overrides and the secondary contours — and pins only exist during a move job,
+    // so a null request simply takes the no-pin path rather than needing an equivalent.
+    //
+    // #247: signature-gated. Real ghosts move every frame, so their signature changes every frame and this
+    // rebuilds exactly as it always did; a HOVERED unit is stationary, so its signature holds and the whole
+    // rebuild — polar sight maps and the GPU upload, the expensive parts — is skipped after the first
+    // frame. The per-frame/cached split is emergent, not a mode.
+    //
+    // Returns false when there is nothing to draw (no ranged weapons, or no model on the table).
+    private bool RebuildGhostField(IUnit movingUnit, IReadOnlyDictionary<IModel, Position> ghosts,
         DefineMovementPathRequest? req)
     {
         // Distinct effective ranges -> nested bands (vs the focused pin if any, else raw ranges).
@@ -338,7 +397,14 @@ public class TacticalOverlayController
             }
         }
 
-        if (byRange.Count == 0 || sources.Count == 0) { ClearFieldPictures(); return; }
+        if (byRange.Count == 0 || sources.Count == 0) { ClearFieldPictures(); return false; }
+
+        // #247: everything below is the expensive half (polar sight maps + GPU upload). Skip it whole when
+        // nothing that shapes the picture has moved — which is every frame after the first for a hovered
+        // unit, and no frame at all for live ghosts.
+        long signature = ComputeGhostFieldSignature(movingUnit, sources, byRange.Keys);
+        if (_fieldActive && signature == _lastGhostFieldSig) return true;
+        _lastGhostFieldSig = signature;
 
         var ranges = byRange.Keys.ToList();
         ranges.Sort();
@@ -415,8 +481,45 @@ public class TacticalOverlayController
         _fieldMasksValid = false;  // ghost-anchored masks must not feed the target-anchored sampler truth
         InvalidateField();  // leaving ghost mode must force a target-anchored rebuild
         if (req != null) BuildSecondaryContours(req, movingUnit, _probe.ModalBaseRadius(movingUnit));
-        else _secondaryContours.Clear();   // #230: no pins during a placement, so no secondary rings
+        else _secondaryContours.Clear();   // #230: no pins during a placement/hover, so no secondary rings
+        return true;
     }
+
+    /// <summary>
+    /// #247 — what makes this ghost field's picture what it is: the anchor unit, where its sources stand
+    /// (quantized to 0.1", so sub-inch presentation glide doesn't thrash rebuilds), its distinct effective
+    /// ranges, and the blockers that shape LoS. Blockers matter because a hover field is otherwise
+    /// perfectly stable: a model walking between the hovered unit and open ground must repaint the shadow.
+    /// </summary>
+    private long ComputeGhostFieldSignature(IUnit anchor, List<Position> sources, IEnumerable<float> ranges)
+    {
+        unchecked
+        {
+            long h = 1469598103934665603L;
+            void Mix(long v) => h = (h ^ v) * 1099511628211L;
+
+            Mix(anchor.ID.GetHashCode());
+            foreach (Position s in sources) { Mix((long)(s.x * 10f)); Mix((long)(s.z * 10f)); }
+            foreach (float r in ranges) Mix((long)(r * 100f));
+
+            // Every other unit's models are potential LoS blockers; the anchor's own are excluded from
+            // BuildBlockers, so they can't change this picture and are skipped here too.
+            foreach (IUnit u in _tableState!.Units.Objects)
+            {
+                if (ReferenceEquals(u, anchor)) continue;
+                foreach (IModel m in u.Models)
+                {
+                    if (!m.GetIsAlive()) continue;
+                    Position p = m.Position;
+                    if (p.x == 0f && p.z == 0f) continue;
+                    Mix((long)(p.x * 4f)); Mix((long)(p.z * 4f));
+                }
+            }
+            return h;
+        }
+    }
+
+    private long _lastGhostFieldSig;
 
     private long _lastGhostWarnMs;
 
@@ -504,6 +607,15 @@ public class TacticalOverlayController
         bool wantKeys = !io.WantCaptureKeyboard && !EscapeRouter.MenuOpen;
         if (wantKeys && ImGui.IsKeyPressed(TacticalOverlayConfig.ThreatToggleKey))
             _threatToggledOn = !_threatToggledOn;
+
+        // #247: V is the master reach toggle, handled here rather than in any one resolver so it works
+        // identically while moving, placing, and idle. The placement panel's checkbox drives the same flag.
+        if (wantKeys && ImGui.IsKeyPressed(TacticalOverlayConfig.ReachToggleKey))
+            ViewSettings.ShowReachOverlay = !ViewSettings.ShowReachOverlay;
+
+        // #247: the hover anchor. Captured here (input phase, hover state fresh) and consumed by DrawField
+        // on the next canvas pass. No dwell — see TacticalOverlayConfig.HoverPreviewDelaySeconds.
+        _hoverUnit = io.WantCaptureMouse ? null : hitTester.HoveredUnit;
 
         if (wantKeys && ImGui.IsKeyPressed(TacticalOverlayConfig.FidelitySamplerKey))
         {

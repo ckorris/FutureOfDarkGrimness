@@ -1,8 +1,84 @@
 # 247 — Range / threat overlay UI rethink
 
-**Status:** Exploratory, filed 2026-07-18. Design pass first — surface the fork and get Chris's
+**Status:** Slice 1 built 2026-07-26 (direction B, context-driven anchor + one global toggle) —
+awaiting GUI hand-verify. Q5 (threat frontiers) and the legend/labels half of Q1 still open.
+
+## 2026-07-26 — slice 1: one toggle, one anchor per frame
+
+Came out of #230's hand-verify: "we just need that tactical overlay easier to toggle... while moving, or
+deploying, or even just inspecting the map while waiting for an opponent."
+
+The finding that shaped it: those are **not the same problem**. Moving and deploying both already have an
+anchor (their ghosts); *idle inspection had none* — `DrawField` returned early with no move job and no
+placement, so there was nothing to toggle on. That half needed a new anchor, not a relocated checkbox.
+
+Built (direction **B**, signed off in conversation):
+
+- **`FieldAnchorPlan`** (`FdgRaylib/Rendering/TacticalOverlay/`) — the anchor decision, which had been
+  spread across four places (`DrawField`'s move-request branch, the `GhostAnchoredField` mode flag,
+  `ResolveFieldTarget`'s pins/hover, and #230's placement fallback), collapsed into one pure function with
+  a priority order: `hover > move-ghosts | pinned-target > placement-ghosts`. Exactly one winner, which is
+  what makes the pictures mutually exclusive — two team-coloured washes over the same ground are
+  unreadable, so the contest is the feature, not tidiness. Testable without ImGui (`FieldAnchorPlanTests`,
+  10 cases).
+- **Hover anchors the field on any unit**, at its live positions — the idle-inspection case, and it works
+  mid-decision too. Excludes the unit whose ghosts are live: its models still stand at their *original*
+  positions, so anchoring there mid-aim would answer a question nobody asked.
+- **`V` is the master toggle** (`ViewSettings.ShowReachOverlay`, default on), handled globally in
+  `UpdateInput` rather than in any resolver, so it means the same thing while moving, placing and idle.
+  Checkboxes in the placement panel and Esc -> Options drive the same flag. Resolvers now report what they
+  *have* to anchor on; the controller decides what draws.
+- **Caching**: `RebuildGhostField` is signature-gated on (anchor unit, source positions at 0.1", distinct
+  ranges, every other unit's model positions — they are LoS blockers). Live ghosts move every frame so
+  their signature changes every frame and they rebuild exactly as before; a hovered unit is stationary, so
+  the expensive half (polar sight maps + GPU upload) is skipped after the first frame. The per-frame vs
+  cached split is emergent, not a mode.
+- **Hover dwell disabled** (`HoverPreviewDelaySeconds` 0.150 -> 0.0, note left in
+  `TacticalOverlayConfig`). Chris: the delay doesn't read as deliberate restraint, it reads as the picture
+  being slow to bake. The anti-flicker measure that survives is the hover-doesn't-steal-your-own-ghosts
+  rule above.
+
+**Behaviour change worth naming:** hovering an enemy during a move job used to show the *target-anchored*
+field ("where can I stand to shoot it"); it now shows that enemy's *own* reach, per the new rule. The
+target-anchored picture is still reachable by pinning (click) and then looking elsewhere — hover means
+"what does that unit reach", pin means "where can I stand to shoot it". Coherent, but it is a change.
+
+**Deliberately NOT done:** deleting `TacticalOverlayConfig.GhostAnchoredField`. It selects between two
+genuinely different *move-job* pictures and is default-OFF pending a feel-check, so removing it would
+silently change the default movement experience. The contest routes around it instead.
+
+### Answers to the open questions below
+
+- **Q2 (anchor concept)** — answered: context-driven. The manual toggle survives only for the move job's
+  two pictures.
+- **Q3 (field vs rings)** — answered: field. #230 first shipped plain geometric outlines and they were
+  reverted; without LoS/cover they draw reach straight through a building, which is the one thing a
+  distance tool must not do.
+- **Q4 (when it shows)** — answered: sticky global toggle, context picks the anchor.
+- **Q1 (discoverability)** — half. One key with one meaning, surfaced in two panels; an on-table legend
+  for the band/threat vocabulary is still unbuilt.
+- **Q5 (threat frontiers)** — untouched. F is still a separate layer with its own reference-player logic
+  (`ResolveReference` keys off a move job or the activating unit), so enemy threat still does not
+  auto-show while deploying. Folding threat into the same contest is the obvious slice 2.
+
+### Hand-verify
+
+1. `V` toggles the field off/on identically while moving, while deploying, and while idle.
+2. Idle (or waiting on an opponent): hover any unit -> its reach appears immediately, no perceptible dwell.
+3. Mid-placement: hover an *enemy* -> the field switches to that enemy; move off -> your ghosts' field
+   returns. Hover your *own* placing unit -> the ghost field stays (must not switch).
+4. Only ever one field on screen.
+5. Hover a unit and hold still: no per-frame rebuild cost (the `[overlay] ... ms/frame` Debug warning must
+   not fire; it should for live ghosts on the CPU path only).
+6. Move a third unit between a hovered unit and open ground -> the shadow repaints (the blocker half of the
+   signature).
+7. Esc -> Options: the new "Weapon reach (V)" checkbox agrees with the hotkey both ways.
+
+---
+
+**Originally filed:** Exploratory, 2026-07-18. Design pass first — surface the fork and get Chris's
 sign-off before building anything (per CLAUDE.md). Number 247 verified free against index + archive on
-2026-07-18. No code yet.
+2026-07-18.
 
 ## Trigger
 
