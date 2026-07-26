@@ -515,7 +515,13 @@ public class GuiDefineMovementResolver
             if (!request.IgnoresImpassibleTerrain && bindings.TryGetValue(_selectedModel, out var impBinding))
             {
                 var impPath = new List<Position>(paths.TryGetValue(_selectedModel, out var ip) ? ip : (IReadOnlyList<Position>)System.Array.Empty<Position>()) { ghostPos.Value };
-                ghostCrossesImpassible = MovementUtilities.DoesPathCrossImpassibleTerrain(new ModelMoveEntry(impBinding, impPath), terrain);
+                // Carry the per-waypoint travel facing (#150) so the swept-base impassible check runs against the
+                // same oriented footprint the ghost draws - and the same one the authoritative Done gate now uses.
+                // Without it the red-flag used the model's resting facing and disagreed with the visible ghost.
+                var impFacings = MovementFacingUtilities.WaypointFacings(_selectedModel.Position, impPath,
+                    _selectedModel.Facing, _manualOffsets.GetValueOrDefault(_selectedModel));
+                ghostCrossesImpassible = MovementUtilities.DoesPathCrossImpassibleTerrain(
+                    new ModelMoveEntry(impBinding, impPath, impFacings), terrain);
             }
             ghostOverlaps |= ghostCrossesImpassible;
 
