@@ -23,5 +23,16 @@ rounding/trailing-zero behavior.
   counters, canvas hover label), `GuiModelSelectionResolver`, CLI `AssignWoundsResolver`.
 
 ## Decisions
+- `WoundFormat.Format` rounds explicitly (`MathF.Round(v, 2, AwayFromZero)`) before formatting rather
+  than relying on `"0.##"` alone, so it can collapse **negative zero**. Remaining-wound counters are
+  subtraction chains that land on tiny negatives routinely (#199's epsilon territory) and `"-0"` on a
+  wound counter reads as a bug. A test pins this.
+- Invariant culture, so the decimal separator can never come out as a comma (ASCII rule, and a comma
+  would read as a thousands separator).
 
 ## Outcome
+Shipped 2026-07-26 (`d62804c`). New `FdgRaylib/Rendering/WoundFormat.cs` (`Format` / `Fraction`) applied
+at every wound display: `TableTooltipOverlay` (unit + model sections), `GuiAssignWoundsResolver` (header,
+per-row counters, canvas hover label), `GuiModelSelectionResolver` (both sites), CLI `AssignWoundsResolver`.
+`HealthBarRenderer` needed no change - it draws a bar, never text. 6 new `WoundFormatTests`; app suite
+621/621 green, engine 2196/2196, headless smoke exits 0. Awaiting GUI hand-verify in a probabilistic game.
