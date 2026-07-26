@@ -86,7 +86,7 @@ Internet-play readiness pass (QF1-10) landed 2026-07-08 — password gate, keepa
 frames, targeted PlayerID assignment, greeting-timeout eviction, post-launch join gate, client host-loss
 detection, host-IP display, DNS host entry. See `NetworkingHandoff-2026-07-08.md`. Remainders below.
 
-- [ ] 187 — Disconnect recovery: auto-save on `PlayerDisconnectedException` game-end + live-test #052's networked resume-rejoin. ([WorkItems/187](WorkItems/187-disconnect-recovery.md))
+- [~] 187 — Disconnect recovery: a dropped connection now ends with its own `EGameOutcome.Disconnect`, and the host auto-writes `Saves/recovery-<utc>.fdgsave` (newest 5) named on the game-over card; rejoin covered by the suite's first real-socket tests (saved-PlayerID adoption, distinct slots). Implemented + tested; awaiting the two-machine hand-verify in the detail file. ([WorkItems/187](WorkItems/187-disconnect-recovery.md))
 - [ ] 188 — Multi-remote-client support: live-test 3+ players / 2+ remote clients (QF5 enabled it; roster/team/routing edge cases). ([WorkItems/188](WorkItems/188-multi-remote-client.md))
 - [~] 189 — Broadcast gating (roster-only) DONE + tested; configurable listen/connect port DONE (both modals, `NetworkProtocol.DefaultPort`, browser auto-fills from listing). Engine `46f387d`; awaiting GUI hand-verify of the port fields. ([WorkItems/189](WorkItems/189-broadcast-gating-configurable-port.md))
 - [ ] 190 — Networked clients never receive mid-game token updates (in-place `TokenContainer` mutations bypass the data-sync path; join snapshot only). ([WorkItems/190](WorkItems/190-networked-token-sync.md))
