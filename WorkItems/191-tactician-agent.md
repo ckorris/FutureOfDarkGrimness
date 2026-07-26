@@ -20,6 +20,31 @@ pin tests.
 
 ## Notes (newest first)
 
+**2026-07-26 — ONE-PLY OPPONENT REPLY shipped (Chris approved ideas 1-3 of the smartness
+brainstorm; this is idea 1). Engine `3c4924f`.** Retaliation now prices each enemy's best
+single reply instead of a headcount discount: the per-sharer dilution divisor
+(1 + 0.5 x sharers) is replaced by an adversarial share - incoming x ours/(ours +
+best-alternative-target-value), floored at RetaliationShareFloor (0.25). The alternative-
+target value mirrors the incoming computation exactly (shooting at post-advance reach, melee
+margin at half weight inside charge threat) over OTHER friendlies at their current positions,
+cached per enemy per activation. Consequences: a juicy unit can no longer hide behind chaff
+(same headcount, thin alternative -> near-full price), chaff pays little when a fatter target
+shares the envelope, and the ledgered "dilution counts units, not their remaining volley
+value" simplification is resolved. Pin Retaliation_PricesTheEnemysBestReply_NotAHeadcount-
+Discount (same geometry + sharer count, fat vs worthless alternative must discriminate)
+verified FAILING pre-fix; the old Retaliation_Dilutes pin stays green. Suite 2161/2161.
+**50-game probes (seed 3000, 0 faults everywhere), against fix-NEUTRALIZED baselines rerun
+on the CURRENT engine (the old row numbers predate the #256/#264 drift): RL-vs-Hives 50->47,
+RL-vs-Orks 49->54, RL-vs-HEF 68->63, Hives-vs-HEF 86->82, BB-vs-Orks 72->73 - net -1.2/cell,
+parity within noise (sigma of the 5-cell mean ~3). Behavioral instruments all hold: seed-7001
+timidity replay stays fixed (Hive Warriors RushObjective x3 + Block, no sideways slide, Win),
+Hives-vs-Gunline 100.0, RL-vs-Gunline 93.0.** Shipped on behavior + principle with the gate
+after the other two approved slices as arbiter. WATCH ITEM: the softness concentrates where
+the Tactician's own units are valuable vs shooty opponents (RL/Hives elite rows) - under the
+reply model a valuable unit pays near-FULL price (old dilution gave it 0.67-0.4 by headcount),
+so if the full gate shows elite-army softness the single-knob response is a MoveRetaliation
+retune, or aggregating alternatives by SUM instead of MAX (proportional-pick model).
+
 **2026-07-23 — D1 BASELINE RE-PINNED after #264 issue 6 (the solo skirt capped at +/-60 degrees,
 was +/-100: past perpendicular a "skirt" is a retreat, and it was taken at the FULL rush budget).**
 New 200-game outcome hashes, DOP 16, reproducible across duplicate runs, zero faults, zero
