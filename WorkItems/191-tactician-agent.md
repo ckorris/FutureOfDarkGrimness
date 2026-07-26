@@ -20,6 +20,21 @@ pin tests.
 
 ## Notes (newest first)
 
+**2026-07-26 — RISK POSTURE (idea 3, closing the approved trio; strategic-allocation (c)
+from game 3) shipped. Engine `738a855`.** Posture = round-scaled projected-objective deficit
+(best-placed opponent minus us, half a tilt per marker, clamped [-1,1]; early deficit is
+deployment noise, late is the game), cached per activation. Behind: retaliation AND arriving
+pressure discount by PostureRetaliationRelief (0.35 at full deficit) and the objective
+delta + gradient boost by PostureObjectiveBoost (0.3, behind-only - being ahead is no reason
+to stop playing markers). Ahead: retaliation prices UP the same slope - protect the lead,
+run out the clock. 1-vs-3 late no longer scores like 3-vs-1. Pin
+BehindOnObjectivesLate_ARiskyGrabPricesBetterThanWhenLevel (same guarded grab, two-down vs
+level boards) verified failing pre-fix. Suite 2164/2164. **50-game probes (seed 3000, 0
+faults), same 5 cells (slice-2 -> this, pre-trio baseline in parens): RL-vs-Hives 51->51
+(50), RL-vs-Orks 49->54 (49), RL-vs-HEF 59->60 (68), Hives-vs-HEF 89->84 (86), BB-vs-Orks
+80->73 (72) - noise-level shuffling, trio reads parity on these cells (sum 325->322). Full
+ordered gate next; its row-level read arbitrates the trio and the RL-vs-HEF watch item.**
+
 **2026-07-26 — ARRIVING PRESSURE (idea 2 of the approved trio) shipped. Engine `ec65f9a`.**
 New MoveProjectedThreat (0.15) term: enemies the current retaliation term ignores entirely
 (outside every this-round envelope) are projected one rush-budget step toward their nearest
