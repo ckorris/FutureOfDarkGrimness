@@ -20,6 +20,25 @@ pin tests.
 
 ## Notes (newest first)
 
+**2026-07-26 — TRIO GATE (one-ply reply + arriving pressure + risk posture): MATRIX 83.9 /
+MIRRORS 82.5, ZERO CELLS BELOW 50, ZERO FAULTS IN 3200 - AND THE ATTRIBUTION RUN SHOWS THE
+TRIO IS WHAT CLEARS THE FLOOR.** Full ordered gate (trio-gate, hash `E5B567EFFDAF2A6F`,
+seeds 3000, DOP 16): matrix 83.9, mirrors 82.5, worst cell RL-vs-Hives 51, faults 0/3200,
+timeouts 0. Row avgs: HEF 92.4, Hives 90.5, Orks 90.5, BB 82.9, Dwarf 82.9, DE 81.0, HDF
+79.0, RL 71.9. Because the old 83.9/84.4 reference predates the #256/#264 engine drift, a
+NEUTRALIZED full gate was run on the same engine + seeds with the trio's three commits
+checked out (trio-gate-neutralized, hash `D63814604A328DE4`): matrix 84.3, mirrors 82.5,
+but TWO below-50 cells (RL-vs-Hives 49, RL-vs-Orks 49) and 1 fault (DE-vs-HEF seed-3010
+watchdog timeout). Attribution verdict: the trio costs -0.45 matrix (noise), holds mirrors
+exactly, LIFTS both floor cells over the 50 line (49/49 -> 51/54), and the run is fault-free
+where the neutralized engine was not. RL-row watch item RESOLVED: 71.4 neutralized -> 71.9
+trio (+0.5) - the drop from the old 77.6 reference is engine drift, not the trio;
+RL-vs-HEF's -8 (68->60) is offset by +5/+2 in the same row and its G2 read (flipped seed
+3016 decision replay) shows healthy marker play, no timidity signature. A-gate automated
+criteria on the CURRENT engine: aggregate >= 70 PASS (83.9), no cell < 50 PASS (the
+pre-trio engine FAILS this today), faults <= baseline PASS (0). Reports:
+FdgLab/reports/trio-gate, trio-gate-neutralized.
+
 **2026-07-26 — RISK POSTURE (idea 3, closing the approved trio; strategic-allocation (c)
 from game 3) shipped. Engine `738a855`.** Posture = round-scaled projected-objective deficit
 (best-placed opponent minus us, half a tilt per marker, clamped [-1,1]; early deficit is
