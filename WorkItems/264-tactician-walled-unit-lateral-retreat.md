@@ -185,6 +185,33 @@ Chris still owes the GUI terrain-render hand pass (#167 note).
 
 ## Notes
 
+- 2026-07-25 (follow-up): **the route gradient now honours Strider and Flying.** Engine `71c424f`.
+  Both route helpers built their grid and measured their detour blind to the MOVER's own terrain
+  rules, so the score priced a path the unit does not take. `TacticianPlanner.UnitRoute`: Flying takes
+  the straight segment and builds no grid; Strider builds with `ignoreDifficultTerrain`. Flags read
+  once per activation; `MacroActionGenerator` and `MovementPlanner` pass the same Strider flag so
+  score and move agree.
+  - **Only the SCORE was wrong, which is why the first pin was worthless.** The generator already
+    plans a flyer's MOVE straight (`ignoresAllTerrain`), so the endpoint is correct with or without
+    the fix - the pin asserted on the endpoint and passed both ways. Rewritten to assert on the
+    gradient (`planner.Score`).
+  - **A single wall cannot pin this.** There the flyer still lands inside charge reach, both measures
+    saturate the approach fraction at 1.0, and the bug is invisible. The pin needs a THREE-SIDED
+    pocket, where the ground detour is ~4x the flight: the approach credit then collapses to zero and
+    ties the retreat at -0.0666. Verified red-by-design by toggling the fix off and back on.
+  - **NEW FINDING, filed as #281: `StringPull` erases difficult-terrain routing.** It re-tests every
+    shortcut with `SegmentClear`, which checks Impassible ONLY, so any bend the A* made to dodge
+    difficult ground is pulled straight back through it. `DifficultCostMultiplier` therefore only
+    survives where impassible terrain independently forces the bend; on an open table it does nothing.
+    Consequence here: the Strider half is correct but barely observable in geometry, so its pin is
+    written at GRID level (`TerrainGrid.IsDifficult`) rather than overclaiming a routed-path effect.
+    Landed as correct-and-ready rather than blocked on #281.
+  - **Verification**: suite 2147/2147; full build + headless smoke exit 0; solo D1 bit-identical
+    (`0CBA6DA5E9DD658A`). Pool gate 3200 games/side (`3E48E05C84E2F476` -> `0527A11D77DE480D`),
+    and all eight pool armies carry Strider and/or Flying so the gate genuinely exercises it:
+    aggregate **84.2% -> 84.2%**, faults 0, worst cell 51% -> 52%, every army row within +/-1.0pp,
+    decision cost mean 25.38ms unchanged.
+
 - 2026-07-25 (issue 1, the melee half): **FIXED - the planner's melee APPROACH term is now
   route-aware.** Slice 1 made `ObjectiveApproach` measure walking distance and deliberately left its
   melee twin on straight-line distance ("still owed" item 3). Two findings while folding it in:
