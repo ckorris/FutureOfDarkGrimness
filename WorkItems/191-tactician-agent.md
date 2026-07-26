@@ -20,6 +20,23 @@ pin tests.
 
 ## Notes (newest first)
 
+**2026-07-26 — PERF: TerrainGrid per-game cache - the bot's move pause halved (2.2x decision
+mean, 2.6x p95). Engine `5fcecb4`.** Chris: "noticeable pause before it moves". dotnet-trace on
+a Hives-vs-Orks tactician smoke (seed 3000): ~HALF the game's busy CPU was TerrainGrid.Build -
+rebuilt at least twice per activation (planner route grid + generator shared grid, plus deploy
+lanes) though the grid depends only on terrain + base radius + Strider flag; the #268 dense
+palettes made the old "built per query; measured cheap" note stale (its own comment asked for
+profiler evidence before revisiting - this is it). New TerrainGridCache: ConditionalWeakTable
+per table state (concurrent games never share), keyed (radius, flag, terrain count). Cold
+single-game decision mean 45.7 -> 20.9ms, p95 315.7 -> 122.9ms, wall 18.8 -> 9.4s. Neutrality
+PROVEN at dop 1: 3 matchups x 10 games (horde / caster / transport+ambush), old-vs-new
+hash-equal (6267BEA2307042D2 / 16C0181B0279BAFB / 1EEF569455930F1D) + a bit-identical
+GUID-normalized seed-3000 game log. DOP-16 hash comparison is NOT usable for this - same-code
+DOP-16 runs flip 17/20 outcomes (filed under #210 with the dop-1-only verification practice;
+also there: the first stash-verification attempt silently compared cache to cache after a
+failed rebuild - caught, redone from a verified-old build). Suite 2168/2168 incl. 4 new
+TerrainGridCacheTests.
+
 **2026-07-26 — 200-GAME CONFIRMATION CELLS: THE FLOOR-CLEARING STORY DOES NOT SURVIVE G4
 RESOLUTION.** All six cells completed, 0 faults, seeds 3000+, 200 games/cell, paired seeds
 (sigma ~3.5/cell unpaired, less paired). Trio vs neutralized (`3c4924f~1`): RL-vs-Hives
