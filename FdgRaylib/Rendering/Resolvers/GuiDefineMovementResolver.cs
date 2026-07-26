@@ -1142,7 +1142,7 @@ public class GuiDefineMovementResolver
         // Facing overrides (#150/#282): each waypoint follows its direction of travel, rotated by the manual
         // offset it was PLACED with (captured by PathTemplate.AddStep) - so Done executes exactly the path
         // the committed markers show, and a late rotation never re-orients them.
-        var results = pt.GetResultsAsList(travelDirectionFacing: true);
+        var results = pt.GetResultsAsList(EPathFacingDerivation.TravelDirection);
         var enemyFootprints = GetEnemyFootprintsForRequest(request);
         // #212: friendlies may be passed THROUGH but not ENDED on - so the Done gate must reject a move (esp.
         // a group translate) that finishes on a friendly, exactly as the authoritative DefinePathStage does
