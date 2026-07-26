@@ -56,6 +56,7 @@ Corpus coverage is a different story: 199 of 13,870 book rule references (1.4%) 
 - [~] 234 — Cast gated on `HasAttacked` (shooting or melee closes the casting window; moving does not), per v3.5.1 Caster(X) "at any point before attacking". Implemented + tested; awaiting GUI hand-verify. ([WorkItems/234](WorkItems/234-cast-after-charge-legality.md))
 - [~] 249 — Caster's "only one try per spell" now enforced via a per-activation attempted-spell set (recorded with the cost, so a failed cast burns the try); casting different spells in one activation stays legal. Implemented + tested; awaiting GUI hand-verify. ([WorkItems/249](WorkItems/249-one-try-per-spell.md))
 - [~] 244 — Caster self-boost: own tokens for +1/each in a new dedicated spell picker (`ChooseSpellRequest`, one-panel GUI with useful-cap-gated boost stepper). Implemented + tested; awaiting GUI hand-verify. ([WorkItems/244](WorkItems/244-caster-self-boost.md))
+- [ ] 285 — A resolved spell announces what its effect DID (one `Notice` banner naming the effect + affected units); today only the cast roll is announced. ([WorkItems/285](WorkItems/285-spell-effect-banner.md))
 
 ## Army Forge
 
@@ -129,6 +130,11 @@ detection, host-IP display, DNS host entry. See `NetworkingHandoff-2026-07-08.md
 - [ ] 252 — Anchored field texture ignores the #201 cover proximity rules (tint over-paints cover; pips/aim lines already truthful): needs per-piece polar cover intervals, target-anchored mode first; approach + estimate in the detail file. ([WorkItems/252](WorkItems/252-field-cover-proximity-truthfulness.md))
 - [~] 278 — 2026-07-25 playtest fixes: spillout dice batched into one row; all-saved volley morale pinned (already fixed by #254, real-path regression added); Harassing strike-back move verified rules-legal (no change); Toast banner on Shaken recovery (both paths). Implemented + tested; awaiting GUI hand-verify. ([WorkItems/278](WorkItems/278-playtest-fixes-2026-07-25.md))- [~] 266 — Console word-wrap (the `HorizontalScrollbar` flag was widening the wrap rect to the content, so `TextWrapped` never bit) + resolver/console split moved from 50% to 60% of screen height, which widened every docked resolver at once. Implemented; awaiting GUI hand-verify. ([WorkItems/266](WorkItems/266-console-wrap-and-panel-height.md))
 - [ ] 253 — New movement visual: colored area showing where ending your move earns the cover bonus vs a pinned enemy (#201-aware, samples `VoidsCover`); attacker-side "shoot over this wall" sibling facet awaiting owner call. ([WorkItems/253](WorkItems/253-cover-bonus-placement-visual.md))
+- [ ] 284 — Shoot panel weapon rows show special rules as underlined, individually hoverable names (Army Forge treatment) + a Rules block with descriptions in the Details pane. ([WorkItems/284](WorkItems/284-weapon-select-rule-hovers.md))
+- [ ] 286 — Assign Wounds: hovering a model on the table rings it and highlights its dialog row (only the row -> model direction works today). ([WorkItems/286](WorkItems/286-assign-wounds-canvas-hover.md))
+- [ ] 287 — Fractional wounds display rounded to hundredths everywhere (hover tooltip printed `8.666667`; Assign Wounds' `F0` hid the `.4` of a 3.4 pool). ([WorkItems/287](WorkItems/287-fractional-wound-display.md))
+- [ ] 288 — Late-deploy (Ambush) panel: the 118px unit-stat scroll box grows to fill the panel and gains the hover-tooltip treatment (rule descriptions). ([WorkItems/288](WorkItems/288-late-deploy-stat-panel.md))
+- [~] 289 — Decisive rolls (morale, cast, objective D3, Storm, token shed) render as real dice in probabilistic mode instead of an expected-value bar: `DiceRolledBeat.FromDecisive`. Implemented + tested; awaiting GUI hand-verify. ([WorkItems/289](WorkItems/289-decisive-rolls-render-as-dice.md))
 
 ## 2026-06-10 audit follow-ups
 
