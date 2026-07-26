@@ -71,7 +71,7 @@ Corpus coverage is a different story: 199 of 13,870 book rule references (1.4%) 
 
 ## Transport
 
-- [ ] 097 — Disembark/embark full movement: replace the Advance-equivalent simplifications (disembark-then-Rush/Charge from the 6" drop; real move-into-contact to embark). ([WorkItems/097](WorkItems/097-transport-full-movement.md))
+- [~] 097 — Disembark/embark full movement: owner ruled the 6" exit leash IS the move (RAW), so disembark keeps the circle but now records the real distance (Slow units can't hop 6" and shoot) and charge-out is pinned; embark became move-first-then-board from 1" contact, with a greyed "move up first" menu hint. Implemented + tested; awaiting GUI hand-verify. ([WorkItems/097](WorkItems/097-transport-full-movement.md))
 
 ## AI agent (Tactician)
 
