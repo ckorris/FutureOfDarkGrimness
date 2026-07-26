@@ -857,7 +857,7 @@ public class GuiPlaceObjectsResolver<T>
         var positions = new List<Position>();
         foreach (var unit in _tableState.Units.Objects)
         {
-            if (unit.PlayerID == self) continue;
+            if (!TeamAwareness.IsEnemyUnit(_tableState, self, unit)) continue;
             foreach (var model in unit.Models)
             {
                 var pos = model.Position;
@@ -905,6 +905,10 @@ public class GuiPlaceObjectsResolver<T>
     {
         foreach (var model in _tableState.Models.Objects)
         {
+            // Casualties are removed from play - a dead model's base must not keep blocking placement from
+            // wherever it happened to die. Dead models aren't drawn, so without this the spot where a unit
+            // was wiped out becomes an invisible no-place region (seen as an inexplicable red Ambush drop).
+            if (!model.GetIsAlive()) continue;
             var pos = model.Position;
             // Default-constructed Position is (0,0,0); models there haven't been placed yet.
             if (pos.x == 0f && pos.z == 0f) continue;

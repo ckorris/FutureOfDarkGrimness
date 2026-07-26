@@ -6,6 +6,7 @@ using FDG.StageResolution.Requests;
 using FDG.Stages;
 using FdgRaylib.Rendering.Previews;
 using ImGuiNET;
+using FdgRaylib.Placement;
 
 namespace FdgRaylib.Rendering.Resolvers;
 
@@ -641,7 +642,7 @@ public class GuiConsolidationMoveResolver
         int unitKey = 0;
         foreach (var u in _tableState.Units.Objects)
         {
-            if (u.PlayerID == request.TargetPlayerID) continue;
+            if (!TeamAwareness.IsEnemyUnit(_tableState, request.TargetPlayerID, u)) continue;
             bool uncontactable = FDG.Rules.Dispatch.AircraftRules.IsAircraft(u); // #029
             bool anyLiving = false;
             foreach (var m in u.Models)

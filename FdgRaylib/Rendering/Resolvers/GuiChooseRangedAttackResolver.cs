@@ -281,7 +281,7 @@ public class GuiChooseRangedAttackResolver
                     sub = $"{ts.modelsThatCanShoot.Count}/{livingTargets} in range";
                     // #042 Blast/Indirect/Takedown: a weapon that ignores cover negates the +1.
                     if (ts.HasCover) sub += wo.IgnoresCover ? ", Cover (ignored)" : ", Cover (+1 Def)";
-                    if (wo.IgnoresTerrain) sub += ", ignores LoS";
+                    if (wo.IgnoresTerrain) sub += $", ignores LoS ({wo.LineOfSightIgnoreRule})";
                     colSub = ImGui.ColorConvertFloat4ToU32(new Vector4(0.40f, 0.85f, 0.40f, 1f));
                 }
                 dl.AddText(rMin + new Vector2(4, ImGui.GetTextLineHeight() + 4), colSub, sub);

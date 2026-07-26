@@ -34,7 +34,7 @@ This file-based system is for durable, cross-session tracking. The built-in Task
 | `FutureOfDarkGrimness` | Class library | Game engine: rules, state machine, unit/model data, stage resolution, networking |
 | `FdgRaylib` | Console exe | Application layer: Raylib + ImGui front end, screens (menu/lobby/army builder), CLI + GUI input resolvers |
 
-`FutureOfDarkGrimness` is a **git submodule** — usually treat it as read-only. Stop and ask before modifying it.
+`FutureOfDarkGrimness` is a **git submodule**, and it is usually where the proper fix belongs — prefer the engine-side change over a client-side workaround when the engine is the real home for the behavior. No need to ask first; follow the submodule-first commit cadence above and verify with the engine suite.
 
 ## Build & Run
 

@@ -388,6 +388,8 @@ public class PlaceObjectsResolver<T> : IStageResolver<PlaceObjectsRequest<T>, Ca
         if (_tableState == null) yield break;
         foreach (var model in _tableState.Models.Objects)
         {
+            // Casualties are removed from play - a dead model's base must not keep blocking placement.
+            if (!model.GetIsAlive()) continue;
             var pos = model.Position;
             // Default-constructed Position is (0,0,0); models there haven't been placed yet.
             if (pos.x == 0f && pos.z == 0f) continue;
