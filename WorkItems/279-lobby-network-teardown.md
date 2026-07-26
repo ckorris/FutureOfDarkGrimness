@@ -1,6 +1,6 @@
 # 279 — Lobby network teardown (zombie host lobby / ghost roster slots)
 
-**Status**: implemented + engine-tested; awaiting GUI hand-verify (owner testing in a few hours)
+**Status**: CLOSED 2026-07-25 — GUI hand-verified by owner ("it worked")
 **Related**: #271 (server browser — the flow that surfaced it), #189 (broadcast gating), #266 (pre-auth caps), #075 (join handshake)
 
 ## Symptoms (playtest 2026-07-25, via the server browser)
@@ -57,3 +57,11 @@ Leaving a lobby never tore the networking down, and a failed re-bind was silent:
 - 2026-07-25 — investigated, root-caused, implemented, tested (this file). Engine changes
   authorized by owner. Server browser itself was innocent - it just made the host->back->host-again
   path likely.
+
+## Outcome
+
+Fixed and owner-verified same day. Leaving a lobby (Back or game exit) now fully tears the
+networking down - the host's listener stops and releases the port, the client's connection closes
+so its roster slot frees - and a host port-bind failure surfaces as a visible HostModal error
+instead of a silent dead lobby. Engine `c389648`, superproject `9b49d4d` (pushed in merge
+`e8d0928`). 4 regression pins in `Tests/LobbyTeardownTests.cs`; suite 2129/2129.
