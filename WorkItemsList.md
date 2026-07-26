@@ -146,7 +146,7 @@ From `Audit-6-10-2026.md`; `Audit-6-10-2026-Followup-2026-07-06.md` is the statu
 
 From `SpecialRulesAudit.md` (15 fixes already landed; plan detail, file paths, and approach live in its section 5).
 
-- [ ] 168 — Surface rule-load diagnostics in the UI: subscribe the engine `RuleDiagnostics` channel app-side; warn once per army load in the game log + an army-builder pane ("N rules on this list are not implemented: ...").
+- [~] 168 — Rule-load diagnostics surfaced in the UI: aggregated "N rules ... not implemented" in the game log at launch (buffered `RuleLoadWarnings`, GUI modes) + live army-builder pane lines on a store-free `ArmyRuleAudit` parity-pinned to the launch path. Implemented + tested; awaiting GUI hand-verify. ([WorkItems/168](WorkItems/168-rule-load-diagnostics-ui.md))
 - [~] 164 — `DealHits.WithRules` resolver seam so Blast(3) multiplies pre-attack/Strafing hits (Breath Attack residual). Shared `SyntheticHitResolution` fold + dispatch-time rule resolution landed 2026-07-19 (also fixed Strafing dropping the effect's AP); awaiting GUI hand-verify. ([WorkItems/164](WorkItems/164-dealhits-withrules-seam.md))
 - [ ] 165 — Dangerous-terrain deaths don't reach `UnitDestructionNotifier`: widen `ApplyDangerousTerrainEffects` to carry the moving unit; also decide/record rout kill-attribution.
 - [ ] 166 — Test-suite upgrades umbrella: fire-lint DONE 2026-07-08 (`RuleFireLint` over catalog + supplement); remaining: `RuleInteractionTests`, `SaveLoadRoundTrip` helper, probabilistic-dice variants, wire-crossing request, real Tough ordering test. [Notes](WorkItems/166-test-suite-upgrades.md)

@@ -54,6 +54,9 @@ public static class GameGuiWiring
         }
 
         var log   = new GameLog();
+        // #168: flush the army-load rule warnings buffered during the host's launch path (they fire
+        // before this log exists) and stream any later ones here.
+        RuleLoadWarnings.AttachLog(log);
         var logUI = new GuiLogMessageUI(log);
         var (resolvers, overlay) = ResolverRegistryFactory.BuildGui(game.TableState, coverProximityExceptions,
             tableBackground);

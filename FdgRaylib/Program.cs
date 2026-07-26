@@ -41,6 +41,14 @@ if (args.Contains("--field-harness"))
 
 bool headless = args.Contains("--headless");
 
+// #168: in any windowed mode, collect the engine's rule-load warnings for the in-game log (they fire
+// before the log exists and would otherwise only reach stdout, invisible in a GUI session). Headless
+// keeps the channel's plain stdout fallback that automated runs grep.
+if (!headless)
+{
+    FdgRaylib.Rendering.RuleLoadWarnings.Install();
+}
+
 // --trace-rules (#163): narrate every live rule hook evaluation (fired / condition failed / suppressed /
 // ability offered) through the Debug log channel — printed as [LOG] lines headless, shown in the GUI
 // console's Debug view. The GUI Debug toggle flips the same switch at runtime.
@@ -609,6 +617,9 @@ else
 
                 var scenarioServer = new FDGServer(parts.Store, parts.Bus, parts.Slots,
                     new RealtimePresentationClock());
+                // #168: this path builds the server (whose resume re-runs rule/spell resolution) after
+                // Launch attached the log - push any drops it just produced into the visible summary.
+                RuleLoadWarnings.FlushPending();
                 scenarioServer.OnGameEnded += result => renderer.ShowGameOver(result);
             };
         }
