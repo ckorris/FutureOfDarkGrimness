@@ -216,6 +216,14 @@ public class GuiDefineMovementResolver
     // crosses Difficult terrain draws dotted gray. Dangerous wins when a path crosses both.
     private static readonly uint DangerPathCol    = ImGui.ColorConvertFloat4ToU32(new Vector4(1.00f, 0.20f, 0.20f, 0.95f));
     private static readonly uint DifficultPathCol = ImGui.ColorConvertFloat4ToU32(new Vector4(0.62f, 0.62f, 0.62f, 0.95f));
+    // "Show me why" for an impassible-flagged path: the offending piece gets a red wash + outline and the
+    // model's oriented footprint is drawn at the point of first contact. The collision is often NOT under
+    // the node being placed (a pivot at an earlier waypoint, or the manual rotation offset re-orienting the
+    // whole committed path, can make an earlier segment collide), so the plain red flag read as
+    // "can't place here though nothing is between the last point and this one".
+    private static readonly uint CrossingZoneFill      = ImGui.ColorConvertFloat4ToU32(new Vector4(1.00f, 0.25f, 0.25f, 0.22f));
+    private static readonly uint CrossingZoneOutline   = ImGui.ColorConvertFloat4ToU32(new Vector4(1.00f, 0.30f, 0.30f, 0.95f));
+    private static readonly uint CrossingFootprintFill = ImGui.ColorConvertFloat4ToU32(new Vector4(1.00f, 0.25f, 0.25f, 0.18f));
 
     public GuiDefineMovementResolver(ITableState tableState, FormationModeState formationMode,
         bool coverProximityExceptions = true)
@@ -512,6 +520,7 @@ public class GuiDefineMovementResolver
             // it up front (red base + red line + un-clickable) instead of letting you place it and only blocking
             // Done. Folded into ghostOverlaps so the placement gate + red fill already treat it as "can't place".
             bool ghostCrossesImpassible = false;
+            MovementUtilities.TerrainCrossing? ghostCrossing = null;
             if (!request.IgnoresImpassibleTerrain && bindings.TryGetValue(_selectedModel, out var impBinding))
             {
                 var impPath = new List<Position>(paths.TryGetValue(_selectedModel, out var ip) ? ip : (IReadOnlyList<Position>)System.Array.Empty<Position>()) { ghostPos.Value };
@@ -520,8 +529,9 @@ public class GuiDefineMovementResolver
                 // Without it the red-flag used the model's resting facing and disagreed with the visible ghost.
                 var impFacings = MovementFacingUtilities.WaypointFacings(_selectedModel.Position, impPath,
                     _selectedModel.Facing, _manualOffsets.GetValueOrDefault(_selectedModel));
-                ghostCrossesImpassible = MovementUtilities.DoesPathCrossImpassibleTerrain(
+                ghostCrossing = MovementUtilities.FindFirstImpassibleCrossing(
                     new ModelMoveEntry(impBinding, impPath, impFacings), terrain);
+                ghostCrossesImpassible = ghostCrossing != null;
             }
             ghostOverlaps |= ghostCrossesImpassible;
 
@@ -547,6 +557,11 @@ public class GuiDefineMovementResolver
             uint fill = ghostOverlaps ? OverlapFill : FillColorFor(ghostBand);
             ModelBaseRenderer.DrawFilledImGui(dl, _selectedModel.BaseShape, new Vector2(gx, gy), _scale, fill, GhostOutline, 1.5f, ghostFacing);
             ModelBaseRenderer.DrawHeadingImGui(dl, _selectedModel.BaseShape, new Vector2(gx, gy), _scale, ghostFacing, GhostOutline);
+
+            // Show WHERE an impassible-flagged path collides - the piece, the segment, and the oriented
+            // footprint at first contact (which may be an earlier waypoint, not the node being placed).
+            if (ghostCrossing is { } crossing)
+                DrawImpassibleCrossing(dl, crossing, _selectedModel.BaseShape);
 
             // Cohesion warnings: indicators reflect would-be positions if user committed here
             var finalsWithGhost = BuildFinalPositions(paths, _selectedModel, ghostPos);
@@ -925,8 +940,13 @@ public class GuiDefineMovementResolver
             if (!blocked[i] && !request.IgnoresImpassibleTerrain && bindings.TryGetValue(models[i], out var gimpB))
             {
                 var gimpPath = new List<Position>(paths.TryGetValue(models[i], out var gp) ? gp : (IReadOnlyList<Position>)System.Array.Empty<Position>()) { newPositions[i] };
-                if (MovementUtilities.DoesPathCrossImpassibleTerrain(new ModelMoveEntry(gimpB, gimpPath), terrain))
+                if (MovementUtilities.FindFirstImpassibleCrossing(new ModelMoveEntry(gimpB, gimpPath), terrain)
+                        is { } groupCrossing)
+                {
                     blocked[i] = true;
+                    // Same "show me why" as single mode: piece + contact footprint for each flagged phantom.
+                    DrawImpassibleCrossing(dl, groupCrossing, models[i].BaseShape);
+                }
             }
             if (blocked[i]) allValid = false;
             if (Position.GetDistance2D(lastPositions[i], newPositions[i]) > 0.001f) anyMovement = true;
@@ -1398,6 +1418,26 @@ public class GuiDefineMovementResolver
             if (anyLiving) unitKey++;
         }
         return footprints;
+    }
+
+    /// <summary>The "show me why" overlay for an impassible-flagged path: washes the offending terrain
+    /// piece red, draws the model's oriented footprint at the point of first contact, and thickens the
+    /// colliding segment. Without this the red flag is inexplicable whenever the collision isn't under the
+    /// node being placed - a pivot at an earlier waypoint or the manual rotation offset (which re-orients
+    /// the WHOLE committed path) can make a segment the player already placed collide.</summary>
+    private void DrawImpassibleCrossing(ImDrawListPtr dl, MovementUtilities.TerrainCrossing crossing,
+        IBaseShape baseShape)
+    {
+        ZoneRenderer.DrawFilled(crossing.Piece.Shape, dl, _scale, _originX, _originY, _tableH,
+            CrossingZoneFill, CrossingZoneOutline);
+
+        var (sx, sy) = InchesToPixel(crossing.SegmentStart.X, crossing.SegmentStart.Y);
+        var (ex, ey) = InchesToPixel(crossing.SegmentEnd.X, crossing.SegmentEnd.Y);
+        dl.AddLine(new Vector2(sx, sy), new Vector2(ex, ey), CrossingZoneOutline, 3.5f);
+
+        var (cx, cy) = InchesToPixel(crossing.ContactCentre.X, crossing.ContactCentre.Y);
+        ModelBaseRenderer.DrawFilledImGui(dl, baseShape, new Vector2(cx, cy), _scale,
+            CrossingFootprintFill, CrossingZoneOutline, 2.5f, crossing.Facing);
     }
 
     private bool WouldOverlapAnyModel(Position ghostPos, Float2 ghostFacing, IModel ghostModel,
