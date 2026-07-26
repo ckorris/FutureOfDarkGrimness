@@ -146,17 +146,13 @@ public sealed class EscapeMenuOverlay
         if (_tactical != null)
         {
             SectionHeader("Tactical overlay");
-            bool threat = _tactical.ThreatToggledOn;
-            if (ImGui.Checkbox("Threat frontiers (F)", ref threat))
-                _tactical.ToggleThreat();
+            ImGui.Checkbox("Weapon reach (V)", ref ViewSettings.ShowReachOverlay);
+            ImGui.TextDisabled("Ghosts while moving/placing; any unit you hover.");
 
-            bool anchorSelf = TacticalOverlay.TacticalOverlayConfig.GhostAnchoredField;
-            if (ImGui.Checkbox("Anchor field on my position", ref anchorSelf))
-            {
-                TacticalOverlay.TacticalOverlayConfig.GhostAnchoredField = anchorSelf;
-                _tactical.InvalidateFieldCache();
-            }
-            ImGui.TextDisabled("Off = the target's weapon ranges.");
+            // #247: "Threat frontiers (F)" and "Anchor field on my position" are both gone. The red
+            // frontier layer was outdated once the reach field could answer the same question in one
+            // vocabulary, and pinning an enemy is now the gesture that asks for the target-anchored
+            // picture -- so there is no second layer to toggle and no mode left to set.
         }
 
         SectionHeader("Audio");

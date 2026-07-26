@@ -20,14 +20,12 @@ internal static class TacticalOverlayConfig
     // exact radii, this only affects the picture.
     public const float DefaultReferenceRadiusInches = 0.551f;
 
-    // --- Threat frontiers -------------------------------------------------------------------------
+    // --- Threat -----------------------------------------------------------------------------------
+    // #247: the red frontier CONTOURS are gone (see TacticalOverlayController.DrawContours). The threat
+    // discs behind them live on, feeding SnapInputPoint's frontier snap and the "inside enemy reach"
+    // readout, so this colour is still the danger accent for that text. The contour alphas, thickness and
+    // dash pattern went with the drawing.
     public static readonly (byte r, byte g, byte b) ThreatColor = (232, 72, 72); // dedicated red
-    public const float ThreatContourAlpha       = 0.70f;
-    public const float ThreatIsolatedAlpha      = 0.95f; // brightened unit under hover/idle isolation
-    public const float ThreatDimmedAlpha        = 0.28f; // the aggregate while one unit is isolated
-    public const float ThreatContourThicknessPx = 1.5f;
-    public const float ThreatDashLengthPx       = 7f;    // shoot-reach frontier is dashed
-    public const float ThreatDashGapPx          = 5f;
 
     // --- Opportunity field accents (pin order, spec section 4) ------------------------------------
     // Distinct from both players' identity colors, from the threat color, AND from the mat green: the
@@ -60,7 +58,13 @@ internal static class TacticalOverlayConfig
     public static readonly (byte r, byte g, byte b) GhostInsideThreatTint = (232, 72, 72);
 
     // --- Interaction (spec section 4) -------------------------------------------------------------
-    public const double HoverPreviewDelaySeconds = 0.150;
+    // Hover dwell before a hovered unit's field appears. DISABLED (0) as of #247: the delay was meant to
+    // stop the field flickering as the cursor transits units mid-decision, but in the hand it doesn't read
+    // as deliberate restraint -- it reads as the picture being slow to bake, which is the one impression
+    // this overlay cannot afford. Restore by raising this (0.150 was the original) if flicker turns out to
+    // be the worse problem; the anti-flicker measure that survives is FieldAnchorPlan's rule that hovering
+    // the unit whose ghosts are live does NOT steal the anchor.
+    public const double HoverPreviewDelaySeconds = 0.0;
     public const float  SnapEpsilonInches        = 0.4f;  // drop within this of a boundary snaps
     public const float  SnapInsideMarginInches   = 0.05f; // band snap lands just inside
     public const float  MeasurementPromoteInches = 0.5f;  // draw the labeled measurement line within this
@@ -77,15 +81,17 @@ internal static class TacticalOverlayConfig
     // flipping it invalidates the field cache. Auto-falls back to CPU when GPU init fails.
     public static bool UseGpuField = true;
 
-    // Ghost-anchored field (H4, default OFF pending user feel-check): instead of the pinned target's
-    // "where can I stand to shoot it" bands, the field anchors on the moving unit's ghosts and shows
-    // "what can I hit from here" -- per-model weapon-range bands from the pending positions, LoS from
-    // the ghosts, rebuilt EVERY FRAME (the GPU path makes that ~free). Toolbar "Anchor" button.
-    public static bool GhostAnchoredField = false;
+    // (Retired #247) GhostAnchoredField chose between the ghost-anchored "what can I hit from here" field
+    // and the pinned target's "where can I stand to shoot it". Default OFF meant a move job with nothing
+    // pinned drew NO field at all until the player found the checkbox in the Esc menu -- reported as
+    // "I can't see them during movement". The choice is now made by the gesture: pin an enemy for the
+    // target-anchored picture, otherwise you get your own ghosts. See FieldAnchorPlan.
 
     // --- Hotkeys ----------------------------------------------------------------------------------
-    // T is taken (dev token-reveal in TableTooltipOverlay); F is free. Alt is free.
-    public const ImGuiKey ThreatToggleKey     = ImGuiKey.F;
+    // #247: master reach toggle (the opportunity field, whatever it is anchored on). V was free across the
+    // whole in-game key census (A/F/G/L/R/T, arrows, Enter, Backspace, Escape, Space, digits, F10).
+    // F is free again since the threat-frontier toggle was removed.
+    public const ImGuiKey ReachToggleKey      = ImGuiKey.V;
     public const ImGuiKey ClearPinsKey        = ImGuiKey.Escape;
     public const ImGuiKey FidelitySamplerKey  = ImGuiKey.F10; // debug (spec section 6)
 }

@@ -32,6 +32,7 @@ public class TacticalOverlayController
 {
     private ITableState? _tableState;
     private GuiDefineMovementResolver? _moveResolver;
+    private GuiResolverOverlay? _resolverOverlay;   // #230: source of the active placement's ghosts
     private RulesProbe? _probe;
     private ThreatFrontierCache? _threat;
     private System.Action<string>? _warn;
@@ -63,12 +64,25 @@ public class TacticalOverlayController
     private int _focusIndex = -1;                 // index into _pins; -1 when none
     private DefineMovementPathRequest? _lastSeenRequest; // pins are scoped to one move job
 
-    // Hover preview: an enemy hovered ~150ms with no pins shows a transient dimmed field.
+    // Hover preview: an enemy hovered with no pins shows a transient dimmed target-anchored field.
     private IUnit? _hoverCandidate;
     private double _hoverElapsed;
 
+    // #247: the unit under the cursor this frame, captured in UpdateInput and consumed by DrawField as the
+    // top-priority field anchor. Null while the pointer is over an ImGui panel.
+    private IUnit? _hoverUnit;
+
+    // #247: which anchor won last frame. Replaces the retired GhostAnchoredField flag for the two places
+    // that needed to know whether the drawn field is TARGET-anchored — the fidelity sampler's field
+    // channels and the band snap — because that was always the real question, not what mode was selected.
+    private FieldAnchorKind _lastAnchorKind = FieldAnchorKind.None;
+
     private long _lastFieldSig;
     private bool _fieldBuiltOnce;
+    // #230: true between DrawField painting a field and the next ClearFieldPictures. The ImGui-pass
+    // instruments (band labels) run after the canvas pass, so this tells them a picture is on screen
+    // without their having to re-derive which anchor produced it.
+    private bool _fieldActive;
     // True when _shadowMask/_coverMask hold a CURRENT target-anchored classification (ClassifyInto ran
     // for the live pin) -- the precondition for the sampler's field channels. False in ghost mode.
     private bool _fieldMasksValid;
@@ -101,7 +115,6 @@ public class TacticalOverlayController
     private float _tableH;
 
     // Idle inspection toggle (F). Threat also shows automatically during a move job regardless of this.
-    private bool _threatToggledOn;
 
     // Threat rebuild is driven by a per-frame signature poll: cheap to compute, and a rebuild fires only
     // when it changes (an enemy activated / lost models / became Shaken, a new round, the reference or an
@@ -116,9 +129,6 @@ public class TacticalOverlayController
     private float _lastRefRadius = TacticalOverlayConfig.DefaultReferenceRadiusInches;
 
     // Idle-click isolation (P7): one enemy's frontier brightens while the aggregate dims. Idle only.
-    private IUnit? _isolatedUnit;
-    private List<List<Float2>> _isolatedCharge = new();
-    private List<List<Float2>> _isolatedShoot  = new();
 
     // Secondary-pin contours (P7): each non-focused pin's longest-range boundary in its accent. Reuses a
     // scratch mask for the disc-union march (isolation and secondaries never run in the same frame -- one
@@ -132,8 +142,6 @@ public class TacticalOverlayController
     // (marching every frame would be too costly; that mode is fill-only).
     private List<List<Float2>> _fieldRings = new();
 
-    public bool ThreatToggledOn => _threatToggledOn;
-    public void ToggleThreat() => _threatToggledOn = !_threatToggledOn;
 
     // Maps a unit to its team color (fill/rings/labels/pips), so the field reads as the SELECTED unit's
     // own threat -- red when an enemy is picked ("where I'm in danger"), the mover's color in Self mode.
@@ -192,6 +200,13 @@ public class TacticalOverlayController
         resolver?.SetTacticalOverlay(this);
     }
 
+    /// <summary>
+    /// #230: wires the resolver overlay so the controller can ask which resolver is pending and whether it
+    /// offers ghosts to anchor the field on (<see cref="IGhostFieldSource"/>). Kept as the overlay rather
+    /// than a resolver list so a new opt-in resolver needs no change here. Called from TransitionToGame.
+    /// </summary>
+    public void AttachResolverOverlay(GuiResolverOverlay? overlay) => _resolverOverlay = overlay;
+
     /// <summary>Drops every per-game reference and cached picture. Called from ExitGame.</summary>
     public void Detach()
     {
@@ -206,14 +221,14 @@ public class TacticalOverlayController
         _scratchMask  = null;
         _tableState   = null;
         _moveResolver = null;
+        _resolverOverlay = null;
         _probe        = null;
         _threat       = null;
         _warn         = null;
-        _threatToggledOn = false;
-        _isolatedUnit = null;
-        _isolatedCharge = new List<List<Float2>>();
-        _isolatedShoot  = new List<List<Float2>>();
         _secondaryContours.Clear();
+        _fieldActive = false;
+        _lastAnchorKind = FieldAnchorKind.None;
+        _hoverUnit = null;
         ClearPins();
     }
 
@@ -235,22 +250,60 @@ public class TacticalOverlayController
     {
         if (_tableState == null || _field == null || _bandMask == null || _probe == null) return;
 
-        // The opportunity field exists only during the local player's move job (spec section 3).
+        // #247: one contest decides the anchor, so exactly one field can be on screen. Everything the
+        // decision needs is gathered here; FieldAnchorPlan owns the priority order.
         DefineMovementPathRequest? req = _moveResolver?.ActiveRequest;
-        if (req == null) { ClearFieldPictures(); return; }
-
-        if (TacticalOverlayConfig.GhostAnchoredField)
+        IGhostFieldSource? placement = req == null ? _resolverOverlay?.ActiveGhostField : null;
+        IUnit? placeUnit = null;
+        IReadOnlyDictionary<IModel, Position>? placeGhosts = null;
+        if (placement != null && placement.TryGetGhostField(out IUnit pu, out var pg))
         {
-            // Ghost-anchored: rebuilt every frame, tracking the pending positions. No signature.
-            RebuildGhostField(req);
+            placeUnit = pu;
+            placeGhosts = pg;
         }
-        else
+        bool placementGhosts = placeUnit != null;
+        IUnit? hoverUnit = ResolveHoverAnchor(req, placeUnit);
+        (IUnit? target, int accent, float alphaScale) = req != null
+            ? ResolveFieldTarget(req)
+            : (null, 0, 1f);
+
+        FieldAnchorKind anchor = FieldAnchorPlan.Resolve(
+            showReach: ViewSettings.ShowReachOverlay,
+            hoverAvailable: hoverUnit != null,
+            moveJobActive: req != null,
+            pinnedTargetAvailable: target != null,
+            placementGhostsAvailable: placementGhosts);
+        _lastAnchorKind = anchor;
+
+        bool drew;
+        switch (anchor)
         {
-            (IUnit? target, int accent, float alphaScale) = ResolveFieldTarget(req);
-            if (target == null) { ClearFieldPictures(); return; }
-            RebuildFieldIfNeeded(req, target, accent, alphaScale);
+            case FieldAnchorKind.Hover:
+                // Stationary anchor -> the signature gate inside turns this into one rebuild per hovered
+                // unit rather than one per frame.
+                drew = RebuildGhostField(hoverUnit!, LivePositions(hoverUnit!), req: null);
+                break;
+
+            case FieldAnchorKind.Ghost when req != null:
+                drew = RebuildGhostField(req.UnitDataBinding.GetValue(), _moveResolver!.GhostPositions, req);
+                break;
+
+            case FieldAnchorKind.Ghost:
+                drew = RebuildGhostField(placeUnit!, placeGhosts!, req: null);
+                break;
+
+            case FieldAnchorKind.Target:
+                RebuildFieldIfNeeded(req!, target!, accent, alphaScale);
+                drew = true;
+                break;
+
+            default:
+                ClearFieldPictures();
+                return;
         }
 
+        if (!drew) { ClearFieldPictures(); return; }
+        _fieldActive = true;
         if (_gpuField != null && TacticalOverlayConfig.UseGpuField)
             _gpuField.DrawComposite(_originX, _originY,
                 GameWideConstants.DEFAULT_TABLE_WIDTH_INCHES, GameWideConstants.DEFAULT_TABLE_HEIGHT_INCHES, _scale);
@@ -261,18 +314,60 @@ public class TacticalOverlayController
 
     // ---- Ghost-anchored field (H4): "what can I hit from here", per frame --------------------------
 
+    /// <summary>
+    /// #247 — the unit under the cursor, when inspecting it should take the field over whatever else is on
+    /// screen. Null when nothing is hovered, or when the hovered unit is the very one whose ghosts are
+    /// live: its models still stand at their ORIGINAL positions, so anchoring there mid-aim would replace
+    /// the picture the player is using with one about where they used to be. That exclusion is also what
+    /// keeps the field from flickering as the cursor transits its own unit, now that the hover dwell is
+    /// disabled (see <see cref="TacticalOverlayConfig.HoverPreviewDelaySeconds"/>).
+    /// </summary>
+    private IUnit? ResolveHoverAnchor(DefineMovementPathRequest? req, IUnit? placementUnit)
+    {
+        IUnit? hovered = _hoverUnit;
+        if (hovered == null) return null;
+
+        IUnit? ghosting = req != null ? req.UnitDataBinding.GetValue() : placementUnit;
+        if (ghosting != null && ReferenceEquals(ghosting, hovered)) return null;
+
+        return hovered;
+    }
+
+    /// <summary>Where a unit's living, deployed models actually stand — the anchor for a hover field.</summary>
+    private static Dictionary<IModel, Position> LivePositions(IUnit unit)
+    {
+        var positions = new Dictionary<IModel, Position>();
+        foreach (IModel m in unit.Models)
+        {
+            if (!m.GetIsAlive()) continue;
+            Position p = m.Position;
+            if (p.x == 0f && p.z == 0f) continue;   // undeployed / in reserve
+            positions[m] = p;
+        }
+        return positions;
+    }
+
     // Approximations, deliberate and documented: the reach discs inflate by each model's own base
     // radius plus the DEFAULT 28mm target radius (there is no specific target); LoS blockers exclude
     // only the mover's team (a real shot at unit X would also ignore X's own models). Pips stay the
     // per-target truth. Band labels are suppressed (they'd ride the cursor); pins keep chips/counts and
     // their secondary contours.
-    private void RebuildGhostField(DefineMovementPathRequest req)
+    //
+    // #230: `req` is null for a placement- or hover-anchored build. Everything it feeds is pin-related —
+    // the per-weapon range overrides and the secondary contours — and pins only exist during a move job,
+    // so a null request simply takes the no-pin path rather than needing an equivalent.
+    //
+    // #247: signature-gated. Real ghosts move every frame, so their signature changes every frame and this
+    // rebuilds exactly as it always did; a HOVERED unit is stationary, so its signature holds and the whole
+    // rebuild — polar sight maps and the GPU upload, the expensive parts — is skipped after the first
+    // frame. The per-frame/cached split is emergent, not a mode.
+    //
+    // Returns false when there is nothing to draw (no ranged weapons, or no model on the table).
+    private bool RebuildGhostField(IUnit movingUnit, IReadOnlyDictionary<IModel, Position> ghosts,
+        DefineMovementPathRequest? req)
     {
-        IUnit movingUnit = req.UnitDataBinding.GetValue();
-        IReadOnlyDictionary<IModel, Position> ghosts = _moveResolver!.GhostPositions;
-
         // Distinct effective ranges -> nested bands (vs the focused pin if any, else raw ranges).
-        IUnit? rangeTarget = _pins.Count > 0 && _focusIndex >= 0 && _focusIndex < _pins.Count
+        IUnit? rangeTarget = req != null && _pins.Count > 0 && _focusIndex >= 0 && _focusIndex < _pins.Count
             ? _pins[_focusIndex].Unit : null;
         var byRange = new Dictionary<float, List<GpuFieldRenderer.BandDisc>>();
         var byRangeNames = new Dictionary<float, Dictionary<string, int>>();   // for band labels ("4x Rifle")
@@ -289,7 +384,7 @@ public class TacticalOverlayController
             {
                 if (w.RangeInches <= 0f) continue;
                 float eff = rangeTarget != null
-                    ? EffectiveRange(req, w.Name, rangeTarget.ID, w.RangeInches)
+                    ? EffectiveRange(req!, w.Name, rangeTarget.ID, w.RangeInches)
                     : w.RangeInches;
                 if (!byRange.TryGetValue(eff, out List<GpuFieldRenderer.BandDisc>? discs))
                     byRange[eff] = discs = new List<GpuFieldRenderer.BandDisc>();
@@ -301,7 +396,14 @@ public class TacticalOverlayController
             }
         }
 
-        if (byRange.Count == 0 || sources.Count == 0) { ClearFieldPictures(); return; }
+        if (byRange.Count == 0 || sources.Count == 0) { ClearFieldPictures(); return false; }
+
+        // #247: everything below is the expensive half (polar sight maps + GPU upload). Skip it whole when
+        // nothing that shapes the picture has moved — which is every frame after the first for a hovered
+        // unit, and no frame at all for live ghosts.
+        long signature = ComputeGhostFieldSignature(movingUnit, sources, byRange.Keys);
+        if (_fieldActive && signature == _lastGhostFieldSig) return true;
+        _lastGhostFieldSig = signature;
 
         var ranges = byRange.Keys.ToList();
         ranges.Sort();
@@ -377,8 +479,46 @@ public class TacticalOverlayController
         _lastFieldBands = perBand.Select(pb => pb.band).ToList();  // distance readout still promotes
         _fieldMasksValid = false;  // ghost-anchored masks must not feed the target-anchored sampler truth
         InvalidateField();  // leaving ghost mode must force a target-anchored rebuild
-        BuildSecondaryContours(req, movingUnit, _probe.ModalBaseRadius(movingUnit));
+        if (req != null) BuildSecondaryContours(req, movingUnit, _probe.ModalBaseRadius(movingUnit));
+        else _secondaryContours.Clear();   // #230: no pins during a placement/hover, so no secondary rings
+        return true;
     }
+
+    /// <summary>
+    /// #247 — what makes this ghost field's picture what it is: the anchor unit, where its sources stand
+    /// (quantized to 0.1", so sub-inch presentation glide doesn't thrash rebuilds), its distinct effective
+    /// ranges, and the blockers that shape LoS. Blockers matter because a hover field is otherwise
+    /// perfectly stable: a model walking between the hovered unit and open ground must repaint the shadow.
+    /// </summary>
+    private long ComputeGhostFieldSignature(IUnit anchor, List<Position> sources, IEnumerable<float> ranges)
+    {
+        unchecked
+        {
+            long h = 1469598103934665603L;
+            void Mix(long v) => h = (h ^ v) * 1099511628211L;
+
+            Mix(anchor.ID.GetHashCode());
+            foreach (Position s in sources) { Mix((long)(s.x * 10f)); Mix((long)(s.z * 10f)); }
+            foreach (float r in ranges) Mix((long)(r * 100f));
+
+            // Every other unit's models are potential LoS blockers; the anchor's own are excluded from
+            // BuildBlockers, so they can't change this picture and are skipped here too.
+            foreach (IUnit u in _tableState!.Units.Objects)
+            {
+                if (ReferenceEquals(u, anchor)) continue;
+                foreach (IModel m in u.Models)
+                {
+                    if (!m.GetIsAlive()) continue;
+                    Position p = m.Position;
+                    if (p.x == 0f && p.z == 0f) continue;
+                    Mix((long)(p.x * 4f)); Mix((long)(p.z * 4f));
+                }
+            }
+            return h;
+        }
+    }
+
+    private long _lastGhostFieldSig;
 
     private long _lastGhostWarnMs;
 
@@ -390,6 +530,10 @@ public class TacticalOverlayController
         _secondaryContours.Clear();
         _fieldRings = new List<List<Float2>>();
         _fieldMasksValid = false;
+        _fieldActive = false;
+        // Nothing is on screen, so nothing is target-anchored: the band snap and the sampler's field
+        // channels must not act on the anchor that was about to draw but didn't.
+        _lastAnchorKind = FieldAnchorKind.None;
     }
 
     /// <summary>
@@ -403,29 +547,30 @@ public class TacticalOverlayController
 
         bool moveJobActive = _moveResolver?.ActiveRequest != null;
 
-        if (moveJobActive || _threatToggledOn)
-        {
-            RebuildThreatIfNeeded();   // kept for the fidelity sampler + threat snap
-            // Auto-showing the enemy threat frontiers during a move was REPLACED by the team-colored
-            // opportunity field (the selected enemy's own weapon ranges read directly off the field). Only
-            // draw the frontiers now on an explicit F / "Threat" toggle, so they don't clutter the field.
-            if (_threatToggledOn)
-                DrawThreatPolylines();
-        }
+        // #247: the red threat frontiers are GONE as a visual — the reach field answers "what threatens
+        // this ground" in one vocabulary now, and hovering an enemy shows its reach directly, so a second
+        // red contour layer on its own F toggle was outdated clutter. The threat DISCS are still built,
+        // because the frontier snap and the "inside enemy reach" readout are computed from them; both are
+        // move-job-only, so the rebuild is too (it used to also run whenever the toggle was on).
+        if (moveJobActive) RebuildThreatIfNeeded();
 
-        // The focused field's band rings + secondary-pin contours ride with the field (move job only).
-        if (moveJobActive)
+        // The band rings ride with the field, whatever anchored it (#247 — this was gated on a move job,
+        // so placement and hover fields drew the fill wash with no boundary rings. The rings ARE the band
+        // delineation; the fill is deliberately a light atmosphere layer, so without them the picture
+        // loses most of its information).
+        if (_fieldActive)
         {
-            // GPU draws rings in screen space (constant thin width, both field modes); the CPU vector
-            // rings are the fallback (target mode only) and are empty when the GPU handles them.
+            // GPU draws rings in screen space (constant thin width, every anchor); the CPU vector rings
+            // are the fallback (target-anchored only) and are empty when the GPU handles them.
             if (_gpuField != null && TacticalOverlayConfig.UseGpuField && _gpuField.RingsReady)
                 _gpuField.DrawRings(_originX, _originY,
                     GameWideConstants.DEFAULT_TABLE_WIDTH_INCHES, GameWideConstants.DEFAULT_TABLE_HEIGHT_INCHES, _scale);
             else
                 DrawFieldRings();
-
-            DrawSecondaryContours();
         }
+
+        // Secondary-pin contours are pin-only, so they stay scoped to a move job.
+        if (moveJobActive) DrawSecondaryContours();
     }
 
     // Band boundary rings for the focused field, as consistent-thickness vector lines in the lead accent.
@@ -435,7 +580,7 @@ public class TacticalOverlayController
         (byte r, byte g, byte b) = TacticalOverlayConfig.AccentPalette[0];
         var col = new Color(r, g, b, (byte)(TacticalOverlayConfig.BandBoundaryAlpha * 255f));
         foreach (List<Float2> poly in _fieldRings)
-            DrawWorldPolyline(poly, col, TacticalOverlayConfig.BandBoundaryThicknessPx, dashed: false);
+            DrawWorldPolyline(poly, col, TacticalOverlayConfig.BandBoundaryThicknessPx);
     }
 
     private void DrawSecondaryContours()
@@ -445,7 +590,7 @@ public class TacticalOverlayController
             (byte r, byte g, byte b) = TacticalOverlayConfig.AccentPalette[accent % TacticalOverlayConfig.AccentPalette.Length];
             var col = new Color(r, g, b, (byte)(0.9f * 255f));
             foreach (List<Float2> poly in polylines)
-                DrawWorldPolyline(poly, col, TacticalOverlayConfig.BandBoundaryThicknessPx, dashed: false);
+                DrawWorldPolyline(poly, col, TacticalOverlayConfig.BandBoundaryThicknessPx);
         }
     }
 
@@ -463,8 +608,14 @@ public class TacticalOverlayController
         ImGuiIOPtr io = ImGui.GetIO();
         // Hotkeys are muted while the in-game menu owns input (#246).
         bool wantKeys = !io.WantCaptureKeyboard && !EscapeRouter.MenuOpen;
-        if (wantKeys && ImGui.IsKeyPressed(TacticalOverlayConfig.ThreatToggleKey))
-            _threatToggledOn = !_threatToggledOn;
+        // #247: V is the master reach toggle, handled here rather than in any one resolver so it works
+        // identically while moving, placing, and idle. The placement panel's checkbox drives the same flag.
+        if (wantKeys && ImGui.IsKeyPressed(TacticalOverlayConfig.ReachToggleKey))
+            ViewSettings.ShowReachOverlay = !ViewSettings.ShowReachOverlay;
+
+        // #247: the hover anchor. Captured here (input phase, hover state fresh) and consumed by DrawField
+        // on the next canvas pass. No dwell — see TacticalOverlayConfig.HoverPreviewDelaySeconds.
+        _hoverUnit = io.WantCaptureMouse ? null : hitTester.HoveredUnit;
 
         if (wantKeys && ImGui.IsKeyPressed(TacticalOverlayConfig.FidelitySamplerKey))
         {
@@ -491,27 +642,14 @@ public class TacticalOverlayController
                 ClearPins();
 
             UpdateHover(frameTimeSeconds, hitTester, req);
-            _isolatedUnit = null; // isolation is idle-only
         }
         else
         {
             _hoverCandidate = null;
             _hoverElapsed   = 0;
-
-            // Idle isolation (spec section 3): click an enemy to isolate its threat frontier, click empty
-            // ground (or the same unit again) to clear. Only meaningful while the frontier is shown (F).
-            if (!_threatToggledOn)
-            {
-                _isolatedUnit = null;
-            }
-            else if (hitTester.Clicked)
-            {
-                IUnit? hovered = hitTester.HoveredUnit;
-                if (hovered != null && _lastRefPlayer.HasValue && IsEnemyOf(_lastRefPlayer.Value, hovered))
-                    _isolatedUnit = ReferenceEquals(_isolatedUnit, hovered) ? null : hovered;
-                else if (hovered == null)
-                    _isolatedUnit = null;
-            }
+            // #247: idle threat-frontier isolation (click an enemy to brighten its contour) went with the
+            // frontiers themselves — hovering a unit now shows its reach directly, which is the same
+            // question asked better.
         }
     }
 
@@ -568,7 +706,7 @@ public class TacticalOverlayController
         // classification (ghost mode's truth is different geometry; GPU-only frames skip the masks).
         if (_bandMask != null && _shadowMask != null && _coverMask != null &&
             _fieldTargetUnit != null && _fieldMovingUnit != null &&
-            _fieldMasksValid && !TacticalOverlayConfig.GhostAnchoredField)
+            _fieldMasksValid && _lastAnchorKind == FieldAnchorKind.Target)
         {
             IUnit target = _fieldTargetUnit;
             float longest = _lastFieldBands.Count > 0 ? _lastFieldBands.Max(b => b.RangeInches) : 0f;
@@ -680,9 +818,6 @@ public class TacticalOverlayController
         (PlayerID? refPlayer, float refRadius, _) = ResolveReference();
         if (refPlayer == null) { _threat!.Clear(); return; }
 
-        bool moveJob = _moveResolver?.ActiveRequest != null;
-        if (moveJob) _isolatedUnit = null; // isolation is an idle-only inspection
-
         List<IUnit> enemies = QualifyingEnemies(refPlayer.Value);
         long sig = ComputeThreatSignature(refPlayer, refRadius, enemies);
         if (_threatBuiltOnce && sig == _lastThreatSig) return;
@@ -696,17 +831,8 @@ public class TacticalOverlayController
 
         float eps = 1f / TacticalOverlayConfig.TexelsPerInch; // simplify a hair under a texel
         var sw = System.Diagnostics.Stopwatch.StartNew();
+        // The polylines still feed SnapInputPoint's frontier snap; nothing draws them since #247.
         _threat!.Rebuild(discs, eps);
-
-        // Idle isolation: also march the one isolated unit's frontier so it can draw bright over the dim
-        // aggregate. Cleared unless a still-qualifying enemy is isolated.
-        if (!moveJob && _isolatedUnit != null && enemies.Any(e => ReferenceEquals(e, _isolatedUnit)))
-            BuildIsolatedFrontier(_isolatedUnit, refRadius, eps);
-        else
-        {
-            _isolatedCharge = new List<List<Float2>>();
-            _isolatedShoot  = new List<List<Float2>>();
-        }
         sw.Stop();
         if (sw.Elapsed.TotalMilliseconds > TacticalOverlayConfig.RebuildBudgetMs)
             _warn?.Invoke($"[overlay] threat rebuild {sw.Elapsed.TotalMilliseconds:0}ms " +
@@ -728,18 +854,6 @@ public class TacticalOverlayController
         return discs;
     }
 
-    private void BuildIsolatedFrontier(IUnit unit, float refRadius, float eps)
-    {
-        List<ThreatDisc> discs = BuildUnitDiscs(unit, refRadius);
-
-        _scratchMask!.Clear();
-        foreach (ThreatDisc d in discs) _scratchMask.RasterizeDiscMax(d.X, d.Z, d.ChargeRadius, 1);
-        _isolatedCharge = MarchingSquares.Extract(_scratchMask, 1, eps);
-
-        _scratchMask.Clear();
-        foreach (ThreatDisc d in discs) if (d.ShootRadius > 0f) _scratchMask.RasterizeDiscMax(d.X, d.Z, d.ShootRadius, 1);
-        _isolatedShoot = MarchingSquares.Extract(_scratchMask, 1, eps);
-    }
 
     /// <summary>
     /// Resolves the player threat is measured against and the reference base radius used to inflate
@@ -803,7 +917,6 @@ public class TacticalOverlayController
             Mix(_tableState!.Progress.RoundCount ?? -1);
             Mix(refPlayer?.GetHashCode() ?? 0);
             Mix((long)(refRadius * 100f));
-            Mix(_isolatedUnit?.ID.GetHashCode() ?? 0);
 
             foreach (IUnit u in enemies)
             {
@@ -1306,10 +1419,11 @@ public class TacticalOverlayController
         if (_moveResolver?.ActiveRequest == null) return intended;
         if (ImGui.GetIO().KeyAlt) return intended;
 
-        // Band snap (pin) takes precedence over threat snap -- but only in Target mode: in Self mode the
-        // drawn bands are around the MOVER (with the mover's ranges), so snapping to pin-centred circles
-        // that aren't on screen would jump the cursor to nowhere the player can see.
-        if (!TacticalOverlayConfig.GhostAnchoredField &&
+        // Band snap (pin) takes precedence over threat snap -- but only when the drawn field is actually
+        // the target-anchored one: otherwise the bands on screen are around the MOVER (with the mover's
+        // ranges), so snapping to pin-centred circles that aren't drawn would jump the cursor to nowhere
+        // the player can see.
+        if (_lastAnchorKind == FieldAnchorKind.Target &&
             _pins.Count > 0 && _focusIndex >= 0 && _focusIndex < _pins.Count && _lastFieldBands.Count > 0)
         {
             IUnit focus = _pins[_focusIndex].Unit;
@@ -1566,7 +1680,10 @@ public class TacticalOverlayController
 
     private void DrawBandLabels()
     {
-        if (_bandLabels.Count == 0 || _moveResolver?.ActiveRequest == null) return;
+        // #230: gated on "a field was drawn this frame", not on a move job. The band captions name the
+        // weapon behind each ring ("24in 5x Rifle"), which is most of the field's readability, and a
+        // placement-anchored field has no move request to check.
+        if (_bandLabels.Count == 0 || !_fieldActive) return;
 
         ImDrawListPtr dl = ImGui.GetBackgroundDrawList();
         uint textCol = ImGui.ColorConvertFloat4ToU32(new Vector4(1f, 1f, 1f, 1f));
@@ -1585,69 +1702,18 @@ public class TacticalOverlayController
 
     // ---- Contour drawing (Raylib) ----------------------------------------------------------------
 
-    private void DrawThreatPolylines()
-    {
-        (byte r, byte g, byte b) = TacticalOverlayConfig.ThreatColor;
-        bool isolating = _isolatedUnit != null && (_isolatedCharge.Count > 0 || _isolatedShoot.Count > 0);
-        float aggAlpha = isolating ? TacticalOverlayConfig.ThreatDimmedAlpha : TacticalOverlayConfig.ThreatContourAlpha;
-        var agg = new Color(r, g, b, (byte)(aggAlpha * 255f));
-        float th = TacticalOverlayConfig.ThreatContourThicknessPx;
-
-        foreach (List<Float2> poly in _threat!.ChargePolylines)
-            DrawWorldPolyline(poly, agg, th, dashed: false);
-        foreach (List<Float2> poly in _threat.ShootPolylines)
-            DrawWorldPolyline(poly, agg, th, dashed: true);
-
-        if (isolating)
-        {
-            var bright = new Color(r, g, b, (byte)(TacticalOverlayConfig.ThreatIsolatedAlpha * 255f));
-            foreach (List<Float2> poly in _isolatedCharge)
-                DrawWorldPolyline(poly, bright, th + 0.5f, dashed: false);
-            foreach (List<Float2> poly in _isolatedShoot)
-                DrawWorldPolyline(poly, bright, th + 0.5f, dashed: true);
-        }
-    }
 
     private Vector2 WorldToScreen(Float2 w) =>
         new(_originX + w.X * _scale, _originY + (_tableH - w.Y) * _scale);
 
-    private void DrawWorldPolyline(List<Float2> poly, Color col, float thickness, bool dashed)
+    /// <summary>
+    /// Draws a world-space polyline (band rings, secondary pin contours). Solid only: the dashed variant
+    /// existed for the shoot-reach threat frontier, which #247 removed, so the dash-marching branch and
+    /// its two config constants went with it rather than sitting here uncalled.
+    /// </summary>
+    private void DrawWorldPolyline(List<Float2> poly, Color col, float thickness)
     {
-        if (poly.Count < 2) return;
-
-        if (!dashed)
-        {
-            for (int i = 0; i < poly.Count - 1; i++)
-                Raylib.DrawLineEx(WorldToScreen(poly[i]), WorldToScreen(poly[i + 1]), thickness, col);
-            return;
-        }
-
-        // Dashed: march screen-space arc length, carrying the dash phase across vertices so the pattern
-        // reads continuous around the whole contour.
-        float dashLen = TacticalOverlayConfig.ThreatDashLengthPx;
-        float gapLen  = TacticalOverlayConfig.ThreatDashGapPx;
-        bool on = true;
-        float phase = 0f;
-
         for (int i = 0; i < poly.Count - 1; i++)
-        {
-            Vector2 a = WorldToScreen(poly[i]);
-            Vector2 b = WorldToScreen(poly[i + 1]);
-            float segLen = Vector2.Distance(a, b);
-            if (segLen < 1e-3f) continue;
-            Vector2 dir = (b - a) / segLen;
-
-            float pos = 0f;
-            while (pos < segLen)
-            {
-                float span = on ? dashLen - phase : gapLen - phase;
-                float step = MathF.Min(span, segLen - pos);
-                if (on)
-                    Raylib.DrawLineEx(a + dir * pos, a + dir * (pos + step), thickness, col);
-                pos   += step;
-                phase += step;
-                if (phase >= (on ? dashLen : gapLen) - 1e-4f) { on = !on; phase = 0f; }
-            }
-        }
+            Raylib.DrawLineEx(WorldToScreen(poly[i]), WorldToScreen(poly[i + 1]), thickness, col);
     }
 }

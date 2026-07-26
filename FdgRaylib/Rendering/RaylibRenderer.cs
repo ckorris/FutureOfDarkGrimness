@@ -200,6 +200,8 @@ public class RaylibRenderer
             // #201: the launched game's cover setting rides the resolver overlay (stamped in BuildGui).
             coverProximityExceptions: resolverOverlay?.CoverProximityExceptions ?? true);
         _tacticalOverlay.AttachMovementResolver(resolverOverlay?.MovementResolver);
+        // #230: lets the field anchor on a placement's ghosts when no move job is running.
+        _tacticalOverlay.AttachResolverOverlay(resolverOverlay);
         // The menu's Options panel drives the tactical toggles (Threat, field anchor) and master volume.
         _escapeMenu.AttachOptions(_tacticalOverlay, _audio);
         // #280: preview sharing rides the overlay (built at launch by GameGuiWiring.AttachPreviews).

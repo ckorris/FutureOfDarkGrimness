@@ -16,4 +16,12 @@ public static class ViewSettings
 
     /// <summary>Dev toggle (hotkey T): reveal Invisible bookkeeping tokens in chips/tooltips.</summary>
     public static bool ShowAllTokens = false;
+
+    /// <summary>
+    /// #230/#247 (hotkey V): the master switch for the tactical overlay's reach picture — the opportunity
+    /// field, with LoS and cover. One toggle covers every anchor it can take: the ghosts of a move or
+    /// placement in progress, and the unit under the cursor (which wins while hovering, so only ever one
+    /// field is on screen). Off means none of them draw. On by default.
+    /// </summary>
+    public static bool ShowReachOverlay = true;
 }
