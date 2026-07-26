@@ -44,7 +44,7 @@ public interface IRemotePreviewPresenter
 }
 
 /// <summary>
-/// Receive side of #277, app half: reads the engine <see cref="IPreviewFeed"/> (other players'
+/// Receive side of #280, app half: reads the engine <see cref="IPreviewFeed"/> (other players'
 /// latest preview state), decodes payloads through a registered-type allowlist, and hands them to
 /// presenters each frame. Decoding is cached and gated on the feed's version counter, so a frame
 /// with no network traffic costs one int comparison; unknown payload type names (version skew,

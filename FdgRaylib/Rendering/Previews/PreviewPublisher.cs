@@ -5,7 +5,7 @@ using FDG.StageResolution.Previews;
 namespace FdgRaylib.Rendering.Previews;
 
 /// <summary>
-/// Publish side of #277, app half: once per frame the renderer calls <see cref="Tick"/>, which at
+/// Publish side of #280, app half: once per frame the renderer calls <see cref="Tick"/>, which at
 /// ~10 Hz asks the active resolver (if it opts into <see cref="IPreviewSource"/>) for its preview,
 /// serializes each slot, and sends only the slots whose JSON actually changed - so an idle mouse
 /// streams nothing, and the slow-changing "base" slot rides along only on clicks. When the pending

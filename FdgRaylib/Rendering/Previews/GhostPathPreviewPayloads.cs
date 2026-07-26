@@ -1,6 +1,6 @@
 namespace FdgRaylib.Rendering.Previews;
 
-// #277: the "ghosts + paths" preview vocabulary shared by the movement family (movement now;
+// #280: the "ghosts + paths" preview vocabulary shared by the movement family (movement now;
 // consolidation / aircraft advance / placements are expected to reuse it as they opt in).
 // Two slots split cache-friendly from stream:
 //  - "base"  (GhostPathBase): model roster + committed waypoints. Changes at click cadence;

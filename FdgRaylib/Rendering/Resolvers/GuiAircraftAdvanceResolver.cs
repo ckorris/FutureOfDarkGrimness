@@ -35,7 +35,7 @@ public class GuiAircraftAdvanceResolver
     private bool _confirmOpen;
 
     /// <summary>
-    /// #277: the forced move being previewed, as the shared ghost+path vocabulary - the unit's
+    /// #280: the forced move being previewed, as the shared ghost+path vocabulary - the unit's
     /// living models as the "base" roster (no waypoints; the anchor line the presenter draws from
     /// each live position IS the approach), ghosts at the previewed landing spot along the fixed
     /// heading. No stale-snapshot guard needed: _currentDistance is reset in Resolve under the same

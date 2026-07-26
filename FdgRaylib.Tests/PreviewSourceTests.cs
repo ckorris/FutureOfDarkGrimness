@@ -12,7 +12,7 @@ using NUnit.Framework;
 
 namespace FdgRaylib.Tests;
 
-// #277 — the resolvers that opted into networked previews. Draw-side ghost capture is ImGui
+// #280 — the resolvers that opted into networked previews. Draw-side ghost capture is ImGui
 // (hand-verified); these pin the BuildPreviewState seams that hold the payloads together across
 // the wire. Movement family: roster identity and ORDER (ghost entries reference the base roster by
 // index - a mismatch composes ghosts onto the wrong models), the BaseVersion stamp both slots must

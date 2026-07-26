@@ -14,7 +14,7 @@ public class GuiResolverOverlay
     public void Register(IGuiResolver resolver) => _resolvers.Add(resolver);
 
     /// <summary>
-    /// The #277 preview publisher and remote-preview drawer, built by <see cref="AttachPreviews"/>
+    /// The #280 preview publisher and remote-preview drawer, built by <see cref="AttachPreviews"/>
     /// at launch. They ride the overlay for the same reason the settings above do: the overlay is
     /// what TransitionToGame already receives, and both need pieces (the game's preview channel /
     /// feed) that exist only once a game is launched. Null until then (and always in headless).
@@ -24,7 +24,7 @@ public class GuiResolverOverlay
     public RemotePreviewOverlay? RemotePreviews { get; private set; }
 
     /// <summary>
-    /// Wires live decision-preview sharing (#277) for a launched game: a publisher that streams
+    /// Wires live decision-preview sharing (#280) for a launched game: a publisher that streams
     /// the active resolver's preview (when it opts into <see cref="IPreviewSource"/>) and a
     /// remote overlay that draws every other player's, with the movement family's ghost+path and
     /// the placement family's marker payloads registered. Called by GameGuiWiring right after the
@@ -45,7 +45,7 @@ public class GuiResolverOverlay
     }
 
     /// <summary>
-    /// The currently active resolver's preview source (#277), if it opts in. Null when no resolver
+    /// The currently active resolver's preview source (#280), if it opts in. Null when no resolver
     /// is pending or the active one shares no preview.
     /// </summary>
     public IPreviewSource? ActivePreviewSource

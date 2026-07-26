@@ -6,7 +6,7 @@ using Raylib_cs;
 namespace FdgRaylib.Rendering.Previews;
 
 /// <summary>
-/// Draws the movement family's remote previews (#277): each planning player's committed path lines
+/// Draws the movement family's remote previews (#280): each planning player's committed path lines
 /// and ghost bases, in that player's palette color so multiple simultaneous planners stay
 /// attributable. Ghost fills carry the actor's band tint (advance/rush/charge - the same color
 /// language the planner sees locally, dimmed) inside a player-colored outline. Base shapes,

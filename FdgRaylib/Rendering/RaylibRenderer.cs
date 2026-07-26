@@ -69,7 +69,7 @@ public class RaylibRenderer
     private int  _lastChatCount = 0;      // for the unread check
     private GuiResolverOverlay? _resolverOverlay;
     private GuiOutstandingTaskDisplay? _taskDisplay;
-    // #277 live decision previews: publisher streams the local resolver's ghosts/paths, remote
+    // #280 live decision previews: publisher streams the local resolver's ghosts/paths, remote
     // overlay draws every other player's. Both built at launch and carried on the resolver overlay.
     private Previews.PreviewPublisher? _previewPublisher;
     private Previews.RemotePreviewOverlay? _remotePreviews;
@@ -202,7 +202,7 @@ public class RaylibRenderer
         _tacticalOverlay.AttachMovementResolver(resolverOverlay?.MovementResolver);
         // The menu's Options panel drives the tactical toggles (Threat, field anchor) and master volume.
         _escapeMenu.AttachOptions(_tacticalOverlay, _audio);
-        // #277: preview sharing rides the overlay (built at launch by GameGuiWiring.AttachPreviews).
+        // #280: preview sharing rides the overlay (built at launch by GameGuiWiring.AttachPreviews).
         _previewPublisher = resolverOverlay?.PreviewPublisher;
         _remotePreviews   = resolverOverlay?.RemotePreviews;
         _remotePreviews?.AttachColors(colorForPlayer);
@@ -492,7 +492,7 @@ public class RaylibRenderer
                     BannerOverlay.Draw(bannerBeat, bannerProgress, layout.AreaW, screenH);
                 }
 
-                // #277: the Notice/Toast tiers ride their own concurrent track, so they draw every frame
+                // #275: the Notice/Toast tiers ride their own concurrent track, so they draw every frame
                 // regardless of what holds the active slot - that is the whole point of them.
                 if (_presentationPlayer != null)
                 {
@@ -525,7 +525,7 @@ public class RaylibRenderer
                 _tooltipOverlay.UpdateLayout(layout.Scale, layout.OriginX, layout.OriginY, TableHIn);
                 _tooltipOverlay.Draw(screenW, screenH, _hitTester, _resolverOverlay?.ActiveInteractionHandler);
                 _resolverOverlay?.UpdateLayout(layout.Scale, layout.OriginX, layout.OriginY, TableHIn);
-                // #277: other players' live previews (ghosts / planned paths) - same background
+                // #280: other players' live previews (ghosts / planned paths) - same background
                 // draw list layer as the local resolver's own ghosts, drawn regardless of what the
                 // local player is doing (they're someone else's state).
                 _remotePreviews?.UpdateLayout(layout.Scale, layout.OriginX, layout.OriginY, TableHIn);
@@ -553,7 +553,7 @@ public class RaylibRenderer
                 // ghost snapshot -- pips/counts/distance then track the ghost with no one-frame lag. On the
                 // background draw list (above tokens, under windows), same layer as the ghosts they annotate.
                 _tacticalOverlay.DrawInstruments(screenW, screenH);
-                // #277: publish the local resolver's preview - after its Draw for the same
+                // #280: publish the local resolver's preview - after its Draw for the same
                 // freshness reason as the instruments above (it reads the frame's ghost snapshot).
                 _previewPublisher?.Tick(Raylib.GetTime());
                 // Fill the resolver panel with an idle placeholder whenever nothing is prompting, so the

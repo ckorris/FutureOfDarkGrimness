@@ -49,14 +49,14 @@ public class GuiPlaceObjectsResolver<T>
     // else two rows — the old single default). Built lazily on the first group frame; reset on Resolve.
     private FormationCycle? _formationCycle;
 
-    // #277 remote-preview snapshot (main-thread only, rewritten each Draw): live cursor ghost /
+    // #280 remote-preview snapshot (main-thread only, rewritten each Draw): live cursor ghost /
     // group phantoms, keyed by index into the request's ModelsToPlace roster. BuildPreviewState
     // trusts it only while _snapshotRequest matches the pending request.
     private readonly Dictionary<int, (Position pos, Float2 facing)> _ghostSnapshot = new();
     private PlaceObjectsRequest<T>? _snapshotRequest;
 
     /// <summary>
-    /// #277: the placement being planned, as the shared ghost+path vocabulary. Committed
+    /// #280: the placement being planned, as the shared ghost+path vocabulary. Committed
     /// placements ride the "base" slot as a single waypoint per placed model (click cadence);
     /// the live cursor ghost / group phantoms ride the "ghost" slot. Placements are appended in
     /// roster order, so _placed[i] pairs with ModelsToPlace[i] (the reach-ring code relies on the
@@ -184,7 +184,7 @@ public class GuiPlaceObjectsResolver<T>
         lock (_lock) { request = _request; tcs = _tcs; }
         if (request == null || tcs == null) return;
 
-        // #277: rebuilt below from this frame's ghost/phantom positions.
+        // #280: rebuilt below from this frame's ghost/phantom positions.
         _ghostSnapshot.Clear();
         _snapshotRequest = request;
 
@@ -261,7 +261,7 @@ public class GuiPlaceObjectsResolver<T>
             if (overTable)
             {
                 DrawGhost(dl, GetBaseShape(binding.GetValue()), io.MousePos, _scale, valid, facing);
-                _ghostSnapshot[k] = (cand, facing); // #277
+                _ghostSnapshot[k] = (cand, facing); // #280
             }
             if (clicked)
             {
@@ -296,7 +296,7 @@ public class GuiPlaceObjectsResolver<T>
         if (overTable)
         {
             DrawGhost(dl, GetBaseShape(currentBinding.GetValue()), io.MousePos, _scale, ok, facing);
-            _ghostSnapshot[_placed.Count] = (candidate, facing); // #277
+            _ghostSnapshot[_placed.Count] = (candidate, facing); // #280
         }
         if (clicked)
         {
@@ -399,7 +399,7 @@ public class GuiPlaceObjectsResolver<T>
             bool valid = IsGroupSlotValid(positions[i], radii[i], GetBaseShape(models[i].GetValue()), facings[i],
                 zone, enemies, minEnemyDist, StartPositionOf(models[i].GetValue()), request.MaxDistanceFromStartInches);
             DrawGhost(dl, GetBaseShape(models[i].GetValue()), ToPixelVec(positions[i]), _scale, valid, facings[i]);
-            _ghostSnapshot[i] = (positions[i], facings[i]); // #277
+            _ghostSnapshot[i] = (positions[i], facings[i]); // #280
             if (!valid) allValid = false;
         }
 

@@ -38,7 +38,7 @@ public class GuiPlaceObjectiveResolver
     private TaskCompletionSource<Position>? _tcs;
     private Position? _pendingCandidate;
 
-    // #277: the ghost drawn this frame (live cursor or frozen pending), captured in Draw for
+    // #280: the ghost drawn this frame (live cursor or frozen pending), captured in Draw for
     // BuildPreviewState. Main thread only; _snapshotRequest guards against publishing a previous
     // request's ghost. Null when no ghost was drawn (mouse off-table) - remote sees nothing, WYSIWYG.
     private (Position pos, bool valid, bool pending)? _ghostSnapshot;
@@ -57,7 +57,7 @@ public class GuiPlaceObjectiveResolver
     public bool HasPendingRequest { get { lock (_lock) return _request != null; } }
 
     /// <summary>
-    /// #277: the objective ghost being placed, as the marker preview vocabulary. Everything comes
+    /// #280: the objective ghost being placed, as the marker preview vocabulary. Everything comes
     /// from the per-frame Draw snapshot (both live-cursor and frozen-pending ghosts), so remote
     /// players see exactly what the placer sees - including nothing while the mouse is off the
     /// table. Committed markers already reach every client through synced table state.
@@ -103,7 +103,7 @@ public class GuiPlaceObjectiveResolver
         lock (_lock) { request = _request; tcs = _tcs; pending = _pendingCandidate; }
         if (request == null || tcs == null) return;
 
-        _ghostSnapshot = null;   // #277: rebuilt below from whatever ghost this frame draws
+        _ghostSnapshot = null;   // #280: rebuilt below from whatever ghost this frame draws
         _snapshotRequest = request;
 
         var io = ImGui.GetIO();
@@ -118,7 +118,7 @@ public class GuiPlaceObjectiveResolver
         {
             // Confirmation mode — frozen ghost, brighter, plus the Confirm/Cancel panel.
             DrawGhost(dl, pending.Value, markerNumber, valid: true, frozen: true);
-            _ghostSnapshot = (pending.Value, true, true); // #277
+            _ghostSnapshot = (pending.Value, true, true); // #280
 
             // Backspace / right-click cancels the pending ghost (#248: the universal back key; Esc is
             // reserved for the in-game menu). #240: stuck-key safe (edge-only inside IsBackPressed).
@@ -143,7 +143,7 @@ public class GuiPlaceObjectiveResolver
             if (overTable)
             {
                 DrawGhost(dl, candidate, markerNumber, valid, frozen: false);
-                _ghostSnapshot = (candidate, valid, false); // #277
+                _ghostSnapshot = (candidate, valid, false); // #280
             }
 
             if (overTable && !io.WantCaptureMouse && valid &&

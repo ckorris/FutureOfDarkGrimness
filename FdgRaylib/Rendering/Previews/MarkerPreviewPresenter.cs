@@ -7,7 +7,7 @@ using Raylib_cs;
 namespace FdgRaylib.Rendering.Previews;
 
 /// <summary>
-/// Draws the marker family's remote previews (#277): the objective marker or terrain footprint
+/// Draws the marker family's remote previews (#280): the objective marker or terrain footprint
 /// another player is currently hovering/confirming. The shape keeps its local color language
 /// (neutral grey objective disc, terrain-type tint) at reduced alpha, wrapped in the placing
 /// player's palette color for attribution - except when the placer is hovering an illegal spot,

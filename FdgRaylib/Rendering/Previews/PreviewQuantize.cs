@@ -1,6 +1,6 @@
 namespace FdgRaylib.Rendering.Previews;
 
-/// <summary>Wire-float hygiene shared by every preview source (#277). All payload floats are table
+/// <summary>Wire-float hygiene shared by every preview source (#280). All payload floats are table
 /// inches quantized to 0.01" - sub-pixel at any realistic zoom, and coarse enough that the
 /// publisher's serialize-and-compare dedup absorbs sub-0.01" mouse jitter.</summary>
 public static class PreviewQuantize

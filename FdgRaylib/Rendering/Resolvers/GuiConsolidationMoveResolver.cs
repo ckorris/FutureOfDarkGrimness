@@ -37,7 +37,7 @@ public class GuiConsolidationMoveResolver
     private float _groupFacingAngle;
     private const float GroupMoveSafetyMargin = 0.005f;
 
-    // #277 remote-preview snapshot (main-thread only, rewritten each Draw): the live pending
+    // #280 remote-preview snapshot (main-thread only, rewritten each Draw): the live pending
     // position per model - the mouse ghost in single mode, every phantom in group mode.
     // BuildPreviewState trusts it only while _snapshotRequest matches the pending request, so a
     // fresh request never streams the previous move's ghosts.
@@ -45,7 +45,7 @@ public class GuiConsolidationMoveResolver
     private ConsolidationMoveRequest? _snapshotRequest;
 
     /// <summary>
-    /// #277: the consolidation being planned, as the shared ghost+path vocabulary - committed
+    /// #280: the consolidation being planned, as the shared ghost+path vocabulary - committed
     /// waypoints per model in the "base" slot, live ghost/phantom positions in the "ghost" slot.
     /// All Neutral band: consolidation has no advance/rush/charge semantics. Called by the preview
     /// publisher on the main thread after Draw, so the ghost snapshot is this frame's.
@@ -170,7 +170,7 @@ public class GuiConsolidationMoveResolver
         lock (_lock) { request = _request; tcs = _tcs; pt = _pathTemplate; }
         if (request == null || tcs == null || pt == null) return;
 
-        // #277: rebuilt below from this frame's ghost/phantom positions.
+        // #280: rebuilt below from this frame's ghost/phantom positions.
         _ghostSnapshot.Clear();
         _snapshotRequest = request;
 
@@ -263,7 +263,7 @@ public class GuiConsolidationMoveResolver
             // Clamp so the model's base stays inside the table (circumscribing radius: rotation-safe).
             (nx, nz) = ClampToTable(nx, nz, _selectedModel.BaseShape.CircumscribedRadiusInches);
             ghostPos = new Position(nx, nz);
-            _ghostSnapshot[_selectedModel] = ghostPos.Value; // #277
+            _ghostSnapshot[_selectedModel] = ghostPos.Value; // #280
 
             // Consolidation slides without rotating, so the ghost keeps the model's facing.
             ghostOverlaps = WouldOverlapAnyModel(ghostPos.Value, _selectedModel.Facing, _selectedModel, request, paths);
@@ -420,7 +420,7 @@ public class GuiConsolidationMoveResolver
             groupFacings[i] = RotateFloat2(models[i].Facing, _groupFacingAngle);
             blocked[i] = PhantomOverlapsOtherUnit(newPositions[i], models[i].BaseShape, groupFacings[i], ownUnit);
             if (Position.GetDistance2D(lastPositions[i], newPositions[i]) > 0.001f) anyMovement = true;
-            _ghostSnapshot[models[i]] = newPositions[i]; // #277
+            _ghostSnapshot[models[i]] = newPositions[i]; // #280
         }
         bool allValid = plan.WithinBudget && !blocked.Any(b => b);
 

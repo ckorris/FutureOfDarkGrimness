@@ -1,6 +1,6 @@
-# 277 — Networked decision previews (live ghosts/paths for other players)
+# 280 — Networked decision previews (live ghosts/paths for other players)
 
-**Status**: in-progress
+**Status**: complete (2026-07-25)
 **Related**: #088 (request routing/notify lifecycle), #076 (disconnect resolved-broadcasts, reused as cleanup signal), #186 (wire allowlist — relay never deserializes payloads), #162 (movement resolver snapshots to be tapped in slice 2)
 
 ## Goal
@@ -28,6 +28,11 @@ covered by engine tests.
    payload family (non-model markers). Awaiting hand-verify alongside slice 3.
 
 ## Notes
+
+- 2026-07-25 (verified + renumbered): slices 3+4 GUI HAND-VERIFY PASSED (user, two instances).
+  Item renumbered 277 -> 280 on the final merge - the parallel session claimed 277 (formation
+  cycling) and then 279 (lobby teardown) on origin while this one was landing (Reconciliations
+  26); the five commit messages predating the renumber still say #277.
 
 - 2026-07-25 (slice 4): objective + terrain placement previews - the deferred marker facet. New
   "marker" payload family (`MarkerPreviewPayloads.cs`): `ObjectiveMarkerPreview` (number, center,
@@ -129,4 +134,10 @@ covered by engine tests.
 
 ## Outcome
 
-(when closed)
+Shipped and GUI-verified live (2026-07-25, two instances): every canvas placement/movement resolver
+now streams its in-progress decision to the other players. Engine transport (channel/feed/relayer,
+15 tests) + app publisher/remote overlay with two payload families: ghost+path (movement bands,
+consolidation, aircraft advance, place-objects) and marker (objective + terrain placement,
+footprints flattened to wire circles/quads). Future request types opt in by implementing
+IPreviewSource (+ a payload family/presenter when their visuals are new) - see
+docs/ResolverGuide.md. Filed as #277, renumbered to 280 on merge (Reconciliations 26).

@@ -6,6 +6,21 @@ from origin/master. Standing precedent: numbers are never reused, and when two p
 claim the same number, the *unmerged local* item yields to the *merged* one and takes a fresh number.
 A per-clone pre-push hook blocks duplicate numbers across the index and the archive.
 
+> **2026-07-25 — reconciliation 26.** The preview session filed **277 = networked decision
+> previews** against a local master where 276 was the highest number in use; before its push,
+> origin/master landed reconciliation 25's **277 = formation cycling** plus **278 = playtest
+> fixes** — and, while the first renumber (to 279) was still local, **279 = lobby network
+> teardown** landed and closed as well, colliding a second time. Per merged-wins precedent the
+> unpushed item yields both times: **networked previews 277 -> 280**
+> (`WorkItems/280-networked-decision-previews.md`; 280 free on index + archive). Renumbered in the
+> detail file + title, archive line, and every engine + app source comment - but unlike
+> reconciliations 23-25 the five pre-merge commit messages (engine `3546835`, superproject
+> `5ba0b6b`/`e29e519`/`1981268`/`085bcbc`) keep their `#277`: the engine commit is baked into
+> three superproject submodule-pointer trees, so a message rewrite would orphan the SHA the
+> published history references. Collateral fix while renumbering: reconciliation 25's sed had also
+> rewritten the banner-tier comment at `RaylibRenderer.cs` line 495 (a `#275` tag, introduced by
+> superproject `1538d52`) to `#277`; restored to `#275`.
+
 > **2026-07-25 — reconciliation 25.** The formation-cycling session filed **275 = formation cycling
 > in Group mode** against a local master where 274 was the highest number in use (the same starting
 > point as reconciliations 23 and 24 — a three-way claim on the number). Pre-push re-verification

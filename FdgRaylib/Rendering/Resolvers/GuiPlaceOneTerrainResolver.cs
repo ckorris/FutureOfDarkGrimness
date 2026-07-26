@@ -37,7 +37,7 @@ public class GuiPlaceOneTerrainResolver
     private Float2? _pendingCenter;
     private float _rotationDegrees;  // 0..359 in 15° steps; reset on template change.
 
-    // #277: the footprint ghost drawn this frame (live cursor or frozen pending), captured in Draw
+    // #280: the footprint ghost drawn this frame (live cursor or frozen pending), captured in Draw
     // for BuildPreviewState. Main thread only; _snapshotRequest guards against publishing a
     // previous request's ghost. Null when no ghost was drawn (template selection, mouse off-table).
     private (IZone shape, ETerrainType type, bool valid, bool pending)? _ghostSnapshot;
@@ -57,7 +57,7 @@ public class GuiPlaceOneTerrainResolver
     public bool HasPendingRequest { get { lock (_lock) return _request != null; } }
 
     /// <summary>
-    /// #277: the terrain ghost being placed, as the marker preview vocabulary - the rotated,
+    /// #280: the terrain ghost being placed, as the marker preview vocabulary - the rotated,
     /// world-positioned footprint flattened to wire primitives. Everything comes from the per-frame
     /// Draw snapshot, so remote players see exactly what the placer sees: nothing during template
     /// selection or while the mouse is off the table, the frozen ghost while confirming. Committed
@@ -112,7 +112,7 @@ public class GuiPlaceOneTerrainResolver
         }
         if (request == null || tcs == null) return;
 
-        _ghostSnapshot = null;   // #277: rebuilt below from whatever ghost this frame draws
+        _ghostSnapshot = null;   // #280: rebuilt below from whatever ghost this frame draws
         _snapshotRequest = request;
 
         var io = ImGui.GetIO();
@@ -150,7 +150,7 @@ public class GuiPlaceOneTerrainResolver
                     _tableState.Terrain.Objects) == TerrainPlacementValidity.Valid;
 
                 DrawGhost(dl, template.TerrainType, placedShape, valid: stillValid, frozen: true);
-                _ghostSnapshot = (placedShape, template.TerrainType, stillValid, true); // #277
+                _ghostSnapshot = (placedShape, template.TerrainType, stillValid, true); // #280
 
                 if (ResolverHotkeys.IsBackPressed()) // #248: Backspace = back; Esc opens the in-game menu
                 {
@@ -173,7 +173,7 @@ public class GuiPlaceOneTerrainResolver
                 if (overTable)
                 {
                     DrawGhost(dl, template.TerrainType, candidateShape, valid, frozen: false);
-                    _ghostSnapshot = (candidateShape, template.TerrainType, valid, false); // #277
+                    _ghostSnapshot = (candidateShape, template.TerrainType, valid, false); // #280
                 }
 
                 if (overTable && !io.WantCaptureMouse && valid &&
@@ -215,7 +215,7 @@ public class GuiPlaceOneTerrainResolver
         ZoneRenderer.DrawFilled(placed, dl, _scale, _originX, _originY, _tableH, fillU32, outlineU32, outlineThickness: 2.5f);
     }
 
-    // Internal, not private: the #277 MarkerPreviewPresenter tints remote footprint previews with
+    // Internal, not private: the #280 MarkerPreviewPresenter tints remote footprint previews with
     // the same per-type palette.
     internal static (Vector4 fill, Vector4 outline) TerrainTypeColors(ETerrainType type)
     {

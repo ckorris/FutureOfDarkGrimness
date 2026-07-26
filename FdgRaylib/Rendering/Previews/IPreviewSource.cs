@@ -6,14 +6,14 @@ namespace FdgRaylib.Rendering.Previews;
 public sealed record PreviewSlotPayload(string Slot, object Payload);
 
 /// <summary>
-/// A resolver's shareable preview for the current frame (#277): who is deciding, and the payload
+/// A resolver's shareable preview for the current frame (#280): who is deciding, and the payload
 /// per slot. Slot order matters - the publisher sends them in order, so put slow-changing state
 /// (rosters, committed paths) before the stream that references it.
 /// </summary>
 public sealed record PreviewState(PlayerID SourcePlayerID, IReadOnlyList<PreviewSlotPayload> Slots);
 
 /// <summary>
-/// Optional interface on GUI resolvers (#277): a resolver that wants other players to see its
+/// Optional interface on GUI resolvers (#280): a resolver that wants other players to see its
 /// in-progress decision (ghost models, planned paths) returns its current preview here. Called on
 /// the main thread by <see cref="PreviewPublisher"/> at ~10 Hz while the resolver has a pending
 /// request; the publisher handles throttling, dedup, and the end-of-request clear, so this just

@@ -2,7 +2,7 @@ using FDG;
 
 namespace FdgRaylib.Rendering.Previews;
 
-// #277: the "cursor-following marker" preview vocabulary for the two placement resolvers that put
+// #280: the "cursor-following marker" preview vocabulary for the two placement resolvers that put
 // non-model objects on the table (objective markers, terrain footprints). Unlike the ghost-path
 // family there is no base/ghost cache split: the whole preview is ONE ghost shape at the mouse
 // position (committed markers/terrain land in synced table state and are drawn by the renderer on

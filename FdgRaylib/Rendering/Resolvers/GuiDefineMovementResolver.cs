@@ -86,7 +86,7 @@ public class GuiDefineMovementResolver
     public IReadOnlyDictionary<IModel, Position> CommittedPositions => _committedSnapshot;
     public IReadOnlyDictionary<IModel, Position> GhostPositions => _ghostSnapshot;
 
-    // #277: the request the snapshots above were last written for - main-thread only, written at
+    // #280: the request the snapshots above were last written for - main-thread only, written at
     // the end of Draw. BuildPreviewState trusts the ghost snapshot only when this matches the
     // pending request, so a fresh request never streams the previous move's ghosts.
     private DefineMovementPathRequest? _snapshotRequest;
@@ -99,7 +99,7 @@ public class GuiDefineMovementResolver
     };
 
     /// <summary>
-    /// #277: the move being planned, as the shared ghost+path vocabulary - committed waypoints per
+    /// #280: the move being planned, as the shared ghost+path vocabulary - committed waypoints per
     /// model in the "base" slot (click cadence), live ghost positions in the "ghost" slot (~10 Hz,
     /// only models whose ghost left their committed endpoint). Called by the preview publisher on
     /// the main thread after Draw, so the ghost snapshot is this frame's.
@@ -607,7 +607,7 @@ public class GuiDefineMovementResolver
                 ghost = ghostPos.Value;
             _ghostSnapshot[snapModel] = ghost;
         }
-        // #277: mark which request the snapshots belong to, so the preview publisher never pairs a
+        // #280: mark which request the snapshots belong to, so the preview publisher never pairs a
         // new request's paths with a stale ghost snapshot (Draw can lag Resolve while animations
         // hold the resolver overlay closed).
         _snapshotRequest = request;
