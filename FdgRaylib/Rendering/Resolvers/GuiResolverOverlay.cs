@@ -123,6 +123,22 @@ public class GuiResolverOverlay
     }
 
     /// <summary>
+    /// #230: the currently active resolver's ghost positions, if it opts in — what the tactical overlay
+    /// anchors its opportunity field on when no move job is running (placement). Null when no resolver is
+    /// pending or the active one has no ghosts to offer.
+    /// </summary>
+    public IGhostFieldSource? ActiveGhostField
+    {
+        get
+        {
+            foreach (IGuiResolver r in _resolvers)
+                if (r.HasPendingRequest)
+                    return r as IGhostFieldSource;
+            return null;
+        }
+    }
+
+    /// <summary>
     /// The currently active resolver's enemy-exclusion zone (Ambush reserve placement), if it opts in.
     /// Null when no resolver is pending or the active one imposes no enemy-distance constraint.
     /// </summary>

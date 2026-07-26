@@ -32,6 +32,7 @@ public class TacticalOverlayController
 {
     private ITableState? _tableState;
     private GuiDefineMovementResolver? _moveResolver;
+    private GuiResolverOverlay? _resolverOverlay;   // #230: source of the active placement's ghosts
     private RulesProbe? _probe;
     private ThreatFrontierCache? _threat;
     private System.Action<string>? _warn;
@@ -69,6 +70,10 @@ public class TacticalOverlayController
 
     private long _lastFieldSig;
     private bool _fieldBuiltOnce;
+    // #230: true between DrawField painting a field and the next ClearFieldPictures. The ImGui-pass
+    // instruments (band labels) run after the canvas pass, so this tells them a picture is on screen
+    // without their having to re-derive which anchor produced it.
+    private bool _fieldActive;
     // True when _shadowMask/_coverMask hold a CURRENT target-anchored classification (ClassifyInto ran
     // for the live pin) -- the precondition for the sampler's field channels. False in ghost mode.
     private bool _fieldMasksValid;
@@ -192,6 +197,13 @@ public class TacticalOverlayController
         resolver?.SetTacticalOverlay(this);
     }
 
+    /// <summary>
+    /// #230: wires the resolver overlay so the controller can ask which resolver is pending and whether it
+    /// offers ghosts to anchor the field on (<see cref="IGhostFieldSource"/>). Kept as the overlay rather
+    /// than a resolver list so a new opt-in resolver needs no change here. Called from TransitionToGame.
+    /// </summary>
+    public void AttachResolverOverlay(GuiResolverOverlay? overlay) => _resolverOverlay = overlay;
+
     /// <summary>Drops every per-game reference and cached picture. Called from ExitGame.</summary>
     public void Detach()
     {
@@ -206,6 +218,7 @@ public class TacticalOverlayController
         _scratchMask  = null;
         _tableState   = null;
         _moveResolver = null;
+        _resolverOverlay = null;
         _probe        = null;
         _threat       = null;
         _warn         = null;
@@ -214,6 +227,7 @@ public class TacticalOverlayController
         _isolatedCharge = new List<List<Float2>>();
         _isolatedShoot  = new List<List<Float2>>();
         _secondaryContours.Clear();
+        _fieldActive = false;
         ClearPins();
     }
 
@@ -235,14 +249,17 @@ public class TacticalOverlayController
     {
         if (_tableState == null || _field == null || _bandMask == null || _probe == null) return;
 
-        // The opportunity field exists only during the local player's move job (spec section 3).
+        // The opportunity field exists during the local player's move job (spec section 3) or, since #230,
+        // during a placement — the only other time the player is choosing ground for their own models.
         DefineMovementPathRequest? req = _moveResolver?.ActiveRequest;
-        if (req == null) { ClearFieldPictures(); return; }
-
-        if (TacticalOverlayConfig.GhostAnchoredField)
+        if (req == null)
+        {
+            if (!TryDrawPlacementField()) { ClearFieldPictures(); return; }
+        }
+        else if (TacticalOverlayConfig.GhostAnchoredField)
         {
             // Ghost-anchored: rebuilt every frame, tracking the pending positions. No signature.
-            RebuildGhostField(req);
+            RebuildGhostField(req.UnitDataBinding.GetValue(), _moveResolver!.GhostPositions, req);
         }
         else
         {
@@ -251,6 +268,7 @@ public class TacticalOverlayController
             RebuildFieldIfNeeded(req, target, accent, alphaScale);
         }
 
+        _fieldActive = true;
         if (_gpuField != null && TacticalOverlayConfig.UseGpuField)
             _gpuField.DrawComposite(_originX, _originY,
                 GameWideConstants.DEFAULT_TABLE_WIDTH_INCHES, GameWideConstants.DEFAULT_TABLE_HEIGHT_INCHES, _scale);
@@ -261,18 +279,37 @@ public class TacticalOverlayController
 
     // ---- Ghost-anchored field (H4): "what can I hit from here", per frame --------------------------
 
+    /// <summary>
+    /// #230 — the placement equivalent of a move job: a resolver with pending ghosts (deployment, ambush
+    /// arrival, disembark, teleport/reposition) anchors the same field on the spot being aimed at. Always
+    /// ghost-anchored regardless of <see cref="TacticalOverlayConfig.GhostAnchoredField"/>: that flag picks
+    /// between "where can I stand to shoot the pin" and "what can I hit from here", and the first has no
+    /// meaning here — pins are scoped to a move job, and during a placement the ghosts ARE the question.
+    /// Returns false when no placement is offering ghosts, so the caller clears the field.
+    /// </summary>
+    private bool TryDrawPlacementField()
+    {
+        IGhostFieldSource? source = _resolverOverlay?.ActiveGhostField;
+        if (source == null || !source.TryGetGhostField(out IUnit unit, out var ghosts)) return false;
+
+        RebuildGhostField(unit, ghosts, req: null);
+        return true;
+    }
+
     // Approximations, deliberate and documented: the reach discs inflate by each model's own base
     // radius plus the DEFAULT 28mm target radius (there is no specific target); LoS blockers exclude
     // only the mover's team (a real shot at unit X would also ignore X's own models). Pips stay the
     // per-target truth. Band labels are suppressed (they'd ride the cursor); pins keep chips/counts and
     // their secondary contours.
-    private void RebuildGhostField(DefineMovementPathRequest req)
+    //
+    // #230: `req` is null for a placement-anchored build. Everything it feeds is pin-related — the
+    // per-weapon range overrides and the secondary contours — and pins only exist during a move job, so
+    // a null request simply takes the no-pin path rather than needing a placement equivalent.
+    private void RebuildGhostField(IUnit movingUnit, IReadOnlyDictionary<IModel, Position> ghosts,
+        DefineMovementPathRequest? req)
     {
-        IUnit movingUnit = req.UnitDataBinding.GetValue();
-        IReadOnlyDictionary<IModel, Position> ghosts = _moveResolver!.GhostPositions;
-
         // Distinct effective ranges -> nested bands (vs the focused pin if any, else raw ranges).
-        IUnit? rangeTarget = _pins.Count > 0 && _focusIndex >= 0 && _focusIndex < _pins.Count
+        IUnit? rangeTarget = req != null && _pins.Count > 0 && _focusIndex >= 0 && _focusIndex < _pins.Count
             ? _pins[_focusIndex].Unit : null;
         var byRange = new Dictionary<float, List<GpuFieldRenderer.BandDisc>>();
         var byRangeNames = new Dictionary<float, Dictionary<string, int>>();   // for band labels ("4x Rifle")
@@ -289,7 +326,7 @@ public class TacticalOverlayController
             {
                 if (w.RangeInches <= 0f) continue;
                 float eff = rangeTarget != null
-                    ? EffectiveRange(req, w.Name, rangeTarget.ID, w.RangeInches)
+                    ? EffectiveRange(req!, w.Name, rangeTarget.ID, w.RangeInches)
                     : w.RangeInches;
                 if (!byRange.TryGetValue(eff, out List<GpuFieldRenderer.BandDisc>? discs))
                     byRange[eff] = discs = new List<GpuFieldRenderer.BandDisc>();
@@ -377,7 +414,8 @@ public class TacticalOverlayController
         _lastFieldBands = perBand.Select(pb => pb.band).ToList();  // distance readout still promotes
         _fieldMasksValid = false;  // ghost-anchored masks must not feed the target-anchored sampler truth
         InvalidateField();  // leaving ghost mode must force a target-anchored rebuild
-        BuildSecondaryContours(req, movingUnit, _probe.ModalBaseRadius(movingUnit));
+        if (req != null) BuildSecondaryContours(req, movingUnit, _probe.ModalBaseRadius(movingUnit));
+        else _secondaryContours.Clear();   // #230: no pins during a placement, so no secondary rings
     }
 
     private long _lastGhostWarnMs;
@@ -390,6 +428,7 @@ public class TacticalOverlayController
         _secondaryContours.Clear();
         _fieldRings = new List<List<Float2>>();
         _fieldMasksValid = false;
+        _fieldActive = false;
     }
 
     /// <summary>
@@ -1566,7 +1605,10 @@ public class TacticalOverlayController
 
     private void DrawBandLabels()
     {
-        if (_bandLabels.Count == 0 || _moveResolver?.ActiveRequest == null) return;
+        // #230: gated on "a field was drawn this frame", not on a move job. The band captions name the
+        // weapon behind each ring ("24in 5x Rifle"), which is most of the field's readability, and a
+        // placement-anchored field has no move request to check.
+        if (_bandLabels.Count == 0 || !_fieldActive) return;
 
         ImDrawListPtr dl = ImGui.GetBackgroundDrawList();
         uint textCol = ImGui.ColorConvertFloat4ToU32(new Vector4(1f, 1f, 1f, 1f));

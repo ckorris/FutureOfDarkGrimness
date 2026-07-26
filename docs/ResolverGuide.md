@@ -70,6 +70,28 @@ rule; app-side state lives in `FormationCycle`, input in `GroupInput` (both
   hiding the wheel from the resolvers) and the **zoom moved from Ctrl+wheel to Alt+wheel**, so
   zooming keeps working while a group ghost is live and nothing contends for Ctrl.
 
+## Ghost-anchored field during placement (#230)
+
+The tactical overlay's ghost-anchored opportunity field ("what can I hit from here" — per-model weapon-range
+bands from the *pending* positions, LoS and cover taken from those positions, GPU-rasterized, rebuilt every
+frame) was reachable only through `GuiDefineMovementResolver`. Placement now offers its ghosts through
+`IGhostFieldSource` (`FdgRaylib/Rendering/Resolvers/`), surfaced as `GuiResolverOverlay.ActiveGhostField` —
+the same "the pending resolver's X, if it opts in" pattern as `ActivePreviewSource` /
+`ActiveEnemyExclusion`, so the field appears and disappears with the placement and a new opt-in resolver
+needs no change in the controller.
+
+- `TacticalOverlayController.DrawField` falls through to `TryDrawPlacementField` when no move job is
+  running; `RebuildGhostField` takes `(unit, ghosts, req?)` and the null request simply takes the no-pin
+  path (`WeaponRangeOverrides` and secondary contours are both pin-only, and pins are scoped to a move job).
+- **Placement is always ghost-anchored**, regardless of `TacticalOverlayConfig.GhostAnchoredField`. That
+  flag chooses between "where can I stand to shoot the pin" and "what can I hit from here"; the first has no
+  meaning when there is no pin and the ghosts *are* the question.
+- Ghosts are read from the canvas pass, which runs **before** the resolver's own `Draw` — so they are one
+  frame old, exactly as the movement resolver's always have been.
+- **Hotkey `V`** (`ViewSettings.ShowPlacementRanges`, default on) plus a checkbox in the placement panel.
+  `DrawBandLabels` gates on "a field was drawn this frame" (`_fieldActive`), not on a move request, or the
+  band captions naming each weapon would vanish during placement.
+
 ## Validation gotchas
 
 - **Deployment spacing**: `MAX_MODEL_DISTANCE_FROM_ANY_OTHER_MODEL_INCHES` is 1.0" base-to-base. Auto-placement uses 0.1" gap, **not 1.0"** — at exactly 1.0", float accumulation during diagonal movement can push models fractionally over the cohesion limit.

@@ -11,7 +11,7 @@ namespace FdgRaylib.Rendering.Resolvers;
 
 public class GuiPlaceObjectsResolver<T>
     : IStageResolver<PlaceObjectsRequest<T>, CancellableResult<List<PlacedObjectEntry<T>>>>, IGuiResolver, IGuiCanvasOverlay,
-      IEnemyExclusionProvider, IPreviewSource
+      IEnemyExclusionProvider, IPreviewSource, IGhostFieldSource
 {
     private readonly ITableState _tableState;
     private readonly FormationModeState _formationMode;
@@ -54,6 +54,27 @@ public class GuiPlaceObjectsResolver<T>
     // trusts it only while _snapshotRequest matches the pending request.
     private readonly Dictionary<int, (Position pos, Float2 facing)> _ghostSnapshot = new();
     private PlaceObjectsRequest<T>? _snapshotRequest;
+
+    // #230: the same frame's intended positions keyed by model, for the tactical overlay's ghost-anchored
+    // field (IGhostFieldSource). Kept beside the index-keyed snapshot above rather than derived from it on
+    // demand, because the overlay reads this from the canvas pass while _request may already be gone.
+    // Mirrors GuiDefineMovementResolver's GhostPositions, which the field was originally built to read.
+    private readonly Dictionary<IModel, Position> _ghostFieldPositions = new();
+    private IUnit? _ghostFieldUnit;
+
+    /// <summary>
+    /// #230 — the placement in progress, as an anchor for the opportunity field. Every model the request
+    /// is placing that is currently drawn somewhere: the live cursor ghost / group phantoms first, then
+    /// anything already dropped this placement. So the field follows the cursor while the spot is being
+    /// aimed and grows as a unit is built model by model, and a picked-up model contributes at the cursor
+    /// rather than at the spot it is being lifted out of.
+    /// </summary>
+    public bool TryGetGhostField(out IUnit unit, out IReadOnlyDictionary<IModel, Position> ghosts)
+    {
+        unit = _ghostFieldUnit!;
+        ghosts = _ghostFieldPositions;
+        return _ghostFieldUnit != null && _ghostFieldPositions.Count > 0;
+    }
 
     /// <summary>
     /// #280: the placement being planned, as the shared ghost+path vocabulary. Committed
@@ -217,6 +238,11 @@ public class GuiPlaceObjectsResolver<T>
             _dragIndex = null;
         }
 
+        // V toggles the #230 reach field. A view preference, so it lives in ViewSettings and persists
+        // across placements like the label / grid toggles do.
+        if (wantInput && ImGui.IsKeyPressed(ImGuiKey.V))
+            ViewSettings.ShowPlacementRanges = !ViewSettings.ShowPlacementRanges;
+
         // The group follow-formation ghost only shows before the first drop. Once anything is on the
         // table, both modes switch to per-model editing (drag a placed model, or place a missing one),
         // so clicks no longer re-drop the whole unit. Use Restart to re-form from scratch.
@@ -225,9 +251,48 @@ public class GuiPlaceObjectsResolver<T>
         else
             DrawSingleDeploy(dl, io, request, zone, enemies, minEnemyDist, overTable);
 
+        IUnit? owner = FindOwningUnit(request);
+
+        // #230: republish this frame's intended positions for the tactical overlay's field. After the mode
+        // handlers, which is what fills _ghostSnapshot.
+        UpdateGhostField(request, owner);
+
         if (_errorMessage != null && ImGui.GetTime() > _errorExpiry) _errorMessage = null;
 
-        DrawInfoPanel(screenW, request, tcs);
+        DrawInfoPanel(screenW, request, tcs, owner);
+    }
+
+    /// <summary>
+    /// #230 — rebuilds the by-model position map the tactical overlay anchors its field on, from this
+    /// frame's ghosts and committed placements. Cleared when the placement isn't a unit's models
+    /// (objectives, terrain) or nothing is on screen yet, so the field goes away with the ghosts.
+    /// </summary>
+    private void UpdateGhostField(PlaceObjectsRequest<T> request, IUnit? owner)
+    {
+        _ghostFieldPositions.Clear();
+        _ghostFieldUnit = ViewSettings.ShowPlacementRanges ? owner : null;
+        if (_ghostFieldUnit == null) return;
+
+        for (int i = 0; i < request.ModelsToPlace.Count; i++)
+        {
+            if (request.ModelsToPlace[i].GetValue() is not ModelData model) continue;
+            if (TryIntendedPosition(i, out Position at)) _ghostFieldPositions[model] = at;
+        }
+    }
+
+    /// <summary>
+    /// Where model <paramref name="index"/> is headed, as drawn on screen this frame: the live ghost wins
+    /// over a committed placement (a picked-up model is drawn at the cursor, not where it was dropped), then
+    /// anything already placed. False for a model that isn't on screen at all — still to place with the mouse
+    /// off the table, or picked up and being dragged off-table.
+    /// </summary>
+    private bool TryIntendedPosition(int index, out Position position)
+    {
+        if (_ghostSnapshot.TryGetValue(index, out var ghost)) { position = ghost.pos; return true; }
+        if (_dragIndex == index) { position = default; return false; }
+        if (index < _placed.Count) { position = _placed[index].Position; return true; }
+        position = default;
+        return false;
     }
 
     /// <summary>
@@ -567,7 +632,7 @@ public class GuiPlaceObjectsResolver<T>
     }
 
     private void DrawInfoPanel(int screenW, PlaceObjectsRequest<T> request,
-        TaskCompletionSource<CancellableResult<List<PlacedObjectEntry<T>>>> tcs)
+        TaskCompletionSource<CancellableResult<List<PlacedObjectEntry<T>>>> tcs, IUnit? deploying)
     {
         int total = request.ModelsToPlace.Count;
         bool group = _formationMode.IsGroup;
@@ -596,10 +661,19 @@ public class GuiPlaceObjectsResolver<T>
             ImGui.TextUnformatted($"Formation: {_formationCycle.Label} ({_formationCycle.Index + 1}/{_formationCycle.Count})");
         }
 
+        // #230: the hotkey alone would be undiscoverable, so the toggle is also a checkbox here. Only
+        // offered where there is a unit to show reach for (not for objective / terrain placement).
+        if (deploying != null)
+        {
+            ImGui.Checkbox("Weapon reach (V)", ref ViewSettings.ShowPlacementRanges);
+            if (ImGui.IsItemHovered())
+                ImGui.SetTooltip("Show what this spot could hit from here: weapon-range bands, shaded for\n" +
+                                 "line of sight and cover from the pending positions.");
+        }
+
         // The unit's stats (weapons with special rules + unit special rules). Most needed for an Ambush
         // arrival, where the unit is coming on from reserve and isn't visible on the table to hover. Shown
         // for any model placement; skipped for non-model objects (objectives).
-        IUnit? deploying = FindOwningUnit(request);
         if (deploying != null)
         {
             ImGui.Spacing();
@@ -937,6 +1011,10 @@ public class GuiPlaceObjectsResolver<T>
         CancellableResult<List<PlacedObjectEntry<T>>> result)
     {
         lock (_lock) { _request = null; _tcs = null; _placed.Clear(); }
+        // #230: drop the field anchor with the request so the overlay stops drawing this placement's reach
+        // (and we stop holding the unit) the instant it is committed.
+        _ghostFieldPositions.Clear();
+        _ghostFieldUnit = null;
         tcs.SetResult(result);
     }
 

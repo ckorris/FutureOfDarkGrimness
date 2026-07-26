@@ -16,4 +16,11 @@ public static class ViewSettings
 
     /// <summary>Dev toggle (hotkey T): reveal Invisible bookkeeping tokens in chips/tooltips.</summary>
     public static bool ShowAllTokens = false;
+
+    /// <summary>
+    /// #230 (hotkey V): anchor the tactical overlay's opportunity field on a placement's ghosts, so a
+    /// deployment / ambush arrival / teleport spot can be judged by what it would reach — LoS and cover
+    /// included — before it is committed. On by default; the placement panel carries the same toggle.
+    /// </summary>
+    public static bool ShowPlacementRanges = true;
 }
