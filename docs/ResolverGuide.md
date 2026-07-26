@@ -65,6 +65,9 @@ rule; app-side state lives in `FormationCycle`, input in `GroupInput` (both
 - Movement/consolidation feed the picked shape as the base positions of the two-array
   `PlanGroupMove`, so per-model budgets and terrain clamps apply to the morph exactly as they do to
   the coherency repair. The index resets to "current" on every committed step.
+- **Rotation only shapes the live ghost (#282).** `PathTemplate.AddStep` captures the manual offset
+  per waypoint at placement; committed waypoints keep the facing they were placed with (on screen and
+  in the executed result), so a late Wheel/R never re-orients the already-planned path.
 - **Ctrl+Wheel belongs exclusively to the formation cycle.** Alt is the camera/measure modifier:
   the **ruler moved from Ctrl+drag to Alt+drag** (holding Ctrl used to raise `WantCaptureMouse`,
   hiding the wheel from the resolvers) and the **zoom moved from Ctrl+wheel to Alt+wheel**, so
