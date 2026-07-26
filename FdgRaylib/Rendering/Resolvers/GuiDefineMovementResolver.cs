@@ -124,7 +124,9 @@ public class GuiDefineMovementResolver
         {
             IModel m = kvp.Key;
             IReadOnlyList<Position> waypoints = kvp.Value;
-            float facingOffset = group ? _groupFacingAngle : _manualOffsets.GetValueOrDefault(m);
+            // #282: the live offset only shapes the mouse ghost; the committed endpoint keeps the offset
+            // its waypoint was placed with (same derivation as the local final ghost).
+            float liveOffset = group ? _groupFacingAngle : _manualOffsets.GetValueOrDefault(m);
 
             var points = new List<GhostPathPoint>(waypoints.Count);
             foreach (Position p in waypoints)
@@ -134,8 +136,10 @@ public class GuiDefineMovementResolver
             Float2 finalFacing = m.Facing;
             if (waypoints.Count > 0)
             {
+                IReadOnlyList<float> stored = pt.GetModelFacingOffsets(m);
+                float committedOffset = stored.Count > 0 ? stored[^1] : 0f;
                 Position beforeLast = waypoints.Count >= 2 ? waypoints[waypoints.Count - 2] : m.Position;
-                finalFacing = RotateFloat2(TravelFacing(beforeLast, waypoints[^1], m.Facing), facingOffset);
+                finalFacing = RotateFloat2(TravelFacing(beforeLast, waypoints[^1], m.Facing), committedOffset);
             }
 
             var (mAdvance, mRush, mCharge) = request.BudgetFor(m.ID);
@@ -164,7 +168,7 @@ public class GuiDefineMovementResolver
                 float ghostDist = Position.GetDistance2D(committed, ghost);
                 if (ghostDist > PreviewQuantize.GhostEpsilonInches)
                 {
-                    Float2 ghostFacing = RotateFloat2(TravelFacing(committed, ghost, m.Facing), facingOffset);
+                    Float2 ghostFacing = RotateFloat2(TravelFacing(committed, ghost, m.Facing), liveOffset);
                     int band = BandCode(ClassifyBand(committedDist + ghostDist, mAdvance, mRush, hasChargeBand));
                     ghosts.Add(new GhostPathGhost(index, PreviewQuantize.Inches(ghost.x), PreviewQuantize.Inches(ghost.z),
                         PreviewQuantize.Inches(ghostFacing.X), PreviewQuantize.Inches(ghostFacing.Y), band));
@@ -398,12 +402,14 @@ public class GuiDefineMovementResolver
                     prev = cur;
                 }
 
-                // Final position ghost (true shape) + heading (#150): a locked hand/group facing, else the
-                // direction of travel into the last committed waypoint.
+                // Final position ghost (true shape) + heading (#150): the direction of travel into the last
+                // committed waypoint, rotated by the offset that waypoint was PLACED with (#282) - the live
+                // rotation only shapes the mouse ghost, never the committed path.
                 var last = pathPoints[^1];
                 var (lx, ly) = InchesToPixel(last.x, last.z);
                 Position beforeLast = pathPoints.Count >= 2 ? pathPoints[pathPoints.Count - 2] : start;
-                float finalOffset = _formationMode.IsGroup ? _groupFacingAngle : _manualOffsets.GetValueOrDefault(model);
+                IReadOnlyList<float> storedOffsets = pt.GetModelFacingOffsets(model);
+                float finalOffset = storedOffsets.Count > 0 ? storedOffsets[^1] : 0f;
                 Float2 finalFacing = RotateFloat2(TravelFacing(beforeLast, last, model.Facing), finalOffset);
                 ModelBaseRenderer.DrawFilledImGui(dl, model.BaseShape, new Vector2(lx, ly), _scale, FinalGhostCol, outline, thick, finalFacing);
                 ModelBaseRenderer.DrawHeadingImGui(dl, model.BaseShape, new Vector2(lx, ly), _scale, finalFacing, outline);
@@ -526,9 +532,12 @@ public class GuiDefineMovementResolver
                 var impPath = new List<Position>(paths.TryGetValue(_selectedModel, out var ip) ? ip : (IReadOnlyList<Position>)System.Array.Empty<Position>()) { ghostPos.Value };
                 // Carry the per-waypoint travel facing (#150) so the swept-base impassible check runs against the
                 // same oriented footprint the ghost draws - and the same one the authoritative Done gate now uses.
-                // Without it the red-flag used the model's resting facing and disagreed with the visible ghost.
+                // #282: committed waypoints keep the offsets they were placed with; only the ghost node rides
+                // the live offset.
+                var impOffsets = new List<float>(pt.GetModelFacingOffsets(_selectedModel))
+                    { _manualOffsets.GetValueOrDefault(_selectedModel) };
                 var impFacings = MovementFacingUtilities.WaypointFacings(_selectedModel.Position, impPath,
-                    _selectedModel.Facing, _manualOffsets.GetValueOrDefault(_selectedModel));
+                    _selectedModel.Facing, impOffsets);
                 ghostCrossing = MovementUtilities.FindFirstImpassibleCrossing(
                     new ModelMoveEntry(impBinding, impPath, impFacings), terrain);
                 ghostCrossesImpassible = ghostCrossing != null;
@@ -660,7 +669,7 @@ public class GuiDefineMovementResolver
                     float totalSoFar = pt.GetTotalDistanceMoved(_selectedModel);
                     float cap = advanceOnly ? maxAdvance : maxCharge;
                     if (cap - totalSoFar > 0.001f)
-                        pt.AddStep(_selectedModel, ghostPos.Value);
+                        pt.AddStep(_selectedModel, ghostPos.Value, _manualOffsets.GetValueOrDefault(_selectedModel));
                 }
             }
 
@@ -992,7 +1001,7 @@ public class GuiDefineMovementResolver
             && allValid && anyMovement)
         {
             for (int i = 0; i < models.Count; i++)
-                pt.AddStep(models[i], newPositions[i]);
+                pt.AddStep(models[i], newPositions[i], _groupFacingAngle); // #282: this step keeps this attitude
             _groupRotation = 0f;
             // #277: the committed step baked the picked shape into the waypoints — it IS the current
             // shape now, so further dragging is rigid until the player cycles again.
@@ -1124,22 +1133,10 @@ public class GuiDefineMovementResolver
         float fullW   = panelW - pad;                  // one button spanning the panel
         float btnW    = (fullW - spacing) / 2f;        // two buttons per row
 
-        // Facing overrides (#150): a group rotation faces the whole unit that way; single-mode hand-rotations
-        // lock per model. Otherwise each waypoint follows its direction of travel (see PathTemplate).
-        Dictionary<IModel, float>? facingOffsets = null;
-        if (group)
-        {
-            if (_groupFacingAngle != 0f)
-            {
-                facingOffsets = new Dictionary<IModel, float>();
-                foreach (IModel m in pt.CurrentPaths.Keys) facingOffsets[m] = _groupFacingAngle;
-            }
-        }
-        else if (_manualOffsets.Count > 0)
-        {
-            facingOffsets = _manualOffsets;
-        }
-        var results = pt.GetResultsAsList(facingOffsets, travelDirectionFacing: true);
+        // Facing overrides (#150/#282): each waypoint follows its direction of travel, rotated by the manual
+        // offset it was PLACED with (captured by PathTemplate.AddStep) - so Done executes exactly the path
+        // the committed markers show, and a late rotation never re-orients them.
+        var results = pt.GetResultsAsList(travelDirectionFacing: true);
         var enemyFootprints = GetEnemyFootprintsForRequest(request);
         // #212: friendlies may be passed THROUGH but not ENDED on - so the Done gate must reject a move (esp.
         // a group translate) that finishes on a friendly, exactly as the authoritative DefinePathStage does

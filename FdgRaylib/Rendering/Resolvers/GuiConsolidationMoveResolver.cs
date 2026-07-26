@@ -527,15 +527,10 @@ public class GuiConsolidationMoveResolver
         float pad     = ImGui.GetStyle().WindowPadding.X * 2;
         float fullW   = panelW - pad;
 
-        // #215: in group mode the accumulated rotation is baked into every committed step's facing.
-        IReadOnlyDictionary<IModel, float>? facingOffsets = null;
-        if (_formationMode.IsGroup && _groupFacingAngle != 0f)
-        {
-            var fo = new Dictionary<IModel, float>();
-            foreach (var m in pt.CurrentPaths.Keys) fo[m] = _groupFacingAngle;
-            facingOffsets = fo;
-        }
-        var results = pt.GetResultsAsList(facingOffsets);
+        // #215's group rotation is preview-only today: the committed entries carry no facings. (The old
+        // facingOffsets argument was a silent no-op - travelDirectionFacing was never set - and #282
+        // removed it; wiring rotation into the executed consolidation is an open follow-up in #282's notes.)
+        var results = pt.GetResultsAsList();
         // #090: enemy-check the consolidation preview so it matches the authoritative ConsolidateStage check.
         var enemyFootprints = GetEnemyFootprintsForRequest(request);
         bool engineValid = MovementUtilities.ValidatePaths(results, request.MaxDistanceInches,
