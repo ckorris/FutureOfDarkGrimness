@@ -194,7 +194,7 @@ public class DeferredDebuffCompositionTests
     {
         ActivatedAbility ability = Definition(ruleName).Activated.Single();
 
-        Assert.That(ability.TriggerHook, Is.EqualTo(EHookID.Activation_OnPreAttack),
+        Assert.That(ability.TriggerHook, Is.EqualTo(EHookID.Activation_OnBeforeAttackAction),
             "'before attacking' is the pre-attack hook.");
         Assert.That(ability.Cost, Is.InstanceOf<Cost.OncePerActivation>());
         Assert.That(ability.TargetSelector!.TargetAffinity, Is.EqualTo(affinity));

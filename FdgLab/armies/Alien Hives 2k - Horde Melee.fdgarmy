@@ -8965,7 +8965,7 @@
         "passive": [],
         "activated": [
           {
-            "triggerHook": "Activation_OnPreAttack",
+            "triggerHook": "Activation_OnBeforeAttackAction",
             "cost": {
               "kind": "oncePerActivation"
             },
@@ -9003,7 +9003,7 @@
         "passive": [],
         "activated": [
           {
-            "triggerHook": "Activation_OnPreAttack",
+            "triggerHook": "Activation_OnBeforeAttackAction",
             "cost": {
               "kind": "oncePerActivation"
             },
@@ -9039,7 +9039,7 @@
         "passive": [],
         "activated": [
           {
-            "triggerHook": "Activation_OnPreAttack",
+            "triggerHook": "Activation_OnBeforeAttackAction",
             "cost": {
               "kind": "oncePerActivation"
             },
@@ -9851,7 +9851,7 @@
       "passive": [],
       "activated": [
         {
-          "triggerHook": "Activation_OnPreAttack",
+          "triggerHook": "Activation_OnBeforeAttackAction",
           "cost": {
             "kind": "oncePerActivation"
           },
@@ -9889,7 +9889,7 @@
       "passive": [],
       "activated": [
         {
-          "triggerHook": "Activation_OnPreAttack",
+          "triggerHook": "Activation_OnBeforeAttackAction",
           "cost": {
             "kind": "oncePerActivation"
           },
@@ -9925,7 +9925,7 @@
       "passive": [],
       "activated": [
         {
-          "triggerHook": "Activation_OnPreAttack",
+          "triggerHook": "Activation_OnBeforeAttackAction",
           "cost": {
             "kind": "oncePerActivation"
           },
