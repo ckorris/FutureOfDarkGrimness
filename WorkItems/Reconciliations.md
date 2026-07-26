@@ -6,6 +6,19 @@ from origin/master. Standing precedent: numbers are never reused, and when two p
 claim the same number, the *unmerged local* item yields to the *merged* one and takes a fresh number.
 A per-clone pre-push hook blocks duplicate numbers across the index and the archive.
 
+> **2026-07-26 — reconciliation 27 (RESOLVED).** **282** was claimed twice: origin/master's
+> **282 = "rotation only affects ghost"** (merged, `WorkItems/282-rotation-only-affects-ghost.md`,
+> plus its #283 follow-up) vs this clone's locally-filed **282 = "deploy overlap / invisible
+> occupants"** (PlacementCommitGuard; its ENGINE commit `1e17708` "PlacementCommitGuard (#282)"
+> was already pushed, but the detail file and index line were still uncommitted here). Per
+> merged-wins precedent the local item yields: **deploy-overlap 282 -> 284** (284 free on index +
+> archive after a same-day near-miss: this session briefly filed 284 for the DOP-nondeterminism
+> finding, then withdrew it as a duplicate of #210 before pushing). Renumbered: detail file +
+> title (`WorkItems/284-deploy-overlap-invisible-occupants.md`), index line, and the three engine
+> source comments (PlacementCommitGuard.cs, SpilloutExecutor.cs, PlacementCommitGuardTests.cs;
+> engine commit `8b4e23a`). Commit messages saying "#282" for it (engine `1e17708`, superproject
+> `2f2d78d`) predate the renumber and keep their text, per reconciliation-26 precedent.
+>
 > **2026-07-25 — reconciliation 26.** The preview session filed **277 = networked decision
 > previews** against a local master where 276 was the highest number in use; before its push,
 > origin/master landed reconciliation 25's **277 = formation cycling** plus **278 = playtest

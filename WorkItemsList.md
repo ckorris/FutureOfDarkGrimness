@@ -27,6 +27,7 @@ When closing an item: write the Outcome in its detail file, tick the line, and m
 - [~] 277 — Formation cycling in Group mode (Ctrl+Wheel: line/5x2/4-3-3..., index 0 = current shape) for deploy/teleport/movement/consolidation, layout math consolidated into engine FormationLibrary; implemented + tested, awaiting GUI hand-verify. ([WorkItems/277](WorkItems/277-formation-cycling.md))
 - [~] 282 — Rotating mid-path (Wheel/R) re-oriented already-committed waypoints (single scalar offset applied to the whole path): PathTemplate now captures the offset per waypoint at placement, so rotation only shapes the next ghost; implemented + tested, awaiting GUI hand-verify. ([WorkItems/282](WorkItems/282-rotation-only-affects-ghost.md))
 - [~] 283 — Consolidation group rotation was preview-only (facing offsets silently dropped at Done AND ConsolidateStage never applied entry facings): executed via a new rotate-in-place derivation on #282's per-step offsets; implemented + tested, awaiting GUI hand-verify. ([WorkItems/283](WorkItems/283-consolidation-rotation-executes.md))
+- [ ] 284 — Deploy overlap (YellowDeployedOverGreen): commit-time guard SHIPPED (warn + auto-repair at all 5 mandatory-placement seams); root cause still open (occupants invisible/uncommitted at deploy time - stale-engine race suspected; watch for the WARNING log line). Was #282 pre-reconciliation-27. ([WorkItems/284](WorkItems/284-deploy-overlap-invisible-occupants.md))
 
 ## Shooting & cover
 
