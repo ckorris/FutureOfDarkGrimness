@@ -72,6 +72,11 @@ public class TacticalOverlayController
     // top-priority field anchor. Null while the pointer is over an ImGui panel.
     private IUnit? _hoverUnit;
 
+    // #247: which anchor won last frame. Replaces the retired GhostAnchoredField flag for the two places
+    // that needed to know whether the drawn field is TARGET-anchored — the fidelity sampler's field
+    // channels and the band snap — because that was always the real question, not what mode was selected.
+    private FieldAnchorKind _lastAnchorKind = FieldAnchorKind.None;
+
     private long _lastFieldSig;
     private bool _fieldBuiltOnce;
     // #230: true between DrawField painting a field and the next ClearFieldPictures. The ImGui-pass
@@ -232,6 +237,8 @@ public class TacticalOverlayController
         _isolatedShoot  = new List<List<Float2>>();
         _secondaryContours.Clear();
         _fieldActive = false;
+        _lastAnchorKind = FieldAnchorKind.None;
+        _hoverUnit = null;
         ClearPins();
     }
 
@@ -270,14 +277,16 @@ public class TacticalOverlayController
             ? ResolveFieldTarget(req)
             : (null, 0, 1f);
 
+        FieldAnchorKind anchor = FieldAnchorPlan.Resolve(
+            showReach: ViewSettings.ShowReachOverlay,
+            hoverAvailable: hoverUnit != null,
+            moveJobActive: req != null,
+            pinnedTargetAvailable: target != null,
+            placementGhostsAvailable: placementGhosts);
+        _lastAnchorKind = anchor;
+
         bool drew;
-        switch (FieldAnchorPlan.Resolve(
-                    showReach: ViewSettings.ShowReachOverlay,
-                    hoverAvailable: hoverUnit != null,
-                    moveJobActive: req != null,
-                    ghostAnchoredMode: TacticalOverlayConfig.GhostAnchoredField,
-                    pinnedTargetAvailable: target != null,
-                    placementGhostsAvailable: placementGhosts))
+        switch (anchor)
         {
             case FieldAnchorKind.Hover:
                 // Stationary anchor -> the signature gate inside turns this into one rebuild per hovered
@@ -532,6 +541,9 @@ public class TacticalOverlayController
         _fieldRings = new List<List<Float2>>();
         _fieldMasksValid = false;
         _fieldActive = false;
+        // Nothing is on screen, so nothing is target-anchored: the band snap and the sampler's field
+        // channels must not act on the anchor that was about to draw but didn't.
+        _lastAnchorKind = FieldAnchorKind.None;
     }
 
     /// <summary>
@@ -555,19 +567,23 @@ public class TacticalOverlayController
                 DrawThreatPolylines();
         }
 
-        // The focused field's band rings + secondary-pin contours ride with the field (move job only).
-        if (moveJobActive)
+        // The band rings ride with the field, whatever anchored it (#247 — this was gated on a move job,
+        // so placement and hover fields drew the fill wash with no boundary rings. The rings ARE the band
+        // delineation; the fill is deliberately a light atmosphere layer, so without them the picture
+        // loses most of its information).
+        if (_fieldActive)
         {
-            // GPU draws rings in screen space (constant thin width, both field modes); the CPU vector
-            // rings are the fallback (target mode only) and are empty when the GPU handles them.
+            // GPU draws rings in screen space (constant thin width, every anchor); the CPU vector rings
+            // are the fallback (target-anchored only) and are empty when the GPU handles them.
             if (_gpuField != null && TacticalOverlayConfig.UseGpuField && _gpuField.RingsReady)
                 _gpuField.DrawRings(_originX, _originY,
                     GameWideConstants.DEFAULT_TABLE_WIDTH_INCHES, GameWideConstants.DEFAULT_TABLE_HEIGHT_INCHES, _scale);
             else
                 DrawFieldRings();
-
-            DrawSecondaryContours();
         }
+
+        // Secondary-pin contours are pin-only, so they stay scoped to a move job.
+        if (moveJobActive) DrawSecondaryContours();
     }
 
     // Band boundary rings for the focused field, as consistent-thickness vector lines in the lead accent.
@@ -719,7 +735,7 @@ public class TacticalOverlayController
         // classification (ghost mode's truth is different geometry; GPU-only frames skip the masks).
         if (_bandMask != null && _shadowMask != null && _coverMask != null &&
             _fieldTargetUnit != null && _fieldMovingUnit != null &&
-            _fieldMasksValid && !TacticalOverlayConfig.GhostAnchoredField)
+            _fieldMasksValid && _lastAnchorKind == FieldAnchorKind.Target)
         {
             IUnit target = _fieldTargetUnit;
             float longest = _lastFieldBands.Count > 0 ? _lastFieldBands.Max(b => b.RangeInches) : 0f;
@@ -1457,10 +1473,11 @@ public class TacticalOverlayController
         if (_moveResolver?.ActiveRequest == null) return intended;
         if (ImGui.GetIO().KeyAlt) return intended;
 
-        // Band snap (pin) takes precedence over threat snap -- but only in Target mode: in Self mode the
-        // drawn bands are around the MOVER (with the mover's ranges), so snapping to pin-centred circles
-        // that aren't on screen would jump the cursor to nowhere the player can see.
-        if (!TacticalOverlayConfig.GhostAnchoredField &&
+        // Band snap (pin) takes precedence over threat snap -- but only when the drawn field is actually
+        // the target-anchored one: otherwise the bands on screen are around the MOVER (with the mover's
+        // ranges), so snapping to pin-centred circles that aren't drawn would jump the cursor to nowhere
+        // the player can see.
+        if (_lastAnchorKind == FieldAnchorKind.Target &&
             _pins.Count > 0 && _focusIndex >= 0 && _focusIndex < _pins.Count && _lastFieldBands.Count > 0)
         {
             IUnit focus = _pins[_focusIndex].Unit;

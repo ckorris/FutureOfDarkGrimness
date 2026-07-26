@@ -4,24 +4,26 @@ using NUnit.Framework;
 namespace FdgRaylib.Tests;
 
 /// <summary>
-/// #247 — the field's anchor used to be decided in four places (the move-request branch, the
-/// GhostAnchoredField mode flag, the pins/hover target resolve, and #230's placement fallback), which is
-/// how two of them could in principle paint at once. One contest now picks a single winner; these pin the
-/// priority order, since "exactly one field on screen" is the property the feature rests on.
+/// #247 — the field's anchor used to be decided in four places: the move-request branch, the
+/// GhostAnchoredField mode flag (since retired), the pins/hover target resolve, and #230's placement
+/// fallback. That is how two of them could in principle paint at once, and how a move job with nothing
+/// pinned could end up painting nothing at all. One contest now picks a single winner; these pin the
+/// priority order, since "exactly one field, and never zero when there is something to show" is the
+/// property the feature rests on.
 /// </summary>
 [TestFixture]
 public class FieldAnchorPlanTests
 {
-    // Named so each case reads as a scenario rather than six bools.
+    // Named so each case reads as a scenario rather than five bools.
     private static FieldAnchorKind Resolve(bool showReach = true, bool hover = false,
-        bool moveJob = false, bool ghostMode = false, bool pin = false, bool placement = false) =>
-        FieldAnchorPlan.Resolve(showReach, hover, moveJob, ghostMode, pin, placement);
+        bool moveJob = false, bool pin = false, bool placement = false) =>
+        FieldAnchorPlan.Resolve(showReach, hover, moveJob, pin, placement);
 
     [Test]
     public void ToggledOff_NothingAnchorsAtAll()
     {
         // Every source live at once: V still wins over all of them.
-        Assert.That(Resolve(showReach: false, hover: true, moveJob: true, ghostMode: true,
+        Assert.That(Resolve(showReach: false, hover: true, moveJob: true,
             pin: true, placement: true), Is.EqualTo(FieldAnchorKind.None));
     }
 
@@ -45,26 +47,27 @@ public class FieldAnchorPlanTests
     }
 
     [Test]
-    public void Hover_BeatsBothMoveJobModes()
+    public void Hover_BeatsBothMoveJobPictures()
     {
-        Assert.That(Resolve(hover: true, moveJob: true, ghostMode: true),
-            Is.EqualTo(FieldAnchorKind.Hover), "ghost-anchored move job");
-        Assert.That(Resolve(hover: true, moveJob: true, ghostMode: false, pin: true),
-            Is.EqualTo(FieldAnchorKind.Hover), "target-anchored move job");
+        Assert.That(Resolve(hover: true, moveJob: true),
+            Is.EqualTo(FieldAnchorKind.Hover), "move job showing its own ghosts");
+        Assert.That(Resolve(hover: true, moveJob: true, pin: true),
+            Is.EqualTo(FieldAnchorKind.Hover), "move job showing a pinned target");
     }
 
     [Test]
-    public void MoveJob_KeepsItsTwoExistingModes()
+    public void MoveJob_WithNothingPinned_ShowsItsOwnGhosts()
     {
-        Assert.That(Resolve(moveJob: true, ghostMode: true), Is.EqualTo(FieldAnchorKind.Ghost));
-        Assert.That(Resolve(moveJob: true, ghostMode: false, pin: true), Is.EqualTo(FieldAnchorKind.Target));
+        // The regression that prompted this: with the retired GhostAnchoredField defaulting off, a move
+        // job with no pin drew NOTHING, and the only way to a field was a checkbox in the Esc menu.
+        Assert.That(Resolve(moveJob: true), Is.EqualTo(FieldAnchorKind.Ghost));
     }
 
     [Test]
-    public void MoveJob_TargetAnchoredWithNoPin_DrawsNothing()
+    public void MoveJob_WithAPin_ShowsTheTargetAnchoredPicture()
     {
-        // Pre-#247 behaviour, deliberately preserved: no pin, no target field.
-        Assert.That(Resolve(moveJob: true, ghostMode: false, pin: false), Is.EqualTo(FieldAnchorKind.None));
+        // Pinning IS the gesture that asks for "where can I stand to shoot it".
+        Assert.That(Resolve(moveJob: true, pin: true), Is.EqualTo(FieldAnchorKind.Target));
     }
 
     [Test]
@@ -72,17 +75,14 @@ public class FieldAnchorPlanTests
     {
         // The two can't be live together in practice, but the contest must still name one winner rather
         // than letting a stale placement source paint under a move job.
-        Assert.That(Resolve(moveJob: true, ghostMode: false, pin: false, placement: true),
-            Is.EqualTo(FieldAnchorKind.None));
+        Assert.That(Resolve(moveJob: true, placement: true), Is.EqualTo(FieldAnchorKind.Ghost));
+        Assert.That(Resolve(moveJob: true, pin: true, placement: true), Is.EqualTo(FieldAnchorKind.Target));
     }
 
     [Test]
-    public void Placement_AnchorsOnGhosts_RegardlessOfTheMoveJobMode()
+    public void Placement_AnchorsOnGhosts()
     {
-        // GhostAnchoredField picks between the two MOVE pictures; a placement has no pinned target to
-        // offer the alternative, so the flag must not reach it in either state.
-        Assert.That(Resolve(placement: true, ghostMode: false), Is.EqualTo(FieldAnchorKind.Ghost));
-        Assert.That(Resolve(placement: true, ghostMode: true), Is.EqualTo(FieldAnchorKind.Ghost));
+        Assert.That(Resolve(placement: true), Is.EqualTo(FieldAnchorKind.Ghost));
     }
 
     [Test]

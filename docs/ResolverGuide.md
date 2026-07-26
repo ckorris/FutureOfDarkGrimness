@@ -93,9 +93,14 @@ needs no change in the controller.
   while moving, placing and idle. The placement panel and Esc → Options carry the same flag as checkboxes.
   `DrawBandLabels` gates on "a field was drawn this frame" (`_fieldActive`), not on a move request, or the
   band captions naming each weapon would vanish during placement.
-- **One anchor per frame** (#247): `FieldAnchorPlan.Resolve` picks a single winner from
-  hover / move-ghosts / placement-ghosts / pinned-target, which is what keeps two team-coloured washes off
-  the same ground. Resolvers report what they *have* to anchor on; the controller decides what draws.
+- **One anchor per frame** (#247): `FieldAnchorPlan.Resolve` picks a single winner —
+  `hover > (pinned target | move ghosts) > placement ghosts` — which is what keeps two team-coloured
+  washes off the same ground. Resolvers report what they *have* to anchor on; the controller decides what
+  draws. A move job with nothing pinned shows its own ghosts: **pinning is the gesture** that asks for the
+  target-anchored picture, which is why the old `GhostAnchoredField` mode flag is gone (default-off meant
+  a plain move drew nothing at all).
+- Anything that needs to know whether the drawn field is target-anchored asks `_lastAnchorKind`, not a
+  mode flag. Both the band snap and the band rings/labels follow the field, not the move request.
 
 ## Validation gotchas
 

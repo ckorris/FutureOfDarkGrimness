@@ -40,9 +40,11 @@ internal static class FieldAnchorPlan
     /// which nothing else offers. Callers must exclude the unit whose ghosts are live: its models still
     /// stand at their ORIGINAL positions, so anchoring there while the player aims ghosts somewhere else
     /// would answer a question nobody asked.</item>
-    /// <item>A move job keeps its two existing modes, chosen by <paramref name="ghostAnchoredMode"/> —
-    /// "what can I hit from here" vs the pinned target's "where can I stand to shoot it". A move job with
-    /// neither mode satisfiable draws nothing, as it always has.</item>
+    /// <item>A move job shows the pinned target's "where can I stand to shoot it" when something is
+    /// pinned, and otherwise its own ghosts — "what can I hit from here". <b>Pinning is the gesture</b>,
+    /// which is what retired the old <c>GhostAnchoredField</c> mode flag: the default (nothing pinned) is
+    /// now the picture a player actually gets by moving, instead of a blank table until they found a
+    /// checkbox in the Esc menu.</item>
     /// <item>A placement (#230) is always ghost-anchored: pins are scoped to a move job, so the
     /// target-anchored question has no meaning there.</item>
     /// </list>
@@ -51,7 +53,6 @@ internal static class FieldAnchorPlan
         bool showReach,
         bool hoverAvailable,
         bool moveJobActive,
-        bool ghostAnchoredMode,
         bool pinnedTargetAvailable,
         bool placementGhostsAvailable)
     {
@@ -59,10 +60,7 @@ internal static class FieldAnchorPlan
         if (hoverAvailable) return FieldAnchorKind.Hover;
 
         if (moveJobActive)
-        {
-            if (ghostAnchoredMode) return FieldAnchorKind.Ghost;
-            return pinnedTargetAvailable ? FieldAnchorKind.Target : FieldAnchorKind.None;
-        }
+            return pinnedTargetAvailable ? FieldAnchorKind.Target : FieldAnchorKind.Ghost;
 
         return placementGhostsAvailable ? FieldAnchorKind.Ghost : FieldAnchorKind.None;
     }

@@ -43,9 +43,29 @@ field ("where can I stand to shoot it"); it now shows that enemy's *own* reach, 
 target-anchored picture is still reachable by pinning (click) and then looking elsewhere — hover means
 "what does that unit reach", pin means "where can I stand to shoot it". Coherent, but it is a change.
 
-**Deliberately NOT done:** deleting `TacticalOverlayConfig.GhostAnchoredField`. It selects between two
-genuinely different *move-job* pictures and is default-OFF pending a feel-check, so removing it would
-silently change the default movement experience. The contest routes around it instead.
+**Deliberately NOT done at first:** deleting `TacticalOverlayConfig.GhostAnchoredField`. It selected
+between two genuinely different *move-job* pictures and was default-OFF pending a feel-check, so removing
+it looked like a silent change to the default movement experience.
+
+**Same day — that call was wrong, and hand-verify caught it.** Chris: "I see the polar displays during
+deployment, but not during movement." Default-OFF plus no pin meant `FieldAnchorPlan` returned `None` for
+the commonest case in the game: move a unit, pin nothing. The feel-check the flag was waiting on could
+never happen, because the field it gated was unreachable without first finding a checkbox in the Esc menu.
+Retired the flag: a move job shows the target-anchored picture when something is **pinned**, and its own
+ghosts otherwise. Pinning is the gesture; no mode is left to set, so "Anchor field on my position" is gone
+from Options. The two places that genuinely needed to know whether the drawn field is target-anchored (the
+fidelity sampler's field channels, and the band snap in `SnapInputPoint`) now ask
+`_lastAnchorKind == Target`, which was always the real question.
+
+**Second regression found in the same pass:** `DrawContours` gated the field's **band rings** on
+`moveJobActive`, so placement and hover fields drew the fill wash with no boundary rings. Per
+`TacticalOverlayConfig`'s own note the rings carry the band delineation and the fill is deliberately a
+light atmosphere layer — so those fields were showing the atmosphere without the information. Now gated on
+`_fieldActive`, like the band labels. Secondary-pin contours stay move-job scoped, being pin-only.
+
+**Bonus:** movement now benefits from the signature gate too. It previously rebuilt the ghost field every
+frame unconditionally; a stationary cursor mid-move is as cacheable as a hover, so the
+`[overlay] rebuild ...ms/frame` warning should get much rarer on the CPU path.
 
 ### Answers to the open questions below
 
@@ -57,12 +77,32 @@ silently change the default movement experience. The contest routes around it in
 - **Q4 (when it shows)** — answered: sticky global toggle, context picks the anchor.
 - **Q1 (discoverability)** — half. One key with one meaning, surfaced in two panels; an on-table legend
   for the band/threat vocabulary is still unbuilt.
-- **Q5 (threat frontiers)** — untouched. F is still a separate layer with its own reference-player logic
-  (`ResolveReference` keys off a move job or the activating unit), so enemy threat still does not
-  auto-show while deploying. Folding threat into the same contest is the obvious slice 2.
+- **Q5 (threat frontiers)** — untouched, and now the live question. Chris 2026-07-26: "F toggles what I
+  think is an outdated danger radius that should be removed." Costed below; awaiting a scope call.
+
+### Q5 / F removal — what it would actually take (awaiting sign-off)
+
+F toggles `DrawThreatPolylines`: red contours around the aggregate reach of every *unactivated, alive,
+on-table, non-Shaken* enemy — solid = charge reach, dashed = shoot reach. Deleting the **drawing** is
+small. Deleting the **system** is not, because three other things read the same discs:
+
+1. **Threat snap** (`SnapInputPoint`) — dropping a waypoint within 0.4" of a frontier nudges it just
+   outside. Silent movement-feel change if removed.
+2. **The "! Inside enemy charge/shoot reach" row** in the movement panel (`GhostInThreat`).
+3. **The fidelity sampler's threat channels** (F10 debug) and `_isolatedUnit` (click an enemy while
+   threat is on to isolate its frontier).
+
+So the options are: (a) drop the display + F + the Options checkbox, keep the discs feeding snap and the
+warning row; (b) drop all of it, including the snap and the warning row, and delete `ThreatFrontierCache`
+/ `ThreatDisc` / `BuildIsolatedFrontier`; or (c) replace it — fold enemy threat into the reach field's own
+vocabulary so hovering an enemy already answers it, which is arguably what makes the red layer feel
+outdated in the first place.
 
 ### Hand-verify
 
+0. **Move a unit with nothing pinned — the field shows.** (The 2026-07-26 regression.) Then click an
+   enemy to pin: the picture switches to the target-anchored one. Unpin: back to your ghosts.
+0b. Placement and hover fields draw their **boundary rings**, not just the fill wash.
 1. `V` toggles the field off/on identically while moving, while deploying, and while idle.
 2. Idle (or waiting on an opponent): hover any unit -> its reach appears immediately, no perceptible dwell.
 3. Mid-placement: hover an *enemy* -> the field switches to that enemy; move off -> your ghosts' field

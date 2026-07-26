@@ -83,11 +83,11 @@ internal static class TacticalOverlayConfig
     // flipping it invalidates the field cache. Auto-falls back to CPU when GPU init fails.
     public static bool UseGpuField = true;
 
-    // Ghost-anchored field (H4, default OFF pending user feel-check): instead of the pinned target's
-    // "where can I stand to shoot it" bands, the field anchors on the moving unit's ghosts and shows
-    // "what can I hit from here" -- per-model weapon-range bands from the pending positions, LoS from
-    // the ghosts, rebuilt EVERY FRAME (the GPU path makes that ~free). Toolbar "Anchor" button.
-    public static bool GhostAnchoredField = false;
+    // (Retired #247) GhostAnchoredField chose between the ghost-anchored "what can I hit from here" field
+    // and the pinned target's "where can I stand to shoot it". Default OFF meant a move job with nothing
+    // pinned drew NO field at all until the player found the checkbox in the Esc menu -- reported as
+    // "I can't see them during movement". The choice is now made by the gesture: pin an enemy for the
+    // target-anchored picture, otherwise you get your own ghosts. See FieldAnchorPlan.
 
     // --- Hotkeys ----------------------------------------------------------------------------------
     // T is taken (dev token-reveal in TableTooltipOverlay); F is free. Alt is free.

@@ -153,13 +153,8 @@ public sealed class EscapeMenuOverlay
             if (ImGui.Checkbox("Threat frontiers (F)", ref threat))
                 _tactical.ToggleThreat();
 
-            bool anchorSelf = TacticalOverlay.TacticalOverlayConfig.GhostAnchoredField;
-            if (ImGui.Checkbox("Anchor field on my position", ref anchorSelf))
-            {
-                TacticalOverlay.TacticalOverlayConfig.GhostAnchoredField = anchorSelf;
-                _tactical.InvalidateFieldCache();
-            }
-            ImGui.TextDisabled("Off = the target's weapon ranges.");
+            // #247: the "Anchor field on my position" checkbox is gone -- pinning an enemy is the gesture
+            // that asks for the target-anchored picture, so there is no mode left to set.
         }
 
         SectionHeader("Audio");
