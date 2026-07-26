@@ -24,3 +24,19 @@ ASCII only, and an integration test asserts the banner text for at least a grant
   says "Bless grants Rending to Knight Brothers (this round)".
 
 ## Outcome
+Shipped 2026-07-26 (engine `fc2a1d9`). `SpellText.DescribeApplied` (past-tense verb phrase with the
+affected units folded in) + `DescribeConditionalApplied` (one line covering both the failures and the
+passes) + `JoinNames`; `CastSpellStage` emits them through a new `AnnounceEffect` helper on the
+non-damage path and at the end of `ResolveConditionalSpell`, in a violet `EffectBannerColor` distinct
+from the blue cast-result line. Six new tests in `CasterRuleIntegrationTests` (three pure-composer, three
+through the real stage: buff, conditional, and a failed cast that must report nothing).
+
+**Deferred deliberately** (signed off with the user): the DAMAGE path emits no effect banner — its
+attack/dice/wound beats already narrate the result, and a banner there would have to fire *before* the
+child pipeline resolves.
+
+Surprise worth recording: `Announce`'s tier parameter defaults to `Notice`, so the cast success/failure
+banners are Notices too — the effect banner cannot be identified by tier alone. Tests match on exact
+text and assert the count is 1 (the load-bearing claim: report once per spell, not once per target).
+
+Engine suite 2196/2196 green; headless smoke exits 0. Awaiting GUI hand-verify.
