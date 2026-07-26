@@ -71,6 +71,15 @@ public class LobbyScreen : IAppScreen
         // Also the engine thread, and deliberately handled synchronously there: the recovery save must be
         // taken before anything reacts to the game ending (#187).
         viewModel.OnGameCompleted += result => OnGameCompleted?.Invoke(result);
+
+        // Pick a random terrain type (cosmetic table surface) each time a fresh lobby opens, so every
+        // new game leads with a different-looking board instead of always Forest. Host-only (the setting
+        // is host-owned and broadcast to clients) and skipped on resume (saved games keep their surface).
+        if (viewModel.HasHostPrivileges && !viewModel.IsResumeMode)
+        {
+            var backgrounds = Enum.GetValues<ETableBackground>();
+            viewModel.SetTableBackground(backgrounds[Random.Shared.Next(backgrounds.Length)]);
+        }
     }
 
     public void Draw(int screenW, int screenH)
@@ -426,9 +435,15 @@ public class LobbyScreen : IAppScreen
         ImGui.PushItemWidth(panelW - innerPad * 2);
         ImGui.BeginDisabled(locked);
 
-        DrawIntField("Army Points",    _viewModel.ArmyPoints,    _viewModel.SetArmyPoints);
+        DrawIntField("Army Points",    _viewModel.ArmyPoints,    _viewModel.SetArmyPoints,
+            tooltip: "The point budget each player's army is built to. Armies over this limit are\n" +
+                     "flagged before launch. Higher points means bigger battles.");
         DrawEnumCombo("Terrain Mode",  _viewModel.TerrainPlacementMode, _viewModel.SetTerrainPlacementMode,
-            debugLast: new[] { ETerrainPlacementMode.AutoFromLayout });
+            debugLast: new[] { ETerrainPlacementMode.AutoFromLayout },
+            tooltip: "How terrain is put on the board.\n" +
+                     "Alternating: players take turns placing pieces (set the count below).\n" +
+                     "Load From File: place a saved layout verbatim.\n" +
+                     "Auto From Layout: the server places a built-in default pool (fast, for testing).");
 
         // Conditional sub-options under Terrain Mode.
         switch (_viewModel.TerrainPlacementMode)
@@ -443,10 +458,20 @@ public class LobbyScreen : IAppScreen
 
         DrawEnumCombo("Objective Mode", _viewModel.ObjectivePlacementMode, _viewModel.SetObjectivePlacementMode,
             debugLast: new[] { EObjectivePlacementMode.AutoPlaced },
-            displayName: ObjectiveModeLabel);
+            displayName: ObjectiveModeLabel,
+            tooltip: "Where the objective markers go. Objectives decide the winner.\n" +
+                     "Auto-Placed: the server places them in balanced spots, no input needed.\n" +
+                     "Player-Placed: players take turns placing markers.");
 
-        DrawEnumCombo("Randomness",    _viewModel.RandomnessType, _viewModel.SetRandomnessType);
-        DrawEnumCombo("Turn Style",    _viewModel.TurnStyle,      _viewModel.SetTurnStyle);
+        DrawEnumCombo("Randomness",    _viewModel.RandomnessType, _viewModel.SetRandomnessType,
+            tooltip: "How dice are resolved.\n" +
+                     "Realistic: real dice are rolled - whole hits, swingy and unpredictable.\n" +
+                     "Probabilistic: results use expected values - smoother, less luck.");
+        DrawEnumCombo("Turn Style",    _viewModel.TurnStyle,      _viewModel.SetTurnStyle,
+            tooltip: "How the next unit to activate is decided.\n" +
+                     "Standard: players take turns choosing one of their units to activate.\n" +
+                     "Bolt Action: whose turn it is is random, weighted by how many\n" +
+                     "activations each player has left.");
 
         ImGui.EndDisabled();
 
@@ -454,9 +479,9 @@ public class LobbyScreen : IAppScreen
         // Host-gated only - being cosmetic is exactly why a resumed game may still re-pick it.
         ImGui.BeginDisabled(!isHost);
         DrawEnumCombo("Battlefield",   _viewModel.TableBackground, _viewModel.SetTableBackground,
-            displayName: TableBackgrounds.Label);
-        if (ImGui.IsItemHovered())
-            ImGui.SetTooltip("The table's look. Cosmetic - no effect on terrain or any rule.");
+            displayName: TableBackgrounds.Label,
+            tooltip: "The terrain type / table surface (Forest, Desert, Ice, Mars-Like, Urban, Barren).\n" +
+                     "Cosmetic - no effect on terrain placement or any rule. Randomized when the lobby opens.");
         ImGui.EndDisabled();
 
         ImGui.BeginDisabled(locked);
@@ -631,6 +656,9 @@ public class LobbyScreen : IAppScreen
         int v = current;
         if (ImGui.SliderInt("##TerrainCount", ref v, 0, FDG.Stages.PlaceTerrainStage.MaxAlternatingPieceCount) && v != current)
             setter(v);
+        if (ImGui.IsItemHovered())
+            ImGui.SetTooltip("How many terrain pieces the players place, one at a time, alternating.\n" +
+                             "More pieces means a denser, more cover-heavy board.");
     }
 
     private static string ObjectiveModeLabel(EObjectivePlacementMode mode) => mode switch
@@ -654,6 +682,9 @@ public class LobbyScreen : IAppScreen
                 if (!string.IsNullOrEmpty(path)) setter(path);
             }
         }
+        if (ImGui.IsItemHovered())
+            ImGui.SetTooltip("Pick a saved terrain layout file. Its pieces are placed on the board\n" +
+                             "verbatim - no roll-off, no alternating placement.");
     }
 
     private void SubmitChat()
@@ -702,13 +733,15 @@ public class LobbyScreen : IAppScreen
             tableBackground: _viewModel!.TableBackground);
     }
 
-    private static void DrawIntField(string label, int current, Action<int> setter)
+    private static void DrawIntField(string label, int current, Action<int> setter, string? tooltip = null)
     {
         ImGui.TextUnformatted(label);
         ImGui.SameLine();
         int v = current;
         if (ImGui.InputInt($"##{label}", ref v) && v != current)
             setter(Math.Max(0, v));
+        if (tooltip != null && ImGui.IsItemHovered())
+            ImGui.SetTooltip(tooltip);
     }
 
     // Draws a labeled enum dropdown. `debugLast` names values that are debug conveniences (e.g. the
@@ -717,7 +750,7 @@ public class LobbyScreen : IAppScreen
     // lead with them. `displayName` supplies a friendly label per value (falls back to the raw enum name).
     // This is presentation only: the enum, saves, and network wire are identical across build types (#243).
     private static void DrawEnumCombo<TEnum>(string label, TEnum current, Action<TEnum> setter,
-        TEnum[]? debugLast = null, Func<TEnum, string>? displayName = null)
+        TEnum[]? debugLast = null, Func<TEnum, string>? displayName = null, string? tooltip = null)
         where TEnum : struct, Enum
     {
         ImGui.TextUnformatted(label);
@@ -728,6 +761,8 @@ public class LobbyScreen : IAppScreen
         int idx = Math.Max(0, Array.IndexOf(values, current));
         if (ImGui.Combo($"##{label}", ref idx, labels, labels.Length))
             setter(values[idx]);
+        if (tooltip != null && ImGui.IsItemHovered())
+            ImGui.SetTooltip(tooltip);
     }
 
     private static TEnum[] OrderComboValues<TEnum>(TEnum[]? debugLast) where TEnum : struct, Enum
