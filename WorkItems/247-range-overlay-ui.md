@@ -77,26 +77,38 @@ frame unconditionally; a stationary cursor mid-move is as cacheable as a hover, 
 - **Q4 (when it shows)** — answered: sticky global toggle, context picks the anchor.
 - **Q1 (discoverability)** — half. One key with one meaning, surfaced in two panels; an on-table legend
   for the band/threat vocabulary is still unbuilt.
-- **Q5 (threat frontiers)** — untouched, and now the live question. Chris 2026-07-26: "F toggles what I
-  think is an outdated danger radius that should be removed." Costed below; awaiting a scope call.
+- **Q5 (threat frontiers)** — **answered and done 2026-07-26, option (a).** Chris: "F toggles what I
+  think is an outdated danger radius that should be removed."
 
-### Q5 / F removal — what it would actually take (awaiting sign-off)
+### Q5 — threat frontiers removed (option a)
 
-F toggles `DrawThreatPolylines`: red contours around the aggregate reach of every *unactivated, alive,
-on-table, non-Shaken* enemy — solid = charge reach, dashed = shoot reach. Deleting the **drawing** is
-small. Deleting the **system** is not, because three other things read the same discs:
+The red contour layer is gone as a visual. It showed the aggregate reach of every unactivated / alive /
+on-table / non-Shaken enemy (solid = charge, dashed = shoot) on its own F toggle; once the reach field
+could answer "what threatens this ground" in one vocabulary, and hovering an enemy showed its reach
+directly, a second red layer with its own key was clutter answering the same question worse.
 
-1. **Threat snap** (`SnapInputPoint`) — dropping a waypoint within 0.4" of a frontier nudges it just
-   outside. Silent movement-feel change if removed.
-2. **The "! Inside enemy charge/shoot reach" row** in the movement panel (`GhostInThreat`).
-3. **The fidelity sampler's threat channels** (F10 debug) and `_isolatedUnit` (click an enemy while
-   threat is on to isolate its frontier).
+**Removed:** `DrawThreatPolylines`, `_threatToggledOn` / `ThreatToggledOn` / `ToggleThreat`, the **F**
+hotkey (and `ThreatToggleKey` — F is free again), the Options checkbox, and the idle
+**frontier-isolation** interaction (`_isolatedUnit`, `_isolatedCharge/Shoot`, `BuildIsolatedFrontier`) —
+isolation only ever meant "draw this one enemy's contour bright over a dimmed aggregate", so it had no
+meaning left with nothing drawn. The contour-only config constants went too (`ThreatContourAlpha`,
+`ThreatIsolatedAlpha`, `ThreatDimmedAlpha`, `ThreatContourThicknessPx`, `ThreatDashLengthPx`,
+`ThreatDashGapPx`), and with them `DrawWorldPolyline`'s dashed branch — the shoot frontier was its only
+caller, so it collapses to a solid-only helper for the band rings and secondary contours.
 
-So the options are: (a) drop the display + F + the Options checkbox, keep the discs feeding snap and the
-warning row; (b) drop all of it, including the snap and the warning row, and delete `ThreatFrontierCache`
-/ `ThreatDisc` / `BuildIsolatedFrontier`; or (c) replace it — fold enemy threat into the reach field's own
-vocabulary so hovering an enemy already answers it, which is arguably what makes the red layer feel
-outdated in the first place.
+**Kept, deliberately** — these read the same threat discs and are not display:
+
+1. **Frontier snap** in `SnapInputPoint` — a waypoint dropped within 0.4" of a frontier still nudges just
+   outside it. Removing it would have been a silent change to movement feel, which is not what "remove the
+   red radius" asked for.
+2. **The "! Inside enemy charge/shoot reach" readout** in the movement panel (`GhostInThreat`), which is
+   now the only surviving way the danger is communicated — worth watching in play, since it is text where
+   there used to also be a picture.
+3. The F10 fidelity sampler's threat channels.
+
+`RebuildThreatIfNeeded` now runs **only during a move job** (it used to also run whenever the toggle was
+on), so idle frames stop paying for a threat rebuild entirely. `ThreatColor` survives as the accent for
+the warning text.
 
 ### Hand-verify
 
@@ -112,7 +124,11 @@ outdated in the first place.
    not fire; it should for live ghosts on the CPU path only).
 6. Move a third unit between a hovered unit and open ground -> the shadow repaints (the blocker half of the
    signature).
-7. Esc -> Options: the new "Weapon reach (V)" checkbox agrees with the hotkey both ways.
+7. Esc -> Options: the new "Weapon reach (V)" checkbox agrees with the hotkey both ways, and the two
+   removed rows (Threat frontiers, Anchor field on my position) are gone.
+8. **F does nothing** now, and no red contours appear anywhere. Mid-move, dropping a waypoint just inside
+   an enemy's reach still snaps it out, and the "! Inside enemy charge/shoot reach" line still appears —
+   that readout is now the only signal, so judge whether text alone carries it.
 
 ---
 

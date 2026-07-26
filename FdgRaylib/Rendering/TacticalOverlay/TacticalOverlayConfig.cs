@@ -20,14 +20,12 @@ internal static class TacticalOverlayConfig
     // exact radii, this only affects the picture.
     public const float DefaultReferenceRadiusInches = 0.551f;
 
-    // --- Threat frontiers -------------------------------------------------------------------------
+    // --- Threat -----------------------------------------------------------------------------------
+    // #247: the red frontier CONTOURS are gone (see TacticalOverlayController.DrawContours). The threat
+    // discs behind them live on, feeding SnapInputPoint's frontier snap and the "inside enemy reach"
+    // readout, so this colour is still the danger accent for that text. The contour alphas, thickness and
+    // dash pattern went with the drawing.
     public static readonly (byte r, byte g, byte b) ThreatColor = (232, 72, 72); // dedicated red
-    public const float ThreatContourAlpha       = 0.70f;
-    public const float ThreatIsolatedAlpha      = 0.95f; // brightened unit under hover/idle isolation
-    public const float ThreatDimmedAlpha        = 0.28f; // the aggregate while one unit is isolated
-    public const float ThreatContourThicknessPx = 1.5f;
-    public const float ThreatDashLengthPx       = 7f;    // shoot-reach frontier is dashed
-    public const float ThreatDashGapPx          = 5f;
 
     // --- Opportunity field accents (pin order, spec section 4) ------------------------------------
     // Distinct from both players' identity colors, from the threat color, AND from the mat green: the
@@ -90,10 +88,9 @@ internal static class TacticalOverlayConfig
     // target-anchored picture, otherwise you get your own ghosts. See FieldAnchorPlan.
 
     // --- Hotkeys ----------------------------------------------------------------------------------
-    // T is taken (dev token-reveal in TableTooltipOverlay); F is free. Alt is free.
-    public const ImGuiKey ThreatToggleKey     = ImGuiKey.F;
     // #247: master reach toggle (the opportunity field, whatever it is anchored on). V was free across the
     // whole in-game key census (A/F/G/L/R/T, arrows, Enter, Backspace, Escape, Space, digits, F10).
+    // F is free again since the threat-frontier toggle was removed.
     public const ImGuiKey ReachToggleKey      = ImGuiKey.V;
     public const ImGuiKey ClearPinsKey        = ImGuiKey.Escape;
     public const ImGuiKey FidelitySamplerKey  = ImGuiKey.F10; // debug (spec section 6)

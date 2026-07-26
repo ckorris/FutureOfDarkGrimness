@@ -115,7 +115,6 @@ public class TacticalOverlayController
     private float _tableH;
 
     // Idle inspection toggle (F). Threat also shows automatically during a move job regardless of this.
-    private bool _threatToggledOn;
 
     // Threat rebuild is driven by a per-frame signature poll: cheap to compute, and a rebuild fires only
     // when it changes (an enemy activated / lost models / became Shaken, a new round, the reference or an
@@ -130,9 +129,6 @@ public class TacticalOverlayController
     private float _lastRefRadius = TacticalOverlayConfig.DefaultReferenceRadiusInches;
 
     // Idle-click isolation (P7): one enemy's frontier brightens while the aggregate dims. Idle only.
-    private IUnit? _isolatedUnit;
-    private List<List<Float2>> _isolatedCharge = new();
-    private List<List<Float2>> _isolatedShoot  = new();
 
     // Secondary-pin contours (P7): each non-focused pin's longest-range boundary in its accent. Reuses a
     // scratch mask for the disc-union march (isolation and secondaries never run in the same frame -- one
@@ -146,8 +142,6 @@ public class TacticalOverlayController
     // (marching every frame would be too costly; that mode is fill-only).
     private List<List<Float2>> _fieldRings = new();
 
-    public bool ThreatToggledOn => _threatToggledOn;
-    public void ToggleThreat() => _threatToggledOn = !_threatToggledOn;
 
     // Maps a unit to its team color (fill/rings/labels/pips), so the field reads as the SELECTED unit's
     // own threat -- red when an enemy is picked ("where I'm in danger"), the mover's color in Self mode.
@@ -231,10 +225,6 @@ public class TacticalOverlayController
         _probe        = null;
         _threat       = null;
         _warn         = null;
-        _threatToggledOn = false;
-        _isolatedUnit = null;
-        _isolatedCharge = new List<List<Float2>>();
-        _isolatedShoot  = new List<List<Float2>>();
         _secondaryContours.Clear();
         _fieldActive = false;
         _lastAnchorKind = FieldAnchorKind.None;
@@ -557,15 +547,12 @@ public class TacticalOverlayController
 
         bool moveJobActive = _moveResolver?.ActiveRequest != null;
 
-        if (moveJobActive || _threatToggledOn)
-        {
-            RebuildThreatIfNeeded();   // kept for the fidelity sampler + threat snap
-            // Auto-showing the enemy threat frontiers during a move was REPLACED by the team-colored
-            // opportunity field (the selected enemy's own weapon ranges read directly off the field). Only
-            // draw the frontiers now on an explicit F / "Threat" toggle, so they don't clutter the field.
-            if (_threatToggledOn)
-                DrawThreatPolylines();
-        }
+        // #247: the red threat frontiers are GONE as a visual — the reach field answers "what threatens
+        // this ground" in one vocabulary now, and hovering an enemy shows its reach directly, so a second
+        // red contour layer on its own F toggle was outdated clutter. The threat DISCS are still built,
+        // because the frontier snap and the "inside enemy reach" readout are computed from them; both are
+        // move-job-only, so the rebuild is too (it used to also run whenever the toggle was on).
+        if (moveJobActive) RebuildThreatIfNeeded();
 
         // The band rings ride with the field, whatever anchored it (#247 — this was gated on a move job,
         // so placement and hover fields drew the fill wash with no boundary rings. The rings ARE the band
@@ -593,7 +580,7 @@ public class TacticalOverlayController
         (byte r, byte g, byte b) = TacticalOverlayConfig.AccentPalette[0];
         var col = new Color(r, g, b, (byte)(TacticalOverlayConfig.BandBoundaryAlpha * 255f));
         foreach (List<Float2> poly in _fieldRings)
-            DrawWorldPolyline(poly, col, TacticalOverlayConfig.BandBoundaryThicknessPx, dashed: false);
+            DrawWorldPolyline(poly, col, TacticalOverlayConfig.BandBoundaryThicknessPx);
     }
 
     private void DrawSecondaryContours()
@@ -603,7 +590,7 @@ public class TacticalOverlayController
             (byte r, byte g, byte b) = TacticalOverlayConfig.AccentPalette[accent % TacticalOverlayConfig.AccentPalette.Length];
             var col = new Color(r, g, b, (byte)(0.9f * 255f));
             foreach (List<Float2> poly in polylines)
-                DrawWorldPolyline(poly, col, TacticalOverlayConfig.BandBoundaryThicknessPx, dashed: false);
+                DrawWorldPolyline(poly, col, TacticalOverlayConfig.BandBoundaryThicknessPx);
         }
     }
 
@@ -621,9 +608,6 @@ public class TacticalOverlayController
         ImGuiIOPtr io = ImGui.GetIO();
         // Hotkeys are muted while the in-game menu owns input (#246).
         bool wantKeys = !io.WantCaptureKeyboard && !EscapeRouter.MenuOpen;
-        if (wantKeys && ImGui.IsKeyPressed(TacticalOverlayConfig.ThreatToggleKey))
-            _threatToggledOn = !_threatToggledOn;
-
         // #247: V is the master reach toggle, handled here rather than in any one resolver so it works
         // identically while moving, placing, and idle. The placement panel's checkbox drives the same flag.
         if (wantKeys && ImGui.IsKeyPressed(TacticalOverlayConfig.ReachToggleKey))
@@ -658,27 +642,14 @@ public class TacticalOverlayController
                 ClearPins();
 
             UpdateHover(frameTimeSeconds, hitTester, req);
-            _isolatedUnit = null; // isolation is idle-only
         }
         else
         {
             _hoverCandidate = null;
             _hoverElapsed   = 0;
-
-            // Idle isolation (spec section 3): click an enemy to isolate its threat frontier, click empty
-            // ground (or the same unit again) to clear. Only meaningful while the frontier is shown (F).
-            if (!_threatToggledOn)
-            {
-                _isolatedUnit = null;
-            }
-            else if (hitTester.Clicked)
-            {
-                IUnit? hovered = hitTester.HoveredUnit;
-                if (hovered != null && _lastRefPlayer.HasValue && IsEnemyOf(_lastRefPlayer.Value, hovered))
-                    _isolatedUnit = ReferenceEquals(_isolatedUnit, hovered) ? null : hovered;
-                else if (hovered == null)
-                    _isolatedUnit = null;
-            }
+            // #247: idle threat-frontier isolation (click an enemy to brighten its contour) went with the
+            // frontiers themselves — hovering a unit now shows its reach directly, which is the same
+            // question asked better.
         }
     }
 
@@ -847,9 +818,6 @@ public class TacticalOverlayController
         (PlayerID? refPlayer, float refRadius, _) = ResolveReference();
         if (refPlayer == null) { _threat!.Clear(); return; }
 
-        bool moveJob = _moveResolver?.ActiveRequest != null;
-        if (moveJob) _isolatedUnit = null; // isolation is an idle-only inspection
-
         List<IUnit> enemies = QualifyingEnemies(refPlayer.Value);
         long sig = ComputeThreatSignature(refPlayer, refRadius, enemies);
         if (_threatBuiltOnce && sig == _lastThreatSig) return;
@@ -863,17 +831,8 @@ public class TacticalOverlayController
 
         float eps = 1f / TacticalOverlayConfig.TexelsPerInch; // simplify a hair under a texel
         var sw = System.Diagnostics.Stopwatch.StartNew();
+        // The polylines still feed SnapInputPoint's frontier snap; nothing draws them since #247.
         _threat!.Rebuild(discs, eps);
-
-        // Idle isolation: also march the one isolated unit's frontier so it can draw bright over the dim
-        // aggregate. Cleared unless a still-qualifying enemy is isolated.
-        if (!moveJob && _isolatedUnit != null && enemies.Any(e => ReferenceEquals(e, _isolatedUnit)))
-            BuildIsolatedFrontier(_isolatedUnit, refRadius, eps);
-        else
-        {
-            _isolatedCharge = new List<List<Float2>>();
-            _isolatedShoot  = new List<List<Float2>>();
-        }
         sw.Stop();
         if (sw.Elapsed.TotalMilliseconds > TacticalOverlayConfig.RebuildBudgetMs)
             _warn?.Invoke($"[overlay] threat rebuild {sw.Elapsed.TotalMilliseconds:0}ms " +
@@ -895,18 +854,6 @@ public class TacticalOverlayController
         return discs;
     }
 
-    private void BuildIsolatedFrontier(IUnit unit, float refRadius, float eps)
-    {
-        List<ThreatDisc> discs = BuildUnitDiscs(unit, refRadius);
-
-        _scratchMask!.Clear();
-        foreach (ThreatDisc d in discs) _scratchMask.RasterizeDiscMax(d.X, d.Z, d.ChargeRadius, 1);
-        _isolatedCharge = MarchingSquares.Extract(_scratchMask, 1, eps);
-
-        _scratchMask.Clear();
-        foreach (ThreatDisc d in discs) if (d.ShootRadius > 0f) _scratchMask.RasterizeDiscMax(d.X, d.Z, d.ShootRadius, 1);
-        _isolatedShoot = MarchingSquares.Extract(_scratchMask, 1, eps);
-    }
 
     /// <summary>
     /// Resolves the player threat is measured against and the reference base radius used to inflate
@@ -970,7 +917,6 @@ public class TacticalOverlayController
             Mix(_tableState!.Progress.RoundCount ?? -1);
             Mix(refPlayer?.GetHashCode() ?? 0);
             Mix((long)(refRadius * 100f));
-            Mix(_isolatedUnit?.ID.GetHashCode() ?? 0);
 
             foreach (IUnit u in enemies)
             {
@@ -1756,69 +1702,18 @@ public class TacticalOverlayController
 
     // ---- Contour drawing (Raylib) ----------------------------------------------------------------
 
-    private void DrawThreatPolylines()
-    {
-        (byte r, byte g, byte b) = TacticalOverlayConfig.ThreatColor;
-        bool isolating = _isolatedUnit != null && (_isolatedCharge.Count > 0 || _isolatedShoot.Count > 0);
-        float aggAlpha = isolating ? TacticalOverlayConfig.ThreatDimmedAlpha : TacticalOverlayConfig.ThreatContourAlpha;
-        var agg = new Color(r, g, b, (byte)(aggAlpha * 255f));
-        float th = TacticalOverlayConfig.ThreatContourThicknessPx;
-
-        foreach (List<Float2> poly in _threat!.ChargePolylines)
-            DrawWorldPolyline(poly, agg, th, dashed: false);
-        foreach (List<Float2> poly in _threat.ShootPolylines)
-            DrawWorldPolyline(poly, agg, th, dashed: true);
-
-        if (isolating)
-        {
-            var bright = new Color(r, g, b, (byte)(TacticalOverlayConfig.ThreatIsolatedAlpha * 255f));
-            foreach (List<Float2> poly in _isolatedCharge)
-                DrawWorldPolyline(poly, bright, th + 0.5f, dashed: false);
-            foreach (List<Float2> poly in _isolatedShoot)
-                DrawWorldPolyline(poly, bright, th + 0.5f, dashed: true);
-        }
-    }
 
     private Vector2 WorldToScreen(Float2 w) =>
         new(_originX + w.X * _scale, _originY + (_tableH - w.Y) * _scale);
 
-    private void DrawWorldPolyline(List<Float2> poly, Color col, float thickness, bool dashed)
+    /// <summary>
+    /// Draws a world-space polyline (band rings, secondary pin contours). Solid only: the dashed variant
+    /// existed for the shoot-reach threat frontier, which #247 removed, so the dash-marching branch and
+    /// its two config constants went with it rather than sitting here uncalled.
+    /// </summary>
+    private void DrawWorldPolyline(List<Float2> poly, Color col, float thickness)
     {
-        if (poly.Count < 2) return;
-
-        if (!dashed)
-        {
-            for (int i = 0; i < poly.Count - 1; i++)
-                Raylib.DrawLineEx(WorldToScreen(poly[i]), WorldToScreen(poly[i + 1]), thickness, col);
-            return;
-        }
-
-        // Dashed: march screen-space arc length, carrying the dash phase across vertices so the pattern
-        // reads continuous around the whole contour.
-        float dashLen = TacticalOverlayConfig.ThreatDashLengthPx;
-        float gapLen  = TacticalOverlayConfig.ThreatDashGapPx;
-        bool on = true;
-        float phase = 0f;
-
         for (int i = 0; i < poly.Count - 1; i++)
-        {
-            Vector2 a = WorldToScreen(poly[i]);
-            Vector2 b = WorldToScreen(poly[i + 1]);
-            float segLen = Vector2.Distance(a, b);
-            if (segLen < 1e-3f) continue;
-            Vector2 dir = (b - a) / segLen;
-
-            float pos = 0f;
-            while (pos < segLen)
-            {
-                float span = on ? dashLen - phase : gapLen - phase;
-                float step = MathF.Min(span, segLen - pos);
-                if (on)
-                    Raylib.DrawLineEx(a + dir * pos, a + dir * (pos + step), thickness, col);
-                pos   += step;
-                phase += step;
-                if (phase >= (on ? dashLen : gapLen) - 1e-4f) { on = !on; phase = 0f; }
-            }
-        }
+            Raylib.DrawLineEx(WorldToScreen(poly[i]), WorldToScreen(poly[i + 1]), thickness, col);
     }
 }
