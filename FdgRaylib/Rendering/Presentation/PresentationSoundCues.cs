@@ -228,19 +228,17 @@ public static class PresentationSoundCues
             ToneSynth.Tone(523f, 523f, 0.11f, 7f, ToneSynth.Waveform.Sine, 0.32f),
             ToneSynth.Tone(784f, 784f, 0.24f, 4.5f, ToneSynth.Waveform.Sine, 0.34f)),
 
-        // #275 Notice: a struck low hit - a short noise transient into a low body that sags from B2
-        // toward F2. Non-melodic on purpose, and low enough to sit under the chime above it: this is
-        // the busiest tier, so it has to register without asking for the whole room.
+        // #275 Notice: a single subtle mid beep - one short G4 note, a fifth below the Headline chime's
+        // C5 root so the two never clash when adjacent. (Originally a struck low thud; owner asked for
+        // a beep matching the other two tiers, 2026-07-25.) Single and unmelodic where Headline is a
+        // two-note chime: this is the busiest tier, so it has to register without asking for the room.
         //
-        // Levels are deliberate and were measured, not eyeballed. The first cut ran peak 41% / RMS 17%,
-        // LOUDER than the Headline chime it is supposed to sit beneath - an inverted hierarchy that
-        // fires ~18 times a game. Now peak 29% / RMS 11%, under the chime's 33% / 15% and well over the
-        // toast's 13% / 5%, so the three tiers descend monotonically. A snappier decay and a shorter
-        // tail keep a repeated thud from wearing on the ear. If real .wav assets ever replace these,
-        // mix them to the same descending order.
-        BannerNotice => ToneSynth.Concat(
-            ToneSynth.Noise(0.025f, 55f, 0.16f, seed: 71),
-            ToneSynth.Tone(124f, 88f, 0.38f, 4.2f, ToneSynth.Waveform.Sine, 0.30f)),
+        // Levels are deliberate and were measured, not eyeballed (an early thud cut ran LOUDER than the
+        // Headline it sits beneath - an inverted hierarchy that fires ~18 times a game). This note runs
+        // peak 27% / RMS 11%, under the chime's 33% / 15% and over the toast's 13% / 5%, so the three
+        // tiers still descend monotonically. If real .wav assets ever replace these, mix them to the
+        // same descending order.
+        BannerNotice => ToneSynth.Tone(392f, 392f, 0.16f, 9f, ToneSynth.Waveform.Sine, 0.28f),
 
         // #275 Toast: a single soft high blip, quiet and quick. Deliberately the least interesting
         // sound in the game - five of them in a row should read as texture, not as an alarm.
