@@ -257,19 +257,19 @@ public class GuiChooseSpellResolver : IStageResolver<ChooseSpellRequest, ChooseS
         y += 28f;
 
         // ── Commit / cancel ─────────────────────────────────────────────────────
-        // #248: Enter casts, Backspace cancels (Esc is reserved for the in-game menu). Applied once
+        // #248: the Confirm key casts, Backspace cancels (Esc is reserved for the in-game menu). Applied once
         // after drawing so same-frame click + key can't double-resolve the TCS.
         float half = (btnW - 8f) / 2f;
         ImGui.SetCursorPos(new Vector2(pad, y));
         ImGui.PushStyleColor(ImGuiCol.Button, new Vector4(AccentRgba.X * 0.5f, AccentRgba.Y * 0.5f, AccentRgba.Z * 0.5f, 1f));
         ImGui.PushStyleColor(ImGuiCol.ButtonHovered, AccentRgba);
-        bool castNow = ImGui.Button($"Cast (Enter)##commit", new Vector2(half, rowH + 4f));
+        bool castNow = ImGui.Button($"Cast {ResolverKeybinds.Confirm.Parenthetical}##commit", new Vector2(half, rowH + 4f));
         ImGui.PopStyleColor(2);
         ImGui.SameLine();
         ImGui.SetCursorPosX(pad + half + 8f);
-        bool cancelNow = ImGui.Button("Cancel (Backspace)##cancel", new Vector2(half, rowH + 4f));
+        bool cancelNow = ImGui.Button($"Cancel {ResolverKeybinds.Back.Parenthetical}##cancel", new Vector2(half, rowH + 4f));
 
-        castNow   |= ResolverHotkeys.IsEnterPressed();
+        castNow   |= ResolverHotkeys.IsConfirmPressed();
         cancelNow |= ResolverHotkeys.IsBackPressed();
 
         ImGui.EndChild();

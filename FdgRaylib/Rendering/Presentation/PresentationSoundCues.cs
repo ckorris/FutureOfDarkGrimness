@@ -29,7 +29,11 @@ public static class PresentationSoundCues
     public const string Save    = "save";
     public const string Wound   = "wound";
     public const string Death   = "death";
-    public const string Move    = "move";
+
+    // #294: movement is voiced as a run of FOOTFALLS during the glide, not one blip at its start, so
+    // one cue is played many times per beat with a per-step pitch/volume (see StepVoice). This
+    // replaces the single "move" cue, which no longer exists.
+    public const string Step    = "step";
 
     // #275: one voice per banner tier. Volume and weight fall off with the tier, so a Toast can fire
     // five times in a row without grating and a Headline still means something when it does land.
@@ -48,7 +52,7 @@ public static class PresentationSoundCues
 
     private static readonly string[] BaseCues =
     {
-        Dice, Save, Wound, Death, Move,
+        Dice, Save, Wound, Death, Step,
         BannerHeadline, BannerNotice, BannerToast,
         SpellCast, SpellFail, SpellBoon, SpellBane, SpellBoost, SpellHinder,
     };
@@ -100,7 +104,9 @@ public static class PresentationSoundCues
             EBannerTier.Toast  => BannerToast,
             _                  => BannerHeadline,
         },
-        UnitMovedBeat      => Move,
+        // #294: movement cues PER FOOTFALL via StepVoice/UnitStepped, not once at beat start — a
+        // start-of-beat cue would just be the old single blip stacked on top of the first step.
+        UnitMovedBeat      => null,
         // #274: one voice per spell moment — the visual and the sound are picked from the same enum.
         SpellEffectBeat s  => SpellCue(s.Visual),
         _                  => null,
@@ -129,6 +135,52 @@ public static class PresentationSoundCues
     public static string ImpactCue(AttackBeat beat) => beat.IsMelee
         ? MeleeImpactCue(WeaponEffectCatalog.ResolveMeleeKey(beat.WeaponEffect))
         : RangedImpactCue(WeaponEffectCatalog.ResolveRangedKey(beat.WeaponEffect));
+
+    // #294 footfall voicing. One cue, many playbacks — a single real step.wav can drop in and still
+    // tier itself, because the weight lives in the pitch rather than in separate recipes.
+
+    /// <summary>Softest footfall level (an ordinary infantry model), before the master volume.</summary>
+    private const float StepBaseVolume = 0.85f;
+    /// <summary>How far a Tough(X) model's footfall may pitch down. 0.55 is a heavy tread, not a groan.</summary>
+    internal const float StepMinPitch = 0.55f;
+
+    /// <summary>
+    /// How one footfall of <paramref name="beat"/> should sound: the cue key plus its playback pitch
+    /// and volume (#294).
+    ///
+    /// <para>
+    /// Pitch falls with the beat's <see cref="UnitMovedBeat.Toughness"/> weight proxy — Tough(1) plays
+    /// the clip as recorded, Tough(6) around 0.73, anything Tough(12)+ bottoming out at
+    /// <see cref="StepMinPitch"/> — so a monolith treads noticeably lower than a trooper without ever
+    /// dropping into a groan. Volume creeps up over the same range, since weight should read as heavier
+    /// as well as lower, capped at the clip's own level.
+    /// </para>
+    ///
+    /// <para>
+    /// <paramref name="stepIndex"/> alternates the feet: every other footfall is a touch lower and
+    /// softer. Without it, an evenly-spaced identical clip reads as a metronome rather than as walking.
+    /// </para>
+    /// </summary>
+    public static (string Cue, float Pitch, float Volume) StepVoice(UnitMovedBeat beat, int stepIndex)
+    {
+        int tough = Math.Max(1, beat.Toughness);
+
+        float pitch  = 1f / (1f + 0.075f * (tough - 1));
+        float volume = StepBaseVolume + 0.02f * (tough - 1);
+
+        // The off foot (odd steps) lands slightly lower and lighter than the lead foot.
+        if ((stepIndex & 1) == 1)
+        {
+            pitch  *= 0.94f;
+            volume *= 0.88f;
+        }
+
+        // Clamped LAST, so the floor is a real floor: applying the off-foot drop afterwards would push
+        // an already-bottomed-out heavy tread below it. The cost is that the very heaviest models walk
+        // both feet at StepMinPitch, which is the right trade - the alternation is a garnish, the floor
+        // is what keeps a titan from sounding like a dying engine.
+        return (Step, Math.Clamp(pitch, StepMinPitch, 1f), Math.Clamp(volume, 0.5f, 1f));
+    }
 
     /// <summary>
     /// Registers every cue with <paramref name="audio"/>: loads Assets/Sounds/{key}.wav if present,
@@ -244,8 +296,16 @@ public static class PresentationSoundCues
         // sound in the game - five of them in a row should read as texture, not as an alarm.
         BannerToast => ToneSynth.Tone(1046f, 1046f, 0.07f, 26f, ToneSynth.Waveform.Sine, 0.14f),
 
-        // Soft, short, quiet blip.
-        Move => ToneSynth.Tone(300f, 360f, 0.10f, 16f, ToneSynth.Waveform.Sine, 0.20f),
+        // #294 One footfall: a whisper of grit under a short, soft blip that falls rather than rises.
+        // Deliberately smaller and quieter than the single "move" blip it replaces (which ran 100ms at
+        // amp 0.20, rising 300 -> 360Hz) - this one plays three to nine times per move, so it has to
+        // sit UNDER the action the way real footsteps do. Peak amp 0.13, ~63ms, and the falling
+        // contour reads as weight settling instead of as a notification. Pitch and level are then
+        // varied per step by StepVoice, which is where the unit's weight and the left/right
+        // alternation come from - keep this recipe neutral so that scaling stays meaningful.
+        Step => ToneSynth.Concat(
+            ToneSynth.Noise(0.008f, 120f, 0.06f, seed: 71),
+            ToneSynth.Tone(240f, 190f, 0.055f, 30f, ToneSynth.Waveform.Sine, 0.13f)),
 
         // ---------------- spell moments (#274) ----------------
 

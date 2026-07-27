@@ -173,8 +173,9 @@ public sealed class EscapeMenuOverlay
         ImGui.TextDisabled("Middle-drag: pan");
         ImGui.TextDisabled("L labels   T tokens   F threat");
         ImGui.TextDisabled("G: cycle formation (during moves)");
-        ImGui.TextDisabled("Enter: auto-assign / confirm");
-        ImGui.TextDisabled("Backspace: undo / back out");
+        ImGui.TextDisabled("Click a model: switch to it (single-model moves)");
+        ImGui.TextDisabled($"{Resolvers.ResolverKeybinds.Confirm.Hint}: auto-assign / confirm");
+        ImGui.TextDisabled($"{Resolvers.ResolverKeybinds.Back.Hint}: undo / back out");
         ImGui.TextDisabled("Esc: open this menu");
 
         ImGui.Spacing();

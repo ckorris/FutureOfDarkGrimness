@@ -6,6 +6,20 @@ from origin/master. Standing precedent: numbers are never reused, and when two p
 claim the same number, the *unmerged local* item yields to the *merged* one and takes a fresh number.
 A per-clone pre-push hook blocks duplicate numbers across the index and the archive.
 
+> **2026-07-27 — reconciliation 29 (RESOLVED).** A pre-push fetch caught a single collision: this
+> session had filed the click-to-select / Space-confirms work as **294** while origin/master had
+> meanwhile landed **294 = movement footstep cue** (merged, `5ef6803`). Per merged-wins precedent the
+> local item yields: **click-to-select + Space-confirm 294 -> 295**
+> (`WorkItems/295-click-to-select-model-space-confirms.md`). The renumber landed everywhere before
+> publication - detail file + its title, the index line, `docs/ResolverGuide.md`, and the app sources
+> (`ResolverKeybinds.cs`, `ModelPicker.cs`, `ResolverButtons.cs`, `ResolverHotkeys.cs`,
+> `GuiDefineMovementResolver.cs`, `GuiConsolidationMoveResolver.cs`, `ModelPickerTests.cs`,
+> `ResolverKeybindsTests.cs`). **Departure from the usual "commit messages are left as-is":** the one
+> local commit was unpushed and was being rebased onto master anyway, and leaving it titled "#294"
+> would have put two different #294 subjects in the SAME branch history (master's footstep commit is
+> its immediate parent) - so the message was amended to #295 as part of the rebase. No engine change
+> was involved, so the submodule pointer is untouched.
+>
 > **2026-07-26 — reconciliation 28 (RESOLVED).** A pre-push fetch caught a double collision. This
 > session filed eight items from a play-session bug report (**284-291**) while origin/master had
 > meanwhile landed **284 = deploy overlap** (reconciliation 27's own renumber, merged) and

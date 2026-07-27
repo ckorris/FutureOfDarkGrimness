@@ -85,6 +85,26 @@ public sealed class AudioManager : IDisposable
             Raylib.PlaySound(sound);
     }
 
+    /// <summary>
+    /// Plays <paramref name="key"/> shifted in pitch and scaled in volume — one cue voiced many ways
+    /// (#294: footfalls pitch down with a unit's weight, and alternate slightly foot to foot). Pitch is
+    /// a playback-rate multiplier, so a lower pitch also plays LONGER: 0.6 turns a 60 ms tick into a
+    /// 100 ms thump, which is the heavier sound we want anyway. Volume multiplies the master level.
+    ///
+    /// <para>Both settings persist on the cached <see cref="Sound"/>, so every call sets both rather
+    /// than inheriting whatever the last one left behind. Re-playing a cue restarts it (Raylib gives
+    /// each <c>Sound</c> one voice), which is fine at footstep cadence — steps never overlap.</para>
+    /// </summary>
+    public void Play(string key, float pitch, float volume)
+    {
+        if (!_enabled) return;
+        if (!_sounds.TryGetValue(key, out var sound)) return;
+
+        Raylib.SetSoundPitch(sound, Math.Clamp(pitch, 0.05f, 4f));
+        Raylib.SetSoundVolume(sound, Math.Clamp(volume, 0f, 1f));
+        Raylib.PlaySound(sound);
+    }
+
     public void Dispose()
     {
         if (!_enabled) return;

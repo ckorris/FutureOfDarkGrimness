@@ -31,6 +31,7 @@ public class PresentationPlayer : IPresentationSink
     private readonly Queue<PresentationBeat> _incoming = new();
     private PresentationBeat? _active;
     private float _elapsedSeconds;
+    private int   _moveStepsCued;   // #294: footfall cues fired so far for the active move beat
 
     // Per-model display overrides, keyed by ModelID.ID. A model is "claimed" by the player while
     // an override exists; otherwise the renderer falls back to authoritative state.
@@ -160,6 +161,15 @@ public class PresentationPlayer : IPresentationSink
     /// </summary>
     public Action<AttackBeat>? AttackVolleyImpact;
 
+    /// <summary>
+    /// Raised on the render thread each time a footfall of the moving unit lands (#294) — once per
+    /// step, including the first, with that step's index so consumers can alternate feet. Steps are
+    /// spread across the glide by <see cref="StepsStarted"/>, so the patter tracks the models actually
+    /// crossing the table. Same audio-agnostic contract as <see cref="BeatStarted"/>; invoked outside
+    /// the lock.
+    /// </summary>
+    public Action<UnitMovedBeat, int>? UnitStepped;
+
     // ---------------- engine thread ----------------
 
     public void OnBeat(PresentationBeat beat)
@@ -198,6 +208,8 @@ public class PresentationPlayer : IPresentationSink
         List<PresentationBeat>? started = null;
         AttackBeat? volleyCued = null;
         AttackBeat? impactCued = null;
+        UnitMovedBeat? stepCued = null;
+        int stepIndex = 0;
         lock (_lock)
         {
             float dtSeconds = realDt;
@@ -258,6 +270,7 @@ public class PresentationPlayer : IPresentationSink
                 }
                 _active = next;
                 _elapsedSeconds = 0f;
+                _moveStepsCued = 0;
             }
 
             if (_active != null)
@@ -267,6 +280,17 @@ public class PresentationPlayer : IPresentationSink
                 float t = dur <= 0f ? 1f : Math.Clamp(_elapsedSeconds / dur, 0f, 1f);
 
                 Advance(_active, t);
+
+                // #294: one footfall cue per step of the glide, when its slice begins (at most one
+                // per frame; a dropped frame catches up on the next), so movement patters along with
+                // the models instead of announcing itself once and going quiet.
+                if (_active is UnitMovedBeat movingBeat
+                    && _moveStepsCued < StepsStarted(t, dur, movingBeat.Moves.Count, movingBeat.Toughness))
+                {
+                    stepCued  = movingBeat;
+                    stepIndex = _moveStepsCued;
+                    _moveStepsCued++;
+                }
 
                 // A held dice beat parks once past its lead-in: keep it displayed (settled) and free the
                 // active slot so following action beats play WHILE it lingers.
@@ -362,6 +386,7 @@ public class PresentationPlayer : IPresentationSink
             foreach (PresentationBeat beat in started) BeatStarted?.Invoke(beat);
         if (volleyCued != null) AttackVolleyStarted?.Invoke(volleyCued);
         if (impactCued != null) AttackVolleyImpact?.Invoke(impactCued);
+        if (stepCued   != null) UnitStepped?.Invoke(stepCued, stepIndex);
     }
 
     // #275. Called under the lock. A Notice supersedes any Notice already up: they share one band in
@@ -394,6 +419,51 @@ public class PresentationPlayer : IPresentationSink
         int volleys = Math.Max(1, volleyCount);
         float x = Math.Clamp(t, 0f, 1f) * volleys - Math.Clamp(landFraction, 0f, 0.99f);
         return Math.Clamp((int)MathF.Floor(x) + 1, 0, volleys);
+    }
+
+    // #294 footfall cadence. Deliberately SUB-LINEAR in the model count: a ten-model horde should
+    // sound busier underfoot than a lone scout, but ten times the beeps would drown the table. A
+    // doubling of the unit adds a bit over one step per second and the whole thing tops out at
+    // StepsPerSecondMax, so the difference between five models and twenty is texture, not volume.
+    private const float StepsPerSecondBase = 2.4f;   // a single model's pace
+    private const float StepsPerSecondPerDoubling = 1.15f;
+    private const float StepsPerSecondMax  = 6.0f;
+    // Weight drags the pace down alongside the pitch (see PresentationSoundCues.StepVoice): heavy
+    // things take fewer, longer strides. Bottomed out so a Tough(24) titan still walks.
+    private const float StepWeightSlowdown = 0.06f;
+    private const float StepWeightMinScale = 0.55f;
+    // A backstop, not a tuning knob: at the fastest cadence the longest move (MoveMax, 1500ms) works
+    // out to exactly this many steps, so it only ever bites if the engine's move pacing grows.
+    private const int   MaxStepsPerMove = 9;
+
+    /// <summary>Footfalls per second for a unit of <paramref name="modelCount"/> models at
+    /// <paramref name="toughness"/> weight (#294). Internal for tests.</summary>
+    internal static float StepsPerSecond(int modelCount, int toughness)
+    {
+        int n = Math.Max(1, modelCount);
+        float cadence = Math.Clamp(
+            StepsPerSecondBase + StepsPerSecondPerDoubling * MathF.Log2(n),
+            StepsPerSecondBase, StepsPerSecondMax);
+
+        float weight = Math.Clamp(1f / (1f + StepWeightSlowdown * (Math.Max(1, toughness) - 1)),
+            StepWeightMinScale, 1f);
+
+        return cadence * weight;
+    }
+
+    /// <summary>
+    /// #294: how many footfalls have landed by progress <paramref name="t"/> of a move beat lasting
+    /// <paramref name="durationSeconds"/>. The cadence sets how many steps the whole glide gets (at
+    /// least one — a shuffle still makes a sound); those are then spread evenly across it exactly the
+    /// way <see cref="VolleysStarted"/> spreads volleys, so step s opens at t = s/steps and the patter
+    /// stays locked to the models' progress rather than to wall-clock time. Internal for tests.
+    /// </summary>
+    internal static int StepsStarted(float t, float durationSeconds, int modelCount, int toughness)
+    {
+        int steps = Math.Clamp(
+            (int)MathF.Round(Math.Max(0f, durationSeconds) * StepsPerSecond(modelCount, toughness)),
+            1, MaxStepsPerMove);
+        return Math.Min(steps, (int)(Math.Clamp(t, 0f, 1f) * steps) + 1);
     }
 
     // Where in the volley slice the shots land: melee at the clash instant (the same moment the

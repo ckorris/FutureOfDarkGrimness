@@ -9,7 +9,24 @@ Presentation sound cues load from this folder at runtime. Each cue maps to a fil
 | `wound.wav`   | hurt grunt/thud| `ModelWoundedBeat`  |
 | `death.wav`   | death thud     | `ModelDiedBeat`     |
 | `banner.wav`  | stage sting    | `BannerBeat`        |
-| `move.wav`    | footsteps      | `UnitMovedBeat`     |
+| `step.wav`    | one footfall   | `UnitMovedBeat`     |
+
+## Movement footfalls (#294)
+
+Movement is voiced as a run of footsteps for as long as the models are gliding, not one blip when the
+beat starts. `step.wav` is a **single footfall**, played repeatedly and varied per step, so keep the
+recording short (under ~100ms) and quiet — it fires up to nine times per move.
+
+| What varies      | How                                                                        |
+|------------------|----------------------------------------------------------------------------|
+| how many steps   | cadence rises **sub-linearly** with the unit's model count (2.4/s solo, capped at 6/s), so a horde sounds busier without meaning ten times the beeps |
+| pitch            | falls with the unit's `Tough(X)` — Tough(1) plays as recorded, Tough(12)+ bottoms out at 0.55x, so a monolith treads lower than a trooper |
+| pace             | heavy units also step **less often** (fewer, longer strides)               |
+| left / right     | every other footfall is a touch lower and softer, so it reads as walking rather than as a metronome |
+
+Cadence lives in `PresentationPlayer.StepsStarted` / `StepsPerSecond`; pitch and level in
+`PresentationSoundCues.StepVoice`. The weight proxy rides the beat itself
+(`UnitMovedBeat.Toughness`), so networked clients pitch footfalls identically.
 
 ## Spell sounds (#274 — per cast moment)
 

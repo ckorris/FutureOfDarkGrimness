@@ -138,6 +138,22 @@ and the measurement, so they cannot drift), while the ImGui measuring — `CalcT
 wrapWidth)` for wrapped warnings, `ItemSpacing.Y` for the gaps — stays in the resolver. This forces any
 variable footer text to be **composed above** the content and **drawn below** it.
 
+## Keys: bind the intent, not the key (#295)
+
+Resolver-wide bindings live in `ResolverKeybinds` — a named intent (`Confirm`, `Back`), the physical keys
+behind it, and the `Hint` / `Parenthetical` text that advertises it. Panels ask for the intent
+(`ResolverKeybinds.Confirm.IsPressed()`, or just `ResolverButtons.Primary`, which appends the hint itself);
+they never name a key or hand-write "(Enter)". Adding Space to Confirm in #295 was a one-line edit there,
+and every button, tooltip and Options line followed. Muting (typing / Esc-menu open) and the edge-only
+`repeat: false` rule from #240 live in the binding, so a caller cannot forget them.
+
+Panel-LOCAL keys stay put: an option list's number keys, `R` to rotate, `G` for group mode, `Y`/`N`. The
+table is for what is shared across resolvers, which is what goes stale in text.
+
+**Selecting one model of a unit is a click on that model** (single-mode movement and consolidation), not a
+cycle key — that is what freed Space. The click and the hover highlight that advertises it read the same
+`ModelPicker.HitTest`; paint a highlight from anything else and it will eventually disagree with the click.
+
 ## Validation gotchas
 
 - **Deployment spacing**: `MAX_MODEL_DISTANCE_FROM_ANY_OTHER_MODEL_INCHES` is 1.0" base-to-base. Auto-placement uses 0.1" gap, **not 1.0"** — at exactly 1.0", float accumulation during diagonal movement can push models fractionally over the cohesion limit.

@@ -229,6 +229,13 @@ public class RaylibRenderer
                 _audio.Play(PresentationSoundCues.VolleyCue(attack));
             _presentationPlayer.AttackVolleyImpact += attack =>
                 _audio.Play(PresentationSoundCues.ImpactCue(attack));
+            // #294: movement patters once per FOOTFALL for as long as the models are gliding, pitched
+            // down by the unit's weight and alternating foot to foot.
+            _presentationPlayer.UnitStepped += (moved, step) =>
+            {
+                var (cue, pitch, volume) = PresentationSoundCues.StepVoice(moved, step);
+                _audio.Play(cue, pitch, volume);
+            };
         }
 
         tableState.Models.OnObjectCreated += SubscribeToModel;

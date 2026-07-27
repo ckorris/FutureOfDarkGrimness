@@ -740,7 +740,7 @@ public class GuiPlaceObjectsResolver<T>
         float fullW = panelW - ImGui.GetStyle().WindowPadding.X * 2;
         float halfW = (fullW - ImGui.GetStyle().ItemSpacing.X) / 2f;
 
-        // Primary: Done -- larger, accented, commits on click or Enter (gated on all models placed).
+        // Primary: Done -- larger, accented, commits on click or the Confirm key (gated on all models placed).
         bool canDone = _placed.Count == total && !_dragIndex.HasValue
             && (!request.MustTouchTableEdge || PlacedTouchesEdge(request))
             && cohesionIssue == null;
