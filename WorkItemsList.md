@@ -87,6 +87,7 @@ Master plan: `docs/ai-agent-plan.md` (heuristics -> MCTS -> learned value net; g
 
 - [ ] 191 — Tactician AI agent umbrella: challenge-level game-playing AI as a new profile alongside the solo-rules bot; phased A-D, benchmark-gated. ([WorkItems/191](WorkItems/191-tactician-agent.md))
 - [~] 264 — Tactician unit behind large impassible terrain rushes sideways/backwards round 1: all 8 causes fixed and merged to master, 11 pins green (`TacticianWalledUnitTests`); issue 1's melee half folded in 2026-07-25. Open: 8b hysteresis (owner's call, deferred) + GUI eyeball check. ([WorkItems/264](WorkItems/264-tactician-walled-unit-lateral-retreat.md))
+- [~] 294 — Tactician crowded-game drift (#264's friendly-congestion + team-game sibling): 2v2 scoring is team-BLIND (teammate priced as enemy everywhere but deployment/spells), screen credit pays behind the ward, no front-first activation order, markers undervalued vs safety. Repro committed; fix slices in progress. ([WorkItems/294](WorkItems/294-tactician-crowded-game-drift.md))
 
 ## Networking & infrastructure
 

@@ -390,6 +390,12 @@ if (makeScenarioIdx >= 0 && makeScenarioIdx + 2 < args.Length)
 int scenarioIdx = Array.IndexOf(args, "--scenario");
 string? scenarioPath = scenarioIdx >= 0 && scenarioIdx + 1 < args.Length ? args[scenarioIdx + 1] : null;
 
+// --all-ai: scenario slot 0 is AI too (bot-vs-bot observation, GUI or headless).
+// --log-decisions: interleave each planning AI's candidate-table narration into stdout (FdgLab's
+// flag on the scenario path; the AI resolvers have no other sink in an ordinary game - #264 note).
+bool scenarioAllAi = args.Contains("--all-ai");
+bool scenarioLogDecisions = args.Contains("--log-decisions");
+
 // --army <path> (#153): non-interactive headless smoke — both players load <path>, then EOF defaults take
 // over (exactly what the old `printf "1\n<path>\n..." |` pipe idiom did, minus the pipe).
 int armyIdx = Array.IndexOf(args, "--army");
@@ -407,7 +413,8 @@ if (headless)
     {
         try
         {
-            await app.RunScenarioAsync(ScenarioLauncher.LoadStore(scenarioPath));
+            await app.RunScenarioAsync(ScenarioLauncher.LoadStore(scenarioPath),
+                scenarioAllAi, scenarioLogDecisions);
         }
         catch (ScenarioCompileException ex)
         {
@@ -593,14 +600,24 @@ else
     // the resolver registry (assigned in GameGuiWiring.Launch) before requesting decisions.
     if (scenarioPath != null)
     {
+        // Headless-only for now: the GUI wiring assigns its interfaces onto the human game, which
+        // owns no player under --all-ai (spectator rendering is its own slice if ever wanted).
+        if (scenarioAllAi)
+        {
+            Console.Error.WriteLine("--all-ai requires --headless (the GUI needs a local player on slot 0).");
+            Environment.Exit(2);
+        }
         try
         {
             GameDataStore scenarioStore = ScenarioLauncher.LoadStore(scenarioPath);
-            var parts = ScenarioLauncher.BuildResume(scenarioStore, diceSeed, aiProfile);
+            var parts = ScenarioLauncher.BuildResume(scenarioStore, diceSeed, aiProfile,
+                scenarioAllAi,
+                scenarioLogDecisions ? slot => line => Console.WriteLine($"[ai {slot}] {line}") : null);
 
             var players = new List<(PlayerID ID, string Name)>();
             for (int i = 0; i < parts.SavedInfos.Count; i++)
-                players.Add((parts.SavedInfos[i].PlayerID, i == 0 ? "Player 1" : $"Player {i + 1} (AI)"));
+                players.Add((parts.SavedInfos[i].PlayerID,
+                    i == 0 && !scenarioAllAi ? "Player 1" : $"Player {i + 1} (AI)"));
 
             // #201: a compiled scenario carries its GameSettings in the store's progress record;
             // absent (or a pre-#201 save) means the default ON.

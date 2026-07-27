@@ -123,27 +123,38 @@ public class CliApp
     /// <summary>
     /// #167 --scenario: resumes an already-populated store (a compiled scenario or a loaded save)
     /// headless, lobby-free: slot 0 drives via the CLI resolvers, every other saved slot is AI.
+    /// --all-ai makes slot 0 AI too (observation runs); --log-decisions interleaves each planning
+    /// AI's Choose Action narration into stdout as "[ai N] ..." lines (FdgLab's flag, here).
     /// </summary>
-    public async Task RunScenarioAsync(GameDataStore loadedStore)
+    public async Task RunScenarioAsync(GameDataStore loadedStore, bool allAi = false,
+        bool logDecisions = false)
     {
         Console.WriteLine("=== FDG Raylib - scenario ===");
 
-        var parts = ScenarioLauncher.BuildResume(loadedStore, _diceSeed, _aiProfile);
+        var parts = ScenarioLauncher.BuildResume(loadedStore, _diceSeed, _aiProfile, allAi,
+            logDecisions ? slot => line => Console.WriteLine($"[ai {slot}] {line}") : null,
+            logSink: allAi ? Console.WriteLine : null);
         _messageBus = parts.Bus;
         _gameDataStore = parts.Store;
         _localGame = parts.HumanGame;
 
         ILogMessageUI logUI = new CliLogMessageUI();
-        IStageResolverRegistry resolverRegistry = BuildResolverRegistry();
-        if (_slowDelayMs > 0)
-            resolverRegistry = new SlowModeResolverRegistry(resolverRegistry, _slowDelayMs);
+        if (!allAi)
+        {
+            // A human on slot 0: the human game owns the log/chat endpoint and the CLI resolvers.
+            // With --all-ai the human game owns NO player, and AssignInterfaces would throw building
+            // the chat endpoint - the narrative arrives through slot 0's controller logSink instead.
+            IStageResolverRegistry resolverRegistry = BuildResolverRegistry();
+            if (_slowDelayMs > 0)
+                resolverRegistry = new SlowModeResolverRegistry(resolverRegistry, _slowDelayMs);
 
-        _localGame.AssignInterfaces(
-            logMessageUI:          logUI,
-            playerMessageUI:       new CliPlayerMessageUI(),
-            stageResolverRegistry: resolverRegistry,
-            presentationSink:      null,
-            outstandingTaskDisplay: null);
+            _localGame.AssignInterfaces(
+                logMessageUI:          logUI,
+                playerMessageUI:       new CliPlayerMessageUI(),
+                stageResolverRegistry: resolverRegistry,
+                presentationSink:      null,
+                outstandingTaskDisplay: null);
+        }
 
         var gameEnded = new TaskCompletionSource();
         var server = new FDGServer(parts.Store, parts.Bus, parts.Slots); // resume constructor
