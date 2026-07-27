@@ -59,9 +59,17 @@ def run_cell(a, b, weights, games, seed_base, out_dir, log):
     spec = weights_spec(weights)
     if spec:
         cmd += ["--weights", spec]
-    proc = subprocess.run(cmd, capture_output=True, text=True)
-    if proc.returncode != 0:
-        log(f"FATAL bench rc={proc.returncode} for {a} vs {b}: {proc.stderr.strip()[:500]}")
+    # Retry native crashes (one DOP-16 bench segfaulted mid-campaign 2026-07-26, rc=-11, after
+    # nine identical invocations ran clean - transient, likely the #210 race under load). A
+    # persistent failure is still fatal: a silently skipped cell would skew the eval mean.
+    for attempt in range(3):
+        proc = subprocess.run(cmd, capture_output=True, text=True)
+        if proc.returncode == 0:
+            break
+        log(f"bench rc={proc.returncode} for {a} vs {b} "
+            f"(attempt {attempt + 1}/3): {proc.stderr.strip()[:300]}")
+    else:
+        log(f"FATAL bench kept failing for {a} vs {b}")
         sys.exit(1)
     with open(os.path.join(out_dir, "bench.md")) as f:
         for line in f:
@@ -93,6 +101,16 @@ def main():
 
     eval_cache = {}
     evals = 0
+
+    # Resume: completed evals replay from evals.jsonl instead of re-running ~10 minutes each.
+    evals_path = os.path.join(args.out, "evals.jsonl")
+    if os.path.exists(evals_path):
+        with open(evals_path) as f:
+            for line in f:
+                rec = json.loads(line)
+                eval_cache[eval_key(rec["weights"])] = (rec["mean"], rec["cells"])
+                evals = max(evals, rec["eval"])
+        log(f"resumed {len(eval_cache)} cached evals from evals.jsonl")
 
     def evaluate(weights, label):
         nonlocal evals
