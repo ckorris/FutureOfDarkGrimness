@@ -40,6 +40,8 @@ When closing an item: write the Outcome in its detail file, tick the line, and m
 
 ## Special rules — framework
 
+- [~] 290 — Advance-and-shoot gate re-derived the allowance AFTER `ExecuteMoveStage` spent the one-shot movement grant that paid for the move (Inspiring Bots -> Rapid Advance on a Slow unit: advanced 8", then couldn't shoot); the allowance is now recorded with the distance. Implemented + tested; awaiting GUI hand-verify. ([WorkItems/290](WorkItems/290-move-shoot-allowance-consumed-grant.md))
+
 - [~] 042 — Special rules architecture (data-driven Condition x Effect over named hooks + token state). Phases 1-8 largely shipped; remaining: attack/reactivate primitives, then morale/casting invocability. ([WorkItems/042](WorkItems/042-special-rules-architecture.md) + `WorkItems/042-implementation-checklist.txt`)
 - [ ] 087 — Custom special-rule authoring + standalone rules files (author new rules as data in the builder; import/export rule sets independent of armies). Builds on #059. ([WorkItems/087](WorkItems/087-custom-rule-authoring.md))
 - [~] 100 — Special-rule engine primitives umbrella: Part 1 + cross-unit pre-attack targeting done; open: dormant hooks, RangeModifier/Strider, Part-2/3 primitives (deferred-debuff, dice-pool, markers). Corpus reference is off-repo (`../GDF Armies/`, do not commit). ([WorkItems/100](WorkItems/100-special-rule-primitive-gaps.md))
