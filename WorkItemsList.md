@@ -56,7 +56,7 @@ Corpus coverage is a different story: 199 of 13,870 book rule references (1.4%) 
 - [~] 234 — Cast gated on `HasAttacked` (shooting or melee closes the casting window; moving does not), per v3.5.1 Caster(X) "at any point before attacking". Implemented + tested; awaiting GUI hand-verify. ([WorkItems/234](WorkItems/234-cast-after-charge-legality.md))
 - [~] 249 — Caster's "only one try per spell" now enforced via a per-activation attempted-spell set (recorded with the cost, so a failed cast burns the try); casting different spells in one activation stays legal. Implemented + tested; awaiting GUI hand-verify. ([WorkItems/249](WorkItems/249-one-try-per-spell.md))
 - [~] 244 — Caster self-boost: own tokens for +1/each in a new dedicated spell picker (`ChooseSpellRequest`, one-panel GUI with useful-cap-gated boost stepper). Implemented + tested; awaiting GUI hand-verify. ([WorkItems/244](WorkItems/244-caster-self-boost.md))
-- [~] 285 — A resolved spell announces what its effect DID (one `Notice` banner naming the effect + affected units). Implemented + tested; damage path deliberately excluded; awaiting GUI hand-verify. ([WorkItems/285](WorkItems/285-spell-effect-banner.md))
+- [~] 285 — A resolved spell announces what its effect DID (one `Notice` banner naming the effect + affected units). Implemented + tested for every effect path incl. damage (hit count + type); awaiting GUI hand-verify. ([WorkItems/285](WorkItems/285-spell-effect-banner.md))
 
 ## Army Forge
 
