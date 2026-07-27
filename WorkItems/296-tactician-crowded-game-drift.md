@@ -1,4 +1,4 @@
-# 294 — Tactician: crowded-game lateral/backward drift; team-blind scoring in 2v2
+# 296 — Tactician: crowded-game lateral/backward drift; team-blind scoring in 2v2
 
 **Status**: in-progress (investigation + repro done 2026-07-27; fix slices being implemented)
 **Related**: #264 (walled-unit sibling — impassible terrain; this is the friendly-congestion +

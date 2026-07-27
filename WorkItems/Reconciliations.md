@@ -6,6 +6,17 @@ from origin/master. Standing precedent: numbers are never reused, and when two p
 claim the same number, the *unmerged local* item yields to the *merged* one and takes a fresh number.
 A per-clone pre-push hook blocks duplicate numbers across the index and the archive.
 
+> **2026-07-27 — reconciliation 30 (RESOLVED).** Merging origin/master into this session's local
+> master surfaced the same-day sibling of reconciliation 29: this session had filed the Tactician
+> crowded-game drift investigation as **294** (and committed its whole fix set under that number)
+> while origin/master had meanwhile landed **294 = movement footstep cue** (merged, `5ef6803`) and
+> **295 = click-to-select** (reconciliation 29's own renumber). Per merged-wins precedent the local
+> item yields: **crowded-game drift 294 -> 296** (`WorkItems/296-tactician-crowded-game-drift.md`;
+> index line, detail-file self-references, and the engine's Ai/ comment references updated - engine
+> `5d4cae1`). Commit messages saying "#294" for it (`e26c98d`, `f9f5105`, engine `a25e6a6`,
+> `0a4549d`) predate the renumber, per precedent. The objectives-team UI item filed the same day
+> takes **297**.
+>
 > **2026-07-27 — reconciliation 29 (RESOLVED).** A pre-push fetch caught a single collision: this
 > session had filed the click-to-select / Space-confirms work as **294** while origin/master had
 > meanwhile landed **294 = movement footstep cue** (merged, `5ef6803`). Per merged-wins precedent the
