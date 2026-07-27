@@ -151,6 +151,7 @@ File open/save dialogs (Army Builder) use zenity. If those dialogs do
 nothing, install it:
     sudo apt install zenity      # Debian/Ubuntu
     sudo dnf install zenity      # Fedora
+    sudo pacman -S zenity        # Arch
 
 Requires a normal desktop with OpenGL + X11/Wayland (present on any
 standard Ubuntu/Fedora install). Built against glibc; Alpine/musl is not
