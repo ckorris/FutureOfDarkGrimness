@@ -17,6 +17,8 @@ When closing an item: write the Outcome in its detail file, tick the line, and m
 
 ## Movement
 
+- [~] 291 — Models could move partially off the table: the movement validator had no bounds rule at all (the GUI only constrained a model's CENTRE, so big vehicle bases overhung). Footprint-exact "not worsened" rule in all four validators + shared preview clamp. Implemented + tested; awaiting GUI hand-verify. ([WorkItems/291](WorkItems/291-models-may-not-move-off-table.md))
+
 - [~] 159 — `DefinePathStage` cohesion crash: residual isolated (CLI/AI HOLD-EXACT submitting an already-broken unit's positions) and fixed 2026-07-18 via lenient movement coherency (mirrors the ConsolidateStage fix), 90/90 clean; GUI human-movement Done-gate facet explicitly deferred + awaiting GUI hand-verify. ([WorkItems/159](WorkItems/159-definepath-cohesion-crash.md))
 - [ ] 209 — Weapon-choice option order is nondeterministic (ConcurrentDictionary keyed by Weapon identity): multi-weapon units swing/fire in random order, breaking #193 same-seed replay and benchmark hash reproducibility; fix candidate awaiting sign-off. ([WorkItems/209](WorkItems/209-weapon-choice-order-nondeterminism.md))
 - [ ] 210 — Residual bench nondeterminism at --dop > 1 (scattered per-game flips under CPU contention; serial runs exact after #209). Needs the #198 tracer wired into bench to isolate. ([WorkItems/210](WorkItems/210-dop-concurrency-nondeterminism.md))
