@@ -20,6 +20,25 @@ pin tests.
 
 ## Notes (newest first)
 
+**2026-07-26 — AUTOMATED TUNING CAMPAIGN RAN TO COMPLETION: DEFAULTS STAND (a null result at
+full evidence).** Coordinate descent on the merged engine (submodule `d8d8446`): 5 knobs x
+{x0.7, x1.3}, the 8-cell eval set, 50 games/cell paired seeds, adopt at >= +3.0 mean points.
+11 evals, NOTHING adopted - best singles were the caution-direction bumps MoveRetaliation x1.3
+(+1.7) and MoveProjectedThreat x1.3 (+1.4). Their combination probed +2.62 at 50 games/cell,
+just under the bar and selected-winner-biased, so BOTH arms re-ran at 200 games/cell (G4): the
+combo reads **-1.12** (5/8 cells negative, BB-vs-Hives -5.5) - winner's curse confirmed, the
++2.62 was noise. Verdict: the hand-tuned defaults are locally optimal to +-30% per knob and
+against the best-looking combo; no default changes, so the full-gate arbiter was never needed.
+Ops: one DOP-16 bench SEGFAULTED mid-campaign (rc -11, transient, plausibly #210's race under
+load) - the driver now retries crashed benches and resumes completed evals from evals.jsonl.
+Post-merge 200-game baseline on the 8 cells (the next campaign's reference): RL-Orks 53.2,
+RL-Hives 60.0, RL-HEF 69.3, HDF-Hives 59.5, DE-Hives 64.5, DE-Orks 60.8, BB-Hives 70.5,
+Dwarf-Orks 66.1 (mean 62.99). Next levers when this reopens: wider multipliers, joint moves,
+and the STRUCTURAL candidates coordinate descent cannot reach (sum-vs-max alternative-target
+aggregation; MoveScreen/MoveApproach were deliberately out of scope this round). Artifacts:
+FdgLab/reports/tune-2026-07-26/ on disk (campaign.log, evals.jsonl, result.json; the reports
+dir is gitignored like every bench report - numbers of record live in this ledger).
+
 **2026-07-26 — TUNING INFRA (Chris: "do the automated weight tuning"): weights
 runtime-overridable, FdgLab --weights, campaign driver. Engine `7f30a82`.** TacticianWeights
 float consts -> public static floats + TrySet(name, value) (reflection, set before games only);
