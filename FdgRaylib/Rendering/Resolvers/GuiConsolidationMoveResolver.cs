@@ -125,6 +125,10 @@ public class GuiConsolidationMoveResolver
     private static readonly uint RangeRingCol   = ImGui.ColorConvertFloat4ToU32(new Vector4(0.40f, 0.85f, 1.00f, 0.55f));
     private static readonly uint SelectionOutline = ImGui.ColorConvertFloat4ToU32(new Vector4(1f, 1f, 1f, 0.95f));
     private static readonly uint ModelOutline   = ImGui.ColorConvertFloat4ToU32(new Vector4(0.7f, 0.7f, 0.7f, 0.7f));
+    // #295: hover on an unselected model in single mode -- a dimmer, filled version of the white selection
+    // outline, so it reads as "this is about to BE the selection" (and never as the cyan move preview).
+    private static readonly uint HoverOutline   = ImGui.ColorConvertFloat4ToU32(new Vector4(1f, 1f, 1f, 0.75f));
+    private static readonly uint HoverFill      = ImGui.ColorConvertFloat4ToU32(new Vector4(1f, 1f, 1f, 0.18f));
     private static readonly uint GhostOutline   = ImGui.ColorConvertFloat4ToU32(new Vector4(1f, 1f, 1f, 0.85f));
     private static readonly uint FinalGhostCol  = ImGui.ColorConvertFloat4ToU32(new Vector4(1f, 1f, 1f, 0.25f));
     private static readonly uint CohesionLineCol = ImGui.ColorConvertFloat4ToU32(new Vector4(1.00f, 0.55f, 0.55f, 0.90f));
@@ -188,6 +192,19 @@ public class GuiConsolidationMoveResolver
 
         float maxDist = request.MaxDistanceInches;
 
+        bool overTable = IsOverTable(io.MousePos.X, io.MousePos.Y);
+        bool wantInput = !io.WantCaptureMouse && !io.WantCaptureKeyboard;
+
+        // #295: single mode switches models by clicking the model you want (Space used to cycle; Space now
+        // confirms). One hit test up front feeds both the hover highlight and the click, so what lights up
+        // is exactly what a click selects. Group mode has no per-model selection, so nothing is hoverable.
+        IModel? hoveredModel = null;
+        if (!_formationMode.IsGroup && overTable && !io.WantCaptureMouse)
+        {
+            var (hx, hz) = PixelToInches(io.MousePos.X, io.MousePos.Y);
+            hoveredModel = ModelPicker.HitTest(paths.Keys, hx, hz);
+        }
+
         // 1) Draw each model's start circle + committed path + final ghost
         foreach (var kvp in paths)
         {
@@ -196,11 +213,18 @@ public class GuiConsolidationMoveResolver
             var start = model.Position;
             var (sx, sy) = InchesToPixel(start.x, start.z);
 
-            uint outline = ReferenceEquals(model, _selectedModel) ? SelectionOutline : ModelOutline;
-            float thick  = ReferenceEquals(model, _selectedModel) ? 2.5f : 1.5f;
+            bool isSelected = ReferenceEquals(model, _selectedModel);
+            bool isHovered  = !isSelected && ReferenceEquals(model, hoveredModel);
+            uint outline = isSelected ? SelectionOutline : isHovered ? HoverOutline : ModelOutline;
+            float thick  = isSelected || isHovered ? 2.5f : 1.5f;
             // #250: consolidation slides without rotating, so every ghost/outline keeps the model's facing.
-            ModelBaseRenderer.DrawOutlineImGui(dl, model.BaseShape, new Vector2(sx, sy), _scale, outline, thick,
-                facing: model.Facing);
+            // #295: the hovered model also gets a wash, so "click me to switch" reads at a glance.
+            if (isHovered)
+                ModelBaseRenderer.DrawFilledImGui(dl, model.BaseShape, new Vector2(sx, sy), _scale, HoverFill,
+                    outline, thick, facing: model.Facing);
+            else
+                ModelBaseRenderer.DrawOutlineImGui(dl, model.BaseShape, new Vector2(sx, sy), _scale, outline, thick,
+                    facing: model.Facing);
 
             if (pathPoints.Count > 0)
             {
@@ -224,9 +248,6 @@ public class GuiConsolidationMoveResolver
                     facing: committedFacing);
             }
         }
-
-        bool overTable = IsOverTable(io.MousePos.X, io.MousePos.Y);
-        bool wantInput = !io.WantCaptureMouse && !io.WantCaptureKeyboard;
 
         // #215: G toggles Group/Single for the rest of the game (shared with movement/deployment).
         if (wantInput && ImGui.IsKeyPressed(ImGuiKey.G)) _formationMode.Toggle();
@@ -298,23 +319,14 @@ public class GuiConsolidationMoveResolver
         // 4) Input
         if (overTable && !io.WantCaptureMouse)
         {
-            // Left-click: select a model whose start circle is hit; otherwise place a waypoint for the
-            // selected model at the clamped ghost position. Left-click places (consistent with movement).
+            // Left-click: select a model whose start footprint is hit (#295 -- the only way to switch models
+            // now that Space commits); otherwise place a waypoint for the selected model at the clamped ghost
+            // position. Left-click places (consistent with movement).
             if (ImGui.IsMouseClicked(ImGuiMouseButton.Left))
             {
-                var (mx, mz) = PixelToInches(io.MousePos.X, io.MousePos.Y);
-                IModel? hit = null;
-                float bestDist = float.MaxValue;
-                foreach (var model in paths.Keys)
+                if (hoveredModel != null)
                 {
-                    float dx = mx - model.Position.x;
-                    float dz = mz - model.Position.z;
-                    float d2 = dx * dx + dz * dz;
-                    if (model.BaseShape.ContainsLocalPoint(dx, dz) && d2 < bestDist) { hit = model; bestDist = d2; }
-                }
-                if (hit != null)
-                {
-                    _selectedModel = hit;
+                    _selectedModel = hoveredModel;
                 }
                 else if (_selectedModel != null && ghostPos.HasValue && !ghostOverlaps)
                 {
@@ -339,15 +351,8 @@ public class GuiConsolidationMoveResolver
                 pt.RemoveLastStep(_selectedModel);
         }
 
-        if (wantInput && ImGui.IsKeyPressed(ImGuiKey.Space))
-        {
-            var keys = paths.Keys.ToList();
-            if (keys.Count > 0)
-            {
-                int idx = _selectedModel == null ? -1 : keys.IndexOf(_selectedModel);
-                _selectedModel = keys[(idx + 1) % keys.Count];
-            }
-        }
+        // #295: Space no longer cycles models here -- click the model you want (hover-highlighted above),
+        // which frees Space to join Enter as the universal Confirm key.
 
         DrawInfoPanel(screenW, request, pt, tcs, terrain);
     }
@@ -546,7 +551,7 @@ public class GuiConsolidationMoveResolver
             ImGui.TextDisabled("Drag: move unit   Wheel/R: rotate   Ctrl+Wheel: formation\nL-click: commit   R-click/Bksp: undo");
         }
         else
-            ImGui.TextDisabled("L-click: select/waypoint   R-click/Bksp: undo\nSpace: next model");
+            ImGui.TextDisabled("L-click a model: switch to it   L-click elsewhere: place waypoint\nR-click/Bksp: undo");
 
         ImGui.Spacing();
         float spacing = ImGui.GetStyle().ItemSpacing.X;
@@ -580,10 +585,12 @@ public class GuiConsolidationMoveResolver
             issues.Add($"Cohesion: two models would be {cohesion.FarthestPair.Value.dist:F2}\" apart (max {GameWideConstants.MAX_MODEL_DISTANCE_FROM_ALL_OTHER_MODELS_INCHES:F1}\")");
 
         bool canSubmit = issues.Count == 0;
-        // Primary: Done -- larger, accented, commits on click or Enter (gated on a valid move).
+        // Primary: Done -- larger, accented, commits on click or the Confirm key (gated on a valid move).
         bool donePressed = ResolverButtons.Primary("Done", new Vector2(fullW, 34f), enabled: canSubmit);
         if (ImGui.IsItemHovered(ImGuiHoveredFlags.AllowWhenDisabled))
-            ImGui.SetTooltip(canSubmit ? "Commit this move and continue. (Enter)" : string.Join("\n", issues));
+            ImGui.SetTooltip(canSubmit
+                ? $"Commit this move and continue. {ResolverKeybinds.Confirm.Parenthetical}"
+                : string.Join("\n", issues));
         if (donePressed)
         {
             Complete(tcs, results);

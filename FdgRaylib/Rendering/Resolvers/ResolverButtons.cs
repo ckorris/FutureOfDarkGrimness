@@ -8,8 +8,9 @@ namespace FdgRaylib.Rendering.Resolvers;
 ///   Primary       -- the final/commit action (Done, Fire, Confirm): accented, and also fires on Enter.
 ///   Destructive   -- an irreversible action (Clear, Restart): red-tinted; callers separate it visually.
 ///   Deemphasized  -- a low-stakes action (Skip, Stay): dim, so it recedes.
-/// Ordinary secondary actions just use ImGui.Button. The "(Enter)" hint is baked into Primary so the
-/// keyboard shortcut is discoverable on the button itself.
+/// Ordinary secondary actions just use ImGui.Button. The Confirm-key hint ("(Enter/Space)", #295) is
+/// baked into Primary from <see cref="ResolverKeybinds.Confirm"/> so the shortcut is discoverable on
+/// the button itself and can never drift from the key that is actually bound.
 /// </summary>
 internal static class ResolverButtons
 {
@@ -22,9 +23,9 @@ internal static class ResolverButtons
     private static readonly Vector4 DestructiveActive  = new(0.34f, 0.12f, 0.12f, 1f);
 
     /// <summary>
-    /// Primary / commit button. Accented; appends an "(Enter)" hint and also returns true when Enter (or
-    /// keypad Enter) is pressed -- unless a text field is focused (so typing in chat can't trip it) or the
-    /// button is disabled. Pass <paramref name="enabled"/> = false to gray it out and ignore Enter.
+    /// Primary / commit button. Accented; appends the Confirm-key hint and also returns true when the
+    /// Confirm key is pressed -- unless a text field is focused (so typing in chat can't trip it) or the
+    /// button is disabled. Pass <paramref name="enabled"/> = false to gray it out and ignore the key.
     ///
     /// <para>
     /// #240: key shortcuts on commit/cancel actions must use <c>repeat: false</c>. A key whose release
@@ -35,9 +36,9 @@ internal static class ResolverButtons
     /// fire ever; a deliberate fresh tap still works, and nobody wants key-repeat on a commit button.
     /// </para>
     /// </summary>
-    public static bool Primary(string label, Vector2 size, bool enabled = true, bool bindEnter = true)
+    public static bool Primary(string label, Vector2 size, bool enabled = true, bool bindConfirm = true)
     {
-        string shown = bindEnter ? $"{label}  (Enter)" : label;
+        string shown = bindConfirm ? $"{label}  {ResolverKeybinds.Confirm.Parenthetical}" : label;
         ImGui.PushStyleColor(ImGuiCol.Button, PrimaryBg);
         ImGui.PushStyleColor(ImGuiCol.ButtonHovered, PrimaryHovered);
         ImGui.PushStyleColor(ImGuiCol.ButtonActive, PrimaryActive);
@@ -46,14 +47,11 @@ internal static class ResolverButtons
         if (!enabled) ImGui.EndDisabled();
         ImGui.PopStyleColor(3);
 
-        // #248: also muted while the in-game menu is open — the menu blocks clicks (modal), but this
-        // key check is manual code that would otherwise still commit the panel behind the dim.
-        bool enter = enabled && bindEnter && !ImGui.GetIO().WantTextInput && !EscapeRouter.MenuOpen
-                     && (ImGui.IsKeyPressed(ImGuiKey.Enter, repeat: false)
-                         || ImGui.IsKeyPressed(ImGuiKey.KeypadEnter, repeat: false));
-        // A commit (mouse OR the Enter shortcut) gets the positive/forward tone.
-        if (clicked || enter) UiSound.Confirm();
-        return clicked || enter;
+        // The binding owns the edge-only rule and the typing / Esc-menu muting (#240, #248).
+        bool confirmKey = enabled && bindConfirm && ResolverKeybinds.Confirm.IsPressed();
+        // A commit (mouse OR the Confirm shortcut) gets the positive/forward tone.
+        if (clicked || confirmKey) UiSound.Confirm();
+        return clicked || confirmKey;
     }
 
     /// <summary>Red-tinted button for irreversible actions. Callers should set it apart (separator/row).</summary>

@@ -207,6 +207,11 @@ public class GuiDefineMovementResolver
     private static readonly uint ChargeFill      = ImGui.ColorConvertFloat4ToU32(new Vector4(1.00f, 0.55f, 0.10f, 0.40f));
     private static readonly uint SelectionOutline = ImGui.ColorConvertFloat4ToU32(new Vector4(1f, 1f, 1f, 0.95f));
     private static readonly uint ModelOutline    = ImGui.ColorConvertFloat4ToU32(new Vector4(0.7f, 0.7f, 0.7f, 0.7f));
+    // #295: hover on an unselected model in single mode -- deliberately a dimmer, filled version of the
+    // white selection outline rather than a new hue, so it reads as "this is about to BE the selection"
+    // and can't be mistaken for a move band (green/yellow/orange) or an illegal placement (red).
+    private static readonly uint HoverOutline    = ImGui.ColorConvertFloat4ToU32(new Vector4(1f, 1f, 1f, 0.75f));
+    private static readonly uint HoverFill       = ImGui.ColorConvertFloat4ToU32(new Vector4(1f, 1f, 1f, 0.18f));
     private static readonly uint GhostOutline    = ImGui.ColorConvertFloat4ToU32(new Vector4(1f, 1f, 1f, 0.85f));
     private static readonly uint FinalGhostCol   = ImGui.ColorConvertFloat4ToU32(new Vector4(1f, 1f, 1f, 0.25f));
     private static readonly uint CohesionLineCol = ImGui.ColorConvertFloat4ToU32(new Vector4(1.00f, 0.55f, 0.55f, 0.90f));
@@ -331,6 +336,24 @@ public class GuiDefineMovementResolver
         var terrain  = _tableState.Terrain.Objects.ToList();
         var paths    = pt.CurrentPaths;
 
+        // Shared pointer/keyboard state and the current placement mode. Resolved before anything is
+        // drawn so the hover highlight below and the click handler at the end of Draw agree.
+        bool overTable = IsOverTable(io.MousePos.X, io.MousePos.Y);
+        bool wantInput = !io.WantCaptureMouse && !io.WantCaptureKeyboard;
+        bool advanceOnly = _stayInAdvance || ImGui.IsKeyDown(ImGuiKey.LeftShift) || ImGui.IsKeyDown(ImGuiKey.RightShift);
+        bool group = _formationMode.IsGroup;
+
+        // #295: in single mode, clicking a model IS how you switch to it (Space used to cycle; Space now
+        // confirms). Hit-test the pointer once here so the same answer both paints the hover highlight and
+        // drives the click -- a highlight that could disagree with what the click selects is worse than no
+        // highlight. Group mode has no per-model selection, so nothing is hoverable there.
+        IModel? hoveredModel = null;
+        if (!group && overTable && !io.WantCaptureMouse)
+        {
+            var (hx, hz) = PixelToInches(io.MousePos.X, io.MousePos.Y);
+            hoveredModel = ModelPicker.HitTest(paths.Keys, hx, hz);
+        }
+
         // #155: per-frame terrain-consequence state. Difficult is ENFORCED (the ghost clamps so the
         // preview can never propose a move the validator's 6" cap would reject); Dangerous is ADVISORY
         // (badge + panel line - the roll is a gamble the player may take deliberately). Flying
@@ -361,7 +384,7 @@ public class GuiDefineMovementResolver
         // #093: single mode operates on the selected model, so the ghost/clamp/range-rings/bands use ITS own
         // budget — a joined hero with Fast shows bigger rings and can be placed further than its unitmates.
         // Group mode keeps the unit scalars here and applies each model's own budget in DrawGroupGhostAndInput.
-        if (!_formationMode.IsGroup && _selectedModel != null)
+        if (!group && _selectedModel != null)
             (maxAdvance, maxRush, maxCharge) = request.BudgetFor(_selectedModel.ID);
         bool  hasChargeBand = maxCharge > maxRush + 0.0001f;
 
@@ -374,12 +397,20 @@ public class GuiDefineMovementResolver
             var (sx, sy) = InchesToPixel(start.x, start.z);
 
             // Start base outline (real model position) — drawn as the model's true shape (#149)
-            uint outline = ReferenceEquals(model, _selectedModel) ? SelectionOutline : ModelOutline;
-            float thick  = ReferenceEquals(model, _selectedModel) ? 2.5f : 1.5f;
+            bool isSelected = ReferenceEquals(model, _selectedModel);
+            bool isHovered  = !isSelected && ReferenceEquals(model, hoveredModel);
+            uint outline = isSelected ? SelectionOutline : isHovered ? HoverOutline : ModelOutline;
+            float thick  = isSelected || isHovered ? 2.5f : 1.5f;
             // #250: pass the facing — without it a rotated rectangular base drew axis-aligned and
             // mismatched the model rendered underneath it.
-            ModelBaseRenderer.DrawOutlineImGui(dl, model.BaseShape, new Vector2(sx, sy), _scale, outline, thick,
-                facing: model.Facing);
+            // #295: the hovered model also gets a wash, so "click me to switch" is legible at a glance
+            // even where a pale outline sits over a bright model sprite.
+            if (isHovered)
+                ModelBaseRenderer.DrawFilledImGui(dl, model.BaseShape, new Vector2(sx, sy), _scale, HoverFill,
+                    outline, thick, model.Facing);
+            else
+                ModelBaseRenderer.DrawOutlineImGui(dl, model.BaseShape, new Vector2(sx, sy), _scale, outline, thick,
+                    facing: model.Facing);
 
             // Path lines. #155: a model whose committed path crosses Dangerous terrain draws its whole path
             // solid red; crossing Difficult draws dotted gray; otherwise the per-segment band colour.
@@ -415,12 +446,6 @@ public class GuiDefineMovementResolver
                 ModelBaseRenderer.DrawHeadingImGui(dl, model.BaseShape, new Vector2(lx, ly), _scale, finalFacing, outline);
             }
         }
-
-        // Shared pointer/keyboard state and the current placement mode.
-        bool overTable = IsOverTable(io.MousePos.X, io.MousePos.Y);
-        bool wantInput = !io.WantCaptureMouse && !io.WantCaptureKeyboard;
-        bool advanceOnly = _stayInAdvance || ImGui.IsKeyDown(ImGuiKey.LeftShift) || ImGui.IsKeyDown(ImGuiKey.RightShift);
-        bool group = _formationMode.IsGroup;
 
         // #162: an enemy click pins a target for the tactical overlay. Checked once, before both mode
         // handlers, and consumed so it doesn't also select a model or drop a waypoint.
@@ -652,24 +677,16 @@ public class GuiDefineMovementResolver
         // 4) Mouse / keyboard input (single mode — group mode handles its own clicks above)
         if (!group && overTable && !io.WantCaptureMouse)
         {
-            // Left-click: if it lands on a model's start circle, select that model; otherwise place a
-            // waypoint for the selected model at the clamped ghost position (blocked if it would overlap
-            // another model). Left-click places in BOTH single and group mode (consistency).
+            // Left-click: if it lands on a model's start footprint, select that model (#295 -- the only way
+            // to switch models now that Space commits); otherwise place a waypoint for the selected model at
+            // the clamped ghost position (blocked if it would overlap another model). Left-click places in
+            // BOTH single and group mode (consistency). `hoveredModel` is the same hit test the highlight
+            // drew with, so what lights up is exactly what a click selects.
             if (!_frameEnemyPinConsumed && ImGui.IsMouseClicked(ImGuiMouseButton.Left))
             {
-                var (mx, mz) = PixelToInches(io.MousePos.X, io.MousePos.Y);
-                IModel? hit = null;
-                float bestDist = float.MaxValue;
-                foreach (var model in paths.Keys)
+                if (hoveredModel != null)
                 {
-                    float dx = mx - model.Position.x;
-                    float dz = mz - model.Position.z;
-                    float d2 = dx * dx + dz * dz;
-                    if (model.BaseShape.ContainsLocalPoint(dx, dz) && d2 < bestDist) { hit = model; bestDist = d2; }
-                }
-                if (hit != null)
-                {
-                    _selectedModel = hit;
+                    _selectedModel = hoveredModel;
                 }
                 else if (_selectedModel != null && ghostPos.HasValue && !ghostOverlaps)
                 {
@@ -730,16 +747,8 @@ public class GuiDefineMovementResolver
                 + (shift ? GroupRotationStep : -GroupRotationStep);
         }
 
-        // Spacebar cycles to next model in the unit's list (single mode)
-        if (!group && wantInput && ImGui.IsKeyPressed(ImGuiKey.Space))
-        {
-            var keys = paths.Keys.ToList();
-            if (keys.Count > 0)
-            {
-                int idx = _selectedModel == null ? -1 : keys.IndexOf(_selectedModel);
-                _selectedModel = keys[(idx + 1) % keys.Count];
-            }
-        }
+        // #295: Space no longer cycles models here -- single mode switches by clicking the model you want
+        // (hover-highlighted above), which frees Space to join Enter as the universal Confirm key.
 
         // G toggles Group/Single for the rest of the game (shared with deployment).
         if (wantInput && ImGui.IsKeyPressed(ImGuiKey.G))
@@ -749,6 +758,17 @@ public class GuiDefineMovementResolver
             && committedCrossedDifficult.Contains(_selectedModel);
         DrawInfoPanel(screenW, request, pt, tcs, terrain, dangerousCrossers,
             _frameDifficultCrossing, _frameDifficultStopped, selectedCapped);
+    }
+
+    /// <summary>
+    /// #295: single-mode control hints, with switching models spelled out as a click on the model (it used
+    /// to be Space, which now confirms). Shared by the selected and no-selection branches of the panel --
+    /// they carried two copies of the line, which is how the stale "R-click: waypoint" survived in both.
+    /// </summary>
+    private static void DrawSingleModeHints()
+    {
+        ImGui.TextDisabled("L-click a model: switch to it   L-click elsewhere: place waypoint");
+        ImGui.TextDisabled("R-click: undo   Backspace: undo / back");
     }
 
     private static readonly float GroupRotationStep = MathF.PI / 12f; // 15° per wheel notch / key press
@@ -1131,12 +1151,12 @@ public class GuiDefineMovementResolver
             ImGui.PushStyleColor(ImGuiCol.Text, color);
             ImGui.TextUnformatted($"Selected model: {dist:F2}\" / {FormatInches(maxShown)}\"{capTag}  ({(inRush ? "RUSH - cannot shoot" : "advance - may shoot")})");
             ImGui.PopStyleColor();
-            ImGui.TextDisabled("L-click: select   R-click: waypoint   Space: next   Backspace: undo / back");
+            DrawSingleModeHints();
         }
         else
         {
             ImGui.TextDisabled("No model selected. Left-click a model on the table.");
-            ImGui.TextDisabled("L-click: select   R-click: waypoint   Space: next   Backspace: undo / back");
+            DrawSingleModeHints();
         }
 
         if (ImGui.Button(group ? "Mode: Group (G)" : "Mode: Single (G)"))
@@ -1190,10 +1210,12 @@ public class GuiDefineMovementResolver
             issues.Add($"Cohesion: two models would be {cohesion.FarthestPair.Value.dist:F2}\" apart (max {FormatInches(GameWideConstants.MAX_MODEL_DISTANCE_FROM_ALL_OTHER_MODELS_INCHES)}\")");
 
         bool canSubmit = issues.Count == 0;
-        // Primary: Done -- larger, accented, commits on click or Enter (gated on a valid move).
+        // Primary: Done -- larger, accented, commits on click or the Confirm key (gated on a valid move).
         bool donePressed = ResolverButtons.Primary("Done", new Vector2(fullW, 34f), enabled: canSubmit);
         if (ImGui.IsItemHovered(ImGuiHoveredFlags.AllowWhenDisabled))
-            ImGui.SetTooltip(canSubmit ? "Commit this move and continue. (Enter)" : string.Join("\n", issues));
+            ImGui.SetTooltip(canSubmit
+                ? $"Commit this move and continue. {ResolverKeybinds.Confirm.Parenthetical}"
+                : string.Join("\n", issues));
         if (donePressed)
         {
             Complete(tcs, results);

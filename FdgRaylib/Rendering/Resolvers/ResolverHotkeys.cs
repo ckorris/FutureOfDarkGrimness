@@ -115,29 +115,21 @@ internal static class ResolverHotkeys
         return delta;
     }
 
-    /// <summary>Edge-only Enter/keypad-Enter (commit key, so repeat: false per #240).</summary>
-    public static bool IsEnterPressed()
-    {
-        if (KeysMuted) return false;
-        return ImGui.IsKeyPressed(ImGuiKey.Enter, repeat: false)
-            || ImGui.IsKeyPressed(ImGuiKey.KeypadEnter, repeat: false);
-    }
+    /// <summary>Edge-only commit key — Enter/keypad-Enter/Space as of #295. The keys and the label text
+    /// that advertises them both live in <see cref="ResolverKeybinds.Confirm"/>.</summary>
+    public static bool IsConfirmPressed() => ResolverKeybinds.Confirm.IsPressed();
 
     /// <summary>Edge-only Backspace — the universal resolver back/cancel key. Esc deliberately does NOT
     /// cancel resolvers (it opens the in-game menu): mid-move you can reach Options without your Esc
     /// press first undoing the plan (#248 playtest feedback). Cancel key, so repeat: false per #240.</summary>
-    public static bool IsBackPressed()
-    {
-        if (KeysMuted) return false;
-        return ImGui.IsKeyPressed(ImGuiKey.Backspace, repeat: false);
-    }
+    public static bool IsBackPressed() => ResolverKeybinds.Back.IsPressed();
 
     private static bool KeysMuted => ImGui.GetIO().WantTextInput || EscapeRouter.MenuOpen;
 }
 
 /// <summary>
 /// #248: per-resolver keyboard state for a list of valid options: number keys instant-pick, Up/Down
-/// move a highlight (wrapping), Enter commits the highlight. One instance per resolver; call
+/// move a highlight (wrapping), the Confirm key commits the highlight. One instance per resolver; call
 /// <see cref="Update"/> once per frame from Draw. Resets itself when the request object changes, so
 /// a stale highlight never carries into the next decision. Main-thread only (Draw-scoped).
 /// </summary>
@@ -149,7 +141,7 @@ internal sealed class KeyboardListNav
     public int Index { get; private set; } = -1;
 
     /// <summary>Process this frame's keys. Returns the valid-option index to pick NOW (a number key,
-    /// or Enter on the highlight), or -1. <paramref name="moved"/> is true when arrows changed the
+    /// or Confirm on the highlight), or -1. <paramref name="moved"/> is true when arrows changed the
     /// highlight this frame — scroll it into view.</summary>
     public int Update(object request, int validCount, out bool moved)
     {
@@ -170,7 +162,7 @@ internal sealed class KeyboardListNav
             moved = true;
         }
 
-        if (Index >= 0 && ResolverHotkeys.IsEnterPressed()) return Index;
+        if (Index >= 0 && ResolverHotkeys.IsConfirmPressed()) return Index;
         return -1;
     }
 }
