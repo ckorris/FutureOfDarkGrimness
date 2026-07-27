@@ -160,6 +160,10 @@ public class GuiChooseRangedAttackResolver
         ImGui.SameLine();
         ImGui.TextDisabled("(Left/Right)");
         ImGui.Separator();
+        // #292: a rule name under the cursor claims the frame's tooltip. Collected across the loop and
+        // raised after it, because ImGui allows one tooltip per frame and the rows are drawn by hand.
+        bool weaponColHovered = ImGui.IsWindowHovered(ImGuiHoveredFlags.ChildWindows);
+        string? ruleTooltip = null;
         for (int wi = 0; wi < request.WeaponOptions.Count; wi++)
         {
             var wo            = request.WeaponOptions[wi];
@@ -188,8 +192,9 @@ public class GuiChooseRangedAttackResolver
 
             // BeginDisabled suppresses IsItemHovered, so re-query with AllowWhenDisabled to
             // surface a tooltip explaining why the weapon is unavailable.
-            if (!selectableW && ImGui.IsItemHovered(ImGuiHoveredFlags.AllowWhenDisabled))
-                ImGui.SetTooltip(DescribeWeaponUnavailability(wo));
+            bool rowHovered = ImGui.IsItemHovered(ImGuiHoveredFlags.AllowWhenDisabled);
+            string? unavailabilityTooltip =
+                !selectableW && rowHovered ? DescribeWeaponUnavailability(wo) : null;
 
             // Overlay text via draw list — no cursor manipulation, no boundary extension.
             var rMin    = ImGui.GetItemRectMin();
@@ -201,11 +206,21 @@ public class GuiChooseRangedAttackResolver
                 ? ImGui.ColorConvertFloat4ToU32(new Vector4(0.65f, 0.65f, 0.70f, 1f))
                 : ImGui.ColorConvertFloat4ToU32(new Vector4(0.50f, 0.50f, 0.50f, 1f));
             dl.AddText(rMin + new Vector2(4, 2), colTxt, wo.Weapon.Name);
-            string wRules = WeaponStatFormatter.RuleList(wo.Weapon);
-            string wRuleSuffix = wRules.Length > 0 ? $", {wRules}" : "";
-            dl.AddText(rMin + new Vector2(4, ImGui.GetTextLineHeight() + 4), colSub,
-                $"{wo.Weapon.RangeInches}\", A{wo.Weapon.Attacks} AP{wo.Weapon.ArmorPenetration}{wRuleSuffix}");
+            // #292: the stat subline is unchanged text, but each special-rule name is now its own
+            // underlined, hoverable run explaining what the rule does (the Army Forge treatment). Rule
+            // names are tinted brighter than the rest of the subline so they read as "there is more here".
+            uint colRule = selectableW
+                ? ImGui.ColorConvertFloat4ToU32(new Vector4(0.82f, 0.86f, 0.95f, 1f))
+                : colSub;
+            string? hoveredRule = RuleHoverText.DrawInline(dl,
+                rMin + new Vector2(4, ImGui.GetTextLineHeight() + 4),
+                RuleHoverText.WeaponStatLine(wo.Weapon), colSub, colRule, weaponColHovered);
+
+            // A hovered rule name outranks the row's own "why is this grayed out" tooltip: it is the more
+            // specific thing the cursor is on, and the unavailability reason is one mouse-move away.
+            ruleTooltip ??= hoveredRule ?? unavailabilityTooltip;
         }
+        if (ruleTooltip != null) RuleHoverText.ShowTooltip(ruleTooltip);
         ImGui.EndChild();
 
         // ── Section 2: Targets ────────────────────────────────────────────────
@@ -306,6 +321,27 @@ public class GuiChooseRangedAttackResolver
             var tu = ts.TargetUnit.GetValue();
 
             ImGui.TextUnformatted(wo.Weapon.GetWeaponNameAndStats());
+
+            // #292: the weapon's rules spelled out, so the player can read what Rending/Deadly actually do
+            // without hovering the narrow weapon row. Same descriptions the hover tooltips carry.
+            IReadOnlyList<RuleHoverText.Segment> weaponRules = RuleHoverText.RuleSegments(wo.Weapon);
+            if (weaponRules.Count > 0)
+            {
+                ImGui.Spacing();
+                ImGui.TextUnformatted("Rules:");
+                ImGui.Indent();
+                foreach (RuleHoverText.Segment rule in weaponRules)
+                {
+                    ImGui.TextUnformatted(rule.RuleName!);
+                    ImGui.Indent();
+                    ImGui.PushTextWrapPos(0f);   // wrap at the pane's right edge
+                    ImGui.TextDisabled(rule.IsDocumented ? rule.Description : RuleHoverText.UnknownRuleText);
+                    ImGui.PopTextWrapPos();
+                    ImGui.Unindent();
+                }
+                ImGui.Unindent();
+            }
+
             ImGui.Spacing();
             ImGui.Separator();
             ImGui.Spacing();

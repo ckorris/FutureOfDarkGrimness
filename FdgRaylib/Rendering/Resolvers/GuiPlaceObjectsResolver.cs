@@ -673,40 +673,53 @@ public class GuiPlaceObjectsResolver<T>
                                  "Hovering any unit shows that unit's reach instead, while you hover it.");
         }
 
-        // The unit's stats (weapons with special rules + unit special rules). Most needed for an Ambush
-        // arrival, where the unit is coming on from reserve and isn't visible on the table to hover. Shown
-        // for any model placement; skipped for non-model objects (objectives).
-        if (deploying != null)
-        {
-            ImGui.Spacing();
-            ImGui.BeginChild("##DeployStats", new Vector2(0, 118f), ImGuiChildFlags.Borders);
-            UnitStatBlockRenderer.Draw(deploying, includeRuleDescriptions: false);
-            ImGui.EndChild();
-        }
-
-        ImGui.Spacing();
-        if (_errorMessage != null)
-        {
-            ImGui.PushStyleColor(ImGuiCol.Text, new Vector4(1f, 0.4f, 0.4f, 1f));
-            ImGui.TextWrapped(_errorMessage);
-            ImGui.PopStyleColor();
-        }
-        else
-        {
-            string hint =
-                dropping              ? "Position the unit in the blue zone. Wheel / R rotate, Ctrl+Wheel changes formation. Click drops the whole unit." :
-                _dragIndex.HasValue   ? "Click to drop the picked-up model." :
-                _placed.Count < total ? "Click empty space to place the next model, or click a placed model to move it." :
-                                        "Click any placed model to pick it up and move it.";
-            ImGui.PushStyleColor(ImGuiCol.Text, new Vector4(0.6f, 0.6f, 0.6f, 1f));
-            ImGui.TextWrapped(hint);
-            ImGui.PopStyleColor();
-        }
+        // Everything below the stat box is composed BEFORE it is drawn, so its height can be measured and
+        // the stat box given exactly the space that is left (#288). Order of appearance is unchanged.
+        string statusText = _errorMessage ??
+            (dropping              ? "Position the unit in the blue zone. Wheel / R rotate, Ctrl+Wheel changes formation. Click drops the whole unit." :
+             _dragIndex.HasValue   ? "Click to drop the picked-up model." :
+             _placed.Count < total ? "Click empty space to place the next model, or click a placed model to move it." :
+                                     "Click any placed model to pick it up and move it.");
+        Vector4 statusColor = _errorMessage != null
+            ? new Vector4(1f, 0.4f, 0.4f, 1f)
+            : new Vector4(0.6f, 0.6f, 0.6f, 1f);
 
         // #269: for a reposition the cohesion verdict is about the finished formation, so it is reported
         // here (and gates Done) rather than rejecting individual clicks. Only meaningful once every model
         // is down — until then FinalCohesion reports nothing.
         string? cohesionIssue = PlacementCohesion.Describe(FinalCohesion(request));
+
+        // #029: edge-constrained placement (Aircraft redeploy) — surface the touch requirement live.
+        bool touchingEdge = request.MustTouchTableEdge && PlacedTouchesEdge(request);
+        string? edgeText = !request.MustTouchTableEdge ? null
+            : touchingEdge ? "Touching a table edge." : "Must come on touching a table edge.";
+
+        // The unit's stats (weapons with special rules + unit special rules, WITH their descriptions —
+        // the same detail the model hover tooltip carries). Most needed for an Ambush arrival, where the
+        // unit is coming on from reserve and isn't on the table to hover at all. Shown for any model
+        // placement; skipped for non-model objects (objectives).
+        //
+        // #288: the box fills whatever is left above the footer instead of a fixed 118px — a rule-heavy
+        // unit was reading three lines at a time through a keyhole. Measuring the footer first is what
+        // keeps Done/Back on screen no matter how much the unit has to say.
+        if (deploying != null)
+        {
+            ImGui.Spacing();
+            float statsH = PlacementPanelLayout.StatsHeight(ImGui.GetContentRegionAvail().Y,
+                MeasureFooterHeight(request, statusText, cohesionIssue, edgeText));
+            ImGui.BeginChild("##DeployStats", new Vector2(0, statsH), ImGuiChildFlags.Borders);
+            // Wrap descriptions at the child's own width: the shared renderer's tooltip default (300px)
+            // is wider than this docked column and would run rule text off the edge.
+            UnitStatBlockRenderer.Draw(deploying, includeRuleDescriptions: true,
+                descriptionWrapWidth: MathF.Max(120f, ImGui.GetContentRegionAvail().X - ImGui.GetStyle().IndentSpacing));
+            ImGui.EndChild();
+        }
+
+        ImGui.Spacing();
+        ImGui.PushStyleColor(ImGuiCol.Text, statusColor);
+        ImGui.TextWrapped(statusText);
+        ImGui.PopStyleColor();
+
         if (cohesionIssue != null)
         {
             ImGui.PushStyleColor(ImGuiCol.Text, new Vector4(0.95f, 0.75f, 0.3f, 1f));
@@ -714,16 +727,12 @@ public class GuiPlaceObjectsResolver<T>
             ImGui.PopStyleColor();
         }
 
-        // #029: edge-constrained placement (Aircraft redeploy) — surface the touch requirement live.
-        if (request.MustTouchTableEdge)
+        if (edgeText != null)
         {
-            bool touching = PlacedTouchesEdge(request);
-            ImGui.PushStyleColor(ImGuiCol.Text, touching
+            ImGui.PushStyleColor(ImGuiCol.Text, touchingEdge
                 ? new Vector4(0.5f, 0.9f, 0.5f, 1f)
                 : new Vector4(0.95f, 0.75f, 0.3f, 1f));
-            ImGui.TextWrapped(touching
-                ? "Touching a table edge."
-                : "Must come on touching a table edge.");
+            ImGui.TextWrapped(edgeText);
             ImGui.PopStyleColor();
         }
 
@@ -794,6 +803,26 @@ public class GuiPlaceObjectsResolver<T>
 
         ImGui.End();
     }
+
+    /// <summary>
+    /// #288 — measures the panel's live text/style values and asks <see cref="PlacementPanelLayout"/> how
+    /// much room the footer needs. Must be called with the panel window current, before the stat box is
+    /// drawn (the ImGui measuring lives here; the arithmetic is over there, where it is unit-tested).
+    /// </summary>
+    private static float MeasureFooterHeight(PlaceObjectsRequest<T> request,
+        string statusText, string? cohesionIssue, string? edgeText)
+    {
+        float wrapW = ImGui.GetContentRegionAvail().X;
+        return PlacementPanelLayout.FooterHeight(
+            ImGui.GetStyle().ItemSpacing.Y,
+            WrappedTextHeight(statusText, wrapW),
+            cohesionIssue != null ? WrappedTextHeight(cohesionIssue, wrapW) : null,
+            edgeText != null ? WrappedTextHeight(edgeText, wrapW) : null,
+            request.AllowCancel);
+    }
+
+    private static float WrappedTextHeight(string text, float wrapWidth) =>
+        ImGui.CalcTextSize(text, false, MathF.Max(1f, wrapWidth)).Y;
 
     /// <summary>
     /// #269 — cohesion of the FINISHED reposition. Reports "nothing wrong" when the check doesn't apply:

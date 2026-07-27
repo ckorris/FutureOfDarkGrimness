@@ -6,6 +6,22 @@ from origin/master. Standing precedent: numbers are never reused, and when two p
 claim the same number, the *unmerged local* item yields to the *merged* one and takes a fresh number.
 A per-clone pre-push hook blocks duplicate numbers across the index and the archive.
 
+> **2026-07-26 — reconciliation 28 (RESOLVED).** A pre-push fetch caught a double collision. This
+> session filed eight items from a play-session bug report (**284-291**) while origin/master had
+> meanwhile landed **284 = deploy overlap** (reconciliation 27's own renumber, merged) and
+> **285 = self-contained file dialogs** (merged). Per merged-wins precedent both local items yield:
+> **weapon-select rule hovers 284 -> 292** (`WorkItems/292-weapon-select-rule-hovers.md`) and
+> **spell effect banner 285 -> 293** (`WorkItems/293-spell-effect-banner.md`). **286-291 were free on
+> origin and keep their numbers.** Nothing had been pushed, so the renumber landed everywhere before
+> publication - both detail files + their titles, the index lines, `docs/ResolverGuide.md`, the app
+> sources (`RuleHoverText.cs`, `GuiChooseRangedAttackResolver.cs`, `RuleHoverTextTests.cs`) and the
+> engine sources (`SpellText.cs`, `CastSpellStage.cs`, `CasterRuleIntegrationTests.cs`). **Left as-is
+> on purpose:** the commit messages saying "#284"/"#285" for these two (engine `fc2a1d9`, `1138461`,
+> `c0d0e9e`/`ae55836`, superproject `f907b3d`, `84e8e7c`, `b8a976f`), which predate the renumber, per
+> every prior reconciliation's precedent. Care was taken NOT to touch origin's own #284 comments in
+> `PlacementCommitGuard.cs` / `SpilloutExecutor.cs` / `PlacementCommitGuardTests.cs` - they mean the
+> deploy-overlap item and are correct as they stand.
+
 > **2026-07-26 — reconciliation 27 (RESOLVED).** **282** was claimed twice: origin/master's
 > **282 = "rotation only affects ghost"** (merged, `WorkItems/282-rotation-only-affects-ghost.md`,
 > plus its #283 follow-up) vs this clone's locally-filed **282 = "deploy overlap / invisible

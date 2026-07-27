@@ -16,12 +16,18 @@ public static class UnitStatBlockRenderer
 {
     /// <param name="includeRuleDescriptions">When true, each special rule's description is shown under it
     /// (the fuller hover-tooltip treatment); when false, only the rule names (the compact panel treatment).</param>
-    public static void Draw(IUnit unit, bool includeRuleDescriptions)
+    /// <param name="descriptionWrapWidth">How wide a rule description may run before wrapping, in pixels
+    /// from the text's own left edge. The default suits an auto-sizing tooltip; a docked panel (#288) passes
+    /// its own content width so long descriptions wrap inside the panel instead of running off it.</param>
+    public static void Draw(IUnit unit, bool includeRuleDescriptions, float descriptionWrapWidth = 300f)
     {
         ImGui.TextUnformatted(unit.Name);
 
         int live = unit.Models.Count(m => m.GetIsAlive());
         ImGui.TextDisabled($"{live} model{(live == 1 ? "" : "s")}   Qua {unit.Quality}+  Def {unit.Defense}+");
+        // #287/#288: wounds, matching the model hover tooltip - a unit placed after taking damage
+        // (disembark, reposition) is the case where this matters, and it costs one line otherwise.
+        ImGui.TextDisabled($"Wounds {WoundFormat.Fraction(unit.RemainingWounds, unit.MaxWounds)}");
         if (unit.GetMobility(out float advance, out float charge))
             ImGui.TextDisabled($"Advance {advance}\"   Charge {charge}\"");
 
@@ -50,7 +56,7 @@ public static class UnitStatBlockRenderer
                 if (includeRuleDescriptions && !string.IsNullOrEmpty(rule.Definition.Description))
                 {
                     ImGui.Indent();
-                    ImGui.PushTextWrapPos(ImGui.GetCursorPosX() + 300f);
+                    ImGui.PushTextWrapPos(ImGui.GetCursorPosX() + descriptionWrapWidth);
                     ImGui.TextDisabled(rule.Definition.Description);
                     ImGui.PopTextWrapPos();
                     ImGui.Unindent();

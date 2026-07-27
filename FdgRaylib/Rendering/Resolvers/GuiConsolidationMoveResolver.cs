@@ -268,12 +268,16 @@ public class GuiConsolidationMoveResolver
                           : dist <= remaining ? dist
                           : MathF.Max(0f, remaining - 0.001f);
 
+            // #291: stop at the table edge so the model's whole BASE stays on the board. Measured against
+            // the true oriented footprint via the shared engine clamp - the old circumscribing-radius
+            // clamp held a rectangular vehicle over an inch further out than the rule requires.
+            if (allowed > 0.0001f && dist > 0.0001f)
+                allowed = MovementUtilities.ClampTravelToTable(anchor, dx / dist, dz / dist, allowed,
+                    _selectedModel.BaseShape, _selectedModel.Facing);
+
             float nx, nz;
             if (dist < 0.0001f) { nx = anchor.x; nz = anchor.z; }
             else                { nx = anchor.x + dx / dist * allowed; nz = anchor.z + dz / dist * allowed; }
-
-            // Clamp so the model's base stays inside the table (circumscribing radius: rotation-safe).
-            (nx, nz) = ClampToTable(nx, nz, _selectedModel.BaseShape.CircumscribedRadiusInches);
             ghostPos = new Position(nx, nz);
             _ghostSnapshot[_selectedModel] = ghostPos.Value; // #280
 
@@ -418,10 +422,21 @@ public class GuiConsolidationMoveResolver
 
         var plan = GroupFormationUtilities.PlanGroupMove(basePositions, lastPositions, budgets, pivot, cos, sin, desiredTx, desiredTz);
         var newPositions = plan.NewPositions;
+        // #291: hold each model's step short of the table edge, measured against its true oriented
+        // footprint. Per-model (rather than scaling the whole step) preserves this resolver's existing
+        // behaviour; consolidation steps are 1-3" so the formation barely deforms.
         for (int i = 0; i < models.Count; i++)
         {
-            var (cx, cz) = ClampToTable(newPositions[i].x, newPositions[i].z, models[i].BaseShape.CircumscribedRadiusInches);
-            newPositions[i] = new Position(cx, cz);
+            Position from = lastPositions[i];
+            Position to = newPositions[i];
+            float stepDist = Position.GetDistance2D(from, to);
+            if (stepDist <= 0.0001f) continue;
+            float allowedStep = MovementUtilities.ClampTravelToTable(from,
+                (to.x - from.x) / stepDist, (to.z - from.z) / stepDist, stepDist,
+                models[i].BaseShape, models[i].Facing);
+            if (allowedStep >= stepDist) continue;
+            newPositions[i] = new Position(from.x + (to.x - from.x) / stepDist * allowedStep,
+                                           from.z + (to.z - from.z) / stepDist * allowedStep);
         }
 
         var groupFacings = new Float2[models.Count];
@@ -816,12 +831,4 @@ public class GuiConsolidationMoveResolver
         px <= _originX + GameWideConstants.DEFAULT_TABLE_WIDTH_INCHES * _scale &&
         py <= _originY + _tableH * _scale;
 
-    // Keep the model's full base inside the table.
-    private static (float x, float z) ClampToTable(float x, float z, float baseRadius)
-    {
-        float w = GameWideConstants.DEFAULT_TABLE_WIDTH_INCHES;
-        float h = GameWideConstants.DEFAULT_TABLE_HEIGHT_INCHES;
-        return (Math.Clamp(x, baseRadius, w - baseRadius),
-                Math.Clamp(z, baseRadius, h - baseRadius));
-    }
 }

@@ -512,6 +512,13 @@ public class GuiDefineMovementResolver
             if (allowed > 0.0001f && dist > 0.0001f && !request.CanMoveThroughEnemies)
                 allowed = EnemyClampTravel(anchor, dx / dist, dz / dist, allowed, _selectedModel, ghostFacing, request);
 
+            // #291: and the table edge stops it too - the model's whole BASE has to stay on the board, which
+            // for a vehicle bites long before its centre reaches the edge. Clamped here (not just rejected at
+            // Done) so the preview can never propose a move the engine validator would throw on.
+            if (allowed > 0.0001f && dist > 0.0001f)
+                allowed = MovementUtilities.ClampTravelToTable(anchor, dx / dist, dz / dist, allowed,
+                    _selectedModel.BaseShape, ghostFacing);
+
             float nx, nz;
             if (dist < 0.0001f) { nx = anchor.x; nz = anchor.z; }
             else                { nx = anchor.x + dx / dist * allowed; nz = anchor.z + dz / dist * allowed; }
@@ -893,6 +900,15 @@ public class GuiDefineMovementResolver
                         float dirX = (to.x - from.x) / stepDist, dirZ = (to.z - from.z) / stepDist;
                         float enemyAllowed = EnemyClampTravel(from, dirX, dirZ, stepDist, models[i], facing, request);
                         if (stepDist > enemyAllowed + 0.001f) return false;
+                    }
+                    // #291: no model of the group may end with its base off the table. Reported as
+                    // infeasible rather than clamped per-model, so LargestFeasibleScale shrinks the whole
+                    // step and the formation keeps its shape - the same way terrain and enemies are handled.
+                    {
+                        float dirX = (to.x - from.x) / stepDist, dirZ = (to.z - from.z) / stepDist;
+                        float tableAllowed = MovementUtilities.ClampTravelToTable(from, dirX, dirZ, stepDist,
+                            models[i].BaseShape, facing);
+                        if (stepDist > tableAllowed + 0.001f) return false;
                     }
                 }
                 return true;

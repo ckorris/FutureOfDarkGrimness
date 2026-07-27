@@ -105,6 +105,39 @@ needs no change in the controller.
 - Anything that needs to know whether the drawn field is target-anchored asks `_lastAnchorKind`, not a
   mode flag. Both the band snap and the band rings/labels follow the field, not the move request.
 
+## Explaining rules in-game (#292)
+
+`RuleHoverText` (`FdgRaylib/Rendering/`) is the in-game counterpart to the Army Forge's `RuleTextFlow`:
+it splits a stat line into segments, underlines each special-rule name, and reports which one the mouse
+is inside so the caller can raise a "Name\ndescription" tooltip. Used by the shoot panel's weapon rows.
+
+Deliberately a **sibling** of `RuleTextFlow`, not a generalization of it, on two counts: in play a rule
+is a `ResolvedRule` that carries its own description (no `RuleGlossary` lookup at all), and the shoot
+panel paints its rows onto a draw list at computed offsets over one invisible `Selectable`, so nothing
+may touch the ImGui cursor — which is precisely what `RuleTextFlow.Draw` is built to do. Keep the two
+VISUALLY identical (solid underline = documented, faded = inert in play, 28-em tooltip wrap); a player
+should not learn two vocabularies for one idea.
+
+## Canvas hover is a two-way binding (#286)
+
+Where a resolver highlights table models from its dialog, it must do the reverse too. The table hover
+arrives through `ICanvasInteractionHandler.GetHoverLabel`, which `TableTooltipOverlay` calls **before**
+the resolver's own `Draw` in the same frame (`RaylibRenderer` draws the tooltip overlay first) — so
+record the hovered object there, consume it in `Draw`, and clear it at the end of `Draw`. That
+single-frame handshake is what `GuiChooseRangedAttackResolver` (`_canvasHoveredOption`) and
+`GuiAssignWoundsResolver` (`_canvasHoveredModel`) both use. Seed the frame's emphasis from the canvas
+hover and let a hovered dialog row override it, so exactly one object is ever emphasised. If the matching
+row can scroll out of view, scroll it back — a highlight the player cannot see is not a connection.
+
+## Sizing a docked panel's content (#288)
+
+A panel whose content should fill the available height must cost its FOOTER first and give the content
+the remainder; otherwise a verbose unit pushes Done/Back off the bottom, silently. `PlacementPanelLayout`
+holds that arithmetic for `GuiPlaceObjectsResolver` (button heights are constants shared by the drawing
+and the measurement, so they cannot drift), while the ImGui measuring — `CalcTextSize(text, false,
+wrapWidth)` for wrapped warnings, `ItemSpacing.Y` for the gaps — stays in the resolver. This forces any
+variable footer text to be **composed above** the content and **drawn below** it.
+
 ## Validation gotchas
 
 - **Deployment spacing**: `MAX_MODEL_DISTANCE_FROM_ANY_OTHER_MODEL_INCHES` is 1.0" base-to-base. Auto-placement uses 0.1" gap, **not 1.0"** — at exactly 1.0", float accumulation during diagonal movement can push models fractionally over the cohesion limit.

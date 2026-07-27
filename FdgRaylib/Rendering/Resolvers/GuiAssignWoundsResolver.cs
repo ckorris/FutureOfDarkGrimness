@@ -25,8 +25,23 @@ public class GuiAssignWoundsResolver
     // Main-thread only: reset at the top of Draw, set while iterating the buttons.
     private IModel? _hoveredModel;
 
+    // #286: the model hovered on the TABLE this frame, set by GetHoverLabel — which TableTooltipOverlay
+    // calls before this resolver's own Draw (RaylibRenderer draws the tooltip overlay first), so the value
+    // is fresh by the time the rows are laid out. Cleared at the end of Draw so it lasts a single frame,
+    // the same one-frame handshake GuiChooseRangedAttackResolver uses for its canvas hover.
+    private IModel? _canvasHoveredModel;
+
+    /// <summary>The model the cursor is over on the TABLE this frame, or null. Internal for tests: the
+    /// ring and row highlights it drives are ImGui draw calls (hand-verified), but "did the canvas hover
+    /// register at all" is the seam that was missing before #286.</summary>
+    internal IModel? CanvasHoveredModel => _canvasHoveredModel;
+
     private static readonly uint HighlightCol      = ImGui.ColorConvertFloat4ToU32(new Vector4(1f, 0.95f, 0.30f, 0.95f));
     private static readonly uint HighlightHaloCol  = ImGui.ColorConvertFloat4ToU32(new Vector4(1f, 0.95f, 0.30f, 0.45f));
+    // #286: the dialog row belonging to the model under the cursor on the table — same yellow as the ring
+    // so the two ends of the connection read as one highlight.
+    private static readonly uint RowHighlightCol   = ImGui.ColorConvertFloat4ToU32(new Vector4(1f, 0.95f, 0.30f, 0.90f));
+    private static readonly uint RowHighlightBgCol = ImGui.ColorConvertFloat4ToU32(new Vector4(1f, 0.95f, 0.30f, 0.13f));
     private static readonly uint WeaponTextCol     = ImGui.ColorConvertFloat4ToU32(new Vector4(0.72f, 0.78f, 0.85f, 1f));
     private static readonly uint InvalidFillCol    = ImGui.ColorConvertFloat4ToU32(new Vector4(0.10f, 0.10f, 0.12f, 0.62f));
     private static readonly uint InvalidOutlineCol = ImGui.ColorConvertFloat4ToU32(new Vector4(0.55f, 0.55f, 0.60f, 0.80f));
@@ -57,7 +72,9 @@ public class GuiAssignWoundsResolver
         lock (_lock) { request = _request; results = _results; tcs = _tcs; }
         if (request == null || results == null || tcs == null) return;
 
-        _hoveredModel = null;
+        // #286: the canvas hover is the frame's starting emphasis; a hovered dialog row overrides it below.
+        // Either way exactly one model is emphasised, on the table AND in the list.
+        _hoveredModel = _canvasHoveredModel;
 
         ImGui.SetNextWindowPos(Vector2.Zero, ImGuiCond.Always);
         ImGui.SetNextWindowSize(new Vector2(screenW, screenH), ImGuiCond.Always);
@@ -108,7 +125,10 @@ public class GuiAssignWoundsResolver
         ImGui.PushTextWrapPos(dw - pad);
         ImGui.TextUnformatted($"Assign Wounds: {unitName}");
         ImGui.Spacing();
-        ImGui.TextUnformatted($"{results.TotalAssignedWounds:F0} / {results.TotalWoundsToAssign:F0} wounds assigned");
+        // #287: F0 used to TRUNCATE - a 3.4-wound pool read "3 / 3 wounds assigned", which is not the
+        // number the engine is assigning.
+        ImGui.TextUnformatted($"{WoundFormat.Format(results.TotalAssignedWounds)} / " +
+                              $"{WoundFormat.Format(results.TotalWoundsToAssign)} wounds assigned");
         ImGui.PopTextWrapPos();
 
         // Model buttons (scrollable if many models)
@@ -132,7 +152,14 @@ public class GuiAssignWoundsResolver
             bool canTake   = results.CanAssignWoundTo(pw);
 
             float avail = ImGui.GetContentRegionAvail().X;
+            float rowY  = ImGui.GetCursorPosY();   // content coords, matching GetScrollY's space
             Vector2 origin = ImGui.GetCursorScreenPos();
+
+            // #286: a highlight the player can't see is no connection at all, so a canvas-hovered row that
+            // has scrolled out of the list is scrolled back into view (a big Tough unit overflows easily).
+            // Only when it is actually off-view, so it never fights a deliberate scroll.
+            if (ReferenceEquals(_canvasHoveredModel, modelData))
+                ScrollRowIntoView(rowY, btnHeights[i]);
 
             ImGui.BeginDisabled(!canTake);
             bool clicked = ImGui.Button($"##model{i}", new Vector2(avail, btnHeights[i]));
@@ -140,13 +167,23 @@ public class GuiAssignWoundsResolver
             bool hovered = ImGui.IsItemHovered(ImGuiHoveredFlags.AllowWhenDisabled);
             ImGui.EndDisabled();
 
+            // #286: the table -> list direction. The button's own hover styling only fires for the mouse
+            // being over IT, so a model hovered on the canvas gets its row painted here instead: a tinted
+            // fill plus a bright border, drawn before the text so it reads as the row's background.
+            if (ReferenceEquals(_canvasHoveredModel, modelData))
+            {
+                Vector2 rowMax = origin + new Vector2(avail, btnHeights[i]);
+                dl.AddRectFilled(origin, rowMax, RowHighlightBgCol, 4f);
+                dl.AddRect(origin, rowMax, RowHighlightCol, 4f, ImDrawFlags.None, 2f);
+            }
+
             // Overlay text: model + wounds on the main line, weapons in smaller text beneath.
             // Pre-assigned wounds (Tough ordering, locked) are surfaced with an "(N assigned)" note.
             uint mainCol = ImGui.GetColorU32(canTake ? ImGuiCol.Text : ImGuiCol.TextDisabled);
             uint wCol    = canTake ? WeaponTextCol : ImGui.GetColorU32(ImGuiCol.TextDisabled);
-            string assignedNote = pw.Wounds > 0f ? $"   ({pw.Wounds:F0} assigned)" : "";
+            string assignedNote = pw.Wounds > 0f ? $"   ({WoundFormat.Format(pw.Wounds)} assigned)" : "";
             // Show remaining/total only for multi-wound models; single-wound models need no counter.
-            string woundText = total > 1f ? $"   -   ({remaining:F0}/{total:F0})" : "";
+            string woundText = total > 1f ? $"   -   ({WoundFormat.Fraction(remaining, total)})" : "";
             float tx = origin.X + 8f;
             float ty = origin.Y + btnPadY;
             dl.AddText(new Vector2(tx, ty), mainCol, $"Model {i + 1}{woundText}{assignedNote}");
@@ -184,6 +221,23 @@ public class GuiAssignWoundsResolver
 
         DrawInvalidTargets(results);
         DrawMapHighlight();
+
+        // Single-frame handshake: GetHoverLabel sets this before the next Draw if the mouse is still over
+        // a model, so clearing here means "no canvas hover" the instant the cursor leaves the table.
+        _canvasHoveredModel = null;
+    }
+
+    /// <summary>Scrolls the model list so a row at <paramref name="rowY"/> (content coordinates) is fully
+    /// visible, and does nothing when it already is. Mirrors <see cref="GuiSelectionResolver{T}"/>'s
+    /// keyboard-navigation scroll.</summary>
+    private static void ScrollRowIntoView(float rowY, float rowHeight)
+    {
+        float scrollY = ImGui.GetScrollY();
+        float viewH   = ImGui.GetWindowHeight();
+        if (rowY < scrollY)
+            ImGui.SetScrollY(MathF.Max(0f, rowY));
+        else if (rowY + rowHeight > scrollY + viewH)
+            ImGui.SetScrollY(rowY + rowHeight - viewH);
     }
 
     /// <summary>Dims every model on the table that can't be assigned a wound right now — those already
@@ -242,14 +296,18 @@ public class GuiAssignWoundsResolver
         if (pw == null) return null; // not a model of the unit receiving wounds
 
         var modelData = pw.Model.GetValue();
+        // #286: hovering the figure on the table is a first-class hover — it rings the model (via
+        // DrawMapHighlight, which reads _hoveredModel) and highlights the matching dialog row. Set here
+        // because this runs before Draw; Draw seeds _hoveredModel from it and clears it at the end.
+        _canvasHoveredModel = modelData;
         float remaining = modelData.TotalWounds - modelData.WoundsDealt - pw.Wounds;
 
         var sb = new StringBuilder();
         // Show remaining/total only for multi-wound models; single-wound models need no counter.
         if (modelData.TotalWounds > 1f)
-            sb.AppendLine($"This model - ({remaining:F0}/{modelData.TotalWounds:F0})");
+            sb.AppendLine($"This model - ({WoundFormat.Fraction(remaining, modelData.TotalWounds)})");
         if (pw.Wounds > 0f)
-            sb.AppendLine($"({pw.Wounds:F0} already assigned)");
+            sb.AppendLine($"({WoundFormat.Format(pw.Wounds)} already assigned)");
         sb.AppendLine("Weapons:");
         foreach (string line in WeaponLines(modelData))
             sb.AppendLine($"  {line}");
@@ -301,6 +359,8 @@ public class GuiAssignWoundsResolver
     private void Complete(TaskCompletionSource<AssignWoundsResults> tcs, AssignWoundsResults results)
     {
         lock (_lock) { _request = null; _results = null; _tcs = null; }
+        _hoveredModel       = null;
+        _canvasHoveredModel = null;
         tcs.SetResult(results);
     }
 

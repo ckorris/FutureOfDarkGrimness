@@ -132,9 +132,9 @@ public class TableTooltipOverlay
         ImGui.Separator();
         ImGui.TextUnformatted($"Qua {unit.Quality}+   Def {unit.Defense}+");
 
-        float wounds = unit.RemainingWounds;
-        float maxW   = unit.MaxWounds;
-        ImGui.TextUnformatted($"Wounds: {wounds}/{maxW}");
+        // #287: rounded to hundredths - under the probabilistic roller RemainingWounds is a float chain
+        // and bare interpolation printed "Wounds: 8.666667/12".
+        ImGui.TextUnformatted($"Wounds: {WoundFormat.Fraction(unit.RemainingWounds, unit.MaxWounds)}");
 
         if (unit.GetMobility(out float advance, out float charge))
             ImGui.TextUnformatted($"Advance {advance}\"   Charge {charge}\"");
@@ -268,7 +268,8 @@ public class TableTooltipOverlay
 
         // Tough (multi-wound) models show their own remaining wounds; single-wound models need no counter.
         if (model.TotalWounds > 1f)
-            ImGui.TextUnformatted($"Wounds: {model.TotalWounds - model.WoundsDealt:0.#}/{model.TotalWounds:0.#}");
+            ImGui.TextUnformatted(
+                $"Wounds: {WoundFormat.Fraction(model.TotalWounds - model.WoundsDealt, model.TotalWounds)}");
     }
 
     private static void DrawTerrainTooltip(ITerrain terrain)

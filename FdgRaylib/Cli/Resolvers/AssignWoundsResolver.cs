@@ -1,6 +1,7 @@
 using FDG;
 using FDG.StageResolution;
 using FDG.StageResolution.Requests;
+using FdgRaylib.Rendering;
 
 namespace FdgRaylib.Cli.Resolvers;
 
@@ -16,7 +17,9 @@ public class AssignWoundsResolver : IStageResolver<AssignWoundsRequest, AssignWo
 
         while (!results.IsFinishedAssigning)
         {
-            Console.WriteLine($"  Wounds: {results.TotalAssignedWounds}/{results.TotalWoundsToAssign} assigned");
+            // #287: the shared rounder - the raw floats printed "8.666667", and F0 below hid the fraction.
+            Console.WriteLine("  Wounds: " +
+                $"{WoundFormat.Fraction(results.TotalAssignedWounds, results.TotalWoundsToAssign)} assigned");
 
             var models = results.PendingWounds;
             for (int i = 0; i < models.Count; i++)
@@ -24,8 +27,8 @@ public class AssignWoundsResolver : IStageResolver<AssignWoundsRequest, AssignWo
                 var m = models[i].Model.GetValue();
                 float pending   = models[i].Wounds;
                 float remaining = m.TotalWounds - m.WoundsDealt - pending;
-                string assigned = pending > 0 ? $", {pending:F0} already assigned" : "";
-                Console.WriteLine($"  [{i + 1}] Model (wounds remaining: {remaining:F0}{assigned})");
+                string assigned = pending > 0 ? $", {WoundFormat.Format(pending)} already assigned" : "";
+                Console.WriteLine($"  [{i + 1}] Model (wounds remaining: {WoundFormat.Format(remaining)}{assigned})");
             }
 
             Console.Write("  Choice: ");

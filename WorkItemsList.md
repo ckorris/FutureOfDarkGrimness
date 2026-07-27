@@ -17,6 +17,8 @@ When closing an item: write the Outcome in its detail file, tick the line, and m
 
 ## Movement
 
+- [~] 291 — Models could move partially off the table: the movement validator had no bounds rule at all (the GUI only constrained a model's CENTRE, so big vehicle bases overhung). Footprint-exact "not worsened" rule in all four validators + shared preview clamp. Implemented + tested; awaiting GUI hand-verify. ([WorkItems/291](WorkItems/291-models-may-not-move-off-table.md))
+
 - [~] 159 — `DefinePathStage` cohesion crash: residual isolated (CLI/AI HOLD-EXACT submitting an already-broken unit's positions) and fixed 2026-07-18 via lenient movement coherency (mirrors the ConsolidateStage fix), 90/90 clean; GUI human-movement Done-gate facet explicitly deferred + awaiting GUI hand-verify. ([WorkItems/159](WorkItems/159-definepath-cohesion-crash.md))
 - [ ] 209 — Weapon-choice option order is nondeterministic (ConcurrentDictionary keyed by Weapon identity): multi-weapon units swing/fire in random order, breaking #193 same-seed replay and benchmark hash reproducibility; fix candidate awaiting sign-off. ([WorkItems/209](WorkItems/209-weapon-choice-order-nondeterminism.md))
 - [ ] 210 — Residual bench nondeterminism at --dop > 1 (scattered per-game flips under CPU contention; serial runs exact after #209). Needs the #198 tracer wired into bench to isolate. ([WorkItems/210](WorkItems/210-dop-concurrency-nondeterminism.md))
@@ -41,6 +43,8 @@ When closing an item: write the Outcome in its detail file, tick the line, and m
 
 ## Special rules — framework
 
+- [~] 290 — Advance-and-shoot gate re-derived the allowance AFTER `ExecuteMoveStage` spent the one-shot movement grant that paid for the move (Inspiring Bots -> Rapid Advance on a Slow unit: advanced 8", then couldn't shoot); the allowance is now recorded with the distance. Implemented + tested; awaiting GUI hand-verify. ([WorkItems/290](WorkItems/290-move-shoot-allowance-consumed-grant.md))
+
 - [~] 042 — Special rules architecture (data-driven Condition x Effect over named hooks + token state). Phases 1-8 largely shipped; remaining: attack/reactivate primitives, then morale/casting invocability. ([WorkItems/042](WorkItems/042-special-rules-architecture.md) + `WorkItems/042-implementation-checklist.txt`)
 - [ ] 087 — Custom special-rule authoring + standalone rules files (author new rules as data in the builder; import/export rule sets independent of armies). Builds on #059. ([WorkItems/087](WorkItems/087-custom-rule-authoring.md))
 - [~] 100 — Special-rule engine primitives umbrella: Part 1 + cross-unit pre-attack targeting done; open: dormant hooks, RangeModifier/Strider, Part-2/3 primitives (deferred-debuff, dice-pool, markers). Corpus reference is off-repo (`../GDF Armies/`, do not commit). ([WorkItems/100](WorkItems/100-special-rule-primitive-gaps.md))
@@ -57,6 +61,7 @@ Corpus coverage is a different story: 199 of 13,870 book rule references (1.4%) 
 - [~] 234 — Cast gated on `HasAttacked` (shooting or melee closes the casting window; moving does not), per v3.5.1 Caster(X) "at any point before attacking". Implemented + tested; awaiting GUI hand-verify. ([WorkItems/234](WorkItems/234-cast-after-charge-legality.md))
 - [~] 249 — Caster's "only one try per spell" now enforced via a per-activation attempted-spell set (recorded with the cost, so a failed cast burns the try); casting different spells in one activation stays legal. Implemented + tested; awaiting GUI hand-verify. ([WorkItems/249](WorkItems/249-one-try-per-spell.md))
 - [~] 244 — Caster self-boost: own tokens for +1/each in a new dedicated spell picker (`ChooseSpellRequest`, one-panel GUI with useful-cap-gated boost stepper). Implemented + tested; awaiting GUI hand-verify. ([WorkItems/244](WorkItems/244-caster-self-boost.md))
+- [~] 293 — A resolved spell announces what its effect DID (one `Notice` banner naming the effect + affected units). Implemented + tested for every effect path incl. damage (hit count + type); awaiting GUI hand-verify. ([WorkItems/293](WorkItems/293-spell-effect-banner.md))
 
 ## Army Forge
 
@@ -74,7 +79,7 @@ Corpus coverage is a different story: 199 of 13,870 book rule references (1.4%) 
 
 ## Transport
 
-- [ ] 097 — Disembark/embark full movement: replace the Advance-equivalent simplifications (disembark-then-Rush/Charge from the 6" drop; real move-into-contact to embark). ([WorkItems/097](WorkItems/097-transport-full-movement.md))
+- [~] 097 — Disembark/embark full movement: owner ruled the 6" exit leash IS the move (RAW), so disembark keeps the circle but now records the real distance (Slow units can't hop 6" and shoot) and charge-out is pinned; embark became move-first-then-board from 1" contact, with a greyed "move up first" menu hint. Implemented + tested; awaiting GUI hand-verify. ([WorkItems/097](WorkItems/097-transport-full-movement.md))
 
 ## AI agent (Tactician)
 
@@ -130,6 +135,12 @@ detection, host-IP display, DNS host entry. See `NetworkingHandoff-2026-07-08.md
 - [ ] 252 — Anchored field texture ignores the #201 cover proximity rules (tint over-paints cover; pips/aim lines already truthful): needs per-piece polar cover intervals, target-anchored mode first; approach + estimate in the detail file. ([WorkItems/252](WorkItems/252-field-cover-proximity-truthfulness.md))
 - [~] 278 — 2026-07-25 playtest fixes: spillout dice batched into one row; all-saved volley morale pinned (already fixed by #254, real-path regression added); Harassing strike-back move verified rules-legal (no change); Toast banner on Shaken recovery (both paths). Implemented + tested; awaiting GUI hand-verify. ([WorkItems/278](WorkItems/278-playtest-fixes-2026-07-25.md))- [~] 266 — Console word-wrap (the `HorizontalScrollbar` flag was widening the wrap rect to the content, so `TextWrapped` never bit) + resolver/console split moved from 50% to 60% of screen height, which widened every docked resolver at once. Implemented; awaiting GUI hand-verify. ([WorkItems/266](WorkItems/266-console-wrap-and-panel-height.md))
 - [ ] 253 — New movement visual: colored area showing where ending your move earns the cover bonus vs a pinned enemy (#201-aware, samples `VoidsCover`); attacker-side "shoot over this wall" sibling facet awaiting owner call. ([WorkItems/253](WorkItems/253-cover-bonus-placement-visual.md))
+- [ ] 285 — Self-contained file dialogs: TinyDialogs silently no-ops on Linux without zenity (Arch/i3 user report); plan an in-app ImGui picker (fallback vs primary = open design fork), all call sites behind one seam. Dist README pacman line shipped as stopgap. ([WorkItems/285](WorkItems/285-self-contained-file-dialogs.md))
+- [~] 286 — Assign Wounds: hovering a model on the table now rings it and highlights (+ scrolls to) its dialog row; only the row -> model direction worked before. Implemented + tested; awaiting GUI hand-verify. ([WorkItems/286](WorkItems/286-assign-wounds-canvas-hover.md))
+- [~] 287 — Fractional wounds display rounded to hundredths everywhere via a shared `WoundFormat` (hover tooltip printed `8.666667`; Assign Wounds' `F0` hid the `.4` of a 3.4 pool). Implemented + tested; awaiting GUI hand-verify. ([WorkItems/287](WorkItems/287-fractional-wound-display.md))
+- [~] 288 — Late-deploy (Ambush) panel: the 118px unit-stat scroll box now fills the panel (footer costed first) and carries the hover-tooltip treatment incl. rule descriptions. Implemented + tested; awaiting GUI hand-verify. ([WorkItems/288](WorkItems/288-late-deploy-stat-panel.md))
+- [~] 289 — Decisive rolls (morale, cast, objective D3, Storm, token shed) render as real dice in probabilistic mode instead of an expected-value bar: `DiceRolledBeat.FromDecisive`. Implemented + tested; awaiting GUI hand-verify. ([WorkItems/289](WorkItems/289-decisive-rolls-render-as-dice.md))
+- [~] 292 — Shoot panel weapon rows show special rules as underlined, individually hoverable names (new in-game `RuleHoverText`) + a Rules block with descriptions in the Details pane. Implemented + tested; awaiting GUI hand-verify. ([WorkItems/292](WorkItems/292-weapon-select-rule-hovers.md))
 
 ## 2026-06-10 audit follow-ups
 
