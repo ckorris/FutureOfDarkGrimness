@@ -20,6 +20,34 @@ pin tests.
 
 ## Notes (newest first)
 
+**2026-07-27 — OVERNIGHT WIDE-MULTIPLIER CAMPAIGN: DEFAULTS STAND AGAIN (second null, now with
+in-run confirms).** Chris asked for a second auto-tuning round (23:25 -> 07:00 window). The
+engine had moved to `24d77f8` since yesterday's campaign (origin merge incl. #291's
+base-off-table clamp), so every number re-based: fresh screen baseline **62.38** (8 cells x 50
+games, seeds 3000+; was 60.38 pre-merge). Driver upgraded (committed with this entry):
+**x0.5 / x2.0** multipliers over **12 knobs** - the 7 previously untuned movement/targeting
+weights (MoveScreen, MoveObjective, MoveObjectiveApproach, MoveApproach, ShootThreatFactor,
+MoraleBreakBonus, ShootingKillBonus) probed first, yesterday's 5 last - plus per-bench
+timeouts, deadline awareness (--deadline-epoch with observed-rate projection), and an in-run
+confirm stage: a screen hit (>= +3.0 at 50 g/cell) adopts only if it clears +2.0 at 150 g/cell
+on a DIFFERENT seed base (5000). Campaign result: 25 evals, **no candidate reached even the
+screen threshold** (best: MoveApproach x0.5 +2.00, MoveObjectiveApproach x2 +1.62,
+MoveRetaliation x2 +1.50). Leftover budget went to follow-up probes: knock-outs (weight -> 0)
+of the #191 slices all read neutral-to-negative at 50 g/cell (arriving-pressure -0.12,
+risk-posture -0.12, share-floor -0.75 - each still earns its keep or breaks even), the top-3
+singles combo read +1.88 (no synergy over MoveApproach alone), and ko-screening (MoveScreen=0)
+screened +2.55. Confirms at 150 g/cell seed 5000 (defaults there: 63.91): **MoveScreen=0
++0.19** (the +2.55 was a mirage) and **MoveApproach=0.375 -2.88** (the campaign's best single
+is actively WORSE on fresh seeds - winner's curse caught in-run, exactly what the confirm
+stage was added for). Verdict: the hand-tuned defaults are now confirmed locally optimal to
+x0.5/x2.0 across 12 knobs on the merged engine, and single-knob (or naive combo) weight
+nudges are exhausted as an improvement lever - the next lever is structural (sum-vs-max
+alternative-target aggregation, joint moves). Artifacts:
+`FdgLab/reports/tune-2026-07-27-overnight/` (campaign.log, evals.jsonl, probes.log,
+probes.jsonl; reports/ is gitignored - the numbers of record are here). Ops note: the
+follow-up probe task was externally killed at ~04:50 (no OS/OOM evidence, cause unknown);
+phase 2 was restarted standalone and completed 06:23.
+
 **2026-07-26 — AUTOMATED TUNING CAMPAIGN RAN TO COMPLETION: DEFAULTS STAND (a null result at
 full evidence).** Coordinate descent on the merged engine (submodule `d8d8446`): 5 knobs x
 {x0.7, x1.3}, the 8-cell eval set, 50 games/cell paired seeds, adopt at >= +3.0 mean points.
