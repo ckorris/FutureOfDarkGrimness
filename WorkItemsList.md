@@ -206,3 +206,4 @@ Tick and move to the archive once verified. The detail files carry the full ledg
 - [~] 156 — Army Forge catalog builder. Verify: remaining hand-verify rounds (all core facets landed). ([WorkItems/156](WorkItems/156-army-forge-builder.md))
 - [~] 106 — Army builder authoring UX. Verify: read-only stat block, per-unit Duplicate, auto-unfold of new units/weapons/spells. ([WorkItems/106](WorkItems/106-army-builder-ux.md))
 - [~] 053 — Sound cues on the beat stream. Verify: hear the placeholder tone per beat; real `.wav`s drop into `FdgRaylib/Assets/Sounds/` by filename. ([WorkItems/053](WorkItems/053-sound.md))
+- [~] 294 — Movement footsteps replace the single `move` beep: a quiet footfall repeats across the glide, denser (sub-linearly) for bigger units and pitched/paced down by Tough(X), carried on a new `UnitMovedBeat.Toughness`. Verify: the six listening checks in the detail file. ([WorkItems/294](WorkItems/294-movement-footstep-cue.md))
