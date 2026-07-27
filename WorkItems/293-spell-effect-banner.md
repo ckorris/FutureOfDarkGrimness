@@ -1,4 +1,4 @@
-# 285 — Banner announcing what a spell's effect actually did
+# 293 — Banner announcing what a spell's effect actually did
 
 **Status**: in-progress
 **Related**: #274 (spell visuals), #275 (banner tiers), #033/#034 (spell effects), `SpellText`

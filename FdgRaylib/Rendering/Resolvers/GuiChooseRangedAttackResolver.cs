@@ -160,7 +160,7 @@ public class GuiChooseRangedAttackResolver
         ImGui.SameLine();
         ImGui.TextDisabled("(Left/Right)");
         ImGui.Separator();
-        // #284: a rule name under the cursor claims the frame's tooltip. Collected across the loop and
+        // #292: a rule name under the cursor claims the frame's tooltip. Collected across the loop and
         // raised after it, because ImGui allows one tooltip per frame and the rows are drawn by hand.
         bool weaponColHovered = ImGui.IsWindowHovered(ImGuiHoveredFlags.ChildWindows);
         string? ruleTooltip = null;
@@ -206,7 +206,7 @@ public class GuiChooseRangedAttackResolver
                 ? ImGui.ColorConvertFloat4ToU32(new Vector4(0.65f, 0.65f, 0.70f, 1f))
                 : ImGui.ColorConvertFloat4ToU32(new Vector4(0.50f, 0.50f, 0.50f, 1f));
             dl.AddText(rMin + new Vector2(4, 2), colTxt, wo.Weapon.Name);
-            // #284: the stat subline is unchanged text, but each special-rule name is now its own
+            // #292: the stat subline is unchanged text, but each special-rule name is now its own
             // underlined, hoverable run explaining what the rule does (the Army Forge treatment). Rule
             // names are tinted brighter than the rest of the subline so they read as "there is more here".
             uint colRule = selectableW
@@ -322,7 +322,7 @@ public class GuiChooseRangedAttackResolver
 
             ImGui.TextUnformatted(wo.Weapon.GetWeaponNameAndStats());
 
-            // #284: the weapon's rules spelled out, so the player can read what Rending/Deadly actually do
+            // #292: the weapon's rules spelled out, so the player can read what Rending/Deadly actually do
             // without hovering the narrow weapon row. Same descriptions the hover tooltips carry.
             IReadOnlyList<RuleHoverText.Segment> weaponRules = RuleHoverText.RuleSegments(wo.Weapon);
             if (weaponRules.Count > 0)

@@ -21,6 +21,8 @@ static int Usage()
         Commands:
           bench   --a <army> --b <army> | --pool <dir>   seeded, side-swapped benchmark matrix
                   [--profile-a P] [--profile-b P]  AI per army side: solorules | tactician (#191 A4)
+                  [--weights "Name=V;Name=V"]  override TacticianWeights fields for this process
+                                     (#191 automated tuning; recorded in the report header)
                   [--games N]        total games per matchup (default 200; played as N/2 seeds x 2 sides)
                   [--seed-base S]    first seed (default 1000)
                   [--dop D]          concurrent games (default: min(16, cores))
@@ -87,6 +89,8 @@ static async Task<int> RunBench(string[] args)
         !TryProfileArg(args, "--profile-b", out FDG.Ai.EAiProfile benchProfileB))
         return 2;
 
+    if (!TryApplyWeights(args)) return 2;
+
     var options = new BenchmarkOptions(
         Matchups: matchups,
         GamesPerMatchup: IntArg(args, "--games", 200),
@@ -98,7 +102,8 @@ static async Task<int> RunBench(string[] args)
         ProfileA: benchProfileA,
         ProfileB: benchProfileB,
         DumpLogsDir: Arg(args, "--dump-logs"),
-        Trace: args.Contains("--trace"));
+        Trace: args.Contains("--trace"),
+        WeightOverrides: Arg(args, "--weights"));
 
     return await Benchmark.RunAsync(options);
 }
@@ -108,6 +113,8 @@ static async Task<int> RunSmoke(string[] args)
     if (!TryProfileArg(args, "--profile-a", out FDG.Ai.EAiProfile profileA) ||
         !TryProfileArg(args, "--profile-b", out FDG.Ai.EAiProfile profileB))
         return 2;
+
+    if (!TryApplyWeights(args)) return 2;
 
     var spec = GameSpec.TwoPlayer(
         Armies.LoadSlot(Arg(args, "--a") ?? Armies.BuiltinSpec) with { Profile = profileA },
@@ -197,6 +204,30 @@ static string? Arg(string[] args, string name)
 {
     int i = Array.IndexOf(args, name);
     return i >= 0 && i + 1 < args.Length ? args[i + 1] : null;
+}
+
+// #191 automated tuning: apply "Name=Value;Name=Value" onto TacticianWeights before any game
+// starts (weights are process-global). Invariant culture; any unparseable pair or unknown field
+// name is a hard usage error - a silently-skipped override would corrupt a whole tuning campaign.
+static bool TryApplyWeights(string[] args)
+{
+    string? spec = Arg(args, "--weights");
+    if (spec == null) return true;
+    foreach (string pair in spec.Split(';', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))
+    {
+        int eq = pair.IndexOf('=');
+        string name = eq < 0 ? "" : pair[..eq].Trim();
+        if (eq < 0
+            || !float.TryParse(pair[(eq + 1)..], System.Globalization.NumberStyles.Float,
+                System.Globalization.CultureInfo.InvariantCulture, out float value)
+            || !FDG.Ai.Tactician.TacticianWeights.TrySet(name, value))
+        {
+            Console.Error.WriteLine($"--weights: cannot apply '{pair}'. Format is Name=Value with " +
+                "Name a public static float field of TacticianWeights.");
+            return false;
+        }
+    }
+    return true;
 }
 
 static int IntArg(string[] args, string name, int fallback) =>

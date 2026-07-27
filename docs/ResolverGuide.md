@@ -105,7 +105,7 @@ needs no change in the controller.
 - Anything that needs to know whether the drawn field is target-anchored asks `_lastAnchorKind`, not a
   mode flag. Both the band snap and the band rings/labels follow the field, not the move request.
 
-## Explaining rules in-game (#284)
+## Explaining rules in-game (#292)
 
 `RuleHoverText` (`FdgRaylib/Rendering/`) is the in-game counterpart to the Army Forge's `RuleTextFlow`:
 it splits a stat line into segments, underlines each special-rule name, and reports which one the mouse

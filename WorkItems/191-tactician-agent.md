@@ -20,6 +20,138 @@ pin tests.
 
 ## Notes (newest first)
 
+**2026-07-26 — TUNING INFRA (Chris: "do the automated weight tuning"): weights
+runtime-overridable, FdgLab --weights, campaign driver. Engine `7f30a82`.** TacticianWeights
+float consts -> public static floats + TrySet(name, value) (reflection, set before games only);
+the committed defaults remain the shipped policy and still change only with a benchmark
+attached. FdgLab bench/smoke take --weights "Name=V;..." (invariant culture; unknown name or
+bad value is a hard usage error - a silently-skipped override would corrupt a campaign;
+recorded in the report header so a tuned run can never pass as default). Verified: defaults at
+dop 1 reproduce the cache-slice hash 6267BEA2307042D2 exactly (const->static is value-neutral);
+--weights MoveRetaliation=99 flips the 4-game hash (the override reaches the planner); unknown
+name exits 2. Driver: FdgLab/tools/tune_weights.py - coordinate descent over {MoveRetaliation,
+RetaliationShareFloor, MoveProjectedThreat, PostureRetaliationRelief, PostureObjectiveBoost},
+x0.7/x1.3 candidates per round, 8-cell eval set (the three RL decision cells + the trio gate's
+sub-70 cells: HDF-Hives, DE-Hives, DE-Orks, BB-Hives, Dwarf-Orks), 50 games/cell paired seeds,
+adopt only at >= +3.0 eval-mean points (~1.2 sigma incl. #210 schedule noise), 2 rounds with
+early stop, every eval appended to evals.jsonl; the script never edits source - the full
+ordered-pool gate arbitrates before any default changes.
+
+**2026-07-26 — PERF: TerrainGrid per-game cache - the bot's move pause halved (2.2x decision
+mean, 2.6x p95). Engine `5fcecb4`.** Chris: "noticeable pause before it moves". dotnet-trace on
+a Hives-vs-Orks tactician smoke (seed 3000): ~HALF the game's busy CPU was TerrainGrid.Build -
+rebuilt at least twice per activation (planner route grid + generator shared grid, plus deploy
+lanes) though the grid depends only on terrain + base radius + Strider flag; the #268 dense
+palettes made the old "built per query; measured cheap" note stale (its own comment asked for
+profiler evidence before revisiting - this is it). New TerrainGridCache: ConditionalWeakTable
+per table state (concurrent games never share), keyed (radius, flag, terrain count). Cold
+single-game decision mean 45.7 -> 20.9ms, p95 315.7 -> 122.9ms, wall 18.8 -> 9.4s. Neutrality
+PROVEN at dop 1: 3 matchups x 10 games (horde / caster / transport+ambush), old-vs-new
+hash-equal (6267BEA2307042D2 / 16C0181B0279BAFB / 1EEF569455930F1D) + a bit-identical
+GUID-normalized seed-3000 game log. DOP-16 hash comparison is NOT usable for this - same-code
+DOP-16 runs flip 17/20 outcomes (filed under #210 with the dop-1-only verification practice;
+also there: the first stash-verification attempt silently compared cache to cache after a
+failed rebuild - caught, redone from a verified-old build). Suite 2168/2168 incl. 4 new
+TerrainGridCacheTests.
+
+**2026-07-26 — 200-GAME CONFIRMATION CELLS: THE FLOOR-CLEARING STORY DOES NOT SURVIVE G4
+RESOLUTION.** All six cells completed, 0 faults, seeds 3000+, 200 games/cell, paired seeds
+(sigma ~3.5/cell unpaired, less paired). Trio vs neutralized (`3c4924f~1`): RL-vs-Hives
+60.8 vs 57.3 (+3.5), RL-vs-Orks 53.2 vs 60.5 (-7.3), RL-vs-HEF 69.3 vs 74.5 (-5.2). Two
+findings. (1) The 50-game floor cells were NOISE: the neutralized engine's 49/49 on
+RL-vs-Hives/RL-vs-Orks reads 57.3/60.5 at 200 games - both comfortably above the A-gate
+line - so "the trio is what clears the floor" (previous entry) is RETRACTED; the trio's
+case now rests on full-matrix parity (83.9 vs 84.3 at 3200), the behavioral pins, and
+fault-freeness. (2) The trio reads net -9 across the three RL decision cells,
+concentrated in RL-vs-Orks (-7.3, ~2 sigma) - a real watch item, not noise-shrugged.
+The already-recorded candidate knobs (MoveRetaliation retune, sum-vs-max alternative
+aggregation) plus the new posture/projection weights go to the automated tuning campaign
+(Chris, 2026-07-26), whose cell set must include RL-vs-Orks and RL-vs-HEF. Process note:
+a mid-run status check misread the still-running script as crashed and briefly restored
+the submodule to master while its last two neutralized cells ran; both cells' outcomes
+differ from the trio run's same-seed cells, which (determinism, G5) proves they ran
+baseline code - the numbers stand.
+
+**2026-07-26 — TRIO GATE (one-ply reply + arriving pressure + risk posture): MATRIX 83.9 /
+MIRRORS 82.5, ZERO CELLS BELOW 50, ZERO FAULTS IN 3200 - AND THE ATTRIBUTION RUN SHOWS THE
+TRIO IS WHAT CLEARS THE FLOOR.** Full ordered gate (trio-gate, hash `E5B567EFFDAF2A6F`,
+seeds 3000, DOP 16): matrix 83.9, mirrors 82.5, worst cell RL-vs-Hives 51, faults 0/3200,
+timeouts 0. Row avgs: HEF 92.4, Hives 90.5, Orks 90.5, BB 82.9, Dwarf 82.9, DE 81.0, HDF
+79.0, RL 71.9. Because the old 83.9/84.4 reference predates the #256/#264 engine drift, a
+NEUTRALIZED full gate was run on the same engine + seeds with the trio's three commits
+checked out (trio-gate-neutralized, hash `D63814604A328DE4`): matrix 84.3, mirrors 82.5,
+but TWO below-50 cells (RL-vs-Hives 49, RL-vs-Orks 49) and 1 fault (DE-vs-HEF seed-3010
+watchdog timeout). Attribution verdict: the trio costs -0.45 matrix (noise), holds mirrors
+exactly, LIFTS both floor cells over the 50 line (49/49 -> 51/54), and the run is fault-free
+where the neutralized engine was not. RL-row watch item RESOLVED: 71.4 neutralized -> 71.9
+trio (+0.5) - the drop from the old 77.6 reference is engine drift, not the trio;
+RL-vs-HEF's -8 (68->60) is offset by +5/+2 in the same row and its G2 read (flipped seed
+3016 decision replay) shows healthy marker play, no timidity signature. A-gate automated
+criteria on the CURRENT engine: aggregate >= 70 PASS (83.9), no cell < 50 PASS (the
+pre-trio engine FAILS this today), faults <= baseline PASS (0). Reports:
+FdgLab/reports/trio-gate, trio-gate-neutralized.
+
+**2026-07-26 — RISK POSTURE (idea 3, closing the approved trio; strategic-allocation (c)
+from game 3) shipped. Engine `738a855`.** Posture = round-scaled projected-objective deficit
+(best-placed opponent minus us, half a tilt per marker, clamped [-1,1]; early deficit is
+deployment noise, late is the game), cached per activation. Behind: retaliation AND arriving
+pressure discount by PostureRetaliationRelief (0.35 at full deficit) and the objective
+delta + gradient boost by PostureObjectiveBoost (0.3, behind-only - being ahead is no reason
+to stop playing markers). Ahead: retaliation prices UP the same slope - protect the lead,
+run out the clock. 1-vs-3 late no longer scores like 3-vs-1. Pin
+BehindOnObjectivesLate_ARiskyGrabPricesBetterThanWhenLevel (same guarded grab, two-down vs
+level boards) verified failing pre-fix. Suite 2164/2164. **50-game probes (seed 3000, 0
+faults), same 5 cells (slice-2 -> this, pre-trio baseline in parens): RL-vs-Hives 51->51
+(50), RL-vs-Orks 49->54 (49), RL-vs-HEF 59->60 (68), Hives-vs-HEF 89->84 (86), BB-vs-Orks
+80->73 (72) - noise-level shuffling, trio reads parity on these cells (sum 325->322). Full
+ordered gate next; its row-level read arbitrates the trio and the RL-vs-HEF watch item.**
+
+**2026-07-26 — ARRIVING PRESSURE (idea 2 of the approved trio) shipped. Engine `ec65f9a`.**
+New MoveProjectedThreat (0.15) term: enemies the current retaliation term ignores entirely
+(outside every this-round envelope) are projected one rush-budget step toward their nearest
+attractive goal (a marker their side does not own, or one of our units - deterministic,
+cached per activation) and the endpoint pays a low-weight forecast of their threat from
+there. Only zero-current-threat enemies are priced (no double count), a cached max-range
+precheck keeps the CombatMath cost off distant enemies, and projected MELEE pressure is
+EXEMPT when our melee margin against the arriver is positive - a staged charge must not be
+penalized for standing its ground (the A5-6 charging-beats-being-charged interaction).
+2 pins - ArrivingPressure_PricesAnEnemyTwoMovesOut (verified failing pre-fix) and
+ArrivingMeleePressure_IsAnOpportunityForAWillingBrawler (verified failing with the exemption
+disabled; first fixture draft was too weak to discriminate and was strengthened). Suite
+2163/2163. **50-game probes (seed 3000, 0 faults), same 5 cells (slice-1 -> this, with the
+pre-trio baseline in parens): RL-vs-Hives 47->51 (50), RL-vs-Orks 54->49 (49), RL-vs-HEF
+63->59 (68), Hives-vs-HEF 82->89 (86), BB-vs-Orks 73->80 (72) - net +2.2/cell over slice 1;
+the two target cases (elites camping in a horde's arrival path, melee flood vs gunline)
+respond exactly as designed. WATCH: RL-vs-HEF has drifted 68->63->59 across the trio's two
+slices (~1.3 sigma cumulative); G2 read of flipped seed 3016 shows NO degenerate behavior
+(forward marker play, Warriors advance + shoot, no SeekCover spiral, loss is an objective
+race 1-2) - full-gate row read decides whether it is real.**
+
+**2026-07-26 — ONE-PLY OPPONENT REPLY shipped (Chris approved ideas 1-3 of the smartness
+brainstorm; this is idea 1). Engine `3c4924f`.** Retaliation now prices each enemy's best
+single reply instead of a headcount discount: the per-sharer dilution divisor
+(1 + 0.5 x sharers) is replaced by an adversarial share - incoming x ours/(ours +
+best-alternative-target-value), floored at RetaliationShareFloor (0.25). The alternative-
+target value mirrors the incoming computation exactly (shooting at post-advance reach, melee
+margin at half weight inside charge threat) over OTHER friendlies at their current positions,
+cached per enemy per activation. Consequences: a juicy unit can no longer hide behind chaff
+(same headcount, thin alternative -> near-full price), chaff pays little when a fatter target
+shares the envelope, and the ledgered "dilution counts units, not their remaining volley
+value" simplification is resolved. Pin Retaliation_PricesTheEnemysBestReply_NotAHeadcount-
+Discount (same geometry + sharer count, fat vs worthless alternative must discriminate)
+verified FAILING pre-fix; the old Retaliation_Dilutes pin stays green. Suite 2161/2161.
+**50-game probes (seed 3000, 0 faults everywhere), against fix-NEUTRALIZED baselines rerun
+on the CURRENT engine (the old row numbers predate the #256/#264 drift): RL-vs-Hives 50->47,
+RL-vs-Orks 49->54, RL-vs-HEF 68->63, Hives-vs-HEF 86->82, BB-vs-Orks 72->73 - net -1.2/cell,
+parity within noise (sigma of the 5-cell mean ~3). Behavioral instruments all hold: seed-7001
+timidity replay stays fixed (Hive Warriors RushObjective x3 + Block, no sideways slide, Win),
+Hives-vs-Gunline 100.0, RL-vs-Gunline 93.0.** Shipped on behavior + principle with the gate
+after the other two approved slices as arbiter. WATCH ITEM: the softness concentrates where
+the Tactician's own units are valuable vs shooty opponents (RL/Hives elite rows) - under the
+reply model a valuable unit pays near-FULL price (old dilution gave it 0.67-0.4 by headcount),
+so if the full gate shows elite-army softness the single-knob response is a MoveRetaliation
+retune, or aggregating alternatives by SUM instead of MAX (proportional-pick model).
+
 **2026-07-23 — D1 BASELINE RE-PINNED after #264 issue 6 (the solo skirt capped at +/-60 degrees,
 was +/-100: past perpendicular a "skirt" is a retreat, and it was taken at the FULL rush budget).**
 New 200-game outcome hashes, DOP 16, reproducible across duplicate runs, zero faults, zero

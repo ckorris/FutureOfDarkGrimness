@@ -8,7 +8,7 @@ using ImGuiNET;
 namespace FdgRaylib.Rendering;
 
 /// <summary>
-/// #284 — in-game sibling of <see cref="RuleTextFlow"/>: rule names inside a stat line get their own
+/// #292 — in-game sibling of <see cref="RuleTextFlow"/>: rule names inside a stat line get their own
 /// underline and their own hover tooltip, the way the Army Forge explains rules, but for the LIVE rules
 /// on a weapon rather than the army-file entries the Forge edits.
 ///

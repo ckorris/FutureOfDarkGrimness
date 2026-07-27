@@ -9,7 +9,7 @@ using NUnit.Framework;
 
 namespace FdgRaylib.Tests;
 
-// #284 — the shoot panel showed a weapon's stats but not what its special rules DO. Rule names on the
+// #292 — the shoot panel showed a weapon's stats but not what its special rules DO. Rule names on the
 // weapon subline are now their own underlined, hoverable runs (the #259 Army Forge treatment), and the
 // Details pane spells them out. The drawing is ImGui (hand-verified); these pin the segmentation, which
 // is where a bug would silently change what the player reads.

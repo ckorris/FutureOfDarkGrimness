@@ -1,4 +1,4 @@
-# 284 — Weapon select shows special rules with per-rule hovers
+# 292 — Weapon select shows special rules with per-rule hovers
 
 **Status**: in-progress
 **Related**: #259 (Army Forge rule hovers / `RuleTextFlow`), #027 (`WeaponStatFormatter`)
