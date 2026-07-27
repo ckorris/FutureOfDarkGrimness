@@ -84,6 +84,52 @@ TacticianWeights file-header policy; observation games are the in-progress signa
 
 ## Notes
 
+- 2026-07-27 (implementation): **all four slices built and observation-verified** on the committed
+  repro, same seed (42) each run, engine suite 2227/2227 green throughout.
+  - **Slice 1, team-awareness sweep.** `TacticalAnalysis.AreAllied`/`IsProjectedOwnerAllied`
+    helpers; team-aware enemy/friendly enumerations in `TacticianPlanner` (incl.
+    `AnyEnemyOffBattlefield`, `ProjectedEnemyPosition` goals), `TacticianActivationResolver`
+    (urgency + flip), `MacroActionGenerator` (targeted families, M12 destination),
+    `MovementPlanner.LiveEnemyFootprints` (ally bases no longer carry the enemy 1" standoff),
+    borrowed solo resolvers (`AiConsolidationMoveResolver`, `AiStringSelectionResolver`),
+    `DeploymentMatchup`, and the ambush-strike enumeration in `TacticianPlaceObjectsResolver`.
+    Objective terms: "ours" = TEAM-owned; NEW -1 for stepping onto an ally-held marker (it
+    reconciles to neutral); NEW +1 for stepping OFF a marker contested only by our own side;
+    walk-away penalty's vacuous `PlayersInRange.Count(p => p == self) <= 1` guard dropped
+    (PlayersInRange holds each player once - it was always true). `Posture` pools per side.
+    **1v1 bit-identity verified** (by construction + same-seed FdgLab smokes, both profiles).
+    Same-seed 2v2: teammate-targeted chosen plans 10 -> 0, round-1 retreats 4 -> 1, Hold count
+    54 -> 15 of ~130 plans, stuck reports 5 -> 3.
+  - **Slice 2, screen interior gate.** `ScreenValue` pays only endpoints on the INTERIOR of the
+    threat->ward segment (t in 0.05..0.95); `DistanceToSegment`'s clamp had paid full credit up
+    to 5" BEHIND the ward - the round-1 backward-FallBack winner's mechanism.
+  - **Slice 3, front-first activation.** `ActivationFrontlineBias = 0.1` x the unit's forward
+    percentile among this request's on-battlefield options (axis = own mass -> enemy mass;
+    embarked units excluded from the normalization, they keep the cargo bias). Decides order
+    only when kill/flip/threat are flat - the crowded round-1 shape. Observed: the crowded rear
+    player's round-1 order became cleanly front-first; stuck reports 3 -> 2, all confined to
+    round 1 (baseline: recurring across rounds 1-4).
+  - **Slice 4a, support-ball credit.** `MoveObjectiveSupport = 0.3` inside `ObjectiveDelta` for
+    ending in the 4.5-9" band around a marker (own/ally-held markers only while
+    `MarkerContestable` - garrison-release rationale). With the ally-contest penalty this reads
+    "surround your teammate's marker, never step on it".
+  - **Residuals, deliberately deferred**: (a) beyond-marker DENIAL screens (Chris: "some beyond
+    the objective, between the opponent and the marker so they never get to contest") - design
+    sketch: extend `ScreenLane` wards to held/contested markers (ward value = the marker's
+    MoveObjective x urgency worth, same currency) + M8 Block lanes enemy->marker; not built, needs
+    its own balance pass. (b) Two 20-model Shooter Mobs still log the stuck line in ROUND 1 only:
+    they are the rear PLAYER's front rows wedged behind the ally player's rows, and per-player
+    front-first cannot reorder across the team's alternating turns - crowd-aware goal retargeting
+    (nearest reachable staging point when the marker lane is jammed) is the likely fix if it still
+    matters after (a). (c) Engine design fork for Chris: allied players within 3" of the same
+    marker CONTEST it to neutral (per-player seizure, per-team victory #257) - is that the
+    intended rule? The bot now avoids it either way.
+  - **Weights policy**: slices 2-4a change 1v1 TACTICIAN behavior (solo bot untouched; D1
+    baselines do not move). New constants `ActivationFrontlineBias`, `MoveObjectiveSupport` +
+    the screen gate = scoring-policy changes landed with observation-game evidence per Chris's
+    2026-07-27 instruction (1-3 games, not full FdgLab); the benchmark gate + sign-off still
+    owed before this is treated as settled policy.
+
 - 2026-07-27: filed after investigation + two observation games (game 1 invalidated by the
   off-table auto-row; game 2 above is the evidence run). Analyzer script (move classification,
   teammate-target detection, stuck/objective tallies) lives in the session scratchpad; promote to
