@@ -84,6 +84,12 @@ TacticianWeights file-header policy; observation games are the in-progress signa
 
 ## Notes
 
+- 2026-07-27 (later, #297 supersession): Chris ruled allies must NOT contest each other's markers -
+  the engine reconcile is now team-aware (`ITeamExtensions.ReconcileObjectiveOwner`, see #297).
+  Slice 1's ally-contest penalty and step-off bonus were built for the old per-player rule and were
+  REMOVED with it; the walk-away penalty now skips when a teammate remains in range. The rest of
+  the fix set (team sweep, screen gate, frontline bias, support ball) is unaffected.
+
 - 2026-07-27 (implementation): **all four slices built and observation-verified** on the committed
   repro, same seed (42) each run, engine suite 2227/2227 green throughout.
   - **Slice 1, team-awareness sweep.** `TacticalAnalysis.AreAllied`/`IsProjectedOwnerAllied`
