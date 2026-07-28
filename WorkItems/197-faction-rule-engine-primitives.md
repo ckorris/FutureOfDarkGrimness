@@ -1236,6 +1236,63 @@ Changelings!" -> Changelings ACTIVATES THE SAME ROUND it was born from the destr
 
 Corpus dead references **143 -> 140**.
 
+## Slice P17c: Reinforcement (4 refs) — DONE 2026-07-28
+
+> "When a unit where all models have this rule is Shaken or fully destroyed, you may remove it from
+> the table as destroyed and place a new copy of it fully within 12\" of any table edge at the
+> beginning of the next round after Ambushers have been deployed. Units that deploy via Reinforcement
+> can't seize or contest objectives on the round they deploy, and this rule doesn't apply to the new
+> copy of the unit." (Ratmen Clans: Stalkers, Operators, Saboteurs, Elite Operators)
+
+**Two trigger arms meeting on one token.** `Effect.ReinforceUnit` -> `InvokeReinforce` ->
+`IOperationServices.ReinforceUnit`, authored at BOTH moments: the destroyed arm rides P17b's
+killer-less `Lifecycle_OnSelfDestroyed`; the Shaken arm needed `Morale_OnShakenApplied` to become an
+EVALUABLE moment (new `ShakenAppliedContext`, fired by `ApplyShakenWithPresentation` - the hook had
+only ever been a token-clear target). Both entries gate on `not(tokenPresent(ReinforcementSpent))`,
+and the service stamps that token BEFORE the Shaken arm's removal-as-destroyed lands on the
+destruction seam - the ordering that stops the destroyed-arm entry re-prompting, pinned by test AND
+mutation. Declining does NOT stamp (the choice is saved: a Shaken decline still offers at the later
+death). The destruction seam's prompt grew per-family Yes/Nos (Split and Reinforcement answer
+independently if a unit ever carries both).
+
+**The copy** is a fresh full-strength unit built directly from the live original (shapes + weapon
+profiles per model, unit rules re-attached MINUS the firing rule, per-model #093 relocations carried,
+creation rules re-derive Tough's max wounds), held IN RESERVE with the new
+`PendingReinforcementArrival` token - the Ambush Re-Deployment shape, so save/load and networking
+ride for free. `StartOfRoundExtraActionStage.PlaceReinforcements` runs right after `BringOnReserves`
+(the rule's own "after Ambushers have been deployed") and places it MANDATORILY (the "you may" was
+spent at removal); the `ArrivedFromReserve` stamp IS the can't-seize clause. Arriving before the
+round context builds its pools, the copy activates the round it deploys.
+
+**New zone:** `TableEdgeBandZone` ("fully within 12\" of any table edge") - an `IBoundedZone` whose
+true shape is four non-overlapping border rectangles delegated to an internal `CompositeZone`, so
+the union path/entry geometry already existed; `PlacementUtilities.IsBaseWithinZone` consumes it
+polymorphically, `ZoneRenderer` draws it by part, `SaveTypeRegistry` gained its stable id (the
+registry's own guard test caught the omission). Centre-in-band is the same approximation every
+non-rectangular placement zone accepts (recorded).
+
+Data (app-side, supplement): both entries as above; embedded into RatmenClans.
+
+Tests: engine `ReinforcementRuleIntegrationTests` (4 - the Shaken accept end-to-end WITH the
+one-prompt pin, the killer-less destroyed arm, decline-saves-the-choice then re-offer at death, and
+the mandatory band arrival through the real round-start stage incl. zone geometry + marker
+lifecycle). App `ReinforcementShippedDataTests` (2 - both arms + BOTH GATING ON THE SAME SPENT TOKEN
+(an ungated destroyed arm re-prompts after the Shaken kill), book embedding). Engine 2282/2282, app
+693/693.
+
+Mutation-checked: moving the spent stamp AFTER the removal reds exactly the one-prompt pin.
+
+Verified in play (headless scenario probe): Marksmen wipe the Stalkers -> "Stalkers is destroyed -
+queue a Reinforcement copy for the next round?" -> "falls back" -> next round "Stalkers arrives as
+reinforcements!" - and when the COPY is later Shaken it idles with NO re-offer ("this rule doesn't
+apply to the new copy", stripped at clone time). Exit 0.
+
+Recorded, not built: the transport-spillout Shaken site (`TransportUtilities.ApplySpilloutEffects`,
+deliberately Stages-free) does not fire the Shaken arm - a spilled-out Reinforcement unit is only
+offered when destroyed. One corpus-supported edge; wire it via SpilloutExecutor if play ever hits it.
+
+Corpus dead references **140 -> 136**.
+
 ## Slice: Misc small primitives — IN PROGRESS (started 2026-07-23)
 
 The 102-ref "Misc" row, triaged rule-by-rule (each is a one-off). Full wording pulled from the corpus
