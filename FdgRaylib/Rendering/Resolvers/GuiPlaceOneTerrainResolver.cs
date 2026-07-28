@@ -47,7 +47,7 @@ public class GuiPlaceOneTerrainResolver
     // so the wheel feels identical everywhere on the table.
     private const float RotationStepDegrees = 15f;
 
-    // #299 points mode: the debt notice / debt warning tint (amber, matching the stage's Toast color).
+    // #301 points mode: the debt notice / debt warning tint (amber, matching the stage's Toast color).
     private static readonly Vector4 WarningYellow = new Vector4(0.94f, 0.78f, 0.35f, 1f);
 
     public GuiPlaceOneTerrainResolver(ITableState tableState) => _tableState = tableState;
@@ -245,7 +245,7 @@ public class GuiPlaceOneTerrainResolver
 
         if (request.PointsBudget is TerrainPointsBudget budget)
         {
-            // #299 points mode: personal total + this turn's spend, plus the yellow debt notice when
+            // #301 points mode: personal total + this turn's spend, plus the yellow debt notice when
             // part of this turn already went to an earlier over-budget piece. Copy comes from the
             // budget itself so the CLI, GUI and any future front end always say the same thing.
             ImGui.TextUnformatted(budget.PointsSummaryLine);
@@ -301,7 +301,7 @@ public class GuiPlaceOneTerrainResolver
         ImGui.End();
     }
 
-    /// <summary>#299 - the yellow "this borrows from your next turn" line while a debt piece is being placed.</summary>
+    /// <summary>#301 - the yellow "this borrows from your next turn" line while a debt piece is being placed.</summary>
     private static void DrawSelectedPieceDebtWarning(PlaceOneTerrainRequest request, int templateIndex)
     {
         if (request.PointsBudget is not TerrainPointsBudget budget) return;
@@ -319,7 +319,7 @@ public class GuiPlaceOneTerrainResolver
     /// scale derived from the largest piece in the pool, so relative sizes read
     /// correctly (a 6x4" building looks bigger than a 5"-radius forest).
     ///
-    /// #299 points mode: each row carries its cost; a row the budget forbids is dimmed and
+    /// #301 points mode: each row carries its cost; a row the budget forbids is dimmed and
     /// unclickable with the reason in its hover tooltip, and a playable-but-debt row gets a
     /// yellow label plus the "will take N points from your next turn" tooltip.
     /// </summary>

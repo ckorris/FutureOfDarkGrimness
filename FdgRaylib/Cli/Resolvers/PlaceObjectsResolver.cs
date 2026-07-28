@@ -22,6 +22,10 @@ public class PlaceObjectsResolver<T> : IStageResolver<PlaceObjectsRequest<T>, Ca
     // Each is still checked at its NEW position through the placed-so-far overlap loop.
     private HashSet<object> _selfModels = new(ReferenceEqualityComparer.Instance);
 
+    // #197 P22: the request being resolved, so the auto-candidate filter can judge enemy distance
+    // through PlacementDistanceRules (flat minimum + Repel keep-out discs + Beacon waivers).
+    private PlaceObjectsRequest<T>? _activeRequest;
+
     public PlaceObjectsResolver(ITableState? tableState = null)
     {
         _tableState = tableState;
@@ -43,6 +47,7 @@ public class PlaceObjectsResolver<T> : IStageResolver<PlaceObjectsRequest<T>, Ca
             if (selfBinding.GetValue() is ModelData selfModel) _selfModels.Add(selfModel);
         }
 
+        _activeRequest = request;
         float minEnemyDist = request.MinDistanceFromEnemiesInches;
         var enemies = minEnemyDist > 0f ? GetEnemyPositions(request.TargetPlayerID) : new List<Position>();
 
@@ -155,9 +160,12 @@ public class PlaceObjectsResolver<T> : IStageResolver<PlaceObjectsRequest<T>, Ca
                         continue;
                     }
 
-                    if (TooCloseToEnemy(newPos, enemies, minEnemyDist))
+                    // #197 P22: flat minimum, Repel keep-out discs and Beacon waivers, judged together.
+                    if (PlacementDistanceRules.ViolatesEnemyDistance(request, newPos, enemies))
                     {
-                        Console.WriteLine($"    ! Too close to an enemy - must be over {minEnemyDist:F0}\" from enemy units.");
+                        Console.WriteLine(TooCloseToEnemy(newPos, enemies, minEnemyDist)
+                            ? $"    ! Too close to an enemy - must be over {minEnemyDist:F0}\" from enemy units."
+                            : "    ! Inside an enemy's Repel Ambushers keep-away - set up further from that unit (or within a friendly Ambush Beacon's range).");
                         continue;
                     }
 
@@ -353,7 +361,8 @@ public class PlaceObjectsResolver<T> : IStageResolver<PlaceObjectsRequest<T>, Ca
         if (CheckOverlap(candidate, shape, facing, placedSoFar) != null) return false;
         if (CheckOverlapWithExisting(candidate, shape, facing, existing) != null) return false;
         if (PlacementUtilities.OverlapsImpassibleTerrain(candidate, shape, facing, _impassibleTerrain)) return false;
-        if (minEnemyDist > 0f && TooCloseToEnemy(candidate, enemies, minEnemyDist)) return false;
+        if (_activeRequest != null
+            && PlacementDistanceRules.ViolatesEnemyDistance(_activeRequest, candidate, enemies)) return false;
         if (placedSoFar.Count > 0 && !IsInCohesion(candidate, r, placedSoFar)) return false;
         return true;
     }
@@ -364,7 +373,10 @@ public class PlaceObjectsResolver<T> : IStageResolver<PlaceObjectsRequest<T>, Ca
         if (_tableState == null) return positions;
         foreach (var unit in _tableState.Units.Objects)
         {
-            if (unit.PlayerID == self) continue;
+            // Side-aware (#197 P22): a teammate is not an enemy, so an Ambush arrival is not pushed
+            // away from its own side's models. The GUI and AI resolvers already judged it this way;
+            // this scan was the player-based holdout.
+            if (ITeamExtensions.AreAllied(_tableState.Teams.Objects, self, unit.PlayerID)) continue;
             foreach (var model in unit.Models)
             {
                 var pos = model.Position;

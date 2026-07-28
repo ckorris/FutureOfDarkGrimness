@@ -2368,8 +2368,9 @@
                   "quantity": 1,
                   "rules": [
                     {
-                      "kind": "core",
-                      "name": "Spawn"
+                      "kind": "coreText",
+                      "name": "Spawn",
+                      "textValue": "Lust Warriors [5]"
                     }
                   ]
                 }
@@ -4371,6 +4372,40 @@
       "engineArgumentCount": 1,
       "valence": "Positive",
       "description": "Counts as having Defense X\u002B in place of the model\u0027s own Defense stat."
+    },
+    {
+      "name": "Spawn",
+      "passive": [],
+      "activated": [
+        {
+          "triggerHook": "Activation_OnActivationStart",
+          "cost": {
+            "kind": "oncePerGame"
+          },
+          "targetSelector": {
+            "rangeInches": 0,
+            "minCount": 1,
+            "maxCount": 1,
+            "targetAffinity": "Self",
+            "requireLineOfSight": false,
+            "requiredToken": null,
+            "singleModel": false,
+            "requiredRule": null
+          },
+          "effect": {
+            "kind": "spawnUnit",
+            "radiusInches": 6
+          },
+          "availableWhen": {
+            "kind": "always"
+          },
+          "label": "Spawn"
+        }
+      ],
+      "scope": "Unit",
+      "engineArgumentCount": 1,
+      "valence": "Positive",
+      "description": "Once per game, when this model is activated, you may place a new unit of X fully within 6\u0022 of it."
     }
   ],
   "spells": [

@@ -441,7 +441,7 @@ public class LobbyScreen : IAppScreen
             step: 250);
         DrawEnumCombo("Terrain Mode",  _viewModel.TerrainPlacementMode, _viewModel.SetTerrainPlacementMode,
             debugLast: new[] { ETerrainPlacementMode.AutoFromLayout },
-            // #299: explicit order keeps the two Alternating modes adjacent (the enum appends
+            // #301: explicit order keeps the two Alternating modes adjacent (the enum appends
             // AlternatingPoints after LoadFromFile to keep the wire/save values stable).
             explicitOrder: new[]
             {
@@ -705,7 +705,7 @@ public class LobbyScreen : IAppScreen
         _ => mode.ToString(),
     };
 
-    // #299 Alternating: Points - the two knobs shown only in that mode.
+    // #301 Alternating: Points - the two knobs shown only in that mode.
     private static void DrawTerrainPointsSliders(ILobbyViewModel viewModel)
     {
         ImGui.TextUnformatted("Total Points");
@@ -814,7 +814,7 @@ public class LobbyScreen : IAppScreen
     // Draws a labeled enum dropdown. `debugLast` names values that are debug conveniences (e.g. the
     // pre-placed / auto-placed setup shortcuts): in a Debug build they keep their declared position -
     // first, for fast iteration - while in a Release build they move to the end so a normal game doesn't
-    // lead with them. `explicitOrder` overrides the raw enum-value order entirely (#299: lets related
+    // lead with them. `explicitOrder` overrides the raw enum-value order entirely (#301: lets related
     // modes sit together when wire-compat forced a new value to the end of the enum); debugLast still
     // applies on top of it. `displayName` supplies a friendly label per value (falls back to the raw
     // enum name). This is presentation only: the enum, saves, and network wire are identical across

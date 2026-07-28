@@ -6664,5 +6664,229 @@
     "engineArgumentCount": 0,
     "valence": "Positive",
     "description": "This model and its unit gain Protection Feat."
+  },
+  {
+    "name": "Repel Ambushers",
+    "passive": [
+      {
+        "hookID": "Lifecycle_OnCapabilityQuery",
+        "condition": { "kind": "always" },
+        "effect": { "kind": "repelAmbushers", "distanceInches": 12.0 },
+        "lifetime": "UntilEndOfGame",
+        "seat": "Actor"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "Enemy units using Ambush must be set up over 12\" away from this model's unit."
+  },
+  {
+    "name": "Ambush Beacon",
+    "passive": [
+      {
+        "hookID": "Lifecycle_OnCapabilityQuery",
+        "condition": { "kind": "always" },
+        "effect": { "kind": "ambushBeacon", "rangeInches": 6.0 },
+        "lifetime": "UntilEndOfGame",
+        "seat": "Actor"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "Friendly units using Ambush may ignore distance restrictions from enemies if they are deployed within 6\" of this model."
+  },
+  {
+    "name": "Rapid Ambush",
+    "passive": [
+      {
+        "hookID": "Deployment_OnPreDeploymentSelect",
+        "condition": { "kind": "always" },
+        "effect": { "kind": "deferDeployment", "timing": "LaterRound", "placementRangeInches": 9.0, "minArrivalRound": 1 },
+        "lifetime": "UntilEndOfGame",
+        "seat": "Actor"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "Counts as having Ambush, but may be deployed at the start of any round, including the first."
+  },
+  {
+    "name": "Spawn",
+    "passive": [],
+    "activated": [
+      {
+        "triggerHook": "Activation_OnActivationStart",
+        "cost": { "kind": "oncePerGame" },
+        "targetSelector": {
+          "rangeInches": 0,
+          "minCount": 1,
+          "maxCount": 1,
+          "targetAffinity": "Self",
+          "requireLineOfSight": false,
+          "requiredToken": null,
+          "singleModel": false,
+          "requiredRule": null
+        },
+        "effect": { "kind": "spawnUnit", "radiusInches": 6.0 },
+        "availableWhen": { "kind": "always" },
+        "label": "Spawn"
+      }
+    ],
+    "scope": "Unit",
+    "engineArgumentCount": 1,
+    "valence": "Positive",
+    "description": "Once per game, when this model is activated, you may place a new unit of X fully within 6\" of it."
+  },
+  {
+    "name": "Split",
+    "passive": [
+      {
+        "hookID": "Lifecycle_OnSelfDestroyed",
+        "condition": { "kind": "always" },
+        "effect": { "kind": "spawnUnit", "radiusInches": 6.0 },
+        "lifetime": "UntilEndOfGame",
+        "seat": "Actor"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 1,
+    "valence": "Positive",
+    "description": "When this unit is fully destroyed, you may place a new unit of X fully within 6\" of it before removing the last model."
+  },
+  {
+    "name": "Reanimation",
+    "passive": [
+      {
+        "hookID": "Activation_OnActivationStart",
+        "condition": { "kind": "allModelsHaveThisRule" },
+        "effect": { "kind": "restoreWounds", "minRoll": 5 },
+        "lifetime": "UntilEndOfGame",
+        "seat": "Actor"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "When a unit where all models have this rule is activated, roll as many dice as the max. number of models/wounds it could restore. For each 5+ you may restore one model/wound. Note that new models may only be restored if they can be placed in coherency with non-restored models."
+  },
+  {
+    "name": "Reanimation Aura",
+    "passive": [
+      {
+        "hookID": "Lifecycle_OnUnitCreated",
+        "condition": { "kind": "always" },
+        "effect": { "kind": "aura", "ruleName": "Reanimation" },
+        "lifetime": "UntilEndOfGame",
+        "seat": "Actor"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "This model and its unit get Reanimation."
+  },
+  {
+    "name": "Reinforcement",
+    "passive": [
+      {
+        "hookID": "Lifecycle_OnSelfDestroyed",
+        "condition": {
+          "kind": "and",
+          "left": { "kind": "allModelsHaveThisRule" },
+          "right": { "kind": "not", "inner": { "kind": "tokenPresent", "tType": { "id": "ReinforcementSpent" }, "minCount": 1 } }
+        },
+        "effect": { "kind": "reinforceUnit" },
+        "lifetime": "UntilEndOfGame",
+        "seat": "Actor"
+      },
+      {
+        "hookID": "Morale_OnShakenApplied",
+        "condition": {
+          "kind": "and",
+          "left": { "kind": "allModelsHaveThisRule" },
+          "right": { "kind": "not", "inner": { "kind": "tokenPresent", "tType": { "id": "ReinforcementSpent" }, "minCount": 1 } }
+        },
+        "effect": { "kind": "reinforceUnit" },
+        "lifetime": "UntilEndOfGame",
+        "seat": "Actor"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "When a unit where all models have this rule is Shaken or fully destroyed, you may remove it from the table as destroyed and place a new copy of it fully within 12\" of any table edge at the beginning of the next round after Ambushers have been deployed. Units that deploy via Reinforcement can't seize or contest objectives on the round they deploy, and this rule doesn't apply to the new copy of the unit."
+  },
+  {
+    "name": "Ambush Re-Deployment",
+    "passive": [
+      {
+        "hookID": "Deployment_OnPreDeploymentSelect",
+        "condition": { "kind": "tokenPresent", "tType": { "id": "PendingAmbushArrival" }, "minCount": 1 },
+        "effect": { "kind": "deferDeployment", "timing": "LaterRound", "placementRangeInches": 9.0, "mandatoryArrival": true },
+        "lifetime": "UntilEndOfGame",
+        "seat": "Actor"
+      }
+    ],
+    "activated": [
+      {
+        "triggerHook": "Activation_OnEndOfActivation",
+        "cost": { "kind": "oncePerGame" },
+        "targetSelector": {
+          "rangeInches": 0,
+          "minCount": 1,
+          "maxCount": 1,
+          "targetAffinity": "Self",
+          "requireLineOfSight": false,
+          "requiredToken": null,
+          "singleModel": false,
+          "requiredRule": null
+        },
+        "effect": { "kind": "ambushRedeploy" },
+        "availableWhen": { "kind": "allModelsHaveThisRule" },
+        "label": "Ambush Re-Deployment"
+      }
+    ],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "Once per game, when a unit where all models have this rule ends its activation, you may immediately remove it from the table (dropping any objectives it might hold within 1\"), and deploy it as if it had Ambush at the beginning of the next round."
+  },
+  {
+    "name": "Ambushing Piercing Shot",
+    "passive": [
+      {
+        "hookID": "Deployment_OnPreDeploymentSelect",
+        "condition": { "kind": "always" },
+        "effect": { "kind": "deferDeployment", "timing": "LaterRound", "placementRangeInches": 9.0 },
+        "lifetime": "UntilEndOfGame",
+        "seat": "Actor"
+      },
+      {
+        "hookID": "Shooting_OnHitRollComplete",
+        "condition": {
+          "kind": "and",
+          "left": { "kind": "not", "inner": { "kind": "isMelee" } },
+          "right": { "kind": "tokenPresent", "tType": { "id": "ArrivedFromReserve" }, "minCount": 1 }
+        },
+        "effect": { "kind": "rollModifier", "rollKind": "Save", "delta": -1 },
+        "lifetime": "ThisAttack",
+        "seat": "Actor"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "Counts as having Ambush, and its weapons get AP(+1) when shooting on the round in which it deploys via this rule."
   }
 ]

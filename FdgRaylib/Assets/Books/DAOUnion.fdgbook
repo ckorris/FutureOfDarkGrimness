@@ -6289,6 +6289,28 @@
       "description": "Once per activation: pick one enemy within 30 inches in line of sight and roll one die; on a 4\u002B place a marker on it. Attackers may remove markers from it before rolling to hit, gaining \u002B1 to hit per removed marker."
     },
     {
+      "name": "Ambush Beacon",
+      "passive": [
+        {
+          "hookID": "Lifecycle_OnCapabilityQuery",
+          "condition": {
+            "kind": "always"
+          },
+          "effect": {
+            "kind": "ambushBeacon",
+            "rangeInches": 6
+          },
+          "lifetime": "UntilEndOfGame",
+          "seat": "Actor"
+        }
+      ],
+      "activated": [],
+      "scope": "Unit",
+      "engineArgumentCount": 0,
+      "valence": "Positive",
+      "description": "Friendly units using Ambush may ignore distance restrictions from enemies if they are deployed within 6\u0022 of this model."
+    },
+    {
       "name": "Ranged Slayer",
       "passive": [
         {

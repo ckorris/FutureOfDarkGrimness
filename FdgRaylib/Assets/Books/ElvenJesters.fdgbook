@@ -1960,6 +1960,59 @@
       "description": "This model and its unit gain Rapid Blink Boost."
     },
     {
+      "name": "Ambush Re-Deployment",
+      "passive": [
+        {
+          "hookID": "Deployment_OnPreDeploymentSelect",
+          "condition": {
+            "kind": "tokenPresent",
+            "tType": {
+              "id": "PendingAmbushArrival"
+            },
+            "minCount": 1
+          },
+          "effect": {
+            "kind": "deferDeployment",
+            "timing": "LaterRound",
+            "placementRangeInches": 9,
+            "minArrivalRound": 2,
+            "mandatoryArrival": true
+          },
+          "lifetime": "UntilEndOfGame",
+          "seat": "Actor"
+        }
+      ],
+      "activated": [
+        {
+          "triggerHook": "Activation_OnEndOfActivation",
+          "cost": {
+            "kind": "oncePerGame"
+          },
+          "targetSelector": {
+            "rangeInches": 0,
+            "minCount": 1,
+            "maxCount": 1,
+            "targetAffinity": "Self",
+            "requireLineOfSight": false,
+            "requiredToken": null,
+            "singleModel": false,
+            "requiredRule": null
+          },
+          "effect": {
+            "kind": "ambushRedeploy"
+          },
+          "availableWhen": {
+            "kind": "allModelsHaveThisRule"
+          },
+          "label": "Ambush Re-Deployment"
+        }
+      ],
+      "scope": "Unit",
+      "engineArgumentCount": 0,
+      "valence": "Positive",
+      "description": "Once per game, when a unit where all models have this rule ends its activation, you may immediately remove it from the table (dropping any objectives it might hold within 1\u0022), and deploy it as if it had Ambush at the beginning of the next round."
+    },
+    {
       "name": "Melee Slayer",
       "passive": [
         {

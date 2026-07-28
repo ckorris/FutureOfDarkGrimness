@@ -2319,8 +2319,9 @@
           "name": "Hero"
         },
         {
-          "kind": "core",
-          "name": "Split"
+          "kind": "coreText",
+          "name": "Split",
+          "textValue": "Lesser Change Horrors [5]"
         },
         {
           "kind": "coreNumeric",
@@ -3058,8 +3059,9 @@
       ],
       "rules": [
         {
-          "kind": "core",
-          "name": "Split"
+          "kind": "coreText",
+          "name": "Split",
+          "textValue": "Lesser Change Horrors [5]"
         },
         {
           "kind": "core",
@@ -3205,8 +3207,9 @@
           "name": "Changebound"
         },
         {
-          "kind": "core",
-          "name": "Split"
+          "kind": "coreText",
+          "name": "Split",
+          "textValue": "Changelings [10]"
         }
       ],
       "items": [],
@@ -4723,6 +4726,28 @@
       "engineArgumentCount": 0,
       "valence": "Positive",
       "description": "Once per activation, before attacking, pick one enemy unit within 18\u0022 in line of sight with Caster, which gets -1 to casting rolls once (next time the effect would apply)."
+    },
+    {
+      "name": "Split",
+      "passive": [
+        {
+          "hookID": "Lifecycle_OnSelfDestroyed",
+          "condition": {
+            "kind": "always"
+          },
+          "effect": {
+            "kind": "spawnUnit",
+            "radiusInches": 6
+          },
+          "lifetime": "UntilEndOfGame",
+          "seat": "Actor"
+        }
+      ],
+      "activated": [],
+      "scope": "Unit",
+      "engineArgumentCount": 1,
+      "valence": "Positive",
+      "description": "When this unit is fully destroyed, you may place a new unit of X fully within 6\u0022 of it before removing the last model."
     },
     {
       "name": "Indirect when shooting",

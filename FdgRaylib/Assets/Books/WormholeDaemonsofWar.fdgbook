@@ -4151,6 +4151,28 @@
       "description": "If all models have this rule: gains a marker when it fully destroys an enemy unit (max 2); each marker adds \u002B1 to Defense rolls for the rest of the game."
     },
     {
+      "name": "Repel Ambushers",
+      "passive": [
+        {
+          "hookID": "Lifecycle_OnCapabilityQuery",
+          "condition": {
+            "kind": "always"
+          },
+          "effect": {
+            "kind": "repelAmbushers",
+            "distanceInches": 12
+          },
+          "lifetime": "UntilEndOfGame",
+          "seat": "Actor"
+        }
+      ],
+      "activated": [],
+      "scope": "Unit",
+      "engineArgumentCount": 0,
+      "valence": "Positive",
+      "description": "Enemy units using Ambush must be set up over 12\u0022 away from this model\u0027s unit."
+    },
+    {
       "name": "Piercing Fighter",
       "passive": [
         {

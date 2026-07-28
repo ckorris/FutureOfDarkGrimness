@@ -44,6 +44,12 @@ public static class ZoneRenderer
                     DrawFilled(part, scale, originX, originY, tableH, fill, outline, outlineThickness);
                 break;
 
+            // #197 P17c: Reinforcement's arrival band - four non-overlapping border rectangles.
+            case TableEdgeBandZone band:
+                foreach (var part in band.Bands)
+                    DrawFilled(part, scale, originX, originY, tableH, fill, outline, outlineThickness);
+                break;
+
             case RotatedZoneWrapper wRect when wRect.Inner is RectangularZone rr:
                 DrawRotatedRect_Raylib(rr, wRect.AngleDegrees, wRect.Pivot, scale, originX, originY, tableH, fill, outline);
                 break;
@@ -107,6 +113,12 @@ public static class ZoneRenderer
 
             case CompositeZone comp:
                 foreach (var part in comp.Parts)
+                    DrawFilled(part, drawList, scale, originX, originY, tableH, fillColor, outlineColor, outlineThickness);
+                break;
+
+            // #197 P17c: Reinforcement's arrival band - four non-overlapping border rectangles.
+            case TableEdgeBandZone band:
+                foreach (var part in band.Bands)
                     DrawFilled(part, drawList, scale, originX, originY, tableH, fillColor, outlineColor, outlineThickness);
                 break;
 

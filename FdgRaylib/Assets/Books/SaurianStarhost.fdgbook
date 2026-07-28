@@ -4955,6 +4955,28 @@
       "description": "Once per game, when this unit activates, it may brace: until its next activation it rolls one die per wound it takes, ignoring each on a 5\u002B."
     },
     {
+      "name": "Ambush Beacon",
+      "passive": [
+        {
+          "hookID": "Lifecycle_OnCapabilityQuery",
+          "condition": {
+            "kind": "always"
+          },
+          "effect": {
+            "kind": "ambushBeacon",
+            "rangeInches": 6
+          },
+          "lifetime": "UntilEndOfGame",
+          "seat": "Actor"
+        }
+      ],
+      "activated": [],
+      "scope": "Unit",
+      "engineArgumentCount": 0,
+      "valence": "Positive",
+      "description": "Friendly units using Ambush may ignore distance restrictions from enemies if they are deployed within 6\u0022 of this model."
+    },
+    {
       "name": "Rending when shooting",
       "passive": [
         {

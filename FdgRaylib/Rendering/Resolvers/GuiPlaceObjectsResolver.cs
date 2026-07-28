@@ -538,8 +538,17 @@ public class GuiPlaceObjectsResolver<T>
         if (maxFromStart <= 0f && !IsInCohesion(cand, shape, facing, excludeIndex))
         { reason = $"Outside cohesion - must be within {GameWideConstants.MAX_MODEL_DISTANCE_FROM_ANY_OTHER_MODEL_INCHES}\" base-to-base of a placed model."; return false; }
 
-        if (minEnemyDist > 0f && TooCloseToEnemy(cand, enemies, minEnemyDist))
-        { reason = $"Too close to an enemy - must be over {minEnemyDist:F0}\" from enemy units."; return false; }
+        // #197 P22: the shared authority folds the flat minimum, Repel keep-out discs and Beacon
+        // waivers together; TooCloseToEnemy is kept only to word the reason for the common case.
+        PlaceObjectsRequest<T>? req = ConstraintRequest;
+        if (req != null && PlacementDistanceRules.ViolatesEnemyDistance(req, cand, enemies))
+        {
+            reason = minEnemyDist > 0f && TooCloseToEnemy(cand, enemies, minEnemyDist)
+                ? $"Too close to an enemy - must be over {minEnemyDist:F0}\" from enemy units."
+                : "Inside an enemy's Repel Ambushers keep-away - set up further from that unit " +
+                  "(or within a friendly Ambush Beacon's range).";
+            return false;
+        }
 
         if (PlacementUtilities.OverlapsImpassibleTerrain(cand, shape, facing, _tableState.Terrain.Objects))
         { reason = "On impassible terrain - the model's base would overlap a building or blocker."; return false; }
@@ -558,7 +567,8 @@ public class GuiPlaceObjectsResolver<T>
         if (!PlacementUtilities.IsBaseWithinZone(cand, shape, facing, zone)) return false;
         foreach (var (pos, oShape, oFacing) in GetTableOccupants())
             if (BaseShapeGeometry.AreColliding(shape, cand, facing, oShape, pos, oFacing)) return false;
-        if (minEnemyDist > 0f && TooCloseToEnemy(cand, enemies, minEnemyDist)) return false;
+        PlaceObjectsRequest<T>? req = ConstraintRequest;
+        if (req != null && PlacementDistanceRules.ViolatesEnemyDistance(req, cand, enemies)) return false;
         if (PlacementUtilities.OverlapsImpassibleTerrain(cand, shape, facing, _tableState.Terrain.Objects)) return false;
         return true;
     }
@@ -934,7 +944,8 @@ public class GuiPlaceObjectsResolver<T>
                     if (!PlacementUtilities.IsBaseWithinZone(c, shape, facing, zone)) continue;
                     if (CheckOverlap(c, shape, facing) != null) continue;
                     if (PlacementUtilities.OverlapsImpassibleTerrain(c, shape, facing, _tableState.Terrain.Objects)) continue;
-                    if (minEnemyDist > 0f && TooCloseToEnemy(c, enemies, minEnemyDist)) continue;
+                    PlaceObjectsRequest<T>? req = ConstraintRequest;
+                    if (req != null && PlacementDistanceRules.ViolatesEnemyDistance(req, c, enemies)) continue;
                     if (!IsInCohesion(c, shape, facing, -1)) continue;
                     result = c; return true;
                 }
@@ -945,24 +956,44 @@ public class GuiPlaceObjectsResolver<T>
     }
 
     private static readonly List<Position> _noEnemies = new();
+    private static readonly List<PlacementDisc> _noDiscs = new();
 
-    // IEnemyExclusionProvider: surfaces the live enemy centres + radius while an Ambush-style placement
-    // (MinDistanceFromEnemiesInches > 0) is pending, so the renderer can draw the no-go blob. The engine
-    // thread is blocked awaiting this resolution during placement, so reading table state here is safe.
-    public bool TryGetEnemyExclusion(out IReadOnlyList<Position> enemyCenters, out float radiusInches)
+    // #197 P22: the pending request, read where the legality checks and the exclusion provider run
+    // (main thread; the engine thread is blocked awaiting this resolution, so the snapshot is stable).
+    private PlaceObjectsRequest<T>? ConstraintRequest
     {
-        PlaceObjectsRequest<T>? request;
-        lock (_lock) request = _request;
+        get { lock (_lock) return _request; }
+    }
 
-        if (request == null || request.MinDistanceFromEnemiesInches <= 0f)
+    // IEnemyExclusionProvider: surfaces the no-go geometry while an Ambush-style placement is pending, so
+    // the renderer can draw the blob. Keep-out = the flat over-9" rule as a disc per live enemy model plus
+    // the request's Repel Ambushers discs (#197 P22, each at its own radius); waivers = Ambush Beacon
+    // regions the renderer ERASES from the blob (and outlines), since inside one every enemy-distance
+    // restriction is void. The engine thread is blocked awaiting this resolution during placement, so
+    // reading table state here is safe.
+    public bool TryGetEnemyExclusion(out IReadOnlyList<PlacementDisc> keepOut,
+        out IReadOnlyList<PlacementDisc> waivers)
+    {
+        PlaceObjectsRequest<T>? request = ConstraintRequest;
+
+        bool constrained = request != null
+            && (request.MinDistanceFromEnemiesInches > 0f || request.EnemyKeepOutDiscs.Count > 0);
+        if (!constrained)
         {
-            enemyCenters = _noEnemies;
-            radiusInches = 0f;
+            keepOut = _noDiscs;
+            waivers = _noDiscs;
             return false;
         }
 
-        enemyCenters = GetEnemyPositions(request.TargetPlayerID);
-        radiusInches = request.MinDistanceFromEnemiesInches;
+        var discs = new List<PlacementDisc>(request!.EnemyKeepOutDiscs);
+        if (request.MinDistanceFromEnemiesInches > 0f)
+        {
+            foreach (Position enemy in GetEnemyPositions(request.TargetPlayerID))
+                discs.Add(new PlacementDisc(enemy, request.MinDistanceFromEnemiesInches));
+        }
+
+        keepOut = discs;
+        waivers = request.EnemyDistanceWaiverDiscs;
         return true;
     }
 

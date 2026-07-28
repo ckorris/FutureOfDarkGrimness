@@ -12,7 +12,7 @@ namespace FdgRaylib.Rendering.Presentation;
 /// the table while the numbers narrate from the caption zone, never covering the units or the
 /// concurrent attack animation (#238). The panel is: a standalone <b>target badge</b> (the success
 /// threshold, e.g. "4+", big enough to read before the dice settle) over the roll's category word
-/// (ATTACK / SAVE, matching the panel's accent stripe), a <b>header</b> with the roll's purpose
+/// (ATTACK / SAVE / CAST, matching the panel's accent stripe), a <b>header</b> with the roll's purpose
 /// (<see cref="DiceRolledBeat.Label"/>), an optional dim <b>context</b> line (who's rolling at
 /// whom), the dice themselves, optional <b>modifier chips</b> ("Quality 4+ | Stealth -1") and gold
 /// <b>proc chips</b> ("Furious +2 on 6s") — top-face successes get a gold rim when procs fired —
@@ -25,9 +25,11 @@ namespace FdgRaylib.Rendering.Presentation;
 ///
 /// <para>Two vocabularies keyed off the roller mode:</para>
 /// <list type="bullet">
-/// <item><b>Realistic</b> — the actual dice as pip faces; successes green, failures gray; a brief
+/// <item><b>Realistic</b> — the actual dice as pip faces; successes in the roll's category accent
+/// (ember / green / arcane / amethyst, matching the stripe and badge word), failures gray; a brief
 /// "settle" tumble at the start reads as rolling.</item>
-/// <item><b>Probabilistic</b> — no discrete dice exist (fractional), so a labeled success bar.</item>
+/// <item><b>Probabilistic</b> — no discrete dice exist (fractional), so a labeled success bar, its
+/// filled portion in the same category accent.</item>
 /// </list>
 ///
 /// <para><see cref="DrawRollOff"/> docks to the same caption zone: the objective-count roll and the
@@ -39,26 +41,36 @@ public static class DiceOverlay
     private const float FlickerEnd = 0.3f; // fraction of the beat spent "rolling" before faces lock; rest lingers settled
     private const float TumbleHz   = 9f;   // face-change rate while rolling (per-frame swaps strobe)
 
-    private const int HeaderSize   = 22;
-    private const int ContextSize  = 18;
-    private const int ResultSize   = 20;
-    private const int BadgeSize    = 40;   // the standalone target number
-    private const int BadgePad     = 10;
-    private const int CategorySize = 12;   // the ATTACK / SAVE word under the badge
-    private const int ChipSize     = 16;
-    private const int ChipPadX     = 7;
-    private const int ChipPadY     = 3;
-    private const int ChipGap      = 6;
-    private const int PanelPad     = 16;
-    private const int RowGap       = 8;
-    private const int ColGap       = 16;
-    private const int BottomMargin = 18;
+    // Every panel dimension below is a design number run through Sc() once, so the whole strip —
+    // type, dice, chips, padding, badge — grows or shrinks together from this single knob.
+    private const float PanelScale = 1.25f;
+
+    private static int Sc(int v) => (int)MathF.Round(v * PanelScale);
+
+    private static readonly int HeaderSize   = Sc(22);
+    private static readonly int ContextSize  = Sc(18);
+    private static readonly int ResultSize   = Sc(20);
+    private static readonly int BadgeSize    = Sc(40);   // the standalone target number
+    private static readonly int BadgePad     = Sc(10);
+    private static readonly int CategorySize = Sc(12);   // the ATTACK / SAVE / CAST word under the badge
+    private static readonly int ChipSize     = Sc(16);
+    private static readonly int ChipPadX     = Sc(7);
+    private static readonly int ChipPadY     = Sc(3);
+    private static readonly int ChipGap      = Sc(6);
+    private static readonly int PanelPad     = Sc(16);
+    private static readonly int RowGap       = Sc(8);
+    private static readonly int ColGap       = Sc(16);
+    private static readonly int DieSize      = Sc(44);
+    private static readonly int DieGap       = Sc(8);
+    private static readonly int DieMin       = Sc(16);   // floor when a huge pool has to shrink
+    private static readonly int SideReserve  = Sc(260);  // width kept clear for the badge column + margins
+    private const           int BottomMargin = 18;       // dock gap, not panel geometry — unscaled
 
     private const float OverlapDim = 0.35f; // ghost alpha while the attack animation overlaps the strip
 
     private static readonly Color Panel    = new(20, 20, 24, 210);
     private static readonly Color BadgeBg  = new(42, 38, 26, 230);
-    private static readonly Color Success  = new(60, 170, 70, 255);
+    private static readonly Color Success  = new(60, 170, 70, 255);   // roll-offs only — see AccentFor
     private static readonly Color Fail     = new(110, 110, 110, 255);
     private static readonly Color Rolling  = new(225, 225, 225, 255);
     private static readonly Color Header   = new(235, 235, 235, 255);
@@ -67,10 +79,14 @@ public static class DiceOverlay
     private static readonly Color Tie      = new(228, 200, 60, 255);  // yellow — tied for the win (re-rolls)
 
     // #245 category accents: the edge stripe + badge word color-code what the roll is FOR. The word
-    // is the redundant channel (color alone would fail a colorblind glance).
-    private static readonly Color OffenseAccent = new(215, 95, 60, 255);   // ember — attacks
-    private static readonly Color DefenseAccent = new(95, 145, 215, 255);  // steel — saves
-    private static readonly Color MiscAccent    = new(140, 140, 148, 255); // neutral — everything else
+    // is the redundant channel (color alone would fail a colorblind glance). Successful dice wear the
+    // same accent, so the stripe, the badge word and the settled faces all say one thing; failures
+    // stay neutral gray, which is what actually carries the pass/fail read.
+    // Hues sit roughly 70-90 degrees apart so no two are confusable in a 4px stripe or a small die.
+    private static readonly Color OffenseAccent = new(215, 95, 60, 255);   // ember    — attacks
+    private static readonly Color DefenseAccent = new(80, 190, 95, 255);   // green    — saves
+    private static readonly Color MagicAccent   = new(85, 170, 225, 255);  // arcane   — cast rolls
+    private static readonly Color MiscAccent    = new(160, 115, 210, 255); // amethyst — morale, terrain, objectives
 
     private static readonly Color ChipBg     = new(45, 45, 52, 230);
     private static readonly Color ChipText   = new(210, 210, 215, 255);
@@ -106,19 +122,19 @@ public static class DiceOverlay
         // sized for it up front and never reflows at the settle instant.
         string result = ResultText(beat);
         string badge  = $"{beat.SuccessThreshold}+";
-        int maxChipRow = areaWidth - 260;
+        int maxChipRow = areaWidth - SideReserve;
         List<(string Text, int W)>? modChips  = LayoutChips(beat.ModifierTags, maxChipRow);
         List<(string Text, int W)>? procChips = LayoutChips(beat.ProcTags, maxChipRow);
         bool procsFired = procChips != null;
 
         // Size the dice row (shrink the die if there are many).
-        int gap = 8;
-        int dieSize = 44;
+        int gap = DieGap;
+        int dieSize = DieSize;
         if (faces.Count > 0)
         {
-            float maxRow = areaWidth - 260; // leave room for the badge column + margins
+            float maxRow = areaWidth - SideReserve; // leave room for the badge column + margins
             if (faces.Count * (dieSize + gap) > maxRow)
-                dieSize = Math.Max(16, (int)(maxRow / faces.Count) - gap);
+                dieSize = Math.Max(DieMin, (int)(maxRow / faces.Count) - gap);
         }
         int rowW  = faces.Count > 0 ? faces.Count * dieSize + (faces.Count - 1) * gap : 0;
         int diceH = faces.Count > 0 ? dieSize : 0;
@@ -168,6 +184,7 @@ public static class DiceOverlay
         if (diceH > 0)
         {
             y += RowGap;
+            Color successFill = AccentFor(beat.Category);
             int rowX = contentX + (contentW - rowW) / 2;
             for (int i = 0; i < faces.Count; i++)
             {
@@ -178,7 +195,7 @@ public static class DiceOverlay
                 {
                     shownFace = faces[i];
                     bool success = shownFace >= beat.SuccessThreshold;
-                    fill = success ? Success : Fail;
+                    fill = success ? successFill : Fail;
                     pip = Color.White;
                 }
                 else
@@ -222,12 +239,12 @@ public static class DiceOverlay
         string header = beat.Label;
         string result = ResultText(beat);
         string badge  = $"{beat.SuccessThreshold}+";
-        int maxChipRow = areaWidth - 260;
+        int maxChipRow = areaWidth - SideReserve;
         List<(string Text, int W)>? modChips  = LayoutChips(beat.ModifierTags, maxChipRow);
         List<(string Text, int W)>? procChips = LayoutChips(beat.ProcTags, maxChipRow);
 
-        int barW = Math.Min(360, areaWidth - 260);
-        int barH = 22;
+        int barW = Math.Min(Sc(360), areaWidth - SideReserve);
+        int barH = Sc(22);
 
         (int badgeW, int badgeColH) = BadgeColumnSize(badge, beat.Category);
 
@@ -274,7 +291,8 @@ public static class DiceOverlay
         int barX = contentX + (contentW - barW) / 2;
         Raylib.DrawRectangle(barX, y, barW, barH, Faded(Fail, a));
         float frac = beat.Total > 0f ? beat.Successes / beat.Total : 0f;
-        Raylib.DrawRectangle(barX, y, (int)(barW * Math.Clamp(frac, 0f, 1f)), barH, Faded(Success, a));
+        Raylib.DrawRectangle(barX, y, (int)(barW * Math.Clamp(frac, 0f, 1f)), barH,
+            Faded(AccentFor(beat.Category), a));
         Raylib.DrawRectangleLines(barX, y, barW, barH, Faded(Color.Black, a));
         y += barH;
 
@@ -313,10 +331,10 @@ public static class DiceOverlay
         if (a <= 0.02f) return;
 
         bool settled = progress >= FlickerEnd;
-        const int nameFont = 22;
-        const int dieSize  = 44;
-        const int rowGap   = 10;
-        const int colGap   = 18;
+        int nameFont = Sc(22);
+        int dieSize  = DieSize;
+        int rowGap   = Sc(10);
+        int colGap   = Sc(18);
 
         int nameColW = 0;
         foreach (RollOffEntry e in beat.Entries)
@@ -384,6 +402,7 @@ public static class DiceOverlay
     {
         ERollBeatCategory.Offense => OffenseAccent,
         ERollBeatCategory.Defense => DefenseAccent,
+        ERollBeatCategory.Magic   => MagicAccent,
         _                         => MiscAccent,
     };
 
@@ -391,6 +410,7 @@ public static class DiceOverlay
     {
         ERollBeatCategory.Offense => "ATTACK",
         ERollBeatCategory.Defense => "SAVE",
+        ERollBeatCategory.Magic   => "CAST",
         _                         => "",
     };
 

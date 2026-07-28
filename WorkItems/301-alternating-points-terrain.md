@@ -1,4 +1,4 @@
-# 299 — "Alternating: Points" terrain placement mode
+# 301 — "Alternating: Points" terrain placement mode
 
 **Status**: in-progress (implemented + tested; awaiting GUI hand-verify)
 **Related**: #268 (palette), #002 (Alternating), #280 (terrain preview)

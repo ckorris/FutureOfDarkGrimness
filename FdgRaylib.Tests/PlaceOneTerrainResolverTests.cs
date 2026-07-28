@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace FdgRaylib.Tests;
 
-// #299 Alternating: Points - the CLI resolver must honor the request's budget: an unaffordable pick
+// #301 Alternating: Points - the CLI resolver must honor the request's budget: an unaffordable pick
 // re-prompts instead of resolving, and the EOF fallback (piped/automated runs) never picks a piece
 // the server-side check would bounce right back.
 [TestFixture]

@@ -977,6 +977,358 @@ core `Slow` grant survives. Affects all 15 shipped `* Buff` rules plus `Piercing
 authored (consistent with its siblings and correct in normal play) rather than papering over one
 instance; filed against **#095**.
 
+## Slice P22a: Repel Ambushers + Ambush Beacon (30 refs) — DONE 2026-07-28
+
+> Repel: "Enemy units using Ambush must be set up over 12\" away from this model's unit." (24 refs, 8 books)
+> Beacon: "Friendly units using Ambush may ignore distance restrictions from enemies if they are deployed
+> within 6\" of this model." (6 refs, 3 books)
+
+**Owner sign-offs (2026-07-28):** the Beacon waiver is judged PER arriving MODEL; it overrides BOTH
+restriction kinds (the flat over-9" rule and Repel's 12"); and the arrival distance scans became
+side-aware in this slice.
+
+**The shape: constraint discs on the request + one legality authority.** `PlaceObjectsRequest` gained
+`EnemyKeepOutDiscs` / `EnemyDistanceWaiverDiscs` (new `PlacementDisc(Center, RadiusInches)`, snapshotted
+at request build — nothing moves during a placement, so the snapshot is exact), and a new engine
+`PlacementDistanceRules` is the single authority combining the flat minimum + keep-outs + waivers
+(waiver wins over both; keep-outs exclusive at the boundary like the over-9" rule, waiver inclusive).
+All four placement resolvers now judge enemy distance through it: CLI + GUI (their `TooCloseToEnemy`
+kept only to word the failure message), solo-AI (`BlockPenalty`'s one enemy-distance read — the
+Tactician inherits it, being a subclass), and the Tactician's strike aim (per-victim clearance asks
+`CapabilityRuleQueries.AmbushRepelDistance` so "right behind it" aims past a repeller's 12").
+
+**Both rules are capability answers** at `Lifecycle_OnCapabilityQuery` (`Effect./RuleOperation.
+RepelAmbushers(dist)` + `AmbushBeacon(range)`), so a Condition gates them live and suppression applies;
+`AmbushArrivalRules` (beside `ReserveRules`) turns the answers into discs — side-aware
+(`ITeamExtensions.AreAllied`; "friendly"/"enemy" is relative to the ARRIVING unit), living models only,
+reserve units project nothing, one disc per living model of the constraint unit. The per-model
+radiation is Repel's wording exactly; for Beacon ("this model") it is the unit-holds-the-rule
+accommodation Accumulator/Caster Group made — every corpus beacon is a single-model unit.
+
+**Found while scoping: the CLI resolver's enemy scan was player-based** (teammates counted as enemies
+for the 9" rule), while GUI/AI/Tactician were already side-aware — fixed here per the sign-off, one
+line on the shared `AreAllied`.
+
+**GUI**: `IEnemyExclusionProvider` reshaped to discs; the no-go blob paints each keep-out disc at its
+own radius and ERASES the beacon bubbles (custom zero-src blend — the hole IS the semantics), with a
+green outline so the player sees why the hole exists. Aircraft off-table redeploy is not "using
+Ambush": no discs, by construction.
+
+Data (app-side, supplement): both defs, capability entry each; embedded into the 8 Repel books
+(EternalDynasty, Jackals, HumanInquisition, SoulSnatcherCults, RobotLegions, WormholeDaemonsofWar,
+OrcMarauders, HumanDefenseForce) + 3 Beacon books (DAOUnion, SaurianStarhost, EternalDynasty).
+
+Tests: engine `AmbushArrivalConstraintTests` (12 — disc building incl. dead/reserve/allied/live-Condition
+gating, the combination authority incl. both waiver-overrides pins and the boundary conventions, and the
+stage wiring end-to-end via the real `StartOfRoundExtraActionStage`); `AiPlaceObjectsResolverTests` +1
+(the AI honors a keep-out disc bigger than the flat rule). App `AmbushConstraintShippedDataTests` (5 —
+shipped-data pins + end-to-end discs from the real JSON + every-referencing-book-embeds). Engine
+2259/2259, app 676/676, smoke exit 0.
+
+Mutation-checked, four mutations each redding exactly its own tests: dropping the waiver short-circuit,
+reverting the side check to player-based, dropping the stage's disc wiring, and deleting the AI's
+enemy-distance read. That last one initially SURVIVED — both AI tests passed with the check deleted,
+because the fan-out lane happens to land far from a mid-table enemy — so both were hardened to park the
+enemy on the AI's natural landing spot (the pre-existing 9" test had been vacuous all along).
+
+Corpus dead references **199 -> 169**.
+
+## Slice P22b: Rapid Ambush (4 refs) — DONE 2026-07-28
+
+> "Counts as having Ambush, but may be deployed at the start of any round, including the first."
+> (Dark Prime Brothers, Dark Brothers)
+
+**A field, not a new `EDeferTiming` value.** The filed premise suggested a new timing; the real
+variable is only the EARLIEST arrival round, so `DeferDeployment` (effect + op + JSON) gained
+`MinArrivalRound` (default 2) and every `Timing == LaterRound` check in the codebase stays untouched -
+core Ambush and all pre-existing authorings keep their gate by defaulting. `BringOnReserves` now runs
+every round and gates PER UNIT (`roundCount < defer.MinArrivalRound`); the Aircraft off-table return
+keeps its flat round-2 gate. `ChooseUnitToActivateStage`'s unavailability tooltip words the unit's own
+round ("Reserve - arrives round N").
+
+Data (app-side, supplement): `deferDeployment(LaterRound, 9, minArrivalRound: 1)`; embedded into
+DarkPrimeBrothers + DarkBrothers.
+
+Tests: engine `RapidAmbushRuleIntegrationTests` (3 - round-1 arrival WITH the 9" constraint while a
+core-Ambush unit in the same run stays held (the per-unit pin), declined-round-1 re-offered round 2,
+and the default-2 pin so existing authorings are provably untouched). App `RapidAmbushShippedDataTests`
+(2 - the JSON deserializes minArrivalRound 1 (a silent fallback to 2 would validate, lint and play
+exactly like core Ambush), book embedding). Engine 2262/2262, app 674/674, smoke exit 0.
+
+Mutation-checked: reverting the per-unit gate to the flat round-2 check reds exactly the round-1 test.
+
+Corpus dead references **169 -> 165**.
+
+## Slice P22c: Ambushing Piercing Shot (4 refs) — DONE 2026-07-28 (app-side only)
+
+> "Counts as having Ambush, and its weapons get AP(+1) when shooting on the round in which it deploys
+> via this rule." (Jackals, Robot Legions, Rebel Guerrillas)
+
+**Pure data, no engine change** - two entries on shipped seams: `deferDeployment(LaterRound, 9)` (the
+Ambush half) + a Piercing-Fighter-shaped Save -1 at `Shooting_OnHitRollComplete`, Actor seat, gated
+`and(not(isMelee), tokenPresent(ArrivedFromReserve))`. The arrival pass already stamps that token and
+the round-end sweep already clears it, so "on the round in which it deploys" rides the existing
+lifecycle. Recorded approximation: an Aircraft off-table return stamps the same token; no corpus APS
+unit is an Aircraft (checked), so nothing observable rides on the shared marker.
+
+Tests: app `AmbushingPiercingShotShippedDataTests` (4 - the defer half is plain round-2 Ambush; token
+present -> -1 Save shooting and 0 in melee; no token -> 0; book embedding). App 679/679.
+
+Corpus dead references **165 -> 161**.
+
+## Slice P22d: Ambush Re-Deployment (4 refs) — DONE 2026-07-28 (P22 closed, 42/42)
+
+> "Once per game, when a unit where all models have this rule ends its activation, you may immediately
+> remove it from the table (dropping any objectives it might hold within 1\"), and deploy it as if it
+> had Ambush at the beginning of the next round." (Elven Jesters)
+
+**Owner sign-off (2026-07-28): the return is MANDATORY** - the next round start PLACES the unit without
+asking; only the spot is the player's. `DeferDeployment` gained `MandatoryArrival` (default false);
+`BringOnReserves` skips its Yes/No when set.
+
+**Two halves that meet on a token.** The removal is an end-of-activation activated ability
+(`Cost.OncePerGame`, `availableWhen: allModelsHaveThisRule`) whose `Effect.AmbushRedeploy` resolves to
+an executable `InvokeAmbushRedeploy` -> new `IOperationServices.RedeployAsAmbush`: drop any objective
+the unit's SIDE holds within 1" (base-edge to marker centre, reconcile's own measure; #297
+side-awareness), park the models at the unplaced sentinel, `PlaceInReserve`, stamp the new
+`TokenType.PendingAmbushArrival` (ManualOnly - it must survive the round-end sweep). The return leg is
+the rule's own `deferDeployment(LaterRound, 9, mandatoryArrival: true)` entry GATED on that token, so
+the ordinary arrival pass finds it with no special case, and arriving spends the token.
+
+**The end-of-activation ability seam is new** (and is what Dash rides later):
+`ReconcileEndOfActivationStage` gathers offers at a new `ActivationEndContext`
+(`Activation_OnEndOfActivation`) BEFORE its token sweep, mirroring `ActivationStartStage`'s
+single-ability-Yes/No / multi-ability-pick shape via `AbilityEffectChoice`. One deliberate difference,
+recorded in the stage doc: **the Yes/No defaults to NO** - at activation start the lone optional
+ability is a buff and the aggressive EOF/AI default suits it; here the only corpus ability is a
+once-per-game self-removal with a mandatory return, which an auto-accepting AI would fire on every
+unit's first activation. A unit wiped out during its own activation (melee strike-back) is never
+offered. `RuleFireLint` gained the hook in `AbilityOfferingHooks` + the context in `ContextVariants` -
+the lint itself caught the missing context by failing the shipped data's fire check, which is exactly
+the loud-drift direction it was built for.
+
+Data (app-side, supplement): both halves as above; embedded into ElvenJesters.
+
+Tests: engine `AmbushRedeployRuleIntegrationTests` (4 - the full accept loop through the REAL stages
+(removal state, mandatory return that FAILS the test if any Yes/No is asked, arrival token, pending
+token spent, once-per-game gate), decline leaves the gate unspent, the objective drop trio (ours-near
+drops / enemy-near stays / ours-far stays), wiped-unit never offered). App
+`AmbushRedeployShippedDataTests` (3 - the ability pins, the return-leg pins incl. BOTH HALVES NAMING
+THE SAME TOKEN (gating on any other strands the unit off-table), book embedding). Engine 2266/2266,
+app 683/683.
+
+Mutation-checked: dropping the MandatoryArrival honor (always ask), disabling the objective drop, and
+dropping the alive guard each red exactly their own test.
+
+Verified in play (headless scenario probe, scratchpad): an on-table carrier surfaces "Use Ambush
+Re-Deployment on Troupe?" at every end of activation (EOF declines, gate unspent - correct for "you
+may"); a unit seeded InReserve+PendingAmbushArrival arrives at the round-2 start with ZERO "Deploy
+from Ambush this round?" prompts (grep-counted), through the normal placement flow, then logs
+"arrives from Ambush!". Exit 0.
+
+Corpus dead references **161 -> 157**. P22 closes at 42/42 (Repel 24 + Beacon 6 + Rapid 4 + APS 4 +
+Re-Deployment 4).
+
+## Slice P17a: Spawn + the unit-creation machinery (14 refs) — DONE 2026-07-28
+
+> "Once per game, when this model is activated, you may place a new unit of X fully within 6\" of it."
+> (Alien Hives, Ratmen Clans, Robot Legions, Wormhole Daemons of Lust)
+
+**Owner sign-offs (2026-07-28):** a mid-round creation may activate the SAME round ("same round for
+all" - including Split's destruction-seam path, which is what shaped the adoption design below).
+
+**Why Spawn was dead twice over.** The OPR source writes the X as a STRING rating
+("Spawn(Spores [5])") and BOTH importers flattened any non-numeric rating to the bare rule name - the
+argument never reached the books, let alone the engine. And nothing could represent it anyway:
+`RuleArgument` had only `Int` (its doc literally anticipated "a Str case for Alien Hives'
+Spawn(unit-type)").
+
+**The vocabulary:** `RuleArgument.Str`; `SpecialRuleEntry_Text` ("coreText", PrintableName
+"Spawn(Spores [5])") emitted by both importers for non-numeric ratings and resolved to a Str arg by
+`DescribeRuleEntry`; `SpecialRuleEntryParser` grows a text-parenthetical branch GATED on
+no-space-before-paren, so rule NAMES like "Versatile Attack (Piercing)" keep resolving whole;
+`RuleAttachmentPersistence` extended compatibly (it used to HARD-FAIL a resume on any non-Int
+argument - new blobs write a kind-carrying `Arguments` list, old blobs still read via `IntArguments`).
+
+**Auxiliary unit specs.** `ArmyListFile.AuxiliaryUnits` (nullable, omitted when absent so existing
+files round-trip byte-identical): full `UnitFileEntry`s keyed by the rule's exact argument text in
+`Id` (display `Name` stays clean - "Spores", not "Spores [5]"). `ListCompiler.CompileAuxiliaryUnits`
+compiles each named book unit at the `[n]` size, zero points, RECURSIVELY with a seen-guard (a Split
+chain: Change Horrors -> Lesser Change Horrors -> Changelings - every link ships). The rule-name set
+{Spawn, Split} is a commented constant per grow-on-demand. `ArmyRuleDataPersistence` carries the aux
+list + the effect-set keys on ArmyData (nullable additions, pre-P17 blobs read fine), so the specs
+survive to mid-game and across a resume.
+
+**The creation service.** `Effect.SpawnUnit(radius)` reads Arg(0) ->
+`RuleOperation.InvokeSpawnUnit` -> new `IOperationServices.SpawnUnit`: find the placer's army, read
+the persisted spec, build through THE SAME PATH a deploying unit takes (UnitData ctor + the
+now-public `GameBootstrap.AttachRulesFromArmyList` + `UnitCreationRules.Apply`, so Tough's max
+wounds and auras land identically), store-Create (which is what replicates the new unit to network
+clients - the AddSingleDataMessage path has existed since the join-snapshot work), append
+`army.UnitBindings` + re-Set the army through the store (the #190 update path carries the grown
+list), place via the normal flow in a 6" `CircularZone` (disembark's shape, #282 commit guard), and
+stamp the new `TokenType.JoinsRoundInProgress`.
+
+**Same-round activation without touching the creator.** The per-round pool snapshots at round start,
+and a creation can fire from code that cannot see the round context (Split's destruction seam). So
+the ROUND CONTEXT adopts: `SingleRoundContext.AdoptMidRoundUnits()` runs at its own query seams
+(the DoesX/remaining-activation checks), folds marked units into their owner's pool and spends the
+marker; the round-start snapshot sweeps strays so nothing joins twice. Works for any future
+mid-round creation for free.
+
+Data: `Spawn` supplement definition (once-per-game activation-start ability, `spawnUnit` 6",
+engineArgumentCount 1); the FIVE book files' Spawn/Split refs re-imported to `coreText` (grafted
+from fresh OPR-snapshot imports by parallel tree walk, 17 refs, none left bare); embedded into the
+4 Spawn books. Found here: `BookRuleSupplement`'s reference scanner didn't know the new entry kind,
+so the embed silently skipped Spawn - the every-book-embeds test now pins it.
+
+Tests: engine `SpawnRuleIntegrationTests` (7 - build/place/register through the REAL
+ActivationStartStage incl. the 6" circular zone and the join marker; rules + creation-time rules on
+the spawned unit; same-round adoption through the real round context incl. marker spend;
+once-per-game; decline saves the use; dangling spec warns not throws; round-start stray sweep),
+`ArmyForgeCompilerTests` +1 (the recursive chain), `OprBookImporterTests` +1 (text rating -> Text
+entry). App `SpawnShippedDataTests` (3 - definition pins, every ref carries its text argument + the
+definition embeds, end-to-end Forge compile of the real AlienHives book). Engine 2275/2275, app
+687/687, smoke exit 0.
+
+Mutation-checked: disabling pool adoption and the compiler's recursion each red exactly their own
+test. NOT separately pinned (recorded): the army re-Set broadcast (needs network scaffolding; rides
+the #190-established path).
+
+Verified in play (headless scenario probe): "Use Spawn(Spores [5]) on Spawning Beast?" at activation
+start, "Spawning Beast spawns Spores!", and Spores ACTIVATES THE SAME ROUND. Exit 0.
+
+Corpus dead references **157 -> 143** (Split's 3 stay dead until P17b rides this machinery).
+
+## Slice P17b: Split (3 refs) — DONE 2026-07-28
+
+> "When this unit is fully destroyed, you may place a new unit of X fully within 6\" of it before
+> removing the last model." (Wormhole Daemons of Change: Horror Champion, Change Horrors, Lesser
+> Change Horrors - a CHAIN, each link splitting into the next)
+
+**Rides P17a's whole machinery** (Str argument, aux specs - the compiler's recursion was built for
+exactly this chain - creation service, same-round adoption). The only new engine work is the trigger
+seam: the existing destroyed hook is the KILLER's (`Shooting_OnUnitDestroyed`, requires an
+attributable killer; routs and dangerous-terrain deaths skip it), so Split needed the dead unit's
+own killer-less moment. New `EHookID.Lifecycle_OnSelfDestroyed` + `SelfDestroyedContext`, fired by
+`UnitDestructionNotifier` for EVERY alive-to-dead transition, BEFORE the killer-attribution
+early-return - "before removing the last model" holds because the dead models' positions are still
+live, which is what centres the 6" placement on the corpse. Token ops apply unconditionally; a spawn
+op is one Yes/No for the owner (default yes - a free unit - so the EOF/AI fallback takes it).
+Because #299 routed every batched wipe-out through this notifier, Split fires on all of them for
+free. Lint: the hook joined the passive-consumption map + ContextVariants.
+
+Data (app-side, supplement): passive entry at the new hook, `spawnUnit` 6", engineArgumentCount 1;
+embedded into WormholeDaemonsofChange (its refs regained their text arguments in P17a's book graft).
+
+Tests: engine `SplitRuleIntegrationTests` (3 - a KILLER-LESS death offers and places the successor
+(zone centred on the corpse, join marker on), decline places nothing, a Split-less unit never
+prompts). App `SplitShippedDataTests` (2 - definition pins; the real book's chain compiles BOTH
+links into the army, the middle link keeping its own Split argument). Engine 2278/2278, app
+690/690, smoke exit 0.
+
+Mutation-checked: gating the self-destroyed evaluation behind killer attribution reds exactly the
+killer-less test.
+
+Verified in play (headless scenario probe): Marksmen shoot the Change Horror dead ->
+"Change Horror is destroyed - use Split to place its successor?" -> "Change Horror spawns
+Changelings!" -> Changelings ACTIVATES THE SAME ROUND it was born from the destruction seam. Exit 0.
+
+Corpus dead references **143 -> 140**.
+
+## Slice P17c: Reinforcement (4 refs) — DONE 2026-07-28
+
+> "When a unit where all models have this rule is Shaken or fully destroyed, you may remove it from
+> the table as destroyed and place a new copy of it fully within 12\" of any table edge at the
+> beginning of the next round after Ambushers have been deployed. Units that deploy via Reinforcement
+> can't seize or contest objectives on the round they deploy, and this rule doesn't apply to the new
+> copy of the unit." (Ratmen Clans: Stalkers, Operators, Saboteurs, Elite Operators)
+
+**Two trigger arms meeting on one token.** `Effect.ReinforceUnit` -> `InvokeReinforce` ->
+`IOperationServices.ReinforceUnit`, authored at BOTH moments: the destroyed arm rides P17b's
+killer-less `Lifecycle_OnSelfDestroyed`; the Shaken arm needed `Morale_OnShakenApplied` to become an
+EVALUABLE moment (new `ShakenAppliedContext`, fired by `ApplyShakenWithPresentation` - the hook had
+only ever been a token-clear target). Both entries gate on `not(tokenPresent(ReinforcementSpent))`,
+and the service stamps that token BEFORE the Shaken arm's removal-as-destroyed lands on the
+destruction seam - the ordering that stops the destroyed-arm entry re-prompting, pinned by test AND
+mutation. Declining does NOT stamp (the choice is saved: a Shaken decline still offers at the later
+death). The destruction seam's prompt grew per-family Yes/Nos (Split and Reinforcement answer
+independently if a unit ever carries both).
+
+**The copy** is a fresh full-strength unit built directly from the live original (shapes + weapon
+profiles per model, unit rules re-attached MINUS the firing rule, per-model #093 relocations carried,
+creation rules re-derive Tough's max wounds), held IN RESERVE with the new
+`PendingReinforcementArrival` token - the Ambush Re-Deployment shape, so save/load and networking
+ride for free. `StartOfRoundExtraActionStage.PlaceReinforcements` runs right after `BringOnReserves`
+(the rule's own "after Ambushers have been deployed") and places it MANDATORILY (the "you may" was
+spent at removal); the `ArrivedFromReserve` stamp IS the can't-seize clause. Arriving before the
+round context builds its pools, the copy activates the round it deploys.
+
+**New zone:** `TableEdgeBandZone` ("fully within 12\" of any table edge") - an `IBoundedZone` whose
+true shape is four non-overlapping border rectangles delegated to an internal `CompositeZone`, so
+the union path/entry geometry already existed; `PlacementUtilities.IsBaseWithinZone` consumes it
+polymorphically, `ZoneRenderer` draws it by part, `SaveTypeRegistry` gained its stable id (the
+registry's own guard test caught the omission). Centre-in-band is the same approximation every
+non-rectangular placement zone accepts (recorded).
+
+Data (app-side, supplement): both entries as above; embedded into RatmenClans.
+
+Tests: engine `ReinforcementRuleIntegrationTests` (4 - the Shaken accept end-to-end WITH the
+one-prompt pin, the killer-less destroyed arm, decline-saves-the-choice then re-offer at death, and
+the mandatory band arrival through the real round-start stage incl. zone geometry + marker
+lifecycle). App `ReinforcementShippedDataTests` (2 - both arms + BOTH GATING ON THE SAME SPENT TOKEN
+(an ungated destroyed arm re-prompts after the Shaken kill), book embedding). Engine 2282/2282, app
+693/693.
+
+Mutation-checked: moving the spent stamp AFTER the removal reds exactly the one-prompt pin.
+
+Verified in play (headless scenario probe): Marksmen wipe the Stalkers -> "Stalkers is destroyed -
+queue a Reinforcement copy for the next round?" -> "falls back" -> next round "Stalkers arrives as
+reinforcements!" - and when the COPY is later Shaken it idles with NO re-offer ("this rule doesn't
+apply to the new copy", stripped at clone time). Exit 0.
+
+Recorded, not built: the transport-spillout Shaken site (`TransportUtilities.ApplySpilloutEffects`,
+deliberately Stages-free) does not fire the Shaken arm - a spilled-out Reinforcement unit is only
+offered when destroyed. One corpus-supported edge; wire it via SpilloutExecutor if play ever hits it.
+
+Corpus dead references **140 -> 136**.
+
+## Slice P17d: Reanimation + Aura (3 refs) — DONE 2026-07-28 (P17 closed, 24/24)
+
+> "When a unit where all models have this rule is activated, roll as many dice as the max. number of
+> models/wounds it could restore. For each 5+ you may restore one model/wound. Note that new models
+> may only be restored if they can be placed in coherency with non-restored models." + Aura form.
+> (Robot Legions - every corpus ref is the Aura; the base rule had never existed either, which is why
+> only the Aura registered as dead.)
+
+**Owner sign-off (2026-07-28): wounds-first, auto-place.** `Effect.RestoreWounds(minRoll)` ->
+`InvokeRestoreWounds` -> `IOperationServices.RestoreWounds`: pool = floor of the unit's total wounds
+dealt (the probabilistic roller's fractional tail earns no die - conservative, no int-locking); the
+pool rolls DECISIVE faces (binary per-die outcomes, the ClearTokenOnRoll/Storm precedent) into one
+`DiceRolledBeat`; each success tops up the first wounded LIVING model, else revives the first dead
+one at one wound - a just-revived Tough model is then the wounded living model the next success tops
+up, so bodies return one at a time and fill before the next. Revives auto-place beside the first
+living model (0.1" base-to-base, eight angles, widening rings, overlap-checked against the whole
+table; anchor-stack as the CohesiveFallback-style last resort). Rides the P5a activation-start
+passive seam - no stage work at all.
+
+Data (app-side, supplement): `Reanimation` (restoreWounds 5 at Activation_OnActivationStart, gated
+allModelsHaveThisRule) + `Reanimation Aura` (the Screened-Aura link shape); embedded into
+RobotLegions.
+
+Tests: engine `ReanimationRuleIntegrationTests` (4, through the REAL ActivationStartStage - revives
+at one wound placed in coherency, the wounds-first order pin (living Tough heals fully before the
+grunt returns), failed dice restore nothing, a full-strength unit rolls nothing). App
+`ReanimationShippedDataTests` (3 - shape pins, the aura link (all refs are the Aura, a broken link
+makes the rule unreachable), book embedding). Engine 2286/2286, app 698/698, smoke exit 0.
+
+Verified in play (headless scenario probe, Realistic dice, seeded casualties): every activation logs
+"Reanimation rolled 2 dice, N at 5+ ...", and a round-3 success logs "revived 1 model" with the body
+back on the table. Exit 0.
+
+Corpus dead references **136 -> 133**. P17 closes at 24/24 (Spawn 14 + Reinforcement 4 + Reanimation
+Aura 3 + Split 3).
+
 ## Slice: Misc small primitives — IN PROGRESS (started 2026-07-23)
 
 The 102-ref "Misc" row, triaged rule-by-rule (each is a one-off). Full wording pulled from the corpus
@@ -1119,7 +1471,7 @@ Reference counts are corpus-wide (44 books). Primitive numbers are #100's.
 | 21 | ~~**Versatile Defense** (out of P5a)~~ **DONE 2026-07-23** (21/21) | The filed premise held, with one correction and one addition: no new `TokenClearTrigger` variant was needed (`CustomHook` already says "clears at hook X"), and the deployment arm needed a new `Cost.Free` because the once-per-X "used" marker is keyed on the RULE. Both effects were Sturdy's and Changebound's bodies verbatim. See the write-up above. | Versatile Defense Aura (21) |
 | 47 | ~~**Delayed Action** (was P22)~~ **DONE 2026-07-11** | Shipped at unit-selection (pick-then-confirm hold-back), NOT the next-activator seam - see the Delayed Action write-up above. Fork resolved with Chris: holding back does NOT activate the unit (it stays in the pool) and the turn passes to the opponent; once per round per player. | Delayed Action (47) |
 | 15 | ~~**Teleport** (was P22)~~ **DONE 2026-07-11** (15 + Teleport Aura 4) | Shipped as a flat-6in menu action - see the Teleport write-up below. The pre-attack-hook / 3in-vs-6in reading was wrong (see write-up); Chris corrected the design in-conversation. | Teleport (15), Teleport Aura (4) |
-| 18 | **Ambush variants** (the real P22, + a P21 re-file) | The only genuine deploy-timing work. `Rapid Ambush` (deployable from round 1 — a new `EDeferTiming`), `Ambush Beacon` (relaxes the >9in enemy restriction for OTHER friendly Ambushers within 6in — a cross-unit deployment constraint), `Ambushing Piercing Shot` (Ambush + AP(+1) during the round it arrives — needs deploy-round state). **`Ambush Re-Deployment` (4, re-filed from P21):** "once per game, when this unit ends its activation, remove it and redeploy as if it had Ambush at the start of the next round" - not deploy-phase at all; needs the round-N Ambush arrival these rules build plus an end-of-activation trigger. | Rapid Ambush (4), Ambush Beacon (6), Ambushing Piercing Shot (4), Ambush Re-Deployment (4) |
+| 42 | ~~**Ambush variants** (the real P22, + Repel Ambushers from Misc)~~ **DONE 2026-07-28** (42/42) | Shipped in four slices (write-ups above): P22a constraint discs + Repel Ambushers + Ambush Beacon (the filed "new EDeferTiming" premise was wrong twice over - Rapid Ambush needed only a `MinArrivalRound` field, and Beacon/Repel needed the capability seam + request-carried discs, not deploy-timing work); P22b Rapid Ambush; P22c Ambushing Piercing Shot (pure data on the ArrivedFromReserve token - no new deploy-round state); P22d Ambush Re-Deployment (the end-of-activation ability seam Dash rides later; owner-ruled mandatory return). | Repel Ambushers (24), Ambush Beacon (6), Rapid Ambush (4), Ambushing Piercing Shot (4), Ambush Re-Deployment (4) all DONE |
 | 2 | **Surprise Attack** (was P22) | Infiltrate + "the first time this unit is activated, pick one enemy within 6in in LoS and roll X dice; each 2+ deals a hit with AP(1)". Blocked on **P10**'s dice-pool primitive regardless. | Surprise Attack (2) |
 | 96 | ~~**New** reposition-at-activation~~ **DONE 2026-07-09** (96/96) | Owner's ruling: a **placement**, not a move — nothing is asked of the path, only of the destination. `PlaceObjectsRequest` gained `MaxDistanceFromStartInches`, a *per-model* radius (0 = unconstrained, so deployment is untouched), honoured by all three resolvers. `Effect.RepositionAtActivation` rolls its die at Apply (Heal's shape) so the op carries a concrete distance; several **sum**, which is how `Rapid Blink Boost` widens D3 to 2D3 as an increment rather than a second prompt. The AI declines by standing still. Engine `5f3c4df`. | Wolfborn (60), Bounding (22), Rapid Blink (8), Bounding Aura (4), Rapid Blink Boost Aura (2) |
 | 66 | ~~**P5b** round-start Shaken recovery~~ **DONE 2026-07-09** (66/66) | **The premise was wrong:** `Round_OnRoundStart` is not dormant — `StartOfRoundExtraActionStage.GrantSpellTokens` fires it every round for every living unit (Caster token grants), applying token ops and running executables. So this needed only the effect. New `Effect.ClearTokenOnRoll` -> `InvokeClearTokenOnRoll`, an executable resolved through `IOperationServices`. Rolls with `RollDecisiveFace`, never `Roll(1)` — the outcome is binary, so a histogram would want to remove a *fraction* of a token. Engine `05eb91e`. | Steadfast Aura (28), Battleborn (26), Honor Code (9), Steadfast (3) |
@@ -1130,7 +1482,7 @@ Reference counts are corpus-wide (44 books). Primitive numbers are #100's.
 | 41 | ~~**P13** marker-scaled magnitude~~ **DONE 2026-07-22** (41/41) | Shipped WITHOUT touching `ValueSource` (its context-free `Resolve` stays pure): new effects `tokenScaledRollModifier` / `tokenScaledReduceArmorPenetration` read the bearer's token count at Apply time (steps = count / perMarkers, Fortified's read-side `maxReduction` cap), `GrantToken` gained a grant-time `maxTotal` clamp (the "up to a max. of X markers" clause, spell-token-cap pattern), `ReconcileObjectivesStage` now fires `Round_OnRoundEnd` rules for every living unit before the token sweep (new `RoundEndContext`, reflection-registered), and both Shaken-application sites clear `CustomHook(Morale_OnShakenApplied)` tokens (Fortified's lose-all-on-Shaken, pure data). "On the table" composes from existing conditions: `not(InReserve) and not(EmbarkedIn) and not(OffTableFromForcedMove)`. Authored behind `tokenPresent(marker, minCount: perMarkers)` so RuleFireLint's existing token seeding proves each entry fires. 8 definitions (incl. support base `Defensive Growth`); engine 1820/1820, `TokenScaledMarkerTests` (9, incl. a real-stage round-end firing pin per the #196 consumption lesson). Engine `2efc06e`. | Piercing Frenzy (9), Defensive Frenzy (8), Piercing Growth (6), Precision Frenzy (6), Fortified Growth (6), Precision Growth (5), Defensive Growth Aura (1) |
 | 28 | ~~**P14b** spend-for-bonus markers~~ **DONE 2026-07-22** (28/28) | Two marker classes on the ENEMY unit, bonus kind in the token type (mirroring the roll-modifier trio): persistent (`Persistent{Hit,Ap}BonusMarker` — the Target family, counted every attack, never removed) and spendable (`Spendable{Hit,Ap}BonusMarker` — Tag/Spotter). **Owner-ruled 2026-07-22: the spend is PROMPTED, not auto-spent** — `TargetMarkerSpend` asks the attacking player how many to remove (a `StringSelectionRequest`, spend-all listed first so the CLI EOF default and the AI first-option fallback both take the aggressive default; zero-marker attacks never prompt), folded into `DetermineHitRollStage` (skipped while fatigued, like granted buffs) and `DetermineSaveRollsNeededStage` (+net raises the defender's threshold). Placement is data: `Activation_OnPreAttack` abilities over the existing `TargetSelector`/`Cost` machinery; Spotter's "on a 4+ place a marker" is the new `grantTokenOnRoll` effect (decisive die, `InvokeGrantTokenOnRoll` executable, ClearTokenOnRoll's mirror). Engine 1831/1831, `TargetBonusMarkerTests` (11). Engine `d0985e2`. | Precision Target (7), Piercing Tag (6), Precision Spotter (4), Piercing Spotter (4), Precision Tag (4), Piercing Target (3) |
 | 27 | ~~**P11** reflect damage~~ **DONE 2026-07-22** (27/27) | A post-melee reflect (write-up below): Retaliate (X hits per wound taken), Deathstrike (X hits per killed model), Self-Destruct (X per participating model + self-kill any survivor), all per-model attribution. | Retaliate (20) + Deathstrike (4) + Self-Destruct (3) DONE |
-| 24 | **P17** place / restore a unit | Create a unit or restore destroyed models mid-game. Touches deployment + table-state lifecycle + networking sync. | Spawn (14), Reinforcement (4), Reanimation Aura (3), Split (3) |
+| 24 | ~~**P17** place / restore a unit~~ **DONE 2026-07-28** (24/24) | Shipped in four slices (write-ups above): P17a Spawn + the whole mid-game unit-creation machinery (RuleArgument.Str, coreText book refs, auxiliary unit specs, the creation service, same-round pool adoption - owner-ruled "same round for all"); P17b Split on a new killer-less self-destroyed seam; P17c Reinforcement (Shaken-applied evaluation seam, clone-in-reserve with a spent gate, mandatory TableEdgeBandZone arrival after ambushers); P17d Reanimation's decisive restore pool (wounds-first, auto-placed revives - owner-ruled). The feared networking half was already there: store creations replicate via the existing AddSingleDataMessage path. | Spawn (14), Reinforcement (4), Reanimation Aura (3), Split (3) all DONE |
 | 21 | **P23** casting support — **DONE 2026-07-23 (19/19)** | Rides #034. Caster Group, Spell Accumulator and Spell Conduit all shipped on the capability seam (write-ups above); Casting Buff/Debuff landed under P6. Conduit relays the cast origin, no prompt - the origin is derived from the targets and made visible in the picker, the target rows, the banner and the roll breakdown. | Spell Conduit (9) + Spell Accumulator (7) + Caster Group (3) DONE; Casting Buff/Debuff (2+X) under P6 |
 | 20 | ~~**P6** deferred debuff token~~ **DONE 2026-07-23** (20/20, +3 riders) | **The row's premise was mostly wrong** - only 8 of the 20 refs needed a primitive. Four of the five rules ride seams that were already built AND already consumed (Morale/Save granted modifiers, the #153 movement-grant seam, Fortified's AP reduction on the Actor seat) and shipped as pure data. Only `Casting Debuff` had no carrier: new `ERollKind.Cast` + `TokenType.CastRollModifier`, folded into `CastSpellStage`'s threshold. See the P6 write-up above. | Casting Debuff (8), Morale Debuff (4), Piercing Debuff (3), Defense Debuff (3), Speed Debuff (2) DONE + riders Casting Buff (2), Speed Buff (1) |
 | 14 | **P8** apply terrain state to target | Force a Dangerous-terrain test / count as standing in terrain. Builds on `countAsInTerrain` + `ApplyNonMovementTerrainEffectsStage`. | Dangerous Terrain Debuff (11), Difficult Terrain Debuff (3) |
@@ -1141,7 +1493,7 @@ Reference counts are corpus-wide (44 books). Primitive numbers are #100's.
 | 3 | **P19** reactivate another unit | Generalize the live self-`reactivate` to a chosen friendly unit. | Coordinate (3) |
 | 2 | **P12** attack-count producer — **DEFERRED 2026-07-22** (owner ruling) | Regenerative Strength's marker GAIN is "one marker per ignored wound", but the Regeneration ignore roll is a histogram: under the probabilistic roller the ignored count is fractional, and token counts are integers — bridging them means int-locking a roll-derived value. Owner chose to keep the dice invariant pristine over a round-per-attack approximation; the 2 refs stay dead until fractional token counts (or another exact mechanism) exist. The attack-count producer seam itself (a fold at `DetermineHitRollStage`'s attackCount, where the code comment already marks the spot) was NOT built unused, per grow-on-demand. The read side's design is settled when this reopens: melee Yes/No prompt per weapon volley ("add +X attacks to this weapon?"), once-gated per activation — the player picks the weapon by accepting on it (owner ruled 2026-07-22 the pick must be prompted, not auto). | Regenerative Strength (2) |
 | 6 | **Dash** end-of-activation reposition (re-filed from P21) | Reposition-at-activation's twin at a different trigger: "at the END of this unit's activation, once per round, place all models with this rule within D3+1in of their position." The DONE reposition slice fires the SAME `RepositionAtActivation` placement at activation START (`ActivationStartStage`); Dash needs it at end-of-activation (`Activation_OnEndOfActivation`, a hook that already carries token lifecycle) with a once-per-round gate. Small delta on shipped machinery - not deploy-phase. | Dash (2), Dash Aura (4) |
-| 102 | **Misc** small primitives | Each is a one-off; triage before building. Several may collapse into P5/P13. | Repel Ambushers (24, enemy Ambush placement constraint), Inquisitorial Agent (20, once-per-game reactivate), Hazardous (15, self-wound on unmodified 1), Extended Buff Range (9), Protection Feat (8) + Aura (1), Instinctive (4, forced action at activation), Speed Feat Aura (4) + Buff (1), Heavy Impact (3, Impact with AP), Grounded Reinforcement Aura (3), Grounded Precision Aura (3), Mobile Artillery (2, re-filed from P21 - >9in Hold+shoot / hasnt-moved defensive hit mods; likely pure DATA on the built `AttackedFromOverInches` + Hold-action + moved-this-round primitives - verify on build), Quick Readjustment (2, re-filed from P21 - ignore the shoot-after-move penalty for Indirect weapons; a small penalty-ignore), Grounded Stealth (2, "within 1in of terrain" condition), Screened Aura (1) |
+| 102 | **Misc** small primitives | Each is a one-off; triage before building. Several may collapse into P5/P13. ~~Repel Ambushers~~ shipped with P22 (2026-07-28). | Repel Ambushers (24, DONE with P22), Inquisitorial Agent (20, once-per-game reactivate), Hazardous (15, self-wound on unmodified 1), Extended Buff Range (9), Protection Feat (8) + Aura (1), Instinctive (4, forced action at activation), Speed Feat Aura (4) + Buff (1), Heavy Impact (3, Impact with AP), Grounded Reinforcement Aura (3), Grounded Precision Aura (3), Mobile Artillery (2, re-filed from P21 - >9in Hold+shoot / hasnt-moved defensive hit mods; likely pure DATA on the built `AttackedFromOverInches` + Hold-action + moved-this-round primitives - verify on build), Quick Readjustment (2, re-filed from P21 - ignore the shoot-after-move penalty for Indirect weapons; a small penalty-ignore), Grounded Stealth (2, "within 1in of terrain" condition), Screened Aura (1) |
 
 ## Suggested sequencing
 

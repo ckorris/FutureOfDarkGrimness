@@ -4949,8 +4949,9 @@
                   "quantity": 1,
                   "rules": [
                     {
-                      "kind": "core",
-                      "name": "Spawn"
+                      "kind": "coreText",
+                      "name": "Spawn",
+                      "textValue": "Spores [5]"
                     }
                   ]
                 }
@@ -6558,8 +6559,9 @@
                   "quantity": 1,
                   "rules": [
                     {
-                      "kind": "core",
-                      "name": "Spawn"
+                      "kind": "coreText",
+                      "name": "Spawn",
+                      "textValue": "Hive Swarms [3]"
                     }
                   ]
                 }
@@ -6579,8 +6581,9 @@
                   "quantity": 1,
                   "rules": [
                     {
-                      "kind": "core",
-                      "name": "Spawn"
+                      "kind": "coreText",
+                      "name": "Spawn",
+                      "textValue": "Assault Grunts [10]"
                     }
                   ]
                 }
@@ -6600,8 +6603,9 @@
                   "quantity": 1,
                   "rules": [
                     {
-                      "kind": "core",
-                      "name": "Spawn"
+                      "kind": "coreText",
+                      "name": "Spawn",
+                      "textValue": "Shooter Grunts [10]"
                     }
                   ]
                 }
@@ -7313,8 +7317,9 @@
           "quantity": 1,
           "rules": [
             {
-              "kind": "core",
-              "name": "Spawn"
+              "kind": "coreText",
+              "name": "Spawn",
+              "textValue": "Spores [5]"
             }
           ]
         }
@@ -7493,8 +7498,9 @@
                   "quantity": 1,
                   "rules": [
                     {
-                      "kind": "core",
-                      "name": "Spawn"
+                      "kind": "coreText",
+                      "name": "Spawn",
+                      "textValue": "Massive Spores [3]"
                     }
                   ]
                 }
@@ -7752,8 +7758,9 @@
               "weaponsGained": [],
               "rulesGained": [
                 {
-                  "kind": "core",
-                  "name": "Spawn"
+                  "kind": "coreText",
+                  "name": "Spawn",
+                  "textValue": "Spores [5]"
                 }
               ],
               "itemsGained": [],
@@ -7767,8 +7774,9 @@
               "weaponsGained": [],
               "rulesGained": [
                 {
-                  "kind": "core",
-                  "name": "Spawn"
+                  "kind": "coreText",
+                  "name": "Spawn",
+                  "textValue": "Massive Spores [3]"
                 }
               ],
               "itemsGained": [],
@@ -8833,7 +8841,9 @@
           "effect": {
             "kind": "deferDeployment",
             "timing": "LaterRound",
-            "placementRangeInches": 3
+            "placementRangeInches": 3,
+            "minArrivalRound": 2,
+            "mandatoryArrival": false
           },
           "lifetime": "UntilEndOfGame",
           "seat": "Actor"
@@ -9096,6 +9106,40 @@
       "engineArgumentCount": 1,
       "valence": "Positive",
       "description": "Once per game during its activation: pick one enemy within 24 inches in line of sight and place X markers on it. Attackers may remove markers from it before it rolls to block, gaining AP(\u002B1) per removed marker."
+    },
+    {
+      "name": "Spawn",
+      "passive": [],
+      "activated": [
+        {
+          "triggerHook": "Activation_OnActivationStart",
+          "cost": {
+            "kind": "oncePerGame"
+          },
+          "targetSelector": {
+            "rangeInches": 0,
+            "minCount": 1,
+            "maxCount": 1,
+            "targetAffinity": "Self",
+            "requireLineOfSight": false,
+            "requiredToken": null,
+            "singleModel": false,
+            "requiredRule": null
+          },
+          "effect": {
+            "kind": "spawnUnit",
+            "radiusInches": 6
+          },
+          "availableWhen": {
+            "kind": "always"
+          },
+          "label": "Spawn"
+        }
+      ],
+      "scope": "Unit",
+      "engineArgumentCount": 1,
+      "valence": "Positive",
+      "description": "Once per game, when this model is activated, you may place a new unit of X fully within 6\u0022 of it."
     }
   ],
   "spells": [

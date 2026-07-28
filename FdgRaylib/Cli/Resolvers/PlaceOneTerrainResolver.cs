@@ -27,7 +27,7 @@ public class PlaceOneTerrainResolver : IStageResolver<PlaceOneTerrainRequest, Te
         Console.WriteLine();
         if (budget != null)
         {
-            // #299 Alternating: Points - the header carries the pre-dealt personal total and this
+            // #301 Alternating: Points - the header carries the pre-dealt personal total and this
             // turn's remaining spend; the copy comes from the budget so it matches the GUI exactly.
             Console.WriteLine($"=== Place terrain: {budget.PointsSummaryLine} ===");
             Console.WriteLine($"    {budget.TurnSummaryLine}");
@@ -102,7 +102,7 @@ public class PlaceOneTerrainResolver : IStageResolver<PlaceOneTerrainRequest, Te
     }
 
     /// <summary>
-    /// #299 - template indices the fallback may pick: with a points budget, playable entries with
+    /// #301 - template indices the fallback may pick: with a points budget, playable entries with
     /// debt-free ones first (matching the AI resolver's preference); otherwise the whole pool.
     /// </summary>
     private static IReadOnlyList<int> FallbackCandidates(PlaceOneTerrainRequest request)

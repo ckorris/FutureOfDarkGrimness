@@ -2,6 +2,7 @@ using System.Collections.Concurrent;
 using System.Numerics;
 using FDG;
 using FDG.Players;
+using FDG.StageResolution.Requests;
 using FdgRaylib.Audio;
 using FdgRaylib.Rendering.Presentation;
 using FdgRaylib.Rendering.Resolvers;
@@ -818,32 +819,46 @@ public class RaylibRenderer
         }
     }
 
-    // Draws the Ambush no-go region: a single blended blob covering everywhere within the exclusion
-    // radius of an enemy model. Each enemy disc is painted OPAQUE into an offscreen texture so overlaps
-    // overwrite rather than stack, then the whole union is composited once at a uniform light alpha —
-    // five clustered models read as one clean blob instead of a mess of darker overlapping rings.
+    // Draws the Ambush no-go region: a single blended blob covering everywhere an enemy-distance rule
+    // forbids. Each keep-out disc (the flat over-9" rule per enemy model, plus Repel Ambushers' larger
+    // per-model discs — #197 P22) is painted OPAQUE into an offscreen texture so overlaps overwrite
+    // rather than stack; waiver discs (Ambush Beacon) are then ERASED back out — inside one, every
+    // enemy-distance restriction is void, so the hole IS the semantics — and the whole union is
+    // composited once at a uniform light alpha. Waiver bubbles get a green outline so the player sees
+    // why the hole exists.
     private void DrawAmbushExclusion(Layout l, int screenW, int screenH)
     {
         IEnemyExclusionProvider? provider = _resolverOverlay?.ActiveEnemyExclusion;
         if (provider == null) return;
-        if (!provider.TryGetEnemyExclusion(out IReadOnlyList<Position> centers, out float radiusInches)
-            || centers.Count == 0)
+        if (!provider.TryGetEnemyExclusion(out IReadOnlyList<PlacementDisc> keepOut,
+                out IReadOnlyList<PlacementDisc> waivers)
+            || keepOut.Count == 0)
         {
             return;
         }
 
         EnsureExclusionTexture(screenW, screenH);
 
-        float radiusPx = radiusInches * l.Scale;
+        Vector2 ToPx(Position c) => new(
+            l.OriginX + c.x * l.Scale,
+            l.OriginY + (TableHIn - c.z) * l.Scale);
 
         Raylib.BeginTextureMode(_exclusionRT);
         Raylib.ClearBackground(new Color(0, 0, 0, 0));
-        foreach (Position c in centers)
+        foreach (PlacementDisc disc in keepOut)
         {
-            float px = l.OriginX + c.x * l.Scale;
-            float py = l.OriginY + (TableHIn - c.z) * l.Scale;
-            Raylib.DrawCircleV(new Vector2(px, py), radiusPx, ExclusionFill);
+            Raylib.DrawCircleV(ToPx(disc.Center), disc.RadiusInches * l.Scale, ExclusionFill);
         }
+
+        // Erase the waiver bubbles: custom blend (src x 0 + dst x (1 - srcAlpha)) turns an opaque draw
+        // into a pure alpha-cut, so the beacon's bubble reads as legal ground, not a lighter wash.
+        Rlgl.SetBlendFactors(0, 0x0303, 0x8006); // GL_ZERO, GL_ONE_MINUS_SRC_ALPHA, GL_FUNC_ADD
+        Raylib.BeginBlendMode(BlendMode.Custom);
+        foreach (PlacementDisc waiver in waivers)
+        {
+            Raylib.DrawCircleV(ToPx(waiver.Center), waiver.RadiusInches * l.Scale, Color.White);
+        }
+        Raylib.EndBlendMode();
         Raylib.EndTextureMode();
 
         // Composite the opaque union once. Render-texture contents are y-flipped, hence the negative
@@ -852,7 +867,16 @@ public class RaylibRenderer
         var src = new Rectangle(0, 0, _exclusionRT.Texture.Width, -_exclusionRT.Texture.Height);
         Raylib.DrawTextureRec(_exclusionRT.Texture, src, Vector2.Zero,
             new Color((byte)255, (byte)255, (byte)255, ExclusionCompositeAlpha));
+
+        // The waiver outline, on the canvas itself (not the RT) so it stays crisp at full alpha.
+        foreach (PlacementDisc waiver in waivers)
+        {
+            Raylib.DrawCircleLinesV(ToPx(waiver.Center), waiver.RadiusInches * l.Scale, WaiverOutline);
+        }
     }
+
+    // Ambush Beacon waiver outline — green, matching "this ground is legal".
+    private static readonly Color WaiverOutline = new(90, 220, 120, 200);
 
     private void EnsureExclusionTexture(int w, int h)
     {
