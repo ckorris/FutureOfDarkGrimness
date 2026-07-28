@@ -437,7 +437,8 @@ public class LobbyScreen : IAppScreen
 
         DrawIntField("Army Points",    _viewModel.ArmyPoints,    _viewModel.SetArmyPoints,
             tooltip: "The point budget each player's army is built to. Armies over this limit are\n" +
-                     "flagged before launch. Higher points means bigger battles.");
+                     "flagged before launch. Higher points means bigger battles.",
+            step: 250);
         DrawEnumCombo("Terrain Mode",  _viewModel.TerrainPlacementMode, _viewModel.SetTerrainPlacementMode,
             debugLast: new[] { ETerrainPlacementMode.AutoFromLayout },
             // #299: explicit order keeps the two Alternating modes adjacent (the enum appends
@@ -797,13 +798,14 @@ public class LobbyScreen : IAppScreen
             tableBackground: _viewModel!.TableBackground);
     }
 
-    private static void DrawIntField(string label, int current, Action<int> setter, string? tooltip = null)
+    private static void DrawIntField(string label, int current, Action<int> setter, string? tooltip = null,
+        int step = 1)
     {
         ImGui.TextUnformatted(label);
         ImGui.SameLine();
         FillRowItemWidth();
         int v = current;
-        if (ImGui.InputInt($"##{label}", ref v) && v != current)
+        if (ImGui.InputInt($"##{label}", ref v, step, step * 4) && v != current)
             setter(Math.Max(0, v));
         if (tooltip != null && ImGui.IsItemHovered())
             ImGui.SetTooltip(tooltip);
