@@ -1033,6 +1033,32 @@ enemy on the AI's natural landing spot (the pre-existing 9" test had been vacuou
 
 Corpus dead references **199 -> 169**.
 
+## Slice P22b: Rapid Ambush (4 refs) — DONE 2026-07-28
+
+> "Counts as having Ambush, but may be deployed at the start of any round, including the first."
+> (Dark Prime Brothers, Dark Brothers)
+
+**A field, not a new `EDeferTiming` value.** The filed premise suggested a new timing; the real
+variable is only the EARLIEST arrival round, so `DeferDeployment` (effect + op + JSON) gained
+`MinArrivalRound` (default 2) and every `Timing == LaterRound` check in the codebase stays untouched -
+core Ambush and all pre-existing authorings keep their gate by defaulting. `BringOnReserves` now runs
+every round and gates PER UNIT (`roundCount < defer.MinArrivalRound`); the Aircraft off-table return
+keeps its flat round-2 gate. `ChooseUnitToActivateStage`'s unavailability tooltip words the unit's own
+round ("Reserve - arrives round N").
+
+Data (app-side, supplement): `deferDeployment(LaterRound, 9, minArrivalRound: 1)`; embedded into
+DarkPrimeBrothers + DarkBrothers.
+
+Tests: engine `RapidAmbushRuleIntegrationTests` (3 - round-1 arrival WITH the 9" constraint while a
+core-Ambush unit in the same run stays held (the per-unit pin), declined-round-1 re-offered round 2,
+and the default-2 pin so existing authorings are provably untouched). App `RapidAmbushShippedDataTests`
+(2 - the JSON deserializes minArrivalRound 1 (a silent fallback to 2 would validate, lint and play
+exactly like core Ambush), book embedding). Engine 2262/2262, app 674/674, smoke exit 0.
+
+Mutation-checked: reverting the per-unit gate to the flat round-2 check reds exactly the round-1 test.
+
+Corpus dead references **169 -> 165**.
+
 ## Slice: Misc small primitives — IN PROGRESS (started 2026-07-23)
 
 The 102-ref "Misc" row, triaged rule-by-rule (each is a one-off). Full wording pulled from the corpus
