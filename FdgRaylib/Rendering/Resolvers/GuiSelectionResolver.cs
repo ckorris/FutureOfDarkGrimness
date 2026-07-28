@@ -52,8 +52,10 @@ public class GuiSelectionResolver<T> : IStageResolver<SelectionRequest<T>, DataB
         int invalidCount = request.InvalidOptions.Count;
 
         float pad     = 16f;
-        float instrH  = 48f;
-        float rowH    = 32f;   // single-line rows (Back button)
+        // #298: the instruction block is measured rather than assumed 48px - at the 4K font a wrapped
+        // prompt overran the first row.
+        float instrH  = ImGui.CalcTextSize(request.Instructions, false,
+            ResolverPanelLayout.W - pad * 2f).Y + 12f;
 
         // Text metrics — a bright heading in the main font size, detail lines smaller + dimmer, matching the
         // wounds dialog. Detail lines wrap so long weapon lists stack instead of clipping off the edge.
@@ -185,7 +187,7 @@ public class GuiSelectionResolver<T> : IStageResolver<SelectionRequest<T>, DataB
         {
             ImGui.SetCursorPos(new Vector2(pad, y + pad));
             ImGui.PushStyleColor(ImGuiCol.Button, new Vector4(0.25f, 0.25f, 0.30f, 1f));
-            if (ImGui.Button("Back  (Backspace)##back", new Vector2(btnW, rowH - 4f)))
+            if (ImGui.Button("Back  (Backspace)##back", new Vector2(btnW, ResolverPanelLayout.ActionRowHeight())))
                 cancelled = true;
             ImGui.PopStyleColor();
 
@@ -216,28 +218,10 @@ public class GuiSelectionResolver<T> : IStageResolver<SelectionRequest<T>, DataB
     /// which would pop at the unrelated mouse position.</summary>
     protected virtual void OnValidOptionHighlighted(SelectionRequest<T>.ValidOption opt) { }
 
-    // Word-wrap a detail line to maxWidth. Detail text renders at the smaller size, so widths measured at the
-    // main font size are scaled by smallScale (text width scales ~linearly with font size) — avoids a
-    // dependency on the per-size CalcTextSizeA overload.
+    // Word-wrap a detail line to maxWidth, at the smaller detail font size (#298: the wrapping itself now
+    // lives in ResolverText, shared with the string-selection panel).
     private static List<string> WrapDetail(string text, float smallScale, float maxWidth)
-    {
-        var lines = new List<string>();
-        if (string.IsNullOrEmpty(text)) { lines.Add(""); return lines; }
-
-        string cur = "";
-        foreach (string word in text.Split(' '))
-        {
-            string test = cur.Length == 0 ? word : cur + " " + word;
-            if (ImGui.CalcTextSize(test).X * smallScale > maxWidth && cur.Length > 0)
-            {
-                lines.Add(cur);
-                cur = word;
-            }
-            else cur = test;
-        }
-        lines.Add(cur);
-        return lines;
-    }
+        => ResolverText.Wrap(text, maxWidth, smallScale);
 
     protected void Complete(TaskCompletionSource<DataBinding<T>> tcs, DataBinding<T> option)
     {

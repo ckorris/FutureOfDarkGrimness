@@ -62,7 +62,7 @@ public class GuiYesNoResolver : IStageResolver<YesNoRequest, bool>, IGuiResolver
 
         // Buttons anchored to bottom of dialog. Yes is the primary affirmative (accent + Enter); No recedes.
         float btnW = dw * 0.42f;
-        float btnH = 36f;
+        float btnH = ResolverPanelLayout.OptionRowHeight();   // #298: font-relative, was a flat 36px
         float gap  = dw * 0.04f;
         float firstX = (dw - btnW * 2 - gap) * 0.5f;
         float btnY = dh - pad - btnH;

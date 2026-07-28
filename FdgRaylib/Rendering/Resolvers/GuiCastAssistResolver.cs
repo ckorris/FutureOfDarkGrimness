@@ -97,7 +97,8 @@ public class GuiCastAssistResolver : IStageResolver<CastAssistRequest, int>, IGu
         string sign = request.IsFriendly ? "+" : "-";
 
         int buttonCount = request.AvailableTokens + 1; // "Don't spend" + one per token
-        const float rowH = 30f, gap = 4f, pad = 14f;
+        const float gap = 4f, pad = 14f;
+        float rowH = ResolverPanelLayout.OptionRowHeight();   // #298: font-relative, was a flat 30px
 
         float dw = ResolverPanelLayout.W;   // dock into the right-column resolver panel
         float dh = ResolverPanelLayout.H;

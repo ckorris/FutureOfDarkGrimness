@@ -66,10 +66,15 @@ public class GuiChooseSpellResolver : IStageResolver<ChooseSpellRequest, ChooseS
             ImGuiWindowFlags.NoBackground);
 
         const float pad = 14f;
-        const float rowH = 28f;
         const float gap = 4f;
         const float descScale = 0.82f;
         const float descIndent = 10f;
+
+        // #298: every vertical step here used to be a hardcoded pixel count while the font is 18f * uiScale
+        // (up to 25px at 4K) - the spell rows were a 28px sliver and the smaller notes below them overlapped
+        // the next line. Rows come from the shared option height; text steps come from the live line height.
+        float lineH = ImGui.GetTextLineHeight();
+        float rowH = ResolverPanelLayout.OptionRowHeight();
 
         float dw = ResolverPanelLayout.W;   // dock into the right-column resolver panel
         float dh = ResolverPanelLayout.H;
@@ -116,12 +121,12 @@ public class GuiChooseSpellResolver : IStageResolver<ChooseSpellRequest, ChooseS
         ImGui.PushStyleColor(ImGuiCol.Text, AccentRgba);
         ImGui.TextUnformatted($"Choose a spell - {casterName}");
         ImGui.PopStyleColor();
-        ImGui.SetCursorPos(new Vector2(pad, pad + 20f));
+        ImGui.SetCursorPos(new Vector2(pad, pad + lineH + 2f));
         ImGui.PushStyleColor(ImGuiCol.Text, DimTextRgba);
         ImGui.TextUnformatted($"{request.AvailableTokens} spell token{(request.AvailableTokens == 1 ? "" : "s")} available");
         ImGui.PopStyleColor();
 
-        float y = pad + 44f;
+        float y = pad + lineH * 2f + 10f;
 
         // ── #197 P23 relay note ────────────────────────────────────────────────
         // A Spell Conduit in range extends what is reachable and eases the roll. Nothing to choose here -
@@ -129,12 +134,17 @@ public class GuiChooseSpellResolver : IStageResolver<ChooseSpellRequest, ChooseS
         // a spell is worth casting. The target list then names the origin per target.
         foreach (ChooseSpellRequest.RelayOption relay in request.RelaysInRange)
         {
+            // #298: the note wraps (and is measured at that wrap width) instead of running one long line off
+            // the narrow panel and costing a flat 20px whatever it actually drew.
+            string relayNote = $"{relay.UnitName} relays: cast from its position for +{relay.RollBonus} " +
+                "and measure range from it.";
             ImGui.SetCursorPos(new Vector2(pad, y));
             ImGui.PushStyleColor(ImGuiCol.Text, RelayTextRgba);
-            ImGui.TextUnformatted($"{relay.UnitName} relays: cast from its position for +{relay.RollBonus} " +
-                "and measure range from it.");
+            ImGui.PushTextWrapPos(dw - pad);
+            ImGui.TextUnformatted(relayNote);
+            ImGui.PopTextWrapPos();
             ImGui.PopStyleColor();
-            y += 20f;
+            y += ImGui.CalcTextSize(relayNote, false, dw - pad * 2f).Y + 2f;
         }
 
         if (request.RelaysInRange.Count > 0) y += 6f;
@@ -201,7 +211,7 @@ public class GuiChooseSpellResolver : IStageResolver<ChooseSpellRequest, ChooseS
         ImGui.Separator();
         y += 8f;
 
-        const float stepBtn = 26f;
+        float stepBtn = lineH * 1.6f;
         ImGui.SetCursorPos(new Vector2(pad, y));
         ImGui.TextUnformatted("Boost roll:");
         ImGui.SameLine();
@@ -219,26 +229,15 @@ public class GuiChooseSpellResolver : IStageResolver<ChooseSpellRequest, ChooseS
         // At (or past) the useful cap, say why the + goes no further. Orange so it reads as advice.
         if (_boost >= cap && affordable > cap)
         {
-            ImGui.SetCursorPos(new Vector2(pad, y));
-            ImGui.PushStyleColor(ImGuiCol.Text, WarnTextRgba);
-            ImGui.SetWindowFontScale(descScale);
             string capNote = request.HinderTokensInRange == 0
                 ? "Max useful boost - no enemy casters in range (2+ is the floor, a 1 always fails)."
                 : $"Max useful boost vs the {request.HinderTokensInRange} enemy token{(request.HinderTokensInRange == 1 ? "" : "s")} in range.";
-            ImGui.TextUnformatted(capNote);
-            ImGui.SetWindowFontScale(1f);
-            ImGui.PopStyleColor();
-            y += 18f;
+            y += DrawNote(capNote, pad, y, dw, descScale);
         }
         else if (_boost > (request.BaseThreshold - 2) && request.HinderTokensInRange > 0)
         {
-            ImGui.SetCursorPos(new Vector2(pad, y));
-            ImGui.PushStyleColor(ImGuiCol.Text, WarnTextRgba);
-            ImGui.SetWindowFontScale(descScale);
-            ImGui.TextUnformatted($"Hedging vs up to -{request.HinderTokensInRange} from enemy casters in range.");
-            ImGui.SetWindowFontScale(1f);
-            ImGui.PopStyleColor();
-            y += 18f;
+            y += DrawNote($"Hedging vs up to -{request.HinderTokensInRange} from enemy casters in range.",
+                pad, y, dw, descScale);
         }
 
         int needed = System.Math.Max(2, request.BaseThreshold - _boost); // 2+ floor: a natural 1 always fails
@@ -246,7 +245,7 @@ public class GuiChooseSpellResolver : IStageResolver<ChooseSpellRequest, ChooseS
         ImGui.TextUnformatted(_boost > 0
             ? $"Roll needed: {needed}+ (base {request.BaseThreshold}+, self +{_boost})"
             : $"Roll needed: {request.BaseThreshold}+");
-        y += 20f;
+        y += lineH + 4f;
 
         ImGui.SetCursorPos(new Vector2(pad, y));
         ImGui.PushStyleColor(ImGuiCol.Text, DimTextRgba);
@@ -254,7 +253,7 @@ public class GuiChooseSpellResolver : IStageResolver<ChooseSpellRequest, ChooseS
             ? $"Total spend: {chosen.Cost} cost + {_boost} boost = {chosen.Cost + _boost} of {request.AvailableTokens}"
             : $"Total spend: {chosen.Cost} of {request.AvailableTokens}");
         ImGui.PopStyleColor();
-        y += 28f;
+        y += lineH + 10f;
 
         // ── Commit / cancel ─────────────────────────────────────────────────────
         // #248: the Confirm key casts, Backspace cancels (Esc is reserved for the in-game menu). Applied once
@@ -263,11 +262,11 @@ public class GuiChooseSpellResolver : IStageResolver<ChooseSpellRequest, ChooseS
         ImGui.SetCursorPos(new Vector2(pad, y));
         ImGui.PushStyleColor(ImGuiCol.Button, new Vector4(AccentRgba.X * 0.5f, AccentRgba.Y * 0.5f, AccentRgba.Z * 0.5f, 1f));
         ImGui.PushStyleColor(ImGuiCol.ButtonHovered, AccentRgba);
-        bool castNow = ImGui.Button($"Cast {ResolverKeybinds.Confirm.Parenthetical}##commit", new Vector2(half, rowH + 4f));
+        bool castNow = ImGui.Button($"Cast {ResolverKeybinds.Confirm.Parenthetical}##commit", new Vector2(half, rowH));
         ImGui.PopStyleColor(2);
         ImGui.SameLine();
         ImGui.SetCursorPosX(pad + half + 8f);
-        bool cancelNow = ImGui.Button($"Cancel {ResolverKeybinds.Back.Parenthetical}##cancel", new Vector2(half, rowH + 4f));
+        bool cancelNow = ImGui.Button($"Cancel {ResolverKeybinds.Back.Parenthetical}##cancel", new Vector2(half, rowH));
 
         castNow   |= ResolverHotkeys.IsConfirmPressed();
         cancelNow |= ResolverHotkeys.IsBackPressed();
@@ -277,6 +276,27 @@ public class GuiChooseSpellResolver : IStageResolver<ChooseSpellRequest, ChooseS
 
         if (castNow) Complete(tcs, new ChooseSpellReply(_selectedIndex, _boost));
         else if (cancelNow) Complete(tcs, ChooseSpellReply.Cancel);
+    }
+
+    /// <summary>
+    /// #298: draws one of the small orange advice notes wrapped to the panel and returns the height it
+    /// consumed. These used to be one unwrapped line costed at a flat 18px, which both ran off the narrow
+    /// panel and (at the 4K font, where the reduced size is ~20px) overlapped the line below.
+    /// CalcTextSize ignores SetWindowFontScale, so it measures at the scaled-equivalent wrap width and
+    /// scales the height back down.
+    /// </summary>
+    private static float DrawNote(string text, float pad, float y, float panelWidth, float scale)
+    {
+        ImGui.SetCursorPos(new Vector2(pad, y));
+        ImGui.PushStyleColor(ImGuiCol.Text, WarnTextRgba);
+        ImGui.SetWindowFontScale(scale);
+        ImGui.PushTextWrapPos(panelWidth - pad);
+        ImGui.TextUnformatted(text);
+        ImGui.PopTextWrapPos();
+        ImGui.SetWindowFontScale(1f);
+        ImGui.PopStyleColor();
+
+        return ImGui.CalcTextSize(text, false, (panelWidth - pad * 2f) / scale).Y * scale + 2f;
     }
 
     // Re-clamp the boost when the selected spell changes (a pricier spell leaves fewer boost tokens).

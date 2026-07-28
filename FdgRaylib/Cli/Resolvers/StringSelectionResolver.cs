@@ -17,7 +17,10 @@ public class StringSelectionResolver : IStageResolver<StringSelectionRequest, st
             if (request.OptionDescriptions != null
                 && request.OptionDescriptions.TryGetValue(opt, out string? desc))
             {
-                Console.WriteLine($"        {desc}");
+                // #298: a description can be several lines (one per weapon rule); indent each so the
+                // block stays under its option rather than the second line starting at column 0.
+                foreach (string line in desc.Split('\n'))
+                    Console.WriteLine($"        {line}");
             }
         }
 

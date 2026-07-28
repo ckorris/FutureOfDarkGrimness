@@ -146,7 +146,7 @@ public class GuiChooseRangedAttackResolver
         ImGui.PopStyleVar();
 
         float pad       = 8f;
-        float rowH      = 36f;
+        float rowH      = ResolverPanelLayout.OptionRowHeight();
         float footerH   = rowH + pad * 2;
         float spacingY  = ImGui.GetStyle().ItemSpacing.Y;
         // Three stacked sections share the vertical space above the footer (two gaps between them).
@@ -169,7 +169,7 @@ public class GuiChooseRangedAttackResolver
             var wo            = request.WeaponOptions[wi];
             bool sel          = _selectedWeaponIdx == wi;
             bool selectableW  = HasAnyFireableTarget(wo);
-            float itemH       = ImGui.GetTextLineHeight() * 2.4f;
+            float itemH       = ResolverPanelLayout.OptionRowHeight();
 
             if (!selectableW) ImGui.BeginDisabled(true);
 
@@ -249,7 +249,7 @@ public class GuiChooseRangedAttackResolver
                 bool selectableT   = inRange && !ruleBlocked;
                 bool sel           = _selectedTargetTIdx == ti;
                 string name        = ts.TargetUnit.GetValue().Name;
-                float itemH        = ImGui.GetTextLineHeight() * 2.4f;
+                float itemH        = ResolverPanelLayout.OptionRowHeight();
 
                 if (!selectableT) ImGui.BeginDisabled(true);
 
@@ -406,7 +406,7 @@ public class GuiChooseRangedAttackResolver
         {
             // #248: Backspace backs out too (only while Back is offered; Esc is reserved for the
             // in-game menu).
-            if (ResolverButtons.Deemphasized("Back (Backspace)", new Vector2(footW * 0.36f, 32f))
+            if (ResolverButtons.Deemphasized("Back (Backspace)", new Vector2(footW * 0.36f, rowH))
                 || ResolverHotkeys.IsBackPressed())
             {
                 Complete(tcs, new Cancelled<RangedAttackChoice>());
@@ -422,7 +422,7 @@ public class GuiChooseRangedAttackResolver
         ImGui.PushStyleColor(ImGuiCol.ButtonHovered, new Vector4(0.78f, 0.27f, 0.27f, 1f));
         ImGui.PushStyleColor(ImGuiCol.ButtonActive,  new Vector4(0.55f, 0.16f, 0.16f, 1f));
         if (!canFire) ImGui.BeginDisabled(true);
-        bool fireClicked = ImGui.Button($"Fire!  {ResolverKeybinds.Confirm.Parenthetical}##fire", new Vector2(fireW, 32f));
+        bool fireClicked = ImGui.Button($"Fire!  {ResolverKeybinds.Confirm.Parenthetical}##fire", new Vector2(fireW, rowH));
         if (!canFire) ImGui.EndDisabled();
         ImGui.PopStyleColor(3);
         // #240: edge-only (repeat: false) so a stuck key can't fire volleys on its own; #248: the

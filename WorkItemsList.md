@@ -143,6 +143,7 @@ detection, host-IP display, DNS host entry. See `NetworkingHandoff-2026-07-08.md
 - [~] 288 — Late-deploy (Ambush) panel: the 118px unit-stat scroll box now fills the panel (footer costed first) and carries the hover-tooltip treatment incl. rule descriptions. Implemented + tested; awaiting GUI hand-verify. ([WorkItems/288](WorkItems/288-late-deploy-stat-panel.md))
 - [~] 289 — Decisive rolls (morale, cast, objective D3, Storm, token shed) render as real dice in probabilistic mode instead of an expected-value bar: `DiceRolledBeat.FromDecisive`. Implemented + tested; awaiting GUI hand-verify. ([WorkItems/289](WorkItems/289-decisive-rolls-render-as-dice.md))
 - [~] 292 — Shoot panel weapon rows show special rules as underlined, individually hoverable names (new in-game `RuleHoverText`) + a Rules block with descriptions in the Details pane. Implemented + tested; awaiting GUI hand-verify. ([WorkItems/292](WorkItems/292-weapon-select-rule-hovers.md))
+- [~] 298 — Resolver option buttons were hardcoded 28-32px while the font is `18f * uiScale`: row height (and every pixel step sitting next to text) now derives from the line height, shared via `ResolverPanelLayout.OptionRowHeight`. Melee weapon menu also gained its rules' descriptions as option subtext. Implemented + tested; awaiting GUI hand-verify. ([WorkItems/298](WorkItems/298-resolver-option-button-height.md))
 
 ## 2026-06-10 audit follow-ups
 

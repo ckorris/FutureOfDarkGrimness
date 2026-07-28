@@ -44,8 +44,10 @@ public class GuiChooseMeleeDefenderResolver : GuiCancellableUnitSelectionResolve
             ImGuiWindowFlags.NoBackground);
 
         var sole   = request.ValidOptions[0];
-        float pad  = 16f;
-        float rowH = 36f;
+        float pad   = 16f;
+        // #298: the card's button and its text steps come from the font, not from flat pixel counts.
+        float lineH = ImGui.GetTextLineHeight();
+        float rowH  = ResolverPanelLayout.OptionRowHeight();
         float dw = ResolverPanelLayout.W;   // dock into the right-column resolver panel
         float dh = ResolverPanelLayout.H;
         float dx = ResolverPanelLayout.X;
@@ -64,7 +66,8 @@ public class GuiChooseMeleeDefenderResolver : GuiCancellableUnitSelectionResolve
         ImGui.TextUnformatted($"Charge {sole.Name}?");
         ImGui.PopTextWrapPos();
 
-        ImGui.SetCursorPos(new Vector2(pad, pad + 32f));
+        float noteY = pad + lineH * 1.6f;
+        ImGui.SetCursorPos(new Vector2(pad, noteY));
         ImGui.PushStyleColor(ImGuiCol.Text, new Vector4(0.60f, 0.60f, 0.66f, 1f));
         ImGui.PushTextWrapPos(dw - pad);
         ImGui.TextUnformatted("Only one enemy unit is in range.");
@@ -72,7 +75,8 @@ public class GuiChooseMeleeDefenderResolver : GuiCancellableUnitSelectionResolve
         ImGui.PopStyleColor();
 
         float btnW = dw - pad * 2;
-        ImGui.SetCursorPos(new Vector2(pad, pad + 80f));
+        float btnY = noteY + lineH * 2.4f;
+        ImGui.SetCursorPos(new Vector2(pad, btnY));
         if (ResolverButtons.Primary("Charge!", new Vector2(btnW, rowH)))
         {
             Complete(tcs, new Selected<DataBinding<UnitData>>(sole.Option));
@@ -83,8 +87,9 @@ public class GuiChooseMeleeDefenderResolver : GuiCancellableUnitSelectionResolve
 
         // #248: Backspace backs out of the confirm card too (Esc is reserved for the in-game menu),
         // applied once after drawing so a same-frame Back click can't double-resolve the TCS.
-        ImGui.SetCursorPos(new Vector2(pad, pad + 80f + rowH + 8f));
-        bool cancelled = ResolverButtons.Deemphasized("Back  (Backspace)", new Vector2(btnW, rowH - 4f));
+        ImGui.SetCursorPos(new Vector2(pad, btnY + rowH + 8f));
+        bool cancelled = ResolverButtons.Deemphasized("Back  (Backspace)",
+            new Vector2(btnW, ResolverPanelLayout.ActionRowHeight()));
         if (ResolverHotkeys.IsBackPressed())
             cancelled = true;
         if (cancelled)

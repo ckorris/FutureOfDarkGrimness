@@ -127,7 +127,7 @@ public class GuiChooseDeploymentZoneResolver
     {
         int availCount = available.Count;
         int takenCount = unavailable.Count;
-        float rowH    = 36f;
+        float rowH    = ResolverPanelLayout.OptionRowHeight() + 4f;   // #298: font-relative, was a flat 36px
         float pad     = 16f;
         float dw = ResolverPanelLayout.W;   // dock into the right-column resolver panel
         float dh = ResolverPanelLayout.H;

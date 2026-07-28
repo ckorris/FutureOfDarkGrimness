@@ -45,7 +45,7 @@ public class GuiChooseAbilityEffectResolver : IStageResolver<ChooseAbilityEffect
             ImGuiWindowFlags.NoBackground);
 
         const float pad = 16f;
-        const float btnH = 28f;
+        float btnH = ResolverPanelLayout.OptionRowHeight();   // #298: font-relative, was a flat 28px
         const float descScale = 0.82f;
         const float descIndent = 10f;
         const float gapAfterBtn = 6f;

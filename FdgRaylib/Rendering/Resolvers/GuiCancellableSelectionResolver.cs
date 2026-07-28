@@ -47,10 +47,13 @@ public class GuiCancellableSelectionResolver<T>
         int validCount   = request.ValidOptions.Count;
         int invalidCount = request.InvalidOptions.Count;
         int totalRows    = validCount + invalidCount;
-        float rowH   = 32f;
         float pad    = 16f;
-        float instrH = 48f;
-        float backH  = rowH + pad;
+        // #298: rows are sized from the font instead of a hardcoded 32px, which the 4K font nearly filled.
+        // The instruction block is measured for the same reason - at 48px a wrapped prompt ran under row 1.
+        float btnH   = ResolverPanelLayout.OptionRowHeight();
+        float rowH   = btnH + 4f;
+        float instrH = ImGui.CalcTextSize(request.Instructions, false,
+            ResolverPanelLayout.W - pad * 2f).Y + 12f;
         float dw = ResolverPanelLayout.W;   // dock into the right-column resolver panel
         float dh = ResolverPanelLayout.H;
         float dx = ResolverPanelLayout.X;
@@ -95,12 +98,12 @@ public class GuiCancellableSelectionResolver<T>
 
             ImGui.SetCursorPos(new Vector2(pad, rowY));
             Vector2 origin = ImGui.GetCursorScreenPos();
-            if (ImGui.Button($"{ResolverHotkeys.NumberPrefix(i)}{opt.Name}##{i}", new Vector2(btnW, rowH - 4f)))
+            if (ImGui.Button($"{ResolverHotkeys.NumberPrefix(i)}{opt.Name}##{i}", new Vector2(btnW, btnH)))
                 picked ??= opt.Option;
 
             if (i == _nav.Index)
             {
-                dl.AddRect(origin, origin + new Vector2(btnW, rowH - 4f), KbHighlightCol, 4f,
+                dl.AddRect(origin, origin + new Vector2(btnW, btnH), KbHighlightCol, 4f,
                     ImDrawFlags.None, 2f);
                 OnValidOptionHighlighted(opt);
             }
@@ -115,7 +118,7 @@ public class GuiCancellableSelectionResolver<T>
                 var opt = request.InvalidOptions[i];
                 ImGui.SetCursorPos(new Vector2(pad, invalidStart + i * rowH));
                 ImGui.BeginDisabled(true);
-                ImGui.Button($"{opt.Name} ({opt.Reason})##{validCount + i}", new Vector2(btnW, rowH - 4f));
+                ImGui.Button($"{opt.Name} ({opt.Reason})##{validCount + i}", new Vector2(btnW, btnH));
                 ImGui.EndDisabled();
             }
             ImGui.PopStyleColor();
@@ -125,7 +128,7 @@ public class GuiCancellableSelectionResolver<T>
         float backY = listY + totalRows * rowH + pad;
         ImGui.SetCursorPos(new Vector2(pad, backY));
         ImGui.PushStyleColor(ImGuiCol.Button, new Vector4(0.25f, 0.25f, 0.30f, 1f));
-        if (ImGui.Button("Back  (Backspace)##back", new Vector2(btnW, rowH - 4f)))
+        if (ImGui.Button("Back  (Backspace)##back", new Vector2(btnW, ResolverPanelLayout.ActionRowHeight())))
             cancelled = true;
         ImGui.PopStyleColor();
 

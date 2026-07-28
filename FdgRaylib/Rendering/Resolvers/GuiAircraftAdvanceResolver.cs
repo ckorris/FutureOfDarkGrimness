@@ -177,7 +177,8 @@ public class GuiAircraftAdvanceResolver
                 ImGui.TextWrapped($"{unit.Name} would cross the table edge and leave play - its activation ends " +
                     "(no shooting), and it flies back on from a table edge at the start of the next round.");
                 ImGui.Spacing();
-                if (ImGui.Button("Yes, fly off", new Vector2(140f, 28f)))
+                float confirmH = ResolverPanelLayout.OptionRowHeight();   // #298
+                if (ImGui.Button("Yes, fly off", new Vector2(140f, confirmH)))
                 {
                     ImGui.CloseCurrentPopup();
                     ImGui.EndPopup();
@@ -185,7 +186,7 @@ public class GuiAircraftAdvanceResolver
                     return;
                 }
                 ImGui.SameLine();
-                if (ImGui.Button("No, keep moving", new Vector2(140f, 28f)))
+                if (ImGui.Button("No, keep moving", new Vector2(140f, confirmH)))
                 {
                     ImGui.CloseCurrentPopup();
                     _confirmOpen = false;
