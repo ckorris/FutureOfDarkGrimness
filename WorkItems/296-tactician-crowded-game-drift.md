@@ -84,6 +84,23 @@ TacticianWeights file-header policy; observation games are the in-progress signa
 
 ## Notes
 
+- 2026-07-27 (pool gate, Chris's sign-off run): **NO REGRESSION - the fix set is benchmark-clean.**
+  8-army pool, Tactician vs SoloRules, 64 ordered matchups x 50 games = 3200 games per run, DOP 12,
+  seeds from 1000, matched control on the SAME FdgLab/superproject (isolated worktree):
+  - Control = engine `98ab55a` (origin tip, pre-#296): aggregate **84.2%**, hash `921168B6B9A28DF2`.
+  - Fix = engine `5d4cae1` (all four #296 slices): aggregate **84.2%** (-0.1pp against a ~0.65pp
+    aggregate sigma), hash `450ADB8D0DAB24F0`. **0 faults both runs.** Reports:
+    `FdgLab/reports/296-crowded-fix-gate/{control,fix}/`.
+  - Per-army rows all within +/-1.9pp (HEF +1.9, Dwarf +0.9, RL +0.1, HDF -0.1, Hives -0.4,
+    BB -0.8, DE/Orks -1.1). Biggest cell moves +/-8..14pp on 50-game cells (1 sigma = 6.9pp) -
+    noise, no collapse. Per-game wall 9.9s -> 10.1s (~2%; frontline percentile + support band cost
+    nothing measurable). Flat is the expected shape, same as #264's gates: this 1v1 2k pool barely
+    exercises the crowded/team pathology, so the gate is a no-regression check and the observation
+    games are the evidence of the fix.
+  - The gate ran pre-#297 (engine `0910e05` landed during it); #297 is 1v1-inert by construction
+    (per-side reconcile degenerates to per-player with no teams; all 2233 tests incl. the old
+    per-player reconcile pins stay green), so the result stands for the final state.
+
 - 2026-07-27 (later, #297 supersession): Chris ruled allies must NOT contest each other's markers -
   the engine reconcile is now team-aware (`ITeamExtensions.ReconcileObjectiveOwner`, see #297).
   Slice 1's ally-contest penalty and step-off bonus were built for the old per-player rule and were
