@@ -3769,7 +3769,8 @@
             "kind": "reroll",
             "roll": "Save",
             "condition": {
-              "kind": "onUnmodifiedValue"
+              "kind": "onUnmodifiedValue",
+              "minValue": 6
             }
           },
           "lifetime": "ThisAttack",
@@ -3943,7 +3944,8 @@
             "kind": "deferDeployment",
             "timing": "LaterRound",
             "placementRangeInches": 9,
-            "minArrivalRound": 2
+            "minArrivalRound": 2,
+            "mandatoryArrival": false
           },
           "lifetime": "UntilEndOfGame",
           "seat": "Actor"
@@ -3980,6 +3982,55 @@
       "engineArgumentCount": 0,
       "valence": "Positive",
       "description": "Counts as having Ambush, and its weapons get AP(\u002B1) when shooting on the round in which it deploys via this rule."
+    },
+    {
+      "name": "Scrapper Boost",
+      "passive": [
+        {
+          "hookID": "Shooting_OnSaveRollComplete",
+          "condition": {
+            "kind": "attackedFromOverInches",
+            "distanceInches": 9
+          },
+          "effect": {
+            "kind": "reroll",
+            "roll": "Save",
+            "condition": {
+              "kind": "onUnmodifiedValue",
+              "minValue": 5
+            }
+          },
+          "lifetime": "ThisAttack",
+          "seat": "Actor"
+        }
+      ],
+      "activated": [],
+      "scope": "Weapon",
+      "engineArgumentCount": 0,
+      "valence": "Positive",
+      "description": "If this model has Scrapper, when it shoots or charges enemies over 9 inches away, enemies taking hits from it must re-roll successful unmodified defense results of 5-6. Save re-rolls compose by the widest band, so this states the full 5-6 rather than an increment."
+    },
+    {
+      "name": "Scrapper Boost Aura",
+      "passive": [
+        {
+          "hookID": "Lifecycle_OnUnitCreated",
+          "condition": {
+            "kind": "always"
+          },
+          "effect": {
+            "kind": "aura",
+            "ruleName": "Scrapper Boost"
+          },
+          "lifetime": "UntilEndOfGame",
+          "seat": "Actor"
+        }
+      ],
+      "activated": [],
+      "scope": "Unit",
+      "engineArgumentCount": 0,
+      "valence": "Positive",
+      "description": "This model and its unit get Scrapper Boost."
     },
     {
       "name": "Precision Fighter",

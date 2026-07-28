@@ -6923,5 +6923,73 @@
     "engineArgumentCount": 0,
     "valence": "Positive",
     "description": "This model and its unit get Dash."
+  },
+  {
+    "name": "Mischievous Boost",
+    "passive": [
+      {
+        "hookID": "Shooting_OnSaveRollComplete",
+        "condition": { "kind": "attackedFromOverInches", "distanceInches": 9 },
+        "effect": { "kind": "reroll", "roll": "Save", "condition": { "kind": "onUnmodifiedValue", "minValue": 5 } },
+        "lifetime": "ThisAttack",
+        "seat": "Actor"
+      }
+    ],
+    "activated": [],
+    "scope": "Weapon",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "If this model has Mischievous, when it shoots or charges enemies over 9 inches away, enemies taking hits from it must re-roll successful unmodified defense results of 5-6. Save re-rolls compose by the widest band, so this states the full 5-6 rather than an increment."
+  },
+  {
+    "name": "Mischievous Boost Aura",
+    "passive": [
+      {
+        "hookID": "Lifecycle_OnUnitCreated",
+        "condition": { "kind": "always" },
+        "effect": { "kind": "aura", "ruleName": "Mischievous Boost" },
+        "lifetime": "UntilEndOfGame",
+        "seat": "Actor"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "This model and its unit get Mischievous Boost."
+  },
+  {
+    "name": "Scrapper Boost",
+    "passive": [
+      {
+        "hookID": "Shooting_OnSaveRollComplete",
+        "condition": { "kind": "attackedFromOverInches", "distanceInches": 9 },
+        "effect": { "kind": "reroll", "roll": "Save", "condition": { "kind": "onUnmodifiedValue", "minValue": 5 } },
+        "lifetime": "ThisAttack",
+        "seat": "Actor"
+      }
+    ],
+    "activated": [],
+    "scope": "Weapon",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "If this model has Scrapper, when it shoots or charges enemies over 9 inches away, enemies taking hits from it must re-roll successful unmodified defense results of 5-6. Save re-rolls compose by the widest band, so this states the full 5-6 rather than an increment."
+  },
+  {
+    "name": "Scrapper Boost Aura",
+    "passive": [
+      {
+        "hookID": "Lifecycle_OnUnitCreated",
+        "condition": { "kind": "always" },
+        "effect": { "kind": "aura", "ruleName": "Scrapper Boost" },
+        "lifetime": "UntilEndOfGame",
+        "seat": "Actor"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "This model and its unit get Scrapper Boost."
   }
 ]

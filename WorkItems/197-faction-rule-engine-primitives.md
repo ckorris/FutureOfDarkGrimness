@@ -1,6 +1,6 @@
 # 197 — Faction rule coverage, part 2: engine primitives + the scope-mismatch bug
 
-**Status**: in progress. Corpus dead references **2,342 -> 127** of 13,870 (0.9%), 26 names.
+**Status**: in progress. Corpus dead references **2,342 -> 121** of 13,870 (0.9%), 24 names.
 **Related**: #196 (data-only half, closed 2026-07-22), #100 (primitive catalog), #102, #034, #042, #093, #095, `SpecialRulesAudit.md`
 
 > **Compacted 2026-07-28.** Shipped slices are summarized to the durable facts: the seam/vocabulary
@@ -31,7 +31,7 @@ Done = each slice ships its primitive with an integration test mirroring the nea
 
 # Open work
 
-Ref counts are live from `--rule-coverage FdgRaylib/Assets/Books` (2026-07-28). **127 dead across 26 names.**
+Ref counts are live from `--rule-coverage FdgRaylib/Assets/Books` (2026-07-28). **121 dead across 24 names.**
 
 | Refs | Slice | What it needs | Rules |
 |-----:|-------|---------------|-------|
@@ -45,7 +45,6 @@ Ref counts are live from `--rule-coverage FdgRaylib/Assets/Books` (2026-07-28). 
 | 9 | **Extended Buff Range** (re-filed from Misc) | Relay non-spell Hero picks across 24in via another friendly unit with the rule — a relational aura-relay, i.e. generalized Spell Conduit for non-spell "pick friendly within 12in" rules. **Conduit's `CastSupport` neighbour scan and the `EnableSpellRelay` shape are the template.** | Extended Buff Range (9) |
 | 7 | **P16** one-shot special-attack injection | Once per game, inject one extra attack with an authored weapon profile. | Takedown Strike (5), Takedown Shot (2) |
 | 7 | **`moraleTestThen` outside spell casting** | `Effect.MoraleTestThen.Apply()` is an intentional no-op — `CastSpellStage` special-cases the effect and runs the test-then-branch itself. None of the five generic ability-offering stages do, so a plain `SpecialRuleDefinition` ability using it is a no-op in play (confirmed by `RuleFireLint`). Both corpus uses are ordinary `unit.rules` references, so modelling them as `SpellDefinition`s would not fix the corpus. | Mind Control (4), Fatigue Debuff (3) |
-| 6 | **Reroll threshold parameter** | `RerollCondition.OnUnmodifiedValue` carries no value — `RerollSink` hardcodes the unmodified max face (6). These need "re-roll unmodified 5s *or* 6s". `AddExtraHit`/`AddExtraWound` already parameterize their trigger per entry (`OnRollValue`); `RerollCondition` needs the same. **Author as the INCREMENT** (re-roll 5s only) — the base already re-rolls 6s. Also needs `attackedFromOverInches` (built). | Mischievous Boost Aura (4), Scrapper Boost Aura (2) |
 | 5 | **Unpredictable Marks** (P15 residual) | A mark grants Unpredictable at the hit-roll hook, AFTER `UnpredictableBranchResolver`'s action-level roll, so the mark-granted rule is invisible to it. Needs the resolver to also scan the DEFENDER for an Unpredictable-granting mark at action time. | Unpredictable Fighter Mark (3), Unpredictable Shooter Mark (2) |
 | 4 | **Instinctive** — DEFERRED 2026-07-23 | "When activated, if able to shoot/charge, this model MUST attack the CLOSEST valid target, +1 to hit for that attack." The defining mechanic is **forced target selection**, which `RestrictActions` cannot express (it gates action TYPES, not targets) and which must override both the human Choose-Action/target flow AND the AI target resolver — feature-sized. Shipping the +1 rider alone would invert the rule's character (a compelled creature becomes a pure buff), so it was deliberately NOT shipped buff-only. | Instinctive (4) |
 | 3 | **P19** reactivate another unit | Generalize the live self-`reactivate` to a chosen friendly unit. | Coordinate (3) |
@@ -457,6 +456,36 @@ built directly as synthetic histograms, never an int `Roll`. **333 -> 306.**
 `ArmorPenetration` (default 0); `ImpactSink` folds it as a MAX across sources (the single impact pool
 cannot separate per-source AP — no corpus unit hits this, since Heavy Impact replaces Impact).
 **232 -> 229.**
+
+**Reroll threshold (Mischievous / Scrapper Boost) — DONE 2026-07-28** (6 refs; engine `5de9c85`).
+> "If this model has Mischievous/Scrapper, when it shoots or charges enemies over 9in away, enemies
+> taking hits from it must re-roll successful unmodified defense results of **5-6**."
+
+`RerollCondition.OnUnmodifiedValue` gained `MinValue` (default 6) — the change `RerollSink`'s own doc had
+anticipated ("add a value field to the condition if a non-6 reroll rule ever appears"). **The default is
+load-bearing for compatibility**: every pre-existing authoring, core Bane included, serializes as a bare
+`{"kind":"onUnmodifiedValue"}` and must keep meaning "the unmodified maximum".
+
+**Correction to this row's filed premise.** It said to author these as the INCREMENT (re-roll 5s only),
+by analogy with #196's Boost double-counting lesson. That lesson is about the ADDITIVE sinks; a threshold
+is not additive. `RerollSink` now folds save rerolls by **MINIMUM**, so a base (6) and its Boost (5-6) on
+the same weapon net the wider band, and the Boost is authored as the full band the corpus states —
+correct alone, correct with its base, and correct if the base were ever dropped.
+
+**Latent engine bug found and fixed:** `DiceResults.TotalWithinRange` offset-corrected its lower bound by
+`SideMin` but used its upper bound raw. Accidentally right for a full die (`SideMin` 1) and wrong for
+every SUBSET, whose `SideMin` is its lowest kept face — so any range query over a subset over-counted or
+threw `IndexOutOfRange`. Nothing had asked: the old reroll path used `At(SideMax)`, which indexes
+directly. Asking `AtOrAbove(5)` of a `SubsetAtOrAbove` is what surfaced it.
+`DiceResultsSubsetRangeTests` pins both the subset behaviour and the unchanged full-die behaviour.
+
+**Recorded, not fixed:** `CombatMath` (the AI's analytic mirror) builds its `SaveRollCompleteContext`
+without a distance, so the `attackedFromOverInches` gate reads 0 there and the AI values these Boosts —
+and every other save-side range-gated rule — as if they never fire. Pre-existing, not introduced here.
+
+Data (app-side, supplement): base Boost + Boost Aura per family, Weapon-scoped like their bases, on the
+Warbound Boost template; embedded into GoblinReclaimers + Jackals. The base Boost ships even though only
+the Aura registered as dead, because each book's spell grants it by name. **121 dead.**
 
 ## Markers & tokens
 
