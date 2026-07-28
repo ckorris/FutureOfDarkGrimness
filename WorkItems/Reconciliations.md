@@ -6,6 +6,22 @@ from origin/master. Standing precedent: numbers are never reused, and when two p
 claim the same number, the *unmerged local* item yields to the *merged* one and takes a fresh number.
 A per-clone pre-push hook blocks duplicate numbers across the index and the archive.
 
+> **2026-07-28 — reconciliation 31 (RESOLVED).** A pre-push fetch caught the same class of collision as
+> 29, one number along. This session had filed the resolver option-button-height work as **296**; the
+> engine's origin/master had meanwhile landed **296 = Tactician crowded-game fix set** (merged - itself
+> renumbered 294 -> 296 by the engine-side reconciliation 30, `5d4cae1`, and carrying `#296` comments
+> across ~10 `Ai/` files), plus **297 = objectives held per side** (`0910e05`). Neither number was in the
+> superproject index yet: that clone had pushed its engine commits ahead of its index, so only a
+> `git fetch` in the submodule revealed them. Per merged-wins precedent the local item yields:
+> **resolver button height 296 -> 298** (`WorkItems/298-resolver-option-button-height.md`). The renumber
+> landed everywhere before publication - detail file + its title, the index line, the engine sources
+> (`ChooseMeleeWeaponStage.cs`, `MeleeWeaponRuleDescriptionTests.cs`) and the app sources (the resolver
+> panels, `ResolverPanelLayout.cs`, `PlacementPanelLayout.cs`, `ResolverText.cs`, `StringSelectionResolver.cs`
+> and both layout test files) - and, unlike prior reconciliations, **the commit messages too**: all three
+> commits were still unpushed, so they were rewritten to say #298 rather than leaving a stale number in
+> shared history. The engine commit was rebased onto origin/master before the push (the superproject had
+> been pinning a submodule commit that predated #296's fix set and #297).
+
 > **2026-07-27 — reconciliation 29 (RESOLVED).** A pre-push fetch caught a single collision: this
 > session had filed the click-to-select / Space-confirms work as **294** while origin/master had
 > meanwhile landed **294 = movement footstep cue** (merged, `5ef6803`). Per merged-wins precedent the
