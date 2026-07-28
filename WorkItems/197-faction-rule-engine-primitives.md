@@ -1076,6 +1076,59 @@ present -> -1 Save shooting and 0 in melee; no token -> 0; book embedding). App 
 
 Corpus dead references **165 -> 161**.
 
+## Slice P22d: Ambush Re-Deployment (4 refs) — DONE 2026-07-28 (P22 closed, 42/42)
+
+> "Once per game, when a unit where all models have this rule ends its activation, you may immediately
+> remove it from the table (dropping any objectives it might hold within 1\"), and deploy it as if it
+> had Ambush at the beginning of the next round." (Elven Jesters)
+
+**Owner sign-off (2026-07-28): the return is MANDATORY** - the next round start PLACES the unit without
+asking; only the spot is the player's. `DeferDeployment` gained `MandatoryArrival` (default false);
+`BringOnReserves` skips its Yes/No when set.
+
+**Two halves that meet on a token.** The removal is an end-of-activation activated ability
+(`Cost.OncePerGame`, `availableWhen: allModelsHaveThisRule`) whose `Effect.AmbushRedeploy` resolves to
+an executable `InvokeAmbushRedeploy` -> new `IOperationServices.RedeployAsAmbush`: drop any objective
+the unit's SIDE holds within 1" (base-edge to marker centre, reconcile's own measure; #297
+side-awareness), park the models at the unplaced sentinel, `PlaceInReserve`, stamp the new
+`TokenType.PendingAmbushArrival` (ManualOnly - it must survive the round-end sweep). The return leg is
+the rule's own `deferDeployment(LaterRound, 9, mandatoryArrival: true)` entry GATED on that token, so
+the ordinary arrival pass finds it with no special case, and arriving spends the token.
+
+**The end-of-activation ability seam is new** (and is what Dash rides later):
+`ReconcileEndOfActivationStage` gathers offers at a new `ActivationEndContext`
+(`Activation_OnEndOfActivation`) BEFORE its token sweep, mirroring `ActivationStartStage`'s
+single-ability-Yes/No / multi-ability-pick shape via `AbilityEffectChoice`. One deliberate difference,
+recorded in the stage doc: **the Yes/No defaults to NO** - at activation start the lone optional
+ability is a buff and the aggressive EOF/AI default suits it; here the only corpus ability is a
+once-per-game self-removal with a mandatory return, which an auto-accepting AI would fire on every
+unit's first activation. A unit wiped out during its own activation (melee strike-back) is never
+offered. `RuleFireLint` gained the hook in `AbilityOfferingHooks` + the context in `ContextVariants` -
+the lint itself caught the missing context by failing the shipped data's fire check, which is exactly
+the loud-drift direction it was built for.
+
+Data (app-side, supplement): both halves as above; embedded into ElvenJesters.
+
+Tests: engine `AmbushRedeployRuleIntegrationTests` (4 - the full accept loop through the REAL stages
+(removal state, mandatory return that FAILS the test if any Yes/No is asked, arrival token, pending
+token spent, once-per-game gate), decline leaves the gate unspent, the objective drop trio (ours-near
+drops / enemy-near stays / ours-far stays), wiped-unit never offered). App
+`AmbushRedeployShippedDataTests` (3 - the ability pins, the return-leg pins incl. BOTH HALVES NAMING
+THE SAME TOKEN (gating on any other strands the unit off-table), book embedding). Engine 2266/2266,
+app 683/683.
+
+Mutation-checked: dropping the MandatoryArrival honor (always ask), disabling the objective drop, and
+dropping the alive guard each red exactly their own test.
+
+Verified in play (headless scenario probe, scratchpad): an on-table carrier surfaces "Use Ambush
+Re-Deployment on Troupe?" at every end of activation (EOF declines, gate unspent - correct for "you
+may"); a unit seeded InReserve+PendingAmbushArrival arrives at the round-2 start with ZERO "Deploy
+from Ambush this round?" prompts (grep-counted), through the normal placement flow, then logs
+"arrives from Ambush!". Exit 0.
+
+Corpus dead references **161 -> 157**. P22 closes at 42/42 (Repel 24 + Beacon 6 + Rapid 4 + APS 4 +
+Re-Deployment 4).
+
 ## Slice: Misc small primitives — IN PROGRESS (started 2026-07-23)
 
 The 102-ref "Misc" row, triaged rule-by-rule (each is a one-off). Full wording pulled from the corpus
