@@ -92,14 +92,31 @@ batch at roll time — seconds of announce + dice beat before the first death be
    dice row is read, and only then do casualties drop, each animating exactly once.
 3. **Self-destruct.** Win/lose a melee against a unit with Self-Destruct. Expected: each self-destructing
    model plays a death animation rather than blinking out.
+4. **Transport killed by terrain.** Drive a loaded transport with one wound left across a minefield until
+   the test kills it. Expected: it dies, and its cargo immediately spills out (placement prompt, Shaken)
+   instead of disappearing with the wreck.
 
-## Deferred (explicitly, not dropped)
+## Deferred → closed 2026-07-28
 
-- **A unit wiped out by dangerous terrain never reaches `UnitDestructionNotifier`.** Pre-existing, not
-  introduced here (the wounds were unnotified before too), so no token cleanup and — if the unit is a
-  Transport — no spillout of its cargo, i.e. the #169 ghost state via a terrain death. Left alone because
-  fixing it is a rules change, not a presentation one. Same gap applies to spillout deaths killing an
-  occupant unit outright.
+- ~~**A unit wiped out by dangerous terrain never reaches `UnitDestructionNotifier`.**~~ Closed in the
+  same item at the user's request. Pre-existing rather than introduced here (the wounds were unnotified
+  before too), but it meant no cross-unit token cleanup and — if the unit was a Transport — no spillout,
+  i.e. the #169 ghost state reached through terrain instead of through a killer. The spillout's own
+  dangerous test had the identical gap when it finished off a battered occupant.
+  - `MovementExecutor.ResolveDangerousTerrain` and `SpilloutExecutor.PresentSpilloutRolls` now both take
+    the alive-before/dead-after reading around `CasualtyPresentation.ApplyAndPresent` and call
+    `UnitDestructionNotifier.NotifyUnitDestroyed(..., killer: null)` on the transition — the same guard
+    shape `ApplyWoundsStage` and the Rout path use.
+  - **Killer-less on purpose**: `Shooting_OnUnitDestroyed` still does not fire for a terrain death (there
+    is no attacker to credit), matching the documented contract in `UnitDestructionNotifier`. What DOES
+    now run is the part that was never optional — spillout and `OwnerDestroyed` token cleanup.
+  - `DangerousTerrainResult` carries the `IUnit` rather than a bare `UnitID` + name, since the seam needs
+    the unit itself and not just enough to label a beat.
+  - Re-entrancy: a spillout casualty notifying can re-enter `SpillOccupants` for a carrier-inside-a-carrier.
+    Terminates because each level needs a distinct unit to die, and it is covered by
+    `OccupantKilledBySpilloutTest_SpillsItsOwnCargo`.
+  - 3 new tests in `TransportSpilloutTests`: transport killed by terrain spills its cargo; a transport that
+    SURVIVES the test keeps it (no spurious destruction); and the nested re-entrant case above.
 
 ## Outcome
 
