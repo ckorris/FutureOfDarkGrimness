@@ -47,6 +47,9 @@ public class GuiPlaceOneTerrainResolver
     // so the wheel feels identical everywhere on the table.
     private const float RotationStepDegrees = 15f;
 
+    // #299 points mode: the debt notice / debt warning tint (amber, matching the stage's Toast color).
+    private static readonly Vector4 WarningYellow = new Vector4(0.94f, 0.78f, 0.35f, 1f);
+
     public GuiPlaceOneTerrainResolver(ITableState tableState) => _tableState = tableState;
 
     public void UpdateLayout(float scale, int originX, int originY, float tableH)
@@ -240,14 +243,32 @@ public class GuiPlaceOneTerrainResolver
         float PanelWidth = ResolverPanelLayout.ContentWidth;   // dock into the right-column resolver panel
         ResolverPanelLayout.BeginDocked("Place Terrain##placeterrainpanel");
 
-        int remaining = request.TotalPieces - request.PiecesPlaced;
-        ImGui.TextUnformatted($"Pieces remaining: {remaining}");
-        ImGui.TextUnformatted($"(piece {request.PiecesPlaced + 1} of {request.TotalPieces})");
+        if (request.PointsBudget is TerrainPointsBudget budget)
+        {
+            // #299 points mode: personal total + this turn's spend, plus the yellow debt notice when
+            // part of this turn already went to an earlier over-budget piece. Copy comes from the
+            // budget itself so the CLI, GUI and any future front end always say the same thing.
+            ImGui.TextUnformatted(budget.PointsSummaryLine);
+            ImGui.TextUnformatted(budget.TurnSummaryLine);
+            if (budget.DebtNoticeLine is string debtLine)
+            {
+                ImGui.PushStyleColor(ImGuiCol.Text, WarningYellow);
+                ImGui.TextWrapped(debtLine);
+                ImGui.PopStyleColor();
+            }
+        }
+        else
+        {
+            int remaining = request.TotalPieces - request.PiecesPlaced;
+            ImGui.TextUnformatted($"Pieces remaining: {remaining}");
+            ImGui.TextUnformatted($"(piece {request.PiecesPlaced + 1} of {request.TotalPieces})");
+        }
         ImGui.Separator();
 
         if (pending.HasValue && selected.HasValue)
         {
             ImGui.TextWrapped($"Place {DescribeTemplate(request.Pool[selected.Value])} here?");
+            DrawSelectedPieceDebtWarning(request, selected.Value);
             ImGui.TextDisabled($"Center: ({pending.Value.X:F1}\", {pending.Value.Y:F1}\")  Rotation: {rotationDegrees:F0} deg");
             ImGui.TextDisabled("Mouse wheel or R / Shift+R to rotate 15 deg.");
             ImGui.Spacing();
@@ -267,16 +288,29 @@ public class GuiPlaceOneTerrainResolver
         else if (selected.HasValue)
         {
             ImGui.TextWrapped($"Placing: {DescribeTemplate(request.Pool[selected.Value])}");
+            DrawSelectedPieceDebtWarning(request, selected.Value);
             ImGui.TextDisabled($"Rotation: {rotationDegrees:F0} deg (wheel or R / Shift+R = 15 deg)");
             ImGui.TextDisabled("Hover to preview. Left-click to place. Right-click or Esc to switch template.");
         }
         else
         {
             ImGui.TextUnformatted("Pick a piece:");
-            DrawTemplatePicker(request.Pool, PanelWidth);
+            DrawTemplatePicker(request, PanelWidth);
         }
 
         ImGui.End();
+    }
+
+    /// <summary>#299 - the yellow "this borrows from your next turn" line while a debt piece is being placed.</summary>
+    private static void DrawSelectedPieceDebtWarning(PlaceOneTerrainRequest request, int templateIndex)
+    {
+        if (request.PointsBudget is not TerrainPointsBudget budget) return;
+        var verdict = budget.Evaluate(TerrainPointsBudget.CostOf(request.Pool[templateIndex]));
+        if (verdict.WarningText is not string warning) return;
+
+        ImGui.PushStyleColor(ImGuiCol.Text, WarningYellow);
+        ImGui.TextWrapped(warning);
+        ImGui.PopStyleColor();
     }
 
     /// <summary>
@@ -284,9 +318,16 @@ public class GuiPlaceOneTerrainResolver
     /// type/dimensions label on the right. All thumbnails share one pixels-per-inch
     /// scale derived from the largest piece in the pool, so relative sizes read
     /// correctly (a 6x4" building looks bigger than a 5"-radius forest).
+    ///
+    /// #299 points mode: each row carries its cost; a row the budget forbids is dimmed and
+    /// unclickable with the reason in its hover tooltip, and a playable-but-debt row gets a
+    /// yellow label plus the "will take N points from your next turn" tooltip.
     /// </summary>
-    private void DrawTemplatePicker(IReadOnlyList<TerrainPieceEntry> pool, float panelWidth)
+    private void DrawTemplatePicker(PlaceOneTerrainRequest request, float panelWidth)
     {
+        IReadOnlyList<TerrainPieceEntry> pool = request.Pool;
+        TerrainPointsBudget? budget = request.PointsBudget;
+
         const float ThumbW = 56f;
         const float ThumbH = 36f;
         const float RowPad = 4f;
@@ -304,27 +345,49 @@ public class GuiPlaceOneTerrainResolver
         for (int i = 0; i < pool.Count; i++)
         {
             TerrainPieceEntry entry = pool[i];
+
+            string label = DescribeTemplate(entry);
+            bool blocked = false;
+            string? tooltip = null;
+            bool debtWarning = false;
+            if (budget != null)
+            {
+                int cost = TerrainPointsBudget.CostOf(entry);
+                var verdict = budget.Evaluate(cost);
+                label += $" - {TerrainPointsBudget.Pts(cost)}";
+                blocked = !verdict.Playable;
+                debtWarning = verdict.WarningText != null;
+                tooltip = verdict.BlockedReason ?? verdict.WarningText;
+            }
+
             Vector2 rowOrigin = ImGui.GetCursorScreenPos();
 
             bool clicked = ImGui.InvisibleButton($"##t{i}", new Vector2(rowW, rowH));
             bool hovered = ImGui.IsItemHovered();
-            bool active = ImGui.IsItemActive();
+            bool active = !blocked && ImGui.IsItemActive();
 
             uint bg = ImGui.GetColorU32(
                 active ? ImGuiCol.ButtonActive
-                : hovered ? ImGuiCol.ButtonHovered
-                : ImGuiCol.Button);
+                : hovered && !blocked ? ImGuiCol.ButtonHovered
+                : ImGuiCol.Button, blocked ? 0.45f : 1f);
             dl.AddRectFilled(rowOrigin, rowOrigin + new Vector2(rowW, rowH), bg, 4f);
 
             Vector2 thumbTL = rowOrigin + new Vector2(RowPad, RowPad);
-            DrawTemplateThumbnail(dl, entry, thumbTL, new Vector2(ThumbW, ThumbH), ppi);
+            DrawTemplateThumbnail(dl, entry, thumbTL, new Vector2(ThumbW, ThumbH), ppi,
+                alphaMul: blocked ? 0.4f : 1f);
 
             Vector2 textPos = rowOrigin + new Vector2(
                 RowPad + ThumbW + RowPad * 2,
                 rowH * 0.5f - ImGui.GetTextLineHeight() * 0.5f);
-            dl.AddText(textPos, ImGui.GetColorU32(ImGuiCol.Text), DescribeTemplate(entry));
+            uint textColor = blocked ? ImGui.GetColorU32(ImGuiCol.TextDisabled)
+                : debtWarning ? ImGui.ColorConvertFloat4ToU32(WarningYellow)
+                : ImGui.GetColorU32(ImGuiCol.Text);
+            dl.AddText(textPos, textColor, label);
 
-            if (clicked)
+            if (hovered && tooltip != null)
+                ImGui.SetTooltip(tooltip);
+
+            if (clicked && !blocked)
                 lock (_lock) _selectedTemplate = i;
         }
     }
@@ -345,11 +408,12 @@ public class GuiPlaceOneTerrainResolver
     /// the thumbnail by <paramref name="ppi"/> and centered on the template's AABB.
     /// </summary>
     private static void DrawTemplateThumbnail(ImDrawListPtr dl, TerrainPieceEntry entry,
-        Vector2 topLeft, Vector2 size, float ppi)
+        Vector2 topLeft, Vector2 size, float ppi, float alphaMul = 1f)
     {
         (Vector4 fillBase, Vector4 outlineBase) = TerrainTypeColors(entry.TerrainType);
-        uint fill = ImGui.ColorConvertFloat4ToU32(new Vector4(fillBase.X, fillBase.Y, fillBase.Z, 0.55f));
-        uint outline = ImGui.ColorConvertFloat4ToU32(outlineBase);
+        uint fill = ImGui.ColorConvertFloat4ToU32(new Vector4(fillBase.X, fillBase.Y, fillBase.Z, 0.55f * alphaMul));
+        uint outline = ImGui.ColorConvertFloat4ToU32(
+            new Vector4(outlineBase.X, outlineBase.Y, outlineBase.Z, outlineBase.W * alphaMul));
 
         Float2 templateCenter = entry.Shape.GetAABBCenter();
         Vector2 thumbCenter = topLeft + size * 0.5f;

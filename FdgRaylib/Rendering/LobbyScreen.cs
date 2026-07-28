@@ -440,8 +440,22 @@ public class LobbyScreen : IAppScreen
                      "flagged before launch. Higher points means bigger battles.");
         DrawEnumCombo("Terrain Mode",  _viewModel.TerrainPlacementMode, _viewModel.SetTerrainPlacementMode,
             debugLast: new[] { ETerrainPlacementMode.AutoFromLayout },
+            // #299: explicit order keeps the two Alternating modes adjacent (the enum appends
+            // AlternatingPoints after LoadFromFile to keep the wire/save values stable).
+            explicitOrder: new[]
+            {
+                ETerrainPlacementMode.AutoFromLayout,
+                ETerrainPlacementMode.Alternating,
+                ETerrainPlacementMode.AlternatingPoints,
+                ETerrainPlacementMode.LoadFromFile,
+            },
+            displayName: TerrainModeLabel,
             tooltip: "How terrain is put on the board.\n" +
-                     "Alternating: players take turns placing pieces (set the count below).\n" +
+                     "Alternating: One Per: players take turns placing one piece at a time\n" +
+                     "(set the count below).\n" +
+                     "Alternating: Points: pieces cost 1-3 points by size; players take turns\n" +
+                     "spending a per-turn allowance from a shared total (set both below), so one\n" +
+                     "big piece or several small ones per turn.\n" +
                      "Load From File: place a saved layout verbatim.\n" +
                      "Auto From Layout: the server places a built-in default pool (fast, for testing).");
 
@@ -450,6 +464,9 @@ public class LobbyScreen : IAppScreen
         {
             case ETerrainPlacementMode.Alternating:
                 DrawTerrainCountSlider(_viewModel.TerrainCount, _viewModel.SetTerrainCount);
+                break;
+            case ETerrainPlacementMode.AlternatingPoints:
+                DrawTerrainPointsSliders(_viewModel);
                 break;
             case ETerrainPlacementMode.LoadFromFile:
                 DrawTerrainLayoutPicker(_viewModel.TerrainLayoutPath, _viewModel.SetTerrainLayoutPath);
@@ -668,6 +685,41 @@ public class LobbyScreen : IAppScreen
         _ => mode.ToString(),
     };
 
+    private static string TerrainModeLabel(ETerrainPlacementMode mode) => mode switch
+    {
+        ETerrainPlacementMode.AutoFromLayout => "Auto From Layout",
+        ETerrainPlacementMode.Alternating => "Alternating: One Per",
+        ETerrainPlacementMode.AlternatingPoints => "Alternating: Points",
+        ETerrainPlacementMode.LoadFromFile => "Load From File",
+        _ => mode.ToString(),
+    };
+
+    // #299 Alternating: Points - the two knobs shown only in that mode.
+    private static void DrawTerrainPointsSliders(ILobbyViewModel viewModel)
+    {
+        ImGui.TextUnformatted("Total Points");
+        ImGui.SameLine();
+        int total = viewModel.TerrainPointsTotal;
+        int t = total;
+        if (ImGui.SliderInt("##TerrainPointsTotal", ref t, 0, FDG.Stages.PlaceTerrainStage.MaxPointsTotal) && t != total)
+            viewModel.SetTerrainPointsTotal(t);
+        if (ImGui.IsItemHovered())
+            ImGui.SetTooltip("The total terrain points the players place between them, dealt out in\n" +
+                             "placing order a turn's worth at a time - whoever wins the roll-off gets\n" +
+                             "any remainder. 0 skips terrain placement entirely.");
+
+        ImGui.TextUnformatted("Points Per Turn");
+        ImGui.SameLine();
+        int perTurn = viewModel.TerrainPointsPerTurn;
+        int p = perTurn;
+        if (ImGui.SliderInt("##TerrainPointsPerTurn", ref p, 1, FDG.Stages.PlaceTerrainStage.MaxPointsPerTurn) && p != perTurn)
+            viewModel.SetTerrainPointsPerTurn(p);
+        if (ImGui.IsItemHovered())
+            ImGui.SetTooltip("How many terrain points each player spends on their turn - one big piece\n" +
+                             "or several small ones. A piece costing more than this can still open a\n" +
+                             "turn; the difference comes out of the player's next turn.");
+    }
+
     private static void DrawTerrainLayoutPicker(string? current, Action<string?> setter)
     {
         ImGui.TextUnformatted("Layout File");
@@ -747,16 +799,20 @@ public class LobbyScreen : IAppScreen
     // Draws a labeled enum dropdown. `debugLast` names values that are debug conveniences (e.g. the
     // pre-placed / auto-placed setup shortcuts): in a Debug build they keep their declared position -
     // first, for fast iteration - while in a Release build they move to the end so a normal game doesn't
-    // lead with them. `displayName` supplies a friendly label per value (falls back to the raw enum name).
-    // This is presentation only: the enum, saves, and network wire are identical across build types (#243).
+    // lead with them. `explicitOrder` overrides the raw enum-value order entirely (#299: lets related
+    // modes sit together when wire-compat forced a new value to the end of the enum); debugLast still
+    // applies on top of it. `displayName` supplies a friendly label per value (falls back to the raw
+    // enum name). This is presentation only: the enum, saves, and network wire are identical across
+    // build types (#243).
     private static void DrawEnumCombo<TEnum>(string label, TEnum current, Action<TEnum> setter,
-        TEnum[]? debugLast = null, Func<TEnum, string>? displayName = null, string? tooltip = null)
+        TEnum[]? debugLast = null, Func<TEnum, string>? displayName = null, string? tooltip = null,
+        TEnum[]? explicitOrder = null)
         where TEnum : struct, Enum
     {
         ImGui.TextUnformatted(label);
         ImGui.SameLine();
 
-        TEnum[] values = OrderComboValues(debugLast);
+        TEnum[] values = OrderComboValues(debugLast, explicitOrder);
         string[] labels = values.Select(v => displayName?.Invoke(v) ?? v.ToString()).ToArray();
         int idx = Math.Max(0, Array.IndexOf(values, current));
         if (ImGui.Combo($"##{label}", ref idx, labels, labels.Length))
@@ -765,9 +821,10 @@ public class LobbyScreen : IAppScreen
             ImGui.SetTooltip(tooltip);
     }
 
-    private static TEnum[] OrderComboValues<TEnum>(TEnum[]? debugLast) where TEnum : struct, Enum
+    private static TEnum[] OrderComboValues<TEnum>(TEnum[]? debugLast, TEnum[]? explicitOrder = null)
+        where TEnum : struct, Enum
     {
-        TEnum[] all = Enum.GetValues<TEnum>();
+        TEnum[] all = explicitOrder ?? Enum.GetValues<TEnum>();
 #if DEBUG
         return all;
 #else
