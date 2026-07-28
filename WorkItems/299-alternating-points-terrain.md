@@ -13,6 +13,13 @@ turn is paying debt off. Nothing may exceed the personal total; a debt-consumed 
 a Toast; the old mode is relabeled "Alternating: One Per".
 
 ## Notes
+- 2026-07-28 (later): Chris's lobby test found settings rows overflowing the window - the panel used a
+  blanket `PushItemWidth(panelW)` after each label+SameLine, so every control overran by its label
+  width. Rows now size to the space left in the row (`FillRowItemWidth`), Copy buttons pin to the
+  panel edge, the connection header wraps, and the settings column got a 280px floor. Also per
+  Chris: `GetPalette()` now sorts by cost (cheap first, stable) and dedupes position-only template
+  duplicates (the two Forests / two Sandbag lines) - palette is 29 entries, both alternating modes
+  inherit it; sortedness + uniqueness pinned in `DefaultTerrainPoolTests`.
 - 2026-07-28: Implemented end to end. Engine: `TerrainPieceEntry.Points` (default 1 for old files) +
   values across all 31 palette entries; `ETerrainPlacementMode.AlternatingPoints` (appended - wire
   values stable, combo order fixed app-side via `explicitOrder`); `GameSettings.TerrainPointsTotal`/

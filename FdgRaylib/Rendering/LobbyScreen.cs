@@ -119,7 +119,8 @@ public class LobbyScreen : IAppScreen
             ImGuiWindowFlags.NoTitleBar);
 
         float margin       = 10f;
-        float settingsW    = screenW * 0.25f;
+        // Floor keeps the settings rows usable at small window sizes; the main column absorbs the rest.
+        float settingsW    = MathF.Max(280f, screenW * 0.25f);
         float mainW        = screenW - settingsW - margin * 3;
         float fontSize     = ImGui.GetFontSize();
         float framePadY    = ImGui.GetStyle().FramePadding.Y;
@@ -432,7 +433,6 @@ public class LobbyScreen : IAppScreen
             ImGui.PopStyleColor();
         }
 
-        ImGui.PushItemWidth(panelW - innerPad * 2);
         ImGui.BeginDisabled(locked);
 
         DrawIntField("Army Points",    _viewModel.ArmyPoints,    _viewModel.SetArmyPoints,
@@ -512,9 +512,15 @@ public class LobbyScreen : IAppScreen
                              "grants nothing unless the target hugs the same piece, and cover shared by\n" +
                              "shooter and target grants nothing when they are closer than 6in.");
 
-        ImGui.PopItemWidth();
         ImGui.EndDisabled();
     }
+
+    // After a label + SameLine, size the upcoming control to exactly the space left in the row, so
+    // every settings row ends flush at the panel edge whatever the window size. (The old blanket
+    // PushItemWidth(panelW) ignored the label already occupying part of the row, so wide labels
+    // pushed their controls off the panel - and off the window at small sizes.)
+    private static void FillRowItemWidth() =>
+        ImGui.SetNextItemWidth(MathF.Max(60f, ImGui.GetContentRegionAvail().X));
 
     // Shows the addresses a remote player would type into "Host Address", plus the listen port (QF9). LAN
     // is computed once; the public IP is fetched once in the background and filled in when it returns.
@@ -528,20 +534,23 @@ public class LobbyScreen : IAppScreen
         }
 
         ImGui.PushStyleColor(ImGuiCol.Text, HeaderAccent);
-        ImGui.TextUnformatted("Connection (share with players)");
+        ImGui.TextWrapped("Connection (share with players)");
         ImGui.PopStyleColor();
 
-        string lan = _lanAddresses ?? "unavailable";
-        ImGui.TextUnformatted($"LAN:    {lan}");
-        ImGui.SameLine();
-        if (UiButton.NavigateSmall("Copy##lanip")) ImGui.SetClipboardText(lan);
-
-        string pub = _publicAddress;
-        ImGui.TextUnformatted($"Public: {pub}");
-        ImGui.SameLine();
-        if (UiButton.NavigateSmall("Copy##pubip")) ImGui.SetClipboardText(pub);
-
+        DrawCopyableAddress("LAN:    ", _lanAddresses ?? "unavailable", "lanip");
+        DrawCopyableAddress("Public: ", _publicAddress, "pubip");
         ImGui.TextUnformatted($"Port:   {ListenPort}");
+    }
+
+    // One "label address [Copy]" row with Copy pinned to the panel's right edge; a long address
+    // slides under the button instead of pushing it off the panel at narrow window sizes. The full
+    // string is copied regardless of how much of it is visible.
+    private static void DrawCopyableAddress(string label, string address, string id)
+    {
+        ImGui.TextUnformatted($"{label}{address}");
+        float copyW = ImGui.CalcTextSize("Copy").X + ImGui.GetStyle().FramePadding.X * 2f;
+        ImGui.SameLine(MathF.Max(0f, ImGui.GetCursorPosX() + ImGui.GetContentRegionAvail().X - copyW));
+        if (UiButton.NavigateSmall($"Copy##{id}")) ImGui.SetClipboardText(address);
     }
 
     // Up, non-loopback IPv4 unicast addresses - the LAN addresses a same-network player can reach.
@@ -670,6 +679,7 @@ public class LobbyScreen : IAppScreen
     {
         ImGui.TextUnformatted("Terrain Count");
         ImGui.SameLine();
+        FillRowItemWidth();
         int v = current;
         if (ImGui.SliderInt("##TerrainCount", ref v, 0, FDG.Stages.PlaceTerrainStage.MaxAlternatingPieceCount) && v != current)
             setter(v);
@@ -699,6 +709,7 @@ public class LobbyScreen : IAppScreen
     {
         ImGui.TextUnformatted("Total Points");
         ImGui.SameLine();
+        FillRowItemWidth();
         int total = viewModel.TerrainPointsTotal;
         int t = total;
         if (ImGui.SliderInt("##TerrainPointsTotal", ref t, 0, FDG.Stages.PlaceTerrainStage.MaxPointsTotal) && t != total)
@@ -710,6 +721,7 @@ public class LobbyScreen : IAppScreen
 
         ImGui.TextUnformatted("Points Per Turn");
         ImGui.SameLine();
+        FillRowItemWidth();
         int perTurn = viewModel.TerrainPointsPerTurn;
         int p = perTurn;
         if (ImGui.SliderInt("##TerrainPointsPerTurn", ref p, 1, FDG.Stages.PlaceTerrainStage.MaxPointsPerTurn) && p != perTurn)
@@ -789,6 +801,7 @@ public class LobbyScreen : IAppScreen
     {
         ImGui.TextUnformatted(label);
         ImGui.SameLine();
+        FillRowItemWidth();
         int v = current;
         if (ImGui.InputInt($"##{label}", ref v) && v != current)
             setter(Math.Max(0, v));
@@ -811,6 +824,7 @@ public class LobbyScreen : IAppScreen
     {
         ImGui.TextUnformatted(label);
         ImGui.SameLine();
+        FillRowItemWidth();
 
         TEnum[] values = OrderComboValues(debugLast, explicitOrder);
         string[] labels = values.Select(v => displayName?.Invoke(v) ?? v.ToString()).ToArray();
