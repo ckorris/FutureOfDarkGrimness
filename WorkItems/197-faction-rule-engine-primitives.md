@@ -977,6 +977,62 @@ core `Slow` grant survives. Affects all 15 shipped `* Buff` rules plus `Piercing
 authored (consistent with its siblings and correct in normal play) rather than papering over one
 instance; filed against **#095**.
 
+## Slice P22a: Repel Ambushers + Ambush Beacon (30 refs) — DONE 2026-07-28
+
+> Repel: "Enemy units using Ambush must be set up over 12\" away from this model's unit." (24 refs, 8 books)
+> Beacon: "Friendly units using Ambush may ignore distance restrictions from enemies if they are deployed
+> within 6\" of this model." (6 refs, 3 books)
+
+**Owner sign-offs (2026-07-28):** the Beacon waiver is judged PER arriving MODEL; it overrides BOTH
+restriction kinds (the flat over-9" rule and Repel's 12"); and the arrival distance scans became
+side-aware in this slice.
+
+**The shape: constraint discs on the request + one legality authority.** `PlaceObjectsRequest` gained
+`EnemyKeepOutDiscs` / `EnemyDistanceWaiverDiscs` (new `PlacementDisc(Center, RadiusInches)`, snapshotted
+at request build — nothing moves during a placement, so the snapshot is exact), and a new engine
+`PlacementDistanceRules` is the single authority combining the flat minimum + keep-outs + waivers
+(waiver wins over both; keep-outs exclusive at the boundary like the over-9" rule, waiver inclusive).
+All four placement resolvers now judge enemy distance through it: CLI + GUI (their `TooCloseToEnemy`
+kept only to word the failure message), solo-AI (`BlockPenalty`'s one enemy-distance read — the
+Tactician inherits it, being a subclass), and the Tactician's strike aim (per-victim clearance asks
+`CapabilityRuleQueries.AmbushRepelDistance` so "right behind it" aims past a repeller's 12").
+
+**Both rules are capability answers** at `Lifecycle_OnCapabilityQuery` (`Effect./RuleOperation.
+RepelAmbushers(dist)` + `AmbushBeacon(range)`), so a Condition gates them live and suppression applies;
+`AmbushArrivalRules` (beside `ReserveRules`) turns the answers into discs — side-aware
+(`ITeamExtensions.AreAllied`; "friendly"/"enemy" is relative to the ARRIVING unit), living models only,
+reserve units project nothing, one disc per living model of the constraint unit. The per-model
+radiation is Repel's wording exactly; for Beacon ("this model") it is the unit-holds-the-rule
+accommodation Accumulator/Caster Group made — every corpus beacon is a single-model unit.
+
+**Found while scoping: the CLI resolver's enemy scan was player-based** (teammates counted as enemies
+for the 9" rule), while GUI/AI/Tactician were already side-aware — fixed here per the sign-off, one
+line on the shared `AreAllied`.
+
+**GUI**: `IEnemyExclusionProvider` reshaped to discs; the no-go blob paints each keep-out disc at its
+own radius and ERASES the beacon bubbles (custom zero-src blend — the hole IS the semantics), with a
+green outline so the player sees why the hole exists. Aircraft off-table redeploy is not "using
+Ambush": no discs, by construction.
+
+Data (app-side, supplement): both defs, capability entry each; embedded into the 8 Repel books
+(EternalDynasty, Jackals, HumanInquisition, SoulSnatcherCults, RobotLegions, WormholeDaemonsofWar,
+OrcMarauders, HumanDefenseForce) + 3 Beacon books (DAOUnion, SaurianStarhost, EternalDynasty).
+
+Tests: engine `AmbushArrivalConstraintTests` (12 — disc building incl. dead/reserve/allied/live-Condition
+gating, the combination authority incl. both waiver-overrides pins and the boundary conventions, and the
+stage wiring end-to-end via the real `StartOfRoundExtraActionStage`); `AiPlaceObjectsResolverTests` +1
+(the AI honors a keep-out disc bigger than the flat rule). App `AmbushConstraintShippedDataTests` (5 —
+shipped-data pins + end-to-end discs from the real JSON + every-referencing-book-embeds). Engine
+2259/2259, app 676/676, smoke exit 0.
+
+Mutation-checked, four mutations each redding exactly its own tests: dropping the waiver short-circuit,
+reverting the side check to player-based, dropping the stage's disc wiring, and deleting the AI's
+enemy-distance read. That last one initially SURVIVED — both AI tests passed with the check deleted,
+because the fan-out lane happens to land far from a mid-table enemy — so both were hardened to park the
+enemy on the AI's natural landing spot (the pre-existing 9" test had been vacuous all along).
+
+Corpus dead references **199 -> 169**.
+
 ## Slice: Misc small primitives — IN PROGRESS (started 2026-07-23)
 
 The 102-ref "Misc" row, triaged rule-by-rule (each is a one-off). Full wording pulled from the corpus
