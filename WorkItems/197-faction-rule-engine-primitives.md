@@ -1293,6 +1293,42 @@ offered when destroyed. One corpus-supported edge; wire it via SpilloutExecutor 
 
 Corpus dead references **140 -> 136**.
 
+## Slice P17d: Reanimation + Aura (3 refs) — DONE 2026-07-28 (P17 closed, 24/24)
+
+> "When a unit where all models have this rule is activated, roll as many dice as the max. number of
+> models/wounds it could restore. For each 5+ you may restore one model/wound. Note that new models
+> may only be restored if they can be placed in coherency with non-restored models." + Aura form.
+> (Robot Legions - every corpus ref is the Aura; the base rule had never existed either, which is why
+> only the Aura registered as dead.)
+
+**Owner sign-off (2026-07-28): wounds-first, auto-place.** `Effect.RestoreWounds(minRoll)` ->
+`InvokeRestoreWounds` -> `IOperationServices.RestoreWounds`: pool = floor of the unit's total wounds
+dealt (the probabilistic roller's fractional tail earns no die - conservative, no int-locking); the
+pool rolls DECISIVE faces (binary per-die outcomes, the ClearTokenOnRoll/Storm precedent) into one
+`DiceRolledBeat`; each success tops up the first wounded LIVING model, else revives the first dead
+one at one wound - a just-revived Tough model is then the wounded living model the next success tops
+up, so bodies return one at a time and fill before the next. Revives auto-place beside the first
+living model (0.1" base-to-base, eight angles, widening rings, overlap-checked against the whole
+table; anchor-stack as the CohesiveFallback-style last resort). Rides the P5a activation-start
+passive seam - no stage work at all.
+
+Data (app-side, supplement): `Reanimation` (restoreWounds 5 at Activation_OnActivationStart, gated
+allModelsHaveThisRule) + `Reanimation Aura` (the Screened-Aura link shape); embedded into
+RobotLegions.
+
+Tests: engine `ReanimationRuleIntegrationTests` (4, through the REAL ActivationStartStage - revives
+at one wound placed in coherency, the wounds-first order pin (living Tough heals fully before the
+grunt returns), failed dice restore nothing, a full-strength unit rolls nothing). App
+`ReanimationShippedDataTests` (3 - shape pins, the aura link (all refs are the Aura, a broken link
+makes the rule unreachable), book embedding). Engine 2286/2286, app 698/698, smoke exit 0.
+
+Verified in play (headless scenario probe, Realistic dice, seeded casualties): every activation logs
+"Reanimation rolled 2 dice, N at 5+ ...", and a round-3 success logs "revived 1 model" with the body
+back on the table. Exit 0.
+
+Corpus dead references **136 -> 133**. P17 closes at 24/24 (Spawn 14 + Reinforcement 4 + Reanimation
+Aura 3 + Split 3).
+
 ## Slice: Misc small primitives — IN PROGRESS (started 2026-07-23)
 
 The 102-ref "Misc" row, triaged rule-by-rule (each is a one-off). Full wording pulled from the corpus
@@ -1446,7 +1482,7 @@ Reference counts are corpus-wide (44 books). Primitive numbers are #100's.
 | 41 | ~~**P13** marker-scaled magnitude~~ **DONE 2026-07-22** (41/41) | Shipped WITHOUT touching `ValueSource` (its context-free `Resolve` stays pure): new effects `tokenScaledRollModifier` / `tokenScaledReduceArmorPenetration` read the bearer's token count at Apply time (steps = count / perMarkers, Fortified's read-side `maxReduction` cap), `GrantToken` gained a grant-time `maxTotal` clamp (the "up to a max. of X markers" clause, spell-token-cap pattern), `ReconcileObjectivesStage` now fires `Round_OnRoundEnd` rules for every living unit before the token sweep (new `RoundEndContext`, reflection-registered), and both Shaken-application sites clear `CustomHook(Morale_OnShakenApplied)` tokens (Fortified's lose-all-on-Shaken, pure data). "On the table" composes from existing conditions: `not(InReserve) and not(EmbarkedIn) and not(OffTableFromForcedMove)`. Authored behind `tokenPresent(marker, minCount: perMarkers)` so RuleFireLint's existing token seeding proves each entry fires. 8 definitions (incl. support base `Defensive Growth`); engine 1820/1820, `TokenScaledMarkerTests` (9, incl. a real-stage round-end firing pin per the #196 consumption lesson). Engine `2efc06e`. | Piercing Frenzy (9), Defensive Frenzy (8), Piercing Growth (6), Precision Frenzy (6), Fortified Growth (6), Precision Growth (5), Defensive Growth Aura (1) |
 | 28 | ~~**P14b** spend-for-bonus markers~~ **DONE 2026-07-22** (28/28) | Two marker classes on the ENEMY unit, bonus kind in the token type (mirroring the roll-modifier trio): persistent (`Persistent{Hit,Ap}BonusMarker` — the Target family, counted every attack, never removed) and spendable (`Spendable{Hit,Ap}BonusMarker` — Tag/Spotter). **Owner-ruled 2026-07-22: the spend is PROMPTED, not auto-spent** — `TargetMarkerSpend` asks the attacking player how many to remove (a `StringSelectionRequest`, spend-all listed first so the CLI EOF default and the AI first-option fallback both take the aggressive default; zero-marker attacks never prompt), folded into `DetermineHitRollStage` (skipped while fatigued, like granted buffs) and `DetermineSaveRollsNeededStage` (+net raises the defender's threshold). Placement is data: `Activation_OnPreAttack` abilities over the existing `TargetSelector`/`Cost` machinery; Spotter's "on a 4+ place a marker" is the new `grantTokenOnRoll` effect (decisive die, `InvokeGrantTokenOnRoll` executable, ClearTokenOnRoll's mirror). Engine 1831/1831, `TargetBonusMarkerTests` (11). Engine `d0985e2`. | Precision Target (7), Piercing Tag (6), Precision Spotter (4), Piercing Spotter (4), Precision Tag (4), Piercing Target (3) |
 | 27 | ~~**P11** reflect damage~~ **DONE 2026-07-22** (27/27) | A post-melee reflect (write-up below): Retaliate (X hits per wound taken), Deathstrike (X hits per killed model), Self-Destruct (X per participating model + self-kill any survivor), all per-model attribution. | Retaliate (20) + Deathstrike (4) + Self-Destruct (3) DONE |
-| 24 | **P17** place / restore a unit | Create a unit or restore destroyed models mid-game. Touches deployment + table-state lifecycle + networking sync. | Spawn (14), Reinforcement (4), Reanimation Aura (3), Split (3) |
+| 24 | ~~**P17** place / restore a unit~~ **DONE 2026-07-28** (24/24) | Shipped in four slices (write-ups above): P17a Spawn + the whole mid-game unit-creation machinery (RuleArgument.Str, coreText book refs, auxiliary unit specs, the creation service, same-round pool adoption - owner-ruled "same round for all"); P17b Split on a new killer-less self-destroyed seam; P17c Reinforcement (Shaken-applied evaluation seam, clone-in-reserve with a spent gate, mandatory TableEdgeBandZone arrival after ambushers); P17d Reanimation's decisive restore pool (wounds-first, auto-placed revives - owner-ruled). The feared networking half was already there: store creations replicate via the existing AddSingleDataMessage path. | Spawn (14), Reinforcement (4), Reanimation Aura (3), Split (3) all DONE |
 | 21 | **P23** casting support — **DONE 2026-07-23 (19/19)** | Rides #034. Caster Group, Spell Accumulator and Spell Conduit all shipped on the capability seam (write-ups above); Casting Buff/Debuff landed under P6. Conduit relays the cast origin, no prompt - the origin is derived from the targets and made visible in the picker, the target rows, the banner and the roll breakdown. | Spell Conduit (9) + Spell Accumulator (7) + Caster Group (3) DONE; Casting Buff/Debuff (2+X) under P6 |
 | 20 | ~~**P6** deferred debuff token~~ **DONE 2026-07-23** (20/20, +3 riders) | **The row's premise was mostly wrong** - only 8 of the 20 refs needed a primitive. Four of the five rules ride seams that were already built AND already consumed (Morale/Save granted modifiers, the #153 movement-grant seam, Fortified's AP reduction on the Actor seat) and shipped as pure data. Only `Casting Debuff` had no carrier: new `ERollKind.Cast` + `TokenType.CastRollModifier`, folded into `CastSpellStage`'s threshold. See the P6 write-up above. | Casting Debuff (8), Morale Debuff (4), Piercing Debuff (3), Defense Debuff (3), Speed Debuff (2) DONE + riders Casting Buff (2), Speed Buff (1) |
 | 14 | **P8** apply terrain state to target | Force a Dangerous-terrain test / count as standing in terrain. Builds on `countAsInTerrain` + `ApplyNonMovementTerrainEffectsStage`. | Dangerous Terrain Debuff (11), Difficult Terrain Debuff (3) |

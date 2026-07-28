@@ -6761,6 +6761,40 @@
     "description": "When this unit is fully destroyed, you may place a new unit of X fully within 6\" of it before removing the last model."
   },
   {
+    "name": "Reanimation",
+    "passive": [
+      {
+        "hookID": "Activation_OnActivationStart",
+        "condition": { "kind": "allModelsHaveThisRule" },
+        "effect": { "kind": "restoreWounds", "minRoll": 5 },
+        "lifetime": "UntilEndOfGame",
+        "seat": "Actor"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "When a unit where all models have this rule is activated, roll as many dice as the max. number of models/wounds it could restore. For each 5+ you may restore one model/wound. Note that new models may only be restored if they can be placed in coherency with non-restored models."
+  },
+  {
+    "name": "Reanimation Aura",
+    "passive": [
+      {
+        "hookID": "Lifecycle_OnUnitCreated",
+        "condition": { "kind": "always" },
+        "effect": { "kind": "aura", "ruleName": "Reanimation" },
+        "lifetime": "UntilEndOfGame",
+        "seat": "Actor"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "This model and its unit get Reanimation."
+  },
+  {
     "name": "Reinforcement",
     "passive": [
       {
