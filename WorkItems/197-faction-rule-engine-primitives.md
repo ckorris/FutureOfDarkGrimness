@@ -1,6 +1,6 @@
 # 197 — Faction rule coverage, part 2: engine primitives + the scope-mismatch bug
 
-**Status**: in progress. Corpus dead references **2,342 -> 133** of 13,870 (1.0%), 27 names.
+**Status**: in progress. Corpus dead references **2,342 -> 127** of 13,870 (0.9%), 26 names.
 **Related**: #196 (data-only half, closed 2026-07-22), #100 (primitive catalog), #102, #034, #042, #093, #095, `SpecialRulesAudit.md`
 
 > **Compacted 2026-07-28.** Shipped slices are summarized to the durable facts: the seam/vocabulary
@@ -31,7 +31,7 @@ Done = each slice ships its primitive with an integration test mirroring the nea
 
 # Open work
 
-Ref counts are live from `--rule-coverage FdgRaylib/Assets/Books` (2026-07-28). **133 dead across 27 names.**
+Ref counts are live from `--rule-coverage FdgRaylib/Assets/Books` (2026-07-28). **127 dead across 26 names.**
 
 | Refs | Slice | What it needs | Rules |
 |-----:|-------|---------------|-------|
@@ -46,7 +46,6 @@ Ref counts are live from `--rule-coverage FdgRaylib/Assets/Books` (2026-07-28). 
 | 7 | **P16** one-shot special-attack injection | Once per game, inject one extra attack with an authored weapon profile. | Takedown Strike (5), Takedown Shot (2) |
 | 7 | **`moraleTestThen` outside spell casting** | `Effect.MoraleTestThen.Apply()` is an intentional no-op — `CastSpellStage` special-cases the effect and runs the test-then-branch itself. None of the five generic ability-offering stages do, so a plain `SpecialRuleDefinition` ability using it is a no-op in play (confirmed by `RuleFireLint`). Both corpus uses are ordinary `unit.rules` references, so modelling them as `SpellDefinition`s would not fix the corpus. | Mind Control (4), Fatigue Debuff (3) |
 | 6 | **Reroll threshold parameter** | `RerollCondition.OnUnmodifiedValue` carries no value — `RerollSink` hardcodes the unmodified max face (6). These need "re-roll unmodified 5s *or* 6s". `AddExtraHit`/`AddExtraWound` already parameterize their trigger per entry (`OnRollValue`); `RerollCondition` needs the same. **Author as the INCREMENT** (re-roll 5s only) — the base already re-rolls 6s. Also needs `attackedFromOverInches` (built). | Mischievous Boost Aura (4), Scrapper Boost Aura (2) |
-| 6 | **Dash** end-of-activation reposition (re-filed from P21) | "At the END of activation, once per round, place all models with this rule within D3+1in." Reposition-at-activation's twin at a different trigger. **P22d built the seam it rides**: `Activation_OnEndOfActivation` + `ActivationEndContext` gathering offers in `ReconcileEndOfActivationStage` via `AbilityEffectChoice`. Small delta on shipped machinery. | Dash (2), Dash Aura (4) |
 | 5 | **Unpredictable Marks** (P15 residual) | A mark grants Unpredictable at the hit-roll hook, AFTER `UnpredictableBranchResolver`'s action-level roll, so the mark-granted rule is invisible to it. Needs the resolver to also scan the DEFENDER for an Unpredictable-granting mark at action time. | Unpredictable Fighter Mark (3), Unpredictable Shooter Mark (2) |
 | 4 | **Instinctive** — DEFERRED 2026-07-23 | "When activated, if able to shoot/charge, this model MUST attack the CLOSEST valid target, +1 to hit for that attack." The defining mechanic is **forced target selection**, which `RestrictActions` cannot express (it gates action TYPES, not targets) and which must override both the human Choose-Action/target flow AND the AI target resolver — feature-sized. Shipping the +1 rider alone would invert the rule's character (a compelled creature becomes a pure buff), so it was deliberately NOT shipped buff-only. | Instinctive (4) |
 | 3 | **P19** reactivate another unit | Generalize the live self-`reactivate` to a chosen friendly unit. | Coordinate (3) |
@@ -220,6 +219,27 @@ activation-start rules are multi-ability.
 rule -> ask which effect -> resolve/apply/execute" block, so a rule resolves identically at every hook it
 uses. `DeployUnitStage` routes MULTI-ability groups through it and keeps its Yes/No for single-ability
 "you MAY" rules (Vanguard, Fanatic).
+
+**Dash — DONE 2026-07-28** (6 refs; engine `c8b28ab`). Reposition-at-activation's twin at the far end of
+the activation, riding P22d's seam. The effect is **Bounding's body verbatim** (`repositionAtActivation`,
+D3, `plusInches: 1`), so this was prompting-and-plumbing work: `ReconcileEndOfActivationStage` gathered
+offers but never folded `RuleOperation.RepositionModels`, the third and last trigger of the family
+(`ActivationStartStage` and `DeployUnitStage` already did). Authored as an **activated** ability rather
+than a passive entry like its three siblings, because only the ability path can express "once per round" —
+which matters exactly when a unit is reactivated.
+
+**Owner sign-off (2026-07-28): the placement is the only prompt.** The seam asks single-ability rules a
+Yes/No defaulting to NO, which is right for Ambush Re-Deployment's self-removal and wrong for a free
+repositioning buff — it would double-prompt a human and permanently decline the rule for every automated
+resolver. New `RepositionPlacement.IsCancellablePlacement`: an ability whose effect already asks a
+cancellable question skips the Yes/No. **Recorded, not silently unified:** `DeployUnitStage` keeps its
+unconditional Yes/No for Vanguard and Fanatic — that prompting is shipped behaviour its tests pin, and
+changing it was out of scope here. **Recorded consequence:** the cost is emitted when the ability
+resolves, so cancelling the placement still spends the round's use (same as Vanguard/Fanatic at
+deployment today); pinned by test so a change of heart fails loudly.
+
+Data (app-side, supplement): `Dash` + `Dash Aura`; all 6 refs are Custodian Brothers' Envoy Banner option.
+**127 dead.**
 
 **End-of-activation ability seam — DONE 2026-07-28** (from P22d; **this is what Dash rides**).
 `ReconcileEndOfActivationStage` gathers offers at a new **`Activation_OnEndOfActivation` +
