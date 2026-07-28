@@ -1,6 +1,6 @@
 # 197 — Faction rule coverage, part 2: engine primitives + the scope-mismatch bug
 
-**Status**: in progress. Corpus dead references **2,342 -> 121** of 13,870 (0.9%), 24 names.
+**Status**: in progress. Corpus dead references **2,342 -> 114** of 13,870 (0.8%), 22 names.
 **Related**: #196 (data-only half, closed 2026-07-22), #100 (primitive catalog), #102, #034, #042, #093, #095, `SpecialRulesAudit.md`
 
 > **Compacted 2026-07-28.** Shipped slices are summarized to the durable facts: the seam/vocabulary
@@ -31,7 +31,7 @@ Done = each slice ships its primitive with an integration test mirroring the nea
 
 # Open work
 
-Ref counts are live from `--rule-coverage FdgRaylib/Assets/Books` (2026-07-28). **121 dead across 24 names.**
+Ref counts are live from `--rule-coverage FdgRaylib/Assets/Books` (2026-07-28). **114 dead across 22 names.**
 
 | Refs | Slice | What it needs | Rules |
 |-----:|-------|---------------|-------|
@@ -44,7 +44,6 @@ Ref counts are live from `--rule-coverage FdgRaylib/Assets/Books` (2026-07-28). 
 | 9 | **P7** morale-outcome override | Convert a failed morale test into a pass, then take unignorable self-wounds. | No Retreat Aura (5), No Retreat (3), No Retreat Buff (1) |
 | 9 | **Extended Buff Range** (re-filed from Misc) | Relay non-spell Hero picks across 24in via another friendly unit with the rule — a relational aura-relay, i.e. generalized Spell Conduit for non-spell "pick friendly within 12in" rules. **Conduit's `CastSupport` neighbour scan and the `EnableSpellRelay` shape are the template.** | Extended Buff Range (9) |
 | 7 | **P16** one-shot special-attack injection | Once per game, inject one extra attack with an authored weapon profile. | Takedown Strike (5), Takedown Shot (2) |
-| 7 | **`moraleTestThen` outside spell casting** | `Effect.MoraleTestThen.Apply()` is an intentional no-op — `CastSpellStage` special-cases the effect and runs the test-then-branch itself. None of the five generic ability-offering stages do, so a plain `SpecialRuleDefinition` ability using it is a no-op in play (confirmed by `RuleFireLint`). Both corpus uses are ordinary `unit.rules` references, so modelling them as `SpellDefinition`s would not fix the corpus. | Mind Control (4), Fatigue Debuff (3) |
 | 5 | **Unpredictable Marks** (P15 residual) | A mark grants Unpredictable at the hit-roll hook, AFTER `UnpredictableBranchResolver`'s action-level roll, so the mark-granted rule is invisible to it. Needs the resolver to also scan the DEFENDER for an Unpredictable-granting mark at action time. | Unpredictable Fighter Mark (3), Unpredictable Shooter Mark (2) |
 | 4 | **Instinctive** — DEFERRED 2026-07-23 | "When activated, if able to shoot/charge, this model MUST attack the CLOSEST valid target, +1 to hit for that attack." The defining mechanic is **forced target selection**, which `RestrictActions` cannot express (it gates action TYPES, not targets) and which must override both the human Choose-Action/target flow AND the AI target resolver — feature-sized. Shipping the +1 rider alone would invert the rule's character (a compelled creature becomes a pure buff), so it was deliberately NOT shipped buff-only. | Instinctive (4) |
 | 3 | **P19** reactivate another unit | Generalize the live self-`reactivate` to a chosen friendly unit. | Coordinate (3) |
@@ -572,6 +571,30 @@ for "pick one enemy with Caster". Also fixed a **#167 tooling gap**: `ScenarioTo
 a payload, so a placed `CastRollModifier` carried no delta and looked exactly like the modifier not
 working; it now takes an optional `delta` for the four carrier types, and a `delta` on any other type is a
 compile error rather than a silent drop. **306 -> 283.**
+
+**`moraleTestThen` outside spell casting — DONE 2026-07-28** (7 refs; engine `548399a`).
+> Mind Control: "Once per activation, before attacking, pick one enemy unit within 18in in line of sight,
+> which must take a morale test. If failed you may move it by up to 6in in a straight line in any
+> direction." Fatigue Debuff: same, "if failed, it becomes fatigued."
+
+Both are the **P6 pre-attack shape**, so the hook, cost and target selector were all already proven — the
+only gap was that `Effect.MoraleTestThen.Apply()` was a documented no-op, enacted solely by
+`CastSpellStage`. **Owner sign-off (2026-07-28): make it an executable operation** rather than teaching
+one more stage about it. New `RuleOperation.InvokeMoraleTestThen` -> `IOperationServices.MoraleTestThen`,
+the P17/P22 shape. Every ability-offering stage already runs `OperationExecutor`, so the effect now works
+at **all** of them instead of only where a stage was taught — which was the actual gap, not just these 7
+refs. `RuleFireLint`'s ability arm already returns true for any `ExecutableOperation`, so no lint change.
+
+**The operation carries BOTH units.** The on-failure effect resolves with the rule's OWNER as bearer and
+the failing unit as target, because `Effect.TriggeredMove` reads `Bearer.PlayerID` for the controller —
+carrying only the victim would hand the enemy control of its own forced move. Pinned and mutation-checked.
+
+**`CastSpellStage` deliberately keeps its own path**, recorded rather than unified: it resolves the same
+effect over SEVERAL targets and reports one aggregated banner (#293), which per-target executables would
+fragment. It short-circuits before `Apply` is called, so nothing double-runs.
+
+Data (app-side, supplement): both rules; embedded into Jackals, SoulSnatcherCults, WormholeDaemonsofLust
+(Mind Control) and WormholeDaemonsofWar (Fatigue Debuff). **114 dead.**
 
 **Screened / Screened Aura — DONE 2026-07-23** (1 ref). Pure data, byte-identical to shipped `Machine-Fog`
 on the `AttackedFromOverInches` gate. **243 -> 242.**
