@@ -586,7 +586,8 @@ public class GuiConsolidationMoveResolver
 
         bool canSubmit = issues.Count == 0;
         // Primary: Done -- larger, accented, commits on click or the Confirm key (gated on a valid move).
-        bool donePressed = ResolverButtons.Primary("Done", new Vector2(fullW, 34f), enabled: canSubmit);
+        bool donePressed = ResolverButtons.Primary("Done",
+            new Vector2(fullW, ResolverPanelLayout.OptionRowHeight()), enabled: canSubmit);   // #298
         if (ImGui.IsItemHovered(ImGuiHoveredFlags.AllowWhenDisabled))
             ImGui.SetTooltip(canSubmit
                 ? $"Commit this move and continue. {ResolverKeybinds.Confirm.Parenthetical}"
@@ -599,7 +600,8 @@ public class GuiConsolidationMoveResolver
         }
 
         // Secondary: Stay in place (de-emphasized).
-        bool stayPressed = ResolverButtons.Deemphasized("Stay in place", new Vector2(fullW, 28f));
+        bool stayPressed = ResolverButtons.Deemphasized("Stay in place",
+            new Vector2(fullW, ResolverPanelLayout.ActionRowHeight()));
         if (ImGui.IsItemHovered())
             ImGui.SetTooltip("Don't move the unit. Every model stays where it is.");
         if (stayPressed)
@@ -612,7 +614,8 @@ public class GuiConsolidationMoveResolver
 
         // Destructive: Clear -- set apart below a separator, red-tinted.
         ImGui.Separator();
-        bool clearPressed = ResolverButtons.Destructive("Clear selected", new Vector2(fullW, 26f));
+        bool clearPressed = ResolverButtons.Destructive("Clear selected",
+            new Vector2(fullW, ResolverPanelLayout.ActionRowHeight()));
         if (ImGui.IsItemHovered())
             ImGui.SetTooltip("Remove all waypoints from the currently selected model.");
         if (clearPressed && _selectedModel != null) pt.ClearModelSteps(_selectedModel);

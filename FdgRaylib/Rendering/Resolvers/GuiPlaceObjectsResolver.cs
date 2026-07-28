@@ -706,7 +706,8 @@ public class GuiPlaceObjectsResolver<T>
         {
             ImGui.Spacing();
             float statsH = PlacementPanelLayout.StatsHeight(ImGui.GetContentRegionAvail().Y,
-                MeasureFooterHeight(request, statusText, cohesionIssue, edgeText));
+                MeasureFooterHeight(request, statusText, cohesionIssue, edgeText),
+                ImGui.GetTextLineHeight());
             ImGui.BeginChild("##DeployStats", new Vector2(0, statsH), ImGuiChildFlags.Borders);
             // Wrap descriptions at the child's own width: the shared renderer's tooltip default (300px)
             // is wider than this docked column and would run rule text off the edge.
@@ -739,12 +740,19 @@ public class GuiPlaceObjectsResolver<T>
         ImGui.Spacing();
         float fullW = panelW - ImGui.GetStyle().WindowPadding.X * 2;
         float halfW = (fullW - ImGui.GetStyle().ItemSpacing.X) / 2f;
+        // #298: button heights come from the font via PlacementPanelLayout, which is also what
+        // MeasureFooterHeight costs them at - the two must not drift.
+        float lineH     = ImGui.GetTextLineHeight();
+        float doneH     = PlacementPanelLayout.DoneButtonHeight(lineH);
+        float backH     = PlacementPanelLayout.BackButtonHeight(lineH);
+        float secondH   = PlacementPanelLayout.SecondaryRowHeight(lineH);
+        float restartH  = PlacementPanelLayout.RestartButtonHeight(lineH);
 
         // Primary: Done -- larger, accented, commits on click or the Confirm key (gated on all models placed).
         bool canDone = _placed.Count == total && !_dragIndex.HasValue
             && (!request.MustTouchTableEdge || PlacedTouchesEdge(request))
             && cohesionIssue == null;
-        if (ResolverButtons.Primary("Done", new Vector2(fullW, 32f), enabled: canDone))
+        if (ResolverButtons.Primary("Done", new Vector2(fullW, doneH), enabled: canDone))
         {
             Complete(tcs, new List<PlacedObjectEntry<T>>(_placed));
             ImGui.End();
@@ -756,7 +764,7 @@ public class GuiPlaceObjectsResolver<T>
         if (request.AllowCancel)
         {
             // #248: Backspace = back here too (no waypoint-undo exists yet in placement - #161 C).
-            if (ResolverButtons.Deemphasized("Back (Backspace)", new Vector2(fullW, 28f))
+            if (ResolverButtons.Deemphasized("Back (Backspace)", new Vector2(fullW, backH))
                 || ResolverHotkeys.IsBackPressed())
             {
                 CompleteCancelled(tcs);
@@ -769,7 +777,7 @@ public class GuiPlaceObjectsResolver<T>
 
         // Secondary row: Undo + Auto-place.
         ImGui.BeginDisabled(_placed.Count == 0);
-        if (ImGui.Button("Undo", new Vector2(halfW, 28f)))
+        if (ImGui.Button("Undo", new Vector2(halfW, secondH)))
         {
             _placed.RemoveAt(_placed.Count - 1);
             _dragIndex = null;
@@ -779,7 +787,7 @@ public class GuiPlaceObjectsResolver<T>
 
         ImGui.SameLine();
         ImGui.BeginDisabled(_placed.Count >= total);
-        if (ImGui.Button("Auto-place", new Vector2(halfW, 28f)))
+        if (ImGui.Button("Auto-place", new Vector2(halfW, secondH)))
         {
             if (AutoPlaceRemaining(request)) _errorMessage = null;
             else
@@ -793,7 +801,7 @@ public class GuiPlaceObjectsResolver<T>
         // Destructive: Restart -- set apart below a separator, red-tinted.
         ImGui.Separator();
         ImGui.BeginDisabled(_placed.Count == 0);
-        if (ResolverButtons.Destructive("Restart", new Vector2(fullW, 26f)))
+        if (ResolverButtons.Destructive("Restart", new Vector2(fullW, restartH)))
         {
             _placed.Clear();
             _dragIndex = null;
@@ -815,6 +823,7 @@ public class GuiPlaceObjectsResolver<T>
         float wrapW = ImGui.GetContentRegionAvail().X;
         return PlacementPanelLayout.FooterHeight(
             ImGui.GetStyle().ItemSpacing.Y,
+            ImGui.GetTextLineHeight(),
             WrappedTextHeight(statusText, wrapW),
             cohesionIssue != null ? WrappedTextHeight(cohesionIssue, wrapW) : null,
             edgeText != null ? WrappedTextHeight(edgeText, wrapW) : null,

@@ -14,25 +14,32 @@ namespace FdgRaylib.Rendering.Resolvers;
 /// </summary>
 public static class PlacementPanelLayout
 {
-    /// <summary>The stat box never shrinks below this; it scrolls instead.</summary>
-    public const float MinStatsHeight = 90f;
+    /// <summary>The stat box never shrinks below this many text lines; it scrolls instead.</summary>
+    public const float MinStatsLines = 5f;
+
+    /// <inheritdoc cref="MinStatsLines"/>
+    public static float MinStatsHeight(float lineHeight) => lineHeight * MinStatsLines;
 
     // Footer button heights, the single source of truth for both the drawing code and the measurement.
-    public const float DoneButtonHeight    = 32f;
-    public const float BackButtonHeight    = 28f;
-    public const float SecondaryRowHeight  = 28f;   // Undo / Auto-place share one row
-    public const float RestartButtonHeight = 26f;
+    // #298: line-height multiples rather than the old 26-32px constants. The ImGui font is 18f * uiScale
+    // (up to 25px at 4K), so those buttons were nearly full of text on a high-DPI display; the tiers now
+    // come from ResolverPanelLayout, shared with every other resolver panel.
+    public static float DoneButtonHeight(float lineHeight)    => ResolverPanelLayout.OptionRowHeight(lineHeight);
+    public static float BackButtonHeight(float lineHeight)    => ResolverPanelLayout.ActionRowHeight(lineHeight);
+    public static float SecondaryRowHeight(float lineHeight)  => ResolverPanelLayout.ActionRowHeight(lineHeight);   // Undo / Auto-place share one row
+    public static float RestartButtonHeight(float lineHeight) => ResolverPanelLayout.ActionRowHeight(lineHeight);
 
     /// <summary>
     /// Height of everything drawn BELOW the stat box: the status line, the optional cohesion and
     /// table-edge lines, and the button stack (Done, optional Back, Undo/Auto-place, separator, Restart).
     /// </summary>
     /// <param name="itemSpacingY">ImGui's <c>ItemSpacing.Y</c> — the gap the layout adds after each item.</param>
+    /// <param name="lineHeight">ImGui's <c>GetTextLineHeight()</c> — what the button heights scale with.</param>
     /// <param name="statusTextHeight">Wrapped height of the hint / error line (always present).</param>
     /// <param name="cohesionTextHeight">Wrapped height of the #269 cohesion warning, or null when absent.</param>
     /// <param name="edgeTextHeight">Wrapped height of the #029 table-edge line, or null when absent.</param>
     /// <param name="allowCancel">Whether the Back button is offered (cancellable placements only).</param>
-    public static float FooterHeight(float itemSpacingY, float statusTextHeight,
+    public static float FooterHeight(float itemSpacingY, float lineHeight, float statusTextHeight,
         float? cohesionTextHeight, float? edgeTextHeight, bool allowCancel)
     {
         // Two Spacing() calls bracket the text block: one above it, one below.
@@ -42,11 +49,11 @@ public static class PlacementPanelLayout
         if (cohesionTextHeight.HasValue) height += cohesionTextHeight.Value + itemSpacingY;
         if (edgeTextHeight.HasValue)     height += edgeTextHeight.Value + itemSpacingY;
 
-        height += DoneButtonHeight + itemSpacingY;
-        if (allowCancel) height += BackButtonHeight + itemSpacingY;
-        height += SecondaryRowHeight + itemSpacingY;
+        height += DoneButtonHeight(lineHeight) + itemSpacingY;
+        if (allowCancel) height += BackButtonHeight(lineHeight) + itemSpacingY;
+        height += SecondaryRowHeight(lineHeight) + itemSpacingY;
         height += itemSpacingY * 2f + 1f;                 // the Separator above Restart
-        height += RestartButtonHeight + itemSpacingY;
+        height += RestartButtonHeight(lineHeight) + itemSpacingY;
 
         return height;
     }
@@ -56,6 +63,6 @@ public static class PlacementPanelLayout
     /// <see cref="MinStatsHeight"/> so a very short panel still shows a scrollable stat block rather
     /// than a zero-height (or negative) child.
     /// </summary>
-    public static float StatsHeight(float availableHeight, float footerHeight) =>
-        MathF.Max(MinStatsHeight, availableHeight - footerHeight);
+    public static float StatsHeight(float availableHeight, float footerHeight, float lineHeight) =>
+        MathF.Max(MinStatsHeight(lineHeight), availableHeight - footerHeight);
 }

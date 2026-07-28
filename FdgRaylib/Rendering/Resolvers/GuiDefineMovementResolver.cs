@@ -1211,7 +1211,8 @@ public class GuiDefineMovementResolver
 
         bool canSubmit = issues.Count == 0;
         // Primary: Done -- larger, accented, commits on click or the Confirm key (gated on a valid move).
-        bool donePressed = ResolverButtons.Primary("Done", new Vector2(fullW, 34f), enabled: canSubmit);
+        bool donePressed = ResolverButtons.Primary("Done",
+            new Vector2(fullW, ResolverPanelLayout.OptionRowHeight()), enabled: canSubmit);   // #298
         if (ImGui.IsItemHovered(ImGuiHoveredFlags.AllowWhenDisabled))
             ImGui.SetTooltip(canSubmit
                 ? $"Commit this move and continue. {ResolverKeybinds.Confirm.Parenthetical}"
@@ -1227,7 +1228,8 @@ public class GuiDefineMovementResolver
         // spends the unit's Move action. Nothing has been mutated yet, so this is always safe here.
         if (request.AllowCancel)
         {
-            bool backPressed = ResolverButtons.Deemphasized("Back (Backspace)", new Vector2(fullW, 28f));
+            bool backPressed = ResolverButtons.Deemphasized("Back (Backspace)",
+                new Vector2(fullW, ResolverPanelLayout.ActionRowHeight()));
             if (ImGui.IsItemHovered())
                 ImGui.SetTooltip("Cancel the move and pick a different action. The unit keeps its move.");
             if (backPressed)
@@ -1239,7 +1241,8 @@ public class GuiDefineMovementResolver
         }
 
         // Secondary row: Skip (de-emphasized) + Auto-advance.
-        bool skipPressed = ResolverButtons.Deemphasized("Skip all", new Vector2(btnW, 28f));
+        bool skipPressed = ResolverButtons.Deemphasized("Skip all",
+            new Vector2(btnW, ResolverPanelLayout.ActionRowHeight()));
         if (ImGui.IsItemHovered())
             ImGui.SetTooltip("Don't move the unit. Every model stays in place.");
         if (skipPressed)
@@ -1251,7 +1254,8 @@ public class GuiDefineMovementResolver
         }
 
         ImGui.SameLine();
-        bool autoPressed = ImGui.Button("Auto-advance", new Vector2(btnW, 28f));
+        bool autoPressed = ImGui.Button("Auto-advance",
+            new Vector2(btnW, ResolverPanelLayout.ActionRowHeight()));
         if (ImGui.IsItemHovered())
             ImGui.SetTooltip("Move the whole unit toward the nearest enemy, stopping ~1\" short. Stays within Advance distance so the unit can still shoot.");
         if (autoPressed)
@@ -1263,7 +1267,8 @@ public class GuiDefineMovementResolver
 
         // Destructive: Clear -- set apart below a separator, red-tinted.
         ImGui.Separator();
-        bool clearPressed = ResolverButtons.Destructive(group ? "Clear all" : "Clear selected", new Vector2(fullW, 26f));
+        bool clearPressed = ResolverButtons.Destructive(group ? "Clear all" : "Clear selected",
+            new Vector2(fullW, ResolverPanelLayout.ActionRowHeight()));
         if (ImGui.IsItemHovered())
             ImGui.SetTooltip(group
                 ? "Remove all waypoints from every model in the unit."

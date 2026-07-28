@@ -243,9 +243,11 @@ public class GuiPlaceObjectiveResolver
             ImGui.Spacing();
 
             // Primary: Confirm (accent + Enter). Cancel is de-emphasized.
-            bool confirmPressed = ResolverButtons.Primary("Confirm", new Vector2(190f, 30f));
+            bool confirmPressed = ResolverButtons.Primary("Confirm",
+                new Vector2(190f, ResolverPanelLayout.OptionRowHeight()));   // #298
             ImGui.SameLine();
-            bool cancelPressed = ResolverButtons.Deemphasized("Cancel", new Vector2(120f, 30f));
+            bool cancelPressed = ResolverButtons.Deemphasized("Cancel",
+                new Vector2(120f, ResolverPanelLayout.ActionRowHeight()));
 
             if (confirmPressed)
             {
