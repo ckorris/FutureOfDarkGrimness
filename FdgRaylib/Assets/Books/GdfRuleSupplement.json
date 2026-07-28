@@ -6717,6 +6717,33 @@
     "description": "Counts as having Ambush, but may be deployed at the start of any round, including the first."
   },
   {
+    "name": "Spawn",
+    "passive": [],
+    "activated": [
+      {
+        "triggerHook": "Activation_OnActivationStart",
+        "cost": { "kind": "oncePerGame" },
+        "targetSelector": {
+          "rangeInches": 0,
+          "minCount": 1,
+          "maxCount": 1,
+          "targetAffinity": "Self",
+          "requireLineOfSight": false,
+          "requiredToken": null,
+          "singleModel": false,
+          "requiredRule": null
+        },
+        "effect": { "kind": "spawnUnit", "radiusInches": 6.0 },
+        "availableWhen": { "kind": "always" },
+        "label": "Spawn"
+      }
+    ],
+    "scope": "Unit",
+    "engineArgumentCount": 1,
+    "valence": "Positive",
+    "description": "Once per game, when this model is activated, you may place a new unit of X fully within 6\" of it."
+  },
+  {
     "name": "Ambush Re-Deployment",
     "passive": [
       {

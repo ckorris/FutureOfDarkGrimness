@@ -5022,8 +5022,9 @@
                   "quantity": 1,
                   "rules": [
                     {
-                      "kind": "core",
-                      "name": "Spawn"
+                      "kind": "coreText",
+                      "name": "Spawn",
+                      "textValue": "Mine-Drones [5]"
                     }
                   ]
                 }
@@ -5400,8 +5401,9 @@
               ],
               "rulesGained": [
                 {
-                  "kind": "core",
-                  "name": "Spawn"
+                  "kind": "coreText",
+                  "name": "Spawn",
+                  "textValue": "Mine-Drones [5]"
                 }
               ],
               "itemsGained": [],
@@ -5605,8 +5607,9 @@
                   "quantity": 1,
                   "rules": [
                     {
-                      "kind": "core",
-                      "name": "Spawn"
+                      "kind": "coreText",
+                      "name": "Spawn",
+                      "textValue": "Mine-Drones [5]"
                     }
                   ]
                 }
@@ -5749,8 +5752,9 @@
                   "quantity": 1,
                   "rules": [
                     {
-                      "kind": "core",
-                      "name": "Spawn"
+                      "kind": "coreText",
+                      "name": "Spawn",
+                      "textValue": "Mine-Drones [5]"
                     }
                   ]
                 }
@@ -6682,6 +6686,40 @@
       "engineArgumentCount": 0,
       "valence": "Positive",
       "description": "Attacks with this weapon get AP(4), but this weapon\u0027s unit takes one wound on unmodified rolls of 1 to hit."
+    },
+    {
+      "name": "Spawn",
+      "passive": [],
+      "activated": [
+        {
+          "triggerHook": "Activation_OnActivationStart",
+          "cost": {
+            "kind": "oncePerGame"
+          },
+          "targetSelector": {
+            "rangeInches": 0,
+            "minCount": 1,
+            "maxCount": 1,
+            "targetAffinity": "Self",
+            "requireLineOfSight": false,
+            "requiredToken": null,
+            "singleModel": false,
+            "requiredRule": null
+          },
+          "effect": {
+            "kind": "spawnUnit",
+            "radiusInches": 6
+          },
+          "availableWhen": {
+            "kind": "always"
+          },
+          "label": "Spawn"
+        }
+      ],
+      "scope": "Unit",
+      "engineArgumentCount": 1,
+      "valence": "Positive",
+      "description": "Once per game, when this model is activated, you may place a new unit of X fully within 6\u0022 of it."
     },
     {
       "name": "Predator Shooter",

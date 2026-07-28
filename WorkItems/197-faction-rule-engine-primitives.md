@@ -1129,6 +1129,77 @@ from Ambush this round?" prompts (grep-counted), through the normal placement fl
 Corpus dead references **161 -> 157**. P22 closes at 42/42 (Repel 24 + Beacon 6 + Rapid 4 + APS 4 +
 Re-Deployment 4).
 
+## Slice P17a: Spawn + the unit-creation machinery (14 refs) — DONE 2026-07-28
+
+> "Once per game, when this model is activated, you may place a new unit of X fully within 6\" of it."
+> (Alien Hives, Ratmen Clans, Robot Legions, Wormhole Daemons of Lust)
+
+**Owner sign-offs (2026-07-28):** a mid-round creation may activate the SAME round ("same round for
+all" - including Split's destruction-seam path, which is what shaped the adoption design below).
+
+**Why Spawn was dead twice over.** The OPR source writes the X as a STRING rating
+("Spawn(Spores [5])") and BOTH importers flattened any non-numeric rating to the bare rule name - the
+argument never reached the books, let alone the engine. And nothing could represent it anyway:
+`RuleArgument` had only `Int` (its doc literally anticipated "a Str case for Alien Hives'
+Spawn(unit-type)").
+
+**The vocabulary:** `RuleArgument.Str`; `SpecialRuleEntry_Text` ("coreText", PrintableName
+"Spawn(Spores [5])") emitted by both importers for non-numeric ratings and resolved to a Str arg by
+`DescribeRuleEntry`; `SpecialRuleEntryParser` grows a text-parenthetical branch GATED on
+no-space-before-paren, so rule NAMES like "Versatile Attack (Piercing)" keep resolving whole;
+`RuleAttachmentPersistence` extended compatibly (it used to HARD-FAIL a resume on any non-Int
+argument - new blobs write a kind-carrying `Arguments` list, old blobs still read via `IntArguments`).
+
+**Auxiliary unit specs.** `ArmyListFile.AuxiliaryUnits` (nullable, omitted when absent so existing
+files round-trip byte-identical): full `UnitFileEntry`s keyed by the rule's exact argument text in
+`Id` (display `Name` stays clean - "Spores", not "Spores [5]"). `ListCompiler.CompileAuxiliaryUnits`
+compiles each named book unit at the `[n]` size, zero points, RECURSIVELY with a seen-guard (a Split
+chain: Change Horrors -> Lesser Change Horrors -> Changelings - every link ships). The rule-name set
+{Spawn, Split} is a commented constant per grow-on-demand. `ArmyRuleDataPersistence` carries the aux
+list + the effect-set keys on ArmyData (nullable additions, pre-P17 blobs read fine), so the specs
+survive to mid-game and across a resume.
+
+**The creation service.** `Effect.SpawnUnit(radius)` reads Arg(0) ->
+`RuleOperation.InvokeSpawnUnit` -> new `IOperationServices.SpawnUnit`: find the placer's army, read
+the persisted spec, build through THE SAME PATH a deploying unit takes (UnitData ctor + the
+now-public `GameBootstrap.AttachRulesFromArmyList` + `UnitCreationRules.Apply`, so Tough's max
+wounds and auras land identically), store-Create (which is what replicates the new unit to network
+clients - the AddSingleDataMessage path has existed since the join-snapshot work), append
+`army.UnitBindings` + re-Set the army through the store (the #190 update path carries the grown
+list), place via the normal flow in a 6" `CircularZone` (disembark's shape, #282 commit guard), and
+stamp the new `TokenType.JoinsRoundInProgress`.
+
+**Same-round activation without touching the creator.** The per-round pool snapshots at round start,
+and a creation can fire from code that cannot see the round context (Split's destruction seam). So
+the ROUND CONTEXT adopts: `SingleRoundContext.AdoptMidRoundUnits()` runs at its own query seams
+(the DoesX/remaining-activation checks), folds marked units into their owner's pool and spends the
+marker; the round-start snapshot sweeps strays so nothing joins twice. Works for any future
+mid-round creation for free.
+
+Data: `Spawn` supplement definition (once-per-game activation-start ability, `spawnUnit` 6",
+engineArgumentCount 1); the FIVE book files' Spawn/Split refs re-imported to `coreText` (grafted
+from fresh OPR-snapshot imports by parallel tree walk, 17 refs, none left bare); embedded into the
+4 Spawn books. Found here: `BookRuleSupplement`'s reference scanner didn't know the new entry kind,
+so the embed silently skipped Spawn - the every-book-embeds test now pins it.
+
+Tests: engine `SpawnRuleIntegrationTests` (7 - build/place/register through the REAL
+ActivationStartStage incl. the 6" circular zone and the join marker; rules + creation-time rules on
+the spawned unit; same-round adoption through the real round context incl. marker spend;
+once-per-game; decline saves the use; dangling spec warns not throws; round-start stray sweep),
+`ArmyForgeCompilerTests` +1 (the recursive chain), `OprBookImporterTests` +1 (text rating -> Text
+entry). App `SpawnShippedDataTests` (3 - definition pins, every ref carries its text argument + the
+definition embeds, end-to-end Forge compile of the real AlienHives book). Engine 2275/2275, app
+687/687, smoke exit 0.
+
+Mutation-checked: disabling pool adoption and the compiler's recursion each red exactly their own
+test. NOT separately pinned (recorded): the army re-Set broadcast (needs network scaffolding; rides
+the #190-established path).
+
+Verified in play (headless scenario probe): "Use Spawn(Spores [5]) on Spawning Beast?" at activation
+start, "Spawning Beast spawns Spores!", and Spores ACTIVATES THE SAME ROUND. Exit 0.
+
+Corpus dead references **157 -> 143** (Split's 3 stay dead until P17b rides this machinery).
+
 ## Slice: Misc small primitives — IN PROGRESS (started 2026-07-23)
 
 The 102-ref "Misc" row, triaged rule-by-rule (each is a one-off). Full wording pulled from the corpus

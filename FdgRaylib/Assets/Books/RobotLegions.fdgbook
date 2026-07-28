@@ -2856,8 +2856,9 @@
                   "quantity": 1,
                   "rules": [
                     {
-                      "kind": "core",
-                      "name": "Spawn"
+                      "kind": "coreText",
+                      "name": "Spawn",
+                      "textValue": "Bot Swarms [3]"
                     }
                   ]
                 }
@@ -5067,7 +5068,8 @@
             "kind": "deferDeployment",
             "timing": "LaterRound",
             "placementRangeInches": 3,
-            "minArrivalRound": 2
+            "minArrivalRound": 2,
+            "mandatoryArrival": false
           },
           "lifetime": "UntilEndOfGame",
           "seat": "Actor"
@@ -5426,6 +5428,40 @@
       "description": "Enemy units using Ambush must be set up over 12\u0022 away from this model\u0027s unit."
     },
     {
+      "name": "Spawn",
+      "passive": [],
+      "activated": [
+        {
+          "triggerHook": "Activation_OnActivationStart",
+          "cost": {
+            "kind": "oncePerGame"
+          },
+          "targetSelector": {
+            "rangeInches": 0,
+            "minCount": 1,
+            "maxCount": 1,
+            "targetAffinity": "Self",
+            "requireLineOfSight": false,
+            "requiredToken": null,
+            "singleModel": false,
+            "requiredRule": null
+          },
+          "effect": {
+            "kind": "spawnUnit",
+            "radiusInches": 6
+          },
+          "availableWhen": {
+            "kind": "always"
+          },
+          "label": "Spawn"
+        }
+      ],
+      "scope": "Unit",
+      "engineArgumentCount": 1,
+      "valence": "Positive",
+      "description": "Once per game, when this model is activated, you may place a new unit of X fully within 6\u0022 of it."
+    },
+    {
       "name": "Ambushing Piercing Shot",
       "passive": [
         {
@@ -5437,7 +5473,8 @@
             "kind": "deferDeployment",
             "timing": "LaterRound",
             "placementRangeInches": 9,
-            "minArrivalRound": 2
+            "minArrivalRound": 2,
+            "mandatoryArrival": false
           },
           "lifetime": "UntilEndOfGame",
           "seat": "Actor"
