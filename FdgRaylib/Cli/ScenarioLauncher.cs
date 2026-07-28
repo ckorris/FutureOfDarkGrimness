@@ -41,8 +41,23 @@ public static class ScenarioLauncher
     /// #191 <c>--ai-profile</c>: which AI drives the non-human slots. One profile for all AI slots —
     /// per-slot selection arrives with the lobby UX (plan A6) if ever needed here.
     /// </param>
+    /// <param name="allAi">
+    /// <c>--all-ai</c>: slot 0 gets an AI controller too (no human) - observation runs, mirroring
+    /// FdgLab's human-free GameRunner assembly. The human game still exists for the caller's
+    /// interface wiring; it simply owns no player.
+    /// </param>
+    /// <param name="decisionLogFor">
+    /// <c>--log-decisions</c>: per-slot decision-narration sink (the #191 candidate-table replay,
+    /// FdgLab's flag brought to the scenario path). Null = no narration, exactly as before.
+    /// </param>
+    /// <param name="logSink">
+    /// All-AI only: receives the game narrative via slot 0's controller (with no human game to
+    /// assign a log UI onto, the controller's <c>SendLogMessage</c> is the only tap - FdgLab's
+    /// pattern). Ignored when <paramref name="allAi"/> is false.
+    /// </param>
     public static ResumeParts BuildResume(GameDataStore store, int? seedOverride = null,
-        EAiProfile aiProfile = EAiProfile.SoloRules)
+        EAiProfile aiProfile = EAiProfile.SoloRules, bool allAi = false,
+        Func<int, Action<string>?>? decisionLogFor = null, Action<string>? logSink = null)
     {
         // Mirror LaunchResume: capture the saved slot infos, then drop the old records so the
         // rebuilt slots don't create duplicates.
@@ -74,7 +89,7 @@ public static class ScenarioLauncher
             slots[i] = new PlayerSlot(i, savedInfos[i].TeamNumber, savedInfos[i].PlayerID,
                 new ArmyListFile(), store);
 
-            if (i == 0)
+            if (i == 0 && !allAi)
             {
                 humanGame.AddLocalPlayerID(savedInfos[i].PlayerID);
                 slots[i].AssignPlayerController(
@@ -82,9 +97,15 @@ public static class ScenarioLauncher
             }
             else
             {
+                // Built via BuildRegistry rather than CreateController so the decision-narration
+                // sink can be threaded through (CreateController has no such parameter).
                 var aiGame = new FDGGame_AsLocal(store, bus);
-                slots[i].AssignPlayerController(AiProfileFactory.CreateController(aiProfile,
-                    $"Player {i + 1} (AI)", savedInfos[i].PlayerID, aiGame, effectiveSeed, slots[i].SlotID));
+                FDG.StageResolution.IStageResolverRegistry registry = AiProfileFactory.BuildRegistry(
+                    aiProfile, aiGame.TableState, savedInfos[i].PlayerID, effectiveSeed,
+                    slots[i].SlotID, decisionLogFor?.Invoke(i));
+                slots[i].AssignPlayerController(new ScenarioAiPlayerController(
+                    $"Player {i + 1} (AI)", savedInfos[i].PlayerID, aiGame, registry,
+                    logSink: i == 0 ? logSink : null));
             }
         }
 

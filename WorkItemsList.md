@@ -89,6 +89,8 @@ Master plan: `docs/ai-agent-plan.md` (heuristics -> MCTS -> learned value net; g
 
 - [ ] 191 — Tactician AI agent umbrella: challenge-level game-playing AI as a new profile alongside the solo-rules bot; phased A-D, benchmark-gated. ([WorkItems/191](WorkItems/191-tactician-agent.md))
 - [~] 264 — Tactician unit behind large impassible terrain rushes sideways/backwards round 1: all 8 causes fixed and merged to master, 11 pins green (`TacticianWalledUnitTests`); issue 1's melee half folded in 2026-07-25. Open: 8b hysteresis (owner's call, deferred) + GUI eyeball check. ([WorkItems/264](WorkItems/264-tactician-walled-unit-lateral-retreat.md))
+- [~] 296 — Tactician crowded-game drift (#264's friendly-congestion + team-game sibling): 2v2 scoring is team-BLIND (teammate priced as enemy everywhere but deployment/spells), screen credit pays behind the ward, no front-first activation order, markers undervalued vs safety. All four fix slices landed + observation-verified; pool bench in progress. ([WorkItems/296](WorkItems/296-tactician-crowded-game-drift.md))
+- [~] 297 — Objectives held per SIDE (Chris's call): allied players guarding one marker no longer contest it to neutral; `ITeamExtensions.ReconcileObjectiveOwner` is the one authority for reconcile + AI projection, 1v1 bit-identical. Backend done; UI treatment (team-colored markers/scoreboard) awaiting Chris's pick. ([WorkItems/297](WorkItems/297-team-owned-objectives.md))
 
 ## Networking & infrastructure
 
