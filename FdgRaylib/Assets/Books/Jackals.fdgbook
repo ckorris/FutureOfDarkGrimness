@@ -3932,6 +3932,56 @@
       "description": "Enemy units using Ambush must be set up over 12\u0022 away from this model\u0027s unit."
     },
     {
+      "name": "Ambushing Piercing Shot",
+      "passive": [
+        {
+          "hookID": "Deployment_OnPreDeploymentSelect",
+          "condition": {
+            "kind": "always"
+          },
+          "effect": {
+            "kind": "deferDeployment",
+            "timing": "LaterRound",
+            "placementRangeInches": 9,
+            "minArrivalRound": 2
+          },
+          "lifetime": "UntilEndOfGame",
+          "seat": "Actor"
+        },
+        {
+          "hookID": "Shooting_OnHitRollComplete",
+          "condition": {
+            "kind": "and",
+            "left": {
+              "kind": "not",
+              "inner": {
+                "kind": "isMelee"
+              }
+            },
+            "right": {
+              "kind": "tokenPresent",
+              "tType": {
+                "id": "ArrivedFromReserve"
+              },
+              "minCount": 1
+            }
+          },
+          "effect": {
+            "kind": "rollModifier",
+            "rollKind": "Save",
+            "delta": -1
+          },
+          "lifetime": "ThisAttack",
+          "seat": "Actor"
+        }
+      ],
+      "activated": [],
+      "scope": "Unit",
+      "engineArgumentCount": 0,
+      "valence": "Positive",
+      "description": "Counts as having Ambush, and its weapons get AP(\u002B1) when shooting on the round in which it deploys via this rule."
+    },
+    {
       "name": "Precision Fighter",
       "passive": [
         {

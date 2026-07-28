@@ -1059,6 +1059,23 @@ Mutation-checked: reverting the per-unit gate to the flat round-2 check reds exa
 
 Corpus dead references **169 -> 165**.
 
+## Slice P22c: Ambushing Piercing Shot (4 refs) — DONE 2026-07-28 (app-side only)
+
+> "Counts as having Ambush, and its weapons get AP(+1) when shooting on the round in which it deploys
+> via this rule." (Jackals, Robot Legions, Rebel Guerrillas)
+
+**Pure data, no engine change** - two entries on shipped seams: `deferDeployment(LaterRound, 9)` (the
+Ambush half) + a Piercing-Fighter-shaped Save -1 at `Shooting_OnHitRollComplete`, Actor seat, gated
+`and(not(isMelee), tokenPresent(ArrivedFromReserve))`. The arrival pass already stamps that token and
+the round-end sweep already clears it, so "on the round in which it deploys" rides the existing
+lifecycle. Recorded approximation: an Aircraft off-table return stamps the same token; no corpus APS
+unit is an Aircraft (checked), so nothing observable rides on the shared marker.
+
+Tests: app `AmbushingPiercingShotShippedDataTests` (4 - the defer half is plain round-2 Ambush; token
+present -> -1 Save shooting and 0 in melee; no token -> 0; book embedding). App 679/679.
+
+Corpus dead references **165 -> 161**.
+
 ## Slice: Misc small primitives — IN PROGRESS (started 2026-07-23)
 
 The 102-ref "Misc" row, triaged rule-by-rule (each is a one-off). Full wording pulled from the corpus
