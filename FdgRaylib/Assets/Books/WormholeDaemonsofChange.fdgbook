@@ -94,7 +94,7 @@
           "options": [
             {
               "id": "T4qO-",
-              "label": "Exalted Hexed Chakram (18\", A9, Surge)",
+              "label": "Exalted Hexed Chakram (18\u0022, A9, Surge)",
               "cost": 30,
               "costUnpriced": false,
               "weaponsGained": [
@@ -175,7 +175,7 @@
             },
             {
               "id": "8J0CiduOvb",
-              "label": "Exalted Magic Bolt (18\", A6, AP(1), Shred)",
+              "label": "Exalted Magic Bolt (18\u0022, A6, AP(1), Shred)",
               "cost": 40,
               "costUnpriced": false,
               "weaponsGained": [
@@ -199,7 +199,7 @@
             },
             {
               "id": "14nS6",
-              "label": "Exalted Magic Blast (12\", A12, Shred)",
+              "label": "Exalted Magic Blast (12\u0022, A12, Shred)",
               "cost": 45,
               "costUnpriced": false,
               "weaponsGained": [
@@ -313,14 +313,14 @@
             },
             {
               "id": "wB4iODNVMB",
-              "label": "Change God's Power (Storm of Change)",
+              "label": "Change God\u0027s Power (Storm of Change)",
               "cost": 40,
               "costUnpriced": false,
               "weaponsGained": [],
               "rulesGained": [],
               "itemsGained": [
                 {
-                  "name": "Change God's Power",
+                  "name": "Change God\u0027s Power",
                   "quantity": 1,
                   "rules": [
                     {
@@ -483,7 +483,7 @@
           "options": [
             {
               "id": "MVgWa",
-              "label": "Great Hexed Chakram (18\", A6, Surge)",
+              "label": "Great Hexed Chakram (18\u0022, A6, Surge)",
               "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
@@ -536,7 +536,7 @@
             },
             {
               "id": "v3Gw3MhYbl",
-              "label": "Great Magic Bolt (18\", A4, AP(1), Shred)",
+              "label": "Great Magic Bolt (18\u0022, A4, AP(1), Shred)",
               "cost": 20,
               "costUnpriced": false,
               "weaponsGained": [
@@ -560,7 +560,7 @@
             },
             {
               "id": "ZQkfU",
-              "label": "Great Magic Blast (12\", A8, Shred)",
+              "label": "Great Magic Blast (12\u0022, A8, Shred)",
               "cost": 20,
               "costUnpriced": false,
               "weaponsGained": [
@@ -897,7 +897,7 @@
             },
             {
               "id": "9CJkU",
-              "label": "Heavy Hexed Chakram (18\", A3, Surge)",
+              "label": "Heavy Hexed Chakram (18\u0022, A3, Surge)",
               "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
@@ -921,7 +921,7 @@
             },
             {
               "id": "NSZNoEyusd",
-              "label": "Magic Bolt (18\", A2, AP(1), Shred)",
+              "label": "Magic Bolt (18\u0022, A2, AP(1), Shred)",
               "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
@@ -973,7 +973,7 @@
             },
             {
               "id": "8IfRQ",
-              "label": "Magic Blast (12\", A4, Shred)",
+              "label": "Magic Blast (12\u0022, A4, Shred)",
               "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
@@ -1404,7 +1404,7 @@
             },
             {
               "id": "YCnNlNX5fW",
-              "label": "Magic Bolt (18\", A2, AP(1), Shred), Power Staff (A2, Rending, Shred)",
+              "label": "Magic Bolt (18\u0022, A2, AP(1), Shred), Power Staff (A2, Rending, Shred)",
               "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [
@@ -1445,7 +1445,7 @@
             },
             {
               "id": "iLstcYi63D",
-              "label": "Hexed Chakram (18\", A3, Surge), Power Staff (A2, Rending, Shred)",
+              "label": "Hexed Chakram (18\u0022, A3, Surge), Power Staff (A2, Rending, Shred)",
               "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [
@@ -1486,7 +1486,7 @@
             },
             {
               "id": "Iw_PB",
-              "label": "Magic Blast (12\", A4, Shred), Power Staff (A2, Rending, Shred)",
+              "label": "Magic Blast (12\u0022, A4, Shred), Power Staff (A2, Rending, Shred)",
               "cost": 20,
               "costUnpriced": false,
               "weaponsGained": [
@@ -2006,7 +2006,7 @@
             },
             {
               "id": "fgPSNPLUoT",
-              "label": "Magic Bolt (18\", A2, AP(1), Shred), Power Staff (A2, Rending, Shred)",
+              "label": "Magic Bolt (18\u0022, A2, AP(1), Shred), Power Staff (A2, Rending, Shred)",
               "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [
@@ -2047,7 +2047,7 @@
             },
             {
               "id": "42Xkj",
-              "label": "Magic Blast (12\", A4, Shred), Power Staff (A2, Rending, Shred)",
+              "label": "Magic Blast (12\u0022, A4, Shred), Power Staff (A2, Rending, Shred)",
               "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [
@@ -2088,7 +2088,7 @@
             },
             {
               "id": "6OVaESBdlC",
-              "label": "Hexed Chakram (18\", A3, Surge), Power Staff (A2, Rending, Shred)",
+              "label": "Hexed Chakram (18\u0022, A3, Surge), Power Staff (A2, Rending, Shred)",
               "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [
@@ -2420,7 +2420,7 @@
             },
             {
               "id": "0UJJ55sJGr",
-              "label": "Magic Bolt (18\", A2, AP(1), Shred), Power Staff (A2, Rending, Shred)",
+              "label": "Magic Bolt (18\u0022, A2, AP(1), Shred), Power Staff (A2, Rending, Shred)",
               "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [
@@ -2461,7 +2461,7 @@
             },
             {
               "id": "xqzYLfjW6M",
-              "label": "Hexed Chakram (18\", A3, Surge), Power Staff (A2, Rending, Shred)",
+              "label": "Hexed Chakram (18\u0022, A3, Surge), Power Staff (A2, Rending, Shred)",
               "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [
@@ -2502,7 +2502,7 @@
             },
             {
               "id": "VMMKs",
-              "label": "Magic Blast (12\", A4, Shred), Power Staff (A2, Rending, Shred)",
+              "label": "Magic Blast (12\u0022, A4, Shred), Power Staff (A2, Rending, Shred)",
               "cost": 20,
               "costUnpriced": false,
               "weaponsGained": [
@@ -3330,7 +3330,7 @@
           "options": [
             {
               "id": "pdQW8Idg",
-              "label": "Magic Bolt (18\", A1, AP(1), Shred)",
+              "label": "Magic Bolt (18\u0022, A1, AP(1), Shred)",
               "cost": 0,
               "costUnpriced": false,
               "weaponsGained": [
@@ -3354,7 +3354,7 @@
             },
             {
               "id": "3exDEe9C",
-              "label": "Hexed Chakram (18\", A2, Surge)",
+              "label": "Hexed Chakram (18\u0022, A2, Surge)",
               "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
@@ -3497,7 +3497,7 @@
           "options": [
             {
               "id": "WKlFjw8lFn",
-              "label": "Magic Blast (12\", A2, Shred)",
+              "label": "Magic Blast (12\u0022, A2, Shred)",
               "cost": 5,
               "costUnpriced": false,
               "weaponsGained": [
@@ -3521,7 +3521,7 @@
             },
             {
               "id": "-hjtF2PJ1d",
-              "label": "Hexed Chakram (18\", A2, Surge)",
+              "label": "Hexed Chakram (18\u0022, A2, Surge)",
               "cost": 10,
               "costUnpriced": false,
               "weaponsGained": [
@@ -3679,7 +3679,7 @@
             },
             {
               "id": "7JZun",
-              "label": "Magic Blast (12\", A4, Shred), Claws (A1)",
+              "label": "Magic Blast (12\u0022, A4, Shred), Claws (A1)",
               "cost": 15,
               "costUnpriced": false,
               "weaponsGained": [
@@ -4000,7 +4000,7 @@
           "options": [
             {
               "id": "1QRzSmLcAA",
-              "label": "Great Scorcher Flame (18\", A2, AP(1), Blast(3), Reliable)",
+              "label": "Great Scorcher Flame (18\u0022, A2, AP(1), Blast(3), Reliable)",
               "cost": 20,
               "costUnpriced": false,
               "weaponsGained": [
@@ -4189,7 +4189,7 @@
           "options": [
             {
               "id": "XgAX8",
-              "label": "Heavy Change Cannon (24\", A6, AP(2), Shred)",
+              "label": "Heavy Change Cannon (24\u0022, A6, AP(2), Shred)",
               "cost": 20,
               "costUnpriced": false,
               "weaponsGained": [
@@ -4213,7 +4213,7 @@
             },
             {
               "id": "IbkFD",
-              "label": "Hexed Cannon (18\", A18, Surge)",
+              "label": "Hexed Cannon (18\u0022, A18, Surge)",
               "cost": 35,
               "costUnpriced": false,
               "weaponsGained": [
@@ -4442,7 +4442,7 @@
       "scope": "Unit",
       "engineArgumentCount": 1,
       "valence": "Positive",
-      "description": "Gets X accumulator tokens at the start of each round, but can't hold more than 6 tokens at once. Casters from other friendly units within 12\" may spend this unit's accumulator tokens as if they were their own spell tokens. Friendly casters may only use this rule if this unit isn't Shaken."
+      "description": "Gets X accumulator tokens at the start of each round, but can\u0027t hold more than 6 tokens at once. Casters from other friendly units within 12\u0022 may spend this unit\u0027s accumulator tokens as if they were their own spell tokens. Friendly casters may only use this rule if this unit isn\u0027t Shaken."
     },
     {
       "name": "Unique",
@@ -4473,7 +4473,7 @@
       "scope": "Weapon",
       "engineArgumentCount": 0,
       "valence": "Positive",
-      "description": "This weapon's attacks ignore the target's Regeneration."
+      "description": "This weapon\u0027s attacks ignore the target\u0027s Regeneration."
     },
     {
       "name": "Changebound",
@@ -4625,7 +4625,7 @@
       "scope": "Unit",
       "engineArgumentCount": 0,
       "valence": "Positive",
-      "description": "The unit gets +1 to morale test rolls."
+      "description": "The unit gets \u002B1 to morale test rolls."
     },
     {
       "name": "Musician",
@@ -4680,7 +4680,7 @@
       "scope": "Unit",
       "engineArgumentCount": 0,
       "valence": "Positive",
-      "description": "The unit moves +1 inch on Advance, Rush and Charge actions."
+      "description": "The unit moves \u002B1 inch on Advance, Rush and Charge actions."
     },
     {
       "name": "Armor",
@@ -4689,7 +4689,7 @@
       "scope": "Unit",
       "engineArgumentCount": 1,
       "valence": "Positive",
-      "description": "Counts as having Defense X+ in place of the model's own Defense stat."
+      "description": "Counts as having Defense X\u002B in place of the model\u0027s own Defense stat."
     },
     {
       "name": "Casting Debuff",
@@ -4725,7 +4725,29 @@
       "scope": "Unit",
       "engineArgumentCount": 0,
       "valence": "Positive",
-      "description": "Once per activation, before attacking, pick one enemy unit within 18\" in line of sight with Caster, which gets -1 to casting rolls once (next time the effect would apply)."
+      "description": "Once per activation, before attacking, pick one enemy unit within 18\u0022 in line of sight with Caster, which gets -1 to casting rolls once (next time the effect would apply)."
+    },
+    {
+      "name": "Split",
+      "passive": [
+        {
+          "hookID": "Lifecycle_OnSelfDestroyed",
+          "condition": {
+            "kind": "always"
+          },
+          "effect": {
+            "kind": "spawnUnit",
+            "radiusInches": 6
+          },
+          "lifetime": "UntilEndOfGame",
+          "seat": "Actor"
+        }
+      ],
+      "activated": [],
+      "scope": "Unit",
+      "engineArgumentCount": 1,
+      "valence": "Positive",
+      "description": "When this unit is fully destroyed, you may place a new unit of X fully within 6\u0022 of it before removing the last model."
     },
     {
       "name": "Indirect when shooting",
@@ -4804,7 +4826,7 @@
       "scope": "Unit",
       "engineArgumentCount": 0,
       "valence": "Positive",
-      "description": "When this unit is activated, it may place all its models anywhere fully within D3+1 inches of their position."
+      "description": "When this unit is activated, it may place all its models anywhere fully within D3\u002B1 inches of their position."
     }
   ],
   "spells": [

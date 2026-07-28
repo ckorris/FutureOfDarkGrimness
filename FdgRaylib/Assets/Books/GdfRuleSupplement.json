@@ -6744,6 +6744,23 @@
     "description": "Once per game, when this model is activated, you may place a new unit of X fully within 6\" of it."
   },
   {
+    "name": "Split",
+    "passive": [
+      {
+        "hookID": "Lifecycle_OnSelfDestroyed",
+        "condition": { "kind": "always" },
+        "effect": { "kind": "spawnUnit", "radiusInches": 6.0 },
+        "lifetime": "UntilEndOfGame",
+        "seat": "Actor"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 1,
+    "valence": "Positive",
+    "description": "When this unit is fully destroyed, you may place a new unit of X fully within 6\" of it before removing the last model."
+  },
+  {
     "name": "Ambush Re-Deployment",
     "passive": [
       {

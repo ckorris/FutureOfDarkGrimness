@@ -1200,6 +1200,42 @@ start, "Spawning Beast spawns Spores!", and Spores ACTIVATES THE SAME ROUND. Exi
 
 Corpus dead references **157 -> 143** (Split's 3 stay dead until P17b rides this machinery).
 
+## Slice P17b: Split (3 refs) — DONE 2026-07-28
+
+> "When this unit is fully destroyed, you may place a new unit of X fully within 6\" of it before
+> removing the last model." (Wormhole Daemons of Change: Horror Champion, Change Horrors, Lesser
+> Change Horrors - a CHAIN, each link splitting into the next)
+
+**Rides P17a's whole machinery** (Str argument, aux specs - the compiler's recursion was built for
+exactly this chain - creation service, same-round adoption). The only new engine work is the trigger
+seam: the existing destroyed hook is the KILLER's (`Shooting_OnUnitDestroyed`, requires an
+attributable killer; routs and dangerous-terrain deaths skip it), so Split needed the dead unit's
+own killer-less moment. New `EHookID.Lifecycle_OnSelfDestroyed` + `SelfDestroyedContext`, fired by
+`UnitDestructionNotifier` for EVERY alive-to-dead transition, BEFORE the killer-attribution
+early-return - "before removing the last model" holds because the dead models' positions are still
+live, which is what centres the 6" placement on the corpse. Token ops apply unconditionally; a spawn
+op is one Yes/No for the owner (default yes - a free unit - so the EOF/AI fallback takes it).
+Because #299 routed every batched wipe-out through this notifier, Split fires on all of them for
+free. Lint: the hook joined the passive-consumption map + ContextVariants.
+
+Data (app-side, supplement): passive entry at the new hook, `spawnUnit` 6", engineArgumentCount 1;
+embedded into WormholeDaemonsofChange (its refs regained their text arguments in P17a's book graft).
+
+Tests: engine `SplitRuleIntegrationTests` (3 - a KILLER-LESS death offers and places the successor
+(zone centred on the corpse, join marker on), decline places nothing, a Split-less unit never
+prompts). App `SplitShippedDataTests` (2 - definition pins; the real book's chain compiles BOTH
+links into the army, the middle link keeping its own Split argument). Engine 2278/2278, app
+690/690, smoke exit 0.
+
+Mutation-checked: gating the self-destroyed evaluation behind killer attribution reds exactly the
+killer-less test.
+
+Verified in play (headless scenario probe): Marksmen shoot the Change Horror dead ->
+"Change Horror is destroyed - use Split to place its successor?" -> "Change Horror spawns
+Changelings!" -> Changelings ACTIVATES THE SAME ROUND it was born from the destruction seam. Exit 0.
+
+Corpus dead references **143 -> 140**.
+
 ## Slice: Misc small primitives — IN PROGRESS (started 2026-07-23)
 
 The 102-ref "Misc" row, triaged rule-by-rule (each is a one-off). Full wording pulled from the corpus
