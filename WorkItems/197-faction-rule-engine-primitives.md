@@ -613,7 +613,7 @@ degrades to the exact prior behaviour. **252 -> 243.**
 
 ## Buffs & debuffs
 
-**P8 terrain debuffs — DONE 2026-07-28** (14 refs; engine `<pending>`).
+**P8 terrain debuffs — DONE 2026-07-28** (14 refs; engine `a0c5301`).
 > Dangerous Terrain Debuff, wording A (9 refs — Change/Havoc/Plague Disciples, Goblin Reclaimers): "Once
 > per activation, before attacking, pick one enemy unit within 18in **in line of sight**, which **counts as
 > being in Dangerous Terrain once** (next time the effect would apply)."
