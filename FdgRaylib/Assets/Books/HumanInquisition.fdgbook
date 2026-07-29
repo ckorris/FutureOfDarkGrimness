@@ -5257,7 +5257,9 @@
           "effect": {
             "kind": "deferDeployment",
             "timing": "LaterRound",
-            "placementRangeInches": 3
+            "placementRangeInches": 3,
+            "minArrivalRound": 2,
+            "mandatoryArrival": false
           },
           "lifetime": "UntilEndOfGame",
           "seat": "Actor"
@@ -5552,6 +5554,41 @@
       "engineArgumentCount": 0,
       "valence": "Positive",
       "description": "Enemy units using Ambush must be set up over 12\u0022 away from this model\u0027s unit."
+    },
+    {
+      "name": "Inquisitorial Agent",
+      "passive": [],
+      "activated": [
+        {
+          "triggerHook": "Activation_OnNextActivatorRequested",
+          "cost": {
+            "kind": "oncePerGame"
+          },
+          "targetSelector": {
+            "rangeInches": 0,
+            "minCount": 1,
+            "maxCount": 1,
+            "targetAffinity": "Self",
+            "requireLineOfSight": false,
+            "requiredToken": null,
+            "singleModel": false,
+            "requiredRule": null
+          },
+          "effect": {
+            "kind": "reactivate",
+            "clearsFatigue": true,
+            "armyRoundQuotaDivisor": 3
+          },
+          "availableWhen": {
+            "kind": "allModelsHaveThisRule"
+          },
+          "label": ""
+        }
+      ],
+      "scope": "Unit",
+      "engineArgumentCount": 0,
+      "valence": "Positive",
+      "description": "Once per game, if all models in this unit have this rule, it may be activated even if it had already activated this round (stops being fatigued when activated for the second time). Only up to one third of the units in the army with this rule at the beginning of the game (rounding up) may use it in a single round."
     },
     {
       "name": "Precision Fighter",

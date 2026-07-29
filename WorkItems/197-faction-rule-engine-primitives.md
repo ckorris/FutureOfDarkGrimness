@@ -1,6 +1,6 @@
 # 197 — Faction rule coverage, part 2: engine primitives + the scope-mismatch bug
 
-**Status**: in progress. Corpus dead references **2,342 -> 67** of 13,870 (0.5%), 12 names.
+**Status**: in progress. Corpus dead references **2,342 -> 47** of 13,870 (0.3%), 11 names.
 **Related**: #196 (data-only half, closed 2026-07-22), #100 (primitive catalog), #102, #034, #042, #093, #095, `SpecialRulesAudit.md`
 
 > **Compacted 2026-07-28.** Shipped slices are summarized to the durable facts: the seam/vocabulary
@@ -31,12 +31,11 @@ Done = each slice ships its primitive with an integration test mirroring the nea
 
 # Open work
 
-Ref counts are live from `--rule-coverage FdgRaylib/Assets/Books` (2026-07-29). **67 dead across 12 names,
+Ref counts are live from `--rule-coverage FdgRaylib/Assets/Books` (2026-07-29). **47 dead across 11 names,
 all of them `no-definition` - the `scope-mismatch` category is empty for the first time since slice 0.**
 
 | Refs | Slice | What it needs | Rules |
 |-----:|-------|---------------|-------|
-| 20 | **Inquisitorial Agent** (re-filed from Misc) | Once-per-game self-`reactivate` (the effect exists) PLUS an army-wide "up to one third of units with this rule, rounding up, per round" quota — novel army-global state. | Inquisitorial Agent (20) |
 | 12 | **Sergeant** — per-model rule attribution (#196 F16 handoff) | OPR `8HWdOwMYcI0p`: "when this MODEL attacks, unmodified 6s to hit deal 1 extra hit" — a one-model champion upgrade. `ListCompiler` attaches `RulesGained` to `unit.SpecialRules` and hit rolls fold over the whole unit's pool, so a data definition over-grants ~10x. Owner ruled 2026-07-22: must apply to the one model only. Needs a per-model attachment + a hit-roll seam scoping an extra-hit effect to the bearer model's own attacks. **P11's per-model start-wounds snapshot solved the analogous problem by before/after comparison; the hit-roll path has no such seam.** | Sergeant (12) |
 | 11 | **Armor(X) defense floor** (#196 F16 handoff) | OPR `74RjQ1k41DoO`: "counts as having Defense X+" — a stat SET with a varying rating. No Defense-side analog of `qualityFloor`, and data effects carry fixed authored values. Needs a defense-floor effect reading `Arg(0)` (or engine-side stat handling a la Tough). #196 shipped a zero-hook marker-with-arg definition so the name resolves and the description shows — **so these 11 refs do NOT appear in the dead count, but the mechanic is absent.** | Armor (11) |
 | 9 | **Extended Buff Range** (re-filed from Misc) | Relay non-spell Hero picks across 24in via another friendly unit with the rule — a relational aura-relay, i.e. generalized Spell Conduit for non-spell "pick friendly within 12in" rules. **Conduit's `CastSupport` neighbour scan and the `EnableSpellRelay` shape are the template.** | Extended Buff Range (9) |
@@ -191,6 +190,44 @@ Later payloads on the same seam: `EnableSpellLending` (Accumulator), `EnableSpel
 `RepelAmbushers` / `AmbushBeacon` (P22a).
 
 ## Activation & ability seams
+
+**Inquisitorial Agent — DONE 2026-07-29** (20 refs, the item's largest single name; engine `0a14cd8`).
+> "Once per game, if all models in this unit have this rule, it may be activated even if it had already
+> activated this round (**stops being fatigued** when activated for the second time). Only up to **one
+> third of the units in the army with this rule at the beginning of the game (rounding up)** may use it in
+> a single round."
+
+The reactivation itself was already Martial Prowess's (`Cost.OncePerGame` + `Effect.Reactivate` +
+`AllModelsHaveThisRule`), exactly as filed. Two riders were new, and the ledger had recorded only one of
+them — the fatigue clause is in the corpus text and was missing from the row.
+
+**The "novel army-global state" turned out not to be needed.** The quota is derived entirely from
+existing per-unit state:
+- **Roster** (`N`, fixed at game start): counted straight off `ArmyData.UnitBindings`, which is
+  **append-only** — a destroyed unit stays in the list, marked not-alive. So counting bindings whose rules
+  carry the offered ability IS the game-start roster, casualties included, with no snapshot. Pinned by
+  `DeadAgentsStillCountTowardTheRoster` (a live-only count would allow ceil(2/3)=1 instead of 2).
+- **Uses this round**: one new `TokenType.ReactivatedThisRound`, round-end cleared, stamped on ACCEPTANCE
+  (a declined offer costs the army nothing). The unit's own once-per-game marker stays separate and
+  permanent.
+
+Because it is all tokens, it saves, resumes and networks for free — no new serialized field, no new
+round-end reset, no new sync. **The assumption has a guard**: a unit-CREATING rule in the same book
+(Spawn/Split/Reinforcement) would inflate the roster mid-game, so an app-side test fails loudly if any book
+ever pairs one with this rule. None does today.
+
+**Where the gate lives:** `DeterminePlayerTurnStage`, checked *before* the player is asked, so a full quota
+is silently unavailable rather than offered and then refused. It has to be there — neither the `Cost` seam
+(`IsAffordable` sees one unit) nor a `Condition` (the hook context carries one unit) can see the army. The
+declaration rides `Effect.Reactivate(ClearsFatigue, ArmyRoundQuotaDivisor)`; both default off, so Martial
+Prowess is unchanged, and a control test pins that. Ability matching is by the ability itself, not a rule
+name, so an army-flavored rename counts the same way.
+
+**Verified in play**: four agents, `Agents 0`/`Agents 1` reactivate in round 1 (each logging "stops being
+fatigued for its second activation"), then `Inquisitorial Agent: 2 of 4 units have already used a second
+activation this round (limit 2) - not offered`; round 2 re-opens the cap for `Agents 2` while 0 and 1 never
+reappear. **67 -> 47.**
+
 
 **P5a activation-choice hook — DONE 2026-07-09/23** (175/175; engine `df234bc`, `90ba258`; app `6dbd31c`)
 **Owner sign-off:** label the abilities (not a new `Effect.ChooseOne`); give the choice its own request
