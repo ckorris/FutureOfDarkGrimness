@@ -51,13 +51,8 @@ all of them `no-definition` - the `scope-mismatch` category is empty for the fir
 
 These do **not** show in the dead count. Recorded here so they are not silently lost.
 
-- **Hazardous self-wound arm** (15 refs) — "takes one wound on unmodified 1s to hit". Needs
-  `Effect.SelfWoundOnUnmodifiedRoll(1)` reading the hit histogram at face 1, a
-  `RuleOperation.InvokeDealWoundsToUnit`, an `IOperationServices.DealWoundsToUnit` (mirroring
-  `ApplyWoundsStage` + the `UnitDestructionNotifier` choke), AND a new `OperationExecutor.Execute` point
-  in `RollToHitStage` — the hit-roll stages fold only sink ops today, no executable runs there. A
-  wound-subsystem hook, not a small primitive. **Balance flag: until it lands, Hazardous is upside-only**
-  (AP(4) with no self-harm).
+- ~~**Hazardous self-wound arm** (15 refs)~~ — **DONE 2026-07-29**, see Combat primitives. The balance
+  flag is cleared: Hazardous is no longer upside-only.
 - **Mobile Artillery defensive arm** (2 refs) — "as long as this unit hasn't moved during the ROUND,
   enemies shooting it from over 9in get -2". Needs round-persistent per-unit moved-this-round state
   readable at the DEFENSIVE hit hook (fired during the enemy's activation). `UnitActionContext.HasMoved`
@@ -73,9 +68,12 @@ These do **not** show in the dead count. Recorded here so they are not silently 
 
 ## Tooling / hygiene found here, not fixed
 
-- **`RuleFireLint.Check` returns at the FIRST passive entry that produces operations**, so a rule's later
-  entries are never lint-checked. Consistent with what it claims to test, but a dead second entry on a
-  live rule is invisible. Worth its own item if a per-entry check is wanted.
+- ~~**`RuleFireLint.Check` returns at the FIRST passive entry that produces operations**, so a rule's later
+  entries are never lint-checked.~~ **WRONG — corrected 2026-07-29 while shipping Hazardous.** `Check`
+  loops every passive entry (`for i in Passive.Count -> CheckPassiveEntry`); the `return` sits inside
+  `CheckPassiveEntry` and only ends that entry's search through its own context variants, which is exactly
+  what it claims to test. Hazardous's second entry is linted. Standing lesson 4 again, this time against a
+  premise this ledger itself filed.
 - **The CLI army-file prompt loops forever on EOF** when the file fails to load (a stale probe army
   produced a 5.8 GB log before timeout). It should abort at EOF like every other resolver.
 
@@ -100,6 +98,12 @@ These do **not** show in the dead count. Recorded here so they are not silently 
 5. **Decisive vs fractional.** A roll whose outcome selects a branch, a target count, or a binary
    token removal is `RollDecisiveFace` even in probabilistic mode (P15 branch, P10b pool, P5b recovery,
    Reanimation restore). A roll that produces hits/wounds stays fractional. Never int-lock the latter.
+6. **Never write code after a combat stage's `onFinished`.** That call is a tail call into the next stage;
+   its continuation is never resumed, so anything below it is dead code in play — while running fine under
+   a test layer whose `ExecuteTransition` returns immediately. Hazardous shipped its first cut this way:
+   14 green tests, zero effect in a real game. Work that must happen "after the attack" belongs in a later
+   stage, carried there on the results struct. Corollary: a test double that terminates the state machine
+   proves nothing about ordering — only a probe (or a test driving the real next stage) does.
 
 ---
 
@@ -441,6 +445,74 @@ overlap-checked against the whole table; anchor-stack as last resort). Rides the
 passive seam — no stage work at all. **136 -> 133. P17 closed 24/24.**
 
 ## Combat primitives
+
+**Hazardous self-wound arm — DONE 2026-07-29** (15 refs, all weapons in RatmenClans; engine `7934e88`).
+> "Attacks with this weapon get AP(4), but **this weapon's unit takes one wound on unmodified rolls of 1
+> to hit**." #196 shipped the AP half only, so for three passes Hazardous was **upside-only** — the one
+> open item in this ledger that was a live balance bug rather than missing coverage. Dead count unchanged
+> (the name already resolved); this closes the mechanic and the flag.
+
+**The filed plan was wrong in the expensive direction** (standing lesson 4, again). It called for a
+`RuleOperation.InvokeDealWoundsToUnit` + `IOperationServices.DealWoundsToUnit` + a new
+`OperationExecutor.Execute` point in `RollToHitStage`. None of that was needed: `RollToHitStage` already
+consumes `ReduceArmorPenetration` as a plain summed op, and the stage is async and holds the attacker. So
+the whole arm is one effect, one op, and four lines in the stage — no interface member, no executable, no
+executor point. `CapabilityEffect.Apply` is `sealed` and `ApplyCore` never sees the `RuleInvocation`, so
+the executable route would have needed a base-class change too, for nothing.
+
+New `Effect.SelfWoundOnUnmodifiedRoll(OnRollValue, Count)` : `CapabilityEffect<IHasUnmodifiedHitRolls>` —
+`AddExtraHit`'s exact shape, reading the same histogram, producing `RuleOperation.InflictSelfWounds`. The
+supplement's Hazardous grew a **second entry at the same hook** (AP + overheat), gated
+`unmodifiedRollEquals 1`. Per grow-on-demand the op stays non-executable; the comment on it names the
+condition (a second hook needing self-wounds) that would earn it an `IOperationServices` member.
+
+**Two owner rulings, 2026-07-29:**
+1. **The wound lands after the whole attack resolves**, not at the roll. The alternative interleaved the
+   shooter's casualties into the middle of the target's saves and could tear the attacking unit down while
+   later stages of its own attack were still running (destruction spills transports and clears marks). The
+   player still learns at the roll: the to-hit beat carries a `2 self-wounds` proc chip.
+   **Implemented as a carried total, not a local await** — see the tail-call trap below. `RollToHitStage`
+   counts the wounds onto `RollToHitResults.SelfWounds`; **`ApplyWoundsStage`** applies them after the
+   target's, which lands the behaviour for shooting, melee swings and Strafing at once (every chain with a
+   hit roll ends in that stage) and skips the chains that have no hit roll to overheat on.
+2. **Unignorable.** Applied straight through the casualty seam, so no save and no Regeneration read — the
+   treatment dangerous terrain and No Retreat already get. The corpus text does not say "can't be ignored",
+   so this is a consistency call, and `RegenerationDoesNotSaveTheShooterFromItsOwnGun` states it out loud.
+
+**Reuse:** P7's wound-dealing body moved out of `MoraleUtilities` into
+**`CasualtyPresentation.ApplyUnitWounds`** — the shared "the UNIT owes a pool of wounds" path (spread
+living models front-to-back up to each one's capacity, casualty beats through the #232 cascade, killer-less
+destruction seam). No Retreat and Hazardous now differ only in how they count their wounds.
+
+**Dice invariant:** the 1-count is FRACTIONAL and stays that way. Flooring it is the pool-size precedent
+(P17d/P7) and does not apply to a wound total — a 2-attack pistol owes 1/3 of a wound per volley and would
+never self-wound under a floor. Two tests pin the fraction. *Mutation note:* the first draft used a 6-die
+volley, whose 6 x 1/6 = exactly 1.0 survives a floor untouched — the test read like it pinned the invariant
+and did not. Re-cut to 4 dice (2/3 of a wound); the floor mutation now reddens both.
+
+**The tail-call trap — the reason to keep probing in play (new standing lesson 6).** The first cut placed
+the wound application *after* `await onFinished(results)` in `RollToHitStage`, which reads as "after the
+attack resolves" and passed all 14 unit tests. **In a real game it never executed once.** A combat stage's
+`onFinished` is effectively a tail call into the next stage (`CombatStage.Execute` -> `AddResult` ->
+`NextStage.Activate`), and the continuation below it is never resumed — no existing stage has a line after
+that call, which is the convention that hid it. It *looks* live under `NoOpLayer`, whose
+`ExecuteTransition` returns `Task.CompletedTask` immediately, so the harness dutifully ran the dead code
+and the ordering test even passed for the wrong reason. Caught only by the headless probe: the rule's two
+hook entries both fired and narrated, `selfWounds` computed 0.5 correctly, and no wound was ever dealt.
+**Anything a combat stage must do after handing off belongs in a later stage, not below its `onFinished`.**
+
+**Verified in play (after the fix):** a 3-attack Plas-Burst volley at Quality 2+, probabilistic ->
+`Applying 2.0833333 wounds killed 2 models` (the target), immediately followed by
+`Overheaters takes 0.5 wounds from its own Plas-Burst Rifle`. Correct value, correct order.
+
+**10 mutation checks**, each reddening only the intended tests: wound the defender (9), apply at the roll
+(1), floor the total (2), read the wrong face (6), drop the lint entry (app lint, 1), skip the destruction
+seam (1), ignore per-model capacity (1), drop the proc chip (1), drop the `ApplyWoundsStage` call (8), never
+set the carried total (9).
+
+**Found in passing:** this ledger's own claim that `RuleFireLint.Check` skips a rule's later passive
+entries is wrong — see Tooling / hygiene. Hazardous's second entry is linted, and the M5 mutation's failure
+message names it as "passive entry 1".
 
 **P15 randomized-branch (Unpredictable) — DONE 2026-07-11** (48 of 53 refs). "Roll one die: 1-3 AP(+1),
 4-6 +1 to hit." Forks resolved with Chris: **decisive** selecting die (a branch selector cannot be
