@@ -1,6 +1,6 @@
 # 197 — Faction rule coverage, part 2: engine primitives + the scope-mismatch bug
 
-**Status**: in progress. Corpus dead references **2,342 -> 102** of 13,870 (0.7%), 21 names.
+**Status**: in progress. Corpus dead references **2,342 -> 88** of 13,870 (0.6%), 18 names.
 **Related**: #196 (data-only half, closed 2026-07-22), #100 (primitive catalog), #102, #034, #042, #093, #095, `SpecialRulesAudit.md`
 
 > **Compacted 2026-07-28.** Shipped slices are summarized to the durable facts: the seam/vocabulary
@@ -31,13 +31,12 @@ Done = each slice ships its primitive with an integration test mirroring the nea
 
 # Open work
 
-Ref counts are live from `--rule-coverage FdgRaylib/Assets/Books` (2026-07-28). **102 dead across 21 names,
+Ref counts are live from `--rule-coverage FdgRaylib/Assets/Books` (2026-07-28). **88 dead across 18 names,
 all of them `no-definition` - the `scope-mismatch` category is empty for the first time since slice 0.**
 
 | Refs | Slice | What it needs | Rules |
 |-----:|-------|---------------|-------|
 | 20 | **Inquisitorial Agent** (re-filed from Misc) | Once-per-game self-`reactivate` (the effect exists) PLUS an army-wide "up to one third of units with this rule, rounding up, per round" quota — novel army-global state. | Inquisitorial Agent (20) |
-| 14 | **P8** apply terrain state to target | Force a Dangerous-terrain test / count as standing in terrain. Builds on `countAsInTerrain` + `ApplyNonMovementTerrainEffectsStage`. | Dangerous Terrain Debuff (11), Difficult Terrain Debuff (3) |
 | 12 | **Sergeant** — per-model rule attribution (#196 F16 handoff) | OPR `8HWdOwMYcI0p`: "when this MODEL attacks, unmodified 6s to hit deal 1 extra hit" — a one-model champion upgrade. `ListCompiler` attaches `RulesGained` to `unit.SpecialRules` and hit rolls fold over the whole unit's pool, so a data definition over-grants ~10x. Owner ruled 2026-07-22: must apply to the one model only. Needs a per-model attachment + a hit-roll seam scoping an extra-hit effect to the bearer model's own attacks. **P11's per-model start-wounds snapshot solved the analogous problem by before/after comparison; the hit-roll path has no such seam.** | Sergeant (12) |
 | 12 | **P20** action-permission modifiers | (a) allow shooting after Rush; (b) "strikes last", the inverse of live `strikeFirst`. | Quick Shot Aura (5), Quick Shot Mark (4), Unwieldy Debuff (3) |
 | 11 | **Armor(X) defense floor** (#196 F16 handoff) | OPR `74RjQ1k41DoO`: "counts as having Defense X+" — a stat SET with a varying rating. No Defense-side analog of `qualityFloor`, and data effects carry fixed authored values. Needs a defense-floor effect reading `Arg(0)` (or engine-side stat handling a la Tough). #196 shipped a zero-hook marker-with-arg definition so the name resolves and the description shows — **so these 11 refs do NOT appear in the dead count, but the mechanic is absent.** | Armor (11) |
@@ -613,6 +612,56 @@ announced, and "relay +1" listed first in the roll breakdown. With no conduit on
 degrades to the exact prior behaviour. **252 -> 243.**
 
 ## Buffs & debuffs
+
+**P8 terrain debuffs — DONE 2026-07-28** (14 refs; engine `<pending>`).
+> Dangerous Terrain Debuff, wording A (9 refs — Change/Havoc/Plague Disciples, Goblin Reclaimers): "Once
+> per activation, before attacking, pick one enemy unit within 18in **in line of sight**, which **counts as
+> being in Dangerous Terrain once** (next time the effect would apply)."
+> Dangerous Terrain Debuff, wording B (2 refs — Lust Disciples, War Disciples): "...pick one enemy unit
+> within 18in [**no** line of sight], which **must immediately take a Dangerous Terrain test**."
+> Difficult Terrain Debuff (3 refs — Wormhole Daemons of Plague): wording A, Difficult, no line of sight.
+
+**The filed row was right about both halves and did not know they were the same NAME.** "Force a
+Dangerous-terrain test / count as standing in terrain" is two rules OPR ships under one name — the
+**Darkborn** situation, six armies wide. `OprBookImporter.AmbiguousRuleNames` routes Lust/War Disciples to
+**"Dangerous Terrain Debuff (Immediate)"**; the other four keep the bare name. **Only the minority variant
+is renamed** (Darkborn renamed both): one side has to diverge from its own printed page either way, and
+this keeps the corpus wording for 12 of the 14 refs. The two bundled books were patched by targeted string
+replace — labels deliberately untouched, since `DisambiguateAmbiguousRuleNames` rewrites rule ENTRIES only,
+so the books stay byte-identical to what a re-import produces.
+
+**Wording A is pure data** — #153's `Effect.CountAsInTerrain` + `AddRule(NextTrigger)` already do exactly
+this, with `Speed Debuff`/`Piercing Debuff` as the literal template (18in / Foe / pre-attack /
+`OncePerActivation`). Line of sight is per-variant, straight from the text, and is the one field a
+copy-from-the-nearest-sibling edit would silently get wrong.
+
+**Wording B needed the primitive.** New `Effect.DangerousTerrainTest` -> `RuleOperation
+.InvokeDangerousTerrainTest` (an `ExecutableOperation`, because it deals wounds and can destroy the unit,
+so it needs the async present/casualty/destruction seam) -> `IOperationServices.ForceDangerousTerrainTest`
+-> new `MovementExecutor.RollForcedDangerousTerrain`. `RollDangerousTerrain`'s batched-roll body was
+extracted into a shared `RollBatch(testers, unit)`; the move-driven path builds its testers from paths, the
+forced path from LIVING models. `RuleFireLint` needed no change (its ability arm already returns true for
+any `ExecutableOperation`). **Modelling B as A was the trap**: A only bites when the victim moves, so a
+victim that simply holds still would shrug the whole debuff off, inverting the rule. The engine tests pin
+the two arms against each other for exactly that reason.
+
+**Owner ruling 2026-07-28: a Flying victim waives the forced test** (`IgnoresAllTerrain`), matching what it
+already waives on a real crossing and on the counts-as grant — one rule for all three dangerous-terrain
+paths. Strider is `DifficultOnly` and still takes it; both directions are pinned. The waiver skips the roll
+rather than discarding it, so the seeded dice stream is untouched, and it logs, so a rule that visibly
+fires and does nothing is never a mystery.
+
+**Verified in play** (`--scenario` probe, three carriers vs Dummies): wording B wounds a standing victim at
+the attacker's pre-attack action and then drops off the menu; wording A's grant lands on the enemy, fires
+at the enemy's own move (`Dummies: 5 model(s) tested dangerous terrain - 1 wound(s) dealt`) and is spent
+exactly once. **The 6in Difficult cap itself was NOT separately re-probed** — the probe geometry could not
+discriminate a capped from an uncapped AI move. It is covered by `MovementRuleIntegrationTests`, which
+already grants a counts-as-Difficult rule through the same `RuleGrant`/`NextTrigger` token and asserts
+`MovementActionContext.MaxAdvanceDistance`; this slice changes who grants it, not what the cap does.
+
+**Recorded, not fixed:** the AI never USES any of the three. `Ai/` has no reference to before-attack
+abilities at all, so this is the whole `Activation_OnBeforeAttackAction` family's gap (~40 supplement
+rules, Mend and Breath Attack included), not this slice's. **114 -> 88.**
 
 **P6 deferred buff/debuff family — DONE 2026-07-23** (20/20 + 3 riders; engine `6121b13`, `c83b1fd`,
 `4a8e767`). **The row's premise was mostly wrong** — it filed all five rules as needing a new one-shot

@@ -5122,7 +5122,7 @@
                   "rules": [
                     {
                       "kind": "core",
-                      "name": "Dangerous Terrain Debuff"
+                      "name": "Dangerous Terrain Debuff (Immediate)"
                     }
                   ]
                 }
@@ -7766,6 +7766,39 @@
       "engineArgumentCount": 0,
       "valence": "Positive",
       "description": "This model and its unit gain Steadfast."
+    },
+    {
+      "name": "Dangerous Terrain Debuff (Immediate)",
+      "passive": [],
+      "activated": [
+        {
+          "triggerHook": "Activation_OnBeforeAttackAction",
+          "cost": {
+            "kind": "oncePerActivation"
+          },
+          "targetSelector": {
+            "rangeInches": 18,
+            "minCount": 1,
+            "maxCount": 1,
+            "targetAffinity": "Foe",
+            "requireLineOfSight": false,
+            "requiredToken": null,
+            "singleModel": false,
+            "requiredRule": null
+          },
+          "effect": {
+            "kind": "dangerousTerrainTest"
+          },
+          "availableWhen": {
+            "kind": "always"
+          },
+          "label": ""
+        }
+      ],
+      "scope": "Unit",
+      "engineArgumentCount": 0,
+      "valence": "Positive",
+      "description": "Once per activation, before attacking, pick one enemy unit within 18\u0022, which must immediately take a Dangerous Terrain test - each of its models rolls a die, taking a wound on a 1."
     },
     {
       "name": "Versatile Attack (Piercing)",

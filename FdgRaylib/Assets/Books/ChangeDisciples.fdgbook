@@ -8234,6 +8234,41 @@
       "description": "This model and its unit gain Steadfast."
     },
     {
+      "name": "Dangerous Terrain Debuff",
+      "passive": [],
+      "activated": [
+        {
+          "triggerHook": "Activation_OnBeforeAttackAction",
+          "cost": {
+            "kind": "oncePerActivation"
+          },
+          "targetSelector": {
+            "rangeInches": 18,
+            "minCount": 1,
+            "maxCount": 1,
+            "targetAffinity": "Foe",
+            "requireLineOfSight": true,
+            "requiredToken": null,
+            "singleModel": false,
+            "requiredRule": null
+          },
+          "effect": {
+            "kind": "addRule",
+            "ruleName": "Dangerous Terrain Debuff Effect",
+            "scope": "NextTrigger"
+          },
+          "availableWhen": {
+            "kind": "always"
+          },
+          "label": ""
+        }
+      ],
+      "scope": "Unit",
+      "engineArgumentCount": 0,
+      "valence": "Positive",
+      "description": "Once per activation, before attacking, pick one enemy unit within 18\u0022 in line of sight, which counts as being in Dangerous Terrain once (next time the effect would apply)."
+    },
+    {
       "name": "Versatile Attack (Piercing)",
       "passive": [
         {
@@ -8425,6 +8460,28 @@
       "engineArgumentCount": 0,
       "valence": "Positive",
       "description": "If this unit is Shaken at the start of the round, roll one die. On a 4\u002B it stops being Shaken."
+    },
+    {
+      "name": "Dangerous Terrain Debuff Effect",
+      "passive": [
+        {
+          "hookID": "Movement_OnMoveThroughTerrain",
+          "condition": {
+            "kind": "always"
+          },
+          "effect": {
+            "kind": "countAsInTerrain",
+            "terrain": "Dangerous"
+          },
+          "lifetime": "ThisActivation",
+          "seat": "Actor"
+        }
+      ],
+      "activated": [],
+      "scope": "Unit",
+      "engineArgumentCount": 0,
+      "valence": "Negative",
+      "description": "This unit counts as being in Dangerous Terrain on its next move - each moving model rolls a die, taking a wound on a 1."
     },
     {
       "name": "Versatile Defense (Guard)",

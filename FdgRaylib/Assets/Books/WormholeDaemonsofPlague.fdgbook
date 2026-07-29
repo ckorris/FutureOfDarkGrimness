@@ -4445,6 +4445,41 @@
       "description": "This model and its unit gain Screened."
     },
     {
+      "name": "Difficult Terrain Debuff",
+      "passive": [],
+      "activated": [
+        {
+          "triggerHook": "Activation_OnBeforeAttackAction",
+          "cost": {
+            "kind": "oncePerActivation"
+          },
+          "targetSelector": {
+            "rangeInches": 18,
+            "minCount": 1,
+            "maxCount": 1,
+            "targetAffinity": "Foe",
+            "requireLineOfSight": false,
+            "requiredToken": null,
+            "singleModel": false,
+            "requiredRule": null
+          },
+          "effect": {
+            "kind": "addRule",
+            "ruleName": "Difficult Terrain Debuff Effect",
+            "scope": "NextTrigger"
+          },
+          "availableWhen": {
+            "kind": "always"
+          },
+          "label": ""
+        }
+      ],
+      "scope": "Unit",
+      "engineArgumentCount": 0,
+      "valence": "Positive",
+      "description": "Once per activation, before attacking, pick one enemy unit within 18\u0022, which counts as being in Difficult Terrain once (next time the effect would apply)."
+    },
+    {
       "name": "Precision Attacks",
       "passive": [
         {
@@ -4496,6 +4531,28 @@
       "engineArgumentCount": 0,
       "valence": "Positive",
       "description": "Enemies shooting or charging this unit from over 9 inches away get -1 to hit."
+    },
+    {
+      "name": "Difficult Terrain Debuff Effect",
+      "passive": [
+        {
+          "hookID": "Movement_OnMoveThroughTerrain",
+          "condition": {
+            "kind": "always"
+          },
+          "effect": {
+            "kind": "countAsInTerrain",
+            "terrain": "Difficult"
+          },
+          "lifetime": "ThisActivation",
+          "seat": "Actor"
+        }
+      ],
+      "activated": [],
+      "scope": "Unit",
+      "engineArgumentCount": 0,
+      "valence": "Negative",
+      "description": "This unit counts as being in Difficult Terrain on its next move - that move is capped at 6\u0022."
     }
   ],
   "spells": [
