@@ -6780,6 +6780,28 @@
       "description": "When a unit where all models have this rule is Shaken or fully destroyed, you may remove it from the table as destroyed and place a new copy of it fully within 12\u0022 of any table edge at the beginning of the next round after Ambushers have been deployed. Units that deploy via Reinforcement can\u0027t seize or contest objectives on the round they deploy, and this rule doesn\u0027t apply to the new copy of the unit."
     },
     {
+      "name": "No Retreat",
+      "passive": [
+        {
+          "hookID": "Morale_OnMoraleTestComplete",
+          "condition": {
+            "kind": "mostModelsHaveThisRule"
+          },
+          "effect": {
+            "kind": "passFailedMoraleTest",
+            "selfWoundOnRollAtMost": 3
+          },
+          "lifetime": "UntilEndOfGame",
+          "seat": "Actor"
+        }
+      ],
+      "activated": [],
+      "scope": "Unit",
+      "engineArgumentCount": 0,
+      "valence": "Positive",
+      "description": "When a unit where most models have this rule fails a morale test that causes it to be Shaken or Routed, the test counts as passed instead. Then, roll as many dice as the number of wounds it would take to fully destroy it, and for each result of 1-3 the unit takes one wound, which can\u0027t be ignored."
+    },
+    {
       "name": "Predator Shooter",
       "passive": [
         {

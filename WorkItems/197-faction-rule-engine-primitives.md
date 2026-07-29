@@ -1,6 +1,6 @@
 # 197 — Faction rule coverage, part 2: engine primitives + the scope-mismatch bug
 
-**Status**: in progress. Corpus dead references **2,342 -> 76** of 13,870 (0.5%), 15 names.
+**Status**: in progress. Corpus dead references **2,342 -> 67** of 13,870 (0.5%), 12 names.
 **Related**: #196 (data-only half, closed 2026-07-22), #100 (primitive catalog), #102, #034, #042, #093, #095, `SpecialRulesAudit.md`
 
 > **Compacted 2026-07-28.** Shipped slices are summarized to the durable facts: the seam/vocabulary
@@ -31,7 +31,7 @@ Done = each slice ships its primitive with an integration test mirroring the nea
 
 # Open work
 
-Ref counts are live from `--rule-coverage FdgRaylib/Assets/Books` (2026-07-28). **76 dead across 15 names,
+Ref counts are live from `--rule-coverage FdgRaylib/Assets/Books` (2026-07-29). **67 dead across 12 names,
 all of them `no-definition` - the `scope-mismatch` category is empty for the first time since slice 0.**
 
 | Refs | Slice | What it needs | Rules |
@@ -39,7 +39,6 @@ all of them `no-definition` - the `scope-mismatch` category is empty for the fir
 | 20 | **Inquisitorial Agent** (re-filed from Misc) | Once-per-game self-`reactivate` (the effect exists) PLUS an army-wide "up to one third of units with this rule, rounding up, per round" quota — novel army-global state. | Inquisitorial Agent (20) |
 | 12 | **Sergeant** — per-model rule attribution (#196 F16 handoff) | OPR `8HWdOwMYcI0p`: "when this MODEL attacks, unmodified 6s to hit deal 1 extra hit" — a one-model champion upgrade. `ListCompiler` attaches `RulesGained` to `unit.SpecialRules` and hit rolls fold over the whole unit's pool, so a data definition over-grants ~10x. Owner ruled 2026-07-22: must apply to the one model only. Needs a per-model attachment + a hit-roll seam scoping an extra-hit effect to the bearer model's own attacks. **P11's per-model start-wounds snapshot solved the analogous problem by before/after comparison; the hit-roll path has no such seam.** | Sergeant (12) |
 | 11 | **Armor(X) defense floor** (#196 F16 handoff) | OPR `74RjQ1k41DoO`: "counts as having Defense X+" — a stat SET with a varying rating. No Defense-side analog of `qualityFloor`, and data effects carry fixed authored values. Needs a defense-floor effect reading `Arg(0)` (or engine-side stat handling a la Tough). #196 shipped a zero-hook marker-with-arg definition so the name resolves and the description shows — **so these 11 refs do NOT appear in the dead count, but the mechanic is absent.** | Armor (11) |
-| 9 | **P7** morale-outcome override | Convert a failed morale test into a pass, then take unignorable self-wounds. | No Retreat Aura (5), No Retreat (3), No Retreat Buff (1) |
 | 9 | **Extended Buff Range** (re-filed from Misc) | Relay non-spell Hero picks across 24in via another friendly unit with the rule — a relational aura-relay, i.e. generalized Spell Conduit for non-spell "pick friendly within 12in" rules. **Conduit's `CastSupport` neighbour scan and the `EnableSpellRelay` shape are the template.** | Extended Buff Range (9) |
 | 7 | **P16** one-shot special-attack injection | Once per game, inject one extra attack with an authored weapon profile. | Takedown Strike (5), Takedown Shot (2) |
 | 5 | **Unpredictable Marks** (P15 residual) | A mark grants Unpredictable at the hit-roll hook, AFTER `UnpredictableBranchResolver`'s action-level roll, so the mark-granted rule is invisible to it. Needs the resolver to also scan the DEFENDER for an Unpredictable-granting mark at action time. | Unpredictable Fighter Mark (3), Unpredictable Shooter Mark (2) |
@@ -611,6 +610,55 @@ announced, and "relay +1" listed first in the roll breakdown. With no conduit on
 degrades to the exact prior behaviour. **252 -> 243.**
 
 ## Buffs & debuffs
+
+**P7 morale-outcome override — DONE 2026-07-29** (9 refs; engine `3c47383`).
+> No Retreat: "When a unit where **most models** have this rule fails a morale test that causes it to be
+> Shaken or Routed, the test counts as passed instead. Then, roll as many dice as the number of wounds it
+> would take to fully destroy it, and for each result of **1-3** the unit takes one wound, **which can't be
+> ignored**." No Retreat Aura (5 refs) confers it unit-wide; No Retreat Buff (1 ref) grants it once.
+
+The filed row said only "convert a failed morale test into a pass, then take unignorable self-wounds" —
+right as far as it went, but it omitted the band (1-3, not a single face), the pool size (the unit's
+REMAINING wounds), and the majority gate. All three are places a plausible authoring is silently wrong.
+
+New `Effect.PassFailedMoraleTest(SelfWoundOnRollAtMost)` -> `RuleOperation.PassMoraleTest` at
+`Morale_OnMoraleTestComplete`, read by `MoraleUtilities` rather than folded by a sink: **both halves have
+to land at one point in the sequence**, and the op carries its own price so conversion and cost can never
+drift apart. New **`Condition.MostModelsHaveThisRule`** — `AllModelsHaveThisRule`'s body at a strict
+majority of LIVING models, same ownership semantics (per-model rules, a joined hero excluded from the
+host's static rules, unit-held grants counting for everyone).
+
+**Two owner rulings, 2026-07-29:**
+1. **Only Shaken/Rout tests convert.** `TakeMoraleTest` has four callers and only two end that way; the
+   others are Mind Control / Fatigue Debuff and a spell's own test, which the rule's wording does not
+   cover. Threaded as `failureCausesShakenOrRout`, set at the two eligible call sites.
+2. **The already-Shaken automatic failure converts too.** That path returned before the hook ever fired —
+   and it is precisely the failure that ROUTS, which the rule's own text names. The conversion is now
+   offered ahead of the GF v3.5.1 short-circuit. A unit without the rule still auto-fails; that is its own
+   test, because this reached into load-bearing rules code.
+
+**Ordering:** a Fearless re-roll is free, so it goes first; converting before it would charge a wound pool
+the unit never owed. The already-evaluated op queue is reused rather than re-evaluated, or a one-shot
+grant (the Buff's) would be double-spent.
+
+**Found in passing:** the morale-complete evaluation passed no models, so **per-model rules were invisible
+at that hook** — `MostModelsHaveThisRule`'s majority arithmetic would have been dead code, and a joined
+hero's morale rule unreachable. Now carries `HeroStatRules.LivingModels`, the #183 shape already used by
+`EffectiveChargeDistanceAgainst` and Counter. Fearless is unaffected (it gates on `AllModelsHaveThisRule`,
+which a lone hero still fails).
+
+**Dice invariant:** the pool is FLOORED from remaining wounds (the P17d Reanimation precedent — a
+fractional tail cannot buy a whole die); the wounds it produces stay fractional. One batched roll, so the
+probabilistic roller yields the expected number of low faces. Wounds are unignorable **by construction** —
+applied straight through the casualty seam, never the save/wound-ignore pipeline, exactly as dangerous
+terrain's are — and a self-kill still goes through the destruction seam, killer-less.
+
+**Verified in play:** `Diehards: No Retreat rolled 1 dice, 0 at 3 or less` then `passed its morale test`,
+where the ruleless control unit was Shaken.
+
+**Recorded, not fixed:** this builds the "deal unignorable wounds to a unit" half that the deferred
+**Hazardous self-wound arm** (15 refs) needs; that arm still needs its histogram-reading effect and an
+`OperationExecutor` point in `RollToHitStage`. **76 -> 67.**
 
 **P20 action-permission modifiers — DONE 2026-07-28** (12 refs; engine `e52924d`).
 > Quick Shot: "This model may shoot after using Rush actions." Quick Shot Aura (5 refs): "This model and

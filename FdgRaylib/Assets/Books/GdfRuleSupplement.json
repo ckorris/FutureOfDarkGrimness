@@ -7195,5 +7195,56 @@
     "engineArgumentCount": 0,
     "valence": "Positive",
     "description": "Once per activation, before attacking, pick one enemy unit within 18\" in line of sight, which gets Unwieldy in melee once (next time the effect would apply)."
+  },
+  {
+    "name": "No Retreat",
+    "passive": [
+      {
+        "hookID": "Morale_OnMoraleTestComplete",
+        "condition": { "kind": "mostModelsHaveThisRule" },
+        "effect": { "kind": "passFailedMoraleTest", "selfWoundOnRollAtMost": 3 },
+        "lifetime": "UntilEndOfGame",
+        "seat": "Actor"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "When a unit where most models have this rule fails a morale test that causes it to be Shaken or Routed, the test counts as passed instead. Then, roll as many dice as the number of wounds it would take to fully destroy it, and for each result of 1-3 the unit takes one wound, which can't be ignored."
+  },
+  {
+    "name": "No Retreat Aura",
+    "passive": [
+      {
+        "hookID": "Lifecycle_OnUnitCreated",
+        "condition": { "kind": "always" },
+        "effect": { "kind": "aura", "ruleName": "No Retreat" },
+        "lifetime": "UntilEndOfGame",
+        "seat": "Actor"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "This model and its unit get No Retreat."
+  },
+  {
+    "name": "No Retreat Buff",
+    "passive": [],
+    "activated": [
+      {
+        "triggerHook": "Activation_OnBeforeAttackAction",
+        "cost": { "kind": "oncePerActivation" },
+        "targetSelector": { "rangeInches": 12, "minCount": 1, "maxCount": 1, "targetAffinity": "Friend", "requireLineOfSight": false, "requiredToken": null, "singleModel": false, "requiredRule": null },
+        "effect": { "kind": "addRule", "ruleName": "No Retreat", "scope": "NextTrigger" },
+        "availableWhen": { "kind": "always" }
+      }
+    ],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "Once per activation, before attacking, pick one friendly unit within 12\", which gets No Retreat once (next time the effect would apply)."
   }
 ]
