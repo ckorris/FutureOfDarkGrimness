@@ -1,6 +1,6 @@
 # 197 — Faction rule coverage, part 2: engine primitives + the scope-mismatch bug
 
-**Status**: in progress. Corpus dead references **2,342 -> 114** of 13,870 (0.8%), 22 names.
+**Status**: in progress. Corpus dead references **2,342 -> 102** of 13,870 (0.7%), 21 names.
 **Related**: #196 (data-only half, closed 2026-07-22), #100 (primitive catalog), #102, #034, #042, #093, #095, `SpecialRulesAudit.md`
 
 > **Compacted 2026-07-28.** Shipped slices are summarized to the durable facts: the seam/vocabulary
@@ -31,7 +31,8 @@ Done = each slice ships its primitive with an integration test mirroring the nea
 
 # Open work
 
-Ref counts are live from `--rule-coverage FdgRaylib/Assets/Books` (2026-07-28). **114 dead across 22 names.**
+Ref counts are live from `--rule-coverage FdgRaylib/Assets/Books` (2026-07-28). **102 dead across 21 names,
+all of them `no-definition` - the `scope-mismatch` category is empty for the first time since slice 0.**
 
 | Refs | Slice | What it needs | Rules |
 |-----:|-------|---------------|-------|
@@ -39,7 +40,6 @@ Ref counts are live from `--rule-coverage FdgRaylib/Assets/Books` (2026-07-28). 
 | 14 | **P8** apply terrain state to target | Force a Dangerous-terrain test / count as standing in terrain. Builds on `countAsInTerrain` + `ApplyNonMovementTerrainEffectsStage`. | Dangerous Terrain Debuff (11), Difficult Terrain Debuff (3) |
 | 12 | **Sergeant** — per-model rule attribution (#196 F16 handoff) | OPR `8HWdOwMYcI0p`: "when this MODEL attacks, unmodified 6s to hit deal 1 extra hit" — a one-model champion upgrade. `ListCompiler` attaches `RulesGained` to `unit.SpecialRules` and hit rolls fold over the whole unit's pool, so a data definition over-grants ~10x. Owner ruled 2026-07-22: must apply to the one model only. Needs a per-model attachment + a hit-roll seam scoping an extra-hit effect to the bearer model's own attacks. **P11's per-model start-wounds snapshot solved the analogous problem by before/after comparison; the hit-roll path has no such seam.** | Sergeant (12) |
 | 12 | **P20** action-permission modifiers | (a) allow shooting after Rush; (b) "strikes last", the inverse of live `strikeFirst`. | Quick Shot Aura (5), Quick Shot Mark (4), Unwieldy Debuff (3) |
-| 12 | **Strafing** (out of slice 0) | The books are right and the catalog is the approximation: `Strafing` IS weapon-scoped (the mid-move attack is made *with* the bomb weapon carrying it, and that weapon may be used no other way; all 12 refs sit on bomb weapons). Cannot be a scope flip — its fly-over permission is a `Movement_OnMoveThroughEnemy` passive read by `MovementRuleQueries.CanMoveThroughEnemies`, and movement hooks never consult weapon rules. Needs (a) movement-hook access to the bearer's weapons, (b) a mid-move "attack with *this* weapon" primitive replacing the fixed 3-hit `InvokeDealHits`, (c) a once-per-activation weapon-use restriction. Allowlisted in `BookRuleScopeTests` with that reason. | Strafing (12) |
 | 11 | **Armor(X) defense floor** (#196 F16 handoff) | OPR `74RjQ1k41DoO`: "counts as having Defense X+" — a stat SET with a varying rating. No Defense-side analog of `qualityFloor`, and data effects carry fixed authored values. Needs a defense-floor effect reading `Arg(0)` (or engine-side stat handling a la Tough). #196 shipped a zero-hook marker-with-arg definition so the name resolves and the description shows — **so these 11 refs do NOT appear in the dead count, but the mechanic is absent.** | Armor (11) |
 | 9 | **P7** morale-outcome override | Convert a failed morale test into a pass, then take unignorable self-wounds. | No Retreat Aura (5), No Retreat (3), No Retreat Buff (1) |
 | 9 | **Extended Buff Range** (re-filed from Misc) | Relay non-spell Hero picks across 24in via another friendly unit with the rule — a relational aura-relay, i.e. generalized Spell Conduit for non-spell "pick friendly within 12in" rules. **Conduit's `CastSupport` neighbour scan and the `EnableSpellRelay` shape are the template.** | Extended Buff Range (9) |
@@ -123,7 +123,8 @@ further `Precise` refs that were resolving but landing on the wrong weapons (a m
 shooting rule). No book data changed, so a re-import cannot reintroduce it. `ResolveAnyScope` splits
 name+arity resolution from the scope gate. Guards: `WeaponScopedWargearRoutingTests` (engine, asserts
 *which* weapon carries *which* rule), `BookRuleScopeTests` (app, walks all 47 books, allowlist fails when
-a listed rule starts resolving cleanly). **Deferred: `Strafing`** — see Open work.
+a listed rule starts resolving cleanly). **Deferred: `Strafing`** — closed 2026-07-28, see Combat primitives.
+The allowlist is empty now; it and its stale-entry guard are kept for the next re-import.
 
 **Darkborn — DONE 2026-07-11** (59 refs). **Only a naming bug** — both mechanics were already built
 (#029/#183's `EffectiveChargeDistanceAgainst` powers defensive Darkborn). OPR reuses the bare name for
@@ -428,7 +429,8 @@ letting them enter `AssignWoundsStage` directly, skipping the save stages (and t
 prompt, correct since there is no save to block) while Regeneration/Tough run untouched.
 `ResolveRavageWoundsStage` fires at `Melee_OnChargeContact`. **`CrossingAttackStage`** sits beside
 `StrafingStage`; `StrafingStage` was filtered to `DealHits` abilities and Crossing to `DealAutoWounds` so
-the two never double-offer at the shared `Movement_OnMoveThroughEnemy` hook. **Crossing Attack(X) is the
+the two never double-offer at the shared `Movement_OnMoveThroughEnemy` hook (Strafing's filter is
+`AttackWithThisWeapon` since its own slice; the split is unchanged). **Crossing Attack(X) is the
 first activated ability whose effect reads `ValueSource.Arg`** — `AbilityOffer` now carries the bearing
 rule's `Arguments` and `ResolveAbility` resolves against them (backward-compatible). **423 -> 384.**
 
@@ -485,6 +487,63 @@ and every other save-side range-gated rule — as if they never fire. Pre-existi
 Data (app-side, supplement): base Boost + Boost Aura per family, Weapon-scoped like their bases, on the
 Warbound Boost template; embedded into GoblinReclaimers + Jackals. The base Boost ships even though only
 the Aura registered as dead, because each book's spell grants it by name. **121 dead.**
+
+**Strafing — DONE 2026-07-28** (12 refs, the last `scope-mismatch` in the corpus).
+> "Once per activation, when this model moves through enemy units, pick one of them and attack it with
+> this weapon as if it was shooting. This weapon may only be used in this way."
+
+**Two-thirds of the filed premise was wrong** (standing lesson 4 again). It listed three blockers; only
+one was real.
+
+- *"Cannot be a scope flip - its fly-over passive rides a hook that never reads weapon rules."* The source
+  rule **grants no fly-over at all** - "when this model moves through enemy units" presupposes a unit that
+  already can. Every one of the 11 carrier units has `Aircraft` or `Flying`, both of which emit
+  `IgnoreEnemyMovementBlock` at unit scope; even the one footslogger (Saurian's Gecko Champion) gets
+  `Flying` from the same Pterodactyl item that grants the bomb. The catalog's passive was an engine
+  invention duplicating Flying. **Owner-signed-off: dropped**, with `StrafingStage` warning once
+  (`WarnOnce`) if a bearer ever turns up without the capability, since the weapon would then be unusable.
+  `StrafingShippedDataTests.EveryStrafingCarrier_CanMoveThroughEnemies` walks all 47 books and pins it.
+- *"Needs a once-per-activation weapon-use restriction."* `Cost.OncePerActivation` already existed and
+  already reset (P22's `ReconcileEndOfActivationStage` token sweep closed the old Appendix C deferral).
+  The real clause is "may only be used in this way", which is a **weapon-pool exclusion**, and it was
+  live: `IWeapon.IsMelee()` IS "range 0", every corpus bomb has range 0, so a Bomber Plane dragged into
+  melee was swinging its Blast(3) bombs as a close-combat weapon. New `StrafingRules.IsStrafeOnly`
+  (structural - keys on the effect, not the name, so a renamed copy is restricted too) filters
+  `GetMeleeWeapons`/`GetRangedWeapons`, `MeleeRangeUtilities.GetMeleeWeaponsFromModels` and
+  `CombatMath.SurvivorWeaponBatches`.
+- *"Needs a mid-move attack-with-this-weapon primitive."* Real, and the whole slice.
+
+**No book data changed.** The books were right from the start - all 12 references already sit on bomb
+weapons - and the catalog was the approximation. First slice in #197 that is engine-only.
+
+New vocabulary: **`Effect.AttackWithThisWeapon`** (`attackWithThisWeapon`) -> **`RuleOperation.InvokeWeaponAttack`**,
+a payload-free op: the weapon IS the payload. **`AbilityOffer` gained `Weapon`**, and `GatherOffers` now
+scans the acting unit's weapons - deduped BY NAME, the identity the shooting/melee pools already use,
+since weapons are per-model instances and a five-model unit would otherwise be asked five times. That is
+the seam the passive side has had since #027 and the ability side never did; `ResolveAbility` threads the
+weapon into `RuleInvocation.Weapon`, which already existed.
+
+`StrafingStage` was rewritten rather than joined by a sibling: after the re-author nothing else emits
+`DealHits` at the move-through hook, so keeping the old synthetic-hits arm would have been dead code
+(grow-on-demand). Its child chain is now the **real shooting chain** - BuildTargetList -> CoverCheck ->
+DetermineHitRoll -> RollToHit -> save -> wounds -> **`ResolveStrafeMoraleStage`** - minus RangeCheck and
+OcclusionCheck, since the mover is directly overhead and the weapon's range is 0 precisely because it can
+be used no other way. So the weapon's own Attacks, AP and rules apply; verified in play, where Blast(3)
+multiplied the hits and AP(1) moved the save from 5+ to 6+.
+
+**Owner ruling (morale):** "as if it was shooting" carries the shooting morale test, unlike Impact and
+Crossing Attack, which deal mid-move wounds and never test - their text says nothing of the kind.
+**Owner ruling (the pick):** one enemy crossed keeps the yes/no; several get a cancellable pick and no
+yes/no on top (the Dash rule - an ability that lets you decline at the pick is not asked twice).
+
+Hygiene fixed in passing: `RuleFireLint` still listed `InvokeDealHits` as handled at
+`Movement_OnMoveThroughEnemy`, which after this slice nothing reads - exactly the silent no-op the lint
+exists to catch. Removed.
+
+**Recorded, not fixed:** the AI never *uses* Strafing. The offer surfaces as a `YesNoRequest` mid-move and
+`ComputerPlayerController` answers it by default rather than by valuation, and `CombatMath` has no term
+for a mid-move attack. Same state as Crossing Attack and every other move-through ability, so this is the
+family's gap rather than this slice's. **114 -> 102.**
 
 ## Markers & tokens
 

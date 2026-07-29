@@ -30,15 +30,11 @@ public class BookRuleScopeTests
     // A rule the corpus names on weapons that the catalog still defines at unit scope. Each entry is a
     // known engine gap with a reason, not a tolerance for misauthored data — a stale entry (the rule
     // starts resolving cleanly) fails the fixture just as a new mismatch does.
-    private static readonly IReadOnlyDictionary<string, string> Allowlist = new Dictionary<string, string>
-    {
-        ["Strafing"] = "the source rule is weapon-scoped - the mid-move attack is made with the weapon " +
-            "carrying the rule, and that weapon may be used no other way - so all 12 corpus references are " +
-            "correctly on bomb weapons. The catalog's Strafing is a unit-scoped approximation (3 hits, no " +
-            "weapon restriction) whose fly-over passive rides Movement_OnMoveThroughEnemy, a hook that " +
-            "never reads weapon rules. Re-scoping it needs a mid-move attack-with-this-weapon primitive " +
-            "plus a once-per-activation weapon-use restriction - its own #197 slice.",
-    };
+    // Empty since #197 closed Strafing, its last entry: the catalog rule is weapon-scoped now, so the corpus
+    // and the engine agree everywhere. Kept (with its guard below) because the mechanism is what matters -
+    // the next re-import or catalog edit that reintroduces a mismatch has somewhere to be justified, and a
+    // stale justification fails just as loudly as a new mismatch.
+    private static readonly IReadOnlyDictionary<string, string> Allowlist = new Dictionary<string, string>();
 
     private static string BooksDirectory => Path.Combine(AppContext.BaseDirectory, "Assets", "Books");
 
