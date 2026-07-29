@@ -22,8 +22,23 @@ public class PlaceOneTerrainResolver : IStageResolver<PlaceOneTerrainRequest, Te
 
     public Task<TerrainPlacementResult> Resolve(PlaceOneTerrainRequest request)
     {
+        TerrainPointsBudget? budget = request.PointsBudget;
+
         Console.WriteLine();
-        Console.WriteLine($"=== Place terrain piece {request.PiecesPlaced + 1} of {request.TotalPieces} ===");
+        if (budget != null)
+        {
+            // #301 Alternating: Points - the header carries the pre-dealt personal total and this
+            // turn's remaining spend; the copy comes from the budget so it matches the GUI exactly.
+            Console.WriteLine($"=== Place terrain: {budget.PointsSummaryLine} ===");
+            Console.WriteLine($"    {budget.TurnSummaryLine}");
+            if (budget.DebtNoticeLine is string debtLine)
+                Console.WriteLine($"    WARNING: {debtLine}");
+        }
+        else
+        {
+            Console.WriteLine($"=== Place terrain piece {request.PiecesPlaced + 1} of {request.TotalPieces} ===");
+        }
+
         for (int i = 0; i < request.Pool.Count; i++)
         {
             var entry = request.Pool[i];
@@ -31,30 +46,81 @@ public class PlaceOneTerrainResolver : IStageResolver<PlaceOneTerrainRequest, Te
             string label = string.IsNullOrWhiteSpace(entry.Name)
                 ? $"{entry.TerrainType}"
                 : $"{entry.Name} - {entry.TerrainType}";
-            Console.WriteLine($"  [{i}] {label}  {DescribeShape(entry.Shape)}");
-        }
-        Console.Write("Enter <template_index> <x>,<z> [rotation_deg]: ");
 
-        string? input = Console.ReadLine();
-        if (input == null)
+            string pointsSuffix = "";
+            if (budget != null)
+            {
+                int cost = TerrainPointsBudget.CostOf(entry);
+                var verdict = budget.Evaluate(cost);
+                pointsSuffix = $"  [{TerrainPointsBudget.Pts(cost)}]";
+                if (!verdict.Playable)
+                    pointsSuffix += $"  (unavailable: {verdict.BlockedReason})";
+                else if (verdict.WarningText is string warning)
+                    pointsSuffix += $"  (warning: {warning})";
+            }
+
+            Console.WriteLine($"  [{i}] {label}  {DescribeShape(entry.Shape)}{pointsSuffix}");
+        }
+
+        while (true)
         {
-            // EOF: deterministic fallback so piped tests progress.
+            Console.Write("Enter <template_index> <x>,<z> [rotation_deg]: ");
+
+            string? input = Console.ReadLine();
+            if (input == null)
+            {
+                // EOF: deterministic fallback so piped tests progress.
+                return Task.FromResult(EofFallback(request));
+            }
+
+            var parts = input.Trim().Split(' ', 3, StringSplitOptions.RemoveEmptyEntries);
+            if (parts.Length >= 2
+                && int.TryParse(parts[0], out int idx)
+                && idx >= 0 && idx < request.Pool.Count
+                && TryParseXZ(parts[1], out float x, out float z))
+            {
+                if (budget != null)
+                {
+                    var verdict = budget.Evaluate(TerrainPointsBudget.CostOf(request.Pool[idx]));
+                    if (!verdict.Playable)
+                    {
+                        // Unlike a parse failure (fallback), an unaffordable pick re-prompts: silently
+                        // placing a piece the player did not choose would be worse than asking again.
+                        Console.WriteLine($"Cannot place that piece: {verdict.BlockedReason}");
+                        continue;
+                    }
+                }
+
+                float rot = 0f;
+                if (parts.Length >= 3) float.TryParse(parts[2], out rot);
+                return Task.FromResult(new TerrainPlacementResult(idx, new Float2(x, z), rot));
+            }
+
+            Console.WriteLine("Could not parse input; using fallback placement.");
             return Task.FromResult(EofFallback(request));
         }
+    }
 
-        var parts = input.Trim().Split(' ', 3, StringSplitOptions.RemoveEmptyEntries);
-        if (parts.Length >= 2
-            && int.TryParse(parts[0], out int idx)
-            && idx >= 0 && idx < request.Pool.Count
-            && TryParseXZ(parts[1], out float x, out float z))
+    /// <summary>
+    /// #301 - template indices the fallback may pick: with a points budget, playable entries with
+    /// debt-free ones first (matching the AI resolver's preference); otherwise the whole pool.
+    /// </summary>
+    private static IReadOnlyList<int> FallbackCandidates(PlaceOneTerrainRequest request)
+    {
+        var all = Enumerable.Range(0, request.Pool.Count).ToList();
+        if (request.PointsBudget is not TerrainPointsBudget budget) return all;
+
+        var debtFree = new List<int>();
+        var withDebt = new List<int>();
+        foreach (int i in all)
         {
-            float rot = 0f;
-            if (parts.Length >= 3) float.TryParse(parts[2], out rot);
-            return Task.FromResult(new TerrainPlacementResult(idx, new Float2(x, z), rot));
+            var verdict = budget.Evaluate(TerrainPointsBudget.CostOf(request.Pool[i]));
+            if (!verdict.Playable) continue;
+            (verdict.DebtIncurred == 0 ? debtFree : withDebt).Add(i);
         }
 
-        Console.WriteLine("Could not parse input; using fallback placement.");
-        return Task.FromResult(EofFallback(request));
+        var candidates = debtFree.Concat(withDebt).ToList();
+        return candidates.Count > 0 ? candidates : all;
     }
 
     private TerrainPlacementResult EofFallback(PlaceOneTerrainRequest request)
@@ -62,7 +128,7 @@ public class PlaceOneTerrainResolver : IStageResolver<PlaceOneTerrainRequest, Te
         const float Step = 2f;
         var existing = _tableState.Terrain.Objects.ToList();
 
-        for (int idx = 0; idx < request.Pool.Count; idx++)
+        foreach (int idx in FallbackCandidates(request))
         {
             IZone template = request.Pool[idx].Shape;
             (float halfW, float halfH) = GetHalfExtents(template);

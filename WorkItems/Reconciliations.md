@@ -6,6 +6,19 @@ from origin/master. Standing precedent: numbers are never reused, and when two p
 claim the same number, the *unmerged local* item yields to the *merged* one and takes a fresh number.
 A per-clone pre-push hook blocks duplicate numbers across the index and the archive.
 
+> **2026-07-28 — reconciliation 32 (RESOLVED).** Same collision class as 29/31, caught by the
+> pre-push fetch. This session had filed the "Alternating: Points" terrain placement mode as **299**;
+> origin/master had meanwhile landed **299 = casualty beats for batched wounds** (merged, with `#299`
+> comments in `DangerousTerrainWoundTests.cs` / `TransportSpilloutTests.cs`) and **300 = dice-panel
+> category colors** (already archived). Per merged-wins precedent the local item yields:
+> **alternating-points terrain 299 -> 301** (`WorkItems/301-alternating-points-terrain.md`). Renumbered
+> in the detail file + title, the index line, all engine sources/tests of the mode (ledger, budget,
+> stage, pool, request, AI resolver, lobby VM docs) and the app sources (CLI + GUI terrain resolvers,
+> `LobbyScreen`, CLI resolver tests). Unlike 31, the pre-renumber COMMIT MESSAGES keep `#299`: the
+> submodule history already contained a merge and the superproject's earlier commits pin those exact
+> submodule hashes, so a message rewrite would have orphaned the pointers - the older
+> messages-predate-the-renumber precedent (reconciliations 2/3) applies.
+
 > **2026-07-28 — reconciliation 31 (RESOLVED).** A pre-push fetch caught the same class of collision as
 > 29, one number along. This session had filed the resolver option-button-height work as **296**; the
 > engine's origin/master had meanwhile landed **296 = Tactician crowded-game fix set** (merged - itself
