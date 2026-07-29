@@ -7801,6 +7801,27 @@
       "description": "Once per activation, before attacking, pick one enemy unit within 18\u0022, which must immediately take a Dangerous Terrain test - each of its models rolls a die, taking a wound on a 1."
     },
     {
+      "name": "Quick Shot",
+      "passive": [
+        {
+          "hookID": "Activation_OnActionChoice",
+          "condition": {
+            "kind": "always"
+          },
+          "effect": {
+            "kind": "shootAfterRush"
+          },
+          "lifetime": "ThisActivation",
+          "seat": "Actor"
+        }
+      ],
+      "activated": [],
+      "scope": "Unit",
+      "engineArgumentCount": 0,
+      "valence": "Positive",
+      "description": "This model may shoot after using Rush actions."
+    },
+    {
       "name": "Versatile Attack (Piercing)",
       "passive": [
         {

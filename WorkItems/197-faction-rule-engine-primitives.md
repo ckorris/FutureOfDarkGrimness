@@ -1,6 +1,6 @@
 # 197 — Faction rule coverage, part 2: engine primitives + the scope-mismatch bug
 
-**Status**: in progress. Corpus dead references **2,342 -> 88** of 13,870 (0.6%), 18 names.
+**Status**: in progress. Corpus dead references **2,342 -> 76** of 13,870 (0.5%), 15 names.
 **Related**: #196 (data-only half, closed 2026-07-22), #100 (primitive catalog), #102, #034, #042, #093, #095, `SpecialRulesAudit.md`
 
 > **Compacted 2026-07-28.** Shipped slices are summarized to the durable facts: the seam/vocabulary
@@ -31,14 +31,13 @@ Done = each slice ships its primitive with an integration test mirroring the nea
 
 # Open work
 
-Ref counts are live from `--rule-coverage FdgRaylib/Assets/Books` (2026-07-28). **88 dead across 18 names,
+Ref counts are live from `--rule-coverage FdgRaylib/Assets/Books` (2026-07-28). **76 dead across 15 names,
 all of them `no-definition` - the `scope-mismatch` category is empty for the first time since slice 0.**
 
 | Refs | Slice | What it needs | Rules |
 |-----:|-------|---------------|-------|
 | 20 | **Inquisitorial Agent** (re-filed from Misc) | Once-per-game self-`reactivate` (the effect exists) PLUS an army-wide "up to one third of units with this rule, rounding up, per round" quota — novel army-global state. | Inquisitorial Agent (20) |
 | 12 | **Sergeant** — per-model rule attribution (#196 F16 handoff) | OPR `8HWdOwMYcI0p`: "when this MODEL attacks, unmodified 6s to hit deal 1 extra hit" — a one-model champion upgrade. `ListCompiler` attaches `RulesGained` to `unit.SpecialRules` and hit rolls fold over the whole unit's pool, so a data definition over-grants ~10x. Owner ruled 2026-07-22: must apply to the one model only. Needs a per-model attachment + a hit-roll seam scoping an extra-hit effect to the bearer model's own attacks. **P11's per-model start-wounds snapshot solved the analogous problem by before/after comparison; the hit-roll path has no such seam.** | Sergeant (12) |
-| 12 | **P20** action-permission modifiers | (a) allow shooting after Rush; (b) "strikes last", the inverse of live `strikeFirst`. | Quick Shot Aura (5), Quick Shot Mark (4), Unwieldy Debuff (3) |
 | 11 | **Armor(X) defense floor** (#196 F16 handoff) | OPR `74RjQ1k41DoO`: "counts as having Defense X+" — a stat SET with a varying rating. No Defense-side analog of `qualityFloor`, and data effects carry fixed authored values. Needs a defense-floor effect reading `Arg(0)` (or engine-side stat handling a la Tough). #196 shipped a zero-hook marker-with-arg definition so the name resolves and the description shows — **so these 11 refs do NOT appear in the dead count, but the mechanic is absent.** | Armor (11) |
 | 9 | **P7** morale-outcome override | Convert a failed morale test into a pass, then take unignorable self-wounds. | No Retreat Aura (5), No Retreat (3), No Retreat Buff (1) |
 | 9 | **Extended Buff Range** (re-filed from Misc) | Relay non-spell Hero picks across 24in via another friendly unit with the rule — a relational aura-relay, i.e. generalized Spell Conduit for non-spell "pick friendly within 12in" rules. **Conduit's `CastSupport` neighbour scan and the `EnableSpellRelay` shape are the template.** | Extended Buff Range (9) |
@@ -612,6 +611,59 @@ announced, and "relay +1" listed first in the roll breakdown. With no conduit on
 degrades to the exact prior behaviour. **252 -> 243.**
 
 ## Buffs & debuffs
+
+**P20 action-permission modifiers — DONE 2026-07-28** (12 refs; engine `e52924d`).
+> Quick Shot: "This model may shoot after using Rush actions." Quick Shot Aura (5 refs): "This model and
+> its unit get Quick Shot." Quick Shot Mark (4 refs): "Once per activation, before attacking, pick one
+> enemy unit within 18in in line of sight, which friendly units gets Quick Shot AGAINST once."
+> Unwieldy: "Strikes last when charging." Unwieldy Debuff (3 refs): "...pick one enemy unit within 18in in
+> line of sight, which gets Unwieldy in melee once (next time the effect would apply)."
+
+**Neither BASE rule is referenced by any unit in the corpus** — both exist only as the target of a grant
+(aura, mark, one-shot debuff, spell). That is why `--rule-coverage` never counted "Quick Shot" or
+"Unwieldy in melee": it walks unit/item/weapon/upgrade sites, so a rule that only ever arrives by grant is
+invisible to it. Three books' `Combat Ecstasy` spell and High Elf Fleets' `Creator of Illusions` were
+granting these names into thin air — dangling, silent, and NOT in the dead count. Both now resolve.
+`QuickShotAndUnwieldyShippedDataTests` walks every book's spells for exactly this class of break.
+
+**Quick Shot** is a permission, deliberately not a distance: new `Effect.ShootAfterRush` ->
+`RuleOperation.AllowShootAfterRush` at `Activation_OnActionChoice` (the hook `ChooseActionStage` already
+fires for `RestrictActions`), read by the advance-and-shoot cap in `GetCanShoot`. Authoring it as
+`movementBonus(Advance, +6)` would have been close in effect and wrong in kind — it also changes what
+counts as an Advance for every other rule that asks. `GetCanShoot` became **public static** like its
+sibling `GetCanPass`: a rushed unit with nothing else to do never reaches the menu (zero valid options
+auto-pass, and rushing also closes Pass), so the answer has to be readable without one. Aircraft keeps its
+own hardcoded waiver — **recorded, not fixed:** it now expresses the same idea as this op and could ride it.
+
+**Quick Shot Mark was the design fork** (owner-ruled 2026-07-28: full fidelity). Every other Mark is a
+weapon/attack rule where "against" makes sense; Quick Shot is a movement permission, and the mark is
+claimed in `DetermineHitRollStage` — *after* the shot is declared — so a plain `markTarget("Quick Shot")`
+would have resolved the name and done nothing. Instead the READ moved earlier (`GetCanShoot` asks whether
+any fireable enemy carries a shoot-after-rush mark) and the permission stays target-bound: a new
+`ApplyQuickShotMarkGating` in `ChooseRangedAttackStage`'s shared gating pipeline marks every unmarked
+target unselectable. Sharing that pipeline is what keeps the action gate and the shoot stage agreeing
+(#200). The claim/consumption is untouched — because the target list is narrowed to marked units, the mark
+is always actually spent. `ICombatActionContext.MarkedTargetsOnly` carries the decision from the gate
+(the only place that knows how far the unit moved) into the stage. Detection is **structural** — by the
+effect a granted rule produces, not by its name — so a Shred Mark cannot double as a Quick Shot.
+
+**Unwieldy** is Counter's mirror: `Effect.StrikeLast` -> `RuleOperation.StrikeLast` at
+`Melee_OnCounterTrigger`, and `DetermineStrikeOrderStage` now evaluates the **charger on the Actor seat**
+as well (Counter's participants were all Subject-seated, so an attacker-side rule was invisible to it).
+Both ops drive the SAME role swap: a charger that strikes last and a defender that strikes first describe
+one outcome, so they compose instead of swapping twice and handing the first swing back. The banner names
+whichever is responsible. The stage's evaluation is a live one, which is what spends the debuff's one-shot
+grant.
+
+**Verified in play** (`--scenario` probe): two identical rifle units rush 8in — the Quick Shot Aura one
+keeps Shoot, the other has zero options and auto-passes; a rushed unit with a marked enemy gets
+`[1] Rifle -> Dummies` and `[-] Rifle -> Tough Dummy [unavailable: Rushed - only a Quick Shot marked
+target may be shot.]`; and an Unwieldy charger produces `Clumsy Chargers is unwieldy - Tough Dummy strikes
+first!` with the melee resolving defender-first and the charger offered the strike-back.
+
+**Recorded, not fixed:** the AI never uses Quick Shot Mark or Unwieldy Debuff (the whole
+`Activation_OnBeforeAttackAction` family, see P8), and `CombatMath` has no term for either permission, so
+the Tactician will not plan a rush-and-shoot. **88 -> 76.**
 
 **P8 terrain debuffs — DONE 2026-07-28** (14 refs; engine `a0c5301`).
 > Dangerous Terrain Debuff, wording A (9 refs — Change/Havoc/Plague Disciples, Goblin Reclaimers): "Once
