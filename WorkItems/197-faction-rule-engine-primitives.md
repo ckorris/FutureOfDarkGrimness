@@ -53,9 +53,7 @@ These do **not** show in the dead count. Recorded here so they are not silently 
   one-shot grants there). Needs a stage-level "grant a MovedThisRound token on move" + `Not(TokenPresent)`.
 - ~~**Ravage strike-back**~~ — **DONE 2026-07-30**, see Combat primitives. Every unit that swings now
   rolls its own Ravage.
-- **Reinforcement via transport spillout** — `TransportUtilities.ApplySpilloutEffects` is deliberately
-  Stages-free, so it does not fire the Shaken arm. A spilled-out Reinforcement unit is only offered when
-  destroyed. Wire via `SpilloutExecutor` if play hits it.
+- ~~**Reinforcement via transport spillout**~~ — **DONE 2026-07-30**, see Unit creation & restoration.
 - **Speed Feat Buff** (1) — the spell-buff variant of the shipped Speed Feat.
 
 ## Tooling / hygiene found here, not fixed
@@ -549,6 +547,21 @@ finite budget. Faithful for the 1v1 corpus; multi-player is an approximation ove
   end-of-activation ability seam (above). **161 -> 157. P22 closed 42/42.**
 
 ## Unit creation & restoration (P17 DONE 2026-07-28, 24/24; Armor DONE 2026-07-29)
+
+**Reinforcement via transport spillout — DONE 2026-07-30** (engine `99a015e`). Dead count unchanged. The
+gap was **structural, not conditional**: `TransportUtilities.ApplySpilloutEffects` sets the Shaken token
+from the Rules layer, which cannot reach a stage, so `Morale_OnShakenApplied` was simply never evaluated
+on that path — a spilled-out Reinforcement unit could only ever be offered when destroyed. Fix is one
+call: `MoraleUtilities.OfferShakenTriggeredRules` (private -> public) invoked from `SpilloutExecutor`
+after the occupant is placed and its dangerous-terrain test has landed, gated on the occupant still being
+alive. No new vocabulary — the seam P17c already built is reused verbatim.
+
+Guards: `ReinforcementRuleIntegrationTests` +3 (offer / decline / kill-during-spillout). Mutation-checked:
+deleting the call fails the first two. **The third does NOT pin the ordering** — moving the offer ahead of
+the wounds still passes, because the rule's own `Not(TokenPresent(ReinforcementSpent))` gate is what holds
+whichever arm reaches it first. The alive-gate and after-the-wounds placement are a correctness /
+presentation choice (don't evaluate Shaken rules on a corpse; don't remove a unit and then animate wounds
+on it), and the test comment says so rather than claiming coverage it doesn't have.
 
 **Armor(X) defense set — DONE 2026-07-29** (11 refs across 7 books, #196 F16 handoff; engine `d8c052e`).
 
