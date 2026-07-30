@@ -6609,7 +6609,11 @@
           "condition": {
             "kind": "and",
             "left": {
-              "kind": "allModelsHaveThisRule"
+              "kind": "tokenPresent",
+              "tType": {
+                "id": "CompelledToAttack"
+              },
+              "minCount": 1
             },
             "right": {
               "kind": "not",
@@ -6631,7 +6635,11 @@
           "condition": {
             "kind": "and",
             "left": {
-              "kind": "allModelsHaveThisRule"
+              "kind": "tokenPresent",
+              "tType": {
+                "id": "CompelledToAttack"
+              },
+              "minCount": 1
             },
             "right": {
               "kind": "and",

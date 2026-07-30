@@ -7494,14 +7494,14 @@
       },
       {
         "hookID": "Shooting_OnHitRollModifier",
-        "condition": { "kind": "and", "left": { "kind": "allModelsHaveThisRule" }, "right": { "kind": "not", "inner": { "kind": "isMelee" } } },
+        "condition": { "kind": "and", "left": { "kind": "tokenPresent", "tType": { "id": "CompelledToAttack" }, "minCount": 1 }, "right": { "kind": "not", "inner": { "kind": "isMelee" } } },
         "effect": { "kind": "rollModifier", "rollKind": "Hit", "delta": 1 },
         "lifetime": "UntilEndOfGame",
         "seat": "Actor"
       },
       {
         "hookID": "Shooting_OnHitRollModifier",
-        "condition": { "kind": "and", "left": { "kind": "allModelsHaveThisRule" }, "right": { "kind": "and", "left": { "kind": "isMelee" }, "right": { "kind": "isCharging" } } },
+        "condition": { "kind": "and", "left": { "kind": "tokenPresent", "tType": { "id": "CompelledToAttack" }, "minCount": 1 }, "right": { "kind": "and", "left": { "kind": "isMelee" }, "right": { "kind": "isCharging" } } },
         "effect": { "kind": "rollModifier", "rollKind": "Hit", "delta": 1 },
         "lifetime": "UntilEndOfGame",
         "seat": "Actor"

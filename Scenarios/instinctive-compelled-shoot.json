@@ -1,5 +1,5 @@
 {
-  "name": "Instinctive, from-here: the Shooters CAN shoot, so the menu is the attack; the shot must fall on the nearer Dummies, not the Tough Dummy; the corner Freaks have nothing reachable and act freely",
+  "name": "Instinctive: the Shooters CAN shoot when they activate, so the menu collapses to the attack and the shot must fall on the nearer Dummies, not the Tough Dummy (+1 to hit). The Freaks activate with nothing in reach - the rule does not bind, so they move and attack normally, with a free target and no bonus.",
   "round": 1,
   "activePlayer": 0,
   "settings": {
@@ -38,16 +38,16 @@
           "unit": "Ramshackle Freaks",
           "models": [
             [
-              4,
-              4
+              34,
+              22
             ],
             [
-              5,
-              4
+              35,
+              22
             ],
             [
-              6,
-              4
+              36,
+              22
             ]
           ]
         }

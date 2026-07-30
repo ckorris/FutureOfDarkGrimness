@@ -18,10 +18,10 @@ namespace FdgRaylib.Tests;
 // rolls for that attack." Dead no-definition (4 refs) until 2026-07-30.
 //
 // The compulsion machinery is rule-agnostic and pinned engine-side by
-// CompelClosestTargetRuleIntegrationTests (capability + menu restriction + both choosers' narrowing + the
-// move-to-attack planner); nothing in the engine names Instinctive. These pin the authored JSON - the
-// capability entry, the two rider entries and their condition combos - the corpus census, the embedded
-// book copy, and a carrier through the real compiler.
+// CompelClosestTargetRuleIntegrationTests (capability, the activation-time obligation token, the menu
+// restriction and both choosers' narrowing); nothing in the engine names Instinctive. These pin the
+// authored JSON - the capability entry and the two rider entries with their obligation + combat-kind
+// gates - the corpus census, the embedded book copy, and a carrier through the real compiler.
 [TestFixture]
 public class InstinctiveShippedDataTests
 {
@@ -59,14 +59,14 @@ public class InstinctiveShippedDataTests
         HookEntry entry = Supplement().Passive.Single(e => e.Effect is Effect.CompelClosestTarget);
 
         Assert.That(entry.HookID, Is.EqualTo(EHookID.Lifecycle_OnCapabilityQuery),
-            "read by ChooseActionStage and both target choosers via MustAttackClosestSource");
+            "the capability ChooseActionStage reads when the unit activates, to decide whether to bind it");
         Assert.That(entry.Condition, Is.InstanceOf<Condition.AllModelsHaveThisRule>(),
             "#267: the compulsion binds the WHOLE unit's action, so a joined hero without it frees the unit");
         Assert.That(entry.Seat, Is.EqualTo(ERuleSeat.Actor));
     }
 
-    // "+1 to hit rolls for THAT attack": the unit's own shot (its shot is always the compelled attack
-    // while the rule binds) and its charge swing - never its strike-back, which is not "that attack".
+    // "+1 to hit rolls for THAT attack": the COMPELLED shot or charge swing only - never a strike-back,
+    // and never an attack by a unit the rule did not bind when it activated.
     [Test]
     public void TheRiders_CoverTheShotAndTheChargeSwing_NotTheStrikeBack()
     {
@@ -79,32 +79,39 @@ public class InstinctiveShippedDataTests
         Assert.That(riders.All(r => ((Effect.RollModifier)r.Effect).RollKind == ERollKind.Hit
                                     && ((Effect.RollModifier)r.Effect).Delta == 1), Is.True);
 
-        // One entry gates on NOT melee (the shot), the other on melee AND charging (the swing). Flatten
-        // each condition tree and assert by the presence of the leaf kinds, so authoring style changes
-        // (And nesting order) don't break the pin while the SEMANTICS stay pinned.
+        // Both gate on the OBLIGATION token (stamped only when the compulsion actually bound at
+        // activation), then split by combat kind: NOT melee (the shot) / melee AND charging (the swing).
+        // Flatten each condition tree and assert by the presence of the leaf kinds, so authoring style
+        // changes (And nesting order) don't break the pin while the SEMANTICS stay pinned.
         static List<Condition> Flatten(Condition c) => c switch
         {
             Condition.And and => Flatten(and.Left).Concat(Flatten(and.Right)).ToList(),
             _ => new List<Condition> { c },
         };
 
+        static bool GatesOnObligation(List<Condition> leaves) => leaves.Any(l =>
+            l is Condition.TokenPresent token && token.TType == TokenType.CompelledToAttack);
+
         bool hasShotEntry = riders.Any(r =>
         {
             List<Condition> leaves = Flatten(r.Condition);
-            return leaves.Any(l => l is Condition.AllModelsHaveThisRule)
+            return GatesOnObligation(leaves)
                 && leaves.Any(l => l is Condition.Not not && not.Inner is Condition.IsMelee);
         });
         bool hasChargeEntry = riders.Any(r =>
         {
             List<Condition> leaves = Flatten(r.Condition);
-            return leaves.Any(l => l is Condition.AllModelsHaveThisRule)
+            return GatesOnObligation(leaves)
                 && leaves.Any(l => l is Condition.IsMelee)
                 && leaves.Any(l => l is Condition.IsCharging);
         });
 
-        Assert.That(hasShotEntry, Is.True, "the ranged rider: all-models gate + NOT melee");
+        Assert.That(hasShotEntry, Is.True, "the ranged rider: obligation gate + NOT melee");
         Assert.That(hasChargeEntry, Is.True,
-            "the melee rider: all-models gate + melee + CHARGING - a strike-back must never get the +1");
+            "the melee rider: obligation gate + melee + CHARGING - a strike-back must never get the +1");
+        Assert.That(riders.All(r => GatesOnObligation(Flatten(r.Condition))), Is.True,
+            "'+1 for THAT attack': a unit that merely HAS the rule, but was not compelled when it " +
+            "activated, gets no bonus at all (owner clarification 2026-07-31)");
     }
 
     // ---- The corpus census -----------------------------------------------------------------------------

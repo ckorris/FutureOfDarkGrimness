@@ -218,75 +218,73 @@ Later payloads on the same seam: `EnableSpellLending` (Accumulator), `EnableSpel
 
 ## Activation & ability seams
 
-**Instinctive — DONE 2026-07-30** (4 refs: all Goblin Reclaimers "Ramshackle Crew" affects-All upgrades;
-engine `1399368` + `2b920e5` + `d6b96e3`, three slices). OPR verbatim: "When this model is activated, if
-it is able to shoot/charge an enemy unit, then it must immediately attack the closest valid target and
-gets +1 to hit rolls for that attack." The 2026-07-23 deferral premise WAS stale as flagged - P20's
-target-gating seam made the choosers a normal slice - but the owner extended the scope past the
-re-estimate: **"able to shoot/charge" includes able-via-a-move** (design session 2026-07-30), so a unit
-that could reach an attack by moving must move.
+**Instinctive — DONE 2026-07-31** (4 refs: all Goblin Reclaimers "Ramshackle Crew" affects-All upgrades;
+engine `1399368` + `2b920e5` + `d6b96e3` + the correction, app `84ddfec` + the correction). OPR verbatim:
+"When this model is activated, if it is able to shoot/charge an enemy unit, then it must immediately
+attack the closest valid target and gets +1 to hit rolls for that attack."
 
-The mechanism is rule-agnostic, three layers:
+**The 2026-07-23 deferral premise was stale as flagged** (P20's target-gating seam made both choosers a
+normal slice), **and then the first cut over-read the rule.** Built 2026-07-30 against a design session
+reading of "able to shoot/charge" as including able-via-a-move; the owner's rules research on 2026-07-31
+found no such clause and cut it. What that removed: `CompelledAttackMovePlanner`, the auto-resolve menu
+options, `DefineMovementPathRequest.MustEndAbleToAttackRule`, `CompelledMoveDestinationCheck` and its CLI
++ GUI enforcement, and the planned-move plumbing through UnitActionContext / MovementStage /
+DefinePathStage. **Standing lesson 4 again, from the other side:** the filed premise was stale, but so was
+the replacement - "surface the fork" is not the same as "confirm the rule text", and a design session can
+invent scope as easily as a stale ledger can preserve it. Kept from that work: `ValidateAgainstBudgets`
+(the shared move validation DefinePathStage now uses for its one caller) and the quiet capability queries.
 
-- **Slice 1, from-here.** `Effect.CompelClosestTarget` -> capability answer, read via
-  `CapabilityRuleQueries.MustAttackClosestSource` (name-attributed, the CoverIgnoreSource shape).
-  `ChooseActionStage` collapses the menu to the attack actions while one is possible (strict "must
-  immediately attack": no Move-first, no Pass/Cast/ability actions; both attack kinds offered when both
-  apply); re-checked per menu visit, so moving into range binds and walking out cannot dodge it.
-  `ApplyTargetGating` grew a closest-target gate run LAST - "closest VALID" means closest among what
-  survived Limited/Deadly/QuickShot gating, so the compulsion never points at a target the unit may not
-  shoot (the livelock class #200 exists for). `ChooseMeleeDefenderStage` narrows the same way. Both narrow
-  BEFORE the request is issued, so human and AI resolvers comply by construction. Ties within 0.001in all
-  stay selectable (the rule names one closest; geometry offering two makes the pick the player's).
-- **Slice 2, move-to-attack.** **`CompelledAttackMovePlanner`** finds a CONCRETE validated enabling move -
-  never a bare boolean (#200 again): whole-unit re-packs (`CohesiveFormation.PackGrid`, the CLI
-  auto-advance recipe) stepped along the straight line toward each enemy nearest-first, validated with the
-  resolvers' own `ValidatePaths` call, then probed by APPLYING the positions, asking the REAL gates
-  (`HasAnyFireableTarget` / `AreUnitsInMeleeRange`), and restoring (synchronous, no awaits - nothing
-  observes the probe; a projected-geometry copy of fireability would drift). A found move bars Pass/Cast
-  and surfaces as auto-resolve menu options ("Instinctive: move into shooting/charge range") - the
-  found move IS the option, so the player facing a fiddly destination search takes it with one click;
-  manual Move stays, flagged via **`DefineMovementPathRequest.MustEndAbleToAttackRule`**. `DefinePathStage`
-  submits an accepted planned move without raising the request (re-validated by the same shared
-  `ValidateAgainstBudgets` a resolver reply gets). Straight-line candidates only: terrain that needs a
-  hook move under-compels, never over-compels.
-- **Slice 3, resolver enforcement + data.** **`CompelledMoveDestinationCheck`** - the request-data
-  predicate (per-model budgets, `WeaponSightProfiles`, `WeaponRangeOverrides`, table geometry; resolvers
-  have no IGameContext) - enforced in the CLI resolver (reject + re-prompt) and the GUI Done gate (a
-  gating issue with the reason in the tooltip). Knowing approximations (no model-silhouette LoS blockers)
-  only under-enforce, and the STAGE never throws on a non-compliant destination: the unit just lands
-  where the next menu visit re-evaluates with the authoritative gates. The +1 rider is pure data: two
-  `rollModifier(Hit,+1)` entries - `Not(IsMelee)` for the shot, `And(IsMelee, IsCharging)` for the swing -
-  so a STRIKE-BACK never gets the +1 ("that attack"). Everything gated `AllModelsHaveThisRule` (#267): a
-  joined hero without the rule frees the unit; all 4 corpus sites are affects-All squads (census-pinned,
-  with a comment that a future partial upgrade re-opens the scoping question).
+**What the rule actually is, and the seam that makes it exact.** The condition is read ONCE, when the
+unit activates. `ChooseActionStage` decides on its first visit of the activation (the only stages before
+it are ActivationStart and the Surprise Attack burst) and stamps **`TokenType.CompelledToAttack`**
+(cleared at end of activation). A unit that could NOT attack then is untouched for the whole activation:
+it moves, and it attacks with a free target and no bonus. A unit that COULD gets the menu collapsed to
+the attack actions - both kinds when both apply, since the rule compels the TARGET, not which attack -
+with Move/Pass/Cast/abilities barred until it attacks.
 
-Found and fixed alongside: single-participant `Evaluate` logged "X's <rule> applied an effect" for every
+The token, not the capability, is the live obligation: `CapabilityRuleQueries.MustAttackClosestSource`
+answers "carries such a rule" (display name), `IsCompelledToAttackClosest` answers "is bound right now",
+and both choosers plus the authored +1 read the second. That split is what makes "moved into range =
+normal attack" true rather than aspirational, and a mutation that points the choosers at the capability
+is caught. `Effect.CompelClosestTarget` remains the rule-agnostic vocabulary (capability answer, gated
+`AllModelsHaveThisRule` per #267 - a joined hero without the rule frees the unit).
+
+Target narrowing (unchanged from the first cut): `ApplyTargetGating` grew a closest-target gate run LAST,
+so "closest VALID" means closest among what survived Limited/Deadly/QuickShot gating - the compulsion
+never points at a target the unit may not shoot (the #200 livelock class); `ChooseMeleeDefenderStage`
+narrows the same way; both narrow BEFORE the request is issued, so human and AI comply by construction
+(the P20 pattern). Ties within 0.001in all stay selectable. The +1 rider is data: two
+`rollModifier(Hit,+1)` entries, each gated `TokenPresent(CompelledToAttack)` AND the combat kind
+(`Not(IsMelee)` for the shot, `And(IsMelee, IsCharging)` for the swing) - so a strike-back never gets it,
+and neither does a unit that merely HAS the rule.
+
+**Two gotchas the probes caught, both worth remembering.** (1) A probe army embeds its own
+`ruleDefinitions` copy, so re-gating the supplement left `Scenarios/armies/InstinctiveMobs.fdgarmy` firing
+the OLD unconditional rider - the engine was right and the probe lied. Re-embed probe armies, not just
+books. (2) The move-into-range test was VACUOUS as first written: stacking the unit's models on one point
+let the near enemy's base occlude the far one for every model, so the far row was unfireable on its own
+merits and the target-gating assertion passed no matter what the gate did (standing lesson 3 - the
+mutation that survived is what exposed it). Translating the models instead fixed it.
+
+Also fixed alongside: single-participant `Evaluate` logged "X's <rule> applied an effect" for every
 capability query, contradicting `CapabilityRuleQueries`'s documented non-logging contract - pre-existing
-noise (the default smoke log had 10 lines) that the per-menu compulsion query turned into a stream. The
-capability question no longer logs, for all capability rules.
+noise the per-activation compulsion query would have turned into a stream.
 
-**Recorded, not fixed:** (a) the CLI EOF auto-advance re-pack can exceed the advance allowance (an
-accidental Rush - `ClampRepackStep` clamps against the hard cap, not advance), so a compelled EOF-driven
-unit can land unable to shoot; graceful (it acts freely next visit) and EOF-only. (b) The AI does not
-PREFER the auto-resolve options (solo picks Move and auto-advances - usually compliant; Tactician plans
-its own move unaware of the obligation); both act under the narrowed requests, so their ATTACKS always
-comply - the compelled-move preference is an AI-behavior refinement, not a rules gap. (c) Pre-existing,
-surfaced by the probes and BISECTED to pre-slice engine `5c4dd2c` (not a regression): the solo-AI Dummies
-probe army sometimes gets an empty fresh-activation menu ("No actions available - passing") when far from
-everything - unexplained, filed here for the next AI pass.
+**Recorded, not fixed:** the AI does not reason about the compulsion, but its attacks always comply
+(it answers the narrowed requests). Pre-existing and BISECTED to pre-slice engine `5c4dd2c` (not a
+regression): the solo-AI Dummies probe army sometimes gets an empty fresh-activation menu when far from
+everything - filed for the next AI pass.
 
-Guards: engine `CompelClosestTargetRuleIntegrationTests` (23: capability + hero-join control, menu
-collapse both kinds, acts-freely + Pass-stays controls (livelock), closest-VALID-not-closest-on-table,
-melee narrowing, rider combo incl. strike-back exclusion, planner find/none/restore, WouldEndAbleToAttack
-short-move rejection, planned-move submit bypasses the request (throwing requester, not a hang), request
-carries the rule, destination-check three-outcome agreement); 10 mutations across the slices each caught
-by exactly the intended tests. App `InstinctiveShippedDataTests` (7: authored shape, rider semantics
-pinned structurally, 4-site census all-affects-All, embedded copy, real-book compile). Probes:
-`instinctive-compelled-shoot` (menu collapsed to Shoot, Tough Dummy row gated with the rule-named reason,
-+1 -> hit threshold 4->3 in the log) and `instinctive-move-to-attack` ("takes the compelled move" -> the
-shot falls on the NEAREST enemy; the melee-only Freaks auto-advance into the compelled charge at +1).
-**9 -> 5 dead, 2 names.**
+Guards: engine `CompelClosestTargetRuleIntegrationTests` (16: capability + hero-join control, menu
+collapse both kinds, unable-at-activation acts freely, **moved-into-range is NOT compelled** (menu, token
+and target list), the obligation outlives the menu, closest-VALID-not-closest-on-table, melee narrowing,
+rider combo incl. strike-back exclusion and the no-obligation-no-bonus control); 4 mutations of the
+activation-time semantics each caught. App `InstinctiveShippedDataTests` (7: authored shape, riders
+pinned to the obligation gate, 4-site census all-affects-All, embedded copy, real-book compile). Probe
+`instinctive-compelled-shoot` shows both halves on ONE unit across two activations: the Freaks that move
+into contact charge at 4+ with a free target list ("Tough Dummy - too far away"), and the same unit
+activating already in contact is collapsed to Charge, narrowed ("Tough Dummy - Instinctive: must attack
+the closest") and swings at 3+. **9 -> 5 dead, 2 names.**
 
 **Surprise Attack — DONE 2026-07-30** (2 refs; engine `86af87d`). OPR verbatim: "Counts as having
 Infiltrate. The first time this unit is activated, pick one enemy unit within 6in in line of sight, and
