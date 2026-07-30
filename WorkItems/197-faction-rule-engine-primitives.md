@@ -1,6 +1,6 @@
 # 197 — Faction rule coverage, part 2: engine primitives + the scope-mismatch bug
 
-**Status**: in progress. Corpus dead references **2,342 -> 33** of 13,870 (0.2%), 8 names.
+**Status**: in progress. Corpus dead references **2,342 -> 21** of 13,870 (0.15%), 7 names.
 **Related**: #196 (data-only half, closed 2026-07-22), #100 (primitive catalog), #102, #034, #042, #093, #095, `SpecialRulesAudit.md`
 
 > **Compacted 2026-07-28.** Shipped slices are summarized to the durable facts: the seam/vocabulary
@@ -36,7 +36,6 @@ all of them `no-definition` - the `scope-mismatch` category is empty for the fir
 
 | Refs | Slice | What it needs | Rules |
 |-----:|-------|---------------|-------|
-| 12 | **Sergeant** — per-model rule attribution (#196 F16 handoff) | OPR `8HWdOwMYcI0p`: "when this MODEL attacks, unmodified 6s to hit deal 1 extra hit" — a one-model champion upgrade. `ListCompiler` attaches `RulesGained` to `unit.SpecialRules` and hit rolls fold over the whole unit's pool, so a data definition over-grants ~10x. Owner ruled 2026-07-22: must apply to the one model only. Needs a per-model attachment + a hit-roll seam scoping an extra-hit effect to the bearer model's own attacks. **P11's per-model start-wounds snapshot solved the analogous problem by before/after comparison; the hit-roll path has no such seam.** | Sergeant (12) |
 | 7 | **P16** one-shot special-attack injection | Once per game, inject one extra attack with an authored weapon profile. | Takedown Strike (5), Takedown Shot (2) |
 | 4 | **Instinctive** — DEFERRED 2026-07-23 | "When activated, if able to shoot/charge, this model MUST attack the CLOSEST valid target, +1 to hit for that attack." The defining mechanic is **forced target selection**, which `RestrictActions` cannot express (it gates action TYPES, not targets) and which must override both the human Choose-Action/target flow AND the AI target resolver — feature-sized. Shipping the +1 rider alone would invert the rule's character (a compelled creature becomes a pure buff), so it was deliberately NOT shipped buff-only. | Instinctive (4) |
 | 3 | **P19** reactivate another unit | Generalize the live self-`reactivate` to a chosen friendly unit. | Coordinate (3) |
@@ -73,6 +72,13 @@ These do **not** show in the dead count. Recorded here so they are not silently 
   premise this ledger itself filed.
 - **The CLI army-file prompt loops forever on EOF** when the file fails to load (a stale probe army
   produced a 5.8 GB log before timeout). It should abort at EOF like every other resolver.
+- **The ranged-attack chooser assumes weapon names are unique per unit** (`BuildWeaponOptions` keys its
+  pool, LoS map, per-target stats and range cache by NAME; #209's determinism ordering leans on it) and
+  FAULTS the state machine on a duplicate. Sergeant's slice sidesteps it by renaming marked copies, and
+  the only other same-name-split producer (slice 0's partial targeted upgrades, 17 "Upgrade Master
+  Marksman Carbine with: Precise" sites) is safe in practice - all are one-carbine heroes, whole-entry
+  attach, no split. Latent until a book update ships a multi-copy partial weapon upgrade; the honest fix
+  is profile-keying the chooser (and auditing its melee sibling).
 
 ---
 
@@ -122,6 +128,30 @@ name+arity resolution from the scope gate. Guards: `WeaponScopedWargearRoutingTe
 *which* weapon carries *which* rule), `BookRuleScopeTests` (app, walks all 47 books, allowlist fails when
 a listed rule starts resolving cleanly). **Deferred: `Strafing`** — closed 2026-07-28, see Combat primitives.
 The allowlist is empty now; it and its stale-entry guard are kept for the next re-import.
+
+**Sergeant — DONE 2026-07-29** (12 refs: the champion option of every Wormhole Daemons troop squad;
+engine `998bbd2` + `4ca9b6a`). OPR `8HWdOwMYcI0p` verbatim: "When this model attacks, unmodified results
+of 6 to hit deal 1 extra hit (only the original hit counts as a 6 for special rules)." The mechanic is
+Surge's body exactly; the slice built only the ONE-MODEL scoping (owner ruling 2026-07-22), and the
+owner chose **weapon marking over true per-model rules** (2026-07-29, after the per-model alternative was
+costed: army-file format has no per-model expression, and pooled volleys would need re-keying at three
+sites; no remaining open item needs it). Sergeant is authored **Weapon-scoped**, and `ListCompiler` grew
+a champion post-pass: a weapon-scoped rule gained from a TARGETS-LESS, non-affects-All section ("Upgrade
+up to three models with one") attaches to one copy of each weapon profile per application - AFTER all
+sections, so "Replace all Hand Weapons" can't eat the mark - and never reaches `unit.SpecialRules`
+(army-load's spread is the ~10x over-grant). The marked copy is the aggregate format's "this model":
+round-robin hands it to a model at load, `WeaponComparer` batches it as its own volley, and the
+weapon-participant dispatch fires the extra-hit fold on those dice alone - the joined-hero mechanism,
+reused. Corpus census pinned in tests: Sergeant's 12 sites are the ONLY occupants of the routing shape.
+The no-cascade parenthetical was already engine law (6-triggered rules read unmodified rolls before
+synthetic hits insert). **The play probe caught a crash the whole green suite missed**: the ranged
+chooser keys its weapon pool by NAME ("An item with the same key has already been added: Rifle"), so
+marked copies are RENAMED "Rifle (Sergeant)" - the invariant stays true and the row/log self-attributes
+("Blood Squad's Sword (Sergeant)'s Sergeant added 0.167 extra hits", both combat kinds probed). Guards:
+`SergeantRuleIntegrationTests` (6: mark shape + name uniqueness, replace ordering, multi-application,
+affects-All and unit-scope controls, load + batch-owners), `SergeantShippedDataTests` (4: Weapon scope
+load-bearing, census pins the section shape, embedded copies, real-book compile). **33 -> 21 dead,
+7 names.**
 
 **Darkborn — DONE 2026-07-11** (59 refs). **Only a naming bug** — both mechanics were already built
 (#029/#183's `EffectiveChargeDistanceAgainst` powers defensive Darkborn). OPR reuses the bare name for
@@ -1034,7 +1064,9 @@ work table. Two clusters are worth grouping:
 - ~~**Sergeant + Armor(X)** (23 refs, both #196 F16 handoffs) are the per-model / per-stat attribution
   family~~ — Armor shipped 2026-07-29 on Tough's creation seam (unit-wide stat write, no per-model
   attribution needed after all: every corpus site is a single-model hero or an affects-All squad).
-  Sergeant (12) remains, and remains genuinely per-model.
+  ~~Sergeant (12) remains, and remains genuinely per-model~~ — Sergeant shipped 2026-07-29 as weapon
+  marking (the marked copy IS the model, owner-chosen over true per-model rules); the per-model framing
+  turned out not to need per-model machinery.
 - ~~**Extended Buff Range + P19 Coordinate** (12 refs) both reach *another friendly unit*; Conduit's relay
   machinery is the nearest precedent for the first~~ — Extended Buff Range shipped 2026-07-29 on the
   capability seam (`EnableBuffRelay` + AbilityTargeting's relay leg). Coordinate (3) remains; if it also
