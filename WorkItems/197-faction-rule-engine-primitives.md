@@ -1,6 +1,6 @@
 # 197 — Faction rule coverage, part 2: engine primitives + the scope-mismatch bug
 
-**Status**: in progress. Corpus dead references **2,342 -> 11** of 13,870 (0.08%), 4 names.
+**Status**: in progress. Corpus dead references **2,342 -> 9** of 13,870 (0.06%), 3 names.
 **Related**: #196 (data-only half, closed 2026-07-22), #100 (primitive catalog), #102, #034, #042, #093, #095, `SpecialRulesAudit.md`
 
 > **Compacted 2026-07-28.** Shipped slices are summarized to the durable facts: the seam/vocabulary
@@ -31,14 +31,13 @@ Done = each slice ships its primitive with an integration test mirroring the nea
 
 # Open work
 
-Ref counts are live from `--rule-coverage FdgRaylib/Assets/Books` (2026-07-30). **11 dead across 4 names,
+Ref counts are live from `--rule-coverage FdgRaylib/Assets/Books` (2026-07-30). **9 dead across 3 names,
 all of them `no-definition` - the `scope-mismatch` category has been empty since Strafing (2026-07-28).**
 
 | Refs | Slice | What it needs | Rules |
 |-----:|-------|---------------|-------|
 | 4 | **Instinctive** — DEFERRED 2026-07-23 | "When activated, if able to shoot/charge, this model MUST attack the CLOSEST valid target, +1 to hit for that attack." The defining mechanic is **forced target selection**, which `RestrictActions` cannot express (it gates action TYPES, not targets) and which must override the target flow. Shipping the +1 rider alone would invert the rule's character (a compelled creature becomes a pure buff), so it was deliberately NOT shipped buff-only. **Re-estimate this before building - the filed premise is now stale (checked 2026-07-30).** It was sized as feature-work on the grounds that the compulsion had to override the human Choose-Action/target flow AND the AI target resolver separately. P20's Quick Shot marks shipped 2026-07-28, five days AFTER this deferral, and built exactly one seam for it: `ChooseRangedAttackStage.ApplyTargetGating(weaponOptions, ..., context.MarkedTargetsOnly)` narrows the target list BEFORE the request is issued, and `TacticianRangedAttackResolver` answers that same narrowed `ChooseRangedAttackRequest` - so the AI is constrained by construction, not by a second override. The shooting half is now a normal slice; the charge half (`ChooseMeleeDefenderStage`) still needs the same treatment, and the +1 rider is trivial on existing sinks. | Instinctive (4) |
 | 3 | **Vengeance** | "Place N markers on the unit that destroyed this one, N = models with this rule at game start; friendly units get +N to hit vs the marker count." P13's marker-scaled magnitude now exists and covers the read side; **still needs a magnitude source for "count of models with rule X in the bearer unit at game start"** — `ValueSource.RuleCarrierCount` (P23) counts LIVING carriers now, not at game start. | Vengeance (3) |
-| 2 | **Surprise Attack** — now UNBLOCKED | Infiltrate + "the first time this unit is activated, pick one enemy within 6in in LoS and roll X dice; each 2+ deals a hit with AP(1)". Was filed as blocked on P10; **P10 is DONE**, so `StormOfHits` (rolled pool -> hits, threshold + AP + range config) is very close to this shape — single-target rather than per-success picking. | Surprise Attack (2) |
 | 2 | **P12** attack-count producer — DEFERRED 2026-07-22 (owner ruling) | Regenerative Strength's marker GAIN is "one marker per ignored wound", but the Regeneration ignore roll is a histogram: under the probabilistic roller the ignored count is fractional, and token counts are integers — bridging them means int-locking a roll-derived value. Owner chose to keep the dice invariant pristine over a rounding approximation. The producer seam (a fold at `DetermineHitRollStage`'s attackCount, where a code comment marks the spot) was NOT built unused, per grow-on-demand; note the consumption side is ALREADY fraction-ready - `attackCount` is a `float`, so only the marker count is integral (`Token.Count` is an `int`), not the thing it would feed. **A second, unwired prerequisite, found 2026-07-30:** `EHookID.Lifecycle_OnWoundIgnored = 21` is declared and documented ("used by rules that count or react to ignored wounds, e.g. Regenerative Strength markers") but has **no context type and no firing site anywhere in the engine** - a rule authored there today would validate, lint clean and never fire (the Breath Attack shape). So even with the fractional question settled, the producer also needs a `WoundIgnoredContext` plus a fire site in `AssignWoundsStage`'s wound-ignore fold. If this reopens, the fractional options are: fractional token counts (a format change - tokens are int-counted everywhere), a separate decisive roll for the marker count (which then diverges from the wounds actually ignored), or rounding (what the owner rejected). **Read side is settled for when this reopens:** melee Yes/No per weapon volley ("add +X attacks to this weapon?"), once-gated per activation — the player picks the weapon by accepting on it (owner-ruled: prompted, not auto). | Regenerative Strength (2) |
 
 ## Deferred sub-arms of shipped rules (name resolves; mechanic partial)
@@ -219,6 +218,54 @@ Later payloads on the same seam: `EnableSpellLending` (Accumulator), `EnableSpel
 `RepelAmbushers` / `AmbushBeacon` (P22a), `EnableBuffRelay` (Extended Buff Range, 2026-07-29).
 
 ## Activation & ability seams
+
+**Surprise Attack — DONE 2026-07-30** (2 refs; engine `86af87d`). OPR verbatim: "Counts as having
+Infiltrate. The first time this unit is activated, pick one enemy unit within 6in in line of sight, and
+roll X dice. For each 2+ it takes one hit with AP(1)." Filed as blocked on P10; the filed premise that
+`StormOfHits` was "very close" turned out to be **half right and half a trap** (standing lesson 4): the
+looping-stage shape was reusable, but Storm's pool is rolled DECISIVELY - correct there, because its
+successes are target PICKS - while these successes are a HIT COUNT and must stay fractional (standing
+lesson 5). Reusing the effect would have int-locked the burst.
+
+New vocabulary: **`Effect.DealPooledHits(ValueSource DiceCount, SuccessThreshold, ArmorPenetration)`** ->
+`RuleOperation.InvokeDealPooledHits`, the hit-pool sibling of P10a's `DealAutoWounds` (those successes are
+save-skipping wounds; these are ordinary hits through the full pipeline). Range and LoS ride the ability's
+own `TargetSelector` rather than the effect, so `AbilityTargeting`'s existing sight leg is reused as-is -
+Storm's duplicated `RangeInches` was not copied. `SyntheticHitResolution` gained **`ResolveRolled`**, the
+same fold over ALREADY-rolled hits, so the fractional success histogram reaches the save/wound children
+without a scalar round-trip. **`SurpriseAttackStage`** runs between `ActivationStartStage` and the action
+menu; `ActivationStartStage` filters the effect out of its own offers (it is a LEAF stage and cannot run a
+child chain) - the ChooseActionStage-routes-Storm shape, moved one stage earlier.
+
+**Two owner rulings (2026-07-30), signed off before building.** (1) *Mandatory at activation start, not a
+menu action*: the text says "the first time this unit is activated", so it fires by itself before any
+move - the Storm shape was rejected because it would let the player defer or decline the burst. The only
+decision is WHICH enemy, so the pick is a non-cancellable `SelectionRequest<UnitData>` and a single
+eligible enemy resolves with no prompt at all (`ActivationStartStage`'s "nothing to choose" precedent).
+(2) *The burst is LOST, not banked*: the `OncePerGame` marker is paid BEFORE the target search, so a unit
+whose first activation has no enemy within 6in in sight never gets it. This is why the cost is spent
+against the bearer when the target search comes back empty.
+
+"Counts as having Infiltrate" is authored as a **copy of Infiltrate's own passive entry**, not a grant -
+the deployment arm has to be live before deployment and nothing grants a rule that early; the app test
+compares the whole entry, so retuning Infiltrate cannot silently desync the copy. It is load-bearing on
+one of the two carriers: the Hive Burrower buys Surprise Attack(5) on an item that REPLACES the item
+granting Ambush, so without the passive it has no route onto the table. Both carriers are single-model
+units (census pinned in tests), so unit scope is exact - the Sergeant question does not arise. **Noted,
+not fixed:** an AI carrier picks the FIRST eligible enemy (`SelectionRequest<UnitData>` falls through
+`TacticianUnitSelectionResolver` to the solo fallback) - legal, since the burst is mandatory and every
+offered target is valid, but not a considered choice.
+
+Guards: engine `SurpriseAttackRuleIntegrationTests` (10: the argument-driven pool, the once-per-game gate,
+the burst with its AP folding into the save against an AP-less control, the mandatory pick, out of
+range/out of sight, the second activation, the fractional pin, and the ActivationStartStage seam), app
+`SurpriseAttackShippedDataTests` (8: authored shape, the Infiltrate-entry equality, the 2-ref census,
+embedded copies, both carriers through the real compiler). Five mutations were each caught by exactly one
+test. Probe `Scenarios/surprise-attack-burst.json`: 5 dice -> 4.17 hits at AP(1) into a Defense 5+ squad
+(save threshold 6, 3.47 wounds, 3 models dead), the pick prompted because two enemies were in range, the
+unit still moved and charged afterwards, no second burst across four rounds, and the second carrier alone
+in a corner logged "no enemy within 6in in line of sight - the surprise is spent". **11 -> 9 dead,
+3 names.**
 
 **Extended Buff Range — DONE 2026-07-29** (9 refs: all HumanDefenseForce, all Field/Vehicle Radio items;
 engine `a83c4a0`). The generalized Spell Conduit the audit called for, on the capability seam:
@@ -1189,8 +1236,9 @@ work table. Two clusters are worth grouping:
   turned out not to need per-model machinery.
 - ~~**Extended Buff Range + P19 Coordinate** (12 refs) both reach *another friendly unit*; Conduit's relay
   machinery is the nearest precedent for the first~~ — Extended Buff Range shipped 2026-07-29 on the
-  capability seam (`EnableBuffRelay` + AbilityTargeting's relay leg). Coordinate (3) remains; if it also
-  turns out relational-within-12, the new relay leg applies to its pick for free.
+  capability seam (`EnableBuffRelay` + AbilityTargeting's relay leg), and ~~Coordinate (3) remains~~
+  Coordinate shipped 2026-07-30 as its own turn-order primitive - it needed no relay, since its 12in pick
+  is measured from the bearer.
 
 ## Outcome
 

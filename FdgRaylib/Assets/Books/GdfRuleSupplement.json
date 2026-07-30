@@ -7456,5 +7456,30 @@
     "engineArgumentCount": 0,
     "valence": "Positive",
     "description": "At the end of this unit's activation, another friendly unit within 12\" that hasn't activated yet may be activated immediately. May not be used if this unit was activated via Coordinate."
+  },
+  {
+    "name": "Surprise Attack",
+    "passive": [
+      {
+        "hookID": "Deployment_OnPreDeploymentSelect",
+        "condition": { "kind": "always" },
+        "effect": { "kind": "deferDeployment", "timing": "LaterRound", "placementRangeInches": 3 },
+        "lifetime": "UntilEndOfGame",
+        "seat": "Actor"
+      }
+    ],
+    "activated": [
+      {
+        "triggerHook": "Activation_OnActivationStart",
+        "cost": { "kind": "oncePerGame" },
+        "targetSelector": { "rangeInches": 6, "minCount": 1, "maxCount": 1, "targetAffinity": "Foe", "requireLineOfSight": true, "requiredToken": null, "singleModel": false, "requiredRule": null },
+        "effect": { "kind": "dealPooledHits", "diceCount": { "kind": "arg", "index": 0 }, "successThreshold": 2, "armorPenetration": 1 },
+        "availableWhen": { "kind": "always" }
+      }
+    ],
+    "scope": "Unit",
+    "engineArgumentCount": 1,
+    "valence": "Positive",
+    "description": "Counts as having Infiltrate. The first time this unit is activated, pick one enemy unit within 6\" in line of sight and roll X dice; for each 2+ it takes one hit with AP(1)."
   }
 ]
