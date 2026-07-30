@@ -1,6 +1,6 @@
 # 197 — Faction rule coverage, part 2: engine primitives + the scope-mismatch bug
 
-**Status**: in progress. Corpus dead references **2,342 -> 42** of 13,870 (0.3%), 9 names.
+**Status**: in progress. Corpus dead references **2,342 -> 33** of 13,870 (0.2%), 8 names.
 **Related**: #196 (data-only half, closed 2026-07-22), #100 (primitive catalog), #102, #034, #042, #093, #095, `SpecialRulesAudit.md`
 
 > **Compacted 2026-07-28.** Shipped slices are summarized to the durable facts: the seam/vocabulary
@@ -37,7 +37,6 @@ all of them `no-definition` - the `scope-mismatch` category is empty for the fir
 | Refs | Slice | What it needs | Rules |
 |-----:|-------|---------------|-------|
 | 12 | **Sergeant** — per-model rule attribution (#196 F16 handoff) | OPR `8HWdOwMYcI0p`: "when this MODEL attacks, unmodified 6s to hit deal 1 extra hit" — a one-model champion upgrade. `ListCompiler` attaches `RulesGained` to `unit.SpecialRules` and hit rolls fold over the whole unit's pool, so a data definition over-grants ~10x. Owner ruled 2026-07-22: must apply to the one model only. Needs a per-model attachment + a hit-roll seam scoping an extra-hit effect to the bearer model's own attacks. **P11's per-model start-wounds snapshot solved the analogous problem by before/after comparison; the hit-roll path has no such seam.** | Sergeant (12) |
-| 9 | **Extended Buff Range** (re-filed from Misc) | Relay non-spell Hero picks across 24in via another friendly unit with the rule — a relational aura-relay, i.e. generalized Spell Conduit for non-spell "pick friendly within 12in" rules. **Conduit's `CastSupport` neighbour scan and the `EnableSpellRelay` shape are the template.** | Extended Buff Range (9) |
 | 7 | **P16** one-shot special-attack injection | Once per game, inject one extra attack with an authored weapon profile. | Takedown Strike (5), Takedown Shot (2) |
 | 4 | **Instinctive** — DEFERRED 2026-07-23 | "When activated, if able to shoot/charge, this model MUST attack the CLOSEST valid target, +1 to hit for that attack." The defining mechanic is **forced target selection**, which `RestrictActions` cannot express (it gates action TYPES, not targets) and which must override both the human Choose-Action/target flow AND the AI target resolver — feature-sized. Shipping the +1 rider alone would invert the rule's character (a compelled creature becomes a pure buff), so it was deliberately NOT shipped buff-only. | Instinctive (4) |
 | 3 | **P19** reactivate another unit | Generalize the live self-`reactivate` to a chosen friendly unit. | Coordinate (3) |
@@ -189,9 +188,29 @@ CORPUS TEXT does — authored data, not an engine assumption); `ListValidator`, 
 `ArmyForgeScreen.IsCaster` (book/roster data, no rule graph exists yet).
 
 Later payloads on the same seam: `EnableSpellLending` (Accumulator), `EnableSpellRelay` (Conduit),
-`RepelAmbushers` / `AmbushBeacon` (P22a).
+`RepelAmbushers` / `AmbushBeacon` (P22a), `EnableBuffRelay` (Extended Buff Range, 2026-07-29).
 
 ## Activation & ability seams
+
+**Extended Buff Range — DONE 2026-07-29** (9 refs: all HumanDefenseForce, all Field/Vehicle Radio items;
+engine `a83c4a0`). The generalized Spell Conduit the audit called for, on the capability seam:
+**`Effect.EnableBuffRelay(rangeInches)`** answers `Lifecycle_OnCapabilityQuery`, and
+**`AbilityTargeting.EligibleTargets` grew the relay leg** — a candidate out of a FRIENDLY pick's own range
+is still eligible when some other friendly bearer is within the relay's 12in of the user AND the candidate
+is within the ability's own range of the bearer (12 + 12 = the audit's "across 24in"). The relay relaxes
+RANGE only; affinity/token/rule filters unchanged, and two gates are pinned: Foe picks never relay (the
+rule relays buffs, not target acquisition) and sight-requiring picks never relay (a relay lends position,
+not eyes — no corpus Friend-pick needs LoS, so the combination is gated, not guessed: grow-on-demand).
+All three `EligibleTargets` callers (menu gating, the stage, StormStage) inherit the leg for free. No
+Shaken gate authored — Conduit's comes from its own wording; this rule's carries none. Engine
+`ExtendedBuffRangeRuleIntegrationTests` (9: capability answer, both legs' boundaries, Foe/enemy-bearer/LoS
+gates, no-relay control, end-to-end through BeforeAttackActionStage with a requester that only takes
+OFFERED targets — the canned one force-picks and would mask a dead relay); app
+`ExtendedBuffRangeShippedDataTests` (authored shape, 9-ref census, embedded copy, capability answer
+through the real attach path). Probe: Commander's 12in Precision Shooter Buff offered and landed on a
+squad 20in away through a radio at 10in — "Far Squad's Precision Shooter added +1 to Hit rolls" on its
+next volley; control with the radio at 16in (first leg dead) dropped both the far squad AND the radio from
+the pick list. **42 -> 33 dead, 8 names.**
 
 **Inquisitorial Agent — DONE 2026-07-29** (20 refs, the item's largest single name; engine `0a14cd8`).
 > "Once per game, if all models in this unit have this rule, it may be activated even if it had already
@@ -1016,8 +1035,10 @@ work table. Two clusters are worth grouping:
   family~~ — Armor shipped 2026-07-29 on Tough's creation seam (unit-wide stat write, no per-model
   attribution needed after all: every corpus site is a single-model hero or an affects-All squad).
   Sergeant (12) remains, and remains genuinely per-model.
-- **Extended Buff Range + P19 Coordinate** (12 refs) both reach *another friendly unit*; Conduit's relay
-  machinery is the nearest precedent for the first.
+- ~~**Extended Buff Range + P19 Coordinate** (12 refs) both reach *another friendly unit*; Conduit's relay
+  machinery is the nearest precedent for the first~~ — Extended Buff Range shipped 2026-07-29 on the
+  capability seam (`EnableBuffRelay` + AbilityTargeting's relay leg). Coordinate (3) remains; if it also
+  turns out relational-within-12, the new relay leg applies to its pick for free.
 
 ## Outcome
 
