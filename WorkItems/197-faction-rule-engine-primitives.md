@@ -51,8 +51,8 @@ These do **not** show in the dead count. Recorded here so they are not silently 
   is per-activation and about the ACTING unit; `AfterMoving` reads the attacker, not the bearer; and a
   token granted at `Movement_OnMoveActionDeclared` is never applied (`ExecuteMoveStage` only *consumes*
   one-shot grants there). Needs a stage-level "grant a MovedThisRound token on move" + `Not(TokenPresent)`.
-- **Ravage strike-back** — a Ravage unit that is CHARGED does not roll on its strike-back; only the
-  charger triggers the stage, mirroring Impact's charge-only scope.
+- ~~**Ravage strike-back**~~ — **DONE 2026-07-30**, see Combat primitives. Every unit that swings now
+  rolls its own Ravage.
 - **Reinforcement via transport spillout** — `TransportUtilities.ApplySpilloutEffects` is deliberately
   Stages-free, so it does not fire the Shaken arm. A spilled-out Reinforcement unit is only offered when
   destroyed. Wire via `SpilloutExecutor` if play hits it.
@@ -648,6 +648,31 @@ overlap-checked against the whole table; anchor-stack as last resort). Rides the
 passive seam — no stage work at all. **136 -> 133. P17 closed 24/24.**
 
 ## Combat primitives
+
+**Ravage strike-back arm — DONE 2026-07-30** (engine `84f7155`). Dead count unchanged — the name already
+resolved; this closes the mechanic. The filed premise ("mirroring Impact's charge-only scope") was the
+wrong frame: Impact is worded *when charging*, Ravage *"when attacking in melee"*, and a strike-back is
+attacking in melee. **Owner-signed fork (2026-07-30): resolve per SWINGING UNIT, not once per melee.**
+Naively adding a strike-back instance would have double-fired — `DetermineStrikeOrderStage` swaps the
+roles for Counter/Unwieldy, so the charger would roll at contact *and* again at its strike-back, while the
+Counter unit (which actually swings first) never rolled at all. Instead the parent's copy MOVED to after
+the strike-order swap and a twin was added as `StrikeBackStage`'s starting child, on its already-reversed
+context (the P16 Takedown precedent). Each combatant that swings rolls exactly once, immediately before
+its own swings; no gate or bookkeeping flag was needed.
+
+*Noted, not fixed:* this is a second live evaluation of `Melee_OnChargeContact` in one melee, and
+`EvaluateAll` spends one-shot NextTrigger grants. Harmless for all four rules at the hook today (Impact,
+Heavy Impact, Counter's reduction, Ravage — all permanent/ThisAttack), but a future NextTrigger grant of
+Impact would be consumed at the strike-back without being rolled. Comment on the stage says so.
+
+Guards: `RavageRuleIntegrationTests` +3. Two drive the REAL `StrikeBackStage` (wiring, not the stage in
+isolation) and both were mutation-checked — dropping the stage from the chain fails the first, un-reversing
+the strike-back context fails both. **Fixture trap worth remembering:** more dice than the target has
+wounds wipes the unit with nothing to assign, so no `AssignWoundsRequest` is posed and an assertion on the
+request passes vacuously; each case is now sized to leave a real assignment choice. The third test pins
+that Ravage reads the POST-swap Actor seat, sequencing the real strike-order and Ravage stages by hand —
+**it does not pin the two stages' ORDER inside `MeleeStage.PopulateTransitions`**, which has no full-melee
+harness to drive it (`MeleeBackOutTests` is the only one, and it only exercises back-outs).
 
 **Hazardous self-wound arm — DONE 2026-07-29** (15 refs, all weapons in RatmenClans; engine `7934e88`).
 > "Attacks with this weapon get AP(4), but **this weapon's unit takes one wound on unmodified rolls of 1
