@@ -1,0 +1,79 @@
+{
+  "name": "Surprise Attack, AI side: the Tactician's burst target pick. The near-dead Dummies squad is listed first (a first-option pick takes it); the Tough Dummy is worth more of what the burst can actually remove, so the value-weighted pick takes that instead",
+  "round": 1,
+  "activePlayer": 1,
+  "settings": {
+    "randomness": "Probabilistic"
+  },
+  "players": [
+    {
+      "army": "armies/Dummies.fdgarmy",
+      "units": [
+        {
+          "unit": "Dummies",
+          "models": [
+            [
+              22,
+              24
+            ],
+            [
+              23,
+              24
+            ],
+            [
+              24,
+              24
+            ],
+            [
+              25,
+              24
+            ],
+            [
+              26,
+              24
+            ]
+          ],
+          "woundsDealt": [
+            1,
+            1,
+            1,
+            1,
+            0
+          ]
+        },
+        {
+          "unit": "Tough Dummy",
+          "models": [
+            [
+              27,
+              23
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "army": "armies/SurpriseAssassins.fdgarmy",
+      "units": [
+        {
+          "unit": "Burrow Assassin",
+          "models": [
+            [
+              24,
+              20
+            ]
+          ]
+        },
+        {
+          "unit": "Lone Assassin",
+          "models": [
+            [
+              6,
+              6
+            ]
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -251,10 +251,23 @@ the deployment arm has to be live before deployment and nothing grants a rule th
 compares the whole entry, so retuning Infiltrate cannot silently desync the copy. It is load-bearing on
 one of the two carriers: the Hive Burrower buys Surprise Attack(5) on an item that REPLACES the item
 granting Ambush, so without the passive it has no route onto the table. Both carriers are single-model
-units (census pinned in tests), so unit scope is exact - the Sergeant question does not arise. **Noted,
-not fixed:** an AI carrier picks the FIRST eligible enemy (`SelectionRequest<UnitData>` falls through
-`TacticianUnitSelectionResolver` to the solo fallback) - legal, since the burst is mandatory and every
-offered target is valid, but not a considered choice.
+units (census pinned in tests), so unit scope is exact - the Sergeant question does not arise.
+
+**The AI's pick, added 2026-07-30 on request.** The burst first shipped with the AI taking the first
+eligible enemy (the solo fallback). It now scores them: **`CombatMath.EstimatePooledHits`** prices the
+pool through the same save/wound mirror `EstimateSpellDamage` uses, and `TacticianPlanner`'s
+`TryChooseBurstTarget` ranks candidates by **fraction of the target's remaining wounds removed x what the
+target is worth** - `SpellValuation.TargetValue`'s damage arm, reused rather than re-invented, so the
+burst and a damage spell answer "which enemy?" the same way. Deliberately simple: no positional or
+objective context, and no save-it-for-later (the burst is mandatory on this activation or never). The
+discriminator is `SurpriseAttackStage.PICK_INSTRUCTION_PREFIX` - the prompt was reworded so the constant
+LEADS ("Pick the enemy unit hit by <rule>"), matching how the spell and deploy-order branches key
+themselves; the pool's dice/threshold/AP are read off the ACTIVE unit's own rule (a burst can only resolve
+during its bearer's activation), and anything unresolvable falls back to the solo pick rather than
+guessing. Guards: 3 tests in `TacticianTargetChoiceTests` (armor drives it, worth breaks a damage tie, and
+a carrier-less unit falls back), each caught by mutation; probe `surprise-attack-ai-target.json` run on
+both profiles - the solo AI takes the first-listed near-dead squad, the Tactician takes the Tough Dummy
+behind it.
 
 Guards: engine `SurpriseAttackRuleIntegrationTests` (10: the argument-driven pool, the once-per-game gate,
 the burst with its AP folding into the save against an AP-less control, the mandatory pick, out of
