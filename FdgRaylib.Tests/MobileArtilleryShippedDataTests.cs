@@ -9,6 +9,7 @@ using FDG.Rules.Definitions;
 using FDG.Rules.Dispatch;
 using FDG.Rules.Dispatch.Contexts;
 using FDG.Rules.Foundation;
+using FDG.Rules.Tokens;
 using FDG.Utilities;
 using NUnit.Framework;
 
@@ -19,10 +20,15 @@ namespace FdgRaylib.Tests;
 // did not move] + AttackedFromOverInches(9), Actor seat, +1 Hit.
 //
 // The defensive arm ("as long as this unit hasn't moved during the round, enemies shooting from over 9in
-// get -2 to hit") is DEFERRED: it needs round-persistent "this unit moved this round" state readable at the
-// defensive hit hook (during the ENEMY's activation), which no primitive exposes - HasMoved is per-activation
-// and about the acting unit, and a token granted at the move hook is not applied (ExecuteMoveStage only
-// consumes grants there). Recorded in the #197 ledger. These tests pin the arm that shipped.
+// get -2 to hit") shipped 2026-07-30 on the new TokenType.MovedThisRound: Stealth's exact shape, but gated
+// Not(TokenPresent(MovedThisRound)) instead of on a per-attack condition. It had to be a token because the
+// hook fires during the ENEMY's activation - HasMoved is per-activation and about the ACTING unit, and
+// Condition.AfterMoving reads the attacker, not the bearer. MovementStage stamps the token when a declared
+// move resolves; the round-end sweep clears it.
+//
+// Note the two arms read "moved" at different scopes ON PURPOSE, because the rule text does: the offensive
+// arm is "uses a Hold ACTION" (this activation, AfterMoving) and the defensive one is "hasn't moved during
+// the ROUND" (the token). A unit that moved earlier in the round and Holds now gets +1 but not -2.
 [TestFixture]
 public class MobileArtilleryShippedDataTests
 {
@@ -37,13 +43,62 @@ public class MobileArtilleryShippedDataTests
     [Test]
     public void OffensiveArm_IsActorSeat_AtTheHitModifierHook_PlusOneHit()
     {
-        HookEntry entry = Supplement().Single(r => r.Name == RuleName).Passive.Single();
+        HookEntry entry = Supplement().Single(r => r.Name == RuleName).Passive
+            .Single(e => e.Seat == ERuleSeat.Actor);
         Assert.That(entry.HookID, Is.EqualTo(EHookID.Shooting_OnHitRollModifier));
-        Assert.That(entry.Seat, Is.EqualTo(ERuleSeat.Actor));
         Assert.That(entry.Effect, Is.InstanceOf<Effect.RollModifier>());
         var mod = (Effect.RollModifier)entry.Effect;
         Assert.That(mod.RollKind, Is.EqualTo(ERollKind.Hit));
         Assert.That(mod.Delta, Is.EqualTo(1));
+    }
+
+    [Test]
+    public void DefensiveArm_IsSubjectSeat_AtTheSameHook_MinusTwoHit()
+    {
+        HookEntry entry = Supplement().Single(r => r.Name == RuleName).Passive
+            .Single(e => e.Seat == ERuleSeat.Subject);
+        Assert.That(entry.HookID, Is.EqualTo(EHookID.Shooting_OnHitRollModifier));
+        Assert.That(entry.Effect, Is.InstanceOf<Effect.RollModifier>());
+        var mod = (Effect.RollModifier)entry.Effect;
+        Assert.That(mod.RollKind, Is.EqualTo(ERollKind.Hit));
+        Assert.That(mod.Delta, Is.EqualTo(-2), "'they get -2 to hit rolls'");
+        Assert.That(entry.Condition.ToString(), Does.Contain(TokenType.MOVED_THIS_ROUND_ID),
+            "the round-scoped gate must be the token, not a per-attack AfterMoving read");
+    }
+
+    // The headline: a bearer that has not moved this round is -2 to be shot at from beyond 9in. Evaluated
+    // with the participant shape DetermineHitRollStage really uses (attacker Actor + defender Subject).
+    [Test]
+    public void HasNotMovedThisRound_ShotFromBeyondNine_IsMinusTwoToHit()
+    {
+        var h = new Harness(RuleName, ruleOnDefender: true);
+        Assert.That(h.NetIncomingHit(distance: Far), Is.EqualTo(-2));
+    }
+
+    [Test]
+    public void HavingMovedThisRound_TheDefensiveBonusIsOff()
+    {
+        var h = new Harness(RuleName, ruleOnDefender: true);
+        h.MarkDefenderMoved();
+        Assert.That(h.NetIncomingHit(distance: Far), Is.EqualTo(0),
+            "'as long as this unit hasn't moved during the round'");
+    }
+
+    [Test]
+    public void ShotFromWithinNine_GetsNoDefensiveBonus()
+    {
+        var h = new Harness(RuleName, ruleOnDefender: true);
+        Assert.That(h.NetIncomingHit(distance: Near), Is.EqualTo(0),
+            "'from over 9 inches away' - a close-range shot is unaffected.");
+    }
+
+    // Mirrors Stealth, which carries no Not(IsMelee) either: a melee swing resolves in base contact, so the
+    // live-distance gate can never pass there. Pinned so nobody "fixes" the missing melee exclusion.
+    [Test]
+    public void MeleeSwing_GetsNoDefensiveBonus_TheDistanceGateExcludesIt()
+    {
+        var h = new Harness(RuleName, ruleOnDefender: true);
+        Assert.That(h.NetIncomingHit(distance: 0.5f, isMelee: true), Is.EqualTo(0));
     }
 
     [Test]
@@ -85,13 +140,31 @@ public class MobileArtilleryShippedDataTests
         private readonly IUnit _attacker;
         private readonly IUnit _defender;
 
-        public Harness(string ruleName)
+        public Harness(string ruleName, bool ruleOnDefender = false)
         {
             var byName = Supplement().ToDictionary(r => r.Name, StringComparer.OrdinalIgnoreCase);
             _resolver.Register(byName[ruleName]);
             _evaluator = new RuleEvaluator(new ProbabilisticDiceRoller(), ruleResolver: _resolver);
-            _attacker = Build("P1", ruleName);
-            _defender = Build("P2");
+            _attacker = ruleOnDefender ? Build("P1") : Build("P1", ruleName);
+            _defender = ruleOnDefender ? Build("P2", ruleName) : Build("P2");
+        }
+
+        /// <summary> What MovementStage stamps when a declared move resolves. </summary>
+        public void MarkDefenderMoved() =>
+            _defender.Tokens.AddToken(TokenDefinitionCatalog.Create(TokenType.MovedThisRound));
+
+        // The defensive read, with DetermineHitRollStage's real participant shape: the attacker in the
+        // Actor seat and the defender's living models in the Subject seat (which is what lets the bearer's
+        // AllModelsHaveThisRule gate see them).
+        public int NetIncomingHit(float distance, bool isMelee = false)
+        {
+            var sink = new RollModifierSink();
+            sink.ApplyFrom(_evaluator.EvaluateAll(
+                new HitRollModifierContext(_attacker, _defender, distance, AttackerMoved: false,
+                    IsMelee: isMelee),
+                RuleParticipant.Actor(_attacker),
+                RuleParticipant.Subject(_defender, models: HeroStatRules.LivingModels(_defender))));
+            return sink.Net(ERollKind.Hit);
         }
 
         private IUnit Build(string playerName, params string[] ruleNames)

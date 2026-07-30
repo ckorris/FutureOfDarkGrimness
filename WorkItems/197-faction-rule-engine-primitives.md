@@ -45,12 +45,7 @@ These do **not** show in the dead count. Recorded here so they are not silently 
 
 - ~~**Hazardous self-wound arm** (15 refs)~~ — **DONE 2026-07-29**, see Combat primitives. The balance
   flag is cleared: Hazardous is no longer upside-only.
-- **Mobile Artillery defensive arm** (2 refs) — "as long as this unit hasn't moved during the ROUND,
-  enemies shooting it from over 9in get -2". Needs round-persistent per-unit moved-this-round state
-  readable at the DEFENSIVE hit hook (fired during the enemy's activation). `UnitActionContext.HasMoved`
-  is per-activation and about the ACTING unit; `AfterMoving` reads the attacker, not the bearer; and a
-  token granted at `Movement_OnMoveActionDeclared` is never applied (`ExecuteMoveStage` only *consumes*
-  one-shot grants there). Needs a stage-level "grant a MovedThisRound token on move" + `Not(TokenPresent)`.
+- ~~**Mobile Artillery defensive arm** (2 refs)~~ — **DONE 2026-07-30**, see Distance & geometry.
 - ~~**Ravage strike-back**~~ — **DONE 2026-07-30**, see Combat primitives. Every unit that swings now
   rolls its own Ravage.
 - ~~**Reinforcement via transport spillout**~~ — **DONE 2026-07-30**, see Unit creation & restoration.
@@ -155,6 +150,44 @@ stays correct. The two bundled books were patched by targeted string replace, no
 hand-authored #197 rules a re-import would clobber). **635 -> 576.**
 
 ## Distance & geometry
+
+**Mobile Artillery defensive arm — DONE 2026-07-30** (2 refs, HumanDefenseForce + RobotLegions; engine
+`3203714`). Dead count unchanged — the name already resolved on its offensive arm. New
+**`TokenType.MovedThisRound`** (RoundEnd clear, Normal prominence — it is the only visible explanation for
+why an artillery piece got easier to shoot), stamped by `MovementStage.ReconcileChildContextBeforeLeaving`
+next to `RegisterMoveFinished`, which the back-out returns above. The arm itself is pure data: Stealth's
+shape at `Shooting_OnHitRollModifier`/Subject, `And(AllModelsHaveThisRule, And(Not(TokenPresent
+(MovedThisRound)), DistanceGreaterThan(9)))`, `rollModifier(Hit, -2)`, ThisAttack. No melee exclusion, for
+Stealth's reason: melee resolves in base contact so the live-distance gate can never pass there.
+
+**Owner-signed fork (2026-07-30): "moved" = a move ACTION, not any position change.** Repositions
+(Vanguard/Bounding/Dash), forced Aircraft moves and spillout placement do NOT stamp it — an artillery
+piece shoved by someone else's rule keeps its own bonus.
+
+**The filed premise was half wrong (standing lesson 4).** It called for stamping on a Charge as well.
+Charging in this engine requires the unit to ALREADY be within melee range, so a charge is never itself a
+move — whatever brought it into range was, and that already stamped. A unit that starts its activation in
+contact and charges without moving has genuinely not moved and keeps the bonus, so a MeleeStage stamp
+would have been an outright bug. One seam, not two.
+
+*Note the two arms read "moved" at different scopes on purpose, because the text does:* offensive is "uses
+a Hold ACTION" (per-activation, `AfterMoving`), defensive is "hasn't moved during the ROUND" (the token).
+A unit that moved earlier in the round and Holds now gets +1 but not -2.
+
+Guards: `MovementBackOutTests` +3 (stamp on a resolved move / no stamp on a back-out / RoundEnd lifetime),
+driven through the REAL `MovementStage`; both stamp tests mutation-checked. `MobileArtilleryShippedDataTests`
++5 in the app suite, using `DetermineHitRollStage`'s real participant shape (Actor attacker + Subject
+defender with living models). Re-embedded into both books with `--apply-rules`; the diff is the new entry
+and nothing else.
+
+**In-play probe (standing lesson 1)** — `Scenarios/mobile-artillery-defensive.json` and its twin
+`mobile-artillery-moved.json` (identical but the battery starts with the token), plus
+`Scenarios/armies/MobileArtillery.fdgarmy`. Drive with
+`printf "1\n2\n1\n1\n1\n1\n" | dotnet run --project FdgRaylib/FdgRaylib.csproj -- --headless --scenario <file> --trace-rules`
+— the EOF default picks *Move*, so stdin must choose Shoot ([2]) or the probe proves nothing. Result: the
+first scenario traces `Mobile Artillery at Shooting_OnHitRollModifier/Subject: fired -> ApplyRollModifier`
+and the Quality-2 Marksmen need **4+** instead of 2+; after the AI activates and moves the battery the same
+shot goes back to 2+. The token twin never fires and stays at 2+, isolating the token as the switch.
 
 **The ">9in shot or charged" gate — DONE 2026-07-09** (engine `bf6353d`, `e677f1e`; app `27c55c4`)
 Twelve rules read "shot **or charged** from over 9in away". `Condition.DistanceGreaterThan` reads LIVE
