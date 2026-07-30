@@ -37,7 +37,6 @@ all of them `no-definition` - the `scope-mismatch` category is empty for the fir
 | Refs | Slice | What it needs | Rules |
 |-----:|-------|---------------|-------|
 | 12 | **Sergeant** — per-model rule attribution (#196 F16 handoff) | OPR `8HWdOwMYcI0p`: "when this MODEL attacks, unmodified 6s to hit deal 1 extra hit" — a one-model champion upgrade. `ListCompiler` attaches `RulesGained` to `unit.SpecialRules` and hit rolls fold over the whole unit's pool, so a data definition over-grants ~10x. Owner ruled 2026-07-22: must apply to the one model only. Needs a per-model attachment + a hit-roll seam scoping an extra-hit effect to the bearer model's own attacks. **P11's per-model start-wounds snapshot solved the analogous problem by before/after comparison; the hit-roll path has no such seam.** | Sergeant (12) |
-| 11 | **Armor(X) defense floor** (#196 F16 handoff) | OPR `74RjQ1k41DoO`: "counts as having Defense X+" — a stat SET with a varying rating. No Defense-side analog of `qualityFloor`, and data effects carry fixed authored values. Needs a defense-floor effect reading `Arg(0)` (or engine-side stat handling a la Tough). #196 shipped a zero-hook marker-with-arg definition so the name resolves and the description shows — **so these 11 refs do NOT appear in the dead count, but the mechanic is absent.** | Armor (11) |
 | 9 | **Extended Buff Range** (re-filed from Misc) | Relay non-spell Hero picks across 24in via another friendly unit with the rule — a relational aura-relay, i.e. generalized Spell Conduit for non-spell "pick friendly within 12in" rules. **Conduit's `CastSupport` neighbour scan and the `EnableSpellRelay` shape are the template.** | Extended Buff Range (9) |
 | 7 | **P16** one-shot special-attack injection | Once per game, inject one extra attack with an authored weapon profile. | Takedown Strike (5), Takedown Shot (2) |
 | 5 | **Unpredictable Marks** (P15 residual) | A mark grants Unpredictable at the hit-roll hook, AFTER `UnpredictableBranchResolver`'s action-level roll, so the mark-granted rule is invisible to it. Needs the resolver to also scan the DEFENDER for an Unpredictable-granting mark at action time. | Unpredictable Fighter Mark (3), Unpredictable Shooter Mark (2) |
@@ -376,7 +375,38 @@ finite budget. Faithful for the 1v1 corpus; multi-player is an approximation ove
   entry GATED on that token, so the ordinary arrival pass needs no special case. Created the
   end-of-activation ability seam (above). **161 -> 157. P22 closed 42/42.**
 
-## Unit creation & restoration (P17, DONE 2026-07-28, 24/24)
+## Unit creation & restoration (P17 DONE 2026-07-28, 24/24; Armor DONE 2026-07-29)
+
+**Armor(X) defense set — DONE 2026-07-29** (11 refs across 7 books, #196 F16 handoff; engine `d8c052e`).
+
+> "Counts as having Defense X+ **in place of** the model's own Defense stat." #196 shipped a zero-hook
+> marker-with-arg so the name resolved and the description showed — the mechanic was absent, and every
+> site is a PAID upgrade (Heavy Armor 5pts, mounts, chariots) whose other bundled rules (Tough/Fast/
+> Strider/Impact) all worked. These 11 refs never showed in the dead count; the row lived here instead.
+
+- **Owner ruling 2026-07-29: a literal SET, not a floor** — replaces the base even where the base is
+  better (no corpus site worsens today; floor was offered first and declined as less literal). Pinned by
+  `Armor_IsALiteralSet_NotAFloor`.
+- **Vocabulary:** `Effect.SetDefense(ValueSource)` ("setDefense", reads `Arg(0)`),
+  `RuleOperation.SetDefense`, `IDefenseSetSink`/`DefenseSetSink` (several sets -> lowest wins,
+  mirroring MaxWoundsSink's best-of).
+- **Seam: Tough's, not the save path's.** Fires at `Lifecycle_OnUnitCreated`; `UnitCreationRules.Apply`
+  folds the sink and WRITES `UnitData.Defense`, so every reader — the save stage, impact, reflect,
+  synthetic hits, `GetSaveDefense`, and the AI's CombatMath — sees it with zero per-path folding. The
+  rejected alternative (fold at `Shooting_OnHitRollComplete`, carried on `RollToHitResults` like
+  Shielded) would have missed impact/reflect and needed a CombatMath mirror. Resume-safe: `Defense` is
+  a serialized property, so the skip-creation-rules-on-resume path reloads the written value.
+- **Joined hero:** the hero's standalone unit never runs UnitCreationRules, so `HeroJoinResolver` bakes
+  the set into `HeroAttachment.Defense` (`ResolveJoinedHeroDefense` — matched by EFFECT SHAPE, not rule
+  name, so a book alias can't dodge it), mirroring how `heroWounds` bakes in Tough. While squadmates
+  live the unit saves at the unit's stat (the hero's Armor stays out of it), per the last-model-Defense
+  philosophy; the host's own Armor covers everyone via the unit stat.
+- Tests: engine `ArmorRuleIntegrationTests` (6 — set-from-arg, SET-not-floor pin, best-of, no-op
+  control, hero-join bake + host-no-leak, join-without-armor control); app `ArmorShippedDataTests`
+  (4 — authored shape, 11-ref census across the 7 books, embedded copies carry the mechanic,
+  shipped-data end-to-end to Defense 4). Both stat writes mutation-checked. Probe: D6+ dummies with
+  Armor(4) log "Base roll to save is 4" in play; non-Armor units unchanged.
+- `RuleSupplementLintTests` allowlist entry removed (its now-fires tripwire failed as designed).
 
 **P17a Spawn + the unit-creation machinery (14 refs).** **Owner sign-off: a mid-round creation may
 activate the SAME round** ("same round for all"), including Split's destruction-seam path.
@@ -968,8 +998,10 @@ The original ordering is spent — slice 0, P5a/P5b, the marker cluster, P10, P1
 are all done. Remaining work is a long tail of independent slices; take them by leverage from the Open
 work table. Two clusters are worth grouping:
 
-- **Sergeant + Armor(X)** (23 refs, both #196 F16 handoffs) are the per-model / per-stat attribution
-  family — different mechanics, but both are about a rule that applies to less than the whole unit.
+- ~~**Sergeant + Armor(X)** (23 refs, both #196 F16 handoffs) are the per-model / per-stat attribution
+  family~~ — Armor shipped 2026-07-29 on Tough's creation seam (unit-wide stat write, no per-model
+  attribution needed after all: every corpus site is a single-model hero or an affects-All squad).
+  Sergeant (12) remains, and remains genuinely per-model.
 - **Extended Buff Range + P19 Coordinate** (12 refs) both reach *another friendly unit*; Conduit's relay
   machinery is the nearest precedent for the first.
 

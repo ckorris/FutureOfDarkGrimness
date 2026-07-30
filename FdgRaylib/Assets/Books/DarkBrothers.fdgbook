@@ -11028,7 +11028,8 @@
             "kind": "deferDeployment",
             "timing": "LaterRound",
             "placementRangeInches": 9,
-            "minArrivalRound": 1
+            "minArrivalRound": 1,
+            "mandatoryArrival": false
           },
           "lifetime": "UntilEndOfGame",
           "seat": "Actor"

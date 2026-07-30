@@ -4084,7 +4084,23 @@
     },
     {
       "name": "Armor",
-      "passive": [],
+      "passive": [
+        {
+          "hookID": "Lifecycle_OnUnitCreated",
+          "condition": {
+            "kind": "always"
+          },
+          "effect": {
+            "kind": "setDefense",
+            "defense": {
+              "kind": "arg",
+              "index": 0
+            }
+          },
+          "lifetime": "UntilEndOfGame",
+          "seat": "Actor"
+        }
+      ],
       "activated": [],
       "scope": "Unit",
       "engineArgumentCount": 1,

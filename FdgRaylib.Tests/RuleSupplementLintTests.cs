@@ -35,12 +35,6 @@ public class RuleSupplementLintTests
         ["Melee Slayer"] = "AP(+2) in melee vs Tough 3+ (targetMajorityHasTough); lint has no Tough-majority target context.",
         ["Ranged Slayer"] = "AP(+2) at range vs Tough 3+ (targetMajorityHasTough); lint has no Tough-majority target context.",
 
-        // #196 F16. "Counts as having Defense X+" is a stat SET with a varying rating - no Defense-floor
-        // effect kind exists and data effects carry fixed authored values, so the mechanic is deferred to
-        // #197 (defense-floor primitive). Zero-hook marker-with-arg definition (the Unique/Transport
-        // precedent) so the name resolves and its description shows in the UI meanwhile.
-        ["Armor"] = "wargear marker: Defense-set mechanic needs an engine primitive, deferred to #197; " +
-            "no dispatch entries until then.",
     };
 
     private static string SupplementPath =>
