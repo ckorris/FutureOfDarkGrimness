@@ -42,6 +42,8 @@ all of them `no-definition` - the `scope-mismatch` category has been empty since
 ## Deferred sub-arms of shipped rules (name resolves; mechanic partial)
 
 These do **not** show in the dead count. Recorded here so they are not silently lost.
+**All five are closed as of 2026-07-30** — four shipped, one struck as never having existed. The list is
+kept rather than deleted: it is the record of what was deferred and how each was resolved.
 
 - ~~**Hazardous self-wound arm** (15 refs)~~ — **DONE 2026-07-29**, see Combat primitives. The balance
   flag is cleared: Hazardous is no longer upside-only.
@@ -49,7 +51,18 @@ These do **not** show in the dead count. Recorded here so they are not silently 
 - ~~**Ravage strike-back**~~ — **DONE 2026-07-30**, see Combat primitives. Every unit that swings now
   rolls its own Ravage.
 - ~~**Reinforcement via transport spillout**~~ — **DONE 2026-07-30**, see Unit creation & restoration.
-- **Speed Feat Buff** (1) — the spell-buff variant of the shipped Speed Feat.
+- ~~**Speed Feat Buff** (1)~~ — **NOT A REAL ROW; struck 2026-07-30.** There is no such rule. The string
+  "Speed Feat Buff" appears in **no book, no spell, no supplement definition and no engine code**, and
+  `git log --all -S` finds it in exactly one commit in the repo's whole history: `d517b59`, the ledger
+  entry that filed it. `--rule-coverage` reports 5 dead across 2 names, neither of them this. The corpus
+  Speed family is `Speed Feat` / `Speed Feat Boost` / `Speed Feat Aura` (all live since 2026-07-23) plus
+  the unrelated `Speed Buff` / `Speed Debuff` pair (the Fast/Slow grant abilities, also live and defined).
+  It looks like the two were conflated into a third name that never existed. Standing lesson 4 — this time
+  the wrong premise was a work row, and the cost was a slice that had nothing to build. **Owner-signed
+  2026-07-30: correct the ledger, do not author speculative vocabulary with no caller.**
+
+  *Method worth reusing when a filed row smells wrong:* grep the working tree, then `git log --all -S` the
+  exact string. A name that has never existed in any tracked file cannot be a coverage gap.
 
 ## Tooling / hygiene found here, not fixed
 
