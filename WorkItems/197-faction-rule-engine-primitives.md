@@ -1,6 +1,6 @@
 # 197 — Faction rule coverage, part 2: engine primitives + the scope-mismatch bug
 
-**Status**: in progress. Corpus dead references **2,342 -> 47** of 13,870 (0.3%), 11 names.
+**Status**: in progress. Corpus dead references **2,342 -> 42** of 13,870 (0.3%), 9 names.
 **Related**: #196 (data-only half, closed 2026-07-22), #100 (primitive catalog), #102, #034, #042, #093, #095, `SpecialRulesAudit.md`
 
 > **Compacted 2026-07-28.** Shipped slices are summarized to the durable facts: the seam/vocabulary
@@ -31,7 +31,7 @@ Done = each slice ships its primitive with an integration test mirroring the nea
 
 # Open work
 
-Ref counts are live from `--rule-coverage FdgRaylib/Assets/Books` (2026-07-29). **47 dead across 11 names,
+Ref counts are live from `--rule-coverage FdgRaylib/Assets/Books` (2026-07-29). **42 dead across 9 names,
 all of them `no-definition` - the `scope-mismatch` category is empty for the first time since slice 0.**
 
 | Refs | Slice | What it needs | Rules |
@@ -39,7 +39,6 @@ all of them `no-definition` - the `scope-mismatch` category is empty for the fir
 | 12 | **Sergeant** — per-model rule attribution (#196 F16 handoff) | OPR `8HWdOwMYcI0p`: "when this MODEL attacks, unmodified 6s to hit deal 1 extra hit" — a one-model champion upgrade. `ListCompiler` attaches `RulesGained` to `unit.SpecialRules` and hit rolls fold over the whole unit's pool, so a data definition over-grants ~10x. Owner ruled 2026-07-22: must apply to the one model only. Needs a per-model attachment + a hit-roll seam scoping an extra-hit effect to the bearer model's own attacks. **P11's per-model start-wounds snapshot solved the analogous problem by before/after comparison; the hit-roll path has no such seam.** | Sergeant (12) |
 | 9 | **Extended Buff Range** (re-filed from Misc) | Relay non-spell Hero picks across 24in via another friendly unit with the rule — a relational aura-relay, i.e. generalized Spell Conduit for non-spell "pick friendly within 12in" rules. **Conduit's `CastSupport` neighbour scan and the `EnableSpellRelay` shape are the template.** | Extended Buff Range (9) |
 | 7 | **P16** one-shot special-attack injection | Once per game, inject one extra attack with an authored weapon profile. | Takedown Strike (5), Takedown Shot (2) |
-| 5 | **Unpredictable Marks** (P15 residual) | A mark grants Unpredictable at the hit-roll hook, AFTER `UnpredictableBranchResolver`'s action-level roll, so the mark-granted rule is invisible to it. Needs the resolver to also scan the DEFENDER for an Unpredictable-granting mark at action time. | Unpredictable Fighter Mark (3), Unpredictable Shooter Mark (2) |
 | 4 | **Instinctive** — DEFERRED 2026-07-23 | "When activated, if able to shoot/charge, this model MUST attack the CLOSEST valid target, +1 to hit for that attack." The defining mechanic is **forced target selection**, which `RestrictActions` cannot express (it gates action TYPES, not targets) and which must override both the human Choose-Action/target flow AND the AI target resolver — feature-sized. Shipping the +1 rider alone would invert the rule's character (a compelled creature becomes a pure buff), so it was deliberately NOT shipped buff-only. | Instinctive (4) |
 | 3 | **P19** reactivate another unit | Generalize the live self-`reactivate` to a chosen friendly unit. | Coordinate (3) |
 | 3 | **Vengeance** | "Place N markers on the unit that destroyed this one, N = models with this rule at game start; friendly units get +N to hit vs the marker count." P13's marker-scaled magnitude now exists and covers the read side; **still needs a magnitude source for "count of models with rule X in the bearer unit at game start"** — `ValueSource.RuleCarrierCount` (P23) counts LIVING carriers now, not at game start. | Vengeance (3) |
@@ -544,6 +543,21 @@ set the carried total (9).
 entries is wrong — see Tooling / hygiene. Hazardous's second entry is linted, and the M5 mutation's failure
 message names it as "passive entry 1".
 
+**P15 Unpredictable Marks — DONE 2026-07-29** (5 refs: Fighter Mark 3 in AlienHives, Shooter Mark 2 in
+GoblinReclaimers; engine `bad8725`). The residual: the two mark names were dead `no-definition`, and
+authoring them alone would have shipped a no-op — a mark-granted Unpredictable only reaches the attacker
+when `ClaimTargetMarks` converts it at the hit stage, AFTER the action-level branch roll, so both arms
+gate out on a branch that never rolled. `UnpredictableBranchResolver.Resolve` now takes the DEFENDER and
+treats a Mark token granting an applicable Unpredictable rule as a roll trigger (kind-aware: a Shooter
+mark doesn't roll for a melee swing; keyed on the granted rule so ordinary marks consume no die — the
+seeded stream stays untouched). Definitions authored on the uniform mark-family template (18in, LoS,
+`markTarget` -> the CORE Fighter/Shooter rules, whose branch-gated arms already existed). Engine tests
+extend `UnpredictableRuleIntegrationTests` (defender-mark roll, wrong-kind no-die, non-Unpredictable-mark
+no-die, and a real-CombatActionContext end-to-end proving branch + claim + arm compose to quality-1);
+app `UnpredictableMarkShippedDataTests` pins authored shape, census, embedded copies. Probe: mark placed
+via the CLI ability, then the marked unit charged and the STRIKE-BACK rolled ApBonus — "Markers's
+Unpredictable Fighter added -1 to Save rolls", threshold 6 -> 7 in play. **47 -> 42 dead, 9 names.**
+
 **P15 randomized-branch (Unpredictable) — DONE 2026-07-11** (48 of 53 refs). "Roll one die: 1-3 AP(+1),
 4-6 +1 to hit." Forks resolved with Chris: **decisive** selecting die (a branch selector cannot be
 averaged into "half a modifier"), and **once per attack ACTION**, not per weapon. The two arms consume at
@@ -552,7 +566,7 @@ at the other, so the single roll is resolved ABOVE the hooks and threaded down: 
 **`IHasUnpredictableBranch`** + `Condition.UnpredictableBranchIs`. `UnpredictableBranchResolver` rolls
 only when the attacker carries an applicable rule (native, per-model, or aura-granted), so the seeded
 stream (#193) is untouched for ordinary attacks; cached per action, reset on `SwapCombatRoles`.
-**576 -> 528.** *Marks deferred — see Open work.*
+**576 -> 528.** *Marks shipped 2026-07-29 — see the entry above.*
 
 **P10a auto-wound dice pool (Ravage + Crossing Attack) — DONE 2026-07-22** (39 refs; engine `1340496`,
 `3ee6896`). **The reading that reshaped the slice:** P10's names are two unrelated mechanics — Ravage/
