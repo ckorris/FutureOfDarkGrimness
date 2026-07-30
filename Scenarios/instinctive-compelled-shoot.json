@@ -1,0 +1,96 @@
+{
+  "name": "Instinctive, from-here: the Shooters CAN shoot, so the menu is the attack; the shot must fall on the nearer Dummies, not the Tough Dummy; the corner Freaks have nothing reachable and act freely",
+  "round": 1,
+  "activePlayer": 0,
+  "settings": {
+    "randomness": "Probabilistic"
+  },
+  "players": [
+    {
+      "army": "armies/InstinctiveMobs.fdgarmy",
+      "units": [
+        {
+          "unit": "Ramshackle Shooters",
+          "models": [
+            [
+              24,
+              20
+            ],
+            [
+              25,
+              20
+            ],
+            [
+              26,
+              20
+            ],
+            [
+              24,
+              21
+            ],
+            [
+              25,
+              21
+            ]
+          ]
+        },
+        {
+          "unit": "Ramshackle Freaks",
+          "models": [
+            [
+              4,
+              4
+            ],
+            [
+              5,
+              4
+            ],
+            [
+              6,
+              4
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "army": "armies/Dummies.fdgarmy",
+      "units": [
+        {
+          "unit": "Dummies",
+          "models": [
+            [
+              24,
+              26
+            ],
+            [
+              25,
+              26
+            ],
+            [
+              26,
+              26
+            ],
+            [
+              24,
+              27
+            ],
+            [
+              25,
+              27
+            ]
+          ]
+        },
+        {
+          "unit": "Tough Dummy",
+          "models": [
+            [
+              30,
+              30
+            ]
+          ]
+        }
+      ]
+    }
+  ]
+}

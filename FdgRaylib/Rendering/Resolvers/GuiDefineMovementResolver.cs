@@ -1209,6 +1209,14 @@ public class GuiDefineMovementResolver
         if (cohesion.FarthestPair.HasValue)
             issues.Add($"Cohesion: two models would be {cohesion.FarthestPair.Value.dist:F2}\" apart (max {FormatInches(GameWideConstants.MAX_MODEL_DISTANCE_FROM_ALL_OTHER_MODELS_INCHES)}\")");
 
+        // #197 Instinctive slice 3: a compelled unit's manual move must END able to attack. The shared
+        // request-data check (same one the CLI resolver runs), surfaced as a Done-gating issue so the
+        // tooltip explains exactly why the button is disabled.
+        if (request.MustEndAbleToAttackRule != null && _tableState != null && issues.Count == 0
+            && !CompelledMoveDestinationCheck.EndsAbleToAttack(_tableState, request, results))
+            issues.Add($"{request.MustEndAbleToAttackRule}: must end in melee range of an enemy, or in " +
+                "shooting range having Advanced.");
+
         bool canSubmit = issues.Count == 0;
         // Primary: Done -- larger, accented, commits on click or the Confirm key (gated on a valid move).
         bool donePressed = ResolverButtons.Primary("Done",

@@ -1,6 +1,6 @@
 # 197 — Faction rule coverage, part 2: engine primitives + the scope-mismatch bug
 
-**Status**: in progress. Corpus dead references **2,342 -> 9** of 13,870 (0.06%), 3 names.
+**Status**: in progress. Corpus dead references **2,342 -> 5** of 13,870 (0.04%), 2 names.
 **Related**: #196 (data-only half, closed 2026-07-22), #100 (primitive catalog), #102, #034, #042, #093, #095, `SpecialRulesAudit.md`
 
 > **Compacted 2026-07-28.** Shipped slices are summarized to the durable facts: the seam/vocabulary
@@ -31,12 +31,11 @@ Done = each slice ships its primitive with an integration test mirroring the nea
 
 # Open work
 
-Ref counts are live from `--rule-coverage FdgRaylib/Assets/Books` (2026-07-30). **9 dead across 3 names,
+Ref counts are live from `--rule-coverage FdgRaylib/Assets/Books` (2026-07-30). **5 dead across 2 names,
 all of them `no-definition` - the `scope-mismatch` category has been empty since Strafing (2026-07-28).**
 
 | Refs | Slice | What it needs | Rules |
 |-----:|-------|---------------|-------|
-| 4 | **Instinctive** — DEFERRED 2026-07-23 | "When activated, if able to shoot/charge, this model MUST attack the CLOSEST valid target, +1 to hit for that attack." The defining mechanic is **forced target selection**, which `RestrictActions` cannot express (it gates action TYPES, not targets) and which must override the target flow. Shipping the +1 rider alone would invert the rule's character (a compelled creature becomes a pure buff), so it was deliberately NOT shipped buff-only. **Re-estimate this before building - the filed premise is now stale (checked 2026-07-30).** It was sized as feature-work on the grounds that the compulsion had to override the human Choose-Action/target flow AND the AI target resolver separately. P20's Quick Shot marks shipped 2026-07-28, five days AFTER this deferral, and built exactly one seam for it: `ChooseRangedAttackStage.ApplyTargetGating(weaponOptions, ..., context.MarkedTargetsOnly)` narrows the target list BEFORE the request is issued, and `TacticianRangedAttackResolver` answers that same narrowed `ChooseRangedAttackRequest` - so the AI is constrained by construction, not by a second override. The shooting half is now a normal slice; the charge half (`ChooseMeleeDefenderStage`) still needs the same treatment, and the +1 rider is trivial on existing sinks. | Instinctive (4) |
 | 3 | **Vengeance** | "Place N markers on the unit that destroyed this one, N = models with this rule at game start; friendly units get +N to hit vs the marker count." P13's marker-scaled magnitude now exists and covers the read side; **still needs a magnitude source for "count of models with rule X in the bearer unit at game start"** — `ValueSource.RuleCarrierCount` (P23) counts LIVING carriers now, not at game start. | Vengeance (3) |
 | 2 | **P12** attack-count producer — DEFERRED 2026-07-22 (owner ruling) | Regenerative Strength's marker GAIN is "one marker per ignored wound", but the Regeneration ignore roll is a histogram: under the probabilistic roller the ignored count is fractional, and token counts are integers — bridging them means int-locking a roll-derived value. Owner chose to keep the dice invariant pristine over a rounding approximation. The producer seam (a fold at `DetermineHitRollStage`'s attackCount, where a code comment marks the spot) was NOT built unused, per grow-on-demand; note the consumption side is ALREADY fraction-ready - `attackCount` is a `float`, so only the marker count is integral (`Token.Count` is an `int`), not the thing it would feed. **A second, unwired prerequisite, found 2026-07-30:** `EHookID.Lifecycle_OnWoundIgnored = 21` is declared and documented ("used by rules that count or react to ignored wounds, e.g. Regenerative Strength markers") but has **no context type and no firing site anywhere in the engine** - a rule authored there today would validate, lint clean and never fire (the Breath Attack shape). So even with the fractional question settled, the producer also needs a `WoundIgnoredContext` plus a fire site in `AssignWoundsStage`'s wound-ignore fold. If this reopens, the fractional options are: fractional token counts (a format change - tokens are int-counted everywhere), a separate decisive roll for the marker count (which then diverges from the wounds actually ignored), or rounding (what the owner rejected). **Read side is settled for when this reopens:** melee Yes/No per weapon volley ("add +X attacks to this weapon?"), once-gated per activation — the player picks the weapon by accepting on it (owner-ruled: prompted, not auto). | Regenerative Strength (2) |
 
@@ -218,6 +217,76 @@ Later payloads on the same seam: `EnableSpellLending` (Accumulator), `EnableSpel
 `RepelAmbushers` / `AmbushBeacon` (P22a), `EnableBuffRelay` (Extended Buff Range, 2026-07-29).
 
 ## Activation & ability seams
+
+**Instinctive — DONE 2026-07-30** (4 refs: all Goblin Reclaimers "Ramshackle Crew" affects-All upgrades;
+engine `1399368` + `2b920e5` + `d6b96e3`, three slices). OPR verbatim: "When this model is activated, if
+it is able to shoot/charge an enemy unit, then it must immediately attack the closest valid target and
+gets +1 to hit rolls for that attack." The 2026-07-23 deferral premise WAS stale as flagged - P20's
+target-gating seam made the choosers a normal slice - but the owner extended the scope past the
+re-estimate: **"able to shoot/charge" includes able-via-a-move** (design session 2026-07-30), so a unit
+that could reach an attack by moving must move.
+
+The mechanism is rule-agnostic, three layers:
+
+- **Slice 1, from-here.** `Effect.CompelClosestTarget` -> capability answer, read via
+  `CapabilityRuleQueries.MustAttackClosestSource` (name-attributed, the CoverIgnoreSource shape).
+  `ChooseActionStage` collapses the menu to the attack actions while one is possible (strict "must
+  immediately attack": no Move-first, no Pass/Cast/ability actions; both attack kinds offered when both
+  apply); re-checked per menu visit, so moving into range binds and walking out cannot dodge it.
+  `ApplyTargetGating` grew a closest-target gate run LAST - "closest VALID" means closest among what
+  survived Limited/Deadly/QuickShot gating, so the compulsion never points at a target the unit may not
+  shoot (the livelock class #200 exists for). `ChooseMeleeDefenderStage` narrows the same way. Both narrow
+  BEFORE the request is issued, so human and AI resolvers comply by construction. Ties within 0.001in all
+  stay selectable (the rule names one closest; geometry offering two makes the pick the player's).
+- **Slice 2, move-to-attack.** **`CompelledAttackMovePlanner`** finds a CONCRETE validated enabling move -
+  never a bare boolean (#200 again): whole-unit re-packs (`CohesiveFormation.PackGrid`, the CLI
+  auto-advance recipe) stepped along the straight line toward each enemy nearest-first, validated with the
+  resolvers' own `ValidatePaths` call, then probed by APPLYING the positions, asking the REAL gates
+  (`HasAnyFireableTarget` / `AreUnitsInMeleeRange`), and restoring (synchronous, no awaits - nothing
+  observes the probe; a projected-geometry copy of fireability would drift). A found move bars Pass/Cast
+  and surfaces as auto-resolve menu options ("Instinctive: move into shooting/charge range") - the
+  found move IS the option, so the player facing a fiddly destination search takes it with one click;
+  manual Move stays, flagged via **`DefineMovementPathRequest.MustEndAbleToAttackRule`**. `DefinePathStage`
+  submits an accepted planned move without raising the request (re-validated by the same shared
+  `ValidateAgainstBudgets` a resolver reply gets). Straight-line candidates only: terrain that needs a
+  hook move under-compels, never over-compels.
+- **Slice 3, resolver enforcement + data.** **`CompelledMoveDestinationCheck`** - the request-data
+  predicate (per-model budgets, `WeaponSightProfiles`, `WeaponRangeOverrides`, table geometry; resolvers
+  have no IGameContext) - enforced in the CLI resolver (reject + re-prompt) and the GUI Done gate (a
+  gating issue with the reason in the tooltip). Knowing approximations (no model-silhouette LoS blockers)
+  only under-enforce, and the STAGE never throws on a non-compliant destination: the unit just lands
+  where the next menu visit re-evaluates with the authoritative gates. The +1 rider is pure data: two
+  `rollModifier(Hit,+1)` entries - `Not(IsMelee)` for the shot, `And(IsMelee, IsCharging)` for the swing -
+  so a STRIKE-BACK never gets the +1 ("that attack"). Everything gated `AllModelsHaveThisRule` (#267): a
+  joined hero without the rule frees the unit; all 4 corpus sites are affects-All squads (census-pinned,
+  with a comment that a future partial upgrade re-opens the scoping question).
+
+Found and fixed alongside: single-participant `Evaluate` logged "X's <rule> applied an effect" for every
+capability query, contradicting `CapabilityRuleQueries`'s documented non-logging contract - pre-existing
+noise (the default smoke log had 10 lines) that the per-menu compulsion query turned into a stream. The
+capability question no longer logs, for all capability rules.
+
+**Recorded, not fixed:** (a) the CLI EOF auto-advance re-pack can exceed the advance allowance (an
+accidental Rush - `ClampRepackStep` clamps against the hard cap, not advance), so a compelled EOF-driven
+unit can land unable to shoot; graceful (it acts freely next visit) and EOF-only. (b) The AI does not
+PREFER the auto-resolve options (solo picks Move and auto-advances - usually compliant; Tactician plans
+its own move unaware of the obligation); both act under the narrowed requests, so their ATTACKS always
+comply - the compelled-move preference is an AI-behavior refinement, not a rules gap. (c) Pre-existing,
+surfaced by the probes and BISECTED to pre-slice engine `5c4dd2c` (not a regression): the solo-AI Dummies
+probe army sometimes gets an empty fresh-activation menu ("No actions available - passing") when far from
+everything - unexplained, filed here for the next AI pass.
+
+Guards: engine `CompelClosestTargetRuleIntegrationTests` (23: capability + hero-join control, menu
+collapse both kinds, acts-freely + Pass-stays controls (livelock), closest-VALID-not-closest-on-table,
+melee narrowing, rider combo incl. strike-back exclusion, planner find/none/restore, WouldEndAbleToAttack
+short-move rejection, planned-move submit bypasses the request (throwing requester, not a hang), request
+carries the rule, destination-check three-outcome agreement); 10 mutations across the slices each caught
+by exactly the intended tests. App `InstinctiveShippedDataTests` (7: authored shape, rider semantics
+pinned structurally, 4-site census all-affects-All, embedded copy, real-book compile). Probes:
+`instinctive-compelled-shoot` (menu collapsed to Shoot, Tough Dummy row gated with the rule-named reason,
++1 -> hit threshold 4->3 in the log) and `instinctive-move-to-attack` ("takes the compelled move" -> the
+shot falls on the NEAREST enemy; the melee-only Freaks auto-advance into the compelled charge at +1).
+**9 -> 5 dead, 2 names.**
 
 **Surprise Attack — DONE 2026-07-30** (2 refs; engine `86af87d`). OPR verbatim: "Counts as having
 Infiltrate. The first time this unit is activated, pick one enemy unit within 6in in line of sight, and

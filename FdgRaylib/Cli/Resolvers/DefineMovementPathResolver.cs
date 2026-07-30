@@ -90,7 +90,21 @@ public class DefineMovementPathResolver : IStageResolver<DefineMovementPathReque
                     GetEnemyFootprints(request), request.CanMoveThroughEnemies, request.IgnoresDifficultTerrain,
                     request.IgnoresImpassibleTerrain, _tableState?.Terrain.Objects, out var errors,
                     GetFriendlyFootprints(request), lenientCoherency: true))
+            {
+                // #197 Instinctive slice 3: a compelled unit's manual move must END able to attack -
+                // within melee range, or within shooting range having Advanced. Same request-data check
+                // the GUI resolver runs, so the two front ends agree on what counts as compliant.
+                if (request.MustEndAbleToAttackRule != null && _tableState != null
+                    && !CompelledMoveDestinationCheck.EndsAbleToAttack(_tableState, request, entries))
+                {
+                    Console.WriteLine();
+                    Console.WriteLine($"  {request.MustEndAbleToAttackRule}: the move must end able to " +
+                        "attack - in melee range of an enemy, or in shooting range having Advanced. " +
+                        "Re-enter all models:");
+                    continue;
+                }
                 return Selected(entries);
+            }
 
             Console.WriteLine();
             Console.WriteLine("  Movement is invalid - please re-enter all models:");
