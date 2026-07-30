@@ -17,6 +17,9 @@
 #   scripts/build-dist.sh mac-arm      # macOS Apple Silicon only
 #   scripts/build-dist.sh mac-x64      # macOS Intel only
 #
+# Each output folder gets the published app plus a platform README.txt, the
+# third-party license notices, and a copy of the repo's armies/ sample lists.
+#
 # Output lands in dist/:
 #   dist/FdgRaylib-win-x64/     + FdgRaylib-win-x64.zip
 #   dist/FdgRaylib-linux-x64/   + FdgRaylib-linux-x64.tar.gz
@@ -77,6 +80,15 @@ publish_one() {
   else
     echo "!! THIRD-PARTY-NOTICES.txt missing at repo root - license notices will NOT ship" >&2
   fi
+
+  # Ship the sample army lists. The Load Army / Load Game dialogs open with no
+  # preset directory, so they land in the app folder - an "armies" sibling next to
+  # the binary is exactly where a recipient will find them.
+  if [[ -d "$ROOT_DIR/armies" ]]; then
+    cp -R "$ROOT_DIR/armies" "$out/armies"
+  else
+    echo "!! armies/ missing at repo root - no sample army lists will ship" >&2
+  fi
 }
 
 write_readme() {
@@ -93,6 +105,9 @@ No .NET install is required - the runtime is bundled.
 First launch: Windows SmartScreen may show "Windows protected your PC"
 because the app is not code-signed. Click "More info" -> "Run anyway".
 This is expected for an unsigned app and is safe.
+
+Sample army lists are in the "armies" folder - pick one from the lobby's
+"Load Army" button.
 
 Keep the whole folder together - FdgRaylib.exe needs the DLLs and the
 Assets folder next to it.
@@ -131,6 +146,9 @@ Which build is this?
 Use the one matching the Mac. An Intel build also runs on Apple Silicon under
 Rosetta 2, but the arm64 build is native and faster.
 
+Sample army lists are in the "armies" folder - pick one from the lobby's
+"Load Army" button.
+
 Keep the whole folder together - the binary needs its native .dylib libraries
 and the Assets folder next to it.
 EOF
@@ -156,6 +174,9 @@ nothing, install it:
 Requires a normal desktop with OpenGL + X11/Wayland (present on any
 standard Ubuntu/Fedora install). Built against glibc; Alpine/musl is not
 supported.
+
+Sample army lists are in the "armies" folder - pick one from the lobby's
+"Load Army" button.
 
 Keep the whole folder together - the binary needs its native libraries
 and the Assets folder next to it.
