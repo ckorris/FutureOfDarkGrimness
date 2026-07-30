@@ -9651,6 +9651,46 @@
       "description": "Once per activation, before attacking, pick one friendly unit within 12\u0022, which gets No Retreat once (next time the effect would apply)."
     },
     {
+      "name": "Coordinate",
+      "passive": [],
+      "activated": [
+        {
+          "triggerHook": "Activation_OnEndOfActivation",
+          "cost": {
+            "kind": "free"
+          },
+          "targetSelector": {
+            "rangeInches": 12,
+            "minCount": 1,
+            "maxCount": 1,
+            "targetAffinity": "Friend",
+            "requireLineOfSight": false,
+            "requiredToken": null,
+            "singleModel": false,
+            "requiredRule": null
+          },
+          "effect": {
+            "kind": "activateUnitNext"
+          },
+          "availableWhen": {
+            "kind": "not",
+            "inner": {
+              "kind": "tokenPresent",
+              "tType": {
+                "id": "ActivatedOutOfOrder"
+              },
+              "minCount": 1
+            }
+          },
+          "label": ""
+        }
+      ],
+      "scope": "Unit",
+      "engineArgumentCount": 0,
+      "valence": "Positive",
+      "description": "At the end of this unit\u0027s activation, another friendly unit within 12\u0022 that hasn\u0027t activated yet may be activated immediately. May not be used if this unit was activated via Coordinate."
+    },
+    {
       "name": "Entrenched",
       "passive": [
         {

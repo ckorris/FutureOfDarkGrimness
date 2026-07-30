@@ -1,6 +1,6 @@
 # 197 — Faction rule coverage, part 2: engine primitives + the scope-mismatch bug
 
-**Status**: in progress. Corpus dead references **2,342 -> 14** of 13,870 (0.10%), 5 names.
+**Status**: in progress. Corpus dead references **2,342 -> 11** of 13,870 (0.08%), 4 names.
 **Related**: #196 (data-only half, closed 2026-07-22), #100 (primitive catalog), #102, #034, #042, #093, #095, `SpecialRulesAudit.md`
 
 > **Compacted 2026-07-28.** Shipped slices are summarized to the durable facts: the seam/vocabulary
@@ -31,13 +31,12 @@ Done = each slice ships its primitive with an integration test mirroring the nea
 
 # Open work
 
-Ref counts are live from `--rule-coverage FdgRaylib/Assets/Books` (2026-07-30). **14 dead across 5 names,
+Ref counts are live from `--rule-coverage FdgRaylib/Assets/Books` (2026-07-30). **11 dead across 4 names,
 all of them `no-definition` - the `scope-mismatch` category has been empty since Strafing (2026-07-28).**
 
 | Refs | Slice | What it needs | Rules |
 |-----:|-------|---------------|-------|
 | 4 | **Instinctive** — DEFERRED 2026-07-23 | "When activated, if able to shoot/charge, this model MUST attack the CLOSEST valid target, +1 to hit for that attack." The defining mechanic is **forced target selection**, which `RestrictActions` cannot express (it gates action TYPES, not targets) and which must override both the human Choose-Action/target flow AND the AI target resolver — feature-sized. Shipping the +1 rider alone would invert the rule's character (a compelled creature becomes a pure buff), so it was deliberately NOT shipped buff-only. | Instinctive (4) |
-| 3 | **P19** reactivate another unit | Generalize the live self-`reactivate` to a chosen friendly unit. | Coordinate (3) |
 | 3 | **Vengeance** | "Place N markers on the unit that destroyed this one, N = models with this rule at game start; friendly units get +N to hit vs the marker count." P13's marker-scaled magnitude now exists and covers the read side; **still needs a magnitude source for "count of models with rule X in the bearer unit at game start"** — `ValueSource.RuleCarrierCount` (P23) counts LIVING carriers now, not at game start. | Vengeance (3) |
 | 2 | **Surprise Attack** — now UNBLOCKED | Infiltrate + "the first time this unit is activated, pick one enemy within 6in in LoS and roll X dice; each 2+ deals a hit with AP(1)". Was filed as blocked on P10; **P10 is DONE**, so `StormOfHits` (rolled pool -> hits, threshold + AP + range config) is very close to this shape — single-target rather than per-success picking. | Surprise Attack (2) |
 | 2 | **P12** attack-count producer — DEFERRED 2026-07-22 (owner ruling) | Regenerative Strength's marker GAIN is "one marker per ignored wound", but the Regeneration ignore roll is a histogram: under the probabilistic roller the ignored count is fractional, and token counts are integers — bridging them means int-locking a roll-derived value. Owner chose to keep the dice invariant pristine over a rounding approximation. The producer seam (a fold at `DetermineHitRollStage`'s attackCount, where a code comment marks the spot) was NOT built unused, per grow-on-demand. **Read side is settled for when this reopens:** melee Yes/No per weapon volley ("add +X attacks to this weapon?"), once-gated per activation — the player picks the weapon by accepting on it (owner-ruled: prompted, not auto). | Regenerative Strength (2) |
@@ -708,6 +707,70 @@ both rules fire, all three riders self-attribute in the log ("Reliable set base 
 multiplied wounds by 3", "Takedown re-scoped the attack to a single target model" - the last one IN MELEE),
 the normal attack follows, and across 4 rounds each unit keeps attacking but is never offered a second
 strike. **21 -> 14 dead, 5 names.**
+
+**P19 out-of-order activation (Coordinate) — DONE 2026-07-30** (3 refs; engine `6468b24`). OPR
+`FPlO2MymiMc0` verbatim: "At the end of this unit's activation, another friendly unit within 12in that
+hasn't activated yet may be activated immediately. May not be used if this unit was activated via
+Coordinate." **The filed premise was wrong** (standing lesson 4): this row said "generalize the live
+self-`reactivate` to a chosen friendly unit", and Coordinate is not a Reactivate variant at all.
+`Reactivate` re-adds an ALREADY-ACTIVATED unit to the pool so it appears as a CHOICE later; Coordinate
+takes a unit that has NOT activated and makes it the next activation, now. Reactivate grants an extra
+activation, Coordinate only reorders ones already owed - the acting side gains **tempo, not activation
+count**. So the work landed in the turn-order layer, the first rule to reach it.
+
+**Built as a rule-agnostic primitive, at the owner's insistence** (2026-07-30): nothing in the engine
+mentions Coordinate. `Effect.ActivateUnitNext` -> `RuleOperation.InvokeActivateUnitNext`, plus three
+tokens named for the mechanism - `ActivatesNext` ("takes the next activation, ahead of the normal
+alternation"), `ActivatedOutOfOrder` ("this activation was granted by another unit"), and
+`ActivatedThisRound`. `TeamPlayerAlternationCursor.PointAt(PlayerID)` is the generic cursor move.
+No new hook: `Activation_OnEndOfActivation` already offers abilities.
+
+**Why a token and not a context field.** The producer (`ReconcileEndOfActivationStage`, on
+`ISingleTurnContext`) and the consumers (`DeterminePlayerTurnStage` + `ChooseUnitToActivateStage`) sit in
+different layers, so the grant has to be carried. A token carries it with no plumbing AND survives a
+resume for free - decisive here, because #052's rolling save point is written at the TOP of
+DeterminePlayerTurnStage, i.e. AFTER the grant, so stage-local state would be lost on a load. **The pool
+stays authoritative**: a flag is honoured only for a unit genuinely still unactivated, alive and on the
+table, so a marker outliving its target (killed before its turn) degrades to a normal advance instead of
+pinning the round on a unit that can never be picked.
+
+**`ActivatedThisRound` is new state and worth knowing about.** "Has this unit activated this round?" was
+previously derivable ONLY from the round context's pool, unreachable from a rule, an ability's targeting,
+or any stage below the round layer. It is now stamped/cleared in lockstep with the pool by the only two
+methods that move it (`MarkUnitAsActivated` / `ReinstateUnitForActivation`, the latter mattering for
+Martial Prowess). It is what lets the eligibility filter see an ALLY's units, which no per-player pool
+reachable from a turn context covers.
+
+**Three owner rulings (2026-07-30).** (1) *The generic-jump alternative was rejected on the merits*: a
+"transfer control to stage X with a context object" hook would be aimed at the wrong joint - the stage
+SEQUENCE is already correct here (DeterminePlayerTurn -> ChooseUnitToActivate -> activate); only the DATA
+those stages compute is wrong. Its real costs are per-layer context ownership (`GetNewChildContext`),
+`GetResumeEntry`/#052, and #203's tail-call stack discipline. Filed separately as its own idea, to be
+scoped on reactions/interrupts rather than sized by a 3-reference faction rule. (2) *An ally's unit is a
+legal target and ITS OWNER controls it* - which simplified the primitive rather than complicating it, since
+"the next activation is the flagged unit, and the acting player is its owner" covers own-unit as the case
+where the owner is you. Hence `PointAt` moving the team index too. A beat announces it (`Notice`), naming
+the controlling player when it is not the granting one. (3) *The end-of-activation Yes/No default flipped
+NO -> YES*, covering Ambush Re-Deployment as well: these are paid-for one-shots, and a default of NO meant
+every AI and EOF resolver declined them every time - an army paying points for an ability only a human
+could use, and a human never seeing the mechanic played against them.
+
+Data: authored `Free` (the source states no per-game or per-round limit; its only brake is the anti-chain
+clause, authored as `Not(TokenPresent(ActivatedOutOfOrder))` - data, not code), selector
+`(12in, 1, 1, Friend, no LoS)`, embedded into HumanDefenseForce. All 3 carriers are single-model HDF heroes
+(Tank Company / Storm / Company Leader), so unit scope is exact.
+
+Guards: engine `ActivateUnitNextRuleIntegrationTests` (15: the grant, the anti-chain condition, the
+pool/token lockstep, the bearer and already-activated exclusions, range, cancel-costs-nothing, the ally
+target + beat, the cursor staying vs crossing to an ally, stale flags on activated AND dead units, the
+menu-free activation, and a control that ordinary activations still get their menu); app
+`CoordinateShippedDataTests` (6). **Mutation-checking caught a vacuous test**: the first
+"pool authority" mutation PASSED because the test only exercised pool membership while the mutation cut
+the liveness half - so a `Consumer_AFlagOnADeadUnit_IsIgnored` test was added and both halves re-checked
+red. Probe `Scenarios/p19-coordinate.json` (headless, exit 0): every round runs General ->
+**First Squad out of order** -> opponent, and First Squad carries Coordinate ITSELF and is never offered it
+(4 offers across 4 rounds, not 8) - the anti-chain verified in play, not only in a unit test.
+**14 -> 11 dead, 4 names.**
 
 **Heavy Impact — DONE 2026-07-23** (3 refs; engine `f739d2c`). `Effect.ChargeImpactHits` gained
 `ArmorPenetration` (default 0); `ImpactSink` folds it as a MAX across sources (the single impact pool

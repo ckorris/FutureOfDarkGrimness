@@ -1,0 +1,81 @@
+{
+  "name": "P19 - Coordinate: the General hands the next activation to First Squad, which carries Coordinate itself and must NOT chain it on (the anti-chain clause)",
+  "round": 1,
+  "activePlayer": 0,
+  "settings": {
+    "randomness": "Probabilistic"
+  },
+  "players": [
+    {
+      "army": "armies/P19Command.fdgarmy",
+      "units": [
+        {
+          "unit": "General",
+          "models": [
+            [
+              24,
+              14
+            ]
+          ]
+        },
+        {
+          "unit": "First Squad",
+          "models": [
+            [
+              28,
+              14
+            ]
+          ]
+        },
+        {
+          "unit": "Second Squad",
+          "models": [
+            [
+              32,
+              14
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "army": "armies/Dummies.fdgarmy",
+      "units": [
+        {
+          "unit": "Dummies",
+          "models": [
+            [
+              24,
+              32
+            ],
+            [
+              26,
+              32
+            ],
+            [
+              28,
+              32
+            ],
+            [
+              30,
+              32
+            ],
+            [
+              32,
+              32
+            ]
+          ]
+        },
+        {
+          "unit": "Tough Dummy",
+          "models": [
+            [
+              40,
+              32
+            ]
+          ]
+        }
+      ]
+    }
+  ]
+}
