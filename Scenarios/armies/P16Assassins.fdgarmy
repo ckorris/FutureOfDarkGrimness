@@ -1,0 +1,139 @@
+{
+  "name": "P16 Assassins (probe army)",
+  "faction": "",
+  "pointsLimit": 0,
+  "units": [
+    {
+      "name": "Sniper Assassin",
+      "modelCount": 1,
+      "quality": 5,
+      "defense": 4,
+      "specialRules": [
+        {
+          "kind": "core",
+          "name": "Takedown Shot"
+        }
+      ],
+      "weapons": [
+        {
+          "name": "Heavy Sniper Rifle",
+          "quantity": 1,
+          "rangeInches": 36,
+          "attacks": 1,
+          "armorPenetration": 0,
+          "specialRules": []
+        }
+      ],
+      "pointCost": 0
+    },
+    {
+      "name": "Blade Assassin",
+      "modelCount": 1,
+      "quality": 5,
+      "defense": 4,
+      "specialRules": [
+        {
+          "kind": "core",
+          "name": "Takedown Strike"
+        }
+      ],
+      "weapons": [
+        {
+          "name": "Dagger",
+          "quantity": 1,
+          "rangeInches": 0,
+          "attacks": 1,
+          "armorPenetration": 0,
+          "specialRules": []
+        }
+      ],
+      "pointCost": 0
+    }
+  ],
+  "ruleDefinitions": [
+    {
+      "name": "Takedown Strike",
+      "passive": [],
+      "activated": [
+        {
+          "triggerHook": "Combat_OnAttackWindow",
+          "cost": {
+            "kind": "oncePerGame"
+          },
+          "targetSelector": {
+            "rangeInches": 0,
+            "minCount": 1,
+            "maxCount": 1,
+            "targetAffinity": "Foe",
+            "requireLineOfSight": false,
+            "requiredToken": null,
+            "singleModel": false,
+            "requiredRule": null
+          },
+          "effect": {
+            "kind": "extraAttack",
+            "weaponName": "Takedown Strike",
+            "attacks": 1,
+            "armorPenetration": 2,
+            "withRules": [
+              "Reliable",
+              "Deadly(3)",
+              "Takedown"
+            ]
+          },
+          "availableWhen": {
+            "kind": "isMelee"
+          }
+        }
+      ],
+      "scope": "Unit",
+      "engineArgumentCount": 0,
+      "valence": "Positive",
+      "description": "Once per game, when it's this model's turn to attack in melee, it may make one extra attack at Quality 2+ with AP(2), Deadly(3), and Takedown."
+    },
+    {
+      "name": "Takedown Shot",
+      "passive": [],
+      "activated": [
+        {
+          "triggerHook": "Combat_OnAttackWindow",
+          "cost": {
+            "kind": "oncePerGame"
+          },
+          "targetSelector": {
+            "rangeInches": 0,
+            "minCount": 1,
+            "maxCount": 1,
+            "targetAffinity": "Foe",
+            "requireLineOfSight": false,
+            "requiredToken": null,
+            "singleModel": false,
+            "requiredRule": null
+          },
+          "effect": {
+            "kind": "extraAttack",
+            "weaponName": "Takedown Shot",
+            "attacks": 1,
+            "armorPenetration": 2,
+            "withRules": [
+              "Reliable",
+              "Deadly(3)",
+              "Takedown"
+            ]
+          },
+          "availableWhen": {
+            "kind": "not",
+            "inner": {
+              "kind": "isMelee"
+            }
+          }
+        }
+      ],
+      "scope": "Unit",
+      "engineArgumentCount": 0,
+      "valence": "Positive",
+      "description": "Once per game, when this model shoots, it may make one extra attack against the target at Quality 2+ with AP(2), Deadly(3), and Takedown."
+    }
+  ],
+  "spells": []
+}

@@ -1,6 +1,6 @@
 # 197 — Faction rule coverage, part 2: engine primitives + the scope-mismatch bug
 
-**Status**: in progress. Corpus dead references **2,342 -> 21** of 13,870 (0.15%), 7 names.
+**Status**: in progress. Corpus dead references **2,342 -> 14** of 13,870 (0.10%), 5 names.
 **Related**: #196 (data-only half, closed 2026-07-22), #100 (primitive catalog), #102, #034, #042, #093, #095, `SpecialRulesAudit.md`
 
 > **Compacted 2026-07-28.** Shipped slices are summarized to the durable facts: the seam/vocabulary
@@ -31,12 +31,11 @@ Done = each slice ships its primitive with an integration test mirroring the nea
 
 # Open work
 
-Ref counts are live from `--rule-coverage FdgRaylib/Assets/Books` (2026-07-29). **42 dead across 9 names,
-all of them `no-definition` - the `scope-mismatch` category is empty for the first time since slice 0.**
+Ref counts are live from `--rule-coverage FdgRaylib/Assets/Books` (2026-07-30). **14 dead across 5 names,
+all of them `no-definition` - the `scope-mismatch` category has been empty since Strafing (2026-07-28).**
 
 | Refs | Slice | What it needs | Rules |
 |-----:|-------|---------------|-------|
-| 7 | **P16** one-shot special-attack injection | Once per game, inject one extra attack with an authored weapon profile. | Takedown Strike (5), Takedown Shot (2) |
 | 4 | **Instinctive** — DEFERRED 2026-07-23 | "When activated, if able to shoot/charge, this model MUST attack the CLOSEST valid target, +1 to hit for that attack." The defining mechanic is **forced target selection**, which `RestrictActions` cannot express (it gates action TYPES, not targets) and which must override both the human Choose-Action/target flow AND the AI target resolver — feature-sized. Shipping the +1 rider alone would invert the rule's character (a compelled creature becomes a pure buff), so it was deliberately NOT shipped buff-only. | Instinctive (4) |
 | 3 | **P19** reactivate another unit | Generalize the live self-`reactivate` to a chosen friendly unit. | Coordinate (3) |
 | 3 | **Vengeance** | "Place N markers on the unit that destroyed this one, N = models with this rule at game start; friendly units get +N to hit vs the marker count." P13's marker-scaled magnitude now exists and covers the read side; **still needs a magnitude source for "count of models with rule X in the bearer unit at game start"** — `ValueSource.RuleCarrierCount` (P23) counts LIVING carriers now, not at game start. | Vengeance (3) |
@@ -651,6 +650,64 @@ stalled Sergeant.** `ResolveMeleeReflectStage` (a `MeleeStage` child after conso
 rule-bearing MODEL: Retaliate's wounds-taken x X, Deathstrike's kills x X, Self-Destruct's X per model
 that ENTERED alive plus killing every survivor through the `UnitDestructionNotifier` choke. Hit counts are
 built directly as synthetic histograms, never an int `Roll`. **333 -> 306.**
+
+**P16 one-shot extra attack (Takedown Strike / Takedown Shot) — DONE 2026-07-30** (7 refs; engine
+`8aab7c8`). OPR `eyMkgYDVrP7C` / `LPEKodkJ6xPS` verbatim: "Once per game, when it's this model's turn to
+attack in melee, it may make one attack at Quality 2+ with AP(2), Deadly(3), and Takedown" / "... when this
+model shoots, it may make one extra attack against the target at ...". **Two findings shrank the slice.**
+(a) *Every rider is already a weapon rule*: "at Quality 2+" IS `Reliable` (`QualityFloor`, folded by
+minimum, so it lifts a bad shooter and leaves a 2+ one alone), and Deadly(3) / Takedown are themselves - so
+the only new vocabulary is "make one extra attack with an AUTHORED profile", and the riders fold through the
+shared hit/save/wound stages exactly as a fired volley's do. (b) *All 7 carriers are single-model units*
+(`minModels=maxModels=1`: Shadow Hunter, Master Jester, Elite/Clan Handler, Rebel Leader, Cult Hitman,
+Surveillance Ministry Assassin), so the per-model scoping that cost Sergeant a whole slice is a non-issue -
+unit scope is exact, and the once-per-game ability fires once even for a hero merged into a squad. Census
+pinned in tests.
+
+New vocabulary: `Effect.ExtraAttack(WeaponName, Attacks, ArmorPenetration, WithRules)` ->
+`RuleOperation.InvokeExtraAttack`, plus **`EHookID.Combat_OnAttackWindow`** + `AttackWindowContext`
+(attacker, defender, combat kind) - the first `Combat_` hook, fired in both kinds because the two rules
+differ in nothing else and separate on `Condition.IsMelee`. `ResolveExtraAttackStage` builds the synthetic
+weapon (the `BeforeAttackActionStage` build, resolved at dispatch time) and runs the shared attack chain as
+real children, the StrafingStage pattern.
+
+**Three owner rulings (2026-07-30), all signed off before building.** (1) *In-pipeline in all three chains*,
+not a before-attack menu action: the stage is instantiated in ShootStage (after the weapon/target choice,
+before FireStage), in MeleeStage (after in-range determination, before the swing loop) and in
+`StrikeBackStage` - so "its turn to attack in melee" is true of a unit that was CHARGED, not only of the
+charger. This is deliberately unlike the deferred Ravage strike-back arm, which rides charge-contact. The
+target is inherited, never picked: it is already range/LoS/contact-validated, so a prompt could only offer a
+way to break the rule. (2) *Melee Takedown turned ON* - `BuildTargetListStage`'s `if (!metaData.IsMelee)`
+gate is gone, so a strike picks its victim out of the enemy unit (the assassin fantasy the rule exists for).
+Safe for existing data because **no melee weapon in any of the 48 bundled books carries Takedown** - pinned
+by `ExtraAttackShippedDataTests.NoMeleeWeaponInAnyBook_CarriesTakedown`, which fails loudly if a re-import
+ever changes that. (3) *EXTRA, not instead-of*: the source's sibling says "one extra attack" and this one
+omits the word, but a paid once-per-game upgrade adds rather than substitutes. Verified in play - the
+normal volley/swing follows the injected attack.
+
+**A C# init-order trap, worth remembering.** `ParentStage`'s constructor calls `PopulateTransitions`, so a
+constructor-assigned `_isMelee` field is still `false` there - the melee instance silently got the
+ranged-only `CoverCheckStage` and threw "Ran combat stage ... when a result was already present". The combat
+kind therefore lives in the TYPE (`ResolveMeleeExtraAttackStage` / `ResolveRangedExtraAttackStage` over an
+abstract base with `protected abstract bool IsMelee`), which an override answers correctly during base
+construction. Any future stage whose child chain varies by construction parameter has the same problem.
+
+**The lint earned its keep again**: `RuleSupplementLintTests` failed both rules with "never offered by
+GatherOffers in any synthesized context" until `RuleFireLint.ContextVariants` learned to build an
+`AttackWindowContext` - the missing capability-wiring step that produced the Breath Attack no-op. Also
+extended: `AbilityOfferingHooks` and `IsOpHandledAtAbilityHook`.
+
+Guards: engine `ExtraAttackRuleIntegrationTests` (15: the combat-kind split both ways, the emitted profile,
+the once-per-game gate, each rider against a control that removes only it, the melee Takedown confinement,
+decline-spends-nothing, the strike-back wiring driven through the real `StrikeBackStage`, and a regression
+that an ordinary swing still spreads its wounds); app `ExtraAttackShippedDataTests` (10: authored shape,
+profile, the single-model census, the no-melee-Takedown invariant, embedded copies, real-book compile).
+Mutation-checked: restoring the melee gate, removing the strike-back window, and dropping `WithRules`
+resolution each fail the right tests. Probe `Scenarios/p16-takedown-extra-attacks.json` (headless, exit 0):
+both rules fire, all three riders self-attribute in the log ("Reliable set base Quality to 2+", "Deadly(3)
+multiplied wounds by 3", "Takedown re-scoped the attack to a single target model" - the last one IN MELEE),
+the normal attack follows, and across 4 rounds each unit keeps attacking but is never offered a second
+strike. **21 -> 14 dead, 5 names.**
 
 **Heavy Impact — DONE 2026-07-23** (3 refs; engine `f739d2c`). `Effect.ChargeImpactHits` gained
 `ArmorPenetration` (default 0); `ImpactSink` folds it as a MAX across sources (the single impact pool
