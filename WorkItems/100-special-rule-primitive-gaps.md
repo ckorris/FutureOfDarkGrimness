@@ -46,7 +46,7 @@ Rules already expressible on the above but not yet in the catalog (pure data, no
 5. **Fire the dormant hooks.** **DEFERRED — not one-line seam finishes.** Each hook needs a stage to dispatch it *and* a paired consumer rule to be worth firing (e.g. `OnActivationStart` is only useful with the Versatile activation-choice ability; `OnPostShoot`/`OnPostMelee` with the Hit-&-Run optional-move resolver; `OnUnitDestroyed`/`OnRoundStart` with the marker-growth family #13). Better landed *with* the rules that consume them than as bare hook-firings. Catalogued here so they're not lost:
    - `Activation_OnActivationStart` → activation-choice self-grants: **Versatile Attack / Reach / Defense, Watchborn**.
    - `Shooting_OnPostShoot` + `Melee_OnPostMelee` → "move up to 3" after shooting/melee": **Hit & Run, Harassing, Guerrilla, Hit & Run Fighter/Shooter** (the `TriggeredMove` effect is already live; only the trigger is missing).
-   - `Shooting_OnUnitDestroyed` → "destroyed an enemy" markers: **Piercing/Precision Frenzy, Vengeance**.
+   - `Shooting_OnUnitDestroyed` → "destroyed an enemy" markers: **Piercing/Precision Frenzy**. ~~Vengeance~~ — **wrong, corrected 2026-07-30 (#197).** Vengeance is the INVERSION: it fires from the `Subject` seat when the bearer is destroyed and marks its killer, so grouping it here filed the wrong mechanic (and made it a duplicate of Precision Frenzy). Same hook, opposite seat.
    - `Lifecycle_OnWoundIgnored` → "marker on ignored wound": **Regenerative Strength**.
    - `Round_OnRoundStart` / `Round_OnRoundEnd` → start-of-round un-shake (**Battleborn, Steadfast, Honor Code**), per-round growth markers, and spell-token replenishment (feeds #033).
 

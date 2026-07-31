@@ -1,6 +1,6 @@
 # 197 — Faction rule coverage, part 2: engine primitives + the scope-mismatch bug
 
-**Status**: in progress. Corpus dead references **2,342 -> 5** of 13,870 (0.04%), 2 names.
+**Status**: in progress. Corpus dead references **2,342 -> 2** of 13,870 (0.01%), 1 name.
 **Related**: #196 (data-only half, closed 2026-07-22), #100 (primitive catalog), #102, #034, #042, #093, #095, `SpecialRulesAudit.md`
 
 > **Compacted 2026-07-28.** Shipped slices are summarized to the durable facts: the seam/vocabulary
@@ -31,12 +31,11 @@ Done = each slice ships its primitive with an integration test mirroring the nea
 
 # Open work
 
-Ref counts are live from `--rule-coverage FdgRaylib/Assets/Books` (2026-07-30). **5 dead across 2 names,
-all of them `no-definition` - the `scope-mismatch` category has been empty since Strafing (2026-07-28).**
+Ref counts are live from `--rule-coverage FdgRaylib/Assets/Books` (2026-07-30). **2 dead across 1 name,
+`no-definition` - the `scope-mismatch` category has been empty since Strafing (2026-07-28).**
 
 | Refs | Slice | What it needs | Rules |
 |-----:|-------|---------------|-------|
-| 3 | **Vengeance** | "Place N markers on the unit that destroyed this one, N = models with this rule at game start; friendly units get +N to hit vs the marker count." P13's marker-scaled magnitude now exists and covers the read side; **still needs a magnitude source for "count of models with rule X in the bearer unit at game start"** — `ValueSource.RuleCarrierCount` (P23) counts LIVING carriers now, not at game start. | Vengeance (3) |
 | 2 | **P12** attack-count producer — DEFERRED 2026-07-22 (owner ruling) | Regenerative Strength's marker GAIN is "one marker per ignored wound", but the Regeneration ignore roll is a histogram: under the probabilistic roller the ignored count is fractional, and token counts are integers — bridging them means int-locking a roll-derived value. Owner chose to keep the dice invariant pristine over a rounding approximation. The producer seam (a fold at `DetermineHitRollStage`'s attackCount, where a code comment marks the spot) was NOT built unused, per grow-on-demand; note the consumption side is ALREADY fraction-ready - `attackCount` is a `float`, so only the marker count is integral (`Token.Count` is an `int`), not the thing it would feed. **A second, unwired prerequisite, found 2026-07-30:** `EHookID.Lifecycle_OnWoundIgnored = 21` is declared and documented ("used by rules that count or react to ignored wounds, e.g. Regenerative Strength markers") but has **no context type and no firing site anywhere in the engine** - a rule authored there today would validate, lint clean and never fire (the Breath Attack shape). So even with the fractional question settled, the producer also needs a `WoundIgnoredContext` plus a fire site in `AssignWoundsStage`'s wound-ignore fold. If this reopens, the fractional options are: fractional token counts (a format change - tokens are int-counted everywhere), a separate decisive roll for the marker count (which then diverges from the wounds actually ignored), or rounding (what the owner rejected). **Read side is settled for when this reopens:** melee Yes/No per weapon volley ("add +X attacks to this weapon?"), once-gated per activation — the player picks the weapon by accepting on it (owner-ruled: prompted, not auto). | Regenerative Strength (2) |
 
 ## Deferred sub-arms of shipped rules (name resolves; mechanic partial)
@@ -1096,6 +1095,51 @@ both take the aggressive default; zero-marker attacks never prompt), folded into
 (skipped while fatigued, like granted buffs) and `DetermineSaveRollsNeededStage`. Placement is data over
 existing `TargetSelector`/`Cost` machinery; Spotter's "on a 4+ place a marker" is the new
 `grantTokenOnRoll` effect (decisive die, `InvokeGrantTokenOnRoll`, ClearTokenOnRoll's mirror).
+
+**Vengeance — DONE 2026-07-30** (3 refs, dead 5 -> 2; engine `da76a7b` + `b8f0990`). "When this unit is
+destroyed, place a marker on the unit that destroyed it; friendly units get +1 to hit against it for the
+rest of the game." Read side was free — P14b's `PersistentHitBonusMarker` verbatim. The new work was the
+PLACEMENT: **`Effect.GrantTokenToKiller`** over a new **`IHasKillerUnit`** capability, which
+`UnitDestroyedContext` now carries. The dead unit was already evaluated at `Shooting_OnUnitDestroyed` in
+the `Subject` seat (`UnitDestructionNotifier` passes it alongside the killer) — what was missing is that
+on the passive path `RuleInvocation.EffectiveTarget` is **always the bearer**, so every token-granting
+effect landed on the corpse. Deliberately a separate effect rather than a recipient flag on `GrantToken`:
+"somewhere other than the bearer" has no general answer on the passive path, it has to come from the
+firing context, and this is the only context offering a killer. Generalize when a SECOND such rule
+appears, not before. Also gave `RuleOperation.GrantTokenToUnit` a `Describe()` that names the recipient —
+the old "applied an effect" hid the one thing that matters for a cross-unit grant.
+
+*Two filed premises were wrong here, both struck with owner sign-off (2026-07-30):*
+
+1. **The blocker was misdiagnosed.** The row said Vengeance "needs a magnitude source for carriers at game
+   start". It does not — and the filed source would have been actively wrong. `ValueSource.RuleCarrierCount`
+   returns **0** at this hook (it counts LIVING carriers; every model is dead by definition), and a
+   game-start variant would return the unit's **starting model count**, because `ListCompiler` folds an
+   item's rules onto the UNIT and `RuleCarrierCount` credits every model of a unit that holds the rule —
+   a permanent **+5 to hit** on Warriors. There is no way to express "only the Honor-Bound model has it":
+   `ERuleScope` is Unit or Weapon, with no model level. The count is `ValueSource.Literal(1)`, exact
+   because all three carriers buy it through an `Affects.One` section (one item per unit, so one model).
+   `VengeanceShippedDataTests.EveryCarrier_BuysItThroughAnAffectsOneSection` pins that premise, and
+   `VengeanceRuleIntegrationTests.RuleCarrierCount_AtThisHook_IsZero...` pins why the source was rejected,
+   so neither gets re-filed.
+2. **#100 filed the wrong mechanic.** Its hook census (2026-06-22) grouped Vengeance with Piercing/Precision
+   Frenzy under "`Shooting_OnUnitDestroyed` -> destroyed-an-enemy markers", i.e. the bearer gains markers
+   when IT kills. That is the `Actor` seat — the exact inversion, and it would have made Vengeance a
+   duplicate of Precision Frenzy. #192's later, detailed row had it right. Owner-signed on the detailed
+   reading.
+
+*Standing lesson 4 twice over, plus a new wrinkle: **the corpus has no definition text for Vengeance at
+all**.* Not in the 47 books, not in the supplement, not in git history — `git log --all -S` finds the
+description only in the ledger row that filed it. Unlike "Speed Feat Buff" the NAME is real (3 live refs),
+so it was a genuine gap; only the mechanic was unsourced, which is why both premises could sit on record
+for weeks without either being checked against anything. When a row's mechanic has no citable source,
+say so in the row.
+
+*Verified in play, not just by lint* (`Scenarios/vengeance-marks-the-killer.json`): same shooters, same
+target, one run — the enemy needs **6+** while the Honor-Bound unit lives, the Executioners kill it
+("Honor-Bound Warriors's Vengeance placed 1x Targeted (hit) on Executioners"), and the next two enemy
+attacks need **5+**. The same scenario carries the control arm: a Plain Warriors unit with no Vengeance,
+killed later in the same run, marks nothing.
 
 *P13 + P14b were built together per this file's own sequencing warning — one coherent marker mechanic,
 not three incompatible ones. **492 -> 423** (-69 of the cluster's 71; P12's 2 deferred).*

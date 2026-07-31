@@ -7545,5 +7545,22 @@
     "engineArgumentCount": 0,
     "valence": "Positive",
     "description": "When this model is activated, if it is able to shoot/charge an enemy unit, it must immediately attack the closest valid target and gets +1 to hit rolls for that attack."
+  },
+  {
+    "name": "Vengeance",
+    "passive": [
+      {
+        "hookID": "Shooting_OnUnitDestroyed",
+        "condition": { "kind": "always" },
+        "effect": { "kind": "grantTokenToKiller", "tType": { "id": "PersistentHitBonusMarker" }, "count": { "kind": "literal", "value": 1 }, "clear": { "kind": "manualOnly" } },
+        "lifetime": "UntilEndOfGame",
+        "seat": "Subject"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "When this unit is destroyed, place a marker on the unit that destroyed it. Friendly units get +1 to hit rolls against that unit for the rest of the game."
   }
 ]
