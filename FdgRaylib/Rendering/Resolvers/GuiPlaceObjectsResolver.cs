@@ -769,8 +769,10 @@ public class GuiPlaceObjectsResolver<T>
             return;
         }
 
-        // Back: abandon the whole placement. Only offered where the player chose the action and can still
-        // decline it (Disembark) - deployment, Scout, Ambush arrival and spillout are mandatory.
+        // Back: abandon the whole placement. Only offered where the player still has somewhere to return
+        // to (Disembark, Teleport/reposition, and #305 deployment) - Scout, Ambush arrival and spillout
+        // are mandatory. What backing out MEANS differs per caller, so the request words it (#305: the
+        // hard-coded "stays aboard its transport" became a lie the moment deployment allowed cancelling).
         if (request.AllowCancel)
         {
             // #248: Backspace = back here too (no waypoint-undo exists yet in placement - #161 C).
@@ -781,8 +783,8 @@ public class GuiPlaceObjectsResolver<T>
                 ImGui.End();
                 return;
             }
-            if (ImGui.IsItemHovered())
-                ImGui.SetTooltip("Cancel and pick a different action. The unit stays aboard its transport.");
+            if (ImGui.IsItemHovered() && !string.IsNullOrEmpty(request.CancelHint))
+                ImGui.SetTooltip(request.CancelHint);
         }
 
         // Secondary row: Undo + Auto-place.
