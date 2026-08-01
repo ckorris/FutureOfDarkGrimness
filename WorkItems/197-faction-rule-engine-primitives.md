@@ -36,8 +36,10 @@ Done = each slice ships its primitive with an integration test mirroring the nea
 0 scope-mismatch across 0 names)` over 13,870 references (2026-07-31). The `scope-mismatch` category has
 been empty since Strafing (2026-07-28); `no-definition` emptied with P12 below.
 
-Two items found during this work are **not** #197 work and need their own numbers — they are recorded in
-"Tooling / hygiene found here, not fixed" and must be filed rather than archived with this item.
+Two items found during this work were **not** #197 work and were filed separately on close:
+**[#305](305-cli-army-prompt-eof-loop.md)** (CLI army-file prompt spins at EOF) and
+**[#306](306-weapon-chooser-name-keying.md)** (weapon choosers fault on duplicate weapon names). See
+"Tooling / hygiene found here, not fixed" for the findings as recorded at the time.
 
 ## Deferred sub-arms of shipped rules (name resolves; mechanic partial)
 
@@ -72,8 +74,13 @@ kept rather than deleted: it is the record of what was deferred and how each was
   `CheckPassiveEntry` and only ends that entry's search through its own context variants, which is exactly
   what it claims to test. Hazardous's second entry is linted. Standing lesson 4 again, this time against a
   premise this ledger itself filed.
+**Both were filed as their own items on 2026-07-31 when #197 closed** — they are not #197 work and must
+not be archived with it. Kept here because this is where they were found and why.
+
 - **The CLI army-file prompt loops forever on EOF** when the file fails to load (a stale probe army
   produced a 5.8 GB log before timeout). It should abort at EOF like every other resolver.
+  **-> [#305](305-cli-army-prompt-eof-loop.md)** (`ArmyLoader.LoadFromFile` conflates a null `ReadLine`
+  with an empty line; `PromptForArmy` one method up already gets it right).
 - **The ranged-attack chooser assumes weapon names are unique per unit** (`BuildWeaponOptions` keys its
   pool, LoS map, per-target stats and range cache by NAME; #209's determinism ordering leans on it) and
   FAULTS the state machine on a duplicate. Sergeant's slice sidesteps it by renaming marked copies, and
@@ -81,6 +88,7 @@ kept rather than deleted: it is the record of what was deferred and how each was
   Marksman Carbine with: Precise" sites) is safe in practice - all are one-carbine heroes, whole-entry
   attach, no split. Latent until a book update ships a multi-copy partial weapon upgrade; the honest fix
   is profile-keying the chooser (and auditing its melee sibling).
+  **-> [#306](306-weapon-chooser-name-keying.md)**.
 
 ---
 
@@ -1554,4 +1562,5 @@ Deliberately NOT done, and why:
   emits it. Left as-is rather than removed, but noted here so it is not mistaken for live vocabulary.
 
 Carried out of this item as separate work (see "Tooling / hygiene found here, not fixed"): the CLI
-army-file prompt's EOF loop, and the ranged chooser's weapon-name-uniqueness fault.
+army-file prompt's EOF loop (**#305**) and the ranged chooser's weapon-name-uniqueness fault (**#306**),
+both filed 2026-07-31.

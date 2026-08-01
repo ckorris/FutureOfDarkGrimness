@@ -36,6 +36,7 @@ When closing an item: write the Outcome in its detail file, tick the line, and m
 ## Shooting & cover
 
 - [~] 201 — Shooting *out of* cover grants the defender cover: fixed 2026-07-21 via lobby-toggled proximity house rules (default on: 2" exit w/ both-hugging amendment + 6" shared cover), previews kept truthful; implemented + tested on `201-cover-proximity`, awaiting GUI hand-verify. ([WorkItems/201](WorkItems/201-cover-attacker-side.md))
+- [ ] 306 — Both weapon choosers key their pools/LoS maps/stat caches by `Weapon.Name` and `Dictionary.Add`-fault the state machine on a duplicate; a same-name split weapon (a multi-copy partial upgrade) would crash mid-activation. Latent — no corpus site splits today; Sergeant sidesteps it by renaming. Fix is profile-keying, preserving #209's deterministic order. ([WorkItems/306](WorkItems/306-weapon-chooser-name-keying.md))
 - [~] 276 — Attack animation truthfulness: occluded/out-of-range carriers no longer roll dice (engine bug) nor draw beams; split Takedown shots fire one beam each, rotating snipers. Implemented + tested; awaiting GUI hand-verify. ([WorkItems/276](WorkItems/276-attack-animation-truthfulness.md))
 
 ## Model bases & geometry
@@ -111,6 +112,7 @@ detection, host-IP display, DNS host entry. See `NetworkingHandoff-2026-07-08.md
 
 ## Client / renderer
 
+- [ ] 305 — `ArmyLoader.LoadFromFile` treats EOF as an empty line and retries forever: a piped headless run whose army fails to load spins until killed (5.8 GB of log in one #197 probe). `PromptForArmy` one method up already handles `ReadLine() == null` correctly. ([WorkItems/305](WorkItems/305-cli-army-prompt-eof-loop.md))
 - [~] 162 — Tactical overlay: opportunity fields + per-model instruments (instruments call real rules, never the field texture). P0 scaffolding done; P1-P7 remain. Threat frontiers were removed by #247 (the discs still feed movement snap). Design doc: `docs/tactical-overlay-plan.md`. ([WorkItems/162](WorkItems/162-tactical-overlay.md))
 - [ ] 161 — Resolver UI consistency pass: stat/highlight parity, right-click undo on deploy, shared canvas-selector base (also absorbs the `GuiModelSelectionResolver` alive-filter gap), dialog chrome. Findings + canonical click scheme in the detail file. ([WorkItems/161](WorkItems/161-resolver-consistency.md))
 - [~] 056 — Presentation beat stream: architecture shipped and live on master; remaining animation polish + a hands-on pass. ([WorkItems/056](WorkItems/056-presentation-beat-stream.md))
