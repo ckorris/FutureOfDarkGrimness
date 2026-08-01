@@ -132,6 +132,30 @@ public class MobileArtilleryShippedDataTests
             "'and shoots' - a melee swing, even a long charge, is excluded.");
     }
 
+    // #305: the "Moved" chip is hidden on every unit EXCEPT one carrying a rule that reads the token.
+    // Mobile Artillery is that rule, so this is the end-to-end check that the hiding didn't take the one
+    // unit that needs the chip down with it - against shipped book data, not a hand-authored stand-in.
+    [Test]
+    public void ShippedMobileArtillery_IsSeenAsAReaderOfTheMovedToken()
+    {
+        var store = GameDataStore.GameDataStoreBuilder.GetDefault();
+        var model = new ModelData(baseRadiusInches: 0.5f, weapons: new List<Weapon>(),
+            initialPosition: new Position(), gameDataStore: store);
+        var unit = new UnitData(new PlayerID(Guid.NewGuid()), "Artillery", quality: 4, defense: 4,
+            modelBindings: new List<DataBinding<ModelData>>
+            {
+                store.GetDataBinding<ModelData>(store.Create(model)),
+            });
+        unit.AttachRuleDefinition(new ResolvedRule(RuleName,
+            Supplement().Single(r => r.Name == RuleName), Array.Empty<RuleArgument>()));
+
+        Assert.That(TokenReadership.IsReadByAnyRule(unit, TokenType.MovedThisRound), Is.True,
+            "the artillery piece must keep its Moved chip - it explains why its -2 switched off.");
+        Assert.That(TokenDisplay.ResolveProminence(
+                TokenDefinitionCatalog.Create(TokenType.MovedThisRound), unit),
+            Is.EqualTo(ETokenProminence.Normal));
+    }
+
     private sealed class Harness
     {
         private readonly GameDataStore _store = GameDataStore.GameDataStoreBuilder.GetDefault();

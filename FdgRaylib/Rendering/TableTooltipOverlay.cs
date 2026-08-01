@@ -208,7 +208,7 @@ public class TableTooltipOverlay
             ImGui.Unindent();
         }
 
-        var tokenInfos = TokenChipRenderer.ResolveVisible(unit.Tokens, _ruleResolver, false, ViewSettings.ShowAllTokens);
+        var tokenInfos = TokenChipRenderer.ResolveVisible(unit.Tokens, _ruleResolver, false, ViewSettings.ShowAllTokens, unit);
         if (tokenInfos.Count > 0)
         {
             ImGui.Spacing();
@@ -328,7 +328,7 @@ public class TableTooltipOverlay
                 count++;
 
                 // Model-scoped tokens sit just above each model (usually none).
-                var modelChips = TokenChipRenderer.ResolveVisible(model.Tokens, _ruleResolver, true, ViewSettings.ShowAllTokens);
+                var modelChips = TokenChipRenderer.ResolveVisible(model.Tokens, _ruleResolver, true, ViewSettings.ShowAllTokens, unit);
                 if (modelChips.Count > 0)
                     TokenChipRenderer.DrawChipRow(drawList, modelChips, mx,
                         my - mr - 3f - TokenChipRenderer.RowHeight(modelChips));
@@ -341,7 +341,7 @@ public class TableTooltipOverlay
             float modelsTop = cy - minRadiusPx;
 
             // Unit-scoped tokens sit just above the unit, under its name.
-            var unitChips = TokenChipRenderer.ResolveVisible(unit.Tokens, _ruleResolver, false, ViewSettings.ShowAllTokens);
+            var unitChips = TokenChipRenderer.ResolveVisible(unit.Tokens, _ruleResolver, false, ViewSettings.ShowAllTokens, unit);
             float chipH = TokenChipRenderer.RowHeight(unitChips);
             float chipTopY = modelsTop - 3f - chipH;
             if (unitChips.Count > 0)

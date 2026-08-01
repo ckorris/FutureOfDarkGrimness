@@ -48,14 +48,18 @@ public static class TokenChipRenderer
     /// The visible tokens on a container, resolved to display info and sorted for a stable on-canvas order
     /// (first-class first, then negative → neutral → positive, then by id hash so position doesn't jump).
     /// Invisible tokens are dropped unless <paramref name="showInvisible"/> (the dev toggle).
+    /// <para><paramref name="bearer"/> is the unit the container belongs to (the unit itself, or the owner
+    /// of the model for a model-scoped container). The engine needs it to hide a bookkeeping token no rule
+    /// on that unit reads — see <c>TokenDefinition.VisibleOnlyWhenRead</c>. Pass it whenever it is known;
+    /// omitting it just leaves such tokens visible.</para>
     /// </summary>
     public static List<TokenDisplayInfo> ResolveVisible(ITokenContainer tokens, IRuleResolver? rules,
-        bool isModelScoped, bool showInvisible)
+        bool isModelScoped, bool showInvisible, IUnit? bearer = null)
     {
         var list = new List<TokenDisplayInfo>();
         foreach (Token token in tokens.GetAllTokens())
         {
-            TokenDisplayInfo info = TokenDisplay.Resolve(token, rules, isModelScoped);
+            TokenDisplayInfo info = TokenDisplay.Resolve(token, rules, isModelScoped, bearer);
             if (info.Prominence == ETokenProminence.Invisible && !showInvisible) continue;
             list.Add(info);
         }
