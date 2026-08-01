@@ -1,6 +1,7 @@
 # 197 — Faction rule coverage, part 2: engine primitives + the scope-mismatch bug
 
-**Status**: in progress. Corpus dead references **2,342 -> 2** of 13,870 (0.01%), 1 name.
+**Status**: COMPLETE (2026-07-31). Corpus dead references **2,342 -> 0** of 13,870. Every rule name
+the corpus references now resolves to a definition that fires.
 **Related**: #196 (data-only half, closed 2026-07-22), #100 (primitive catalog), #102, #034, #042, #093, #095, `SpecialRulesAudit.md`
 
 > **Compacted 2026-07-28.** Shipped slices are summarized to the durable facts: the seam/vocabulary
@@ -31,12 +32,12 @@ Done = each slice ships its primitive with an integration test mirroring the nea
 
 # Open work
 
-Ref counts are live from `--rule-coverage FdgRaylib/Assets/Books` (2026-07-30). **2 dead across 1 name,
-`no-definition` - the `scope-mismatch` category has been empty since Strafing (2026-07-28).**
+**None.** `--rule-coverage FdgRaylib/Assets/Books` reports `Dead: 0 (0 no-definition across 0 names,
+0 scope-mismatch across 0 names)` over 13,870 references (2026-07-31). The `scope-mismatch` category has
+been empty since Strafing (2026-07-28); `no-definition` emptied with P12 below.
 
-| Refs | Slice | What it needs | Rules |
-|-----:|-------|---------------|-------|
-| 2 | **P12** attack-count producer — DEFERRED 2026-07-22 (owner ruling) | Regenerative Strength's marker GAIN is "one marker per ignored wound", but the Regeneration ignore roll is a histogram: under the probabilistic roller the ignored count is fractional, and token counts are integers — bridging them means int-locking a roll-derived value. Owner chose to keep the dice invariant pristine over a rounding approximation. The producer seam (a fold at `DetermineHitRollStage`'s attackCount, where a code comment marks the spot) was NOT built unused, per grow-on-demand; note the consumption side is ALREADY fraction-ready - `attackCount` is a `float`, so only the marker count is integral (`Token.Count` is an `int`), not the thing it would feed. **A second, unwired prerequisite, found 2026-07-30:** `EHookID.Lifecycle_OnWoundIgnored = 21` is declared and documented ("used by rules that count or react to ignored wounds, e.g. Regenerative Strength markers") but has **no context type and no firing site anywhere in the engine** - a rule authored there today would validate, lint clean and never fire (the Breath Attack shape). So even with the fractional question settled, the producer also needs a `WoundIgnoredContext` plus a fire site in `AssignWoundsStage`'s wound-ignore fold. If this reopens, the fractional options are: fractional token counts (a format change - tokens are int-counted everywhere), a separate decisive roll for the marker count (which then diverges from the wounds actually ignored), or rounding (what the owner rejected). **Read side is settled for when this reopens:** melee Yes/No per weapon volley ("add +X attacks to this weapon?"), once-gated per activation — the player picks the weapon by accepting on it (owner-ruled: prompted, not auto). | Regenerative Strength (2) |
+Two items found during this work are **not** #197 work and need their own numbers — they are recorded in
+"Tooling / hygiene found here, not fixed" and must be filed rather than archived with this item.
 
 ## Deferred sub-arms of shipped rules (name resolves; mechanic partial)
 
@@ -1076,6 +1077,81 @@ family's gap rather than this slice's. **114 -> 102.**
 
 ## Markers & tokens
 
+**P12 Regenerative Strength — DONE 2026-07-31** (2 refs, **2 -> 0 dead: the corpus is now fully covered**).
+OPR verbatim, identical in both books: "Place one marker on this model when it ignores a wound. When in
+melee, pick one of its weapons to get +X attacks, where X is the number of markers on it."
+
+**The 2026-07-22 deferral was reopened because one of its three options turned out not to exist.** The
+filed choice was: fractional token counts, a separate decisive roll for the marker count, or rounding. The
+middle one is not available: `ProbabilisticDiceRoller.Roll` is `rollCount / sideCount` per face, and
+`totalWoundsDealt` arriving at the ignore fold is ALREADY fractional (it comes from `Below(saveNeeded)` on
+a fractional pool), so "roll one decisive die per ignored wound" needs an integer die count and must round
+the wound total first. It collapses into option 3. The real fork was therefore binary — fractional markers,
+or rounding — and the owner chose fractional (2026-07-31), reversing the deferral.
+
+**Where the fraction lives (owner-signed):** a new `TokenPayload.Magnitude(float)`, NOT `Token.Count`. A
+float `Count` was costed and rejected: it would put non-integers in front of spell-token pools,
+Limited-spent flags and every cost gate, all of which must stay integral, and it moves ~99 call sites plus
+the save format. Confining the fraction to a payload means exactly one reader
+(`ITokenContainer.GetTokenMagnitude`) ever sees it. Magnitude tokens are **the one place payload equality
+is not the stacking key** — `TokenContainer.AddToken` special-cases them and SUMS, since two 0.33 markers
+are one 0.67 marker, not two tokens.
+
+**Both hooks it needed were declared-but-unwired** — the ledger had flagged only one.
+`Lifecycle_OnWoundIgnored = 21` is now lit: new `IHasIgnoredWoundCount` capability (float, deliberately —
+it is the only roll-derived value an effect can read), new `WoundIgnoredContext`, new
+`Effect.GrantIgnoredWoundMarker` (a dedicated effect because `ValueSource.Resolve` returns `int` and
+widening it would put a rounding seam in front of every value-driven effect), and a fire site in
+`AssignWoundsStage` right after the ignore fold, guarded on `ignored > 0f` so the capability can promise a
+positive count. `RuleFireLint` gained a context variant and a consumption entry — token ops ONLY, not
+`IsTokenOrExecutable`: the fire site is mid-wound-resolution, before allocation, where running an
+executable or prompting would reorder the attack.
+
+**`Shooting_OnPreHitRollCount = 71` is deliberately LEFT dormant.** The read side is stage code
+(`RegenerativeStrengthAttacks`, beside `TargetMarkerSpend` at the `attackCount` seam), because "pick ONE of
+its weapons" needs a prompt and a per-melee gate and a declarative effect at that hook would have to boost
+every melee weapon the unit swings — a different, stronger rule. Wiring the generic hook would mean
+authoring the wrong rule at it. The stale "no such rule exists yet — the producer side is deferred" comment
+at that seam is gone.
+
+**Gate scope corrected from the filed ruling** (owner-signed 2026-07-31): per MELEE, not per activation.
+`TokenClearTrigger.ActivationEnd` looked equivalent but is not — the end-of-activation sweep only ever
+visits the ACTIVATED unit, so a gate stamped during a strike-back (which happens inside the enemy's
+activation) would survive to suppress the bearer's own next melee. Uses
+`CustomHook(Melee_OnPostMelee)`, and **`PostMeleeStage` gained the sweep that hook never had** — both
+combatants, since either can set a gate. Every terminal melee path reaches that stage; only
+`BackToChooseAction` bypasses it, and no swing happened there.
+
+**Corpus simplification, recorded not silent:** the marker is granted to the UNIT, not the model. Both
+carriers — Engine of Suffering (Dark Elf Raiders, Tough(6), Regeneration, "Pain Fueled") and Psycho-Rex
+(Alien Hives, Tough(12), Resistance, "Psy-Frenzy") — are min=max=1 model units, and the Forge only offers
+multi-model units as hero-join hosts, so neither can ever hold a second model. Unit and model are the same
+statement here. This matters because the wound-ignore fold genuinely CANNOT answer model attribution: it
+ignores wounds from a unit-wide pool before allocation decides who takes them.
+`RegenerativeStrengthShippedDataTests` pins min/max models at 1 so a book update makes the question loud
+again, and pins that both carriers own a wound-ignore rule — without one the rule is structurally live and
+practically inert.
+
+Guards: `RegenerativeStrengthRuleIntegrationTests` (15 — producer through the real `AssignWoundsStage`,
+fractional accrual, merge, melee-only, one-weapon-per-melee, post-melee re-entitlement, striker-back
+clearing, the token layer, the effect's throw), `RegenerativeStrengthShippedDataTests` (6 — authored shape,
+single-model census, wound-ignore-source census, embedded copies, real-book compile),
+`TokenRoundTripTests.MagnitudeTokens_SurviveTheRoundTrip_WithTheirFraction`. **The full suite caught what
+the filtered one missed**: `SaveTypeRegistry` needs a stable ID for the new payload, or saves break on
+rename — added as `tokenPayload.magnitude`.
+
+**Mutation-tested (7/7 caught), and it earned its keep:** the accumulation test originally used two
+IDENTICAL fractions, which the general payload-equality branch merges by coincidence (same payload ->
+Count 2, and `GetTokenMagnitude` multiplies by Count) — so it passed with the magnitude branch deleted and
+pinned nothing. Now uses 0.333 + 1.0. Also worth recording: the mutation script's `mv` restore left an
+mtime older than the built DLL, so MSBuild skipped the rebuild and the "baseline" run tested a stale
+mutated assembly — a red herring that looked like a real failure. Restores must `touch`.
+
+Probe (`Scenarios/regenerative-strength.json`): probabilistic run banks 0.15 of a marker, offers once,
+rolls 3.148 attacks off a printed A3 weapon, then 0.3 / 3.296 in the next melee; the same scenario under
+the realistic roller banks 1, offers +1, rolls 4. `GrantTokenToUnit.Describe` now reports a magnitude
+token's payload rather than its `Count`, which otherwise logged "placed 1x" beside "banks 0.15".
+
 **P13 marker-scaled magnitude — DONE 2026-07-22** (41 refs; engine `2efc06e`). Shipped **without touching
 `ValueSource`** (its context-free `Resolve` stays pure): new effects `tokenScaledRollModifier` /
 `tokenScaledReduceArmorPenetration` read the bearer's token count at Apply time (steps = count /
@@ -1450,4 +1526,32 @@ work table. Two clusters are worth grouping:
 
 ## Outcome
 
-_(written when the item closes)_
+**Closed 2026-07-31.** Corpus dead rule references went **2,342 -> 0** of 13,870. Every rule name any
+shipped book references now resolves to a definition that actually fires, and the `scope-mismatch`
+category is empty. Verified by `--rule-coverage FdgRaylib/Assets/Books` (`Dead: 0`), `--validate-rules`
+(251 definitions, no problems), engine 2,520/2,520, app 851/851, and a headless smoke exiting 0.
+
+What the item actually produced, beyond the coverage number:
+
+- **A vocabulary.** Roughly two dozen new effects, conditions, capabilities and contexts, each with a
+  `RuleJson` registration, `HookContextCatalog` wiring and `RuleFireLint` support. The capability seam
+  (`ICapability` + `HookContextCatalog`) is the most reused thing here.
+- **Seven hooks lit that were declared but dead** — the "Breath Attack shape". The last two were P12's
+  `Lifecycle_OnWoundIgnored` and, still deliberately dormant, `Shooting_OnPreHitRollCount`.
+- **The dice invariant held.** No slice int-locked a roll-derived value. P12 was the hardest case and was
+  deferred for nine days rather than rounded; the fix (a fractional token payload) keeps probabilistic and
+  realistic modes agreeing in expectation.
+- **Six standing lessons**, all earned by something shipping broken first. The most expensive is #4: filed
+  premises are wrong often enough that checking the source text and the engine before designing is now the
+  default. Two rows in this very ledger were struck as never having existed or as inverted.
+
+Deliberately NOT done, and why:
+
+- **Model-scoped Regenerative Strength markers** — no corpus carrier can hold two models, and the
+  wound-ignore fold cannot attribute a pooled ignore to a model. Pinned by census tests.
+- **`Shooting_OnPreHitRollCount`** — no rule can be authored at it correctly (see P12).
+- **`RuleOperation.GrantTokenToModel`** — still constructed by nothing; the applier handles it, no effect
+  emits it. Left as-is rather than removed, but noted here so it is not mistaken for live vocabulary.
+
+Carried out of this item as separate work (see "Tooling / hygiene found here, not fixed"): the CLI
+army-file prompt's EOF loop, and the ranged chooser's weapon-name-uniqueness fault.

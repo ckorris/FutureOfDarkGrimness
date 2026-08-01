@@ -7562,5 +7562,22 @@
     "engineArgumentCount": 0,
     "valence": "Positive",
     "description": "When this unit is destroyed, place a marker on the unit that destroyed it. Friendly units get +1 to hit rolls against that unit for the rest of the game."
+  },
+  {
+    "name": "Regenerative Strength",
+    "passive": [
+      {
+        "hookID": "Lifecycle_OnWoundIgnored",
+        "condition": { "kind": "always" },
+        "effect": { "kind": "grantIgnoredWoundMarker", "tType": { "id": "RegenerativeStrengthMarker" }, "clear": { "kind": "manualOnly" } },
+        "lifetime": "UntilEndOfGame",
+        "seat": "Subject"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "Place one marker on this model when it ignores a wound. When in melee, pick one of its weapons to get +X attacks, where X is the number of markers on it."
   }
 ]

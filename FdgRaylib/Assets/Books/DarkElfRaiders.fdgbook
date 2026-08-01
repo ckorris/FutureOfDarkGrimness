@@ -7068,6 +7068,33 @@
       "description": "Gains a marker when it fully destroys an enemy unit (max 2); each marker adds AP(\u002B1) to its attacks for the rest of the game."
     },
     {
+      "name": "Regenerative Strength",
+      "passive": [
+        {
+          "hookID": "Lifecycle_OnWoundIgnored",
+          "condition": {
+            "kind": "always"
+          },
+          "effect": {
+            "kind": "grantIgnoredWoundMarker",
+            "tType": {
+              "id": "RegenerativeStrengthMarker"
+            },
+            "clear": {
+              "kind": "manualOnly"
+            }
+          },
+          "lifetime": "UntilEndOfGame",
+          "seat": "Subject"
+        }
+      ],
+      "activated": [],
+      "scope": "Unit",
+      "engineArgumentCount": 0,
+      "valence": "Positive",
+      "description": "Place one marker on this model when it ignores a wound. When in melee, pick one of its weapons to get \u002BX attacks, where X is the number of markers on it."
+    },
+    {
       "name": "Precision Fighting",
       "passive": [
         {
