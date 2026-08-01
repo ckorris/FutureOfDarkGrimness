@@ -113,7 +113,6 @@ detection, host-IP display, DNS host entry. See `NetworkingHandoff-2026-07-08.md
 
 ## Client / renderer
 
-- [ ] 305 — `ArmyLoader.LoadFromFile` treats EOF as an empty line and retries forever: a piped headless run whose army fails to load spins until killed (5.8 GB of log in one #197 probe). `PromptForArmy` one method up already handles `ReadLine() == null` correctly. ([WorkItems/305](WorkItems/305-cli-army-prompt-eof-loop.md))
 - [~] 162 — Tactical overlay: opportunity fields + per-model instruments (instruments call real rules, never the field texture). P0 scaffolding done; P1-P7 remain. Threat frontiers were removed by #247 (the discs still feed movement snap). Design doc: `docs/tactical-overlay-plan.md`. ([WorkItems/162](WorkItems/162-tactical-overlay.md))
 - [ ] 161 — Resolver UI consistency pass: stat/highlight parity, right-click undo on deploy, shared canvas-selector base (also absorbs the `GuiModelSelectionResolver` alive-filter gap), dialog chrome. Findings + canonical click scheme in the detail file. ([WorkItems/161](WorkItems/161-resolver-consistency.md))
 - [~] 056 — Presentation beat stream: architecture shipped and live on master; remaining animation polish + a hands-on pass. ([WorkItems/056](WorkItems/056-presentation-beat-stream.md))

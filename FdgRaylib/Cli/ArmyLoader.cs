@@ -21,20 +21,37 @@ public static class ArmyLoader
                 Console.WriteLine("(EOF - using built-in test army)");
                 return MakeTestArmy(playerLabel);
             }
-            if (input == "1") return LoadFromFile();
+            if (input == "1")
+            {
+                // #305: null means the path prompt hit EOF, not that a file failed to load. The
+                // "what do we do when there's no army" decision lives here, next to the other fallback.
+                ArmyListFile? loaded = LoadFromFile();
+                if (loaded != null) return loaded;
+                Console.WriteLine("(EOF - using built-in test army)");
+                return MakeTestArmy(playerLabel);
+            }
             if (input == "2") return MakeTestArmy(playerLabel);
             Console.WriteLine("Enter 1 or 2.");
         }
     }
 
-    private static ArmyListFile LoadFromFile()
+    /// <summary>
+    /// Prompts for a .fdgarmy path until one loads. Returns null at EOF - the caller supplies the
+    /// fallback army. #305: this used to fold EOF into "empty line" via IsNullOrEmpty and `continue`,
+    /// but Console.ReadLine() returns null forever once stdin closes, so a piped headless run whose
+    /// army failed to load spun printing "No path entered." until the harness killed it (5.8 GB of log
+    /// in one #197 probe). Every CLI resolver already treats null as terminal; only this missed it.
+    /// </summary>
+    private static ArmyListFile? LoadFromFile()
     {
         while (true)
         {
             Console.Write("Path to .fdgarmy file: ");
             string? path = Console.ReadLine()?.Trim().Trim('"');
 
-            if (string.IsNullOrEmpty(path))
+            if (path == null) return null;
+
+            if (path.Length == 0)
             {
                 Console.WriteLine("No path entered.");
                 continue;
