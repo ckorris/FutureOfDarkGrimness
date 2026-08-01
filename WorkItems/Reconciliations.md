@@ -6,6 +6,22 @@ from origin/master. Standing precedent: numbers are never reused, and when two p
 claim the same number, the *unmerged local* item yields to the *merged* one and takes a fresh number.
 A per-clone pre-push hook blocks duplicate numbers across the index and the archive.
 
+> **2026-08-01 — reconciliation 33 (RESOLVED).** Same collision class as 29/31/32, caught by the
+> pre-push fetch. This session had filed the 2026-07-31 playthrough findings (Blast per-hit cap,
+> "Moved" token visibility, shooting/deployment Back, sticky shoot target) as **305**; while the work
+> was in progress origin/master landed **305 = CLI army-prompt EOF loop**, **306 = weapon-chooser
+> name keying** and **307 = Forge failed-load saves default** (all merged, `4f8d6af` / `dde2955`).
+> Per merged-wins precedent the unmerged local item yields: **playthrough findings 305 -> 308**
+> (`WorkItems/308-playthrough-findings-2026-07-31.md`). Renumbered in the detail file + title, the
+> index line, and all 19 engine/app sources and tests carrying `#305` comments (Blast in
+> `RollToHitStage`/`CombatMath`, the token-visibility trio, `ChooseRangedAttackRequest`/Stage and both
+> ranged resolvers, `PlaceObjectsRequest`/`DeployUnitStage`/`DeployAllUnitsStage`/
+> `ChooseUnitToDeployStage`/`PlacementCommitGuard` and the placement resolver). **Left as-is:** the
+> pre-renumber COMMIT MESSAGES on both sides of the submodule boundary, which still say `#305` - the
+> superproject commits pin exact submodule hashes, so rewriting engine messages would orphan the
+> pointers (reconciliation 32's reasoning, and the messages-predate-the-renumber precedent of 2/3).
+> Upstream's #305/#306/#307 keep their numbers and their `WorkItems/197-*.md` references untouched.
+
 > **2026-07-28 — reconciliation 32 (RESOLVED).** Same collision class as 29/31, caught by the
 > pre-push fetch. This session had filed the "Alternating: Points" terrain placement mode as **299**;
 > origin/master had meanwhile landed **299 = casualty beats for batched wounds** (merged, with `#299`

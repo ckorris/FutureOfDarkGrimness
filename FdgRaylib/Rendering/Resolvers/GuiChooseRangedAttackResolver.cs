@@ -98,7 +98,7 @@ public class GuiChooseRangedAttackResolver
         // Auto-select the first selectable weapon on a new request.
         // #237: when that weapon has exactly one fireable target, pre-select it too - the player only
         // has to press Fire. Never auto-fires: the commit stays a deliberate click/Enter.
-        // #305: a shoot action's later weapons start aimed where the last one fired, when that target is
+        // #308: a shoot action's later weapons start aimed where the last one fired, when that target is
         // still fireable - it beats the sole-target rule, which is the weaker guess of the two.
         if (!ReferenceEquals(request, _lastRequest))
         {
@@ -393,7 +393,7 @@ public class GuiChooseRangedAttackResolver
         // shooting, you're committed to finishing the shoot stage. De-emphasized (secondary to Fire).
         float footW   = ImGui.GetContentRegionAvail().X;
         float spacing = ImGui.GetStyle().ItemSpacing.X;
-        // #305: the ENGINE decides whether backing out is still legal (nothing fired yet this shoot
+        // #308: the ENGINE decides whether backing out is still legal (nothing fired yet this shoot
         // action). The resolver used to keep its own counter and got it wrong on repeat activations.
         bool  showBack = request.AllowCancel;
         if (showBack)
@@ -602,7 +602,7 @@ public class GuiChooseRangedAttackResolver
     }
 
     /// <summary>
-    /// #305: which target a weapon should start with selected. The unit the PREVIOUS weapon of this shoot
+    /// #308: which target a weapon should start with selected. The unit the PREVIOUS weapon of this shoot
     /// action fired at wins whenever this weapon can still legally fire at it — a volley is normally aimed
     /// at one unit, and re-picking it for every weapon was pure clicking. Otherwise fall back to #237's
     /// sole-fireable-target rule, and to "nothing selected" when even that is ambiguous.

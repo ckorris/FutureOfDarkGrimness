@@ -1,4 +1,4 @@
-# 305 — Playthrough findings, 2026-07-31
+# 308 — Playthrough findings, 2026-07-31
 
 **Status**: in-progress
 **Related**: #197 (Mobile Artillery / MovedThisRound), #151 (token display), #248 (resolver Back), #237 (shoot pre-select)

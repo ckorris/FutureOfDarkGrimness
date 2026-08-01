@@ -132,7 +132,7 @@ public class MobileArtilleryShippedDataTests
             "'and shoots' - a melee swing, even a long charge, is excluded.");
     }
 
-    // #305: the "Moved" chip is hidden on every unit EXCEPT one carrying a rule that reads the token.
+    // #308: the "Moved" chip is hidden on every unit EXCEPT one carrying a rule that reads the token.
     // Mobile Artillery is that rule, so this is the end-to-end check that the hiding didn't take the one
     // unit that needs the chip down with it - against shipped book data, not a hand-authored stand-in.
     [Test]

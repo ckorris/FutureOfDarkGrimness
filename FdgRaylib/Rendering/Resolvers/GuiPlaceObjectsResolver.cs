@@ -770,8 +770,8 @@ public class GuiPlaceObjectsResolver<T>
         }
 
         // Back: abandon the whole placement. Only offered where the player still has somewhere to return
-        // to (Disembark, Teleport/reposition, and #305 deployment) - Scout, Ambush arrival and spillout
-        // are mandatory. What backing out MEANS differs per caller, so the request words it (#305: the
+        // to (Disembark, Teleport/reposition, and #308 deployment) - Scout, Ambush arrival and spillout
+        // are mandatory. What backing out MEANS differs per caller, so the request words it (#308: the
         // hard-coded "stays aboard its transport" became a lie the moment deployment allowed cancelling).
         if (request.AllowCancel)
         {

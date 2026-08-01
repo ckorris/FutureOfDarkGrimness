@@ -59,7 +59,7 @@ public class ChooseRangedAttackResolver : IStageResolver<ChooseRangedAttackReque
             Console.WriteLine($"{prefix} {options[i].label}");
         }
 
-        // #305: Back only while the engine still allows it (nothing fired this shoot action). After the
+        // #308: Back only while the engine still allows it (nothing fired this shoot action). After the
         // first weapon there is no un-firing it, and a Cancelled reply has nowhere to return to.
         if (request.AllowCancel)
             Console.WriteLine($"  [0] Back");

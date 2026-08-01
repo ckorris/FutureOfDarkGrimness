@@ -132,7 +132,7 @@ public class GuiChooseRangedAttackResolverTests
             new List<FDG.StageResolution.Requests.ChooseRangedAttackRequest.WeaponOption>()), Is.EqualTo(-1));
     }
 
-    // ── #305: the target carries across a shoot action's weapons ─────────────
+    // ── #308: the target carries across a shoot action's weapons ─────────────
     // A volley is normally aimed at one unit, so the next weapon starts on the last one's target while
     // that stays legal. Ranked ABOVE #237's sole-target rule: the previous target is evidence of the
     // player's intent, a sole target only the absence of alternatives.
