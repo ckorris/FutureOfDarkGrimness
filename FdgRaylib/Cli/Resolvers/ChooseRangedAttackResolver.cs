@@ -59,7 +59,10 @@ public class ChooseRangedAttackResolver : IStageResolver<ChooseRangedAttackReque
             Console.WriteLine($"{prefix} {options[i].label}");
         }
 
-        Console.WriteLine($"  [0] Back");
+        // #305: Back only while the engine still allows it (nothing fired this shoot action). After the
+        // first weapon there is no un-firing it, and a Cancelled reply has nowhere to return to.
+        if (request.AllowCancel)
+            Console.WriteLine($"  [0] Back");
 
         // First selectable option, for EOF default.
         int firstSelectable = options.FindIndex(o => o.choice != null);
@@ -76,7 +79,8 @@ public class ChooseRangedAttackResolver : IStageResolver<ChooseRangedAttackReque
             }
             if (int.TryParse(input, out int choice))
             {
-                if (choice == 0) return Task.FromResult<CancellableResult<RangedAttackChoice>>(new Cancelled<RangedAttackChoice>());
+                if (choice == 0 && request.AllowCancel)
+                    return Task.FromResult<CancellableResult<RangedAttackChoice>>(new Cancelled<RangedAttackChoice>());
                 if (choice >= 1 && choice <= options.Count)
                 {
                     var picked = options[choice - 1].choice;
@@ -86,7 +90,9 @@ public class ChooseRangedAttackResolver : IStageResolver<ChooseRangedAttackReque
                     continue;
                 }
             }
-            Console.WriteLine($"  Enter 0 (Back) or a number between 1 and {options.Count}.");
+            Console.WriteLine(request.AllowCancel
+                ? $"  Enter 0 (Back) or a number between 1 and {options.Count}."
+                : $"  Enter a number between 1 and {options.Count}.");
         }
     }
 }

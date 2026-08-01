@@ -132,6 +132,67 @@ public class GuiChooseRangedAttackResolverTests
             new List<FDG.StageResolution.Requests.ChooseRangedAttackRequest.WeaponOption>()), Is.EqualTo(-1));
     }
 
+    // ── #305: the target carries across a shoot action's weapons ─────────────
+    // A volley is normally aimed at one unit, so the next weapon starts on the last one's target while
+    // that stays legal. Ranked ABOVE #237's sole-target rule: the previous target is evidence of the
+    // player's intent, a sole target only the absence of alternatives.
+
+    [Test]
+    public void PreferredTargetIndex_PicksThePreviousTarget_WhenStillFireable()
+    {
+        var store = GameDataStore.GameDataStoreBuilder.GetDefault();
+        var first  = MakeTarget(store, inRange: true);
+        var second = MakeTarget(store, inRange: true);
+        var wo = MakeWeapon(first, second);
+
+        Assert.That(GuiChooseRangedAttackResolver.PreferredTargetIndex(wo, second.TargetUnit),
+            Is.EqualTo(1), "the unit the last weapon fired at starts selected.");
+    }
+
+    [Test]
+    public void PreferredTargetIndex_IgnoresThePreviousTarget_WhenThisWeaponCannotFireAtIt()
+    {
+        var store = GameDataStore.GameDataStoreBuilder.GetDefault();
+        var outOfRange = MakeTarget(store, inRange: false);   // the last weapon's target, out of this one's reach
+        var reachable  = MakeTarget(store, inRange: true);
+        var wo = MakeWeapon(outOfRange, reachable);
+
+        Assert.That(GuiChooseRangedAttackResolver.PreferredTargetIndex(wo, outOfRange.TargetUnit),
+            Is.EqualTo(1), "an unreachable previous target falls through to the sole-fireable rule.");
+    }
+
+    [Test]
+    public void PreferredTargetIndex_BlockedPreviousTarget_DoesNotOverrideTheGate()
+    {
+        var store = GameDataStore.GameDataStoreBuilder.GetDefault();
+        var blocked   = MakeTarget(store, inRange: true, "Must fire Deadly weapons first.");
+        var selectable = MakeTarget(store, inRange: true);
+        var wo = MakeWeapon(blocked, selectable);
+
+        Assert.That(GuiChooseRangedAttackResolver.PreferredTargetIndex(wo, blocked.TargetUnit),
+            Is.EqualTo(1), "the pre-select is a hint, never a permission - a gated row stays unpicked.");
+    }
+
+    [Test]
+    public void PreferredTargetIndex_NoPreviousTarget_FallsBackToTheSoleTargetRule()
+    {
+        var store = GameDataStore.GameDataStoreBuilder.GetDefault();
+        var wo = MakeWeapon(MakeTarget(store, inRange: false), MakeTarget(store, inRange: true));
+
+        Assert.That(GuiChooseRangedAttackResolver.PreferredTargetIndex(wo, previousTarget: null),
+            Is.EqualTo(1), "the first weapon of a shoot action has no previous target - #237 still applies.");
+    }
+
+    [Test]
+    public void PreferredTargetIndex_NoPreviousTargetAndSeveralOptions_SelectsNothing()
+    {
+        var store = GameDataStore.GameDataStoreBuilder.GetDefault();
+        var wo = MakeWeapon(MakeTarget(store, inRange: true), MakeTarget(store, inRange: true));
+
+        Assert.That(GuiChooseRangedAttackResolver.PreferredTargetIndex(wo, previousTarget: null),
+            Is.EqualTo(-1), "with two real alternatives and no evidence, guessing would aim the volley.");
+    }
+
     [Test]
     public void NearestModel_AllCandidatesDead_ReturnsNull()
     {

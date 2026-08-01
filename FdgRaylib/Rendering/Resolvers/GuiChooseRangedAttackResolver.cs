@@ -33,11 +33,6 @@ public class GuiChooseRangedAttackResolver
     private (int wIdx, int tIdx) _hoveredOption       = (-1, -1);
     private (int wIdx, int tIdx) _canvasHoveredOption = (-1, -1);
 
-    // Per-attacker fire counter — once we've sent at least one Selected for this attacker, Back is hidden.
-    // Reset when the request's AttackingUnit changes.
-    private DataReference? _trackedAttackerRef;
-    private int            _firesThisAction;
-
     public GuiChooseRangedAttackResolver(ITableState tableState) => _tableState = tableState;
 
     public void UpdateLayout(float scale, int originX, int originY, float tableH)
@@ -100,21 +95,17 @@ public class GuiChooseRangedAttackResolver
         lock (_lock) { request = _request; tcs = _tcs; }
         if (request == null || tcs == null) return;
 
-        // Auto-select first selectable weapon on new request; reset fire counter if attacker changed.
+        // Auto-select the first selectable weapon on a new request.
         // #237: when that weapon has exactly one fireable target, pre-select it too - the player only
         // has to press Fire. Never auto-fires: the commit stays a deliberate click/Enter.
+        // #305: a shoot action's later weapons start aimed where the last one fired, when that target is
+        // still fireable - it beats the sole-target rule, which is the weaker guess of the two.
         if (!ReferenceEquals(request, _lastRequest))
         {
             _lastRequest        = request;
-            DataReference attackerRef = request.AttackingUnit.Reference;
-            if (_trackedAttackerRef == null || !_trackedAttackerRef.Value.Equals(attackerRef))
-            {
-                _trackedAttackerRef = attackerRef;
-                _firesThisAction    = 0;
-            }
             _selectedWeaponIdx  = FirstFireableWeaponIndex(request.WeaponOptions);
             _selectedTargetTIdx = _selectedWeaponIdx >= 0
-                ? SoleFireableTargetIndex(request.WeaponOptions[_selectedWeaponIdx]) : -1;
+                ? PreferredTargetIndex(request.WeaponOptions[_selectedWeaponIdx], request.PreviousTarget) : -1;
         }
 
         // #248 keyboard: Left/Right cycle the weapon (among fireable ones), Up/Down + number keys pick
@@ -178,7 +169,8 @@ public class GuiChooseRangedAttackResolver
                 if (selectableW)
                 {
                     // #237: switching weapons re-applies the sole-target pre-select.
-                    if (_selectedWeaponIdx != wi) _selectedTargetTIdx = SoleFireableTargetIndex(wo);
+                    if (_selectedWeaponIdx != wi)
+                        _selectedTargetTIdx = PreferredTargetIndex(wo, request.PreviousTarget);
                     _selectedWeaponIdx = wi;
                 }
             }
@@ -401,7 +393,9 @@ public class GuiChooseRangedAttackResolver
         // shooting, you're committed to finishing the shoot stage. De-emphasized (secondary to Fire).
         float footW   = ImGui.GetContentRegionAvail().X;
         float spacing = ImGui.GetStyle().ItemSpacing.X;
-        bool  showBack = _firesThisAction == 0;
+        // #305: the ENGINE decides whether backing out is still legal (nothing fired yet this shoot
+        // action). The resolver used to keep its own counter and got it wrong on repeat activations.
+        bool  showBack = request.AllowCancel;
         if (showBack)
         {
             // #248: Backspace backs out too (only while Back is offered; Esc is reserved for the
@@ -432,7 +426,6 @@ public class GuiChooseRangedAttackResolver
         {
             var wo = request.WeaponOptions[_selectedWeaponIdx];
             var ts = wo.WeaponTargetStats[_selectedTargetTIdx];
-            _firesThisAction++;
             Complete(tcs, new Selected<RangedAttackChoice>(new RangedAttackChoice(wo.Weapon, ts.TargetUnit)));
             ImGui.End();
             return;
@@ -462,7 +455,7 @@ public class GuiChooseRangedAttackResolver
             int newW = fireableWeapons[pos];
             if (newW != _selectedWeaponIdx)
             {
-                _selectedTargetTIdx = SoleFireableTargetIndex(request.WeaponOptions[newW]);
+                _selectedTargetTIdx = PreferredTargetIndex(request.WeaponOptions[newW], request.PreviousTarget);
                 _selectedWeaponIdx  = newW;
             }
         }
@@ -606,6 +599,29 @@ public class GuiChooseRangedAttackResolver
         for (int wi = 0; wi < weaponOptions.Count; wi++)
             if (HasAnyFireableTarget(weaponOptions[wi])) return wi;
         return weaponOptions.Count > 0 ? 0 : -1;
+    }
+
+    /// <summary>
+    /// #305: which target a weapon should start with selected. The unit the PREVIOUS weapon of this shoot
+    /// action fired at wins whenever this weapon can still legally fire at it — a volley is normally aimed
+    /// at one unit, and re-picking it for every weapon was pure clicking. Otherwise fall back to #237's
+    /// sole-fireable-target rule, and to "nothing selected" when even that is ambiguous.
+    /// <para>Ranked, not merged: the previous target is EVIDENCE of intent, while a sole target is only
+    /// the absence of alternatives — so when both apply the evidence wins. Internal for tests.</para>
+    /// </summary>
+    internal static int PreferredTargetIndex(WeaponOption wo, DataBinding<UnitData>? previousTarget)
+    {
+        if (previousTarget != null)
+        {
+            for (int ti = 0; ti < wo.WeaponTargetStats.Count; ti++)
+            {
+                var ts = wo.WeaponTargetStats[ti];
+                if (ts.UnselectableReason != null || ts.modelsThatCanShoot.Count == 0) continue;
+                if (ts.TargetUnit.Reference.Equals(previousTarget.Reference)) return ti;
+            }
+        }
+
+        return SoleFireableTargetIndex(wo);
     }
 
     // #237: the index of the weapon's ONLY fireable target, or -1 when it has zero or several - the
