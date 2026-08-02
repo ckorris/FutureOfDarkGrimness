@@ -1,6 +1,20 @@
 # 309 — Networked client: late-deployed models render label-only (no base) until they move
 
-**Status:** implemented + tested (2026-08-02); awaiting networked GUI hand-verify
+**Status:** CLOSED 2026-08-02 — hand-verified by Chris on the original repro (host + client,
+ambush arrival shows bases immediately on the client). Engine `3c2ac8d`, superproject `91451c2`,
+both pushed to origin/master.
+
+## Outcome
+
+Fixed on both sides. Engine: all six late-placement flows (ambush arrival, reinforcements,
+aircraft return, disembark, spillout, plus the two benign deployment sites) clear their
+off-table token BEFORE the first position replicates; 3 ordering pins ride the position
+binding's OnValueChanged exactly as the client renderer does. App: `DrawModels` resolves the
+owning unit from live table state per frame and `OnModelPlaced` matches by ModelID, so a
+client-side instance replacement can never gate drawing again (also fixes the latent
+never-registers variant for replaced ModelData slots). Disembark/spillout paths verified by
+engine tests only - not hand-verified from a client - flagged here in case a sibling symptom
+ever resurfaces.
 **Reported:** first real internet playthrough — the remote client sometimes saw only a unit's
 overhead label (name/health/chips), no circle/rectangle bases, until the unit next moved; worst
 with late deployments (Ambush). The host never sees it. Reproduced by Chris 2026-08-02 (host +
