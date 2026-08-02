@@ -19,7 +19,7 @@ When closing an item: write the Outcome in its detail file, tick the line, and m
 
 - [~] 312 — "Charge offered but won't allow" + partial one-at-a-time moves (2026-07-31 game): ValidateChargeReach + end-state validators now true base-to-base at end facing; enemy-pin click removed; click hit-test follows planned ghost poses. Implemented + tested; awaiting GUI hand-verify + networked re-test. Was #310 pre-reconciliation-36. ([WorkItems/312](WorkItems/312-charge-wont-allow-and-swallowed-clicks.md))
 
-- [~] 315 — Moves silently snapped back at difficult terrain (2026-08-02 playtest): the clamped ghost now also draws the pose it would have taken in pale gray, dotted-linked, labelled "Difficult Terrain" / "Can only move 6"" (or "Cannot enter - 6" used"), in single AND group mode. Implemented + tested; awaiting GUI hand-verify. ([WorkItems/315](WorkItems/315-difficult-terrain-shortfall-preview.md))
+- [~] 317 — Moves silently snapped back at difficult terrain (2026-08-02 playtest): the clamped ghost now also draws the pose it would have taken in pale gray, dotted-linked, labelled "Difficult Terrain" / "Can only move 6"" (or "Cannot enter - 6" used"); impassible blocks get the matching red text. Single AND group mode. Implemented + tested; awaiting GUI hand-verify. Was #315 pre-reconciliation-39. ([WorkItems/317](WorkItems/317-difficult-terrain-shortfall-preview.md))
 
 - [~] 291 — Models could move partially off the table: the movement validator had no bounds rule at all (the GUI only constrained a model's CENTRE, so big vehicle bases overhung). Footprint-exact "not worsened" rule in all four validators + shared preview clamp. Implemented + tested; awaiting GUI hand-verify. ([WorkItems/291](WorkItems/291-models-may-not-move-off-table.md))
 

@@ -4,7 +4,7 @@ using NUnit.Framework;
 namespace FdgRaylib.Tests;
 
 /// <summary>
-/// #315 — impassible terrain refuses the placement outright rather than shortening it, so it has no would-be
+/// #317 — impassible terrain refuses the placement outright rather than shortening it, so it has no would-be
 /// phantom; it gets the same two-line "here is the rule that stopped you" text beside the red contact
 /// footprint. Pins the wording and the ASCII-only rule (the ImGui atlas bakes Basic Latin + Latin-1 only).
 /// </summary>

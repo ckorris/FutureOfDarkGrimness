@@ -1,7 +1,7 @@
 namespace FdgRaylib.Rendering;
 
 /// <summary>
-/// #315: the impassible-terrain sibling of <see cref="DifficultShortfallPlan"/>'s label. Impassible terrain
+/// #317: the impassible-terrain sibling of <see cref="DifficultShortfallPlan"/>'s label. Impassible terrain
 /// doesn't shorten a move the way Difficult does — the whole placement is refused (red piece, red swept
 /// footprint at first contact, un-clickable), so there is no would-be phantom and nothing to measure. All
 /// that's needed is the same two-line "here is the rule that stopped you" text the difficult clamp gained,

@@ -203,7 +203,7 @@ public class GuiDefineMovementResolver
     // model couldn't afford to enter, so it was held at the terrain edge. Reset at the top of each Draw.
     private bool _frameDifficultCrossing;
     private bool _frameDifficultStopped;
-    // #315: impassible terrain flags every phantom of a blocked group step, so its label draws once per frame.
+    // #317: impassible terrain flags every phantom of a blocked group step, so its label draws once per frame.
     private bool _frameImpassibleLabelDrawn;
 
     // Move bands: Advance (green, can shoot after), Rush (yellow, can't shoot), Charge (orange,
@@ -241,7 +241,7 @@ public class GuiDefineMovementResolver
     // crosses Difficult terrain draws dotted gray. Dangerous wins when a path crosses both.
     private static readonly uint DangerPathCol    = ImGui.ColorConvertFloat4ToU32(new Vector4(1.00f, 0.20f, 0.20f, 0.95f));
     private static readonly uint DifficultPathCol = ImGui.ColorConvertFloat4ToU32(new Vector4(0.62f, 0.62f, 0.62f, 0.95f));
-    // #315: the difficult-terrain shortfall phantom - where the move WOULD have reached but for the clamp.
+    // #317: the difficult-terrain shortfall phantom - where the move WOULD have reached but for the clamp.
     // Deliberately the palest thing on the table (and no band hue), so it reads as "not where you're going";
     // the dotted link continues the same gray the difficult-crossing path lines already use.
     private static readonly uint ShortfallFill    = ImGui.ColorConvertFloat4ToU32(new Vector4(0.78f, 0.78f, 0.80f, 0.16f));
@@ -255,7 +255,7 @@ public class GuiDefineMovementResolver
     private static readonly uint CrossingZoneFill      = ImGui.ColorConvertFloat4ToU32(new Vector4(1.00f, 0.25f, 0.25f, 0.22f));
     private static readonly uint CrossingZoneOutline   = ImGui.ColorConvertFloat4ToU32(new Vector4(1.00f, 0.30f, 0.30f, 0.95f));
     private static readonly uint CrossingFootprintFill = ImGui.ColorConvertFloat4ToU32(new Vector4(1.00f, 0.25f, 0.25f, 0.18f));
-    // #315: the impassible label takes the red of the wash it explains, lightened to stay readable as text -
+    // #317: the impassible label takes the red of the wash it explains, lightened to stay readable as text -
     // deliberately NOT the shortfall gray, since this move is refused rather than merely shortened.
     private static readonly uint ImpassibleTextCol     = ImGui.ColorConvertFloat4ToU32(new Vector4(1.00f, 0.50f, 0.47f, 1f));
 
@@ -501,7 +501,7 @@ public class GuiDefineMovementResolver
             // #155: difficult terrain enforces its own cap on top of the band cap. Crossing difficult
             // caps this model's TOTAL move at 6"; when entry is no longer affordable the ghost stops
             // just short of the terrain edge - the preview can never propose an invalid move.
-            // #315: keep the pre-clamp travel so the shortfall can be drawn below - the ghost snapping back
+            // #317: keep the pre-clamp travel so the shortfall can be drawn below - the ghost snapping back
             // with no visible cause was the thing playtesters couldn't read.
             float allowedIgnoringDifficult = allowed;
             var difficultClampKind = MovementUtilities.EDifficultClampKind.NotLimited;
@@ -530,7 +530,7 @@ public class GuiDefineMovementResolver
                 allowed = MovementUtilities.ClampTravelToTable(anchor, dx / dist, dz / dist, allowed,
                     _selectedModel.BaseShape, ghostFacing);
 
-            // #315: run the pre-clamp travel through the SAME enemy + table clamps, so the gray phantom shows
+            // #317: run the pre-clamp travel through the SAME enemy + table clamps, so the gray phantom shows
             // where this move would really have landed but for the terrain - not a point past an enemy base or
             // half off the board, which would blame difficult terrain for a limit it didn't impose.
             if (difficultClampKind != MovementUtilities.EDifficultClampKind.NotLimited && dist > 0.0001f)
@@ -593,7 +593,7 @@ public class GuiDefineMovementResolver
             else if (ghDiff)   AddDottedLine(dl, new Vector2(ax, ay), new Vector2(gx, gy), DifficultPathCol, 2.5f);
             else               dl.AddLine(new Vector2(ax, ay), new Vector2(gx, gy), LineColorFor(ghostBand), 2f);
 
-            // #315: the difficult-terrain shortfall - the pose this move would have taken without the clamp,
+            // #317: the difficult-terrain shortfall - the pose this move would have taken without the clamp,
             // drawn first so the live ghost paints over it where the two overlap.
             var shortfallHint = DifficultShortfallPlan.Build(difficultClampKind, allowedIgnoringDifficult - allowed,
                 GameWideConstants.DIFFICULT_TERRAIN_MOVE_CAP_INCHES);
@@ -893,7 +893,7 @@ public class GuiDefineMovementResolver
         bool enemyClampActive = !request.CanMoveThroughEnemies;
         bool clampActive = difficultActive || enemyClampActive;
         bool terrainBlocked = false;
-        // #315: the same step solved with the difficult-terrain clamp off - the gray "where you'd be" phantoms.
+        // #317: the same step solved with the difficult-terrain clamp off - the gray "where you'd be" phantoms.
         Position[]? difficultFreePositions = null;
         if (clampActive)
         {
@@ -912,7 +912,7 @@ public class GuiDefineMovementResolver
             Float2 StepFacing(Position from, Position to, IModel m) =>
                 RotateFloat2(TravelFacing(from, to, m.Facing), _groupFacingAngle);
 
-            // #315: `includeDifficult: false` re-runs the identical solve with only the difficult-terrain
+            // #317: `includeDifficult: false` re-runs the identical solve with only the difficult-terrain
             // clamp switched off, which is exactly the counterfactual the gray shortfall phantoms show.
             bool Feasible(IReadOnlyList<Position> candidate, bool includeDifficult = true)
             {
@@ -976,7 +976,7 @@ public class GuiDefineMovementResolver
                     else if (clamp.Kind == MovementUtilities.EDifficultClampKind.StoppedShortOfEdge) _frameDifficultStopped = true;
                 }
 
-                // #315: and where the step WOULD have landed with difficult terrain out of the picture. Solved
+                // #317: and where the step WOULD have landed with difficult terrain out of the picture. Solved
                 // the same way the real step is (whole-formation scale-back, not per-model), so the phantoms
                 // keep the unit's shape; a step the OTHER clamps shortened comes back identical to the real
                 // one and no shortfall is drawn, which is right - the terrain didn't cost them that.
@@ -1029,7 +1029,7 @@ public class GuiDefineMovementResolver
             if (Position.GetDistance2D(lastPositions[i], newPositions[i]) > 0.001f) anyMovement = true;
         }
 
-        // #315: difficult-terrain shortfall pass - one pale phantom per model that the terrain held back, each
+        // #317: difficult-terrain shortfall pass - one pale phantom per model that the terrain held back, each
         // linked to its real phantom by a dotted gray line, with ONE label for the unit (a copy per model would
         // bury the formation in text). Drawn before the real phantoms so those paint over it where they overlap.
         if (difficultFreePositions != null)
@@ -1539,7 +1539,7 @@ public class GuiDefineMovementResolver
         ModelBaseRenderer.DrawFilledImGui(dl, baseShape, new Vector2(cx, cy), _scale,
             CrossingFootprintFill, CrossingZoneOutline, 2.5f, crossing.Facing);
 
-        // #315: name the rule, the same way a difficult-terrain shortfall does. Once per frame only - in group
+        // #317: name the rule, the same way a difficult-terrain shortfall does. Once per frame only - in group
         // mode every phantom of a blocked step reports its own crossing, and a label per model would stack the
         // same two lines over the whole formation. The first crossing is the one whose footprint reads clearest.
         if (!_frameImpassibleLabelDrawn)
@@ -2130,7 +2130,7 @@ public class GuiDefineMovementResolver
     }
 
     /// <summary>
-    /// #315: "you asked to go there, and here is what stopped you" - the model's pose as it WOULD have been
+    /// #317: "you asked to go there, and here is what stopped you" - the model's pose as it WOULD have been
     /// without the difficult-terrain clamp, in pale gray, joined to the real (clamped) ghost by a dotted gray
     /// line. The link continues the same dotted gray a difficult-crossing path already draws, so the whole
     /// route reads as one line that changes character where the terrain bites.
@@ -2147,7 +2147,7 @@ public class GuiDefineMovementResolver
     }
 
     /// <summary>
-    /// #315: the two-line reason a terrain rule shaped this move - the rule name, then what it cost - centred
+    /// #317: the two-line reason a terrain rule shaped this move - the rule name, then what it cost - centred
     /// above the pose it is explaining (the shortfall phantom at the far end of a difficult move, or the swept
     /// footprint at first contact with an impassible piece). Shared so both rules speak in the same voice and
     /// in the same spot relative to the model they're about.

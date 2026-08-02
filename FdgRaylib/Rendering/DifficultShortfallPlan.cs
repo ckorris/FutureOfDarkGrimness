@@ -3,7 +3,7 @@ using FDG.Stages;
 namespace FdgRaylib.Rendering;
 
 /// <summary>
-/// #315: the display-independent core of the difficult-terrain "snap back" explanation. When the movement
+/// #317: the display-independent core of the difficult-terrain "snap back" explanation. When the movement
 /// preview's ghost is shortened by the difficult-terrain clamp (#155), the resolver also draws the pose the
 /// ghost WOULD have taken in light gray, linked to the real ghost by a dotted line — this decides whether
 /// that phantom is worth drawing at all, and what the label beside it says.

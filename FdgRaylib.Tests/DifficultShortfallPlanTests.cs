@@ -5,7 +5,7 @@ using NUnit.Framework;
 namespace FdgRaylib.Tests;
 
 /// <summary>
-/// #315 — the movement ghost snapping back at difficult terrain read as a bug in playtest because nothing
+/// #317 — the movement ghost snapping back at difficult terrain read as a bug in playtest because nothing
 /// on the table said why. The resolver now draws the would-be pose in gray with a two-line reason; these pin
 /// when that phantom appears and that each of the clamp's two cases gets the sentence that actually applies.
 /// </summary>

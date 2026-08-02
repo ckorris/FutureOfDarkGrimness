@@ -1,4 +1,4 @@
-# 315 — Show WHY a move snaps back at difficult terrain
+# 317 — Show WHY a move snaps back at difficult terrain
 
 **Status**: in-progress (implemented + tested; awaiting GUI hand-verify)
 **Related**: #155 (difficult/dangerous terrain indication — this builds on its clamp + panel lines)
