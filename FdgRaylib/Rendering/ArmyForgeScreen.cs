@@ -868,18 +868,11 @@ public class ArmyForgeScreen : IAppScreen
 
             if (section.IsCounted) // "any"/"up to N" or add-models → a stepper
             {
-                int hardBound = section.MaxApplications > 0 ? section.MaxApplications : int.MaxValue;
                 foreach (UpgradeOption option in section.Options)
                 {
                     int v = ChoiceCount(bu, section.Id, option.Id);
-                    // `available` is measured on the FINAL compiled state (this option's picks already
-                    // consumed), so the option's own count comes back into its budget.
-                    int poolBound = section.Variant == UpgradeVariant.AddModels
-                        ? Math.Max(0, roster.MaxModels - roster.BaseModelCount)
-                        : isReplace ? available + v
-                        : compiledUnit.ModelCount;
-                    int max = Math.Min(hardBound, poolBound);
-                    DrawStepper(bu, glossary, section, option, v, max);
+                    DrawStepper(bu, glossary, section, option, v,
+                        StepperMax(section, roster, compiledUnit, available, v));
                 }
             }
             else if (section.MaxPicks <= 1 && section.Options.Count >= 2) // pick one of several → radios
@@ -914,6 +907,27 @@ public class ArmyForgeScreen : IAppScreen
             }
             ImGui.Unindent();
         }
+    }
+
+    /// <summary>
+    /// Upper bound for one option's stepper in a counted section: the section's own hard cap ("up to N"),
+    /// against the pool it draws from - models the unit may still gain (AddModels), targets it can still
+    /// replace (Replace), or one per model (a per-model upgrade).
+    /// </summary>
+    /// <param name="available">Replace-target availability on the FINAL compiled state, where this option's
+    /// picks are already consumed - so <paramref name="current"/> comes back into its own budget.</param>
+    /// <param name="current">Applications this option currently holds.</param>
+    internal static int StepperMax(UpgradeSection section, RosterUnit roster, UnitFileEntry compiledUnit,
+        int available, int current)
+    {
+        int hardBound = section.MaxApplications > 0 ? section.MaxApplications : int.MaxValue;
+        int poolBound = section.Variant switch
+        {
+            UpgradeVariant.AddModels => Math.Max(0, roster.MaxModels - roster.BaseModelCount),
+            UpgradeVariant.Replace => available + current,
+            _ => compiledUnit.ModelCount,
+        };
+        return Math.Min(hardBound, poolBound);
     }
 
     // Counted-section control: [-] [count] [+] label. The buttons gray individually at their bound (- at 0,

@@ -1,3 +1,5 @@
+using System;
+using System.IO;
 using System.Linq;
 using System.Text.Json;
 using FDG.ArmyBuilding;
@@ -213,6 +215,50 @@ public class ArmyForgeScreenTests
             "final compiled state has no Heavy Rifle left");
         Assert.That(ArmyForgeScreen.AvailableExcludingSection(book, bu, missiles), Is.EqualTo(3),
             "excluding the section's own pick, the full pool is switchable");
+    }
+
+    // ── #318 Titan Lords double Heavy Hammer, against the SHIPPED book ─────────────────────────────────
+
+    // Reported 2026-08-02 (friend's War Disciples list): on the War Errant Mini-Titan, trading the Titan
+    // Shield for a second Heavy Hammer must leave BOTH hammers swappable. The book authors "Replace any
+    // Heavy Hammer" ABOVE the shield section that grants the second one, which starved the second swap in
+    // the compiler; this pins the whole path on the real bundled data - stepper bound and compiled result.
+    [Test]
+    public void WarErrantMiniTitan_ShieldTradedForASecondHammer_SwapsBothHammers()
+    {
+        BookFile book = JsonSerializer.Deserialize<BookFile>(
+            File.ReadAllText(Path.Combine(AppContext.BaseDirectory, "Assets", "Books",
+                "TitanLordsWarDisciples" + BookFile.EXTENSION_WITH_PERIOD)), RuleJson.Options)!;
+        RosterUnit errant = book.Units.Single(u => u.Name == "War Errant Mini-Titan");
+        UpgradeSection hammers = errant.Sections.Single(s => s.Label == "Replace any Heavy Hammer");
+        UpgradeSection shield = errant.Sections.Single(s => s.Label == "Replace Titan Shield");
+        UpgradeOption sword = hammers.Options.Single(o => o.Label.StartsWith("Heavy Sword"));
+
+        var screen = new ArmyForgeScreen(book);
+        screen.AddToList(errant.Id);
+        BuilderUnit bu = screen.List.Units[0];
+
+        ArmyForgeScreen.SetChoice(bu, shield, shield.Options.Single().Id, 1); // Titan Shield -> Heavy Hammer
+
+        // With two hammers on the unit, the stepper must offer two swaps - both before and after the first.
+        Assert.That(StepperMaxFor(book, bu, hammers, sword), Is.EqualTo(2), "two hammers, two swaps offered");
+        ArmyForgeScreen.SetChoice(bu, hammers, sword.Id, 1);
+        Assert.That(StepperMaxFor(book, bu, hammers, sword), Is.EqualTo(2), "the second swap is still offered");
+
+        ArmyForgeScreen.SetChoice(bu, hammers, sword.Id, 2);
+        UnitFileEntry compiled = screen.Compile().Units.Single();
+        Assert.That(compiled.Weapons.Any(w => w.Name == "Heavy Hammer"), Is.False, "neither hammer is left behind");
+        Assert.That(compiled.Weapons.Single(w => w.Name == "Heavy Sword").Quantity, Is.EqualTo(2));
+        Assert.That(compiled.PointCost, Is.EqualTo(385), "295 base + 30 shield swap + 30x2 sword swaps");
+    }
+
+    private static int StepperMaxFor(BookFile book, BuilderUnit bu, UpgradeSection section, UpgradeOption option)
+    {
+        (UnitFileEntry unit, var items) = ListCompiler.CompileUnitDetailed(book, bu);
+        RosterUnit roster = book.Units.Single(u => u.Id == bu.RosterUnitId);
+        return ArmyForgeScreen.StepperMax(section, roster, unit,
+            ListCompiler.AvailableApplications(unit.Weapons, items, section.Targets),
+            ArmyForgeScreen.ChoiceCount(bu, section.Id, option.Id));
     }
 
     // ── #006 hero-join seams ────────────────────────────────────────────────────────────────────────────
