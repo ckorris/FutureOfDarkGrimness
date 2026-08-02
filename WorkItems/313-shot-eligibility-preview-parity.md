@@ -1,6 +1,7 @@
-# 312 — Targeting previews must ask the rules' own can-hit question
+# 313 — Targeting previews must ask the rules' own can-hit question
 
-**Status**: implemented (awaiting GUI hand-verification)
+**Status**: closed 2026-08-02 (hand-verified in the running app)
+**Number**: filed as 312; renumbered 312 -> 313 at push time (reconciliation 37 — a parallel session's merged charge-reach item took 312). Commit messages say "#312" and predate the renumber.
 **Related**: #276 (truthful attack-beat endpoints — the "thing that works" this borrows from), #245 (dice
 caption strip), #212 (team-aware enemy test), #158 (never aim at corpses)
 
@@ -64,5 +65,11 @@ Owner's ask: fix it, and have the preview use the SAME can-hit mechanism as the 
 
 ## Outcome
 
-_(pending GUI hand-verification: open the shoot panel against a unit with some models behind blocking
-terrain and confirm every green line lands on a model that is actually visible)_
+Fixed and hand-verified in the running app (2026-08-02): the shoot panel's fire lines now land only on
+models the shooter can actually see. `ShotEligibility` is the shared can-hit test behind the rules'
+animation endpoints and the preview, so the two cannot drift; the team predicates behind can-hit /
+can-charge indicators are consolidated on `TeamAwareness`.
+
+The two deliberate exclusions above still stand and are the places to look if this ever recurs: the
+targeting stage's own cached copy of the test (guarded by the agreement test, not by sharing code), and
+the movement resolver's cover-aware preview (audited, unchanged).

@@ -7,7 +7,7 @@ using NUnit.Framework;
 
 namespace FdgRaylib.Tests;
 
-// #312 — one team-aware definition of "enemy" for the whole app. Every overlay that paints something
+// #313 — one team-aware definition of "enemy" for the whole app. Every overlay that paints something
 // hostile onto a unit asks this: the movement resolver's can-hit / can-charge indicators and fire lines,
 // the tactical overlay's threat rings, and the enemy-spacing gates during placement and consolidation.
 // A unit belonging to ANOTHER PLAYER ON YOUR TEAM must never be treated as a target - the preview would

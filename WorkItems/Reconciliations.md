@@ -6,6 +6,33 @@ from origin/master. Standing precedent: numbers are never reused, and when two p
 claim the same number, the *unmerged local* item yields to the *merged* one and takes a fresh number.
 A per-clone pre-push hook blocks duplicate numbers across the index and the archive.
 
+> **2026-08-02 - reconciliation 37 (RESOLVED).** Immediately after reconciliation 36 landed, the
+> shot-eligibility session hit the number it had just created: this session filed its preview-parity item
+> as **312**, and the push-time fetch found origin/master had meanwhile landed **312 = charge-won't-allow
+> + swallowed clicks** (`fec819a` / engine `03bf1a4`, itself a #310 yield via reconciliation 36). Per
+> merged-wins precedent the local item yields: **shot-eligibility preview parity 312 -> 313**
+> (`WorkItems/313-shot-eligibility-preview-parity.md`). Renumbered in the detail file + title, the index
+> line, and the six comments carrying it (engine `ShotEligibilityTests`; app
+> `GuiChooseRangedAttackResolver` x2, `GuiDefineMovementResolver`, `TacticalOverlayController`,
+> `GuiChooseRangedAttackResolverTests`, `TeamAwarenessTests`) — the many #312 comments the merged charge
+> item legitimately owns in those same files were left untouched, so the renumber was done per line, not
+> by search-and-replace. Commit messages naming "#312" (engine `c2ca754`, superproject `1a20b4d`) predate
+> the renumber, as usual. The merge also took origin/master's DELETION of
+> `GuiDefineMovementResolver.HandleEnemyPinClick` (the charge item removed the pin gesture) over this
+> branch's edit to that same method, which had only rerouted it through `TeamAwareness`.
+>
+> **2026-08-02 - reconciliation 36 (RESOLVED).** The charge/swallowed-clicks session filed its item as
+> **310**; the push-time fetch found origin/master had meanwhile landed BOTH **310 = per-user config
+> file** (`d545861`, itself a #309 yield via reconciliation 34) and **311 = pass confirmation**
+> (closed, via reconciliation 35). Per merged-wins precedent the local item yields past both:
+> **charge-won't-allow + swallowed-clicks 310 -> 312**
+> (`WorkItems/312-charge-wont-allow-and-swallowed-clicks.md`). Renumbered in the detail file + title,
+> the index line, and the seven sources carrying the comment (engine `MovementUtilities`,
+> `ChargeReachValidationTests`; app `GuiDefineMovementResolver`, `GuiConsolidationMoveResolver`,
+> `ModelPicker`, `TacticalOverlayController`, `ModelPickerTests`) — the app files legitimately
+> referencing the config item's #310 were left untouched. The commit messages naming "#310" (engine
+> `03bf1a4`, superproject `fec819a`) predate the renumber, as usual.
+>
 > **2026-08-02 - reconciliation 35 (RESOLVED).** A double collision, and the second half of it is the
 > rare one. This session had filed the Choose Action Pass-confirmation work as **309**; the pre-push
 > fetch found origin/master had landed **309 = networked client's invisible late-deployed models**

@@ -527,7 +527,7 @@ public class GuiChooseRangedAttackResolver
         }
 
         // One line per shooter — from each attacker model that can hit this unit, to the nearest
-        // defender it can actually SEE (#312). Aiming at the nearest model outright drew fire lines
+        // defender it can actually SEE (#313). Aiming at the nearest model outright drew fire lines
         // straight through blocking terrain whenever the closest defender was the blocked one, while
         // the volley itself resolved against a model the shooter could see. The sight test is the
         // engine's own (ShotEligibility, shared with the attack animation's endpoints), so the preview
@@ -564,7 +564,7 @@ public class GuiChooseRangedAttackResolver
         }
     }
 
-    // Internal for tests. The nearest candidate this shooter can SEE (#312) — pass null blockers for a
+    // Internal for tests. The nearest candidate this shooter can SEE (#313) — pass null blockers for a
     // weapon that ignores line of sight, which reduces it to plain nearest. #158: only LIVING, placed
     // models are candidates — a just-killed model is often the nearest (you shot it last volley), and
     // aiming the shooter line at its corpse read as "shooting at a dead model".

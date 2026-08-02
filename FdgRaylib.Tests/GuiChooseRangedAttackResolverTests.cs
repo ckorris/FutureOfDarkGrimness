@@ -14,7 +14,7 @@ namespace FdgRaylib.Tests;
 [TestFixture]
 public class GuiChooseRangedAttackResolverTests
 {
-    // #312: the fire line must land on a model the shooter can SEE. Aiming at the nearest model outright
+    // #313: the fire line must land on a model the shooter can SEE. Aiming at the nearest model outright
     // drew lines straight through blocking terrain while the volley resolved against a visible model.
     [Test]
     public void NearestVisibleModel_SkipsANearerModelBehindABlocker()
