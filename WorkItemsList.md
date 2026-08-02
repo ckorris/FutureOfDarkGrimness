@@ -15,6 +15,10 @@ When closing an item: write the Outcome in its detail file, tick the line, and m
 
 ---
 
+## Activation flow
+
+- [~] 316 — Every round opened with the wrong player (2026-08-02 game): the round's alternation cursor advances before each activation, so starting it at index 0 handed the opening pick to the team that should have gone second - in round 1 and every round after. Cursor now parks one step short of the head of the order. Implemented + tested + headless-verified; awaiting confirmation in a live multiplayer game. ([WorkItems/316](WorkItems/316-round-opens-on-wrong-player.md))
+
 ## Movement
 
 - [~] 312 — "Charge offered but won't allow" + partial one-at-a-time moves (2026-07-31 game): ValidateChargeReach + end-state validators now true base-to-base at end facing; enemy-pin click removed; click hit-test follows planned ghost poses. Implemented + tested; awaiting GUI hand-verify + networked re-test. Was #310 pre-reconciliation-36. ([WorkItems/312](WorkItems/312-charge-wont-allow-and-swallowed-clicks.md))
