@@ -10,7 +10,7 @@ public class StringSelectionResolver : IStageResolver<StringSelectionRequest, st
         Console.WriteLine();
         Console.WriteLine(request.Instructions);
 
-        // #317: a companion action belongs to another option's row (melee: hold this weapon back instead
+        // #321: a companion action belongs to another option's row (melee: hold this weapon back instead
         // of attacking with it), so it is printed UNDER its owner as an "s"-keyed sub-choice rather than
         // as a peer in the numbered list - the CLI's version of the GUI's second button on the row.
         var companionOptions = new HashSet<string>(StringComparer.Ordinal);
@@ -88,7 +88,7 @@ public class StringSelectionResolver : IStageResolver<StringSelectionRequest, st
             if (input == null)
                 return Task.FromResult(request.ValidOptions.First(o => !companionOptions.Contains(o)));
 
-            // #317: "s3" takes option 3's companion action.
+            // #321: "s3" takes option 3's companion action.
             if (input.StartsWith("s", StringComparison.OrdinalIgnoreCase)
                 && int.TryParse(input.AsSpan(1), out int ownerNumber)
                 && ownerNumber >= 1 && ownerNumber <= request.ValidOptions.Count

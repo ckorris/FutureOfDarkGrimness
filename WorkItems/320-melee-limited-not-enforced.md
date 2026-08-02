@@ -1,12 +1,12 @@
-# 316 — Limited is not enforced in melee at all
+# 320 — Limited is not enforced in melee at all
 
-**Status**: in-progress (implemented + tested + CLI hand-verified; awaiting GUI hand-verify)
-**Related**: #032 (Limited: marker rule + per-model spent token, shooting only), #315 (the shooting
+**Status**: done (closed 2026-08-02 - hand-verified in the running app by the owner)
+**Related**: #032 (Limited: marker rule + per-model spent token, shooting only), #319 (the shooting
 opt-out this mirrors), #028 (Deadly-first gating in melee, the gate hold-back had to release)
 
 ## Goal
 A Limited melee weapon may only be used once per game, and a player may decline to use it — the same
-two properties #032 and #315 gave the shooting path.
+two properties #032 and #319 gave the shooting path.
 
 ## Notes
 
@@ -24,7 +24,7 @@ two properties #032 and #315 gave the shooting path.
   inches back must not have its charge burned — and since `IsSpent` asks whether EVERY living carrier has
   used it, marking that model would also have retired the weapon for the whole unit a melee early.
 
-  **Hold back.** `Enter` loops like #315's; each weapon that can swing this pass gets a
+  **Hold back.** `Enter` loops like #319's; each weapon that can swing this pass gets a
   "Hold back: <label>" row in the same `StringSelectionRequest` (no new request type — the label is
   already the option's identity on this wire, and the stage maps the reply back through its own
   (label, weapon, holdBack) list, so nothing is parsed out of a string). Declining calls
@@ -46,7 +46,7 @@ two properties #032 and #315 gave the shooting path.
   un-declined weapon's hold-back row is offered as UNAVAILABLE with that reason rather than hidden. It
   costs nothing in practice: to keep a Limited weapon you hold it back and swing something else.
 - **The attack-ending hold-back confirms** (user sign-off), via a `YesNoRequest` naming the weapon and
-  what it keeps — the melee analogue of #315's "Done shooting" confirmation. Per-weapon holds with swings
+  what it keeps — the melee analogue of #319's "Done shooting" confirmation. Per-weapon holds with swings
   still to come stay silent, exactly as Hold fire does. `defaultAnswer: true`, since the player had to
   pick the hold-back row to get there.
 - **`HOLD_BACK_PREFIX` / `IsHoldBackChoice` are public, and `AiStringSelectionResolver` skips hold-back
@@ -58,7 +58,13 @@ two properties #032 and #315 gave the shooting path.
   an all-disabled list for a human, and a throw for the AI's `ValidOptions[0]`.
 
 ## Outcome
-(pending — GUI hand-verify)
+Limited is now enforced in melee - spent weapons are offered as unavailable, choosing one marks it
+fired, and the spend is scoped to the models actually within melee range rather than every carrier in
+the unit. Hold back shipped alongside it, then #318 narrowed it to Limited weapons only once the melee
+rule text was supplied, and #321 changed how it is presented. The one asymmetry left on purpose: the
+Charge action gate still does not know about spent Limited weapons (a unit whose ONLY melee weapon is
+spent can charge and then swing nothing - it routes cleanly and logs it). No shipped book has such a
+unit, so it was not fixed blind.
 
 ## Follow-ups not taken here
 - **The Charge action gate does not know about spent Limited weapons.** Shooting grays out Shoot when the

@@ -54,7 +54,7 @@ internal static class ResolverHotkeys
     public static bool IsLetterPressed(char letter) => IsLetterPressed(letter, shift: false);
 
     /// <summary>
-    /// #317: the same check, with Shift as part of the binding rather than ignored. A row and its
+    /// #321: the same check, with Shift as part of the binding rather than ignored. A row and its
     /// companion action share one letter - E attacks with the weapon, Shift+E holds it back - so the
     /// modifier has to DISCRIMINATE: plain E must not fire while Shift is held, or one keystroke would
     /// trigger both. That is why the plain overload above now means "letter, without Shift".

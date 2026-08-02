@@ -1,8 +1,8 @@
 # 318 — Melee hold-back is a Limited-only exception, not a general opt-out
 
-**Status**: in-progress (implemented + tested + CLI hand-verified; awaiting GUI hand-verify)
-**Related**: #316 (melee Limited enforcement + hold-back, which this narrows), #317 (how the hold-back is
-presented), #315 (shooting's Hold fire, which is NOT affected — see Decisions)
+**Status**: done (closed 2026-08-02 - hand-verified in the running app by the owner)
+**Related**: #320 (melee Limited enforcement + hold-back, which this narrows), #321 (how the hold-back is
+presented), #319 (shooting's Hold fire, which is NOT affected — see Decisions)
 
 ## Goal
 Melee hold-back matches the melee rule: a weapon may only be declined when a rule says it may.
@@ -12,7 +12,7 @@ Melee hold-back matches the melee rule: a weapon may only be declined when a rul
 ## Notes
 
 - 2026-08-02: **Implemented. Engine 2590/0, app 894/0, full build clean, CLI hand-run.** Owner-supplied
-  rule text: #316 shipped hold-back on EVERY melee weapon, which contradicts it — there is no general
+  rule text: #320 shipped hold-back on EVERY melee weapon, which contradicts it — there is no general
   opting out of a swing. `ChooseMeleeWeaponStage` now offers the hold-back only for weapons carrying
   Limited (`LimitedRules.LimitedRuleName != null`); an ordinary weapon gets no hold-back row at all, not
   even a greyed one (a greyed row would imply the choice exists and is merely unavailable right now).
@@ -38,7 +38,7 @@ Melee hold-back matches the melee rule: a weapon may only be declined when a rul
   Nothing else in the melee sequence carries that implication, so nothing else gets the choice.
 - **Not a greyed row for ordinary weapons.** Showing "Hold back" disabled on every blade would teach the
   player that declining is normally possible; it isn't. Absence is the honest presentation.
-- **Shooting keeps its broader Hold fire (#315), deliberately.** The rule quoted above is about MELEE —
+- **Shooting keeps its broader Hold fire (#319), deliberately.** The rule quoted above is about MELEE —
   it is what compels models in contact to strike. Shooting has no equivalent "must fire everything"
   clause, and a unit may decline to shoot at all, so declining an individual weapon there needs no
   rule-granted exception. If the shooting side turns out to have its own must-fire clause, that is a
@@ -48,4 +48,7 @@ Melee hold-back matches the melee rule: a weapon may only be declined when a rul
   holding it back would mean striking with nothing.
 
 ## Outcome
-(pending — GUI hand-verify)
+Melee hold-back is offered only for weapons carrying Limited; an ordinary weapon gets no opt-out row at
+all, matching "models within 2in horizontally and 4in vertically of enemies must strike with all melee
+weapons". The only-weapon refusal survives on the same rule. Shooting's Hold fire (#319) was left
+deliberately broader - that rule governs melee, and a unit may decline to shoot entirely.

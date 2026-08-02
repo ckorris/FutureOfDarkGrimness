@@ -1,9 +1,9 @@
-# 315 — Limited weapons were mandatory: Hold fire / Done shooting + once-per-game visibility
+# 319 — Limited weapons were mandatory: Hold fire / Done shooting + once-per-game visibility
 
-**Status**: in-progress (implemented + tested + CLI hand-verified; awaiting GUI hand-verify)
+**Status**: done (closed 2026-08-02 - hand-verified in the running app by the owner)
 **Related**: #032 (Limited shipped as a marker rule + spent token), #308 (the engine took ownership of
 "may the player back out?"), #028/#314 (resolve-first gating, the reason hold-fire had to be
-per-weapon), #316 (melee never enforces Limited at all — split out, not fixed here)
+per-weapon), #320 (melee never enforces Limited at all — split out, not fixed here)
 
 ## Goal
 A player may decline to fire a weapon, so a once-per-game Limited weapon is never spent against their
@@ -54,7 +54,7 @@ will; and the once-per-game state is visible at the moment of the decision, in b
 
 - 2026-08-02: **Hand-test fixtures.** `LimitedWeaponsTest.fdgarmy` (repo root, 500pts, 4 units — one
   case each: Deadly+Limited rocket beside plain rifles; two DIFFERENT Limited weapons on one unit;
-  a unit whose only weapon is Limited; and a Limited MELEE weapon, which is #316's gap and is expected
+  a unit whose only weapon is Limited; and a Limited MELEE weapon, which is #320's gap and is expected
   to stay unenforced). `Scenarios/limited-weapons-test.json` drops all four in range on turn 1 so the
   shoot panel is two clicks away; `Scenarios/limited-hold-fire.json` is the narrow Deadly+Limited case.
 
@@ -83,4 +83,10 @@ will; and the once-per-game state is visible at the moment of the decision, in b
   Back to Done and making the unit owe a morale test it never triggered.
 
 ## Outcome
-(pending — GUI hand-verify)
+Hold fire (per weapon) and Done shooting (confirmed) shipped in both front ends, so a once-per-game
+Limited weapon is never spent against the player's will, and the once-per-game state is visible before
+the click (ONCE PER GAME / SPENT badges, an amber consequence line, a spend log line). The engine's
+hold-fire reply is a null target on `RangedAttackChoice`; `DeclineWeapon` keeps a declined weapon out of
+`AlreadyUsedWeapons`, which is what lets a declined Deadly+Limited weapon stop gating the unit's other
+weapons. Nothing deferred on the shooting side. Melee was split out as #320 (and narrowed by #318);
+AI hold-fire policy is deliberately not attempted.

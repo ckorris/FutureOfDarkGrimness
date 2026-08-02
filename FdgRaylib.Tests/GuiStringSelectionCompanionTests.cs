@@ -7,7 +7,7 @@ using NUnit.Framework;
 
 namespace FdgRaylib.Tests;
 
-// #317: a companion action ("Hold back: <weapon>") belongs to the option above it and is drawn as a
+// #321: a companion action ("Hold back: <weapon>") belongs to the option above it and is drawn as a
 // second button ON that row, sharing its letter under Shift. Two peer list entries for one weapon read
 // as two unrelated choices, which is what this replaced. The drawing is ImGui (hand-verified); these pin
 // the row-building rules that decide what gets a row, what gets a letter, and what a greyed companion says.

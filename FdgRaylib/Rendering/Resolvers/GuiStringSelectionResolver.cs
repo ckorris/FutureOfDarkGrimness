@@ -46,7 +46,7 @@ public class GuiStringSelectionResolver : IStageResolver<StringSelectionRequest,
         public string? Desc { get; }
         public int ValidIndex { get; }
 
-        /// <summary>#317: the companion action riding this row (melee's "Hold back"), or null.</summary>
+        /// <summary>#321: the companion action riding this row (melee's "Hold back"), or null.</summary>
         public StringSelectionRequest.SecondaryAction? Secondary { get; set; }
 
         /// <summary>Its button text, and the reason it is greyed out when it may not be taken.</summary>
@@ -88,7 +88,7 @@ public class GuiStringSelectionResolver : IStageResolver<StringSelectionRequest,
         const float gapAfterDesc = 8f;
         const float textPadX = 10f;      // inset of the hand-drawn label from the button's left edge
         const float btnPadY = 6f;
-        const float gapBetweenRowButtons = 4f;   // #317: between a row and its companion action
+        const float gapBetweenRowButtons = 4f;   // #321: between a row and its companion action
 
         // #298: rows are sized from the font, not from a hardcoded pixel count - see OptionRowHeight.
         float lineH = ImGui.GetTextLineHeight();
@@ -100,7 +100,7 @@ public class GuiStringSelectionResolver : IStageResolver<StringSelectionRequest,
         float dy = ResolverPanelLayout.Y;
         float fullBtnW = dw - pad * 2;      // full-width row: the footer buttons never lose a scrollbar strip
 
-        // #317: options that BELONG to another row (melee's "Hold back: <weapon>") are drawn as a second
+        // #321: options that BELONG to another row (melee's "Hold back: <weapon>") are drawn as a second
         // button on that row, so they must not also appear as rows of their own - which is the whole point:
         // two peer entries for one weapon read as two unrelated choices.
         HashSet<string> companionOptions = CompanionOptions(request);
@@ -109,7 +109,7 @@ public class GuiStringSelectionResolver : IStageResolver<StringSelectionRequest,
         // The label carries the letter so the shortcut is discoverable on the button itself. Assigned
         // from the REQUEST's option order (not the display order) so pulling Pass out below cannot
         // shuffle anyone else's letter.
-        // #317: companions are skipped when handing out letters - they share their owner row's letter
+        // #321: companions are skipped when handing out letters - they share their owner row's letter
         // under Shift - so they neither burn pool letters nor shift anyone else's.
         char?[] letters = AssignRowLetters(request, companionOptions);
 
@@ -159,7 +159,7 @@ public class GuiStringSelectionResolver : IStageResolver<StringSelectionRequest,
             float total = 0f;
             foreach (MenuRow row in rows)
             {
-                // #317: a companion button takes its text's width off the right of the row (capped, so a
+                // #321: a companion button takes its text's width off the right of the row (capped, so a
                 // long verb can never squeeze the weapon line out), and the label wraps into the rest.
                 row.SecondaryWidth = row.Secondary == null
                     ? 0f
@@ -264,7 +264,7 @@ public class GuiStringSelectionResolver : IStageResolver<StringSelectionRequest,
                 picked ??= row.Option;
             }
 
-            // #317: the companion action, on the SAME row and to its right - "attack with this weapon" and
+            // #321: the companion action, on the SAME row and to its right - "attack with this weapon" and
             // "hold this weapon back" are one decision about one weapon, and were two peer list entries
             // before, which read as two unrelated choices. Shares the row's letter under Shift.
             if (row.Secondary != null)
@@ -458,7 +458,7 @@ public class GuiStringSelectionResolver : IStageResolver<StringSelectionRequest,
     }
 
     /// <summary>
-    /// #317: hangs a row's companion action off it, if it has one - its button text (the short label plus
+    /// #321: hangs a row's companion action off it, if it has one - its button text (the short label plus
     /// the Shift shortcut it shares with the row's own letter) and, when the companion is currently
     /// refused, the reason to show greyed instead of a live button.
     /// </summary>
@@ -487,7 +487,7 @@ public class GuiStringSelectionResolver : IStageResolver<StringSelectionRequest,
     }
 
     /// <summary>
-    /// #317: every option that is some other option's companion action. These are drawn as a second button
+    /// #321: every option that is some other option's companion action. These are drawn as a second button
     /// on their owner's row, so they must be skipped everywhere a row is built from the request's lists -
     /// valid, invalid, and letter assignment alike. Internal for tests.
     /// </summary>
@@ -501,7 +501,7 @@ public class GuiStringSelectionResolver : IStageResolver<StringSelectionRequest,
     }
 
     /// <summary>
-    /// #248 letters, #317-aware: indexed by VALID-OPTION index so the draw loop can keep asking
+    /// #248 letters, #321-aware: indexed by VALID-OPTION index so the draw loop can keep asking
     /// <c>letters[row.ValidIndex]</c>, but companions are passed over - they share their owner's letter
     /// under Shift, so giving them their own would both burn the ten-letter pool and shift the letters of
     /// every option after them. Internal for tests.
@@ -523,7 +523,7 @@ public class GuiStringSelectionResolver : IStageResolver<StringSelectionRequest,
         return letters;
     }
 
-    /// <summary>#317: the companion action's own subtext, if the request gave it one.</summary>
+    /// <summary>#321: the companion action's own subtext, if the request gave it one.</summary>
     private static string? SecondaryDescription(StringSelectionRequest request, MenuRow row)
     {
         if (row.Secondary == null || request.OptionDescriptions == null) return null;

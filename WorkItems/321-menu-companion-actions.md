@@ -1,7 +1,7 @@
-# 317 — Companion actions: a second button ON the option's row, not a second row
+# 321 — Companion actions: a second button ON the option's row, not a second row
 
-**Status**: in-progress (implemented + tested + CLI hand-verified; awaiting GUI hand-verify)
-**Related**: #316 (melee hold-back, the first user of this), #315 (shooting's Hold fire, which is a
+**Status**: done (closed 2026-08-02 - hand-verified in the running app by the owner)
+**Related**: #320 (melee hold-back, the first user of this), #319 (shooting's Hold fire, which is a
 footer button and needs none of this), #248 (letter hotkeys), #298 (option subtext)
 
 ## Goal
@@ -38,7 +38,7 @@ list entry whose connection to the weapon the player has to infer from a text pr
   `[--] Hold back (reason)`. EOF still answers the first non-companion option.
 
   **AI**: `AiStringSelectionResolver` now skips companions generically (any value of `SecondaryActions`)
-  rather than by #316's melee-specific prefix.
+  rather than by #320's melee-specific prefix.
 
   **Tests**: 5 new app-side (`GuiStringSelectionCompanionTests`: companion set, letters skip companions
   without shifting the others, available/refused/absent companion labelling) + 2 engine (the melee stage
@@ -52,11 +52,16 @@ list entry whose connection to the weapon the player has to infer from a text pr
   `InvalidOption` that happens to be owned.
 - **Generic on `StringSelectionRequest`, not a melee-specific request type.** The pairing is a
   presentation fact about option lists, and a melee-only request would have forced both front ends to
-  grow a second weapon-menu implementation. #316's `HOLD_BACK_PREFIX`/`IsHoldBackChoice` survive for the
+  grow a second weapon-menu implementation. #320's `HOLD_BACK_PREFIX`/`IsHoldBackChoice` survive for the
   stage's own bookkeeping and tests, but no resolver keys off them any more.
 - **Companions do not take pool letters.** They share their owner's under Shift, so handing them one
   would burn the ten-letter pool twice as fast and shift every later option's letter — the letters array
   stays indexed by valid-option index with null holes instead.
 
 ## Outcome
-(pending — GUI hand-verify)
+`StringSelectionRequest.SecondaryActions` pairs an option with the action that belongs to it, and both
+front ends render the pair as one row - a right-hand button sharing the row's letter under Shift in the
+GUI, an indented `[sN]` sub-choice in the CLI. The companion stays an ordinary option on the wire, so
+resolvers that ignore the map are unaffected. Melee hold-back is the only user today; shooting's Hold
+fire is a footer button and needs none of it. `IsLetterPressed` now treats Shift as part of the binding,
+which was required for a shared letter and is the one change here that reaches every other menu.

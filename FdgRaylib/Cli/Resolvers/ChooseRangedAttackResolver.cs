@@ -24,7 +24,7 @@ public class ChooseRangedAttackResolver : IStageResolver<ChooseRangedAttackReque
             // blocked or in-cover unit is still a normal target (e.g. "(Indirect ignores line of sight)").
             weaponStats += SightRuleLabel.Parenthetical(
                 weaponOption.CoverIgnoreRule, weaponOption.LineOfSightIgnoreRule);
-            // #315: firing a once-per-game weapon spends it for good, and the player may decline it
+            // #319: firing a once-per-game weapon spends it for good, and the player may decline it
             // (hold fire, below) - so say which state it is in on every line that offers it.
             if (weaponOption.LimitedRule != null)
             {
@@ -67,7 +67,7 @@ public class ChooseRangedAttackResolver : IStageResolver<ChooseRangedAttackReque
             Console.WriteLine($"{prefix} {options[i].label}");
         }
 
-        // #315: hold fire - decline one weapon for this shoot action without firing it. Listed per weapon
+        // #319: hold fire - decline one weapon for this shoot action without firing it. Listed per weapon
         // that can still fire, since that is the only case where declining changes anything; a Limited
         // weapon says what holding fire preserves.
         var holdFireWeapons = request.WeaponOptions
@@ -83,7 +83,7 @@ public class ChooseRangedAttackResolver : IStageResolver<ChooseRangedAttackReque
             Console.WriteLine($"  [h{i + 1}] Hold fire: {wo.Weapon.Name} - do not fire it this action{keeps}");
         }
 
-        // #308/#315: exactly one exit, and the engine says which. Back (nothing fired) rewinds to Choose
+        // #308/#319: exactly one exit, and the engine says which. Back (nothing fired) rewinds to Choose
         // Action; Done (something fired) ends the shoot action with the remaining weapons unfired.
         if (request.AllowCancel)
             Console.WriteLine($"  [0] Back");
@@ -120,7 +120,7 @@ public class ChooseRangedAttackResolver : IStageResolver<ChooseRangedAttackReque
             {
                 if (choice == 0 && (request.AllowCancel || request.AllowStopShooting))
                 {
-                    // #315 (user sign-off): ending the action with loaded weapons asks first. Backing out
+                    // #319 (user sign-off): ending the action with loaded weapons asks first. Backing out
                     // before anything has fired costs nothing, so it does not.
                     if (request.AllowStopShooting && !ConfirmStopShooting(holdFireWeapons))
                         continue;
@@ -141,7 +141,7 @@ public class ChooseRangedAttackResolver : IStageResolver<ChooseRangedAttackReque
         }
     }
 
-    // #315: names what the shoot action is giving up before it ends. EOF answers "yes" - a piped script
+    // #319: names what the shoot action is giving up before it ends. EOF answers "yes" - a piped script
     // that asked to stop shooting means it, and re-prompting forever is the one wrong answer here.
     private static bool ConfirmStopShooting(List<WeaponOption> unfired)
     {

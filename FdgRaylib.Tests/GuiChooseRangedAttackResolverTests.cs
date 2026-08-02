@@ -226,7 +226,7 @@ public class GuiChooseRangedAttackResolverTests
             Is.EqualTo(-1), "with two real alternatives and no evidence, guessing would aim the volley.");
     }
 
-    // #315: the "Done shooting" confirmation names what the action gives up, so it must count only the
+    // #319: the "Done shooting" confirmation names what the action gives up, so it must count only the
     // weapons that could actually still fire. Listing one with nothing in range would warn about a shot
     // the unit never had.
     [Test]
