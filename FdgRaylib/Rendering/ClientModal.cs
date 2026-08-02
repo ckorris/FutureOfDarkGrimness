@@ -5,6 +5,7 @@ using System.Numerics;
 using FDG.Network;
 using FDG.Network.Connection;
 using FDG.Network.Connection.Lobby;
+using FdgRaylib.Config;
 using FdgRaylib.ListServer;
 using ImGuiNET;
 
@@ -15,7 +16,9 @@ public class ClientModal : IAppScreen
     public Action<ILobbyViewModel>? OnConnected;
     public Action? OnCancel;
 
-    private string _yourName  = "Mrs. Client";
+    // Seeded from the saved config (#310) - the same name you last hosted or joined under, "Newbie" on
+    // a fresh install.
+    private string _yourName  = UserConfig.Current.PlayerName;
     private string _ipAddress = "127.0.0.1";
     private string _port      = NetworkProtocol.DefaultPort.ToString();
     private string _password  = "";
@@ -42,6 +45,10 @@ public class ClientModal : IAppScreen
 
     // How long to wait for the host's accept/reject handshake before giving up (#075).
     private const double JoinTimeoutSeconds = 8.0;
+
+    // #310: the saved name can change while this dialog sits off screen (you hosted under a different
+    // one), so the fields are re-read from the config every time it opens, not just at construction.
+    public void OnShown() => Reset();
 
     public void Draw(int screenW, int screenH)
     {
@@ -447,6 +454,11 @@ public class ClientModal : IAppScreen
                 return;
             }
 
+            // The name that just joined becomes the default for next time (#310), host dialog included.
+            // Saved only after the host accepts, so a rejected join doesn't rewrite it.
+            UserConfig.Current.PlayerName = _yourName;
+            UserConfig.Save();
+
             Reset();
             OnConnected?.Invoke(viewModel);
         }
@@ -480,7 +492,7 @@ public class ClientModal : IAppScreen
 
     private void Reset()
     {
-        _yourName      = "Mrs. Client";
+        _yourName      = UserConfig.Current.PlayerName; // #310: the saved name, not a hardcoded default
         _ipAddress     = "127.0.0.1";
         _port          = NetworkProtocol.DefaultPort.ToString();
         _password      = "";

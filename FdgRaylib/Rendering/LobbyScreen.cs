@@ -7,6 +7,7 @@ using FDG.Network.Messages;
 using FDG.Players;
 using FDG.SaveLoad;
 using FdgRaylib.Cli;
+using FdgRaylib.Config;
 using FdgRaylib.Rendering.Presentation;
 using FdgRaylib.Rendering.Resolvers;
 using ImGuiNET;
@@ -72,9 +73,15 @@ public class LobbyScreen : IAppScreen
         // taken before anything reacts to the game ending (#187).
         viewModel.OnGameCompleted += result => OnGameCompleted?.Invoke(result);
 
+        // #310: a fresh host lobby opens on the settings the last hosted game used (saved config), not
+        // on the engine defaults. No-op for a client or a resume - ApplyTo gates on both, since a
+        // resumed game launches from its own saved settings.
+        UserConfig.Current.HostSettings.ApplyTo(viewModel);
+
         // Pick a random terrain type (cosmetic table surface) each time a fresh lobby opens, so every
         // new game leads with a different-looking board instead of always Forest. Host-only (the setting
         // is host-owned and broadcast to clients) and skipped on resume (saved games keep their surface).
+        // Deliberately NOT remembered in the config (#310) - randomizing it is the whole point.
         if (viewModel.HasHostPrivileges && !viewModel.IsResumeMode)
         {
             var backgrounds = Enum.GetValues<ETableBackground>();
@@ -152,7 +159,10 @@ public class LobbyScreen : IAppScreen
         float backH = headerH - 8f;
         ImGui.SetCursorPos(new Vector2(mainW - backW - 4f, 4f));
         if (UiButton.Back("Back", new Vector2(backW, backH)))
+        {
+            PersistHostSettings();
             OnBack?.Invoke();
+        }
 
         ImGui.EndChild();
 
@@ -643,6 +653,20 @@ public class LobbyScreen : IAppScreen
         string? fail;
         bool started = resume ? _viewModel!.TryResumeGame(out fail) : _viewModel!.TryLaunchGame(out fail);
         _lastLaunchError = started ? null : (fail ?? "Launch failed.");
+
+        if (started) PersistHostSettings();
+    }
+
+    // #310: the settings panel as the host left it becomes the default for the next hosted game.
+    // Written at the two points a lobby ends - launching and backing out - rather than on every edit,
+    // so dragging a slider doesn't write the file once per value. Host-only and never on a resume:
+    // a resume lobby's controls are locked to the save's settings, which aren't this player's picks.
+    private void PersistHostSettings()
+    {
+        if (_viewModel == null || !_viewModel.HasHostPrivileges || _viewModel.IsResumeMode) return;
+
+        UserConfig.Current.HostSettings = HostGameSettings.CaptureFrom(_viewModel);
+        UserConfig.Save();
     }
 
     // #153 launch gate: lists each army's hard legality problems; Cancel is the default action, and
