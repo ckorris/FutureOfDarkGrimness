@@ -285,6 +285,9 @@ public class TableTooltipOverlay
         }
 
         string typeLine = flags.Count > 0 ? string.Join(", ", flags) : "None";
+        // Named pieces (palette entries like "Boulder") lead with the name, matching the placement picker.
+        if (!string.IsNullOrWhiteSpace(terrain.Name))
+            ImGui.TextUnformatted(terrain.Name);
         ImGui.TextUnformatted($"Terrain: {typeLine}");
         if (terrain.HeightInches > 0f)
             ImGui.TextUnformatted($"Height: {terrain.HeightInches}\"");
