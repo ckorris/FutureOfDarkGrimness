@@ -3,6 +3,7 @@ using FDG;
 using FDG.Data;
 using FDG.StageResolution;
 using FDG.StageResolution.Requests;
+using FDG.Stages;
 using ImGuiNET;
 using static FDG.StageResolution.Requests.ChooseRangedAttackRequest;
 
@@ -525,17 +526,27 @@ public class GuiChooseRangedAttackResolver
                 thickness: 2f, inflateInches: 3f / _scale, facing: m.Facing);
         }
 
-        // One line per shooter — from each attacker model that can hit this unit, to its
-        // nearest target model. Uses 2D distance as a proxy for "valid"; per-model LoS data
-        // isn't in the request, but the unit-level modelsThatCanShoot set guarantees at
-        // least one defender is reachable. Label each line at its midpoint with the 3D
-        // base-to-base distance in inches (matches the engine's range-check metric).
+        // One line per shooter — from each attacker model that can hit this unit, to the nearest
+        // defender it can actually SEE (#312). Aiming at the nearest model outright drew fire lines
+        // straight through blocking terrain whenever the closest defender was the blocked one, while
+        // the volley itself resolved against a model the shooter could see. The sight test is the
+        // engine's own (ShotEligibility, shared with the attack animation's endpoints), so the preview
+        // and the shot cannot disagree.
+        //
+        // No range check is needed here: modelsThatCanShoot already says this shooter can hit the unit,
+        // and the nearest VISIBLE defender is necessarily the in-range one (every other visible defender
+        // is farther away). A weapon that ignores line of sight (Indirect/Takedown) passes null blockers
+        // and so aims at the nearest model, blocked or not — which is exactly what it shoots.
+        IReadOnlyList<ITerrain>? blockers = wo.IgnoresTerrain
+            ? null
+            : ShotEligibility.BuildBlockers(_tableState, request.AttackingUnit.GetValue(), targetUnit);
+
         uint colorLabel = ImGui.ColorConvertFloat4ToU32(new Vector4(0.85f, 1.00f, 0.85f, 0.95f));
         uint colorLabelBg = ImGui.ColorConvertFloat4ToU32(new Vector4(0f, 0f, 0f, 0.55f));
         foreach (var ab in ts.modelsThatCanShoot)
         {
             var attacker = ab.GetValue();
-            ModelData? nearest = NearestModel(attacker, targetUnit.ModelBindings);
+            ModelData? nearest = NearestVisibleModel(attacker, targetUnit.ModelBindings, blockers);
             if (nearest == null) continue;
             var (ax, ay) = InchesToPixel(attacker.Position.x, attacker.Position.z);
             var (tx, ty) = InchesToPixel(nearest.Position.x, nearest.Position.z);
@@ -553,23 +564,20 @@ public class GuiChooseRangedAttackResolver
         }
     }
 
-    // Internal for tests. #158: only LIVING, placed models are candidates — a just-killed model is often
-    // the nearest (you shot it last volley), and aiming the shooter line at its corpse read as
-    // "shooting at a dead model".
-    internal static ModelData? NearestModel(ModelData from, IReadOnlyList<DataBinding<ModelData>> candidates)
+    // Internal for tests. The nearest candidate this shooter can SEE (#312) — pass null blockers for a
+    // weapon that ignores line of sight, which reduces it to plain nearest. #158: only LIVING, placed
+    // models are candidates — a just-killed model is often the nearest (you shot it last volley), and
+    // aiming the shooter line at its corpse read as "shooting at a dead model".
+    //
+    // A thin adapter over the engine's ShotEligibility, not a second implementation: the shot animation
+    // asks the same function, so a line the panel draws is a line the volley would fire.
+    internal static ModelData? NearestVisibleModel(ModelData from,
+        IReadOnlyList<DataBinding<ModelData>> candidates, IReadOnlyList<ITerrain>? blockers)
     {
-        ModelData? best = null;
-        float bestDist = float.PositiveInfinity;
-        foreach (var mb in candidates)
-        {
-            var m  = mb.GetValue();
-            if (!m.GetIsAlive()) continue;
-            if (m.Position.x == 0f && m.Position.z == 0f) continue;
-            float d = DistanceUtilities.GetBaseToBaseDistanceInches_3D(
-                from.Position, m.Position, from.BaseShape, from.Facing, m.BaseShape, m.Facing);
-            if (d < bestDist) { bestDist = d; best = m; }
-        }
-        return best;
+        var models = new List<IModel>(candidates.Count);
+        foreach (var mb in candidates) models.Add(mb.GetValue());
+        return ShotEligibility.NearestVisibleModel(from.Position, from.BaseShape, from.Facing,
+            models, blockers) as ModelData;
     }
 
     // ── Helpers ───────────────────────────────────────────────────────────────

@@ -14,8 +14,41 @@ namespace FdgRaylib.Tests;
 [TestFixture]
 public class GuiChooseRangedAttackResolverTests
 {
+    // #312: the fire line must land on a model the shooter can SEE. Aiming at the nearest model outright
+    // drew lines straight through blocking terrain while the volley resolved against a visible model.
     [Test]
-    public void NearestModel_SkipsDeadAndUnplacedCandidates()
+    public void NearestVisibleModel_SkipsANearerModelBehindABlocker()
+    {
+        var store = GameDataStore.GameDataStoreBuilder.GetDefault();
+        // Wall x 8..12, z 3..7 — the (1,12) -> (21,1) lane cuts it; (1,12) -> (25,12) is clear.
+        var wall = new TerrainData(ETerrainType.Blocking, new RectangularZone(8, 12, 3, 7));
+        store.Create(wall);
+
+        DataBinding<ModelData> Make(Position pos)
+        {
+            var model = new ModelData(baseRadiusInches: 0.5f, weapons: new List<Weapon>(),
+                initialPosition: pos, gameDataStore: store);
+            return store.GetDataBinding<ModelData>(store.Create(model));
+        }
+
+        var shooter = Make(new Position(1, 12));
+        var blocked = Make(new Position(21, 1));   // nearer, but behind the wall
+        var visible = Make(new Position(25, 12));  // farther, clear lane
+        var blockers = new List<ITerrain> { wall };
+
+        Assert.That(GuiChooseRangedAttackResolver.NearestVisibleModel(shooter.GetValue(),
+                new List<DataBinding<ModelData>> { blocked, visible }, blockers),
+            Is.SameAs(visible.GetValue()),
+            "the line must point at the defender the shot could actually reach");
+
+        Assert.That(GuiChooseRangedAttackResolver.NearestVisibleModel(shooter.GetValue(),
+                new List<DataBinding<ModelData>> { blocked, visible }, blockers: null),
+            Is.SameAs(blocked.GetValue()),
+            "a weapon that ignores line of sight (Indirect/Takedown) still aims at the nearest model");
+    }
+
+    [Test]
+    public void NearestVisibleModel_SkipsDeadAndUnplacedCandidates()
     {
         var store = GameDataStore.GameDataStoreBuilder.GetDefault();
 
@@ -34,8 +67,8 @@ public class GuiChooseRangedAttackResolverTests
         var deadModel = dead.GetValue();
         deadModel.DealWounds(deadModel.TotalWounds - deadModel.WoundsDealt);
 
-        ModelData? nearest = GuiChooseRangedAttackResolver.NearestModel(shooter.GetValue(),
-            new List<DataBinding<ModelData>> { dead, unplaced, alive });
+        ModelData? nearest = GuiChooseRangedAttackResolver.NearestVisibleModel(shooter.GetValue(),
+            new List<DataBinding<ModelData>> { dead, unplaced, alive }, blockers: null);
 
         Assert.That(nearest, Is.SameAs(alive.GetValue()),
             "the line must aim at the nearest LIVING, placed model - never a corpse or the table origin");
@@ -194,7 +227,7 @@ public class GuiChooseRangedAttackResolverTests
     }
 
     [Test]
-    public void NearestModel_AllCandidatesDead_ReturnsNull()
+    public void NearestVisibleModel_AllCandidatesDead_ReturnsNull()
     {
         var store = GameDataStore.GameDataStoreBuilder.GetDefault();
         var model = new ModelData(baseRadiusInches: 0.5f, weapons: new List<Weapon>(),
@@ -206,7 +239,7 @@ public class GuiChooseRangedAttackResolverTests
             initialPosition: new Position(1, 0), gameDataStore: store);
         store.Create(from);
 
-        Assert.That(GuiChooseRangedAttackResolver.NearestModel(from,
-            new List<DataBinding<ModelData>> { binding }), Is.Null);
+        Assert.That(GuiChooseRangedAttackResolver.NearestVisibleModel(from,
+            new List<DataBinding<ModelData>> { binding }, blockers: null), Is.Null);
     }
 }

@@ -6,6 +6,7 @@ using FDG.Players;
 using FDG.Rules.Foundation;
 using FDG.StageResolution.Requests;
 using FDG.Stages;
+using FdgRaylib.Placement;
 using FdgRaylib.Rendering.Resolvers;
 using ImGuiNET;
 using Raylib_cs;
@@ -889,13 +890,10 @@ public class TacticalOverlayController
     /// </summary>
     private List<IUnit> QualifyingEnemies(PlayerID refPlayer)
     {
-        ITeam? refTeam = _tableState!.Teams.Objects.FirstOrDefault(t => t.IsPlayerOnTeam(refPlayer));
-
         var result = new List<IUnit>();
-        foreach (IUnit u in _tableState.Progress.UnactivatedUnits)
+        foreach (IUnit u in _tableState!.Progress.UnactivatedUnits)
         {
-            bool enemy = refTeam != null ? !refTeam.IsPlayerOnTeam(u.PlayerID) : !u.PlayerID.Equals(refPlayer);
-            if (!enemy) continue;
+            if (!IsEnemyOf(refPlayer, u)) continue;
             if (!u.GetIsAlive()) continue;
             if (!u.GetIsOnBattlefield()) continue;
             if (u.Tokens.HasToken(TokenType.Shaken)) continue;
@@ -1377,11 +1375,10 @@ public class TacticalOverlayController
         return maps;
     }
 
+    // #312: one team-aware rule for the whole app - a unit belonging to ANOTHER PLAYER ON YOUR TEAM is
+    // not an enemy, and so must never wear a threat ring or a can-hit / can-charge indicator.
     private bool IsEnemyOf(PlayerID refPlayer, IUnit unit)
-    {
-        ITeam? team = _tableState!.Teams.Objects.FirstOrDefault(t => t.IsPlayerOnTeam(refPlayer));
-        return team != null ? !team.IsPlayerOnTeam(unit.PlayerID) : !unit.PlayerID.Equals(refPlayer);
-    }
+        => TeamAwareness.IsEnemyUnit(_tableState!, refPlayer, unit);
 
     private void UpdateHover(double dt, TableHitTester hitTester, DefineMovementPathRequest req)
     {
