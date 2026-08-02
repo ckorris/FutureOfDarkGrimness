@@ -5,7 +5,7 @@ namespace FdgRaylib.Rendering;
 
 /// <summary>
 /// Subscribes to the engine's outstanding-task stream and answers "whose decision is the game
-/// waiting on right now?" for the status HUD (#318). Local players' tasks are filtered out - the
+/// waiting on right now?" for the status HUD (#322). Local players' tasks are filtered out - the
 /// resolver panel already shows those - so what remains is exactly the set of other people the
 /// local player is waiting for. Purely a read model: the renderer draws it via
 /// <see cref="StatusHudOverlay"/> (the old draggable "Outstanding Tasks" ImGui window is gone).

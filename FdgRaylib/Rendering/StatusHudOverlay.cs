@@ -7,7 +7,7 @@ namespace FdgRaylib.Rendering;
 /// <summary>
 /// A persistent top-center status strip over the table: the current round ("ROUND 2 / 4"), a live
 /// objective scoreboard (one player-colored pip + controlled-objective count per player), and -- when
-/// another player holds up the game (#318) -- a smaller "Waiting on Bob: Place Unit Models" line
+/// another player holds up the game (#322) -- a smaller "Waiting on Bob: Place Unit Models" line
 /// beneath, one per outstanding non-local task. Answers the three questions the log otherwise
 /// buries -- what round is it, who's ahead, and why is nothing happening.
 ///
@@ -23,7 +23,7 @@ public static class StatusHudOverlay
     private const int   PipRadius  = 9;
     private const int   TopMargin  = 12;
 
-    // #318 "Waiting on" lines: smaller than the main strip, capped so a many-player pileup can't
+    // #322 "Waiting on" lines: smaller than the main strip, capped so a many-player pileup can't
     // curtain the board.
     private const int   WaitFontSize = 20;
     private const int   WaitLineGap  = 5;

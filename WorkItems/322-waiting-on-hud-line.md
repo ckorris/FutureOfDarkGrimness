@@ -1,6 +1,7 @@
-# 318 — "Waiting on" line in the status HUD
+# 322 — "Waiting on" line in the status HUD
 
 **Status**: in-progress
+**Related**: Was #318 pre-reconciliation-41 (that number stayed with the merged melee hold-back item); commit messages from before the renumber say #318.
 
 ## Goal
 Restore visibility into what other players are doing while the local player waits (removed with the

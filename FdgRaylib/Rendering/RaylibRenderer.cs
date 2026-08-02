@@ -1003,7 +1003,7 @@ public class RaylibRenderer
         foreach (PlayerObjectiveScore s in progress.Scores)
             scores.Add((_colorForPlayer(s.PlayerID), s.ObjectiveCount));
 
-        // #318: whose decision the game is waiting on (non-local players only - the resolver panel
+        // #322: whose decision the game is waiting on (non-local players only - the resolver panel
         // already covers the local player's own pending tasks).
         var waiting = new List<(Color color, string playerName, string taskName)>();
         if (_taskDisplay != null)
