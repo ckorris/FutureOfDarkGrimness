@@ -7,10 +7,10 @@ using Raylib_cs;
 namespace FdgRaylib.Rendering.Presentation;
 
 /// <summary>
-/// Draws the active <see cref="DiceRolledBeat"/> as a lower-third caption strip docked to the
-/// bottom-center of the table viewport (#245) — the subtitle convention: the action plays out on
+/// Draws the live <see cref="DiceRolledBeat"/> panels as a lower-third caption STACK docked to the
+/// bottom-center of the table viewport (#245, #322) — the subtitle convention: the action plays out on
 /// the table while the numbers narrate from the caption zone, never covering the units or the
-/// concurrent attack animation (#238). The panel is: a standalone <b>target badge</b> (the success
+/// concurrent attack animation (#238). Each panel is: a standalone <b>target badge</b> (the success
 /// threshold, e.g. "4+", big enough to read before the dice settle) over the roll's category word
 /// (ATTACK / SAVE / CAST, matching the panel's accent stripe), a <b>header</b> with the roll's purpose
 /// (<see cref="DiceRolledBeat.Label"/>), an optional dim <b>context</b> line (who's rolling at
@@ -19,7 +19,13 @@ namespace FdgRaylib.Rendering.Presentation;
 /// and a <b>result line</b> with the settled outcome (<see cref="DiceRolledBeat.ResultSummary"/>).
 /// Beats carrying chips arrive pre-stretched by the engine so there is time to read them.
 ///
-/// <para>If the attack animation's screen bounds still reach the strip (units fighting at the
+/// <para>#322: rolls are held beats, so several are legible at once. The OLDEST keeps the bottom
+/// anchor and newer ones stack above it, each dimmed by depth so the newest reads loudest; hovering
+/// the stack freezes the timers and restores every panel to full strength. When the stack would not fit
+/// the vertical budget the oldest panels are dropped from the layout, never the newest — the top of the
+/// stack is the one furthest from the anchor, so it is the one at risk of running off screen.</para>
+///
+/// <para>If an attack animation's screen bounds still reach the strip (units fighting at the
 /// bottom table edge), the panel fades to a ghost instead of moving — consistent anchor, graceful
 /// degradation.</para>
 ///
@@ -68,6 +74,14 @@ public static class DiceOverlay
 
     private const float OverlapDim = 0.35f; // ghost alpha while the attack animation overlaps the strip
 
+    // #322 stack geometry.
+    private const int StackGap    = 8;   // between panels
+    private const int StackTopMin = 56;  // the stack never climbs over the status HUD strip
+    // Depth dim, counted from the newest panel down: the current roll reads at full strength and the
+    // history behind it steps back a little further each time. Hovering the stack restores every panel
+    // to full — that is the "let me re-read that" affordance. The last entry repeats for deeper stacks.
+    private static readonly float[] DepthAlpha = { 1f, 0.62f, 0.42f };
+
     private static readonly Color Panel    = new(20, 20, 24, 210);
     private static readonly Color BadgeBg  = new(42, 38, 26, 230);
     private static readonly Color Success  = new(60, 170, 70, 255);   // roll-offs only — see AccentFor
@@ -92,108 +106,222 @@ public static class DiceOverlay
     private static readonly Color ChipText   = new(210, 210, 215, 255);
     private static readonly Color ProcChipBg = new(58, 48, 24, 230);
 
-    // Smoothed overlap dim so the ghosting eases instead of stepping. Render-thread only.
-    private static float  _dim = 1f;
-    private static double _lastDrawTime;
-
-    public static void Draw(DiceRolledBeat beat, float progress, float alpha, int areaWidth, int screenH,
-        Rectangle? avoid)
+    // Per-panel smoothing state, keyed by beat reference and pruned each frame. Render-thread only.
+    // The overlap ghosting was already eased; #322 made it per-panel (panels at different heights
+    // overlap the attack differently, and one shared value had them fighting over it) and added the
+    // depth dim, which likewise eases — a panel stepping straight from full to dim the instant the next
+    // roll appears reads as a flicker rather than as history receding.
+    private sealed class PanelFx
     {
-        if (beat.Mode == ERandomnessType.Probabilistic)
-            DrawProbabilistic(beat, alpha, areaWidth, screenH, avoid);
-        else
-            DrawRealistic(beat, progress, alpha, areaWidth, screenH, avoid);
+        public float Dim = 1f;
+        public float Depth = -1f;   // negative until the panel's first frame, which seeds it
     }
 
-    private static void DrawRealistic(DiceRolledBeat beat, float progress, float alpha, int areaWidth,
-        int screenH, Rectangle? avoid)
+    private static readonly Dictionary<DiceRolledBeat, PanelFx> _fx = new();
+    private static double _lastDrawTime;
+
+    /// <summary>
+    /// Draws every live dice panel (#322), taking the stack OLDEST FIRST exactly as
+    /// <c>PresentationPlayer.GetDiceStack</c> returns it, and returns the screen bounds the stack
+    /// occupies so the caller can hit-test the pointer for hover-freeze. Zero-size when nothing is up.
+    /// </summary>
+    /// <param name="hovered">Frozen under the pointer: every panel draws at full strength, so the
+    /// history can be read instead of merely glimpsed.</param>
+    public static Rectangle DrawStack(
+        IReadOnlyList<(DiceRolledBeat beat, float progress, float alpha)> stack,
+        int areaWidth, int screenH, Rectangle? avoid, bool hovered)
     {
-        // Expand the histogram into individual dice (rounded — realistic counts are whole numbers).
-        var faces = new List<int>();
-        for (int i = 0; i < beat.FaceCounts.Count; i++)
+        if (stack.Count == 0)
         {
-            int count = (int)MathF.Round(beat.FaceCounts[i]);
-            for (int n = 0; n < count; n++) faces.Add(beat.SideMin + i);
+            _fx.Clear();
+            return new Rectangle(0, 0, 0, 0);
         }
 
-        bool settled = progress >= FlickerEnd;
-        string header = beat.Label;
-        // The settled text is known from the start (the tumble is purely cosmetic), so the panel is
-        // sized for it up front and never reflows at the settle instant.
-        string result = ResultText(beat);
-        string badge  = $"{beat.SuccessThreshold}+";
+        // Measure first: panels are anchored from the BOTTOM up, so each one's Y depends on the heights
+        // of everything below it.
+        var layouts = new PanelLayout[stack.Count];
+        for (int i = 0; i < stack.Count; i++) layouts[i] = Measure(stack[i].beat, areaWidth);
+
+        // Trim the OLDEST panels while the stack overflows its vertical budget. The newest sits highest,
+        // so an overflow always threatens the panel that matters most — the trim has to come off the
+        // anchored end. The last panel is never dropped, however tall it is.
+        int totalH = 0;
+        for (int i = 0; i < layouts.Length; i++) totalH += layouts[i].PanelH + (i > 0 ? StackGap : 0);
+        int budget = screenH - BottomMargin - StackTopMin;
+        int first = 0;
+        while (first < layouts.Length - 1 && totalH > budget)
+        {
+            totalH -= layouts[first].PanelH + StackGap;
+            first++;
+        }
+
+        float dt = FrameDelta();
+        PruneFx(stack);
+
+        int left = int.MaxValue, right = 0, top = int.MaxValue;
+        int bottom = screenH - BottomMargin;    // the anchor: the oldest drawn panel's bottom edge
+        int stackBottom = bottom;
+        for (int i = first; i < stack.Count; i++)
+        {
+            PanelLayout layout = layouts[i];
+            int panelY = bottom - layout.PanelH;
+            int panelX = (areaWidth - layout.PanelW) / 2;
+
+            // Depth counted from the TOP of the stack, so the newest roll is always the loudest one
+            // regardless of how many are up.
+            int depth = stack.Count - 1 - i;
+            float depthAlpha = hovered ? 1f : DepthAlpha[Math.Min(depth, DepthAlpha.Length - 1)];
+
+            DrawPanel(stack[i].beat, layout, stack[i].progress, stack[i].alpha,
+                panelX, panelY, avoid, depthAlpha, dt);
+
+            left  = Math.Min(left, panelX);
+            right = Math.Max(right, panelX + layout.PanelW);
+            top   = Math.Min(top, panelY);
+            bottom = panelY - StackGap;
+        }
+
+        return new Rectangle(left, top, right - left, stackBottom - top);
+    }
+
+    /// <summary>
+    /// Everything about a panel that has to be known before it can be positioned. Measuring is split
+    /// from drawing because a bottom-anchored stack has to size every panel before it can place any of
+    /// them — and because the settled text is known from the start (the tumble is purely cosmetic), so
+    /// a panel is sized for its final content up front and never reflows at the settle instant.
+    /// </summary>
+    private sealed class PanelLayout
+    {
+        public bool Probabilistic;
+        public readonly List<int> Faces = new();   // realistic: the histogram expanded into single dice
+        public int DieSizeUsed, RowW, DiceH;       // realistic
+        public int BarW, BarH;                     // probabilistic
+        public List<(string Text, int W)>? ModChips;
+        public List<(string Text, int W)>? ProcChips;
+        public string Header = "", ResultLine = "", Badge = "";
+        public int BadgeW, BadgeColH, ContentW, ContentH, PanelW, PanelH;
+    }
+
+    private static PanelLayout Measure(DiceRolledBeat beat, int areaWidth)
+    {
+        var l = new PanelLayout
+        {
+            Probabilistic = beat.Mode == ERandomnessType.Probabilistic,
+            Header     = beat.Label,
+            ResultLine = ResultText(beat),
+            Badge      = $"{beat.SuccessThreshold}+",
+        };
+
         int maxChipRow = areaWidth - SideReserve;
-        List<(string Text, int W)>? modChips  = LayoutChips(beat.ModifierTags, maxChipRow);
-        List<(string Text, int W)>? procChips = LayoutChips(beat.ProcTags, maxChipRow);
-        bool procsFired = procChips != null;
+        l.ModChips  = LayoutChips(beat.ModifierTags, maxChipRow);
+        l.ProcChips = LayoutChips(beat.ProcTags, maxChipRow);
 
-        // Size the dice row (shrink the die if there are many).
-        int gap = DieGap;
-        int dieSize = DieSize;
-        if (faces.Count > 0)
+        if (l.Probabilistic)
         {
-            float maxRow = areaWidth - SideReserve; // leave room for the badge column + margins
-            if (faces.Count * (dieSize + gap) > maxRow)
-                dieSize = Math.Max(DieMin, (int)(maxRow / faces.Count) - gap);
+            // No discrete dice exist under the probabilistic roller — a success bar stands in for them.
+            l.BarW = Math.Min(Sc(360), areaWidth - SideReserve);
+            l.BarH = Sc(22);
         }
-        int rowW  = faces.Count > 0 ? faces.Count * dieSize + (faces.Count - 1) * gap : 0;
-        int diceH = faces.Count > 0 ? dieSize : 0;
+        else
+        {
+            // Expand the histogram into individual dice (rounded — realistic counts are whole numbers).
+            for (int i = 0; i < beat.FaceCounts.Count; i++)
+            {
+                int count = (int)MathF.Round(beat.FaceCounts[i]);
+                for (int n = 0; n < count; n++) l.Faces.Add(beat.SideMin + i);
+            }
 
-        (int badgeW, int badgeColH) = BadgeColumnSize(badge, beat.Category);
+            // Size the dice row (shrink the die if there are many).
+            l.DieSizeUsed = DieSize;
+            if (l.Faces.Count > 0)
+            {
+                float maxRow = areaWidth - SideReserve; // leave room for the badge column + margins
+                if (l.Faces.Count * (l.DieSizeUsed + DieGap) > maxRow)
+                    l.DieSizeUsed = Math.Max(DieMin, (int)(maxRow / l.Faces.Count) - DieGap);
+            }
+            l.RowW  = l.Faces.Count > 0 ? l.Faces.Count * l.DieSizeUsed + (l.Faces.Count - 1) * DieGap : 0;
+            l.DiceH = l.Faces.Count > 0 ? l.DieSizeUsed : 0;
+        }
+
+        (l.BadgeW, l.BadgeColH) = BadgeColumnSize(l.Badge, beat.Category);
 
         int chipH = ChipSize + ChipPadY * 2;
-        int contentW = Math.Max(Raylib.MeasureText(header, HeaderSize),
-                       Math.Max(rowW, Raylib.MeasureText(result, ResultSize)));
-        if (beat.Context != null) contentW = Math.Max(contentW, Raylib.MeasureText(beat.Context, ContextSize));
-        if (modChips != null)  contentW = Math.Max(contentW, ChipsWidth(modChips));
-        if (procChips != null) contentW = Math.Max(contentW, ChipsWidth(procChips));
+        int bodyW = l.Probabilistic ? l.BarW : l.RowW;
+        l.ContentW = Math.Max(Raylib.MeasureText(l.Header, HeaderSize),
+                     Math.Max(bodyW, Raylib.MeasureText(l.ResultLine, ResultSize)));
+        if (beat.Context != null)
+            l.ContentW = Math.Max(l.ContentW, Raylib.MeasureText(beat.Context, ContextSize));
+        if (l.ModChips != null)  l.ContentW = Math.Max(l.ContentW, ChipsWidth(l.ModChips));
+        if (l.ProcChips != null) l.ContentW = Math.Max(l.ContentW, ChipsWidth(l.ProcChips));
 
-        int contentH = HeaderSize
+        int bodyH = l.Probabilistic ? RowGap + l.BarH : (l.DiceH > 0 ? RowGap + l.DiceH : 0);
+        l.ContentH = HeaderSize
             + (beat.Context != null ? RowGap + ContextSize : 0)
-            + (diceH > 0 ? RowGap + diceH : 0)
-            + (modChips != null ? RowGap + chipH : 0)
-            + (procChips != null ? RowGap + chipH : 0)
+            + bodyH
+            + (l.ModChips != null ? RowGap + chipH : 0)
+            + (l.ProcChips != null ? RowGap + chipH : 0)
             + RowGap + ResultSize;
 
-        int panelW = PanelPad + badgeW + ColGap + contentW + PanelPad;
-        int panelH = PanelPad * 2 + Math.Max(contentH, badgeColH);
-        int panelX = (areaWidth - panelW) / 2;
-        int panelY = screenH - panelH - BottomMargin;
+        l.PanelW = PanelPad + l.BadgeW + ColGap + l.ContentW + PanelPad;
+        l.PanelH = PanelPad * 2 + Math.Max(l.ContentH, l.BadgeColH);
+        return l;
+    }
 
-        var panelRect = new Rectangle(panelX, panelY, panelW, panelH);
-        float a = alpha * UpdateDim(panelRect, avoid);
+    private static void DrawPanel(DiceRolledBeat beat, PanelLayout l, float progress, float alpha,
+        int panelX, int panelY, Rectangle? avoid, float depthAlpha, float dt)
+    {
+        var panelRect = new Rectangle(panelX, panelY, l.PanelW, l.PanelH);
+        float a = alpha * PanelFxFor(beat, panelRect, avoid, depthAlpha, dt);
         if (a <= 0.02f) return;
 
+        // Probabilistic rolls have no rolling phase: there are no faces to tumble, so show the result at
+        // once.
+        bool settled = l.Probabilistic || progress >= FlickerEnd;
+        bool procsFired = l.ProcChips != null;
+        int chipH = ChipSize + ChipPadY * 2;
+
         Raylib.DrawRectangleRounded(panelRect, 0.18f, 6, Faded(Panel, a));
-        DrawAccentStripe(panelX, panelY, panelH, beat.Category, a);
-        DrawBadgeColumn(panelX + PanelPad, panelY + (panelH - badgeColH) / 2, badgeW, badge, beat.Category, a);
+        DrawAccentStripe(panelX, panelY, l.PanelH, beat.Category, a);
+        DrawBadgeColumn(panelX + PanelPad, panelY + (l.PanelH - l.BadgeColH) / 2, l.BadgeW, l.Badge,
+            beat.Category, a);
 
         // Content column, centered within its own span (the badge offsets it from the panel center).
-        int contentX = panelX + PanelPad + badgeW + ColGap;
-        int y = panelY + (panelH - contentH) / 2;
-        DrawCenteredIn(header, contentX, contentW, y, HeaderSize, Faded(Header, a));
+        int contentX = panelX + PanelPad + l.BadgeW + ColGap;
+        int y = panelY + (l.PanelH - l.ContentH) / 2;
+        DrawCenteredIn(l.Header, contentX, l.ContentW, y, HeaderSize, Faded(Header, a));
         y += HeaderSize;
 
         if (beat.Context != null)
         {
             y += RowGap;
-            DrawCenteredIn(beat.Context, contentX, contentW, y, ContextSize, Faded(Hint, a));
+            DrawCenteredIn(beat.Context, contentX, l.ContentW, y, ContextSize, Faded(Hint, a));
             y += ContextSize;
         }
 
-        if (diceH > 0)
+        if (l.Probabilistic)
+        {
+            y += RowGap;
+            int barX = contentX + (l.ContentW - l.BarW) / 2;
+            Raylib.DrawRectangle(barX, y, l.BarW, l.BarH, Faded(Fail, a));
+            float frac = beat.Total > 0f ? beat.Successes / beat.Total : 0f;
+            Raylib.DrawRectangle(barX, y, (int)(l.BarW * Math.Clamp(frac, 0f, 1f)), l.BarH,
+                Faded(AccentFor(beat.Category), a));
+            Raylib.DrawRectangleLines(barX, y, l.BarW, l.BarH, Faded(Color.Black, a));
+            y += l.BarH;
+        }
+        else if (l.DiceH > 0)
         {
             y += RowGap;
             Color successFill = AccentFor(beat.Category);
-            int rowX = contentX + (contentW - rowW) / 2;
-            for (int i = 0; i < faces.Count; i++)
+            int rowX = contentX + (l.ContentW - l.RowW) / 2;
+            for (int i = 0; i < l.Faces.Count; i++)
             {
-                int x = rowX + i * (dieSize + gap);
+                int x = rowX + i * (l.DieSizeUsed + DieGap);
                 int shownFace;
                 Color fill, pip;
                 if (settled)
                 {
-                    shownFace = faces[i];
+                    shownFace = l.Faces[i];
                     bool success = shownFace >= beat.SuccessThreshold;
                     fill = success ? successFill : Fail;
                     pip = Color.White;
@@ -204,113 +332,32 @@ public static class DiceOverlay
                     fill = Rolling;
                     pip = new Color(30, 30, 30, 255);
                 }
-                DrawDie(x, y, dieSize, shownFace, fill, pip, a);
+                DrawDie(x, y, l.DieSizeUsed, shownFace, fill, pip, a);
                 // A top-face success with a proc riding it gets a gold rim — "that 6 did something".
                 if (settled && procsFired && shownFace == beat.SideMax && shownFace >= beat.SuccessThreshold)
-                    Raylib.DrawRectangleRoundedLines(new Rectangle(x - 2, y - 2, dieSize + 4, dieSize + 4),
+                    Raylib.DrawRectangleRoundedLines(
+                        new Rectangle(x - 2, y - 2, l.DieSizeUsed + 4, l.DieSizeUsed + 4),
                         0.22f, 6, Faded(Result, a));
             }
-            y += dieSize;
+            y += l.DieSizeUsed;
         }
 
-        if (modChips != null)
+        if (l.ModChips != null)
         {
             y += RowGap;
-            DrawChips(modChips, contentX, contentW, y, ChipBg, ChipText, border: null, a);
+            DrawChips(l.ModChips, contentX, l.ContentW, y, ChipBg, ChipText, border: null, a);
             y += chipH;
         }
-        if (procChips != null)
+        if (l.ProcChips != null)
         {
             y += RowGap;
-            DrawChips(procChips, contentX, contentW, y, ProcChipBg, Result, border: Result, a);
+            DrawChips(l.ProcChips, contentX, l.ContentW, y, ProcChipBg, Result, border: Result, a);
             y += chipH;
         }
 
         y += RowGap;
-        DrawCenteredIn(settled ? result : "...", contentX, contentW, y, ResultSize,
+        DrawCenteredIn(settled ? l.ResultLine : "...", contentX, l.ContentW, y, ResultSize,
             Faded(settled ? Result : Hint, a));
-    }
-
-    private static void DrawProbabilistic(DiceRolledBeat beat, float alpha, int areaWidth, int screenH,
-        Rectangle? avoid)
-    {
-        // No discrete dice exist under the probabilistic roller, so there's no "rolling" phase —
-        // show the result immediately.
-        string header = beat.Label;
-        string result = ResultText(beat);
-        string badge  = $"{beat.SuccessThreshold}+";
-        int maxChipRow = areaWidth - SideReserve;
-        List<(string Text, int W)>? modChips  = LayoutChips(beat.ModifierTags, maxChipRow);
-        List<(string Text, int W)>? procChips = LayoutChips(beat.ProcTags, maxChipRow);
-
-        int barW = Math.Min(Sc(360), areaWidth - SideReserve);
-        int barH = Sc(22);
-
-        (int badgeW, int badgeColH) = BadgeColumnSize(badge, beat.Category);
-
-        int chipH = ChipSize + ChipPadY * 2;
-        int contentW = Math.Max(Raylib.MeasureText(header, HeaderSize),
-                       Math.Max(barW, Raylib.MeasureText(result, ResultSize)));
-        if (beat.Context != null) contentW = Math.Max(contentW, Raylib.MeasureText(beat.Context, ContextSize));
-        if (modChips != null)  contentW = Math.Max(contentW, ChipsWidth(modChips));
-        if (procChips != null) contentW = Math.Max(contentW, ChipsWidth(procChips));
-
-        int contentH = HeaderSize
-            + (beat.Context != null ? RowGap + ContextSize : 0)
-            + RowGap + barH
-            + (modChips != null ? RowGap + chipH : 0)
-            + (procChips != null ? RowGap + chipH : 0)
-            + RowGap + ResultSize;
-
-        int panelW = PanelPad + badgeW + ColGap + contentW + PanelPad;
-        int panelH = PanelPad * 2 + Math.Max(contentH, badgeColH);
-        int panelX = (areaWidth - panelW) / 2;
-        int panelY = screenH - panelH - BottomMargin;
-
-        var panelRect = new Rectangle(panelX, panelY, panelW, panelH);
-        float a = alpha * UpdateDim(panelRect, avoid);
-        if (a <= 0.02f) return;
-
-        Raylib.DrawRectangleRounded(panelRect, 0.18f, 6, Faded(Panel, a));
-        DrawAccentStripe(panelX, panelY, panelH, beat.Category, a);
-        DrawBadgeColumn(panelX + PanelPad, panelY + (panelH - badgeColH) / 2, badgeW, badge, beat.Category, a);
-
-        int contentX = panelX + PanelPad + badgeW + ColGap;
-        int y = panelY + (panelH - contentH) / 2;
-        DrawCenteredIn(header, contentX, contentW, y, HeaderSize, Faded(Header, a));
-        y += HeaderSize;
-
-        if (beat.Context != null)
-        {
-            y += RowGap;
-            DrawCenteredIn(beat.Context, contentX, contentW, y, ContextSize, Faded(Hint, a));
-            y += ContextSize;
-        }
-
-        y += RowGap;
-        int barX = contentX + (contentW - barW) / 2;
-        Raylib.DrawRectangle(barX, y, barW, barH, Faded(Fail, a));
-        float frac = beat.Total > 0f ? beat.Successes / beat.Total : 0f;
-        Raylib.DrawRectangle(barX, y, (int)(barW * Math.Clamp(frac, 0f, 1f)), barH,
-            Faded(AccentFor(beat.Category), a));
-        Raylib.DrawRectangleLines(barX, y, barW, barH, Faded(Color.Black, a));
-        y += barH;
-
-        if (modChips != null)
-        {
-            y += RowGap;
-            DrawChips(modChips, contentX, contentW, y, ChipBg, ChipText, border: null, a);
-            y += chipH;
-        }
-        if (procChips != null)
-        {
-            y += RowGap;
-            DrawChips(procChips, contentX, contentW, y, ProcChipBg, Result, border: Result, a);
-            y += chipH;
-        }
-
-        y += RowGap;
-        DrawCenteredIn(result, contentX, contentW, y, ResultSize, Faded(Result, a));
     }
 
     /// <summary>
@@ -511,17 +558,46 @@ public static class DiceOverlay
         return min + (int)(h % (uint)Math.Max(1, max - min + 1));
     }
 
-    // Ghost the panel while the attack animation's bounds reach it, easing between states.
-    private static float UpdateDim(Rectangle panel, Rectangle? avoid)
+    // Seconds since the last stack draw, taken once per frame so every panel eases at the same rate.
+    private static float FrameDelta()
     {
         double now = Raylib.GetTime();
         float dt = (float)(now - _lastDrawTime);
         _lastDrawTime = now;
-        if (dt > 0.25f) _dim = 1f; // the panel just (re)appeared — start fresh, not from stale state
+        return dt;
+    }
 
-        float target = avoid.HasValue && Raylib.CheckCollisionRecs(panel, avoid.Value) ? OverlapDim : 1f;
-        _dim += (target - _dim) * Math.Clamp(dt * 10f, 0f, 1f);
-        return _dim;
+    // Forget the smoothing state of panels that have left the stack, so a beat reference can't pin
+    // memory and a new panel never inherits stale easing.
+    private static void PruneFx(IReadOnlyList<(DiceRolledBeat beat, float progress, float alpha)> stack)
+    {
+        if (_fx.Count <= stack.Count) return;
+
+        var live = new HashSet<DiceRolledBeat>();
+        foreach ((DiceRolledBeat beat, float _, float _) in stack) live.Add(beat);
+        foreach (DiceRolledBeat gone in new List<DiceRolledBeat>(_fx.Keys))
+            if (!live.Contains(gone)) _fx.Remove(gone);
+    }
+
+    /// <summary>
+    /// The panel's smoothed display multiplier: the attack-overlap ghost times the depth dim, both eased
+    /// toward their targets so neither steps. A long frame gap means the stack just (re)appeared, so both
+    /// snap rather than easing from stale state.
+    /// </summary>
+    private static float PanelFxFor(DiceRolledBeat beat, Rectangle panel, Rectangle? avoid,
+        float depthTarget, float dt)
+    {
+        if (!_fx.TryGetValue(beat, out PanelFx? fx)) _fx[beat] = fx = new PanelFx();
+
+        bool snap = dt > 0.25f;
+        float ease = Math.Clamp(dt * 10f, 0f, 1f);
+
+        float dimTarget = avoid.HasValue && Raylib.CheckCollisionRecs(panel, avoid.Value) ? OverlapDim : 1f;
+        fx.Dim = snap ? dimTarget : fx.Dim + (dimTarget - fx.Dim) * ease;
+        // A panel seeds its depth on the frame it appears: easing up from nothing would fade it in twice.
+        fx.Depth = fx.Depth < 0f || snap ? depthTarget : fx.Depth + (depthTarget - fx.Depth) * ease;
+
+        return fx.Dim * fx.Depth;
     }
 
     private static Color Faded(Color c, float a) =>

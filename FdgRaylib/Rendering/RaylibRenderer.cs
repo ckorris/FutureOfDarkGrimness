@@ -2,6 +2,7 @@ using System.Collections.Concurrent;
 using System.Numerics;
 using FDG;
 using FDG.Players;
+using FDG.Presentation.Beats;
 using FDG.StageResolution.Requests;
 using FdgRaylib.Audio;
 using FdgRaylib.Rendering.Presentation;
@@ -180,6 +181,17 @@ public class RaylibRenderer
         float fitX = (viewportW - MinMargin * 2f) / TableWIn;
         float fitY = (screenH   - MinMargin * 2f) / TableHIn;
         return Math.Max(1f, Math.Min(fitX, fitY));
+    }
+
+    // Smallest rectangle containing both — used to ghost the dice strip against every in-flight attack
+    // at once (#322).
+    private static Rectangle Union(Rectangle a, Rectangle b)
+    {
+        float x = Math.Min(a.X, b.X);
+        float y = Math.Min(a.Y, b.Y);
+        return new Rectangle(x, y,
+            Math.Max(a.X + a.Width,  b.X + b.Width)  - x,
+            Math.Max(a.Y + a.Height, b.Y + b.Height) - y);
     }
 
     public void TransitionToGame(ITableState tableState, Func<PlayerID, Color> colorForPlayer,
@@ -479,10 +491,13 @@ public class RaylibRenderer
                 DrawModels(layout);
                 DrawDeathBursts(layout);
 
-                if (_presentationPlayer != null &&
-                    _presentationPlayer.TryGetActiveAttack(out var attackBeat, out var attackProgress))
+                // #322: usually one attack, occasionally two overlapping (the next weapon fires before
+                // the previous tracers land, which held dice made possible).
+                if (_presentationPlayer != null)
                 {
-                    AttackOverlay.Draw(attackBeat, attackProgress, layout.Scale, layout.OriginX, layout.OriginY, TableHIn);
+                    foreach ((AttackBeat attackBeat, float attackProgress) in _presentationPlayer.GetActiveAttacks())
+                        AttackOverlay.Draw(attackBeat, attackProgress, layout.Scale, layout.OriginX,
+                            layout.OriginY, TableHIn);
                 }
 
                 if (_presentationPlayer != null &&
@@ -499,15 +514,25 @@ public class RaylibRenderer
                     SpellOverlay.Draw(spellBeat, spellProgress, layout.Scale, layout.OriginX, layout.OriginY, TableHIn);
                 }
 
-                if (_presentationPlayer != null &&
-                    _presentationPlayer.TryGetActiveDice(out var diceBeat, out var diceProgress, out var diceAlpha))
+                if (_presentationPlayer != null)
                 {
-                    // #245: the caption strip ghosts itself while the attack animation reaches into it.
+                    // #245: the caption strip ghosts itself while an attack animation reaches into it —
+                    // over the union of them when more than one is in flight (#322).
                     Rectangle? diceAvoid = null;
-                    if (_presentationPlayer.TryGetActiveAttack(out var diceAvoidAttack, out _))
-                        diceAvoid = AttackOverlay.ScreenBounds(diceAvoidAttack,
+                    foreach ((AttackBeat avoidAttack, float _) in _presentationPlayer.GetActiveAttacks())
+                    {
+                        Rectangle bounds = AttackOverlay.ScreenBounds(avoidAttack,
                             layout.Scale, layout.OriginX, layout.OriginY, TableHIn, 48f);
-                    DiceOverlay.Draw(diceBeat, diceProgress, diceAlpha, layout.AreaW, screenH, diceAvoid);
+                        diceAvoid = diceAvoid.HasValue ? Union(diceAvoid.Value, bounds) : bounds;
+                    }
+
+                    // #322: the whole stack, oldest anchored at the bottom. Hovering it freezes every
+                    // panel's timer; the bounds it reports are what the pointer is tested against next
+                    // frame (a frame of lag is invisible and avoids measuring the stack twice).
+                    Rectangle stackBounds = DiceOverlay.DrawStack(_presentationPlayer.GetDiceStack(),
+                        layout.AreaW, screenH, diceAvoid, _presentationPlayer.IsDiceStackHovered);
+                    _presentationPlayer.SetDiceStackHovered(stackBounds.Width > 0
+                        && Raylib.CheckCollisionPointRec(Raylib.GetMousePosition(), stackBounds));
                 }
 
                 if (_presentationPlayer != null &&

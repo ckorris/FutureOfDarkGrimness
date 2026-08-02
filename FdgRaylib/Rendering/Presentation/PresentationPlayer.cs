@@ -38,22 +38,61 @@ public class PresentationPlayer : IPresentationSink
     private readonly Dictionary<Guid, GlideState> _glides = new();
     private readonly Dictionary<Guid, DeathState> _deaths = new();
 
-    // Screen-space dice display for the currently-active DiceRolledBeat (null when none).
-    private DiceRolledBeat? _activeDice;
-    private float _diceProgress;
-    // A "held" dice beat parks after its lead-in: it stays displayed (settled) while later action beats
-    // play, then lingers this long with no beat activity before clearing (or until a new dice beat
-    // replaces it). Action beats reset the linger, so held dice survive through the wounds they caused.
-    private bool  _diceHeld;
-    private float _diceLingerSeconds;
-    private const float DiceHoldLingerSeconds = 2.5f;
-    // Display alpha for the dice panel (#245): eases in as a beat starts, out over the end of a
-    // non-held beat's duration or the tail of a held beat's linger — the panel fades instead of
-    // popping. When a new dice beat replaces a still-visible panel the fade-in is skipped (no blink).
-    private float _diceAlpha = 1f;
-    private bool  _diceSkipFadeIn;
+    // #322 dice stack. Rolls are held beats (see DiceRolledBeat.Held), so the engine moves on after each
+    // one's settle lead-in and several panels are on screen at once. A new roll STACKS on top of the last
+    // instead of evicting it — single-slot eviction is precisely what forced dice to be non-held before
+    // (ea91d68), because the second of two save thresholds cut the first short. Oldest first; the overlay
+    // anchors the oldest at the bottom and grows upward.
+    private readonly List<DiceEntry> _diceStack = new();
+    private const int MaxDiceStack = 3;
+    // How long a panel stays up after it has finished settling. Chips are extra reading, so a panel
+    // carrying them lingers longer — the same principle as the engine's stretched beat duration (#245).
+    private const float DiceLingerSeconds        = 3.0f;
+    private const float DiceLingerPerInfoBlock   = 0.4f;
+    // Display alpha for a dice panel (#245): eased in as it appears and out over the tail of its
+    // lifetime, so panels fade instead of popping.
     private const float DiceFadeInSeconds  = 0.12f;
     private const float DiceFadeOutSeconds = 0.35f;
+    // Hovering the stack freezes every panel's timer (and the overlay un-dims the older ones), so a
+    // player who wants to re-read a roll can, without slowing down one who doesn't. Set from the render
+    // thread once the overlay knows the stack's own screen bounds.
+    private bool _diceHovered;
+
+    /// <summary>
+    /// One panel on the dice stack. Its lifetime is FIXED at construction rather than reset by later beat
+    /// activity (which is what the old single-slot linger did): with several panels up, a lifetime that
+    /// depends on what happens to follow makes the stack's layout unpredictable.
+    /// </summary>
+    private sealed class DiceEntry
+    {
+        public readonly DiceRolledBeat Beat;
+        public readonly float Lifetime;
+        public float Elapsed;
+
+        public DiceEntry(DiceRolledBeat beat)
+        {
+            Beat = beat;
+            // A held roll settles over its lead-in; a non-held one owns the active slot for its whole
+            // duration. Either way the linger is what the panel gets ON TOP of that.
+            float paced = (float)(beat.Held ? beat.HoldLeadIn : beat.NominalDuration).TotalSeconds;
+            Lifetime = paced + DiceLingerSeconds + DiceLingerPerInfoBlock * beat.InfoBlocks;
+        }
+
+        /// <summary>0..1 against the beat's own envelope — drives the overlay's tumble-then-settle. A
+        /// panel outlives its envelope, so this simply saturates at 1 and stays settled.</summary>
+        public float Progress
+        {
+            get
+            {
+                float dur = (float)Beat.NominalDuration.TotalSeconds;
+                return dur <= 0f ? 1f : Math.Clamp(Elapsed / dur, 0f, 1f);
+            }
+        }
+
+        public float Alpha => Math.Min(
+            Elapsed / DiceFadeInSeconds,
+            Math.Clamp((Lifetime - Elapsed) / DiceFadeOutSeconds, 0f, 1f));
+    }
 
     // Screen-space banner for the currently-active HEADLINE BannerBeat (null when none). Only the
     // Headline tier reaches the active slot; the two lower tiers ride the concurrent track below.
@@ -80,16 +119,29 @@ public class PresentationPlayer : IPresentationSink
     private RollOffBeat? _activeRollOff;
     private float _rollOffProgress;
 
-    // World-space attack (tracers / clash) — runs on its OWN timeline, concurrent with the active
+    // World-space attacks (tracers / clash) — each runs on its OWN timeline, concurrent with the active
     // beat (#238): AttackBeat is a held beat with zero lead-in, so it transfers here the frame it is
     // dequeued and animates over its full NominalDuration WHILE the to-hit dice that always follow
-    // it tumble in the active slot.
-    private AttackBeat? _activeAttack;
-    private float _attackProgress;
-    private float _attackElapsedSeconds;
-    private int   _attackVolleysCued;    // volley sound cues fired so far for the current attack
-    private int   _attackImpactsCued;    // volley LANDINGS processed so far (#239 impact sounds)
-    private bool  _attackHitStopFired;
+    // it tumble.
+    //
+    // #322 made this a LIST. The to-hit roll used to pace 1800ms, comfortably outlasting the longest
+    // attack animation (VolleyMax, 1600ms), so a second attack could never arrive before the first had
+    // finished. Held rolls pace ~600ms instead, and a whiffed attack has no saves or wounds behind it, so
+    // the next weapon's AttackBeat really can land mid-flight — overlapping attacks now play side by side
+    // rather than truncating each other.
+    private readonly List<AttackState> _attacks = new();
+    private const int MaxConcurrentAttacks = 3;
+
+    private sealed class AttackState
+    {
+        public readonly AttackBeat Beat;
+        public float Elapsed;
+        public float Progress;
+        public int   VolleysCued;   // volley sound cues fired so far for this attack
+        public int   ImpactsCued;   // volley LANDINGS processed so far (#239 impact sounds)
+        public bool  HitStopFired;
+        public AttackState(AttackBeat beat) => Beat = beat;
+    }
 
     // Models flashing a "hurt but survived" tint (the wounded beat is active for each).
     private readonly HashSet<Guid> _wounded = new();
@@ -134,7 +186,7 @@ public class PresentationPlayer : IPresentationSink
         get
         {
             lock (_lock)
-                return _active != null || _incoming.Count > 0 || _activeAttack != null
+                return _active != null || _incoming.Count > 0 || _attacks.Count > 0
                     || _cascading.Count > 0;
         }
     }
@@ -206,8 +258,8 @@ public class PresentationPlayer : IPresentationSink
     public void Update(float realDt)
     {
         List<PresentationBeat>? started = null;
-        AttackBeat? volleyCued = null;
-        AttackBeat? impactCued = null;
+        List<AttackBeat>? volleysCued = null;
+        List<AttackBeat>? impactsCued = null;
         UnitMovedBeat? stepCued = null;
         int stepIndex = 0;
         lock (_lock)
@@ -219,24 +271,6 @@ public class PresentationPlayer : IPresentationSink
                 dtSeconds *= HitStopTimeScale;    // ...but the timeline crawls while it lasts
             }
 
-            // A parked (held) dice display lingers independently of the action queue; it clears after
-            // DiceHoldLingerSeconds of no beat activity (Advance resets that timer whenever an action
-            // beat plays) or as soon as a new dice beat replaces it.
-            if (_diceHeld)
-            {
-                _diceLingerSeconds += dtSeconds;
-                // A panel carrying info chips lingers longer — same principle as the engine's
-                // stretched beat duration: more to read, more time to read it (#245).
-                float lingerLimit = DiceHoldLingerSeconds + 0.4f * (_activeDice?.InfoBlocks ?? 0);
-                // Fade the parked panel out over the linger's tail instead of popping (#245).
-                _diceAlpha = Math.Clamp((lingerLimit - _diceLingerSeconds) / DiceFadeOutSeconds, 0f, 1f);
-                if (_diceLingerSeconds >= lingerLimit)
-                {
-                    _activeDice = null;
-                    _diceHeld = false;
-                }
-            }
-
             // Dequeue until a beat holds the active slot. An AttackBeat never does (#238): it
             // transfers to its own concurrent track, so the to-hit dice behind it become active this
             // same frame and shots fly while the dice tumble.
@@ -246,13 +280,18 @@ public class PresentationPlayer : IPresentationSink
                 (started ??= new List<PresentationBeat>()).Add(next);
                 if (next is AttackBeat attack)
                 {
-                    _activeAttack         = attack;
-                    _attackProgress       = 0f;
-                    _attackElapsedSeconds = 0f;
-                    _attackVolleysCued    = 0;
-                    _attackImpactsCued    = 0;
-                    _attackHitStopFired   = false;
+                    _attacks.Add(new AttackState(attack));
+                    while (_attacks.Count > MaxConcurrentAttacks) _attacks.RemoveAt(0);
                     continue;
+                }
+                // #322: every roll joins the dice stack for display. A HELD roll (the default) stops
+                // there and the next beat becomes active immediately; a non-held one — the explicit
+                // "stop play for this roll" opt-out — also takes the active slot below, which is what
+                // makes the engine's matching full-duration wait line up with an animating front-end.
+                if (next is DiceRolledBeat dice)
+                {
+                    PushDice(dice);
+                    if (dice.Held) continue;
                 }
                 // #232: an overlapped casualty beat never holds the active slot - it transfers to the
                 // cascade track and animates concurrently while later beats play.
@@ -292,18 +331,7 @@ public class PresentationPlayer : IPresentationSink
                     _moveStepsCued++;
                 }
 
-                // A held dice beat parks once past its lead-in: keep it displayed (settled) and free the
-                // active slot so following action beats play WHILE it lingers.
-                if (_active is DiceRolledBeat heldDice && heldDice.Held
-                    && _elapsedSeconds >= heldDice.HoldLeadIn.TotalSeconds)
-                {
-                    _diceHeld = true;
-                    _diceLingerSeconds = 0f;
-                    _diceProgress = 1f; // fully settled while parked
-                    _diceAlpha = 1f;
-                    _active = null;
-                }
-                else if (_elapsedSeconds >= dur)
+                if (_elapsedSeconds >= dur)
                 {
                     Finish(_active);
                     _active = null;
@@ -325,6 +353,20 @@ public class PresentationPlayer : IPresentationSink
                 }
             }
 
+            // #322: the dice stack, likewise independent of the active slot - each panel lives its own
+            // fixed lifetime and retires when it runs out. Aged AFTER the dequeue above, like every other
+            // concurrent track, so a panel that appeared this frame gets this frame's time too.
+            // Hovering the stack freezes all of them at once.
+            if (!_diceHovered)
+            {
+                for (int i = _diceStack.Count - 1; i >= 0; i--)
+                {
+                    DiceEntry entry = _diceStack[i];
+                    entry.Elapsed += dtSeconds;
+                    if (entry.Elapsed >= entry.Lifetime) _diceStack.RemoveAt(i);
+                }
+            }
+
             // #275: the held-banner track, likewise independent of the active slot. Pure display -
             // nothing here touches model state, so it only ages and retires.
             for (int i = _heldBanners.Count - 1; i >= 0; i--)
@@ -334,49 +376,49 @@ public class PresentationPlayer : IPresentationSink
                 if (b.Elapsed >= (float)b.Beat.NominalDuration.TotalSeconds) _heldBanners.RemoveAt(i);
             }
 
-            // The concurrent attack track advances every frame, independent of the active slot.
-            if (_activeAttack != null)
+            // The concurrent attack track advances every frame, independent of the active slot. Each
+            // attack keeps its own cue counters, so two overlapping ones never steal each other's
+            // volley/impact cues (#322).
+            for (int i = _attacks.Count - 1; i >= 0; i--)
             {
-                _attackElapsedSeconds += dtSeconds;
-                float dur = (float)_activeAttack.NominalDuration.TotalSeconds;
-                float t = dur <= 0f ? 1f : Math.Clamp(_attackElapsedSeconds / dur, 0f, 1f);
-                _attackProgress = t;
-
-                // Attack activity keeps a parked dice display alive, like any action beat would.
-                if (_diceHeld) _diceLingerSeconds = 0f;
+                AttackState a = _attacks[i];
+                a.Elapsed += dtSeconds;
+                float dur = (float)a.Beat.NominalDuration.TotalSeconds;
+                float t = dur <= 0f ? 1f : Math.Clamp(a.Elapsed / dur, 0f, 1f);
+                a.Progress = t;
 
                 // One sound cue per volley, when its time slice begins (at most one per frame; a
                 // dropped frame catches up on the next).
-                if (_attackVolleysCued < VolleysStarted(t, _activeAttack.VolleyCount))
+                if (a.VolleysCued < VolleysStarted(t, a.Beat.VolleyCount))
                 {
-                    volleyCued = _activeAttack;
-                    _attackVolleysCued++;
+                    (volleysCued ??= new List<AttackBeat>()).Add(a.Beat);
+                    a.VolleysCued++;
                 }
 
                 // #239: one impact cue per volley that LANDS something, at the moment its shots
                 // arrive (the effect style's LandFraction into the volley slice; melee at the
                 // clash). Whiffed volleys advance the counter silently. At most one per frame.
-                if (_attackImpactsCued < ImpactsLanded(t, _activeAttack.VolleyCount, LandFraction(_activeAttack)))
+                if (a.ImpactsCued < ImpactsLanded(t, a.Beat.VolleyCount, LandFraction(a.Beat)))
                 {
-                    int volley = _attackImpactsCued;
-                    _attackImpactsCued++;
-                    int volleys = Math.Max(1, _activeAttack.VolleyCount);
-                    int visualHits = AttackShotPlan.VisualHits(_activeAttack.HitCount, _activeAttack.AttackCount,
-                        AttackShotPlan.TotalShots(_activeAttack.From.Count, volleys));
-                    if (AttackShotPlan.VolleyHasHit(volley, _activeAttack.From.Count, volleys, visualHits))
-                        impactCued = _activeAttack;
+                    int volley = a.ImpactsCued;
+                    a.ImpactsCued++;
+                    int volleys = Math.Max(1, a.Beat.VolleyCount);
+                    int visualHits = AttackShotPlan.VisualHits(a.Beat.HitCount, a.Beat.AttackCount,
+                        AttackShotPlan.TotalShots(a.Beat.From.Count, volleys));
+                    if (AttackShotPlan.VolleyHasHit(volley, a.Beat.From.Count, volleys, visualHits))
+                        (impactsCued ??= new List<AttackBeat>()).Add(a.Beat);
                 }
 
                 // A melee clash fires a one-time hit-stop for weight — but only when something
                 // actually connects (#239): a whiffed swing has no impact to freeze on.
-                if (!_attackHitStopFired && _activeAttack.IsMelee && t >= HitStopTriggerT)
+                if (!a.HitStopFired && a.Beat.IsMelee && t >= HitStopTriggerT)
                 {
-                    _attackHitStopFired = true;
-                    if (AttackShotPlan.HasAnyHit(_activeAttack))
+                    a.HitStopFired = true;
+                    if (AttackShotPlan.HasAnyHit(a.Beat))
                         _hitStopRemaining = HitStopDuration;
                 }
 
-                if (_attackElapsedSeconds >= dur) _activeAttack = null;
+                if (a.Elapsed >= dur) _attacks.RemoveAt(i);
             }
         }
 
@@ -384,9 +426,21 @@ public class PresentationPlayer : IPresentationSink
         // re-enter the player.
         if (started != null)
             foreach (PresentationBeat beat in started) BeatStarted?.Invoke(beat);
-        if (volleyCued != null) AttackVolleyStarted?.Invoke(volleyCued);
-        if (impactCued != null) AttackVolleyImpact?.Invoke(impactCued);
-        if (stepCued   != null) UnitStepped?.Invoke(stepCued, stepIndex);
+        if (volleysCued != null)
+            foreach (AttackBeat beat in volleysCued) AttackVolleyStarted?.Invoke(beat);
+        if (impactsCued != null)
+            foreach (AttackBeat beat in impactsCued) AttackVolleyImpact?.Invoke(beat);
+        if (stepCued != null) UnitStepped?.Invoke(stepCued, stepIndex);
+    }
+
+    /// <summary>
+    /// #322. Called under the lock. A new roll goes on TOP of the stack; the oldest drops out once the
+    /// stack is full, so the newest panel is never the one squeezed off screen.
+    /// </summary>
+    private void PushDice(DiceRolledBeat beat)
+    {
+        _diceStack.Add(new DiceEntry(beat));
+        while (_diceStack.Count > MaxDiceStack) _diceStack.RemoveAt(0);
     }
 
     // #275. Called under the lock. A Notice supersedes any Notice already up: they share one band in
@@ -474,10 +528,6 @@ public class PresentationPlayer : IPresentationSink
 
     private void Advance(PresentationBeat beat, float t)
     {
-        // Any non-dice beat playing keeps a parked dice display alive, so held dice survive through the
-        // wound/death animations that immediately follow them.
-        if (_diceHeld && beat is not DiceRolledBeat) _diceLingerSeconds = 0f;
-
         switch (beat)
         {
             case UnitMovedBeat moved:
@@ -494,21 +544,9 @@ public class PresentationPlayer : IPresentationSink
                     if (_deaths.TryGetValue(rm.Model.ID, out var routDeath))
                         routDeath.SetProgress(t); // all routed models fade together
                 break;
-            case DiceRolledBeat dice:
-                if (!ReferenceEquals(_activeDice, dice))
-                    _diceSkipFadeIn = _activeDice != null; // replacing a visible panel — no blink to zero
-                _activeDice = dice;
-                _diceProgress = t;
-                _diceHeld = false; // an actively-animating dice beat is not parked; it replaces any parked one
-                float fadeIn = _diceSkipFadeIn ? 1f : Math.Min(1f, _elapsedSeconds / DiceFadeInSeconds);
-                float fadeOut = 1f;
-                if (!dice.Held) // a held beat parks and fades on the linger instead
-                {
-                    float diceDur = (float)dice.NominalDuration.TotalSeconds;
-                    fadeOut = Math.Clamp((diceDur - _elapsedSeconds) / DiceFadeOutSeconds, 0f, 1f);
-                }
-                _diceAlpha = Math.Min(fadeIn, fadeOut);
-                break;
+            // DiceRolledBeat never reaches here: every roll is displayed from the dice stack, which ages
+            // on its own timeline (#322). A non-held roll still occupies the active slot, but only so the
+            // engine's full-duration wait has something animating behind it.
             // Headline only: a Held (Notice/Toast) banner was diverted to the held track at dequeue and
             // never reaches the active slot (#275).
             case BannerBeat banner:
@@ -551,11 +589,7 @@ public class PresentationPlayer : IPresentationSink
                     if (_deaths.TryGetValue(rm.Model.ID, out var routDeath))
                         routDeath.Done = true;
                 break;
-            case DiceRolledBeat:
-                _activeDice = null;
-                _diceHeld = false;
-                _diceSkipFadeIn = false;
-                break;
+            // A DiceRolledBeat's panel outlives the beat by design (#322) — the stack retires it.
             case BannerBeat:
                 _activeBanner = null;
                 break;
@@ -575,18 +609,35 @@ public class PresentationPlayer : IPresentationSink
     }
 
     /// <summary>
-    /// The dice roll being shown this frame, if any, with its 0..1 progress and display alpha
-    /// (fade in/out easing, #245 — the overlay multiplies its colors by it).
+    /// The dice panels on screen this frame, OLDEST FIRST (#322), each with its 0..1 progress against
+    /// its own envelope and its display alpha (fade in/out easing, #245 — the overlay multiplies its
+    /// colors by it). The overlay anchors the oldest at the bottom of the table area and stacks the rest
+    /// above it. Snapshot taken under the lock.
     /// </summary>
-    public bool TryGetActiveDice(out DiceRolledBeat beat, out float progress, out float alpha)
+    public IReadOnlyList<(DiceRolledBeat beat, float progress, float alpha)> GetDiceStack()
     {
         lock (_lock)
         {
-            beat = _activeDice!;
-            progress = _diceProgress;
-            alpha = _diceAlpha;
-            return _activeDice != null;
+            var live = new List<(DiceRolledBeat, float, float)>(_diceStack.Count);
+            foreach (DiceEntry e in _diceStack) live.Add((e.Beat, e.Progress, e.Alpha));
+            return live;
         }
+    }
+
+    /// <summary>
+    /// #322. Tells the player the pointer is over the dice stack, which freezes every panel's timer until
+    /// it leaves — the "wait, why did that happen?" affordance. Set from the render thread each frame
+    /// from the bounds the overlay reports; a one-frame lag is invisible.
+    /// </summary>
+    public void SetDiceStackHovered(bool hovered)
+    {
+        lock (_lock) _diceHovered = hovered;
+    }
+
+    /// <summary>Whether the dice stack is currently frozen under the pointer (#322).</summary>
+    public bool IsDiceStackHovered
+    {
+        get { lock (_lock) return _diceHovered; }
     }
 
     /// <summary>
@@ -632,14 +683,18 @@ public class PresentationPlayer : IPresentationSink
         }
     }
 
-    /// <summary>The attack (tracers / clash) being shown this frame, if any, with its 0..1 progress.</summary>
-    public bool TryGetActiveAttack(out AttackBeat beat, out float progress)
+    /// <summary>
+    /// The attacks (tracers / clash) being shown this frame, oldest first, each with its 0..1 progress.
+    /// Usually one; a second appears when the next weapon fires before the previous animation has
+    /// finished, which held dice made possible (#322). Snapshot taken under the lock.
+    /// </summary>
+    public IReadOnlyList<(AttackBeat beat, float progress)> GetActiveAttacks()
     {
         lock (_lock)
         {
-            beat = _activeAttack!;
-            progress = _attackProgress;
-            return _activeAttack != null;
+            var live = new List<(AttackBeat, float)>(_attacks.Count);
+            foreach (AttackState a in _attacks) live.Add((a.Beat, a.Progress));
+            return live;
         }
     }
 
