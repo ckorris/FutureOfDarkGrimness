@@ -142,6 +142,50 @@ public class ForgeCrossSectionReplaceShippedDataTests
         return ListCompiler.CompileUnitDetailed(book, bu);
     }
 
+    // #319 — every Replace target must name something its unit can actually hold, in the base loadout or
+    // from some option's gains. One target failed this before the plural fix: Dwarf Guilds' "Guardians"
+    // target "Bashes" against a weapon named "Bash", which the single-trailing-s rule turned into "bashe".
+    // Because that section is Affects=All (max across targets, not min) it still fired off its Pistols half,
+    // so the swap looked like it worked while quietly leaving all five Bashes on the unit, free.
+    //
+    // OPR publishes targets as display STRINGS with no id-based alternative (verified 2026-08-02 against the
+    // live army-books API: 61 targets in the Dwarf Guilds book, all strings, and the section schema carries
+    // no weapon-id field). So name matching is the only mechanism there is, and a typo-shaped mismatch here
+    // is silent by construction - which is why it gets a corpus-wide assertion rather than a spot test.
+    [Test]
+    public void EveryReplaceTarget_NamesSomethingItsUnitCanHold()
+    {
+        var dead = new List<string>();
+
+        foreach (string path in Directory.EnumerateFiles(BooksDirectory, "*" + BookFile.EXTENSION_WITH_PERIOD))
+        {
+            BookFile book = Load(path);
+            foreach (RosterUnit roster in book.Units)
+            {
+                // Every name the unit can ever carry: its base loadout plus anything any option grants.
+                var holdable = new List<WeaponFileEntry>(roster.Weapons);
+                var holdableItems = new List<ItemEntry>(roster.Items);
+                foreach (UpgradeSection s in roster.Sections)
+                    foreach (UpgradeOption o in s.Options)
+                    {
+                        holdable.AddRange(o.WeaponsGained);
+                        holdableItems.AddRange(o.ItemsGained);
+                    }
+
+                foreach (UpgradeSection section in roster.Sections)
+                {
+                    if (section.Variant != UpgradeVariant.Replace) continue;
+                    foreach (string target in section.Targets)
+                        if (ListCompiler.AvailableApplications(holdable, holdableItems, new[] { target }) == 0)
+                            dead.Add($"{Path.GetFileNameWithoutExtension(path)}/{roster.Name}/" +
+                                $"\"{section.Label}\" targets \"{target}\", which matches nothing on the unit");
+                }
+            }
+        }
+
+        Assert.That(dead, Is.Empty, string.Join("\n  ", dead));
+    }
+
     // The census that sized the problem (2026-08-02) - a canary, so a re-import that changes the corpus's
     // shape shows up as a number here rather than as silence. 54 (unit, section) pairs across 17 books are
     // fed ONLY by a section authored below them: every Titan Lords chapter's Errant/Pilgrim/Questor/Knight

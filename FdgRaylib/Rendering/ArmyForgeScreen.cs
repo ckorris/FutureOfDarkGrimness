@@ -844,9 +844,14 @@ public class ArmyForgeScreen : IAppScreen
         {
             bool isReplace = section.Variant == UpgradeVariant.Replace;
             bool linked = mirror != null && section.Affects == UpgradeAffects.All;
-            int available = isReplace
-                ? ListCompiler.AvailableApplications(compiledUnit.Weapons, items, section.Targets)
-                : int.MaxValue;
+            // #319: when a single-target all-swap above this section has been taken, the compiler now leaves
+            // this section its copies rather than eating the pool - so availability must be measured against
+            // that same reservation, or the Forge would gray out a swap the compiler would honour. Only pay
+            // for the extra compile when such a rival is actually selected.
+            int available = !isReplace ? int.MaxValue
+                : YieldingAllSwapChosen(bu, roster, section)
+                    ? ReplacePool(book, bu, roster, section, excludeOwn: false)
+                    : ListCompiler.AvailableApplications(compiledUnit.Weapons, items, section.Targets);
             // Availability ignoring this section's OWN pick: a mutually-exclusive (radio) pick returns its
             // replaced target to the pool the moment you switch away, so other options must not gray out
             // just because the current pick consumed the target (hand-verify round 2). Also drives the
@@ -964,13 +969,45 @@ public class ArmyForgeScreen : IAppScreen
     /// option could draw on if the section's current pick were released (radio switching, header text).</summary>
     internal static int AvailableExcludingSection(BookFile book, BuilderUnit bu, UpgradeSection section)
     {
-        var without = new BuilderUnit
+        RosterUnit? roster = book.Units.FirstOrDefault(u => u.Id == bu.RosterUnitId);
+        return roster is null ? 0 : ReplacePool(book, bu, roster, section, excludeOwn: true);
+    }
+
+    /// <summary>Whether a single-target all-swap that must YIELD to <paramref name="section"/> (#319) is
+    /// currently selected — the only case where availability has to be re-measured against the reservation
+    /// rather than read off the already-compiled unit.</summary>
+    private static bool YieldingAllSwapChosen(BuilderUnit bu, RosterUnit roster, UpgradeSection section) =>
+        bu.Choices.Any(c => YieldsTo(roster, c.SectionId, section));
+
+    // The all-swap at `sectionId` leaves copies for `claimant` when it is a single-target all-swap authored
+    // ABOVE the claimant and they compete for the same weapon — mirroring ListCompiler's reservation rule.
+    private static bool YieldsTo(RosterUnit roster, string sectionId, UpgradeSection claimant)
+    {
+        int index = roster.Sections.FindIndex(s => s.Id == sectionId);
+        if (index < 0 || index >= roster.Sections.FindIndex(s => s.Id == claimant.Id)) return false;
+
+        string? target = ListCompiler.SingleAllSwapTarget(roster.Sections[index]);
+        return target is not null && ListCompiler.CompetesForTarget(claimant, target);
+    }
+
+    /// <summary>
+    /// The pool a Replace section may draw on, measured on a compile where every all-swap that yields to it
+    /// (#319) is dropped — those copies are reserved for this section, so the Forge must offer them even
+    /// though the finished unit no longer shows them. <paramref name="excludeOwn"/> additionally releases
+    /// this section's own picks (the radio-switching pool).
+    /// </summary>
+    internal static int ReplacePool(BookFile book, BuilderUnit bu, RosterUnit roster, UpgradeSection section,
+        bool excludeOwn)
+    {
+        var view = new BuilderUnit
         {
             RosterUnitId = bu.RosterUnitId,
             ModelCount = bu.ModelCount,
-            Choices = bu.Choices.Where(c => c.SectionId != section.Id).ToList(),
+            Choices = bu.Choices
+                .Where(c => !(excludeOwn && c.SectionId == section.Id) && !YieldsTo(roster, c.SectionId, section))
+                .ToList(),
         };
-        (UnitFileEntry unit, List<ItemEntry> items) = ListCompiler.CompileUnitDetailed(book, without);
+        (UnitFileEntry unit, List<ItemEntry> items) = ListCompiler.CompileUnitDetailed(book, view);
         return ListCompiler.AvailableApplications(unit.Weapons, items, section.Targets);
     }
 

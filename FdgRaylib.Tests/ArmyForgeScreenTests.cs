@@ -252,6 +252,67 @@ public class ArmyForgeScreenTests
         Assert.That(compiled.PointCost, Is.EqualTo(385), "295 base + 30 shield swap + 30x2 sword swaps");
     }
 
+    // ── #319 an all-swap must not hide the specialist swap below it, against the SHIPPED book ──────────
+
+    // DAO Union Tactical Grunts: 5 Pulse Rifles, "Replace all Pulse Rifles" (#1) above "Replace one Pulse
+    // Rifle" (#2). Taking the all-swap used to eat the pool, so the compiler dropped the specialist AND the
+    // Forge grayed it out. Both halves are checked here: the Forge still offers the swap, and the compile
+    // honours it.
+    [Test]
+    public void TacticalGrunts_AllSwapLeavesTheSpecialistSwapAvailableAndCompiled()
+    {
+        BookFile book = JsonSerializer.Deserialize<BookFile>(
+            File.ReadAllText(Path.Combine(AppContext.BaseDirectory, "Assets", "Books",
+                "DAOUnion" + BookFile.EXTENSION_WITH_PERIOD)), RuleJson.Options)!;
+        RosterUnit grunts = book.Units.Single(u => u.Name == "Tactical Grunts");
+        UpgradeSection all = grunts.Sections.Single(s => s.Label == "Replace all Pulse Rifles");
+        UpgradeSection one = grunts.Sections.Single(s => s.Label == "Replace one Pulse Rifle");
+        UpgradeOption plasma = one.Options.Single(o => o.Label.StartsWith("Plasma Rifle"));
+
+        var screen = new ArmyForgeScreen(book);
+        screen.AddToList(grunts.Id);
+        BuilderUnit bu = screen.List.Units[0];
+
+        ArmyForgeScreen.SetChoice(bu, all, all.Options.Single().Id, 1);
+
+        // The Forge gate: with every rifle swapped away by the all-swap, the specialist section must still
+        // offer its pick - the compiler reserves a rifle for it.
+        Assert.That(ArmyForgeScreen.AvailableExcludingSection(book, bu, one), Is.EqualTo(5),
+            "the all-swap yields, so the specialist swap is still selectable");
+
+        ArmyForgeScreen.SetChoice(bu, one, plasma.Id, 1);
+
+        UnitFileEntry compiled = screen.Compile().Units.Single();
+        Assert.That(compiled.Weapons.Single(w => w.Name == "Pulse Carbine").Quantity, Is.EqualTo(4));
+        Assert.That(compiled.Weapons.Single(w => w.Name == "Plasma Rifle").Quantity, Is.EqualTo(1));
+        Assert.That(compiled.Weapons.Any(w => w.Name == "Pulse Rifle"), Is.False);
+        Assert.That(compiled.PointCost, Is.EqualTo(150), "115 base + 25 flat all-swap + 10 plasma");
+
+        // And switching the specialist to another option still works with the all-swap in place.
+        Assert.That(ArmyForgeScreen.AvailableExcludingSection(book, bu, one), Is.EqualTo(5));
+    }
+
+    // Dwarf Guilds Guardians: 5 Pistols + 5 Bashes, "Replace all Pistols and Bashes" -> CCW. The "Bashes"
+    // target never matched the "Bash" weapon, so the swap left all five Bashes on the unit for free (#319).
+    [Test]
+    public void Guardians_ReplaceAllPistolsAndBashes_TakesTheBashesToo()
+    {
+        BookFile book = JsonSerializer.Deserialize<BookFile>(
+            File.ReadAllText(Path.Combine(AppContext.BaseDirectory, "Assets", "Books",
+                "DwarfGuilds" + BookFile.EXTENSION_WITH_PERIOD)), RuleJson.Options)!;
+        RosterUnit guardians = book.Units.Single(u => u.Name == "Guardians");
+        UpgradeSection swap = guardians.Sections.Single(s => s.Label == "Replace all Pistols and Bashes");
+
+        var screen = new ArmyForgeScreen(book);
+        screen.AddToList(guardians.Id);
+        ArmyForgeScreen.SetChoice(screen.List.Units[0], swap, swap.Options.First().Id, 1);
+
+        UnitFileEntry compiled = screen.Compile().Units.Single();
+        Assert.That(compiled.Weapons.Any(w => w.Name == "Bash"), Is.False, "the Bashes are traded away");
+        Assert.That(compiled.Weapons.Any(w => w.Name == "Pistol"), Is.False);
+        Assert.That(compiled.Weapons.Single(w => w.Name == "CCW").Quantity, Is.EqualTo(5));
+    }
+
     private static int StepperMaxFor(BookFile book, BuilderUnit bu, UpgradeSection section, UpgradeOption option)
     {
         (UnitFileEntry unit, var items) = ListCompiler.CompileUnitDetailed(book, bu);
