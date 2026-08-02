@@ -6,6 +6,19 @@ from origin/master. Standing precedent: numbers are never reused, and when two p
 claim the same number, the *unmerged local* item yields to the *merged* one and takes a fresh number.
 A per-clone pre-push hook blocks duplicate numbers across the index and the archive.
 
+> **2026-08-02 - reconciliation 39 (RESOLVED).** The difficult-terrain movement-preview session filed its item
+> as **315** against a local master that was 4 commits stale, not having seen that origin/master had already
+> taken **315 = embarked-unit activation disambiguation** (merged, `aa11c54`, `WorkItems/315-embarked-activation-disambiguation.md`)
+> and **316 = round opens on the wrong player** (merged + closed, `d9f887c`). Per the standing precedent the
+> unmerged local item yields: **difficult-terrain shortfall preview 315 -> 317**
+> (`WorkItems/317-difficult-terrain-shortfall-preview.md`; the index line, the detail file, and the `#315`
+> markers in `DifficultShortfallPlan`, `ImpassibleBlockLabel`, `GuiDefineMovementResolver` and both test
+> fixtures were updated). Master's #315 keeps the number, and the `#315` references in `GuiSelectionResolver` /
+> `GuiUnitSelectionResolver` / `TransportOptionLookup` mean THAT item and were deliberately left alone.
+> **Left as-is on purpose:** the two commit messages saying "#315" for the movement work (`d8c39cc`, `1bdf123`)
+> predate the renumber, like every prior reconciliation. Caught before pushing, by inspecting git state rather
+> than by the pre-push hook.
+>
 > **2026-08-02 - reconciliation 38 (RESOLVED).** The Takedown rule-facet session yielded TWICE in one
 > push, to two different sessions racing the same range. It filed its item as **311** against a local
 > master 6 commits stale, not having seen that origin/master had closed **311 = accidental passes in the

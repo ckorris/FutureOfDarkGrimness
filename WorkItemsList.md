@@ -94,6 +94,8 @@ Corpus coverage is now complete too: **0 of 13,870** book rule references are de
 
 ## Transport
 
+- [~] 315 — Duplicate-named units in transports were indistinguishable in the activation picker: engine label suffix "Warriors (in Rhino)" + GUI hover rings the transport (distinct style) + canvas-hover on a transport emphasises its occupants' rows (#286 two-way rule). ([WorkItems/315](WorkItems/315-embarked-activation-disambiguation.md))
+
 - [~] 097 — Disembark/embark full movement: owner ruled the 6" exit leash IS the move (RAW), so disembark keeps the circle but now records the real distance (Slow units can't hop 6" and shoot) and charge-out is pinned; embark became move-first-then-board from 1" contact, with a greyed "move up first" menu hint. Implemented + tested; awaiting GUI hand-verify. ([WorkItems/097](WorkItems/097-transport-full-movement.md))
 
 ## AI agent (Tactician)

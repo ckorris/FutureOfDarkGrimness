@@ -22,6 +22,11 @@ public class GuiSelectionResolver<T> : IStageResolver<SelectionRequest<T>, DataB
     private readonly KeyboardListNav _nav = new();
     private static readonly uint KbHighlightCol = ImGui.ColorConvertFloat4ToU32(new Vector4(0.55f, 0.90f, 1.00f, 0.90f));
 
+    // #315: canvas-driven row emphasis (the Assign Wounds #286 treatment) — a tinted fill + bright border
+    // painted on rows a subclass flags via IsRowEmphasized, e.g. a hovered transport's occupants.
+    private static readonly uint RowEmphasisCol   = ImGui.ColorConvertFloat4ToU32(new Vector4(1f, 0.95f, 0.30f, 0.90f));
+    private static readonly uint RowEmphasisBgCol = ImGui.ColorConvertFloat4ToU32(new Vector4(1f, 0.95f, 0.30f, 0.13f));
+
     public Task<DataBinding<T>> Resolve(SelectionRequest<T> request)
     {
         var tcs = new TaskCompletionSource<DataBinding<T>>();
@@ -131,6 +136,7 @@ public class GuiSelectionResolver<T> : IStageResolver<SelectionRequest<T>, DataB
 
         float listY = pad + instrH;
         float y = listY;
+        bool emphasisScrolled = false;   // #315: scroll at most one emphasised row into view per frame
         for (int i = 0; i < total; i++)
         {
             bool isValid = i < validCount;
@@ -154,6 +160,24 @@ public class GuiSelectionResolver<T> : IStageResolver<SelectionRequest<T>, DataB
             bool clicked = ImGui.Button($"##opt{i}", new Vector2(btnW, rowHeights[i]));
             bool hovered = isValid && ImGui.IsItemHovered();
             if (!isValid) ImGui.EndDisabled();
+
+            // #315: the table -> list direction (the Assign Wounds #286 treatment). The button's own hover
+            // styling only fires for the mouse being over IT, so canvas-driven emphasis paints the row
+            // here instead — fill + border under the text — and scrolls an off-view row back into view
+            // (only when actually off-view, so it never fights a deliberate scroll).
+            DataBinding<T> option = isValid ? request.ValidOptions[i].Option
+                                            : request.InvalidOptions[i - validCount].Option;
+            if (IsRowEmphasized(option))
+            {
+                if (!emphasisScrolled)
+                {
+                    ScrollRowIntoView(y, rowHeights[i]);
+                    emphasisScrolled = true;
+                }
+                Vector2 rowMax = origin + new Vector2(btnW, rowHeights[i]);
+                dl.AddRectFilled(origin, rowMax, RowEmphasisBgCol, 4f);
+                dl.AddRect(origin, rowMax, RowEmphasisCol, 4f, ImDrawFlags.None, 2f);
+            }
 
             float tx = origin.X + textPadX;
             float ty = origin.Y + btnPadY;
@@ -217,6 +241,23 @@ public class GuiSelectionResolver<T> : IStageResolver<SelectionRequest<T>, DataB
     /// Subclasses ring the object on the canvas like a hover — but must NOT raise hover tooltips,
     /// which would pop at the unrelated mouse position.</summary>
     protected virtual void OnValidOptionHighlighted(SelectionRequest<T>.ValidOption opt) { }
+
+    /// <summary>#315: true to paint this option's row with the canvas-driven emphasis (tinted fill +
+    /// bright border, scrolled into view if off-screen) — the table -> list half of the two-way hover
+    /// binding. Asked for valid and invalid rows alike; default none.</summary>
+    protected virtual bool IsRowEmphasized(DataBinding<T> option) => false;
+
+    /// <summary>Scrolls the option list so a row at <paramref name="rowY"/> (content coordinates) is
+    /// fully visible, and does nothing when it already is. Mirrors the Assign Wounds dialog (#286).</summary>
+    private static void ScrollRowIntoView(float rowY, float rowHeight)
+    {
+        float scrollY = ImGui.GetScrollY();
+        float viewH   = ImGui.GetWindowHeight();
+        if (rowY < scrollY)
+            ImGui.SetScrollY(MathF.Max(0f, rowY));
+        else if (rowY + rowHeight > scrollY + viewH)
+            ImGui.SetScrollY(rowY + rowHeight - viewH);
+    }
 
     // Word-wrap a detail line to maxWidth, at the smaller detail font size (#298: the wrapping itself now
     // lives in ResolverText, shared with the string-selection panel).
