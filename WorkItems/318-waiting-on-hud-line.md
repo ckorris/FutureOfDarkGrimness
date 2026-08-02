@@ -11,6 +11,27 @@ players' tasks are filtered out (the resolver panel already shows those); conseq
 games never show the line, by design (agreed 2026-08-02).
 
 ## Notes
+- 2026-08-02 (3): Applied the full audit - every stage name is now game-language gerund form.
+  Non-discriminator TaskNames reworded in place (nothing app-side reads TaskName; the only
+  string-matches are the three Tactician placement discriminators, confirmed by grep); shared
+  class literals (YesNoRequest "Yes/No Question", StringSelectionRequest "Select Option",
+  SingleBindingRequest "Select Item", Selection* "Select <T>") gained a displayName ctor param
+  with per-site wording; Scout/Ambush keep their discriminator TaskNames and carry displayName.
+  Final display strings (complete inventory): Choosing an Army; Placing Terrain (n of m) /
+  (x of y points left); Placing Objective n of m; Choosing a Deployment Zone; Choosing a Unit to
+  Deploy; Deploying [unit]; Deploying [unit] (Scout); Deciding Whether to Deploy [unit];
+  Choosing a Unit to Activate; Deciding Whether to Delay Activation; Choosing an Action;
+  Moving [unit] (advance/rush/charge + rule-triggered); Flying [unit]; Choosing a Transport for
+  [unit]; Disembarking [unit]; Teleporting [unit]; Repositioning [unit]; Placing [unit] (summon);
+  Placing Reinforcements ([unit]); Deploying [unit] from Ambush; Deciding Whether to Deploy [unit]
+  from Ambush; Redeploying [unit] (aircraft + redeploy rule); Choosing a Unit to Redeploy;
+  Choosing a Ranged Weapon; Choosing a Target; Choosing a Takedown Target; Choosing a Strafing
+  Target; Choosing a Storm Target; Choosing a [rule] Target (surprise attack); Choosing a Melee
+  Target; Choosing a Melee Weapon; Assigning Wounds; Consolidating After a Wipeout / After
+  Disengaging; Deciding Whether to Strike Back; Deciding Whether to Use [rule]; Deciding Whether
+  to Reactivate [unit]; Deciding Whether to Reinforce [unit]; Deciding on Regenerative Strength;
+  Spending Target Markers; Choosing a Spell; Choosing a Target for [spell]; Assisting a Spell
+  Cast; Choosing an Effect; Spilling Out [unit]. Suite 2595 green, headless smoke exit 0.
 - 2026-08-02 (2): Playtest feedback - HUD showed raw TaskNames ("Select UnitData", "Place Unit
   Models"). Engine 38b40ca: `IStageTaskRequest.DisplayName` (defaults to TaskName; sender broadcasts
   it in the awaiting message) + optional `displayName` on Selection/CancellableSelection/PlaceObjects
