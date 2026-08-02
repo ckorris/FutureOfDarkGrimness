@@ -40,7 +40,12 @@ public class ChooseRangedAttackResolver : IStageResolver<ChooseRangedAttackReque
                 // #158: count the target's LIVING models — dead ones aren't shootable.
                 int targetModels = targetUnit.ModelBindings.Count(mb => mb.GetValue().GetIsAlive());
 
-                string label = $"{weaponStats}  ->  {targetUnit.Name} ({targetModels} models, {canShoot} shooters in range";
+                string label = $"{weaponStats}  ->  {targetUnit.Name}";
+                // #323: the effective thresholds for this pairing (AP, cover and rule modifiers already
+                // folded by the engine's forecast), so the numbers are comparable across lines.
+                if (targetStats.Forecast != null)
+                    label += $"  [hit {targetStats.Forecast.HitRollNeeded}+, save {targetStats.Forecast.SaveRollNeeded}+]";
+                label += $" ({targetModels} models, {canShoot} shooters in range";
                 if (cannotShoot > 0)
                     label += $", {cannotShoot} out of range";
                 // #042 Blast/Indirect/Takedown: when the weapon ignores cover the +1 doesn't apply, so show

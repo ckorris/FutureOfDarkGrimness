@@ -291,6 +291,22 @@ public class GuiChooseRangedAttackResolver
                 string numPrefix = selectableT ? ResolverHotkeys.NumberPrefix(fireableRowsSeen++) : "";
                 dl.AddText(rMin + new Vector2(4, 2), colTxt, $"{numPrefix}{name}");
 
+                // #323: the numbers the dice will actually use, right-aligned on the name line so the
+                // rows read as a comparable column. Effective values - AP, cover and rule modifiers
+                // already folded by the engine's forecast; the Details pane holds the arithmetic.
+                // Drawn in the row's own text color, so a grayed row's numbers gray with it.
+                if (ts.Forecast != null)
+                {
+                    string nums = $"Hit {ts.Forecast.HitRollNeeded}+ / Sv {ts.Forecast.SaveRollNeeded}+";
+                    var numSize  = ImGui.CalcTextSize(nums);
+                    var rMax     = ImGui.GetItemRectMax();
+                    float numsX  = rMax.X - numSize.X - 4;
+                    // A very long unit name wins the collision; the numbers are one selection away
+                    // in the Details pane, an overdraw here is unreadable either way.
+                    if (numsX > rMin.X + 4 + ImGui.CalcTextSize($"{numPrefix}{name}").X + 12)
+                        dl.AddText(new Vector2(numsX, rMin.Y + 2), colTxt, nums);
+                }
+
                 string sub;
                 uint colSub;
                 if (ruleBlocked)

@@ -19,6 +19,10 @@ from the shooting details section.
 
 ## Notes
 
+- 2026-08-02: Slice 2 (rows) shipped. GUI: "Hit X+ / Sv Y+" right-aligned on each target row's name
+  line (draw-list overlay; row's own text color so grayed rows gray with it; long-name collision
+  guard skips the draw). CLI: "[hit X+, save Y+]" after the target name. Verified live in headless
+  output - per-target differentiation visible (a 5+ row next to 4+ rows; Blast pricing cover away).
 - 2026-08-02: Slice 1 (engine) shipped, submodule `3e503bd`, 2620/2620 green. `ShootingForecast`
   (ChooseRangedWeaponStage/) computes per fireable weapon-x-target row and `Attach` stamps it in
   `OfferWeapons` (NOT in BuildWeaponOptions - HasAnyFireableTarget reuses the builder every Choose
