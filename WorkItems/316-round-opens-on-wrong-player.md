@@ -1,6 +1,6 @@
 # 316 — Every round opened with the wrong player
 
-**Status**: in-progress (implemented + tested + headless-verified; awaiting confirmation in a live multiplayer game)
+**Status**: done
 **Related**: #052 (save/load rolling snapshot), #167 (scenario compiler), #197 P19 (ActivatesNext cursor override)
 
 ## Goal
@@ -66,4 +66,17 @@ resumed saves, and multi-player teams.
 
 ## Outcome
 
-Pending: written when the reporter confirms correct opening order in a live multiplayer game.
+Closed 2026-08-02, confirmed in a live multiplayer game by the original reporter. The round's opening
+activation now goes to the head of the activation order at every seam that picks it: fresh rounds,
+rounds resumed from a save taken before their first activation, and multi-player teams (which had the
+same off-by-one on the within-team round-robin). One-line behavioural change -
+`SingleRoundContext` parks its cursor via the new `TeamPlayerAlternationCursor.ParkBeforeFirstTurn`;
+`TryAdvance` itself is untouched, so deployment, objective placement and both terrain-placement walks
+are unaffected.
+
+Nothing deferred. Two pre-existing tests that had been passing on the buggy order were repaired rather
+than re-pinned (see Decisions). Coverage is `Tests/RoundActivationOrderTests.cs`: six pins that fail
+on the old behaviour, five guards for what already worked (alternation after the opening pick,
+skip-a-team-with-nothing-to-activate, end-of-round, mid-round resume, and the read-then-advance cursor
+contract the terrain walks depend on).
+
