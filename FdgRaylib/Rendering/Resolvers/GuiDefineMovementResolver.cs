@@ -83,6 +83,14 @@ public class GuiDefineMovementResolver
     // Pathing state — main-thread only after Resolve assigns it
     private PathTemplate? _pathTemplate;
     private IModel? _selectedModel;
+
+    // #326: the roster row the pointer was over at the END of the previous frame. The panel is drawn after
+    // the table, so the roster -> table direction of the two-way hover binding (#286) needs the same
+    // single-frame handshake GuiAssignWoundsResolver uses for the opposite direction: record it in
+    // DrawInfoPanel, consume it at the top of the next Draw, clear it there so the highlight dies the
+    // instant the cursor leaves the row. Kept OUT of the click hit test on purpose - it is a highlight
+    // source only, and a frame-old value must never decide which model a click on the table selects.
+    private IModel? _panelHoveredModel;
     private bool _stayInAdvance; // toggle — off by default, reset each Resolve
     private bool _showTargeting = true; // toggle — on by default, persists across Resolve calls (covers both ranged + melee)
 
@@ -228,6 +236,15 @@ public class GuiDefineMovementResolver
     // and can't be mistaken for a move band (green/yellow/orange) or an illegal placement (red).
     private static readonly uint HoverOutline    = ImGui.ColorConvertFloat4ToU32(new Vector4(1f, 1f, 1f, 0.75f));
     private static readonly uint HoverFill       = ImGui.ColorConvertFloat4ToU32(new Vector4(1f, 1f, 1f, 0.18f));
+
+    // #326 roster. The two distance colours are the same green / orange the selected-model line has always
+    // used for "advance - may shoot" / "RUSH - cannot shoot", now carried per row so the whole unit's
+    // shooting status is legible at a glance. The row highlight matches GuiAssignWoundsResolver's, since it
+    // means the same thing there: this is the model the pointer is on out on the table.
+    private static readonly Vector4 AdvanceTextCol   = new(0.25f, 0.95f, 0.25f, 1f);
+    private static readonly Vector4 RushTextCol      = new(1.00f, 0.55f, 0.10f, 1f);
+    private static readonly uint RosterHighlightBg   = ImGui.ColorConvertFloat4ToU32(new Vector4(1f, 1f, 1f, 0.10f));
+    private static readonly uint RosterHighlightLine = ImGui.ColorConvertFloat4ToU32(new Vector4(1f, 1f, 1f, 0.75f));
     private static readonly uint GhostOutline    = ImGui.ColorConvertFloat4ToU32(new Vector4(1f, 1f, 1f, 0.85f));
     private static readonly uint FinalGhostCol   = ImGui.ColorConvertFloat4ToU32(new Vector4(1f, 1f, 1f, 0.25f));
     private static readonly uint CohesionLineCol = ImGui.ColorConvertFloat4ToU32(new Vector4(1.00f, 0.55f, 0.55f, 0.90f));
@@ -309,6 +326,7 @@ public class GuiDefineMovementResolver
             _groupGhostPositions = null;
             _manualOffsets.Clear();
             _formationCycle = null;
+            _panelHoveredModel = null;
         }
         return tcs.Task;
     }
@@ -333,10 +351,10 @@ public class GuiDefineMovementResolver
         bool advanceOnly = _stayInAdvance || ImGui.IsKeyDown(ImGuiKey.LeftShift) || ImGui.IsKeyDown(ImGuiKey.RightShift);
         bool group = _formationMode.IsGroup;
 
-        // #295: in single mode, clicking a model IS how you switch to it (Space used to cycle; Space now
-        // confirms). Hit-test the pointer once here so the same answer both paints the hover highlight and
-        // drives the click -- a highlight that could disagree with what the click selects is worse than no
-        // highlight. Group mode has no per-model selection, so nothing is hoverable there.
+        // #295: in single mode, clicking a model on the table also switches to it. Hit-test the pointer once
+        // here so the same answer both paints the hover highlight and drives the click -- a highlight that
+        // could disagree with what the click selects is worse than no highlight. Group mode has no per-model
+        // selection, so nothing is hoverable there.
         // #312: hit-test each model at its PLANNED pose (final ghost position + facing), so a click on a
         // vacated start slot places a waypoint there instead of silently re-selecting the model that left.
         IModel? hoveredModel = null;
@@ -345,6 +363,13 @@ public class GuiDefineMovementResolver
             var (hx, hz) = PixelToInches(io.MousePos.X, io.MousePos.Y);
             hoveredModel = ModelPicker.HitTest(paths.Select(kvp => PlannedPose(pt, kvp.Key, kvp.Value)), hx, hz);
         }
+
+        // #326: what gets the hover WASH is the table hit test or, failing that, last frame's hovered roster
+        // row -- so running the cursor down the panel's list lights each model up on the table. What a CLICK
+        // reads stays `hoveredModel` alone: the roster value is a frame old and the pointer is over the panel
+        // when it is set, so letting it reach the click handler could select a model the player never aimed at.
+        IModel? highlightModel = hoveredModel ?? (group ? null : _panelHoveredModel);
+        _panelHoveredModel = null;
 
         // #155: per-frame terrain-consequence state. Difficult is ENFORCED (the ghost clamps so the
         // preview can never propose a move the validator's 6" cap would reject); Dangerous is ADVISORY
@@ -391,7 +416,7 @@ public class GuiDefineMovementResolver
 
             // Start base outline (real model position) — drawn as the model's true shape (#149)
             bool isSelected = ReferenceEquals(model, _selectedModel);
-            bool isHovered  = !isSelected && ReferenceEquals(model, hoveredModel);
+            bool isHovered  = !isSelected && ReferenceEquals(model, highlightModel);
             uint outline = isSelected ? SelectionOutline : isHovered ? HoverOutline : ModelOutline;
             float thick  = isSelected || isHovered ? 2.5f : 1.5f;
             // #250: pass the facing — without it a rotated rectangular base drew axis-aligned and
@@ -759,27 +784,50 @@ public class GuiDefineMovementResolver
                 + (shift ? GroupRotationStep : -GroupRotationStep);
         }
 
-        // #295: Space no longer cycles models here -- single mode switches by clicking the model you want
-        // (hover-highlighted above), which frees Space to join Enter as the universal Confirm key.
+        // #326: Up/Down and Tab/Shift+Tab walk the roster. Space is NOT bound here -- it is Confirm
+        // (#295), and the roster in the panel is what makes the set of models discoverable in the first
+        // place; the key is the shortcut for players who have found it, not the only way in.
+        if (!group && wantInput)
+        {
+            int cycle = ResolverHotkeys.CycleDelta();
+            if (cycle != 0)
+            {
+                var roster = LivingModels(request);
+                int index = ModelRoster.Cycle(roster.FindIndex(m => ReferenceEquals(m, _selectedModel)),
+                    roster.Count, cycle);
+                if (index >= 0) _selectedModel = roster[index];
+            }
+        }
 
         // G toggles Group/Single for the rest of the game (shared with deployment).
         if (wantInput && ImGui.IsKeyPressed(ImGuiKey.G))
             _formationMode.Toggle();
 
-        bool selectedCapped = difficultActive && _selectedModel != null
-            && committedCrossedDifficult.Contains(_selectedModel);
         DrawInfoPanel(screenW, request, pt, tcs, terrain, dangerousCrossers,
-            _frameDifficultCrossing, _frameDifficultStopped, selectedCapped);
+            _frameDifficultCrossing, _frameDifficultStopped,
+            difficultActive ? committedCrossedDifficult : new HashSet<IModel>(), hoveredModel);
     }
 
     /// <summary>
-    /// #295: single-mode control hints, with switching models spelled out as a click on the model (it used
-    /// to be Space, which now confirms). Shared by the selected and no-selection branches of the panel --
-    /// they carried two copies of the line, which is how the stale "R-click: waypoint" survived in both.
+    /// The unit's living models in roster order — the order <see cref="Resolve"/> picks the initial
+    /// selection from, and the order the panel numbers "Model 1..N" in. Taken from the unit's model
+    /// bindings rather than the path map, whose iteration order a dictionary does not promise.
+    /// </summary>
+    private static List<IModel> LivingModels(DefineMovementPathRequest request) =>
+        request.UnitDataBinding.GetValue().ModelBindings
+            .Select(mb => mb.GetValue() as IModel)
+            .Where(m => m != null && m.GetIsAlive())
+            .Select(m => m!)
+            .ToList();
+
+    /// <summary>
+    /// #326: single-mode control hints. Switching models is spelled out as the keys, because the roster
+    /// above these lines already shows that clicking a row does it; clicking the model on the table still
+    /// works and is advertised on the roster header's tooltip and in Esc -> Options.
     /// </summary>
     private static void DrawSingleModeHints()
     {
-        ImGui.TextDisabled("L-click a model: switch to it   L-click elsewhere: place waypoint");
+        ImGui.TextDisabled($"{ResolverHotkeys.CycleHint}: pick model   L-click: place waypoint");
         ImGui.TextDisabled("R-click: undo   Backspace: undo / back");
     }
 
@@ -1139,8 +1187,10 @@ public class GuiDefineMovementResolver
 
     private void DrawInfoPanel(int screenW, DefineMovementPathRequest request, PathTemplate pt,
         TaskCompletionSource<CancellableResult<List<ModelMoveEntry>>> tcs, List<ITerrain> terrain,
-        int dangerousCrossers, bool difficultCrossing, bool difficultStopped, bool selectedCapped)
+        int dangerousCrossers, bool difficultCrossing, bool difficultStopped,
+        IReadOnlySet<IModel> cappedByDifficult, IModel? canvasHoveredModel)
     {
+        bool selectedCapped = _selectedModel != null && cappedByDifficult.Contains(_selectedModel);
         float panelW = ResolverPanelLayout.W;   // dock into the right-column resolver panel
         ImGui.SetNextWindowPos(new Vector2(ResolverPanelLayout.X, ResolverPanelLayout.Y), ImGuiCond.Always);
         ImGui.SetNextWindowSize(new Vector2(ResolverPanelLayout.W, ResolverPanelLayout.H), ImGuiCond.Always);
@@ -1195,24 +1245,24 @@ public class GuiDefineMovementResolver
             ImGui.TextUnformatted($"Group move - rotation {deg:0} deg   formation: {formation}");
             ImGui.TextDisabled("Wheel / R / Shift+R: rotate 15 deg   Ctrl+Wheel: formation   L-click: place step");
         }
-        else if (_selectedModel != null)
-        {
-            float dist = pt.GetTotalDistanceMoved(_selectedModel);
-            bool inRush = dist + 0.0001f >= request.MaxAdvanceDistance;
-            // #155: once this model's committed path crossed difficult terrain, 6" total is its real max.
-            float maxShown = selectedCapped
-                ? MathF.Min(request.MaxDistanceInches, GameWideConstants.DIFFICULT_TERRAIN_MOVE_CAP_INCHES)
-                : request.MaxDistanceInches;
-            string capTag = selectedCapped ? " (difficult terrain cap)" : string.Empty;
-            var color = inRush ? new Vector4(1.00f, 0.55f, 0.10f, 1f) : new Vector4(0.25f, 0.95f, 0.25f, 1f);
-            ImGui.PushStyleColor(ImGuiCol.Text, color);
-            ImGui.TextUnformatted($"Selected model: {dist:F2}\" / {FormatInches(maxShown)}\"{capTag}  ({(inRush ? "RUSH - cannot shoot" : "advance - may shoot")})");
-            ImGui.PopStyleColor();
-            DrawSingleModeHints();
-        }
         else
         {
-            ImGui.TextDisabled("No model selected. Left-click a model on the table.");
+            DrawModelRoster(request, pt, cappedByDifficult, canvasHoveredModel);
+
+            if (_selectedModel != null)
+            {
+                var row = RosterRowFor(request, pt, _selectedModel, selectedCapped);
+                string capTag = row.CappedByTerrain ? " (difficult terrain cap)" : string.Empty;
+                var color = row.InRush ? RushTextCol : AdvanceTextCol;
+                ImGui.PushStyleColor(ImGuiCol.Text, color);
+                ImGui.TextUnformatted($"{ModelRoster.RowDistanceText(row)}{capTag}  "
+                    + $"({(row.InRush ? "RUSH - cannot shoot" : "advance - may shoot")})");
+                ImGui.PopStyleColor();
+            }
+            else
+            {
+                ImGui.TextDisabled("No model selected. Pick one above.");
+            }
             DrawSingleModeHints();
         }
 
@@ -1337,6 +1387,101 @@ public class GuiDefineMovementResolver
         }
 
         ImGui.End();
+    }
+
+    /// <summary>#326: this model's roster numbers — how far it has gone against its OWN budget (#093: a
+    /// joined hero with Fast has a bigger one than its unitmates), difficult-terrain cap included.</summary>
+    private static ModelRosterRow RosterRowFor(DefineMovementPathRequest request, PathTemplate pt,
+        IModel model, bool capped, int ordinal = 0)
+    {
+        var (advance, _, maxDist) = request.BudgetFor(model.ID);
+        return ModelRoster.BuildRow(ordinal, pt.GetTotalDistanceMoved(model), advance, maxDist, capped);
+    }
+
+    /// <summary>
+    /// #326: the unit's models as a scrolling list — the panel-side half of the canvas-plus-object-list
+    /// pattern. Click a row to select that model; the row the pointer is on lights the model up on the
+    /// table, and a model hovered on the table lights its row up here and scrolls it back into view (#286 —
+    /// a highlight the player cannot see is not a connection). The distance column doubles as the checklist
+    /// of who has and hasn't been dealt with, which is the actual loop of a single-model move.
+    ///
+    /// <para>The list is sized by <see cref="ModelRoster"/>, which costs the footer FIRST (#288): a unit big
+    /// enough to overflow the roster is precisely the one whose roster must not push Done off the bottom.</para>
+    /// </summary>
+    private void DrawModelRoster(DefineMovementPathRequest request, PathTemplate pt,
+        IReadOnlySet<IModel> cappedByDifficult, IModel? canvasHoveredModel)
+    {
+        var models = LivingModels(request);
+        if (models.Count == 0) return;
+
+        var style       = ImGui.GetStyle();
+        float lineH     = ImGui.GetTextLineHeight();
+        float rowH      = ModelRoster.RowHeight(lineH);
+        float footerH   = ModelRoster.FooterHeight(style.ItemSpacing.Y, lineH, ImGui.GetFrameHeight(),
+            request.AllowCancel);
+        float rosterH   = ModelRoster.RosterHeight(ImGui.GetContentRegionAvail().Y - lineH - style.ItemSpacing.Y,
+            footerH, lineH, models.Count);
+
+        ImGui.TextDisabled($"Models ({models.Count})");
+        if (ImGui.IsItemHovered())
+            ImGui.SetTooltip($"Pick the model to move: click a row, press {ResolverHotkeys.CycleHint}, "
+                + "or click the model itself on the table.");
+
+        ImGui.BeginChild("##MoveRoster", new Vector2(0f, rosterH), ImGuiChildFlags.Borders);
+        var dl = ImGui.GetWindowDrawList();
+        for (int i = 0; i < models.Count; i++)
+        {
+            IModel model  = models[i];
+            bool selected = ReferenceEquals(model, _selectedModel);
+            var row       = RosterRowFor(request, pt, model, cappedByDifficult.Contains(model), i + 1);
+
+            float avail    = ImGui.GetContentRegionAvail().X;
+            float rowY     = ImGui.GetCursorPosY();     // content coords, matching GetScrollY's space
+            Vector2 origin = ImGui.GetCursorScreenPos();
+
+            if (ReferenceEquals(model, canvasHoveredModel))
+                ScrollRowIntoView(rowY, rowH);
+
+            ImGui.PushID(i);
+            if (ImGui.Selectable("##rosterRow", selected, ImGuiSelectableFlags.None, new Vector2(avail, rowH)))
+                _selectedModel = model;
+            if (ImGui.IsItemHovered()) _panelHoveredModel = model;
+            ImGui.PopID();
+
+            // The table -> list direction. The Selectable's own hover styling only fires for the pointer
+            // being over IT, so a model hovered out on the table gets its row painted here instead.
+            if (ReferenceEquals(model, canvasHoveredModel))
+            {
+                Vector2 rowMax = origin + new Vector2(avail, rowH);
+                dl.AddRectFilled(origin, rowMax, RosterHighlightBg, 3f);
+                dl.AddRect(origin, rowMax, RosterHighlightLine, 3f, ImDrawFlags.None, 1.5f);
+            }
+
+            // Overlay text: "Model N" left, distance right-aligned so the column scans vertically. A model
+            // that has not moved yet is greyed - the difference between "done" and "still to do" is the one
+            // thing this list exists to make obvious.
+            string name = ModelRoster.RowNameText(row.Ordinal, selected);
+            string dist = ModelRoster.RowDistanceText(row);
+            uint nameCol = ImGui.GetColorU32(ImGuiCol.Text);
+            uint distCol = !row.Started
+                ? ImGui.GetColorU32(ImGuiCol.TextDisabled)
+                : ImGui.ColorConvertFloat4ToU32(row.InRush ? RushTextCol : AdvanceTextCol);
+            float ty = origin.Y + (rowH - lineH) * 0.5f;
+            dl.AddText(new Vector2(origin.X + 4f, ty), nameCol, name);
+            dl.AddText(new Vector2(origin.X + avail - ImGui.CalcTextSize(dist).X - 6f, ty), distCol, dist);
+        }
+        ImGui.EndChild();
+    }
+
+    /// <summary>Scrolls the roster so a row at <paramref name="rowY"/> (content coordinates) is fully
+    /// visible, and does nothing when it already is — so it never fights a deliberate scroll. Mirrors
+    /// <see cref="GuiAssignWoundsResolver"/>'s.</summary>
+    private static void ScrollRowIntoView(float rowY, float rowHeight)
+    {
+        float scroll = ImGui.GetScrollY();
+        float viewH  = ImGui.GetWindowHeight();
+        if (rowY < scroll) ImGui.SetScrollY(rowY);
+        else if (rowY + rowHeight > scroll + viewH) ImGui.SetScrollY(rowY + rowHeight - viewH);
     }
 
     /// <summary>
@@ -2285,12 +2430,9 @@ public class GuiDefineMovementResolver
     private (float px, float py) InchesToPixel(float x, float z) =>
         (_originX + x * _scale, _originY + (_tableH - z) * _scale);
 
-    private static string FormatInches(float value)
-    {
-        float frac = value - MathF.Floor(value);
-        if (frac < 0.05f || frac > 0.95f) return MathF.Round(value).ToString("0");
-        return value.ToString("0.0");
-    }
+    // #326: one implementation, in ModelRoster, so the roster's "/ 12"" and this panel's own readouts can
+    // never render the same number two ways.
+    private static string FormatInches(float value) => ModelRoster.FormatInches(value);
 
     private bool IsOverTable(float px, float py) =>
         px >= _originX && py >= _originY &&

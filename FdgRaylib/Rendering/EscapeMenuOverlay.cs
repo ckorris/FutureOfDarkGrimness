@@ -172,8 +172,12 @@ public sealed class EscapeMenuOverlay
         ImGui.TextDisabled("Alt+wheel: zoom");
         ImGui.TextDisabled("Middle-drag: pan");
         ImGui.TextDisabled("L labels   T tokens   F threat");
-        ImGui.TextDisabled("G: cycle formation (during moves)");
-        ImGui.TextDisabled("Click a model: switch to it (single-model moves)");
+        // #326: G toggles Group/Single -- it is Ctrl+wheel that cycles the formation (#277). The old line
+        // said "G: cycle formation", which named the wrong key for the wrong action.
+        ImGui.TextDisabled("G: group / single mode (during moves)");
+        ImGui.TextDisabled("Ctrl+wheel: cycle formation (group moves)");
+        ImGui.TextDisabled($"{Resolvers.ResolverHotkeys.CycleHint}: pick model (single moves)");
+        ImGui.TextDisabled("Click a model: switch to it (single moves)");
         ImGui.TextDisabled($"{Resolvers.ResolverKeybinds.Confirm.Hint}: auto-assign / confirm");
         ImGui.TextDisabled($"{Resolvers.ResolverKeybinds.Back.Hint}: undo / back out");
         ImGui.TextDisabled("Esc: open this menu");

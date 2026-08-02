@@ -150,9 +150,40 @@ and every button, tooltip and Options line followed. Muting (typing / Esc-menu o
 Panel-LOCAL keys stay put: an option list's number keys, `R` to rotate, `G` for group mode, `Y`/`N`. The
 table is for what is shared across resolvers, which is what goes stale in text.
 
-**Selecting one model of a unit is a click on that model** (single-mode movement and consolidation), not a
-cycle key — that is what freed Space. The click and the hover highlight that advertises it read the same
-`ModelPicker.HitTest`; paint a highlight from anything else and it will eventually disagree with the click.
+**Selecting one model of a unit is a click on that model** (single-mode movement and consolidation). The
+click and the hover highlight that advertises it read the same `ModelPicker.HitTest`; paint a highlight
+from anything else and it will eventually disagree with the click.
+
+## The model roster (#326)
+
+#295's click-to-select freed Space, but it left **the set of models with no representation outside the
+table** — and the only affordance, a hover highlight, appears once the cursor is already on a base, which
+during a move is busy aiming the waypoint ghost. Players not told the gesture existed did not find it.
+
+The movement panel now draws a **roster** of the unit's living models in single mode (`ModelRoster` +
+`GuiDefineMovementResolver.DrawModelRoster`): "Model N" and distance travelled against that model's own
+budget, greyed until it moves, green while it can still shoot, orange once it is rushing. Consequences
+worth keeping:
+
+- **The table's left click has one meaning again** — place a waypoint. Selection has its own surface.
+- **Selection is two-way bound** (#286): a hovered row washes the model on the table, a model hovered on
+  the table paints and scrolls its row back into view. The panel is drawn *after* the table, so the
+  roster→table direction uses the same single-frame handshake — `_panelHoveredModel` is written in
+  `DrawInfoPanel`, consumed at the top of the next `Draw`, cleared there. It feeds the **highlight only**;
+  the click hit test still reads the live `ModelPicker.HitTest`, because a frame-old value recorded while
+  the pointer was over the panel must never decide which model a click on the table selects.
+- **Keys are additive, never a rebind.** `ResolverHotkeys.CycleDelta()` = Up/Down + Tab/Shift+Tab. The
+  tempting key is the Space that used to cycle, but Space is `ResolverKeybinds.Confirm`, whose whole value
+  is that one table generates every label, tooltip and Options line — a per-panel exception makes all of
+  that text lie. Advertise with `ResolverHotkeys.CycleHint`, never a hand-written "(Tab)".
+- **The footer is costed first** (#288): `ModelRoster.FooterHeight` prices the hint block, mode button,
+  both checkboxes and the whole button stack; `RosterHeight` takes the remainder, capped at
+  `MaxVisibleRows` so a big Tough unit scrolls rather than pushing Done off the bottom.
+- `ModelRoster` is arithmetic only (no ImGui), so the budget is unit-tested in `ModelRosterTests` — same
+  split as `PlacementPanelLayout` and `ActionMenuLayout`.
+
+Consolidation (`GuiConsolidationMoveResolver`) carries the identical click-to-select gesture and is the
+next slice to get the same treatment; until then it keeps the click-only affordance.
 
 ## Validation gotchas
 
