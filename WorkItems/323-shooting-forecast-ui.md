@@ -19,6 +19,15 @@ from the shooting details section.
 
 ## Notes
 
+- 2026-08-02 (hand-verify feedback): weapon rows showed NO special rules (owner screenshot: Shard
+  Carbine missing its Crack). Root cause predates this item: `Weapon.RuleDefinitions` is [JsonIgnore]
+  and nothing rehydrated the persisted blob on the RECEIVING side of a request, so any JSON hop
+  (networked client, synced store) blanked every rule reader - stat sublines, RuleSegments, table
+  tooltips, AI. Fixed at the boundary: `Weapon.[OnDeserialized] -> RehydrateRules()` (engine
+  `c3cc5da`), so all existing display paths (#292 hover tooltips + Details rules list) light up with
+  no client change. `SplitWeaponProfileTests` precondition updated (it pinned the old rule-less
+  arrival); new pin test `RequestWeapon_RulesSurviveTheWire_ViaOnDeserializedRehydration`. 2621/2621.
+  ResolverGuide's "weapon rules do not cross the wire" gotcha rewritten.
 - 2026-08-02: Slice 3 (details + badge) shipped. Details pane: "To hit: Quality 4+ | Stealth -1 ->
   5+" / "Save: Defense 4+ | AP 2 | Cover +1 -> 5+" (chips verbatim from the forecast, never
   re-derived client-side), forecast Notes in dim amber, and the misleading target-Quality line is
