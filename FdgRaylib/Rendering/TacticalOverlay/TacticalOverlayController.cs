@@ -938,28 +938,11 @@ public class TacticalOverlayController
     }
 
     // ---- Opportunity field: pins -----------------------------------------------------------------
-
-    /// <summary>
-    /// Routes an enemy click during a move job to pin/unpin (spec section 3): clicking an unpinned enemy
-    /// pins + focuses it, clicking a pinned enemy unpins it. Returns true when it consumed the click, so
-    /// the move resolver doesn't also treat it as a waypoint. No-op outside a move job.
-    /// </summary>
-    public bool TryHandleEnemyClick(IUnit unit)
-    {
-        if (_moveResolver?.ActiveRequest == null) return false;
-
-        // Single pin: clicking the pinned enemy unpins; clicking any other REPLACES it.
-        if (_pins.Count > 0 && ReferenceEquals(_pins[0].Unit, unit))
-        {
-            ClearPins();
-        }
-        else
-        {
-            _pins.Clear();
-            Pin(unit);
-        }
-        return true;
-    }
+    // #310: the click-to-pin gesture is REMOVED (it silently ate the waypoint click a player aimed at an
+    // enemy base while charging into contact). Nothing sets a pin any more, so every _pins-guarded branch
+    // below (focused-pin band snap, pin panels, Esc unpin, the pin fallback in ActiveTargetUnit) is inert;
+    // the hover-anchored target picture (#247) is the surviving way to inspect an enemy during a move.
+    // Full removal of the dead pin plumbing is deferred - tracked in WorkItems/310.
 
     /// <summary>
     /// The enemy every instrument (field, rings, pips, counts, distance) currently reflects: the HOVERED

@@ -198,11 +198,13 @@ public class GuiConsolidationMoveResolver
         // #295: single mode switches models by clicking the model you want (Space used to cycle; Space now
         // confirms). One hit test up front feeds both the hover highlight and the click, so what lights up
         // is exactly what a click selects. Group mode has no per-model selection, so nothing is hoverable.
+        // #310: hit-test each model at its PLANNED pose (committed ghost position + facing), so a click on
+        // a vacated start slot places a step there instead of silently re-selecting the model that left.
         IModel? hoveredModel = null;
         if (!_formationMode.IsGroup && overTable && !io.WantCaptureMouse)
         {
             var (hx, hz) = PixelToInches(io.MousePos.X, io.MousePos.Y);
-            hoveredModel = ModelPicker.HitTest(paths.Keys, hx, hz);
+            hoveredModel = ModelPicker.HitTest(paths.Select(kvp => PlannedPose(pt, kvp.Key, kvp.Value)), hx, hz);
         }
 
         // 1) Draw each model's start circle + committed path + final ghost
@@ -237,13 +239,12 @@ public class GuiConsolidationMoveResolver
                     dl.AddLine(new Vector2(px, py), new Vector2(cx, cy), MoveColor, 2f);
                     prev = cur;
                 }
-                var last = pathPoints[^1];
-                var (lx, ly) = InchesToPixel(last.x, last.z);
                 // #283: the committed marker keeps the rotation its step was committed with (0 outside group
                 // mode = the model's own facing) - it no longer snaps back unrotated after a rotated commit,
-                // and a later wheel turn only moves the phantoms.
-                IReadOnlyList<float> storedOffsets = pt.GetModelFacingOffsets(model);
-                Float2 committedFacing = RotateFloat2(model.Facing, storedOffsets.Count > 0 ? storedOffsets[^1] : 0f);
+                // and a later wheel turn only moves the phantoms. PlannedPose is the same math the
+                // hover/click hit test uses (#310), so the drawn marker IS the click hotspot.
+                var (_, last, committedFacing) = PlannedPose(pt, model, pathPoints);
+                var (lx, ly) = InchesToPixel(last.x, last.z);
                 ModelBaseRenderer.DrawFilledImGui(dl, model.BaseShape, new Vector2(lx, ly), _scale, FinalGhostCol, outline, thick,
                     facing: committedFacing);
             }
@@ -491,6 +492,20 @@ public class GuiConsolidationMoveResolver
     {
         float cos = MathF.Cos(radians), sin = MathF.Sin(radians);
         return new Float2(f.X * cos - f.Y * sin, f.X * sin + f.Y * cos);
+    }
+
+    // #310: where a model's committed marker STANDS while planning -- the last committed step at the
+    // rotation it was committed with (#283, rotate-in-place: consolidation slides without turning to the
+    // direction of travel), or the resting base for a model with no steps yet. Feeds BOTH the committed
+    // marker draw and the hover/click hit test, so the marker and the click hotspot cannot drift apart.
+    private static (IModel model, Position at, Float2 facing) PlannedPose(PathTemplate pt, IModel model,
+        IReadOnlyList<Position> pathPoints)
+    {
+        if (pathPoints.Count == 0) return (model, model.Position, model.Facing);
+
+        IReadOnlyList<float> storedOffsets = pt.GetModelFacingOffsets(model);
+        Float2 committedFacing = RotateFloat2(model.Facing, storedOffsets.Count > 0 ? storedOffsets[^1] : 0f);
+        return (model, pathPoints[^1], committedFacing);
     }
 
     // True if the shape at p (facing) overlaps a live model of ANOTHER unit. Own-unit models are ignored -
