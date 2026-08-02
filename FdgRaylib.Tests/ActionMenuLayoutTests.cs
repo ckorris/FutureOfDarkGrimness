@@ -82,7 +82,7 @@ public class ActionMenuLayoutTests
 
         Assert.That(with - without, Is.EqualTo(
                 ResolverPanelLayout.ActionRowHeight(lineHeight) + ActionMenuLayout.GapBetween(lineHeight))
-            .Within(0.001f), "#248's Back button is pinned above Pass, so the footer must pay for it");
+            .Within(0.001f), "#248's Back button is pinned below Pass, so the footer must pay for it");
     }
 
     [Test]
@@ -131,11 +131,12 @@ public class ActionMenuLayoutTests
         Assert.That(listHeight, Is.GreaterThan(0f));
     }
 
-    // The invariant the drawing code actually depends on: the resolver lays the footer out by walking
-    // down from the bottom of the list, so Pass lands exactly GapBelow above the panel's bottom edge.
-    // If FooterHeight and that walk ever disagree, Pass drifts off the panel (or floats in the middle).
+    // The invariant the drawing code actually depends on: the resolver lays the footer out by walking down
+    // from the bottom of the list, so its LAST row - Back when the activation is cancellable, Pass
+    // otherwise - lands exactly GapBelow above the panel's bottom edge. If FooterHeight and that walk ever
+    // disagree, the footer drifts off the panel (or floats in the middle of it).
     [Test]
-    public void PassRow_LandsExactlyOneBottomGapAboveThePanelEdge()
+    public void TheLastFooterRow_LandsExactlyOneBottomGapAboveThePanelEdge()
     {
         foreach (float lineHeight in new[] { LineHeight1x, LineHeight4K })
         {
@@ -145,13 +146,16 @@ public class ActionMenuLayoutTests
                 float footer = ActionMenuLayout.FooterHeight(lineHeight, passRow, allowCancel);
                 float listHeight = ActionMenuLayout.ListHeight(PanelHeight, ListTop, footer, lineHeight);
 
-                // Mirrors GuiStringSelectionResolver.Draw's footer walk.
+                // Mirrors GuiStringSelectionResolver.Draw's footer walk: Pass first, then Back under it.
                 float y = ListTop + listHeight + ActionMenuLayout.GapAbove(lineHeight);
+                float bottom = y + passRow;
                 if (allowCancel)
-                    y += ResolverPanelLayout.ActionRowHeight(lineHeight) + ActionMenuLayout.GapBetween(lineHeight);
-                float passBottom = y + passRow;
+                {
+                    bottom += ActionMenuLayout.GapBetween(lineHeight)
+                              + ResolverPanelLayout.ActionRowHeight(lineHeight);
+                }
 
-                Assert.That(PanelHeight - passBottom, Is.EqualTo(ActionMenuLayout.GapBelow(lineHeight)).Within(0.001f),
+                Assert.That(PanelHeight - bottom, Is.EqualTo(ActionMenuLayout.GapBelow(lineHeight)).Within(0.001f),
                     $"lineHeight {lineHeight}, allowCancel {allowCancel}");
             }
         }

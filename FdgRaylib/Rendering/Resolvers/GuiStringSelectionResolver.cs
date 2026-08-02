@@ -265,17 +265,12 @@ public class GuiStringSelectionResolver : IStageResolver<StringSelectionRequest,
 
         ImGui.EndChild();
 
-        // ---- the pinned footer: Back, then Pass, raised off the panel's bottom edge -------------------
+        // ---- the pinned footer: Pass, then Back, raised off the panel's bottom edge --------------------
+        // Back goes last on purpose: the panel's bottom edge is the easiest target in it to slam into, so
+        // it belongs to the harmless action rather than the irreversible one.
         if (pinPass)
         {
             float fy = listTop + listH + ActionMenuLayout.GapAbove(lineH);
-
-            if (request.AllowCancel)
-            {
-                ImGui.SetCursorPos(new Vector2(pad, fy));
-                if (DrawBackButton(fullBtnW)) cancelled = true;
-                fy += ResolverPanelLayout.ActionRowHeight() + ActionMenuLayout.GapBetween(lineH);
-            }
 
             // An available Pass is drawn at full strength, exactly like an option row: the position and
             // the confirmation are what make it deliberate. Dimming it (tried first) read as "disabled"
@@ -306,6 +301,13 @@ public class GuiStringSelectionResolver : IStageResolver<StringSelectionRequest,
 
             // The soft back tone, as on every other receding action - the confirmation is next, not the pass.
             if (passPressed) UiSound.Back();
+
+            if (request.AllowCancel)
+            {
+                fy += passRowH + ActionMenuLayout.GapBetween(lineH);
+                ImGui.SetCursorPos(new Vector2(pad, fy));
+                if (DrawBackButton(fullBtnW)) cancelled = true;
+            }
         }
 
         // #248: cancellable string menus (a pristine activation's action menu) get a Back button +
@@ -332,20 +334,33 @@ public class GuiStringSelectionResolver : IStageResolver<StringSelectionRequest,
         {
             // Keep the modal request alive across frames (OpenPopup is consumed by the first BeginPopupModal).
             if (!ImGui.IsPopupOpen(ConfirmPassTitle)) ImGui.OpenPopup(ConfirmPassTitle);
-            // Always, not Appearing: an AlwaysAutoResize window has no size yet on the frame it appears,
-            // so a centre pivot applied once lands it against the top of the screen (it did). ImGui hides
-            // an auto-resizing window on its first frame anyway, so re-centring every frame is free.
+
+            // The width is pinned and the message wraps at an explicit position rather than at the window
+            // edge. Wrapped text inside an AlwaysAutoResize window is circular - the wrap width comes from
+            // the window width, which comes from the content - and on the frame the popup appears ImGui has
+            // no width yet, so the message wrapped to a column of single words and the popup opened nearly
+            // as tall as the screen for one frame before snapping down. A fixed width breaks the loop: the
+            // height (0 = auto-fit) is then measured correctly the first time, on the frame ImGui hides a
+            // brand-new window anyway. Position is re-applied every frame (Always) so the centre pivot uses
+            // the real size instead of whatever the window had when it appeared.
+            float rowH = ResolverPanelLayout.OptionRowHeight();
+            float btnW = MathF.Max(150f,
+                ImGui.CalcTextSize($"Pass  {ResolverKeybinds.Confirm.Parenthetical}").X + 24f);
+            float contentW = btnW * 2f + ImGui.GetStyle().ItemSpacing.X;
+
             Vector2 center = ImGui.GetMainViewport().GetCenter();
             ImGui.SetNextWindowPos(center, ImGuiCond.Always, new Vector2(0.5f, 0.5f));
-            if (ImGui.BeginPopupModal(ConfirmPassTitle, ImGuiWindowFlags.AlwaysAutoResize))
+            ImGui.SetNextWindowSize(new Vector2(contentW + ImGui.GetStyle().WindowPadding.X * 2f, 0f),
+                ImGuiCond.Always);
+            if (ImGui.BeginPopupModal(ConfirmPassTitle,
+                    ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoScrollbar |
+                    ImGuiWindowFlags.NoSavedSettings))
             {
-                ImGui.TextWrapped(
+                ImGui.PushTextWrapPos(ImGui.GetCursorPosX() + contentW);
+                ImGui.TextUnformatted(
                     "Passing ends this unit's activation - it does nothing else this round.");
+                ImGui.PopTextWrapPos();
                 ImGui.Spacing();
-
-                float rowH = ResolverPanelLayout.OptionRowHeight();
-                float btnW = MathF.Max(150f,
-                    ImGui.CalcTextSize($"Pass  {ResolverKeybinds.Confirm.Parenthetical}").X + 24f);
 
                 bool confirmed = ResolverButtons.Primary("Pass", new Vector2(btnW, rowH));
                 ImGui.SameLine();

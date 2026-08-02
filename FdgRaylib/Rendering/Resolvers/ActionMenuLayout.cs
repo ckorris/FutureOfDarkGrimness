@@ -13,9 +13,12 @@ namespace FdgRaylib.Rendering.Resolvers;
 /// In a 2026-08-02 multiplayer game both players ended activations that still had actions left by
 /// clicking Pass where it happened to sit under the cursor — it was just the last row of an ordinary
 /// option list, one row below Shoot. So Pass is lifted out of the scrolling list and pinned to the
-/// bottom of the panel: a gap above separates it from the real actions, and a gap below raises it clear
-/// of the panel's bottom edge instead of leaving it flush against it. Back (#248) stacks directly above
-/// it, so both "leave this menu" actions stay reachable when the option list scrolls.</para>
+/// bottom of the panel: a gap above separates it from the real actions, and a gap below raises the
+/// footer clear of the panel's bottom edge instead of leaving it flush against it.</para>
+///
+/// <para>Back (#248) stacks BELOW Pass, so both "leave this menu" actions stay reachable when the option
+/// list scrolls and the bottom edge — the easiest thing in the panel to slam the cursor into — belongs
+/// to the harmless action rather than the irreversible one.</para>
 ///
 /// <para>Every gap is a line-height multiple (#298's rule): the ImGui font is <c>18f * uiScale</c>, up to
 /// 25px at 4K, so a pixel constant that reads as padding on the developer's display is a hairline on a
@@ -40,10 +43,10 @@ public static class ActionMenuLayout
     /// read as "not one of the actions above".</summary>
     public const float GapAboveLineMultiple = 0.7f;
 
-    /// <summary>Gap under Pass: the padding that raises it off the panel's bottom edge.</summary>
+    /// <summary>Gap under the last footer row: the padding that raises it off the panel's bottom edge.</summary>
     public const float GapBelowLineMultiple = 0.7f;
 
-    /// <summary>Gap between the Back button and Pass, so the two footer rows don't read as one slab.</summary>
+    /// <summary>Gap between Pass and the Back button, so the two footer rows don't read as one slab.</summary>
     public const float GapBetweenLineMultiple = 0.4f;
 
     /// <summary>The option list never shrinks below this many text lines; it scrolls instead. A safety
@@ -60,8 +63,8 @@ public static class ActionMenuLayout
     public static float GapBetween(float lineHeight) => lineHeight * GapBetweenLineMultiple;
 
     /// <summary>
-    /// Height of everything pinned below the scrolling option list: the gap above, the optional Back
-    /// button and its gap, the Pass row, and the gap that lifts it off the bottom edge.
+    /// Height of everything pinned below the scrolling option list: the gap above, the Pass row, the
+    /// optional Back button and its gap, and the gap that lifts the last row off the bottom edge.
     /// </summary>
     /// <param name="lineHeight">ImGui's <c>GetTextLineHeight()</c> — what every gap scales with.</param>
     /// <param name="passRowHeight">Measured height of the Pass row: a plain option row when Pass is

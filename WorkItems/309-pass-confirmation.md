@@ -15,6 +15,14 @@ confirmation where Enter/Space passes and Escape cancels.
 
 ## Notes
 
+- 2026-08-02 (second hand-verify pass, user-driven): two more defects fixed.
+  - The confirmation opened nearly screen-tall for one frame before snapping down. Cause: wrapped text
+    inside an `AlwaysAutoResize` window is circular — the wrap width comes from the window width, which
+    comes from the content — so on the appearing frame the message wrapped to a column of single words.
+    The popup now pins its width (`SetNextWindowSize(w, 0)`, height auto-fit) and wraps at an explicit
+    position, which breaks the loop and makes the first measured height correct.
+  - Back moved BELOW Pass at the user's request; agreed on UX grounds — the panel's bottom edge is the
+    easiest target to slam into, so it should belong to the harmless action, not the irreversible one.
 - 2026-08-02: Implemented client-side, in `GuiStringSelectionResolver` + a new `ActionMenuLayout`.
   - The engine still describes the menu as a flat list of strings; the client decides how it reads,
     matching `Pass` by name the same way `ResolverHotkeys` pins its letters to the built-in action names.
