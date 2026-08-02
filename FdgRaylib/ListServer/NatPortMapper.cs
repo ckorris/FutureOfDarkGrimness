@@ -128,7 +128,23 @@ public sealed class NatPortMapper : IDisposable
         try { await device.DeletePortMapAsync(mapping).ConfigureAwait(false); } catch { }
     }
 
-    public void Dispose()
+    /// <summary>
+    /// Releases the mapping. Returns immediately: the router round-trip that removes it runs in the
+    /// background, because this is called from the UI thread when a lobby closes and a router taking
+    /// its time froze the app for most of a second before the main menu appeared (#310 follow-up).
+    /// Use <see cref="DisposeBlocking"/> on the way out of the process instead, where there is no
+    /// later moment for a background task to finish in.
+    /// </summary>
+    public void Dispose() => Teardown(TimeSpan.Zero);
+
+    /// <summary>
+    /// Dispose, waiting up to <paramref name="timeout"/> for the router to confirm the removal. For
+    /// app shutdown only - the mapping is created with an indefinite lease, so letting the process
+    /// exit mid-removal would leave the port open on the router until it is rebooted.
+    /// </summary>
+    public void DisposeBlocking(TimeSpan? timeout = null) => Teardown(timeout ?? TimeSpan.FromSeconds(2));
+
+    private void Teardown(TimeSpan wait)
     {
         INatDevice? device;
         Mapping? mapping;
@@ -144,10 +160,13 @@ public sealed class NatPortMapper : IDisposable
         }
 
         // Best-effort removal so the mapping vanishes now instead of lingering until the router's lease
-        // expires. Bounded so app exit never hangs on an unresponsive router.
-        if (device != null && mapping != null)
+        // expires. Nothing here is load-bearing: a removal that never lands just leaves a forwarded port.
+        if (device == null || mapping == null) return;
+
+        Task removal = SafeDeleteAsync(device, mapping);
+        if (wait > TimeSpan.Zero)
         {
-            try { SafeDeleteAsync(device, mapping).Wait(TimeSpan.FromSeconds(2)); } catch { }
+            try { removal.Wait(wait); } catch { }
         }
     }
 }

@@ -27,4 +27,16 @@ public class NatPortMapperTests
         Assert.DoesNotThrow(() => mapper.Dispose());
         Assert.That(mapper.State, Is.EqualTo(NatPortMapper.MapState.Idle));
     }
+
+    // #310 follow-up: the in-session teardown is the one on the UI thread, so it must never wait on the
+    // router. (With no mapping to remove neither form can block; the distinction that matters is that
+    // both are safe and idempotent, and that app exit still has a blocking form to call.)
+    [Test]
+    public void DisposeBlocking_IsInterchangeableWithDispose()
+    {
+        var mapper = new NatPortMapper(6389);
+        Assert.DoesNotThrow(() => mapper.DisposeBlocking());
+        Assert.DoesNotThrow(() => mapper.Dispose());
+        Assert.That(mapper.State, Is.EqualTo(NatPortMapper.MapState.Idle));
+    }
 }

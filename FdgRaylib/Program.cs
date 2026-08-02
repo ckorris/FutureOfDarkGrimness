@@ -1,5 +1,6 @@
 using System.Text.Json;
 using FdgRaylib.Cli;
+using FdgRaylib.Config;
 using FdgRaylib.ListServer;
 using FdgRaylib.Rendering;
 using FDG;
@@ -38,6 +39,10 @@ if (args.Contains("--field-harness"))
 {
     Environment.Exit(FdgRaylib.Rendering.TacticalOverlay.FieldHarness.Run());
 }
+
+// #310: every install gets a config file (player name + the last hosted game's settings). Created with
+// defaults on first run; best-effort, so a read-only home directory just means nothing is remembered.
+UserConfig.EnsureExists();
 
 bool headless = args.Contains("--headless");
 
@@ -461,13 +466,17 @@ else
         activeLobby?.Dispose();
         activeLobby = null;
     }
-    void StopListing()
+    // `blocking` is for app exit only: it waits for the router to confirm the UPnP removal, which there
+    // is no later moment to do. Every in-session call leaves it false - waiting on a slow router there
+    // froze the UI for most of a second on the way back to the main menu.
+    void StopListing(bool blocking = false)
     {
         activeListing?.Dispose();
         activeListing = null;
         // Removes the UPnP port mapping too (#271), so we don't leave a router port open past the
         // session. Best-effort; a missed path just leaves the mapping to the router's lease TTL.
-        activeMapper?.Dispose();
+        if (blocking) activeMapper?.DisposeBlocking();
+        else activeMapper?.Dispose();
         activeMapper = null;
     }
 
@@ -511,7 +520,8 @@ else
             return;
         }
 
-        var lobby = new LobbyViewModel_Host("Mr. Host", "Loaded Game", "", host, loadedStore);
+        // #310: the saved player name, same as a fresh host lobby uses.
+        var lobby = new LobbyViewModel_Host(UserConfig.Current.PlayerName, "Loaded Game", "", host, loadedStore);
         activeLobby = lobby;
         renderer.LobbyScreen.SetViewModel(lobby);
         renderer.NavigateTo(renderer.LobbyScreen);
@@ -660,7 +670,9 @@ else
     }
     finally
     {
-        // App exit: send the polite delist so the entry vanishes now, not at TTL (#271).
-        StopListing();
+        // App exit: send the polite delist so the entry vanishes now, not at TTL (#271), and wait for
+        // the router to drop the port mapping - the process is about to end, so a background removal
+        // would die with it.
+        StopListing(blocking: true);
     }
 }

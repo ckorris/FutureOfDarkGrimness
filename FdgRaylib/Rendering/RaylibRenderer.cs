@@ -139,7 +139,11 @@ public class RaylibRenderer
         _escapeMenu.OnLoadGame = () => { ExitGame(); NavigateTo(MainMenu); OnLoadGameRequested?.Invoke(); };
     }
 
-    public void NavigateTo(IAppScreen screen) => _currentScreen = screen;
+    public void NavigateTo(IAppScreen screen)
+    {
+        _currentScreen = screen;
+        screen.OnShown();
+    }
 
     // The owning unit rides along with the colour so DrawModels can ask whether the model is actually in
     // play. A model belonging to an off-table unit (Ambush reserve, embarked, an Aircraft that flew off)

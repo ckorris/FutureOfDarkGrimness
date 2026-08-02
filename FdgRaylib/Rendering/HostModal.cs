@@ -2,6 +2,7 @@ using System.Numerics;
 using FDG.Network;
 using FDG.Network.Connection;
 using FDG.Network.Connection.Lobby;
+using FdgRaylib.Config;
 using FdgRaylib.ListServer;
 using ImGuiNET;
 
@@ -16,15 +17,22 @@ public class HostModal : IAppScreen
     public Action<ILobbyViewModel, PublicListingService?, NatPortMapper?>? OnCreated;
     public Action? OnCancel;
 
-    private string _yourName      = "Mr. Host";
-    private string _serverName    = "The Table";
+    // Seeded from the saved config (#310): name, server name, port and the public-listing tick are
+    // whatever the last hosted game used, defaulting to "Newbie" / "The Table" / 6389 on a fresh
+    // install. The password is never stored.
+    private string _yourName      = UserConfig.Current.PlayerName;
+    private string _serverName    = UserConfig.Current.ServerName;
     private string _password      = "";
-    private string _port          = NetworkProtocol.DefaultPort.ToString();
-    private bool   _listPublicly  = false;
+    private string _port          = UserConfig.Current.Port.ToString();
+    private bool   _listPublicly  = UserConfig.Current.ListPublicly;
     private string _error         = "";
 
     private const float DialogWidthFraction  = 0.30f;
     private const float DialogHeightFraction = 0.52f;
+
+    // #310: the saved name can change while this dialog sits off screen (you joined a game as someone
+    // else), so the fields are re-read from the config every time it opens, not just at construction.
+    public void OnShown() => Reset();
 
     public void Draw(int screenW, int screenH)
     {
@@ -179,6 +187,14 @@ public class HostModal : IAppScreen
             return;
         }
 
+        // The dialog's choices become the defaults for next time (#310). Saved here, once the server is
+        // actually listening, so a failed bind doesn't rewrite the config with a port that didn't work.
+        UserConfig.Current.PlayerName   = _yourName;
+        UserConfig.Current.ServerName   = _serverName;
+        UserConfig.Current.Port         = port;
+        UserConfig.Current.ListPublicly = _listPublicly;
+        UserConfig.Save();
+
         var viewModel = new LobbyViewModel_Host(_yourName, _serverName, _password, host);
 
         // Best-effort UPnP port forwarding (#271), regardless of public listing: any internet host
@@ -203,11 +219,13 @@ public class HostModal : IAppScreen
 
     private void Reset()
     {
-        _yourName     = "Mr. Host";
-        _serverName   = "The Table";
+        // Back to the saved config rather than to hardcoded defaults (#310), so re-opening the dialog
+        // shows the same name and server the last host used.
+        _yourName     = UserConfig.Current.PlayerName;
+        _serverName   = UserConfig.Current.ServerName;
         _password     = "";
-        _port         = NetworkProtocol.DefaultPort.ToString();
-        _listPublicly = false;
+        _port         = UserConfig.Current.Port.ToString();
+        _listPublicly = UserConfig.Current.ListPublicly;
         _error        = "";
     }
 }
