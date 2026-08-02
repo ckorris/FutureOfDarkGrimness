@@ -1,6 +1,6 @@
-# 309 — Pass is pinned to the bottom of the action menu and asks for confirmation
+# 311 — Pass is pinned to the bottom of the action menu and asks for confirmation
 
-**Status**: in-progress (implemented + tested; awaiting GUI hand-verify)
+**Status**: done (hand-verified in the running app 2026-08-02)
 **Related**: #248 (Back / letter hotkeys / Esc-belongs-to-the-menu), #298 (line-height-derived row sizes), #295 (Confirm = Enter/Space)
 
 ## Goal
@@ -15,6 +15,11 @@ confirmation where Enter/Space passes and Escape cancels.
 
 ## Notes
 
+- 2026-08-02: **Renumbered 309 -> 310 -> 311** at push time - see reconciliation 35 in
+  `Reconciliations.md`. origin/master had meanwhile landed its own merged #309 (networked client
+  rendering late-deployed models label-only), and then, while that first renumber was being verified,
+  a parallel session's #310 (per-user config file) plus its own reconciliation-34 entry. Per merged-wins
+  precedent this unmerged local item yields twice.
 - 2026-08-02 (second hand-verify pass, user-driven): two more defects fixed.
   - The confirmation opened nearly screen-tall for one frame before snapping down. Cause: wrapped text
     inside an `AlwaysAutoResize` window is circular — the wrap width comes from the window width, which
@@ -64,4 +69,19 @@ confirmation where Enter/Space passes and Escape cancels.
 
 ## Outcome
 
-_Open._
+Shipped, client-side only, no engine or wire-format change. The Choose Action panel is now
+instructions / scrolling option list / pinned footer: Pass sits below the list separated by its own gap,
+Back sits under Pass, and a bottom gap lifts the footer off the panel edge - every gap a line-height
+multiple, so it survives the 4K font. Choosing Pass by click or by its X hotkey opens a centred
+confirmation (Enter/Space passes, Esc cancels, Esc claimed from `EscapeRouter` so it cannot also open the
+in-game menu); all letter/Backspace hotkeys freeze while it is up. Menus without a Pass option - weapon,
+spell, ability pickers - keep their original layout untouched.
+
+Two defects were found and fixed in the hand-verify passes, both worth remembering: dimming Pass
+(`ResolverButtons.Deemphasized`) read as *disabled* rather than merely receding, and wrapped text inside
+an `AlwaysAutoResize` ImGui window is circularly sized - the wrap width comes from the window width,
+which comes from the content - so the popup opened nearly screen-tall for one frame until the width was
+pinned and the wrap position made explicit.
+
+Nothing deferred. Verified: engine + app suites green, headless smoke exit 0, and hand-verified in the
+running app (footer layout, confirmation, Esc-cancel not opening the in-game menu).

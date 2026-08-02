@@ -4,7 +4,7 @@ using NUnit.Framework;
 
 namespace FdgRaylib.Tests;
 
-// #309 — Pass ends an activation and cannot be taken back, but in the Choose Action menu it was just the
+// #311 — Pass ends an activation and cannot be taken back, but in the Choose Action menu it was just the
 // last row of an ordinary option list: in a 2026-08-02 multiplayer game both players ended activations
 // they still had actions left in by clicking it where it happened to sit under the cursor. It is now
 // pinned to the bottom of the panel, separated from the real actions and raised off the bottom edge,

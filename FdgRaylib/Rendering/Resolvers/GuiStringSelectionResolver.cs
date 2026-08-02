@@ -9,7 +9,7 @@ namespace FdgRaylib.Rendering.Resolvers;
 
 public class GuiStringSelectionResolver : IStageResolver<StringSelectionRequest, string>, IGuiResolver
 {
-    /// <summary>#309 — the Pass confirmation's title, which doubles as its ImGui popup id.</summary>
+    /// <summary>#311 — the Pass confirmation's title, which doubles as its ImGui popup id.</summary>
     private const string ConfirmPassTitle = "End this activation?";
 
     private readonly object _lock = new();
@@ -17,7 +17,7 @@ public class GuiStringSelectionResolver : IStageResolver<StringSelectionRequest,
     private TaskCompletionSource<string>? _tcs;
 
     /// <summary>
-    /// #309: true between pressing Pass and answering the confirmation. Only the render thread reads or
+    /// #311: true between pressing Pass and answering the confirmation. Only the render thread reads or
     /// writes it, but it is cleared under the same lock as the request so a request that resolves or is
     /// replaced underneath can never leave a confirmation armed over the next menu.
     /// </summary>
@@ -94,7 +94,7 @@ public class GuiStringSelectionResolver : IStageResolver<StringSelectionRequest,
         // shuffle anyone else's letter.
         char?[] letters = ResolverHotkeys.AssignLetters(request.ValidOptions);
 
-        // #309: Pass is pinned to the bottom of the panel behind a confirmation instead of sitting in the
+        // #311: Pass is pinned to the bottom of the panel behind a confirmation instead of sitting in the
         // list as an ordinary row - see ActionMenuLayout for why. It keeps that spot when it is greyed
         // out (Instinctive compels an attack), so the rows above never shift under the cursor.
         int passValid   = ActionMenuLayout.PassIndex(request.ValidOptions);
@@ -191,7 +191,7 @@ public class GuiStringSelectionResolver : IStageResolver<StringSelectionRequest,
         bool cancelled = false;
         bool passPressed = false;
 
-        // #309: the confirmation is a modal popup, so it blocks the mouse - but the letter and Backspace
+        // #311: the confirmation is a modal popup, so it blocks the mouse - but the letter and Backspace
         // hotkeys are read straight from ImGui and would still fire behind it, exactly the case #248's
         // muting rule exists for. Freeze every key path while it is up.
         bool keysLive = !confirming;
@@ -312,14 +312,14 @@ public class GuiStringSelectionResolver : IStageResolver<StringSelectionRequest,
 
         // #248: cancellable string menus (a pristine activation's action menu) get a Back button +
         // Backspace, replying null — the SelectionRequest cancel sentinel. Esc is reserved for the
-        // in-game menu (except while the #309 confirmation owns it, below).
+        // in-game menu (except while the #311 confirmation owns it, below).
         if (request.AllowCancel && keysLive && ResolverHotkeys.IsBackPressed())
             cancelled = true;
 
         ImGui.EndChild();
         ImGui.End();
 
-        // #309: Escape answers the confirmation, and claims the press from the arbiter so the same Escape
+        // #311: Escape answers the confirmation, and claims the press from the arbiter so the same Escape
         // does not also open the in-game menu behind it. Read before this frame's Pass press so opening
         // the popup and dismissing it can never happen on one keystroke.
         bool escCancel = confirming && EscapeRouter.TryConsumeEscape();

@@ -5,7 +5,7 @@ using FDG.StageResolution.Requests;
 namespace FdgRaylib.Rendering.Resolvers;
 
 /// <summary>
-/// #309 — the Choose Action menu's pinned footer, expressed as arithmetic rather than ImGui calls so the
+/// #311 — the Choose Action menu's pinned footer, expressed as arithmetic rather than ImGui calls so the
 /// vertical budget is unit-testable (the drawing around it is hand-verified, exactly like
 /// <see cref="PlacementPanelLayout"/>).
 ///
