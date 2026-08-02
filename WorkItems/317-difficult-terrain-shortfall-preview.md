@@ -1,6 +1,6 @@
 # 317 — Show WHY a move snaps back at difficult terrain
 
-**Status**: in-progress (implemented + tested; awaiting GUI hand-verify)
+**Status**: done (hand-verified in the running app 2026-08-02)
 **Related**: #155 (difficult/dangerous terrain indication — this builds on its clamp + panel lines)
 
 ## Goal
@@ -47,9 +47,20 @@ modes (single and group).
 - **One impassible label per frame**, not per crossing: a blocked group step reports a crossing per phantom.
 
 ## Outcome
-_Open — pending GUI hand-verify (see checks below)._
+Shipped and closed 2026-08-02, all five checks below hand-verified in the running app by the owner. A move
+the difficult-terrain clamp shortens now draws the pose it would have taken in pale gray, dotted-linked to the
+real ghost, under a two-line label naming the rule and what it cost — `Can only move 6"` when moving through,
+`Cannot enter - 6" used` when the cap was already spent — in single mode (per selected model) and group mode
+(one phantom per held-back model, one label at their centroid). Impassible terrain, which refuses the
+placement rather than shortening it, gained the matching text in red beside the existing contact footprint,
+drawn once per frame. Show/hide rules and wording live in `DifficultShortfallPlan` + `ImpassibleBlockLabel`
+(12 tests) so they are checkable without ImGui; the resolver keeps the drawing, with both rules sharing
+`DrawTerrainReasonLabel` so they can't drift apart in voice or placement. The gray phantom is a true
+counterfactual — the move re-solved with only the difficult clamp switched off — so a step shortened by the
+band cap, an enemy base or the table edge shows nothing and terrain is never blamed for a limit it didn't
+impose. Nothing deferred. Filed as #315, renumbered on merge (Reconciliations 39).
 
-Hand-verify checks:
+Hand-verify checks (all passed 2026-08-02):
 1. Single mode, walk a model into a difficult piece: gray phantom ahead of the green ghost, dotted gray link,
    "Difficult Terrain" / "Can only move 6"".
 2. Single mode, spend the 6" first, then aim into the piece: same visuals but "Cannot enter - 6" used".
