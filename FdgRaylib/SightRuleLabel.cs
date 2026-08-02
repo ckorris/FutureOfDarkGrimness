@@ -11,8 +11,8 @@ public static class SightRuleLabel
 {
     /// <summary>
     /// The attribution phrase for the given cover- and LoS-ignore rule names (either may be null), without
-    /// surrounding parentheses — or null if neither rule applies. When one rule ignores both (e.g. Takedown),
-    /// it's named once: "Takedown ignores cover and line of sight".
+    /// surrounding parentheses — or null if neither rule applies. When one rule ignores both (e.g. Indirect),
+    /// it's named once: "Indirect ignores cover and line of sight".
     /// </summary>
     public static string? Describe(string? coverIgnoreRule, string? lineOfSightIgnoreRule)
     {

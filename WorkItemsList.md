@@ -46,6 +46,8 @@ When closing an item: write the Outcome in its detail file, tick the line, and m
 
 ## Special rules — framework
 
+- [~] 311 — Takedown granted line-of-sight AND cover bypass (snipers shot through Blocking terrain) from a wrong row in the #042 checklist; the rule text grants neither. Both hooks removed, and its real "resolved before other weapons" ordering clause implemented on #028's gate. Implemented + tested; awaiting GUI hand-verify. ([WorkItems/311](WorkItems/311-takedown-facet-correction.md))
+
 - [~] 290 — Advance-and-shoot gate re-derived the allowance AFTER `ExecuteMoveStage` spent the one-shot movement grant that paid for the move (Inspiring Bots -> Rapid Advance on a Slow unit: advanced 8", then couldn't shoot); the allowance is now recorded with the distance. Implemented + tested; awaiting GUI hand-verify. ([WorkItems/290](WorkItems/290-move-shoot-allowance-consumed-grant.md))
 
 - [~] 042 — Special rules architecture (data-driven Condition x Effect over named hooks + token state). Phases 1-8 largely shipped; remaining: attack/reactivate primitives, then morale/casting invocability. ([WorkItems/042](WorkItems/042-special-rules-architecture.md) + `WorkItems/042-implementation-checklist.txt`)
