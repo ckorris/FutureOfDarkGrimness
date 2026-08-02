@@ -365,7 +365,11 @@ public class RaylibRenderer
         // after ExitGame has dropped the table state. Nothing to draw once the game is gone.
         if (_tableState == null || _colorForPlayer == null) return;
 
-        var unit = _tableState.Units.Objects.FirstOrDefault(u => u.Models.Contains(model));
+        // #309: match by ModelID, not instance. On a networked client every replicated update to a
+        // ModelData slot deserializes a NEW instance, so the instance this subscription captured at
+        // creation may no longer be the one the unit's bindings return - a reference Contains would
+        // then never find the unit and the model would never register for drawing.
+        var unit = _tableState.Units.Objects.FirstOrDefault(u => u.Models.Any(m => m.ID == model.ID));
         if (unit != null)
             _placedModels[model] = (_colorForPlayer(unit.PlayerID), unit);
     }
@@ -930,8 +934,25 @@ public class RaylibRenderer
 
     private void DrawModels(Layout l)
     {
-        foreach (var (model, (color, unit)) in _placedModels)
+        // #309: resolve each model's owning unit from LIVE table state, not the instance captured at
+        // registration. A networked client's store REPLACES UnitData instances on every replicated
+        // update (token changes ride a whole-object rebroadcast), so a captured instance keeps stale
+        // token state forever - an ambush arrival registered between its position sync and its
+        // reserve-clear sync read as still InReserve and its bases never drew, while the (live-read)
+        // label overlay did. The captured tuple stays as color source (PlayerID is immutable) and as
+        // fallback for the one-frame window where a unit isn't enumerable.
+        var liveUnitByModel = new Dictionary<ModelID, IUnit>();
+        if (_tableState != null)
         {
+            foreach (IUnit u in _tableState.Units.Objects)
+                foreach (IModel m in u.Models)
+                    liveUnitByModel[m.ID] = u;
+        }
+
+        foreach (var (model, (color, cachedUnit)) in _placedModels)
+        {
+            IUnit unit = liveUnitByModel.TryGetValue(model.ID, out IUnit? live) ? live : cachedUnit;
+
             // Not in play: held in Ambush reserve, riding a transport, or an Aircraft that flew off the
             // edge. Its models are parked at the origin, which is the table's bottom-left corner.
             if (!unit.GetIsOnBattlefield()) continue;
