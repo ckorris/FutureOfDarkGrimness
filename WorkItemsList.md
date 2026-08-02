@@ -48,6 +48,8 @@ When closing an item: write the Outcome in its detail file, tick the line, and m
 
 ## Special rules — framework
 
+- [~] 314 — Takedown granted line-of-sight AND cover bypass (snipers shot through Blocking terrain) from a wrong row in the #042 checklist; the rule text grants neither. Both hooks removed, and its real "resolved before other weapons" ordering clause implemented on #028's gate. Implemented + tested; awaiting GUI hand-verify. ([WorkItems/314](WorkItems/314-takedown-facet-correction.md)) Was #311, then #313, pre-reconciliation-38.
+
 - [~] 290 — Advance-and-shoot gate re-derived the allowance AFTER `ExecuteMoveStage` spent the one-shot movement grant that paid for the move (Inspiring Bots -> Rapid Advance on a Slow unit: advanced 8", then couldn't shoot); the allowance is now recorded with the distance. Implemented + tested; awaiting GUI hand-verify. ([WorkItems/290](WorkItems/290-move-shoot-allowance-consumed-grant.md))
 
 - [~] 042 — Special rules architecture (data-driven Condition x Effect over named hooks + token state). Phases 1-8 largely shipped; remaining: attack/reactivate primitives, then morale/casting invocability. ([WorkItems/042](WorkItems/042-special-rules-architecture.md) + `WorkItems/042-implementation-checklist.txt`)
@@ -189,7 +191,7 @@ From `Audit-2026-07-06-New-Subsystems.md` (13 smaller findings were fixed in tha
 - [ ] 172 — Army Forge: combined-unit asymmetric rule values (`Tough(3)` + `Tough(6)`) both survive the merge and only the first is read — needs a ruling (max / warn / forbid). Relates #156/#107.
 - [ ] 173 — Caster: port the `RequiredToken`/`RequiredRule` checks from `PreAttackTargeting` into `SpellTargeting`. Dormant today. Relates #033/#034.
 - [ ] 174 — Caster: `SingleModel` + `MaxCount > 1` misattributes every target's wounds to one model — validate at army load or re-pick per target. Relates #034.
-- [ ] 175 — Fear vs Fearless joined-hero gating asymmetry (Fear gates on `Always`, Fearless on `AllModelsHaveThisRule`) — **needs a rulebook check**, not an engineering call. Relates #021/#091.
+- [~] 175 — Fear vs Fearless joined-hero gating asymmetry: **rulebook check DONE 2026-07-22 — asymmetry is correct** (v3.5.1: Fearless says "where all models have this rule", Fear(X) is per-model). The adjacent gap it found — a joined hero's Fear never fired, the melee-winner dispatch passed no models — is fixed 2026-08-02 + tested; awaiting GUI hand-verify. ([WorkItems/175](WorkItems/175-fear-fearless-hero-gating.md))
 - [ ] 176 — `UnitCreationRules.cs` missing `OperationExecutor.Execute`: needs async conversion of `FDGServer.BuildContextAndLaunch`'s chain. Harmless until a creation-time rule uses imperative ops.
 - [ ] 177 — `AssignWoundsResults` residual cleanup: float `==` in `IsFinishedAssigning`, misused `ArgumentOutOfRangeException` ctor, documented wound-split exploit window. Relates #023/#024.
 - [ ] 178 — (low) Save version migration hook (`IGameSaveMigrator`): deliberate deferral until a version bump is real; filed so it isn't forgotten. Relates #070/#160.

@@ -4,6 +4,7 @@ using FDG.Data;
 using FDG.StageResolution;
 using FDG.StageResolution.Requests;
 using FDG.Stages;
+using FdgRaylib.Placement;
 using FdgRaylib.Rendering.Previews;
 using ImGuiNET;
 
@@ -1380,15 +1381,12 @@ public class GuiDefineMovementResolver
         return limited;
     }
 
-    // #212: team-based enemy test (falls back to different-player when no team is registered), matching the
-    // engine's GetEnemyModelFootprints. Friendlies (own unit + allies) are not enemies - the mover passes
-    // through them and is only stopped from ENDING on them.
+    // #212: team-based enemy test, matching the engine's GetEnemyModelFootprints. Friendlies (own unit +
+    // allies) are not enemies - the mover passes through them, is only stopped from ENDING on them, and
+    // gets no can-hit / can-charge indicators drawn on them (#313). The rule lives in TeamAwareness so
+    // every resolver answers it the same way; this stays as a one-arg shorthand for the many call sites.
     private bool IsEnemyUnit(IUnit unit, DefineMovementPathRequest request)
-    {
-        var me = request.TargetPlayerID;
-        var myTeam = _tableState.Teams.Objects.FirstOrDefault(t => t.IsPlayerOnTeam(me));
-        return myTeam != null ? !myTeam.IsPlayerOnTeam(unit.PlayerID) : !unit.PlayerID.Equals(me);
-    }
+        => TeamAwareness.IsEnemyUnit(_tableState, request.TargetPlayerID, unit);
 
     // #212: friendly model footprints (allies + any other same-team unit, but NOT the moving unit) for the
     // end-on-friendly gate. Reuses EnemyModelFootprint purely as a base-footprint carrier, matching the

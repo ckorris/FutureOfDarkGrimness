@@ -6,6 +6,39 @@ from origin/master. Standing precedent: numbers are never reused, and when two p
 claim the same number, the *unmerged local* item yields to the *merged* one and takes a fresh number.
 A per-clone pre-push hook blocks duplicate numbers across the index and the archive.
 
+> **2026-08-02 - reconciliation 38 (RESOLVED).** The Takedown rule-facet session yielded TWICE in one
+> push, to two different sessions racing the same range. It filed its item as **311** against a local
+> master 6 commits stale, not having seen that origin/master had closed **311 = accidental passes in the
+> Choose Action menu** (reconciliation 35) and taken **312 = charge reach / swallowed clicks**
+> (reconciliation 36); it renumbered to **313**, and while its merge was being verified origin/master
+> landed **313 = shot-eligibility preview parity** (reconciliation 37, above). Per merged-wins precedent
+> the unmerged local item yields both times, landing on **Takedown facet correction 311 -> 313 -> 314**
+> (`WorkItems/314-takedown-facet-correction.md`). Renumbered in the index line, the detail file, the
+> three annotations in `042-implementation-checklist.txt`, and 16 code/test comments in the engine
+> (submodule `a7b537b` then `3d525de`). This entry is **38**, not 37: reconciliation 37 collided too -
+> the shot-eligibility session took that ordinal while this one was mid-merge.
+> **Left as-is on purpose:** the commit messages saying "#311" for the Takedown work (`24cafde` engine,
+> `5a18182` superproject) and "#313" for the first renumber (`a7b537b`), which predate the later
+> renumbers, exactly as every prior reconciliation has handled them. The same session's other item,
+> **#175** (Fear/Fearless hero gating), did not collide - it edited an existing entry and kept its
+> number. The merge also corrected one stale comment in the incoming `ShotEligibility.cs`: its
+> `ignoresLineOfSight` parameter doc still named Takedown, which this item's whole point is that it no
+> longer qualifies (the logic was already right - callers derive the flag from `SightRuleQueries`).
+
+> **2026-08-02 - reconciliation 37 (RESOLVED).** Immediately after reconciliation 36 landed, the
+> shot-eligibility session hit the number it had just created: this session filed its preview-parity item
+> as **312**, and the push-time fetch found origin/master had meanwhile landed **312 = charge-won't-allow
+> + swallowed clicks** (`fec819a` / engine `03bf1a4`, itself a #310 yield via reconciliation 36). Per
+> merged-wins precedent the local item yields: **shot-eligibility preview parity 312 -> 313**
+> (`WorkItems/313-shot-eligibility-preview-parity.md`). Renumbered in the detail file + title, the index
+> line, and the six comments carrying it (engine `ShotEligibilityTests`; app
+> `GuiChooseRangedAttackResolver` x2, `GuiDefineMovementResolver`, `TacticalOverlayController`,
+> `GuiChooseRangedAttackResolverTests`, `TeamAwarenessTests`) — the many #312 comments the merged charge
+> item legitimately owns in those same files were left untouched, so the renumber was done per line, not
+> by search-and-replace. Commit messages naming "#312" (engine `c2ca754`, superproject `1a20b4d`) predate
+> the renumber, as usual. The merge also took origin/master's DELETION of
+> `GuiDefineMovementResolver.HandleEnemyPinClick` (the charge item removed the pin gesture) over this
+> branch's edit to that same method, which had only rerouted it through `TeamAwareness`.
 > **2026-08-02 - reconciliation 36 (RESOLVED).** The charge/swallowed-clicks session filed its item as
 > **310**; the push-time fetch found origin/master had meanwhile landed BOTH **310 = per-user config
 > file** (`d545861`, itself a #309 yield via reconciliation 34) and **311 = pass confirmation**

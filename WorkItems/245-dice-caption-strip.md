@@ -21,6 +21,24 @@ split** (roll-offs stay centered). Notably `DiceOverlay`'s own doc comment alway
 
 ## Notes
 
+- 2026-08-02 (v4, to-hit caption names the weapon + volley size - ENGINE only, user request): with
+  several weapon batches firing in one activation, the bare "Roll to Hit" header said nothing about
+  which batch this was.
+  - `RollToHitStage.HitBeatLabel` -> `"Roll to Hit - Heavy Rifle"` (mirrors the save beat's
+    `"{weapon}: {breakdown}"` caption from #204); nameless weapon falls back to the bare label.
+  - `RollToHitStage.HitBeatContext` -> `"Warriors -> Gunners  |  6 attacks"` (singular at 1). The
+    count is the DETERMINED `AttackCount` actually rolled, not the weapon's per-carrier `Attacks`
+    stat, so it matches the dice on screen - and it is the only readable count under the
+    probabilistic roller, which draws a success bar instead of dice (design fork settled with the
+    user: weapon in the header, count on the context line, total attacks over profile).
+  - Covers melee too - `RollToHitStage` is the shared `CombatStage` for both. Rule-driven pooled
+    hits (`SurpriseAttackStage`, `ResolveImpactHitsStage`) have no weapon and are unchanged.
+  - No app-side change: `DiceOverlay` already renders `Label` + `Context` verbatim. The context
+    line is now ~15 chars longer, and nothing clamps it against the viewport - a pair of long unit
+    names could widen the panel past the screen edge. Pre-existing (it was already unclamped);
+    NOT fixed here, flagged if it ever bites.
+  - `DiceBeatGlanceMetadataTests` +3 (two composers, one live-stage integration). 2556/2556 green.
+
 - 2026-07-18 (v3, glance metadata - ENGINE + app, engine change user-authorized): the roll panel now
   answers "what kind of roll, who, why this number, what procced" at a cursory look.
   - **Engine** (submodule `57b9dd9`; originally `753cdeb`, rebased onto the caster work at push): `DiceRolledBeat` gains optional `ERollBeatCategory`

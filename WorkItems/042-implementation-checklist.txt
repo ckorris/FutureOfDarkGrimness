@@ -1374,6 +1374,10 @@ INTEGRATION PROGRESS (2026-06-11, cont. 30) — Indirect + Takedown "ignore LoS 
     333 -> 338. Headless: Infiltrators (Takedown) log "ignored intervening line of sight" / "ignored the
     target's cover" live.
   * Takedown and Indirect are now FULLY implemented (both rows removed from Appendix C).
+  * [2026-08-02, #314] The Takedown half of this entry was WRONG and has been reverted: its rule text
+    grants no LoS/cover bypass (the PER-RULE MAPPING row it was built from had Indirect's clause
+    appended by mistake), so snipers shot through Blocking terrain. Both hooks removed; Takedown's
+    real ordering clause implemented instead. Indirect keeps everything described above.
 
 INTEGRATION PROGRESS (2026-06-28, cont. 31) — CATCH-UP: the roster drifted out of date between cont. 30
   (2026-06-11) and now. CoreRuleCatalog.All grew from ~35 to 55 player-facing rules across #100 (primitive
@@ -1788,7 +1792,11 @@ PER-RULE MAPPING (rule [primary seat] -> when(s); [condition -> effect])
   Stealth [def]     -> W12 [dist>9 -> -1 to attacker hit]
   Strider [mover]   -> W6 [ignore difficult-terrain effects]  (narrower than Flying)
   Surge [atk]       -> W10 [unmodified 6 -> +1 hit]  (NO combat-kind condition -> fires in shooting AND melee)
-  Takedown [atk]    -> W9 [target individual model, resolve as unit of [1]; ignore intervening LoS/cover]  (ORDERING: "resolved first")
+  Takedown [atk]    -> W9 [target individual model, resolve as unit of [1]]  (ORDERING: "resolved before other weapons")
+                    *** CORRECTED 2026-08-02 (#314): this row used to append "; ignore intervening
+                    LoS/cover" -- Indirect's clause, which Takedown's v3.5.1 text does NOT grant. The
+                    catalog was built from this row (cont. 30), so snipers shot through Blocking
+                    terrain until #314 removed both hooks and implemented the ordering clause. ***
   Thrust [atk]      -> W10 [melee AND charging -> +1 hit and AP(+1)]
   Tough(X) [self/def]-> W2 [set max wounds = X], W18 [assignment order: most-wounded tough first; heroes last]
   Unstoppable [atk] -> W10 [ignore all negative modifiers to this weapon], W19 [suppress Regeneration]
