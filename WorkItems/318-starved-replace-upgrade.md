@@ -13,6 +13,19 @@ every selection Army Forge sent.
 
 ## Notes
 
+- 2026-08-02 (later): Owner pushed back that the shape looked far more common than the first census
+  suggested — correctly. A second, independent audit of all 47 books settled the numbers: **1955 Replace
+  sections total; 1471 self-sufficient; 429 fed only from an EARLIER section (always worked); 54 fed only
+  from a LATER section; 1 fed from both directions** (Dark Brother Bikers' "Replace Energy Sword" — the
+  earlier feed made it look safe, but a player taking only the later one hit the same bug). Of the 55
+  broken-or-suspect rows, 24 were FULLY starved (the swap did nothing and charged nothing) and 17 partially
+  starved (the reported Titan Lords shape). Alien Hives IS affected: the Hive Lord's "Replace any Heavy
+  Razor Claw" is fed by the later "Replace Shredder Cannon" option that grants `2x Heavy Razor Claws`, so
+  only 2 of a possible 4 claws could be swapped. New corpus guard
+  `FdgRaylib.Tests/ForgeCrossSectionReplaceShippedDataTests` walks every book and asserts each cross-fed
+  Replace can spend its whole pool at the right price: **12 books fail it on the pre-fix compiler**
+  (AlienHives, Battle/Blood/Dark/Knight/Wolf Brothers, OrcMarauders, all five TitanLords chapters), all 47
+  pass after. A second test pins the census at 54 so a re-import that changes the corpus shape is loud.
 - 2026-08-02: Fixed in `ListCompiler.CompileUnitDetailed`. Replace applications the loadout can't afford at
   their section's turn are now banked (`OwedApplications`) and settled to a fixpoint after every section has
   had its pass (`ApplyStarvedReplaces`), charging normally as they land. Forge-side, the counted-section
@@ -49,6 +62,16 @@ every selection Army Forge sent.
   Titan Lords chapters' Errant/Pilgrim/Questor/Knight titans, plus the Battle/Blood/Dark/Knight/Wolf Brothers
   "Replace Gravity Pistol" sections, whose target arrives from a later "Replace Flamer Pistol". Those swaps
   used to apply nothing and charge nothing; they now work.
+
+## Found along the way (NOT fixed here)
+
+- **Dead Replace target in the shipped data.** `DwarfGuilds.fdgbook` / "Guardians" / "Replace all Pistols
+  and Bashes" targets `Bashes`, which never matches the unit's `Bash` weapon: `ListCompiler.Normalize`
+  strips ONE trailing "s", so "Bashes" -> "bashe" and "Bash" -> "bash". Because the section is Affects=All
+  (max across targets, not min) it still fires off the Pistols half, so a player taking it keeps all 5
+  Bashes **in addition to** the new gear, free. Corpus-wide this is the ONLY dead target (verified twice,
+  independently). It is a name-normalisation gap, not an ordering one, so #318 does not touch it — the fix
+  is a fork worth an owner decision (book data vs. `Normalize` vs. `OprBookImporter`), see the index line.
 
 ## Outcome
 Pending hand-verification in the running Army Forge (see the index line for what to check).
