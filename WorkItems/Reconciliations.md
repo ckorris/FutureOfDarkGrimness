@@ -6,6 +6,23 @@ from origin/master. Standing precedent: numbers are never reused, and when two p
 claim the same number, the *unmerged local* item yields to the *merged* one and takes a fresh number.
 A per-clone pre-push hook blocks duplicate numbers across the index and the archive.
 
+> **2026-08-02 - reconciliation 43 (RESOLVED).** A third collision on the same afternoon. The dice-stack
+> session filed **322** ("dice rolls linger without blocking") from an index fetched minutes earlier;
+> by the time it went to merge, origin/master had taken **322 = "Waiting on" line in the status HUD**
+> (itself the product of reconciliation 41, which had just moved it off 318). Per the standing precedent
+> the unmerged local item yields. **323 and 324 were NOT free either** — reconciliation 42 had claimed
+> both for the in-flight Army Forge upgrade markers, visible only in the engine repo (`91ea5de`) because
+> that session's superproject bookkeeping had not landed yet — so the dice stack takes the next genuinely
+> free number: **dice stack 322 -> 325** (`WorkItems/325-dice-stack-non-blocking.md`, renamed). Renumbered
+> everywhere in the same pass: the detail file + filename, the index line, and every `#322` marker from
+> this session in the engine (`DiceRolledBeat`, `RollToSaveStage`, `DiceBeatHoldTests`) and the app
+> (`PresentationPlayer`, `DiceOverlay`, `RaylibRenderer`, `DiceStackTests`). `RaylibRenderer` now carries
+> BOTH numbers on purpose — its status-HUD line legitimately belongs to the waiting-HUD #322, so only the
+> four dice-stack comments moved. Left as-is per precedent: the three commit messages saying "#322" for
+> the dice stack, which predate the renumber. **Lesson repeated:** fetching before filing is necessary
+> but not sufficient — the index is stale the moment a parallel session commits, and a number can be
+> claimed in the submodule before it ever appears in the superproject's index.
+>
 > **2026-08-02 - reconciliation 41 (RESOLVED).** The waiting-HUD session filed **318** ("Waiting on"
 > line in the status HUD) against a local master that predated reconciliation 40, whose session had
 > meanwhile taken **318 = melee hold-back is Limited-only** (merged + closed, engine `dcf6e04`).

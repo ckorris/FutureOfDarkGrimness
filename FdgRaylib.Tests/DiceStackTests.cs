@@ -6,14 +6,14 @@ using NUnit.Framework;
 
 namespace FdgRaylib.Tests;
 
-// #322 — a dice panel OUTLIVES its beat. The engine still paces each roll in full (the gap between
+// #325 — a dice panel OUTLIVES its beat. The engine still paces each roll in full (the gap between
 // rolls is the rhythm of the exchange, not dead time), but the panel stays up for seconds afterwards,
 // so consecutive rolls overlap on screen and the player keeps a STACK of them (oldest first, drawn from
 // the bottom anchor upward) instead of a single slot that the next roll evicts — the eviction is what
 // made a two-threshold volley cut its own first roll short (engine ea91d68). Hovering the stack freezes
 // every panel's timer.
 //
-// Also covers the concurrent attack LIST, which #322 introduced while rolls were briefly held and kept
+// Also covers the concurrent attack LIST, which #325 introduced while rolls were briefly held and kept
 // afterwards: "the dice envelope outlasts the attack animation" is a coincidence of two unrelated
 // constants, not something the front-end should depend on.
 //

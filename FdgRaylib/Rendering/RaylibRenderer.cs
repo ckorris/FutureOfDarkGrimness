@@ -184,7 +184,7 @@ public class RaylibRenderer
     }
 
     // Smallest rectangle containing both — used to ghost the dice strip against every in-flight attack
-    // at once (#322).
+    // at once (#325).
     private static Rectangle Union(Rectangle a, Rectangle b)
     {
         float x = Math.Min(a.X, b.X);
@@ -491,7 +491,7 @@ public class RaylibRenderer
                 DrawModels(layout);
                 DrawDeathBursts(layout);
 
-                // #322: usually one attack, occasionally two overlapping (the next weapon fires before
+                // #325: usually one attack, occasionally two overlapping (the next weapon fires before
                 // the previous tracers land, which held dice made possible).
                 if (_presentationPlayer != null)
                 {
@@ -517,7 +517,7 @@ public class RaylibRenderer
                 if (_presentationPlayer != null)
                 {
                     // #245: the caption strip ghosts itself while an attack animation reaches into it —
-                    // over the union of them when more than one is in flight (#322).
+                    // over the union of them when more than one is in flight (#325).
                     Rectangle? diceAvoid = null;
                     foreach ((AttackBeat avoidAttack, float _) in _presentationPlayer.GetActiveAttacks())
                     {
@@ -526,7 +526,7 @@ public class RaylibRenderer
                         diceAvoid = diceAvoid.HasValue ? Union(diceAvoid.Value, bounds) : bounds;
                     }
 
-                    // #322: the whole stack, oldest anchored at the bottom. Hovering it freezes every
+                    // #325: the whole stack, oldest anchored at the bottom. Hovering it freezes every
                     // panel's timer; the bounds it reports are what the pointer is tested against next
                     // frame (a frame of lag is invisible and avoids measuring the stack twice).
                     Rectangle stackBounds = DiceOverlay.DrawStack(_presentationPlayer.GetDiceStack(),

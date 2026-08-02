@@ -1,4 +1,4 @@
-# 322 — Dice rolls linger without blocking: held-by-default rolls stack instead of evicting
+# 325 — Dice panels outlive their beats and stack instead of evicting each other
 
 **Status**: in-progress
 **Related**: #245 (dice caption strip), #275 (banner tiers — the held-track precedent), #232 (casualty
@@ -7,15 +7,23 @@ this supersedes), #222 (roll-off pacing, deliberately out of scope)
 
 ## Goal
 
-A dice roll should be readable for longer than it blocks the game. Every `DiceRolledBeat` becomes a
-**held** beat: the engine paces only its settle lead-in (600ms + 200ms per info-chip row) and moves on,
-while the front-end keeps the panel on screen for several more seconds. Because rolls now overlap, the
-front-end's single dice slot becomes a **stack** — a second roll appears *above* the first rather than
-evicting it — and hovering the stack freezes every panel's timer so a player who wants to interrogate
-the history can. Done when a shooting sequence spends ~2s in dice pacing instead of ~5.5-6s while every
-roll stays legible for ~4s, and no panel is ever replaced mid-read.
+A dice roll should stay readable for longer than the game waits for it. The engine keeps pacing each
+roll in full (see the 2026-08-02 revert below — the gap between rolls is the rhythm of the exchange),
+but the front-end's single dice slot becomes a **stack** whose panels outlive their beats: a panel
+lingers ~3s past its envelope, so a second roll appears *above* the first rather than evicting it, and
+hovering the stack freezes every timer so a player who wants to interrogate the history can. Done when
+a to-hit roll is still readable under the saves it caused, no panel is ever replaced mid-read, and the
+pace of combat is unchanged from before the item.
 
 ## Notes
+
+- 2026-08-02 (late): **Renumbered 322 -> 325** — see reconciliation 43. Also reverted the pacing half of
+  the item at the owner's request (engine `c6e2170`, superproject `9b32706`): rolls are non-held again,
+  so the engine waits the full 1800ms(+400/chip) envelope per roll exactly as it did before this item.
+  Panel lifetime is now envelope + 3.0s + 0.4s/info block = 4.8s for a plain roll, so a panel outlives
+  its beat by 3s and the stack still fills. At full pacing the stack sits at 2-3 panels in practice, so
+  the cap of 3 is a safety net rather than an everyday limit. Checklist items 2 and 6 below are void
+  (the pace is unchanged); item 1 is now the headline check.
 
 - 2026-08-02: Implemented, both suites green (engine 2616, app 917), headless smoke exits 0, GUI launches
   clean on the shootout scenario. Engine `6a6fdc6`; app side is the superproject commit that bumps it.
@@ -62,22 +70,31 @@ roll stays legible for ~4s, and no panel is ever replaced mid-read.
 - **Older entries stay full panels, only dimmed** (owner's call). The compact one-line variant was
   offered and declined, so the stack is capped tight (3) and the height guard above does the rest.
 
-- **Uniform hold, not a dice tier system.** Tiering dice the way #275 tiered banners (some rolls stop
+- **Uniform pacing, not a dice tier system.** Tiering dice the way #275 tiered banners (some rolls stop
   play, some don't) would re-introduce exactly the uneven pacing `ea91d68` hit. Stack position already
-  supplies the prominence gradient, so every roll is held and the flag stays available as an explicit
-  per-roll opt-out ("this roll should stop the game") that nothing uses today.
+  supplies the prominence gradient, so every roll paces identically and `held` stays available as an
+  explicit per-roll opt-out ("this roll should NOT stop the game") that nothing uses today.
 
-- **The attack track has to become concurrent too.** Today the to-hit roll's 1800ms envelope always
-  outlasts the longest attack animation (`VolleyMax` 1600ms), so a second `AttackBeat` can never truncate
-  the first — `AttackBeatOverlapTests` pins exactly that. Drop dice pacing to 600ms and a *whiffed*
-  attack (no saves, no wounds behind it) lets the next weapon's `AttackBeat` arrive at ~600ms and cut the
-  previous tracers off mid-flight. So `_activeAttack` becomes a small list, mirroring `_cascading` — a
-  regression caused by this change, therefore fixed in this slice rather than deferred.
+- **The attack track became concurrent, and stays that way.** The to-hit roll's 1800ms envelope outlasts
+  the longest attack animation (`VolleyMax` 1600ms), so a second `AttackBeat` cannot truncate the first —
+  `AttackBeatOverlapTests` pins exactly that. But that is a coincidence of two unrelated constants, and
+  the brief window where rolls paced 600ms turned it into a real truncation (a *whiffed* attack has no
+  saves or wounds behind it, so the next weapon fires almost immediately). `_activeAttack` became a list
+  mirroring `_cascading`; kept after the pacing revert because the front-end should not depend on that
+  coincidence.
 
 - **Linger is a fixed per-entry lifetime, not "reset by activity".** The old parked-dice linger was reset
   every time any non-dice beat played, so a panel's lifetime depended on what happened to follow it.
   With a stack that indirection buys nothing and makes the layout unpredictable; each entry now lives
-  `lead-in + linger` and ages out on its own.
+  `paced part + linger` and ages out on its own.
+
+- **Pacing revert (owner's call, 2026-08-02, after playing it).** Holding rolls shrank the gap between
+  the to-hit and save rolls "considerably" and made combat read as rushed. So the gap goes back: rolls
+  are non-held again and pace their whole envelope. This does NOT undo the item — the lingering it was
+  after now comes entirely from the stack's overhang (panel lifetime = envelope + 3s), so consecutive
+  rolls still overlap on screen and still stack. Same readability, unchanged pace. Holding dice has now
+  been tried and reverted twice (`ea91d68`, then here), which is why `DiceRolledBeat.Held` carries the
+  whole history: the third session to try it should know what it costs.
 
 ## Outcome
 

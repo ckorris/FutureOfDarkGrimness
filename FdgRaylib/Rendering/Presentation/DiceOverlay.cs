@@ -8,7 +8,7 @@ namespace FdgRaylib.Rendering.Presentation;
 
 /// <summary>
 /// Draws the live <see cref="DiceRolledBeat"/> panels as a lower-third caption STACK docked to the
-/// bottom-center of the table viewport (#245, #322) — the subtitle convention: the action plays out on
+/// bottom-center of the table viewport (#245, #325) — the subtitle convention: the action plays out on
 /// the table while the numbers narrate from the caption zone, never covering the units or the
 /// concurrent attack animation (#238). Each panel is: a standalone <b>target badge</b> (the success
 /// threshold, e.g. "4+", big enough to read before the dice settle) over the roll's category word
@@ -19,7 +19,7 @@ namespace FdgRaylib.Rendering.Presentation;
 /// and a <b>result line</b> with the settled outcome (<see cref="DiceRolledBeat.ResultSummary"/>).
 /// Beats carrying chips arrive pre-stretched by the engine so there is time to read them.
 ///
-/// <para>#322: rolls are held beats, so several are legible at once. The OLDEST keeps the bottom
+/// <para>#325: a panel outlives its beat, so several are legible at once. The OLDEST keeps the bottom
 /// anchor and newer ones stack above it, each dimmed by depth so the newest reads loudest; hovering
 /// the stack freezes the timers and restores every panel to full strength. When the stack would not fit
 /// the vertical budget the oldest panels are dropped from the layout, never the newest — the top of the
@@ -74,7 +74,7 @@ public static class DiceOverlay
 
     private const float OverlapDim = 0.35f; // ghost alpha while the attack animation overlaps the strip
 
-    // #322 stack geometry.
+    // #325 stack geometry.
     private const int StackGap    = 8;   // between panels
     private const int StackTopMin = 56;  // the stack never climbs over the status HUD strip
     // Depth dim, counted from the newest panel down: the current roll reads at full strength and the
@@ -107,7 +107,7 @@ public static class DiceOverlay
     private static readonly Color ProcChipBg = new(58, 48, 24, 230);
 
     // Per-panel smoothing state, keyed by beat reference and pruned each frame. Render-thread only.
-    // The overlap ghosting was already eased; #322 made it per-panel (panels at different heights
+    // The overlap ghosting was already eased; #325 made it per-panel (panels at different heights
     // overlap the attack differently, and one shared value had them fighting over it) and added the
     // depth dim, which likewise eases — a panel stepping straight from full to dim the instant the next
     // roll appears reads as a flicker rather than as history receding.
@@ -121,7 +121,7 @@ public static class DiceOverlay
     private static double _lastDrawTime;
 
     /// <summary>
-    /// Draws every live dice panel (#322), taking the stack OLDEST FIRST exactly as
+    /// Draws every live dice panel (#325), taking the stack OLDEST FIRST exactly as
     /// <c>PresentationPlayer.GetDiceStack</c> returns it, and returns the screen bounds the stack
     /// occupies so the caller can hit-test the pointer for hover-freeze. Zero-size when nothing is up.
     /// </summary>
