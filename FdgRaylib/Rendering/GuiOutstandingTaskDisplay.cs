@@ -1,14 +1,28 @@
-using System.Numerics;
+using FDG;
 using FDG.StageResolution;
-using ImGuiNET;
 
 namespace FdgRaylib.Rendering;
 
-public class GuiOutstandingTaskDisplay : IOutstandingListDisplay
+/// <summary>
+/// Subscribes to the engine's outstanding-task stream and answers "whose decision is the game
+/// waiting on right now?" for the status HUD (#318). Local players' tasks are filtered out - the
+/// resolver panel already shows those - so what remains is exactly the set of other people the
+/// local player is waiting for. Purely a read model: the renderer draws it via
+/// <see cref="StatusHudOverlay"/> (the old draggable "Outstanding Tasks" ImGui window is gone).
+/// </summary>
+public class GuiOutstandingTaskDisplay : IOutstandingListDisplay, IDisposable
 {
     private readonly object _lock = new();
     private IReadOnlyCollection<OutstandingTaskInfo> _tasks = Array.Empty<OutstandingTaskInfo>();
     private IDisposable? _subscription;
+    private readonly IReadOnlyList<PlayerID> _localPlayerIDs;
+
+    /// <param name="localPlayerIDs">The launched game's <c>IFDGGame.LocalPlayerIDs</c>. May be the
+    /// engine's live list; only ever read here.</param>
+    public GuiOutstandingTaskDisplay(IReadOnlyList<PlayerID> localPlayerIDs)
+    {
+        _localPlayerIDs = localPlayerIDs;
+    }
 
     public void AssignLister(IOutstandingTaskLister lister)
     {
@@ -18,42 +32,23 @@ public class GuiOutstandingTaskDisplay : IOutstandingListDisplay
         });
     }
 
-    public void Draw(int screenW, int screenH)
+    /// <summary>
+    /// Tasks currently awaiting a decision from a non-local player, oldest first. Empty in pure
+    /// hotseat games (every player is local) and whenever nobody else holds up the game.
+    /// Thread-safe; called from the render thread while the subscription writes from the engine
+    /// thread.
+    /// </summary>
+    public IReadOnlyList<OutstandingTaskInfo> GetWaitingOnOthers()
     {
         IReadOnlyCollection<OutstandingTaskInfo> tasks;
         lock (_lock) tasks = _tasks;
+        if (tasks.Count == 0) return Array.Empty<OutstandingTaskInfo>();
 
-        float w = MathF.Max(200f, screenW * 0.22f);
-        float x = (screenW - w) * 0.5f;
-
-        // FirstUseEver (not Always) seeds the centered position once, then lets the player drag it
-        // wherever they like and stay there.
-        ImGui.SetNextWindowPos(new Vector2(x, 8f), ImGuiCond.FirstUseEver);
-        ImGui.SetNextWindowSizeConstraints(new Vector2(w, 0), new Vector2(w, screenH * 0.4f));
-        ImGui.SetNextWindowBgAlpha(0.75f);
-        ImGui.Begin("Outstanding Tasks",
-            ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoCollapse |
-            ImGuiWindowFlags.NoScrollbar | ImGuiWindowFlags.AlwaysAutoResize |
-            ImGuiWindowFlags.NoFocusOnAppearing | ImGuiWindowFlags.NoNav);
-
-        if (tasks.Count == 0)
-        {
-            ImGui.TextDisabled("No outstanding tasks.");
-        }
-        else
-        {
-            foreach (var task in tasks)
-            {
-                string playerName = task.PlayerInfo.Name;
-                int team = task.PlayerInfo.TeamNumber;
-                string label = team >= 0
-                    ? $"{playerName} (Team {team + 1}): {task.TaskName}"
-                    : $"{playerName}: {task.TaskName}";
-                ImGui.TextUnformatted(label);
-            }
-        }
-
-        ImGui.End();
+        var waiting = new List<OutstandingTaskInfo>();
+        foreach (var task in tasks)
+            if (!_localPlayerIDs.Contains(task.PlayerInfo.PlayerID))
+                waiting.Add(task);
+        return waiting;
     }
 
     public void Dispose()

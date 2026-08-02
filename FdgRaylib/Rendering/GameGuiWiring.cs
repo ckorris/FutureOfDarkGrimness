@@ -61,7 +61,7 @@ public static class GameGuiWiring
         var (resolvers, overlay) = ResolverRegistryFactory.BuildGui(game.TableState, coverProximityExceptions,
             tableBackground);
 
-        var taskDisplay = new GuiOutstandingTaskDisplay();
+        var taskDisplay = new GuiOutstandingTaskDisplay(game.LocalPlayerIDs);
         var presentationPlayer = new PresentationPlayer();
         var playerMessageUI = new GuiPlayerMessageUI(
             name => nameColors.TryGetValue(name, out var tc) ? tc : new TextColor(150, 220, 255, 255));

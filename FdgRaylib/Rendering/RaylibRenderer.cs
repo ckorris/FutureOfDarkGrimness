@@ -550,8 +550,6 @@ public class RaylibRenderer
                 // is fresh; heavy rebuilds happen in the next frame's DrawField.
                 _tacticalOverlay.UpdateInput(Raylib.GetFrameTime(), _hitTester);
                 DrawConsole(rightX, panelH, rightW, screenH - panelH);
-                // Outstanding Tasks window hidden per user request; re-enable by restoring this draw call.
-                // _taskDisplay?.Draw(screenW, screenH);
                 _tooltipOverlay.UpdateLayout(layout.Scale, layout.OriginX, layout.OriginY, TableHIn);
                 _tooltipOverlay.Draw(screenW, screenH, _hitTester, _resolverOverlay?.ActiveInteractionHandler);
                 _resolverOverlay?.UpdateLayout(layout.Scale, layout.OriginX, layout.OriginY, TableHIn);
@@ -1005,7 +1003,14 @@ public class RaylibRenderer
         foreach (PlayerObjectiveScore s in progress.Scores)
             scores.Add((_colorForPlayer(s.PlayerID), s.ObjectiveCount));
 
-        StatusHudOverlay.Draw(l.AreaW, progress.RoundCount, progress.TotalRounds, scores);
+        // #318: whose decision the game is waiting on (non-local players only - the resolver panel
+        // already covers the local player's own pending tasks).
+        var waiting = new List<(Color color, string playerName, string taskName)>();
+        if (_taskDisplay != null)
+            foreach (var task in _taskDisplay.GetWaitingOnOthers())
+                waiting.Add((_colorForPlayer(task.PlayerInfo.PlayerID), task.PlayerInfo.Name, task.TaskName));
+
+        StatusHudOverlay.Draw(l.AreaW, progress.RoundCount, progress.TotalRounds, scores, waiting);
     }
 
     // A short-lived dust puff where a model died: an expanding, fading gray cloud plus a few debris
