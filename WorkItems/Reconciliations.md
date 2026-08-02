@@ -6,6 +6,19 @@ from origin/master. Standing precedent: numbers are never reused, and when two p
 claim the same number, the *unmerged local* item yields to the *merged* one and takes a fresh number.
 A per-clone pre-push hook blocks duplicate numbers across the index and the archive.
 
+> **2026-08-02 — reconciliation 34 (RESOLVED).** Same collision class as 29/31/32/33, caught by the
+> pre-push fetch. This session had filed the per-user config file (remembered player name + host
+> settings) as **309**; while the work was in progress origin/master landed **309 = networked client's
+> invisible late-deployed models** — merged *and* already archived (`91451c2`, engine `3c2ac8d`). Per
+> merged-wins precedent the unmerged local item yields: **per-user config 309 -> 310**
+> (`WorkItems/310-user-config-file.md`). Nothing had been pushed or even committed at that point, so
+> like reconciliations 12/13 the renumber landed everywhere *before* publication — detail file + title,
+> the index line, all nine app sources and tests carrying `#309` comments (`UserConfig`, `Program`,
+> `HostModal`, `ClientModal`, `LobbyScreen`, `IAppScreen`, `NatPortMapper` and both test files), and
+> the commit message. No reference of any kind predates the renumber. The rebase onto master's three
+> incoming commits was clean (master's #309 touched `RaylibRenderer.DrawModels`, this item touched
+> `NavigateTo`).
+
 > **2026-08-01 — reconciliation 33 (RESOLVED).** Same collision class as 29/31/32, caught by the
 > pre-push fetch. This session had filed the 2026-07-31 playthrough findings (Blast per-hit cap,
 > "Moved" token visibility, shooting/deployment Back, sticky shoot target) as **305**; while the work
