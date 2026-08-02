@@ -54,6 +54,22 @@ public class GuiDefineMovementResolver
         return len > 1e-4f ? new Float2(dx / len, dz / len) : fallback;
     }
 
+    // #312: where a model's ghost STANDS while planning -- the last committed waypoint at the facing it
+    // was placed with (#282), or the resting base for a model with no waypoints yet. This single
+    // definition feeds BOTH the final-ghost draw and the hover/click hit test, so the visible ghost and
+    // the click hotspot cannot drift apart.
+    private static (IModel model, Position at, Float2 facing) PlannedPose(PathTemplate pt, IModel model,
+        IReadOnlyList<Position> pathPoints)
+    {
+        if (pathPoints.Count == 0) return (model, model.Position, model.Facing);
+
+        Position last = pathPoints[^1];
+        Position beforeLast = pathPoints.Count >= 2 ? pathPoints[^2] : model.Position;
+        IReadOnlyList<float> storedOffsets = pt.GetModelFacingOffsets(model);
+        float finalOffset = storedOffsets.Count > 0 ? storedOffsets[^1] : 0f;
+        return (model, last, RotateFloat2(TravelFacing(beforeLast, last, model.Facing), finalOffset));
+    }
+
     // Layout — main-thread only
     private float _scale  = 10f;
     private float _tableH = GameWideConstants.DEFAULT_TABLE_HEIGHT_INCHES;
@@ -69,14 +85,11 @@ public class GuiDefineMovementResolver
     private bool _stayInAdvance; // toggle — off by default, reset each Resolve
     private bool _showTargeting = true; // toggle — on by default, persists across Resolve calls (covers both ranged + melee)
 
-    // #162 tactical overlay hook: pin enemy targets on canvas click, draw pin chips in the info panel.
-    // Null in headless / before wiring; every call is null-guarded.
+    // #162 tactical overlay hook: hover-anchored fields, band snap, pips. Null in headless / before
+    // wiring; every call is null-guarded. (#312: the click-to-pin gesture is gone — a left-click on an
+    // enemy base no longer does anything overlay-side, so it can never eat a waypoint placement.)
     private TacticalOverlay.TacticalOverlayController? _tactical;
     public void SetTacticalOverlay(TacticalOverlay.TacticalOverlayController? tactical) => _tactical = tactical;
-
-    // True for the frame a left-click was consumed as an enemy pin, so neither the single- nor group-mode
-    // click handler also treats it as a model select / waypoint placement.
-    private bool _frameEnemyPinConsumed;
 
     // #162: per-frame planned positions of the moving unit's models, read by the tactical overlay for its
     // pips / eligible-counts / distance readout. Committed = each model's last waypoint (or start);
@@ -264,41 +277,6 @@ public class GuiDefineMovementResolver
     /// </summary>
     public DefineMovementPathRequest? ActiveRequest { get { lock (_lock) return _request; } }
 
-    // #162: hit-test enemy models under a click and route to the tactical overlay to pin/unpin. Returns
-    // true when it consumed the click (so the movement handlers skip it). Enemy = not on the mover's team.
-    // Reads the move request through the lock-guarded ActiveRequest (Resolve writes _request on the engine
-    // thread). Base hit-test mirrors TableHitTester / the resolver's own model-select convention (world
-    // deltas; exact for the default circular bases -- rotated rectangular bases share the codebase's
-    // "axis-aligned, no facing yet" limitation).
-    private bool HandleEnemyPinClick(float mxInches, float mzInches)
-    {
-        if (_tactical == null) return false;
-        DefineMovementPathRequest? req = ActiveRequest;
-        if (req == null) return false;
-
-        var me = req.TargetPlayerID;
-        var myTeam = _tableState.Teams.Objects.FirstOrDefault(t => t.IsPlayerOnTeam(me));
-
-        IUnit? hitUnit = null;
-        float best = float.MaxValue;
-        foreach (var unit in _tableState.Units.Objects)
-        {
-            bool enemy = myTeam != null ? !myTeam.IsPlayerOnTeam(unit.PlayerID) : !unit.PlayerID.Equals(me);
-            if (!enemy) continue;
-            foreach (var m in unit.Models)
-            {
-                if (!m.GetIsAlive()) continue;
-                var p = m.Position;
-                if (p.x == 0f && p.z == 0f) continue;
-                float dx = mxInches - p.x, dz = mzInches - p.z;
-                float d2 = dx * dx + dz * dz;
-                if (m.BaseShape.ContainsLocalPoint(dx, dz) && d2 < best) { best = d2; hitUnit = unit; }
-            }
-        }
-
-        return hitUnit != null && _tactical.TryHandleEnemyClick(hitUnit);
-    }
-
     public Task<CancellableResult<List<ModelMoveEntry>>> Resolve(DefineMovementPathRequest request)
     {
         var tcs = new TaskCompletionSource<CancellableResult<List<ModelMoveEntry>>>();
@@ -347,11 +325,13 @@ public class GuiDefineMovementResolver
         // confirms). Hit-test the pointer once here so the same answer both paints the hover highlight and
         // drives the click -- a highlight that could disagree with what the click selects is worse than no
         // highlight. Group mode has no per-model selection, so nothing is hoverable there.
+        // #312: hit-test each model at its PLANNED pose (final ghost position + facing), so a click on a
+        // vacated start slot places a waypoint there instead of silently re-selecting the model that left.
         IModel? hoveredModel = null;
         if (!group && overTable && !io.WantCaptureMouse)
         {
             var (hx, hz) = PixelToInches(io.MousePos.X, io.MousePos.Y);
-            hoveredModel = ModelPicker.HitTest(paths.Keys, hx, hz);
+            hoveredModel = ModelPicker.HitTest(paths.Select(kvp => PlannedPose(pt, kvp.Key, kvp.Value)), hx, hz);
         }
 
         // #155: per-frame terrain-consequence state. Difficult is ENFORCED (the ghost clamps so the
@@ -435,25 +415,13 @@ public class GuiDefineMovementResolver
 
                 // Final position ghost (true shape) + heading (#150): the direction of travel into the last
                 // committed waypoint, rotated by the offset that waypoint was PLACED with (#282) - the live
-                // rotation only shapes the mouse ghost, never the committed path.
-                var last = pathPoints[^1];
+                // rotation only shapes the mouse ghost, never the committed path. PlannedPose is the same
+                // math the hover/click hit test uses (#312), so the drawn ghost IS the click hotspot.
+                var (_, last, finalFacing) = PlannedPose(pt, model, pathPoints);
                 var (lx, ly) = InchesToPixel(last.x, last.z);
-                Position beforeLast = pathPoints.Count >= 2 ? pathPoints[pathPoints.Count - 2] : start;
-                IReadOnlyList<float> storedOffsets = pt.GetModelFacingOffsets(model);
-                float finalOffset = storedOffsets.Count > 0 ? storedOffsets[^1] : 0f;
-                Float2 finalFacing = RotateFloat2(TravelFacing(beforeLast, last, model.Facing), finalOffset);
                 ModelBaseRenderer.DrawFilledImGui(dl, model.BaseShape, new Vector2(lx, ly), _scale, FinalGhostCol, outline, thick, finalFacing);
                 ModelBaseRenderer.DrawHeadingImGui(dl, model.BaseShape, new Vector2(lx, ly), _scale, finalFacing, outline);
             }
-        }
-
-        // #162: an enemy click pins a target for the tactical overlay. Checked once, before both mode
-        // handlers, and consumed so it doesn't also select a model or drop a waypoint.
-        _frameEnemyPinConsumed = false;
-        if (overTable && !io.WantCaptureMouse && ImGui.IsMouseClicked(ImGuiMouseButton.Left))
-        {
-            var (pinMx, pinMz) = PixelToInches(io.MousePos.X, io.MousePos.Y);
-            if (HandleEnemyPinClick(pinMx, pinMz)) _frameEnemyPinConsumed = true;
         }
 
         Position? ghostPos = null;
@@ -677,12 +645,12 @@ public class GuiDefineMovementResolver
         // 4) Mouse / keyboard input (single mode — group mode handles its own clicks above)
         if (!group && overTable && !io.WantCaptureMouse)
         {
-            // Left-click: if it lands on a model's start footprint, select that model (#295 -- the only way
+            // Left-click: if it lands on a model's footprint, select that model (#295 -- the only way
             // to switch models now that Space commits); otherwise place a waypoint for the selected model at
             // the clamped ghost position (blocked if it would overlap another model). Left-click places in
             // BOTH single and group mode (consistency). `hoveredModel` is the same hit test the highlight
             // drew with, so what lights up is exactly what a click selects.
-            if (!_frameEnemyPinConsumed && ImGui.IsMouseClicked(ImGuiMouseButton.Left))
+            if (ImGui.IsMouseClicked(ImGuiMouseButton.Left))
             {
                 if (hoveredModel != null)
                 {
@@ -1039,7 +1007,7 @@ public class GuiDefineMovementResolver
         }
 
         // Commit on left-click when every phantom is legal and something actually moves.
-        if (overTable && !io.WantCaptureMouse && !_frameEnemyPinConsumed && ImGui.IsMouseClicked(ImGuiMouseButton.Left)
+        if (overTable && !io.WantCaptureMouse && ImGui.IsMouseClicked(ImGuiMouseButton.Left)
             && allValid && anyMovement)
         {
             for (int i = 0; i < models.Count; i++)

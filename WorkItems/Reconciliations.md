@@ -6,6 +6,49 @@ from origin/master. Standing precedent: numbers are never reused, and when two p
 claim the same number, the *unmerged local* item yields to the *merged* one and takes a fresh number.
 A per-clone pre-push hook blocks duplicate numbers across the index and the archive.
 
+> **2026-08-02 - reconciliation 37 (RESOLVED).** The Takedown rule-facet session filed its item as
+> **311** against a local master that was 6 commits stale, not having seen that origin/master had by
+> then closed **311 = accidental passes in the Choose Action menu** (archived, itself a #309 yield via
+> reconciliation 35) and taken **312 = charge reach / swallowed clicks** (reconciliation 36). Both
+> merged; per the standing precedent the unmerged local item yields to the next free number:
+> **Takedown facet correction 311 -> 313** (`WorkItems/313-takedown-facet-correction.md`). Renumbered
+> in the index line, the detail file, the three `#311` annotations in
+> `042-implementation-checklist.txt`, and 16 code/test comments in the engine (submodule `a7b537b`).
+> **Left as-is on purpose:** the commit messages saying "#311" for the Takedown work
+> (`24cafde` engine, `5a18182` superproject), which predate the renumber, exactly as every prior
+> reconciliation has handled them. The same session's other item, **#175** (Fear/Fearless hero
+> gating), did not collide - it edited an existing entry and kept its number.
+
+> **2026-08-02 - reconciliation 36 (RESOLVED).** The charge/swallowed-clicks session filed its item as
+> **310**; the push-time fetch found origin/master had meanwhile landed BOTH **310 = per-user config
+> file** (`d545861`, itself a #309 yield via reconciliation 34) and **311 = pass confirmation**
+> (closed, via reconciliation 35). Per merged-wins precedent the local item yields past both:
+> **charge-won't-allow + swallowed-clicks 310 -> 312**
+> (`WorkItems/312-charge-wont-allow-and-swallowed-clicks.md`). Renumbered in the detail file + title,
+> the index line, and the seven sources carrying the comment (engine `MovementUtilities`,
+> `ChargeReachValidationTests`; app `GuiDefineMovementResolver`, `GuiConsolidationMoveResolver`,
+> `ModelPicker`, `TacticalOverlayController`, `ModelPickerTests`) — the app files legitimately
+> referencing the config item's #310 were left untouched. The commit messages naming "#310" (engine
+> `03bf1a4`, superproject `fec819a`) predate the renumber, as usual.
+>
+> **2026-08-02 - reconciliation 35 (RESOLVED).** A double collision, and the second half of it is the
+> rare one. This session had filed the Choose Action Pass-confirmation work as **309**; the pre-push
+> fetch found origin/master had landed **309 = networked client's invisible late-deployed models**
+> (merged and archived, `91451c2` / engine `3c2ac8d`), so per merged-wins precedent the local item
+> yielded to **310** - and while THAT renumber was being verified, origin/master landed again with
+> `d545861` / `f9cb236`, in which a parallel session had independently yielded its own #309 to **310**
+> and logged it as **reconciliation 34**. So the local item yields a second time: **pass confirmation
+> 309 -> 310 -> 311** (`WorkItems/311-pass-confirmation.md`), and this entry - written first, pushed
+> second - takes **35**. As in reconciliation 15's identical clash over an entry number, this log is
+> authoritative: the merged entry keeps 34. Renumbered in the detail file + its title, the archive
+> entry, and all three app sources carrying the comment (`ActionMenuLayout`,
+> `GuiStringSelectionResolver`, `ActionMenuLayoutTests`). **Left as-is on purpose:** the three
+> pre-renumber COMMIT MESSAGES, which still say `#309` / `#310` and name reconciliation 34 - commit
+> messages are not rewritten (precedent 2/3, and reconciliation 33's separate renumber commit `8e81c8e`
+> is the pattern this follows). The item was hand-verified and closed in the same pass, so it goes
+> straight to the archive and never appears in the index under 310 or 311. No engine change on this
+> side; the only submodule movement was checking out master's new pin (`3c2ac8d`).
+
 > **2026-08-02 — reconciliation 34 (RESOLVED).** Same collision class as 29/31/32/33, caught by the
 > pre-push fetch. This session had filed the per-user config file (remembered player name + host
 > settings) as **309**; while the work was in progress origin/master landed **309 = networked client's

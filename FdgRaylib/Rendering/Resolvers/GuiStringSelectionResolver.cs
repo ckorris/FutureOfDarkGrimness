@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using System.Numerics;
 using FDG.StageResolution;
 using FDG.StageResolution.Requests;
@@ -7,24 +9,54 @@ namespace FdgRaylib.Rendering.Resolvers;
 
 public class GuiStringSelectionResolver : IStageResolver<StringSelectionRequest, string>, IGuiResolver
 {
+    /// <summary>#311 — the Pass confirmation's title, which doubles as its ImGui popup id.</summary>
+    private const string ConfirmPassTitle = "End this activation?";
+
     private readonly object _lock = new();
     private StringSelectionRequest? _request;
     private TaskCompletionSource<string>? _tcs;
+
+    /// <summary>
+    /// #311: true between pressing Pass and answering the confirmation. Only the render thread reads or
+    /// writes it, but it is cleared under the same lock as the request so a request that resolves or is
+    /// replaced underneath can never leave a confirmation armed over the next menu.
+    /// </summary>
+    private bool _confirmingPass;
 
     public bool HasPendingRequest { get { lock (_lock) return _request != null; } }
 
     public Task<string> Resolve(StringSelectionRequest request)
     {
         var tcs = new TaskCompletionSource<string>();
-        lock (_lock) { _tcs = tcs; _request = request; }
+        lock (_lock) { _tcs = tcs; _request = request; _confirmingPass = false; }
         return tcs.Task;
+    }
+
+    /// <summary>One row of the scrolling option list: a valid option (ValidIndex >= 0, clickable, may
+    /// carry subtext) or a greyed-out one carrying its reason. Measured once per frame, then drawn.</summary>
+    private sealed class MenuRow
+    {
+        public MenuRow(string option, string label, string? desc, int validIndex)
+        {
+            Option = option; Label = label; Desc = desc; ValidIndex = validIndex;
+        }
+
+        public string Option { get; }
+        public string Label { get; }
+        public string? Desc { get; }
+        public int ValidIndex { get; }
+
+        public List<string> Lines { get; set; } = new();
+        public float ButtonHeight { get; set; }
+        public float TotalHeight { get; set; }
     }
 
     public void Draw(int screenW, int screenH)
     {
         StringSelectionRequest? request;
         TaskCompletionSource<string>? tcs;
-        lock (_lock) { request = _request; tcs = _tcs; }
+        bool confirming;
+        lock (_lock) { request = _request; tcs = _tcs; confirming = _confirmingPass; }
         if (request == null || tcs == null) return;
 
         ImGui.SetNextWindowPos(Vector2.Zero, ImGuiCond.Always);
@@ -51,51 +83,101 @@ public class GuiStringSelectionResolver : IStageResolver<StringSelectionRequest,
         float btnH = ResolverPanelLayout.OptionRowHeight();
 
         float dw = ResolverPanelLayout.W;   // dock into the right-column resolver panel
-        float btnW = dw - pad * 2;
-        float labelWrap = btnW - textPadX * 2f;
+        float dh = ResolverPanelLayout.H;   // fill the panel; the option list scrolls inside it
+        float dx = ResolverPanelLayout.X;
+        float dy = ResolverPanelLayout.Y;
+        float fullBtnW = dw - pad * 2;      // full-width row: the footer buttons never lose a scrollbar strip
 
         // #248: letter hotkeys - pinned letters for the built-in actions, pool letters for the rest.
         // The label carries the letter so the shortcut is discoverable on the button itself. Assigned
-        // before measuring because the letter is part of the text being wrapped.
+        // from the REQUEST's option order (not the display order) so pulling Pass out below cannot
+        // shuffle anyone else's letter.
         char?[] letters = ResolverHotkeys.AssignLetters(request.ValidOptions);
 
-        // Measure heights up front so the dialog is sized to its content and a wrapped description can never
-        // overflow into the next row. CalcTextSize ignores SetWindowFontScale, so measure the description at
-        // the scaled-equivalent wrap width and scale the resulting height back down.
-        float instrH = ImGui.CalcTextSize(request.Instructions, false, dw - pad * 2).Y + 8f;
+        // #311: Pass is pinned to the bottom of the panel behind a confirmation instead of sitting in the
+        // list as an ordinary row - see ActionMenuLayout for why. It keeps that spot when it is greyed
+        // out (Instinctive compels an attack), so the rows above never shift under the cursor.
+        int passValid   = ActionMenuLayout.PassIndex(request.ValidOptions);
+        int passInvalid = passValid >= 0 ? -1 : ActionMenuLayout.PassIndex(request.InvalidOptions);
+        bool pinPass = passValid >= 0 || passInvalid >= 0;
 
-        float descWrapMeasure = (btnW - descIndent) / descScale;
-        float[] rowHeights = new float[validCount];
-        float[] btnHeights = new float[validCount];
-        List<string>[] labelLines = new List<string>[validCount];
-        string?[] descs = new string?[validCount];
+        // Everything the scrolling list shows: valid options first, then the greyed ones - minus the
+        // pinned Pass. Menus without a Pass option (weapon / spell / ability pickers) keep the original
+        // layout entirely, Back included.
+        var rows = new List<MenuRow>(validCount + invalidCount);
         for (int i = 0; i < validCount; i++)
         {
+            if (i == passValid) continue;
             string opt = request.ValidOptions[i];
-            labelLines[i] = ResolverText.Wrap(LabelFor(opt, letters[i]), labelWrap);
-            btnHeights[i] = MathF.Max(btnH, labelLines[i].Count * lineH + btnPadY * 2f);
-
-            float h = btnHeights[i] + gapAfterBtn;
+            string? desc = null;
             if (hasDescriptions
                 && request.OptionDescriptions!.TryGetValue(opt, out string? d)
                 && !string.IsNullOrEmpty(d))
             {
-                descs[i] = d;
-                float descH = ImGui.CalcTextSize(d, false, descWrapMeasure).Y * descScale;
-                h = btnHeights[i] + 2f + descH + gapAfterDesc;
+                desc = d;
             }
-            rowHeights[i] = h;
+            rows.Add(new MenuRow(opt, LabelFor(opt, letters[i]), desc, i));
+        }
+        for (int i = 0; i < invalidCount; i++)
+        {
+            if (i == passInvalid) continue;
+            StringSelectionRequest.InvalidOption opt = request.InvalidOptions[i];
+            // Same hand-drawn treatment as a valid row, so a greyed-out option reads the same and its
+            // reason ("Must attack with Deadly weapons first.") is never clipped away either.
+            rows.Add(new MenuRow(opt.Option, $"{opt.Option} ({opt.Reason})", null, -1));
         }
 
-        float dh = ResolverPanelLayout.H;   // fill the panel; content taller than this scrolls
-        float dx = ResolverPanelLayout.X;
-        float dy = ResolverPanelLayout.Y;
+        // Measure heights up front so the dialog is sized to its content and a wrapped description can never
+        // overflow into the next row. CalcTextSize ignores SetWindowFontScale, so measure the description at
+        // the scaled-equivalent wrap width and scale the resulting height back down.
+        float MeasureRows(float width)
+        {
+            float labelWrap = width - textPadX * 2f;
+            float descWrapMeasure = (width - descIndent) / descScale;
+            float total = 0f;
+            foreach (MenuRow row in rows)
+            {
+                row.Lines = ResolverText.Wrap(row.Label, labelWrap);
+                row.ButtonHeight = MathF.Max(btnH, row.Lines.Count * lineH + btnPadY * 2f);
+                row.TotalHeight = row.Desc == null
+                    ? row.ButtonHeight + gapAfterBtn
+                    : row.ButtonHeight + 2f
+                      + ImGui.CalcTextSize(row.Desc, false, descWrapMeasure).Y * descScale + gapAfterDesc;
+                total += row.TotalHeight;
+            }
+            return total;
+        }
+
+        // The pinned Pass row: one line when it is available, taller when it is greyed and the reason wraps.
+        string passLabel = passValid >= 0
+            ? LabelFor(request.ValidOptions[passValid], letters[passValid])
+            : passInvalid >= 0
+                ? $"{request.InvalidOptions[passInvalid].Option} ({request.InvalidOptions[passInvalid].Reason})"
+                : string.Empty;
+        List<string> passLines = ResolverText.Wrap(passLabel, fullBtnW - textPadX * 2f);
+        float passRowH = MathF.Max(btnH, passLines.Count * lineH + btnPadY * 2f);
+
+        float instrH = ImGui.CalcTextSize(request.Instructions, false, dw - pad * 2).Y + 8f;
+        float listTop = pad + instrH + 4f;
+        float footerH = pinPass ? ActionMenuLayout.FooterHeight(lineH, passRowH, request.AllowCancel) : 0f;
+        float listH = pinPass
+            ? ActionMenuLayout.ListHeight(dh, listTop, footerH, lineH)
+            : MathF.Max(lineH, dh - listTop - pad);
+
+        float listBtnW = fullBtnW;
+        if (MeasureRows(listBtnW) > listH)
+        {
+            // The list will scroll, so hand the scrollbar its strip back and re-wrap into what is left -
+            // otherwise a long option label is drawn underneath it.
+            listBtnW = fullBtnW - ImGui.GetStyle().ScrollbarSize;
+            MeasureRows(listBtnW);
+        }
 
         ImGui.SetCursorPos(new Vector2(dx, dy));
         ImGui.PushStyleColor(ImGuiCol.ChildBg, new Vector4(0.15f, 0.15f, 0.20f, 0.97f));
         ImGui.PushStyleVar(ImGuiStyleVar.ChildRounding, 6f);
         ImGui.BeginChild("##StrSelDialog", new Vector2(dw, dh), ImGuiChildFlags.Borders,
-            ImGuiWindowFlags.None);
+            ImGuiWindowFlags.NoScrollbar | ImGuiWindowFlags.NoScrollWithMouse);
         ImGui.PopStyleColor();
         ImGui.PopStyleVar();
 
@@ -105,97 +187,219 @@ public class GuiStringSelectionResolver : IStageResolver<StringSelectionRequest,
         ImGui.PopTextWrapPos();
 
         // The picked option is completed once after the loop so two same-frame presses can't double-resolve.
+        string? picked = null;
+        bool cancelled = false;
+        bool passPressed = false;
+
+        // #311: the confirmation is a modal popup, so it blocks the mouse - but the letter and Backspace
+        // hotkeys are read straight from ImGui and would still fire behind it, exactly the case #248's
+        // muting rule exists for. Freeze every key path while it is up.
+        bool keysLive = !confirming;
+
+        // ---- the scrolling option list ---------------------------------------------------------------
+        // Its own child so the footer below stays put while the list scrolls. Zero window padding lines
+        // its content up with the panel coordinates the rest of this method uses.
+        ImGui.SetCursorPos(new Vector2(pad, listTop));
+        ImGui.PushStyleVar(ImGuiStyleVar.WindowPadding, Vector2.Zero);
+        ImGui.PushStyleColor(ImGuiCol.ChildBg, new Vector4(0f, 0f, 0f, 0f));
+        ImGui.BeginChild("##StrSelOptions", new Vector2(fullBtnW, listH), ImGuiChildFlags.None);
+        ImGui.PopStyleColor();
+        ImGui.PopStyleVar();
+
         // Labels are drawn by hand over an empty button: a melee weapon option ("2x Great Sword - A2, AP1,
         // Rending") is wider than the narrow panel, and ImGui.Button center-CLIPS its label, which silently
         // ate the stat tail - the special rules included (#298). Wrapped left-aligned text shows all of it.
         var dl = ImGui.GetWindowDrawList();
         uint labelCol = ImGui.GetColorU32(ImGuiCol.Text);
-        string? picked = null;
+        uint dimCol = ImGui.ColorConvertFloat4ToU32(new Vector4(0.55f, 0.55f, 0.58f, 1f));
 
-        float y = pad + instrH + 4f;
-        for (int i = 0; i < validCount; i++)
+        float y = 0f;
+        for (int i = 0; i < rows.Count; i++)
         {
-            string opt = request.ValidOptions[i];
-            ImGui.SetCursorPos(new Vector2(pad, y));
-            Vector2 origin = ImGui.GetCursorScreenPos();
-            if (ImGui.Button($"##opt{i}", new Vector2(btnW, btnHeights[i])))
-                picked ??= opt;
-            if (letters[i] is char pressedKey && ResolverHotkeys.IsLetterPressed(pressedKey))
-                picked ??= opt;
+            MenuRow row = rows[i];
+            bool enabled = row.ValidIndex >= 0;
 
-            float ty = origin.Y + (btnHeights[i] - labelLines[i].Count * lineH) * 0.5f;
-            foreach (string line in labelLines[i])
+            ImGui.SetCursorPos(new Vector2(0f, y));
+            Vector2 origin = ImGui.GetCursorScreenPos();
+            if (!enabled) ImGui.BeginDisabled(true);
+            if (ImGui.Button($"##row{i}", new Vector2(listBtnW, row.ButtonHeight)) && enabled)
+                picked ??= row.Option;
+            if (!enabled) ImGui.EndDisabled();
+
+            if (enabled && keysLive
+                && letters[row.ValidIndex] is char pressedKey && ResolverHotkeys.IsLetterPressed(pressedKey))
             {
-                dl.AddText(new Vector2(origin.X + textPadX, ty), labelCol, line);
+                picked ??= row.Option;
+            }
+
+            float ty = origin.Y + (row.ButtonHeight - row.Lines.Count * lineH) * 0.5f;
+            foreach (string line in row.Lines)
+            {
+                dl.AddText(new Vector2(origin.X + textPadX, ty), enabled ? labelCol : dimCol, line);
                 ty += lineH;
             }
 
             // Optional subtext under the option (a weapon rule's text, a spell's effect summary):
             // smaller and dimmed.
-            if (descs[i] != null)
+            if (row.Desc != null)
             {
-                ImGui.SetCursorPos(new Vector2(pad + descIndent, y + btnHeights[i] + 2f));
+                ImGui.SetCursorPos(new Vector2(descIndent, y + row.ButtonHeight + 2f));
                 ImGui.PushStyleColor(ImGuiCol.Text, new Vector4(0.62f, 0.66f, 0.74f, 1f));
                 ImGui.SetWindowFontScale(descScale);
-                ImGui.PushTextWrapPos(dw - pad);
-                ImGui.TextUnformatted(descs[i]!);
+                ImGui.PushTextWrapPos(listBtnW);
+                ImGui.TextUnformatted(row.Desc);
                 ImGui.PopTextWrapPos();
                 ImGui.SetWindowFontScale(1f);
                 ImGui.PopStyleColor();
             }
-            y += rowHeights[i];
+
+            y += row.TotalHeight;
         }
 
-        if (invalidCount > 0)
+        // Menus with no Pass to pin keep Back where it has always been: last in the flow.
+        if (!pinPass && request.AllowCancel)
         {
-            uint dimCol = ImGui.ColorConvertFloat4ToU32(new Vector4(0.55f, 0.55f, 0.58f, 1f));
-            for (int i = 0; i < invalidCount; i++)
+            ImGui.SetCursorPos(new Vector2(0f, y + 8f));
+            if (DrawBackButton(listBtnW)) cancelled = true;
+        }
+
+        ImGui.EndChild();
+
+        // ---- the pinned footer: Pass, then Back, raised off the panel's bottom edge --------------------
+        // Back goes last on purpose: the panel's bottom edge is the easiest target in it to slam into, so
+        // it belongs to the harmless action rather than the irreversible one.
+        if (pinPass)
+        {
+            float fy = listTop + listH + ActionMenuLayout.GapAbove(lineH);
+
+            // An available Pass is drawn at full strength, exactly like an option row: the position and
+            // the confirmation are what make it deliberate. Dimming it (tried first) read as "disabled"
+            // and left the player unsure it could be clicked at all. Only a Pass that really is
+            // unavailable is greyed, and it carries its reason like any other invalid option.
+            bool passEnabled = passValid >= 0;
+            ImGui.SetCursorPos(new Vector2(pad, fy));
+            Vector2 passOrigin = ImGui.GetCursorScreenPos();
+
+            if (!passEnabled) ImGui.BeginDisabled(true);
+            if (ImGui.Button("##pass", new Vector2(fullBtnW, passRowH)) && passEnabled)
+                passPressed = true;
+            if (!passEnabled) ImGui.EndDisabled();
+
+            if (passEnabled && keysLive
+                && letters[passValid] is char passKey && ResolverHotkeys.IsLetterPressed(passKey))
             {
-                var opt = request.InvalidOptions[i];
-                // Same hand-drawn treatment as a valid row, so a grayed-out option reads the same and its
-                // reason ("Must attack with Deadly weapons first.") is never clipped away either.
-                List<string> lines = ResolverText.Wrap($"{opt.Option} ({opt.Reason})", labelWrap);
-                float rowH = MathF.Max(btnH, lines.Count * lineH + btnPadY * 2f);
+                passPressed = true;
+            }
 
-                ImGui.SetCursorPos(new Vector2(pad, y));
-                Vector2 origin = ImGui.GetCursorScreenPos();
-                ImGui.BeginDisabled(true);
-                ImGui.Button($"##invalid{validCount + i}", new Vector2(btnW, rowH));
-                ImGui.EndDisabled();
+            var passDl = ImGui.GetWindowDrawList();
+            float passTy = passOrigin.Y + (passRowH - passLines.Count * lineH) * 0.5f;
+            foreach (string line in passLines)
+            {
+                passDl.AddText(new Vector2(passOrigin.X + textPadX, passTy), passEnabled ? labelCol : dimCol, line);
+                passTy += lineH;
+            }
 
-                float ty = origin.Y + (rowH - lines.Count * lineH) * 0.5f;
-                foreach (string line in lines)
-                {
-                    dl.AddText(new Vector2(origin.X + textPadX, ty), dimCol, line);
-                    ty += lineH;
-                }
-                y += rowH + gapAfterBtn;
+            // The soft back tone, as on every other receding action - the confirmation is next, not the pass.
+            if (passPressed) UiSound.Back();
+
+            if (request.AllowCancel)
+            {
+                fy += passRowH + ActionMenuLayout.GapBetween(lineH);
+                ImGui.SetCursorPos(new Vector2(pad, fy));
+                if (DrawBackButton(fullBtnW)) cancelled = true;
             }
         }
 
         // #248: cancellable string menus (a pristine activation's action menu) get a Back button +
         // Backspace, replying null — the SelectionRequest cancel sentinel. Esc is reserved for the
-        // in-game menu.
-        bool cancelled = false;
-        if (request.AllowCancel)
-        {
-            ImGui.SetCursorPos(new Vector2(pad, y + 8f));
-            ImGui.PushStyleColor(ImGuiCol.Button, new Vector4(0.25f, 0.25f, 0.30f, 1f));
-            if (ImGui.Button("Back  (Backspace)##back", new Vector2(btnW, ResolverPanelLayout.ActionRowHeight())))
-                cancelled = true;
-            ImGui.PopStyleColor();
-
-            if (ResolverHotkeys.IsBackPressed())
-                cancelled = true;
-        }
+        // in-game menu (except while the #311 confirmation owns it, below).
+        if (request.AllowCancel && keysLive && ResolverHotkeys.IsBackPressed())
+            cancelled = true;
 
         ImGui.EndChild();
         ImGui.End();
+
+        // #311: Escape answers the confirmation, and claims the press from the arbiter so the same Escape
+        // does not also open the in-game menu behind it. Read before this frame's Pass press so opening
+        // the popup and dismissing it can never happen on one keystroke.
+        bool escCancel = confirming && EscapeRouter.TryConsumeEscape();
+
+        if (passPressed && !confirming)
+        {
+            lock (_lock) _confirmingPass = true;
+            confirming = true;
+        }
+
+        if (confirming)
+        {
+            // Keep the modal request alive across frames (OpenPopup is consumed by the first BeginPopupModal).
+            if (!ImGui.IsPopupOpen(ConfirmPassTitle)) ImGui.OpenPopup(ConfirmPassTitle);
+
+            // The width is pinned and the message wraps at an explicit position rather than at the window
+            // edge. Wrapped text inside an AlwaysAutoResize window is circular - the wrap width comes from
+            // the window width, which comes from the content - and on the frame the popup appears ImGui has
+            // no width yet, so the message wrapped to a column of single words and the popup opened nearly
+            // as tall as the screen for one frame before snapping down. A fixed width breaks the loop: the
+            // height (0 = auto-fit) is then measured correctly the first time, on the frame ImGui hides a
+            // brand-new window anyway. Position is re-applied every frame (Always) so the centre pivot uses
+            // the real size instead of whatever the window had when it appeared.
+            float rowH = ResolverPanelLayout.OptionRowHeight();
+            float btnW = MathF.Max(150f,
+                ImGui.CalcTextSize($"Pass  {ResolverKeybinds.Confirm.Parenthetical}").X + 24f);
+            float contentW = btnW * 2f + ImGui.GetStyle().ItemSpacing.X;
+
+            Vector2 center = ImGui.GetMainViewport().GetCenter();
+            ImGui.SetNextWindowPos(center, ImGuiCond.Always, new Vector2(0.5f, 0.5f));
+            ImGui.SetNextWindowSize(new Vector2(contentW + ImGui.GetStyle().WindowPadding.X * 2f, 0f),
+                ImGuiCond.Always);
+            if (ImGui.BeginPopupModal(ConfirmPassTitle,
+                    ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoScrollbar |
+                    ImGuiWindowFlags.NoSavedSettings))
+            {
+                ImGui.PushTextWrapPos(ImGui.GetCursorPosX() + contentW);
+                ImGui.TextUnformatted(
+                    "Passing ends this unit's activation - it does nothing else this round.");
+                ImGui.PopTextWrapPos();
+                ImGui.Spacing();
+
+                bool confirmed = ResolverButtons.Primary("Pass", new Vector2(btnW, rowH));
+                ImGui.SameLine();
+                bool cancelConfirm = ImGui.Button("Cancel  (Esc)", new Vector2(btnW, rowH)) || escCancel;
+
+                if (confirmed)
+                {
+                    ImGui.CloseCurrentPopup();
+                    ImGui.EndPopup();
+                    Complete(tcs, ActionMenuLayout.PassOption);
+                    return;
+                }
+
+                if (cancelConfirm)
+                {
+                    UiSound.Back();
+                    ImGui.CloseCurrentPopup();
+                    lock (_lock) _confirmingPass = false;
+                }
+
+                ImGui.EndPopup();
+            }
+            return;   // the menu underneath is inert while the confirmation is up
+        }
 
         if (picked != null)
             Complete(tcs, picked);
         else if (cancelled)
             Complete(tcs, null!);
+    }
+
+    /// <summary>The shared Back button (#248): same look wherever it lands, in the flow or in the footer.</summary>
+    private static bool DrawBackButton(float width)
+    {
+        ImGui.PushStyleColor(ImGuiCol.Button, new Vector4(0.25f, 0.25f, 0.30f, 1f));
+        bool clicked = ImGui.Button($"Back  {ResolverKeybinds.Back.Parenthetical}##back",
+            new Vector2(width, ResolverPanelLayout.ActionRowHeight()));
+        ImGui.PopStyleColor();
+        return clicked;
     }
 
     /// <summary>The text drawn on an option's button: the option, prefixed with its letter hotkey when
@@ -205,7 +409,7 @@ public class GuiStringSelectionResolver : IStageResolver<StringSelectionRequest,
 
     private void Complete(TaskCompletionSource<string> tcs, string choice)
     {
-        lock (_lock) { _request = null; _tcs = null; }
+        lock (_lock) { _request = null; _tcs = null; _confirmingPass = false; }
         tcs.SetResult(choice);
     }
 }

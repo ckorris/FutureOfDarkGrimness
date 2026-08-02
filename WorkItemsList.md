@@ -17,6 +17,8 @@ When closing an item: write the Outcome in its detail file, tick the line, and m
 
 ## Movement
 
+- [~] 312 — "Charge offered but won't allow" + partial one-at-a-time moves (2026-07-31 game): ValidateChargeReach + end-state validators now true base-to-base at end facing; enemy-pin click removed; click hit-test follows planned ghost poses. Implemented + tested; awaiting GUI hand-verify + networked re-test. Was #310 pre-reconciliation-36. ([WorkItems/312](WorkItems/312-charge-wont-allow-and-swallowed-clicks.md))
+
 - [~] 291 — Models could move partially off the table: the movement validator had no bounds rule at all (the GUI only constrained a model's CENTRE, so big vehicle bases overhung). Footprint-exact "not worsened" rule in all four validators + shared preview clamp. Implemented + tested; awaiting GUI hand-verify. ([WorkItems/291](WorkItems/291-models-may-not-move-off-table.md))
 
 - [~] 159 — `DefinePathStage` cohesion crash: residual isolated (CLI/AI HOLD-EXACT submitting an already-broken unit's positions) and fixed 2026-07-18 via lenient movement coherency (mirrors the ConsolidateStage fix), 90/90 clean; GUI human-movement Done-gate facet explicitly deferred + awaiting GUI hand-verify. ([WorkItems/159](WorkItems/159-definepath-cohesion-crash.md))
@@ -46,7 +48,7 @@ When closing an item: write the Outcome in its detail file, tick the line, and m
 
 ## Special rules — framework
 
-- [~] 311 — Takedown granted line-of-sight AND cover bypass (snipers shot through Blocking terrain) from a wrong row in the #042 checklist; the rule text grants neither. Both hooks removed, and its real "resolved before other weapons" ordering clause implemented on #028's gate. Implemented + tested; awaiting GUI hand-verify. ([WorkItems/311](WorkItems/311-takedown-facet-correction.md))
+- [~] 313 — Takedown granted line-of-sight AND cover bypass (snipers shot through Blocking terrain) from a wrong row in the #042 checklist; the rule text grants neither. Both hooks removed, and its real "resolved before other weapons" ordering clause implemented on #028's gate. Implemented + tested; awaiting GUI hand-verify. ([WorkItems/313](WorkItems/313-takedown-facet-correction.md)) Was #311 pre-reconciliation-37.
 
 - [~] 290 — Advance-and-shoot gate re-derived the allowance AFTER `ExecuteMoveStage` spent the one-shot movement grant that paid for the move (Inspiring Bots -> Rapid Advance on a Slow unit: advanced 8", then couldn't shoot); the allowance is now recorded with the distance. Implemented + tested; awaiting GUI hand-verify. ([WorkItems/290](WorkItems/290-move-shoot-allowance-consumed-grant.md))
 
