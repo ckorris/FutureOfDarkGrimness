@@ -34,7 +34,7 @@ public class GuiStringSelectionResolver : IStageResolver<StringSelectionRequest,
 
     /// <summary>One row of the scrolling option list: a valid option (ValidIndex >= 0, clickable, may
     /// carry subtext) or a greyed-out one carrying its reason. Measured once per frame, then drawn.</summary>
-    private sealed class MenuRow
+    internal sealed class MenuRow
     {
         public MenuRow(string option, string label, string? desc, int validIndex)
         {
@@ -45,6 +45,17 @@ public class GuiStringSelectionResolver : IStageResolver<StringSelectionRequest,
         public string Label { get; }
         public string? Desc { get; }
         public int ValidIndex { get; }
+
+        /// <summary>#317: the companion action riding this row (melee's "Hold back"), or null.</summary>
+        public StringSelectionRequest.SecondaryAction? Secondary { get; set; }
+
+        /// <summary>Its button text, and the reason it is greyed out when it may not be taken.</summary>
+        public string SecondaryLabel { get; set; } = string.Empty;
+        public string? SecondaryDisabledReason { get; set; }
+
+        /// <summary>Width of the companion button, or 0 when the row has none. The row's own button
+        /// gives it up, so the label must wrap into what is left.</summary>
+        public float SecondaryWidth { get; set; }
 
         public List<string> Lines { get; set; } = new();
         public float ButtonHeight { get; set; }
@@ -77,6 +88,7 @@ public class GuiStringSelectionResolver : IStageResolver<StringSelectionRequest,
         const float gapAfterDesc = 8f;
         const float textPadX = 10f;      // inset of the hand-drawn label from the button's left edge
         const float btnPadY = 6f;
+        const float gapBetweenRowButtons = 4f;   // #317: between a row and its companion action
 
         // #298: rows are sized from the font, not from a hardcoded pixel count - see OptionRowHeight.
         float lineH = ImGui.GetTextLineHeight();
@@ -88,11 +100,18 @@ public class GuiStringSelectionResolver : IStageResolver<StringSelectionRequest,
         float dy = ResolverPanelLayout.Y;
         float fullBtnW = dw - pad * 2;      // full-width row: the footer buttons never lose a scrollbar strip
 
+        // #317: options that BELONG to another row (melee's "Hold back: <weapon>") are drawn as a second
+        // button on that row, so they must not also appear as rows of their own - which is the whole point:
+        // two peer entries for one weapon read as two unrelated choices.
+        HashSet<string> companionOptions = CompanionOptions(request);
+
         // #248: letter hotkeys - pinned letters for the built-in actions, pool letters for the rest.
         // The label carries the letter so the shortcut is discoverable on the button itself. Assigned
         // from the REQUEST's option order (not the display order) so pulling Pass out below cannot
         // shuffle anyone else's letter.
-        char?[] letters = ResolverHotkeys.AssignLetters(request.ValidOptions);
+        // #317: companions are skipped when handing out letters - they share their owner row's letter
+        // under Shift - so they neither burn pool letters nor shift anyone else's.
+        char?[] letters = AssignRowLetters(request, companionOptions);
 
         // #311: Pass is pinned to the bottom of the panel behind a confirmation instead of sitting in the
         // list as an ordinary row - see ActionMenuLayout for why. It keeps that spot when it is greyed
@@ -109,6 +128,7 @@ public class GuiStringSelectionResolver : IStageResolver<StringSelectionRequest,
         {
             if (i == passValid) continue;
             string opt = request.ValidOptions[i];
+            if (companionOptions.Contains(opt)) continue;
             string? desc = null;
             if (hasDescriptions
                 && request.OptionDescriptions!.TryGetValue(opt, out string? d)
@@ -116,12 +136,15 @@ public class GuiStringSelectionResolver : IStageResolver<StringSelectionRequest,
             {
                 desc = d;
             }
-            rows.Add(new MenuRow(opt, LabelFor(opt, letters[i]), desc, i));
+            var row = new MenuRow(opt, LabelFor(opt, letters[i]), desc, i);
+            AttachSecondary(row, request, letters[i]);
+            rows.Add(row);
         }
         for (int i = 0; i < invalidCount; i++)
         {
             if (i == passInvalid) continue;
             StringSelectionRequest.InvalidOption opt = request.InvalidOptions[i];
+            if (companionOptions.Contains(opt.Option)) continue;
             // Same hand-drawn treatment as a valid row, so a greyed-out option reads the same and its
             // reason ("Must attack with Deadly weapons first.") is never clipped away either.
             rows.Add(new MenuRow(opt.Option, $"{opt.Option} ({opt.Reason})", null, -1));
@@ -132,11 +155,17 @@ public class GuiStringSelectionResolver : IStageResolver<StringSelectionRequest,
         // the scaled-equivalent wrap width and scale the resulting height back down.
         float MeasureRows(float width)
         {
-            float labelWrap = width - textPadX * 2f;
             float descWrapMeasure = (width - descIndent) / descScale;
             float total = 0f;
             foreach (MenuRow row in rows)
             {
+                // #317: a companion button takes its text's width off the right of the row (capped, so a
+                // long verb can never squeeze the weapon line out), and the label wraps into the rest.
+                row.SecondaryWidth = row.Secondary == null
+                    ? 0f
+                    : MathF.Min(ImGui.CalcTextSize(row.SecondaryLabel).X + textPadX * 2f, width * 0.42f);
+                float labelWrap = width - row.SecondaryWidth
+                    - (row.SecondaryWidth > 0f ? gapBetweenRowButtons : 0f) - textPadX * 2f;
                 row.Lines = ResolverText.Wrap(row.Label, labelWrap);
                 row.ButtonHeight = MathF.Max(btnH, row.Lines.Count * lineH + btnPadY * 2f);
                 row.TotalHeight = row.Desc == null
@@ -219,10 +248,13 @@ public class GuiStringSelectionResolver : IStageResolver<StringSelectionRequest,
             MenuRow row = rows[i];
             bool enabled = row.ValidIndex >= 0;
 
+            float rowBtnW = listBtnW - row.SecondaryWidth
+                - (row.SecondaryWidth > 0f ? gapBetweenRowButtons : 0f);
+
             ImGui.SetCursorPos(new Vector2(0f, y));
             Vector2 origin = ImGui.GetCursorScreenPos();
             if (!enabled) ImGui.BeginDisabled(true);
-            if (ImGui.Button($"##row{i}", new Vector2(listBtnW, row.ButtonHeight)) && enabled)
+            if (ImGui.Button($"##row{i}", new Vector2(rowBtnW, row.ButtonHeight)) && enabled)
                 picked ??= row.Option;
             if (!enabled) ImGui.EndDisabled();
 
@@ -230,6 +262,39 @@ public class GuiStringSelectionResolver : IStageResolver<StringSelectionRequest,
                 && letters[row.ValidIndex] is char pressedKey && ResolverHotkeys.IsLetterPressed(pressedKey))
             {
                 picked ??= row.Option;
+            }
+
+            // #317: the companion action, on the SAME row and to its right - "attack with this weapon" and
+            // "hold this weapon back" are one decision about one weapon, and were two peer list entries
+            // before, which read as two unrelated choices. Shares the row's letter under Shift.
+            if (row.Secondary != null)
+            {
+                bool secondaryEnabled = row.SecondaryDisabledReason == null;
+                ImGui.SetCursorPos(new Vector2(rowBtnW + gapBetweenRowButtons, y));
+                if (!secondaryEnabled) ImGui.BeginDisabled(true);
+                ImGui.PushStyleColor(ImGuiCol.Button, new Vector4(0.28f, 0.26f, 0.20f, 1f));
+                ImGui.PushStyleColor(ImGuiCol.ButtonHovered, new Vector4(0.40f, 0.36f, 0.24f, 1f));
+                bool secondaryClicked = ImGui.Button($"{row.SecondaryLabel}##sec{i}",
+                    new Vector2(row.SecondaryWidth, row.ButtonHeight));
+                ImGui.PopStyleColor(2);
+                if (!secondaryEnabled) ImGui.EndDisabled();
+
+                // BeginDisabled suppresses IsItemHovered, so re-query with AllowWhenDisabled: a refused
+                // companion explains why, an available one explains what taking it buys (its own
+                // description - "Keeps its Limited once-per-game use for a later melee"), which has no
+                // room on a two-word button.
+                if (ImGui.IsItemHovered(ImGuiHoveredFlags.AllowWhenDisabled))
+                {
+                    string? tip = row.SecondaryDisabledReason ?? SecondaryDescription(request, row);
+                    if (tip != null) ImGui.SetTooltip(tip);
+                }
+
+                bool secondaryKey = secondaryEnabled && enabled && keysLive
+                    && letters[row.ValidIndex] is char shiftKey
+                    && ResolverHotkeys.IsLetterPressed(shiftKey, shift: true);
+
+                if ((secondaryClicked && secondaryEnabled) || secondaryKey)
+                    picked ??= row.Secondary.Option;
             }
 
             float ty = origin.Y + (row.ButtonHeight - row.Lines.Count * lineH) * 0.5f;
@@ -390,6 +455,82 @@ public class GuiStringSelectionResolver : IStageResolver<StringSelectionRequest,
             Complete(tcs, picked);
         else if (cancelled)
             Complete(tcs, null!);
+    }
+
+    /// <summary>
+    /// #317: hangs a row's companion action off it, if it has one - its button text (the short label plus
+    /// the Shift shortcut it shares with the row's own letter) and, when the companion is currently
+    /// refused, the reason to show greyed instead of a live button.
+    /// </summary>
+    internal static void AttachSecondary(MenuRow row, StringSelectionRequest request, char? letter)
+    {
+        if (request.SecondaryActions == null
+            || !request.SecondaryActions.TryGetValue(row.Option, out StringSelectionRequest.SecondaryAction? secondary))
+        {
+            return;
+        }
+
+        row.Secondary = secondary;
+        row.SecondaryLabel = letter is char key
+            ? $"[^{key}] {secondary.ShortLabel}"   // "^E" = Shift+E; caret keeps it inside Latin-1 (CLAUDE.md)
+            : secondary.ShortLabel;
+
+        // A companion that is not in ValidOptions is refused, and InvalidOptions says why.
+        if (!request.ValidOptions.Contains(secondary.Option))
+        {
+            foreach (StringSelectionRequest.InvalidOption invalid in request.InvalidOptions)
+            {
+                if (invalid.Option == secondary.Option) { row.SecondaryDisabledReason = invalid.Reason; break; }
+            }
+            row.SecondaryDisabledReason ??= "Not available.";
+        }
+    }
+
+    /// <summary>
+    /// #317: every option that is some other option's companion action. These are drawn as a second button
+    /// on their owner's row, so they must be skipped everywhere a row is built from the request's lists -
+    /// valid, invalid, and letter assignment alike. Internal for tests.
+    /// </summary>
+    internal static HashSet<string> CompanionOptions(StringSelectionRequest request)
+    {
+        var companions = new HashSet<string>(StringComparer.Ordinal);
+        if (request.SecondaryActions == null) return companions;
+        foreach (StringSelectionRequest.SecondaryAction secondary in request.SecondaryActions.Values)
+            companions.Add(secondary.Option);
+        return companions;
+    }
+
+    /// <summary>
+    /// #248 letters, #317-aware: indexed by VALID-OPTION index so the draw loop can keep asking
+    /// <c>letters[row.ValidIndex]</c>, but companions are passed over - they share their owner's letter
+    /// under Shift, so giving them their own would both burn the ten-letter pool and shift the letters of
+    /// every option after them. Internal for tests.
+    /// </summary>
+    internal static char?[] AssignRowLetters(StringSelectionRequest request, HashSet<string> companions)
+    {
+        var owners = new List<string>(request.ValidOptions.Count);
+        var ownerIndex = new List<int>(request.ValidOptions.Count);
+        for (int i = 0; i < request.ValidOptions.Count; i++)
+        {
+            if (companions.Contains(request.ValidOptions[i])) continue;
+            owners.Add(request.ValidOptions[i]);
+            ownerIndex.Add(i);
+        }
+
+        char?[] ownerLetters = ResolverHotkeys.AssignLetters(owners);
+        char?[] letters = new char?[request.ValidOptions.Count];
+        for (int k = 0; k < ownerIndex.Count; k++) letters[ownerIndex[k]] = ownerLetters[k];
+        return letters;
+    }
+
+    /// <summary>#317: the companion action's own subtext, if the request gave it one.</summary>
+    private static string? SecondaryDescription(StringSelectionRequest request, MenuRow row)
+    {
+        if (row.Secondary == null || request.OptionDescriptions == null) return null;
+        return request.OptionDescriptions.TryGetValue(row.Secondary.Option, out string? desc)
+               && !string.IsNullOrEmpty(desc)
+            ? desc
+            : null;
     }
 
     /// <summary>The shared Back button (#248): same look wherever it lands, in the flow or in the footer.</summary>
