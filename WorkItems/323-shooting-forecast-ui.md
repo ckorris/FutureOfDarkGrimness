@@ -19,6 +19,13 @@ from the shooting details section.
 
 ## Notes
 
+- 2026-08-02: Slice 3 (details + badge) shipped. Details pane: "To hit: Quality 4+ | Stealth -1 ->
+  5+" / "Save: Defense 4+ | AP 2 | Cover +1 -> 5+" (chips verbatim from the forecast, never
+  re-derived client-side), forecast Notes in dim amber, and the misleading target-Quality line is
+  GONE (Quality plays no part in being shot at). Canvas: one "Hit X+ / Sv Y+" badge above the ringed
+  hovered/selected target in DrawHoverLines - one badge on the active pairing only, never one per
+  target. All three slices done; AWAITING GUI HAND-VERIFY (rows column, details ledger wrap width,
+  badge placement at different zooms, a Stealth/Shielded/cover matchup reading correctly).
 - 2026-08-02: Slice 2 (rows) shipped. GUI: "Hit X+ / Sv Y+" right-aligned on each target row's name
   line (draw-list overlay; row's own text color so grayed rows gray with it; long-name collision
   guard skips the draw). CLI: "[hit X+, save Y+]" after the target name. Verified live in headless
