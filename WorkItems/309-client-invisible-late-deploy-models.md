@@ -1,6 +1,6 @@
 # 309 — Networked client: late-deployed models render label-only (no base) until they move
 
-**Status:** in progress (2026-08-02)
+**Status:** implemented + tested (2026-08-02); awaiting networked GUI hand-verify
 **Reported:** first real internet playthrough — the remote client sometimes saw only a unit's
 overhead label (name/health/chips), no circle/rectangle bases, until the unit next moved; worst
 with late deployments (Ambush). The host never sees it. Reproduced by Chris 2026-08-02 (host +
@@ -49,5 +49,14 @@ client on one machine, host ambusher arrives -> client shows label-only ghost; m
 
 ## Notes
 
-- 2026-08-02: filed; root cause confirmed by repro. Implementation starting: engine reorder +
-  tests, then app-side live resolution.
+- 2026-08-02: BOTH halves landed. Engine `3c2ac8d` (all six reorder sites + 3 ordering pins:
+  `RoundTwo_Accept_ReserveClearsBeforeFirstPositionReplicates`,
+  `DisembarkStage_UnembarksBeforeFirstPositionReplicates`,
+  `Spillout_UnembarksBeforeFirstPositionReplicates`; suite 2553 green). Superproject `91451c2`
+  (renderer live-resolve + ModelID matching + engine bump; full build green, headless smoke
+  exit 0). NOT pushed - submodule master fast-forwarded locally to `3c2ac8d`; push both when
+  ready (submodule first).
+- Hand-verify: rerun the repro (host + client, host ambusher arrives round 2+) - client must
+  show bases immediately at arrival. Ideally also disembark and a transport destruction
+  (spillout) viewed from the client.
+- 2026-08-02: filed; root cause confirmed by repro.
