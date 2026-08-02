@@ -217,7 +217,7 @@ public class ArmyForgeScreenTests
             "excluding the section's own pick, the full pool is switchable");
     }
 
-    // ── #318 Titan Lords double Heavy Hammer, against the SHIPPED book ─────────────────────────────────
+    // ── #323 Titan Lords double Heavy Hammer, against the SHIPPED book ─────────────────────────────────
 
     // Reported 2026-08-02 (friend's War Disciples list): on the War Errant Mini-Titan, trading the Titan
     // Shield for a second Heavy Hammer must leave BOTH hammers swappable. The book authors "Replace any
@@ -252,7 +252,7 @@ public class ArmyForgeScreenTests
         Assert.That(compiled.PointCost, Is.EqualTo(385), "295 base + 30 shield swap + 30x2 sword swaps");
     }
 
-    // ── #319 an all-swap must not hide the specialist swap below it, against the SHIPPED book ──────────
+    // ── #324 an all-swap must not hide the specialist swap below it, against the SHIPPED book ──────────
 
     // DAO Union Tactical Grunts: 5 Pulse Rifles, "Replace all Pulse Rifles" (#1) above "Replace one Pulse
     // Rifle" (#2). Taking the all-swap used to eat the pool, so the compiler dropped the specialist AND the
@@ -293,7 +293,7 @@ public class ArmyForgeScreenTests
     }
 
     // Dwarf Guilds Guardians: 5 Pistols + 5 Bashes, "Replace all Pistols and Bashes" -> CCW. The "Bashes"
-    // target never matched the "Bash" weapon, so the swap left all five Bashes on the unit for free (#319).
+    // target never matched the "Bash" weapon, so the swap left all five Bashes on the unit for free (#324).
     [Test]
     public void Guardians_ReplaceAllPistolsAndBashes_TakesTheBashesToo()
     {

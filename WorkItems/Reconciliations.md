@@ -6,6 +6,26 @@ from origin/master. Standing precedent: numbers are never reused, and when two p
 claim the same number, the *unmerged local* item yields to the *merged* one and takes a fresh number.
 A per-clone pre-push hook blocks duplicate numbers across the index and the archive.
 
+> **2026-08-02 - reconciliation 42 (RESOLVED).** The Army Forge upgrade session (playtester bug: only one
+> of a Titan's two Heavy Hammers could be swapped) fetched at session start, saw master in sync, and filed
+> **318** and **319** from that view. The Limited-weapon and waiting-HUD work landed on origin/master
+> *during* the session - 13 superproject / 11 engine commits, including reconciliations 40 and 41 - so by
+> the time the work was ready to push, **318 = melee hold-back** and **319 = Limited hold fire** were both
+> merged and closed. Per the standing precedent the unmerged local items yield:
+> **starved-Replace retry 318 -> 323** (`WorkItems/323-starved-replace-upgrade.md`) and
+> **all-swap yields + "-es" plurals 319 -> 324** (`WorkItems/324-all-swap-yields-and-plurals.md`), both
+> renamed. All 21 markers were renumbered before publication, confined to the Army Forge files
+> (`ListCompiler`, `ArmyForgeScreen`, `ArmyForgeCompilerTests`, `OprListSelectionsTests`,
+> `ArmyForgeScreenTests`, `ForgeCrossSectionReplaceShippedDataTests`) plus the two detail files and the two
+> index lines; the `#318`/`#319` markers in the shooting/melee files and `docs/ResolverGuide.md` are the
+> merged items' own and were left alone. Commit messages from before the renumber predate it, as usual.
+>
+> **Note on the rule that was supposed to prevent this.** `CLAUDE.md` gained "`git fetch origin` BEFORE
+> filing a number and take it from `origin/master`'s index + archive" in `c25861f`, citing reconciliations
+> 39 and 40. This session *did* fetch first - the collision came from drift that landed mid-session, which
+> that wording doesn't cover. The cheap guard for a long session is to re-fetch and re-check the number
+> before the first commit that bakes it into filenames and source comments, not only before filing it.
+
 > **2026-08-02 - reconciliation 41 (RESOLVED).** The waiting-HUD session filed **318** ("Waiting on"
 > line in the status HUD) against a local master that predated reconciliation 40, whose session had
 > meanwhile taken **318 = melee hold-back is Limited-only** (merged + closed, engine `dcf6e04`).

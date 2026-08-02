@@ -1,11 +1,11 @@
-# 319 — "Replace all" swallowed the specialist swap below it; "-es" plural targets never matched
+# 324 — "Replace all" swallowed the specialist swap below it; "-es" plural targets never matched
 
 **Status**: awaiting verification (engine + app suites green, headless smoke exit 0)
-**Related**: #318 (the starved-Replace retry — same subsystem, opposite direction), #261 (quantity-prefixed
+**Related**: #323 (the starved-Replace retry — same subsystem, opposite direction), #261 (quantity-prefixed
 targets), #156 (Army Forge builder)
 
 ## Goal
-Two defects found while auditing the #318 blast radius, both owner-triaged 2026-08-02:
+Two defects found while auditing the #323 blast radius, both owner-triaged 2026-08-02:
 
 1. **An "all" swap ate the pool a specialist swap needed.** Owner's framing: *"if you start with 5 pistols,
    and you trade 1 for something else, then buy a 'Replace all Pistols with Rifles' thing, the unit should

@@ -1,4 +1,4 @@
-# 318 — Replace upgrades starved by a later section (Titan Lords double Heavy Hammer)
+# 323 — Replace upgrades starved by a later section (Titan Lords double Heavy Hammer)
 
 **Status**: awaiting verification (engine + app suites green, headless smoke exit 0)
 **Related**: #156 (Army Forge builder), #241 (share-list import / Open in Forge), #261 (quantity-prefixed
@@ -70,7 +70,7 @@ every selection Army Forge sent.
   strips ONE trailing "s", so "Bashes" -> "bashe" and "Bash" -> "bash". Because the section is Affects=All
   (max across targets, not min) it still fires off the Pistols half, so a player taking it keeps all 5
   Bashes **in addition to** the new gear, free. Corpus-wide this is the ONLY dead target (verified twice,
-  independently). It is a name-normalisation gap, not an ordering one, so #318 does not touch it — the fix
+  independently). It is a name-normalisation gap, not an ordering one, so #323 does not touch it — the fix
   is a fork worth an owner decision (book data vs. `Normalize` vs. `OprBookImporter`), see the index line.
 
 ## Outcome

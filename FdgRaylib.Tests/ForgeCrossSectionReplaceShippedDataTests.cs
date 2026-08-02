@@ -10,7 +10,7 @@ using NUnit.Framework;
 
 namespace FdgRaylib.Tests;
 
-// #318 — corpus guard for "buy it in one section, replace it in another".
+// #323 — corpus guard for "buy it in one section, replace it in another".
 //
 // The reported bug was one instance of a general shape: a Replace section whose targets another section
 // grants. Compilation walks the choices in the book's SECTION ORDER, so whenever the granting section is
@@ -142,7 +142,7 @@ public class ForgeCrossSectionReplaceShippedDataTests
         return ListCompiler.CompileUnitDetailed(book, bu);
     }
 
-    // #319 — every Replace target must name something its unit can actually hold, in the base loadout or
+    // #324 — every Replace target must name something its unit can actually hold, in the base loadout or
     // from some option's gains. One target failed this before the plural fix: Dwarf Guilds' "Guardians"
     // target "Bashes" against a weapon named "Bash", which the single-trailing-s rule turned into "bashe".
     // Because that section is Affects=All (max across targets, not min) it still fired off its Pistols half,
@@ -191,7 +191,7 @@ public class ForgeCrossSectionReplaceShippedDataTests
     // fed ONLY by a section authored below them: every Titan Lords chapter's Errant/Pilgrim/Questor/Knight
     // titans, the Battle/Blood/Dark/Knight/Wolf Brothers' "Replace Gravity Pistol", the Alien Hives Hive
     // Lord's Heavy Razor Claws, and the Orc Marauders Beast Titan's Heavy Mortars among them. Those are the
-    // ones the pre-#318 compiler mis-clamped; the test above proves each can now spend its pool.
+    // ones the pre-#323 compiler mis-clamped; the test above proves each can now spend its pool.
     //
     // A 55th, the Dark Brother Bikers' "Replace Energy Sword", is fed from BOTH directions - the earlier
     // feed made it look safe, but a player who takes only the later one hit the same bug. It is deliberately

@@ -844,7 +844,7 @@ public class ArmyForgeScreen : IAppScreen
         {
             bool isReplace = section.Variant == UpgradeVariant.Replace;
             bool linked = mirror != null && section.Affects == UpgradeAffects.All;
-            // #319: when a single-target all-swap above this section has been taken, the compiler now leaves
+            // #324: when a single-target all-swap above this section has been taken, the compiler now leaves
             // this section its copies rather than eating the pool - so availability must be measured against
             // that same reservation, or the Forge would gray out a swap the compiler would honour. Only pay
             // for the extra compile when such a rival is actually selected.
@@ -973,7 +973,7 @@ public class ArmyForgeScreen : IAppScreen
         return roster is null ? 0 : ReplacePool(book, bu, roster, section, excludeOwn: true);
     }
 
-    /// <summary>Whether a single-target all-swap that must YIELD to <paramref name="section"/> (#319) is
+    /// <summary>Whether a single-target all-swap that must YIELD to <paramref name="section"/> (#324) is
     /// currently selected — the only case where availability has to be re-measured against the reservation
     /// rather than read off the already-compiled unit.</summary>
     private static bool YieldingAllSwapChosen(BuilderUnit bu, RosterUnit roster, UpgradeSection section) =>
@@ -992,7 +992,7 @@ public class ArmyForgeScreen : IAppScreen
 
     /// <summary>
     /// The pool a Replace section may draw on, measured on a compile where every all-swap that yields to it
-    /// (#319) is dropped — those copies are reserved for this section, so the Forge must offer them even
+    /// (#324) is dropped — those copies are reserved for this section, so the Forge must offer them even
     /// though the finished unit no longer shows them. <paramref name="excludeOwn"/> additionally releases
     /// this section's own picks (the radio-switching pool).
     /// </summary>
