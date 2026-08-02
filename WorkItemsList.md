@@ -17,7 +17,7 @@ When closing an item: write the Outcome in its detail file, tick the line, and m
 
 ## Movement
 
-- [~] 310 — "Charge offered but won't allow" + partial one-at-a-time moves (2026-07-31 game): ValidateChargeReach + end-state validators now true base-to-base at end facing; enemy-pin click removed; click hit-test follows planned ghost poses. Implemented + tested; awaiting GUI hand-verify + networked re-test. ([WorkItems/310](WorkItems/310-charge-wont-allow-and-swallowed-clicks.md))
+- [~] 312 — "Charge offered but won't allow" + partial one-at-a-time moves (2026-07-31 game): ValidateChargeReach + end-state validators now true base-to-base at end facing; enemy-pin click removed; click hit-test follows planned ghost poses. Implemented + tested; awaiting GUI hand-verify + networked re-test. Was #310 pre-reconciliation-36. ([WorkItems/312](WorkItems/312-charge-wont-allow-and-swallowed-clicks.md))
 
 - [~] 291 — Models could move partially off the table: the movement validator had no bounds rule at all (the GUI only constrained a model's CENTRE, so big vehicle bases overhung). Footprint-exact "not worsened" rule in all four validators + shared preview clamp. Implemented + tested; awaiting GUI hand-verify. ([WorkItems/291](WorkItems/291-models-may-not-move-off-table.md))
 

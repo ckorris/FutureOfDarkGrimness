@@ -54,7 +54,7 @@ public class GuiDefineMovementResolver
         return len > 1e-4f ? new Float2(dx / len, dz / len) : fallback;
     }
 
-    // #310: where a model's ghost STANDS while planning -- the last committed waypoint at the facing it
+    // #312: where a model's ghost STANDS while planning -- the last committed waypoint at the facing it
     // was placed with (#282), or the resting base for a model with no waypoints yet. This single
     // definition feeds BOTH the final-ghost draw and the hover/click hit test, so the visible ghost and
     // the click hotspot cannot drift apart.
@@ -86,7 +86,7 @@ public class GuiDefineMovementResolver
     private bool _showTargeting = true; // toggle — on by default, persists across Resolve calls (covers both ranged + melee)
 
     // #162 tactical overlay hook: hover-anchored fields, band snap, pips. Null in headless / before
-    // wiring; every call is null-guarded. (#310: the click-to-pin gesture is gone — a left-click on an
+    // wiring; every call is null-guarded. (#312: the click-to-pin gesture is gone — a left-click on an
     // enemy base no longer does anything overlay-side, so it can never eat a waypoint placement.)
     private TacticalOverlay.TacticalOverlayController? _tactical;
     public void SetTacticalOverlay(TacticalOverlay.TacticalOverlayController? tactical) => _tactical = tactical;
@@ -325,7 +325,7 @@ public class GuiDefineMovementResolver
         // confirms). Hit-test the pointer once here so the same answer both paints the hover highlight and
         // drives the click -- a highlight that could disagree with what the click selects is worse than no
         // highlight. Group mode has no per-model selection, so nothing is hoverable there.
-        // #310: hit-test each model at its PLANNED pose (final ghost position + facing), so a click on a
+        // #312: hit-test each model at its PLANNED pose (final ghost position + facing), so a click on a
         // vacated start slot places a waypoint there instead of silently re-selecting the model that left.
         IModel? hoveredModel = null;
         if (!group && overTable && !io.WantCaptureMouse)
@@ -416,7 +416,7 @@ public class GuiDefineMovementResolver
                 // Final position ghost (true shape) + heading (#150): the direction of travel into the last
                 // committed waypoint, rotated by the offset that waypoint was PLACED with (#282) - the live
                 // rotation only shapes the mouse ghost, never the committed path. PlannedPose is the same
-                // math the hover/click hit test uses (#310), so the drawn ghost IS the click hotspot.
+                // math the hover/click hit test uses (#312), so the drawn ghost IS the click hotspot.
                 var (_, last, finalFacing) = PlannedPose(pt, model, pathPoints);
                 var (lx, ly) = InchesToPixel(last.x, last.z);
                 ModelBaseRenderer.DrawFilledImGui(dl, model.BaseShape, new Vector2(lx, ly), _scale, FinalGhostCol, outline, thick, finalFacing);

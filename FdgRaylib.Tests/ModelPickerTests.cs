@@ -9,7 +9,7 @@ namespace FdgRaylib.Tests;
 /// #295 — single-model movement/consolidation switch models by clicking the model directly (Space used to
 /// cycle; Space now confirms), and the hover highlight that advertises it is painted from the SAME hit test
 /// the click reads. These pin that hit test: what lights up under the cursor is what a click selects.
-/// #310 — the hit test now takes each model's POSE (planned ghost position + facing): a model with
+/// #312 — the hit test now takes each model's POSE (planned ghost position + facing): a model with
 /// committed waypoints is picked where its ghost stands, and its vacated start slot is bare table.
 /// </summary>
 [TestFixture]
@@ -81,7 +81,7 @@ public class ModelPickerTests
     [Test]
     public void RotatedRectangularBase_IsHitAtItsFacing()
     {
-        // #310: the same vehicle turned to face +X: its long axis now runs along X, so the point 2" out
+        // #312: the same vehicle turned to face +X: its long axis now runs along X, so the point 2" out
         // along X is ON it and the point 2" out along Z is OFF it -- the reverse of the unrotated case.
         var vehicle = Model(new RectangleBase(1f, 6f), 10f, 10f);
         var facingX = new Float2(1f, 0f);
@@ -95,7 +95,7 @@ public class ModelPickerTests
     [Test]
     public void PlannedModel_IsHitAtItsEndpoint_NotItsVacatedStart()
     {
-        // #310: model a is planned to move from (10,10) to (16,10). Clicking its vacated start slot must
+        // #312: model a is planned to move from (10,10) to (16,10). Clicking its vacated start slot must
         // NOT pick it (that ground is free for another model's waypoint - the "6 of 10 moved" bug);
         // clicking where its ghost stands must pick it.
         var a = Model(10f, 10f);

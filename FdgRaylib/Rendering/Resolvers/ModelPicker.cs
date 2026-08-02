@@ -8,7 +8,7 @@ namespace FdgRaylib.Rendering.Resolvers;
 /// highlight to advertise it -- so the highlight and the click MUST agree, which they only do while one
 /// implementation answers both.
 ///
-/// #310: the hit test takes each model's POSE -- the position and facing its ghost is drawn at -- not the
+/// #312: the hit test takes each model's POSE -- the position and facing its ghost is drawn at -- not the
 /// model itself. A model with committed waypoints is hit-tested where its final ghost stands, so its
 /// vacated start slot is free ground for waypoint placement. (The old start-position test made a click on
 /// a vacated slot silently re-select the model that had left it instead of placing a waypoint there --

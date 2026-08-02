@@ -6,6 +6,18 @@ from origin/master. Standing precedent: numbers are never reused, and when two p
 claim the same number, the *unmerged local* item yields to the *merged* one and takes a fresh number.
 A per-clone pre-push hook blocks duplicate numbers across the index and the archive.
 
+> **2026-08-02 - reconciliation 36 (RESOLVED).** The charge/swallowed-clicks session filed its item as
+> **310**; the push-time fetch found origin/master had meanwhile landed BOTH **310 = per-user config
+> file** (`d545861`, itself a #309 yield via reconciliation 34) and **311 = pass confirmation**
+> (closed, via reconciliation 35). Per merged-wins precedent the local item yields past both:
+> **charge-won't-allow + swallowed-clicks 310 -> 312**
+> (`WorkItems/312-charge-wont-allow-and-swallowed-clicks.md`). Renumbered in the detail file + title,
+> the index line, and the seven sources carrying the comment (engine `MovementUtilities`,
+> `ChargeReachValidationTests`; app `GuiDefineMovementResolver`, `GuiConsolidationMoveResolver`,
+> `ModelPicker`, `TacticalOverlayController`, `ModelPickerTests`) — the app files legitimately
+> referencing the config item's #310 were left untouched. The commit messages naming "#310" (engine
+> `03bf1a4`, superproject `fec819a`) predate the renumber, as usual.
+>
 > **2026-08-02 - reconciliation 35 (RESOLVED).** A double collision, and the second half of it is the
 > rare one. This session had filed the Choose Action Pass-confirmation work as **309**; the pre-push
 > fetch found origin/master had landed **309 = networked client's invisible late-deployed models**

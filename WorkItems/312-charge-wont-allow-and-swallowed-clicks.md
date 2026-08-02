@@ -1,4 +1,4 @@
-# 310 — "Charge offered but won't allow" + partial one-at-a-time moves (2026-07-31 networked game)
+# 312 — "Charge offered but won't allow" + partial one-at-a-time moves (2026-07-31 networked game)
 
 ## Goal
 
@@ -48,6 +48,10 @@ Fix the confirmed defects behind both.
 
 ## Notes
 
+- 2026-08-02 — **was #310 pre-reconciliation-36**: origin/master had already claimed 310 (per-user
+  config, via reconciliation 34) and 311 (pass confirmation, via reconciliation 35) while this item
+  was being built; per merged-wins precedent it yields to 312. The two commit messages naming "#310"
+  (engine `03bf1a4`, superproject `fec819a`) predate the renumber.
 - 2026-08-02 — all three fixes implemented + tested:
   - **Engine `03bf1a4`:** `ValidateChargeReach` measures shape+facing base-to-base over all model pairs
     at the mover's END position and END facing (was centre-to-centre). Same-audit fixes: the

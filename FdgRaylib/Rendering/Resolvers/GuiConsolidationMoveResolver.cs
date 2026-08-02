@@ -198,7 +198,7 @@ public class GuiConsolidationMoveResolver
         // #295: single mode switches models by clicking the model you want (Space used to cycle; Space now
         // confirms). One hit test up front feeds both the hover highlight and the click, so what lights up
         // is exactly what a click selects. Group mode has no per-model selection, so nothing is hoverable.
-        // #310: hit-test each model at its PLANNED pose (committed ghost position + facing), so a click on
+        // #312: hit-test each model at its PLANNED pose (committed ghost position + facing), so a click on
         // a vacated start slot places a step there instead of silently re-selecting the model that left.
         IModel? hoveredModel = null;
         if (!_formationMode.IsGroup && overTable && !io.WantCaptureMouse)
@@ -242,7 +242,7 @@ public class GuiConsolidationMoveResolver
                 // #283: the committed marker keeps the rotation its step was committed with (0 outside group
                 // mode = the model's own facing) - it no longer snaps back unrotated after a rotated commit,
                 // and a later wheel turn only moves the phantoms. PlannedPose is the same math the
-                // hover/click hit test uses (#310), so the drawn marker IS the click hotspot.
+                // hover/click hit test uses (#312), so the drawn marker IS the click hotspot.
                 var (_, last, committedFacing) = PlannedPose(pt, model, pathPoints);
                 var (lx, ly) = InchesToPixel(last.x, last.z);
                 ModelBaseRenderer.DrawFilledImGui(dl, model.BaseShape, new Vector2(lx, ly), _scale, FinalGhostCol, outline, thick,
@@ -494,7 +494,7 @@ public class GuiConsolidationMoveResolver
         return new Float2(f.X * cos - f.Y * sin, f.X * sin + f.Y * cos);
     }
 
-    // #310: where a model's committed marker STANDS while planning -- the last committed step at the
+    // #312: where a model's committed marker STANDS while planning -- the last committed step at the
     // rotation it was committed with (#283, rotate-in-place: consolidation slides without turning to the
     // direction of travel), or the resting base for a model with no steps yet. Feeds BOTH the committed
     // marker draw and the hover/click hit test, so the marker and the click hotspot cannot drift apart.
