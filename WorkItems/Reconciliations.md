@@ -6,6 +6,17 @@ from origin/master. Standing precedent: numbers are never reused, and when two p
 claim the same number, the *unmerged local* item yields to the *merged* one and takes a fresh number.
 A per-clone pre-push hook blocks duplicate numbers across the index and the archive.
 
+> **2026-08-02 - reconciliation 41 (RESOLVED).** The waiting-HUD session filed **318** ("Waiting on"
+> line in the status HUD) against a local master that predated reconciliation 40, whose session had
+> meanwhile taken **318 = melee hold-back is Limited-only** (merged + closed, engine `dcf6e04`).
+> Per the standing precedent the unmerged local item yields: **waiting-HUD line 318 -> 322**
+> (`WorkItems/322-waiting-on-hud-line.md`, renamed). The renumber landed everywhere before
+> publication: the detail file, the index line, and every `#318` marker from that session in the
+> engine (`IStageTaskRequest`, `IFDGGame`, the six request classes, `RequestSystemTests`) and the app
+> (`StatusHudOverlay`, `RaylibRenderer`, `GuiOutstandingTaskDisplay`) - the surviving `#318` markers
+> in `ChooseMeleeWeaponStage` / `MeleeLimitedTests` are the melee item's own. Commit messages
+> containing `#318` from before the renumber predate it, as usual.
+
 > **2026-08-02 - reconciliation 40 (RESOLVED).** The Limited-weapon session filed **315** (shooting hold
 > fire), **316** (melee Limited enforcement), **317** (companion actions on a menu row) and **318** (melee
 > hold-back narrowed to Limited only) against a local master that was 12 commits stale. The pre-push fetch
