@@ -52,6 +52,12 @@ will; and the once-per-game state is visible at the moment of the decision, in b
   `AllowStopShooting` is offered only after firing; `LimitedRule` naming; JSON round-trip of the
   hold-fire reply and the badge fields. Plus two assertions folded into the existing spent-Limited test.
 
+- 2026-08-02: **Hand-test fixtures.** `LimitedWeaponsTest.fdgarmy` (repo root, 500pts, 4 units — one
+  case each: Deadly+Limited rocket beside plain rifles; two DIFFERENT Limited weapons on one unit;
+  a unit whose only weapon is Limited; and a Limited MELEE weapon, which is #316's gap and is expected
+  to stay unenforced). `Scenarios/limited-weapons-test.json` drops all four in range on turn 1 so the
+  shoot panel is two clicks away; `Scenarios/limited-hold-fire.json` is the narrow Deadly+Limited case.
+
 ## Decisions
 
 - **Per-weapon hold fire, not just an end-the-shoot exit** (user sign-off). A plain "Done shooting" cannot
