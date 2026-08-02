@@ -226,6 +226,34 @@ public class GuiChooseRangedAttackResolverTests
             Is.EqualTo(-1), "with two real alternatives and no evidence, guessing would aim the volley.");
     }
 
+    // #315: the "Done shooting" confirmation names what the action gives up, so it must count only the
+    // weapons that could actually still fire. Listing one with nothing in range would warn about a shot
+    // the unit never had.
+    [Test]
+    public void WeaponsGivenUpByStopping_CountsOnlyWeaponsThatCouldStillFire()
+    {
+        var store = GameDataStore.GameDataStoreBuilder.GetDefault();
+        var fireable   = MakeWeapon(MakeTarget(store, inRange: false), MakeTarget(store, inRange: true));
+        var outOfRange = MakeWeapon(MakeTarget(store, inRange: false));
+        var ruleBlocked = MakeWeapon(MakeTarget(store, inRange: true, "Already fired (Limited)."));
+
+        var giveUp = GuiChooseRangedAttackResolver.WeaponsGivenUpByStopping(
+            new[] { fireable, outOfRange, ruleBlocked });
+
+        Assert.That(giveUp, Is.EqualTo(new[] { fireable }),
+            "only the weapon with a selectable target in range is being given up.");
+    }
+
+    [Test]
+    public void WeaponsGivenUpByStopping_NothingFireable_IsEmpty()
+    {
+        var store = GameDataStore.GameDataStoreBuilder.GetDefault();
+        var giveUp = GuiChooseRangedAttackResolver.WeaponsGivenUpByStopping(
+            new[] { MakeWeapon(MakeTarget(store, inRange: false)) });
+
+        Assert.That(giveUp, Is.Empty);
+    }
+
     [Test]
     public void NearestVisibleModel_AllCandidatesDead_ReturnsNull()
     {
