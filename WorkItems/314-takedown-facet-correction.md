@@ -1,8 +1,9 @@
-# 313 — Takedown: wrong LoS/cover facets removed, ordering facet implemented
+# 314 — Takedown: wrong LoS/cover facets removed, ordering facet implemented
 
 **Status**: in-progress (implemented + tested; awaiting GUI hand-verify)
-**Number**: filed as #311, renumbered to #313 by reconciliation 37 (origin/master had already merged
-#311 = the pass-confirmation item). Commit messages saying #311 predate the renumber.
+**Number**: filed as #311, renumbered #311 -> #313 -> #314 by reconciliation 38 (origin/master had
+already merged #311 = pass confirmation, then #313 = shot-eligibility preview parity, while this was
+local). Commit messages saying #311 / #313 predate the renumbers.
 **Related**: #042 (rule architecture + the checklist row that caused it), #027 (weapon scope), #028 (Deadly-first gating, the mechanism reused), #157 (per-shot Takedown picks)
 
 ## Goal
