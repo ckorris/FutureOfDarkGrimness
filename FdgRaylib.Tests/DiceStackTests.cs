@@ -6,75 +6,86 @@ using NUnit.Framework;
 
 namespace FdgRaylib.Tests;
 
-// #322 — dice rolls are HELD beats, so the engine moves on after each one's settle lead-in while the
-// panel stays readable for several seconds more. Because rolls now overlap, the player keeps a STACK
-// of them (oldest first, drawn from the bottom anchor upward) instead of a single slot that the next
-// roll evicts — the eviction is exactly what forced dice to be non-held before (engine ea91d68).
-// Hovering the stack freezes every panel's timer.
+// #322 — a dice panel OUTLIVES its beat. The engine still paces each roll in full (the gap between
+// rolls is the rhythm of the exchange, not dead time), but the panel stays up for seconds afterwards,
+// so consecutive rolls overlap on screen and the player keeps a STACK of them (oldest first, drawn from
+// the bottom anchor upward) instead of a single slot that the next roll evicts — the eviction is what
+// made a two-threshold volley cut its own first roll short (engine ea91d68). Hovering the stack freezes
+// every panel's timer.
 //
-// Also covers the knock-on the same change forced (see the item's Decisions): attacks animate on a
-// concurrent LIST, because a ~600ms roll no longer outlasts a 1600ms attack animation the way the old
-// 1800ms one always did.
+// Also covers the concurrent attack LIST, which #322 introduced while rolls were briefly held and kept
+// afterwards: "the dice envelope outlasts the attack animation" is a coincidence of two unrelated
+// constants, not something the front-end should depend on.
 //
 // Alpha carries the #245 fade behaviour: eased in as a panel appears, out over its tail.
 [TestFixture]
 public class DiceStackTests
 {
-    private static DiceRolledBeat Dice(bool held = true, string label = "Roll to Hit") =>
+    private static DiceRolledBeat Dice(bool held = false, string label = "Roll to Hit") =>
         new(new[] { 1f, 1f, 1f, 1f, 1f, 1f }, 1, 4, ERandomnessType.Realistic, label, held: held);
 
     private static DiceRolledBeat Chippy() =>
         new(new[] { 1f, 1f, 1f, 1f, 1f, 1f }, 1, 4, ERandomnessType.Realistic, "Roll to Hit",
-            held: true, modifierTags: new[] { "Quality 4+", "Stealth -1" });
+            modifierTags: new[] { "Quality 4+", "Stealth -1" });
 
     private static AttackBeat Attack(int volleys = 3) => new(isMelee: false,
         new List<Position> { new(0f, 0f) }, new List<Position> { new(5f, 5f) },
         volleyCount: volleys, armorPenetration: 0);
 
-    // Lifetime of a plain held panel: 600ms lead-in + 3s linger.
-    private const float PlainLifetime = 3.6f;
+    // A normal roll: the engine paces its 1800ms envelope, then the panel lingers 3s more.
+    private const float Paced        = 1.8f;
+    private const float PanelLife    = 4.8f;
 
     [Test]
-    public void AHeldRoll_ShowsWithoutHoldingTheActiveSlot()
+    public void ARoll_OwnsTheActiveSlotForItsEnvelope_AndItsPanelOutlivesIt()
     {
         var player = new PresentationPlayer();
         player.OnBeat(Dice());
         player.Update(0.05f);
 
-        Assert.That(player.GetDiceStack(), Has.Count.EqualTo(1), "the panel is up...");
-        Assert.That(player.IsAnimating, Is.False,
-            "...but it never gates a prompt - that is what keeps a practiced player moving");
+        Assert.That(player.GetDiceStack(), Has.Count.EqualTo(1));
+        Assert.That(player.IsAnimating, Is.True, "the engine is waiting for this roll, so the front-end "
+            + "must be animating for exactly as long");
+
+        player.Update(Paced);
+        Assert.That(player.IsAnimating, Is.False, "the beat is done...");
+        Assert.That(player.GetDiceStack(), Has.Count.EqualTo(1), "...and the panel is still up. That "
+            + "overhang is what makes panels overlap, and therefore what makes them stack.");
+
+        player.Update(PanelLife - Paced);
+        Assert.That(player.GetDiceStack(), Is.Empty, "gone once its lifetime runs out");
     }
 
     [Test]
-    public void ANonHeldRoll_StillOwnsTheActiveSlot()
+    public void AHeldRoll_ShowsWithoutGatingPrompts()
     {
-        // The explicit opt-out: the engine waits the full duration for this one, so the front-end has
-        // to be animating for that whole time or the two would drift apart.
+        // The opt-in nothing uses today: pace the settle only. Kept covered so the path does not rot.
         var player = new PresentationPlayer();
-        player.OnBeat(Dice(held: false));
+        DiceRolledBeat beat = Dice(held: true);
+        player.OnBeat(beat);
         player.Update(0.05f);
 
-        Assert.That(player.GetDiceStack(), Has.Count.EqualTo(1));
-        Assert.That(player.IsAnimating, Is.True);
+        Assert.That(player.GetDiceStack(), Has.Count.EqualTo(1), "the panel is up...");
+        Assert.That(player.IsAnimating, Is.False, "...but it never gates a prompt");
 
-        player.Update(2.0f); // past the 1800ms duration
-        Assert.That(player.IsAnimating, Is.False);
-        Assert.That(player.GetDiceStack(), Has.Count.EqualTo(1),
-            "the panel outlives the beat either way - it is the stack that retires it");
+        player.Update((float)beat.HoldLeadIn.TotalSeconds);
+        Assert.That(player.GetDiceStack()[0].progress, Is.GreaterThanOrEqualTo(0.3f),
+            "a held panel must finish tumbling within its lead-in (DiceOverlay locks the faces at 30% "
+            + "of the envelope), or the dice would still be spinning after the engine moved on");
     }
 
     [Test]
     public void ASecondRoll_StacksOnTopInsteadOfEvictingTheFirst()
     {
+        // Real pacing: the engine sends the save roll only after the to-hit roll's envelope elapsed.
         var player = new PresentationPlayer();
         player.OnBeat(Dice(label: "Rifle: 3 hits"));
-        player.Update(0.7f);
+        player.Update(Paced + 0.05f);
         player.OnBeat(Dice(label: "Rifle: 2 hits, Rending AP+1"));
         player.Update(0.05f);
 
         var stack = player.GetDiceStack();
-        Assert.That(stack, Has.Count.EqualTo(2), "a two-threshold volley shows both rolls at once");
+        Assert.That(stack, Has.Count.EqualTo(2), "the to-hit roll is still readable under the saves");
         Assert.That(stack[0].beat.Label, Is.EqualTo("Rifle: 3 hits"), "oldest first");
         Assert.That(stack[1].beat.Label, Is.EqualTo("Rifle: 2 hits, Rending AP+1"));
         Assert.That(stack[0].progress, Is.GreaterThan(stack[1].progress),
@@ -84,10 +95,12 @@ public class DiceStackTests
     [Test]
     public void TheStack_IsCapped_AndDropsTheOldest()
     {
+        // A safety net rather than an everyday path: at full pacing a panel's 4.8s life spans about two
+        // rolls, so the stack sits at 2-3. Driven here with held rolls, which queue without waiting.
         var player = new PresentationPlayer();
         for (int i = 0; i < 5; i++)
         {
-            player.OnBeat(Dice(label: $"Roll {i}"));
+            player.OnBeat(Dice(held: true, label: $"Roll {i}"));
             player.Update(0.05f);
         }
 
@@ -98,49 +111,17 @@ public class DiceStackTests
     }
 
     [Test]
-    public void APanel_OutlivesThePacing_ThenExpires()
-    {
-        var player = new PresentationPlayer();
-        DiceRolledBeat beat = Dice();
-        player.OnBeat(beat);
-
-        player.Update((float)beat.HoldLeadIn.TotalSeconds + 0.05f);
-        Assert.That(player.GetDiceStack(), Has.Count.EqualTo(1),
-            "the engine has already moved on, the panel has not");
-
-        player.Update(PlainLifetime - 1f);
-        Assert.That(player.GetDiceStack(), Has.Count.EqualTo(1), "still up seconds after the roll paced");
-
-        player.Update(1.1f);
-        Assert.That(player.GetDiceStack(), Is.Empty, "and gone once its lifetime runs out");
-    }
-
-    [Test]
-    public void TheLeadIn_OutlastsTheTumble_SoNoPanelParksMidRoll()
-    {
-        // Load-bearing: DiceOverlay locks the faces at 30% of the beat's envelope, and the lead-in is
-        // 600ms of an 1800ms envelope. Shorten the lead-in below that and every panel would settle
-        // AFTER the engine had moved on - the dice would still be spinning as the wounds landed.
-        var player = new PresentationPlayer();
-        DiceRolledBeat beat = Dice();
-        player.OnBeat(beat);
-        player.Update((float)beat.HoldLeadIn.TotalSeconds);
-
-        Assert.That(player.GetDiceStack()[0].progress, Is.GreaterThanOrEqualTo(0.3f));
-    }
-
-    [Test]
     public void InfoChips_BuyThePanelMoreTime()
     {
-        // #245: chips are extra reading, so they stretch both the settle and the linger.
+        // #245: chips are extra reading, so they stretch the envelope AND the linger.
         var player = new PresentationPlayer();
         player.OnBeat(Chippy());
 
-        player.Update(PlainLifetime + 0.2f);
+        player.Update(PanelLife + 0.2f);
         Assert.That(player.GetDiceStack(), Has.Count.EqualTo(1),
             "past a plain panel's lifetime, still up");
 
-        player.Update(1.2f);
+        player.Update(1.5f);
         Assert.That(player.GetDiceStack(), Is.Empty);
     }
 
@@ -156,7 +137,7 @@ public class DiceStackTests
         player.Update(0.15f);
         Assert.That(player.GetDiceStack()[0].alpha, Is.EqualTo(1f), "solid once eased in");
 
-        player.Update(PlainLifetime - 0.4f);
+        player.Update(PanelLife - 0.4f);
         Assert.That(player.GetDiceStack()[0].alpha, Is.GreaterThan(0f).And.LessThan(1f),
             "fading over its tail instead of popping");
     }
@@ -177,15 +158,13 @@ public class DiceStackTests
         Assert.That(player.GetDiceStack()[0].progress, Is.EqualTo(before), "nor advance");
 
         player.SetDiceStackHovered(false);
-        player.Update(PlainLifetime + 0.1f);
+        player.Update(PanelLife + 0.1f);
         Assert.That(player.GetDiceStack(), Is.Empty, "and they resume ageing on release");
     }
 
     [Test]
     public void OverlappingAttacks_PlayConcurrently_InsteadOfTruncating()
     {
-        // The regression held dice opened up: a whiffed attack has no saves or wounds behind it, so the
-        // next weapon's AttackBeat can arrive ~600ms in, while the first is still mid-flight.
         var player = new PresentationPlayer();
         player.OnBeat(Attack());
         player.Update(0.6f);

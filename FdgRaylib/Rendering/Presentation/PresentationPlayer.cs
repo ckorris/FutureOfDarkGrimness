@@ -38,11 +38,12 @@ public class PresentationPlayer : IPresentationSink
     private readonly Dictionary<Guid, GlideState> _glides = new();
     private readonly Dictionary<Guid, DeathState> _deaths = new();
 
-    // #322 dice stack. Rolls are held beats (see DiceRolledBeat.Held), so the engine moves on after each
-    // one's settle lead-in and several panels are on screen at once. A new roll STACKS on top of the last
-    // instead of evicting it — single-slot eviction is precisely what forced dice to be non-held before
-    // (ea91d68), because the second of two save thresholds cut the first short. Oldest first; the overlay
-    // anchors the oldest at the bottom and grows upward.
+    // #322 dice stack. A panel OUTLIVES its beat: the engine paces a roll in full (the gap between rolls
+    // is the rhythm of the exchange — see DiceRolledBeat.Held for the two attempts at removing it), and
+    // then the panel stays up for seconds more while play carries on. So several panels are legible at
+    // once, and a new roll STACKS on top of the last instead of evicting it — the single-slot eviction is
+    // what made a two-threshold volley cut its own first roll short. Oldest first; the overlay anchors
+    // the oldest at the bottom and grows upward.
     private readonly List<DiceEntry> _diceStack = new();
     private const int MaxDiceStack = 3;
     // How long a panel stays up after it has finished settling. Chips are extra reading, so a panel
@@ -72,8 +73,9 @@ public class PresentationPlayer : IPresentationSink
         public DiceEntry(DiceRolledBeat beat)
         {
             Beat = beat;
-            // A held roll settles over its lead-in; a non-held one owns the active slot for its whole
-            // duration. Either way the linger is what the panel gets ON TOP of that.
+            // A normal roll owns the active slot for its whole duration; a held one settles over its
+            // lead-in. Either way the linger is what the panel gets ON TOP of the paced part — that
+            // overhang is what makes panels overlap and therefore stack.
             float paced = (float)(beat.Held ? beat.HoldLeadIn : beat.NominalDuration).TotalSeconds;
             Lifetime = paced + DiceLingerSeconds + DiceLingerPerInfoBlock * beat.InfoBlocks;
         }
@@ -124,11 +126,11 @@ public class PresentationPlayer : IPresentationSink
     // dequeued and animates over its full NominalDuration WHILE the to-hit dice that always follow
     // it tumble.
     //
-    // #322 made this a LIST. The to-hit roll used to pace 1800ms, comfortably outlasting the longest
-    // attack animation (VolleyMax, 1600ms), so a second attack could never arrive before the first had
-    // finished. Held rolls pace ~600ms instead, and a whiffed attack has no saves or wounds behind it, so
-    // the next weapon's AttackBeat really can land mid-flight — overlapping attacks now play side by side
-    // rather than truncating each other.
+    // #322 made this a LIST, and it stays one. The to-hit roll's 1800ms envelope outlasts the longest
+    // attack animation (VolleyMax, 1600ms), so in practice a second attack does not arrive before the
+    // first has finished — but that is a coincidence of two unrelated constants, and the brief spell when
+    // #322 held rolls at ~600ms turned it into a real truncation (a whiffed attack has no saves or wounds
+    // behind it, so the next weapon fires almost immediately). Overlapping attacks play side by side.
     private readonly List<AttackState> _attacks = new();
     private const int MaxConcurrentAttacks = 3;
 
@@ -284,10 +286,10 @@ public class PresentationPlayer : IPresentationSink
                     while (_attacks.Count > MaxConcurrentAttacks) _attacks.RemoveAt(0);
                     continue;
                 }
-                // #322: every roll joins the dice stack for display. A HELD roll (the default) stops
-                // there and the next beat becomes active immediately; a non-held one — the explicit
-                // "stop play for this roll" opt-out — also takes the active slot below, which is what
-                // makes the engine's matching full-duration wait line up with an animating front-end.
+                // #322: every roll joins the dice stack for display, which is what lets its panel outlive
+                // its beat. A normal (non-held) roll ALSO takes the active slot below, so the front-end
+                // animates for exactly as long as the engine waits. A held roll — the opt-in nothing uses
+                // today — stops here instead, and the next beat becomes active immediately.
                 if (next is DiceRolledBeat dice)
                 {
                     PushDice(dice);
