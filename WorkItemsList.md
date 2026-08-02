@@ -39,6 +39,7 @@ When closing an item: write the Outcome in its detail file, tick the line, and m
 
 - [~] 201 — Shooting *out of* cover grants the defender cover: fixed 2026-07-21 via lobby-toggled proximity house rules (default on: 2" exit w/ both-hugging amendment + 6" shared cover), previews kept truthful; implemented + tested on `201-cover-proximity`, awaiting GUI hand-verify. ([WorkItems/201](WorkItems/201-cover-attacker-side.md))
 - [~] 276 — Attack animation truthfulness: occluded/out-of-range carriers no longer roll dice (engine bug) nor draw beams; split Takedown shots fire one beam each, rotating snipers. Implemented + tested; awaiting GUI hand-verify. ([WorkItems/276](WorkItems/276-attack-animation-truthfulness.md))
+
 - [~] 308 — 2026-07-31 playthrough findings: Blast's model cap is per hit and stacks (was capping the volley total, deleting save dice); "Moved" token hidden unless a rule reads it; Back restored for shooting + deployment placement; target carries across weapons. Shaken-defender morale-dice report parked pending a repro save. ([WorkItems/308](WorkItems/308-playthrough-findings-2026-07-31.md))
 
 ## Model bases & geometry
@@ -119,6 +120,7 @@ detection, host-IP display, DNS host entry. See `NetworkingHandoff-2026-07-08.md
 
 ## Client / renderer
 
+- [~] 322 — "Waiting on" line in the status HUD: second smaller top-center line listing non-local players' outstanding tasks (dim prefix + player-colored name + task), replacing the removed Outstanding Tasks window; engine exposes `LocalPlayerIDs`. Implemented + tested; awaiting networked GUI hand-verify. ([WorkItems/322](WorkItems/322-waiting-on-hud-line.md))
 - [~] 310 — Per-user config file (`~/.config/fdg/config.json`, `%APPDATA%\FDG` on Windows, `FDG_CONFIG_DIR` overrides): remembers the player name (default `Newbie`, replacing "Mr. Host"/"Mrs. Client") and the last hosted game's dialog + lobby settings; the battlefield stays randomized. Implemented + tested; awaiting GUI hand-verify. ([WorkItems/310](WorkItems/310-user-config-file.md))
 - [~] 162 — Tactical overlay: opportunity fields + per-model instruments (instruments call real rules, never the field texture). P0 scaffolding done; P1-P7 remain. Threat frontiers were removed by #247 (the discs still feed movement snap). Design doc: `docs/tactical-overlay-plan.md`. ([WorkItems/162](WorkItems/162-tactical-overlay.md))
 - [ ] 161 — Resolver UI consistency pass: stat/highlight parity, right-click undo on deploy, shared canvas-selector base (also absorbs the `GuiModelSelectionResolver` alive-filter gap), dialog chrome. Findings + canonical click scheme in the detail file. ([WorkItems/161](WorkItems/161-resolver-consistency.md))

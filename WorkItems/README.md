@@ -10,6 +10,24 @@ Per-item working memory. Each file corresponds to a numbered entry in `../WorkIt
 - Slug is a short kebab-case identifier that survives renames.
 - Numbers are permanent — never reused, even if an item is deleted.
 
+## Filing a number: `git fetch` FIRST
+
+**Run `git fetch origin` and take the number from `origin/master`'s index + archive, not from your local
+copy.** A number is chosen before it is reserved and then copied into dozens of places — source comments,
+tests, detail file + filename, cross-references, docs, scenario names, commit messages — so a collision
+costs a renumber proportional to how well-documented the work is, not how big it is. Reconciliation 40
+renumbered three items across 106 references in 27 files because the index they were filed from was 12
+commits stale; reconciliation 39, days earlier, was another session making the same mistake on the same
+number. The fetch costs seconds and is the only thing that prevents it.
+
+Then, on a branch that has drifted, read `Reconciliations.md` before filing — and if you collide anyway,
+the unmerged local item yields.
+
+**Corrections found in the same session don't need their own number.** A scope change to work you just
+wrote is a dated note plus a Decisions entry in the item it corrects; file a new number only when the
+work is genuinely separable (a different subsystem, or something another item will want to reference on
+its own). Every extra number is another identifier to keep consistent and another collision surface.
+
 ## Template
 
 ```markdown
