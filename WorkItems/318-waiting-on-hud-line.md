@@ -11,6 +11,17 @@ players' tasks are filtered out (the resolver panel already shows those); conseq
 games never show the line, by design (agreed 2026-08-02).
 
 ## Notes
+- 2026-08-02 (2): Playtest feedback - HUD showed raw TaskNames ("Select UnitData", "Place Unit
+  Models"). Engine 38b40ca: `IStageTaskRequest.DisplayName` (defaults to TaskName; sender broadcasts
+  it in the awaiting message) + optional `displayName` on Selection/CancellableSelection/PlaceObjects
+  requests; deployment now shows "Choosing Unit to Deploy" / "Deploying [unit name]". TaskName kept
+  as the machine identifier (TacticianPlaceObjectsResolver discriminates placement flavors by it).
+  Suite 2595 green, headless smoke exit 0. A Sonnet audit catalogued every runtime TaskName with
+  verdicts + proposed gerund replacements - table saved below; the worst offenders still unfixed:
+  "Select UnitData" (activation pick, melee defender, embark, strafing, spell target...), "Select
+  ModelData", "Select Option" (choose action / melee weapon / hold-or-deploy), "Yes/No Question"
+  (~13 sites), "Select Item" (army pick), "Triggered Move", "Move Unit". Await user's pick on which
+  renames to apply (all via displayName; the three discriminator TaskNames never need to change).
 - 2026-08-02: Implemented. Engine d2aed58: `IFDGGame.LocalPlayerIDs` on both flavors +
   `LocalPlayerIDs_ExposedOnBothGameFlavors` test (suite 2594 green). App: `GuiOutstandingTaskDisplay`
   reworked into a read model (`GetWaitingOnOthers()`, local-ID filter, old ImGui Draw deleted);
@@ -32,3 +43,31 @@ games never show the line, by design (agreed 2026-08-02).
 
 ## Outcome
 (open)
+
+## TaskName audit (2026-08-02, Sonnet subagent; verbatim strings, non-Tests engine tree)
+
+What the waiting HUD shows per request, after the deployment fixes. "Proposed" = suggested
+displayName; TaskName itself never changes (three are AI discriminators, marked DISC).
+
+| Shown today | Source | Moment | Verdict | Proposed |
+|---|---|---|---|---|
+| Choosing Unit to Deploy | ChooseUnitToDeployStage:107 | deployment pick | fixed | - |
+| Deploying [unit] | DeployUnitStage:58 (DISC "Place Unit Models") | deployment placement | fixed | - |
+| Select UnitData | Selection/CancellableSelectionRequest auto-name; sites: ChooseUnitToActivateStage:107, ChooseMeleeDefenderStage, StormStage:135, BeforeAttackActionStage:218, SurpriseAttackStage:160, CastSpellStage:578, EmbarkStage:131, StrafingStage:163, ReconcileEndOfActivationStage:157, ReDeploymentStage:125 | many | TECHNICAL | per-site gerund ("Choosing a Unit to Activate", "Choosing a Melee Target", ...) |
+| Select ModelData | CastSpellStage:632, BuildTargetListStage:78 | spell/shot model pick | TECHNICAL | "Choosing a Target Model" |
+| Select Option | StringSelectionRequest; sites: ChooseActionStage:434, ChooseMeleeWeaponStage:75, hold-or-deploy, TargetMarkerSpend | action menu etc. | TECHNICAL | "Choosing an Action" / "Choosing a Weapon" / "Deciding Whether to Deploy" |
+| Yes/No Question | YesNoRequest; ~13 sites (morale opt-ins, strike back, regenerate, activation triggers, ...) | everywhere | TECHNICAL | per-site wording needed |
+| Select Item | ArmySetupStage:28 | army pick | TECHNICAL | "Choosing an Army" |
+| Move Unit | DefinePathStage:69 | advance/rush/charge | TECHNICAL | "Moving a Unit" |
+| Triggered Move | GameOperationServices:51 | rule-triggered move | TECHNICAL | "Making a Forced Move" |
+| [unit] (Aircraft) - forced move | DefinePathStage:154 | aircraft advance | TECHNICAL | "Flying [unit]'s Forced Move" |
+| Consolidate Move (Wipeout/Disengage) | ConsolidateStage:55 | post-melee | TECHNICAL | "Consolidating After ..." |
+| Place Spawned Unit | GameOperationServices:317 | summon | TECHNICAL | "Placing a Summoned Unit" |
+| Place Reinforcements | StartOfRoundExtraActionStage:156 | reserves | minor | "Placing Reinforcements" |
+| Aircraft Redeploy | StartOfRoundExtraActionStage:202 | round start | minor | "Redeploying an Aircraft" |
+| Ambush Deploy (DISC) | StartOfRoundExtraActionStage:213 | ambush arrival | minor | "Deploying from Ambush" |
+| Place Scout Unit (DISC) | PlaceDeferredUnitsStage:39 | scout deploy | minor | "Deploying a Scouting Unit" |
+| Disembark [unit] / Teleport [unit] (...) / Reposition [unit] (...) / Spill out [unit] (...) / Re-Deploy [unit] | DisembarkStage:63, TeleportStage:66, RepositionPlacement:42, SpilloutExecutor:70, ReDeploymentStage:144 | various | minor (imperative) | gerund forms |
+| Cast Assist | CastSpellStage:752 | casting | minor | "Assisting a Spell Cast" |
+| Choose Spell / Choose Effect / Choose Ranged Weapon / Choose Deployment Zone / Assign Wounds | various | - | OK | optional gerund polish |
+| Place objective N of M / Place terrain ... | PlaceOneObjectiveStage:57, PlaceTerrainStage:323,454 | setup | OK | optional gerund polish |
