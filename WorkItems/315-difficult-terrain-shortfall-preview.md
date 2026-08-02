@@ -12,6 +12,11 @@ modes (single and group).
 
 ## Notes
 
+- 2026-08-02: Impassible terrain gained the matching label after owner playtested that path. It blocks rather
+  than shortens (no phantom to draw), so it is text only: "Impassible Terrain" / "Cannot move through it" in
+  light red beside the red contact footprint, drawn once per frame. `ImpassibleBlockLabel` + 3 tests; label
+  layout shared with the difficult one via `DrawTerrainReasonLabel`. App suite 899/899, engine 2578/2578,
+  headless smoke exit 0.
 - 2026-08-02: Implemented. New `FdgRaylib/Rendering/DifficultShortfallPlan.cs` (show/hide rule + label
   wording, display-independent, mirroring the `ReachRingPlan` idiom) + drawing in
   `GuiDefineMovementResolver` (`DrawDifficultShortfall` / `DrawDifficultShortfallLabel`). Single mode keeps
@@ -36,6 +41,10 @@ modes (single and group).
   smudge; the snap-back also isn't what confused anyone at that size.
 - Group mode was a genuine fork (more code: the difficult-free re-solve). Owner chose both modes — the whole
   formation snapping back is arguably the more confusing case.
+- **Impassible keeps its own colour.** The label is red (the wash it explains), not the shortfall gray: gray
+  means "shortened, this is where you'd have been", red means "refused". Same two-line shape and same position
+  above the model, so they read as one family without implying the same consequence.
+- **One impassible label per frame**, not per crossing: a blocked group step reports a crossing per phantom.
 
 ## Outcome
 _Open — pending GUI hand-verify (see checks below)._
@@ -48,3 +57,5 @@ Hand-verify checks:
    label at their centroid.
 4. A move shortened by the table edge or an enemy base only (no difficult terrain in the path): no gray
    phantom, no label.
+5. Aim a path through an impassible piece: red piece + red contact footprint as before, now with
+   "Impassible Terrain" / "Cannot move through it" above it. In group mode, exactly one copy of that text.

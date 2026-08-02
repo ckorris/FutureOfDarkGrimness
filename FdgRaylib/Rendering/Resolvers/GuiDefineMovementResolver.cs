@@ -203,6 +203,8 @@ public class GuiDefineMovementResolver
     // model couldn't afford to enter, so it was held at the terrain edge. Reset at the top of each Draw.
     private bool _frameDifficultCrossing;
     private bool _frameDifficultStopped;
+    // #315: impassible terrain flags every phantom of a blocked group step, so its label draws once per frame.
+    private bool _frameImpassibleLabelDrawn;
 
     // Move bands: Advance (green, can shoot after), Rush (yellow, can't shoot), Charge (orange,
     // only legal if at least one model ends in melee). The Charge band only exists for units
@@ -253,6 +255,9 @@ public class GuiDefineMovementResolver
     private static readonly uint CrossingZoneFill      = ImGui.ColorConvertFloat4ToU32(new Vector4(1.00f, 0.25f, 0.25f, 0.22f));
     private static readonly uint CrossingZoneOutline   = ImGui.ColorConvertFloat4ToU32(new Vector4(1.00f, 0.30f, 0.30f, 0.95f));
     private static readonly uint CrossingFootprintFill = ImGui.ColorConvertFloat4ToU32(new Vector4(1.00f, 0.25f, 0.25f, 0.18f));
+    // #315: the impassible label takes the red of the wash it explains, lightened to stay readable as text -
+    // deliberately NOT the shortfall gray, since this move is refused rather than merely shortened.
+    private static readonly uint ImpassibleTextCol     = ImGui.ColorConvertFloat4ToU32(new Vector4(1.00f, 0.50f, 0.47f, 1f));
 
     public GuiDefineMovementResolver(ITableState tableState, FormationModeState formationMode,
         bool coverProximityExceptions = true)
@@ -352,6 +357,7 @@ public class GuiDefineMovementResolver
             && terrain.Any(t => t.TerrainType.HasFlag(ETerrainType.Dangerous));
         _frameDifficultCrossing = false;
         _frameDifficultStopped = false;
+        _frameImpassibleLabelDrawn = false;
         Dictionary<IModel, DataBinding<ModelData>> bindings = BuildBindingMap(request);
         var committedCrossedDifficult = new HashSet<IModel>();
         var committedCrossedDangerous = new HashSet<IModel>();
@@ -596,8 +602,8 @@ public class GuiDefineMovementResolver
                 var wouldBe = new Position(anchor.x + dx / dist * allowedIgnoringDifficult,
                                            anchor.z + dz / dist * allowedIgnoringDifficult);
                 DrawDifficultShortfall(dl, _selectedModel, ghostPos.Value, wouldBe, ghostFacing);
-                DrawDifficultShortfallLabel(dl, wouldBe, _selectedModel.BaseShape.CircumscribedRadiusInches,
-                    shortfallHint);
+                DrawTerrainReasonLabel(dl, wouldBe, _selectedModel.BaseShape.CircumscribedRadiusInches,
+                    shortfallHint.Header, shortfallHint.Detail, ShortfallTextCol);
             }
 
             // Ghost base (true shape) + heading.
@@ -1050,8 +1056,8 @@ public class GuiDefineMovementResolver
                                         : MovementUtilities.EDifficultClampKind.StoppedShortOfEdge,
                 maxShortfall, GameWideConstants.DIFFICULT_TERRAIN_MOVE_CAP_INCHES);
             if (shortfallCount > 0 && groupHint.Show)
-                DrawDifficultShortfallLabel(dl,
-                    new Position(labelX / shortfallCount, labelZ / shortfallCount), labelRadius, groupHint);
+                DrawTerrainReasonLabel(dl, new Position(labelX / shortfallCount, labelZ / shortfallCount),
+                    labelRadius, groupHint.Header, groupHint.Detail, ShortfallTextCol);
         }
 
         // Pending ghost: line from each model's last spot to its new spot + a base circle, band-coloured
@@ -1532,6 +1538,17 @@ public class GuiDefineMovementResolver
         var (cx, cy) = InchesToPixel(crossing.ContactCentre.X, crossing.ContactCentre.Y);
         ModelBaseRenderer.DrawFilledImGui(dl, baseShape, new Vector2(cx, cy), _scale,
             CrossingFootprintFill, CrossingZoneOutline, 2.5f, crossing.Facing);
+
+        // #315: name the rule, the same way a difficult-terrain shortfall does. Once per frame only - in group
+        // mode every phantom of a blocked step reports its own crossing, and a label per model would stack the
+        // same two lines over the whole formation. The first crossing is the one whose footprint reads clearest.
+        if (!_frameImpassibleLabelDrawn)
+        {
+            _frameImpassibleLabelDrawn = true;
+            DrawTerrainReasonLabel(dl, new Position(crossing.ContactCentre.X, crossing.ContactCentre.Y),
+                baseShape.CircumscribedRadiusInches, ImpassibleBlockLabel.HEADER, ImpassibleBlockLabel.DETAIL,
+                ImpassibleTextCol);
+        }
     }
 
     private bool WouldOverlapAnyModel(Position ghostPos, Float2 ghostFacing, IModel ghostModel,
@@ -2130,19 +2147,21 @@ public class GuiDefineMovementResolver
     }
 
     /// <summary>
-    /// #315: the two-line reason, centred above the shortfall phantom (which sits at the FAR end of the move,
-    /// away from the models the player is reading) - the rule name, then what it cost them.
+    /// #315: the two-line reason a terrain rule shaped this move - the rule name, then what it cost - centred
+    /// above the pose it is explaining (the shortfall phantom at the far end of a difficult move, or the swept
+    /// footprint at first contact with an impassible piece). Shared so both rules speak in the same voice and
+    /// in the same spot relative to the model they're about.
     /// </summary>
-    private void DrawDifficultShortfallLabel(ImDrawListPtr dl, Position at, float radiusInches,
-        DifficultShortfallPlan.Hint hint)
+    private void DrawTerrainReasonLabel(ImDrawListPtr dl, Position at, float radiusInches,
+        string header, string detail, uint color)
     {
         var (px, py) = InchesToPixel(at.x, at.z);
         float lineH  = ImGui.GetTextLineHeight();
         float top    = py - radiusInches * _scale - lineH * 2f - 4f;
-        Vector2 headerSize = ImGui.CalcTextSize(hint.Header);
-        Vector2 detailSize = ImGui.CalcTextSize(hint.Detail);
-        dl.AddText(new Vector2(px - headerSize.X * 0.5f, top), ShortfallTextCol, hint.Header);
-        dl.AddText(new Vector2(px - detailSize.X * 0.5f, top + lineH), ShortfallTextCol, hint.Detail);
+        Vector2 headerSize = ImGui.CalcTextSize(header);
+        Vector2 detailSize = ImGui.CalcTextSize(detail);
+        dl.AddText(new Vector2(px - headerSize.X * 0.5f, top), color, header);
+        dl.AddText(new Vector2(px - detailSize.X * 0.5f, top + lineH), color, detail);
     }
 
     private static void AddDottedLine(ImDrawListPtr dl, Vector2 a, Vector2 b, uint color, float thickness,
