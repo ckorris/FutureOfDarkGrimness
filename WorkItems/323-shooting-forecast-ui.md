@@ -19,6 +19,19 @@ from the shooting details section.
 
 ## Notes
 
+- 2026-08-02: Slice 1 (engine) shipped, submodule `3e503bd`, 2620/2620 green. `ShootingForecast`
+  (ChooseRangedWeaponStage/) computes per fireable weapon-x-target row and `Attach` stamps it in
+  `OfferWeapons` (NOT in BuildWeaponOptions - HasAnyFireableTarget reuses the builder every Choose
+  Action open and only needs a bool). `AttackForecast` record nested in the request; chips come from
+  calling the stages' own internal `ComposeThresholdTags`/`ComposeSaveModifierTags` directly (they
+  are static+pure; no hoist needed - tests already call them as
+  `DetermineHitRollStage<ICombatMetadata>.ComposeThresholdTags`). Save-side whole-attack fold
+  evaluated with an EMPTY roll histogram so face-triggered ops price as zero. Better than planned:
+  granted one-shot buffs (new read-only `GrantedRollModifiers.PeekNet`) and persistent Target-family
+  markers ARE priced; only spendable Tag/Spotter markers + unclaimed Marks fall to Notes.
+  `ICombatActionContext` now exposes `AttackerMoved` (Indirect's -1 after moving forecasts truly).
+  Not priced, by design: Rending/Furious procs (natural 6s), Unpredictable branch die,
+  RegenerativeStrength attack bump. 6 new tests in ChooseRangedAttackStageTests.
 - 2026-08-02: Filed. Design agreed with owner: forecast rides the request (not the presentation
   beat stream — beats are one-way transient narration, fan out to spectators, and would race the
   request; the forecast is decision state for the acting player only). Math via the read-only
