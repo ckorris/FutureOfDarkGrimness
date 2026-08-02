@@ -41,6 +41,7 @@ When closing an item: write the Outcome in its detail file, tick the line, and m
 - [~] 276 — Attack animation truthfulness: occluded/out-of-range carriers no longer roll dice (engine bug) nor draw beams; split Takedown shots fire one beam each, rotating snipers. Implemented + tested; awaiting GUI hand-verify. ([WorkItems/276](WorkItems/276-attack-animation-truthfulness.md))
 
 - [~] 308 — 2026-07-31 playthrough findings: Blast's model cap is per hit and stacks (was capping the volley total, deleting save dice); "Moved" token hidden unless a rule reads it; Back restored for shooting + deployment placement; target carries across weapons. Shaken-defender morale-dice report parked pending a repro save. ([WorkItems/308](WorkItems/308-playthrough-findings-2026-07-31.md))
+- [~] 323 — Pre-roll shooting forecast: effective Hit/Save + modifier tags computed read-only engine-side, attached to `ChooseRangedAttackRequest`, shown on target rows / details pane / canvas hover badge (no expected-wounds). In progress. ([WorkItems/323](WorkItems/323-shooting-forecast-ui.md))
 
 ## Model bases & geometry
 
