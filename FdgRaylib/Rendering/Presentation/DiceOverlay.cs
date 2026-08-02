@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using FDG;
+using FDG.Presentation;
 using FDG.Presentation.Beats;
 using Raylib_cs;
 
@@ -38,9 +39,11 @@ namespace FdgRaylib.Rendering.Presentation;
 /// filled portion in the same category accent.</item>
 /// </list>
 ///
-/// <para><see cref="DrawRollOff"/> docks to the same caption zone: the objective-count roll and the
-/// first-turn roll-off play back-to-back at game start, and hopping between center and bottom read
-/// as jarring — placement continuity won over stakes-based prominence (playtest 2026-07-18).</para>
+/// <para>A <see cref="RollOffBeat"/> is a panel on the same stack (#325), drawn as a labelled name+die
+/// list instead of a caption. It already shared this caption zone — placement continuity beat
+/// stakes-based prominence at the 2026-07-18 playtest — but it used to draw itself there independently,
+/// so the first-turn roll-off landed on top of the still-lingering objective-count roll at game start.
+/// On the stack it queues above whatever is still up.</para>
 /// </summary>
 public static class DiceOverlay
 {
@@ -71,6 +74,8 @@ public static class DiceOverlay
     private static readonly int DieMin       = Sc(16);   // floor when a huge pool has to shrink
     private static readonly int SideReserve  = Sc(260);  // width kept clear for the badge column + margins
     private const           int BottomMargin = 18;       // dock gap, not panel geometry — unscaled
+
+    private static readonly int RollOffNameSize = Sc(22); // competitor names on a roll-off panel
 
     private const float OverlapDim = 0.35f; // ghost alpha while the attack animation overlaps the strip
 
@@ -117,18 +122,19 @@ public static class DiceOverlay
         public float Depth = -1f;   // negative until the panel's first frame, which seeds it
     }
 
-    private static readonly Dictionary<DiceRolledBeat, PanelFx> _fx = new();
+    private static readonly Dictionary<PresentationBeat, PanelFx> _fx = new();
     private static double _lastDrawTime;
 
     /// <summary>
-    /// Draws every live dice panel (#325), taking the stack OLDEST FIRST exactly as
-    /// <c>PresentationPlayer.GetDiceStack</c> returns it, and returns the screen bounds the stack
-    /// occupies so the caller can hit-test the pointer for hover-freeze. Zero-size when nothing is up.
+    /// Draws every live roll panel (#325) — dice rolls and roll-offs alike — taking the stack OLDEST
+    /// FIRST exactly as <c>PresentationPlayer.GetRollStack</c> returns it, and returns the screen bounds
+    /// the stack occupies so the caller can hit-test the pointer for hover-freeze. Zero-size when nothing
+    /// is up.
     /// </summary>
     /// <param name="hovered">Frozen under the pointer: every panel draws at full strength, so the
     /// history can be read instead of merely glimpsed.</param>
     public static Rectangle DrawStack(
-        IReadOnlyList<(DiceRolledBeat beat, float progress, float alpha)> stack,
+        IReadOnlyList<(PresentationBeat beat, float progress, float alpha)> stack,
         int areaWidth, int screenH, Rectangle? avoid, bool hovered)
     {
         if (stack.Count == 0)
@@ -192,6 +198,8 @@ public static class DiceOverlay
     /// </summary>
     private sealed class PanelLayout
     {
+        public bool RollOff;                       // a labelled name+die stack rather than a dice caption
+        public int NameColW, RowsH, RowGapUsed, ColGapUsed;  // roll-off
         public bool Probabilistic;
         public readonly List<int> Faces = new();   // realistic: the histogram expanded into single dice
         public int DieSizeUsed, RowW, DiceH;       // realistic
@@ -202,7 +210,41 @@ public static class DiceOverlay
         public int BadgeW, BadgeColH, ContentW, ContentH, PanelW, PanelH;
     }
 
-    private static PanelLayout Measure(DiceRolledBeat beat, int areaWidth)
+    private static PanelLayout Measure(PresentationBeat beat, int areaWidth) => beat switch
+    {
+        RollOffBeat rollOff => MeasureRollOff(rollOff),
+        DiceRolledBeat dice => MeasureDice(dice, areaWidth),
+        _ => new PanelLayout(),
+    };
+
+    /// <summary>
+    /// A roll-off's own shape: the label over one row per competitor (name on the left, that
+    /// competitor's die on the right). No badge column and no chips — there is no threshold to show,
+    /// the highest roll simply wins.
+    /// </summary>
+    private static PanelLayout MeasureRollOff(RollOffBeat beat)
+    {
+        var l = new PanelLayout { RollOff = true, Header = beat.Label };
+
+        int count = beat.Entries?.Count ?? 0;
+        l.DieSizeUsed = DieSize;
+        l.RowGapUsed  = Sc(10);
+        l.ColGapUsed  = Sc(18);
+
+        if (beat.Entries != null)
+            foreach (RollOffEntry e in beat.Entries)
+                l.NameColW = Math.Max(l.NameColW, Raylib.MeasureText(e.Name, RollOffNameSize));
+
+        l.RowsH = count > 0 ? count * l.DieSizeUsed + (count - 1) * l.RowGapUsed : 0;
+
+        int innerW = Math.Max(Raylib.MeasureText(l.Header, HeaderSize),
+            l.NameColW + l.ColGapUsed + l.DieSizeUsed);
+        l.PanelW = innerW + PanelPad * 2;
+        l.PanelH = PanelPad * 2 + HeaderSize + RowGap + l.RowsH;
+        return l;
+    }
+
+    private static PanelLayout MeasureDice(DiceRolledBeat beat, int areaWidth)
     {
         var l = new PanelLayout
         {
@@ -267,12 +309,15 @@ public static class DiceOverlay
         return l;
     }
 
-    private static void DrawPanel(DiceRolledBeat beat, PanelLayout l, float progress, float alpha,
+    private static void DrawPanel(PresentationBeat beat, PanelLayout l, float progress, float alpha,
         int panelX, int panelY, Rectangle? avoid, float depthAlpha, float dt)
     {
         var panelRect = new Rectangle(panelX, panelY, l.PanelW, l.PanelH);
         float a = alpha * PanelFxFor(beat, panelRect, avoid, depthAlpha, dt);
         if (a <= 0.02f) return;
+
+        if (beat is RollOffBeat rollOff) { DrawRollOffPanel(rollOff, l, progress, panelX, panelY, a); return; }
+        if (beat is not DiceRolledBeat dice) return;
 
         // Probabilistic rolls have no rolling phase: there are no faces to tumble, so show the result at
         // once.
@@ -281,9 +326,9 @@ public static class DiceOverlay
         int chipH = ChipSize + ChipPadY * 2;
 
         Raylib.DrawRectangleRounded(panelRect, 0.18f, 6, Faded(Panel, a));
-        DrawAccentStripe(panelX, panelY, l.PanelH, beat.Category, a);
+        DrawAccentStripe(panelX, panelY, l.PanelH, dice.Category, a);
         DrawBadgeColumn(panelX + PanelPad, panelY + (l.PanelH - l.BadgeColH) / 2, l.BadgeW, l.Badge,
-            beat.Category, a);
+            dice.Category, a);
 
         // Content column, centered within its own span (the badge offsets it from the panel center).
         int contentX = panelX + PanelPad + l.BadgeW + ColGap;
@@ -291,10 +336,10 @@ public static class DiceOverlay
         DrawCenteredIn(l.Header, contentX, l.ContentW, y, HeaderSize, Faded(Header, a));
         y += HeaderSize;
 
-        if (beat.Context != null)
+        if (dice.Context != null)
         {
             y += RowGap;
-            DrawCenteredIn(beat.Context, contentX, l.ContentW, y, ContextSize, Faded(Hint, a));
+            DrawCenteredIn(dice.Context, contentX, l.ContentW, y, ContextSize, Faded(Hint, a));
             y += ContextSize;
         }
 
@@ -303,16 +348,16 @@ public static class DiceOverlay
             y += RowGap;
             int barX = contentX + (l.ContentW - l.BarW) / 2;
             Raylib.DrawRectangle(barX, y, l.BarW, l.BarH, Faded(Fail, a));
-            float frac = beat.Total > 0f ? beat.Successes / beat.Total : 0f;
+            float frac = dice.Total > 0f ? dice.Successes / dice.Total : 0f;
             Raylib.DrawRectangle(barX, y, (int)(l.BarW * Math.Clamp(frac, 0f, 1f)), l.BarH,
-                Faded(AccentFor(beat.Category), a));
+                Faded(AccentFor(dice.Category), a));
             Raylib.DrawRectangleLines(barX, y, l.BarW, l.BarH, Faded(Color.Black, a));
             y += l.BarH;
         }
         else if (l.DiceH > 0)
         {
             y += RowGap;
-            Color successFill = AccentFor(beat.Category);
+            Color successFill = AccentFor(dice.Category);
             int rowX = contentX + (l.ContentW - l.RowW) / 2;
             for (int i = 0; i < l.Faces.Count; i++)
             {
@@ -322,19 +367,19 @@ public static class DiceOverlay
                 if (settled)
                 {
                     shownFace = l.Faces[i];
-                    bool success = shownFace >= beat.SuccessThreshold;
+                    bool success = shownFace >= dice.SuccessThreshold;
                     fill = success ? successFill : Fail;
                     pip = Color.White;
                 }
                 else
                 {
-                    shownFace = TumbleFace(i, beat.SideMin, beat.SideMax);
+                    shownFace = TumbleFace(i, dice.SideMin, dice.SideMax);
                     fill = Rolling;
                     pip = new Color(30, 30, 30, 255);
                 }
                 DrawDie(x, y, l.DieSizeUsed, shownFace, fill, pip, a);
                 // A top-face success with a proc riding it gets a gold rim — "that 6 did something".
-                if (settled && procsFired && shownFace == beat.SideMax && shownFace >= beat.SuccessThreshold)
+                if (settled && procsFired && shownFace == dice.SideMax && shownFace >= dice.SuccessThreshold)
                     Raylib.DrawRectangleRoundedLines(
                         new Rectangle(x - 2, y - 2, l.DieSizeUsed + 4, l.DieSizeUsed + 4),
                         0.22f, 6, Faded(Result, a));
@@ -361,50 +406,37 @@ public static class DiceOverlay
     }
 
     /// <summary>
-    /// Draws a <see cref="RollOffBeat"/> as a labelled stack — each competitor's name on the left, its
-    /// die on the right — so it's clear who's rolling against whom. The sole highest roller's die turns
-    /// green (Won); a shared highest turns yellow (TiedForWin) and the engine emits a fresh beat for the
+    /// Draws a <see cref="RollOffBeat"/> panel — each competitor's name on the left, its die on the
+    /// right — so it's clear who's rolling against whom. The sole highest roller's die turns green
+    /// (Won); a shared highest turns yellow (TiedForWin) and the engine emits a fresh beat for the
     /// run-off. Dice tumble for the first fraction of the beat, then settle to the rolled face + colour.
-    /// Docked to the same bottom caption zone as the dice strip — back-to-back rolls (the objective
-    /// count, then the first-turn roll-off) shouldn't hop around the screen. No ghost logic needed:
-    /// nothing else animates during a roll-off. Fades in/out over the beat's ends so successive tie
-    /// re-rolls read as fresh rolls.
+    ///
+    /// <para>#325: this is a panel ON THE STACK, not a separate overlay. It used to draw itself at the
+    /// bottom anchor independently, which put the first-turn roll-off straight over the still-lingering
+    /// objective-count roll at game start. Sharing the stack means it queues above whatever is still up,
+    /// and it inherits the stack's fade, depth dim and hover-freeze instead of carrying its own
+    /// envelope.</para>
     /// </summary>
-    public static void DrawRollOff(RollOffBeat beat, float progress, int areaWidth, int screenH)
+    private static void DrawRollOffPanel(RollOffBeat beat, PanelLayout l, float progress,
+        int panelX, int panelY, float a)
     {
         if (beat.Entries == null || beat.Entries.Count == 0) return;
 
-        float a = RollOffEnvelope(progress);
-        if (a <= 0.02f) return;
-
         bool settled = progress >= FlickerEnd;
-        int nameFont = Sc(22);
-        int dieSize  = DieSize;
-        int rowGap   = Sc(10);
-        int colGap   = Sc(18);
 
-        int nameColW = 0;
-        foreach (RollOffEntry e in beat.Entries)
-            nameColW = Math.Max(nameColW, Raylib.MeasureText(e.Name, nameFont));
-
-        int rowsH  = beat.Entries.Count * dieSize + (beat.Entries.Count - 1) * rowGap;
-        int innerW = Math.Max(Raylib.MeasureText(beat.Label, HeaderSize), nameColW + colGap + dieSize);
-        int panelW = innerW + PanelPad * 2;
-        int panelH = PanelPad * 2 + HeaderSize + RowGap + rowsH;
-        int panelX = (areaWidth - panelW) / 2;
-        int panelY = screenH - panelH - BottomMargin;
-
-        Raylib.DrawRectangleRounded(new Rectangle(panelX, panelY, panelW, panelH), 0.12f, 6, Faded(Panel, a));
-        DrawCenteredIn(beat.Label, panelX, panelW, panelY + PanelPad, HeaderSize, Faded(Header, a));
+        Raylib.DrawRectangleRounded(new Rectangle(panelX, panelY, l.PanelW, l.PanelH), 0.12f, 6,
+            Faded(Panel, a));
+        DrawCenteredIn(l.Header, panelX, l.PanelW, panelY + PanelPad, HeaderSize, Faded(Header, a));
 
         int rowTop = panelY + PanelPad + HeaderSize + RowGap;
         int nameX  = panelX + PanelPad;
-        int dieX   = panelX + PanelPad + nameColW + colGap;
+        int dieX   = panelX + PanelPad + l.NameColW + l.ColGapUsed;
         for (int i = 0; i < beat.Entries.Count; i++)
         {
             RollOffEntry e = beat.Entries[i];
-            int rowY = rowTop + i * (dieSize + rowGap);
-            Raylib.DrawText(e.Name, nameX, rowY + (dieSize - nameFont) / 2, nameFont, Faded(Header, a));
+            int rowY = rowTop + i * (l.DieSizeUsed + l.RowGapUsed);
+            Raylib.DrawText(e.Name, nameX, rowY + (l.DieSizeUsed - RollOffNameSize) / 2, RollOffNameSize,
+                Faded(Header, a));
 
             int face;
             Color fill, pip;
@@ -425,18 +457,8 @@ public static class DiceOverlay
                 fill = Rolling;
                 pip  = new Color((byte)30, (byte)30, (byte)30, (byte)255);
             }
-            DrawDie(dieX, rowY, dieSize, face, fill, pip, a);
+            DrawDie(dieX, rowY, l.DieSizeUsed, face, fill, pip, a);
         }
-    }
-
-    // The roll-off's fade envelope, driven by beat progress (it always runs its full duration through
-    // the active slot, unlike held dice beats): ease in fast, hold, ease out over the tail.
-    private static float RollOffEnvelope(float t)
-    {
-        const float fadeIn = 0.06f, fadeOutStart = 0.90f;
-        if (t < fadeIn) return t / fadeIn;
-        if (t > fadeOutStart) return Math.Max(0f, 1f - (t - fadeOutStart) / (1f - fadeOutStart));
-        return 1f;
     }
 
     // The settled result line: the stage-supplied summary, or a generic successes/total fallback.
@@ -569,13 +591,13 @@ public static class DiceOverlay
 
     // Forget the smoothing state of panels that have left the stack, so a beat reference can't pin
     // memory and a new panel never inherits stale easing.
-    private static void PruneFx(IReadOnlyList<(DiceRolledBeat beat, float progress, float alpha)> stack)
+    private static void PruneFx(IReadOnlyList<(PresentationBeat beat, float progress, float alpha)> stack)
     {
         if (_fx.Count <= stack.Count) return;
 
-        var live = new HashSet<DiceRolledBeat>();
-        foreach ((DiceRolledBeat beat, float _, float _) in stack) live.Add(beat);
-        foreach (DiceRolledBeat gone in new List<DiceRolledBeat>(_fx.Keys))
+        var live = new HashSet<PresentationBeat>();
+        foreach ((PresentationBeat beat, float _, float _) in stack) live.Add(beat);
+        foreach (PresentationBeat gone in new List<PresentationBeat>(_fx.Keys))
             if (!live.Contains(gone)) _fx.Remove(gone);
     }
 
@@ -584,7 +606,7 @@ public static class DiceOverlay
     /// toward their targets so neither steps. A long frame gap means the stack just (re)appeared, so both
     /// snap rather than easing from stale state.
     /// </summary>
-    private static float PanelFxFor(DiceRolledBeat beat, Rectangle panel, Rectangle? avoid,
+    private static float PanelFxFor(PresentationBeat beat, Rectangle panel, Rectangle? avoid,
         float depthTarget, float dt)
     {
         if (!_fx.TryGetValue(beat, out PanelFx? fx)) _fx[beat] = fx = new PanelFx();

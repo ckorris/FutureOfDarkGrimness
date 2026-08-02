@@ -17,6 +17,13 @@ pace of combat is unchanged from before the item.
 
 ## Notes
 
+- 2026-08-02 (later still): **Roll-offs joined the stack** (owner report: at game start the objective-count
+  roll was still up when the first-turn roll-off drew straight over it). `RollOffBeat` is now a panel on
+  the same stack rather than its own bottom-anchored overlay, so it queues above whatever is lingering and
+  inherits the stack's fade, depth dim and hover-freeze; its private fade envelope is gone. The player's
+  dice-only API generalised with it: `GetDiceStack` -> `GetRollStack`, `SetDiceStackHovered` ->
+  `SetRollStackHovered`, and `TryGetActiveRollOff` deleted. Two tests added for it.
+
 - 2026-08-02 (late): **Renumbered 322 -> 325** — see reconciliation 43. Also reverted the pacing half of
   the item at the owner's request (engine `c6e2170`, superproject `9b32706`): rolls are non-held again,
   so the engine waits the full 1800ms(+400/chip) envelope per roll exactly as it did before this item.

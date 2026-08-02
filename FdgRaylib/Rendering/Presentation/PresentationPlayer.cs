@@ -44,40 +44,46 @@ public class PresentationPlayer : IPresentationSink
     // once, and a new roll STACKS on top of the last instead of evicting it — the single-slot eviction is
     // what made a two-threshold volley cut its own first roll short. Oldest first; the overlay anchors
     // the oldest at the bottom and grows upward.
-    private readonly List<DiceEntry> _diceStack = new();
-    private const int MaxDiceStack = 3;
+    // Roll-offs share the stack (#325). They dock to the same caption zone and are the same kind of
+    // statement — "here is a roll and what it meant" — so a roll-off drawn over a still-lingering dice
+    // panel was the exact overlap this item exists to remove. The objective-count roll and the first-turn
+    // roll-off at game start are the case that showed it.
+    private readonly List<RollPanel> _rollStack = new();
+    private const int MaxRollStack = 3;
     // How long a panel stays up after it has finished settling. Chips are extra reading, so a panel
     // carrying them lingers longer — the same principle as the engine's stretched beat duration (#245).
-    private const float DiceLingerSeconds        = 3.0f;
-    private const float DiceLingerPerInfoBlock   = 0.4f;
-    // Display alpha for a dice panel (#245): eased in as it appears and out over the tail of its
-    // lifetime, so panels fade instead of popping.
-    private const float DiceFadeInSeconds  = 0.12f;
-    private const float DiceFadeOutSeconds = 0.35f;
+    private const float RollLingerSeconds      = 3.0f;
+    private const float RollLingerPerInfoBlock = 0.4f;
+    // Display alpha for a panel (#245): eased in as it appears and out over the tail of its lifetime,
+    // so panels fade instead of popping.
+    private const float RollFadeInSeconds  = 0.12f;
+    private const float RollFadeOutSeconds = 0.35f;
     // Hovering the stack freezes every panel's timer (and the overlay un-dims the older ones), so a
     // player who wants to re-read a roll can, without slowing down one who doesn't. Set from the render
     // thread once the overlay knows the stack's own screen bounds.
-    private bool _diceHovered;
+    private bool _rollHovered;
 
     /// <summary>
-    /// One panel on the dice stack. Its lifetime is FIXED at construction rather than reset by later beat
-    /// activity (which is what the old single-slot linger did): with several panels up, a lifetime that
-    /// depends on what happens to follow makes the stack's layout unpredictable.
+    /// One panel on the roll stack — a <see cref="DiceRolledBeat"/> or a <see cref="RollOffBeat"/>. Its
+    /// lifetime is FIXED at construction rather than reset by later beat activity (which is what the old
+    /// single-slot linger did): with several panels up, a lifetime that depends on what happens to follow
+    /// makes the stack's layout unpredictable.
     /// </summary>
-    private sealed class DiceEntry
+    private sealed class RollPanel
     {
-        public readonly DiceRolledBeat Beat;
+        public readonly PresentationBeat Beat;
         public readonly float Lifetime;
         public float Elapsed;
 
-        public DiceEntry(DiceRolledBeat beat)
+        public RollPanel(PresentationBeat beat)
         {
             Beat = beat;
             // A normal roll owns the active slot for its whole duration; a held one settles over its
             // lead-in. Either way the linger is what the panel gets ON TOP of the paced part — that
             // overhang is what makes panels overlap and therefore stack.
             float paced = (float)(beat.Held ? beat.HoldLeadIn : beat.NominalDuration).TotalSeconds;
-            Lifetime = paced + DiceLingerSeconds + DiceLingerPerInfoBlock * beat.InfoBlocks;
+            int infoBlocks = beat is DiceRolledBeat dice ? dice.InfoBlocks : 0;
+            Lifetime = paced + RollLingerSeconds + RollLingerPerInfoBlock * infoBlocks;
         }
 
         /// <summary>0..1 against the beat's own envelope — drives the overlay's tumble-then-settle. A
@@ -92,8 +98,8 @@ public class PresentationPlayer : IPresentationSink
         }
 
         public float Alpha => Math.Min(
-            Elapsed / DiceFadeInSeconds,
-            Math.Clamp((Lifetime - Elapsed) / DiceFadeOutSeconds, 0f, 1f));
+            Elapsed / RollFadeInSeconds,
+            Math.Clamp((Lifetime - Elapsed) / RollFadeOutSeconds, 0f, 1f));
     }
 
     // Screen-space banner for the currently-active HEADLINE BannerBeat (null when none). Only the
@@ -116,10 +122,6 @@ public class PresentationPlayer : IPresentationSink
         public float Elapsed;
         public HeldBannerState(BannerBeat beat) => Beat = beat;
     }
-
-    // Screen-space roll-off (labelled name+die stack) for the currently-active RollOffBeat (null when none).
-    private RollOffBeat? _activeRollOff;
-    private float _rollOffProgress;
 
     // World-space attacks (tracers / clash) — each runs on its OWN timeline, concurrent with the active
     // beat (#238): AttackBeat is a held beat with zero lead-in, so it transfers here the frame it is
@@ -286,14 +288,14 @@ public class PresentationPlayer : IPresentationSink
                     while (_attacks.Count > MaxConcurrentAttacks) _attacks.RemoveAt(0);
                     continue;
                 }
-                // #325: every roll joins the dice stack for display, which is what lets its panel outlive
-                // its beat. A normal (non-held) roll ALSO takes the active slot below, so the front-end
-                // animates for exactly as long as the engine waits. A held roll — the opt-in nothing uses
-                // today — stops here instead, and the next beat becomes active immediately.
-                if (next is DiceRolledBeat dice)
+                // #325: every roll - dice or roll-off - joins the stack for display, which is what lets
+                // its panel outlive its beat. A normal (non-held) roll ALSO takes the active slot below,
+                // so the front-end animates for exactly as long as the engine waits. A held roll — the
+                // opt-in nothing uses today — stops here, and the next beat becomes active immediately.
+                if (next is DiceRolledBeat or RollOffBeat)
                 {
-                    PushDice(dice);
-                    if (dice.Held) continue;
+                    PushRoll(next);
+                    if (next.Held) continue;
                 }
                 // #232: an overlapped casualty beat never holds the active slot - it transfers to the
                 // cascade track and animates concurrently while later beats play.
@@ -355,17 +357,17 @@ public class PresentationPlayer : IPresentationSink
                 }
             }
 
-            // #325: the dice stack, likewise independent of the active slot - each panel lives its own
+            // #325: the roll stack, likewise independent of the active slot - each panel lives its own
             // fixed lifetime and retires when it runs out. Aged AFTER the dequeue above, like every other
             // concurrent track, so a panel that appeared this frame gets this frame's time too.
             // Hovering the stack freezes all of them at once.
-            if (!_diceHovered)
+            if (!_rollHovered)
             {
-                for (int i = _diceStack.Count - 1; i >= 0; i--)
+                for (int i = _rollStack.Count - 1; i >= 0; i--)
                 {
-                    DiceEntry entry = _diceStack[i];
-                    entry.Elapsed += dtSeconds;
-                    if (entry.Elapsed >= entry.Lifetime) _diceStack.RemoveAt(i);
+                    RollPanel panel = _rollStack[i];
+                    panel.Elapsed += dtSeconds;
+                    if (panel.Elapsed >= panel.Lifetime) _rollStack.RemoveAt(i);
                 }
             }
 
@@ -439,10 +441,10 @@ public class PresentationPlayer : IPresentationSink
     /// #325. Called under the lock. A new roll goes on TOP of the stack; the oldest drops out once the
     /// stack is full, so the newest panel is never the one squeezed off screen.
     /// </summary>
-    private void PushDice(DiceRolledBeat beat)
+    private void PushRoll(PresentationBeat beat)
     {
-        _diceStack.Add(new DiceEntry(beat));
-        while (_diceStack.Count > MaxDiceStack) _diceStack.RemoveAt(0);
+        _rollStack.Add(new RollPanel(beat));
+        while (_rollStack.Count > MaxRollStack) _rollStack.RemoveAt(0);
     }
 
     // #275. Called under the lock. A Notice supersedes any Notice already up: they share one band in
@@ -555,10 +557,6 @@ public class PresentationPlayer : IPresentationSink
                 _activeBanner = banner;
                 _bannerProgress = t;
                 break;
-            case RollOffBeat rollOff:
-                _activeRollOff = rollOff;
-                _rollOffProgress = t;
-                break;
             // AttackBeat never reaches here: it runs on its own concurrent track (see Update, #238).
             case SaveBeat save:
                 _activeSave = save;
@@ -595,9 +593,6 @@ public class PresentationPlayer : IPresentationSink
             case BannerBeat:
                 _activeBanner = null;
                 break;
-            case RollOffBeat:
-                _activeRollOff = null;
-                break;
             case SaveBeat:
                 _activeSave = null;
                 break;
@@ -611,35 +606,35 @@ public class PresentationPlayer : IPresentationSink
     }
 
     /// <summary>
-    /// The dice panels on screen this frame, OLDEST FIRST (#325), each with its 0..1 progress against
-    /// its own envelope and its display alpha (fade in/out easing, #245 — the overlay multiplies its
-    /// colors by it). The overlay anchors the oldest at the bottom of the table area and stacks the rest
-    /// above it. Snapshot taken under the lock.
+    /// The roll panels on screen this frame, OLDEST FIRST (#325) — dice rolls and roll-offs share one
+    /// stack — each with its 0..1 progress against its own envelope and its display alpha (fade in/out
+    /// easing, #245 — the overlay multiplies its colors by it). The overlay anchors the oldest at the
+    /// bottom of the table area and stacks the rest above it. Snapshot taken under the lock.
     /// </summary>
-    public IReadOnlyList<(DiceRolledBeat beat, float progress, float alpha)> GetDiceStack()
+    public IReadOnlyList<(PresentationBeat beat, float progress, float alpha)> GetRollStack()
     {
         lock (_lock)
         {
-            var live = new List<(DiceRolledBeat, float, float)>(_diceStack.Count);
-            foreach (DiceEntry e in _diceStack) live.Add((e.Beat, e.Progress, e.Alpha));
+            var live = new List<(PresentationBeat, float, float)>(_rollStack.Count);
+            foreach (RollPanel p in _rollStack) live.Add((p.Beat, p.Progress, p.Alpha));
             return live;
         }
     }
 
     /// <summary>
-    /// #325. Tells the player the pointer is over the dice stack, which freezes every panel's timer until
+    /// #325. Tells the player the pointer is over the roll stack, which freezes every panel's timer until
     /// it leaves — the "wait, why did that happen?" affordance. Set from the render thread each frame
     /// from the bounds the overlay reports; a one-frame lag is invisible.
     /// </summary>
-    public void SetDiceStackHovered(bool hovered)
+    public void SetRollStackHovered(bool hovered)
     {
-        lock (_lock) _diceHovered = hovered;
+        lock (_lock) _rollHovered = hovered;
     }
 
-    /// <summary>Whether the dice stack is currently frozen under the pointer (#325).</summary>
-    public bool IsDiceStackHovered
+    /// <summary>Whether the roll stack is currently frozen under the pointer (#325).</summary>
+    public bool IsRollStackHovered
     {
-        get { lock (_lock) return _diceHovered; }
+        get { lock (_lock) return _rollHovered; }
     }
 
     /// <summary>
@@ -671,17 +666,6 @@ public class PresentationPlayer : IPresentationSink
                 live.Add((b.Beat, dur <= 0f ? 1f : Math.Clamp(b.Elapsed / dur, 0f, 1f)));
             }
             return live;
-        }
-    }
-
-    /// <summary>The roll-off being shown this frame, if any, with its 0..1 progress.</summary>
-    public bool TryGetActiveRollOff(out RollOffBeat beat, out float progress)
-    {
-        lock (_lock)
-        {
-            beat = _activeRollOff!;
-            progress = _rollOffProgress;
-            return _activeRollOff != null;
         }
     }
 

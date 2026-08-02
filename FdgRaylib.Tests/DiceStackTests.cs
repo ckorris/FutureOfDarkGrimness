@@ -28,6 +28,13 @@ public class DiceStackTests
         new(new[] { 1f, 1f, 1f, 1f, 1f, 1f }, 1, 4, ERandomnessType.Realistic, "Roll to Hit",
             modifierTags: new[] { "Quality 4+", "Stealth -1" });
 
+    private static RollOffBeat RollOff(string label = "Map Side Roll-Off") =>
+        new(label, new List<RollOffEntry>
+        {
+            new("Fragsteel", 5, ERollOffResult.Won),
+            new("Tactician Bot 1", 2, ERollOffResult.Lost),
+        });
+
     private static AttackBeat Attack(int volleys = 3) => new(isMelee: false,
         new List<Position> { new(0f, 0f) }, new List<Position> { new(5f, 5f) },
         volleyCount: volleys, armorPenetration: 0);
@@ -43,17 +50,17 @@ public class DiceStackTests
         player.OnBeat(Dice());
         player.Update(0.05f);
 
-        Assert.That(player.GetDiceStack(), Has.Count.EqualTo(1));
+        Assert.That(player.GetRollStack(), Has.Count.EqualTo(1));
         Assert.That(player.IsAnimating, Is.True, "the engine is waiting for this roll, so the front-end "
             + "must be animating for exactly as long");
 
         player.Update(Paced);
         Assert.That(player.IsAnimating, Is.False, "the beat is done...");
-        Assert.That(player.GetDiceStack(), Has.Count.EqualTo(1), "...and the panel is still up. That "
+        Assert.That(player.GetRollStack(), Has.Count.EqualTo(1), "...and the panel is still up. That "
             + "overhang is what makes panels overlap, and therefore what makes them stack.");
 
         player.Update(PanelLife - Paced);
-        Assert.That(player.GetDiceStack(), Is.Empty, "gone once its lifetime runs out");
+        Assert.That(player.GetRollStack(), Is.Empty, "gone once its lifetime runs out");
     }
 
     [Test]
@@ -65,11 +72,11 @@ public class DiceStackTests
         player.OnBeat(beat);
         player.Update(0.05f);
 
-        Assert.That(player.GetDiceStack(), Has.Count.EqualTo(1), "the panel is up...");
+        Assert.That(player.GetRollStack(), Has.Count.EqualTo(1), "the panel is up...");
         Assert.That(player.IsAnimating, Is.False, "...but it never gates a prompt");
 
         player.Update((float)beat.HoldLeadIn.TotalSeconds);
-        Assert.That(player.GetDiceStack()[0].progress, Is.GreaterThanOrEqualTo(0.3f),
+        Assert.That(player.GetRollStack()[0].progress, Is.GreaterThanOrEqualTo(0.3f),
             "a held panel must finish tumbling within its lead-in (DiceOverlay locks the faces at 30% "
             + "of the envelope), or the dice would still be spinning after the engine moved on");
     }
@@ -84,10 +91,10 @@ public class DiceStackTests
         player.OnBeat(Dice(label: "Rifle: 2 hits, Rending AP+1"));
         player.Update(0.05f);
 
-        var stack = player.GetDiceStack();
+        var stack = player.GetRollStack();
         Assert.That(stack, Has.Count.EqualTo(2), "the to-hit roll is still readable under the saves");
-        Assert.That(stack[0].beat.Label, Is.EqualTo("Rifle: 3 hits"), "oldest first");
-        Assert.That(stack[1].beat.Label, Is.EqualTo("Rifle: 2 hits, Rending AP+1"));
+        Assert.That(((DiceRolledBeat)stack[0].beat).Label, Is.EqualTo("Rifle: 3 hits"), "oldest first");
+        Assert.That(((DiceRolledBeat)stack[1].beat).Label, Is.EqualTo("Rifle: 2 hits, Rending AP+1"));
         Assert.That(stack[0].progress, Is.GreaterThan(stack[1].progress),
             "each panel runs its own envelope; the older one is further along");
     }
@@ -104,10 +111,10 @@ public class DiceStackTests
             player.Update(0.05f);
         }
 
-        var stack = player.GetDiceStack();
+        var stack = player.GetRollStack();
         Assert.That(stack, Has.Count.EqualTo(3), "a burst of rolls cannot bury the table");
-        Assert.That(stack[0].beat.Label, Is.EqualTo("Roll 2"), "the oldest drop out...");
-        Assert.That(stack[2].beat.Label, Is.EqualTo("Roll 4"), "...and the newest always survives");
+        Assert.That(((DiceRolledBeat)stack[0].beat).Label, Is.EqualTo("Roll 2"), "the oldest drop out...");
+        Assert.That(((DiceRolledBeat)stack[2].beat).Label, Is.EqualTo("Roll 4"), "...and the newest always survives");
     }
 
     [Test]
@@ -118,11 +125,11 @@ public class DiceStackTests
         player.OnBeat(Chippy());
 
         player.Update(PanelLife + 0.2f);
-        Assert.That(player.GetDiceStack(), Has.Count.EqualTo(1),
+        Assert.That(player.GetRollStack(), Has.Count.EqualTo(1),
             "past a plain panel's lifetime, still up");
 
         player.Update(1.5f);
-        Assert.That(player.GetDiceStack(), Is.Empty);
+        Assert.That(player.GetRollStack(), Is.Empty);
     }
 
     [Test]
@@ -132,13 +139,13 @@ public class DiceStackTests
         player.OnBeat(Dice());
 
         player.Update(0.05f);
-        Assert.That(player.GetDiceStack()[0].alpha, Is.GreaterThan(0f).And.LessThan(1f), "mid fade-in");
+        Assert.That(player.GetRollStack()[0].alpha, Is.GreaterThan(0f).And.LessThan(1f), "mid fade-in");
 
         player.Update(0.15f);
-        Assert.That(player.GetDiceStack()[0].alpha, Is.EqualTo(1f), "solid once eased in");
+        Assert.That(player.GetRollStack()[0].alpha, Is.EqualTo(1f), "solid once eased in");
 
         player.Update(PanelLife - 0.4f);
-        Assert.That(player.GetDiceStack()[0].alpha, Is.GreaterThan(0f).And.LessThan(1f),
+        Assert.That(player.GetRollStack()[0].alpha, Is.GreaterThan(0f).And.LessThan(1f),
             "fading over its tail instead of popping");
     }
 
@@ -148,18 +155,49 @@ public class DiceStackTests
         var player = new PresentationPlayer();
         player.OnBeat(Dice());
         player.Update(0.2f);
-        float before = player.GetDiceStack()[0].progress;
+        float before = player.GetRollStack()[0].progress;
 
-        player.SetDiceStackHovered(true);
-        Assert.That(player.IsDiceStackHovered, Is.True);
+        player.SetRollStackHovered(true);
+        Assert.That(player.IsRollStackHovered, Is.True);
         player.Update(10f); // far past its lifetime
 
-        Assert.That(player.GetDiceStack(), Has.Count.EqualTo(1), "frozen panels do not expire");
-        Assert.That(player.GetDiceStack()[0].progress, Is.EqualTo(before), "nor advance");
+        Assert.That(player.GetRollStack(), Has.Count.EqualTo(1), "frozen panels do not expire");
+        Assert.That(player.GetRollStack()[0].progress, Is.EqualTo(before), "nor advance");
 
-        player.SetDiceStackHovered(false);
+        player.SetRollStackHovered(false);
         player.Update(PanelLife + 0.1f);
-        Assert.That(player.GetDiceStack(), Is.Empty, "and they resume ageing on release");
+        Assert.That(player.GetRollStack(), Is.Empty, "and they resume ageing on release");
+    }
+
+    [Test]
+    public void ARollOff_JoinsTheSameStack_InsteadOfDrawingOverIt()
+    {
+        // Game start: the objective-count roll, then the first-turn roll-off. Both dock to the caption
+        // zone, so before #325 the roll-off drew straight over the still-lingering dice panel.
+        var player = new PresentationPlayer();
+        player.OnBeat(Dice(label: "Roll for Objectives (D3 + 2)"));
+        player.Update(Paced + 0.05f);
+        player.OnBeat(RollOff("Map Side Roll-Off"));
+        player.Update(0.05f);
+
+        var stack = player.GetRollStack();
+        Assert.That(stack, Has.Count.EqualTo(2), "both are up, stacked - not one over the other");
+        Assert.That(stack[0].beat, Is.TypeOf<DiceRolledBeat>(), "the objective roll keeps the anchor");
+        Assert.That(stack[1].beat, Is.TypeOf<RollOffBeat>(), "the roll-off queues above it");
+    }
+
+    [Test]
+    public void ARollOffPanel_OutlivesItsBeat_LikeAnyOtherRoll()
+    {
+        var player = new PresentationPlayer();
+        player.OnBeat(RollOff("Map Side Roll-Off"));
+
+        player.Update(Paced + 0.05f);
+        Assert.That(player.IsAnimating, Is.False, "the beat has finished pacing...");
+        Assert.That(player.GetRollStack(), Has.Count.EqualTo(1), "...and the panel is still readable");
+
+        player.Update(PanelLife);
+        Assert.That(player.GetRollStack(), Is.Empty);
     }
 
     [Test]

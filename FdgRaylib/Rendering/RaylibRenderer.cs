@@ -526,19 +526,14 @@ public class RaylibRenderer
                         diceAvoid = diceAvoid.HasValue ? Union(diceAvoid.Value, bounds) : bounds;
                     }
 
-                    // #325: the whole stack, oldest anchored at the bottom. Hovering it freezes every
-                    // panel's timer; the bounds it reports are what the pointer is tested against next
-                    // frame (a frame of lag is invisible and avoids measuring the stack twice).
-                    Rectangle stackBounds = DiceOverlay.DrawStack(_presentationPlayer.GetDiceStack(),
-                        layout.AreaW, screenH, diceAvoid, _presentationPlayer.IsDiceStackHovered);
-                    _presentationPlayer.SetDiceStackHovered(stackBounds.Width > 0
+                    // #325: the whole stack - dice rolls AND roll-offs - oldest anchored at the bottom.
+                    // Hovering it freezes every panel's timer; the bounds it reports are what the pointer
+                    // is tested against next frame (a frame of lag is invisible and avoids measuring the
+                    // stack twice).
+                    Rectangle stackBounds = DiceOverlay.DrawStack(_presentationPlayer.GetRollStack(),
+                        layout.AreaW, screenH, diceAvoid, _presentationPlayer.IsRollStackHovered);
+                    _presentationPlayer.SetRollStackHovered(stackBounds.Width > 0
                         && Raylib.CheckCollisionPointRec(Raylib.GetMousePosition(), stackBounds));
-                }
-
-                if (_presentationPlayer != null &&
-                    _presentationPlayer.TryGetActiveRollOff(out var rollOffBeat, out var rollOffProgress))
-                {
-                    DiceOverlay.DrawRollOff(rollOffBeat, rollOffProgress, layout.AreaW, screenH);
                 }
 
                 if (_presentationPlayer != null &&
