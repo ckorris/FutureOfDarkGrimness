@@ -6,6 +6,28 @@ from origin/master. Standing precedent: numbers are never reused, and when two p
 claim the same number, the *unmerged local* item yields to the *merged* one and takes a fresh number.
 A per-clone pre-push hook blocks duplicate numbers across the index and the archive.
 
+> **2026-08-02 - reconciliation 40 (RESOLVED).** The Limited-weapon session filed **315** (shooting hold
+> fire), **316** (melee Limited enforcement), **317** (companion actions on a menu row) and **318** (melee
+> hold-back narrowed to Limited only) against a local master that was 12 commits stale. The pre-push fetch
+> found origin/master had meanwhile taken all three of the first numbers: **315 = embarked-unit activation
+> disambiguation** (merged, `aa11c54`), **316 = round opens on the wrong player** (merged + closed,
+> `d9f887c`) and **317 = difficult-terrain shortfall preview** (merged + closed, itself reconciliation 39's
+> 315 -> 317 renumber). Per the standing precedent the unmerged local items yield: **shooting hold fire
+> 315 -> 319**, **melee Limited 316 -> 320**, **companion actions 317 -> 321**
+> (`WorkItems/319-limited-hold-fire.md`, `320-melee-limited-not-enforced.md`,
+> `321-menu-companion-actions.md`). **318 was free on origin/master and is KEPT**, per reconciliation 7's
+> precedent that a non-colliding local item does not move — so this group is deliberately non-contiguous
+> (318 is a correction of what is now 320). The renumber landed everywhere before publication: the three
+> detail files (renamed + retitled + cross-references), #318's cross-references, the archive entries, and
+> every `#315`/`#316`/`#317` marker in the engine (`LimitedRules`, `ChooseRangedAttackRequest`,
+> `StringSelectionRequest`, `ChooseRangedAttackStage`, `ChooseMeleeWeaponStage`, `CombatActionContext`,
+> `MeleeStage`, `StrikeBackStage`, `AiStringSelectionResolver`, 4 test files), the app
+> (`GuiChooseRangedAttackResolver`, `GuiStringSelectionResolver`, `ResolverHotkeys`, both CLI resolvers,
+> 2 test files), `docs/ResolverGuide.md` and both scenario JSONs. The replacement was scoped to the files
+> this session's own commits touched, since master's merged work carries its own `#315`/`#316`/`#317`
+> markers that must not be rewritten. **Left as-is on purpose:** the nine pre-renumber commit messages,
+> matching every prior reconciliation's precedent that commit messages are not rewritten.
+
 > **2026-08-02 - reconciliation 39 (RESOLVED).** The difficult-terrain movement-preview session filed its item
 > as **315** against a local master that was 4 commits stale, not having seen that origin/master had already
 > taken **315 = embarked-unit activation disambiguation** (merged, `aa11c54`, `WorkItems/315-embarked-activation-disambiguation.md`)

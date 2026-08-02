@@ -34,6 +34,11 @@ public class GuiChooseRangedAttackResolver
     private (int wIdx, int tIdx) _hoveredOption       = (-1, -1);
     private (int wIdx, int tIdx) _canvasHoveredOption = (-1, -1);
 
+    // #319: "Done shooting" ends the action with weapons still loaded, so it asks first (user sign-off).
+    // Main-thread only, cleared with the request in Complete.
+    private const string DonePopupTitle = "End the shoot action?";
+    private bool _donePopupOpen;
+
     public GuiChooseRangedAttackResolver(ITableState tableState) => _tableState = tableState;
 
     public void UpdateLayout(float scale, int originX, int originY, float tableH)
@@ -107,11 +112,13 @@ public class GuiChooseRangedAttackResolver
             _selectedWeaponIdx  = FirstFireableWeaponIndex(request.WeaponOptions);
             _selectedTargetTIdx = _selectedWeaponIdx >= 0
                 ? PreferredTargetIndex(request.WeaponOptions[_selectedWeaponIdx], request.PreviousTarget) : -1;
+            _donePopupOpen      = false;
         }
 
         // #248 keyboard: Left/Right cycle the weapon (among fireable ones), Up/Down + number keys pick
         // the target (among fireable ones, display order). Enter fires via the footer's existing binding.
-        HandleKeyboard(request);
+        // #319: the Done confirmation owns the keyboard while it is up.
+        if (!_donePopupOpen) HandleKeyboard(request);
 
         DrawHoverLines(request);
 
@@ -139,8 +146,10 @@ public class GuiChooseRangedAttackResolver
 
         float pad       = 8f;
         float rowH      = ResolverPanelLayout.OptionRowHeight();
-        float footerH   = rowH + pad * 2;
         float spacingY  = ImGui.GetStyle().ItemSpacing.Y;
+        // #288 sizing rule: cost the footer first. #319 made it two rows - Fire on top, the
+        // Back/Done + Hold fire pair under it - so the sections must give up a row's worth of height.
+        float footerH   = rowH * 2 + spacingY + pad * 2;
         // Three stacked sections share the vertical space above the footer (two gaps between them).
         float sectionH  = (ImGui.GetContentRegionAvail().Y - footerH - spacingY * 2f) / 3f;
 
@@ -199,6 +208,18 @@ public class GuiChooseRangedAttackResolver
                 ? ImGui.ColorConvertFloat4ToU32(new Vector4(0.65f, 0.65f, 0.70f, 1f))
                 : ImGui.ColorConvertFloat4ToU32(new Vector4(0.50f, 0.50f, 0.50f, 1f));
             dl.AddText(rMin + new Vector2(4, 2), colTxt, wo.Weapon.Name);
+            // #319: a once-per-game weapon says so on its row, in both states - "ONCE PER GAME" while it
+            // still has its shot (firing it is irreversible, and that has to be visible BEFORE the click),
+            // "SPENT" once it is gone. Amber for the live one, gray for the used one.
+            if (wo.LimitedRule != null)
+            {
+                string badge = wo.LimitedAlreadyFired ? "SPENT" : "ONCE PER GAME";
+                uint colBadge = wo.LimitedAlreadyFired
+                    ? ImGui.ColorConvertFloat4ToU32(new Vector4(0.55f, 0.55f, 0.55f, 1f))
+                    : ImGui.ColorConvertFloat4ToU32(new Vector4(0.95f, 0.72f, 0.25f, 1f));
+                dl.AddText(rMin + new Vector2(4 + ImGui.CalcTextSize(wo.Weapon.Name + "  ").X, 2),
+                    colBadge, badge);
+            }
             // #292: the stat subline is unchanged text, but each special-rule name is now its own
             // underlined, hoverable run explaining what the rule does (the Army Forge treatment). Rule
             // names are tinted brighter than the rest of the subline so they read as "there is more here".
@@ -315,6 +336,21 @@ public class GuiChooseRangedAttackResolver
 
             ImGui.TextUnformatted(wo.Weapon.GetWeaponNameAndStats());
 
+            // #319: the consequence, not just the rule name. Firing a once-per-game weapon is the most
+            // irreversible thing this panel can do, and the player can still walk away from it (Hold fire),
+            // so the trade is spelled out at the moment of the decision.
+            if (wo.LimitedRule != null)
+            {
+                ImGui.Spacing();
+                ImGui.PushStyleColor(ImGuiCol.Text, wo.LimitedAlreadyFired
+                    ? new Vector4(0.70f, 0.70f, 0.70f, 1f) : new Vector4(0.95f, 0.72f, 0.25f, 1f));
+                ImGui.TextWrapped(wo.LimitedAlreadyFired
+                    ? $"{wo.LimitedRule}: already fired this game - it cannot fire again."
+                    : $"{wo.LimitedRule}: firing spends this weapon for the REST OF THE GAME. " +
+                      "Hold fire to keep it.");
+                ImGui.PopStyleColor();
+            }
+
             // #292: the weapon's rules spelled out, so the player can read what Rending/Deadly actually do
             // without hovering the narrow weapon row. Same descriptions the hover tooltips carry.
             IReadOnlyList<RuleHoverText.Segment> weaponRules = RuleHoverText.RuleSegments(wo.Weapon);
@@ -390,39 +426,22 @@ public class GuiChooseRangedAttackResolver
                               .WeaponTargetStats[_selectedTargetTIdx]
                               .modelsThatCanShoot.Count > 0;
 
-        // Back is only offered before the first weapon has fired this shoot action -- once you start
-        // shooting, you're committed to finishing the shoot stage. De-emphasized (secondary to Fire).
         float footW   = ImGui.GetContentRegionAvail().X;
         float spacing = ImGui.GetStyle().ItemSpacing.X;
-        // #308: the ENGINE decides whether backing out is still legal (nothing fired yet this shoot
-        // action). The resolver used to keep its own counter and got it wrong on repeat activations.
-        bool  showBack = request.AllowCancel;
-        if (showBack)
-        {
-            // #248: Backspace backs out too (only while Back is offered; Esc is reserved for the
-            // in-game menu).
-            if (ResolverButtons.Deemphasized("Back (Backspace)", new Vector2(footW * 0.36f, rowH))
-                || ResolverHotkeys.IsBackPressed())
-            {
-                Complete(tcs, new Cancelled<RangedAttackChoice>());
-                ImGui.End();
-                return;
-            }
-            ImGui.SameLine();
-        }
 
-        // Primary: Fire! -- red accent, larger; commits on click or the Confirm key when a weapon+target is chosen.
-        float fireW = showBack ? footW * 0.64f - spacing : footW;
+        // Primary: Fire! -- red accent, full width; commits on click or the Confirm key when a
+        // weapon+target is chosen. Muted while the Done confirmation is up, so the same Enter press
+        // cannot both answer the popup and fire the volley behind it.
         ImGui.PushStyleColor(ImGuiCol.Button,        new Vector4(0.65f, 0.20f, 0.20f, 1f));
         ImGui.PushStyleColor(ImGuiCol.ButtonHovered, new Vector4(0.78f, 0.27f, 0.27f, 1f));
         ImGui.PushStyleColor(ImGuiCol.ButtonActive,  new Vector4(0.55f, 0.16f, 0.16f, 1f));
         if (!canFire) ImGui.BeginDisabled(true);
-        bool fireClicked = ImGui.Button($"Fire!  {ResolverKeybinds.Confirm.Parenthetical}##fire", new Vector2(fireW, rowH));
+        bool fireClicked = ImGui.Button($"Fire!  {ResolverKeybinds.Confirm.Parenthetical}##fire", new Vector2(footW, rowH));
         if (!canFire) ImGui.EndDisabled();
         ImGui.PopStyleColor(3);
         // #240: edge-only (repeat: false) so a stuck key can't fire volleys on its own; #248: the
         // shared helper also mutes it while typing or while the in-game menu is open.
-        bool fireEnter = canFire && ResolverHotkeys.IsConfirmPressed();
+        bool fireEnter = canFire && !_donePopupOpen && ResolverHotkeys.IsConfirmPressed();
         if (fireClicked || fireEnter)
         {
             var wo = request.WeaponOptions[_selectedWeaponIdx];
@@ -432,11 +451,136 @@ public class GuiChooseRangedAttackResolver
             return;
         }
 
+        // Second row: the exit on the left, Hold fire on the right. #308: the ENGINE decides which exit
+        // is legal (the resolver used to keep its own counter and got it wrong on repeat activations);
+        // #319 turned the "no exit at all" case into the honestly-labelled "Done shooting".
+        float halfW = (footW - spacing) * 0.5f;
+        if (request.AllowCancel)
+        {
+            // Nothing has fired: backing out costs the player nothing, so it needs no confirmation.
+            // #248: Backspace backs out too (Esc is reserved for the in-game menu).
+            if (ResolverButtons.Deemphasized("Back (Backspace)", new Vector2(halfW, rowH))
+                || (!_donePopupOpen && ResolverHotkeys.IsBackPressed()))
+            {
+                Complete(tcs, new Cancelled<RangedAttackChoice>());
+                ImGui.End();
+                return;
+            }
+        }
+        else if (request.AllowStopShooting)
+        {
+            // #319: a weapon has fired, so this ENDS the action - shots the unit still has go unfired.
+            // That is the point (a Limited weapon you would rather keep), but it is also irreversible,
+            // so it asks first.
+            if (ResolverButtons.Deemphasized("Done shooting", new Vector2(halfW, rowH)))
+            {
+                _donePopupOpen = true;
+                ImGui.OpenPopup(DonePopupTitle);
+            }
+        }
+        else
+        {
+            ImGui.Dummy(new Vector2(halfW, rowH));
+        }
+
+        ImGui.SameLine();
+
+        // #319: Hold fire - decline just this weapon. It leaves the shoot action unfired (a Limited
+        // weapon keeps its once-per-game shot, a Deadly one stops gating the rest), and the remaining
+        // weapons are offered again.
+        bool canHoldFire = _selectedWeaponIdx >= 0 && !_donePopupOpen;
+        if (!canHoldFire) ImGui.BeginDisabled(true);
+        bool holdClicked = ImGui.Button("Hold fire (H)##holdfire", new Vector2(halfW, rowH));
+        if (!canHoldFire) ImGui.EndDisabled();
+        if (canHoldFire && ImGui.IsItemHovered())
+        {
+            var wo = request.WeaponOptions[_selectedWeaponIdx];
+            ImGui.SetTooltip(wo.LimitedRule != null
+                ? $"Do not fire {wo.Weapon.Name} this action - it keeps its {wo.LimitedRule} shot."
+                : $"Do not fire {wo.Weapon.Name} this action.");
+        }
+        if (holdClicked || (canHoldFire && ResolverHotkeys.IsLetterPressed('H')))
+        {
+            var wo = request.WeaponOptions[_selectedWeaponIdx];
+            Complete(tcs, new Selected<RangedAttackChoice>(RangedAttackChoice.HoldFire(wo.Weapon)));
+            ImGui.End();
+            return;
+        }
+
+        if (DrawDoneConfirmation(request, tcs))
+        {
+            ImGui.End();
+            return;
+        }
+
         ImGui.End();
 
         // Clear canvas hover so it only persists for the single frame after GetHoverLabel set it.
         // (If the mouse is still over a model next frame, GetHoverLabel will set it again before Draw.)
         _canvasHoveredOption = (-1, -1);
+    }
+
+    /// <summary>
+    /// #319: the "Done shooting" confirmation. Ending the action here gives up every shot the unit has
+    /// left this turn, so the popup names them rather than asking an abstract "are you sure?" - and calls
+    /// out that a once-per-game weapon is the one thing this KEEPS, since that is usually why the player
+    /// is here. Returns true when the resolver has completed (the caller must stop drawing the panel).
+    /// </summary>
+    private bool DrawDoneConfirmation(ChooseRangedAttackRequest request,
+        TaskCompletionSource<CancellableResult<RangedAttackChoice>> tcs)
+    {
+        if (!_donePopupOpen) return false;
+
+        // Keep the modal request alive across frames (OpenPopup is consumed by the first BeginPopupModal).
+        if (!ImGui.IsPopupOpen(DonePopupTitle)) ImGui.OpenPopup(DonePopupTitle);
+        var center = ImGui.GetMainViewport().GetCenter();
+        ImGui.SetNextWindowPos(center, ImGuiCond.Appearing, new Vector2(0.5f, 0.5f));
+        if (!ImGui.BeginPopupModal(DonePopupTitle, ImGuiWindowFlags.AlwaysAutoResize)) return false;
+
+        var giveUp = WeaponsGivenUpByStopping(request.WeaponOptions);
+        var limited = giveUp.Where(wo => wo.LimitedRule != null).ToList();
+
+        ImGui.TextWrapped(giveUp.Count > 0
+            ? $"{request.AttackingUnit.GetValue().Name} still has {giveUp.Count} weapon" +
+              $"{(giveUp.Count != 1 ? "s" : "")} that can fire this action:"
+            : $"{request.AttackingUnit.GetValue().Name} has nothing left that can fire.");
+        foreach (var wo in giveUp)
+        {
+            ImGui.BulletText(wo.LimitedRule != null
+                ? $"{wo.Weapon.Name}  ({wo.LimitedRule})"
+                : wo.Weapon.Name);
+        }
+
+        ImGui.Spacing();
+        ImGui.PushStyleColor(ImGuiCol.Text, new Vector4(0.85f, 0.75f, 0.30f, 1f));
+        ImGui.TextWrapped("Ending the shoot action now gives up those shots for this turn.");
+        ImGui.PopStyleColor();
+        if (limited.Count > 0)
+        {
+            ImGui.PushStyleColor(ImGuiCol.Text, new Vector4(0.45f, 0.80f, 0.45f, 1f));
+            ImGui.TextWrapped(limited.Count == 1
+                ? $"{limited[0].Weapon.Name} keeps its once-per-game shot for a later turn."
+                : "The once-per-game weapons above keep their shots for a later turn.");
+            ImGui.PopStyleColor();
+        }
+
+        ImGui.Spacing();
+        float confirmH = ResolverPanelLayout.OptionRowHeight();
+        if (ImGui.Button("End the shoot", new Vector2(150f, confirmH)))
+        {
+            ImGui.CloseCurrentPopup();
+            ImGui.EndPopup();
+            Complete(tcs, new Cancelled<RangedAttackChoice>());
+            return true;
+        }
+        ImGui.SameLine();
+        if (ImGui.Button("Keep shooting", new Vector2(150f, confirmH)))
+        {
+            ImGui.CloseCurrentPopup();
+            _donePopupOpen = false;
+        }
+        ImGui.EndPopup();
+        return false;
     }
 
     // #248: keyboard selection. Weapon cycling mirrors a weapon-row click (sole-target pre-select
@@ -647,6 +791,19 @@ public class GuiChooseRangedAttackResolver
         return sole;
     }
 
+    /// <summary>
+    /// #319: what ending the shoot action here actually costs — the weapons that could still fire at
+    /// something. A weapon with nothing in range loses nothing by stopping now, and naming it in the
+    /// confirmation would be a false warning. Internal for tests.
+    /// </summary>
+    internal static List<WeaponOption> WeaponsGivenUpByStopping(IReadOnlyList<WeaponOption> weaponOptions)
+    {
+        var giveUp = new List<WeaponOption>();
+        foreach (var wo in weaponOptions)
+            if (HasAnyFireableTarget(wo)) giveUp.Add(wo);
+        return giveUp;
+    }
+
     private static bool HasAnyFireableTarget(WeaponOption wo)
     {
         foreach (var ts in wo.WeaponTargetStats)
@@ -677,6 +834,7 @@ public class GuiChooseRangedAttackResolver
         _lastRequest        = null;
         _selectedWeaponIdx  = -1;
         _selectedTargetTIdx = -1;
+        _donePopupOpen      = false;
         _hoveredOption       = (-1, -1);
         _canvasHoveredOption = (-1, -1);
         tcs.SetResult(choice);
