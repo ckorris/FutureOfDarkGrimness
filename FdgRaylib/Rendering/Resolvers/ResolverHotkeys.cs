@@ -113,6 +113,31 @@ internal static class ResolverHotkeys
         return delta;
     }
 
+    /// <summary>
+    /// #326: "step to the next / previous item in a set" — Up/Down plus Tab/Shift+Tab, repeat on for the
+    /// same reason <see cref="ArrowDelta"/> has it (holding the key walks a long list).
+    ///
+    /// <para>Deliberately ADDITIVE rather than a rebind. The gesture this replaces was #295's click on the
+    /// model itself, and the obvious key to reach for is the Space that used to cycle — but Space is now
+    /// <see cref="ResolverKeybinds.Confirm"/>, whose whole value is that ONE table generates every button
+    /// label, tooltip and Options line. A per-panel exception would make all of that text lie. So: arrows,
+    /// because a visible list is what they already mean everywhere else in the app
+    /// (<see cref="KeyboardListNav"/>), and Tab, because it is the universal "next" key, has no other
+    /// binding in this client, and works without looking away from the table.</para>
+    /// </summary>
+    public static int CycleDelta()
+    {
+        if (KeysMuted) return 0;
+        int delta = ArrowDelta();
+        if (ImGui.IsKeyPressed(ImGuiKey.Tab, repeat: true))
+            delta += ImGui.GetIO().KeyShift ? -1 : 1;
+        return delta;
+    }
+
+    /// <summary>How the cycle reads in UI text. Derived from nothing — but kept beside the binding so a
+    /// panel never hand-writes the keys next to a call to <see cref="CycleDelta"/>.</summary>
+    public const string CycleHint = "Up/Down or Tab";
+
     /// <summary>Left/Right arrow movement this frame (+1 right, -1 left), repeat on — used by
     /// two-pane pickers (shoot: weapons) where vertical arrows own the other list.</summary>
     public static int HorizontalArrowDelta()

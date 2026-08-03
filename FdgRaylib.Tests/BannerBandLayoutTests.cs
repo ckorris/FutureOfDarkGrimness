@@ -3,7 +3,7 @@ using NUnit.Framework;
 
 namespace FdgRaylib.Tests;
 
-// #325 — a banner band stacks like the roll stack does: the OLDEST entry keeps the band's anchor and
+// #327 — a banner band stacks like the roll stack does: the OLDEST entry keeps the band's anchor and
 // newer ones pile up above it. Mid-screen is crowded (toasts, then headlines, then notices, then the
 // roll stack at the bottom), so each band gets a ceiling from the band above and trims to fit. The
 // direction of that trim is the load-bearing part: dropping from the oldest end shifts the stack back

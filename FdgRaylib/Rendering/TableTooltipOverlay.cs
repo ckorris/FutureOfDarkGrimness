@@ -26,7 +26,7 @@ public class TableTooltipOverlay
     // models during a move instead of teleporting to the destination (which is the logical model.Position).
     private PresentationPlayer? _presentationPlayer;
 
-    // #325: the roll stack's screen bounds this frame (see the Draw parameter). Render-thread only.
+    // #327: the roll stack's screen bounds this frame (see the Draw parameter). Render-thread only.
     private Rectangle? _rollStack;
 
     private float _scale;
@@ -60,7 +60,7 @@ public class TableTooltipOverlay
     }
 
     /// <param name="rollStackBounds">
-    /// #325: where the dice/roll-off stack is on screen this frame, or null when nothing is up. Unit
+    /// #327: where the dice/roll-off stack is on screen this frame, or null when nothing is up. Unit
     /// overlays are ImGui draw-list text, which renders ON TOP of the Raylib-drawn roll panels, so a
     /// label sitting over one turned both into mush. Anything that would land inside these bounds yields
     /// for as long as they are there — a panel is a few seconds of transient reading; the labels are
@@ -450,7 +450,7 @@ public class TableTooltipOverlay
     }
 
     /// <summary>
-    /// #325: true when the given screen rect would land on the roll stack, and should therefore not be
+    /// #327: true when the given screen rect would land on the roll stack, and should therefore not be
     /// drawn this frame. A small margin keeps text from kissing a panel's edge, which reads as badly as
     /// overlapping it.
     /// </summary>

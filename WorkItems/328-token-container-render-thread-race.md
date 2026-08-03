@@ -1,7 +1,7 @@
-# 326 — Token reads crashed the renderer: `GetAllTokens` handed out the live list
+# 328 — Token reads crashed the renderer: `GetAllTokens` handed out the live list
 
 **Status**: in-progress
-**Related**: #151 (token display data, the reader), #325 (the session that surfaced it)
+**Related**: #151 (token display data, the reader), #327 (the session that surfaced it)
 
 ## Goal
 

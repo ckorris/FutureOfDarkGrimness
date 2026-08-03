@@ -6,14 +6,14 @@ using NUnit.Framework;
 
 namespace FdgRaylib.Tests;
 
-// #325 — a dice panel OUTLIVES its beat. The engine still paces each roll in full (the gap between
+// #327 — a dice panel OUTLIVES its beat. The engine still paces each roll in full (the gap between
 // rolls is the rhythm of the exchange, not dead time), but the panel stays up for seconds afterwards,
 // so consecutive rolls overlap on screen and the player keeps a STACK of them (oldest first, drawn from
 // the bottom anchor upward) instead of a single slot that the next roll evicts — the eviction is what
 // made a two-threshold volley cut its own first roll short (engine ea91d68). Hovering the stack freezes
 // every panel's timer.
 //
-// Also covers the concurrent attack LIST, which #325 introduced while rolls were briefly held and kept
+// Also covers the concurrent attack LIST, which #327 introduced while rolls were briefly held and kept
 // afterwards: "the dice envelope outlasts the attack animation" is a coincidence of two unrelated
 // constants, not something the front-end should depend on.
 //
@@ -173,7 +173,7 @@ public class DiceStackTests
     public void ARollOff_JoinsTheSameStack_InsteadOfDrawingOverIt()
     {
         // Game start: the objective-count roll, then the first-turn roll-off. Both dock to the caption
-        // zone, so before #325 the roll-off drew straight over the still-lingering dice panel.
+        // zone, so before #327 the roll-off drew straight over the still-lingering dice panel.
         var player = new PresentationPlayer();
         player.OnBeat(Dice(label: "Roll for Objectives (D3 + 2)"));
         player.Update(Paced + 0.05f);

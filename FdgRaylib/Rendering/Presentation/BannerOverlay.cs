@@ -19,7 +19,7 @@ namespace FdgRaylib.Rendering.Presentation;
 /// is animating.</item>
 /// </list>
 ///
-/// <para><b>Every tier stacks (#325).</b> A banner used to be replaced by the next one in its band — a
+/// <para><b>Every tier stacks (#327).</b> A banner used to be replaced by the next one in its band — a
 /// new Notice wiped out the Notice before it, a new Headline replaced the last — which is the same
 /// "evicted mid-read" problem the dice stack was built to fix. Now each band grows: the oldest keeps the
 /// band's anchor and newer ones pile up ABOVE it, dimmed by depth so the newest reads loudest, matching
@@ -58,7 +58,7 @@ public static class BannerOverlay
     private static readonly Color ToastPanel = new(20, 20, 24, 200);
 
     /// <summary>
-    /// Draws every live banner (#325), taking the list OLDEST FIRST exactly as
+    /// Draws every live banner (#327), taking the list OLDEST FIRST exactly as
     /// <c>PresentationPlayer.GetBanners</c> returns it. All three tiers arrive together and are split
     /// into their bands here.
     /// </summary>

@@ -38,13 +38,13 @@ public class PresentationPlayer : IPresentationSink
     private readonly Dictionary<Guid, GlideState> _glides = new();
     private readonly Dictionary<Guid, DeathState> _deaths = new();
 
-    // #325 dice stack. A panel OUTLIVES its beat: the engine paces a roll in full (the gap between rolls
+    // #327 dice stack. A panel OUTLIVES its beat: the engine paces a roll in full (the gap between rolls
     // is the rhythm of the exchange — see DiceRolledBeat.Held for the two attempts at removing it), and
     // then the panel stays up for seconds more while play carries on. So several panels are legible at
     // once, and a new roll STACKS on top of the last instead of evicting it — the single-slot eviction is
     // what made a two-threshold volley cut its own first roll short. Oldest first; the overlay anchors
     // the oldest at the bottom and grows upward.
-    // Roll-offs share the stack (#325). They dock to the same caption zone and are the same kind of
+    // Roll-offs share the stack (#327). They dock to the same caption zone and are the same kind of
     // statement — "here is a roll and what it meant" — so a roll-off drawn over a still-lingering dice
     // panel was the exact overlap this item exists to remove. The objective-count roll and the first-turn
     // roll-off at game start are the case that showed it.
@@ -102,7 +102,7 @@ public class PresentationPlayer : IPresentationSink
             Math.Clamp((Lifetime - Elapsed) / RollFadeOutSeconds, 0f, 1f));
     }
 
-    // #275 banner tiers, all three on one display track since #325. Notice/Toast are Held, so they
+    // #275 banner tiers, all three on one display track since #327. Notice/Toast are Held, so they
     // transfer here the frame they are dequeued and the engine keeps moving underneath them (it paces
     // only their lead-in: 300ms for a Notice, nothing at all for a Toast). A Headline ALSO lands here,
     // but unlike the others it additionally holds the active slot for its full duration - it is the one
@@ -155,10 +155,10 @@ public class PresentationPlayer : IPresentationSink
     // dequeued and animates over its full NominalDuration WHILE the to-hit dice that always follow
     // it tumble.
     //
-    // #325 made this a LIST, and it stays one. The to-hit roll's 1800ms envelope outlasts the longest
+    // #327 made this a LIST, and it stays one. The to-hit roll's 1800ms envelope outlasts the longest
     // attack animation (VolleyMax, 1600ms), so in practice a second attack does not arrive before the
     // first has finished — but that is a coincidence of two unrelated constants, and the brief spell when
-    // #325 held rolls at ~600ms turned it into a real truncation (a whiffed attack has no saves or wounds
+    // #327 held rolls at ~600ms turned it into a real truncation (a whiffed attack has no saves or wounds
     // behind it, so the next weapon fires almost immediately). Overlapping attacks play side by side.
     private readonly List<AttackState> _attacks = new();
     private const int MaxConcurrentAttacks = 3;
@@ -315,7 +315,7 @@ public class PresentationPlayer : IPresentationSink
                     while (_attacks.Count > MaxConcurrentAttacks) _attacks.RemoveAt(0);
                     continue;
                 }
-                // #325: every roll - dice or roll-off - joins the stack for display, which is what lets
+                // #327: every roll - dice or roll-off - joins the stack for display, which is what lets
                 // its panel outlive its beat. A normal (non-held) roll ALSO takes the active slot below,
                 // so the front-end animates for exactly as long as the engine waits. A held roll — the
                 // opt-in nothing uses today — stops here, and the next beat becomes active immediately.
@@ -331,7 +331,7 @@ public class PresentationPlayer : IPresentationSink
                     _cascading.Add(new CascadeState(next));
                     continue;
                 }
-                // #275/#325: every banner joins the display track, which is what lets it outlive its
+                // #275/#327: every banner joins the display track, which is what lets it outlive its
                 // beat and stack. A Notice or Toast stops there - it announces over the top of play
                 // instead of interrupting it. A Headline falls through to the active slot as well,
                 // because it is the tier that stops play.
@@ -386,7 +386,7 @@ public class PresentationPlayer : IPresentationSink
                 }
             }
 
-            // #325: the roll stack, likewise independent of the active slot - each panel lives its own
+            // #327: the roll stack, likewise independent of the active slot - each panel lives its own
             // fixed lifetime and retires when it runs out. Aged AFTER the dequeue above, like every other
             // concurrent track, so a panel that appeared this frame gets this frame's time too.
             // Hovering the stack freezes all of them at once.
@@ -411,7 +411,7 @@ public class PresentationPlayer : IPresentationSink
 
             // The concurrent attack track advances every frame, independent of the active slot. Each
             // attack keeps its own cue counters, so two overlapping ones never steal each other's
-            // volley/impact cues (#325).
+            // volley/impact cues (#327).
             for (int i = _attacks.Count - 1; i >= 0; i--)
             {
                 AttackState a = _attacks[i];
@@ -467,7 +467,7 @@ public class PresentationPlayer : IPresentationSink
     }
 
     /// <summary>
-    /// #325. Called under the lock. A new roll goes on TOP of the stack; the oldest drops out once the
+    /// #327. Called under the lock. A new roll goes on TOP of the stack; the oldest drops out once the
     /// stack is full, so the newest panel is never the one squeezed off screen.
     /// </summary>
     private void PushRoll(PresentationBeat beat)
@@ -477,7 +477,7 @@ public class PresentationPlayer : IPresentationSink
     }
 
     /// <summary>
-    /// #325. Called under the lock. A banner goes on TOP of its tier's stack and the OLDEST of that tier
+    /// #327. Called under the lock. A banner goes on TOP of its tier's stack and the OLDEST of that tier
     /// drops out once it is full — the newest statement is always the one that survives. Tiers are capped
     /// separately because they occupy different amounts of screen: five toasts are a ticker, five
     /// headlines would be the whole table.
@@ -594,10 +594,10 @@ public class PresentationPlayer : IPresentationSink
                         routDeath.SetProgress(t); // all routed models fade together
                 break;
             // DiceRolledBeat never reaches here: every roll is displayed from the dice stack, which ages
-            // on its own timeline (#325). A non-held roll still occupies the active slot, but only so the
+            // on its own timeline (#327). A non-held roll still occupies the active slot, but only so the
             // engine's full-duration wait has something animating behind it.
             // BannerBeat never reaches here: every banner is displayed from the banner track, which ages
-            // on its own timeline (#325). A Headline still occupies the active slot, but only so the
+            // on its own timeline (#327). A Headline still occupies the active slot, but only so the
             // engine's full-duration wait has something animating behind it.
             // AttackBeat never reaches here: it runs on its own concurrent track (see Update, #238).
             case SaveBeat save:
@@ -631,7 +631,7 @@ public class PresentationPlayer : IPresentationSink
                     if (_deaths.TryGetValue(rm.Model.ID, out var routDeath))
                         routDeath.Done = true;
                 break;
-            // A DiceRolledBeat's panel outlives the beat by design (#325) — the stack retires it.
+            // A DiceRolledBeat's panel outlives the beat by design (#327) — the stack retires it.
             case SaveBeat:
                 _activeSave = null;
                 break;
@@ -645,7 +645,7 @@ public class PresentationPlayer : IPresentationSink
     }
 
     /// <summary>
-    /// The roll panels on screen this frame, OLDEST FIRST (#325) — dice rolls and roll-offs share one
+    /// The roll panels on screen this frame, OLDEST FIRST (#327) — dice rolls and roll-offs share one
     /// stack — each with its 0..1 progress against its own envelope and its display alpha (fade in/out
     /// easing, #245 — the overlay multiplies its colors by it). The overlay anchors the oldest at the
     /// bottom of the table area and stacks the rest above it. Snapshot taken under the lock.
@@ -661,7 +661,7 @@ public class PresentationPlayer : IPresentationSink
     }
 
     /// <summary>
-    /// #325. Tells the player the pointer is over the roll stack, which freezes every panel's timer until
+    /// #327. Tells the player the pointer is over the roll stack, which freezes every panel's timer until
     /// it leaves — the "wait, why did that happen?" affordance. Set from the render thread each frame
     /// from the bounds the overlay reports; a one-frame lag is invisible.
     /// </summary>
@@ -670,14 +670,14 @@ public class PresentationPlayer : IPresentationSink
         lock (_lock) _rollHovered = hovered;
     }
 
-    /// <summary>Whether the roll stack is currently frozen under the pointer (#325).</summary>
+    /// <summary>Whether the roll stack is currently frozen under the pointer (#327).</summary>
     public bool IsRollStackHovered
     {
         get { lock (_lock) return _rollHovered; }
     }
 
     /// <summary>
-    /// Every banner on screen this frame, ALL TIERS, oldest first (#275, #325), each with its display
+    /// Every banner on screen this frame, ALL TIERS, oldest first (#275, #327), each with its display
     /// alpha (eased in as it appears, out over the tail of its lifetime). The overlay lays each tier out
     /// in its own band, stacking within it. Snapshot taken under the lock.
     /// </summary>
@@ -694,7 +694,7 @@ public class PresentationPlayer : IPresentationSink
     /// <summary>
     /// The attacks (tracers / clash) being shown this frame, oldest first, each with its 0..1 progress.
     /// Usually one; a second appears when the next weapon fires before the previous animation has
-    /// finished, which held dice made possible (#325). Snapshot taken under the lock.
+    /// finished, which held dice made possible (#327). Snapshot taken under the lock.
     /// </summary>
     public IReadOnlyList<(AttackBeat beat, float progress)> GetActiveAttacks()
     {

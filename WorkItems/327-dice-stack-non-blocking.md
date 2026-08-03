@@ -1,4 +1,4 @@
-# 325 — Dice panels outlive their beats and stack instead of evicting each other
+# 327 — Dice panels outlive their beats and stack instead of evicting each other
 
 **Status**: in-progress
 **Related**: #245 (dice caption strip), #275 (banner tiers — the held-track precedent), #232 (casualty

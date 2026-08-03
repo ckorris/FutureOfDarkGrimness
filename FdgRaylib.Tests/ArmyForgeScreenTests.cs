@@ -1,3 +1,5 @@
+using System;
+using System.IO;
 using System.Linq;
 using System.Text.Json;
 using FDG.ArmyBuilding;
@@ -213,6 +215,111 @@ public class ArmyForgeScreenTests
             "final compiled state has no Heavy Rifle left");
         Assert.That(ArmyForgeScreen.AvailableExcludingSection(book, bu, missiles), Is.EqualTo(3),
             "excluding the section's own pick, the full pool is switchable");
+    }
+
+    // ── #323 Titan Lords double Heavy Hammer, against the SHIPPED book ─────────────────────────────────
+
+    // Reported 2026-08-02 (friend's War Disciples list): on the War Errant Mini-Titan, trading the Titan
+    // Shield for a second Heavy Hammer must leave BOTH hammers swappable. The book authors "Replace any
+    // Heavy Hammer" ABOVE the shield section that grants the second one, which starved the second swap in
+    // the compiler; this pins the whole path on the real bundled data - stepper bound and compiled result.
+    [Test]
+    public void WarErrantMiniTitan_ShieldTradedForASecondHammer_SwapsBothHammers()
+    {
+        BookFile book = JsonSerializer.Deserialize<BookFile>(
+            File.ReadAllText(Path.Combine(AppContext.BaseDirectory, "Assets", "Books",
+                "TitanLordsWarDisciples" + BookFile.EXTENSION_WITH_PERIOD)), RuleJson.Options)!;
+        RosterUnit errant = book.Units.Single(u => u.Name == "War Errant Mini-Titan");
+        UpgradeSection hammers = errant.Sections.Single(s => s.Label == "Replace any Heavy Hammer");
+        UpgradeSection shield = errant.Sections.Single(s => s.Label == "Replace Titan Shield");
+        UpgradeOption sword = hammers.Options.Single(o => o.Label.StartsWith("Heavy Sword"));
+
+        var screen = new ArmyForgeScreen(book);
+        screen.AddToList(errant.Id);
+        BuilderUnit bu = screen.List.Units[0];
+
+        ArmyForgeScreen.SetChoice(bu, shield, shield.Options.Single().Id, 1); // Titan Shield -> Heavy Hammer
+
+        // With two hammers on the unit, the stepper must offer two swaps - both before and after the first.
+        Assert.That(StepperMaxFor(book, bu, hammers, sword), Is.EqualTo(2), "two hammers, two swaps offered");
+        ArmyForgeScreen.SetChoice(bu, hammers, sword.Id, 1);
+        Assert.That(StepperMaxFor(book, bu, hammers, sword), Is.EqualTo(2), "the second swap is still offered");
+
+        ArmyForgeScreen.SetChoice(bu, hammers, sword.Id, 2);
+        UnitFileEntry compiled = screen.Compile().Units.Single();
+        Assert.That(compiled.Weapons.Any(w => w.Name == "Heavy Hammer"), Is.False, "neither hammer is left behind");
+        Assert.That(compiled.Weapons.Single(w => w.Name == "Heavy Sword").Quantity, Is.EqualTo(2));
+        Assert.That(compiled.PointCost, Is.EqualTo(385), "295 base + 30 shield swap + 30x2 sword swaps");
+    }
+
+    // ── #324 an all-swap must not hide the specialist swap below it, against the SHIPPED book ──────────
+
+    // DAO Union Tactical Grunts: 5 Pulse Rifles, "Replace all Pulse Rifles" (#1) above "Replace one Pulse
+    // Rifle" (#2). Taking the all-swap used to eat the pool, so the compiler dropped the specialist AND the
+    // Forge grayed it out. Both halves are checked here: the Forge still offers the swap, and the compile
+    // honours it.
+    [Test]
+    public void TacticalGrunts_AllSwapLeavesTheSpecialistSwapAvailableAndCompiled()
+    {
+        BookFile book = JsonSerializer.Deserialize<BookFile>(
+            File.ReadAllText(Path.Combine(AppContext.BaseDirectory, "Assets", "Books",
+                "DAOUnion" + BookFile.EXTENSION_WITH_PERIOD)), RuleJson.Options)!;
+        RosterUnit grunts = book.Units.Single(u => u.Name == "Tactical Grunts");
+        UpgradeSection all = grunts.Sections.Single(s => s.Label == "Replace all Pulse Rifles");
+        UpgradeSection one = grunts.Sections.Single(s => s.Label == "Replace one Pulse Rifle");
+        UpgradeOption plasma = one.Options.Single(o => o.Label.StartsWith("Plasma Rifle"));
+
+        var screen = new ArmyForgeScreen(book);
+        screen.AddToList(grunts.Id);
+        BuilderUnit bu = screen.List.Units[0];
+
+        ArmyForgeScreen.SetChoice(bu, all, all.Options.Single().Id, 1);
+
+        // The Forge gate: with every rifle swapped away by the all-swap, the specialist section must still
+        // offer its pick - the compiler reserves a rifle for it.
+        Assert.That(ArmyForgeScreen.AvailableExcludingSection(book, bu, one), Is.EqualTo(5),
+            "the all-swap yields, so the specialist swap is still selectable");
+
+        ArmyForgeScreen.SetChoice(bu, one, plasma.Id, 1);
+
+        UnitFileEntry compiled = screen.Compile().Units.Single();
+        Assert.That(compiled.Weapons.Single(w => w.Name == "Pulse Carbine").Quantity, Is.EqualTo(4));
+        Assert.That(compiled.Weapons.Single(w => w.Name == "Plasma Rifle").Quantity, Is.EqualTo(1));
+        Assert.That(compiled.Weapons.Any(w => w.Name == "Pulse Rifle"), Is.False);
+        Assert.That(compiled.PointCost, Is.EqualTo(150), "115 base + 25 flat all-swap + 10 plasma");
+
+        // And switching the specialist to another option still works with the all-swap in place.
+        Assert.That(ArmyForgeScreen.AvailableExcludingSection(book, bu, one), Is.EqualTo(5));
+    }
+
+    // Dwarf Guilds Guardians: 5 Pistols + 5 Bashes, "Replace all Pistols and Bashes" -> CCW. The "Bashes"
+    // target never matched the "Bash" weapon, so the swap left all five Bashes on the unit for free (#324).
+    [Test]
+    public void Guardians_ReplaceAllPistolsAndBashes_TakesTheBashesToo()
+    {
+        BookFile book = JsonSerializer.Deserialize<BookFile>(
+            File.ReadAllText(Path.Combine(AppContext.BaseDirectory, "Assets", "Books",
+                "DwarfGuilds" + BookFile.EXTENSION_WITH_PERIOD)), RuleJson.Options)!;
+        RosterUnit guardians = book.Units.Single(u => u.Name == "Guardians");
+        UpgradeSection swap = guardians.Sections.Single(s => s.Label == "Replace all Pistols and Bashes");
+
+        var screen = new ArmyForgeScreen(book);
+        screen.AddToList(guardians.Id);
+        ArmyForgeScreen.SetChoice(screen.List.Units[0], swap, swap.Options.First().Id, 1);
+
+        UnitFileEntry compiled = screen.Compile().Units.Single();
+        Assert.That(compiled.Weapons.Any(w => w.Name == "Bash"), Is.False, "the Bashes are traded away");
+        Assert.That(compiled.Weapons.Any(w => w.Name == "Pistol"), Is.False);
+        Assert.That(compiled.Weapons.Single(w => w.Name == "CCW").Quantity, Is.EqualTo(5));
+    }
+
+    private static int StepperMaxFor(BookFile book, BuilderUnit bu, UpgradeSection section, UpgradeOption option)
+    {
+        (UnitFileEntry unit, var items) = ListCompiler.CompileUnitDetailed(book, bu);
+        RosterUnit roster = book.Units.Single(u => u.Id == bu.RosterUnitId);
+        return ArmyForgeScreen.StepperMax(section, roster, unit,
+            ListCompiler.AvailableApplications(unit.Weapons, items, section.Targets),
+            ArmyForgeScreen.ChoiceCount(bu, section.Id, option.Id));
     }
 
     // ── #006 hero-join seams ────────────────────────────────────────────────────────────────────────────

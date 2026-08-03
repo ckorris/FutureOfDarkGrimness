@@ -4,7 +4,7 @@ using Raylib_cs;
 
 namespace FdgRaylib.Tests;
 
-// #325 — unit name labels, token chips, transport badges and health bars are ImGui draw-list text, which
+// #327 — unit name labels, token chips, transport badges and health bars are ImGui draw-list text, which
 // renders ON TOP of the Raylib-drawn roll panels. Once panels started lingering (and stacking), labels
 // over the middle of the table landed on them and both became unreadable. Anything that would collide
 // with the stack yields while the stack is up.

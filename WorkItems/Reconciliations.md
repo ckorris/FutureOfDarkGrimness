@@ -6,23 +6,85 @@ from origin/master. Standing precedent: numbers are never reused, and when two p
 claim the same number, the *unmerged local* item yields to the *merged* one and takes a fresh number.
 A per-clone pre-push hook blocks duplicate numbers across the index and the archive.
 
-> **2026-08-02 - reconciliation 43 (RESOLVED).** A third collision on the same afternoon. The dice-stack
-> session filed **322** ("dice rolls linger without blocking") from an index fetched minutes earlier;
-> by the time it went to merge, origin/master had taken **322 = "Waiting on" line in the status HUD**
-> (itself the product of reconciliation 41, which had just moved it off 318). Per the standing precedent
-> the unmerged local item yields. **323 and 324 were NOT free either** — reconciliation 42 had claimed
-> both for the in-flight Army Forge upgrade markers, visible only in the engine repo (`91ea5de`) because
-> that session's superproject bookkeeping had not landed yet — so the dice stack takes the next genuinely
-> free number: **dice stack 322 -> 325** (`WorkItems/325-dice-stack-non-blocking.md`, renamed). Renumbered
-> everywhere in the same pass: the detail file + filename, the index line, and every `#322` marker from
-> this session in the engine (`DiceRolledBeat`, `RollToSaveStage`, `DiceBeatHoldTests`) and the app
-> (`PresentationPlayer`, `DiceOverlay`, `RaylibRenderer`, `DiceStackTests`). `RaylibRenderer` now carries
-> BOTH numbers on purpose — its status-HUD line legitimately belongs to the waiting-HUD #322, so only the
-> four dice-stack comments moved. Left as-is per precedent: the three commit messages saying "#322" for
-> the dice stack, which predate the renumber. **Lesson repeated:** fetching before filing is necessary
-> but not sufficient — the index is stale the moment a parallel session commits, and a number can be
-> claimed in the submodule before it ever appears in the superproject's index.
+> **2026-08-02 - reconciliation 45 (RESOLVED).** The dice-stack session collided TWICE, which is worth
+> recording as one story. It filed **322** from an index fetched minutes earlier; by the time it went to
+> merge, origin/master had taken **322 = "Waiting on" line in the status HUD** (reconciliation 41's
+> renumber). 323/324 were gone too (reconciliation 42, visible only in the engine repo at that point), so
+> it took **325** - and then, before it could push, reconciliations 43 and 44 landed on origin and
+> assigned **325 = pre-roll shooting forecast** and **326 = single-model move roster**, colliding with
+> BOTH of this session's numbers. Per merged-wins precedent the unmerged local items yield again:
+> **dice stack 322 -> 325 -> 327** (`WorkItems/327-dice-stack-non-blocking.md`) and
+> **token-container render-thread race 326 -> 328** (`WorkItems/328-token-container-render-thread-race.md`).
+> This entry was itself filed as "reconciliation 43" before origin's 43 and 44 existed, and is renumbered
+> **45** here for the same reason.
 >
+> All markers moved before publication: both detail files + filenames, both index lines, and every
+> `#325`/`#326` marker from this session in the engine (`DiceRolledBeat`, `RollToSaveStage`,
+> `DiceBeatHoldTests`, `TokenContainer`, `ITokenContainer`, `TokenContainerConcurrencyTests`) and the app
+> (`PresentationPlayer`, `DiceOverlay`, `BannerOverlay`, `RaylibRenderer`, `TableTooltipOverlay`,
+> `DiceStackTests`, `BannerTierPlayerTests`, `BannerBandLayoutTests`, `UnitOverlayOcclusionTests`).
+> Deliberately NOT touched: the merged sessions' own `#325`/`#326` markers in the shooting-forecast and
+> model-roster files and `docs/ResolverGuide.md`, and `RaylibRenderer`'s `#322` status-HUD line, which
+> belongs to the waiting-HUD item. Commit messages saying `#322`/`#325`/`#326` for this work predate the
+> renumbers, as usual.
+>
+> **Reconciliation 44's observation, confirmed from the other side.** This session fetched at filing time
+> AND re-fetched before pushing, and still collided twice - because the second collision was created by
+> work that landed *while this session was mid-flight*. Re-checking before the first commit that bakes
+> the number in (44's suggested guard) would not have helped either: the collision arrived after that
+> point. On the evidence of 39/40/42/43/44/45, reading origin cannot prevent this at any cadence; only
+> reserving the number on origin at filing time can.
+
+> **2026-08-02 - reconciliation 44 (RESOLVED).** The model-roster session fetched at filing time and took
+> **325** from origin/master at `0f21304`, where it was free across index + archive + `WorkItems/` - but
+> reconciliation 43 (below) landed on origin *while the work was in progress* and renumbered the shooting
+> forecast INTO **325**, merged and pushed first. Per merged-wins precedent the unpushed local item
+> yields: **model roster 325 -> 326** (`WorkItems/326-single-model-move-roster.md`). References updated
+> before any push - detail file + filename, index line, `docs/ResolverGuide.md` section, and the app-side
+> comments in `ModelRoster`, `GuiDefineMovementResolver`, `ResolverHotkeys`, `EscapeMenuOverlay` and
+> `ModelRosterTests`. The local commit predating the renumber was rebased and amended rather than left
+> saying "#325", since it had never been pushed and origin's real #325 is the shooting forecast; nothing
+> shared ever carried the old number.
+>
+> **This is the third instance of one race** (39/40, then 43, now 44), and it is worth naming precisely:
+> fetching at filing time bounds only what is *already* taken, never what another in-flight session
+> claims and pushes first. The pre-push hook catches it, but only after the number has been copied
+> everywhere. Nothing here fixes that - a genuinely collision-free scheme would have to reserve the
+> number on origin at filing time (an empty commit touching the index, pushed immediately) rather than
+> merely reading it. Filed as an observation, not a change.
+>
+> **2026-08-02 - reconciliation 43 (RESOLVED).** The shooting-forecast session fetched at filing time
+> and took **323** from a then-synced origin/master - but reconciliation 42 (the Army Forge session,
+> below) landed on origin *afterwards* and renumbered its items INTO **323/324**, merged and pushed
+> before this session's first push. Same race as 39/40, from the other side: a fetch at filing only
+> protects against numbers already taken, not numbers claimed later by a session that pushes first.
+> Per merged-wins precedent the unpushed local item yields: **shooting forecast 323 -> 325**
+> (`WorkItems/325-shooting-forecast-ui.md`). References updated before any push - detail file, index,
+> engine source comments (ShootingForecast, ChooseRangedAttackRequest, ChooseRangedAttackStage,
+> GrantedRollModifiers, CombatActionContext, IWeapon, both test files), app-side resolver comments and
+> `docs/ResolverGuide.md` - so only the pre-renumber commit messages say "#323" for it, per precedent.
+> Engine merge was clean (Forge vs shoot-stage, no shared files); 2643/2643 green post-merge.
+>
+> **2026-08-02 - reconciliation 42 (RESOLVED).** The Army Forge upgrade session (playtester bug: only one
+> of a Titan's two Heavy Hammers could be swapped) fetched at session start, saw master in sync, and filed
+> **318** and **319** from that view. The Limited-weapon and waiting-HUD work landed on origin/master
+> *during* the session - 13 superproject / 11 engine commits, including reconciliations 40 and 41 - so by
+> the time the work was ready to push, **318 = melee hold-back** and **319 = Limited hold fire** were both
+> merged and closed. Per the standing precedent the unmerged local items yield:
+> **starved-Replace retry 318 -> 323** (`WorkItems/323-starved-replace-upgrade.md`) and
+> **all-swap yields + "-es" plurals 319 -> 324** (`WorkItems/324-all-swap-yields-and-plurals.md`), both
+> renamed. All 21 markers were renumbered before publication, confined to the Army Forge files
+> (`ListCompiler`, `ArmyForgeScreen`, `ArmyForgeCompilerTests`, `OprListSelectionsTests`,
+> `ArmyForgeScreenTests`, `ForgeCrossSectionReplaceShippedDataTests`) plus the two detail files and the two
+> index lines; the `#318`/`#319` markers in the shooting/melee files and `docs/ResolverGuide.md` are the
+> merged items' own and were left alone. Commit messages from before the renumber predate it, as usual.
+>
+> **Note on the rule that was supposed to prevent this.** `CLAUDE.md` gained "`git fetch origin` BEFORE
+> filing a number and take it from `origin/master`'s index + archive" in `c25861f`, citing reconciliations
+> 39 and 40. This session *did* fetch first - the collision came from drift that landed mid-session, which
+> that wording doesn't cover. The cheap guard for a long session is to re-fetch and re-check the number
+> before the first commit that bakes it into filenames and source comments, not only before filing it.
+
 > **2026-08-02 - reconciliation 41 (RESOLVED).** The waiting-HUD session filed **318** ("Waiting on"
 > line in the status HUD) against a local master that predated reconciliation 40, whose session had
 > meanwhile taken **318 = melee hold-back is Limited-only** (merged + closed, engine `dcf6e04`).

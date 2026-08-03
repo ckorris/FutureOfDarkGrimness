@@ -9,7 +9,7 @@ namespace FdgRaylib.Rendering.Presentation;
 
 /// <summary>
 /// Draws the live <see cref="DiceRolledBeat"/> panels as a lower-third caption STACK docked to the
-/// bottom-center of the table viewport (#245, #325) — the subtitle convention: the action plays out on
+/// bottom-center of the table viewport (#245, #327) — the subtitle convention: the action plays out on
 /// the table while the numbers narrate from the caption zone, never covering the units or the
 /// concurrent attack animation (#238). Each panel is: a standalone <b>target badge</b> (the success
 /// threshold, e.g. "4+", big enough to read before the dice settle) over the roll's category word
@@ -20,7 +20,7 @@ namespace FdgRaylib.Rendering.Presentation;
 /// and a <b>result line</b> with the settled outcome (<see cref="DiceRolledBeat.ResultSummary"/>).
 /// Beats carrying chips arrive pre-stretched by the engine so there is time to read them.
 ///
-/// <para>#325: a panel outlives its beat, so several are legible at once. The OLDEST keeps the bottom
+/// <para>#327: a panel outlives its beat, so several are legible at once. The OLDEST keeps the bottom
 /// anchor and newer ones stack above it, each dimmed by depth so the newest reads loudest; hovering
 /// the stack freezes the timers and restores every panel to full strength. When the stack would not fit
 /// the vertical budget the oldest panels are dropped from the layout, never the newest — the top of the
@@ -39,7 +39,7 @@ namespace FdgRaylib.Rendering.Presentation;
 /// filled portion in the same category accent.</item>
 /// </list>
 ///
-/// <para>A <see cref="RollOffBeat"/> is a panel on the same stack (#325), drawn as a labelled name+die
+/// <para>A <see cref="RollOffBeat"/> is a panel on the same stack (#327), drawn as a labelled name+die
 /// list instead of a caption. It already shared this caption zone — placement continuity beat
 /// stakes-based prominence at the 2026-07-18 playtest — but it used to draw itself there independently,
 /// so the first-turn roll-off landed on top of the still-lingering objective-count roll at game start.
@@ -79,7 +79,7 @@ public static class DiceOverlay
 
     private const float OverlapDim = 0.35f; // ghost alpha while the attack animation overlaps the strip
 
-    // #325 stack geometry.
+    // #327 stack geometry.
     private const int StackGap    = 8;   // between panels
     private const int StackTopMin = 56;  // the stack never climbs over the status HUD strip
     // Depth dim, counted from the newest panel down: the current roll reads at full strength and the
@@ -112,7 +112,7 @@ public static class DiceOverlay
     private static readonly Color ProcChipBg = new(58, 48, 24, 230);
 
     // Per-panel smoothing state, keyed by beat reference and pruned each frame. Render-thread only.
-    // The overlap ghosting was already eased; #325 made it per-panel (panels at different heights
+    // The overlap ghosting was already eased; #327 made it per-panel (panels at different heights
     // overlap the attack differently, and one shared value had them fighting over it) and added the
     // depth dim, which likewise eases — a panel stepping straight from full to dim the instant the next
     // roll appears reads as a flicker rather than as history receding.
@@ -126,7 +126,7 @@ public static class DiceOverlay
     private static double _lastDrawTime;
 
     /// <summary>
-    /// Draws every live roll panel (#325) — dice rolls and roll-offs alike — taking the stack OLDEST
+    /// Draws every live roll panel (#327) — dice rolls and roll-offs alike — taking the stack OLDEST
     /// FIRST exactly as <c>PresentationPlayer.GetRollStack</c> returns it, and returns the screen bounds
     /// the stack occupies so the caller can hit-test the pointer for hover-freeze. Zero-size when nothing
     /// is up.
@@ -411,7 +411,7 @@ public static class DiceOverlay
     /// (Won); a shared highest turns yellow (TiedForWin) and the engine emits a fresh beat for the
     /// run-off. Dice tumble for the first fraction of the beat, then settle to the rolled face + colour.
     ///
-    /// <para>#325: this is a panel ON THE STACK, not a separate overlay. It used to draw itself at the
+    /// <para>#327: this is a panel ON THE STACK, not a separate overlay. It used to draw itself at the
     /// bottom anchor independently, which put the first-turn roll-off straight over the still-lingering
     /// objective-count roll at game start. Sharing the stack means it queues above whatever is still up,
     /// and it inherits the stack's fade, depth dim and hover-freeze instead of carrying its own

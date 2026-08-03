@@ -184,7 +184,7 @@ public class RaylibRenderer
     }
 
     // Smallest rectangle containing both — used to ghost the dice strip against every in-flight attack
-    // at once (#325).
+    // at once (#327).
     private static Rectangle Union(Rectangle a, Rectangle b)
     {
         float x = Math.Min(a.X, b.X);
@@ -491,7 +491,7 @@ public class RaylibRenderer
                 DrawModels(layout);
                 DrawDeathBursts(layout);
 
-                // #325: usually one attack, occasionally two overlapping (the next weapon fires before
+                // #327: usually one attack, occasionally two overlapping (the next weapon fires before
                 // the previous tracers land, which held dice made possible).
                 if (_presentationPlayer != null)
                 {
@@ -514,14 +514,14 @@ public class RaylibRenderer
                     SpellOverlay.Draw(spellBeat, spellProgress, layout.Scale, layout.OriginX, layout.OriginY, TableHIn);
                 }
 
-                // #325: handed to the tooltip overlay below. Its unit labels are ImGui draw-list text and
+                // #327: handed to the tooltip overlay below. Its unit labels are ImGui draw-list text and
                 // therefore land ON TOP of these Raylib-drawn panels, so they have to know where the stack
                 // is in order to yield to it.
                 Rectangle? rollStackBounds = null;
                 if (_presentationPlayer != null)
                 {
                     // #245: the caption strip ghosts itself while an attack animation reaches into it —
-                    // over the union of them when more than one is in flight (#325).
+                    // over the union of them when more than one is in flight (#327).
                     Rectangle? diceAvoid = null;
                     foreach ((AttackBeat avoidAttack, float _) in _presentationPlayer.GetActiveAttacks())
                     {
@@ -530,7 +530,7 @@ public class RaylibRenderer
                         diceAvoid = diceAvoid.HasValue ? Union(diceAvoid.Value, bounds) : bounds;
                     }
 
-                    // #325: the whole stack - dice rolls AND roll-offs - oldest anchored at the bottom.
+                    // #327: the whole stack - dice rolls AND roll-offs - oldest anchored at the bottom.
                     // Hovering it freezes every panel's timer; the bounds it reports are what the pointer
                     // is tested against next frame (a frame of lag is invisible and avoids measuring the
                     // stack twice).
@@ -540,7 +540,7 @@ public class RaylibRenderer
                         && Raylib.CheckCollisionPointRec(Raylib.GetMousePosition(), rollStackBounds.Value));
                 }
 
-                // #275/#325: every banner tier rides one concurrent display track and stacks within its
+                // #275/#327: every banner tier rides one concurrent display track and stacks within its
                 // band, so they draw every frame regardless of what holds the active slot.
                 if (_presentationPlayer != null)
                 {

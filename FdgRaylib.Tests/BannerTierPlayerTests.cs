@@ -12,7 +12,7 @@ namespace FdgRaylib.Tests;
 // are still up. Mirrors CasualtyCascadePlayerTests, which pins the same "Held means its own track" shape
 // for casualties.
 //
-// #325: every tier now STACKS rather than being replaced in its band, and a Headline's panel lingers
+// #327: every tier now STACKS rather than being replaced in its band, and a Headline's panel lingers
 // past its beat so consecutive ones can overlap at all. The pacing is untouched - a Headline still stops
 // the game for exactly as long as it did.
 [TestFixture]
@@ -44,7 +44,7 @@ public class BannerTierPlayerTests
     [Test]
     public void AHeadlinePanel_OutlivesItsBeat()
     {
-        // #325: without an overhang two headlines could never be on screen together, since each blocks
+        // #327: without an overhang two headlines could never be on screen together, since each blocks
         // for its whole duration - the linger is what makes the stack reachable.
         var player = new PresentationPlayer();
         player.OnBeat(Banner("Round 1", EBannerTier.Headline));
@@ -90,7 +90,7 @@ public class BannerTierPlayerTests
     [Test]
     public void EveryTierStacks_InsteadOfBeingReplaced()
     {
-        // A Notice used to supersede the Notice before it outright. #325: it is pushed aside and dimmed
+        // A Notice used to supersede the Notice before it outright. #327: it is pushed aside and dimmed
         // instead, like a dice panel - nothing is overwritten mid-read.
         var player = new PresentationPlayer();
         player.OnBeat(Banner("Alice deploys first", EBannerTier.Notice));
