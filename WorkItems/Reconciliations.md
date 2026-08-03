@@ -6,6 +6,24 @@ from origin/master. Standing precedent: numbers are never reused, and when two p
 claim the same number, the *unmerged local* item yields to the *merged* one and takes a fresh number.
 A per-clone pre-push hook blocks duplicate numbers across the index and the archive.
 
+> **2026-08-02 - reconciliation 44 (RESOLVED).** The model-roster session fetched at filing time and took
+> **325** from origin/master at `0f21304`, where it was free across index + archive + `WorkItems/` - but
+> reconciliation 43 (below) landed on origin *while the work was in progress* and renumbered the shooting
+> forecast INTO **325**, merged and pushed first. Per merged-wins precedent the unpushed local item
+> yields: **model roster 325 -> 326** (`WorkItems/326-single-model-move-roster.md`). References updated
+> before any push - detail file + filename, index line, `docs/ResolverGuide.md` section, and the app-side
+> comments in `ModelRoster`, `GuiDefineMovementResolver`, `ResolverHotkeys`, `EscapeMenuOverlay` and
+> `ModelRosterTests`. The local commit predating the renumber was rebased and amended rather than left
+> saying "#325", since it had never been pushed and origin's real #325 is the shooting forecast; nothing
+> shared ever carried the old number.
+>
+> **This is the third instance of one race** (39/40, then 43, now 44), and it is worth naming precisely:
+> fetching at filing time bounds only what is *already* taken, never what another in-flight session
+> claims and pushes first. The pre-push hook catches it, but only after the number has been copied
+> everywhere. Nothing here fixes that - a genuinely collision-free scheme would have to reserve the
+> number on origin at filing time (an empty commit touching the index, pushed immediately) rather than
+> merely reading it. Filed as an observation, not a change.
+>
 > **2026-08-02 - reconciliation 43 (RESOLVED).** The shooting-forecast session fetched at filing time
 > and took **323** from a then-synced origin/master - but reconciliation 42 (the Army Forge session,
 > below) landed on origin *afterwards* and renumbered its items INTO **323/324**, merged and pushed
