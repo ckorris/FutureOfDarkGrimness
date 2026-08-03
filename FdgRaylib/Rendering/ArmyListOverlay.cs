@@ -182,30 +182,28 @@ public sealed class ArmyListOverlay
         ImGui.SameLine();
         if (ImGui.RadioButton("Table", _tableMode)) _tableMode = true;
 
-        float closeW = 110f;
+        // One close button (user feedback v4: not a separate chip). Normally a quiet
+        // "Return to Game (L)"; while the engine waits on YOU (it never pauses), it grows the
+        // "Action Needed" prefix and flashes orange so it reads over a wall of cards.
         bool pending = _resolverOverlay?.HasAnyPending ?? false;
-        float chipW = pending
-            ? ImGui.CalcTextSize("Action needed - return to game").X
-              + 2f * ImGui.GetStyle().FramePadding.X + ImGui.GetStyle().ItemSpacing.X
-            : 0f;
-
-        ImGui.SameLine(ImGui.GetWindowWidth() - ImGui.GetStyle().WindowPadding.X - closeW - chipW);
+        string label = pending ? "Action Needed - Return to Game (L)" : "Return to Game (L)";
+        float buttonW = ImGui.CalcTextSize(label).X + 2f * ImGui.GetStyle().FramePadding.X;
+        ImGui.SameLine(ImGui.GetWindowWidth() - ImGui.GetStyle().WindowPadding.X - buttonW);
 
         if (pending)
         {
-            // The engine is waiting on YOU while this is open (it never pauses); pulse so the chip
-            // reads over a wall of cards, and clicking it drops straight back to the prompt.
             float pulse = 0.5f + 0.5f * MathF.Sin((float)ImGui.GetTime() * 5f);
             var hot = new Vector4(0.95f, 0.65f, 0.15f, 1f);
             var dim = new Vector4(0.62f, 0.42f, 0.10f, 1f);
-            ImGui.PushStyleColor(ImGuiCol.Button, Vector4.Lerp(dim, hot, pulse));
+            Vector4 flash = Vector4.Lerp(dim, hot, pulse);
+            // All three button states, so hovering doesn't snap back to the theme gray mid-flash.
+            ImGui.PushStyleColor(ImGuiCol.Button, flash);
+            ImGui.PushStyleColor(ImGuiCol.ButtonHovered, hot);
+            ImGui.PushStyleColor(ImGuiCol.ButtonActive, hot);
             ImGui.PushStyleColor(ImGuiCol.Text, new Vector4(0.05f, 0.05f, 0.05f, 1f));
-            if (ImGui.Button("Action needed - return to game")) Close();
-            ImGui.PopStyleColor(2);
-            ImGui.SameLine();
         }
-
-        if (ImGui.Button("Close (L)", new Vector2(closeW, 0f))) Close();
+        if (ImGui.Button(label)) Close();
+        if (pending) ImGui.PopStyleColor(4);
     }
 
     private void DrawPlayerTab(IPlayerSlotInfo slot)
@@ -287,7 +285,7 @@ public sealed class ArmyListOverlay
         ImGui.TableSetupColumn("Stats", ImGuiTableColumnFlags.WidthStretch, 1f);
         ImGui.TableSetupColumn("Loadout", ImGuiTableColumnFlags.WidthStretch, 3f);
         ImGui.TableSetupColumn("Special Rules", ImGuiTableColumnFlags.WidthStretch, 2.5f);
-        ImGui.TableHeadersRow();
+        DrawStaticHeaderRow("Unit", "Stats", "Loadout", "Special Rules");
 
         foreach (IUnit unit in units)
             DrawUnitRow(unit);
@@ -379,6 +377,19 @@ public sealed class ArmyListOverlay
         var heroRules = PlayerFacingRules(hero.RuleDefinitions);
         if (heroRules.Count > 0)
             DrawWrappedSegments(RuleSegmentsFor(heroRules), ImGui.GetContentRegionAvail().X);
+    }
+
+    // Header row WITHOUT TableHeadersRow's interactive header widgets: these columns don't sort or
+    // hide, so the hover highlight advertised a click that does nothing (user feedback v4). The
+    // Headers row flag keeps the header-band background; plain text draws on it.
+    private static void DrawStaticHeaderRow(params string[] labels)
+    {
+        ImGui.TableNextRow(ImGuiTableRowFlags.Headers);
+        for (int i = 0; i < labels.Length; i++)
+        {
+            ImGui.TableSetColumnIndex(i);
+            ImGui.TextUnformatted(labels[i]);
+        }
     }
 
     /// <summary>The comma-joined hoverable segment list for a set of resolved rules.</summary>
@@ -585,7 +596,7 @@ public sealed class ArmyListOverlay
         ImGui.TableSetupColumn("ATK", ImGuiTableColumnFlags.WidthFixed, 40f);
         ImGui.TableSetupColumn("AP", ImGuiTableColumnFlags.WidthFixed, 32f);
         ImGui.TableSetupColumn("SPE", ImGuiTableColumnFlags.WidthStretch, 2f);
-        ImGui.TableHeadersRow();
+        DrawStaticHeaderRow("Weapon", "RNG", "ATK", "AP", "SPE");
 
         foreach (var group in weapons.GroupBy(w => w.Name))
         {

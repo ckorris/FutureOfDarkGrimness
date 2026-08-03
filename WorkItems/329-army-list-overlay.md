@@ -57,6 +57,10 @@ User sign-off on all forks:
 
 ## Notes
 
+- 2026-08-02: v4 feedback: table header rows are no longer interactive (TableHeadersRow's hover
+  highlight advertised a click that did nothing; now a Headers-flag row with plain text). The
+  Action-needed chip and Close merged into one button: "Return to Game (L)" normally, orange-flashing
+  "Action Needed - Return to Game (L)" while a local prompt waits.
 - 2026-08-02: v3 feedback: +5% of the viewport's width/height as extra breathing room on all four
   sides, on top of the v2 chrome clearance (still per-frame, so still resize-proof).
 - 2026-08-02: v2 feedback (screenshot): margins now leave the game's chrome visible on all four
