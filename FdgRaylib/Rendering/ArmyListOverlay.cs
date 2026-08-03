@@ -110,13 +110,20 @@ public sealed class ArmyListOverlay
         if (!IsOpen) return;   // closed by a key above — nothing to draw this frame
 
         // Sized to the table area, not the screen, so the right column (resolver panel, log, chat)
-        // stays readable and clickable beside it; the margins let the board edge and the bottom-left
-        // buttons peek through. 85% background alpha (user feedback): the board ghosts through the
-        // panel without costing the text any contrast.
-        var size = new Vector2(areaW - 48f, screenH - 48f);
-        ImGui.SetNextWindowPos(new Vector2(areaW * 0.5f, screenH * 0.5f), ImGuiCond.Always,
-            new Vector2(0.5f, 0.5f));
-        ImGui.SetNextWindowSize(size, ImGuiCond.Always);
+        // stays readable and clickable beside it. The margins keep the game's own chrome visible
+        // around the panel (user feedback): the status strip and top toast band above, the
+        // bottom-left Menu / Army Lists buttons below, and a sliver of board on both sides.
+        // Recomputed every frame from the live sizes, so they hold through resizes and UI scales.
+        const float side = 16f;
+        // Status strip (12 + 24px text, plus "waiting on" lines) and the toast band (anchored at
+        // y=48, one row ~44px) live above; proportional with clamps so small windows don't drown.
+        float top = Math.Clamp(screenH * 0.095f, 96f, 140f);
+        // The Menu / Army Lists buttons are pinned 8px off the bottom in an auto-sized window;
+        // GetFrameHeight tracks the live font scale, so this clears them at any UI scale.
+        float bottom = 8f + ImGui.GetFrameHeight() + ImGui.GetStyle().WindowPadding.Y * 2f + 10f;
+
+        ImGui.SetNextWindowPos(new Vector2(side, top), ImGuiCond.Always);
+        ImGui.SetNextWindowSize(new Vector2(areaW - side * 2f, screenH - top - bottom), ImGuiCond.Always);
         ImGui.SetNextWindowBgAlpha(0.85f);
 
         if (ImGui.Begin("##armylists",
@@ -593,9 +600,21 @@ public sealed class ArmyListOverlay
             ImGui.TableSetColumnIndex(4);
             var ruleSegments = RuleHoverText.RuleSegments(w);
             if (ruleSegments.Count == 0)
+            {
                 ImGui.TextDisabled("-");
+            }
             else
-                DrawWrappedSegments(ruleSegments, ImGui.GetContentRegionAvail().X);
+            {
+                // RuleSegments is one segment PER RULE with no separators (its shoot-panel caller
+                // interleaves its own) - without these a two-rule weapon printed "Deadly(3)Limited".
+                var separated = new List<RuleHoverText.Segment>();
+                foreach (RuleHoverText.Segment segment in ruleSegments)
+                {
+                    if (separated.Count > 0) separated.Add(new RuleHoverText.Segment(", ", null, null));
+                    separated.Add(segment);
+                }
+                DrawWrappedSegments(separated, ImGui.GetContentRegionAvail().X);
+            }
         }
 
         ImGui.EndTable();

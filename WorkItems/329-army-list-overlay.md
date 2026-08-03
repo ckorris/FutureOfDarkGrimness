@@ -57,6 +57,12 @@ User sign-off on all forks:
 
 ## Notes
 
+- 2026-08-02: v2 feedback (screenshot): margins now leave the game's chrome visible on all four
+  sides - top clamp(screenH*0.095, 96, 140) clears the status strip + toast band, bottom clears the
+  pinned Menu/Army Lists buttons via GetFrameHeight (UI-scale-aware), 16px sides - recomputed per
+  frame so they hold through resizes. Also fixed from the screenshot: the card weapon table's SPE
+  cell ran multi-rule weapons together ("Deadly(3)Limited") - RuleHoverText.RuleSegments carries no
+  separators (its shoot-panel caller adds them); the SPE cell now interleaves ", ".
 - 2026-08-02: v1 feedback tweak: no longer a true modal popup. Now a plain top window sized to the
   TABLE AREA (layout.AreaW) with 85% background alpha, so the right column (resolver panel, log,
   chat) stays visible and clickable beside it and the board ghosts through. Board input muting is
