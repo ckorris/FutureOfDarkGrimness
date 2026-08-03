@@ -100,21 +100,18 @@ public class LobbyScreen : IAppScreen
 
         if (_viewModel == null) return;
 
-        // Scale UI elements up for the lobby — default ImGui font is on the small side at
-        // these screen sizes. 1.2x roughly = "two sizes bigger" and grows buttons by the
-        // same factor (since button height = font + frame padding).
-        var io = ImGui.GetIO();
-        float originalFontScale = io.FontGlobalScale;
-        io.FontGlobalScale = originalFontScale * 1.2f;
+        DrawScaled(screenW, screenH);
+    }
 
-        try
-        {
-            DrawScaled(screenW, screenH);
-        }
-        finally
-        {
-            io.FontGlobalScale = originalFontScale;
-        }
+    // How much smaller the window is than the monitor the fonts were baked for, clamped to
+    // [0.5, 1]. 1 when fullscreen/maximized; shrinks proportionally as the window does.
+    private static float WindowToMonitorScale(int screenW, int screenH)
+    {
+        int monitor = Raylib.GetCurrentMonitor();
+        float monW = Raylib.GetMonitorWidth(monitor);
+        float monH = Raylib.GetMonitorHeight(monitor);
+        if (monW <= 0f || monH <= 0f) return 1f;
+        return Math.Clamp(MathF.Min(screenW / monW, screenH / monH), 0.5f, 1f);
     }
 
     private void DrawScaled(int screenW, int screenH)
@@ -125,11 +122,20 @@ public class LobbyScreen : IAppScreen
             ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoCollapse |
             ImGuiWindowFlags.NoTitleBar);
 
+        // Fonts are baked for the monitor at startup and the panel scales below are tuned for a
+        // fullscreen window; a smaller window scales the lobby down proportionally instead of
+        // overflowing (truncated columns, oversized rows). This must ride the per-window
+        // SetWindowFontScale calls: io.FontGlobalScale is latched at NewFrame, so setting it inside
+        // Draw and restoring before returning never rendered (the old 1.2x was a silent no-op).
+        float ws         = WindowToMonitorScale(screenW, screenH);
+        float panelScale = 1.5f * ws;  // the "~50% bigger" panels, as tuned at fullscreen
+
         float margin       = 10f;
         // Floor keeps the settings rows usable at small window sizes; the main column absorbs the rest.
         float settingsW    = MathF.Max(280f, screenW * 0.25f);
         float mainW        = screenW - settingsW - margin * 3;
-        float fontSize     = ImGui.GetFontSize();
+        float baseFontSize = ImGui.GetFontSize();       // baked font px, unaffected by ws
+        float fontSize     = baseFontSize * ws;         // layout metric the lobby's rows derive from
         float framePadY    = ImGui.GetStyle().FramePadding.Y;
         float naturalBtnH  = fontSize + framePadY * 2;
         float headerH      = MathF.Max(40f, naturalBtnH + 12f);
@@ -149,13 +155,14 @@ public class LobbyScreen : IAppScreen
             ImGuiWindowFlags.NoScrollbar | ImGuiWindowFlags.NoScrollWithMouse);
 
         float headerFontH  = headerH * 0.65f;
-        float headerScale  = headerFontH / fontSize;
+        float headerScale  = headerFontH / baseFontSize; // window-scale factor that renders at headerFontH px
         ImGui.SetWindowFontScale(headerScale);
         ImGui.SetCursorPosY((headerH - headerFontH) * 0.5f);
         ImGui.TextUnformatted(_viewModel.ServerName);
-        ImGui.SetWindowFontScale(1f);
+        ImGui.SetWindowFontScale(ws);
 
-        float backW = ImGui.CalcTextSize("Back").X + 36f; // fit the text at the current scale
+        // CalcTextSize ignores SetWindowFontScale, so apply ws to the measured width by hand.
+        float backW = (ImGui.CalcTextSize("Back").X + 36f) * ws;
         float backH = headerH - 8f;
         ImGui.SetCursorPos(new Vector2(mainW - backW - 4f, 4f));
         if (UiButton.Back("Back", new Vector2(backW, backH)))
@@ -170,7 +177,7 @@ public class LobbyScreen : IAppScreen
         float playerListY = margin + headerH + margin;
         ImGui.SetCursorPos(new Vector2(margin, playerListY));
         ImGui.BeginChild("##players", new Vector2(mainW, playerListH), ImGuiChildFlags.Borders);
-        ImGui.SetWindowFontScale(1.5f);  // rows + font ~50% bigger than the rest of the lobby
+        ImGui.SetWindowFontScale(panelScale);  // rows + font ~50% bigger than the rest of the lobby
         DrawPlayerList(mainW);
         ImGui.EndChild();
 
@@ -179,7 +186,7 @@ public class LobbyScreen : IAppScreen
         ImGui.SetCursorPos(new Vector2(margin, chatY));
         ImGui.BeginChild("##chatlog", new Vector2(mainW, chatH), ImGuiChildFlags.Borders,
             ImGuiWindowFlags.HorizontalScrollbar);
-        ImGui.SetWindowFontScale(1.5f);  // match the player + settings panels
+        ImGui.SetWindowFontScale(panelScale);  // match the player + settings panels
         DrawChatLog();
         ImGui.EndChild();
 
@@ -191,10 +198,11 @@ public class LobbyScreen : IAppScreen
         ImGui.BeginChild("##chatrow", new Vector2(mainW, chatInputH), ImGuiChildFlags.None,
             ImGuiWindowFlags.NoScrollbar);
         ImGui.PopStyleVar();
-        ImGui.SetWindowFontScale(1.5f);
+        ImGui.SetWindowFontScale(panelScale);
 
         // Size the Send button to its text at the row's scaled font, so it doesn't clip to "Ser".
-        float sendBtnW = ImGui.CalcTextSize("Send").X + 36f;
+        // (CalcTextSize ignores SetWindowFontScale; ws applied by hand, same as the Back button.)
+        float sendBtnW = (ImGui.CalcTextSize("Send").X + 36f) * ws;
 
         // InputText height = font + 2*FramePadding.Y. Recompute padding against the now-scaled font size.
         float scaledFontSize  = ImGui.GetFontSize();
@@ -218,14 +226,14 @@ public class LobbyScreen : IAppScreen
         ImGui.SetCursorPos(new Vector2(rightX, margin));
         ImGui.BeginChild("##settings", new Vector2(settingsW, rightH - chatInputH - margin),
             ImGuiChildFlags.Borders);
-        ImGui.SetWindowFontScale(1.5f);  // settings fields ~50% bigger than the rest of the lobby
+        ImGui.SetWindowFontScale(panelScale);  // settings fields ~50% bigger than the rest of the lobby
         DrawSettings(settingsW);
         ImGui.EndChild();
 
         ImGui.SetCursorPos(new Vector2(rightX, margin + rightH - chatInputH));
         // No border on the launch child — the button itself fills the panel and provides the visual edge.
         ImGui.BeginChild("##launch", new Vector2(settingsW, chatInputH), ImGuiChildFlags.None);
-        ImGui.SetWindowFontScale(1.5f);  // match the chat row + other panels
+        ImGui.SetWindowFontScale(panelScale);  // match the chat row + other panels
         DrawLaunch(settingsW, chatInputH);
         ImGui.EndChild();
 

@@ -30,6 +30,12 @@ public class HostModal : IAppScreen
     private const float DialogWidthFraction  = 0.30f;
     private const float DialogHeightFraction = 0.52f;
 
+    // Height the dialog actually needed last frame (content + button row + padding). The fraction-of-
+    // screen height assumes the content shrinks with the window, but fixed paddings and the baked title
+    // font don't - at low resolutions the checkbox caption ended up drawn under the pinned buttons.
+    // Measuring and growing keeps the buttons below the content whatever the window size.
+    private float _requiredDialogH;
+
     // #310: the saved name can change while this dialog sits off screen (you joined a game as someone
     // else), so the fields are re-read from the config every time it opens, not just at construction.
     public void OnShown() => Reset();
@@ -46,7 +52,7 @@ public class HostModal : IAppScreen
         ImGui.PopStyleColor();
 
         float dw = screenW * DialogWidthFraction;
-        float dh = screenH * DialogHeightFraction;
+        float dh = MathF.Min(MathF.Max(screenH * DialogHeightFraction, _requiredDialogH), screenH - 16f);
         float dx = (screenW - dw) * 0.5f;
         float dy = (screenH - dh) * 0.5f;
         float scale = Math.Min(screenW / 1920f, screenH / 1080f);
@@ -106,7 +112,11 @@ public class HostModal : IAppScreen
         float gap   = dw * 0.04f;
         float firstX = (dw - btnW * 2 - gap) * 0.5f;
 
-        float btnY = dh - pad - btnH;
+        // Buttons pin to the dialog bottom, but never above the content. Recording the content-only
+        // requirement (not btnY + button) keeps the dialog free to shrink back when the window grows.
+        float contentBottom = ImGui.GetCursorPosY();
+        float btnY = MathF.Max(dh - pad - btnH, contentBottom + 8f * scale);
+        _requiredDialogH = contentBottom + 8f * scale + btnH + pad;
         ImGui.SetCursorPos(new Vector2(firstX, btnY));
 
         if (UiButton.Back("CANCEL", new Vector2(btnW, btnH)))
