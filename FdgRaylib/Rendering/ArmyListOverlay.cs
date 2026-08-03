@@ -33,6 +33,10 @@ public sealed class ArmyListOverlay
     private const float MinCardWidth = 420f;   // roughly the printed card's proportions
     private const int   MaxColumns   = 4;
 
+    // Slice 3: the printed list's second mode — one row per unit. A display preference like the
+    // ViewSettings toggles, so it persists across opens (and games) within the session.
+    private static bool _tableMode;
+
     public bool IsOpen { get; private set; }
 
     private ITableState? _tableState;
@@ -151,12 +155,19 @@ public sealed class ArmyListOverlay
         }
     }
 
-    // Title on the left; "Action needed" pulse + Close on the right.
+    // Title + view-mode pair on the left; "Action needed" pulse + Close on the right.
     private void DrawHeaderBar()
     {
         ImGui.PushFont(RaylibRenderer.LargeFont);
         ImGui.TextUnformatted("Army Lists");
         ImGui.PopFont();
+
+        // The printed list's two modes, one click apart (radio pair, not a cycling button, so the
+        // current mode is always visible).
+        ImGui.SameLine();
+        if (ImGui.RadioButton("Cards", !_tableMode)) _tableMode = false;
+        ImGui.SameLine();
+        if (ImGui.RadioButton("Table", _tableMode)) _tableMode = true;
 
         float closeW = 110f;
         bool pending = _resolverOverlay?.HasAnyPending ?? false;
@@ -217,30 +228,157 @@ public sealed class ArmyListOverlay
             - ImGui.CalcTextSize(hint).X);
         ImGui.TextDisabled(hint);
 
-        // One scroll region per player (stable ID), so each tab keeps its own scroll position.
-        ImGui.BeginChild($"##list{slot.SlotID}");
+        // One scroll region per player AND mode (stable IDs), so each tab keeps its own scroll
+        // position and switching modes doesn't inherit a stale offset.
+        ImGui.BeginChild($"##list{slot.SlotID}{(_tableMode ? "t" : "c")}");
 
-        int columns = ArmyListLayout.ColumnCount(ImGui.GetContentRegionAvail().X, MinCardWidth, MaxColumns);
-        float estimate = ImGui.GetTextLineHeightWithSpacing();
-        var heights = units
-            .Select(u => _cardHeights.TryGetValue(u.ID, out float h) ? h : estimate * 10f)
-            .ToList();
-        int[] columnOf = ArmyListLayout.PackColumns(heights, columns);
-
-        if (ImGui.BeginTable("##cards", columns, ImGuiTableFlags.SizingStretchSame))
+        if (_tableMode)
         {
-            ImGui.TableNextRow();
-            for (int c = 0; c < columns; c++)
+            DrawUnitTable(units);
+        }
+        else
+        {
+            int columns = ArmyListLayout.ColumnCount(ImGui.GetContentRegionAvail().X, MinCardWidth, MaxColumns);
+            float estimate = ImGui.GetTextLineHeightWithSpacing();
+            var heights = units
+                .Select(u => _cardHeights.TryGetValue(u.ID, out float h) ? h : estimate * 10f)
+                .ToList();
+            int[] columnOf = ArmyListLayout.PackColumns(heights, columns);
+
+            if (ImGui.BeginTable("##cards", columns, ImGuiTableFlags.SizingStretchSame))
             {
-                ImGui.TableSetColumnIndex(c);
-                for (int i = 0; i < units.Count; i++)
-                    if (columnOf[i] == c)
-                        DrawCard(units[i]);
+                ImGui.TableNextRow();
+                for (int c = 0; c < columns; c++)
+                {
+                    ImGui.TableSetColumnIndex(c);
+                    for (int i = 0; i < units.Count; i++)
+                        if (columnOf[i] == c)
+                            DrawCard(units[i]);
+                }
+                ImGui.EndTable();
             }
-            ImGui.EndTable();
         }
 
         ImGui.EndChild();
+    }
+
+    // ── Table mode (slice 3): the printed list's condensed one-row-per-unit form ────────────────────
+
+    private void DrawUnitTable(IReadOnlyList<IUnit> units)
+    {
+        if (!ImGui.BeginTable("##units", 4,
+            ImGuiTableFlags.BordersInnerH | ImGuiTableFlags.RowBg | ImGuiTableFlags.SizingStretchProp))
+            return;
+
+        ImGui.TableSetupColumn("Unit", ImGuiTableColumnFlags.WidthStretch, 2.2f);
+        ImGui.TableSetupColumn("Stats", ImGuiTableColumnFlags.WidthStretch, 1f);
+        ImGui.TableSetupColumn("Loadout", ImGuiTableColumnFlags.WidthStretch, 3f);
+        ImGui.TableSetupColumn("Special Rules", ImGuiTableColumnFlags.WidthStretch, 2.5f);
+        ImGui.TableHeadersRow();
+
+        foreach (IUnit unit in units)
+            DrawUnitRow(unit);
+
+        ImGui.EndTable();
+    }
+
+    private void DrawUnitRow(IUnit unit)
+    {
+        int live  = unit.Models.Count(m => m.GetIsAlive());
+        int total = unit.Models.Count;
+        bool destroyed = live == 0;
+
+        ImGui.PushID(unit.ID.GetHashCode());
+        ImGui.TableNextRow();
+        if (destroyed) ImGui.PushStyleVar(ImGuiStyleVar.Alpha, ImGui.GetStyle().Alpha * 0.45f);
+
+        // Unit: name [count] - pts, then the state tag and token chips under it.
+        ImGui.TableSetColumnIndex(0);
+        string count = live == total ? $"[{total}]" : $"[{live}/{total}]";
+        ImGui.TextUnformatted(unit is UnitData { PointCost: > 0 } ud
+            ? $"{unit.Name} {count} - {ud.PointCost}pts"
+            : $"{unit.Name} {count}");
+        if (destroyed)
+        {
+            // Inside the alpha push so it dims with the row; strong red still reads.
+            ImGui.TextColored(new Vector4(0.95f, 0.25f, 0.25f, 1f), "DESTROYED");
+        }
+        else if (UnitActivation.HasActivated(_tableState!.Progress, unit))
+        {
+            ImGui.TextColored(ActivatedRed, "Activated");
+        }
+        DrawTokenChips(unit);
+
+        // Stats: Qua/Def, wounds fraction when wounded.
+        ImGui.TableSetColumnIndex(1);
+        ImGui.TextUnformatted($"Qua {unit.Quality}+  Def {unit.Defense}+");
+        if (!destroyed && unit.RemainingWounds < unit.MaxWounds)
+            ImGui.TextColored(WoundedAmber,
+                $"Wounds {WoundFormat.Fraction(unit.RemainingWounds, unit.MaxWounds)}");
+
+        // Loadout: one line per distinct weapon, count-prefixed, stats + hoverable rules in parens —
+        // the #292 weapon vocabulary ("18\", A1 AP1, Rending") rather than the printout's, so the
+        // stat spelling matches the shoot panel the player already reads.
+        ImGui.TableSetColumnIndex(2);
+        var weapons = unit.AllWeapons();
+        foreach (var group in weapons.GroupBy(w => w.Name))
+        {
+            IWeapon w = group.First();
+            var segments = new List<RuleHoverText.Segment>
+            {
+                new($"{group.Count()}x {w.Name} (", null, null),
+            };
+            segments.AddRange(RuleHoverText.WeaponStatLine(w));
+            segments.Add(new RuleHoverText.Segment(")", null, null));
+            DrawWrappedSegments(segments, ImGui.GetContentRegionAvail().X);
+        }
+        if (weapons.Count == 0) ImGui.TextDisabled("-");
+
+        // Special Rules: the unit's hoverable list; a joined hero appends its gold tag + own rules.
+        ImGui.TableSetColumnIndex(3);
+        var rules = PlayerFacingRules(unit.RuleDefinitions);
+        if (rules.Count > 0)
+            DrawWrappedSegments(RuleSegmentsFor(rules), ImGui.GetContentRegionAvail().X);
+        else if (unit.JoinedHeroModelId == null)
+            ImGui.TextDisabled("-");
+        DrawHeroSummary(unit);
+
+        if (destroyed) ImGui.PopStyleVar();
+        ImGui.PopID();
+    }
+
+    // The hero tag + hero-own-rules pair, shared between the card's sub-block and the table row's
+    // Special Rules cell.
+    private void DrawHeroSummary(IUnit unit)
+    {
+        if (unit.JoinedHeroModelId is not { } heroId) return;
+        IModel? hero = unit.Models.FirstOrDefault(m => m.ID.Equals(heroId));
+        if (hero == null) return;
+
+        string tag = unit is UnitData { HeroAttachment: { } ha }
+            ? HeroMarkerRenderer.FormatHeroTag(ha.Quality, ha.Defense)
+            : "Hero";
+        if (!hero.GetIsAlive()) tag += "  -  dead";
+        else if (hero.TotalWounds > 1f)
+            tag += $"  Wounds {WoundFormat.Fraction(hero.TotalWounds - hero.WoundsDealt, hero.TotalWounds)}";
+        ImGui.TextColored(HeroGold, tag);
+
+        var heroRules = PlayerFacingRules(hero.RuleDefinitions);
+        if (heroRules.Count > 0)
+            DrawWrappedSegments(RuleSegmentsFor(heroRules), ImGui.GetContentRegionAvail().X);
+    }
+
+    /// <summary>The comma-joined hoverable segment list for a set of resolved rules.</summary>
+    private static List<RuleHoverText.Segment> RuleSegmentsFor(IReadOnlyList<ResolvedRule> rules)
+    {
+        var segments = new List<RuleHoverText.Segment>();
+        foreach (ResolvedRule rule in rules)
+        {
+            if (segments.Count > 0) segments.Add(new RuleHoverText.Segment(", ", null, null));
+            segments.Add(new RuleHoverText.Segment(rule.RequestedName, rule.RequestedName,
+                rule.Definition.Description));
+        }
+        return segments;
     }
 
     // A player's army + units in army order (the Armies store preserves the list file's order, dead
@@ -417,15 +555,7 @@ public sealed class ArmyListOverlay
         var rules = PlayerFacingRules(unit.RuleDefinitions);
         if (rules.Count == 0) return;
 
-        var segments = new List<RuleHoverText.Segment>();
-        foreach (ResolvedRule rule in rules)
-        {
-            if (segments.Count > 0) segments.Add(new RuleHoverText.Segment(", ", null, null));
-            segments.Add(new RuleHoverText.Segment(rule.RequestedName, rule.RequestedName,
-                rule.Definition.Description));
-        }
-
-        DrawWrappedSegments(segments, ImGui.GetContentRegionAvail().X);
+        DrawWrappedSegments(RuleSegmentsFor(rules), ImGui.GetContentRegionAvail().X);
         ImGui.Spacing();
     }
 
@@ -475,32 +605,9 @@ public sealed class ArmyListOverlay
     // share the unit's).
     private void DrawHeroBlock(IUnit unit)
     {
-        if (unit.JoinedHeroModelId is not { } heroId) return;
-        IModel? hero = unit.Models.FirstOrDefault(m => m.ID.Equals(heroId));
-        if (hero == null) return;
-
+        if (unit.JoinedHeroModelId == null) return;
         ImGui.Separator();
-
-        string tag = unit is UnitData { HeroAttachment: { } ha }
-            ? HeroMarkerRenderer.FormatHeroTag(ha.Quality, ha.Defense)
-            : "Hero";
-        if (!hero.GetIsAlive()) tag += "  -  dead";
-        else if (hero.TotalWounds > 1f)
-            tag += $"  Wounds {WoundFormat.Fraction(hero.TotalWounds - hero.WoundsDealt, hero.TotalWounds)}";
-        ImGui.TextColored(HeroGold, tag);
-
-        var heroRules = PlayerFacingRules(hero.RuleDefinitions);
-        if (heroRules.Count > 0)
-        {
-            var segments = new List<RuleHoverText.Segment>();
-            foreach (ResolvedRule rule in heroRules)
-            {
-                if (segments.Count > 0) segments.Add(new RuleHoverText.Segment(", ", null, null));
-                segments.Add(new RuleHoverText.Segment(rule.RequestedName, rule.RequestedName,
-                    rule.Definition.Description));
-            }
-            DrawWrappedSegments(segments, ImGui.GetContentRegionAvail().X);
-        }
+        DrawHeroSummary(unit);
     }
 
     // Status tokens as colored text chips ("[Shaken]"), hover for the engine's description — same

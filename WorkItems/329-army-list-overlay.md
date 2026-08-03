@@ -1,6 +1,6 @@
 # 329 — In-game Army List overlay (toggleable, all players)
 
-**Status**: in-progress (slices 1-2 implemented + tested; awaiting GUI hand-verify; slice 3 open)
+**Status**: in-progress (slices 1-3 implemented + tested; awaiting GUI hand-verify)
 **Related**: #259 (RuleGlossary/RuleTextFlow), #292 (RuleHoverText), #246 (EscapeRouter/ViewSettings), #227 (joined-hero stats), #328 (render-thread token snapshots), #149 (precedent for adding a serialized field to unit data)
 
 ## Goal
@@ -57,6 +57,14 @@ User sign-off on all forks:
 
 ## Notes
 
+- 2026-08-02: Slice 3 (table mode) implemented, app-only: Cards|Table radio pair in the overlay
+  header (session-persistent static), condensed one-row-per-unit table (Unit/Stats/Loadout/Special
+  Rules) with the same live states (points, wounds fraction, DESTROYED/Activated, token chips,
+  joined-hero tag) and hoverable rules everywhere - loadout lines use the #292 weapon stat
+  vocabulary, not the printout's. Card/table hero + rule-segment rendering deduped into
+  DrawHeroSummary/RuleSegmentsFor. DEFERRED from the polish list (explicitly, until after GUI
+  hand-verify shapes them): per-card collapse chevrons, per-model tough pips on multi-model tough
+  units, caster spells section.
 - 2026-08-02: Slice 2 implemented. Engine (submodule ae684f2): `UnitData.PointCost` from the file
   entry, hero cost folds into host at merge (HeroJoinResolver), Reinforcement copy keeps its twin's
   cost, `ArmyData.ArmyName/Faction/PointsLimit` set in CreateArmy - all serialized, so they sync and
