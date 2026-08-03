@@ -540,17 +540,11 @@ public class RaylibRenderer
                         && Raylib.CheckCollisionPointRec(Raylib.GetMousePosition(), rollStackBounds.Value));
                 }
 
-                if (_presentationPlayer != null &&
-                    _presentationPlayer.TryGetActiveBanner(out var bannerBeat, out var bannerProgress))
-                {
-                    BannerOverlay.Draw(bannerBeat, bannerProgress, layout.AreaW, screenH);
-                }
-
-                // #275: the Notice/Toast tiers ride their own concurrent track, so they draw every frame
-                // regardless of what holds the active slot - that is the whole point of them.
+                // #275/#325: every banner tier rides one concurrent display track and stacks within its
+                // band, so they draw every frame regardless of what holds the active slot.
                 if (_presentationPlayer != null)
                 {
-                    BannerOverlay.DrawHeld(_presentationPlayer.GetHeldBanners(), layout.AreaW, screenH);
+                    BannerOverlay.Draw(_presentationPlayer.GetBanners(), layout.AreaW, screenH);
                 }
 
                 DrawStatusHud(layout);

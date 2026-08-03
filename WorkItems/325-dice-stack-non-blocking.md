@@ -17,6 +17,27 @@ pace of combat is unchanged from before the item.
 
 ## Notes
 
+- 2026-08-02 (latest): **All three banner tiers stack too** (owner request, after asking whether they
+  already did - only Toasts had). A Notice used to supersede the Notice before it and a Headline replaced
+  the last, which is the same evicted-mid-read problem the dice stack exists to fix. Now every tier grows
+  within its band on the roll stack's convention: oldest keeps the band anchor, newer pile up above it,
+  dimmed by depth. Caps are per tier (Toast 5, Notice 3, Headline 2) because they eat wildly different
+  amounts of screen, and one tier's cap can never evict another's.
+
+  Two consequences worth knowing:
+  - **A Headline panel now lingers 1.5s past its beat.** Without an overhang, two headlines could never
+    coexist (each blocks for its full duration), so "stacking headlines" would have been a no-op. Pacing
+    is untouched - it still stops play for exactly as long as it did. Same shape as the dice fix.
+  - **The bands are laid out in ONE top-down pass, each yielding to the one above**: toasts take their
+    ticker, headlines stack up to the toasts' bottom, notices stack up to the headlines' top. Mid-screen
+    is only ~150px between bands on 1080p, so a band that runs out of room drops its OLDEST entries -
+    never the newest. `BannerOverlay.Draw`/`DrawHeld` collapsed into one `Draw`, and the player's
+    `TryGetActiveBanner` + `GetHeldBanners` into one `GetBanners` returning alpha rather than progress.
+
+  Deliberately NOT given hover-freeze, unlike the roll stack: the banner bands sit mid-screen, exactly
+  where the cursor lives during play, so incidental hovering would freeze them constantly. The roll stack
+  gets away with it by being docked to the bottom edge.
+
 - 2026-08-02 (latest): **Unit overlays yield to the stack.** Owner screenshot: unit name labels drew
   straight over a dice panel, both unreadable. Cause is draw order, not the stack - unit labels, token
   chips, transport badges and health bars are ImGui draw-list text, rendered after (and therefore on top

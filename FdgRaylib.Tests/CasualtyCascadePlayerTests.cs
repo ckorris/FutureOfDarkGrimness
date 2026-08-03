@@ -48,7 +48,7 @@ public class CasualtyCascadePlayerTests
         player.OnBeat(new BannerBeat("Next", new TextColor(255, 255, 255, 255)));
 
         player.Update(0.05f);
-        Assert.That(player.TryGetActiveBanner(out _, out _), Is.True,
+        Assert.That(player.GetBanners(), Has.Count.EqualTo(1),
             "a following beat starts immediately - the overlapped death does not hold the active slot");
     }
 }
