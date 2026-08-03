@@ -1,6 +1,6 @@
 # 329 — In-game Army List overlay (toggleable, all players)
 
-**Status**: in-progress (slices 1-3 implemented + tested; awaiting GUI hand-verify)
+**Status**: done
 **Related**: #259 (RuleGlossary/RuleTextFlow), #292 (RuleHoverText), #246 (EscapeRouter/ViewSettings), #227 (joined-hero stats), #328 (render-thread token snapshots), #149 (precedent for adding a serialized field to unit data)
 
 ## Goal
@@ -150,4 +150,15 @@ User sign-off on all forks:
 
 ## Outcome
 
-(open)
+Shipped 2026-08-02, all three slices plus eight rounds of owner-driven visual iteration (v1-v8,
+hand-verified by screenshot). L (labels moved to N) or the bottom-left "Army Lists (L)" button opens
+an 85%-alpha overlay over the table area (right column stays live) with per-player tabs and two
+modes: Army Forge-style cards (masonry columns, stat pills, RNG/ATK/AP/SPE tables, cards at a
+composited 95% ink-well tone) and a condensed table. Everything is live state: points + army
+identity (engine-side plumb on UnitData/ArmyData, hero cost folded at merge, save/sync-safe), wound
+fractions, shrinking weapon counts, DESTROYED/Activated, token chips, joined-hero blocks, hoverable
+rule descriptions, and an orange-flashing "Action Needed" close button while a prompt waits. Also
+fixed en route: Esc-menu titles clipping at larger UI scales; "Menu" button now advertises (Esc).
+Deferred (revisit on demand): per-card collapse chevrons, per-model tough pips, caster spells
+section, and reserving top margin for tall transient banner stacks. App commits 871f2ec..3a064e5 +
+merge f28f24d; engine ae684f2.
