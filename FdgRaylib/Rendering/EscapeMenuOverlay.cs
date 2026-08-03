@@ -14,8 +14,10 @@ namespace FdgRaylib.Rendering;
 /// playing. Gameplay input is suppressed via <see cref="EscapeRouter.MenuOpen"/> checks at the canvas
 /// and hotkey sites; the full-screen dim window also blocks clicks from reaching windows behind it.</para>
 ///
-/// <para>Contents: Resume, Army Lists (#329), Save Game (host only), Load Game (host only), Return to
-/// Main Menu, Quit to Desktop. Options and the toolbar retirement land in #246 S3.</para>
+/// <para>Contents: Resume, Save Game (host only), Load Game (host only), Return to Main Menu, Quit to
+/// Desktop. Options and the toolbar retirement land in #246 S3. (The army list deliberately has no
+/// row here - the always-visible bottom-left "Army Lists (L)" button beside "Menu (Esc)" is its
+/// discoverable home, owner-ruled 2026-08-02.)</para>
 /// </summary>
 public sealed class EscapeMenuOverlay
 {
@@ -29,10 +31,6 @@ public sealed class EscapeMenuOverlay
     public Action? OnReturnToMainMenu;
     public Action? OnQuitToDesktop;
     public Action? OnLoadGame;
-
-    // #329: opens the army list overlay (closing this menu first). A menu row is the discoverable
-    // path to the feature - players explore the Esc menu long before they read a hotkey list.
-    public Action? OnOpenArmyLists;
 
     // Serializes the live game to a .fdgsave string. Non-null only on the host (a client can't save yet
     // — that's #054); a null func drives the disabled Save/Load rows.
@@ -114,13 +112,6 @@ public sealed class EscapeMenuOverlay
         ImGui.Spacing();
 
         if (FullWidthButton("Resume")) Close();
-
-        // #329: right under Resume - the two "back to looking at the game" actions sit together.
-        if (FullWidthButton("Army Lists (L)"))
-        {
-            Close();
-            OnOpenArmyLists?.Invoke();
-        }
 
         // Save / Load are host actions. A client sees them disabled with a one-line reason (client-side
         // save is #054); the host resumes/saves the whole game.

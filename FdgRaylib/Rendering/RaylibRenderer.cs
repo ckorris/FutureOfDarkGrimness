@@ -137,7 +137,6 @@ public class RaylibRenderer
         // reuse the exact pair the game-over card uses (ExitGame + NavigateTo) so there's one teardown path.
         _escapeMenu.OnReturnToMainMenu = () => { ExitGame(); NavigateTo(MainMenu); };
         _escapeMenu.OnQuitToDesktop    = RequestClose;
-        _escapeMenu.OnOpenArmyLists    = _armyListOverlay.Open;   // #329 discoverability
         // Load ends the current game, returns to the menu, then runs the shared load-from-file flow.
         _escapeMenu.OnLoadGame = () => { ExitGame(); NavigateTo(MainMenu); OnLoadGameRequested?.Invoke(); };
     }
@@ -1089,7 +1088,7 @@ public class RaylibRenderer
             ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoCollapse |
             ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.AlwaysAutoResize |
             ImGuiWindowFlags.NoFocusOnAppearing | ImGuiWindowFlags.NoNav);
-        if (ImGui.Button("Menu"))
+        if (ImGui.Button("Menu (Esc)"))
             _escapeMenu.Open();
         // #329: the discoverable way into the army list, beside the menu (the hotkey is L).
         ImGui.SameLine();

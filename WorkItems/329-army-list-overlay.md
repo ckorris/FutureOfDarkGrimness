@@ -57,6 +57,10 @@ User sign-off on all forks:
 
 ## Notes
 
+- 2026-08-02: v8 feedback (final): Esc-menu Army Lists row REMOVED - the owner had missed the
+  always-visible bottom-left "Army Lists (L)" button, which is the feature's discoverable home; the
+  Menu button now reads "Menu (Esc)" so both bottom-left buttons advertise their hotkeys. GUI
+  hand-verified by the owner through v1-v8 (screenshots); shipped.
 - 2026-08-02: v7 feedback: Esc-menu gains an "Army Lists (L)" row right under Resume (closes the
   menu, opens the overlay) for discoverability. Esc-menu DrawTitle now shrinks-to-fit: "Return to
   Main Menu" overran the fixed 360px menu at larger UI scales and clipped mid-word (pre-existing,
