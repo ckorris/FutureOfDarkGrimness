@@ -57,6 +57,11 @@ User sign-off on all forks:
 
 ## Notes
 
+- 2026-08-02: v6 feedback: card alpha corrected for compositing - the card draws OVER the 85%
+  window, so total = 0.85 + A*0.15; A = 2/3 lands the card region at the intended 95% total (the
+  naive 0.95 stacked to ~99%, reading fully opaque). Header-line widgets now pin to one ABSOLUTE
+  centered Y each (a relative nudge before the first radio didn't survive the next SameLine - the
+  Table radio drifted high).
 - 2026-08-02: v5 feedback: Cards/Table radios (and the close button, same line) vertically centered
   against the LargeFont title; player tabs enlarged (1.3x label scale + fatter FramePadding, scale
   reset for tab content); card bodies now DARKER (ImGuiTheme.InkWell) at 95% alpha over the window's

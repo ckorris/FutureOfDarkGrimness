@@ -182,22 +182,26 @@ public sealed class ArmyListOverlay
     // Title + view-mode pair on the left; "Action needed" pulse + Close on the right.
     private void DrawHeaderBar()
     {
+        float lineTop = ImGui.GetCursorPosY();
+
         ImGui.PushFont(RaylibRenderer.LargeFont);
         float titleHeight = ImGui.GetTextLineHeight();
         ImGui.TextUnformatted("Army Lists");
         ImGui.PopFont();
 
         // The title line is LargeFont-tall; body-font widgets sharing it sit top-aligned unless
-        // nudged to its vertical center (user feedback v5). The radios' padded Y carries to every
-        // later SameLine on this line, so the close button centers with them.
-        float centerPad = MathF.Max(0f, (titleHeight - ImGui.GetFrameHeight()) * 0.5f);
+        // pinned to its vertical center (user feedback v5). Pinned ABSOLUTELY per widget: a nudge
+        // before the first radio does NOT survive the next SameLine (the Table radio drifted back
+        // up), so every widget on this line sets the same Y itself.
+        float rowY = lineTop + MathF.Max(0f, (titleHeight - ImGui.GetFrameHeight()) * 0.5f);
 
         // The printed list's two modes, one click apart (radio pair, not a cycling button, so the
         // current mode is always visible).
         ImGui.SameLine();
-        ImGui.SetCursorPosY(ImGui.GetCursorPosY() + centerPad);
+        ImGui.SetCursorPosY(rowY);
         if (ImGui.RadioButton("Cards", !_tableMode)) _tableMode = false;
         ImGui.SameLine();
+        ImGui.SetCursorPosY(rowY);
         if (ImGui.RadioButton("Table", _tableMode)) _tableMode = true;
 
         // One close button (user feedback v4: not a separate chip). Normally a quiet
@@ -207,6 +211,7 @@ public sealed class ArmyListOverlay
         string label = pending ? "Action Needed - Return to Game (L)" : "Return to Game (L)";
         float buttonW = ImGui.CalcTextSize(label).X + 2f * ImGui.GetStyle().FramePadding.X;
         ImGui.SameLine(ImGui.GetWindowWidth() - ImGui.GetStyle().WindowPadding.X - buttonW);
+        ImGui.SetCursorPosY(rowY);   // same absolute center-pin as the radios
 
         if (pending)
         {
@@ -452,10 +457,12 @@ public sealed class ArmyListOverlay
         if (destroyed)
             ImGui.PushStyleVar(ImGuiStyleVar.Alpha, ImGui.GetStyle().Alpha * 0.45f);
 
-        // Each card body is DARKER than the panel (the ink well the printed cards use) and nearly
-        // solid (95% vs the window's 85%), so cards read as crisp sheets floating on the ghosted
-        // board (user feedback v5).
-        Vector4 cardBg = ImGuiTheme.InkWell with { W = 0.95f };
+        // Each card body is DARKER than the panel (the ink well the printed cards use) and reads
+        // ~95% opaque IN TOTAL (user feedback v5/v6). The card composites OVER the window's 85%
+        // background, and alpha does not add linearly: total = 0.85 + A * (1 - 0.85), so A = 2/3
+        // lands the card region at exactly 95% coverage. (The first cut naively used A = 0.95,
+        // which stacks to ~99% - fully opaque.)
+        Vector4 cardBg = ImGuiTheme.InkWell with { W = 2f / 3f };
         ImGui.PushStyleColor(ImGuiCol.ChildBg, cardBg);
         ImGui.BeginChild("card", new Vector2(0f, 0f),
             ImGuiChildFlags.Borders | ImGuiChildFlags.AutoResizeY | ImGuiChildFlags.AlwaysUseWindowPadding);
