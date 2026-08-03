@@ -57,6 +57,8 @@ User sign-off on all forks:
 
 ## Notes
 
+- 2026-08-02: v3 feedback: +5% of the viewport's width/height as extra breathing room on all four
+  sides, on top of the v2 chrome clearance (still per-frame, so still resize-proof).
 - 2026-08-02: v2 feedback (screenshot): margins now leave the game's chrome visible on all four
   sides - top clamp(screenH*0.095, 96, 140) clears the status strip + toast band, bottom clears the
   pinned Menu/Army Lists buttons via GetFrameHeight (UI-scale-aware), 16px sides - recomputed per

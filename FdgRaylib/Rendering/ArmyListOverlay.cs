@@ -114,13 +114,17 @@ public sealed class ArmyListOverlay
         // around the panel (user feedback): the status strip and top toast band above, the
         // bottom-left Menu / Army Lists buttons below, and a sliver of board on both sides.
         // Recomputed every frame from the live sizes, so they hold through resizes and UI scales.
-        const float side = 16f;
+        // On top of the chrome clearance, 5% of the viewport's width/height of breathing room on
+        // every side (user feedback v3) - the board reads as the surface the panel floats over.
+        float breatheX = areaW * 0.05f;
+        float breatheY = screenH * 0.05f;
+        float side = 16f + breatheX;
         // Status strip (12 + 24px text, plus "waiting on" lines) and the toast band (anchored at
         // y=48, one row ~44px) live above; proportional with clamps so small windows don't drown.
-        float top = Math.Clamp(screenH * 0.095f, 96f, 140f);
+        float top = Math.Clamp(screenH * 0.095f, 96f, 140f) + breatheY;
         // The Menu / Army Lists buttons are pinned 8px off the bottom in an auto-sized window;
         // GetFrameHeight tracks the live font scale, so this clears them at any UI scale.
-        float bottom = 8f + ImGui.GetFrameHeight() + ImGui.GetStyle().WindowPadding.Y * 2f + 10f;
+        float bottom = 8f + ImGui.GetFrameHeight() + ImGui.GetStyle().WindowPadding.Y * 2f + 10f + breatheY;
 
         ImGui.SetNextWindowPos(new Vector2(side, top), ImGuiCond.Always);
         ImGui.SetNextWindowSize(new Vector2(areaW - side * 2f, screenH - top - bottom), ImGuiCond.Always);
