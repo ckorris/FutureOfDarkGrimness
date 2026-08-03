@@ -12,7 +12,8 @@ namespace FdgRaylib.Rendering;
 
 /// <summary>
 /// Draws hover tooltips and toggleable unit-name labels on the table canvas.
-/// Press L (or click the top-left button) to toggle name labels.
+/// Press N (or the Esc menu's Options panel) to toggle name labels. (#329 moved this off L,
+/// which now opens the army list overlay.)
 ///
 /// Reads hit-test results from TableHitTester (shared with resolvers) and checks
 /// the active resolver's ICanvasInteractionHandler to append contextual hover text
@@ -77,7 +78,7 @@ public class TableTooltipOverlay
         // Hotkeys are muted while the in-game menu owns input (#246). Toggles live in ViewSettings, shared
         // with the menu's Options panel.
         bool wantKeys = !ImGui.GetIO().WantCaptureKeyboard && !EscapeRouter.MenuOpen;
-        if (wantKeys && ImGui.IsKeyPressed(ImGuiKey.L))
+        if (wantKeys && ImGui.IsKeyPressed(ImGuiKey.N))
             ViewSettings.ShowLabels = !ViewSettings.ShowLabels;
 
         if (wantKeys && ImGui.IsKeyPressed(ImGuiKey.T))
@@ -472,20 +473,8 @@ public class TableTooltipOverlay
             && y - margin < stack.Y + stack.Height && y + h + margin > stack.Y;
     }
 
-    // A unit has spent its activation this round once the main phase is under way (RoundCount != null)
-    // and it is no longer in the unactivated pool. The unit currently taking its turn stays in the pool
-    // until the turn ends (SingleTurnStage.MarkUnitAsActivated), and is excluded here too so a unit
-    // mid-activation does not prematurely read as done. Outside the main phase nothing is activated.
-    private bool HasActivated(IUnit unit)
-    {
-        var progress = _tableState!.Progress;
-        if (progress.RoundCount == null) return false;
-        if (progress.ActivatingUnit?.ID.Equals(unit.ID) == true) return false;
-
-        foreach (var u in progress.UnactivatedUnits)
-            if (u.ID.Equals(unit.ID)) return false;
-        return true;
-    }
+    // #329: the definition lives in UnitActivation, shared with the army list overlay.
+    private bool HasActivated(IUnit unit) => UnitActivation.HasActivated(_tableState!.Progress, unit);
 
     // Per-model weapon-range and charge-reach rings for the hovered unit, drawn in world space centred on
     // each model — a unit's true reach is the union of its models' circles, not a single centroid sphere.

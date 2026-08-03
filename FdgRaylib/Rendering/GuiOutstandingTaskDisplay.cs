@@ -24,6 +24,10 @@ public class GuiOutstandingTaskDisplay : IOutstandingListDisplay, IDisposable
         _localPlayerIDs = localPlayerIDs;
     }
 
+    /// <summary>The launched game's local player IDs, re-exposed for the renderer overlays that need
+    /// "is this slot me" (#329: the army list puts the local player's tab first).</summary>
+    public IReadOnlyList<PlayerID> LocalPlayerIDs => _localPlayerIDs;
+
     public void AssignLister(IOutstandingTaskLister lister)
     {
         _subscription = lister.OutstandingTasks.Subscribe(tasks =>

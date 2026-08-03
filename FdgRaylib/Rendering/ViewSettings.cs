@@ -8,7 +8,8 @@ namespace FdgRaylib.Rendering;
 /// </summary>
 public static class ViewSettings
 {
-    /// <summary>Unit-name labels on the table (hotkey L).</summary>
+    /// <summary>Unit-name labels on the table (hotkey N; #329 moved it off L, which now opens
+    /// the army list overlay).</summary>
     public static bool ShowLabels = true;
 
     /// <summary>Etched grid + felt vignette under the table (was RaylibRenderer.ShowGrid).</summary>

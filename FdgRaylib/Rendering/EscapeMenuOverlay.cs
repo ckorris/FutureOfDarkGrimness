@@ -139,7 +139,7 @@ public sealed class EscapeMenuOverlay
         ImGui.Spacing();
 
         SectionHeader("Display");
-        ImGui.Checkbox("Unit labels (L)", ref ViewSettings.ShowLabels);
+        ImGui.Checkbox("Unit labels (N)", ref ViewSettings.ShowLabels);
         ImGui.Checkbox("Table grid", ref ViewSettings.ShowGrid);
         ImGui.Checkbox("Show all tokens (T, dev)", ref ViewSettings.ShowAllTokens);
 
@@ -171,7 +171,8 @@ public sealed class EscapeMenuOverlay
         ImGui.TextDisabled("Alt+drag: measure");
         ImGui.TextDisabled("Alt+wheel: zoom");
         ImGui.TextDisabled("Middle-drag: pan");
-        ImGui.TextDisabled("L labels   T tokens   F threat");
+        ImGui.TextDisabled("L: army lists (all players)");
+        ImGui.TextDisabled("N labels   T tokens   F threat");
         // #326: G toggles Group/Single -- it is Ctrl+wheel that cycles the formation (#277). The old line
         // said "G: cycle formation", which named the wrong key for the wrong action.
         ImGui.TextDisabled("G: group / single mode (during moves)");

@@ -82,6 +82,7 @@ public class RaylibRenderer
     private readonly MeasurementOverlay  _measurementOverlay = new();
     private readonly TacticalOverlay.TacticalOverlayController _tacticalOverlay = new();
     private readonly EscapeMenuOverlay _escapeMenu = new();
+    private readonly ArmyListOverlay _armyListOverlay = new();
     private bool _inGame = false;
     private bool _closeRequested = false;
     private bool _resolverOverlayFaulted = false;
@@ -213,6 +214,10 @@ public class RaylibRenderer
         _background         = resolverOverlay?.TableBackground ?? ETableBackground.Forest;
         _backgroundStyle    = TableBackgrounds.For(_background);
         _tooltipOverlay.Attach(tableState, colorForPlayer, presentationPlayer);
+        // #329: local player IDs ride the task display (the one launch-path object that carries
+        // them), so the army list can put "your" tab first.
+        _armyListOverlay.Attach(tableState, colorForPlayer,
+            taskDisplay?.LocalPlayerIDs ?? [], resolverOverlay);
         _escapeMenu.AttachSave(saveGameToJson);
         _measurementOverlay.Attach(tableState);
         // [overlay] messages are developer detail (rebuild-budget warnings) -> the Debug log category.
@@ -332,6 +337,7 @@ public class RaylibRenderer
         _measurementOverlay.Reset();
         _tacticalOverlay.Detach();
         _escapeMenu.Close();
+        _armyListOverlay.Close();
         _placedModels.Clear();
         lock (_terrainLock)    _terrain.Clear();
         lock (_objectivesLock) _objectives.Clear();
@@ -557,8 +563,11 @@ public class RaylibRenderer
 
                 rlImGui.Begin();
                 // Reset the Escape arbiter before any consumer runs this frame. Passing the menu's open
-                // state mutes every other Escape consumer while the menu owns the key.
-                EscapeRouter.BeginFrame(_escapeMenu.IsOpen);
+                // state mutes every other Escape consumer while the menu owns the key. The army list
+                // modal (#329) counts as "menu open" for the same reason: while it covers the board,
+                // resolver Esc-cancels and canvas hotkeys must not fire underneath it — the overlay
+                // handles its own Escape/L directly, like the Esc menu does.
+                EscapeRouter.BeginFrame(_escapeMenu.IsOpen || _armyListOverlay.IsOpen);
                 // Runs before the hit tester / resolvers so its Alt-measure WantCaptureMouse override
                 // lands before they read that flag (see MeasurementOverlay).
                 _measurementOverlay.UpdateLayout(layout.Scale, layout.OriginX, layout.OriginY, TableHIn);
@@ -611,6 +620,11 @@ public class RaylibRenderer
                 // Standalone "Menu" button in the bottom-left corner (where the retired toolbar sat),
                 // the discoverable way into the Esc menu. Drawn before the menu so its dim covers it.
                 DrawMenuButton(screenH);
+
+                // #329: the army list modal. Drawn before the Esc menu so the menu's dim sits above
+                // it; its own open/close keys (L, Esc) are handled inside Draw. Suppressed once the
+                // game-over card is up so that card stays reachable.
+                _armyListOverlay.Draw(screenW, screenH, _escapeMenu.IsOpen, _gameOverResult != null);
 
                 // In-game menu (Esc). Opens only when no context claimed Escape this frame, and never
                 // over the game-over card (that has its own Return to Main Menu button). Drawn last so
@@ -1075,6 +1089,10 @@ public class RaylibRenderer
             ImGuiWindowFlags.NoFocusOnAppearing | ImGuiWindowFlags.NoNav);
         if (ImGui.Button("Menu"))
             _escapeMenu.Open();
+        // #329: the discoverable way into the army list, beside the menu (the hotkey is L).
+        ImGui.SameLine();
+        if (ImGui.Button("Army Lists (L)"))
+            _armyListOverlay.Toggle();
         ImGui.End();
     }
 

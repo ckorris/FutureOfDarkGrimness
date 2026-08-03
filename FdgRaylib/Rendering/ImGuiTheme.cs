@@ -39,6 +39,13 @@ public static class ImGuiTheme
     // across the lobby and the Host/Client dialogs.
     public static readonly Vector4 HeaderAccent = new(0.50f, 0.73f, 1.0f, 1f);
 
+    // The theme's blue accent, exposed for surfaces that paint their own draw-list shapes in it —
+    // the army list overlay's stat pills (#329) match the printed Army Forge pills with this.
+    public static readonly Vector4 AccentBlue = Accent;
+
+    // The darkest well tone, for the value half of a two-tone pill (#329).
+    public static readonly Vector4 InkWell = Ink;
+
     // Opaque panel fill for modal dialogs that float above a dimmed backdrop (Host/Client). Matches the
     // lobby's panel tone (the theme window body) so the dialogs read as the same surface, not a blue slab.
     public static readonly Vector4 DialogPanelBg = Panel;
