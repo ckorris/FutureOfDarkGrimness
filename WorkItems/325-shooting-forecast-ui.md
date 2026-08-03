@@ -1,4 +1,4 @@
-# 323 — Pre-roll shooting forecast (effective Hit/Save + modifiers in the target UI)
+# 325 — Pre-roll shooting forecast (effective Hit/Save + modifiers in the target UI)
 
 **Status**: in-progress
 **Related**: #319 (ChooseRangedAttackRequest reply forms), #292 (RuleHoverText), #286 (canvas hover binding)

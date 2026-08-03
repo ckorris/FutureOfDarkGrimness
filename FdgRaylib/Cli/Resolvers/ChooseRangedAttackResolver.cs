@@ -41,7 +41,7 @@ public class ChooseRangedAttackResolver : IStageResolver<ChooseRangedAttackReque
                 int targetModels = targetUnit.ModelBindings.Count(mb => mb.GetValue().GetIsAlive());
 
                 string label = $"{weaponStats}  ->  {targetUnit.Name}";
-                // #323: the effective thresholds for this pairing (AP, cover and rule modifiers already
+                // #325: the effective thresholds for this pairing (AP, cover and rule modifiers already
                 // folded by the engine's forecast), so the numbers are comparable across lines.
                 if (targetStats.Forecast != null)
                     label += $"  [hit {targetStats.Forecast.HitRollNeeded}+, save {targetStats.Forecast.SaveRollNeeded}+]";

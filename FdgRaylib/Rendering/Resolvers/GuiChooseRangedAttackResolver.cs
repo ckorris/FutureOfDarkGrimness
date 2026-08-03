@@ -291,7 +291,7 @@ public class GuiChooseRangedAttackResolver
                 string numPrefix = selectableT ? ResolverHotkeys.NumberPrefix(fireableRowsSeen++) : "";
                 dl.AddText(rMin + new Vector2(4, 2), colTxt, $"{numPrefix}{name}");
 
-                // #323: the numbers the dice will actually use, right-aligned on the name line so the
+                // #325: the numbers the dice will actually use, right-aligned on the name line so the
                 // rows read as a comparable column. Effective values - AP, cover and rule modifiers
                 // already folded by the engine's forecast; the Details pane holds the arithmetic.
                 // Drawn in the row's own text color, so a grayed row's numbers gray with it.
@@ -391,7 +391,7 @@ public class GuiChooseRangedAttackResolver
             ImGui.Separator();
             ImGui.Spacing();
             ImGui.TextUnformatted($"Target:  {tu.Name}");
-            // #323: the arithmetic behind the row's numbers, chip-for-chip identical to what the dice
+            // #325: the arithmetic behind the row's numbers, chip-for-chip identical to what the dice
             // beats will show ("Quality 4+ | Stealth -1 -> 5+"), so the preview teaches the player to
             // read the roll. The target's QUALITY is deliberately gone from this pane: it plays no part
             // in being shot at, and showing it here invited exactly that misreading.
@@ -672,7 +672,7 @@ public class GuiChooseRangedAttackResolver
         return result;
     }
 
-    // #323: one ledger line of the Details pane - the base stat and every modifier as chips, then the
+    // #325: one ledger line of the Details pane - the base stat and every modifier as chips, then the
     // effective threshold, or just the number when nothing modifies it ("To hit:  4+"). The chip strings
     // arrive verbatim from the engine's forecast (the roll stages' own composers), never re-derived here.
     private static void DrawForecastLine(string label, List<string>? tags, int threshold)
@@ -725,7 +725,7 @@ public class GuiChooseRangedAttackResolver
             ringCount++;
         }
 
-        // #323: the effective numbers as a badge over the ringed unit, so the player comparing targets
+        // #325: the effective numbers as a badge over the ringed unit, so the player comparing targets
         // by looking at the TABLE (the #286 hover gesture) gets the same glance the row gives. One badge,
         // on the single hovered/selected pairing only - never one per target, which is the noise case.
         if (ts.Forecast != null && ringCount > 0)
