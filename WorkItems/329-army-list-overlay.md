@@ -57,6 +57,10 @@ User sign-off on all forks:
 
 ## Notes
 
+- 2026-08-02: v7 feedback: Esc-menu gains an "Army Lists (L)" row right under Resume (closes the
+  menu, opens the overlay) for discoverability. Esc-menu DrawTitle now shrinks-to-fit: "Return to
+  Main Menu" overran the fixed 360px menu at larger UI scales and clipped mid-word (pre-existing,
+  surfaced during #329 playtesting).
 - 2026-08-02: v6 feedback: card alpha corrected for compositing - the card draws OVER the 85%
   window, so total = 0.85 + A*0.15; A = 2/3 lands the card region at the intended 95% total (the
   naive 0.95 stacked to ~99%, reading fully opaque). Header-line widgets now pin to one ABSOLUTE
