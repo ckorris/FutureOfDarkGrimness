@@ -18,11 +18,14 @@ namespace FdgRaylib.Rendering;
 /// special rules, RNG/ATK/AP/SPE weapon table), but live — model counts, wounds, weapon counts,
 /// destroyed units, activation state and status tokens all track the current game state.
 ///
-/// <para>A true modal like the Esc menu (#246): the board dims, gameplay input is muted via
+/// <para>An overlay window covering the TABLE AREA only (user feedback on v1's fullscreen modal):
+/// the right column — resolver panel, log, chat — stays visible and clickable beside it, and the
+/// 85%-alpha background lets the board ghost through. Board input is still muted via
 /// <see cref="EscapeRouter.MenuOpen"/> (the renderer ORs this overlay's open state into
-/// <c>BeginFrame</c>), and Escape or L closes. Deliberately NOT a pause — the engine keeps running;
-/// if a decision arrives for the local player while reading, a pulsing "Action needed" chip appears
-/// in the header and clicking it returns to the game.</para>
+/// <c>BeginFrame</c>), so a covered resolver's Esc-cancel or canvas hotkey can never fire
+/// underneath; Escape or L closes. Deliberately NOT a pause — the engine keeps running; if a
+/// decision arrives for the local player while reading, a pulsing "Action needed" chip appears in
+/// the header and clicking it returns to the game.</para>
 ///
 /// <para>Read-only: draws from live <see cref="ITableState"/> on the render thread, the same
 /// convention as <see cref="TableTooltipOverlay"/> (token reads snapshot per #328). ASCII only
@@ -71,11 +74,13 @@ public sealed class ArmyListOverlay
     public void Close()  => IsOpen = false;
     public void Toggle() => IsOpen = !IsOpen;
 
+    /// <param name="areaW">The table area's width in pixels (screen width minus the right column) —
+    /// the overlay covers this region only, leaving the resolver/log column visible beside it.</param>
     /// <param name="escapeMenuOpen">True while the Esc menu owns input — the L toggle is muted so the
-    /// two modals never fight over a keypress.</param>
+    /// two overlays never fight over a keypress.</param>
     /// <param name="gameOver">True once the game-over card is up; the overlay closes and stays closed
     /// so the card is reachable.</param>
-    public void Draw(int screenW, int screenH, bool escapeMenuOpen, bool gameOver)
+    public void Draw(int areaW, int screenH, bool escapeMenuOpen, bool gameOver)
     {
         if (_tableState == null) return;
         if (gameOver) { Close(); return; }
@@ -102,28 +107,25 @@ public sealed class ArmyListOverlay
         if (!openedThisFrame && (lPressed || ImGui.IsKeyPressed(ImGuiKey.Escape, repeat: false)))
             Close();
 
-        if (IsOpen && !ImGui.IsPopupOpen("##armylists"))
-            ImGui.OpenPopup("##armylists");
+        if (!IsOpen) return;   // closed by a key above — nothing to draw this frame
 
-        // Near-fullscreen: the card columns want the width, and a fullscreen reading mode is the
-        // point — the board is one keypress away.
-        var size = new Vector2(screenW - 90f, screenH - 70f);
-        ImGui.SetNextWindowPos(new Vector2(screenW * 0.5f, screenH * 0.5f), ImGuiCond.Always,
+        // Sized to the table area, not the screen, so the right column (resolver panel, log, chat)
+        // stays readable and clickable beside it; the margins let the board edge and the bottom-left
+        // buttons peek through. 85% background alpha (user feedback): the board ghosts through the
+        // panel without costing the text any contrast.
+        var size = new Vector2(areaW - 48f, screenH - 48f);
+        ImGui.SetNextWindowPos(new Vector2(areaW * 0.5f, screenH * 0.5f), ImGuiCond.Always,
             new Vector2(0.5f, 0.5f));
         ImGui.SetNextWindowSize(size, ImGuiCond.Always);
-        ImGui.PushStyleColor(ImGuiCol.ModalWindowDimBg, new Vector4(0f, 0f, 0f, 0.55f));
+        ImGui.SetNextWindowBgAlpha(0.85f);
 
-        bool visible = true;   // NoTitleBar hides the implicit close button this ref would add
-        if (ImGui.BeginPopupModal("##armylists", ref visible,
+        if (ImGui.Begin("##armylists",
             ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoMove |
             ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoSavedSettings))
         {
-            if (IsOpen) DrawContent();
-            if (!IsOpen) ImGui.CloseCurrentPopup();
-            ImGui.EndPopup();
+            DrawContent();
         }
-
-        ImGui.PopStyleColor();
+        ImGui.End();
     }
 
     // ── Modal content ───────────────────────────────────────────────────────────────────────────────

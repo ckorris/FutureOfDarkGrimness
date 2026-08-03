@@ -621,10 +621,11 @@ public class RaylibRenderer
                 // the discoverable way into the Esc menu. Drawn before the menu so its dim covers it.
                 DrawMenuButton(screenH);
 
-                // #329: the army list modal. Drawn before the Esc menu so the menu's dim sits above
-                // it; its own open/close keys (L, Esc) are handled inside Draw. Suppressed once the
+                // #329: the army list overlay, sized to the table area so the right column stays
+                // visible beside it. Drawn before the Esc menu so the menu's dim sits above it; its
+                // own open/close keys (L, Esc) are handled inside Draw. Suppressed once the
                 // game-over card is up so that card stays reachable.
-                _armyListOverlay.Draw(screenW, screenH, _escapeMenu.IsOpen, _gameOverResult != null);
+                _armyListOverlay.Draw(layout.AreaW, screenH, _escapeMenu.IsOpen, _gameOverResult != null);
 
                 // In-game menu (Esc). Opens only when no context claimed Escape this frame, and never
                 // over the game-over card (that has its own Return to Main Menu button). Drawn last so

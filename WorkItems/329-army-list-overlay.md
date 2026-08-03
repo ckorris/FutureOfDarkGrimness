@@ -57,6 +57,12 @@ User sign-off on all forks:
 
 ## Notes
 
+- 2026-08-02: v1 feedback tweak: no longer a true modal popup. Now a plain top window sized to the
+  TABLE AREA (layout.AreaW) with 85% background alpha, so the right column (resolver panel, log,
+  chat) stays visible and clickable beside it and the board ghosts through. Board input muting is
+  unchanged (open state still ORs into EscapeRouter.BeginFrame); resolver keyboard hotkeys stay
+  muted while open, but right-column clicks now work - the Action needed chip remains for
+  canvas-based prompts.
 - 2026-08-02: Slice 3 (table mode) implemented, app-only: Cards|Table radio pair in the overlay
   header (session-persistent static), condensed one-row-per-unit table (Unit/Stats/Loadout/Special
   Rules) with the same live states (points, wounds fraction, DESTROYED/Activated, token chips,
