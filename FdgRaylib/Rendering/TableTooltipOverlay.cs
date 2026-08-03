@@ -26,6 +26,9 @@ public class TableTooltipOverlay
     // models during a move instead of teleporting to the destination (which is the logical model.Position).
     private PresentationPlayer? _presentationPlayer;
 
+    // #325: the roll stack's screen bounds this frame (see the Draw parameter). Render-thread only.
+    private Rectangle? _rollStack;
+
     private float _scale;
     private int   _originX;
     private int   _originY;
@@ -56,10 +59,20 @@ public class TableTooltipOverlay
         _tableH  = tableH;
     }
 
+    /// <param name="rollStackBounds">
+    /// #325: where the dice/roll-off stack is on screen this frame, or null when nothing is up. Unit
+    /// overlays are ImGui draw-list text, which renders ON TOP of the Raylib-drawn roll panels, so a
+    /// label sitting over one turned both into mush. Anything that would land inside these bounds yields
+    /// for as long as they are there — a panel is a few seconds of transient reading; the labels are
+    /// permanent and come straight back.
+    /// </param>
     public void Draw(int screenW, int screenH,
-        TableHitTester hitTester, ICanvasInteractionHandler? interactionHandler)
+        TableHitTester hitTester, ICanvasInteractionHandler? interactionHandler,
+        Rectangle? rollStackBounds = null)
     {
         if (_tableState == null) return;
+
+        _rollStack = rollStackBounds;
 
         // Hotkeys are muted while the in-game menu owns input (#246). Toggles live in ViewSettings, shared
         // with the menu's Options panel.
@@ -333,8 +346,13 @@ public class TableTooltipOverlay
                 // Model-scoped tokens sit just above each model (usually none).
                 var modelChips = TokenChipRenderer.ResolveVisible(model.Tokens, _ruleResolver, true, ViewSettings.ShowAllTokens, unit);
                 if (modelChips.Count > 0)
-                    TokenChipRenderer.DrawChipRow(drawList, modelChips, mx,
-                        my - mr - 3f - TokenChipRenderer.RowHeight(modelChips));
+                {
+                    float mcW = TokenChipRenderer.RowWidth(modelChips);
+                    float mcH = TokenChipRenderer.RowHeight(modelChips);
+                    float mcY = my - mr - 3f - mcH;
+                    if (!Occluded(mx - mcW * 0.5f, mcY, mcW, mcH))
+                        TokenChipRenderer.DrawChipRow(drawList, modelChips, mx, mcY);
+                }
             }
 
             if (count == 0) continue;
@@ -347,7 +365,9 @@ public class TableTooltipOverlay
             var unitChips = TokenChipRenderer.ResolveVisible(unit.Tokens, _ruleResolver, false, ViewSettings.ShowAllTokens, unit);
             float chipH = TokenChipRenderer.RowHeight(unitChips);
             float chipTopY = modelsTop - 3f - chipH;
-            if (unitChips.Count > 0)
+            if (unitChips.Count > 0
+                && !Occluded(cx - TokenChipRenderer.RowWidth(unitChips) * 0.5f, chipTopY,
+                    TokenChipRenderer.RowWidth(unitChips), chipH))
                 TokenChipRenderer.DrawChipRow(drawList, unitChips, cx, chipTopY);
 
             // Top of the name/chips stack — the health bar sits above it.
@@ -358,11 +378,13 @@ public class TableTooltipOverlay
                 Vector2 textSize = ImGui.CalcTextSize(unit.Name);
                 float labelX = cx - textSize.X * 0.5f;
                 float labelY = stackTopY - textSize.Y - 2f;
+                // The activation marker hangs off the name's left edge, so it shares the name's fate.
+                bool labelHidden = Occluded(labelX, labelY, textSize.X, textSize.Y);
 
                 // Activation marker: a red disc with a white "A" just left of the name, so a spent unit
                 // reads at a glance. The currently-activating unit already has its own spotlight halo, so
                 // it is excluded (see HasActivated) and does not get the marker until its turn ends.
-                if (HasActivated(unit))
+                if (HasActivated(unit) && !labelHidden)
                 {
                     float   radius = textSize.Y * 0.6f;
                     Vector2 center = new Vector2(labelX - 5f - radius, labelY + textSize.Y * 0.5f);
@@ -386,9 +408,14 @@ public class TableTooltipOverlay
                     drawList.AddLine(barL, barR, white, thick);
                 }
 
-                drawList.AddText(new Vector2(labelX + 1, labelY + 1), shadow, unit.Name);
-                drawList.AddText(new Vector2(labelX,     labelY),     white,  unit.Name);
+                if (!labelHidden)
+                {
+                    drawList.AddText(new Vector2(labelX + 1, labelY + 1), shadow, unit.Name);
+                    drawList.AddText(new Vector2(labelX,     labelY),     white,  unit.Name);
+                }
 
+                // The column above keeps its place whether or not the name drew, so a badge does not jump
+                // down into the panel the moment the name yields.
                 stackTopY = labelY;
             }
 
@@ -404,17 +431,45 @@ public class TableTooltipOverlay
                 Vector2 bSize = ImGui.CalcTextSize(badge);
                 float bx = cx - bSize.X * 0.5f;
                 float by = stackTopY - bSize.Y - 2f;
-                drawList.AddText(new Vector2(bx + 1, by + 1), shadow, badge);
-                drawList.AddText(new Vector2(bx,     by),     cyan,   badge);
+                if (!Occluded(bx, by, bSize.X, bSize.Y))
+                {
+                    drawList.AddText(new Vector2(bx + 1, by + 1), shadow, badge);
+                    drawList.AddText(new Vector2(bx,     by),     cyan,   badge);
+                }
                 stackTopY = by;
             }
 
             // Health bar above the name (#152) — hidden at full strength.
             var (remainingW, maxW) = HealthBarRenderer.Compute(unit);
-            if (HealthBarRenderer.ShouldShow(remainingW, maxW))
-                HealthBarRenderer.Draw(drawList, cx, stackTopY - 3f - HealthBarRenderer.Height,
-                    maxRightX - minLeftX, remainingW, maxW);
+            float barW = maxRightX - minLeftX;
+            float barY = stackTopY - 3f - HealthBarRenderer.Height;
+            if (HealthBarRenderer.ShouldShow(remainingW, maxW)
+                && !Occluded(cx - barW * 0.5f, barY, barW, HealthBarRenderer.Height))
+                HealthBarRenderer.Draw(drawList, cx, barY, barW, remainingW, maxW);
         }
+    }
+
+    /// <summary>
+    /// #325: true when the given screen rect would land on the roll stack, and should therefore not be
+    /// drawn this frame. A small margin keeps text from kissing a panel's edge, which reads as badly as
+    /// overlapping it.
+    /// </summary>
+    private bool Occluded(float x, float y, float w, float h) =>
+        _rollStack is { } r && IsOccluded(r, x, y, w, h);
+
+    /// <summary>
+    /// Whether the rect (<paramref name="x"/>, <paramref name="y"/>, <paramref name="w"/>,
+    /// <paramref name="h"/>) collides with the roll stack at <paramref name="stack"/>, allowing a small
+    /// margin so text never sits flush against a panel edge. An empty stack rect occludes nothing.
+    /// Internal for tests.
+    /// </summary>
+    internal static bool IsOccluded(Rectangle stack, float x, float y, float w, float h,
+        float margin = 4f)
+    {
+        if (stack.Width <= 0f || stack.Height <= 0f) return false;
+
+        return x - margin < stack.X + stack.Width && x + w + margin > stack.X
+            && y - margin < stack.Y + stack.Height && y + h + margin > stack.Y;
     }
 
     // A unit has spent its activation this round once the main phase is under way (RoundCount != null)

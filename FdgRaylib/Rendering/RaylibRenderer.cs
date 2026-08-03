@@ -514,6 +514,10 @@ public class RaylibRenderer
                     SpellOverlay.Draw(spellBeat, spellProgress, layout.Scale, layout.OriginX, layout.OriginY, TableHIn);
                 }
 
+                // #325: handed to the tooltip overlay below. Its unit labels are ImGui draw-list text and
+                // therefore land ON TOP of these Raylib-drawn panels, so they have to know where the stack
+                // is in order to yield to it.
+                Rectangle? rollStackBounds = null;
                 if (_presentationPlayer != null)
                 {
                     // #245: the caption strip ghosts itself while an attack animation reaches into it —
@@ -530,10 +534,10 @@ public class RaylibRenderer
                     // Hovering it freezes every panel's timer; the bounds it reports are what the pointer
                     // is tested against next frame (a frame of lag is invisible and avoids measuring the
                     // stack twice).
-                    Rectangle stackBounds = DiceOverlay.DrawStack(_presentationPlayer.GetRollStack(),
+                    rollStackBounds = DiceOverlay.DrawStack(_presentationPlayer.GetRollStack(),
                         layout.AreaW, screenH, diceAvoid, _presentationPlayer.IsRollStackHovered);
-                    _presentationPlayer.SetRollStackHovered(stackBounds.Width > 0
-                        && Raylib.CheckCollisionPointRec(Raylib.GetMousePosition(), stackBounds));
+                    _presentationPlayer.SetRollStackHovered(rollStackBounds is { Width: > 0 }
+                        && Raylib.CheckCollisionPointRec(Raylib.GetMousePosition(), rollStackBounds.Value));
                 }
 
                 if (_presentationPlayer != null &&
@@ -571,7 +575,8 @@ public class RaylibRenderer
                 _tacticalOverlay.UpdateInput(Raylib.GetFrameTime(), _hitTester);
                 DrawConsole(rightX, panelH, rightW, screenH - panelH);
                 _tooltipOverlay.UpdateLayout(layout.Scale, layout.OriginX, layout.OriginY, TableHIn);
-                _tooltipOverlay.Draw(screenW, screenH, _hitTester, _resolverOverlay?.ActiveInteractionHandler);
+                _tooltipOverlay.Draw(screenW, screenH, _hitTester, _resolverOverlay?.ActiveInteractionHandler,
+                    rollStackBounds);
                 _resolverOverlay?.UpdateLayout(layout.Scale, layout.OriginX, layout.OriginY, TableHIn);
                 // #280: other players' live previews (ghosts / planned paths) - same background
                 // draw list layer as the local resolver's own ghosts, drawn regardless of what the

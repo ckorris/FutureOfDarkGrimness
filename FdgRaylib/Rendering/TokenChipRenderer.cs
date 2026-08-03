@@ -141,6 +141,16 @@ public static class TokenChipRenderer
         return 2f * maxR;
     }
 
+    /// <summary>Width a chip row will occupy (0 if no chips) — the row is centred on the caller's x.</summary>
+    public static float RowWidth(IReadOnlyList<TokenDisplayInfo> tokens)
+    {
+        if (tokens.Count == 0) return 0f;
+
+        float totalW = 0f;
+        foreach (TokenDisplayInfo t in tokens) totalW += 2f * RadiusOf(t) + Gap;
+        return totalW - Gap;
+    }
+
     /// <summary>Height a chip row will occupy (0 if no chips) — lets the caller stack the unit name above it.</summary>
     public static float RowHeight(IReadOnlyList<TokenDisplayInfo> tokens) =>
         tokens.Count == 0

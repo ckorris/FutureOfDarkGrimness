@@ -17,6 +17,16 @@ pace of combat is unchanged from before the item.
 
 ## Notes
 
+- 2026-08-02 (latest): **Unit overlays yield to the stack.** Owner screenshot: unit name labels drew
+  straight over a dice panel, both unreadable. Cause is draw order, not the stack - unit labels, token
+  chips, transport badges and health bars are ImGui draw-list text, rendered after (and therefore on top
+  of) the Raylib-drawn panels. Lingering, taller stacks simply reach far enough up the table to collide
+  now. `TableTooltipOverlay.Draw` takes the stack's screen bounds and skips any element that would land
+  in them (4px margin, so text never sits flush against a panel edge either); the label column keeps its
+  y positions whether or not the name drew, so a badge cannot jump down into the panel when the name
+  yields. Chose to hide the LABEL rather than dim the panel: a panel is a few seconds of transient
+  reading, the labels are permanent and return the moment it fades.
+
 - 2026-08-02 (later still): **Roll-offs joined the stack** (owner report: at game start the objective-count
   roll was still up when the first-turn roll-off drew straight over it). `RollOffBeat` is now a panel on
   the same stack rather than its own bottom-anchored overlay, so it queues above whatever is lingering and
