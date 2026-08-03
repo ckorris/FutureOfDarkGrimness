@@ -20,7 +20,8 @@ namespace FdgRaylib.Rendering;
 ///
 /// <para>An overlay window covering the TABLE AREA only (user feedback on v1's fullscreen modal):
 /// the right column — resolver panel, log, chat — stays visible and clickable beside it, and the
-/// 90%-alpha background lets the board ghost through. Board input is still muted via
+/// 85%-alpha background lets the board ghost through (each card body sits darker and near-solid
+/// on it, like the printed cards). Board input is still muted via
 /// <see cref="EscapeRouter.MenuOpen"/> (the renderer ORs this overlay's open state into
 /// <c>BeginFrame</c>), so a covered resolver's Esc-cancel or canvas hotkey can never fire
 /// underneath; Escape or L closes. Deliberately NOT a pause — the engine keeps running; if a
@@ -128,7 +129,7 @@ public sealed class ArmyListOverlay
 
         ImGui.SetNextWindowPos(new Vector2(side, top), ImGuiCond.Always);
         ImGui.SetNextWindowSize(new Vector2(areaW - side * 2f, screenH - top - bottom), ImGuiCond.Always);
-        ImGui.SetNextWindowBgAlpha(0.90f);
+        ImGui.SetNextWindowBgAlpha(0.85f);
 
         if (ImGui.Begin("##armylists",
             ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoMove |
@@ -149,6 +150,12 @@ public sealed class ArmyListOverlay
         var slots = _tableState!.Players.Objects.Where(p => p.IsFilled).ToList();
         var ordered = ArmyListLayout.OrderTabs(slots, s => _localPlayerIDs.Contains(s.PlayerID));
 
+        // Larger tabs (user feedback v5): scaled-up labels + fatter frame padding make the player
+        // tabs the obvious click targets they are. The scale drops back to 1 for the tab CONTENT
+        // (drawn inside the selected item) and is restored for the next tab's label.
+        const float tabScale = 1.3f;
+        ImGui.PushStyleVar(ImGuiStyleVar.FramePadding, new Vector2(16f, 8f));
+        ImGui.SetWindowFontScale(tabScale);
         if (ImGui.BeginTabBar("##armytabs"))
         {
             foreach (IPlayerSlotInfo slot in ordered)
@@ -160,24 +167,35 @@ public sealed class ArmyListOverlay
 
                 if (selected)
                 {
+                    ImGui.SetWindowFontScale(1f);
                     DrawPlayerTab(slot);
                     ImGui.EndTabItem();
+                    ImGui.SetWindowFontScale(tabScale);
                 }
             }
             ImGui.EndTabBar();
         }
+        ImGui.SetWindowFontScale(1f);
+        ImGui.PopStyleVar();
     }
 
     // Title + view-mode pair on the left; "Action needed" pulse + Close on the right.
     private void DrawHeaderBar()
     {
         ImGui.PushFont(RaylibRenderer.LargeFont);
+        float titleHeight = ImGui.GetTextLineHeight();
         ImGui.TextUnformatted("Army Lists");
         ImGui.PopFont();
+
+        // The title line is LargeFont-tall; body-font widgets sharing it sit top-aligned unless
+        // nudged to its vertical center (user feedback v5). The radios' padded Y carries to every
+        // later SameLine on this line, so the close button centers with them.
+        float centerPad = MathF.Max(0f, (titleHeight - ImGui.GetFrameHeight()) * 0.5f);
 
         // The printed list's two modes, one click apart (radio pair, not a cycling button, so the
         // current mode is always visible).
         ImGui.SameLine();
+        ImGui.SetCursorPosY(ImGui.GetCursorPosY() + centerPad);
         if (ImGui.RadioButton("Cards", !_tableMode)) _tableMode = false;
         ImGui.SameLine();
         if (ImGui.RadioButton("Table", _tableMode)) _tableMode = true;
@@ -434,6 +452,11 @@ public sealed class ArmyListOverlay
         if (destroyed)
             ImGui.PushStyleVar(ImGuiStyleVar.Alpha, ImGui.GetStyle().Alpha * 0.45f);
 
+        // Each card body is DARKER than the panel (the ink well the printed cards use) and nearly
+        // solid (95% vs the window's 85%), so cards read as crisp sheets floating on the ghosted
+        // board (user feedback v5).
+        Vector4 cardBg = ImGuiTheme.InkWell with { W = 0.95f };
+        ImGui.PushStyleColor(ImGuiCol.ChildBg, cardBg);
         ImGui.BeginChild("card", new Vector2(0f, 0f),
             ImGuiChildFlags.Borders | ImGuiChildFlags.AutoResizeY | ImGuiChildFlags.AlwaysUseWindowPadding);
 
@@ -453,6 +476,7 @@ public sealed class ArmyListOverlay
         DrawTokenChips(unit);
 
         ImGui.EndChild();
+        ImGui.PopStyleColor();   // ChildBg
 
         if (destroyed) ImGui.PopStyleVar();
 

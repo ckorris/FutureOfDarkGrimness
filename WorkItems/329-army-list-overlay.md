@@ -57,6 +57,11 @@ User sign-off on all forks:
 
 ## Notes
 
+- 2026-08-02: v5 feedback: Cards/Table radios (and the close button, same line) vertically centered
+  against the LargeFont title; player tabs enlarged (1.3x label scale + fatter FramePadding, scale
+  reset for tab content); card bodies now DARKER (ImGuiTheme.InkWell) at 95% alpha over the window's
+  85% (the 0.90 bump from the previous round is superseded) - cards read as crisp dark sheets on the
+  ghosted board, like the printout.
 - 2026-08-02: v4 feedback: table header rows are no longer interactive (TableHeadersRow's hover
   highlight advertised a click that did nothing; now a Headers-flag row with plain text). The
   Action-needed chip and Close merged into one button: "Return to Game (L)" normally, orange-flashing
