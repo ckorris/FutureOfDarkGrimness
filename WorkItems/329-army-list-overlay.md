@@ -1,6 +1,6 @@
 # 329 — In-game Army List overlay (toggleable, all players)
 
-**Status**: in-progress (slice 1 implemented + tested; awaiting GUI hand-verify; slices 2-3 open)
+**Status**: in-progress (slices 1-2 implemented + tested; awaiting GUI hand-verify; slice 3 open)
 **Related**: #259 (RuleGlossary/RuleTextFlow), #292 (RuleHoverText), #246 (EscapeRouter/ViewSettings), #227 (joined-hero stats), #328 (render-thread token snapshots), #149 (precedent for adding a serialized field to unit data)
 
 ## Goal
@@ -57,6 +57,15 @@ User sign-off on all forks:
 
 ## Notes
 
+- 2026-08-02: Slice 2 implemented. Engine (submodule ae684f2): `UnitData.PointCost` from the file
+  entry, hero cost folds into host at merge (HeroJoinResolver), Reinforcement copy keeps its twin's
+  cost, `ArmyData.ArmyName/Faction/PointsLimit` set in CreateArmy - all serialized, so they sync and
+  survive saves (3 tests in `ArmyPointsCarryTests`, incl. GameSaveSerializer round-trip). App: card
+  header gains "- NNNpts", tab header line "Name - Faction" + "total / limit pts" (sums UnitData
+  costs; pre-slice-2 saves just thin the line). DESIGN CHANGE from plan: army identity rides
+  ArmyData engine-side instead of plumbing lobby ArmyListSummary through GameGuiWiring - works for
+  scenario direct-launch and resumed saves too, no app plumbing. Engine suite 2653/2653, app
+  1013/1013, headless smoke exit 0.
 - 2026-08-02: Slice 1 implemented, all app-side (no engine changes). New: `ArmyListOverlay`
   (modal/tabs/cards), `ArmyListLayout` (pure packing/wrapping/formatting core, 12 tests in
   `ArmyListLayoutTests`), `UnitActivation` (HasActivated extracted from TableTooltipOverlay, now

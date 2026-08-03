@@ -186,7 +186,27 @@ public sealed class ArmyListOverlay
 
     private void DrawPlayerTab(IPlayerSlotInfo slot)
     {
-        var units = UnitsFor(slot.PlayerID);
+        var (army, units) = ArmyFor(slot.PlayerID);
+
+        // #329 slice 2: the army's file identity + points, carried on ArmyData/UnitData by the
+        // engine. A pre-slice-2 save has neither (empty name, zero costs) — the line simply thins.
+        string identity = army == null ? ""
+            : string.Join(" - ", new[] { army.ArmyName, army.Faction }.Where(s => !string.IsNullOrWhiteSpace(s)));
+        int totalPoints = units.Sum(u => u is UnitData ud ? ud.PointCost : 0);
+        string points = totalPoints <= 0 ? ""
+            : army is { PointsLimit: > 0 } ? $"{totalPoints} / {army.PointsLimit} pts"
+            : $"{totalPoints} pts";
+
+        if (identity.Length > 0 || points.Length > 0)
+        {
+            ImGui.TextUnformatted(identity.Length > 0 ? identity : " ");
+            if (points.Length > 0)
+            {
+                ImGui.SameLine(ImGui.GetWindowWidth() - ImGui.GetStyle().WindowPadding.X
+                    - ImGui.CalcTextSize(points).X);
+                ImGui.TextUnformatted(points);
+            }
+        }
 
         int standing = units.Count(u => u.Models.Any(m => m.GetIsAlive()));
         ImGui.TextDisabled(standing == units.Count
@@ -223,18 +243,18 @@ public sealed class ArmyListOverlay
         ImGui.EndChild();
     }
 
-    // A player's units in army order (the Armies store preserves the list file's order, dead
+    // A player's army + units in army order (the Armies store preserves the list file's order, dead
     // included); armies are synced to every client, but fall back to the flat unit store just in
-    // case an IArmy was never registered for this player.
-    private List<IUnit> UnitsFor(PlayerID playerID)
+    // case an IArmy was never registered for this player. The concrete ArmyData carries the #329
+    // display identity (name/faction/points limit) — same pattern-match as UnitData.HeroAttachment.
+    private (ArmyData? Army, List<IUnit> Units) ArmyFor(PlayerID playerID)
     {
-        var fromArmies = _tableState!.Armies.Objects
-            .Where(a => a.PlayerID.Equals(playerID))
-            .SelectMany(a => a.Units)
-            .ToList();
-        if (fromArmies.Count > 0) return fromArmies;
+        var armies = _tableState!.Armies.Objects.Where(a => a.PlayerID.Equals(playerID)).ToList();
+        var fromArmies = armies.SelectMany(a => a.Units).ToList();
+        if (fromArmies.Count > 0)
+            return (armies.OfType<ArmyData>().FirstOrDefault(), fromArmies);
 
-        return _tableState.Units.Objects.Where(u => u.PlayerID.Equals(playerID)).ToList();
+        return (null, _tableState.Units.Objects.Where(u => u.PlayerID.Equals(playerID)).ToList());
     }
 
     // ── One unit card ───────────────────────────────────────────────────────────────────────────────
@@ -301,9 +321,13 @@ public sealed class ArmyListOverlay
 
     private void DrawCardHeader(IUnit unit, int live, int total, bool destroyed)
     {
-        // A pristine unit reads exactly like the printout ("[20]"); casualties turn it into the
-        // live fraction ("[12/20]").
-        string header = live == total ? $"{unit.Name} [{total}]" : $"{unit.Name} [{live}/{total}]";
+        // A pristine unit reads exactly like the printout ("Hive Lord [1] - 435pts"); casualties
+        // turn the count into the live fraction ("[12/20]"). Points only when the engine carried
+        // them (#329 slice 2) — a pre-slice-2 save shows none rather than "0pts".
+        string count = live == total ? $"[{total}]" : $"[{live}/{total}]";
+        string header = unit is UnitData { PointCost: > 0 } ud
+            ? $"{unit.Name} {count} - {ud.PointCost}pts"
+            : $"{unit.Name} {count}";
 
         ImGui.SetWindowFontScale(1.12f);
         CenterNextText(header);
