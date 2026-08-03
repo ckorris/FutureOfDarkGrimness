@@ -20,7 +20,7 @@ namespace FdgRaylib.Rendering;
 ///
 /// <para>An overlay window covering the TABLE AREA only (user feedback on v1's fullscreen modal):
 /// the right column — resolver panel, log, chat — stays visible and clickable beside it, and the
-/// 85%-alpha background lets the board ghost through. Board input is still muted via
+/// 90%-alpha background lets the board ghost through. Board input is still muted via
 /// <see cref="EscapeRouter.MenuOpen"/> (the renderer ORs this overlay's open state into
 /// <c>BeginFrame</c>), so a covered resolver's Esc-cancel or canvas hotkey can never fire
 /// underneath; Escape or L closes. Deliberately NOT a pause — the engine keeps running; if a
@@ -128,7 +128,7 @@ public sealed class ArmyListOverlay
 
         ImGui.SetNextWindowPos(new Vector2(side, top), ImGuiCond.Always);
         ImGui.SetNextWindowSize(new Vector2(areaW - side * 2f, screenH - top - bottom), ImGuiCond.Always);
-        ImGui.SetNextWindowBgAlpha(0.85f);
+        ImGui.SetNextWindowBgAlpha(0.90f);
 
         if (ImGui.Begin("##armylists",
             ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoMove |
