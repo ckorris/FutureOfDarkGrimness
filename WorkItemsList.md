@@ -87,6 +87,8 @@ Corpus coverage is now complete too: **0 of 13,870** book rule references are de
 
 ## Victory & scoring
 
+- [~] 330 — Match grinds on after the result is fixed (tabled opponent + sole objective lead at end of round 3 still played round 4). Ends early on a provably-decided state; Headline banner + log line explain the short stop to both players. Implemented + tested (mutation-verified); awaiting GUI hand-verify. ([WorkItems/330](WorkItems/330-early-match-decision.md))
+
 - [~] 257 — Team-based victory scoring: teammates pool objectives, unique top team wins, banner names every winning player ("Alpha and Bravo win!"); `GameResult.WinnerPlayers` added, 1v1 results byte-identical. Implemented + tested; awaiting GUI hand-verify. ([WorkItems/257](WorkItems/257-team-victory-scoring.md))
 
 ## Transport
