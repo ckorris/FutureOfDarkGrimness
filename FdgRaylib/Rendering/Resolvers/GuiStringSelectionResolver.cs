@@ -358,8 +358,14 @@ public class GuiStringSelectionResolver : IStageResolver<StringSelectionRequest,
                 uint rowRuleCol = enabled ? ruleCol : dimCol;
                 foreach (List<RuleHoverText.Segment> segmentLine in row.SegmentLines)
                 {
-                    ruleTooltip ??= RuleHoverText.DrawInline(dl, new Vector2(origin.X + textPadX, ty),
+                    // DrawInline DRAWS as well as reporting what is hovered, so it must be called for
+                    // every line unconditionally and the tooltip picked afterwards. Folding the call into
+                    // `ruleTooltip ??= ...` reads fine and is wrong: `??=` skips its right-hand side once
+                    // a tooltip has been found, so hovering any rule name stopped every line after it -
+                    // in practice the greyed rows, which sort last - from being drawn at all.
+                    string? hovered = RuleHoverText.DrawInline(dl, new Vector2(origin.X + textPadX, ty),
                         segmentLine, rowTextCol, rowRuleCol, listHovered);
+                    ruleTooltip ??= hovered;
                     ty += lineH;
                 }
             }

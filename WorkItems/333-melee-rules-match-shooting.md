@@ -17,6 +17,18 @@ hovered row.
 
 ## Notes
 
+- 2026-08-04: **GUI hand-verify round 1 found a real bug** (owner: "while hovering over a special rule,
+  the grayed out text of weapons that aren't available disappears"). Cause: the row loop collected the
+  frame's tooltip with `ruleTooltip ??= RuleHoverText.DrawInline(...)`, and `??=` does not evaluate its
+  right-hand side once the left is non-null - but `DrawInline` DRAWS the line as well as reporting what
+  the cursor is on. So from the hovered rule onward nothing was drawn, and since invalid options are
+  appended after every valid one, the greyed rows were always in that dead zone. Now called
+  unconditionally with the tooltip coalesced afterwards, at both sites: the same one-liner was already
+  in `ArmyListOverlay.DrawWrappedSegments` (pre-existing, same defect, would blank the later wrapped
+  lines of a rules block), fixed too. Swept every other `??=` under `FdgRaylib/Rendering` - the rest are
+  lazy-init or already-computed locals, all correct.
+  **Not covered by a test**: `DrawInline` needs an ImGui context and the app suite has none by design
+  (pure logic only). The guard is a comment at both call sites; this stays hand-verify territory.
 - 2026-08-04: **Hand-verify asset**: `WeaponRules.fdgsave` (repo root), compiled from
   `Scenarios/333-weapon-rules-showcase.json` + `Scenarios/armies/RuleShowcase.fdgarmy`. Built to put every
   display state on ONE screen rather than needing several games: the Blademasters' first melee menu has two

@@ -730,7 +730,10 @@ public sealed class ArmyListOverlay
         foreach (var line in lines)
         {
             Vector2 origin = ImGui.GetCursorScreenPos();
-            tooltip ??= RuleHoverText.DrawInline(dl, origin, line, textColor, textColor, hoverEnabled);
+            // Unconditionally, then coalesce: DrawInline draws as well as reporting the hover, and `??=`
+            // would skip the call - and so the line - once a tooltip had been found (#333).
+            string? hovered = RuleHoverText.DrawInline(dl, origin, line, textColor, textColor, hoverEnabled);
+            tooltip ??= hovered;
             ImGui.Dummy(new Vector2(width, lineHeight));
         }
 
