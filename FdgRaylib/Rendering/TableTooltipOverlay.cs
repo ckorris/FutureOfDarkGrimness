@@ -126,15 +126,20 @@ public class TableTooltipOverlay
 
         // Model section first — it sits nearest the cursor, so the hovered model's own weapon(s), its
         // model-specific special rules, and (if Tough) its remaining wounds read before the whole-unit stats.
-        DrawModelSection(model);
+        // #342: for the joined hero that section is headed by the hero's NAME instead of the generic
+        // "This model" — hovering the star is the natural "who is this?" gesture, and until #342 the name
+        // wasn't anywhere in the game to answer with.
+        bool isHero = HeroMarkerRenderer.IsHeroModel(unit, model);
+        HeroAttachment? heroAttachment = isHero ? (unit as UnitData)?.HeroAttachment : null;
+        DrawModelSection(model, isHero ? heroAttachment?.Name : null);
 
         // Joined-Hero tag (#227): if the hovered model is the unit's joined hero, call it out with the hero's
         // OWN Quality / Defense (which diverge from the host unit's). The stats live on HeroAttachment, off
         // the concrete UnitData; fall back to a bare "Hero" for any other IUnit impl.
-        if (HeroMarkerRenderer.IsHeroModel(unit, model))
+        if (isHero)
         {
-            string tag = unit is UnitData { HeroAttachment: { } ha }
-                ? HeroMarkerRenderer.FormatHeroTag(ha.Quality, ha.Defense)
+            string tag = heroAttachment != null
+                ? HeroMarkerRenderer.FormatHeroTag(heroAttachment.Name, heroAttachment.Quality, heroAttachment.Defense)
                 : "Hero";
             ImGui.TextColored(new Vector4(1f, 0.85f, 0.3f, 1f), tag);
         }
@@ -260,9 +265,13 @@ public class TableTooltipOverlay
     // The section for the specific model under the cursor: the weapon(s) IT carries (matters in mixed units
     // like a joined hero), any rule scoped to just this model (per-model RuleDefinitions — unit-wide rules
     // show in the unit section below), and, if it is Tough, its own remaining wounds.
-    private void DrawModelSection(IModel model)
+    // <paramref name="heroName"/> (#342), when set, names the joined hero in place of the generic header.
+    private void DrawModelSection(IModel model, string? heroName = null)
     {
-        ImGui.TextDisabled("This model");
+        if (string.IsNullOrWhiteSpace(heroName))
+            ImGui.TextDisabled("This model");
+        else
+            ImGui.TextColored(new Vector4(1f, 0.85f, 0.3f, 1f), heroName);
 
         foreach (var grp in model.Weapons.GroupBy(w => w.Name))
         {
