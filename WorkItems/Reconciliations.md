@@ -6,6 +6,22 @@ from origin/master. Standing precedent: numbers are never reused, and when two p
 claim the same number, the *unmerged local* item yields to the *merged* one and takes a fresh number.
 A per-clone pre-push hook blocks duplicate numbers across the index and the archive.
 
+> **2026-08-04 - reconciliation 50 (RESOLVED).** Same day, same shape as 49, one number along. This
+> session filed **337 = strike-back survivor consolidates** against an `origin/master` whose index topped
+> out at 336 (fetched immediately before filing, per the rule), implemented and committed it in both
+> repos, then waited three minutes at the owner's request before pushing - and the pre-push fetch found
+> origin four commits further on, owning **337 = Shaken badge in the activation picker** and
+> **338 = Notice banners linger 2400ms**. Merged wins per standing precedent: **strike-back survivor
+> consolidation 337 -> 339** (`WorkItems/339-strike-back-survivor-consolidates.md`). The renumber landed
+> before publication - detail file + filename, the index line, and the engine source comment + both test
+> files. **Left as-is on purpose:** the two pre-renumber commit messages saying "#337", per every prior
+> reconciliation. Both merges of origin/master were clean: the incoming engine work (`UnitStatusLabel`,
+> the Shaken label tests) touches no file this item changed, and the only conflict was the superproject's
+> submodule pointer, resolved by taking this clone's engine branch, which had already merged origin's.
+> **Worth noting for the next session:** the fetch-before-filing rule is now failing to prevent
+> collisions two sessions running, because the gap that matters is between filing and *pushing*, not
+> between fetching and filing. A number is only really reserved once it is on origin.
+>
 > **2026-08-04 - reconciliation 49 (RESOLVED).** Third session in a row to collide on **333**, and the
 > second to lose it to `origin/master`'s *confirm unmoved models on Done*. This session filed
 > **333 = melee weapon rules read the way shooting's do** against an `origin/master` whose index + archive
