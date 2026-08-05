@@ -68,6 +68,12 @@ rule; app-side state lives in `FormationCycle`, input in `GroupInput` (both
 - **Rotation only shapes the live ghost (#282).** `PathTemplate.AddStep` captures the manual offset
   per waypoint at placement; committed waypoints keep the facing they were placed with (on screen and
   in the executed result), so a late Wheel/R never re-orients the already-planned path.
+- **...and only the node it is placed at (#340).** Capturing the offset per waypoint was not enough on its
+  own, because the *validators* swept each leg as one rigid base at its ARRIVING attitude — and a swept base
+  covers its start point, so the turn was applied to the ground the model set off from. A model hugging a
+  wall could not be turned at all. A leg now runs between two attitudes and its rotation is not validated:
+  see "The two-attitude leg rule" under Validation gotchas. The turn is instead shown, interpolated per leg
+  by `GlideState` from the facings the move beat now carries.
 - **Ctrl+Wheel belongs exclusively to the formation cycle.** Alt is the camera/measure modifier:
   the **ruler moved from Ctrl+drag to Alt+drag** (holding Ctrl used to raise `WantCaptureMouse`,
   hiding the wheel from the resolvers) and the **zoom moved from Ctrl+wheel to Alt+wheel**, so
@@ -187,6 +193,25 @@ next slice to get the same treatment; until then it keeps the click-only afforda
 
 ## Validation gotchas
 
+- **The two-attitude leg rule (#340)**: a path is a sequence of POSES (position + the facing that node was
+  placed with), and the rotation *between* two poses is deliberately not validated — the base turns
+  somewhere along the leg and the animation decides when. So the swept tests come in two polarities and a
+  caller must say which it means (`MovementUtilities.ELegAttitudeRule`):
+  - **Legality** (impassible terrain, enemy pass-through): the leg is blocked only when the swept footprint
+    collides at **both** endpoint attitudes — the departing one (the previous node's facing, or the model's
+    pre-move resting facing for leg 0) and the arriving one. The OR is per attitude over the **whole**
+    obstacle set, never per obstacle. Every node's pose is then checked strictly on its own, which is what
+    still refuses a move that ends rotated into a wall; a pose identical to the one before it is skipped, or
+    a hold by an already-overlapping model would self-flag (the same reason zero-length legs are skipped).
+  - **Hazard detection** (Dangerous / Difficult): unchanged, the arriving attitude alone. "Does this ground
+    affect the model" is not "is this move legal", and widening it changes how often units take terrain
+    wounds or hit the 6" cap.
+
+  A preview clamp must follow the same rule or it re-introduces the bug one layer up: `EnemyClampTravel`
+  allows the farther of the two attitudes. `ClampTravelToTable` (a node-pose constraint) and the
+  difficult-terrain clamp (a move cap) are untouched by it. `ValidateMovingThroughImpassibleTerrain`
+  delegates to `FindFirstTerrainCrossing`, so the Done gate and the red "show me why" ghost are literally
+  one walk.
 - **Deployment spacing**: `MAX_MODEL_DISTANCE_FROM_ANY_OTHER_MODEL_INCHES` is 1.0" base-to-base. Auto-placement uses 0.1" gap, **not 1.0"** — at exactly 1.0", float accumulation during diagonal movement can push models fractionally over the cohesion limit.
 - **Movement float precision**: `AutoAdvance` caps `step` at `MaxAdvanceDistance - 0.001f`. Without this margin, the resulting 3D move distance can come out fractionally above `MaxAdvanceDistance` and `ChooseActionStage.GetCanShoot` will block shooting after a legal advance.
 - **Back / cancel sentinel**: `GuiSelectionResolver<T>` and `GuiChooseRangedAttackResolver` resolve with `null` when the player clicks Back — as does the CLI `SelectionResolver<T>` on `[0]` (#335). Any stage that awaits those requests must null-check the result and activate its `BackToChooseAction` binding rather than proceeding. `ChooseMeleeDefenderStage` and `ChooseRangedAttackStage` already do this.

@@ -1,6 +1,6 @@
 # 340 — A rotation dialled in mid-path rotated the model where it was STANDING
 
-**Status**: in-progress
+**Status**: in-progress (implemented + tested; awaiting GUI hand-verify)
 **Related**: #150 (per-waypoint travel facing), #282 (offsets captured per waypoint), #283 (consolidation
 rotate-in-place), #312 (end-state at end facing), #213/#317 (impassible preview), #155 (difficult clamp)
 
@@ -87,11 +87,35 @@ Applies to movement (single + group) and to consolidation (owner's call, 2026-08
   - A model that STARTS with its base overlapping impassible terrain is still trapped (every leg collides
     at both attitudes). Pre-existing; unchanged.
 
-- **One existing test asserted the old semantics and was rewritten.**
-  `MovementImpassibleFacingTests.FindFirstCrossing_LateRotationOffset_FlagsTheEarlierSegment` documented
-  that "a late rotation makes an EARLIER, already-green segment collide" — which is the bug. It now asserts
-  the opposite, with a companion test that a rotation collapsing the *node pose* into the pillar is still
-  caught.
+- **The OR is per-enemy in the enemy validator, and globally over the piece set for terrain.** The terrain
+  walk asks "is there one attitude clear of everything", which is the strict reading. `ValidateMovingThrough-
+  EnemyUnits` evaluates it inside its per-enemy loop instead, because every other clause of that check
+  (the start/end gap guard, the aircraft branch, the ending-stacked rule) is per enemy — "did I pass through
+  THIS enemy" is the question it is built around. The gap: a leg crossing enemy A only at the arriving
+  attitude and enemy B only at the departing one passes, though no single attitude is clear of both. Two
+  enemies and a rotating rectangle threading between them; the end pose is still checked. Left as is rather
+  than restructure a validator with this much documented history for it.
+
+- **Two existing tests moved rather than broke, and the surprise was which.** The predicted casualty was
+  `FindFirstCrossing_LateRotationOffset_FlagsTheEarlierSegment` ("a late rotation makes an EARLIER,
+  already-green segment collide" — the bug, asserted). It still passes: the 45deg pose at the node it turns
+  at lands inside the pillar, so the collision survives, reattributed from the leg to the node. Renamed and
+  extended with the case that does change (turn past the pillar instead and the whole path is now legal).
+  The one that actually failed was `FindFirstCrossing_ReportsPieceSegmentAndContact`, whose scenario became
+  a node-pose collision reporting contact at the node rather than mid-leg; it now rests the model facing its
+  direction of travel so the two attitudes agree and it stays a pure leg test, with a new sibling covering
+  the node-pose reporting shape.
+
+## Verification
+
+- Engine 2831/2831, app 1077/1077, `dotnet build` clean, headless smoke exits 0 (run at every commit).
+- Commits: engine `c0b0304` (rule) -> `617e51f` (consolidation tests) -> `1ffbc8e` (beat facings);
+  superproject `fa3abbb` (clamps + bump) -> `8fc736f` (glide rotation + bump).
+- **Not verified in the GUI.** The owner's scenario is a hand-verify: park a rectangular model beside a
+  wall, rotate, and place a node clear of the wall's end - the ghost must stay green and Done must accept.
+  Then repeat with the node still alongside the wall: the ghost must go red with the offending piece washed
+  and the model's oriented footprint drawn AT that node. Watch the move play: the model should turn across
+  the leg rather than arrive pre-turned.
 
 ## Outcome
 

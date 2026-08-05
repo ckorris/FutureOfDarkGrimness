@@ -283,9 +283,11 @@ public class GuiDefineMovementResolver
     private static readonly uint ShortfallTextCol = ImGui.ColorConvertFloat4ToU32(new Vector4(0.80f, 0.80f, 0.83f, 1f));
     // "Show me why" for an impassible-flagged path: the offending piece gets a red wash + outline and the
     // model's oriented footprint is drawn at the point of first contact. The collision is often NOT under
-    // the node being placed (a pivot at an earlier waypoint, or the manual rotation offset re-orienting the
-    // whole committed path, can make an earlier segment collide), so the plain red flag read as
+    // the node being placed - an earlier leg can be the one that collides - so the plain red flag read as
     // "can't place here though nothing is between the last point and this one".
+    // #340: the contact may now also be a NODE POSE rather than a leg (a rotation the base has room to
+    // travel with but not to stand in), which draws as the oriented footprint at that node with no line -
+    // the collision is the attitude, not the ground crossed to reach it.
     private static readonly uint CrossingZoneFill      = ImGui.ColorConvertFloat4ToU32(new Vector4(1.00f, 0.25f, 0.25f, 0.22f));
     private static readonly uint CrossingZoneOutline   = ImGui.ColorConvertFloat4ToU32(new Vector4(1.00f, 0.30f, 0.30f, 0.95f));
     private static readonly uint CrossingFootprintFill = ImGui.ColorConvertFloat4ToU32(new Vector4(1.00f, 0.25f, 0.25f, 0.18f));
