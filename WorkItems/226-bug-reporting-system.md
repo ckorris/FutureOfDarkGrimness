@@ -7,6 +7,7 @@
 Give the user (and future testers) a way to report a bug from inside the app rather than out-of-band. Not yet scoped to a mechanism — options include an in-app "report bug" action that dumps recent log/state to a file for the user to send, versus something that files directly to a tracker. Surface the design fork before building.
 
 ## Notes
+- 2026-08-05: Both slices landed (9ca9d7b Worker, bb0854a app). Verified: engine 2862 green, app 1116 green (8 new in `BugReportTests`), full build, headless smoke exit 0. **Outstanding verification** (no Node.js on this machine, and GUI needs hands): (1) `wrangler dev` + `./smoke.sh` for the new /reports checks, (2) deploy: `npx wrangler deploy` + one-time `npx wrangler secret put ADMIN_TOKEN`, (3) GUI hand-check of the escape-menu Report a Bug flow (send as host: save included; status line honest on no-network).
 - 2026-08-05: Design agreed with owner (see Decisions). Building: Worker slice first, then app slice.
 - 2026-07-15: Filed from user playtest feedback. No mechanism decided yet.
 
