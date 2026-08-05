@@ -6,6 +6,27 @@ from origin/master. Standing precedent: numbers are never reused, and when two p
 claim the same number, the *unmerged local* item yields to the *merged* one and takes a fresh number.
 A per-clone pre-push hook blocks duplicate numbers across the index and the archive.
 
+> **2026-08-04 - reconciliation 51 (RESOLVED).** Third collision of the day, and the same trap as 49 and
+> 50: this session filed **337 = Takedown/Sniper aims one rifle at a time** against an `origin/master`
+> whose index topped out at 336 (fetched immediately before filing, per the rule), built and closed it in
+> both repos, then waited three minutes at the owner's request before pushing - and the pre-push fetch
+> found origin six commits further on, owning **337 = Shaken badge in the activation picker**,
+> **338 = Notice banners linger 2400ms** and **339 = strike-back survivor consolidates** (339 itself the
+> product of reconciliation 50, an hour earlier). Merged wins per standing precedent: **Takedown per-rifle
+> targets 337 -> 340** (`WorkItems/340-takedown-per-rifle-targets.md`). The renumber landed before
+> publication - detail file + filename, the archive entry (the item was already closed and archived), the
+> engine source comments in five files, both engine test files, both app resolvers, and the hand-verify
+> fixtures (`Scenarios/340-sniper-split-targets.json` / `.fdgsave`, `armies/340-Snipers.fdgarmy`,
+> `armies/340-Targets.fdgarmy`). **Left as-is on purpose:** the four pre-renumber commit messages saying
+> "#337", per every prior reconciliation. Both merges of origin/master were clean: the incoming work
+> (Shaken labels, strike-back consolidation, Notice durations) touches no file this item changed, and the
+> only conflict was the superproject's submodule pointer, resolved by taking this clone's engine branch,
+> which had already merged origin's.
+>
+> **Lesson, three times over in one day:** filing a number from a fresh fetch is not enough when the work
+> then takes an hour. The number is only safe at PUSH time - fetch again before publishing, and expect to
+> renumber.
+
 > **2026-08-04 - reconciliation 50 (RESOLVED).** Same day, same shape as 49, one number along. This
 > session filed **337 = strike-back survivor consolidates** against an `origin/master` whose index topped
 > out at 336 (fetched immediately before filing, per the rule), implemented and committed it in both

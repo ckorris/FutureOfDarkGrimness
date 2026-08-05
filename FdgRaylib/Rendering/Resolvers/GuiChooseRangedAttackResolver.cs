@@ -211,14 +211,24 @@ public class GuiChooseRangedAttackResolver
             // #319: a once-per-game weapon says so on its row, in both states - "ONCE PER GAME" while it
             // still has its shot (firing it is irreversible, and that has to be visible BEFORE the click),
             // "SPENT" once it is gone. Amber for the live one, gray for the used one.
+            float badgeX = 4 + ImGui.CalcTextSize(wo.Weapon.Name + "  ").X;
             if (wo.LimitedRule != null)
             {
                 string badge = wo.LimitedAlreadyFired ? "SPENT" : "ONCE PER GAME";
                 uint colBadge = wo.LimitedAlreadyFired
                     ? ImGui.ColorConvertFloat4ToU32(new Vector4(0.55f, 0.55f, 0.55f, 1f))
                     : ImGui.ColorConvertFloat4ToU32(new Vector4(0.95f, 0.72f, 0.25f, 1f));
-                dl.AddText(rMin + new Vector2(4 + ImGui.CalcTextSize(wo.Weapon.Name + "  ").X, 2),
-                    colBadge, badge);
+                dl.AddText(rMin + new Vector2(badgeX, 2), colBadge, badge);
+                badgeX += ImGui.CalcTextSize(badge + "  ").X;
+            }
+            // #340: a Takedown weapon fires ONE copy per pass, each with its own target, so the row says
+            // how many rifles are still waiting to be aimed - the weapon reappearing after firing is the
+            // rule working, not a bug.
+            if (wo.AimedIndividuallyRule != null && wo.CopiesRemaining > 1)
+            {
+                string badge = $"{wo.CopiesRemaining} LEFT - AIMED 1 AT A TIME";
+                dl.AddText(rMin + new Vector2(badgeX, 2),
+                    ImGui.ColorConvertFloat4ToU32(new Vector4(0.45f, 0.80f, 0.90f, 1f)), badge);
             }
             // #292: the stat subline is unchanged text, but each special-rule name is now its own
             // underlined, hoverable run explaining what the rule does (the Army Forge treatment). Rule
@@ -364,6 +374,18 @@ public class GuiChooseRangedAttackResolver
                     ? $"{wo.LimitedRule}: already fired this game - it cannot fire again."
                     : $"{wo.LimitedRule}: firing spends this weapon for the REST OF THE GAME. " +
                       "Hold fire to keep it.");
+                ImGui.PopStyleColor();
+            }
+
+            // #340: what firing this option actually commits. A one-at-a-time weapon spends a single copy
+            // and comes back for the next one, which is the whole point of the rule and has to be said
+            // before the click - the player is choosing a target for ONE rifle, not for the squad.
+            if (wo.AimedIndividuallyRule != null && wo.CopiesRemaining > 1)
+            {
+                ImGui.Spacing();
+                ImGui.PushStyleColor(ImGuiCol.Text, new Vector4(0.45f, 0.80f, 0.90f, 1f));
+                ImGui.TextWrapped($"{wo.AimedIndividuallyRule}: each copy aims on its own. Firing spends " +
+                    $"1 of {wo.CopiesRemaining}; the rest are offered again and may pick other targets.");
                 ImGui.PopStyleColor();
             }
 

@@ -32,6 +32,14 @@ public class ChooseRangedAttackResolver : IStageResolver<ChooseRangedAttackReque
                     ? $"  [{weaponOption.LimitedRule}: already fired this game]"
                     : $"  [{weaponOption.LimitedRule}: ONCE PER GAME - firing spends it]";
             }
+            // #340: a Takedown weapon aims one copy at a time, so say how many are still waiting and that
+            // firing this line spends exactly one of them - otherwise the weapon coming back for another
+            // pass reads as a bug.
+            if (weaponOption.AimedIndividuallyRule != null && weaponOption.CopiesRemaining > 1)
+            {
+                weaponStats += $"  [{weaponOption.AimedIndividuallyRule}: {weaponOption.CopiesRemaining} left, " +
+                    "fires 1 - each picks its own target]";
+            }
             foreach (var targetStats in weaponOption.WeaponTargetStats)
             {
                 int canShoot = targetStats.modelsThatCanShoot.Count;
@@ -85,7 +93,11 @@ public class ChooseRangedAttackResolver : IStageResolver<ChooseRangedAttackReque
             string keeps = wo.LimitedRule != null
                 ? $" (keeps its {wo.LimitedRule} once-per-game shot)"
                 : "";
-            Console.WriteLine($"  [h{i + 1}] Hold fire: {wo.Weapon.Name} - do not fire it this action{keeps}");
+            // #340: holding fire drops EVERY unfired copy of a one-at-a-time weapon, not just the next one.
+            string copies = wo.AimedIndividuallyRule != null && wo.CopiesRemaining > 1
+                ? $" (all {wo.CopiesRemaining} remaining)"
+                : "";
+            Console.WriteLine($"  [h{i + 1}] Hold fire: {wo.Weapon.Name}{copies} - do not fire it this action{keeps}");
         }
 
         // #308/#319: exactly one exit, and the engine says which. Back (nothing fired) rewinds to Choose
