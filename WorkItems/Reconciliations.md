@@ -6,6 +6,8 @@ from origin/master. Standing precedent: numbers are never reused, and when two p
 claim the same number, the *unmerged local* item yields to the *merged* one and takes a fresh number.
 A per-clone pre-push hook blocks duplicate numbers across the index and the archive.
 
+> **2026-08-05 — reconciliation 55.** A pre-filing `git fetch` (for the Hive Lord charge-pruning item) caught a double collision: origin/master had meanwhile landed **356 = Save-As carries the editable session** and **357 = --retrofit-editable armies** (both pushed), while this session had locally filed **356 = crowded-zone lane clearing** (implemented + committed, engine + superproject unpushed) and **357 = artillery move economics** (filed only). Per merged-wins precedent both local items yield: **lane clearing 356 -> 359** (`WorkItems/359-crowded-lane-clearing.md`) and **artillery 357 -> 360** (`WorkItems/360-artillery-move-economics.md`); **358 (solo move-decline livelock) was free on origin and keeps its number.** Nothing had been pushed, so the renumber landed everywhere before publication - detail files, index, archive entries, engine source comments and the engine commit messages (the two engine commits were recreated as `e42d3ce`/`d0a7295`, then origin's engine merged on top as `2a7b387`; the superproject bump was amended likewise). No references predate the renumber. NOTE for the parallel session: this side now also owns 358-361 (see index/archive).
+
 > **2026-08-05 - reconciliation 54 (RESOLVED, then pre-emptively widened).** Fifth collision of this
 > shape in three days, and the first where the number went stale DURING the work rather than before
 > it. This session fetched `origin/master`, read its index+archive as topping out at 341, and filed
