@@ -82,5 +82,21 @@ Deliberately NOT done, and not deferred by accident:
 - **Only the activation picker.** The deploy picker uses the same resolver and would light up for free, but
   nothing is Shaken at deploy time.
 
+## GUI hand-verify
+`Scenarios/337-shaken-picker.json` (round 2, you are player 1). Blade Squad is Shaken AND standing 0.30"
+base-to-base from the circular-based Round Sentinel - the reported situation exactly. Check:
+
+1. The picker row reads `Blade Squad (Shaken - recovers)`, the badge in amber and underlined, the rest of
+   the heading in the ordinary colour.
+2. Hovering the badge raises the Shaken tooltip, NOT the unit's full stat block; hovering elsewhere on the
+   row still raises the stat block as before.
+3. Picking it announces the recovery and ends the activation without a charge - which is now explained
+   before the click rather than after it. (#338 keeps that banner up long enough to read.)
+4. The other two rows are unchanged.
+
+```
+dotnet run --project FdgRaylib/FdgRaylib.csproj -- --scenario Scenarios/337-shaken-picker.json
+```
+
 ## Outcome
 _(pending GUI hand-verify)_
