@@ -10,16 +10,16 @@ Playtest note (2026-08-04, Chris): *"When choosing which unit to activate, if an
 be made very clear, like with colored text or something, to say '(Unshake)' or something. If possible, that
 text should be hoverable."*
 
-Reported in the same breath as *"I got really really close and for some reason didn't have to charge"* — and
-those turn out to be the same event. See **Diagnosis** below.
+Reported in the same breath as *"I got really really close and for some reason didn't have to charge"*.
 
 Done means: the activation list says which units are Shaken, in colour, and the marker explains itself on
 hover; both front ends carry it.
 
 ## Diagnosis (2026-08-04)
 
-The "didn't have to charge" report is **not** a forced-charge bug. Verified two ways before touching
-anything:
+### What is settled: the gate measures base to base
+
+Verified two ways before touching anything:
 
 1. **Read the path.** `ChooseActionStage.GetCanPass` delegates to
    `ForcedChargeUtilities.AnyEnemyWithinStandoff` -> `UnitCompareUtilities.MinDistanceBetweenUnits(...,
@@ -32,19 +32,37 @@ anything:
    of an enemy - must charge (or reposition) rather than stand idle."* and the CLI move preview prints
    *"FORCED CHARGE: 3 models end within 1" of Round Sentinel."*
 
-What DOES bypass the gate: **a unit that started its activation Shaken never reaches the action menu at
-all.** `ChooseActionStage.Enter` sees `StartedActivationShaken`, announces, and routes straight to
-end-of-activation. Standing nose-to-nose with an enemy, it declines to charge and the activation is simply
-over — which is exactly the reported symptom, and reads as the proximity rule being broken.
-
-The only thing that said so was a Toast banner that had already faded (#338, reported in the same message).
-The picker itself listed the unit like any other. So the fix for the forced-charge report is this item, not
-a change to the rule.
-
-Regression cover added anyway, so the measurement can never quietly become centre-based:
+Regression cover added so the measurement can never quietly become centre-based:
 `ChooseActionPassDisableTests.GetCanPass_LargeCircularBases_MeasuredBaseToBase_NotCentreToCentre` — two
 3"-diameter circles with centres 3.5" apart (bases 0.5" apart) must gate Pass; a centre-distance check would
-call them four times clear. Plus its converse, plus a test pinning the Shaken bypass as deliberate.
+call them four times clear. Plus its converse.
+
+### What is NOT settled: why that activation escaped the gate
+
+**A Shaken activation was the first theory and the owner ruled it out** (2026-08-04: *"the unit in my case
+was definitely not shaken because I had moved it into contact"*). It is a real bypass and worth knowing —
+`ChooseActionStage.Enter` sees `StartedActivationShaken` and routes straight to end-of-activation, so a
+Shaken unit standing nose-to-nose declines to charge and the activation is simply over — and it is pinned
+by `StartedActivationShaken_BypassesTheForcedChargeGate_ByDesign`. But it is not what happened here, and a
+unit that has MOVED cannot have started its activation Shaken (a Shaken activation never reaches the move).
+
+**The root cause of the original report is therefore still open.** Two candidates survive a read of the
+stage, both of which produce "moved into contact, never asked to charge" with no rule broken:
+
+1. **Shot after moving.** `GetCanPass` returns true early on `context.HasAttacked` (by design — a unit that
+   has engaged has met the obligation). Move into contact -> Shoot the adjacent unit -> back at Choose
+   Action, Pass is available again.
+2. **Nothing to charge with -> silent auto-pass.** `GetCanCharge` needs a melee weapon. A rifle-only unit
+   that has already moved can't Move, can't Charge, and (once it has shot or has no target) can't Shoot —
+   `validOptions.Count == 0`, and the stage ends the activation without ever showing a menu. The #334
+   movement panel already anticipates exactly this ("has no melee weapon to Charge with").
+
+Candidate 2 is the more interesting one: it is indistinguishable from the rule failing, because the player
+is never shown the menu that would have explained it.
+
+**What would settle it:** the game log from the activation. Candidate 2 leaves the line
+`No actions available for <unit> - passing.`; candidate 1 leaves a shooting sequence between the move and
+the pass. A `.fdgsave` from just before the activation would do it too.
 
 ## Approach
 
