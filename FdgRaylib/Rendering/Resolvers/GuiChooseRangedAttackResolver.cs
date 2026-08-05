@@ -334,6 +334,10 @@ public class GuiChooseRangedAttackResolver
                     // #158: the denominator is the target's LIVING models — dead ones aren't shootable.
                     int livingTargets = ts.TargetUnit.GetValue().ModelBindings.Count(mb => mb.GetValue().GetIsAlive());
                     sub = $"{ts.modelsThatCanShoot.Count}/{livingTargets} in range";
+                    // #345: and how much of the volley that actually amounts to, when part of it is held
+                    // back. Silent when every copy fires - the common case, where the ratio is noise.
+                    string ratio = ShortAttacksRatio(ts.Forecast);
+                    if (ratio.Length > 0) sub += $", {ratio} attacks";
                     // #042 Blast/Indirect/Takedown: a weapon that ignores cover negates the +1.
                     if (ts.HasCover) sub += wo.IgnoresCover ? ", Cover (ignored)" : ", Cover (+1 Def)";
                     if (wo.IgnoresTerrain) sub += $", ignores LoS ({wo.LineOfSightIgnoreRule})";
@@ -421,6 +425,7 @@ public class GuiChooseRangedAttackResolver
             {
                 DrawForecastLine("To hit", ts.Forecast.HitTags, ts.Forecast.HitRollNeeded);
                 DrawForecastLine("Save", ts.Forecast.SaveTags, ts.Forecast.SaveRollNeeded);
+                DrawAttacksLine(ts.Forecast);
                 if (ts.Forecast.Notes != null)
                 {
                     ImGui.PushStyleColor(ImGuiCol.Text, new Vector4(0.85f, 0.75f, 0.30f, 1f));
@@ -707,6 +712,36 @@ public class GuiChooseRangedAttackResolver
         ImGui.TextWrapped($"{label}:  {string.Join(" | ", tags)}  ->  {threshold}+");
     }
 
+    // #345: the size of the volley, on the ledger line beneath To hit / Save. The interesting case is the
+    // SHORT one - "Attacks:  7 of 10" means three of this weapon's copies are looking at a wall (or are out
+    // of range) and will not roll, which nothing else in this panel says and which the player otherwise
+    // discovers only by counting the dice afterwards. Amber when short, plain when the whole unit fires.
+    private static void DrawAttacksLine(ChooseRangedAttackRequest.AttackForecast forecast)
+    {
+        if (forecast.AttacksPotential <= 0) return;   // legacy / unstamped forecast: say nothing
+
+        if (forecast.AttacksFiring >= forecast.AttacksPotential)
+        {
+            ImGui.TextUnformatted($"Attacks:  {forecast.AttacksFiring}");
+            return;
+        }
+
+        ImGui.PushStyleColor(ImGuiCol.Text, new Vector4(0.95f, 0.72f, 0.25f, 1f));
+        ImGui.TextWrapped($"Attacks:  {forecast.AttacksFiring} of {forecast.AttacksPotential}  " +
+            $"({forecast.AttacksPotential - forecast.AttacksFiring} held back - no line of sight or range)");
+        ImGui.PopStyleColor();
+    }
+
+    /// <summary>
+    /// #345: "7/10" when part of the volley cannot fire, empty when all of it can. Used on the target row
+    /// and the canvas badge, where there is only room for the ratio itself. Internal for tests.
+    /// </summary>
+    internal static string ShortAttacksRatio(ChooseRangedAttackRequest.AttackForecast? forecast) =>
+        forecast == null || forecast.AttacksPotential <= 0
+            || forecast.AttacksFiring >= forecast.AttacksPotential
+            ? ""
+            : $"{forecast.AttacksFiring}/{forecast.AttacksPotential}";
+
     // ── Canvas line drawing ───────────────────────────────────────────────────
 
     private void DrawHoverLines(ChooseRangedAttackRequest request)
@@ -753,13 +788,25 @@ public class GuiChooseRangedAttackResolver
         if (ts.Forecast != null && ringCount > 0)
         {
             string badge = $"Hit {ts.Forecast.HitRollNeeded}+ / Sv {ts.Forecast.SaveRollNeeded}+";
+            // #345: the volley's real size on a second line directly beneath the thresholds, and only when
+            // it is SHORT - "7/10 attacks" is the terrain eating three of your shots, said where the player
+            // is already looking (the #286 table-hover gesture).
+            string ratio = ShortAttacksRatio(ts.Forecast);
+            string sub = ratio.Length > 0 ? $"{ratio} attacks" : "";
+
             var badgeSize = ImGui.CalcTextSize(badge);
-            var badgePos = new Vector2(ringSumX / ringCount - badgeSize.X * 0.5f,
-                ringMinY - badgeSize.Y - 14f);
+            var subSize   = sub.Length > 0 ? ImGui.CalcTextSize(sub) : Vector2.Zero;
+            float boxW    = MathF.Max(badgeSize.X, subSize.X);
+            float boxH    = badgeSize.Y + subSize.Y;
+            var badgePos = new Vector2(ringSumX / ringCount - boxW * 0.5f, ringMinY - boxH - 14f);
             uint badgeBg = ImGui.ColorConvertFloat4ToU32(new Vector4(0f, 0f, 0f, 0.65f));
-            dl.AddRectFilled(badgePos - new Vector2(4, 2), badgePos + badgeSize + new Vector2(4, 2),
-                badgeBg, 3f);
-            dl.AddText(badgePos, ImGui.ColorConvertFloat4ToU32(new Vector4(1f, 0.92f, 0.70f, 1f)), badge);
+            dl.AddRectFilled(badgePos - new Vector2(4, 2),
+                badgePos + new Vector2(boxW, boxH) + new Vector2(4, 2), badgeBg, 3f);
+            dl.AddText(new Vector2(badgePos.X + (boxW - badgeSize.X) * 0.5f, badgePos.Y),
+                ImGui.ColorConvertFloat4ToU32(new Vector4(1f, 0.92f, 0.70f, 1f)), badge);
+            if (sub.Length > 0)
+                dl.AddText(new Vector2(badgePos.X + (boxW - subSize.X) * 0.5f, badgePos.Y + badgeSize.Y),
+                    ImGui.ColorConvertFloat4ToU32(new Vector4(0.95f, 0.72f, 0.25f, 1f)), sub);
         }
 
         // One line per shooter — from each attacker model that can hit this unit, to the nearest

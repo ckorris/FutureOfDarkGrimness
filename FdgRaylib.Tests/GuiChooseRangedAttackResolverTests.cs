@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using FDG;
 using FDG.Data;
+using FDG.StageResolution.Requests;
 using FdgRaylib.Rendering.Resolvers;
 using NUnit.Framework;
 
@@ -270,4 +271,22 @@ public class GuiChooseRangedAttackResolverTests
         Assert.That(GuiChooseRangedAttackResolver.NearestVisibleModel(from,
             new List<DataBinding<ModelData>> { binding }, blockers: null), Is.Null);
     }
+
+    // #345 — the target row and the canvas badge get the volley's real size, and ONLY when part of it is
+    // held back. When every copy fires the ratio is noise on rows the player is scanning to compare
+    // targets, so the short form stays empty and the Details pane carries the plain count.
+    [Test]
+    public void ShortAttacksRatio_SpeaksOnlyWhenPartOfTheVolleyCannotFire()
+    {
+        Assert.That(GuiChooseRangedAttackResolver.ShortAttacksRatio(Forecast(7, 10)), Is.EqualTo("7/10"),
+            "three copies looking at a wall - the fact the player cannot otherwise see pre-roll");
+        Assert.That(GuiChooseRangedAttackResolver.ShortAttacksRatio(Forecast(10, 10)), Is.Empty,
+            "the whole unit fires: nothing worth saying");
+        Assert.That(GuiChooseRangedAttackResolver.ShortAttacksRatio(Forecast(0, 0)), Is.Empty,
+            "an unstamped forecast says nothing rather than '0/0'");
+        Assert.That(GuiChooseRangedAttackResolver.ShortAttacksRatio(null), Is.Empty);
+    }
+
+    private static ChooseRangedAttackRequest.AttackForecast Forecast(int firing, int potential) =>
+        new(HitRollNeeded: 4, SaveRollNeeded: 4, AttacksFiring: firing, AttacksPotential: potential);
 }

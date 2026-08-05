@@ -54,6 +54,13 @@ public class ChooseRangedAttackResolver : IStageResolver<ChooseRangedAttackReque
                 if (targetStats.Forecast != null)
                     label += $"  [hit {targetStats.Forecast.HitRollNeeded}+, save {targetStats.Forecast.SaveRollNeeded}+]";
                 label += $" ({targetModels} models, {canShoot} shooters in range";
+                // #345: how much of the volley actually fires. Only said when part of it is held back -
+                // the number the player cannot otherwise see until the dice are already rolled.
+                if (targetStats.Forecast is { AttacksPotential: > 0 } forecast
+                    && forecast.AttacksFiring < forecast.AttacksPotential)
+                {
+                    label += $", {forecast.AttacksFiring}/{forecast.AttacksPotential} attacks";
+                }
                 if (cannotShoot > 0)
                     label += $", {cannotShoot} out of range";
                 // #042 Blast/Indirect/Takedown: when the weapon ignores cover the +1 doesn't apply, so show
