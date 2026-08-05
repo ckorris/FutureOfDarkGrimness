@@ -6,21 +6,39 @@ from origin/master. Standing precedent: numbers are never reused, and when two p
 claim the same number, the *unmerged local* item yields to the *merged* one and takes a fresh number.
 A per-clone pre-push hook blocks duplicate numbers across the index and the archive.
 
-> **2026-08-05 - reconciliation 53 (RESOLVED).** Fifth collision of this shape in three days, and the
-> first where the number went stale DURING the work rather than before it. This session fetched
-> `origin/master`, read its index+archive as topping out at 341, and filed **342 = a saved `.fdgarmy`
-> freezes its book's rule definitions**. The implementation was built, tested and committed locally
-> (unpushed). A `git fetch origin` before filing the NEXT item then showed origin/master had advanced
-> in the meantime and now owned **342 = joined-hero name/points** (merged, `[~]`) and **343 =
-> deployment undo at action granularity**. Merged wins per standing precedent, so the local item
-> yields: **rule-definitions rot 342 -> 344** (`WorkItems/344-army-rule-definitions-rot.md`; every
-> `#342` in the engine and app sources, both test fixtures, the detail file and the index line updated
-> before any push). The follow-on impact-charge item filed fresh as **345**. **Left as-is on purpose:**
-> the three commit messages saying `#342` for it (engine `e44dd1f`, superproject `19b0a14`, `86ceb6e`),
-> matching every prior reconciliation's precedent that commit messages are not rewritten - even here,
-> where the commits were still local and could have been.
+> **2026-08-05 - reconciliation 54 (RESOLVED, then pre-emptively widened).** Fifth collision of this
+> shape in three days, and the first where the number went stale DURING the work rather than before
+> it. This session fetched `origin/master`, read its index+archive as topping out at 341, and filed
+> **342 = a saved `.fdgarmy` freezes its book's rule definitions**. The implementation was built,
+> tested and committed locally (unpushed). A `git fetch origin` before filing the NEXT item then
+> showed origin/master had advanced in the meantime and now owned **342 = joined-hero name/points**
+> (merged) and **343 = deployment undo**. Merged wins per standing precedent, so the local item
+> yielded **342 -> 344** and the follow-on impact-charge item was filed fresh as **345**.
+> **Then the owner asked for a 10-number jump**, a parallel instance being mid-way through a batch of
+> new items: **rule-definitions rot 344 -> 354** (`WorkItems/354-army-rule-definitions-rot.md`) and
+> **impact-only charges 345 -> 355** (`WorkItems/355-impact-only-charges.md`), leaving 344-353 clear
+> for that instance. Every `#342`/`#344` and `#345` in the engine and app sources, all four test
+> fixtures, both detail files and both index lines were updated before any push. This entry itself
+> yielded too: it was written as 53, which the merge showed origin had already used for the
+> deployment-undo renumber below.
+> **Left as-is on purpose:** the commit messages saying `#342`/`#344`/`#345` (engine `e44dd1f`,
+> `8763497`, `fa9c5fa`; superproject `19b0a14`, `86ceb6e`, `ef3e275`, `1987a4c`), matching every prior
+> reconciliation's precedent that commit messages are not rewritten - even here, where they were still
+> local and could have been.
 > **The lesson this one adds:** fetching before filing is not sufficient when the work outlives the
-> fetch. A long item should re-check its number before it is pushed, not only when it is opened.
+> fetch. A long item should re-check its number before it is pushed, not only when it is opened - and
+> when parallel work is known to be in flight, leaving a gap costs nothing next to a renumber.
+>
+> **2026-08-05 - reconciliation 53 (RESOLVED).** Same shape as 49-52, caught pre-push: this session
+> filed **342 = deployment undo at action granularity** against an `origin/master` topping out at 341
+> (fetched immediately before filing, per the rule); while the work was built, a parallel session
+> filed and pushed its own **342 = name joined heroes**. Merged wins per standing precedent:
+> **deployment-action-undo 342 -> 343** (343 free on origin's index + archive). Because the local
+> commit was still unpushed, it was AMENDED rather than renumbered-in-a-follow-up - the shared branch
+> never saw the colliding number, so unlike 50-52 there are no stale "#342" commit messages to leave
+> behind. Renamed/edited before the merge: detail file + filename, index line, 7 source/test files,
+> `docs/ResolverGuide.md`, and the #161/#248 cross-references. The merge itself was clean (incoming
+> work is hero-tooltip/army-list-side; no file overlap).
 >
 > **2026-08-05 - reconciliation 52 (RESOLVED).** Fourth collision of this exact shape in two days, and the
 > first to be caused BY a prior reconciliation. This session filed **340 = a rotation dialled in mid-path
