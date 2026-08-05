@@ -14,8 +14,8 @@ namespace FdgRaylib.Rendering;
 /// playing. Gameplay input is suppressed via <see cref="EscapeRouter.MenuOpen"/> checks at the canvas
 /// and hotkey sites; the full-screen dim window also blocks clicks from reaching windows behind it.</para>
 ///
-/// <para>Contents: Resume, Save Game (host only), Load Game (host only), Return to Main Menu, Quit to
-/// Desktop. Options and the toolbar retirement land in #246 S3. (The army list deliberately has no
+/// <para>Contents: Resume, Save Game (host only), Load Game (host only), Options, Report a Bug (#226),
+/// Return to Main Menu, Quit to Desktop. (The army list deliberately has no
 /// row here - the always-visible bottom-left "Army Lists (L)" button beside "Menu (Esc)" is its
 /// discoverable home, owner-ruled 2026-08-02.)</para>
 /// </summary>
@@ -24,6 +24,13 @@ public sealed class EscapeMenuOverlay
     private enum Confirm { None, ReturnToMenu, Quit, LoadGame }
     private Confirm _confirm = Confirm.None;
     private bool _inOptions;
+    private bool _inBugReport;
+
+    // Bug-report view state (#226). The description survives leaving and re-entering the view
+    // within a session (typing it is the expensive part); it clears when a send starts, because
+    // from then on the text lives in the written report file.
+    private string _bugDescription = "";
+    private bool _bugSent;
 
     public bool IsOpen { get; private set; }
 
@@ -52,8 +59,12 @@ public sealed class EscapeMenuOverlay
         _audio    = audio;
     }
 
-    public void Open()  { IsOpen = true;  _confirm = Confirm.None; _inOptions = false; }
-    public void Close() { IsOpen = false; _confirm = Confirm.None; _inOptions = false; }
+    // The bug reporter (#226), one per launched game like the save hook above; null hides the row.
+    private BugReport.BugReporter? _bugReporter;
+    public void AttachBugReport(BugReport.BugReporter? bugReporter) => _bugReporter = bugReporter;
+
+    public void Open()  { IsOpen = true;  _confirm = Confirm.None; _inOptions = false; _inBugReport = false; }
+    public void Close() { IsOpen = false; _confirm = Confirm.None; _inOptions = false; _inBugReport = false; }
 
     /// <param name="justOpened">
     /// True on the frame the renderer opened the menu from an Escape press. That same press is still
@@ -66,9 +77,10 @@ public sealed class EscapeMenuOverlay
 
         if (!justOpened && ImGui.IsKeyPressed(ImGuiKey.Escape, repeat: false))
         {
-            // Escape steps back one level: out of a confirm, then out of Options, then out of the menu.
+            // Escape steps back one level: out of a confirm, then out of a sub-view, then the menu.
             if (_confirm != Confirm.None) _confirm = Confirm.None;
             else if (_inOptions) _inOptions = false;
+            else if (_inBugReport) _inBugReport = false;
             else Close();   // fall through so the popup gets its CloseCurrentPopup this frame
         }
 
@@ -79,8 +91,9 @@ public sealed class EscapeMenuOverlay
         if (IsOpen && !ImGui.IsPopupOpen("##escmenu"))
             ImGui.OpenPopup("##escmenu");
 
-        // Options is wider (slider + longer labels) than the plain button column.
-        float menuW = _inOptions ? MathF.Min(440f, screenW * 0.9f) : MathF.Min(360f, screenW * 0.8f);
+        // Options and the bug-report box are wider than the plain button column.
+        float menuW = _inOptions || _inBugReport
+            ? MathF.Min(440f, screenW * 0.9f) : MathF.Min(360f, screenW * 0.8f);
         ImGui.SetNextWindowPos(new Vector2(screenW * 0.5f, screenH * 0.5f), ImGuiCond.Always,
             new Vector2(0.5f, 0.5f));
         ImGui.SetNextWindowSize(new Vector2(menuW, 0f), ImGuiCond.Always);
@@ -95,6 +108,7 @@ public sealed class EscapeMenuOverlay
             {
                 if (_confirm != Confirm.None) DrawConfirm();
                 else if (_inOptions) DrawOptions();
+                else if (_inBugReport) DrawBugReport();
                 else DrawMainList();
             }
 
@@ -131,6 +145,11 @@ public sealed class EscapeMenuOverlay
         }
 
         if (FullWidthButton("Options")) _inOptions = true;
+        if (_bugReporter != null && FullWidthButton("Report a Bug"))
+        {
+            _inBugReport = true;
+            _bugSent = false;
+        }
         if (FullWidthButton("Return to Main Menu")) _confirm = Confirm.ReturnToMenu;
         if (FullWidthButton("Quit to Desktop")) _confirm = Confirm.Quit;
     }
@@ -197,6 +216,75 @@ public sealed class EscapeMenuOverlay
         ImGui.Separator();
         ImGui.Spacing();
         if (FullWidthButton("Back")) _inOptions = false;
+    }
+
+    // The bug-report view (#226): a description box, one Send button, and an honest status line.
+    // Send always writes a local copy first, then uploads in the background - the menu stays
+    // open and usable while the upload runs, and the status line follows it frame by frame.
+    private void DrawBugReport()
+    {
+        DrawTitle("Report a Bug");
+        ImGui.Spacing();
+
+        ImGui.PushTextWrapPos(0f);
+        ImGui.TextUnformatted("What happened? What did you expect instead?");
+        ImGui.PopTextWrapPos();
+        ImGui.InputTextMultiline("##bugdesc", ref _bugDescription, 4000,
+            new Vector2(ImGui.GetContentRegionAvail().X, 120f));
+        ImGui.Spacing();
+
+        ImGui.PushTextWrapPos(0f);
+        ImGui.TextDisabled("Sends your notes with the game log, recent crash log, and (as host) " +
+            $"a full game save to the developer. A copy is kept in {BugReport.BugReportStore.DirectoryName}/ " +
+            "next to the game.");
+        ImGui.PopTextWrapPos();
+        ImGui.Spacing();
+
+        bool inFlight = _bugReporter!.UploadState == BugReport.BugReporter.EUploadState.InFlight;
+        ImGui.BeginDisabled(inFlight || _bugDescription.Trim().Length == 0);
+        if (FullWidthButton("Send Report"))
+        {
+            _bugReporter.Send(_bugDescription.Trim());
+            _bugDescription = "";
+            _bugSent = true;
+        }
+        ImGui.EndDisabled();
+
+        if (_bugSent) DrawBugReportStatus();
+
+        ImGui.Spacing();
+        ImGui.Separator();
+        ImGui.Spacing();
+        if (FullWidthButton("Back")) _inBugReport = false;
+    }
+
+    private void DrawBugReportStatus()
+    {
+        ImGui.PushTextWrapPos(0f);
+
+        string? localPath = _bugReporter!.LastLocalPath;
+        if (localPath != null) ImGui.TextUnformatted($"Saved to {localPath}");
+        else ImGui.TextUnformatted("Could not save a local copy.");
+
+        switch (_bugReporter.UploadState)
+        {
+            case BugReport.BugReporter.EUploadState.InFlight:
+                ImGui.TextUnformatted("Uploading...");
+                break;
+            case BugReport.BugReporter.EUploadState.Succeeded:
+                ImGui.TextUnformatted("Report sent. Thank you!");
+                break;
+            case BugReport.BugReporter.EUploadState.Failed:
+                ImGui.TextUnformatted($"Upload failed ({_bugReporter.LastUploadError}). " +
+                    "Please send the saved file to the developer.");
+                break;
+            case BugReport.BugReporter.EUploadState.NotConfigured:
+                ImGui.TextUnformatted("No report server configured - please send the saved file " +
+                    "to the developer.");
+                break;
+        }
+
+        ImGui.PopTextWrapPos();
     }
 
     private void DrawConfirm()

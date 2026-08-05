@@ -38,6 +38,14 @@ DIST_DIR="$ROOT_DIR/dist"
 # (reflection-based) for .fdgarmy files, which a trimmer would break.
 COMMON_ARGS=(-c Release --self-contained true -p:PublishTrimmed=false)
 
+# #226: stamp the build so bug reports can be tied to the binary that produced them
+# (surfaced via AppVersion.cs; non-dist builds report the csproj default "dev").
+GIT_SHA="$(git -C "$ROOT_DIR" rev-parse --short HEAD 2>/dev/null || echo unknown)"
+GIT_STAMP="git-$GIT_SHA-$(date -u +%Y%m%d)"
+if ! git -C "$ROOT_DIR" diff --quiet 2>/dev/null; then GIT_STAMP="$GIT_STAMP-dirty"; fi
+COMMON_ARGS+=("-p:InformationalVersion=$GIT_STAMP")
+echo ">> Build stamp: $GIT_STAMP"
+
 # --- which targets? -----------------------------------------------------------
 # No arg = build everything. An explicit arg turns all off, then enables the pick.
 BUILD_WIN=1

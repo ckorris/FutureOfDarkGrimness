@@ -224,6 +224,9 @@ public class RaylibRenderer
         _armyListOverlay.Attach(tableState, colorForPlayer,
             taskDisplay?.LocalPlayerIDs ?? [], resolverOverlay);
         _escapeMenu.AttachSave(saveGameToJson);
+        // #226: the bug reporter captures this launch's log + chat and (on the host) the save hook,
+        // so a report carries everything the session knows.
+        _escapeMenu.AttachBugReport(new BugReport.BugReporter(log, playerMessageUI?.ChatLog, saveGameToJson));
         _measurementOverlay.Attach(tableState);
         // [overlay] messages are developer detail (rebuild-budget warnings) -> the Debug log category.
         _tacticalOverlay.Attach(tableState, msg => _log?.Add(msg, new TextColor(255, 180, 90, 255), isDebug: true),
@@ -342,6 +345,7 @@ public class RaylibRenderer
         _measurementOverlay.Reset();
         _tacticalOverlay.Detach();
         _escapeMenu.Close();
+        _escapeMenu.AttachBugReport(null); // per-game refs (log, save hook) must not outlive the game
         _armyListOverlay.Close();
         _placedModels.Clear();
         lock (_terrainLock)    _terrain.Clear();
