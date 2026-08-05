@@ -204,16 +204,27 @@ public class GuiSelectionResolver<T> : IStageResolver<SelectionRequest<T>, DataB
             y += rowHeights[i] + ImGui.GetStyle().ItemSpacing.Y;
         }
 
-        // Back button — only for cancellable selections. Mandatory choices (which unit to activate/deploy)
+        // Exit button — only for cancellable selections. Mandatory choices (which unit to activate/deploy)
         // have no back-destination, and a null reply from Back crashes the networked reply path.
         // #248: Backspace backs out too (Esc is reserved for the in-game menu).
+        //
+        // #331: the label comes from the request. Usually that is "Back", but where cancelling is a real
+        // choice rather than a rewind (deploy-time embark: cancel = deploy on the table) the stage names it,
+        // and a player who never presses Back can still find the action. The key hint comes from
+        // ResolverKeybinds so the button can't advertise a key that has moved (#295).
         if (request.AllowCancel)
         {
             ImGui.SetCursorPos(new Vector2(pad, y + pad));
-            ImGui.PushStyleColor(ImGuiCol.Button, new Vector4(0.25f, 0.25f, 0.30f, 1f));
-            if (ImGui.Button("Back  (Backspace)##back", new Vector2(btnW, ResolverPanelLayout.ActionRowHeight())))
+            bool isPlainBack = request.CancelLabel == SelectionRequest<T>.DEFAULT_CANCEL_LABEL;
+            string label = $"{request.CancelLabel}  {ResolverKeybinds.Back.Parenthetical}##back";
+            var size = new Vector2(btnW, ResolverPanelLayout.ActionRowHeight());
+
+            // A named choice is an action, not an escape hatch, so it gets the ordinary button treatment
+            // instead of the dim back-out tint that tells the eye to skip it.
+            if (isPlainBack) ImGui.PushStyleColor(ImGuiCol.Button, new Vector4(0.25f, 0.25f, 0.30f, 1f));
+            if (ImGui.Button(label, size))
                 cancelled = true;
-            ImGui.PopStyleColor();
+            if (isPlainBack) ImGui.PopStyleColor();
 
             if (ResolverHotkeys.IsBackPressed())
                 cancelled = true;

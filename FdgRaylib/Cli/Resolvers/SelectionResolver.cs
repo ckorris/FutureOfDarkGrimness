@@ -14,6 +14,12 @@ public class SelectionResolver<T> : IStageResolver<SelectionRequest<T>, DataBind
         for (int i = 0; i < request.ValidOptions.Count; i++)
             Console.WriteLine($"  [{i + 1}] {request.ValidOptions[i].Name}");
 
+        // #331: a cancellable selection had no CLI representation at all — the GUI's Back button simply did
+        // not exist here, so "deploy normally" was unreachable next to a transport. It is [0], named by the
+        // request (usually "Back"), and replies null exactly like the GUI's button does.
+        if (request.AllowCancel)
+            Console.WriteLine($"  [0] {request.CancelLabel}");
+
         if (request.InvalidOptions.Count > 0)
         {
             Console.WriteLine("  Unavailable:");
@@ -25,13 +31,18 @@ public class SelectionResolver<T> : IStageResolver<SelectionRequest<T>, DataBind
         {
             Console.Write("Choice: ");
             string? input = Console.ReadLine()?.Trim();
-            if (input == null) return Task.FromResult(request.ValidOptions[0].Option); // EOF default: first option
-            if (int.TryParse(input, out int choice) &&
-                choice >= 1 && choice <= request.ValidOptions.Count)
+            // EOF default stays the first option, cancellable or not: piped/automated play has to make
+            // FORWARD progress, and a stage that re-prompts after a cancel would spin forever on EOF.
+            if (input == null) return Task.FromResult(request.ValidOptions[0].Option);
+            if (int.TryParse(input, out int choice))
             {
-                return Task.FromResult(request.ValidOptions[choice - 1].Option);
+                if (request.AllowCancel && choice == 0) return Task.FromResult<DataBinding<T>>(null!);
+                if (choice >= 1 && choice <= request.ValidOptions.Count)
+                    return Task.FromResult(request.ValidOptions[choice - 1].Option);
             }
-            Console.WriteLine($"Enter a number between 1 and {request.ValidOptions.Count}.");
+            Console.WriteLine(request.AllowCancel
+                ? $"Enter a number between 0 and {request.ValidOptions.Count}."
+                : $"Enter a number between 1 and {request.ValidOptions.Count}.");
         }
     }
 }
