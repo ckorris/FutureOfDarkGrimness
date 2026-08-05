@@ -44,6 +44,8 @@ When closing an item: write the Outcome in its detail file, tick the line, and m
 - [~] 276 — Attack animation truthfulness: occluded/out-of-range carriers no longer roll dice (engine bug) nor draw beams; split Takedown shots fire one beam each, rotating snipers. Implemented + tested; awaiting GUI hand-verify. ([WorkItems/276](WorkItems/276-attack-animation-truthfulness.md))
 
 - [~] 308 — 2026-07-31 playthrough findings: Blast's model cap is per hit and stacks (was capping the volley total, deleting save dice); "Moved" token hidden unless a rule reads it; Back restored for shooting + deployment placement; target carries across weapons. Shaken-defender morale-dice report parked pending a repro save. ([WorkItems/308](WorkItems/308-playthrough-findings-2026-07-31.md))
+- [~] 337 — Takedown/Sniper aimed the whole rifle stack at one unit (#157 gave each shot its own MODEL but not its own UNIT): firing now commits one copy and returns the rest to the pool, so each rifle picks its own target through the normal picker; 2-unit cap still binds. Implemented + tested + CLI hand-driven; awaiting GUI hand-verify. ([WorkItems/337](WorkItems/337-takedown-per-rifle-targets.md))
+
 - [~] 325 — Pre-roll shooting forecast: effective Hit/Save + beat-identical modifier tags computed read-only engine-side, on target rows / details pane / canvas hover badge; weapon rule blob now rehydrates on deserialization (rules readable client-side). Rows/details/badge hand-verified by owner; networked re-check pending. Was #323 pre-reconciliation-43. ([WorkItems/325](WorkItems/325-shooting-forecast-ui.md))
 
 ## Model bases & geometry

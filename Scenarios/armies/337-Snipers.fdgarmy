@@ -1,0 +1,47 @@
+{
+  "name": "Snipers (#337 probe)",
+  "faction": "",
+  "pointsLimit": 0,
+  "units": [
+    {
+      "name": "Snipers",
+      "modelCount": 3,
+      "quality": 3,
+      "defense": 4,
+      "specialRules": [],
+      "weapons": [
+        {
+          "name": "Sniper Rifle",
+          "quantity": 3,
+          "rangeInches": 30,
+          "attacks": 1,
+          "armorPenetration": 1,
+          "specialRules": [
+            { "kind": "core", "name": "Takedown" }
+          ]
+        }
+      ],
+      "pointCost": 0
+    },
+    {
+      "name": "Spotters",
+      "modelCount": 3,
+      "quality": 4,
+      "defense": 4,
+      "specialRules": [],
+      "weapons": [
+        {
+          "name": "Carbine",
+          "quantity": 3,
+          "rangeInches": 24,
+          "attacks": 1,
+          "armorPenetration": 0,
+          "specialRules": []
+        }
+      ],
+      "pointCost": 0
+    }
+  ],
+  "ruleDefinitions": [],
+  "spells": []
+}

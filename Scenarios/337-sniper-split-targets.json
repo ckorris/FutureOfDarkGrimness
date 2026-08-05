@@ -1,0 +1,24 @@
+{
+  "name": "#337 - three Takedown rifles, two enemy units: each rifle picks its own target",
+  "round": 1,
+  "activePlayer": 0,
+  "settings": { "randomness": "Realistic", "diceSeed": 337, "background": "Barren" },
+  "objectives": [[8, 8], [40, 40]],
+  "terrain": [],
+  "players": [
+    {
+      "army": "armies/337-Snipers.fdgarmy",
+      "units": [
+        { "unit": "Snipers",  "models": [[30, 16], [32, 16], [34, 16]], "facing": [0, 1] },
+        { "unit": "Spotters", "models": [[42, 16], [44, 16], [46, 16]], "facing": [0, 1] }
+      ]
+    },
+    {
+      "army": "armies/337-Snipers.fdgarmy",
+      "units": [
+        { "unit": "Snipers",  "models": [[28, 32], [30, 32], [32, 32]], "facing": [0, -1] },
+        { "unit": "Spotters", "models": [[40, 32], [42, 32], [44, 32]], "facing": [0, -1] }
+      ]
+    }
+  ]
+}
