@@ -25,4 +25,7 @@ public static class ViewSettings
     /// field is on screen). Off means none of them draw. On by default.
     /// </summary>
     public static bool ShowReachOverlay = true;
+
+    /// <summary>#331: firework bursts in the winning side's colours behind the game-over card.</summary>
+    public static bool ShowVictoryFireworks = true;
 }

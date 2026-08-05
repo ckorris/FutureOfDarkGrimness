@@ -110,6 +110,11 @@ public class RaylibRenderer
     // as _gameOverResult.
     private volatile string? _gameOverNote = null;
 
+    // #331: celebration behind the game-over card. Main-thread only (built and drawn in the render loop),
+    // so unlike the two fields above it needs no volatile — _gameOverResult is the cross-thread signal.
+    private readonly VictoryFireworks _fireworks = new VictoryFireworks();
+    private bool _fireworksStarted;
+
     // Offscreen target for the Ambush enemy-exclusion blob: discs are painted opaque here (so overlaps
     // overwrite instead of stacking alpha), then composited once at a uniform light alpha. Lazily sized
     // to the window and recreated on resize; unloaded on shutdown.
@@ -554,6 +559,12 @@ public class RaylibRenderer
                 }
 
                 DrawStatusHud(layout);
+
+                // #331: victory fireworks. Last of the Raylib-drawn pass, so they sit over the board and
+                // banners but under every ImGui window - the game-over card floats on top of them, which is
+                // the intended look and costs no layering work.
+                UpdateVictoryFireworks(layout.AreaW, screenH);
+                _fireworks.Draw();
 
                 // Right-column regions: resolver panel (top half) + log/chat console (bottom half).
                 int rightW    = RightColumnWidth(screenW);
@@ -1045,6 +1056,36 @@ public class RaylibRenderer
                 waiting.Add((_colorForPlayer(task.PlayerInfo.PlayerID), task.PlayerInfo.Name, task.TaskName));
 
         StatusHudOverlay.Draw(l.AreaW, progress.RoundCount, progress.TotalRounds, scores, waiting);
+    }
+
+    // #331: start the fireworks the frame the game-over card first appears, then keep them running while
+    // it is up. The winning side is derived here rather than read off the result, because the structured
+    // GameResult is host-side only and never crosses the wire - TeamScoreTally over the REPLICATED
+    // objectives and slots is the same computation VictoryCalculationStage used, so a client celebrates
+    // the same winner the host does. A tie hands back every tied team, and a game nobody won hands back
+    // nothing, which stands the effect down.
+    private void UpdateVictoryFireworks(int areaW, int screenH)
+    {
+        bool wanted = _gameOverResult != null && ViewSettings.ShowVictoryFireworks
+            && _tableState != null && _colorForPlayer != null;
+
+        if (!wanted)
+        {
+            // Covers the toggle going off mid-celebration and the pre-launch disconnect card, which shows
+            // with no table state behind it.
+            if (_fireworks.IsActive) _fireworks.Stop();
+            _fireworksStarted = false;
+            return;
+        }
+
+        if (!_fireworksStarted)
+        {
+            _fireworksStarted = true;
+            _fireworks.Restart(VictoryFireworks.ColorsForWinners(
+                TeamScoreTally.TopTeams(TeamScoreTally.Build(_tableState!)), _colorForPlayer!));
+        }
+
+        _fireworks.Update(Raylib.GetFrameTime(), areaW, screenH);
     }
 
     // A short-lived dust puff where a model died: an expanding, fading gray cloud plus a few debris
