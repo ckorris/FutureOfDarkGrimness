@@ -144,6 +144,7 @@ public sealed class EscapeMenuOverlay
         ImGui.Checkbox("Unit labels (N)", ref ViewSettings.ShowLabels);
         ImGui.Checkbox("Table grid", ref ViewSettings.ShowGrid);
         ImGui.Checkbox("Show all tokens (T, dev)", ref ViewSettings.ShowAllTokens);
+        ImGui.Checkbox("Victory fireworks", ref ViewSettings.ShowVictoryFireworks);
 
         if (_tactical != null)
         {
