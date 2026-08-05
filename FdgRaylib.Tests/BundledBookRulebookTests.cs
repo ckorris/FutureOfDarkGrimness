@@ -9,7 +9,7 @@ using NUnit.Framework;
 
 namespace FdgRaylib.Tests;
 
-// #344 - the two rules a live game reported as "not implemented" (Heavy Impact on Ripjawdactyl Riders,
+// #354 - the two rules a live game reported as "not implemented" (Heavy Impact on Ripjawdactyl Riders,
 // Vengeance on Royal Guard / ONIs) were implemented, authored and embedded in their books; the LISTS
 // were saved before those commits and froze a copy of the book's definitions without them. The engine
 // half of the backfill is pinned by ArmyRulebookBackfillIntegrationTests against a stub rulebook; this

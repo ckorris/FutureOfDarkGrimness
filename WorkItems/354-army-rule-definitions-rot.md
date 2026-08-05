@@ -1,4 +1,4 @@
-# 342 - A saved .fdgarmy freezes its rule definitions, so newly implemented rules go inert
+# 354 - A saved .fdgarmy freezes its rule definitions, so newly implemented rules go inert
 
 **Status:** in progress (opened 2026-08-05)
 

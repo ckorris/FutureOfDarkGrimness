@@ -1,4 +1,4 @@
-# 345 - A unit with Impact but no melee weapon could never charge, so Impact was dead on 138 units
+# 355 - A unit with Impact but no melee weapon could never charge, so Impact was dead on 138 units
 
 **Status:** in progress (opened 2026-08-05)
 
@@ -18,7 +18,7 @@ Surveying the 47 bundled books: **138 units** carry a charge-contact rule and ha
 weapon at base** - every APC, tank, speeder and buggy in nearly every faction (`Battle Brothers`
 APC/Battle Tank/Attack Speeder, `Human Defense Force` Battle Tank ... ). Impact is currently
 unreachable on all of them. A further ~38 units can trade their melee weapons away by upgrade,
-which is how the reported case arose (#344's Ripjawdactyl Riders took "Replace all Energy Shields
+which is how the reported case arose (#354's Ripjawdactyl Riders took "Replace all Energy Shields
 and CCWs -> Shock Pistol").
 
 ## What already works (do not rebuild)

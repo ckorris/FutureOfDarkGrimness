@@ -109,7 +109,7 @@ public static class RuleLoadWarnings
     }
 
     /// <summary>
-    /// The one-line "this list predates the rulebook" aggregate (#344), or null when no drop is
+    /// The one-line "this list predates the rulebook" aggregate (#354), or null when no drop is
     /// <see cref="ERuleDropReason.OutdatedList"/>. Separate copy from
     /// <see cref="SummarizeUnimplemented"/> because the fix is different: these rules exist and work,
     /// the saved list is just too old to carry their definitions, so rebuilding it is what helps.
@@ -166,7 +166,7 @@ public static class RuleLoadWarnings
 
     /// <summary>
     /// The visible log lines for a load's drops: unimplemented rules aggregated by name, then rules an
-    /// outdated list can't see (#344), then a count of misauthored references (wrong scope / missing
+    /// outdated list can't see (#354), then a count of misauthored references (wrong scope / missing
     /// value / weaponless wargear) if any. Empty when nothing was dropped. Internal for tests. ASCII only.
     /// </summary>
     internal static IReadOnlyList<string> Summarize(IReadOnlyList<RuleDrop> drops)
