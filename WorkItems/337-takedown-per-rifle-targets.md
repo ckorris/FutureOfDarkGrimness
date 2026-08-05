@@ -1,6 +1,6 @@
 # 337 — Takedown (Sniper): each rifle picks its own target unit
 
-**Status**: implemented — awaiting GUI hand-verification
+**Status**: CLOSED 2026-08-04 — hand-verified in the running app by the owner
 **Related**: #157 (per-shot model picks, superseded here), #314 (Takedown facet correction), #276 (attack-beat
 truthfulness / burst indices), #032 (Limited), #028 (resolve-first gating)
 
@@ -70,6 +70,21 @@ the first pick had chosen — three snipers could never cover three different ta
   `3 LEFT - AIMED 1 AT A TIME`, the count to fall 3 -> 2 -> 1 as each rifle fires, a Takedown model pick per
   shot, and the third rifle to find any third enemy unit greyed out with "Already targeting 2 units this
   shoot action."
+
+## Outcome
+
+Closed 2026-08-04. A unit's Takedown rifles now aim independently: firing one commits a single copy and
+returns the rest to the shoot action's pool, so each rifle chooses its own target unit through the
+existing picker. The 2-unit cap still binds (owner ruling), the ordinary weapons stay locked until every
+Takedown copy has fired or been held, and a Limited+Takedown weapon spends one carrier per shot.
+
+Owner hand-verified in the GUI on the `337-sniper-split-targets` save and confirmed it works. The session
+log shows the flow end to end through the GUI resolvers: rifle 1 of 3 -> Left Guards (Takedown pick, model
+killed), rifle 2 of 2 -> Center Guards (pick, miss), last rifle -> Center Guards (pick, model killed) - one
+pass per rifle, the count falling 3 -> 2 -> 1, and two different enemy units hit by one unit's rifles,
+which is exactly what the old behaviour could not do.
+
+Commits: engine `ce71a25`; superproject `bfa9b93` (pointer + resolvers + work item), `6301d70` (fixtures).
 
 ## Deferred (explicitly, not silently)
 
