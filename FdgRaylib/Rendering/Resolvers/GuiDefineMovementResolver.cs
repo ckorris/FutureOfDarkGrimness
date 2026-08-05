@@ -288,15 +288,25 @@ public class GuiDefineMovementResolver
     // #317: the impassible label takes the red of the wash it explains, lightened to stay readable as text -
     // deliberately NOT the shortfall gray, since this move is refused rather than merely shortened.
     private static readonly uint ImpassibleTextCol     = ImGui.ColorConvertFloat4ToU32(new Vector4(1.00f, 0.50f, 0.47f, 1f));
-    // #334: the 1" forced-charge standoff band. Its own magenta, deliberately not any hue already spoken for
-    // on this canvas - orange is the CHARGE DISTANCE band (a budget, not an obligation, and confusing the two
-    // is the whole risk here), red means invalid or dangerous, gray difficult, green/yellow advance/rush.
+    // #334: the 1" forced-charge standoff band. A DARK / burnt orange (owner's call, 2026-08-04 GUI verify -
+    // the first pass was magenta and read too soft for a boundary this consequential).
+    //
+    // Note what this hue is deliberately living next to: bright orange (1.00, 0.55, 0.10) is already the
+    // CHARGE DISTANCE band and the Rush label - a budget, not an obligation, and confusing the two is exactly
+    // the risk this item exists to remove. These separate from it by VALUE, not hue: distinctly deeper and
+    // browner, and they hug enemy bases while the charge rings are big circles centred on the mover, so the
+    // two never draw the same shape in the same place. If either palette is ever retuned, retune both.
     // Faint = "this is where the obligation starts"; bright = "your move ends in it".
-    private static readonly uint StandoffBandCol       = ImGui.ColorConvertFloat4ToU32(new Vector4(1.00f, 0.35f, 0.68f, 0.30f));
-    private static readonly uint StandoffBandHotCol    = ImGui.ColorConvertFloat4ToU32(new Vector4(1.00f, 0.30f, 0.62f, 0.95f));
-    private static readonly uint StandoffLinkCol       = ImGui.ColorConvertFloat4ToU32(new Vector4(1.00f, 0.30f, 0.62f, 0.85f));
-    private static readonly uint StandoffGhostFill     = ImGui.ColorConvertFloat4ToU32(new Vector4(1.00f, 0.30f, 0.62f, 0.45f));
-    private static readonly Vector4 StandoffTextCol    = new(1.00f, 0.45f, 0.72f, 1f);
+    private static readonly uint StandoffBandCol       = ImGui.ColorConvertFloat4ToU32(new Vector4(0.85f, 0.33f, 0.02f, 0.60f));
+    private static readonly uint StandoffBandHotCol    = ImGui.ColorConvertFloat4ToU32(new Vector4(0.90f, 0.35f, 0.03f, 1.00f));
+    private static readonly uint StandoffLinkCol       = ImGui.ColorConvertFloat4ToU32(new Vector4(0.90f, 0.35f, 0.03f, 0.95f));
+    private static readonly uint StandoffGhostFill     = ImGui.ColorConvertFloat4ToU32(new Vector4(0.88f, 0.34f, 0.03f, 0.50f));
+    // Lifted off the band colour so it stays legible on the dark panel, and kept deeper than RushTextCol
+    // (1.00, 0.55, 0.10) so the warning never reads as another Rush line.
+    private static readonly Vector4 StandoffTextCol    = new(0.98f, 0.42f, 0.10f, 1f);
+    // Solid enough to read as a drawn boundary rather than a wash, at both weights.
+    private const float StandoffBandThickness    = 2.0f;
+    private const float StandoffBandHotThickness = 3.5f;
 
     public GuiDefineMovementResolver(ITableState tableState, FormationModeState formationMode,
         bool coverProximityExceptions = true)
@@ -1849,7 +1859,8 @@ public class GuiDefineMovementResolver
             var pose = _frameEnemyPoses[e];
             var (px, py) = InchesToPixel(pose.Centre.x, pose.Centre.z);
             ModelBaseRenderer.DrawBandOutlineImGui(dl, pose.BaseShape, new Vector2(px, py), _scale,
-                GameWideConstants.ENEMY_STANDOFF_DISTANCE_INCHES, StandoffBandCol, 1.5f, pose.Facing);
+                GameWideConstants.ENEMY_STANDOFF_DISTANCE_INCHES, StandoffBandCol, StandoffBandThickness,
+                pose.Facing);
         }
     }
 
@@ -1869,7 +1880,8 @@ public class GuiDefineMovementResolver
             var pose = _frameEnemyPoses[e];
             var (px, py) = InchesToPixel(pose.Centre.x, pose.Centre.z);
             ModelBaseRenderer.DrawBandOutlineImGui(dl, pose.BaseShape, new Vector2(px, py), _scale,
-                GameWideConstants.ENEMY_STANDOFF_DISTANCE_INCHES, StandoffBandHotCol, 3f, pose.Facing);
+                GameWideConstants.ENEMY_STANDOFF_DISTANCE_INCHES, StandoffBandHotCol, StandoffBandHotThickness,
+                pose.Facing);
         }
     }
 
