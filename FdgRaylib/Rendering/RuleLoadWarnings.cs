@@ -108,6 +108,33 @@ public static class RuleLoadWarnings
         return line.ToString();
     }
 
+    /// <summary>
+    /// The one-line "this list predates the rulebook" aggregate (#354), or null when no drop is
+    /// <see cref="ERuleDropReason.OutdatedList"/>. Separate copy from
+    /// <see cref="SummarizeUnimplemented"/> because the fix is different: these rules exist and work,
+    /// the saved list is just too old to carry their definitions, so rebuilding it is what helps.
+    /// ASCII only.
+    /// </summary>
+    internal static string? SummarizeOutdated(IReadOnlyList<RuleDrop> drops, string subject)
+    {
+        List<RuleDrop> outdated = drops.Where(d => d.Reason == ERuleDropReason.OutdatedList).ToList();
+        if (outdated.Count == 0) return null;
+
+        List<string> names = outdated.Select(d => d.RuleName)
+            .Distinct(StringComparer.OrdinalIgnoreCase).OrderBy(n => n, StringComparer.OrdinalIgnoreCase)
+            .ToList();
+
+        StringBuilder line = new StringBuilder();
+        line.Append(names.Count == 1
+            ? $"1 special rule on {subject} predates the current rulebook and will do nothing until the list is rebuilt: "
+            : $"{names.Count} special rules on {subject} predate the current rulebook and will do nothing until the list is rebuilt: ");
+        line.Append(string.Join(", ", names));
+        if (outdated.Count > names.Count)
+            line.Append($" ({outdated.Count} references)");
+        line.Append('.');
+        return line.ToString();
+    }
+
     private static void HandleDrop(RuleDrop drop)
     {
         lock (_lock)
@@ -138,9 +165,9 @@ public static class RuleLoadWarnings
     }
 
     /// <summary>
-    /// The visible log lines for a load's drops: unimplemented rules aggregated by name, then a count
-    /// of misauthored references (wrong scope / missing value / weaponless wargear) if any. Empty when
-    /// nothing was dropped. Internal for tests. ASCII only.
+    /// The visible log lines for a load's drops: unimplemented rules aggregated by name, then rules an
+    /// outdated list can't see (#354), then a count of misauthored references (wrong scope / missing
+    /// value / weaponless wargear) if any. Empty when nothing was dropped. Internal for tests. ASCII only.
     /// </summary>
     internal static IReadOnlyList<string> Summarize(IReadOnlyList<RuleDrop> drops)
     {
@@ -153,7 +180,14 @@ public static class RuleLoadWarnings
             lines.Add($"{unimplementedLine} Details in the Debug log.");
         }
 
-        int misauthored = drops.Count(d => d.Reason != ERuleDropReason.Unimplemented);
+        string? outdatedLine = SummarizeOutdated(drops, "the loaded armies");
+        if (outdatedLine != null)
+        {
+            lines.Add($"{outdatedLine} Details in the Debug log.");
+        }
+
+        int misauthored = drops.Count(d =>
+            d.Reason != ERuleDropReason.Unimplemented && d.Reason != ERuleDropReason.OutdatedList);
         if (misauthored > 0)
         {
             lines.Add($"{misauthored} rule reference(s) were dropped as misauthored " +

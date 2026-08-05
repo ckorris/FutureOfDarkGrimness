@@ -46,6 +46,11 @@ UserConfig.EnsureExists();
 
 bool headless = args.Contains("--headless");
 
+// #354: let army load see the CURRENT rulebook, not just the frozen copy a saved .fdgarmy embeds, so a
+// list saved before a rule was implemented picks that rule up instead of silently fielding nothing.
+// Installed in every mode - this is army data, not a UI concern.
+FdgRaylib.Import.BundledBookRulebook.Install();
+
 // #168: in any windowed mode, collect the engine's rule-load warnings for the in-game log (they fire
 // before the log exists and would otherwise only reach stdout, invisible in a GUI session). Headless
 // keeps the channel's plain stdout fallback that automated runs grep.
