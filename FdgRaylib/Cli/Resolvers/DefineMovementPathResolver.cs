@@ -98,7 +98,14 @@ public class DefineMovementPathResolver : IStageResolver<DefineMovementPathReque
                     GetEnemyFootprints(request), request.CanMoveThroughEnemies, request.IgnoresDifficultTerrain,
                     request.IgnoresImpassibleTerrain, _tableState?.Terrain.Objects, out var errors,
                     GetFriendlyFootprints(request), lenientCoherency: true))
+            {
+                // #333: the GUI's Done confirmation, in this front end's vocabulary. Declining re-runs the
+                // whole prompt, exactly as an invalid path does below.
+                if (!ConfirmUnmovedModels(entries)) continue;
+                // #334: the standoff warning comes AFTER that confirmation, so a move the player backs out
+                // of never announces a forced charge it isn't going to cause.
                 return Selected(WarnIfForcedCharge(request, entries));
+            }
 
             Console.WriteLine();
             Console.WriteLine("  Movement is invalid - please re-enter all models:");
@@ -106,6 +113,51 @@ public class DefineMovementPathResolver : IStageResolver<DefineMovementPathReque
                 Console.WriteLine($"    ! {MovementUtilities.ErrorReasonToString(err.ErrorReasonType)}");
         }
     }
+
+    /// <summary>
+    /// #333: names the models that never left the start line before the move commits, so "Enter through
+    /// every model" cannot silently spend a unit's Move action. Two shapes, like the GUI popup: leaving
+    /// SOME behind costs them the activation, leaving them ALL behind spends the action on nothing (and,
+    /// engine-side, no longer counts as having moved this round).
+    ///
+    /// <para>EOF answers yes, per #319's rule - a piped script that entered blank lines meant them, and
+    /// re-prompting forever is the one wrong answer here. Bare Enter agrees too: this is a confirmation,
+    /// not a decision, and the player has already typed every model's destination once.</para>
+    /// </summary>
+    private static bool ConfirmUnmovedModels(List<ModelMoveEntry> entries)
+    {
+        var unmoved = new List<int>();
+        for (int i = 0; i < entries.Count; i++)
+            if (MovementUtilities.GetTotalMoveDistance(entries[i]) <= UnmovedEpsilonInches)
+                unmoved.Add(i + 1);
+
+        if (unmoved.Count == 0) return true;
+
+        Console.WriteLine();
+        if (unmoved.Count == entries.Count)
+        {
+            Console.WriteLine("  No model moved. Finishing spends the unit's Move action and leaves it in place");
+            Console.WriteLine("  (the unit will not count as having moved this round).");
+            if (entries.Count > 0)
+                Console.WriteLine("  Type 'back' at the first model instead to keep the Move action.");
+        }
+        else
+        {
+            Console.WriteLine($"  {unmoved.Count} of {entries.Count} models did not move: "
+                + string.Join(", ", unmoved.Select(o => $"Model {o}")));
+            Console.WriteLine("  They stay where they are for the rest of this activation.");
+        }
+
+        Console.Write("  Finish the move? [Y/n]: ");
+        string? answer = Console.ReadLine()?.Trim();
+        if (string.IsNullOrEmpty(answer)) return true;
+        return !(answer.Equals("n", StringComparison.OrdinalIgnoreCase)
+                 || answer.Equals("no", StringComparison.OrdinalIgnoreCase));
+    }
+
+    /// <summary>Float epsilon for "this model did not move" - mirrors the GUI roster's
+    /// <c>ModelRoster.DistanceEpsilon</c>, which greys the same rows.</summary>
+    private const float UnmovedEpsilonInches = 0.0001f;
 
     private static Task<CancellableResult<List<ModelMoveEntry>>> Selected(List<ModelMoveEntry> entries) =>
         Task.FromResult<CancellableResult<List<ModelMoveEntry>>>(new Selected<List<ModelMoveEntry>>(entries));

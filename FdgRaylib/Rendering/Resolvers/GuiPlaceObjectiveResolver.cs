@@ -175,12 +175,15 @@ public class GuiPlaceObjectiveResolver
             var (px, py) = InchesToPixel(obj.Position.x, obj.Position.z);
             var center = new Vector2(px, py);
 
-            // 9" exclusion zone (no-go for new markers).
+            // 9" exclusion zone (no-go for new markers), clipped to the felt - off-table pixels are
+            // not placeable to begin with, so painting the no-go band out there is just spill.
             float exclusionPx = _request!.MinSeparationInches * _scale;
             uint exclusionFill    = ImGui.ColorConvertFloat4ToU32(new Vector4(1.00f, 0.20f, 0.20f, 0.06f));
             uint exclusionOutline = ImGui.ColorConvertFloat4ToU32(new Vector4(1.00f, 0.20f, 0.20f, 0.35f));
+            TableClip.PushClipRect(dl, _scale, _originX, _originY, _tableH);
             dl.AddCircleFilled(center, exclusionPx, exclusionFill);
             dl.AddCircle(center, exclusionPx, exclusionOutline, 48, 1f);
+            dl.PopClipRect();
 
             DrawMarkerVisual(dl, center, i + 1, neutral: true, brightness: 1.0f);
         }
@@ -197,12 +200,15 @@ public class GuiPlaceObjectiveResolver
             ? ImGui.ColorConvertFloat4ToU32(new Vector4(0.30f, 1.00f, 0.30f, 0.95f))
             : ImGui.ColorConvertFloat4ToU32(new Vector4(1.00f, 0.30f, 0.30f, 0.95f));
 
-        // 3" seizure ring — measured from the center, base disc is separate.
+        // 3" seizure ring — measured from the center, base disc is separate. Clipped to the felt so
+        // a ghost near an edge previews the same cut ring the committed marker will draw.
         float seizurePx = ObjectiveSeizureRadiusInches * _scale;
         uint ringFill = ImGui.ColorConvertFloat4ToU32(
             new Vector4(0.70f, 0.70f, 0.70f, frozen ? 0.30f : 0.20f));
+        TableClip.PushClipRect(dl, _scale, _originX, _originY, _tableH);
         dl.AddCircleFilled(center, seizurePx, ringFill);
         dl.AddCircle(center, seizurePx, outline, 48, 2f);
+        dl.PopClipRect();
 
         DrawMarkerVisual(dl, center, number, neutral: true, brightness: frozen ? 1.0f : 0.85f);
     }

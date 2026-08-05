@@ -186,6 +186,55 @@ public class ModelRosterTests
         Assert.That(ModelRoster.FormatInches(4.5f), Is.EqualTo("4.5"));
     }
 
+    // ── #333: the Done confirmation's straggler list ────────────────────────────────────────────────
+
+    // The list the popup reads. Ordinals are 1-based and in ROSTER order, because the popup names
+    // "Model 3" and the player then has to find Model 3 in the list above it - a 0-based or re-sorted
+    // list would point at the wrong row, which is worse than no warning at all.
+    [Test]
+    public void UnmovedOrdinals_NamesTheModelsStillOnTheStartLine_InRosterOrder()
+    {
+        var unmoved = ModelRoster.UnmovedOrdinals(new[] { 4.2f, 0f, 6f, 0f, 0f });
+
+        Assert.That(unmoved, Is.EqualTo(new[] { 2, 4, 5 }),
+            "1-based, roster order - the same 'Model N' the rows show");
+    }
+
+    [Test]
+    public void UnmovedOrdinals_IsEmptyWhenEveryModelMoved()
+    {
+        Assert.That(ModelRoster.UnmovedOrdinals(new[] { 0.5f, 3f }), Is.Empty,
+            "nothing to warn about - Done commits without a popup");
+    }
+
+    // The guard is a float epsilon, not a "barely moved" allowance: a deliberate nudge is a move, and the
+    // popup must not nag about it. Mirrors the engine's MovedThisRound guard, which uses the same value.
+    [Test]
+    public void UnmovedOrdinals_CountsAnyRealTravelAsMoved()
+    {
+        Assert.That(ModelRoster.UnmovedOrdinals(new[] { 0.01f }), Is.Empty,
+            "0.01in is a move");
+        Assert.That(ModelRoster.UnmovedOrdinals(new[] { ModelRoster.DistanceEpsilon }), Is.EqualTo(new[] { 1 }),
+            "float drift on a waypoint dropped in place is not");
+    }
+
+    // The roster's grey-until-it-moves cue and this warning must never disagree about who has moved -
+    // a greyed row the popup does not name (or the reverse) reads as a bug in whichever the player trusts.
+    [Test]
+    public void UnmovedOrdinals_AgreesWithTheRowsGreyedAsNotStarted()
+    {
+        float[] distances = { 0f, 0.0001f, 0.002f, 5f };
+        var unmoved = ModelRoster.UnmovedOrdinals(distances);
+
+        for (int i = 0; i < distances.Length; i++)
+        {
+            var row = ModelRoster.BuildRow(i + 1, distances[i], maxAdvanceInches: 6f,
+                maxDistanceInches: 12f, cappedByTerrain: false);
+            Assert.That(unmoved.Contains(i + 1), Is.EqualTo(!row.Started),
+                $"model {i + 1}: the greyed row and the Done warning read one epsilon");
+        }
+    }
+
     [Test]
     public void RowsAreShorterThanOptionButtonsAndScaleWithTheFont()
     {
