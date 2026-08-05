@@ -293,7 +293,14 @@ public class ArmyBuilderScreen : IAppScreen
         if (unimplemented != null)
             Warn(unimplemented);
 
-        foreach (RuleDrop drop in ruleAudit.Drops.Where(d => d.Reason != ERuleDropReason.Unimplemented))
+        // #342: names the rulebook implements that this list is too old to define aggregate to their own
+        // line - the fix is rebuilding the list, not waiting for the rule to be built.
+        string? outdated = RuleLoadWarnings.SummarizeOutdated(ruleAudit.Drops, "this list");
+        if (outdated != null)
+            Warn(outdated);
+
+        foreach (RuleDrop drop in ruleAudit.Drops.Where(d =>
+                     d.Reason != ERuleDropReason.Unimplemented && d.Reason != ERuleDropReason.OutdatedList))
             Warn($"'{drop.RuleName}' on {drop.Owner} will be dropped at launch: {Describe(drop.Reason)}.");
     }
 
