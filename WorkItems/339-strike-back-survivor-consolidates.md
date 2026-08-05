@@ -1,4 +1,4 @@
-# 337 — A unit that strikes back and kills its attacker gets a consolidation move
+# 339 — A unit that strikes back and kills its attacker gets a consolidation move
 
 **Status**: in-progress (implemented + tested; awaiting GUI hand-verify)
 **Related**: #017 (in-range melee checks / the "charger still consolidates" path), #090 (enemy-checked consolidation), #159 (lenient consolidation coherency)
@@ -10,6 +10,11 @@ winner. Before this, `ConsolidateStage` keyed off the ATTACKING seat alone: a de
 standing exactly where it started, while the mirror case (charger wipes out the defender) got its move.
 
 ## Notes
+
+- 2026-08-04: **Renumbered 337 -> 339** (reconciliation 50). Filed as 337 off a freshly-fetched
+  `origin/master` topping out at 336; origin landed its own 337 (Shaken picker badge) and 338 (Notice
+  banner duration) in the minutes between filing and the pre-push fetch. Merged wins, so this item
+  yielded. The two pre-renumber commit messages still say "#337".
 
 - 2026-08-04: Implemented and closed in one slice (engine-only).
   - `ConsolidateStage.Enter` now picks the CONSOLIDATING unit rather than assuming the attacker:
