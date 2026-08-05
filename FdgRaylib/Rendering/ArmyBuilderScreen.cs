@@ -293,7 +293,7 @@ public class ArmyBuilderScreen : IAppScreen
         if (unimplemented != null)
             Warn(unimplemented);
 
-        // #342: names the rulebook implements that this list is too old to define aggregate to their own
+        // #344: names the rulebook implements that this list is too old to define aggregate to their own
         // line - the fix is rebuilding the list, not waiting for the rule to be built.
         string? outdated = RuleLoadWarnings.SummarizeOutdated(ruleAudit.Drops, "this list");
         if (outdated != null)

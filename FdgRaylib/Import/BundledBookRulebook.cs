@@ -11,7 +11,7 @@ using FDG.SaveLoad;
 namespace FdgRaylib.Import;
 
 /// <summary>
-/// #342 — the engine's <see cref="ICurrentRulebook"/> over the bundled rulebook assets
+/// #344 — the engine's <see cref="ICurrentRulebook"/> over the bundled rulebook assets
 /// (<c>Assets/Books</c>). Installed once at startup in every mode; army load uses it to fill in rule
 /// definitions a saved list is too old to carry, and to tell an outdated list apart from a genuinely
 /// unimplemented rule name.

@@ -46,7 +46,7 @@ UserConfig.EnsureExists();
 
 bool headless = args.Contains("--headless");
 
-// #342: let army load see the CURRENT rulebook, not just the frozen copy a saved .fdgarmy embeds, so a
+// #344: let army load see the CURRENT rulebook, not just the frozen copy a saved .fdgarmy embeds, so a
 // list saved before a rule was implemented picks that rule up instead of silently fielding nothing.
 // Installed in every mode - this is army data, not a UI concern.
 FdgRaylib.Import.BundledBookRulebook.Install();

@@ -104,7 +104,7 @@ public class RuleLoadWarningsTests
             "book casing differences must not double-report a rule.");
     }
 
-    // ── #342: an outdated list is a different problem from an unimplemented rule ──────────────
+    // ── #344: an outdated list is a different problem from an unimplemented rule ──────────────
 
     private static RuleDrop Outdated(string name, string owner = "unit 'Ripjawdactyl Riders'") =>
         new(name, owner, ERuleDropReason.OutdatedList,

@@ -6,6 +6,22 @@ from origin/master. Standing precedent: numbers are never reused, and when two p
 claim the same number, the *unmerged local* item yields to the *merged* one and takes a fresh number.
 A per-clone pre-push hook blocks duplicate numbers across the index and the archive.
 
+> **2026-08-05 - reconciliation 53 (RESOLVED).** Fifth collision of this shape in three days, and the
+> first where the number went stale DURING the work rather than before it. This session fetched
+> `origin/master`, read its index+archive as topping out at 341, and filed **342 = a saved `.fdgarmy`
+> freezes its book's rule definitions**. The implementation was built, tested and committed locally
+> (unpushed). A `git fetch origin` before filing the NEXT item then showed origin/master had advanced
+> in the meantime and now owned **342 = joined-hero name/points** (merged, `[~]`) and **343 =
+> deployment undo at action granularity**. Merged wins per standing precedent, so the local item
+> yields: **rule-definitions rot 342 -> 344** (`WorkItems/344-army-rule-definitions-rot.md`; every
+> `#342` in the engine and app sources, both test fixtures, the detail file and the index line updated
+> before any push). The follow-on impact-charge item filed fresh as **345**. **Left as-is on purpose:**
+> the three commit messages saying `#342` for it (engine `e44dd1f`, superproject `19b0a14`, `86ceb6e`),
+> matching every prior reconciliation's precedent that commit messages are not rewritten - even here,
+> where the commits were still local and could have been.
+> **The lesson this one adds:** fetching before filing is not sufficient when the work outlives the
+> fetch. A long item should re-check its number before it is pushed, not only when it is opened.
+>
 > **2026-08-05 - reconciliation 52 (RESOLVED).** Fourth collision of this exact shape in two days, and the
 > first to be caused BY a prior reconciliation. This session filed **340 = a rotation dialled in mid-path
 > rotated the model where it was STANDING** against an `origin/master` whose index+archive topped out at
