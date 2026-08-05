@@ -25,11 +25,25 @@ public class StringSelectionResolver : IStageResolver<StringSelectionRequest, st
             string opt = request.ValidOptions[i];
             if (companionOptions.Contains(opt)) continue;
             Console.WriteLine($"  [{i + 1}] {opt}");
+
+            // #298/#333: one indented line per documented special rule the option carries. The CLI has no
+            // hover, so unlike the GUI it spells every rule out in place; an UNdocumented rule is skipped,
+            // because a bare name here would only repeat what the option label already printed.
+            if (request.OptionRules != null
+                && request.OptionRules.TryGetValue(opt, out var rules))
+            {
+                foreach (StringSelectionRequest.OptionRule rule in rules)
+                {
+                    if (string.IsNullOrWhiteSpace(rule.Description)) continue;
+                    Console.WriteLine($"        {rule.Name} - {rule.Description}");
+                }
+            }
+
             if (request.OptionDescriptions != null
                 && request.OptionDescriptions.TryGetValue(opt, out string? desc))
             {
-                // #298: a description can be several lines (one per weapon rule); indent each so the
-                // block stays under its option rather than the second line starting at column 0.
+                // A description can be several lines; indent each so the block stays under its option
+                // rather than the second line starting at column 0.
                 foreach (string line in desc.Split('\n'))
                     Console.WriteLine($"        {line}");
             }

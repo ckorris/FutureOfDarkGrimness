@@ -23,12 +23,22 @@ public class GuiStringSelectionResolver : IStageResolver<StringSelectionRequest,
     /// </summary>
     private bool _confirmingPass;
 
+    /// <summary>
+    /// #333: the option whose rules the details strip is showing - the last rule-bearing row the mouse was
+    /// over. Sticky on purpose: shooting's Details pane follows the SELECTED weapon, but a melee row has no
+    /// selected state (clicking it commits the attack), so this follows hover instead, and a strip that
+    /// emptied the moment the cursor left the row would be unreadable by the time you looked at it.
+    /// Render-thread only, but cleared under the lock so a request that resolves underneath cannot leave
+    /// the next menu pointing at an option it does not have.
+    /// </summary>
+    private string? _focusedOption;
+
     public bool HasPendingRequest { get { lock (_lock) return _request != null; } }
 
     public Task<string> Resolve(StringSelectionRequest request)
     {
         var tcs = new TaskCompletionSource<string>();
-        lock (_lock) { _tcs = tcs; _request = request; _confirmingPass = false; }
+        lock (_lock) { _tcs = tcs; _request = request; _confirmingPass = false; _focusedOption = null; }
         return tcs.Task;
     }
 
@@ -56,6 +66,17 @@ public class GuiStringSelectionResolver : IStageResolver<StringSelectionRequest,
         /// <summary>Width of the companion button, or 0 when the row has none. The row's own button
         /// gives it up, so the label must wrap into what is left.</summary>
         public float SecondaryWidth { get; set; }
+
+        /// <summary>#333: the label split around its special-rule names, when the request said this option
+        /// has any. Null on an ordinary option, which keeps the plain word-wrapped path below.</summary>
+        public IReadOnlyList<RuleHoverText.Segment>? Segments { get; set; }
+
+        /// <summary>#333: <see cref="Segments"/> wrapped to the row's width, one entry per drawn line.
+        /// Empty when the row has no rules and <see cref="Lines"/> is what gets drawn.</summary>
+        public List<List<RuleHoverText.Segment>> SegmentLines { get; set; } = new();
+
+        /// <summary>How many text lines the label occupies, whichever of the two paths drew it.</summary>
+        public int LineCount => Segments != null ? SegmentLines.Count : Lines.Count;
 
         public List<string> Lines { get; set; } = new();
         public float ButtonHeight { get; set; }
@@ -138,6 +159,7 @@ public class GuiStringSelectionResolver : IStageResolver<StringSelectionRequest,
             }
             var row = new MenuRow(opt, LabelFor(opt, letters[i]), desc, i);
             AttachSecondary(row, request, letters[i]);
+            AttachRuleSegments(row, request, row.Label, tail: string.Empty);
             rows.Add(row);
         }
         for (int i = 0; i < invalidCount; i++)
@@ -147,7 +169,10 @@ public class GuiStringSelectionResolver : IStageResolver<StringSelectionRequest,
             if (companionOptions.Contains(opt.Option)) continue;
             // Same hand-drawn treatment as a valid row, so a greyed-out option reads the same and its
             // reason ("Must attack with Deadly weapons first.") is never clipped away either.
-            rows.Add(new MenuRow(opt.Option, $"{opt.Option} ({opt.Reason})", null, -1));
+            string reasonTail = $" ({opt.Reason})";
+            var invalidRow = new MenuRow(opt.Option, opt.Option + reasonTail, null, -1);
+            AttachRuleSegments(invalidRow, request, opt.Option, reasonTail);
+            rows.Add(invalidRow);
         }
 
         // Measure heights up front so the dialog is sized to its content and a wrapped description can never
@@ -166,8 +191,11 @@ public class GuiStringSelectionResolver : IStageResolver<StringSelectionRequest,
                     : MathF.Min(ImGui.CalcTextSize(row.SecondaryLabel).X + textPadX * 2f, width * 0.42f);
                 float labelWrap = width - row.SecondaryWidth
                     - (row.SecondaryWidth > 0f ? gapBetweenRowButtons : 0f) - textPadX * 2f;
-                row.Lines = ResolverText.Wrap(row.Label, labelWrap);
-                row.ButtonHeight = MathF.Max(btnH, row.Lines.Count * lineH + btnPadY * 2f);
+                if (row.Segments != null)
+                    row.SegmentLines = OptionRuleSegments.Wrap(row.Segments, MeasureText, labelWrap);
+                else
+                    row.Lines = ResolverText.Wrap(row.Label, labelWrap);
+                row.ButtonHeight = MathF.Max(btnH, row.LineCount * lineH + btnPadY * 2f);
                 row.TotalHeight = row.Desc == null
                     ? row.ButtonHeight + gapAfterBtn
                     : row.ButtonHeight + 2f
@@ -189,9 +217,17 @@ public class GuiStringSelectionResolver : IStageResolver<StringSelectionRequest,
         float instrH = ImGui.CalcTextSize(request.Instructions, false, dw - pad * 2).Y + 8f;
         float listTop = pad + instrH + 4f;
         float footerH = pinPass ? ActionMenuLayout.FooterHeight(lineH, passRowH, request.AllowCancel) : 0f;
+
+        // #333: the rule-details strip is costed before the list, like the footer - the strip is a fixed
+        // share of the panel and the list takes what is left, so a weapon with a wall of rules scrolls its
+        // own strip instead of squeezing the options it is there to be compared against.
+        bool hasRuleDetails = request.OptionRules != null && request.OptionRules.Count > 0;
+        float detailsH = hasRuleDetails ? OptionRuleDetailsLayout.StripHeight(dh, lineH) : 0f;
+        float detailsCost = hasRuleDetails ? OptionRuleDetailsLayout.TotalHeight(dh, lineH) : 0f;
+
         float listH = pinPass
-            ? ActionMenuLayout.ListHeight(dh, listTop, footerH, lineH)
-            : MathF.Max(lineH, dh - listTop - pad);
+            ? ActionMenuLayout.ListHeight(dh, listTop, footerH + detailsCost, lineH)
+            : MathF.Max(lineH, dh - listTop - pad - detailsCost);
 
         float listBtnW = fullBtnW;
         if (MeasureRows(listBtnW) > listH)
@@ -242,6 +278,16 @@ public class GuiStringSelectionResolver : IStageResolver<StringSelectionRequest,
         uint labelCol = ImGui.GetColorU32(ImGuiCol.Text);
         uint dimCol = ImGui.ColorConvertFloat4ToU32(new Vector4(0.55f, 0.55f, 0.58f, 1f));
 
+        // #333: rule names are tinted brighter than the rest of the label so they read as "there is more
+        // here", exactly as the shoot panel tints its stat subline. A greyed row keeps its own dim colour
+        // for both - an unavailable option must not advertise itself with a bright run.
+        uint ruleCol = ImGui.ColorConvertFloat4ToU32(new Vector4(0.82f, 0.86f, 0.95f, 1f));
+
+        // #292's one-tooltip-per-frame rule: the rows are hand-drawn, so a hovered rule name is collected
+        // across the loop and raised after it.
+        bool listHovered = ImGui.IsWindowHovered(ImGuiHoveredFlags.ChildWindows);
+        string? ruleTooltip = null;
+
         float y = 0f;
         for (int i = 0; i < rows.Count; i++)
         {
@@ -257,6 +303,12 @@ public class GuiStringSelectionResolver : IStageResolver<StringSelectionRequest,
             if (ImGui.Button($"##row{i}", new Vector2(rowBtnW, row.ButtonHeight)) && enabled)
                 picked ??= row.Option;
             if (!enabled) ImGui.EndDisabled();
+
+            // #333: hovering a rule-bearing row aims the details strip at it. AllowWhenDisabled because
+            // BeginDisabled suppresses the plain query and a greyed weapon still has rules worth reading -
+            // that IS the reason it is greyed, when the Deadly gate is what did it.
+            if (row.Segments != null && ImGui.IsItemHovered(ImGuiHoveredFlags.AllowWhenDisabled))
+                _focusedOption = row.Option;
 
             if (enabled && keysLive
                 && letters[row.ValidIndex] is char pressedKey && ResolverHotkeys.IsLetterPressed(pressedKey))
@@ -297,11 +349,27 @@ public class GuiStringSelectionResolver : IStageResolver<StringSelectionRequest,
                     picked ??= row.Secondary.Option;
             }
 
-            float ty = origin.Y + (row.ButtonHeight - row.Lines.Count * lineH) * 0.5f;
-            foreach (string line in row.Lines)
+            float ty = origin.Y + (row.ButtonHeight - row.LineCount * lineH) * 0.5f;
+            if (row.Segments != null)
             {
-                dl.AddText(new Vector2(origin.X + textPadX, ty), enabled ? labelCol : dimCol, line);
-                ty += lineH;
+                // #333: the shoot panel's treatment (#292) - the label draws as before, but each special
+                // rule name inside it gets an underline and its own hover tooltip.
+                uint rowTextCol = enabled ? labelCol : dimCol;
+                uint rowRuleCol = enabled ? ruleCol : dimCol;
+                foreach (List<RuleHoverText.Segment> segmentLine in row.SegmentLines)
+                {
+                    ruleTooltip ??= RuleHoverText.DrawInline(dl, new Vector2(origin.X + textPadX, ty),
+                        segmentLine, rowTextCol, rowRuleCol, listHovered);
+                    ty += lineH;
+                }
+            }
+            else
+            {
+                foreach (string line in row.Lines)
+                {
+                    dl.AddText(new Vector2(origin.X + textPadX, ty), enabled ? labelCol : dimCol, line);
+                    ty += lineH;
+                }
             }
 
             // Optional subtext under the option (a weapon rule's text, a spell's effect summary):
@@ -330,12 +398,21 @@ public class GuiStringSelectionResolver : IStageResolver<StringSelectionRequest,
 
         ImGui.EndChild();
 
+        if (ruleTooltip != null) RuleHoverText.ShowTooltip(ruleTooltip);
+
+        // ---- #333: the rule-details strip, pinned under the list ---------------------------------------
+        if (hasRuleDetails)
+        {
+            DrawRuleDetails(request, rows, new Vector2(pad, listTop + listH + OptionRuleDetailsLayout.GapAbove(lineH)),
+                new Vector2(fullBtnW, detailsH));
+        }
+
         // ---- the pinned footer: Pass, then Back, raised off the panel's bottom edge --------------------
         // Back goes last on purpose: the panel's bottom edge is the easiest target in it to slam into, so
         // it belongs to the harmless action rather than the irreversible one.
         if (pinPass)
         {
-            float fy = listTop + listH + ActionMenuLayout.GapAbove(lineH);
+            float fy = listTop + listH + detailsCost + ActionMenuLayout.GapAbove(lineH);
 
             // An available Pass is drawn at full strength, exactly like an option row: the position and
             // the confirmation are what make it deliberate. Dimming it (tried first) read as "disabled"
@@ -455,6 +532,79 @@ public class GuiStringSelectionResolver : IStageResolver<StringSelectionRequest,
             Complete(tcs, picked);
         else if (cancelled)
             Complete(tcs, null!);
+    }
+
+    /// <summary>
+    /// #333: splits a row's label around the special-rule names the request says it carries, so the names
+    /// draw underlined and hoverable where they already sit. Leaves <see cref="MenuRow.Segments"/> null on
+    /// an option with no rules, which keeps every other menu on the plain word-wrapped path unchanged.
+    /// </summary>
+    /// <param name="head">The part of the label the rule names actually live in - the option's own text.
+    /// A greyed row's label continues with its reason, and a reason can repeat a rule's name verbatim
+    /// ("1x Demo Charge - A1, AP0, Limited (Already used this game (Limited).)"), which the trailing-match
+    /// scan would otherwise underline instead of the rule.</param>
+    /// <param name="tail">The rest of the label, appended as plain text.</param>
+    internal static void AttachRuleSegments(MenuRow row, StringSelectionRequest request,
+        string head, string tail)
+    {
+        if (request.OptionRules == null
+            || !request.OptionRules.TryGetValue(row.Option, out List<StringSelectionRequest.OptionRule>? rules)
+            || rules.Count == 0)
+        {
+            return;
+        }
+
+        IReadOnlyList<RuleHoverText.Segment> segments = OptionRuleSegments.Build(head, rules);
+        if (tail.Length > 0)
+        {
+            var withTail = new List<RuleHoverText.Segment>(segments) { new(tail, null, null) };
+            segments = withTail;
+        }
+        row.Segments = segments;
+    }
+
+    /// <summary>ImGui text measurement, as the plain function <see cref="OptionRuleSegments.Wrap"/> wants
+    /// (tests hand it their own).</summary>
+    private static float MeasureText(string text) => ImGui.CalcTextSize(text).X;
+
+    /// <summary>
+    /// #333: the shoot panel's Details pane, for a menu that has no selection to hang one off. Spells out
+    /// the rules of the row under attention - every name, and either what it does or the note that the
+    /// engine will not resolve it - in a scrolling child, so a wall of rules never grows the panel.
+    /// </summary>
+    private void DrawRuleDetails(StringSelectionRequest request, List<MenuRow> rows, Vector2 at, Vector2 size)
+    {
+        // The focus survives the mouse leaving the row, but not the row leaving the menu: fall back to the
+        // first option that has rules, so the strip says something the moment the menu opens.
+        if (_focusedOption == null || !rows.Exists(r => r.Segments != null && r.Option == _focusedOption))
+            _focusedOption = rows.Find(r => r.Segments != null)?.Option;
+
+        ImGui.SetCursorPos(at);
+        ImGui.PushStyleColor(ImGuiCol.ChildBg, new Vector4(0.11f, 0.11f, 0.15f, 1f));
+        ImGui.PushStyleVar(ImGuiStyleVar.ChildRounding, 4f);
+        ImGui.BeginChild("##StrSelRuleDetails", size, ImGuiChildFlags.Borders);
+        ImGui.PopStyleColor();
+        ImGui.PopStyleVar();
+
+        if (_focusedOption != null
+            && request.OptionRules!.TryGetValue(_focusedOption, out List<StringSelectionRequest.OptionRule>? rules))
+        {
+            ImGui.TextDisabled("Rules");
+            ImGui.Separator();
+            foreach (StringSelectionRequest.OptionRule rule in rules)
+            {
+                ImGui.TextUnformatted(rule.Name);
+                ImGui.Indent();
+                ImGui.PushTextWrapPos(0f);   // wrap at the strip's right edge
+                ImGui.TextDisabled(string.IsNullOrWhiteSpace(rule.Description)
+                    ? RuleHoverText.UnknownRuleText
+                    : rule.Description);
+                ImGui.PopTextWrapPos();
+                ImGui.Unindent();
+            }
+        }
+
+        ImGui.EndChild();
     }
 
     /// <summary>
