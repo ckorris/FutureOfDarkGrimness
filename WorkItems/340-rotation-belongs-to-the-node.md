@@ -85,7 +85,17 @@ Applies to movement (single + group) and to consolidation (owner's call, 2026-08
     already-overlapping start yields `entry = 0`, which falls into `CappedCrossing` (move capped at 6")
     rather than `StoppedShortOfEdge`, unless the model has already spent the 6" — which is correct.
   - A model that STARTS with its base overlapping impassible terrain is still trapped (every leg collides
-    at both attitudes). Pre-existing; unchanged.
+    at both attitudes). Pre-existing — but note the node-pose check now closes its one remaining escape:
+    a pure pivot used to be unchecked (zero-length legs are skipped), so such a model could at least turn.
+    No "not worsened" guard was added for it, deliberately: the leg sweep has never had one either, so
+    guarding only the pose would be incoherent and would read as safety that is not there. Nothing in legal
+    play starts overlapping.
+  - `EnemyClampTravel`'s two-attitude change is **not covered by a test**. It reads `_tableState` and the
+    live request, so it is not the pure arithmetic that `ModelRoster` / `PlacementPanelLayout` are pulled
+    out for, and mocking a table state to reach it would test the mock. What protects it is that it cannot
+    propose more than the gate accepts by construction: each attitude's clamp is individually a distance the
+    engine's either-attitude rule allows, and the gate itself is tested
+    (`MoveThroughEnemyValidationTests.SweptFootprintClipsEnemyOnlyAtTheArrivingAttitude_Accepted`).
 
 - **The OR is per-enemy in the enemy validator, and globally over the piece set for terrain.** The terrain
   walk asks "is there one attitude clear of everything", which is the strict reading. `ValidateMovingThrough-
