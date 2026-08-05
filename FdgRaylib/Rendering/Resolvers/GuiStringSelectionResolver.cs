@@ -24,7 +24,7 @@ public class GuiStringSelectionResolver : IStageResolver<StringSelectionRequest,
     private bool _confirmingPass;
 
     /// <summary>
-    /// #333: the option whose rules the details strip is showing - the last rule-bearing row the mouse was
+    /// #336: the option whose rules the details strip is showing - the last rule-bearing row the mouse was
     /// over. Sticky on purpose: shooting's Details pane follows the SELECTED weapon, but a melee row has no
     /// selected state (clicking it commits the attack), so this follows hover instead, and a strip that
     /// emptied the moment the cursor left the row would be unreadable by the time you looked at it.
@@ -67,11 +67,11 @@ public class GuiStringSelectionResolver : IStageResolver<StringSelectionRequest,
         /// gives it up, so the label must wrap into what is left.</summary>
         public float SecondaryWidth { get; set; }
 
-        /// <summary>#333: the label split around its special-rule names, when the request said this option
+        /// <summary>#336: the label split around its special-rule names, when the request said this option
         /// has any. Null on an ordinary option, which keeps the plain word-wrapped path below.</summary>
         public IReadOnlyList<RuleHoverText.Segment>? Segments { get; set; }
 
-        /// <summary>#333: <see cref="Segments"/> wrapped to the row's width, one entry per drawn line.
+        /// <summary>#336: <see cref="Segments"/> wrapped to the row's width, one entry per drawn line.
         /// Empty when the row has no rules and <see cref="Lines"/> is what gets drawn.</summary>
         public List<List<RuleHoverText.Segment>> SegmentLines { get; set; } = new();
 
@@ -218,7 +218,7 @@ public class GuiStringSelectionResolver : IStageResolver<StringSelectionRequest,
         float listTop = pad + instrH + 4f;
         float footerH = pinPass ? ActionMenuLayout.FooterHeight(lineH, passRowH, request.AllowCancel) : 0f;
 
-        // #333: the rule-details strip is costed before the list, like the footer - the strip is a fixed
+        // #336: the rule-details strip is costed before the list, like the footer - the strip is a fixed
         // share of the panel and the list takes what is left, so a weapon with a wall of rules scrolls its
         // own strip instead of squeezing the options it is there to be compared against.
         bool hasRuleDetails = request.OptionRules != null && request.OptionRules.Count > 0;
@@ -278,7 +278,7 @@ public class GuiStringSelectionResolver : IStageResolver<StringSelectionRequest,
         uint labelCol = ImGui.GetColorU32(ImGuiCol.Text);
         uint dimCol = ImGui.ColorConvertFloat4ToU32(new Vector4(0.55f, 0.55f, 0.58f, 1f));
 
-        // #333: rule names are tinted brighter than the rest of the label so they read as "there is more
+        // #336: rule names are tinted brighter than the rest of the label so they read as "there is more
         // here", exactly as the shoot panel tints its stat subline. A greyed row keeps its own dim colour
         // for both - an unavailable option must not advertise itself with a bright run.
         uint ruleCol = ImGui.ColorConvertFloat4ToU32(new Vector4(0.82f, 0.86f, 0.95f, 1f));
@@ -304,7 +304,7 @@ public class GuiStringSelectionResolver : IStageResolver<StringSelectionRequest,
                 picked ??= row.Option;
             if (!enabled) ImGui.EndDisabled();
 
-            // #333: hovering a rule-bearing row aims the details strip at it. AllowWhenDisabled because
+            // #336: hovering a rule-bearing row aims the details strip at it. AllowWhenDisabled because
             // BeginDisabled suppresses the plain query and a greyed weapon still has rules worth reading -
             // that IS the reason it is greyed, when the Deadly gate is what did it.
             if (row.Segments != null && ImGui.IsItemHovered(ImGuiHoveredFlags.AllowWhenDisabled))
@@ -352,7 +352,7 @@ public class GuiStringSelectionResolver : IStageResolver<StringSelectionRequest,
             float ty = origin.Y + (row.ButtonHeight - row.LineCount * lineH) * 0.5f;
             if (row.Segments != null)
             {
-                // #333: the shoot panel's treatment (#292) - the label draws as before, but each special
+                // #336: the shoot panel's treatment (#292) - the label draws as before, but each special
                 // rule name inside it gets an underline and its own hover tooltip.
                 uint rowTextCol = enabled ? labelCol : dimCol;
                 uint rowRuleCol = enabled ? ruleCol : dimCol;
@@ -406,7 +406,7 @@ public class GuiStringSelectionResolver : IStageResolver<StringSelectionRequest,
 
         if (ruleTooltip != null) RuleHoverText.ShowTooltip(ruleTooltip);
 
-        // ---- #333: the rule-details strip, pinned under the list ---------------------------------------
+        // ---- #336: the rule-details strip, pinned under the list ---------------------------------------
         if (hasRuleDetails)
         {
             DrawRuleDetails(request, rows, new Vector2(pad, listTop + listH + OptionRuleDetailsLayout.GapAbove(lineH)),
@@ -541,7 +541,7 @@ public class GuiStringSelectionResolver : IStageResolver<StringSelectionRequest,
     }
 
     /// <summary>
-    /// #333: splits a row's label around the special-rule names the request says it carries, so the names
+    /// #336: splits a row's label around the special-rule names the request says it carries, so the names
     /// draw underlined and hoverable where they already sit. Leaves <see cref="MenuRow.Segments"/> null on
     /// an option with no rules, which keeps every other menu on the plain word-wrapped path unchanged.
     /// </summary>
@@ -574,7 +574,7 @@ public class GuiStringSelectionResolver : IStageResolver<StringSelectionRequest,
     private static float MeasureText(string text) => ImGui.CalcTextSize(text).X;
 
     /// <summary>
-    /// #333: the shoot panel's Details pane, for a menu that has no selection to hang one off. Spells out
+    /// #336: the shoot panel's Details pane, for a menu that has no selection to hang one off. Spells out
     /// the rules of the row under attention - every name, and either what it does or the note that the
     /// engine will not resolve it - in a scrolling child, so a wall of rules never grows the panel.
     /// </summary>

@@ -8,7 +8,7 @@ using NUnit.Framework;
 
 namespace FdgRaylib.Tests;
 
-// #333: the melee weapon menu used to print every rule's full text under every button (#298), which is
+// #336: the melee weapon menu used to print every rule's full text under every button (#298), which is
 // not how the shoot panel, the Army Forge or the army list explain a rule - they underline the NAME where
 // it already sits and hover the text. The engine now sends the rules structured, and this locates each
 // name inside the finished option label so the button can get that same treatment. The drawing is ImGui

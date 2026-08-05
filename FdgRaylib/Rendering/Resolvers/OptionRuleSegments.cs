@@ -5,7 +5,7 @@ using FDG.StageResolution.Requests;
 namespace FdgRaylib.Rendering.Resolvers;
 
 /// <summary>
-/// #333 — turns a string menu's option label plus its <see cref="StringSelectionRequest.OptionRules"/>
+/// #336 — turns a string menu's option label plus its <see cref="StringSelectionRequest.OptionRules"/>
 /// into the <see cref="RuleHoverText.Segment"/>s the shoot panel's rule treatment is drawn from, so a
 /// melee weapon button explains its rules the same way a shooting weapon row does: names underlined
 /// in place, descriptions on hover, instead of a permanent block of prose under the button (#298).

@@ -3,7 +3,7 @@ using System;
 namespace FdgRaylib.Rendering.Resolvers;
 
 /// <summary>
-/// #333 — the vertical budget for the rule-details strip under a string menu's option list, expressed as
+/// #336 — the vertical budget for the rule-details strip under a string menu's option list, expressed as
 /// arithmetic so it is unit-testable (the drawing around it is hand-verified, exactly like
 /// <see cref="ActionMenuLayout"/> and <see cref="PlacementPanelLayout"/>).
 ///

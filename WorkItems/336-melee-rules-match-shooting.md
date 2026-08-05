@@ -1,4 +1,4 @@
-# 333 — Melee weapon rules read the way shooting's do
+# 336 — Melee weapon rules read the way shooting's do
 
 **Status**: in progress
 **Related**: #298 (put the rule text under the melee buttons in the first place), #292 (the shoot panel's
@@ -30,7 +30,7 @@ hovered row.
   **Not covered by a test**: `DrawInline` needs an ImGui context and the app suite has none by design
   (pure logic only). The guard is a comment at both call sites; this stays hand-verify territory.
 - 2026-08-04: **Hand-verify asset**: `WeaponRules.fdgsave` (repo root), compiled from
-  `Scenarios/333-weapon-rules-showcase.json` + `Scenarios/armies/RuleShowcase.fdgarmy`. Built to put every
+  `Scenarios/336-weapon-rules-showcase.json` + `Scenarios/armies/RuleShowcase.fdgarmy`. Built to put every
   display state on ONE screen rather than needing several games: the Blademasters' first melee menu has two
   valid rule-bearing rows (Great Sword `Deadly(3), Rending`; Demo Charge `Limited, Deadly(6)`, which also
   carries the #321 Hold back companion and its #320 consequence line) above two GREYED rule-bearing rows

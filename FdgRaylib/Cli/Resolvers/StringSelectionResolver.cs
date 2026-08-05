@@ -26,7 +26,7 @@ public class StringSelectionResolver : IStageResolver<StringSelectionRequest, st
             if (companionOptions.Contains(opt)) continue;
             Console.WriteLine($"  [{i + 1}] {opt}");
 
-            // #298/#333: one indented line per documented special rule the option carries. The CLI has no
+            // #298/#336: one indented line per documented special rule the option carries. The CLI has no
             // hover, so unlike the GUI it spells every rule out in place; an UNdocumented rule is skipped,
             // because a bare name here would only repeat what the option label already printed.
             if (request.OptionRules != null

@@ -3,7 +3,7 @@ using NUnit.Framework;
 
 namespace FdgRaylib.Tests;
 
-// #333: the rule-details strip under the melee weapon list is costed out of the panel before the option
+// #336: the rule-details strip under the melee weapon list is costed out of the panel before the option
 // list is, so a weapon with a wall of rules scrolls its own strip instead of squeezing the options it is
 // there to be compared against. Sibling of ActionMenuLayoutTests - the arithmetic is testable, the
 // drawing around it is hand-verified.
