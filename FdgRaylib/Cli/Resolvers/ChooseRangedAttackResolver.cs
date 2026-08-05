@@ -32,7 +32,7 @@ public class ChooseRangedAttackResolver : IStageResolver<ChooseRangedAttackReque
                     ? $"  [{weaponOption.LimitedRule}: already fired this game]"
                     : $"  [{weaponOption.LimitedRule}: ONCE PER GAME - firing spends it]";
             }
-            // #337: a Takedown weapon aims one copy at a time, so say how many are still waiting and that
+            // #340: a Takedown weapon aims one copy at a time, so say how many are still waiting and that
             // firing this line spends exactly one of them - otherwise the weapon coming back for another
             // pass reads as a bug.
             if (weaponOption.AimedIndividuallyRule != null && weaponOption.CopiesRemaining > 1)
@@ -93,7 +93,7 @@ public class ChooseRangedAttackResolver : IStageResolver<ChooseRangedAttackReque
             string keeps = wo.LimitedRule != null
                 ? $" (keeps its {wo.LimitedRule} once-per-game shot)"
                 : "";
-            // #337: holding fire drops EVERY unfired copy of a one-at-a-time weapon, not just the next one.
+            // #340: holding fire drops EVERY unfired copy of a one-at-a-time weapon, not just the next one.
             string copies = wo.AimedIndividuallyRule != null && wo.CopiesRemaining > 1
                 ? $" (all {wo.CopiesRemaining} remaining)"
                 : "";

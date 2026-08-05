@@ -221,7 +221,7 @@ public class GuiChooseRangedAttackResolver
                 dl.AddText(rMin + new Vector2(badgeX, 2), colBadge, badge);
                 badgeX += ImGui.CalcTextSize(badge + "  ").X;
             }
-            // #337: a Takedown weapon fires ONE copy per pass, each with its own target, so the row says
+            // #340: a Takedown weapon fires ONE copy per pass, each with its own target, so the row says
             // how many rifles are still waiting to be aimed - the weapon reappearing after firing is the
             // rule working, not a bug.
             if (wo.AimedIndividuallyRule != null && wo.CopiesRemaining > 1)
@@ -377,7 +377,7 @@ public class GuiChooseRangedAttackResolver
                 ImGui.PopStyleColor();
             }
 
-            // #337: what firing this option actually commits. A one-at-a-time weapon spends a single copy
+            // #340: what firing this option actually commits. A one-at-a-time weapon spends a single copy
             // and comes back for the next one, which is the whole point of the rule and has to be said
             // before the click - the player is choosing a target for ONE rifle, not for the squad.
             if (wo.AimedIndividuallyRule != null && wo.CopiesRemaining > 1)

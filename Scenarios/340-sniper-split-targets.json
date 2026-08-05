@@ -1,5 +1,5 @@
 {
-  "name": "#337 - Takedown aims one rifle at a time: 3 sniper rifles, 3 enemy units, 2-target cap",
+  "name": "#340 - Takedown aims one rifle at a time: 3 sniper rifles, 3 enemy units, 2-target cap",
   "round": 1,
   "activePlayer": 0,
   "settings": { "randomness": "Realistic", "diceSeed": 337, "background": "Barren" },
@@ -7,14 +7,14 @@
   "terrain": [],
   "players": [
     {
-      "army": "armies/337-Snipers.fdgarmy",
+      "army": "armies/340-Snipers.fdgarmy",
       "units": [
         { "unit": "Snipers",        "models": [[34, 14], [36, 14], [38, 14]], "facing": [0, 1] },
         { "unit": "Crossbow Squad", "models": [[46, 14], [48, 14], [50, 14]], "facing": [0, 1] }
       ]
     },
     {
-      "army": "armies/337-Targets.fdgarmy",
+      "army": "armies/340-Targets.fdgarmy",
       "units": [
         { "unit": "Left Guards",   "models": [[16, 28], [18, 28], [20, 28], [22, 28]], "facing": [0, -1] },
         { "unit": "Center Guards", "models": [[34, 28], [36, 28], [38, 28], [40, 28]], "facing": [0, -1] },

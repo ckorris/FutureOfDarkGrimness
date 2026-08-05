@@ -62,8 +62,8 @@ the first pick had chosen — three snipers could never cover three different ta
   carrier per shot. `TakedownRuleIntegrationTests`' three #157 split tests rewritten for the new flow —
   per-pass model picks through the REAL `BuildTargetListStage`, pool hand-back 2/1/0, and the dead-target
   case now asserting the remaining copies stay available). App-side 1062/0, full `dotnet build` clean.
-  Headless: `Scenarios/337-sniper-split-targets.json` (3 Takedown rifles vs 2 enemy units, army
-  `Scenarios/armies/337-Snipers.fdgarmy`) driven by hand — rifle 1 -> enemy Snipers, rifle 2 -> enemy
+  Headless: `Scenarios/340-sniper-split-targets.json` (3 Takedown rifles vs 2 enemy units, army
+  `Scenarios/armies/340-Snipers.fdgarmy`) driven by hand — rifle 1 -> enemy Snipers, rifle 2 -> enemy
   Spotters, rifle 3 -> enemy Snipers, one model pick each, game ran to completion exit 0 with the AI
   driving its own snipers; default EOF smoke exit 0.
 - **Awaiting GUI hand-verification**: fire a 3-rifle sniper unit in the GUI; expect the weapon row to badge
@@ -78,7 +78,7 @@ returns the rest to the shoot action's pool, so each rifle chooses its own targe
 existing picker. The 2-unit cap still binds (owner ruling), the ordinary weapons stay locked until every
 Takedown copy has fired or been held, and a Limited+Takedown weapon spends one carrier per shot.
 
-Owner hand-verified in the GUI on the `337-sniper-split-targets` save and confirmed it works. The session
+Owner hand-verified in the GUI on the `340-sniper-split-targets` save and confirmed it works. The session
 log shows the flow end to end through the GUI resolvers: rifle 1 of 3 -> Left Guards (Takedown pick, model
 killed), rifle 2 of 2 -> Center Guards (pick, miss), last rifle -> Center Guards (pick, model killed) - one
 pass per rifle, the count falling 3 -> 2 -> 1, and two different enemy units hit by one unit's rifles,
