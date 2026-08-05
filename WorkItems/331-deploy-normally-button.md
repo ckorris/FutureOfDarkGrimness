@@ -14,6 +14,35 @@ and that the deployment prompt reads as two alternatives rather than one option 
 
 ## Notes
 
+- 2026-08-04: **The AI never embarks** (owner's call, same session): *"It's very rarely the correct thing to
+  do in a real game, and requires more forethought than that level of AI has."* Two seams, both in the AI
+  layer rather than the rules:
+  - `AiSelectionResolver<T>` declines the deploy-time prompt (null = deploy normally) when the exit carries
+    the `DEPLOY_NORMALLY_CHOICE` label. Deliberately narrow: a blanket "AI cancels cancellable selections"
+    would loop every prompt that re-asks after a cancel (melee defender -> Choose Action -> melee defender),
+    so the decline keys on the one label that means "this cancel is a choice". Covers all three profiles —
+    solo, Gunline, and the Tactician, whose `TacticianUnitSelectionResolver` already documents embark picks
+    as falling through to the solo resolver.
+  - `AiStringSelectionResolver.ChooseAction` filters `Embark` out of its position-based tail (the ranked
+    branches — Charge/Move/Shoot/Pass — can never return it, since Embark arrives as a rule-NAMED action).
+    It is still returned if it is the ONLY valid option: the fallback must stay inside `ValidOptions` or
+    `ChooseActionStage` faults, and a fault is worse than one unwanted ride.
+  - Dedupe found on the way: the Ambush hold prompt already had `ChooseUnitToDeployStage.DEPLOY_NORMALLY_CHOICE
+    = "Deploy normally"`, so the embark exit briefly made the same action read two ways in one phase. Now one
+    constant, title-cased to "Deploy Normally"; `ChooseDeployActionStage`'s own duplicate constant is gone.
+    Every reference (both AI resolvers, `TacticianActionResolver`, tests) goes through the constant, so the
+    Ambush prompt just picks up the new casing.
+  - Tests: `AiSelectionResolverTests` (new, 3 — declines the embark prompt, still ANSWERS an ordinary
+    cancellable selection, still picks option 0 on a mandatory one), `AiStringSelectionResolverTests` (+2 —
+    never embarks from the fallback, but answers with it when it is the only option), and
+    `TransportDeploymentChoiceTests` (+1 — the real `AiSelectionResolver` driven through the real stage).
+    Engine 2768 green, app 1017 green, build clean.
+  - Verified headless with the transport army in the **AI's** hands (`printf "2\n1\nTransportTest.fdgarmy\n"`):
+    zero "embark" lines in the entire game log, game plays to a result. Before this it embarked at deployment.
+  - **Not changed**: an AI unit that starts embarked (scenario or save) still has no policy for getting out
+    under the solo profile — the Tactician has A5-5 disembark timing, the solo bot passes. Pre-existing, and
+    now only reachable from authored setups; noted rather than fixed.
+
 - 2026-08-04: **Shipped.** `SelectionRequest<T>` gained `CancelLabel` (default `"Back"`, `DEFAULT_CANCEL_LABEL`),
   worded by the stage, exactly like `PlaceObjectsRequest.CancelHint` from #308.
   - `ChooseDeployActionStage` passes `cancelLabel: DEPLOY_NORMALLY_CHOICE_NAME` ("Deploy Normally"), drops the
@@ -49,8 +78,14 @@ and that the deployment prompt reads as two alternatives rather than one option 
 - **CLI EOF still takes option 1, cancellable or not.** Making EOF cancel would be the friendlier answer for
   this one prompt and a hang for others: a stage that re-prompts after a cancel (melee defender -> Choose
   Action -> melee defender) would spin forever under piped input. Pinned by a test so the reasoning survives.
-- **Not fixed here, deliberately**: `AiSelectionResolver` always takes option 0, so an AI army with a deployed
-  transport embarks every eligible unit into it rather than weighing the choice. That is AI behaviour, not
-  resolver UX; noted for the Tactician deployment work (#191 / #296) rather than folded in silently.
+- **The AI declines rather than scores.** `AiSelectionResolver` taking option 0 meant an AI army embarked
+  every eligible unit into the first transport in the list. The fix is a flat "never", not a heuristic:
+  embarking only pays off with a plan for the drop-off, and neither AI profile has one (the Tactician's
+  A5-5 note records cargo riding until the transport died). A future embark policy has one obvious home in
+  each resolver, both marked with #331.
+- **The decline is keyed to a label, not to cancellability.** Replying null to any cancellable selection
+  would livelock the prompts that re-ask after a cancel. Matching `DEPLOY_NORMALLY_CHOICE` follows the
+  existing Ambush-hold idiom in `AiStringSelectionResolver` — the AI declines a specific named choice it
+  cannot follow through on.
 
 ## Outcome
