@@ -67,7 +67,49 @@ Mischievous, Mobile Artillery. **Deliberately NOT fixed here** - see Decisions.
 
 ## Notes
 
-### 2026-08-05 - opened
+### 2026-08-05 - implemented (engine `e44dd1f`, superproject `19b0a14`)
 
-Diagnosis and survey above. Implementation slice: engine install point + gap-fill + new drop
-reason; app-side bundled-book source + warning copy.
+Engine: `SaveLoad/CurrentRulebook.cs` is the install point (`ICurrentRulebook`: per-faction
+definitions + a name-known query); the host fills it, and with nothing installed the engine
+behaves exactly as before this item. `ArmyListRuleResolution.RegisterEmbeddedDefinitions` now
+registers `EffectiveDefinitions` = backfill (names the army does NOT define) then the army's
+own, so the army always wins on a name it has. `ERuleDropReason.OutdatedList` classifies a name
+the rulebook defines but the resolver could not find.
+
+App: `FdgRaylib/Import/BundledBookRulebook.cs` serves it from `Assets/Books` - the faction's
+book for definitions (cached, negative results too), `GdfRuleSupplement.json` for the
+name-known query. Installed in `Program.cs` before the headless branch. `RuleLoadWarnings`
+gained `SummarizeOutdated`; the misauthored count excludes both no-definition reasons; the
+army builder pane shows the new line.
+
+**Found while implementing - the resume snapshot needed the same fix.**
+`GameBootstrap.CreateArmy` persisted `armyListFile.RuleDefinitions` onto `ArmyData` for #095's
+resume replay. Attachments carry their full definition and survive regardless, but a resumed
+game's BY-NAME lookups (a `RuleGrant` token, a unit created mid-game via Spawn/Split) rebuild
+from that snapshot - a backfilled rule missing from it would be dead on resume. Now persists
+`EffectiveDefinitions`. Pinned by `BackfilledDefinition_SurvivesIntoTheResumeSnapshot`.
+
+Tests: `Tests/ArmyRulebookBackfillIntegrationTests.cs` (7) drives the real launch path against
+a stub rulebook - the pre-fix drop still pinned, backfill attaches, the army's own definition
+wins over the rulebook's, no-faction-match classifies as `OutdatedList`, an unknown name stays
+`Unimplemented`, audit agrees with launch, resume keeps it. `ArmyRuleAuditParityTests` gained a
+`Grudge` reference + an installed stub so `Audit_CoversEveryDropReason` keeps covering every
+reason. App side: `BundledBookRulebookTests` runs against the REAL shipped assets (both
+reported cases resolve; the stale Saurian shape audits clean), `RuleLoadWarningsTests` +5
+including the ASCII pin.
+
+Verified: engine 2842 green, app 1086 green, `dotnet build` clean, default headless smoke
+exits 0. Both reported armies load with **zero** rule drops and play to a result:
+`--headless --army "armies/Saurian Starhost 3k.fdgarmy"` and the Eternal Dynasty 3k list.
+
+**Residual, not a bug in this fix:** the reported `armies/Saurian Starhost 3k.fdgarmy` bought
+"Replace all Energy Shields and CCWs -> Shock Pistol", so its Ripjawdactyl Riders carry no
+melee weapon and never charge - Heavy Impact resolves and attaches now, but that list can
+never trigger it. A `--trace-rules` run shows them only ever as the Subject of someone else's
+charge. Confirmed as a legitimate book upgrade option, not a compiler fault.
+
+**Deliberately NOT done** (owner ruling was gap-fill only): the 10 lists pinning a superseded
+COPY of a definition (Armor, Bounding, Infiltrate, Mischievous, Mobile Artillery) still play by
+their frozen wiring, and no tool re-stamps `.fdgarmy` files on disk - the `dist/` armies cut
+2026-08-03 still carry the stale sets. A `--refresh-army-rules <fileOrDir>` retrofit, mirroring
+`--retrofit-effects`, is the shape that would close both if they ever matter.
