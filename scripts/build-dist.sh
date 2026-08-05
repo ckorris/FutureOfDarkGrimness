@@ -81,9 +81,9 @@ publish_one() {
     echo "!! THIRD-PARTY-NOTICES.txt missing at repo root - license notices will NOT ship" >&2
   fi
 
-  # Ship the sample army lists. The Load Army / Load Game dialogs open with no
-  # preset directory, so they land in the app folder - an "armies" sibling next to
-  # the binary is exactly where a recipient will find them.
+  # Ship the sample army lists. The name and location are load-bearing: ArmyPaths
+  # looks for an "armies" folder beside the executable and opens every .fdgarmy
+  # Save/Load dialog there, so a recipient's Load Army lands straight on these.
   if [[ -d "$ROOT_DIR/armies" ]]; then
     cp -R "$ROOT_DIR/armies" "$out/armies"
   else

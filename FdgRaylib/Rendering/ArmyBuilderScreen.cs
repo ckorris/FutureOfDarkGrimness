@@ -147,7 +147,7 @@ public class ArmyBuilderScreen : IAppScreen
 
     private void SaveToDisk()
     {
-        var (canceled, path) = TinyDialogs.SaveFileDialog("Save Army", "", ArmyFilter);
+        var (canceled, path) = TinyDialogs.SaveFileDialog("Save Army", ArmyPaths.DefaultDialogPath, ArmyFilter);
         if (canceled || string.IsNullOrEmpty(path)) return;
 
         if (Path.GetExtension(path) != ArmyListFile.EXTENSION_WITH_PERIOD)
@@ -160,7 +160,7 @@ public class ArmyBuilderScreen : IAppScreen
 
     private void Load()
     {
-        var (canceled, paths) = TinyDialogs.OpenFileDialog("Load Army", "", false, ArmyFilter);
+        var (canceled, paths) = TinyDialogs.OpenFileDialog("Load Army", ArmyPaths.DefaultDialogPath, false, ArmyFilter);
         if (canceled) return;
 
         string path = paths?.FirstOrDefault() ?? "";

@@ -178,10 +178,20 @@ public class ArmyForgeScreen : IAppScreen
         bool entered = ImGui.InputText("##import-link", ref _importInput, 512, ImGuiInputTextFlags.EnterReturnsTrue);
 
         ImGui.BeginDisabled(busy || _importInput.Trim().Length == 0);
-        bool fetch = ImGui.Button("Fetch", new Vector2(120, 0)) || (entered && !busy && _importInput.Trim().Length > 0);
+        bool fetch = ImGui.Button("Fetch", ButtonSize("Fetch", 120f)) || (entered && !busy && _importInput.Trim().Length > 0);
         ImGui.EndDisabled();
         ImGui.SameLine();
-        if (ImGui.Button("Close", new Vector2(120, 0))) ImGui.CloseCurrentPopup();
+        // The link always arrives via the clipboard (it is copied out of the Army Forge share dialog), and
+        // an ImGui text field has no context menu to paste from - so the paste has to be a button.
+        ImGui.BeginDisabled(busy);
+        if (ImGui.Button("Paste", ButtonSize("Paste", 120f)))
+        {
+            string clipboard = ImGui.GetClipboardText() ?? string.Empty;
+            if (clipboard.Trim().Length > 0) _importInput = clipboard.Trim();
+        }
+        ImGui.EndDisabled();
+        ImGui.SameLine();
+        if (ImGui.Button("Close", ButtonSize("Close", 120f))) ImGui.CloseCurrentPopup();
 
         if (fetch)
         {
@@ -275,19 +285,19 @@ public class ArmyForgeScreen : IAppScreen
             if (_confirmOpenInForge)
             {
                 ImGui.TextColored(YellowText, "This will replace your current Forge list. Continue?");
-                if (ImGui.Button("Replace list", new Vector2(140, 0)))
+                if (ImGui.Button("Replace list", ButtonSize("Replace list")))
                 {
                     _confirmOpenInForge = false;
                     AdoptImported(outcome);
                     ImGui.CloseCurrentPopup();
                 }
                 ImGui.SameLine();
-                if (ImGui.Button("Back", new Vector2(140, 0))) _confirmOpenInForge = false;
+                if (ImGui.Button("Back", ButtonSize("Back"))) _confirmOpenInForge = false;
             }
             else
             {
                 ImGui.BeginDisabled(outcome.ForgeSession is null || outcome.BundledBook is null);
-                if (ImGui.Button("Open in Forge", new Vector2(140, 0)))
+                if (ImGui.Button("Open in Forge", ButtonSize("Open in Forge")))
                 {
                     if (_list.Units.Count > 0) _confirmOpenInForge = true;
                     else
@@ -298,13 +308,21 @@ public class ArmyForgeScreen : IAppScreen
                 }
                 ImGui.EndDisabled();
                 ImGui.SameLine();
-                if (ImGui.Button("Save As...", new Vector2(140, 0)) && SaveImported(army))
+                if (ImGui.Button("Save As...", ButtonSize("Save As...")) && SaveImported(army))
                     ImGui.CloseCurrentPopup();
             }
         }
 
         ImGui.EndPopup();
     }
+
+    /// <summary>
+    /// A button size that always fits its own label. The fixed widths this screen used clipped once the
+    /// 18px UI font is scaled up ("Open in Forge" overflowed 140px); <paramref name="minWidth"/> keeps a
+    /// row of short labels looking uniform rather than each shrinking to its text.
+    /// </summary>
+    private static Vector2 ButtonSize(string label, float minWidth = 140f) =>
+        new(MathF.Max(minWidth, ImGui.CalcTextSize(label).X + ImGui.GetStyle().FramePadding.X * 2f), 0f);
 
     // #241 v2: hand the reconstructed session to the normal Forge editing path. Compile gives the same
     // BuiltArmyFile shape a Load would, so AdoptLoaded's book-dropdown sync and per-frame recompile all
@@ -322,7 +340,7 @@ public class ArmyForgeScreen : IAppScreen
 
     private bool SaveImported(ArmyListFile army)
     {
-        var (canceled, path) = TinyDialogs.SaveFileDialog("Save Imported Army", "", ArmyFilter);
+        var (canceled, path) = TinyDialogs.SaveFileDialog("Save Imported Army", ArmyPaths.DefaultDialogPath, ArmyFilter);
         if (canceled || string.IsNullOrEmpty(path)) return false;
         if (Path.GetExtension(path) != ArmyListFile.EXTENSION_WITH_PERIOD)
             path = Path.ChangeExtension(path, ArmyListFile.EXTENSION_WITH_PERIOD);
@@ -1065,7 +1083,7 @@ public class ArmyForgeScreen : IAppScreen
 
     private void Save(BuiltArmyFile compiled)
     {
-        var (canceled, path) = TinyDialogs.SaveFileDialog("Save Army", "", ArmyFilter);
+        var (canceled, path) = TinyDialogs.SaveFileDialog("Save Army", ArmyPaths.DefaultDialogPath, ArmyFilter);
         if (canceled || string.IsNullOrEmpty(path)) return;
         if (Path.GetExtension(path) != ArmyListFile.EXTENSION_WITH_PERIOD)
             path = Path.ChangeExtension(path, ArmyListFile.EXTENSION_WITH_PERIOD);
@@ -1078,7 +1096,7 @@ public class ArmyForgeScreen : IAppScreen
 
     private void Load()
     {
-        var (canceled, paths) = TinyDialogs.OpenFileDialog("Load Army", "", false, ArmyFilter);
+        var (canceled, paths) = TinyDialogs.OpenFileDialog("Load Army", ArmyPaths.DefaultDialogPath, false, ArmyFilter);
         if (canceled) return;
         string path = paths?.FirstOrDefault() ?? "";
         if (!File.Exists(path)) return;

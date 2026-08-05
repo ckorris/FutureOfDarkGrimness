@@ -794,7 +794,7 @@ public class LobbyScreen : IAppScreen
 
     private void TryLoadArmyForPlayer(PlayerID playerID)
     {
-        var (canceled, paths) = TinyDialogs.OpenFileDialog("Load Army", "", false, ArmyFilter);
+        var (canceled, paths) = TinyDialogs.OpenFileDialog("Load Army", ArmyPaths.DefaultDialogPath, false, ArmyFilter);
         if (canceled) return;
 
         string path = paths?.FirstOrDefault() ?? "";
