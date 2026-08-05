@@ -55,11 +55,51 @@ public class HeroMarkerRendererTests
     }
 
     [Test]
-    public void FormatHeroTag_IsAsciiAndCarriesStats()
+    public void FormatHeroTag_IsAsciiAndCarriesNameAndStats()
     {
-        string tag = HeroMarkerRenderer.FormatHeroTag(3, 4);
-        Assert.That(tag, Is.EqualTo("Hero  Qua 3+  Def 4+"));
-        foreach (char c in tag)
-            Assert.That(c, Is.LessThanOrEqualTo((char)0x7F), $"non-ASCII char in \"{tag}\"");
+        string tag = HeroMarkerRenderer.FormatHeroTag("Elven Noble", 3, 4);
+        Assert.That(tag, Is.EqualTo("Hero: Elven Noble  Qua 3+  Def 4+"));
+        AssertAscii(tag);
+    }
+
+    // #342: a save written before the name rode the attachment. The tag must degrade to what it printed
+    // then, not to "Hero: " with a hole in it.
+    [TestCase(null)]
+    [TestCase("")]
+    [TestCase("   ")]
+    public void FormatHeroTag_WithoutAName_FallsBackToTheBareTag(string? name)
+    {
+        Assert.That(HeroMarkerRenderer.FormatHeroTag(name, 3, 4), Is.EqualTo("Hero  Qua 3+  Def 4+"));
+    }
+
+    [Test]
+    public void FormatHeroNameLine_IsAsciiAndCarriesNameAndPoints()
+    {
+        string line = HeroMarkerRenderer.FormatHeroNameLine("Elven Noble", 150);
+        Assert.That(line, Is.EqualTo("+ Elven Noble - 150pts"));
+        AssertAscii(line);
+    }
+
+    [Test]
+    public void FormatHeroNameLine_WithoutPoints_OmitsThem()
+    {
+        // Pre-#342 save: points folded into the host and the hero's share was never captured. "0pts" would
+        // read as "this hero was free", so the cost is simply absent -- as the unit header does at 0.
+        Assert.That(HeroMarkerRenderer.FormatHeroNameLine("Elven Noble", 0),
+            Is.EqualTo("+ Elven Noble"));
+    }
+
+    [Test]
+    public void FormatHeroNameLine_WithoutAName_StillMarksTheHero()
+    {
+        Assert.That(HeroMarkerRenderer.FormatHeroNameLine(null, 150), Is.EqualTo("+ Hero - 150pts"));
+        Assert.That(HeroMarkerRenderer.FormatHeroNameLine("", 0), Is.EqualTo("+ Hero"));
+    }
+
+    // The font atlas bakes Basic Latin + Latin-1 only; anything above renders as '?' in game.
+    private static void AssertAscii(string text)
+    {
+        foreach (char c in text)
+            Assert.That(c, Is.LessThanOrEqualTo((char)0x7F), $"non-ASCII char in \"{text}\"");
     }
 }

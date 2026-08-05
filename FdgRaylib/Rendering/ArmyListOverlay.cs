@@ -332,6 +332,7 @@ public sealed class ArmyListOverlay
         ImGui.TextUnformatted(unit is UnitData { PointCost: > 0 } ud
             ? $"{unit.Name} {count} - {ud.PointCost}pts"
             : $"{unit.Name} {count}");
+        DrawHeroNameLine(unit, centered: false);
         if (destroyed)
         {
             // Inside the alpha push so it dims with the row; strong red still reads.
@@ -381,6 +382,30 @@ public sealed class ArmyListOverlay
         ImGui.PopID();
     }
 
+    /// <summary>
+    /// #342: the joined hero named directly under the host's name line, so scanning the list shows WHERE
+    /// each hero is without hovering anything. Before this the hero was anonymous once merged — the host's
+    /// name was the only name the game had. On its own line (long hero names would blow out the table
+    /// row's width) and gold, matching the hero tag lower in the entry: centred under the card's centred
+    /// header, indented under the table row's left-aligned one.
+    /// </summary>
+    private static void DrawHeroNameLine(IUnit unit, bool centered)
+    {
+        if (unit is not UnitData { HeroAttachment: { } ha }) return;
+
+        string line = HeroMarkerRenderer.FormatHeroNameLine(ha.Name, ha.PointCost);
+        if (centered)
+        {
+            CenterNextText(line);
+            ImGui.TextColored(HeroGold, line);
+            return;
+        }
+
+        ImGui.Indent();
+        ImGui.TextColored(HeroGold, line);
+        ImGui.Unindent();
+    }
+
     // The hero tag + hero-own-rules pair, shared between the card's sub-block and the table row's
     // Special Rules cell.
     private void DrawHeroSummary(IUnit unit)
@@ -390,7 +415,7 @@ public sealed class ArmyListOverlay
         if (hero == null) return;
 
         string tag = unit is UnitData { HeroAttachment: { } ha }
-            ? HeroMarkerRenderer.FormatHeroTag(ha.Quality, ha.Defense)
+            ? HeroMarkerRenderer.FormatHeroTag(ha.Name, ha.Quality, ha.Defense)
             : "Hero";
         if (!hero.GetIsAlive()) tag += "  -  dead";
         else if (hero.TotalWounds > 1f)
@@ -533,6 +558,9 @@ public sealed class ArmyListOverlay
                 - ImGui.CalcTextSize("Activated").X);
             ImGui.TextColored(ActivatedRed, "Activated");
         }
+
+        // After the Activated tag, whose SameLine has to attach to the header itself.
+        DrawHeroNameLine(unit, centered: true);
     }
 
     // The blue stat pills: Quality / Defense always, Tough when the unit's models carry more than

@@ -79,7 +79,25 @@ public static class HeroMarkerRenderer
             Raylib.DrawLineEx(perimeter[i], perimeter[(i + 1) % perimeter.Length], 1.2f, outline);
     }
 
-    /// <summary>Tooltip tag for the hovered hero model, e.g. "Hero  Qua 3+  Def 4+". ASCII-only.</summary>
-    public static string FormatHeroTag(int quality, int defense) =>
-        $"Hero  Qua {quality}+  Def {defense}+";
+    /// <summary>
+    /// Tooltip / army-list tag for the joined hero, e.g. "Hero: Elven Noble  Qua 3+  Def 4+". ASCII-only.
+    /// The name comes from <c>HeroAttachment.Name</c> (#342); a pre-#342 save has none, so the tag falls
+    /// back to the bare "Hero  Qua 3+  Def 4+" it printed before.
+    /// </summary>
+    public static string FormatHeroTag(string? name, int quality, int defense) =>
+        string.IsNullOrWhiteSpace(name)
+            ? $"Hero  Qua {quality}+  Def {defense}+"
+            : $"Hero: {name}  Qua {quality}+  Def {defense}+";
+
+    /// <summary>
+    /// The army list's under-the-unit-name line for a joined hero (#342), e.g. "+ Elven Noble - 150pts".
+    /// Its own line rather than appended to the unit header: real hero names run long ("Knight Veteran
+    /// Master Brother") and would blow out the table row's width. Points are omitted when the engine
+    /// carried none (pre-#342 save), matching how the unit header hides a 0 cost. ASCII-only.
+    /// </summary>
+    public static string FormatHeroNameLine(string? name, int pointCost)
+    {
+        string label = string.IsNullOrWhiteSpace(name) ? "Hero" : name!;
+        return pointCost > 0 ? $"+ {label} - {pointCost}pts" : $"+ {label}";
+    }
 }
