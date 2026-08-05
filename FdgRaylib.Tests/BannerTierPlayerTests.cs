@@ -127,17 +127,19 @@ public class BannerTierPlayerTests
     public void Banners_RetireAfterTheirOwnLifetime()
     {
         var player = new PresentationPlayer();
-        player.OnBeat(Banner("Alice deploys first", EBannerTier.Notice));   // 900ms
+        player.OnBeat(Banner("Alice deploys first", EBannerTier.Notice));     // 2400ms (#338)
         player.OnBeat(Banner("Warriors embarked Rhino.", EBannerTier.Toast)); // 2200ms
 
         player.Update(0.05f);
         Assert.That(player.GetBanners(), Has.Count.EqualTo(2));
 
-        // Past the notice's 900ms but well short of the toast's 2200ms.
-        for (int i = 0; i < 20; i++) player.Update(0.05f);
+        // Past the toast's 2200ms but short of the notice's 2400ms. #338 lengthened the Notice past the
+        // Toast deliberately: a mid-screen statement is the one being read head-on, so it now outlasts the
+        // ticker line rather than flashing away under it.
+        for (int i = 0; i < 46; i++) player.Update(0.05f);
         var mid = player.GetBanners();
-        Assert.That(mid, Has.Count.EqualTo(1), "the shorter notice retired on its own clock");
-        Assert.That(mid[0].beat.Tier, Is.EqualTo(EBannerTier.Toast));
+        Assert.That(mid, Has.Count.EqualTo(1), "the shorter toast retired on its own clock");
+        Assert.That(mid[0].beat.Tier, Is.EqualTo(EBannerTier.Notice));
 
         for (int i = 0; i < 30; i++) player.Update(0.05f);
         Assert.That(player.GetBanners(), Is.Empty, "every banner eventually clears");
@@ -171,6 +173,49 @@ public class BannerTierPlayerTests
 
         Assert.That(player.GetBanners().Count(b => b.beat.Tier == EBannerTier.Notice), Is.EqualTo(1),
             "a burst of toasts must not push the notice off its own band");
+    }
+
+    // #338 (2026-08-04 playtest: "the tier-2 text is really really quick"). A Notice used to run 900ms,
+    // of which a 120ms fade-in and a 400ms fade-out tail left under 400ms at full strength - too short to
+    // read, and short enough that two notices could never coexist, so #327's centered stack was
+    // unreachable in normal play. What must NOT change is the pacing: a Notice is still a held beat that
+    // stops the engine only for its 300ms lead-in, so the extra time is spent purely on screen.
+    [Test]
+    public void ANoticeLingersLongEnoughToRead_WithoutPausingTheGameAnyLonger()
+    {
+        var player = new PresentationPlayer();
+        player.OnBeat(Banner("Bravo Squad fails morale - Shaken!", EBannerTier.Notice));
+        player.OnBeat(Death());
+
+        player.Update(0.05f);
+        Assert.That(player.GetActiveDeathBursts(), Has.Count.EqualTo(1),
+            "the beat behind it still starts immediately - a Notice never owned the active slot and the "
+            + "longer lifetime must not make it start owning one");
+
+        // Still legible a full second in - the whole point of the change.
+        for (int i = 0; i < 20; i++) player.Update(0.05f);
+        var atOneSecond = player.GetBanners();
+        Assert.That(atOneSecond, Has.Count.EqualTo(1));
+        Assert.That(atOneSecond[0].alpha, Is.EqualTo(1f).Within(0.001f),
+            "a second in, a Notice is still at full strength rather than most of the way faded out");
+    }
+
+    // The consequence the playtest asked for by name ("and also stack"): notices now overlap in normal
+    // play, so the band that was built to stack them is actually reachable. Two announcements a second
+    // apart - a routine spacing - are on screen together.
+    [Test]
+    public void NoticesASecondApart_AreOnScreenTogether()
+    {
+        var player = new PresentationPlayer();
+        player.OnBeat(Banner("Alice deploys first", EBannerTier.Notice));
+        for (int i = 0; i < 20; i++) player.Update(0.05f);   // 1s later
+        player.OnBeat(Banner("Bravo Squad fails morale - Shaken!", EBannerTier.Notice));
+        player.Update(0.05f);
+
+        var banners = player.GetBanners();
+        Assert.That(banners, Has.Count.EqualTo(2),
+            "at the old 900ms the first had already retired, so the stack never appeared");
+        Assert.That(banners[0].beat.BannerText, Is.EqualTo("Alice deploys first"), "oldest first");
     }
 
     [Test]
