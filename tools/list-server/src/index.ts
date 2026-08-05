@@ -1,9 +1,16 @@
-// FDG list server (#271) — the master-server registry behind the in-game server browser.
+// FDG list server (#271) — the master-server registry behind the in-game server browser —
+// plus the bug-report drop box (#226) that rides the same free Worker.
 //
-// Three endpoints, all JSON over HTTPS:
+// Registry endpoints, all JSON over HTTPS:
 //   POST   /servers        register (no id/token) or heartbeat/update (id + token)
 //   GET    /servers        list live entries (never includes tokens)
 //   DELETE /servers/:id    polite removal (X-Token header); TTL expiry is the real cleanup
+//
+// Bug-report endpoints (#226):
+//   POST   /reports        upload one gzipped JSON report bundle (no auth; capped + rate-limited)
+//   GET    /reports        list report metadata            (X-Admin-Token)
+//   GET    /reports/:id    download one report, decompressed (X-Admin-Token)
+//   DELETE /reports/:id    remove a fetched report          (X-Admin-Token)
 //
 // Security posture (see WorkItems/271-server-browser.md):
 //   - The advertised host address is ALWAYS the observed source IP of the registrant
@@ -15,9 +22,23 @@
 //   - Registrations are token-guarded (no listing hijack), size-clamped, ASCII-folded,
 //     rate-limited per IP, and capped per IP and globally.
 //   - Passwords never reach this server; only a hasPassword flag is listed.
+//
+// Bug-report posture (#226, see WorkItems/226-bug-reporting-system.md):
+//   - Upload is necessarily unauthenticated (any player build can report), so it is defended
+//     by size caps (compressed AND decompressed — gzip bombs), a per-IP minimum interval, and
+//     hard total-count/total-bytes caps that REJECT new reports rather than evict stored ones:
+//     a flood must never delete a real report.
+//   - Reading is admin-only: ADMIN_TOKEN is a Wrangler secret; if it isn't configured the read
+//     endpoints are closed (503), never open.
+//   - Report bodies are stored as opaque gzip and only ever echoed back to the admin — nothing
+//     in a report influences server behavior or other players.
 
 export interface Env {
   REGISTRY: DurableObjectNamespace;
+  REPORTS: DurableObjectNamespace;
+  /** Wrangler secret (`npx wrangler secret put ADMIN_TOKEN`; `.dev.vars` under wrangler dev).
+   *  Absent = report reading disabled. */
+  ADMIN_TOKEN?: string;
 }
 
 // ---- Tunables ---------------------------------------------------------------------------
@@ -45,6 +66,13 @@ export default {
       // strongly consistent register/expire semantics with zero extra storage setup.
       const id = env.REGISTRY.idFromName("global");
       return env.REGISTRY.get(id).fetch(request);
+    }
+
+    if (url.pathname === "/reports" || url.pathname.startsWith("/reports/")) {
+      // Same single-instance pattern as the registry: one DO holds every report, giving the
+      // total-storage cap strong consistency (two racing uploads can't both squeeze past it).
+      const id = env.REPORTS.idFromName("global");
+      return env.REPORTS.get(id).fetch(request);
     }
 
     return new Response("not found\n", { status: 404 });
@@ -272,6 +300,234 @@ export class Registry {
     if (expired.length > 0) await this.state.storage.delete(expired);
     return live;
   }
+}
+
+// ---- Reports Durable Object (#226) --------------------------------------------------------
+
+// Bug-report tunables. The game gzips a JSON bundle (description + log + crash log + save);
+// real saves compress ~17:1, so 1MB compressed covers every legitimate report with room over.
+const REPORT_MAX_BODY_BYTES = 1_048_576; // compressed upload cap
+const REPORT_MAX_RAW_BYTES = 16_777_216; // decompressed cap — stops gzip bombs
+const REPORT_MIN_POST_INTERVAL_MS = 30_000; // per IP; reporting is a manual, rare action
+const REPORT_MAX_COUNT = 200;
+const REPORT_MAX_TOTAL_BYTES = 50 * 1_048_576; // ~1% of the free-tier DO storage allowance
+const REPORT_SNIPPET_CHARS = 200;
+
+// Metadata kept small and separate from the gzip blob ("meta:<id>" vs "blob:<id>") so listing
+// and the total-bytes cap never load report bodies into memory.
+const META_PREFIX = "meta:";
+const BLOB_PREFIX = "blob:";
+
+interface ReportMeta {
+  reportId: string;
+  receivedMs: number;
+  ip: string;
+  sizeBytes: number; // compressed (stored) size — what the total cap counts
+  appVersion: string;
+  protocolVersion: number;
+  isHost: boolean;
+  hasSave: boolean;
+  logLines: number;
+  description: string; // first REPORT_SNIPPET_CHARS chars, ASCII-folded
+}
+
+export class Reports {
+  private readonly state: DurableObjectState;
+  private readonly env: Env;
+
+  constructor(state: DurableObjectState, env: Env) {
+    this.state = state;
+    this.env = env;
+  }
+
+  async fetch(request: Request): Promise<Response> {
+    const url = new URL(request.url);
+    try {
+      if (url.pathname === "/reports" && request.method === "POST") {
+        return await this.handleUpload(request);
+      }
+      if (url.pathname === "/reports" && request.method === "GET") {
+        return this.requireAdmin(request) ?? (await this.handleListReports());
+      }
+      const idMatch = url.pathname.match(/^\/reports\/([A-Za-z0-9-]{1,64})$/);
+      if (idMatch && request.method === "GET") {
+        return this.requireAdmin(request) ?? (await this.handleGetReport(idMatch[1]));
+      }
+      if (idMatch && request.method === "DELETE") {
+        return this.requireAdmin(request) ?? (await this.handleDeleteReport(idMatch[1]));
+      }
+      return json({ error: "not found" }, 404);
+    } catch (err) {
+      console.error("reports error:", err);
+      return json({ error: "internal error" }, 500);
+    }
+  }
+
+  /** Null when the caller is the admin; the error response otherwise. No ADMIN_TOKEN secret
+   *  configured means closed (503), never open. */
+  private requireAdmin(request: Request): Response | null {
+    const configured = this.env.ADMIN_TOKEN;
+    if (configured === undefined || configured.length === 0) {
+      return json({ error: "admin token not configured" }, 503);
+    }
+    if (request.headers.get("X-Admin-Token") !== configured) {
+      return json({ error: "forbidden" }, 403);
+    }
+    return null;
+  }
+
+  // ---- POST /reports -----------------------------------------------------------------
+
+  private async handleUpload(request: Request): Promise<Response> {
+    const observedIp = clientIp(request);
+    if (observedIp === null) return json({ error: "could not determine client address" }, 400);
+
+    const now = Date.now();
+
+    // Same storage-backed per-IP rate limit as the registry (see RATE_PREFIX for why storage).
+    const rateKey = RATE_PREFIX + observedIp;
+    const last = ((await this.state.storage.get(rateKey)) as number | undefined) ?? 0;
+    if (now - last < REPORT_MIN_POST_INTERVAL_MS) {
+      return json({ error: "rate limited" }, 429);
+    }
+
+    // Read the compressed body up front (it is capped small); check the real byte count rather
+    // than trusting Content-Length.
+    const compressed = new Uint8Array(await request.arrayBuffer());
+    if (compressed.byteLength === 0) return json({ error: "empty body" }, 400);
+    if (compressed.byteLength > REPORT_MAX_BODY_BYTES) return json({ error: "body too large" }, 413);
+
+    // Decompress only to validate and extract listing metadata; what gets STORED is the
+    // original gzip. The decompressed-size cap stops a tiny upload that inflates huge.
+    let raw: string;
+    try {
+      raw = await gunzipWithCap(compressed, REPORT_MAX_RAW_BYTES);
+    } catch {
+      return json({ error: "body must be gzip within the size cap" }, 400);
+    }
+    let body: unknown;
+    try {
+      body = JSON.parse(raw);
+    } catch {
+      return json({ error: "invalid JSON" }, 400);
+    }
+    if (typeof body !== "object" || body === null) return json({ error: "body must be an object" }, 400);
+    const b = body as Record<string, unknown>;
+
+    const description = asciiFold(String(b.description ?? "")).trim();
+    if (description.length === 0) return json({ error: "description is required" }, 400);
+
+    // Hard caps that REJECT rather than evict: a flood must never delete a stored report.
+    // Count/bytes come from the small meta records only — blobs are never loaded here.
+    const metas = await this.loadMetas();
+    if (metas.length >= REPORT_MAX_COUNT) return json({ error: "report storage full" }, 503);
+    let totalBytes = 0;
+    for (const meta of metas) totalBytes += meta.sizeBytes;
+    if (totalBytes + compressed.byteLength > REPORT_MAX_TOTAL_BYTES) {
+      return json({ error: "report storage full" }, 503);
+    }
+
+    await this.state.storage.put(rateKey, now);
+
+    const meta: ReportMeta = {
+      reportId: crypto.randomUUID(),
+      receivedMs: now,
+      ip: observedIp,
+      sizeBytes: compressed.byteLength,
+      appVersion: asciiFold(String(b.appVersion ?? "")).slice(0, 64),
+      protocolVersion: Number.isInteger(Number(b.protocolVersion)) ? Number(b.protocolVersion) : -1,
+      isHost: b.isHost === true,
+      hasSave: typeof b.save === "string" && (b.save as string).length > 0,
+      logLines: Array.isArray(b.log) ? (b.log as unknown[]).length : 0,
+      description: description.slice(0, REPORT_SNIPPET_CHARS),
+    };
+    await this.state.storage.put(META_PREFIX + meta.reportId, meta);
+    await this.state.storage.put(BLOB_PREFIX + meta.reportId, compressed);
+    return json({ reportId: meta.reportId }, 201);
+  }
+
+  // ---- GET /reports ------------------------------------------------------------------
+
+  private async handleListReports(): Promise<Response> {
+    const metas = await this.loadMetas();
+    metas.sort((a, b) => b.receivedMs - a.receivedMs);
+    return json({
+      reports: metas.map(m => ({
+        reportId: m.reportId,
+        receivedAt: new Date(m.receivedMs).toISOString(),
+        ip: m.ip,
+        sizeBytes: m.sizeBytes,
+        appVersion: m.appVersion,
+        protocolVersion: m.protocolVersion,
+        isHost: m.isHost,
+        hasSave: m.hasSave,
+        logLines: m.logLines,
+        description: m.description,
+      })),
+    }, 200);
+  }
+
+  // ---- GET /reports/:id --------------------------------------------------------------
+
+  private async handleGetReport(reportId: string): Promise<Response> {
+    const blob = (await this.state.storage.get(BLOB_PREFIX + reportId)) as Uint8Array | undefined;
+    if (blob === undefined) return json({ error: "not found" }, 404);
+    // Decompressed server-side so the fetch script needs nothing but curl. The blob was
+    // validated within REPORT_MAX_RAW_BYTES at upload; the cap here is belt-and-braces.
+    const raw = await gunzipWithCap(blob, REPORT_MAX_RAW_BYTES);
+    return new Response(raw, { status: 200, headers: { "Content-Type": "application/json" } });
+  }
+
+  // ---- DELETE /reports/:id -----------------------------------------------------------
+
+  private async handleDeleteReport(reportId: string): Promise<Response> {
+    const existed = await this.state.storage.delete(META_PREFIX + reportId);
+    await this.state.storage.delete(BLOB_PREFIX + reportId);
+    return json({ ok: true, existed }, 200);
+  }
+
+  // ---- Storage helpers ----------------------------------------------------------------
+
+  /** All report metadata (never the blobs), garbage-collecting stale rate records as it goes. */
+  private async loadMetas(): Promise<ReportMeta[]> {
+    const now = Date.now();
+    const metas: ReportMeta[] = [];
+    const staleRate: string[] = [];
+    const all = (await this.state.storage.list({ prefix: META_PREFIX })) as Map<string, unknown>;
+    for (const value of all.values()) metas.push(value as ReportMeta);
+    const rates = (await this.state.storage.list({ prefix: RATE_PREFIX })) as Map<string, unknown>;
+    for (const [key, value] of rates) {
+      if (now - (value as number) > 10 * 60_000) staleRate.push(key);
+    }
+    if (staleRate.length > 0) await this.state.storage.delete(staleRate);
+    return metas;
+  }
+}
+
+/** Gunzips, enforcing a decompressed-size cap while streaming (a gzip bomb aborts mid-stream
+ *  instead of exhausting memory). Throws on bad gzip or cap overrun. */
+async function gunzipWithCap(compressed: Uint8Array, maxRawBytes: number): Promise<string> {
+  const stream = new Blob([compressed]).stream().pipeThrough(new DecompressionStream("gzip"));
+  const reader = stream.getReader();
+  const chunks: Uint8Array[] = [];
+  let total = 0;
+  for (;;) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    total += value.byteLength;
+    if (total > maxRawBytes) {
+      await reader.cancel();
+      throw new Error("decompressed size cap exceeded");
+    }
+    chunks.push(value);
+  }
+  const joined = new Uint8Array(total);
+  let offset = 0;
+  for (const chunk of chunks) {
+    joined.set(chunk, offset);
+    offset += chunk.byteLength;
+  }
+  return new TextDecoder().decode(joined);
 }
 
 // ---- Validation ---------------------------------------------------------------------------

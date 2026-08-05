@@ -11,6 +11,17 @@ compatibility_date = "2026-07-01"
 name = "REGISTRY"
 class_name = "Registry"
 
+# Bug-report drop box (#226) - a second DO class on the same Worker, same single-instance
+# pattern. Report reading needs the ADMIN_TOKEN secret: `npx wrangler secret put ADMIN_TOKEN`
+# once after deploy (local dev reads .dev.vars instead).
+[[durable_objects.bindings]]
+name = "REPORTS"
+class_name = "Reports"
+
 [[migrations]]
 tag = "v1"
 new_sqlite_classes = ["Registry"]
+
+[[migrations]]
+tag = "v2"
+new_sqlite_classes = ["Reports"]
