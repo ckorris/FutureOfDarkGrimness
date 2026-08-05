@@ -76,10 +76,15 @@ public class GuiCastAssistResolver : IStageResolver<CastAssistRequest, int>, IGu
 
         if (TryCentroidPixel(assister, out Vector2 aPix) && TryCentroidPixel(caster, out Vector2 cPix))
         {
-            dl.AddLine(aPix, cPix, color, 2.5f);
+            // #348: DASHED, not solid. #103 offers the window to every eligible Caster in turn, so a cast
+            // with three friendly Casters nearby draws three of these lines one after another - and a solid
+            // line is exactly what the SpellOverlay assist stream looks like, so a sequence of prompts read
+            // as "all of them helped" even when two declined. A dashed line is the question; the solid
+            // stream that plays before the roll is the answer, and only spenders get one.
+            DrawDashedLine(dl, aPix, cPix, color, 2.5f);
 
-            string label = $"{assister.Name}: {request.AvailableTokens} token" +
-                           $"{(request.AvailableTokens == 1 ? "" : "s")}";
+            string label = $"{assister.Name} - deciding ({request.AvailableTokens} token" +
+                           $"{(request.AvailableTokens == 1 ? "" : "s")} available)";
             var size = ImGui.CalcTextSize(label);
             var pos = new Vector2(aPix.X - size.X * 0.5f, aPix.Y - size.Y - 14f);
             uint bg = ImGui.ColorConvertFloat4ToU32(new Vector4(0f, 0f, 0f, 0.6f));
@@ -173,6 +178,24 @@ public class GuiCastAssistResolver : IStageResolver<CastAssistRequest, int>, IGu
 
         if (picked >= 0)
             Complete(tcs, picked);
+    }
+
+    // #348: a dashed run between two points. Dash and gap are in pixels, so the pattern stays readable at
+    // any zoom (a world-space pattern would smear into a solid line when zoomed out, which is the exact
+    // read this is here to avoid).
+    private static void DrawDashedLine(ImDrawListPtr dl, Vector2 from, Vector2 to, uint color, float thickness)
+    {
+        const float Dash = 9f, Gap = 6f;
+        Vector2 delta = to - from;
+        float length = delta.Length();
+        if (length < 1f) return;
+
+        Vector2 dir = delta / length;
+        for (float at = 0f; at < length; at += Dash + Gap)
+        {
+            float end = MathF.Min(at + Dash, length);
+            dl.AddLine(from + dir * at, from + dir * end, color, thickness);
+        }
     }
 
     private bool TryCentroidPixel(UnitData unit, out Vector2 pixel)

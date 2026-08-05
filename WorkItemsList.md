@@ -47,6 +47,7 @@ When closing an item: write the Outcome in its detail file, tick the line, and m
 
 - [~] 308 — 2026-07-31 playthrough findings: Blast's model cap is per hit and stacks (was capping the volley total, deleting save dice); "Moved" token hidden unless a rule reads it; Back restored for shooting + deployment placement; target carries across weapons. Shaken-defender morale-dice report parked pending a repro save. ([WorkItems/308](WorkItems/308-playthrough-findings-2026-07-31.md))
 - [~] 325 — Pre-roll shooting forecast: effective Hit/Save + beat-identical modifier tags computed read-only engine-side, on target rows / details pane / canvas hover badge; weapon rule blob now rehydrates on deserialization (rules readable client-side). Rows/details/badge hand-verified by owner; networked re-check pending. Was #323 pre-reconciliation-43. ([WorkItems/325](WorkItems/325-shooting-forecast-ui.md))
+- [~] 345 — The volley's real size beside the #325 forecast ("Attacks: 7 of 10"): the #276 trim's own eligible-copy count stamped onto `AttackForecast`, on details pane / target row / canvas badge / CLI, silent when nothing is held back. Implemented + tested; awaiting GUI hand-verify. ([WorkItems/345](WorkItems/345-attacks-actually-firing.md))
 
 ## Model bases & geometry
 
@@ -78,6 +79,7 @@ Corpus coverage is now complete too: **0 of 13,870** book rule references are de
 - [~] 249 — Caster's "only one try per spell" now enforced via a per-activation attempted-spell set (recorded with the cost, so a failed cast burns the try); casting different spells in one activation stays legal. Implemented + tested; awaiting GUI hand-verify. ([WorkItems/249](WorkItems/249-one-try-per-spell.md))
 - [~] 244 — Caster self-boost: own tokens for +1/each in a new dedicated spell picker (`ChooseSpellRequest`, one-panel GUI with useful-cap-gated boost stepper). Implemented + tested; awaiting GUI hand-verify. ([WorkItems/244](WorkItems/244-caster-self-boost.md))
 - [~] 293 — A resolved spell announces what its effect DID (one `Notice` banner naming the effect + affected units). Implemented + tested for every effect path incl. damage (hit count + type); awaiting GUI hand-verify. ([WorkItems/293](WorkItems/293-spell-effect-banner.md))
+- [~] 348 — "Assist animation plays from casters that didn't spend" investigated: the beat is correct (pinned by a new only-one-of-three-spends test); the solid prompt line per eligible caster was what read that way, now dashed + "deciding" label. Implemented + tested; awaiting GUI hand-verify. ([WorkItems/348](WorkItems/348-cast-assist-animation-sources.md))
 
 ## Army Forge
 
@@ -128,6 +130,9 @@ detection, host-IP display, DNS host entry. See `NetworkingHandoff-2026-07-08.md
 
 ## Client / renderer
 
+- [~] 344 — Options slider for how long dice-roll popups stay up (1/3x .. 2x, default 1x): scales the panel's LINGER only, never the engine-paced tumble. Implemented + tested; awaiting GUI hand-verify. ([WorkItems/344](WorkItems/344-dice-popup-duration-option.md))
+- [~] 346 — Terrain placement panel said "Right-click or Esc to switch template" (Esc opens the menu, #248), so the only way-out hint named the wrong key; now Backspace/right-click, in a visible colour, both placement steps, plus footprint/height/rules-effect lines for the piece being placed. Implemented; awaiting GUI hand-verify. ([WorkItems/346](WorkItems/346-terrain-placement-hints.md))
+- [~] 347 — Health bars gained casualty ticks: a hairline at every model-loss boundary (Tough-aware, none for one-model units), so "how many more hits before a body drops" reads off the bar. Implemented + tested; awaiting GUI hand-verify. ([WorkItems/347](WorkItems/347-health-bar-casualty-ticks.md))
 - [~] 343 — Deployment undo at action granularity (`PlacementHistory`: group drop / drag-edit / Restart reverse as one gesture each) + app-wide scheme pinned: right-click = undo, Backspace = back, never undo (movement/consolidation Backspace-undo removed); Auto-place button deleted (AI/CLI auto-place separate, untouched). Implemented + tested; awaiting GUI hand-verify. ([WorkItems/343](WorkItems/343-deployment-action-undo.md))
 - [~] 337 — A Shaken unit looked like any other in the activation picker: engine appends `(Shaken - recovers)` to the option label (CLI too), GUI draws it amber, underlined, hover-explained. Implemented + tested + headless-verified; awaiting GUI hand-verify. **Open:** the "moved into contact, never asked to charge" report it was filed beside is NOT explained by this (owner ruled out Shaken) — gate proven base-to-base + pinned, two candidates left, needs a log. ([WorkItems/337](WorkItems/337-shaken-badge-in-activation-picker.md))
 - [~] 338 — Centered Notice banners ran 900ms (under 400ms at full alpha) - unreadable, and too brief for two to ever coexist, so #327's stack was unreachable in play. Now 2400ms; engine pause unchanged (still a 300ms lead-in). Implemented + tested; awaiting GUI hand-verify. ([WorkItems/338](WorkItems/338-notice-banners-too-brief.md))
