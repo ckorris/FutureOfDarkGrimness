@@ -82,9 +82,11 @@ public class GuiUnitSelectionResolver : GuiSelectionResolver<UnitData>, IGuiCanv
     protected override void OnValidOptionHovered(SelectionRequest<UnitData>.ValidOption opt)
     {
         _hoveredValidRef = opt.Option.Reference;
-        ImGui.BeginTooltip();
+        // Same translucent well as the canvas hover (ImGuiTheme.TooltipBg) — this tooltip pops next to the
+        // picker, over the board, and hovering a row also rings that unit's models underneath it.
+        ImGuiTheme.BeginTranslucentTooltip();
         UnitStatBlockRenderer.Draw(opt.Option.GetValue(), includeRuleDescriptions: true);
-        ImGui.EndTooltip();
+        ImGuiTheme.EndTranslucentTooltip();
     }
 
     // #248: keyboard highlight rings the unit like a hover, but skips the tooltip (it would pop at the

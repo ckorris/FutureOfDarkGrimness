@@ -50,6 +50,14 @@ public static class ImGuiTheme
     // lobby's panel tone (the theme window body) so the dialogs read as the same surface, not a blue slab.
     public static readonly Vector4 DialogPanelBg = Panel;
 
+    /// <summary>
+    /// Background for the table hover tooltips (unit, terrain, and the unit-picker's). A rule-heavy unit's
+    /// tooltip is tall enough to blanket the board under the cursor, so it paints on a translucent well
+    /// rather than the near-opaque <c>PopupBg</c> the menus use — the models and terrain it covers stay
+    /// readable through it. Same Ink tone, so it is the theme's popup, just thinner.
+    /// </summary>
+    public static readonly Vector4 TooltipBg = A(Ink, 0.72f);
+
     public static void Apply()
     {
         var style = ImGui.GetStyle();
@@ -120,6 +128,27 @@ public static class ImGuiTheme
         c[(int)ImGuiCol.NavWindowingHighlight] = A(AccentHot, 0.70f);
         c[(int)ImGuiCol.NavWindowingDimBg]     = R2(20, 20, 24, 0.20f);
         c[(int)ImGuiCol.ModalWindowDimBg]      = R2(10, 11, 13, 0.55f);
+    }
+
+    /// <summary>
+    /// <c>ImGui.BeginTooltip</c> on the translucent <see cref="TooltipBg"/> well. The color has to be
+    /// pushed BEFORE Begin — ImGui paints a window's background during Begin, so a push afterwards would
+    /// land a frame's worth of nothing. Pair with <see cref="EndTranslucentTooltip"/>.
+    ///
+    /// Only PopupBg is pushed: text, separators and the border keep full alpha, so the tooltip reads
+    /// exactly as before against whatever it now shows through.
+    /// </summary>
+    public static void BeginTranslucentTooltip()
+    {
+        ImGui.PushStyleColor(ImGuiCol.PopupBg, TooltipBg);
+        ImGui.BeginTooltip();
+    }
+
+    /// <summary>Closes a <see cref="BeginTranslucentTooltip"/> and pops its pushed background.</summary>
+    public static void EndTranslucentTooltip()
+    {
+        ImGui.EndTooltip();
+        ImGui.PopStyleColor();
     }
 
     // 0-255 RGB -> opaque Vector4.

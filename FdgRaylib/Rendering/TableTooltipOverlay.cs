@@ -113,7 +113,9 @@ public class TableTooltipOverlay
     private void DrawUnitTooltip(IUnit unit, IModel model,
         ICanvasInteractionHandler? interactionHandler)
     {
-        ImGui.BeginTooltip();
+        // Translucent well (ImGuiTheme.TooltipBg): a rule-heavy unit's block can cover half the board,
+        // and you are usually hovering it to compare against what is underneath.
+        ImGuiTheme.BeginTranslucentTooltip();
 
         // Activation state up top, in red, so a spent unit reads before anything else.
         if (HasActivated(unit))
@@ -252,7 +254,7 @@ public class TableTooltipOverlay
             ImGui.TextUnformatted(hoverLabel);
         }
 
-        ImGui.EndTooltip();
+        ImGuiTheme.EndTranslucentTooltip();
     }
 
     // The section for the specific model under the cursor: the weapon(s) IT carries (matters in mixed units
@@ -288,7 +290,9 @@ public class TableTooltipOverlay
 
     private static void DrawTerrainTooltip(ITerrain terrain)
     {
-        ImGui.BeginTooltip();
+        // Same translucent well as the unit tooltip - both pop on the canvas under the same cursor, so an
+        // opaque one here would read as a bug the moment you slid off a unit onto the terrain behind it.
+        ImGuiTheme.BeginTranslucentTooltip();
 
         var flags = new List<string>();
         foreach (ETerrainType flag in Enum.GetValues<ETerrainType>())
@@ -306,7 +310,7 @@ public class TableTooltipOverlay
         if (terrain.HeightInches > 0f)
             ImGui.TextUnformatted($"Height: {terrain.HeightInches}\"");
 
-        ImGui.EndTooltip();
+        ImGuiTheme.EndTranslucentTooltip();
     }
 
     private void DrawUnitOverlays()
