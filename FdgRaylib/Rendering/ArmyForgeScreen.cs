@@ -17,6 +17,21 @@ namespace FdgRaylib.Rendering;
 /// <summary>#307: how a Save/Load status line should read. A failure must never share the success channel.</summary>
 internal enum EForgeStatusKind { Info, Success, Error }
 
+/// <summary>What a load attempt did. Anything but <see cref="Adopted"/> means the screen still holds its
+/// previous list, and the caller owes the user a modal saying so.</summary>
+internal enum ELoadOutcome
+{
+    /// <summary>The file is now the screen's list.</summary>
+    Adopted,
+
+    /// <summary>#307: unreadable, or not catalog-editable. Nothing changed.</summary>
+    Rejected,
+
+    /// <summary>#356: readable and editable, but rebuilding it for editing would change the army - the user
+    /// has to accept that first. Nothing changed yet.</summary>
+    NeedsDriftConfirm,
+}
+
 /// <summary>#307: why a Save needs confirming before it writes. <see cref="ESaveGuard.None"/> is the ordinary
 /// path and costs the user no extra click.</summary>
 internal enum ESaveGuard
@@ -86,6 +101,12 @@ public class ArmyForgeScreen : IAppScreen
     // dialog returns, and a popup can only be raised from inside Draw.
     private string? _pendingSavePath;
     private ESaveGuard _pendingSaveGuard;
+
+    // #356: a load held while the user decides whether to accept the rebuild. NOT adopted yet - the screen
+    // still holds its previous list until "Open for editing" is pressed.
+    private BuiltArmyFile? _pendingReopen;
+    private string? _pendingReopenFileName;
+    private EditableSessionDrift? _pendingReopenDrift;
 
     // #241 Import-from-share-link modal state. The fetch runs on a worker task (HTTP must not stall the
     // ImGui thread); Draw polls for completion. Only Draw (main thread) reads/writes these fields.
@@ -225,10 +246,45 @@ public class ArmyForgeScreen : IAppScreen
         ImGui.EndPopup();
     }
 
+    // #356: reopening an imported army rebuilds it against the bundled book. Where that changes the army,
+    // say exactly what changes and let the user decline - the alternative is a silent edit of an army they
+    // already played, which is the harm #307 closed on the save side.
+    private void DrawReopenDriftModal()
+    {
+        bool open = true;
+        ImGui.SetNextWindowSize(new Vector2(560, 0), ImGuiCond.Appearing);
+        if (!ImGui.BeginPopupModal(ReopenDriftTitle, ref open, ImGuiWindowFlags.AlwaysAutoResize)) return;
+
+        string fileName = _pendingReopenFileName ?? "That army";
+        if (_pendingReopenDrift is { } drift) WrappedText(ReopenDriftMessage(fileName, drift), YellowText, 540f);
+        ImGui.Spacing();
+        if (ImGui.Button("Open for editing", ButtonSize("Open for editing", 160f)))
+        {
+            if (_pendingReopen is { } file) Adopt(file, fileName);
+            ClearPendingReopen();
+            ImGui.CloseCurrentPopup();
+        }
+        ImGui.SameLine();
+        if (ImGui.Button("Cancel", ButtonSize("Cancel", 160f)))
+        {
+            DeclineReopen(fileName);
+            ClearPendingReopen();
+            ImGui.CloseCurrentPopup();
+        }
+        ImGui.EndPopup();
+    }
+
     private void ClearPendingSave()
     {
         _pendingSavePath = null;
         _pendingSaveGuard = ESaveGuard.None;
+    }
+
+    private void ClearPendingReopen()
+    {
+        _pendingReopen = null;
+        _pendingReopenFileName = null;
+        _pendingReopenDrift = null;
     }
 
     private static Vector4 StatusColor(EForgeStatusKind kind) => kind switch
@@ -383,8 +439,13 @@ public class ArmyForgeScreen : IAppScreen
             }
             ImGui.EndChild();
 
-            ImGui.TextDisabled("Save As: exact Army Forge data (plays everywhere, edits in the Army Builder).\n" +
-                "Open in Forge: editable here against the bundled book, priced by our Forge.");
+            // #356: Save As is no longer a dead end - it carries the editable session too, so the same file
+            // both plays with Army Forge's numbers and reopens here (with the difference disclosed on reopen).
+            ImGui.TextDisabled(outcome.ForgeSession is not null
+                ? "Save As: exact Army Forge data, and reopens here for editing.\n" +
+                  "Open in Forge: edit it now, against the bundled book, priced by our Forge."
+                : "Save As: exact Army Forge data (plays everywhere, edits in the Army Builder).\n" +
+                  "No bundled book matched this faction, so this list cannot be reopened for editing here.");
 
             if (_confirmOpenInForge)
             {
@@ -412,7 +473,7 @@ public class ArmyForgeScreen : IAppScreen
                 }
                 ImGui.EndDisabled();
                 ImGui.SameLine();
-                if (ImGui.Button("Save As...", ButtonSize("Save As...")) && SaveImported(army))
+                if (ImGui.Button("Save As...", ButtonSize("Save As...")) && SaveImported(outcome))
                     ImGui.CloseCurrentPopup();
             }
         }
@@ -447,15 +508,26 @@ public class ArmyForgeScreen : IAppScreen
         _failedLoadFingerprint = null;
     }
 
-    private bool SaveImported(ArmyListFile army)
+    /// <summary>#356: what "Save As" writes. The playable half is always Army Forge's verbatim import - their
+    /// units, their authoritative points - but when the reconstruction against the bundled book succeeded, the
+    /// editable session rides along so the file can be reopened here instead of being a dead end. The two
+    /// halves can disagree (excluded units, unmatched choices, #218/#219 pricing); that is measured and
+    /// disclosed at reopen, not silently applied.</summary>
+    internal static ArmyListFile ImportedFileToWrite(ArmyListFile army, BuilderList? selections, BookFile? book) =>
+        selections is not null && book is not null ? EditableSession.Attach(army, selections, book) : army;
+
+    private bool SaveImported(ArmyForgeShareService.ImportOutcome outcome)
     {
         var (canceled, path) = TinyDialogs.SaveFileDialog("Save Imported Army", ArmyPaths.DefaultDialogPath, ArmyFilter);
         if (canceled || string.IsNullOrEmpty(path)) return false;
         if (Path.GetExtension(path) != ArmyListFile.EXTENSION_WITH_PERIOD)
             path = Path.ChangeExtension(path, ArmyListFile.EXTENSION_WITH_PERIOD);
+
+        ArmyListFile army = ImportedFileToWrite(
+            outcome.Result.Army, outcome.ForgeSession?.Selections, outcome.BundledBook);
         try
         {
-            File.WriteAllText(path, JsonSerializer.Serialize(army, RuleJson.Options));
+            File.WriteAllText(path, SerializeArmy(army));
         }
         catch (Exception ex) // #307: never report a write that did not happen as a success
         {
@@ -568,6 +640,7 @@ public class ArmyForgeScreen : IAppScreen
         DrawImportModal();
         DrawLoadFailedModal();
         DrawSaveGuardModal();
+        DrawReopenDriftModal();
         if (_statusHint is not null)
         {
             ImGui.SameLine();
@@ -1221,13 +1294,17 @@ public class ArmyForgeScreen : IAppScreen
         ImGui.OpenPopup(SaveGuardTitle);
     }
 
+    /// <summary>Serialize at the army's RUNTIME type. Serializing through a base-typed reference writes only
+    /// the base properties, which would silently drop the embedded selections + book (the engine ignores them
+    /// on load; the Forge reads them back to re-edit). See BuiltArmyFile.</summary>
+    private static string SerializeArmy(ArmyListFile army) =>
+        JsonSerializer.Serialize(army, army.GetType(), RuleJson.Options);
+
     private void WriteArmy(string path, BuiltArmyFile compiled)
     {
-        // Serialize the DERIVED type so the embedded selections + book ride along (the engine ignores them on
-        // load; the Forge reads them back to re-edit). See BuiltArmyFile.
         try
         {
-            File.WriteAllText(path, JsonSerializer.Serialize(compiled, RuleJson.Options));
+            File.WriteAllText(path, SerializeArmy(compiled));
             SetStatus(EForgeStatusKind.Success, $"Saved {Path.GetFileName(path)}");
         }
         catch (Exception ex) // read-only target, vanished directory, permissions - never leave it looking saved
@@ -1258,13 +1335,38 @@ public class ArmyForgeScreen : IAppScreen
             catch (Exception ex) { readError = "That file could not be read:\n\n" + ex.Message; }
         }
 
-        if (!TryAdopt(loaded, fileName, readError)) ImGui.OpenPopup(LoadFailedTitle);
+        switch (TryAdopt(loaded, fileName, readError))
+        {
+            case ELoadOutcome.Rejected: ImGui.OpenPopup(LoadFailedTitle); break;
+            case ELoadOutcome.NeedsDriftConfirm: ImGui.OpenPopup(ReopenDriftTitle); break;
+        }
     }
 
     // ── #307: load/save outcome state (ImGui-free, so the whole decision chain is testable) ─────────────
 
     internal const string LoadFailedTitle = "Load failed";
     internal const string SaveGuardTitle = "Save this list?";
+    internal const string ReopenDriftTitle = "Open for editing?";
+
+    /// <summary>#356: what reopening an imported army for editing would change, or empty when it changes
+    /// nothing. The file on disk is untouched either way - this describes the screen, not the file.</summary>
+    internal static string ReopenDriftMessage(string fileName, EditableSessionDrift drift)
+    {
+        var lines = new List<string>();
+        if (drift.SavedPoints != drift.RebuiltPoints)
+            lines.Add($"    Points: {drift.SavedPoints} -> {drift.RebuiltPoints}");
+        if (drift.SavedUnitCount != drift.RebuiltUnitCount)
+            lines.Add($"    Units: {drift.SavedUnitCount} -> {drift.RebuiltUnitCount}");
+        if (drift.DroppedUnits.Count > 0)
+            lines.Add("    Dropped: " + string.Join(", ", drift.DroppedUnits));
+
+        return $"{fileName} came from Army Forge. It PLAYS with Army Forge's own numbers, but the Forge edits "
+            + "it by rebuilding it against the bundled book - and the two do not match.\n\n"
+            + "Opening it for editing would change it:\n"
+            + string.Join("\n", lines)
+            + "\n\nThe file on disk is not touched until you save. Open it for editing, or cancel and leave "
+            + "the list on screen as it is.";
+    }
 
     internal const string NoEmbeddedBookReason =
         "That army carries no embedded book, so the Forge cannot reopen it for editing. It was almost "
@@ -1272,27 +1374,63 @@ public class ArmyForgeScreen : IAppScreen
         + "plays normally.";
 
     /// <summary>Adopt a file that has just been read, recording the outcome: status line, modal text, and the
-    /// list fingerprint the Save guard compares against. Returns false when the load was REJECTED, which is
-    /// the caller's cue to raise the modal.</summary>
-    internal bool TryAdopt(BuiltArmyFile? loaded, string fileName, string? readError)
+    /// list fingerprint the Save guard compares against. A result other than <see cref="ELoadOutcome.Adopted"/>
+    /// is the caller's cue to raise the matching modal.</summary>
+    internal ELoadOutcome TryAdopt(BuiltArmyFile? loaded, string fileName, string? readError)
     {
         string? reason = null;
         if (readError is not null) reason = readError;
         else if (loaded is null) reason = "That file is empty, or is not an army list.";
-        else if (!AdoptLoaded(loaded)) reason = NoEmbeddedBookReason;
+        else if (loaded.Selections is null || loaded.Book is null) reason = NoEmbeddedBookReason;
 
-        if (reason is null)
+        if (reason is not null)
         {
-            _loadFailureMessage = null;
-            _failedLoadFingerprint = null;
-            SetStatus(EForgeStatusKind.Success, $"Loaded {fileName}");
-            return true;
+            RecordLoadFailure(fileName, reason);
+            return ELoadOutcome.Rejected;
         }
 
+        // #356: an imported army carries Army Forge's units alongside OUR reconstruction of them, and the two
+        // need not agree. Reopening recompiles from the reconstruction, so anything it would change has to be
+        // shown BEFORE the screen adopts it - a Forge-authored file measures no drift and adopts silently.
+        EditableSessionDrift? drift = EditableSession.Measure(loaded!);
+        if (drift is { Differs: true })
+        {
+            _pendingReopen = loaded;
+            _pendingReopenFileName = fileName;
+            _pendingReopenDrift = drift;
+            return ELoadOutcome.NeedsDriftConfirm;
+        }
+
+        return Adopt(loaded!, fileName) ? ELoadOutcome.Adopted : ELoadOutcome.Rejected;
+    }
+
+    /// <summary>Take the file as the screen's list and clear any armed load failure.</summary>
+    private bool Adopt(BuiltArmyFile loaded, string fileName)
+    {
+        if (!AdoptLoaded(loaded)) // defensive: the caller already checked the embedded block is present
+        {
+            RecordLoadFailure(fileName, NoEmbeddedBookReason);
+            return false;
+        }
+        _loadFailureMessage = null;
+        _failedLoadFingerprint = null;
+        SetStatus(EForgeStatusKind.Success, $"Loaded {fileName}");
+        return true;
+    }
+
+    private void RecordLoadFailure(string fileName, string reason)
+    {
         _loadFailureMessage = LoadFailureMessage(fileName, reason);
         _failedLoadFingerprint = ListFingerprint(_list);
         SetStatus(EForgeStatusKind.Error, $"LOAD FAILED - {fileName} was not opened");
-        return false;
+    }
+
+    /// <summary>The user declined the #356 rebuild. Nothing was opened, so the Save guard arms exactly as it
+    /// does after a rejection - but this was a deliberate choice, not a failure, so it is not reported as one.</summary>
+    private void DeclineReopen(string fileName)
+    {
+        _failedLoadFingerprint = ListFingerprint(_list);
+        SetStatus(EForgeStatusKind.Info, $"{fileName} was not opened - the list on screen is unchanged.");
     }
 
     /// <summary>Which confirm (if any) the next Save needs, from the screen's current state.</summary>
