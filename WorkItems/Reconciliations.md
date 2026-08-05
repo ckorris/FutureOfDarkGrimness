@@ -6,7 +6,16 @@ from origin/master. Standing precedent: numbers are never reused, and when two p
 claim the same number, the *unmerged local* item yields to the *merged* one and takes a fresh number.
 A per-clone pre-push hook blocks duplicate numbers across the index and the archive.
 
-> **2026-08-05 - reconciliation 52 (RESOLVED).** Fourth collision of this exact shape in two days, and the
+> **2026-08-05 - reconciliation 53 (RESOLVED).** Same shape as 49-52, caught pre-push: this session
+> filed **342 = deployment undo at action granularity** against an `origin/master` topping out at 341
+> (fetched immediately before filing, per the rule); while the work was built, a parallel session
+> filed and pushed its own **342 = name joined heroes**. Merged wins per standing precedent:
+> **deployment-action-undo 342 -> 343** (343 free on origin's index + archive). Because the local
+> commit was still unpushed, it was AMENDED rather than renumbered-in-a-follow-up - the shared branch
+> never saw the colliding number, so unlike 50-52 there are no stale "#342" commit messages to leave
+> behind. Renamed/edited before the merge: detail file + filename, index line, 7 source/test files,
+> `docs/ResolverGuide.md`, and the #161/#248 cross-references. The merge itself was clean (incoming
+> work is hero-tooltip/army-list-side; no file overlap). Fourth collision of this exact shape in two days, and the
 > first to be caused BY a prior reconciliation. This session filed **340 = a rotation dialled in mid-path
 > rotated the model where it was STANDING** against an `origin/master` whose index+archive topped out at
 > 339 (fetched immediately before filing, per the rule) - but 339 was itself reconciliation 50's output,
