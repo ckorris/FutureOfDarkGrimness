@@ -208,7 +208,7 @@ public class GuiSelectionResolver<T> : IStageResolver<SelectionRequest<T>, DataB
         // have no back-destination, and a null reply from Back crashes the networked reply path.
         // #248: Backspace backs out too (Esc is reserved for the in-game menu).
         //
-        // #331: the label comes from the request. Usually that is "Back", but where cancelling is a real
+        // #333: the label comes from the request. Usually that is "Back", but where cancelling is a real
         // choice rather than a rewind (deploy-time embark: cancel = deploy on the table) the stage names it,
         // and a player who never presses Back can still find the action. The key hint comes from
         // ResolverKeybinds so the button can't advertise a key that has moved (#295).

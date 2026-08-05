@@ -1,6 +1,8 @@
-# 331 — "Deploy Normally" is its own button, not the Back key
+# 333 — "Deploy Normally" is its own button, not the Back key
 
 **Status**: in-progress (implemented + tested; awaiting GUI hand-verify)
+**Renumbered**: filed as 331, moved to 333 on 2026-08-04 (reconciliation 47 - origin/master had already
+merged and archived 331 = victory fireworks). Commit messages before the merge still say "#331".
 **Related**: #035 slice B (deploy-time embarking), #308 (a resolver must not invent cancel wording), #161 (resolver consistency)
 
 ## Goal
@@ -82,7 +84,7 @@ and that the deployment prompt reads as two alternatives rather than one option 
   every eligible unit into the first transport in the list. The fix is a flat "never", not a heuristic:
   embarking only pays off with a plan for the drop-off, and neither AI profile has one (the Tactician's
   A5-5 note records cargo riding until the transport died). A future embark policy has one obvious home in
-  each resolver, both marked with #331.
+  each resolver, both marked with #333.
 - **The decline is keyed to a label, not to cancellability.** Replying null to any cancellable selection
   would livelock the prompts that re-ask after a cancel. Matching `DEPLOY_NORMALLY_CHOICE` follows the
   existing Ambush-hold idiom in `AiStringSelectionResolver` — the AI declines a specific named choice it

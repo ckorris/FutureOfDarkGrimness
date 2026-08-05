@@ -6,6 +6,21 @@ from origin/master. Standing precedent: numbers are never reused, and when two p
 claim the same number, the *unmerged local* item yields to the *merged* one and takes a fresh number.
 A per-clone pre-push hook blocks duplicate numbers across the index and the archive.
 
+> **2026-08-04 - reconciliation 47 (RESOLVED).** The mirror image of 46, from the other side. This clone
+> filed **331 = "Deploy Normally" is its own button** against an `origin/master` whose highest number was
+> 330; meanwhile the *other* session filed **331 = victory fireworks**, pushed it, closed it and archived
+> it. Merged wins, so the unmerged local item yields: **deploy-normally 331 -> 333**
+> (`WorkItems/333-deploy-normally-button.md`), 333 being the first free number above origin's archived 332.
+> Markers moved before publication in both repos: the engine's `SelectionRequest`, `AiSelectionResolver`,
+> `AiStringSelectionResolver`, `ChooseDeployActionStage`, `ChooseUnitToDeployStage`,
+> `TransportDeploymentChoiceTests`, `AiSelectionResolverTests`, `AiStringSelectionResolverTests`; the app's
+> `GuiSelectionResolver`, CLI `SelectionResolver`, `SelectionResolverTests`, `docs/ResolverGuide.md`; plus
+> the detail file + filename and the index line. Upstream's own `#331` markers (`TeamScoreTally`,
+> `VictoryCalculationStage`, `VictoryFireworks`, `ViewSettings`, `RaylibRenderer`) were left untouched -
+> they are the winning item. The two commit messages saying "#331" stay as-is per precedent. Note for the
+> next session: 46 and 47 are the same collision seen from each clone, and neither pre-filing fetch was
+> stale at the time it ran. The pre-push hook is the only thing that closes this gap; install it.
+>
 > **2026-08-04 - reconciliation 46 (RESOLVED).** This session filed **330 = early match decision** (end a
 > match once no remaining play can change the result) from an `origin/master` index whose highest number
 > was 329, and **331 = victory fireworks** immediately after. Between those two filings and the push,

@@ -91,7 +91,7 @@ Corpus coverage is now complete too: **0 of 13,870** book rule references are de
 
 ## Transport
 
-- [~] 331 — Deploying into a transport was reachable only by pressing Back: `SelectionRequest.CancelLabel` lets the stage name its exit, so the button reads "Deploy Normally" (and the CLI, which had no cancel path at all, lists it as `[0]`). The AI now never embarks at all (owner's call - no drop-off plan), at both the deploy prompt and the action menu. Implemented + tested + headless-verified; awaiting GUI hand-verify. ([WorkItems/331](WorkItems/331-deploy-normally-button.md))
+- [~] 333 — Deploying into a transport was reachable only by pressing Back: `SelectionRequest.CancelLabel` lets the stage name its exit, so the button reads "Deploy Normally" (and the CLI, which had no cancel path at all, lists it as `[0]`). The AI now never embarks at all (owner's call - no drop-off plan), at both the deploy prompt and the action menu. Implemented + tested + headless-verified; awaiting GUI hand-verify. ([WorkItems/333](WorkItems/333-deploy-normally-button.md))
 
 - [~] 315 — Duplicate-named units in transports were indistinguishable in the activation picker: engine label suffix "Warriors (in Rhino)" + GUI hover rings the transport (distinct style) + canvas-hover on a transport emphasises its occupants' rows (#286 two-way rule). ([WorkItems/315](WorkItems/315-embarked-activation-disambiguation.md))
 
