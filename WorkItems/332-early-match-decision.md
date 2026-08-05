@@ -1,4 +1,4 @@
-# 330 — End a match once the result can no longer change
+# 332 — End a match once the result can no longer change
 
 **Status**: in-progress (implemented + tested; awaiting GUI hand-verify)
 **Related**: #257 (team victory scoring), #195 (authoritative round number in `ReconcileObjectivesStage`), #040 (game-over card), #191 (benchmark harness reads `RoundsPlayed`)
@@ -16,6 +16,10 @@ still change.
 
 ## Notes
 
+- 2026-08-04: **GUI hand-verified by the owner** on `Scenarios/332-match-already-decided.json`: one
+  activation at round 3, and the match was called there under the real GUI resolvers - banner, log line and
+  the round-3 stop all as designed, clean exit, no resolver faults. Renumbered 330 -> 332 the same day
+  (reconciliation 46: origin/master had meanwhile merged AND archived 330 = pile-in contact maximization).
 - 2026-08-04: Implemented. `MatchDecision.IsResultFixed` (new, beside the stage) + the early exit in
   `ReconcileObjectivesStage`, which now returns early on the round limit so the decided check reads as
   its own branch. 18 new tests in `MatchDecisionTests` — 15 on the pure helper, 3 driving the real stage
@@ -25,7 +29,7 @@ still change.
   **Mutation-verified**, since the tests only earn their keep if they fail on the two mistakes that
   matter: skipping reserve units in the living scan fails both off-table tests, and relaxing the sole-lead
   check from `>=` to `>` fails the tied and 0-0 tests. 4 failures, exactly the relevant ones.
-  End-to-end via `Scenarios/330-match-already-decided.json` (new): round 3, opponent pre-killed through
+  End-to-end via `Scenarios/332-match-already-decided.json` (new): round 3, opponent pre-killed through
   `woundsDealt`, and the run ends there - `rounds=3`, round 4 never played, both the log line and the
   banner text present. Note the compiler rejects a scenario whose active player has nothing to do, so one
   distant unit is left unactivated.

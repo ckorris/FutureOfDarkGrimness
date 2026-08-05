@@ -6,6 +6,21 @@ from origin/master. Standing precedent: numbers are never reused, and when two p
 claim the same number, the *unmerged local* item yields to the *merged* one and takes a fresh number.
 A per-clone pre-push hook blocks duplicate numbers across the index and the archive.
 
+> **2026-08-04 - reconciliation 46 (RESOLVED).** This session filed **330 = early match decision** (end a
+> match once no remaining play can change the result) from an `origin/master` index whose highest number
+> was 329, and **331 = victory fireworks** immediately after. Between those two filings and the push,
+> origin/master landed **330 = pile-in contact maximization**, already merged AND archived. Per merged-wins
+> precedent the unmerged local item yields: **early match decision 330 -> 332**
+> (`WorkItems/332-early-match-decision.md`). It took 332 rather than 331 because 331 was already spoken for
+> by this session's own fireworks item, which did not collide and keeps its number. The renumber landed
+> everywhere before publication - detail file + filename, index line, the engine source comments in
+> `MatchDecision.cs` / `ReconcileObjectivesStage.cs`, `MatchDecisionTests.cs`, the repro scenario
+> (`Scenarios/332-match-already-decided.json`, renamed, seed included) and #331's cross-references - so no
+> reference predates it except the two commit messages saying "#330", **left as-is on purpose** per every
+> prior reconciliation's precedent. Worth noting for the next session: the fetch that produced 330 was
+> correct when it ran; the gap that bit was the hours between filing and pushing, which no pre-filing fetch
+> can close. The pre-push hook is what would have caught it, and did not need to.
+>
 > **2026-08-02 - reconciliation 45 (RESOLVED).** The dice-stack session collided TWICE, which is worth
 > recording as one story. It filed **322** from an index fetched minutes earlier; by the time it went to
 > merge, origin/master had taken **322 = "Waiting on" line in the status HUD** (reconciliation 41's

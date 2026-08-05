@@ -1,7 +1,7 @@
 # 331 — Victory fireworks in the winning side's colours
 
 **Status**: in-progress (implemented + tested; awaiting GUI hand-verify)
-**Related**: #330 (the early match end that made the game-over card worth looking at), #257 (team-pooled
+**Related**: #332 (the early match end that made the game-over card worth looking at), #257 (team-pooled
 scoring), #221 (player colour palette), #246 (Options panel)
 
 ## Goal
@@ -11,6 +11,9 @@ a networked client as well as the host.
 
 ## Notes
 
+- 2026-08-04: **GUI hand-verified by the owner** ("it looks great") on the #332 decided-match scenario -
+  the 30 FPS line-segment sparks read as intended, so the tuning below stands. The three defaulted taste
+  calls were not challenged.
 - 2026-08-04: Implemented in two slices. Engine: `TeamScoreTally` (new) holds the #257 pooled tally and
   `VictoryCalculationStage` now calls it; 9 new `TeamScoreTallyTests`. App: `VictoryFireworks` (new,
   ~200 lines) plus the hook in `RaylibRenderer`, a `ViewSettings.ShowVictoryFireworks` toggle and its
@@ -19,9 +22,9 @@ a networked client as well as the host.
 
 ## Decisions
 
-**The client cannot be told who won, so it works it out.** Same wall as #330: `ShowGameOver` receives only
+**The client cannot be told who won, so it works it out.** Same wall as #332: `ShowGameOver` receives only
 the prose message, and the structured `GameResult.WinnerPlayers` is host-side only and never crosses the
-wire. Rather than widen the wire (rejected in #330), the renderer derives the winner from state that DOES
+wire. Rather than widen the wire (rejected in #332), the renderer derives the winner from state that DOES
 replicate - objectives and player slots - via `TeamScoreTally`. That tally was extracted out of
 `VictoryCalculationStage` rather than reimplemented in the renderer, so host and client run the same code
 over the same state and cannot disagree about who is being celebrated. Wrong-coloured fireworks would be a

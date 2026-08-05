@@ -1,8 +1,8 @@
 {
-  "name": "330 - opponent tabled and sole objective lead at the end of round 3: the match is called there",
+  "name": "332 - opponent tabled and sole objective lead at the end of round 3: the match is called there",
   "round": 3,
   "activePlayer": 0,
-  "settings": { "randomness": "Realistic", "diceSeed": 330 },
+  "settings": { "randomness": "Realistic", "diceSeed": 332 },
   "objectives": [[30, 16], [34, 16], [24, 44]],
   "players": [
     {
