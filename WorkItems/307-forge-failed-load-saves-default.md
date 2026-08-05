@@ -89,6 +89,44 @@ deserializes to `null` (`:1036`) with **no status hint at all** — the same tra
 
 ## Notes
 
+### 2026-08-05 - implemented (options 1 + 2; option 3 deferred, see Decisions)
+
+All of it app-side (`FdgRaylib/Rendering/ArmyForgeScreen.cs`) - no engine change.
+
+**1. The rejection is a modal.** `Load()` no longer reports through the status line alone. Every failure
+path routes to `TryAdopt`, which records the outcome and returns false; the caller raises a `Load failed`
+popup. Its text closes the exact gap the report exposed - it names the file, says it was NOT loaded, gives
+the reason, and then states the thing the user had no way to know: *"The list on screen has not changed -
+it is still whatever was here before. Saving now would write THAT list, not the file you just picked."*
+
+**2. The status line is typed.** `EForgeStatusKind` (Info/Success/Error) drives colour - red for failure,
+green for success, disabled-grey for neutral - so failure and success no longer share `TextDisabled`.
+Drawn via `PushStyleColor` + `TextUnformatted` rather than `TextColored`, because the line can carry a
+file name or an exception message and a stray `%` would be eaten as a printf directive.
+
+**3. Save is guarded.** `ESaveGuard` / `EvaluateSaveGuard`, evaluated after the file dialog so the confirm
+can name the target file:
+- `UnchangedAfterFailedLoad` - a load was rejected and the list has not changed since. Detected with
+  `ListFingerprint` (a JSON snapshot of `BuilderList` taken at the moment of failure), so **no mutation
+  hooks were needed** on the dozen-plus edit sites, and an edit after the failure silently disarms it.
+- `EmptyList` - the list has no units; catches the pristine-default artifact from the report directly.
+- `None` - ordinary saves are untouched, no extra click.
+Confirming ("Save anyway") clears the failed-load state, so the same failure never re-warns.
+
+**Caught while in here** (the item's "worth checking" note): `Load()` returned in silence on a missing
+file and on a null deserialize, and a **malformed .fdgarmy threw `JsonException` straight out of `Draw`**
+and took the renderer down (it only ever reached `crash.log`). All three now report through the modal.
+`File.WriteAllText` in both save paths is wrapped too - a read-only target used to look like a success.
+
+**Tests:** `ArmyForgeScreenTests` +10, 42/42 green. They pin the reported sequence (pristine screen ->
+rejected load -> guard fires), the nastier variant an empty-list check alone would miss (army A on screen,
+army B's load rejected, Save would write A over B's path), the disarm-on-edit and disarm-on-successful-load
+paths, both message texts, and an ASCII pin on all new user-facing strings.
+
+**Verified:** `dotnet build` clean, app suite 1120 green, engine suite 2862 green, headless smoke exits 0.
+**Not verified:** the GUI itself - both modals, the status colours, and the guard flow need a hand pass
+(repro: launch Forge, Load any `armies/*3k.fdgarmy`, then press Save).
+
 - 2026-07-31: Filed from a live report. Root cause read off the artifact plus the screen source; the
   evidence chain is closed (Forge saves carry `selections`+`book`, proven by the artifact having them; the
   loaded file has neither key; `AdoptLoaded` rejects on that; rejection mutates nothing; the startup
@@ -97,7 +135,20 @@ deserializes to `null` (`:1036`) with **no status hint at all** — the same tra
 
 ## Decisions
 
-_(none yet)_
+- **2026-08-05: shipped options 1 + 2; option 3 (let the Forge reopen plain armies) is DEFERRED and still
+  needs a ruling.** 1 + 2 are right whichever way 3 lands - they also cover the other failure paths (missing
+  file, malformed JSON, wrong book) that a plain-army reader would not touch. The open fork is unchanged:
+  reconstruct an editable session against a bundled book the way #241's "Open in Forge" already does
+  (`ListCompiler.Compile(outcome.BundledBook, session.Selections)`), or rule that the Army Builder stays the
+  home for hand-authored lists. Worth noting the fork got cheaper since filing: #354 installed
+  `BundledBookRulebook`, so faction -> bundled book is already a solved lookup on the app side.
+- **2026-08-05: the Save guard detects "unchanged" by fingerprint, not by dirty-tracking.** A JSON snapshot
+  of `BuilderList` compared at Save time is O(list) once per save and needs no hooks in `AddToList`,
+  `RemoveFromList`, `SetChoice`, `ApplyChoice`, the model-count steppers, or the combine/join edits - a
+  dirty flag would have had to be threaded through all of them and would rot the first time a new edit site
+  was added.
+- **2026-08-05: confirm, never block.** The Forge is advisory everywhere else (#003 force-org warnings never
+  block a save or a launch), so the guard is a confirm dialog, not a refusal.
 
 ## Outcome
 
