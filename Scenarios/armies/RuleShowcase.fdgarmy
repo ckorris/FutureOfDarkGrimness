@@ -1,0 +1,163 @@
+{
+ "name": "Rule Showcase (#333 demo army)",
+ "faction": "",
+ "pointsLimit": 0,
+ "units": [
+  {
+   "name": "Blademasters",
+   "modelCount": 3,
+   "quality": 3,
+   "defense": 4,
+   "specialRules": [],
+   "weapons": [
+    {
+     "name": "Great Sword",
+     "quantity": 3,
+     "rangeInches": 0,
+     "attacks": 2,
+     "armorPenetration": 1,
+     "specialRules": [
+      { "kind": "coreNumeric", "name": "Deadly", "numericValue": 3 },
+      { "kind": "core", "name": "Rending" }
+     ]
+    },
+    {
+     "name": "Demo Charge",
+     "quantity": 3,
+     "rangeInches": 0,
+     "attacks": 4,
+     "armorPenetration": 2,
+     "specialRules": [
+      { "kind": "core", "name": "Limited" },
+      { "kind": "coreNumeric", "name": "Deadly", "numericValue": 6 }
+     ]
+    },
+    {
+     "name": "Serrated Blade",
+     "quantity": 3,
+     "rangeInches": 0,
+     "attacks": 3,
+     "armorPenetration": 0,
+     "specialRules": [
+      { "kind": "core", "name": "Rending" },
+      { "kind": "core", "name": "Lacerate" }
+     ]
+    },
+    {
+     "name": "Odd Dagger",
+     "quantity": 3,
+     "rangeInches": 0,
+     "attacks": 1,
+     "armorPenetration": 0,
+     "specialRules": [
+      { "kind": "core", "name": "Mysterious" }
+     ]
+    }
+   ],
+   "pointCost": 0
+  },
+  {
+   "name": "Marksmen",
+   "modelCount": 3,
+   "quality": 3,
+   "defense": 4,
+   "specialRules": [],
+   "weapons": [
+    {
+     "name": "Render Rifle",
+     "quantity": 3,
+     "rangeInches": 30,
+     "attacks": 2,
+     "armorPenetration": 1,
+     "specialRules": [
+      { "kind": "core", "name": "Rending" },
+      { "kind": "core", "name": "Reliable" }
+     ]
+    },
+    {
+     "name": "Siege Launcher",
+     "quantity": 3,
+     "rangeInches": 24,
+     "attacks": 1,
+     "armorPenetration": 2,
+     "specialRules": [
+      { "kind": "coreNumeric", "name": "Blast", "numericValue": 3 },
+      { "kind": "core", "name": "Indirect" }
+     ]
+    },
+    {
+     "name": "Thermal Lance",
+     "quantity": 3,
+     "rangeInches": 18,
+     "attacks": 1,
+     "armorPenetration": 4,
+     "specialRules": [
+      { "kind": "core", "name": "Limited" },
+      { "kind": "coreNumeric", "name": "Deadly", "numericValue": 3 }
+     ]
+    },
+    {
+     "name": "Hand Axe",
+     "quantity": 3,
+     "rangeInches": 0,
+     "attacks": 1,
+     "armorPenetration": 0,
+     "specialRules": []
+    }
+   ],
+   "pointCost": 0
+  },
+  {
+   "name": "Melee Dummies",
+   "modelCount": 3,
+   "quality": 5,
+   "defense": 4,
+   "specialRules": [
+    { "kind": "coreNumeric", "name": "Tough", "numericValue": 6 }
+   ],
+   "weapons": [
+    {
+     "name": "Stick",
+     "quantity": 3,
+     "rangeInches": 0,
+     "attacks": 1,
+     "armorPenetration": 0,
+     "specialRules": []
+    }
+   ],
+   "pointCost": 0
+  },
+  {
+   "name": "Target Dummies",
+   "modelCount": 3,
+   "quality": 5,
+   "defense": 4,
+   "specialRules": [
+    { "kind": "coreNumeric", "name": "Tough", "numericValue": 6 }
+   ],
+   "weapons": [
+    {
+     "name": "Stick",
+     "quantity": 3,
+     "rangeInches": 0,
+     "attacks": 1,
+     "armorPenetration": 0,
+     "specialRules": []
+    }
+   ],
+   "pointCost": 0
+  }
+ ],
+ "ruleDefinitions": [
+  {
+   "name": "Mysterious",
+   "passive": [],
+   "activated": [],
+   "scope": "Weapon",
+   "engineArgumentCount": 0,
+   "valence": "Neutral",
+   "description": ""
+  }
+ ],
+ "spells": []
+}

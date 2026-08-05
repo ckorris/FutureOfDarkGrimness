@@ -17,6 +17,16 @@ hovered row.
 
 ## Notes
 
+- 2026-08-04: **Hand-verify asset**: `WeaponRules.fdgsave` (repo root), compiled from
+  `Scenarios/333-weapon-rules-showcase.json` + `Scenarios/armies/RuleShowcase.fdgarmy`. Built to put every
+  display state on ONE screen rather than needing several games: the Blademasters' first melee menu has two
+  valid rule-bearing rows (Great Sword `Deadly(3), Rending`; Demo Charge `Limited, Deadly(6)`, which also
+  carries the #321 Hold back companion and its #320 consequence line) above two GREYED rule-bearing rows
+  the Deadly gate is holding (Serrated Blade `Rending, Lacerate`; Odd Dagger `Mysterious` - a rule the army
+  file defines with an empty description, so it is the faded-underline "not enforced in play" case). The
+  Marksmen next door carry the shooting comparison: `Rending, Reliable` / `Blast(3), Indirect` /
+  `Limited, Deadly(3)` (the last for the #319 ONCE PER GAME badge). Dummies are Tough(6) so the menus can
+  be reopened. Verified headless: every state listed above appears, and `Mysterious` loads with no warning.
 - 2026-08-04: Implemented in one slice. Engine: `StringSelectionRequest.OptionRules` (new) +
   `ChooseMeleeWeaponStage.BuildOptionRules`, `BuildRuleDescriptions` narrowed to the hold-back line;
   `MeleeWeaponRuleDescriptionTests` re-pointed and grown to 7. App: `OptionRuleSegments` +

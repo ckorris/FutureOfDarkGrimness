@@ -1,0 +1,1221 @@
+{
+  "Version": 2,
+  "TypeMap": [
+    {
+      "TypeId": "__placeholder",
+      "Capacity": 0
+    },
+    {
+      "TypeId": "int",
+      "Capacity": 64
+    },
+    {
+      "TypeId": "float",
+      "Capacity": 64
+    },
+    {
+      "TypeId": "string",
+      "Capacity": 32
+    },
+    {
+      "TypeId": "position",
+      "Capacity": 128
+    },
+    {
+      "TypeId": "model",
+      "Capacity": 64
+    },
+    {
+      "TypeId": "playerSlot",
+      "Capacity": 8
+    },
+    {
+      "TypeId": "team",
+      "Capacity": 2
+    },
+    {
+      "TypeId": "unit",
+      "Capacity": 32
+    },
+    {
+      "TypeId": "army",
+      "Capacity": 8
+    },
+    {
+      "TypeId": "terrain",
+      "Capacity": 32
+    },
+    {
+      "TypeId": "rectangularZone",
+      "Capacity": 16
+    },
+    {
+      "TypeId": "objective",
+      "Capacity": 8
+    },
+    {
+      "TypeId": "playerId",
+      "Capacity": 8
+    },
+    {
+      "TypeId": "gameProgress",
+      "Capacity": 2
+    },
+    {
+      "TypeId": "float2",
+      "Capacity": 128
+    }
+  ],
+  "Entries": [
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 2
+        },
+        "Index": 0,
+        "Generation": 1
+      },
+      "JsonValue": "1.0"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 2
+        },
+        "Index": 1,
+        "Generation": 1
+      },
+      "JsonValue": "1.0"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 2
+        },
+        "Index": 2,
+        "Generation": 1
+      },
+      "JsonValue": "1.0"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 2
+        },
+        "Index": 3,
+        "Generation": 1
+      },
+      "JsonValue": "1.0"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 2
+        },
+        "Index": 4,
+        "Generation": 1
+      },
+      "JsonValue": "1.0"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 2
+        },
+        "Index": 5,
+        "Generation": 1
+      },
+      "JsonValue": "1.0"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 2
+        },
+        "Index": 6,
+        "Generation": 1
+      },
+      "JsonValue": "6.0"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 2
+        },
+        "Index": 7,
+        "Generation": 1
+      },
+      "JsonValue": "6.0"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 2
+        },
+        "Index": 8,
+        "Generation": 1
+      },
+      "JsonValue": "6.0"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 2
+        },
+        "Index": 9,
+        "Generation": 1
+      },
+      "JsonValue": "6.0"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 2
+        },
+        "Index": 10,
+        "Generation": 1
+      },
+      "JsonValue": "6.0"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 2
+        },
+        "Index": 11,
+        "Generation": 1
+      },
+      "JsonValue": "6.0"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 2
+        },
+        "Index": 12,
+        "Generation": 1
+      },
+      "JsonValue": "1.0"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 2
+        },
+        "Index": 13,
+        "Generation": 1
+      },
+      "JsonValue": "1.0"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 2
+        },
+        "Index": 14,
+        "Generation": 1
+      },
+      "JsonValue": "1.0"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 2
+        },
+        "Index": 15,
+        "Generation": 1
+      },
+      "JsonValue": "1.0"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 2
+        },
+        "Index": 16,
+        "Generation": 1
+      },
+      "JsonValue": "1.0"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 2
+        },
+        "Index": 17,
+        "Generation": 1
+      },
+      "JsonValue": "1.0"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 2
+        },
+        "Index": 18,
+        "Generation": 1
+      },
+      "JsonValue": "6.0"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 2
+        },
+        "Index": 19,
+        "Generation": 1
+      },
+      "JsonValue": "6.0"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 2
+        },
+        "Index": 20,
+        "Generation": 1
+      },
+      "JsonValue": "6.0"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 2
+        },
+        "Index": 21,
+        "Generation": 1
+      },
+      "JsonValue": "6.0"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 2
+        },
+        "Index": 22,
+        "Generation": 1
+      },
+      "JsonValue": "6.0"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 2
+        },
+        "Index": 23,
+        "Generation": 1
+      },
+      "JsonValue": "6.0"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 4
+        },
+        "Index": 0,
+        "Generation": 1
+      },
+      "JsonValue": "{\"Position3D\":{\"X\":22.0,\"Y\":0.0,\"Z\":23.0,\"XY\":{\"X\":22.0,\"Y\":0.0},\"XZ\":{\"X\":22.0,\"Y\":23.0}},\"Position2D\":{\"X\":22.0,\"Y\":23.0},\"x\":22.0,\"y\":0.0,\"z\":23.0}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 4
+        },
+        "Index": 1,
+        "Generation": 1
+      },
+      "JsonValue": "{\"Position3D\":{\"X\":23.2,\"Y\":0.0,\"Z\":23.0,\"XY\":{\"X\":23.2,\"Y\":0.0},\"XZ\":{\"X\":23.2,\"Y\":23.0}},\"Position2D\":{\"X\":23.2,\"Y\":23.0},\"x\":23.2,\"y\":0.0,\"z\":23.0}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 4
+        },
+        "Index": 2,
+        "Generation": 1
+      },
+      "JsonValue": "{\"Position3D\":{\"X\":24.4,\"Y\":0.0,\"Z\":23.0,\"XY\":{\"X\":24.4,\"Y\":0.0},\"XZ\":{\"X\":24.4,\"Y\":23.0}},\"Position2D\":{\"X\":24.4,\"Y\":23.0},\"x\":24.4,\"y\":0.0,\"z\":23.0}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 4
+        },
+        "Index": 3,
+        "Generation": 1
+      },
+      "JsonValue": "{\"Position3D\":{\"X\":34.0,\"Y\":0.0,\"Z\":20.0,\"XY\":{\"X\":34.0,\"Y\":0.0},\"XZ\":{\"X\":34.0,\"Y\":20.0}},\"Position2D\":{\"X\":34.0,\"Y\":20.0},\"x\":34.0,\"y\":0.0,\"z\":20.0}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 4
+        },
+        "Index": 4,
+        "Generation": 1
+      },
+      "JsonValue": "{\"Position3D\":{\"X\":35.2,\"Y\":0.0,\"Z\":20.0,\"XY\":{\"X\":35.2,\"Y\":0.0},\"XZ\":{\"X\":35.2,\"Y\":20.0}},\"Position2D\":{\"X\":35.2,\"Y\":20.0},\"x\":35.2,\"y\":0.0,\"z\":20.0}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 4
+        },
+        "Index": 5,
+        "Generation": 1
+      },
+      "JsonValue": "{\"Position3D\":{\"X\":36.4,\"Y\":0.0,\"Z\":20.0,\"XY\":{\"X\":36.4,\"Y\":0.0},\"XZ\":{\"X\":36.4,\"Y\":20.0}},\"Position2D\":{\"X\":36.4,\"Y\":20.0},\"x\":36.4,\"y\":0.0,\"z\":20.0}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 4
+        },
+        "Index": 6,
+        "Generation": 1
+      },
+      "JsonValue": "{\"Position3D\":{\"X\":2.551181,\"Y\":0.0,\"Z\":9.0,\"XY\":{\"X\":2.551181,\"Y\":0.0},\"XZ\":{\"X\":2.551181,\"Y\":9.0}},\"Position2D\":{\"X\":2.551181,\"Y\":9.0},\"x\":2.551181,\"y\":0.0,\"z\":9.0}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 4
+        },
+        "Index": 7,
+        "Generation": 1
+      },
+      "JsonValue": "{\"Position3D\":{\"X\":3.8535433,\"Y\":0.0,\"Z\":9.0,\"XY\":{\"X\":3.8535433,\"Y\":0.0},\"XZ\":{\"X\":3.8535433,\"Y\":9.0}},\"Position2D\":{\"X\":3.8535433,\"Y\":9.0},\"x\":3.8535433,\"y\":0.0,\"z\":9.0}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 4
+        },
+        "Index": 8,
+        "Generation": 1
+      },
+      "JsonValue": "{\"Position3D\":{\"X\":5.1559057,\"Y\":0.0,\"Z\":9.0,\"XY\":{\"X\":5.1559057,\"Y\":0.0},\"XZ\":{\"X\":5.1559057,\"Y\":9.0}},\"Position2D\":{\"X\":5.1559057,\"Y\":9.0},\"x\":5.1559057,\"y\":0.0,\"z\":9.0}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 4
+        },
+        "Index": 9,
+        "Generation": 1
+      },
+      "JsonValue": "{\"Position3D\":{\"X\":8.458268,\"Y\":0.0,\"Z\":9.0,\"XY\":{\"X\":8.458268,\"Y\":0.0},\"XZ\":{\"X\":8.458268,\"Y\":9.0}},\"Position2D\":{\"X\":8.458268,\"Y\":9.0},\"x\":8.458268,\"y\":0.0,\"z\":9.0}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 4
+        },
+        "Index": 10,
+        "Generation": 1
+      },
+      "JsonValue": "{\"Position3D\":{\"X\":9.76063,\"Y\":0.0,\"Z\":9.0,\"XY\":{\"X\":9.76063,\"Y\":0.0},\"XZ\":{\"X\":9.76063,\"Y\":9.0}},\"Position2D\":{\"X\":9.76063,\"Y\":9.0},\"x\":9.76063,\"y\":0.0,\"z\":9.0}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 4
+        },
+        "Index": 11,
+        "Generation": 1
+      },
+      "JsonValue": "{\"Position3D\":{\"X\":11.062991,\"Y\":0.0,\"Z\":9.0,\"XY\":{\"X\":11.062991,\"Y\":0.0},\"XZ\":{\"X\":11.062991,\"Y\":9.0}},\"Position2D\":{\"X\":11.062991,\"Y\":9.0},\"x\":11.062991,\"y\":0.0,\"z\":9.0}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 4
+        },
+        "Index": 12,
+        "Generation": 1
+      },
+      "JsonValue": "{\"Position3D\":{\"X\":2.551181,\"Y\":0.0,\"Z\":39.0,\"XY\":{\"X\":2.551181,\"Y\":0.0},\"XZ\":{\"X\":2.551181,\"Y\":39.0}},\"Position2D\":{\"X\":2.551181,\"Y\":39.0},\"x\":2.551181,\"y\":0.0,\"z\":39.0}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 4
+        },
+        "Index": 13,
+        "Generation": 1
+      },
+      "JsonValue": "{\"Position3D\":{\"X\":3.8535433,\"Y\":0.0,\"Z\":39.0,\"XY\":{\"X\":3.8535433,\"Y\":0.0},\"XZ\":{\"X\":3.8535433,\"Y\":39.0}},\"Position2D\":{\"X\":3.8535433,\"Y\":39.0},\"x\":3.8535433,\"y\":0.0,\"z\":39.0}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 4
+        },
+        "Index": 14,
+        "Generation": 1
+      },
+      "JsonValue": "{\"Position3D\":{\"X\":5.1559057,\"Y\":0.0,\"Z\":39.0,\"XY\":{\"X\":5.1559057,\"Y\":0.0},\"XZ\":{\"X\":5.1559057,\"Y\":39.0}},\"Position2D\":{\"X\":5.1559057,\"Y\":39.0},\"x\":5.1559057,\"y\":0.0,\"z\":39.0}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 4
+        },
+        "Index": 15,
+        "Generation": 1
+      },
+      "JsonValue": "{\"Position3D\":{\"X\":8.458268,\"Y\":0.0,\"Z\":39.0,\"XY\":{\"X\":8.458268,\"Y\":0.0},\"XZ\":{\"X\":8.458268,\"Y\":39.0}},\"Position2D\":{\"X\":8.458268,\"Y\":39.0},\"x\":8.458268,\"y\":0.0,\"z\":39.0}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 4
+        },
+        "Index": 16,
+        "Generation": 1
+      },
+      "JsonValue": "{\"Position3D\":{\"X\":9.76063,\"Y\":0.0,\"Z\":39.0,\"XY\":{\"X\":9.76063,\"Y\":0.0},\"XZ\":{\"X\":9.76063,\"Y\":39.0}},\"Position2D\":{\"X\":9.76063,\"Y\":39.0},\"x\":9.76063,\"y\":0.0,\"z\":39.0}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 4
+        },
+        "Index": 17,
+        "Generation": 1
+      },
+      "JsonValue": "{\"Position3D\":{\"X\":11.062991,\"Y\":0.0,\"Z\":39.0,\"XY\":{\"X\":11.062991,\"Y\":0.0},\"XZ\":{\"X\":11.062991,\"Y\":39.0}},\"Position2D\":{\"X\":11.062991,\"Y\":39.0},\"x\":11.062991,\"y\":0.0,\"z\":39.0}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 4
+        },
+        "Index": 18,
+        "Generation": 1
+      },
+      "JsonValue": "{\"Position3D\":{\"X\":22.0,\"Y\":0.0,\"Z\":24.2,\"XY\":{\"X\":22.0,\"Y\":0.0},\"XZ\":{\"X\":22.0,\"Y\":24.2}},\"Position2D\":{\"X\":22.0,\"Y\":24.2},\"x\":22.0,\"y\":0.0,\"z\":24.2}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 4
+        },
+        "Index": 19,
+        "Generation": 1
+      },
+      "JsonValue": "{\"Position3D\":{\"X\":23.2,\"Y\":0.0,\"Z\":24.2,\"XY\":{\"X\":23.2,\"Y\":0.0},\"XZ\":{\"X\":23.2,\"Y\":24.2}},\"Position2D\":{\"X\":23.2,\"Y\":24.2},\"x\":23.2,\"y\":0.0,\"z\":24.2}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 4
+        },
+        "Index": 20,
+        "Generation": 1
+      },
+      "JsonValue": "{\"Position3D\":{\"X\":24.4,\"Y\":0.0,\"Z\":24.2,\"XY\":{\"X\":24.4,\"Y\":0.0},\"XZ\":{\"X\":24.4,\"Y\":24.2}},\"Position2D\":{\"X\":24.4,\"Y\":24.2},\"x\":24.4,\"y\":0.0,\"z\":24.2}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 4
+        },
+        "Index": 21,
+        "Generation": 1
+      },
+      "JsonValue": "{\"Position3D\":{\"X\":34.0,\"Y\":0.0,\"Z\":32.0,\"XY\":{\"X\":34.0,\"Y\":0.0},\"XZ\":{\"X\":34.0,\"Y\":32.0}},\"Position2D\":{\"X\":34.0,\"Y\":32.0},\"x\":34.0,\"y\":0.0,\"z\":32.0}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 4
+        },
+        "Index": 22,
+        "Generation": 1
+      },
+      "JsonValue": "{\"Position3D\":{\"X\":35.2,\"Y\":0.0,\"Z\":32.0,\"XY\":{\"X\":35.2,\"Y\":0.0},\"XZ\":{\"X\":35.2,\"Y\":32.0}},\"Position2D\":{\"X\":35.2,\"Y\":32.0},\"x\":35.2,\"y\":0.0,\"z\":32.0}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 4
+        },
+        "Index": 23,
+        "Generation": 1
+      },
+      "JsonValue": "{\"Position3D\":{\"X\":36.4,\"Y\":0.0,\"Z\":32.0,\"XY\":{\"X\":36.4,\"Y\":0.0},\"XZ\":{\"X\":36.4,\"Y\":32.0}},\"Position2D\":{\"X\":36.4,\"Y\":32.0},\"x\":36.4,\"y\":0.0,\"z\":32.0}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 5
+        },
+        "Index": 0,
+        "Generation": 1
+      },
+      "JsonValue": "{\"_tokens\":{\"_tokens\":[]},\"_ruleDefinitionsJson\":null,\"RemainingWoundsBinding\":{\"TypeID\":{\"ID\":2},\"Index\":0,\"Generation\":1},\"PositionBinding\":{\"TypeID\":{\"ID\":4},\"Index\":0,\"Generation\":1},\"FacingBinding\":{\"TypeID\":{\"ID\":15},\"Index\":0,\"Generation\":1},\"Weapons\":[{\"_ruleDefinitionsJson\":\"[\\n  {\\n    \\\"requestedName\\\": \\\"Deadly(3)\\\",\\n    \\\"definition\\\": {\\n      \\\"name\\\": \\\"Deadly\\\",\\n      \\\"passive\\\": [\\n        {\\n          \\\"hookID\\\": \\\"Shooting_OnPreApplyWound\\\",\\n          \\\"condition\\\": {\\n            \\\"kind\\\": \\\"always\\\"\\n          },\\n          \\\"effect\\\": {\\n            \\\"kind\\\": \\\"multiplyWounds\\\",\\n            \\\"multiplier\\\": {\\n              \\\"kind\\\": \\\"arg\\\",\\n              \\\"index\\\": 0\\n            }\\n          },\\n          \\\"lifetime\\\": \\\"ThisAttack\\\",\\n          \\\"seat\\\": \\\"Actor\\\"\\n        }\\n      ],\\n      \\\"activated\\\": [],\\n      \\\"scope\\\": \\\"Weapon\\\",\\n      \\\"engineArgumentCount\\\": 0,\\n      \\\"valence\\\": \\\"Positive\\\",\\n      \\\"description\\\": \\\"Each wound from this weapon is multiplied; excess wounds don\\\\u0027t carry over to other models.\\\"\\n    },\\n    \\\"intArguments\\\": [\\n      3\\n    ],\\n    \\\"arguments\\\": [\\n      {\\n        \\\"intValue\\\": 3,\\n        \\\"strValue\\\": null\\n      }\\n    ]\\n  },\\n  {\\n    \\\"requestedName\\\": \\\"Rending\\\",\\n    \\\"definition\\\": {\\n      \\\"name\\\": \\\"Rending\\\",\\n      \\\"passive\\\": [\\n        {\\n          \\\"hookID\\\": \\\"Shooting_OnHitRollComplete\\\",\\n          \\\"condition\\\": {\\n            \\\"kind\\\": \\\"unmodifiedRollEquals\\\",\\n            \\\"dieValue\\\": 6\\n          },\\n          \\\"effect\\\": {\\n            \\\"kind\\\": \\\"perHitSaveModifier\\\",\\n            \\\"onRollValue\\\": 6,\\n            \\\"delta\\\": -4\\n          },\\n          \\\"lifetime\\\": \\\"ThisAttack\\\",\\n          \\\"seat\\\": \\\"Actor\\\"\\n        },\\n        {\\n          \\\"hookID\\\": \\\"Shooting_OnSaveRollComplete\\\",\\n          \\\"condition\\\": {\\n            \\\"kind\\\": \\\"always\\\"\\n          },\\n          \\\"effect\\\": {\\n            \\\"kind\\\": \\\"ignoreRule\\\",\\n            \\\"ruleName\\\": \\\"Regeneration\\\"\\n          },\\n          \\\"lifetime\\\": \\\"ThisAttack\\\",\\n          \\\"seat\\\": \\\"Actor\\\"\\n        }\\n      ],\\n      \\\"activated\\\": [],\\n      \\\"scope\\\": \\\"Weapon\\\",\\n      \\\"engineArgumentCount\\\": 0,\\n      \\\"valence\\\": \\\"Positive\\\",\\n      \\\"description\\\": \\\"An unmodified 6 to hit gives the attack AP(\\\\u002B4), and the attack ignores Regeneration.\\\"\\n    },\\n    \\\"intArguments\\\": [],\\n    \\\"arguments\\\": []\\n  }\\n]\",\"Name\":\"Great Sword\",\"RangeInches\":0.0,\"Attacks\":2,\"ArmorPenetration\":1,\"EffectKey\":null},{\"_ruleDefinitionsJson\":\"[\\n  {\\n    \\\"requestedName\\\": \\\"Limited\\\",\\n    \\\"definition\\\": {\\n      \\\"name\\\": \\\"Limited\\\",\\n      \\\"passive\\\": [],\\n      \\\"activated\\\": [],\\n      \\\"scope\\\": \\\"Weapon\\\",\\n      \\\"engineArgumentCount\\\": 0,\\n      \\\"valence\\\": \\\"Neutral\\\",\\n      \\\"description\\\": \\\"This weapon may only be used once per game.\\\"\\n    },\\n    \\\"intArguments\\\": [],\\n    \\\"arguments\\\": []\\n  },\\n  {\\n    \\\"requestedName\\\": \\\"Deadly(6)\\\",\\n    \\\"definition\\\": {\\n      \\\"name\\\": \\\"Deadly\\\",\\n      \\\"passive\\\": [\\n        {\\n          \\\"hookID\\\": \\\"Shooting_OnPreApplyWound\\\",\\n          \\\"condition\\\": {\\n            \\\"kind\\\": \\\"always\\\"\\n          },\\n          \\\"effect\\\": {\\n            \\\"kind\\\": \\\"multiplyWounds\\\",\\n            \\\"multiplier\\\": {\\n              \\\"kind\\\": \\\"arg\\\",\\n              \\\"index\\\": 0\\n            }\\n          },\\n          \\\"lifetime\\\": \\\"ThisAttack\\\",\\n          \\\"seat\\\": \\\"Actor\\\"\\n        }\\n      ],\\n      \\\"activated\\\": [],\\n      \\\"scope\\\": \\\"Weapon\\\",\\n      \\\"engineArgumentCount\\\": 0,\\n      \\\"valence\\\": \\\"Positive\\\",\\n      \\\"description\\\": \\\"Each wound from this weapon is multiplied; excess wounds don\\\\u0027t carry over to other models.\\\"\\n    },\\n    \\\"intArguments\\\": [\\n      6\\n    ],\\n    \\\"arguments\\\": [\\n      {\\n        \\\"intValue\\\": 6,\\n        \\\"strValue\\\": null\\n      }\\n    ]\\n  }\\n]\",\"Name\":\"Demo Charge\",\"RangeInches\":0.0,\"Attacks\":4,\"ArmorPenetration\":2,\"EffectKey\":null},{\"_ruleDefinitionsJson\":\"[\\n  {\\n    \\\"requestedName\\\": \\\"Rending\\\",\\n    \\\"definition\\\": {\\n      \\\"name\\\": \\\"Rending\\\",\\n      \\\"passive\\\": [\\n        {\\n          \\\"hookID\\\": \\\"Shooting_OnHitRollComplete\\\",\\n          \\\"condition\\\": {\\n            \\\"kind\\\": \\\"unmodifiedRollEquals\\\",\\n            \\\"dieValue\\\": 6\\n          },\\n          \\\"effect\\\": {\\n            \\\"kind\\\": \\\"perHitSaveModifier\\\",\\n            \\\"onRollValue\\\": 6,\\n            \\\"delta\\\": -4\\n          },\\n          \\\"lifetime\\\": \\\"ThisAttack\\\",\\n          \\\"seat\\\": \\\"Actor\\\"\\n        },\\n        {\\n          \\\"hookID\\\": \\\"Shooting_OnSaveRollComplete\\\",\\n          \\\"condition\\\": {\\n            \\\"kind\\\": \\\"always\\\"\\n          },\\n          \\\"effect\\\": {\\n            \\\"kind\\\": \\\"ignoreRule\\\",\\n            \\\"ruleName\\\": \\\"Regeneration\\\"\\n          },\\n          \\\"lifetime\\\": \\\"ThisAttack\\\",\\n          \\\"seat\\\": \\\"Actor\\\"\\n        }\\n      ],\\n      \\\"activated\\\": [],\\n      \\\"scope\\\": \\\"Weapon\\\",\\n      \\\"engineArgumentCount\\\": 0,\\n      \\\"valence\\\": \\\"Positive\\\",\\n      \\\"description\\\": \\\"An unmodified 6 to hit gives the attack AP(\\\\u002B4), and the attack ignores Regeneration.\\\"\\n    },\\n    \\\"intArguments\\\": [],\\n    \\\"arguments\\\": []\\n  },\\n  {\\n    \\\"requestedName\\\": \\\"Lacerate\\\",\\n    \\\"definition\\\": {\\n      \\\"name\\\": \\\"Lacerate\\\",\\n      \\\"passive\\\": [\\n        {\\n          \\\"hookID\\\": \\\"Shooting_OnSaveRollComplete\\\",\\n          \\\"condition\\\": {\\n            \\\"kind\\\": \\\"always\\\"\\n          },\\n          \\\"effect\\\": {\\n            \\\"kind\\\": \\\"reroll\\\",\\n            \\\"roll\\\": \\\"Save\\\",\\n            \\\"condition\\\": {\\n              \\\"kind\\\": \\\"onUnmodifiedValue\\\",\\n              \\\"minValue\\\": 6\\n            }\\n          },\\n          \\\"lifetime\\\": \\\"ThisAttack\\\",\\n          \\\"seat\\\": \\\"Actor\\\"\\n        }\\n      ],\\n      \\\"activated\\\": [],\\n      \\\"scope\\\": \\\"Weapon\\\",\\n      \\\"engineArgumentCount\\\": 0,\\n      \\\"valence\\\": \\\"Positive\\\",\\n      \\\"description\\\": \\\"The defender must re-roll unmodified Defense 6s.\\\"\\n    },\\n    \\\"intArguments\\\": [],\\n    \\\"arguments\\\": []\\n  }\\n]\",\"Name\":\"Serrated Blade\",\"RangeInches\":0.0,\"Attacks\":3,\"ArmorPenetration\":0,\"EffectKey\":null},{\"_ruleDefinitionsJson\":\"[\\n  {\\n    \\\"requestedName\\\": \\\"Mysterious\\\",\\n    \\\"definition\\\": {\\n      \\\"name\\\": \\\"Mysterious\\\",\\n      \\\"passive\\\": [],\\n      \\\"activated\\\": [],\\n      \\\"scope\\\": \\\"Weapon\\\",\\n      \\\"engineArgumentCount\\\": 0,\\n      \\\"valence\\\": \\\"Neutral\\\",\\n      \\\"description\\\": \\\"\\\"\\n    },\\n    \\\"intArguments\\\": [],\\n    \\\"arguments\\\": []\\n  }\\n]\",\"Name\":\"Odd Dagger\",\"RangeInches\":0.0,\"Attacks\":1,\"ArmorPenetration\":0,\"EffectKey\":null}],\"ID\":{\"ID\":\"28e41a8a-2431-42bd-9cab-bf53f10afd2e\"},\"TotalWounds\":1.0,\"WoundsDealt\":0.0,\"Position\":{\"Position3D\":{\"X\":22.0,\"Y\":0.0,\"Z\":23.0,\"XY\":{\"X\":22.0,\"Y\":0.0},\"XZ\":{\"X\":22.0,\"Y\":23.0}},\"Position2D\":{\"X\":22.0,\"Y\":23.0},\"x\":22.0,\"y\":0.0,\"z\":23.0},\"Facing\":{\"X\":0.0,\"Y\":1.0},\"BaseShape\":{\"$type\":\"baseShape.circle\",\"RadiusInches\":0.5511811,\"BoundingRadiusInches\":0.5511811,\"CircumscribedRadiusInches\":0.5511811}}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 5
+        },
+        "Index": 1,
+        "Generation": 1
+      },
+      "JsonValue": "{\"_tokens\":{\"_tokens\":[]},\"_ruleDefinitionsJson\":null,\"RemainingWoundsBinding\":{\"TypeID\":{\"ID\":2},\"Index\":1,\"Generation\":1},\"PositionBinding\":{\"TypeID\":{\"ID\":4},\"Index\":1,\"Generation\":1},\"FacingBinding\":{\"TypeID\":{\"ID\":15},\"Index\":1,\"Generation\":1},\"Weapons\":[{\"_ruleDefinitionsJson\":\"[\\n  {\\n    \\\"requestedName\\\": \\\"Deadly(3)\\\",\\n    \\\"definition\\\": {\\n      \\\"name\\\": \\\"Deadly\\\",\\n      \\\"passive\\\": [\\n        {\\n          \\\"hookID\\\": \\\"Shooting_OnPreApplyWound\\\",\\n          \\\"condition\\\": {\\n            \\\"kind\\\": \\\"always\\\"\\n          },\\n          \\\"effect\\\": {\\n            \\\"kind\\\": \\\"multiplyWounds\\\",\\n            \\\"multiplier\\\": {\\n              \\\"kind\\\": \\\"arg\\\",\\n              \\\"index\\\": 0\\n            }\\n          },\\n          \\\"lifetime\\\": \\\"ThisAttack\\\",\\n          \\\"seat\\\": \\\"Actor\\\"\\n        }\\n      ],\\n      \\\"activated\\\": [],\\n      \\\"scope\\\": \\\"Weapon\\\",\\n      \\\"engineArgumentCount\\\": 0,\\n      \\\"valence\\\": \\\"Positive\\\",\\n      \\\"description\\\": \\\"Each wound from this weapon is multiplied; excess wounds don\\\\u0027t carry over to other models.\\\"\\n    },\\n    \\\"intArguments\\\": [\\n      3\\n    ],\\n    \\\"arguments\\\": [\\n      {\\n        \\\"intValue\\\": 3,\\n        \\\"strValue\\\": null\\n      }\\n    ]\\n  },\\n  {\\n    \\\"requestedName\\\": \\\"Rending\\\",\\n    \\\"definition\\\": {\\n      \\\"name\\\": \\\"Rending\\\",\\n      \\\"passive\\\": [\\n        {\\n          \\\"hookID\\\": \\\"Shooting_OnHitRollComplete\\\",\\n          \\\"condition\\\": {\\n            \\\"kind\\\": \\\"unmodifiedRollEquals\\\",\\n            \\\"dieValue\\\": 6\\n          },\\n          \\\"effect\\\": {\\n            \\\"kind\\\": \\\"perHitSaveModifier\\\",\\n            \\\"onRollValue\\\": 6,\\n            \\\"delta\\\": -4\\n          },\\n          \\\"lifetime\\\": \\\"ThisAttack\\\",\\n          \\\"seat\\\": \\\"Actor\\\"\\n        },\\n        {\\n          \\\"hookID\\\": \\\"Shooting_OnSaveRollComplete\\\",\\n          \\\"condition\\\": {\\n            \\\"kind\\\": \\\"always\\\"\\n          },\\n          \\\"effect\\\": {\\n            \\\"kind\\\": \\\"ignoreRule\\\",\\n            \\\"ruleName\\\": \\\"Regeneration\\\"\\n          },\\n          \\\"lifetime\\\": \\\"ThisAttack\\\",\\n          \\\"seat\\\": \\\"Actor\\\"\\n        }\\n      ],\\n      \\\"activated\\\": [],\\n      \\\"scope\\\": \\\"Weapon\\\",\\n      \\\"engineArgumentCount\\\": 0,\\n      \\\"valence\\\": \\\"Positive\\\",\\n      \\\"description\\\": \\\"An unmodified 6 to hit gives the attack AP(\\\\u002B4), and the attack ignores Regeneration.\\\"\\n    },\\n    \\\"intArguments\\\": [],\\n    \\\"arguments\\\": []\\n  }\\n]\",\"Name\":\"Great Sword\",\"RangeInches\":0.0,\"Attacks\":2,\"ArmorPenetration\":1,\"EffectKey\":null},{\"_ruleDefinitionsJson\":\"[\\n  {\\n    \\\"requestedName\\\": \\\"Limited\\\",\\n    \\\"definition\\\": {\\n      \\\"name\\\": \\\"Limited\\\",\\n      \\\"passive\\\": [],\\n      \\\"activated\\\": [],\\n      \\\"scope\\\": \\\"Weapon\\\",\\n      \\\"engineArgumentCount\\\": 0,\\n      \\\"valence\\\": \\\"Neutral\\\",\\n      \\\"description\\\": \\\"This weapon may only be used once per game.\\\"\\n    },\\n    \\\"intArguments\\\": [],\\n    \\\"arguments\\\": []\\n  },\\n  {\\n    \\\"requestedName\\\": \\\"Deadly(6)\\\",\\n    \\\"definition\\\": {\\n      \\\"name\\\": \\\"Deadly\\\",\\n      \\\"passive\\\": [\\n        {\\n          \\\"hookID\\\": \\\"Shooting_OnPreApplyWound\\\",\\n          \\\"condition\\\": {\\n            \\\"kind\\\": \\\"always\\\"\\n          },\\n          \\\"effect\\\": {\\n            \\\"kind\\\": \\\"multiplyWounds\\\",\\n            \\\"multiplier\\\": {\\n              \\\"kind\\\": \\\"arg\\\",\\n              \\\"index\\\": 0\\n            }\\n          },\\n          \\\"lifetime\\\": \\\"ThisAttack\\\",\\n          \\\"seat\\\": \\\"Actor\\\"\\n        }\\n      ],\\n      \\\"activated\\\": [],\\n      \\\"scope\\\": \\\"Weapon\\\",\\n      \\\"engineArgumentCount\\\": 0,\\n      \\\"valence\\\": \\\"Positive\\\",\\n      \\\"description\\\": \\\"Each wound from this weapon is multiplied; excess wounds don\\\\u0027t carry over to other models.\\\"\\n    },\\n    \\\"intArguments\\\": [\\n      6\\n    ],\\n    \\\"arguments\\\": [\\n      {\\n        \\\"intValue\\\": 6,\\n        \\\"strValue\\\": null\\n      }\\n    ]\\n  }\\n]\",\"Name\":\"Demo Charge\",\"RangeInches\":0.0,\"Attacks\":4,\"ArmorPenetration\":2,\"EffectKey\":null},{\"_ruleDefinitionsJson\":\"[\\n  {\\n    \\\"requestedName\\\": \\\"Rending\\\",\\n    \\\"definition\\\": {\\n      \\\"name\\\": \\\"Rending\\\",\\n      \\\"passive\\\": [\\n        {\\n          \\\"hookID\\\": \\\"Shooting_OnHitRollComplete\\\",\\n          \\\"condition\\\": {\\n            \\\"kind\\\": \\\"unmodifiedRollEquals\\\",\\n            \\\"dieValue\\\": 6\\n          },\\n          \\\"effect\\\": {\\n            \\\"kind\\\": \\\"perHitSaveModifier\\\",\\n            \\\"onRollValue\\\": 6,\\n            \\\"delta\\\": -4\\n          },\\n          \\\"lifetime\\\": \\\"ThisAttack\\\",\\n          \\\"seat\\\": \\\"Actor\\\"\\n        },\\n        {\\n          \\\"hookID\\\": \\\"Shooting_OnSaveRollComplete\\\",\\n          \\\"condition\\\": {\\n            \\\"kind\\\": \\\"always\\\"\\n          },\\n          \\\"effect\\\": {\\n            \\\"kind\\\": \\\"ignoreRule\\\",\\n            \\\"ruleName\\\": \\\"Regeneration\\\"\\n          },\\n          \\\"lifetime\\\": \\\"ThisAttack\\\",\\n          \\\"seat\\\": \\\"Actor\\\"\\n        }\\n      ],\\n      \\\"activated\\\": [],\\n      \\\"scope\\\": \\\"Weapon\\\",\\n      \\\"engineArgumentCount\\\": 0,\\n      \\\"valence\\\": \\\"Positive\\\",\\n      \\\"description\\\": \\\"An unmodified 6 to hit gives the attack AP(\\\\u002B4), and the attack ignores Regeneration.\\\"\\n    },\\n    \\\"intArguments\\\": [],\\n    \\\"arguments\\\": []\\n  },\\n  {\\n    \\\"requestedName\\\": \\\"Lacerate\\\",\\n    \\\"definition\\\": {\\n      \\\"name\\\": \\\"Lacerate\\\",\\n      \\\"passive\\\": [\\n        {\\n          \\\"hookID\\\": \\\"Shooting_OnSaveRollComplete\\\",\\n          \\\"condition\\\": {\\n            \\\"kind\\\": \\\"always\\\"\\n          },\\n          \\\"effect\\\": {\\n            \\\"kind\\\": \\\"reroll\\\",\\n            \\\"roll\\\": \\\"Save\\\",\\n            \\\"condition\\\": {\\n              \\\"kind\\\": \\\"onUnmodifiedValue\\\",\\n              \\\"minValue\\\": 6\\n            }\\n          },\\n          \\\"lifetime\\\": \\\"ThisAttack\\\",\\n          \\\"seat\\\": \\\"Actor\\\"\\n        }\\n      ],\\n      \\\"activated\\\": [],\\n      \\\"scope\\\": \\\"Weapon\\\",\\n      \\\"engineArgumentCount\\\": 0,\\n      \\\"valence\\\": \\\"Positive\\\",\\n      \\\"description\\\": \\\"The defender must re-roll unmodified Defense 6s.\\\"\\n    },\\n    \\\"intArguments\\\": [],\\n    \\\"arguments\\\": []\\n  }\\n]\",\"Name\":\"Serrated Blade\",\"RangeInches\":0.0,\"Attacks\":3,\"ArmorPenetration\":0,\"EffectKey\":null},{\"_ruleDefinitionsJson\":\"[\\n  {\\n    \\\"requestedName\\\": \\\"Mysterious\\\",\\n    \\\"definition\\\": {\\n      \\\"name\\\": \\\"Mysterious\\\",\\n      \\\"passive\\\": [],\\n      \\\"activated\\\": [],\\n      \\\"scope\\\": \\\"Weapon\\\",\\n      \\\"engineArgumentCount\\\": 0,\\n      \\\"valence\\\": \\\"Neutral\\\",\\n      \\\"description\\\": \\\"\\\"\\n    },\\n    \\\"intArguments\\\": [],\\n    \\\"arguments\\\": []\\n  }\\n]\",\"Name\":\"Odd Dagger\",\"RangeInches\":0.0,\"Attacks\":1,\"ArmorPenetration\":0,\"EffectKey\":null}],\"ID\":{\"ID\":\"ff4d40ee-4bd8-4a65-a6ba-d2c7e39a145b\"},\"TotalWounds\":1.0,\"WoundsDealt\":0.0,\"Position\":{\"Position3D\":{\"X\":23.2,\"Y\":0.0,\"Z\":23.0,\"XY\":{\"X\":23.2,\"Y\":0.0},\"XZ\":{\"X\":23.2,\"Y\":23.0}},\"Position2D\":{\"X\":23.2,\"Y\":23.0},\"x\":23.2,\"y\":0.0,\"z\":23.0},\"Facing\":{\"X\":0.0,\"Y\":1.0},\"BaseShape\":{\"$type\":\"baseShape.circle\",\"RadiusInches\":0.5511811,\"BoundingRadiusInches\":0.5511811,\"CircumscribedRadiusInches\":0.5511811}}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 5
+        },
+        "Index": 2,
+        "Generation": 1
+      },
+      "JsonValue": "{\"_tokens\":{\"_tokens\":[]},\"_ruleDefinitionsJson\":null,\"RemainingWoundsBinding\":{\"TypeID\":{\"ID\":2},\"Index\":2,\"Generation\":1},\"PositionBinding\":{\"TypeID\":{\"ID\":4},\"Index\":2,\"Generation\":1},\"FacingBinding\":{\"TypeID\":{\"ID\":15},\"Index\":2,\"Generation\":1},\"Weapons\":[{\"_ruleDefinitionsJson\":\"[\\n  {\\n    \\\"requestedName\\\": \\\"Deadly(3)\\\",\\n    \\\"definition\\\": {\\n      \\\"name\\\": \\\"Deadly\\\",\\n      \\\"passive\\\": [\\n        {\\n          \\\"hookID\\\": \\\"Shooting_OnPreApplyWound\\\",\\n          \\\"condition\\\": {\\n            \\\"kind\\\": \\\"always\\\"\\n          },\\n          \\\"effect\\\": {\\n            \\\"kind\\\": \\\"multiplyWounds\\\",\\n            \\\"multiplier\\\": {\\n              \\\"kind\\\": \\\"arg\\\",\\n              \\\"index\\\": 0\\n            }\\n          },\\n          \\\"lifetime\\\": \\\"ThisAttack\\\",\\n          \\\"seat\\\": \\\"Actor\\\"\\n        }\\n      ],\\n      \\\"activated\\\": [],\\n      \\\"scope\\\": \\\"Weapon\\\",\\n      \\\"engineArgumentCount\\\": 0,\\n      \\\"valence\\\": \\\"Positive\\\",\\n      \\\"description\\\": \\\"Each wound from this weapon is multiplied; excess wounds don\\\\u0027t carry over to other models.\\\"\\n    },\\n    \\\"intArguments\\\": [\\n      3\\n    ],\\n    \\\"arguments\\\": [\\n      {\\n        \\\"intValue\\\": 3,\\n        \\\"strValue\\\": null\\n      }\\n    ]\\n  },\\n  {\\n    \\\"requestedName\\\": \\\"Rending\\\",\\n    \\\"definition\\\": {\\n      \\\"name\\\": \\\"Rending\\\",\\n      \\\"passive\\\": [\\n        {\\n          \\\"hookID\\\": \\\"Shooting_OnHitRollComplete\\\",\\n          \\\"condition\\\": {\\n            \\\"kind\\\": \\\"unmodifiedRollEquals\\\",\\n            \\\"dieValue\\\": 6\\n          },\\n          \\\"effect\\\": {\\n            \\\"kind\\\": \\\"perHitSaveModifier\\\",\\n            \\\"onRollValue\\\": 6,\\n            \\\"delta\\\": -4\\n          },\\n          \\\"lifetime\\\": \\\"ThisAttack\\\",\\n          \\\"seat\\\": \\\"Actor\\\"\\n        },\\n        {\\n          \\\"hookID\\\": \\\"Shooting_OnSaveRollComplete\\\",\\n          \\\"condition\\\": {\\n            \\\"kind\\\": \\\"always\\\"\\n          },\\n          \\\"effect\\\": {\\n            \\\"kind\\\": \\\"ignoreRule\\\",\\n            \\\"ruleName\\\": \\\"Regeneration\\\"\\n          },\\n          \\\"lifetime\\\": \\\"ThisAttack\\\",\\n          \\\"seat\\\": \\\"Actor\\\"\\n        }\\n      ],\\n      \\\"activated\\\": [],\\n      \\\"scope\\\": \\\"Weapon\\\",\\n      \\\"engineArgumentCount\\\": 0,\\n      \\\"valence\\\": \\\"Positive\\\",\\n      \\\"description\\\": \\\"An unmodified 6 to hit gives the attack AP(\\\\u002B4), and the attack ignores Regeneration.\\\"\\n    },\\n    \\\"intArguments\\\": [],\\n    \\\"arguments\\\": []\\n  }\\n]\",\"Name\":\"Great Sword\",\"RangeInches\":0.0,\"Attacks\":2,\"ArmorPenetration\":1,\"EffectKey\":null},{\"_ruleDefinitionsJson\":\"[\\n  {\\n    \\\"requestedName\\\": \\\"Limited\\\",\\n    \\\"definition\\\": {\\n      \\\"name\\\": \\\"Limited\\\",\\n      \\\"passive\\\": [],\\n      \\\"activated\\\": [],\\n      \\\"scope\\\": \\\"Weapon\\\",\\n      \\\"engineArgumentCount\\\": 0,\\n      \\\"valence\\\": \\\"Neutral\\\",\\n      \\\"description\\\": \\\"This weapon may only be used once per game.\\\"\\n    },\\n    \\\"intArguments\\\": [],\\n    \\\"arguments\\\": []\\n  },\\n  {\\n    \\\"requestedName\\\": \\\"Deadly(6)\\\",\\n    \\\"definition\\\": {\\n      \\\"name\\\": \\\"Deadly\\\",\\n      \\\"passive\\\": [\\n        {\\n          \\\"hookID\\\": \\\"Shooting_OnPreApplyWound\\\",\\n          \\\"condition\\\": {\\n            \\\"kind\\\": \\\"always\\\"\\n          },\\n          \\\"effect\\\": {\\n            \\\"kind\\\": \\\"multiplyWounds\\\",\\n            \\\"multiplier\\\": {\\n              \\\"kind\\\": \\\"arg\\\",\\n              \\\"index\\\": 0\\n            }\\n          },\\n          \\\"lifetime\\\": \\\"ThisAttack\\\",\\n          \\\"seat\\\": \\\"Actor\\\"\\n        }\\n      ],\\n      \\\"activated\\\": [],\\n      \\\"scope\\\": \\\"Weapon\\\",\\n      \\\"engineArgumentCount\\\": 0,\\n      \\\"valence\\\": \\\"Positive\\\",\\n      \\\"description\\\": \\\"Each wound from this weapon is multiplied; excess wounds don\\\\u0027t carry over to other models.\\\"\\n    },\\n    \\\"intArguments\\\": [\\n      6\\n    ],\\n    \\\"arguments\\\": [\\n      {\\n        \\\"intValue\\\": 6,\\n        \\\"strValue\\\": null\\n      }\\n    ]\\n  }\\n]\",\"Name\":\"Demo Charge\",\"RangeInches\":0.0,\"Attacks\":4,\"ArmorPenetration\":2,\"EffectKey\":null},{\"_ruleDefinitionsJson\":\"[\\n  {\\n    \\\"requestedName\\\": \\\"Rending\\\",\\n    \\\"definition\\\": {\\n      \\\"name\\\": \\\"Rending\\\",\\n      \\\"passive\\\": [\\n        {\\n          \\\"hookID\\\": \\\"Shooting_OnHitRollComplete\\\",\\n          \\\"condition\\\": {\\n            \\\"kind\\\": \\\"unmodifiedRollEquals\\\",\\n            \\\"dieValue\\\": 6\\n          },\\n          \\\"effect\\\": {\\n            \\\"kind\\\": \\\"perHitSaveModifier\\\",\\n            \\\"onRollValue\\\": 6,\\n            \\\"delta\\\": -4\\n          },\\n          \\\"lifetime\\\": \\\"ThisAttack\\\",\\n          \\\"seat\\\": \\\"Actor\\\"\\n        },\\n        {\\n          \\\"hookID\\\": \\\"Shooting_OnSaveRollComplete\\\",\\n          \\\"condition\\\": {\\n            \\\"kind\\\": \\\"always\\\"\\n          },\\n          \\\"effect\\\": {\\n            \\\"kind\\\": \\\"ignoreRule\\\",\\n            \\\"ruleName\\\": \\\"Regeneration\\\"\\n          },\\n          \\\"lifetime\\\": \\\"ThisAttack\\\",\\n          \\\"seat\\\": \\\"Actor\\\"\\n        }\\n      ],\\n      \\\"activated\\\": [],\\n      \\\"scope\\\": \\\"Weapon\\\",\\n      \\\"engineArgumentCount\\\": 0,\\n      \\\"valence\\\": \\\"Positive\\\",\\n      \\\"description\\\": \\\"An unmodified 6 to hit gives the attack AP(\\\\u002B4), and the attack ignores Regeneration.\\\"\\n    },\\n    \\\"intArguments\\\": [],\\n    \\\"arguments\\\": []\\n  },\\n  {\\n    \\\"requestedName\\\": \\\"Lacerate\\\",\\n    \\\"definition\\\": {\\n      \\\"name\\\": \\\"Lacerate\\\",\\n      \\\"passive\\\": [\\n        {\\n          \\\"hookID\\\": \\\"Shooting_OnSaveRollComplete\\\",\\n          \\\"condition\\\": {\\n            \\\"kind\\\": \\\"always\\\"\\n          },\\n          \\\"effect\\\": {\\n            \\\"kind\\\": \\\"reroll\\\",\\n            \\\"roll\\\": \\\"Save\\\",\\n            \\\"condition\\\": {\\n              \\\"kind\\\": \\\"onUnmodifiedValue\\\",\\n              \\\"minValue\\\": 6\\n            }\\n          },\\n          \\\"lifetime\\\": \\\"ThisAttack\\\",\\n          \\\"seat\\\": \\\"Actor\\\"\\n        }\\n      ],\\n      \\\"activated\\\": [],\\n      \\\"scope\\\": \\\"Weapon\\\",\\n      \\\"engineArgumentCount\\\": 0,\\n      \\\"valence\\\": \\\"Positive\\\",\\n      \\\"description\\\": \\\"The defender must re-roll unmodified Defense 6s.\\\"\\n    },\\n    \\\"intArguments\\\": [],\\n    \\\"arguments\\\": []\\n  }\\n]\",\"Name\":\"Serrated Blade\",\"RangeInches\":0.0,\"Attacks\":3,\"ArmorPenetration\":0,\"EffectKey\":null},{\"_ruleDefinitionsJson\":\"[\\n  {\\n    \\\"requestedName\\\": \\\"Mysterious\\\",\\n    \\\"definition\\\": {\\n      \\\"name\\\": \\\"Mysterious\\\",\\n      \\\"passive\\\": [],\\n      \\\"activated\\\": [],\\n      \\\"scope\\\": \\\"Weapon\\\",\\n      \\\"engineArgumentCount\\\": 0,\\n      \\\"valence\\\": \\\"Neutral\\\",\\n      \\\"description\\\": \\\"\\\"\\n    },\\n    \\\"intArguments\\\": [],\\n    \\\"arguments\\\": []\\n  }\\n]\",\"Name\":\"Odd Dagger\",\"RangeInches\":0.0,\"Attacks\":1,\"ArmorPenetration\":0,\"EffectKey\":null}],\"ID\":{\"ID\":\"e1eb93d7-7bce-4116-9697-96bc07cdd76a\"},\"TotalWounds\":1.0,\"WoundsDealt\":0.0,\"Position\":{\"Position3D\":{\"X\":24.4,\"Y\":0.0,\"Z\":23.0,\"XY\":{\"X\":24.4,\"Y\":0.0},\"XZ\":{\"X\":24.4,\"Y\":23.0}},\"Position2D\":{\"X\":24.4,\"Y\":23.0},\"x\":24.4,\"y\":0.0,\"z\":23.0},\"Facing\":{\"X\":0.0,\"Y\":1.0},\"BaseShape\":{\"$type\":\"baseShape.circle\",\"RadiusInches\":0.5511811,\"BoundingRadiusInches\":0.5511811,\"CircumscribedRadiusInches\":0.5511811}}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 5
+        },
+        "Index": 3,
+        "Generation": 1
+      },
+      "JsonValue": "{\"_tokens\":{\"_tokens\":[]},\"_ruleDefinitionsJson\":null,\"RemainingWoundsBinding\":{\"TypeID\":{\"ID\":2},\"Index\":3,\"Generation\":1},\"PositionBinding\":{\"TypeID\":{\"ID\":4},\"Index\":3,\"Generation\":1},\"FacingBinding\":{\"TypeID\":{\"ID\":15},\"Index\":3,\"Generation\":1},\"Weapons\":[{\"_ruleDefinitionsJson\":\"[\\n  {\\n    \\\"requestedName\\\": \\\"Rending\\\",\\n    \\\"definition\\\": {\\n      \\\"name\\\": \\\"Rending\\\",\\n      \\\"passive\\\": [\\n        {\\n          \\\"hookID\\\": \\\"Shooting_OnHitRollComplete\\\",\\n          \\\"condition\\\": {\\n            \\\"kind\\\": \\\"unmodifiedRollEquals\\\",\\n            \\\"dieValue\\\": 6\\n          },\\n          \\\"effect\\\": {\\n            \\\"kind\\\": \\\"perHitSaveModifier\\\",\\n            \\\"onRollValue\\\": 6,\\n            \\\"delta\\\": -4\\n          },\\n          \\\"lifetime\\\": \\\"ThisAttack\\\",\\n          \\\"seat\\\": \\\"Actor\\\"\\n        },\\n        {\\n          \\\"hookID\\\": \\\"Shooting_OnSaveRollComplete\\\",\\n          \\\"condition\\\": {\\n            \\\"kind\\\": \\\"always\\\"\\n          },\\n          \\\"effect\\\": {\\n            \\\"kind\\\": \\\"ignoreRule\\\",\\n            \\\"ruleName\\\": \\\"Regeneration\\\"\\n          },\\n          \\\"lifetime\\\": \\\"ThisAttack\\\",\\n          \\\"seat\\\": \\\"Actor\\\"\\n        }\\n      ],\\n      \\\"activated\\\": [],\\n      \\\"scope\\\": \\\"Weapon\\\",\\n      \\\"engineArgumentCount\\\": 0,\\n      \\\"valence\\\": \\\"Positive\\\",\\n      \\\"description\\\": \\\"An unmodified 6 to hit gives the attack AP(\\\\u002B4), and the attack ignores Regeneration.\\\"\\n    },\\n    \\\"intArguments\\\": [],\\n    \\\"arguments\\\": []\\n  },\\n  {\\n    \\\"requestedName\\\": \\\"Reliable\\\",\\n    \\\"definition\\\": {\\n      \\\"name\\\": \\\"Reliable\\\",\\n      \\\"passive\\\": [\\n        {\\n          \\\"hookID\\\": \\\"Shooting_OnHitRollModifier\\\",\\n          \\\"condition\\\": {\\n            \\\"kind\\\": \\\"always\\\"\\n          },\\n          \\\"effect\\\": {\\n            \\\"kind\\\": \\\"qualityFloor\\\",\\n            \\\"quality\\\": 2\\n          },\\n          \\\"lifetime\\\": \\\"ThisAttack\\\",\\n          \\\"seat\\\": \\\"Actor\\\"\\n        }\\n      ],\\n      \\\"activated\\\": [],\\n      \\\"scope\\\": \\\"Weapon\\\",\\n      \\\"engineArgumentCount\\\": 0,\\n      \\\"valence\\\": \\\"Positive\\\",\\n      \\\"description\\\": \\\"Attacks with this weapon hit on a Quality of 2\\\\u002B (before other modifiers).\\\"\\n    },\\n    \\\"intArguments\\\": [],\\n    \\\"arguments\\\": []\\n  }\\n]\",\"Name\":\"Render Rifle\",\"RangeInches\":30.0,\"Attacks\":2,\"ArmorPenetration\":1,\"EffectKey\":null},{\"_ruleDefinitionsJson\":\"[\\n  {\\n    \\\"requestedName\\\": \\\"Blast(3)\\\",\\n    \\\"definition\\\": {\\n      \\\"name\\\": \\\"Blast\\\",\\n      \\\"passive\\\": [\\n        {\\n          \\\"hookID\\\": \\\"Shooting_OnHitRollComplete\\\",\\n          \\\"condition\\\": {\\n            \\\"kind\\\": \\\"always\\\"\\n          },\\n          \\\"effect\\\": {\\n            \\\"kind\\\": \\\"multiplyHits\\\",\\n            \\\"multiplier\\\": {\\n              \\\"kind\\\": \\\"arg\\\",\\n              \\\"index\\\": 0\\n            }\\n          },\\n          \\\"lifetime\\\": \\\"ThisAttack\\\",\\n          \\\"seat\\\": \\\"Actor\\\"\\n        },\\n        {\\n          \\\"hookID\\\": \\\"Shooting_OnSaveRollModifier\\\",\\n          \\\"condition\\\": {\\n            \\\"kind\\\": \\\"always\\\"\\n          },\\n          \\\"effect\\\": {\\n            \\\"kind\\\": \\\"ignoreCover\\\"\\n          },\\n          \\\"lifetime\\\": \\\"ThisAttack\\\",\\n          \\\"seat\\\": \\\"Actor\\\"\\n        }\\n      ],\\n      \\\"activated\\\": [],\\n      \\\"scope\\\": \\\"Weapon\\\",\\n      \\\"engineArgumentCount\\\": 0,\\n      \\\"valence\\\": \\\"Positive\\\",\\n      \\\"description\\\": \\\"Each hit becomes several hits (no more per hit than the target unit\\\\u0027s model count) and the attack ignores cover.\\\"\\n    },\\n    \\\"intArguments\\\": [\\n      3\\n    ],\\n    \\\"arguments\\\": [\\n      {\\n        \\\"intValue\\\": 3,\\n        \\\"strValue\\\": null\\n      }\\n    ]\\n  },\\n  {\\n    \\\"requestedName\\\": \\\"Indirect\\\",\\n    \\\"definition\\\": {\\n      \\\"name\\\": \\\"Indirect\\\",\\n      \\\"passive\\\": [\\n        {\\n          \\\"hookID\\\": \\\"Shooting_OnHitRollModifier\\\",\\n          \\\"condition\\\": {\\n            \\\"kind\\\": \\\"and\\\",\\n            \\\"left\\\": {\\n              \\\"kind\\\": \\\"afterMoving\\\"\\n            },\\n            \\\"right\\\": {\\n              \\\"kind\\\": \\\"not\\\",\\n              \\\"inner\\\": {\\n                \\\"kind\\\": \\\"isMelee\\\"\\n              }\\n            }\\n          },\\n          \\\"effect\\\": {\\n            \\\"kind\\\": \\\"rollModifier\\\",\\n            \\\"rollKind\\\": \\\"Hit\\\",\\n            \\\"delta\\\": -1\\n          },\\n          \\\"lifetime\\\": \\\"ThisAttack\\\",\\n          \\\"seat\\\": \\\"Actor\\\"\\n        },\\n        {\\n          \\\"hookID\\\": \\\"Shooting_OnSaveRollModifier\\\",\\n          \\\"condition\\\": {\\n            \\\"kind\\\": \\\"always\\\"\\n          },\\n          \\\"effect\\\": {\\n            \\\"kind\\\": \\\"ignoreLineOfSight\\\"\\n          },\\n          \\\"lifetime\\\": \\\"ThisAttack\\\",\\n          \\\"seat\\\": \\\"Actor\\\"\\n        },\\n        {\\n          \\\"hookID\\\": \\\"Shooting_OnSaveRollModifier\\\",\\n          \\\"condition\\\": {\\n            \\\"kind\\\": \\\"always\\\"\\n          },\\n          \\\"effect\\\": {\\n            \\\"kind\\\": \\\"ignoreCover\\\"\\n          },\\n          \\\"lifetime\\\": \\\"ThisAttack\\\",\\n          \\\"seat\\\": \\\"Actor\\\"\\n        }\\n      ],\\n      \\\"activated\\\": [],\\n      \\\"scope\\\": \\\"Weapon\\\",\\n      \\\"engineArgumentCount\\\": 0,\\n      \\\"valence\\\": \\\"Positive\\\",\\n      \\\"description\\\": \\\"Fires at targets out of line of sight and ignores cover; -1 to hit if the unit moved this activation.\\\"\\n    },\\n    \\\"intArguments\\\": [],\\n    \\\"arguments\\\": []\\n  }\\n]\",\"Name\":\"Siege Launcher\",\"RangeInches\":24.0,\"Attacks\":1,\"ArmorPenetration\":2,\"EffectKey\":null},{\"_ruleDefinitionsJson\":\"[\\n  {\\n    \\\"requestedName\\\": \\\"Limited\\\",\\n    \\\"definition\\\": {\\n      \\\"name\\\": \\\"Limited\\\",\\n      \\\"passive\\\": [],\\n      \\\"activated\\\": [],\\n      \\\"scope\\\": \\\"Weapon\\\",\\n      \\\"engineArgumentCount\\\": 0,\\n      \\\"valence\\\": \\\"Neutral\\\",\\n      \\\"description\\\": \\\"This weapon may only be used once per game.\\\"\\n    },\\n    \\\"intArguments\\\": [],\\n    \\\"arguments\\\": []\\n  },\\n  {\\n    \\\"requestedName\\\": \\\"Deadly(3)\\\",\\n    \\\"definition\\\": {\\n      \\\"name\\\": \\\"Deadly\\\",\\n      \\\"passive\\\": [\\n        {\\n          \\\"hookID\\\": \\\"Shooting_OnPreApplyWound\\\",\\n          \\\"condition\\\": {\\n            \\\"kind\\\": \\\"always\\\"\\n          },\\n          \\\"effect\\\": {\\n            \\\"kind\\\": \\\"multiplyWounds\\\",\\n            \\\"multiplier\\\": {\\n              \\\"kind\\\": \\\"arg\\\",\\n              \\\"index\\\": 0\\n            }\\n          },\\n          \\\"lifetime\\\": \\\"ThisAttack\\\",\\n          \\\"seat\\\": \\\"Actor\\\"\\n        }\\n      ],\\n      \\\"activated\\\": [],\\n      \\\"scope\\\": \\\"Weapon\\\",\\n      \\\"engineArgumentCount\\\": 0,\\n      \\\"valence\\\": \\\"Positive\\\",\\n      \\\"description\\\": \\\"Each wound from this weapon is multiplied; excess wounds don\\\\u0027t carry over to other models.\\\"\\n    },\\n    \\\"intArguments\\\": [\\n      3\\n    ],\\n    \\\"arguments\\\": [\\n      {\\n        \\\"intValue\\\": 3,\\n        \\\"strValue\\\": null\\n      }\\n    ]\\n  }\\n]\",\"Name\":\"Thermal Lance\",\"RangeInches\":18.0,\"Attacks\":1,\"ArmorPenetration\":4,\"EffectKey\":null},{\"_ruleDefinitionsJson\":null,\"Name\":\"Hand Axe\",\"RangeInches\":0.0,\"Attacks\":1,\"ArmorPenetration\":0,\"EffectKey\":null}],\"ID\":{\"ID\":\"064260b1-3ecc-4bd3-8726-1aa748054f6b\"},\"TotalWounds\":1.0,\"WoundsDealt\":0.0,\"Position\":{\"Position3D\":{\"X\":34.0,\"Y\":0.0,\"Z\":20.0,\"XY\":{\"X\":34.0,\"Y\":0.0},\"XZ\":{\"X\":34.0,\"Y\":20.0}},\"Position2D\":{\"X\":34.0,\"Y\":20.0},\"x\":34.0,\"y\":0.0,\"z\":20.0},\"Facing\":{\"X\":0.0,\"Y\":1.0},\"BaseShape\":{\"$type\":\"baseShape.circle\",\"RadiusInches\":0.5511811,\"BoundingRadiusInches\":0.5511811,\"CircumscribedRadiusInches\":0.5511811}}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 5
+        },
+        "Index": 4,
+        "Generation": 1
+      },
+      "JsonValue": "{\"_tokens\":{\"_tokens\":[]},\"_ruleDefinitionsJson\":null,\"RemainingWoundsBinding\":{\"TypeID\":{\"ID\":2},\"Index\":4,\"Generation\":1},\"PositionBinding\":{\"TypeID\":{\"ID\":4},\"Index\":4,\"Generation\":1},\"FacingBinding\":{\"TypeID\":{\"ID\":15},\"Index\":4,\"Generation\":1},\"Weapons\":[{\"_ruleDefinitionsJson\":\"[\\n  {\\n    \\\"requestedName\\\": \\\"Rending\\\",\\n    \\\"definition\\\": {\\n      \\\"name\\\": \\\"Rending\\\",\\n      \\\"passive\\\": [\\n        {\\n          \\\"hookID\\\": \\\"Shooting_OnHitRollComplete\\\",\\n          \\\"condition\\\": {\\n            \\\"kind\\\": \\\"unmodifiedRollEquals\\\",\\n            \\\"dieValue\\\": 6\\n          },\\n          \\\"effect\\\": {\\n            \\\"kind\\\": \\\"perHitSaveModifier\\\",\\n            \\\"onRollValue\\\": 6,\\n            \\\"delta\\\": -4\\n          },\\n          \\\"lifetime\\\": \\\"ThisAttack\\\",\\n          \\\"seat\\\": \\\"Actor\\\"\\n        },\\n        {\\n          \\\"hookID\\\": \\\"Shooting_OnSaveRollComplete\\\",\\n          \\\"condition\\\": {\\n            \\\"kind\\\": \\\"always\\\"\\n          },\\n          \\\"effect\\\": {\\n            \\\"kind\\\": \\\"ignoreRule\\\",\\n            \\\"ruleName\\\": \\\"Regeneration\\\"\\n          },\\n          \\\"lifetime\\\": \\\"ThisAttack\\\",\\n          \\\"seat\\\": \\\"Actor\\\"\\n        }\\n      ],\\n      \\\"activated\\\": [],\\n      \\\"scope\\\": \\\"Weapon\\\",\\n      \\\"engineArgumentCount\\\": 0,\\n      \\\"valence\\\": \\\"Positive\\\",\\n      \\\"description\\\": \\\"An unmodified 6 to hit gives the attack AP(\\\\u002B4), and the attack ignores Regeneration.\\\"\\n    },\\n    \\\"intArguments\\\": [],\\n    \\\"arguments\\\": []\\n  },\\n  {\\n    \\\"requestedName\\\": \\\"Reliable\\\",\\n    \\\"definition\\\": {\\n      \\\"name\\\": \\\"Reliable\\\",\\n      \\\"passive\\\": [\\n        {\\n          \\\"hookID\\\": \\\"Shooting_OnHitRollModifier\\\",\\n          \\\"condition\\\": {\\n            \\\"kind\\\": \\\"always\\\"\\n          },\\n          \\\"effect\\\": {\\n            \\\"kind\\\": \\\"qualityFloor\\\",\\n            \\\"quality\\\": 2\\n          },\\n          \\\"lifetime\\\": \\\"ThisAttack\\\",\\n          \\\"seat\\\": \\\"Actor\\\"\\n        }\\n      ],\\n      \\\"activated\\\": [],\\n      \\\"scope\\\": \\\"Weapon\\\",\\n      \\\"engineArgumentCount\\\": 0,\\n      \\\"valence\\\": \\\"Positive\\\",\\n      \\\"description\\\": \\\"Attacks with this weapon hit on a Quality of 2\\\\u002B (before other modifiers).\\\"\\n    },\\n    \\\"intArguments\\\": [],\\n    \\\"arguments\\\": []\\n  }\\n]\",\"Name\":\"Render Rifle\",\"RangeInches\":30.0,\"Attacks\":2,\"ArmorPenetration\":1,\"EffectKey\":null},{\"_ruleDefinitionsJson\":\"[\\n  {\\n    \\\"requestedName\\\": \\\"Blast(3)\\\",\\n    \\\"definition\\\": {\\n      \\\"name\\\": \\\"Blast\\\",\\n      \\\"passive\\\": [\\n        {\\n          \\\"hookID\\\": \\\"Shooting_OnHitRollComplete\\\",\\n          \\\"condition\\\": {\\n            \\\"kind\\\": \\\"always\\\"\\n          },\\n          \\\"effect\\\": {\\n            \\\"kind\\\": \\\"multiplyHits\\\",\\n            \\\"multiplier\\\": {\\n              \\\"kind\\\": \\\"arg\\\",\\n              \\\"index\\\": 0\\n            }\\n          },\\n          \\\"lifetime\\\": \\\"ThisAttack\\\",\\n          \\\"seat\\\": \\\"Actor\\\"\\n        },\\n        {\\n          \\\"hookID\\\": \\\"Shooting_OnSaveRollModifier\\\",\\n          \\\"condition\\\": {\\n            \\\"kind\\\": \\\"always\\\"\\n          },\\n          \\\"effect\\\": {\\n            \\\"kind\\\": \\\"ignoreCover\\\"\\n          },\\n          \\\"lifetime\\\": \\\"ThisAttack\\\",\\n          \\\"seat\\\": \\\"Actor\\\"\\n        }\\n      ],\\n      \\\"activated\\\": [],\\n      \\\"scope\\\": \\\"Weapon\\\",\\n      \\\"engineArgumentCount\\\": 0,\\n      \\\"valence\\\": \\\"Positive\\\",\\n      \\\"description\\\": \\\"Each hit becomes several hits (no more per hit than the target unit\\\\u0027s model count) and the attack ignores cover.\\\"\\n    },\\n    \\\"intArguments\\\": [\\n      3\\n    ],\\n    \\\"arguments\\\": [\\n      {\\n        \\\"intValue\\\": 3,\\n        \\\"strValue\\\": null\\n      }\\n    ]\\n  },\\n  {\\n    \\\"requestedName\\\": \\\"Indirect\\\",\\n    \\\"definition\\\": {\\n      \\\"name\\\": \\\"Indirect\\\",\\n      \\\"passive\\\": [\\n        {\\n          \\\"hookID\\\": \\\"Shooting_OnHitRollModifier\\\",\\n          \\\"condition\\\": {\\n            \\\"kind\\\": \\\"and\\\",\\n            \\\"left\\\": {\\n              \\\"kind\\\": \\\"afterMoving\\\"\\n            },\\n            \\\"right\\\": {\\n              \\\"kind\\\": \\\"not\\\",\\n              \\\"inner\\\": {\\n                \\\"kind\\\": \\\"isMelee\\\"\\n              }\\n            }\\n          },\\n          \\\"effect\\\": {\\n            \\\"kind\\\": \\\"rollModifier\\\",\\n            \\\"rollKind\\\": \\\"Hit\\\",\\n            \\\"delta\\\": -1\\n          },\\n          \\\"lifetime\\\": \\\"ThisAttack\\\",\\n          \\\"seat\\\": \\\"Actor\\\"\\n        },\\n        {\\n          \\\"hookID\\\": \\\"Shooting_OnSaveRollModifier\\\",\\n          \\\"condition\\\": {\\n            \\\"kind\\\": \\\"always\\\"\\n          },\\n          \\\"effect\\\": {\\n            \\\"kind\\\": \\\"ignoreLineOfSight\\\"\\n          },\\n          \\\"lifetime\\\": \\\"ThisAttack\\\",\\n          \\\"seat\\\": \\\"Actor\\\"\\n        },\\n        {\\n          \\\"hookID\\\": \\\"Shooting_OnSaveRollModifier\\\",\\n          \\\"condition\\\": {\\n            \\\"kind\\\": \\\"always\\\"\\n          },\\n          \\\"effect\\\": {\\n            \\\"kind\\\": \\\"ignoreCover\\\"\\n          },\\n          \\\"lifetime\\\": \\\"ThisAttack\\\",\\n          \\\"seat\\\": \\\"Actor\\\"\\n        }\\n      ],\\n      \\\"activated\\\": [],\\n      \\\"scope\\\": \\\"Weapon\\\",\\n      \\\"engineArgumentCount\\\": 0,\\n      \\\"valence\\\": \\\"Positive\\\",\\n      \\\"description\\\": \\\"Fires at targets out of line of sight and ignores cover; -1 to hit if the unit moved this activation.\\\"\\n    },\\n    \\\"intArguments\\\": [],\\n    \\\"arguments\\\": []\\n  }\\n]\",\"Name\":\"Siege Launcher\",\"RangeInches\":24.0,\"Attacks\":1,\"ArmorPenetration\":2,\"EffectKey\":null},{\"_ruleDefinitionsJson\":\"[\\n  {\\n    \\\"requestedName\\\": \\\"Limited\\\",\\n    \\\"definition\\\": {\\n      \\\"name\\\": \\\"Limited\\\",\\n      \\\"passive\\\": [],\\n      \\\"activated\\\": [],\\n      \\\"scope\\\": \\\"Weapon\\\",\\n      \\\"engineArgumentCount\\\": 0,\\n      \\\"valence\\\": \\\"Neutral\\\",\\n      \\\"description\\\": \\\"This weapon may only be used once per game.\\\"\\n    },\\n    \\\"intArguments\\\": [],\\n    \\\"arguments\\\": []\\n  },\\n  {\\n    \\\"requestedName\\\": \\\"Deadly(3)\\\",\\n    \\\"definition\\\": {\\n      \\\"name\\\": \\\"Deadly\\\",\\n      \\\"passive\\\": [\\n        {\\n          \\\"hookID\\\": \\\"Shooting_OnPreApplyWound\\\",\\n          \\\"condition\\\": {\\n            \\\"kind\\\": \\\"always\\\"\\n          },\\n          \\\"effect\\\": {\\n            \\\"kind\\\": \\\"multiplyWounds\\\",\\n            \\\"multiplier\\\": {\\n              \\\"kind\\\": \\\"arg\\\",\\n              \\\"index\\\": 0\\n            }\\n          },\\n          \\\"lifetime\\\": \\\"ThisAttack\\\",\\n          \\\"seat\\\": \\\"Actor\\\"\\n        }\\n      ],\\n      \\\"activated\\\": [],\\n      \\\"scope\\\": \\\"Weapon\\\",\\n      \\\"engineArgumentCount\\\": 0,\\n      \\\"valence\\\": \\\"Positive\\\",\\n      \\\"description\\\": \\\"Each wound from this weapon is multiplied; excess wounds don\\\\u0027t carry over to other models.\\\"\\n    },\\n    \\\"intArguments\\\": [\\n      3\\n    ],\\n    \\\"arguments\\\": [\\n      {\\n        \\\"intValue\\\": 3,\\n        \\\"strValue\\\": null\\n      }\\n    ]\\n  }\\n]\",\"Name\":\"Thermal Lance\",\"RangeInches\":18.0,\"Attacks\":1,\"ArmorPenetration\":4,\"EffectKey\":null},{\"_ruleDefinitionsJson\":null,\"Name\":\"Hand Axe\",\"RangeInches\":0.0,\"Attacks\":1,\"ArmorPenetration\":0,\"EffectKey\":null}],\"ID\":{\"ID\":\"461121ea-9db6-4074-9070-830df0d31ef9\"},\"TotalWounds\":1.0,\"WoundsDealt\":0.0,\"Position\":{\"Position3D\":{\"X\":35.2,\"Y\":0.0,\"Z\":20.0,\"XY\":{\"X\":35.2,\"Y\":0.0},\"XZ\":{\"X\":35.2,\"Y\":20.0}},\"Position2D\":{\"X\":35.2,\"Y\":20.0},\"x\":35.2,\"y\":0.0,\"z\":20.0},\"Facing\":{\"X\":0.0,\"Y\":1.0},\"BaseShape\":{\"$type\":\"baseShape.circle\",\"RadiusInches\":0.5511811,\"BoundingRadiusInches\":0.5511811,\"CircumscribedRadiusInches\":0.5511811}}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 5
+        },
+        "Index": 5,
+        "Generation": 1
+      },
+      "JsonValue": "{\"_tokens\":{\"_tokens\":[]},\"_ruleDefinitionsJson\":null,\"RemainingWoundsBinding\":{\"TypeID\":{\"ID\":2},\"Index\":5,\"Generation\":1},\"PositionBinding\":{\"TypeID\":{\"ID\":4},\"Index\":5,\"Generation\":1},\"FacingBinding\":{\"TypeID\":{\"ID\":15},\"Index\":5,\"Generation\":1},\"Weapons\":[{\"_ruleDefinitionsJson\":\"[\\n  {\\n    \\\"requestedName\\\": \\\"Rending\\\",\\n    \\\"definition\\\": {\\n      \\\"name\\\": \\\"Rending\\\",\\n      \\\"passive\\\": [\\n        {\\n          \\\"hookID\\\": \\\"Shooting_OnHitRollComplete\\\",\\n          \\\"condition\\\": {\\n            \\\"kind\\\": \\\"unmodifiedRollEquals\\\",\\n            \\\"dieValue\\\": 6\\n          },\\n          \\\"effect\\\": {\\n            \\\"kind\\\": \\\"perHitSaveModifier\\\",\\n            \\\"onRollValue\\\": 6,\\n            \\\"delta\\\": -4\\n          },\\n          \\\"lifetime\\\": \\\"ThisAttack\\\",\\n          \\\"seat\\\": \\\"Actor\\\"\\n        },\\n        {\\n          \\\"hookID\\\": \\\"Shooting_OnSaveRollComplete\\\",\\n          \\\"condition\\\": {\\n            \\\"kind\\\": \\\"always\\\"\\n          },\\n          \\\"effect\\\": {\\n            \\\"kind\\\": \\\"ignoreRule\\\",\\n            \\\"ruleName\\\": \\\"Regeneration\\\"\\n          },\\n          \\\"lifetime\\\": \\\"ThisAttack\\\",\\n          \\\"seat\\\": \\\"Actor\\\"\\n        }\\n      ],\\n      \\\"activated\\\": [],\\n      \\\"scope\\\": \\\"Weapon\\\",\\n      \\\"engineArgumentCount\\\": 0,\\n      \\\"valence\\\": \\\"Positive\\\",\\n      \\\"description\\\": \\\"An unmodified 6 to hit gives the attack AP(\\\\u002B4), and the attack ignores Regeneration.\\\"\\n    },\\n    \\\"intArguments\\\": [],\\n    \\\"arguments\\\": []\\n  },\\n  {\\n    \\\"requestedName\\\": \\\"Reliable\\\",\\n    \\\"definition\\\": {\\n      \\\"name\\\": \\\"Reliable\\\",\\n      \\\"passive\\\": [\\n        {\\n          \\\"hookID\\\": \\\"Shooting_OnHitRollModifier\\\",\\n          \\\"condition\\\": {\\n            \\\"kind\\\": \\\"always\\\"\\n          },\\n          \\\"effect\\\": {\\n            \\\"kind\\\": \\\"qualityFloor\\\",\\n            \\\"quality\\\": 2\\n          },\\n          \\\"lifetime\\\": \\\"ThisAttack\\\",\\n          \\\"seat\\\": \\\"Actor\\\"\\n        }\\n      ],\\n      \\\"activated\\\": [],\\n      \\\"scope\\\": \\\"Weapon\\\",\\n      \\\"engineArgumentCount\\\": 0,\\n      \\\"valence\\\": \\\"Positive\\\",\\n      \\\"description\\\": \\\"Attacks with this weapon hit on a Quality of 2\\\\u002B (before other modifiers).\\\"\\n    },\\n    \\\"intArguments\\\": [],\\n    \\\"arguments\\\": []\\n  }\\n]\",\"Name\":\"Render Rifle\",\"RangeInches\":30.0,\"Attacks\":2,\"ArmorPenetration\":1,\"EffectKey\":null},{\"_ruleDefinitionsJson\":\"[\\n  {\\n    \\\"requestedName\\\": \\\"Blast(3)\\\",\\n    \\\"definition\\\": {\\n      \\\"name\\\": \\\"Blast\\\",\\n      \\\"passive\\\": [\\n        {\\n          \\\"hookID\\\": \\\"Shooting_OnHitRollComplete\\\",\\n          \\\"condition\\\": {\\n            \\\"kind\\\": \\\"always\\\"\\n          },\\n          \\\"effect\\\": {\\n            \\\"kind\\\": \\\"multiplyHits\\\",\\n            \\\"multiplier\\\": {\\n              \\\"kind\\\": \\\"arg\\\",\\n              \\\"index\\\": 0\\n            }\\n          },\\n          \\\"lifetime\\\": \\\"ThisAttack\\\",\\n          \\\"seat\\\": \\\"Actor\\\"\\n        },\\n        {\\n          \\\"hookID\\\": \\\"Shooting_OnSaveRollModifier\\\",\\n          \\\"condition\\\": {\\n            \\\"kind\\\": \\\"always\\\"\\n          },\\n          \\\"effect\\\": {\\n            \\\"kind\\\": \\\"ignoreCover\\\"\\n          },\\n          \\\"lifetime\\\": \\\"ThisAttack\\\",\\n          \\\"seat\\\": \\\"Actor\\\"\\n        }\\n      ],\\n      \\\"activated\\\": [],\\n      \\\"scope\\\": \\\"Weapon\\\",\\n      \\\"engineArgumentCount\\\": 0,\\n      \\\"valence\\\": \\\"Positive\\\",\\n      \\\"description\\\": \\\"Each hit becomes several hits (no more per hit than the target unit\\\\u0027s model count) and the attack ignores cover.\\\"\\n    },\\n    \\\"intArguments\\\": [\\n      3\\n    ],\\n    \\\"arguments\\\": [\\n      {\\n        \\\"intValue\\\": 3,\\n        \\\"strValue\\\": null\\n      }\\n    ]\\n  },\\n  {\\n    \\\"requestedName\\\": \\\"Indirect\\\",\\n    \\\"definition\\\": {\\n      \\\"name\\\": \\\"Indirect\\\",\\n      \\\"passive\\\": [\\n        {\\n          \\\"hookID\\\": \\\"Shooting_OnHitRollModifier\\\",\\n          \\\"condition\\\": {\\n            \\\"kind\\\": \\\"and\\\",\\n            \\\"left\\\": {\\n              \\\"kind\\\": \\\"afterMoving\\\"\\n            },\\n            \\\"right\\\": {\\n              \\\"kind\\\": \\\"not\\\",\\n              \\\"inner\\\": {\\n                \\\"kind\\\": \\\"isMelee\\\"\\n              }\\n            }\\n          },\\n          \\\"effect\\\": {\\n            \\\"kind\\\": \\\"rollModifier\\\",\\n            \\\"rollKind\\\": \\\"Hit\\\",\\n            \\\"delta\\\": -1\\n          },\\n          \\\"lifetime\\\": \\\"ThisAttack\\\",\\n          \\\"seat\\\": \\\"Actor\\\"\\n        },\\n        {\\n          \\\"hookID\\\": \\\"Shooting_OnSaveRollModifier\\\",\\n          \\\"condition\\\": {\\n            \\\"kind\\\": \\\"always\\\"\\n          },\\n          \\\"effect\\\": {\\n            \\\"kind\\\": \\\"ignoreLineOfSight\\\"\\n          },\\n          \\\"lifetime\\\": \\\"ThisAttack\\\",\\n          \\\"seat\\\": \\\"Actor\\\"\\n        },\\n        {\\n          \\\"hookID\\\": \\\"Shooting_OnSaveRollModifier\\\",\\n          \\\"condition\\\": {\\n            \\\"kind\\\": \\\"always\\\"\\n          },\\n          \\\"effect\\\": {\\n            \\\"kind\\\": \\\"ignoreCover\\\"\\n          },\\n          \\\"lifetime\\\": \\\"ThisAttack\\\",\\n          \\\"seat\\\": \\\"Actor\\\"\\n        }\\n      ],\\n      \\\"activated\\\": [],\\n      \\\"scope\\\": \\\"Weapon\\\",\\n      \\\"engineArgumentCount\\\": 0,\\n      \\\"valence\\\": \\\"Positive\\\",\\n      \\\"description\\\": \\\"Fires at targets out of line of sight and ignores cover; -1 to hit if the unit moved this activation.\\\"\\n    },\\n    \\\"intArguments\\\": [],\\n    \\\"arguments\\\": []\\n  }\\n]\",\"Name\":\"Siege Launcher\",\"RangeInches\":24.0,\"Attacks\":1,\"ArmorPenetration\":2,\"EffectKey\":null},{\"_ruleDefinitionsJson\":\"[\\n  {\\n    \\\"requestedName\\\": \\\"Limited\\\",\\n    \\\"definition\\\": {\\n      \\\"name\\\": \\\"Limited\\\",\\n      \\\"passive\\\": [],\\n      \\\"activated\\\": [],\\n      \\\"scope\\\": \\\"Weapon\\\",\\n      \\\"engineArgumentCount\\\": 0,\\n      \\\"valence\\\": \\\"Neutral\\\",\\n      \\\"description\\\": \\\"This weapon may only be used once per game.\\\"\\n    },\\n    \\\"intArguments\\\": [],\\n    \\\"arguments\\\": []\\n  },\\n  {\\n    \\\"requestedName\\\": \\\"Deadly(3)\\\",\\n    \\\"definition\\\": {\\n      \\\"name\\\": \\\"Deadly\\\",\\n      \\\"passive\\\": [\\n        {\\n          \\\"hookID\\\": \\\"Shooting_OnPreApplyWound\\\",\\n          \\\"condition\\\": {\\n            \\\"kind\\\": \\\"always\\\"\\n          },\\n          \\\"effect\\\": {\\n            \\\"kind\\\": \\\"multiplyWounds\\\",\\n            \\\"multiplier\\\": {\\n              \\\"kind\\\": \\\"arg\\\",\\n              \\\"index\\\": 0\\n            }\\n          },\\n          \\\"lifetime\\\": \\\"ThisAttack\\\",\\n          \\\"seat\\\": \\\"Actor\\\"\\n        }\\n      ],\\n      \\\"activated\\\": [],\\n      \\\"scope\\\": \\\"Weapon\\\",\\n      \\\"engineArgumentCount\\\": 0,\\n      \\\"valence\\\": \\\"Positive\\\",\\n      \\\"description\\\": \\\"Each wound from this weapon is multiplied; excess wounds don\\\\u0027t carry over to other models.\\\"\\n    },\\n    \\\"intArguments\\\": [\\n      3\\n    ],\\n    \\\"arguments\\\": [\\n      {\\n        \\\"intValue\\\": 3,\\n        \\\"strValue\\\": null\\n      }\\n    ]\\n  }\\n]\",\"Name\":\"Thermal Lance\",\"RangeInches\":18.0,\"Attacks\":1,\"ArmorPenetration\":4,\"EffectKey\":null},{\"_ruleDefinitionsJson\":null,\"Name\":\"Hand Axe\",\"RangeInches\":0.0,\"Attacks\":1,\"ArmorPenetration\":0,\"EffectKey\":null}],\"ID\":{\"ID\":\"3717bc51-1541-4cd9-abfd-a17d5eb0854a\"},\"TotalWounds\":1.0,\"WoundsDealt\":0.0,\"Position\":{\"Position3D\":{\"X\":36.4,\"Y\":0.0,\"Z\":20.0,\"XY\":{\"X\":36.4,\"Y\":0.0},\"XZ\":{\"X\":36.4,\"Y\":20.0}},\"Position2D\":{\"X\":36.4,\"Y\":20.0},\"x\":36.4,\"y\":0.0,\"z\":20.0},\"Facing\":{\"X\":0.0,\"Y\":1.0},\"BaseShape\":{\"$type\":\"baseShape.circle\",\"RadiusInches\":0.5511811,\"BoundingRadiusInches\":0.5511811,\"CircumscribedRadiusInches\":0.5511811}}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 5
+        },
+        "Index": 6,
+        "Generation": 1
+      },
+      "JsonValue": "{\"_tokens\":{\"_tokens\":[]},\"_ruleDefinitionsJson\":null,\"RemainingWoundsBinding\":{\"TypeID\":{\"ID\":2},\"Index\":6,\"Generation\":1},\"PositionBinding\":{\"TypeID\":{\"ID\":4},\"Index\":6,\"Generation\":1},\"FacingBinding\":{\"TypeID\":{\"ID\":15},\"Index\":6,\"Generation\":1},\"Weapons\":[{\"_ruleDefinitionsJson\":null,\"Name\":\"Stick\",\"RangeInches\":0.0,\"Attacks\":1,\"ArmorPenetration\":0,\"EffectKey\":null}],\"ID\":{\"ID\":\"ad73186f-6f15-4440-b5eb-d57768c8bac8\"},\"TotalWounds\":6.0,\"WoundsDealt\":0.0,\"Position\":{\"Position3D\":{\"X\":2.551181,\"Y\":0.0,\"Z\":9.0,\"XY\":{\"X\":2.551181,\"Y\":0.0},\"XZ\":{\"X\":2.551181,\"Y\":9.0}},\"Position2D\":{\"X\":2.551181,\"Y\":9.0},\"x\":2.551181,\"y\":0.0,\"z\":9.0},\"Facing\":{\"X\":0.0,\"Y\":1.0},\"BaseShape\":{\"$type\":\"baseShape.circle\",\"RadiusInches\":0.5511811,\"BoundingRadiusInches\":0.5511811,\"CircumscribedRadiusInches\":0.5511811}}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 5
+        },
+        "Index": 7,
+        "Generation": 1
+      },
+      "JsonValue": "{\"_tokens\":{\"_tokens\":[]},\"_ruleDefinitionsJson\":null,\"RemainingWoundsBinding\":{\"TypeID\":{\"ID\":2},\"Index\":7,\"Generation\":1},\"PositionBinding\":{\"TypeID\":{\"ID\":4},\"Index\":7,\"Generation\":1},\"FacingBinding\":{\"TypeID\":{\"ID\":15},\"Index\":7,\"Generation\":1},\"Weapons\":[{\"_ruleDefinitionsJson\":null,\"Name\":\"Stick\",\"RangeInches\":0.0,\"Attacks\":1,\"ArmorPenetration\":0,\"EffectKey\":null}],\"ID\":{\"ID\":\"aab42929-753d-41a9-9e12-36d3a7e95f62\"},\"TotalWounds\":6.0,\"WoundsDealt\":0.0,\"Position\":{\"Position3D\":{\"X\":3.8535433,\"Y\":0.0,\"Z\":9.0,\"XY\":{\"X\":3.8535433,\"Y\":0.0},\"XZ\":{\"X\":3.8535433,\"Y\":9.0}},\"Position2D\":{\"X\":3.8535433,\"Y\":9.0},\"x\":3.8535433,\"y\":0.0,\"z\":9.0},\"Facing\":{\"X\":0.0,\"Y\":1.0},\"BaseShape\":{\"$type\":\"baseShape.circle\",\"RadiusInches\":0.5511811,\"BoundingRadiusInches\":0.5511811,\"CircumscribedRadiusInches\":0.5511811}}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 5
+        },
+        "Index": 8,
+        "Generation": 1
+      },
+      "JsonValue": "{\"_tokens\":{\"_tokens\":[]},\"_ruleDefinitionsJson\":null,\"RemainingWoundsBinding\":{\"TypeID\":{\"ID\":2},\"Index\":8,\"Generation\":1},\"PositionBinding\":{\"TypeID\":{\"ID\":4},\"Index\":8,\"Generation\":1},\"FacingBinding\":{\"TypeID\":{\"ID\":15},\"Index\":8,\"Generation\":1},\"Weapons\":[{\"_ruleDefinitionsJson\":null,\"Name\":\"Stick\",\"RangeInches\":0.0,\"Attacks\":1,\"ArmorPenetration\":0,\"EffectKey\":null}],\"ID\":{\"ID\":\"d4bda726-5275-4430-b3db-14ef314e3acf\"},\"TotalWounds\":6.0,\"WoundsDealt\":0.0,\"Position\":{\"Position3D\":{\"X\":5.1559057,\"Y\":0.0,\"Z\":9.0,\"XY\":{\"X\":5.1559057,\"Y\":0.0},\"XZ\":{\"X\":5.1559057,\"Y\":9.0}},\"Position2D\":{\"X\":5.1559057,\"Y\":9.0},\"x\":5.1559057,\"y\":0.0,\"z\":9.0},\"Facing\":{\"X\":0.0,\"Y\":1.0},\"BaseShape\":{\"$type\":\"baseShape.circle\",\"RadiusInches\":0.5511811,\"BoundingRadiusInches\":0.5511811,\"CircumscribedRadiusInches\":0.5511811}}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 5
+        },
+        "Index": 9,
+        "Generation": 1
+      },
+      "JsonValue": "{\"_tokens\":{\"_tokens\":[]},\"_ruleDefinitionsJson\":null,\"RemainingWoundsBinding\":{\"TypeID\":{\"ID\":2},\"Index\":9,\"Generation\":1},\"PositionBinding\":{\"TypeID\":{\"ID\":4},\"Index\":9,\"Generation\":1},\"FacingBinding\":{\"TypeID\":{\"ID\":15},\"Index\":9,\"Generation\":1},\"Weapons\":[{\"_ruleDefinitionsJson\":null,\"Name\":\"Stick\",\"RangeInches\":0.0,\"Attacks\":1,\"ArmorPenetration\":0,\"EffectKey\":null}],\"ID\":{\"ID\":\"7e3d141a-a576-4599-8d6e-374449e62824\"},\"TotalWounds\":6.0,\"WoundsDealt\":0.0,\"Position\":{\"Position3D\":{\"X\":8.458268,\"Y\":0.0,\"Z\":9.0,\"XY\":{\"X\":8.458268,\"Y\":0.0},\"XZ\":{\"X\":8.458268,\"Y\":9.0}},\"Position2D\":{\"X\":8.458268,\"Y\":9.0},\"x\":8.458268,\"y\":0.0,\"z\":9.0},\"Facing\":{\"X\":0.0,\"Y\":1.0},\"BaseShape\":{\"$type\":\"baseShape.circle\",\"RadiusInches\":0.5511811,\"BoundingRadiusInches\":0.5511811,\"CircumscribedRadiusInches\":0.5511811}}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 5
+        },
+        "Index": 10,
+        "Generation": 1
+      },
+      "JsonValue": "{\"_tokens\":{\"_tokens\":[]},\"_ruleDefinitionsJson\":null,\"RemainingWoundsBinding\":{\"TypeID\":{\"ID\":2},\"Index\":10,\"Generation\":1},\"PositionBinding\":{\"TypeID\":{\"ID\":4},\"Index\":10,\"Generation\":1},\"FacingBinding\":{\"TypeID\":{\"ID\":15},\"Index\":10,\"Generation\":1},\"Weapons\":[{\"_ruleDefinitionsJson\":null,\"Name\":\"Stick\",\"RangeInches\":0.0,\"Attacks\":1,\"ArmorPenetration\":0,\"EffectKey\":null}],\"ID\":{\"ID\":\"186a9beb-b027-4e64-8afd-63cdf9c3bb55\"},\"TotalWounds\":6.0,\"WoundsDealt\":0.0,\"Position\":{\"Position3D\":{\"X\":9.76063,\"Y\":0.0,\"Z\":9.0,\"XY\":{\"X\":9.76063,\"Y\":0.0},\"XZ\":{\"X\":9.76063,\"Y\":9.0}},\"Position2D\":{\"X\":9.76063,\"Y\":9.0},\"x\":9.76063,\"y\":0.0,\"z\":9.0},\"Facing\":{\"X\":0.0,\"Y\":1.0},\"BaseShape\":{\"$type\":\"baseShape.circle\",\"RadiusInches\":0.5511811,\"BoundingRadiusInches\":0.5511811,\"CircumscribedRadiusInches\":0.5511811}}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 5
+        },
+        "Index": 11,
+        "Generation": 1
+      },
+      "JsonValue": "{\"_tokens\":{\"_tokens\":[]},\"_ruleDefinitionsJson\":null,\"RemainingWoundsBinding\":{\"TypeID\":{\"ID\":2},\"Index\":11,\"Generation\":1},\"PositionBinding\":{\"TypeID\":{\"ID\":4},\"Index\":11,\"Generation\":1},\"FacingBinding\":{\"TypeID\":{\"ID\":15},\"Index\":11,\"Generation\":1},\"Weapons\":[{\"_ruleDefinitionsJson\":null,\"Name\":\"Stick\",\"RangeInches\":0.0,\"Attacks\":1,\"ArmorPenetration\":0,\"EffectKey\":null}],\"ID\":{\"ID\":\"a8b5bac6-4bf4-4aad-a572-cc0944742a61\"},\"TotalWounds\":6.0,\"WoundsDealt\":0.0,\"Position\":{\"Position3D\":{\"X\":11.062991,\"Y\":0.0,\"Z\":9.0,\"XY\":{\"X\":11.062991,\"Y\":0.0},\"XZ\":{\"X\":11.062991,\"Y\":9.0}},\"Position2D\":{\"X\":11.062991,\"Y\":9.0},\"x\":11.062991,\"y\":0.0,\"z\":9.0},\"Facing\":{\"X\":0.0,\"Y\":1.0},\"BaseShape\":{\"$type\":\"baseShape.circle\",\"RadiusInches\":0.5511811,\"BoundingRadiusInches\":0.5511811,\"CircumscribedRadiusInches\":0.5511811}}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 5
+        },
+        "Index": 12,
+        "Generation": 1
+      },
+      "JsonValue": "{\"_tokens\":{\"_tokens\":[]},\"_ruleDefinitionsJson\":null,\"RemainingWoundsBinding\":{\"TypeID\":{\"ID\":2},\"Index\":12,\"Generation\":1},\"PositionBinding\":{\"TypeID\":{\"ID\":4},\"Index\":12,\"Generation\":1},\"FacingBinding\":{\"TypeID\":{\"ID\":15},\"Index\":12,\"Generation\":1},\"Weapons\":[{\"_ruleDefinitionsJson\":\"[\\n  {\\n    \\\"requestedName\\\": \\\"Deadly(3)\\\",\\n    \\\"definition\\\": {\\n      \\\"name\\\": \\\"Deadly\\\",\\n      \\\"passive\\\": [\\n        {\\n          \\\"hookID\\\": \\\"Shooting_OnPreApplyWound\\\",\\n          \\\"condition\\\": {\\n            \\\"kind\\\": \\\"always\\\"\\n          },\\n          \\\"effect\\\": {\\n            \\\"kind\\\": \\\"multiplyWounds\\\",\\n            \\\"multiplier\\\": {\\n              \\\"kind\\\": \\\"arg\\\",\\n              \\\"index\\\": 0\\n            }\\n          },\\n          \\\"lifetime\\\": \\\"ThisAttack\\\",\\n          \\\"seat\\\": \\\"Actor\\\"\\n        }\\n      ],\\n      \\\"activated\\\": [],\\n      \\\"scope\\\": \\\"Weapon\\\",\\n      \\\"engineArgumentCount\\\": 0,\\n      \\\"valence\\\": \\\"Positive\\\",\\n      \\\"description\\\": \\\"Each wound from this weapon is multiplied; excess wounds don\\\\u0027t carry over to other models.\\\"\\n    },\\n    \\\"intArguments\\\": [\\n      3\\n    ],\\n    \\\"arguments\\\": [\\n      {\\n        \\\"intValue\\\": 3,\\n        \\\"strValue\\\": null\\n      }\\n    ]\\n  },\\n  {\\n    \\\"requestedName\\\": \\\"Rending\\\",\\n    \\\"definition\\\": {\\n      \\\"name\\\": \\\"Rending\\\",\\n      \\\"passive\\\": [\\n        {\\n          \\\"hookID\\\": \\\"Shooting_OnHitRollComplete\\\",\\n          \\\"condition\\\": {\\n            \\\"kind\\\": \\\"unmodifiedRollEquals\\\",\\n            \\\"dieValue\\\": 6\\n          },\\n          \\\"effect\\\": {\\n            \\\"kind\\\": \\\"perHitSaveModifier\\\",\\n            \\\"onRollValue\\\": 6,\\n            \\\"delta\\\": -4\\n          },\\n          \\\"lifetime\\\": \\\"ThisAttack\\\",\\n          \\\"seat\\\": \\\"Actor\\\"\\n        },\\n        {\\n          \\\"hookID\\\": \\\"Shooting_OnSaveRollComplete\\\",\\n          \\\"condition\\\": {\\n            \\\"kind\\\": \\\"always\\\"\\n          },\\n          \\\"effect\\\": {\\n            \\\"kind\\\": \\\"ignoreRule\\\",\\n            \\\"ruleName\\\": \\\"Regeneration\\\"\\n          },\\n          \\\"lifetime\\\": \\\"ThisAttack\\\",\\n          \\\"seat\\\": \\\"Actor\\\"\\n        }\\n      ],\\n      \\\"activated\\\": [],\\n      \\\"scope\\\": \\\"Weapon\\\",\\n      \\\"engineArgumentCount\\\": 0,\\n      \\\"valence\\\": \\\"Positive\\\",\\n      \\\"description\\\": \\\"An unmodified 6 to hit gives the attack AP(\\\\u002B4), and the attack ignores Regeneration.\\\"\\n    },\\n    \\\"intArguments\\\": [],\\n    \\\"arguments\\\": []\\n  }\\n]\",\"Name\":\"Great Sword\",\"RangeInches\":0.0,\"Attacks\":2,\"ArmorPenetration\":1,\"EffectKey\":null},{\"_ruleDefinitionsJson\":\"[\\n  {\\n    \\\"requestedName\\\": \\\"Limited\\\",\\n    \\\"definition\\\": {\\n      \\\"name\\\": \\\"Limited\\\",\\n      \\\"passive\\\": [],\\n      \\\"activated\\\": [],\\n      \\\"scope\\\": \\\"Weapon\\\",\\n      \\\"engineArgumentCount\\\": 0,\\n      \\\"valence\\\": \\\"Neutral\\\",\\n      \\\"description\\\": \\\"This weapon may only be used once per game.\\\"\\n    },\\n    \\\"intArguments\\\": [],\\n    \\\"arguments\\\": []\\n  },\\n  {\\n    \\\"requestedName\\\": \\\"Deadly(6)\\\",\\n    \\\"definition\\\": {\\n      \\\"name\\\": \\\"Deadly\\\",\\n      \\\"passive\\\": [\\n        {\\n          \\\"hookID\\\": \\\"Shooting_OnPreApplyWound\\\",\\n          \\\"condition\\\": {\\n            \\\"kind\\\": \\\"always\\\"\\n          },\\n          \\\"effect\\\": {\\n            \\\"kind\\\": \\\"multiplyWounds\\\",\\n            \\\"multiplier\\\": {\\n              \\\"kind\\\": \\\"arg\\\",\\n              \\\"index\\\": 0\\n            }\\n          },\\n          \\\"lifetime\\\": \\\"ThisAttack\\\",\\n          \\\"seat\\\": \\\"Actor\\\"\\n        }\\n      ],\\n      \\\"activated\\\": [],\\n      \\\"scope\\\": \\\"Weapon\\\",\\n      \\\"engineArgumentCount\\\": 0,\\n      \\\"valence\\\": \\\"Positive\\\",\\n      \\\"description\\\": \\\"Each wound from this weapon is multiplied; excess wounds don\\\\u0027t carry over to other models.\\\"\\n    },\\n    \\\"intArguments\\\": [\\n      6\\n    ],\\n    \\\"arguments\\\": [\\n      {\\n        \\\"intValue\\\": 6,\\n        \\\"strValue\\\": null\\n      }\\n    ]\\n  }\\n]\",\"Name\":\"Demo Charge\",\"RangeInches\":0.0,\"Attacks\":4,\"ArmorPenetration\":2,\"EffectKey\":null},{\"_ruleDefinitionsJson\":\"[\\n  {\\n    \\\"requestedName\\\": \\\"Rending\\\",\\n    \\\"definition\\\": {\\n      \\\"name\\\": \\\"Rending\\\",\\n      \\\"passive\\\": [\\n        {\\n          \\\"hookID\\\": \\\"Shooting_OnHitRollComplete\\\",\\n          \\\"condition\\\": {\\n            \\\"kind\\\": \\\"unmodifiedRollEquals\\\",\\n            \\\"dieValue\\\": 6\\n          },\\n          \\\"effect\\\": {\\n            \\\"kind\\\": \\\"perHitSaveModifier\\\",\\n            \\\"onRollValue\\\": 6,\\n            \\\"delta\\\": -4\\n          },\\n          \\\"lifetime\\\": \\\"ThisAttack\\\",\\n          \\\"seat\\\": \\\"Actor\\\"\\n        },\\n        {\\n          \\\"hookID\\\": \\\"Shooting_OnSaveRollComplete\\\",\\n          \\\"condition\\\": {\\n            \\\"kind\\\": \\\"always\\\"\\n          },\\n          \\\"effect\\\": {\\n            \\\"kind\\\": \\\"ignoreRule\\\",\\n            \\\"ruleName\\\": \\\"Regeneration\\\"\\n          },\\n          \\\"lifetime\\\": \\\"ThisAttack\\\",\\n          \\\"seat\\\": \\\"Actor\\\"\\n        }\\n      ],\\n      \\\"activated\\\": [],\\n      \\\"scope\\\": \\\"Weapon\\\",\\n      \\\"engineArgumentCount\\\": 0,\\n      \\\"valence\\\": \\\"Positive\\\",\\n      \\\"description\\\": \\\"An unmodified 6 to hit gives the attack AP(\\\\u002B4), and the attack ignores Regeneration.\\\"\\n    },\\n    \\\"intArguments\\\": [],\\n    \\\"arguments\\\": []\\n  },\\n  {\\n    \\\"requestedName\\\": \\\"Lacerate\\\",\\n    \\\"definition\\\": {\\n      \\\"name\\\": \\\"Lacerate\\\",\\n      \\\"passive\\\": [\\n        {\\n          \\\"hookID\\\": \\\"Shooting_OnSaveRollComplete\\\",\\n          \\\"condition\\\": {\\n            \\\"kind\\\": \\\"always\\\"\\n          },\\n          \\\"effect\\\": {\\n            \\\"kind\\\": \\\"reroll\\\",\\n            \\\"roll\\\": \\\"Save\\\",\\n            \\\"condition\\\": {\\n              \\\"kind\\\": \\\"onUnmodifiedValue\\\",\\n              \\\"minValue\\\": 6\\n            }\\n          },\\n          \\\"lifetime\\\": \\\"ThisAttack\\\",\\n          \\\"seat\\\": \\\"Actor\\\"\\n        }\\n      ],\\n      \\\"activated\\\": [],\\n      \\\"scope\\\": \\\"Weapon\\\",\\n      \\\"engineArgumentCount\\\": 0,\\n      \\\"valence\\\": \\\"Positive\\\",\\n      \\\"description\\\": \\\"The defender must re-roll unmodified Defense 6s.\\\"\\n    },\\n    \\\"intArguments\\\": [],\\n    \\\"arguments\\\": []\\n  }\\n]\",\"Name\":\"Serrated Blade\",\"RangeInches\":0.0,\"Attacks\":3,\"ArmorPenetration\":0,\"EffectKey\":null},{\"_ruleDefinitionsJson\":\"[\\n  {\\n    \\\"requestedName\\\": \\\"Mysterious\\\",\\n    \\\"definition\\\": {\\n      \\\"name\\\": \\\"Mysterious\\\",\\n      \\\"passive\\\": [],\\n      \\\"activated\\\": [],\\n      \\\"scope\\\": \\\"Weapon\\\",\\n      \\\"engineArgumentCount\\\": 0,\\n      \\\"valence\\\": \\\"Neutral\\\",\\n      \\\"description\\\": \\\"\\\"\\n    },\\n    \\\"intArguments\\\": [],\\n    \\\"arguments\\\": []\\n  }\\n]\",\"Name\":\"Odd Dagger\",\"RangeInches\":0.0,\"Attacks\":1,\"ArmorPenetration\":0,\"EffectKey\":null}],\"ID\":{\"ID\":\"9e7966fc-7618-429f-b96f-71a795c1e407\"},\"TotalWounds\":1.0,\"WoundsDealt\":0.0,\"Position\":{\"Position3D\":{\"X\":2.551181,\"Y\":0.0,\"Z\":39.0,\"XY\":{\"X\":2.551181,\"Y\":0.0},\"XZ\":{\"X\":2.551181,\"Y\":39.0}},\"Position2D\":{\"X\":2.551181,\"Y\":39.0},\"x\":2.551181,\"y\":0.0,\"z\":39.0},\"Facing\":{\"X\":0.0,\"Y\":-1.0},\"BaseShape\":{\"$type\":\"baseShape.circle\",\"RadiusInches\":0.5511811,\"BoundingRadiusInches\":0.5511811,\"CircumscribedRadiusInches\":0.5511811}}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 5
+        },
+        "Index": 13,
+        "Generation": 1
+      },
+      "JsonValue": "{\"_tokens\":{\"_tokens\":[]},\"_ruleDefinitionsJson\":null,\"RemainingWoundsBinding\":{\"TypeID\":{\"ID\":2},\"Index\":13,\"Generation\":1},\"PositionBinding\":{\"TypeID\":{\"ID\":4},\"Index\":13,\"Generation\":1},\"FacingBinding\":{\"TypeID\":{\"ID\":15},\"Index\":13,\"Generation\":1},\"Weapons\":[{\"_ruleDefinitionsJson\":\"[\\n  {\\n    \\\"requestedName\\\": \\\"Deadly(3)\\\",\\n    \\\"definition\\\": {\\n      \\\"name\\\": \\\"Deadly\\\",\\n      \\\"passive\\\": [\\n        {\\n          \\\"hookID\\\": \\\"Shooting_OnPreApplyWound\\\",\\n          \\\"condition\\\": {\\n            \\\"kind\\\": \\\"always\\\"\\n          },\\n          \\\"effect\\\": {\\n            \\\"kind\\\": \\\"multiplyWounds\\\",\\n            \\\"multiplier\\\": {\\n              \\\"kind\\\": \\\"arg\\\",\\n              \\\"index\\\": 0\\n            }\\n          },\\n          \\\"lifetime\\\": \\\"ThisAttack\\\",\\n          \\\"seat\\\": \\\"Actor\\\"\\n        }\\n      ],\\n      \\\"activated\\\": [],\\n      \\\"scope\\\": \\\"Weapon\\\",\\n      \\\"engineArgumentCount\\\": 0,\\n      \\\"valence\\\": \\\"Positive\\\",\\n      \\\"description\\\": \\\"Each wound from this weapon is multiplied; excess wounds don\\\\u0027t carry over to other models.\\\"\\n    },\\n    \\\"intArguments\\\": [\\n      3\\n    ],\\n    \\\"arguments\\\": [\\n      {\\n        \\\"intValue\\\": 3,\\n        \\\"strValue\\\": null\\n      }\\n    ]\\n  },\\n  {\\n    \\\"requestedName\\\": \\\"Rending\\\",\\n    \\\"definition\\\": {\\n      \\\"name\\\": \\\"Rending\\\",\\n      \\\"passive\\\": [\\n        {\\n          \\\"hookID\\\": \\\"Shooting_OnHitRollComplete\\\",\\n          \\\"condition\\\": {\\n            \\\"kind\\\": \\\"unmodifiedRollEquals\\\",\\n            \\\"dieValue\\\": 6\\n          },\\n          \\\"effect\\\": {\\n            \\\"kind\\\": \\\"perHitSaveModifier\\\",\\n            \\\"onRollValue\\\": 6,\\n            \\\"delta\\\": -4\\n          },\\n          \\\"lifetime\\\": \\\"ThisAttack\\\",\\n          \\\"seat\\\": \\\"Actor\\\"\\n        },\\n        {\\n          \\\"hookID\\\": \\\"Shooting_OnSaveRollComplete\\\",\\n          \\\"condition\\\": {\\n            \\\"kind\\\": \\\"always\\\"\\n          },\\n          \\\"effect\\\": {\\n            \\\"kind\\\": \\\"ignoreRule\\\",\\n            \\\"ruleName\\\": \\\"Regeneration\\\"\\n          },\\n          \\\"lifetime\\\": \\\"ThisAttack\\\",\\n          \\\"seat\\\": \\\"Actor\\\"\\n        }\\n      ],\\n      \\\"activated\\\": [],\\n      \\\"scope\\\": \\\"Weapon\\\",\\n      \\\"engineArgumentCount\\\": 0,\\n      \\\"valence\\\": \\\"Positive\\\",\\n      \\\"description\\\": \\\"An unmodified 6 to hit gives the attack AP(\\\\u002B4), and the attack ignores Regeneration.\\\"\\n    },\\n    \\\"intArguments\\\": [],\\n    \\\"arguments\\\": []\\n  }\\n]\",\"Name\":\"Great Sword\",\"RangeInches\":0.0,\"Attacks\":2,\"ArmorPenetration\":1,\"EffectKey\":null},{\"_ruleDefinitionsJson\":\"[\\n  {\\n    \\\"requestedName\\\": \\\"Limited\\\",\\n    \\\"definition\\\": {\\n      \\\"name\\\": \\\"Limited\\\",\\n      \\\"passive\\\": [],\\n      \\\"activated\\\": [],\\n      \\\"scope\\\": \\\"Weapon\\\",\\n      \\\"engineArgumentCount\\\": 0,\\n      \\\"valence\\\": \\\"Neutral\\\",\\n      \\\"description\\\": \\\"This weapon may only be used once per game.\\\"\\n    },\\n    \\\"intArguments\\\": [],\\n    \\\"arguments\\\": []\\n  },\\n  {\\n    \\\"requestedName\\\": \\\"Deadly(6)\\\",\\n    \\\"definition\\\": {\\n      \\\"name\\\": \\\"Deadly\\\",\\n      \\\"passive\\\": [\\n        {\\n          \\\"hookID\\\": \\\"Shooting_OnPreApplyWound\\\",\\n          \\\"condition\\\": {\\n            \\\"kind\\\": \\\"always\\\"\\n          },\\n          \\\"effect\\\": {\\n            \\\"kind\\\": \\\"multiplyWounds\\\",\\n            \\\"multiplier\\\": {\\n              \\\"kind\\\": \\\"arg\\\",\\n              \\\"index\\\": 0\\n            }\\n          },\\n          \\\"lifetime\\\": \\\"ThisAttack\\\",\\n          \\\"seat\\\": \\\"Actor\\\"\\n        }\\n      ],\\n      \\\"activated\\\": [],\\n      \\\"scope\\\": \\\"Weapon\\\",\\n      \\\"engineArgumentCount\\\": 0,\\n      \\\"valence\\\": \\\"Positive\\\",\\n      \\\"description\\\": \\\"Each wound from this weapon is multiplied; excess wounds don\\\\u0027t carry over to other models.\\\"\\n    },\\n    \\\"intArguments\\\": [\\n      6\\n    ],\\n    \\\"arguments\\\": [\\n      {\\n        \\\"intValue\\\": 6,\\n        \\\"strValue\\\": null\\n      }\\n    ]\\n  }\\n]\",\"Name\":\"Demo Charge\",\"RangeInches\":0.0,\"Attacks\":4,\"ArmorPenetration\":2,\"EffectKey\":null},{\"_ruleDefinitionsJson\":\"[\\n  {\\n    \\\"requestedName\\\": \\\"Rending\\\",\\n    \\\"definition\\\": {\\n      \\\"name\\\": \\\"Rending\\\",\\n      \\\"passive\\\": [\\n        {\\n          \\\"hookID\\\": \\\"Shooting_OnHitRollComplete\\\",\\n          \\\"condition\\\": {\\n            \\\"kind\\\": \\\"unmodifiedRollEquals\\\",\\n            \\\"dieValue\\\": 6\\n          },\\n          \\\"effect\\\": {\\n            \\\"kind\\\": \\\"perHitSaveModifier\\\",\\n            \\\"onRollValue\\\": 6,\\n            \\\"delta\\\": -4\\n          },\\n          \\\"lifetime\\\": \\\"ThisAttack\\\",\\n          \\\"seat\\\": \\\"Actor\\\"\\n        },\\n        {\\n          \\\"hookID\\\": \\\"Shooting_OnSaveRollComplete\\\",\\n          \\\"condition\\\": {\\n            \\\"kind\\\": \\\"always\\\"\\n          },\\n          \\\"effect\\\": {\\n            \\\"kind\\\": \\\"ignoreRule\\\",\\n            \\\"ruleName\\\": \\\"Regeneration\\\"\\n          },\\n          \\\"lifetime\\\": \\\"ThisAttack\\\",\\n          \\\"seat\\\": \\\"Actor\\\"\\n        }\\n      ],\\n      \\\"activated\\\": [],\\n      \\\"scope\\\": \\\"Weapon\\\",\\n      \\\"engineArgumentCount\\\": 0,\\n      \\\"valence\\\": \\\"Positive\\\",\\n      \\\"description\\\": \\\"An unmodified 6 to hit gives the attack AP(\\\\u002B4), and the attack ignores Regeneration.\\\"\\n    },\\n    \\\"intArguments\\\": [],\\n    \\\"arguments\\\": []\\n  },\\n  {\\n    \\\"requestedName\\\": \\\"Lacerate\\\",\\n    \\\"definition\\\": {\\n      \\\"name\\\": \\\"Lacerate\\\",\\n      \\\"passive\\\": [\\n        {\\n          \\\"hookID\\\": \\\"Shooting_OnSaveRollComplete\\\",\\n          \\\"condition\\\": {\\n            \\\"kind\\\": \\\"always\\\"\\n          },\\n          \\\"effect\\\": {\\n            \\\"kind\\\": \\\"reroll\\\",\\n            \\\"roll\\\": \\\"Save\\\",\\n            \\\"condition\\\": {\\n              \\\"kind\\\": \\\"onUnmodifiedValue\\\",\\n              \\\"minValue\\\": 6\\n            }\\n          },\\n          \\\"lifetime\\\": \\\"ThisAttack\\\",\\n          \\\"seat\\\": \\\"Actor\\\"\\n        }\\n      ],\\n      \\\"activated\\\": [],\\n      \\\"scope\\\": \\\"Weapon\\\",\\n      \\\"engineArgumentCount\\\": 0,\\n      \\\"valence\\\": \\\"Positive\\\",\\n      \\\"description\\\": \\\"The defender must re-roll unmodified Defense 6s.\\\"\\n    },\\n    \\\"intArguments\\\": [],\\n    \\\"arguments\\\": []\\n  }\\n]\",\"Name\":\"Serrated Blade\",\"RangeInches\":0.0,\"Attacks\":3,\"ArmorPenetration\":0,\"EffectKey\":null},{\"_ruleDefinitionsJson\":\"[\\n  {\\n    \\\"requestedName\\\": \\\"Mysterious\\\",\\n    \\\"definition\\\": {\\n      \\\"name\\\": \\\"Mysterious\\\",\\n      \\\"passive\\\": [],\\n      \\\"activated\\\": [],\\n      \\\"scope\\\": \\\"Weapon\\\",\\n      \\\"engineArgumentCount\\\": 0,\\n      \\\"valence\\\": \\\"Neutral\\\",\\n      \\\"description\\\": \\\"\\\"\\n    },\\n    \\\"intArguments\\\": [],\\n    \\\"arguments\\\": []\\n  }\\n]\",\"Name\":\"Odd Dagger\",\"RangeInches\":0.0,\"Attacks\":1,\"ArmorPenetration\":0,\"EffectKey\":null}],\"ID\":{\"ID\":\"62503f05-40b2-4903-a083-93727a964d7b\"},\"TotalWounds\":1.0,\"WoundsDealt\":0.0,\"Position\":{\"Position3D\":{\"X\":3.8535433,\"Y\":0.0,\"Z\":39.0,\"XY\":{\"X\":3.8535433,\"Y\":0.0},\"XZ\":{\"X\":3.8535433,\"Y\":39.0}},\"Position2D\":{\"X\":3.8535433,\"Y\":39.0},\"x\":3.8535433,\"y\":0.0,\"z\":39.0},\"Facing\":{\"X\":0.0,\"Y\":-1.0},\"BaseShape\":{\"$type\":\"baseShape.circle\",\"RadiusInches\":0.5511811,\"BoundingRadiusInches\":0.5511811,\"CircumscribedRadiusInches\":0.5511811}}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 5
+        },
+        "Index": 14,
+        "Generation": 1
+      },
+      "JsonValue": "{\"_tokens\":{\"_tokens\":[]},\"_ruleDefinitionsJson\":null,\"RemainingWoundsBinding\":{\"TypeID\":{\"ID\":2},\"Index\":14,\"Generation\":1},\"PositionBinding\":{\"TypeID\":{\"ID\":4},\"Index\":14,\"Generation\":1},\"FacingBinding\":{\"TypeID\":{\"ID\":15},\"Index\":14,\"Generation\":1},\"Weapons\":[{\"_ruleDefinitionsJson\":\"[\\n  {\\n    \\\"requestedName\\\": \\\"Deadly(3)\\\",\\n    \\\"definition\\\": {\\n      \\\"name\\\": \\\"Deadly\\\",\\n      \\\"passive\\\": [\\n        {\\n          \\\"hookID\\\": \\\"Shooting_OnPreApplyWound\\\",\\n          \\\"condition\\\": {\\n            \\\"kind\\\": \\\"always\\\"\\n          },\\n          \\\"effect\\\": {\\n            \\\"kind\\\": \\\"multiplyWounds\\\",\\n            \\\"multiplier\\\": {\\n              \\\"kind\\\": \\\"arg\\\",\\n              \\\"index\\\": 0\\n            }\\n          },\\n          \\\"lifetime\\\": \\\"ThisAttack\\\",\\n          \\\"seat\\\": \\\"Actor\\\"\\n        }\\n      ],\\n      \\\"activated\\\": [],\\n      \\\"scope\\\": \\\"Weapon\\\",\\n      \\\"engineArgumentCount\\\": 0,\\n      \\\"valence\\\": \\\"Positive\\\",\\n      \\\"description\\\": \\\"Each wound from this weapon is multiplied; excess wounds don\\\\u0027t carry over to other models.\\\"\\n    },\\n    \\\"intArguments\\\": [\\n      3\\n    ],\\n    \\\"arguments\\\": [\\n      {\\n        \\\"intValue\\\": 3,\\n        \\\"strValue\\\": null\\n      }\\n    ]\\n  },\\n  {\\n    \\\"requestedName\\\": \\\"Rending\\\",\\n    \\\"definition\\\": {\\n      \\\"name\\\": \\\"Rending\\\",\\n      \\\"passive\\\": [\\n        {\\n          \\\"hookID\\\": \\\"Shooting_OnHitRollComplete\\\",\\n          \\\"condition\\\": {\\n            \\\"kind\\\": \\\"unmodifiedRollEquals\\\",\\n            \\\"dieValue\\\": 6\\n          },\\n          \\\"effect\\\": {\\n            \\\"kind\\\": \\\"perHitSaveModifier\\\",\\n            \\\"onRollValue\\\": 6,\\n            \\\"delta\\\": -4\\n          },\\n          \\\"lifetime\\\": \\\"ThisAttack\\\",\\n          \\\"seat\\\": \\\"Actor\\\"\\n        },\\n        {\\n          \\\"hookID\\\": \\\"Shooting_OnSaveRollComplete\\\",\\n          \\\"condition\\\": {\\n            \\\"kind\\\": \\\"always\\\"\\n          },\\n          \\\"effect\\\": {\\n            \\\"kind\\\": \\\"ignoreRule\\\",\\n            \\\"ruleName\\\": \\\"Regeneration\\\"\\n          },\\n          \\\"lifetime\\\": \\\"ThisAttack\\\",\\n          \\\"seat\\\": \\\"Actor\\\"\\n        }\\n      ],\\n      \\\"activated\\\": [],\\n      \\\"scope\\\": \\\"Weapon\\\",\\n      \\\"engineArgumentCount\\\": 0,\\n      \\\"valence\\\": \\\"Positive\\\",\\n      \\\"description\\\": \\\"An unmodified 6 to hit gives the attack AP(\\\\u002B4), and the attack ignores Regeneration.\\\"\\n    },\\n    \\\"intArguments\\\": [],\\n    \\\"arguments\\\": []\\n  }\\n]\",\"Name\":\"Great Sword\",\"RangeInches\":0.0,\"Attacks\":2,\"ArmorPenetration\":1,\"EffectKey\":null},{\"_ruleDefinitionsJson\":\"[\\n  {\\n    \\\"requestedName\\\": \\\"Limited\\\",\\n    \\\"definition\\\": {\\n      \\\"name\\\": \\\"Limited\\\",\\n      \\\"passive\\\": [],\\n      \\\"activated\\\": [],\\n      \\\"scope\\\": \\\"Weapon\\\",\\n      \\\"engineArgumentCount\\\": 0,\\n      \\\"valence\\\": \\\"Neutral\\\",\\n      \\\"description\\\": \\\"This weapon may only be used once per game.\\\"\\n    },\\n    \\\"intArguments\\\": [],\\n    \\\"arguments\\\": []\\n  },\\n  {\\n    \\\"requestedName\\\": \\\"Deadly(6)\\\",\\n    \\\"definition\\\": {\\n      \\\"name\\\": \\\"Deadly\\\",\\n      \\\"passive\\\": [\\n        {\\n          \\\"hookID\\\": \\\"Shooting_OnPreApplyWound\\\",\\n          \\\"condition\\\": {\\n            \\\"kind\\\": \\\"always\\\"\\n          },\\n          \\\"effect\\\": {\\n            \\\"kind\\\": \\\"multiplyWounds\\\",\\n            \\\"multiplier\\\": {\\n              \\\"kind\\\": \\\"arg\\\",\\n              \\\"index\\\": 0\\n            }\\n          },\\n          \\\"lifetime\\\": \\\"ThisAttack\\\",\\n          \\\"seat\\\": \\\"Actor\\\"\\n        }\\n      ],\\n      \\\"activated\\\": [],\\n      \\\"scope\\\": \\\"Weapon\\\",\\n      \\\"engineArgumentCount\\\": 0,\\n      \\\"valence\\\": \\\"Positive\\\",\\n      \\\"description\\\": \\\"Each wound from this weapon is multiplied; excess wounds don\\\\u0027t carry over to other models.\\\"\\n    },\\n    \\\"intArguments\\\": [\\n      6\\n    ],\\n    \\\"arguments\\\": [\\n      {\\n        \\\"intValue\\\": 6,\\n        \\\"strValue\\\": null\\n      }\\n    ]\\n  }\\n]\",\"Name\":\"Demo Charge\",\"RangeInches\":0.0,\"Attacks\":4,\"ArmorPenetration\":2,\"EffectKey\":null},{\"_ruleDefinitionsJson\":\"[\\n  {\\n    \\\"requestedName\\\": \\\"Rending\\\",\\n    \\\"definition\\\": {\\n      \\\"name\\\": \\\"Rending\\\",\\n      \\\"passive\\\": [\\n        {\\n          \\\"hookID\\\": \\\"Shooting_OnHitRollComplete\\\",\\n          \\\"condition\\\": {\\n            \\\"kind\\\": \\\"unmodifiedRollEquals\\\",\\n            \\\"dieValue\\\": 6\\n          },\\n          \\\"effect\\\": {\\n            \\\"kind\\\": \\\"perHitSaveModifier\\\",\\n            \\\"onRollValue\\\": 6,\\n            \\\"delta\\\": -4\\n          },\\n          \\\"lifetime\\\": \\\"ThisAttack\\\",\\n          \\\"seat\\\": \\\"Actor\\\"\\n        },\\n        {\\n          \\\"hookID\\\": \\\"Shooting_OnSaveRollComplete\\\",\\n          \\\"condition\\\": {\\n            \\\"kind\\\": \\\"always\\\"\\n          },\\n          \\\"effect\\\": {\\n            \\\"kind\\\": \\\"ignoreRule\\\",\\n            \\\"ruleName\\\": \\\"Regeneration\\\"\\n          },\\n          \\\"lifetime\\\": \\\"ThisAttack\\\",\\n          \\\"seat\\\": \\\"Actor\\\"\\n        }\\n      ],\\n      \\\"activated\\\": [],\\n      \\\"scope\\\": \\\"Weapon\\\",\\n      \\\"engineArgumentCount\\\": 0,\\n      \\\"valence\\\": \\\"Positive\\\",\\n      \\\"description\\\": \\\"An unmodified 6 to hit gives the attack AP(\\\\u002B4), and the attack ignores Regeneration.\\\"\\n    },\\n    \\\"intArguments\\\": [],\\n    \\\"arguments\\\": []\\n  },\\n  {\\n    \\\"requestedName\\\": \\\"Lacerate\\\",\\n    \\\"definition\\\": {\\n      \\\"name\\\": \\\"Lacerate\\\",\\n      \\\"passive\\\": [\\n        {\\n          \\\"hookID\\\": \\\"Shooting_OnSaveRollComplete\\\",\\n          \\\"condition\\\": {\\n            \\\"kind\\\": \\\"always\\\"\\n          },\\n          \\\"effect\\\": {\\n            \\\"kind\\\": \\\"reroll\\\",\\n            \\\"roll\\\": \\\"Save\\\",\\n            \\\"condition\\\": {\\n              \\\"kind\\\": \\\"onUnmodifiedValue\\\",\\n              \\\"minValue\\\": 6\\n            }\\n          },\\n          \\\"lifetime\\\": \\\"ThisAttack\\\",\\n          \\\"seat\\\": \\\"Actor\\\"\\n        }\\n      ],\\n      \\\"activated\\\": [],\\n      \\\"scope\\\": \\\"Weapon\\\",\\n      \\\"engineArgumentCount\\\": 0,\\n      \\\"valence\\\": \\\"Positive\\\",\\n      \\\"description\\\": \\\"The defender must re-roll unmodified Defense 6s.\\\"\\n    },\\n    \\\"intArguments\\\": [],\\n    \\\"arguments\\\": []\\n  }\\n]\",\"Name\":\"Serrated Blade\",\"RangeInches\":0.0,\"Attacks\":3,\"ArmorPenetration\":0,\"EffectKey\":null},{\"_ruleDefinitionsJson\":\"[\\n  {\\n    \\\"requestedName\\\": \\\"Mysterious\\\",\\n    \\\"definition\\\": {\\n      \\\"name\\\": \\\"Mysterious\\\",\\n      \\\"passive\\\": [],\\n      \\\"activated\\\": [],\\n      \\\"scope\\\": \\\"Weapon\\\",\\n      \\\"engineArgumentCount\\\": 0,\\n      \\\"valence\\\": \\\"Neutral\\\",\\n      \\\"description\\\": \\\"\\\"\\n    },\\n    \\\"intArguments\\\": [],\\n    \\\"arguments\\\": []\\n  }\\n]\",\"Name\":\"Odd Dagger\",\"RangeInches\":0.0,\"Attacks\":1,\"ArmorPenetration\":0,\"EffectKey\":null}],\"ID\":{\"ID\":\"a6d271cf-4fa8-439d-be99-3eaa88d47b08\"},\"TotalWounds\":1.0,\"WoundsDealt\":0.0,\"Position\":{\"Position3D\":{\"X\":5.1559057,\"Y\":0.0,\"Z\":39.0,\"XY\":{\"X\":5.1559057,\"Y\":0.0},\"XZ\":{\"X\":5.1559057,\"Y\":39.0}},\"Position2D\":{\"X\":5.1559057,\"Y\":39.0},\"x\":5.1559057,\"y\":0.0,\"z\":39.0},\"Facing\":{\"X\":0.0,\"Y\":-1.0},\"BaseShape\":{\"$type\":\"baseShape.circle\",\"RadiusInches\":0.5511811,\"BoundingRadiusInches\":0.5511811,\"CircumscribedRadiusInches\":0.5511811}}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 5
+        },
+        "Index": 15,
+        "Generation": 1
+      },
+      "JsonValue": "{\"_tokens\":{\"_tokens\":[]},\"_ruleDefinitionsJson\":null,\"RemainingWoundsBinding\":{\"TypeID\":{\"ID\":2},\"Index\":15,\"Generation\":1},\"PositionBinding\":{\"TypeID\":{\"ID\":4},\"Index\":15,\"Generation\":1},\"FacingBinding\":{\"TypeID\":{\"ID\":15},\"Index\":15,\"Generation\":1},\"Weapons\":[{\"_ruleDefinitionsJson\":\"[\\n  {\\n    \\\"requestedName\\\": \\\"Rending\\\",\\n    \\\"definition\\\": {\\n      \\\"name\\\": \\\"Rending\\\",\\n      \\\"passive\\\": [\\n        {\\n          \\\"hookID\\\": \\\"Shooting_OnHitRollComplete\\\",\\n          \\\"condition\\\": {\\n            \\\"kind\\\": \\\"unmodifiedRollEquals\\\",\\n            \\\"dieValue\\\": 6\\n          },\\n          \\\"effect\\\": {\\n            \\\"kind\\\": \\\"perHitSaveModifier\\\",\\n            \\\"onRollValue\\\": 6,\\n            \\\"delta\\\": -4\\n          },\\n          \\\"lifetime\\\": \\\"ThisAttack\\\",\\n          \\\"seat\\\": \\\"Actor\\\"\\n        },\\n        {\\n          \\\"hookID\\\": \\\"Shooting_OnSaveRollComplete\\\",\\n          \\\"condition\\\": {\\n            \\\"kind\\\": \\\"always\\\"\\n          },\\n          \\\"effect\\\": {\\n            \\\"kind\\\": \\\"ignoreRule\\\",\\n            \\\"ruleName\\\": \\\"Regeneration\\\"\\n          },\\n          \\\"lifetime\\\": \\\"ThisAttack\\\",\\n          \\\"seat\\\": \\\"Actor\\\"\\n        }\\n      ],\\n      \\\"activated\\\": [],\\n      \\\"scope\\\": \\\"Weapon\\\",\\n      \\\"engineArgumentCount\\\": 0,\\n      \\\"valence\\\": \\\"Positive\\\",\\n      \\\"description\\\": \\\"An unmodified 6 to hit gives the attack AP(\\\\u002B4), and the attack ignores Regeneration.\\\"\\n    },\\n    \\\"intArguments\\\": [],\\n    \\\"arguments\\\": []\\n  },\\n  {\\n    \\\"requestedName\\\": \\\"Reliable\\\",\\n    \\\"definition\\\": {\\n      \\\"name\\\": \\\"Reliable\\\",\\n      \\\"passive\\\": [\\n        {\\n          \\\"hookID\\\": \\\"Shooting_OnHitRollModifier\\\",\\n          \\\"condition\\\": {\\n            \\\"kind\\\": \\\"always\\\"\\n          },\\n          \\\"effect\\\": {\\n            \\\"kind\\\": \\\"qualityFloor\\\",\\n            \\\"quality\\\": 2\\n          },\\n          \\\"lifetime\\\": \\\"ThisAttack\\\",\\n          \\\"seat\\\": \\\"Actor\\\"\\n        }\\n      ],\\n      \\\"activated\\\": [],\\n      \\\"scope\\\": \\\"Weapon\\\",\\n      \\\"engineArgumentCount\\\": 0,\\n      \\\"valence\\\": \\\"Positive\\\",\\n      \\\"description\\\": \\\"Attacks with this weapon hit on a Quality of 2\\\\u002B (before other modifiers).\\\"\\n    },\\n    \\\"intArguments\\\": [],\\n    \\\"arguments\\\": []\\n  }\\n]\",\"Name\":\"Render Rifle\",\"RangeInches\":30.0,\"Attacks\":2,\"ArmorPenetration\":1,\"EffectKey\":null},{\"_ruleDefinitionsJson\":\"[\\n  {\\n    \\\"requestedName\\\": \\\"Blast(3)\\\",\\n    \\\"definition\\\": {\\n      \\\"name\\\": \\\"Blast\\\",\\n      \\\"passive\\\": [\\n        {\\n          \\\"hookID\\\": \\\"Shooting_OnHitRollComplete\\\",\\n          \\\"condition\\\": {\\n            \\\"kind\\\": \\\"always\\\"\\n          },\\n          \\\"effect\\\": {\\n            \\\"kind\\\": \\\"multiplyHits\\\",\\n            \\\"multiplier\\\": {\\n              \\\"kind\\\": \\\"arg\\\",\\n              \\\"index\\\": 0\\n            }\\n          },\\n          \\\"lifetime\\\": \\\"ThisAttack\\\",\\n          \\\"seat\\\": \\\"Actor\\\"\\n        },\\n        {\\n          \\\"hookID\\\": \\\"Shooting_OnSaveRollModifier\\\",\\n          \\\"condition\\\": {\\n            \\\"kind\\\": \\\"always\\\"\\n          },\\n          \\\"effect\\\": {\\n            \\\"kind\\\": \\\"ignoreCover\\\"\\n          },\\n          \\\"lifetime\\\": \\\"ThisAttack\\\",\\n          \\\"seat\\\": \\\"Actor\\\"\\n        }\\n      ],\\n      \\\"activated\\\": [],\\n      \\\"scope\\\": \\\"Weapon\\\",\\n      \\\"engineArgumentCount\\\": 0,\\n      \\\"valence\\\": \\\"Positive\\\",\\n      \\\"description\\\": \\\"Each hit becomes several hits (no more per hit than the target unit\\\\u0027s model count) and the attack ignores cover.\\\"\\n    },\\n    \\\"intArguments\\\": [\\n      3\\n    ],\\n    \\\"arguments\\\": [\\n      {\\n        \\\"intValue\\\": 3,\\n        \\\"strValue\\\": null\\n      }\\n    ]\\n  },\\n  {\\n    \\\"requestedName\\\": \\\"Indirect\\\",\\n    \\\"definition\\\": {\\n      \\\"name\\\": \\\"Indirect\\\",\\n      \\\"passive\\\": [\\n        {\\n          \\\"hookID\\\": \\\"Shooting_OnHitRollModifier\\\",\\n          \\\"condition\\\": {\\n            \\\"kind\\\": \\\"and\\\",\\n            \\\"left\\\": {\\n              \\\"kind\\\": \\\"afterMoving\\\"\\n            },\\n            \\\"right\\\": {\\n              \\\"kind\\\": \\\"not\\\",\\n              \\\"inner\\\": {\\n                \\\"kind\\\": \\\"isMelee\\\"\\n              }\\n            }\\n          },\\n          \\\"effect\\\": {\\n            \\\"kind\\\": \\\"rollModifier\\\",\\n            \\\"rollKind\\\": \\\"Hit\\\",\\n            \\\"delta\\\": -1\\n          },\\n          \\\"lifetime\\\": \\\"ThisAttack\\\",\\n          \\\"seat\\\": \\\"Actor\\\"\\n        },\\n        {\\n          \\\"hookID\\\": \\\"Shooting_OnSaveRollModifier\\\",\\n          \\\"condition\\\": {\\n            \\\"kind\\\": \\\"always\\\"\\n          },\\n          \\\"effect\\\": {\\n            \\\"kind\\\": \\\"ignoreLineOfSight\\\"\\n          },\\n          \\\"lifetime\\\": \\\"ThisAttack\\\",\\n          \\\"seat\\\": \\\"Actor\\\"\\n        },\\n        {\\n          \\\"hookID\\\": \\\"Shooting_OnSaveRollModifier\\\",\\n          \\\"condition\\\": {\\n            \\\"kind\\\": \\\"always\\\"\\n          },\\n          \\\"effect\\\": {\\n            \\\"kind\\\": \\\"ignoreCover\\\"\\n          },\\n          \\\"lifetime\\\": \\\"ThisAttack\\\",\\n          \\\"seat\\\": \\\"Actor\\\"\\n        }\\n      ],\\n      \\\"activated\\\": [],\\n      \\\"scope\\\": \\\"Weapon\\\",\\n      \\\"engineArgumentCount\\\": 0,\\n      \\\"valence\\\": \\\"Positive\\\",\\n      \\\"description\\\": \\\"Fires at targets out of line of sight and ignores cover; -1 to hit if the unit moved this activation.\\\"\\n    },\\n    \\\"intArguments\\\": [],\\n    \\\"arguments\\\": []\\n  }\\n]\",\"Name\":\"Siege Launcher\",\"RangeInches\":24.0,\"Attacks\":1,\"ArmorPenetration\":2,\"EffectKey\":null},{\"_ruleDefinitionsJson\":\"[\\n  {\\n    \\\"requestedName\\\": \\\"Limited\\\",\\n    \\\"definition\\\": {\\n      \\\"name\\\": \\\"Limited\\\",\\n      \\\"passive\\\": [],\\n      \\\"activated\\\": [],\\n      \\\"scope\\\": \\\"Weapon\\\",\\n      \\\"engineArgumentCount\\\": 0,\\n      \\\"valence\\\": \\\"Neutral\\\",\\n      \\\"description\\\": \\\"This weapon may only be used once per game.\\\"\\n    },\\n    \\\"intArguments\\\": [],\\n    \\\"arguments\\\": []\\n  },\\n  {\\n    \\\"requestedName\\\": \\\"Deadly(3)\\\",\\n    \\\"definition\\\": {\\n      \\\"name\\\": \\\"Deadly\\\",\\n      \\\"passive\\\": [\\n        {\\n          \\\"hookID\\\": \\\"Shooting_OnPreApplyWound\\\",\\n          \\\"condition\\\": {\\n            \\\"kind\\\": \\\"always\\\"\\n          },\\n          \\\"effect\\\": {\\n            \\\"kind\\\": \\\"multiplyWounds\\\",\\n            \\\"multiplier\\\": {\\n              \\\"kind\\\": \\\"arg\\\",\\n              \\\"index\\\": 0\\n            }\\n          },\\n          \\\"lifetime\\\": \\\"ThisAttack\\\",\\n          \\\"seat\\\": \\\"Actor\\\"\\n        }\\n      ],\\n      \\\"activated\\\": [],\\n      \\\"scope\\\": \\\"Weapon\\\",\\n      \\\"engineArgumentCount\\\": 0,\\n      \\\"valence\\\": \\\"Positive\\\",\\n      \\\"description\\\": \\\"Each wound from this weapon is multiplied; excess wounds don\\\\u0027t carry over to other models.\\\"\\n    },\\n    \\\"intArguments\\\": [\\n      3\\n    ],\\n    \\\"arguments\\\": [\\n      {\\n        \\\"intValue\\\": 3,\\n        \\\"strValue\\\": null\\n      }\\n    ]\\n  }\\n]\",\"Name\":\"Thermal Lance\",\"RangeInches\":18.0,\"Attacks\":1,\"ArmorPenetration\":4,\"EffectKey\":null},{\"_ruleDefinitionsJson\":null,\"Name\":\"Hand Axe\",\"RangeInches\":0.0,\"Attacks\":1,\"ArmorPenetration\":0,\"EffectKey\":null}],\"ID\":{\"ID\":\"e151f3c9-cfdd-4059-a441-33a75ae65763\"},\"TotalWounds\":1.0,\"WoundsDealt\":0.0,\"Position\":{\"Position3D\":{\"X\":8.458268,\"Y\":0.0,\"Z\":39.0,\"XY\":{\"X\":8.458268,\"Y\":0.0},\"XZ\":{\"X\":8.458268,\"Y\":39.0}},\"Position2D\":{\"X\":8.458268,\"Y\":39.0},\"x\":8.458268,\"y\":0.0,\"z\":39.0},\"Facing\":{\"X\":0.0,\"Y\":-1.0},\"BaseShape\":{\"$type\":\"baseShape.circle\",\"RadiusInches\":0.5511811,\"BoundingRadiusInches\":0.5511811,\"CircumscribedRadiusInches\":0.5511811}}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 5
+        },
+        "Index": 16,
+        "Generation": 1
+      },
+      "JsonValue": "{\"_tokens\":{\"_tokens\":[]},\"_ruleDefinitionsJson\":null,\"RemainingWoundsBinding\":{\"TypeID\":{\"ID\":2},\"Index\":16,\"Generation\":1},\"PositionBinding\":{\"TypeID\":{\"ID\":4},\"Index\":16,\"Generation\":1},\"FacingBinding\":{\"TypeID\":{\"ID\":15},\"Index\":16,\"Generation\":1},\"Weapons\":[{\"_ruleDefinitionsJson\":\"[\\n  {\\n    \\\"requestedName\\\": \\\"Rending\\\",\\n    \\\"definition\\\": {\\n      \\\"name\\\": \\\"Rending\\\",\\n      \\\"passive\\\": [\\n        {\\n          \\\"hookID\\\": \\\"Shooting_OnHitRollComplete\\\",\\n          \\\"condition\\\": {\\n            \\\"kind\\\": \\\"unmodifiedRollEquals\\\",\\n            \\\"dieValue\\\": 6\\n          },\\n          \\\"effect\\\": {\\n            \\\"kind\\\": \\\"perHitSaveModifier\\\",\\n            \\\"onRollValue\\\": 6,\\n            \\\"delta\\\": -4\\n          },\\n          \\\"lifetime\\\": \\\"ThisAttack\\\",\\n          \\\"seat\\\": \\\"Actor\\\"\\n        },\\n        {\\n          \\\"hookID\\\": \\\"Shooting_OnSaveRollComplete\\\",\\n          \\\"condition\\\": {\\n            \\\"kind\\\": \\\"always\\\"\\n          },\\n          \\\"effect\\\": {\\n            \\\"kind\\\": \\\"ignoreRule\\\",\\n            \\\"ruleName\\\": \\\"Regeneration\\\"\\n          },\\n          \\\"lifetime\\\": \\\"ThisAttack\\\",\\n          \\\"seat\\\": \\\"Actor\\\"\\n        }\\n      ],\\n      \\\"activated\\\": [],\\n      \\\"scope\\\": \\\"Weapon\\\",\\n      \\\"engineArgumentCount\\\": 0,\\n      \\\"valence\\\": \\\"Positive\\\",\\n      \\\"description\\\": \\\"An unmodified 6 to hit gives the attack AP(\\\\u002B4), and the attack ignores Regeneration.\\\"\\n    },\\n    \\\"intArguments\\\": [],\\n    \\\"arguments\\\": []\\n  },\\n  {\\n    \\\"requestedName\\\": \\\"Reliable\\\",\\n    \\\"definition\\\": {\\n      \\\"name\\\": \\\"Reliable\\\",\\n      \\\"passive\\\": [\\n        {\\n          \\\"hookID\\\": \\\"Shooting_OnHitRollModifier\\\",\\n          \\\"condition\\\": {\\n            \\\"kind\\\": \\\"always\\\"\\n          },\\n          \\\"effect\\\": {\\n            \\\"kind\\\": \\\"qualityFloor\\\",\\n            \\\"quality\\\": 2\\n          },\\n          \\\"lifetime\\\": \\\"ThisAttack\\\",\\n          \\\"seat\\\": \\\"Actor\\\"\\n        }\\n      ],\\n      \\\"activated\\\": [],\\n      \\\"scope\\\": \\\"Weapon\\\",\\n      \\\"engineArgumentCount\\\": 0,\\n      \\\"valence\\\": \\\"Positive\\\",\\n      \\\"description\\\": \\\"Attacks with this weapon hit on a Quality of 2\\\\u002B (before other modifiers).\\\"\\n    },\\n    \\\"intArguments\\\": [],\\n    \\\"arguments\\\": []\\n  }\\n]\",\"Name\":\"Render Rifle\",\"RangeInches\":30.0,\"Attacks\":2,\"ArmorPenetration\":1,\"EffectKey\":null},{\"_ruleDefinitionsJson\":\"[\\n  {\\n    \\\"requestedName\\\": \\\"Blast(3)\\\",\\n    \\\"definition\\\": {\\n      \\\"name\\\": \\\"Blast\\\",\\n      \\\"passive\\\": [\\n        {\\n          \\\"hookID\\\": \\\"Shooting_OnHitRollComplete\\\",\\n          \\\"condition\\\": {\\n            \\\"kind\\\": \\\"always\\\"\\n          },\\n          \\\"effect\\\": {\\n            \\\"kind\\\": \\\"multiplyHits\\\",\\n            \\\"multiplier\\\": {\\n              \\\"kind\\\": \\\"arg\\\",\\n              \\\"index\\\": 0\\n            }\\n          },\\n          \\\"lifetime\\\": \\\"ThisAttack\\\",\\n          \\\"seat\\\": \\\"Actor\\\"\\n        },\\n        {\\n          \\\"hookID\\\": \\\"Shooting_OnSaveRollModifier\\\",\\n          \\\"condition\\\": {\\n            \\\"kind\\\": \\\"always\\\"\\n          },\\n          \\\"effect\\\": {\\n            \\\"kind\\\": \\\"ignoreCover\\\"\\n          },\\n          \\\"lifetime\\\": \\\"ThisAttack\\\",\\n          \\\"seat\\\": \\\"Actor\\\"\\n        }\\n      ],\\n      \\\"activated\\\": [],\\n      \\\"scope\\\": \\\"Weapon\\\",\\n      \\\"engineArgumentCount\\\": 0,\\n      \\\"valence\\\": \\\"Positive\\\",\\n      \\\"description\\\": \\\"Each hit becomes several hits (no more per hit than the target unit\\\\u0027s model count) and the attack ignores cover.\\\"\\n    },\\n    \\\"intArguments\\\": [\\n      3\\n    ],\\n    \\\"arguments\\\": [\\n      {\\n        \\\"intValue\\\": 3,\\n        \\\"strValue\\\": null\\n      }\\n    ]\\n  },\\n  {\\n    \\\"requestedName\\\": \\\"Indirect\\\",\\n    \\\"definition\\\": {\\n      \\\"name\\\": \\\"Indirect\\\",\\n      \\\"passive\\\": [\\n        {\\n          \\\"hookID\\\": \\\"Shooting_OnHitRollModifier\\\",\\n          \\\"condition\\\": {\\n            \\\"kind\\\": \\\"and\\\",\\n            \\\"left\\\": {\\n              \\\"kind\\\": \\\"afterMoving\\\"\\n            },\\n            \\\"right\\\": {\\n              \\\"kind\\\": \\\"not\\\",\\n              \\\"inner\\\": {\\n                \\\"kind\\\": \\\"isMelee\\\"\\n              }\\n            }\\n          },\\n          \\\"effect\\\": {\\n            \\\"kind\\\": \\\"rollModifier\\\",\\n            \\\"rollKind\\\": \\\"Hit\\\",\\n            \\\"delta\\\": -1\\n          },\\n          \\\"lifetime\\\": \\\"ThisAttack\\\",\\n          \\\"seat\\\": \\\"Actor\\\"\\n        },\\n        {\\n          \\\"hookID\\\": \\\"Shooting_OnSaveRollModifier\\\",\\n          \\\"condition\\\": {\\n            \\\"kind\\\": \\\"always\\\"\\n          },\\n          \\\"effect\\\": {\\n            \\\"kind\\\": \\\"ignoreLineOfSight\\\"\\n          },\\n          \\\"lifetime\\\": \\\"ThisAttack\\\",\\n          \\\"seat\\\": \\\"Actor\\\"\\n        },\\n        {\\n          \\\"hookID\\\": \\\"Shooting_OnSaveRollModifier\\\",\\n          \\\"condition\\\": {\\n            \\\"kind\\\": \\\"always\\\"\\n          },\\n          \\\"effect\\\": {\\n            \\\"kind\\\": \\\"ignoreCover\\\"\\n          },\\n          \\\"lifetime\\\": \\\"ThisAttack\\\",\\n          \\\"seat\\\": \\\"Actor\\\"\\n        }\\n      ],\\n      \\\"activated\\\": [],\\n      \\\"scope\\\": \\\"Weapon\\\",\\n      \\\"engineArgumentCount\\\": 0,\\n      \\\"valence\\\": \\\"Positive\\\",\\n      \\\"description\\\": \\\"Fires at targets out of line of sight and ignores cover; -1 to hit if the unit moved this activation.\\\"\\n    },\\n    \\\"intArguments\\\": [],\\n    \\\"arguments\\\": []\\n  }\\n]\",\"Name\":\"Siege Launcher\",\"RangeInches\":24.0,\"Attacks\":1,\"ArmorPenetration\":2,\"EffectKey\":null},{\"_ruleDefinitionsJson\":\"[\\n  {\\n    \\\"requestedName\\\": \\\"Limited\\\",\\n    \\\"definition\\\": {\\n      \\\"name\\\": \\\"Limited\\\",\\n      \\\"passive\\\": [],\\n      \\\"activated\\\": [],\\n      \\\"scope\\\": \\\"Weapon\\\",\\n      \\\"engineArgumentCount\\\": 0,\\n      \\\"valence\\\": \\\"Neutral\\\",\\n      \\\"description\\\": \\\"This weapon may only be used once per game.\\\"\\n    },\\n    \\\"intArguments\\\": [],\\n    \\\"arguments\\\": []\\n  },\\n  {\\n    \\\"requestedName\\\": \\\"Deadly(3)\\\",\\n    \\\"definition\\\": {\\n      \\\"name\\\": \\\"Deadly\\\",\\n      \\\"passive\\\": [\\n        {\\n          \\\"hookID\\\": \\\"Shooting_OnPreApplyWound\\\",\\n          \\\"condition\\\": {\\n            \\\"kind\\\": \\\"always\\\"\\n          },\\n          \\\"effect\\\": {\\n            \\\"kind\\\": \\\"multiplyWounds\\\",\\n            \\\"multiplier\\\": {\\n              \\\"kind\\\": \\\"arg\\\",\\n              \\\"index\\\": 0\\n            }\\n          },\\n          \\\"lifetime\\\": \\\"ThisAttack\\\",\\n          \\\"seat\\\": \\\"Actor\\\"\\n        }\\n      ],\\n      \\\"activated\\\": [],\\n      \\\"scope\\\": \\\"Weapon\\\",\\n      \\\"engineArgumentCount\\\": 0,\\n      \\\"valence\\\": \\\"Positive\\\",\\n      \\\"description\\\": \\\"Each wound from this weapon is multiplied; excess wounds don\\\\u0027t carry over to other models.\\\"\\n    },\\n    \\\"intArguments\\\": [\\n      3\\n    ],\\n    \\\"arguments\\\": [\\n      {\\n        \\\"intValue\\\": 3,\\n        \\\"strValue\\\": null\\n      }\\n    ]\\n  }\\n]\",\"Name\":\"Thermal Lance\",\"RangeInches\":18.0,\"Attacks\":1,\"ArmorPenetration\":4,\"EffectKey\":null},{\"_ruleDefinitionsJson\":null,\"Name\":\"Hand Axe\",\"RangeInches\":0.0,\"Attacks\":1,\"ArmorPenetration\":0,\"EffectKey\":null}],\"ID\":{\"ID\":\"f03ffb9a-406d-4718-99f9-c961475ced8b\"},\"TotalWounds\":1.0,\"WoundsDealt\":0.0,\"Position\":{\"Position3D\":{\"X\":9.76063,\"Y\":0.0,\"Z\":39.0,\"XY\":{\"X\":9.76063,\"Y\":0.0},\"XZ\":{\"X\":9.76063,\"Y\":39.0}},\"Position2D\":{\"X\":9.76063,\"Y\":39.0},\"x\":9.76063,\"y\":0.0,\"z\":39.0},\"Facing\":{\"X\":0.0,\"Y\":-1.0},\"BaseShape\":{\"$type\":\"baseShape.circle\",\"RadiusInches\":0.5511811,\"BoundingRadiusInches\":0.5511811,\"CircumscribedRadiusInches\":0.5511811}}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 5
+        },
+        "Index": 17,
+        "Generation": 1
+      },
+      "JsonValue": "{\"_tokens\":{\"_tokens\":[]},\"_ruleDefinitionsJson\":null,\"RemainingWoundsBinding\":{\"TypeID\":{\"ID\":2},\"Index\":17,\"Generation\":1},\"PositionBinding\":{\"TypeID\":{\"ID\":4},\"Index\":17,\"Generation\":1},\"FacingBinding\":{\"TypeID\":{\"ID\":15},\"Index\":17,\"Generation\":1},\"Weapons\":[{\"_ruleDefinitionsJson\":\"[\\n  {\\n    \\\"requestedName\\\": \\\"Rending\\\",\\n    \\\"definition\\\": {\\n      \\\"name\\\": \\\"Rending\\\",\\n      \\\"passive\\\": [\\n        {\\n          \\\"hookID\\\": \\\"Shooting_OnHitRollComplete\\\",\\n          \\\"condition\\\": {\\n            \\\"kind\\\": \\\"unmodifiedRollEquals\\\",\\n            \\\"dieValue\\\": 6\\n          },\\n          \\\"effect\\\": {\\n            \\\"kind\\\": \\\"perHitSaveModifier\\\",\\n            \\\"onRollValue\\\": 6,\\n            \\\"delta\\\": -4\\n          },\\n          \\\"lifetime\\\": \\\"ThisAttack\\\",\\n          \\\"seat\\\": \\\"Actor\\\"\\n        },\\n        {\\n          \\\"hookID\\\": \\\"Shooting_OnSaveRollComplete\\\",\\n          \\\"condition\\\": {\\n            \\\"kind\\\": \\\"always\\\"\\n          },\\n          \\\"effect\\\": {\\n            \\\"kind\\\": \\\"ignoreRule\\\",\\n            \\\"ruleName\\\": \\\"Regeneration\\\"\\n          },\\n          \\\"lifetime\\\": \\\"ThisAttack\\\",\\n          \\\"seat\\\": \\\"Actor\\\"\\n        }\\n      ],\\n      \\\"activated\\\": [],\\n      \\\"scope\\\": \\\"Weapon\\\",\\n      \\\"engineArgumentCount\\\": 0,\\n      \\\"valence\\\": \\\"Positive\\\",\\n      \\\"description\\\": \\\"An unmodified 6 to hit gives the attack AP(\\\\u002B4), and the attack ignores Regeneration.\\\"\\n    },\\n    \\\"intArguments\\\": [],\\n    \\\"arguments\\\": []\\n  },\\n  {\\n    \\\"requestedName\\\": \\\"Reliable\\\",\\n    \\\"definition\\\": {\\n      \\\"name\\\": \\\"Reliable\\\",\\n      \\\"passive\\\": [\\n        {\\n          \\\"hookID\\\": \\\"Shooting_OnHitRollModifier\\\",\\n          \\\"condition\\\": {\\n            \\\"kind\\\": \\\"always\\\"\\n          },\\n          \\\"effect\\\": {\\n            \\\"kind\\\": \\\"qualityFloor\\\",\\n            \\\"quality\\\": 2\\n          },\\n          \\\"lifetime\\\": \\\"ThisAttack\\\",\\n          \\\"seat\\\": \\\"Actor\\\"\\n        }\\n      ],\\n      \\\"activated\\\": [],\\n      \\\"scope\\\": \\\"Weapon\\\",\\n      \\\"engineArgumentCount\\\": 0,\\n      \\\"valence\\\": \\\"Positive\\\",\\n      \\\"description\\\": \\\"Attacks with this weapon hit on a Quality of 2\\\\u002B (before other modifiers).\\\"\\n    },\\n    \\\"intArguments\\\": [],\\n    \\\"arguments\\\": []\\n  }\\n]\",\"Name\":\"Render Rifle\",\"RangeInches\":30.0,\"Attacks\":2,\"ArmorPenetration\":1,\"EffectKey\":null},{\"_ruleDefinitionsJson\":\"[\\n  {\\n    \\\"requestedName\\\": \\\"Blast(3)\\\",\\n    \\\"definition\\\": {\\n      \\\"name\\\": \\\"Blast\\\",\\n      \\\"passive\\\": [\\n        {\\n          \\\"hookID\\\": \\\"Shooting_OnHitRollComplete\\\",\\n          \\\"condition\\\": {\\n            \\\"kind\\\": \\\"always\\\"\\n          },\\n          \\\"effect\\\": {\\n            \\\"kind\\\": \\\"multiplyHits\\\",\\n            \\\"multiplier\\\": {\\n              \\\"kind\\\": \\\"arg\\\",\\n              \\\"index\\\": 0\\n            }\\n          },\\n          \\\"lifetime\\\": \\\"ThisAttack\\\",\\n          \\\"seat\\\": \\\"Actor\\\"\\n        },\\n        {\\n          \\\"hookID\\\": \\\"Shooting_OnSaveRollModifier\\\",\\n          \\\"condition\\\": {\\n            \\\"kind\\\": \\\"always\\\"\\n          },\\n          \\\"effect\\\": {\\n            \\\"kind\\\": \\\"ignoreCover\\\"\\n          },\\n          \\\"lifetime\\\": \\\"ThisAttack\\\",\\n          \\\"seat\\\": \\\"Actor\\\"\\n        }\\n      ],\\n      \\\"activated\\\": [],\\n      \\\"scope\\\": \\\"Weapon\\\",\\n      \\\"engineArgumentCount\\\": 0,\\n      \\\"valence\\\": \\\"Positive\\\",\\n      \\\"description\\\": \\\"Each hit becomes several hits (no more per hit than the target unit\\\\u0027s model count) and the attack ignores cover.\\\"\\n    },\\n    \\\"intArguments\\\": [\\n      3\\n    ],\\n    \\\"arguments\\\": [\\n      {\\n        \\\"intValue\\\": 3,\\n        \\\"strValue\\\": null\\n      }\\n    ]\\n  },\\n  {\\n    \\\"requestedName\\\": \\\"Indirect\\\",\\n    \\\"definition\\\": {\\n      \\\"name\\\": \\\"Indirect\\\",\\n      \\\"passive\\\": [\\n        {\\n          \\\"hookID\\\": \\\"Shooting_OnHitRollModifier\\\",\\n          \\\"condition\\\": {\\n            \\\"kind\\\": \\\"and\\\",\\n            \\\"left\\\": {\\n              \\\"kind\\\": \\\"afterMoving\\\"\\n            },\\n            \\\"right\\\": {\\n              \\\"kind\\\": \\\"not\\\",\\n              \\\"inner\\\": {\\n                \\\"kind\\\": \\\"isMelee\\\"\\n              }\\n            }\\n          },\\n          \\\"effect\\\": {\\n            \\\"kind\\\": \\\"rollModifier\\\",\\n            \\\"rollKind\\\": \\\"Hit\\\",\\n            \\\"delta\\\": -1\\n          },\\n          \\\"lifetime\\\": \\\"ThisAttack\\\",\\n          \\\"seat\\\": \\\"Actor\\\"\\n        },\\n        {\\n          \\\"hookID\\\": \\\"Shooting_OnSaveRollModifier\\\",\\n          \\\"condition\\\": {\\n            \\\"kind\\\": \\\"always\\\"\\n          },\\n          \\\"effect\\\": {\\n            \\\"kind\\\": \\\"ignoreLineOfSight\\\"\\n          },\\n          \\\"lifetime\\\": \\\"ThisAttack\\\",\\n          \\\"seat\\\": \\\"Actor\\\"\\n        },\\n        {\\n          \\\"hookID\\\": \\\"Shooting_OnSaveRollModifier\\\",\\n          \\\"condition\\\": {\\n            \\\"kind\\\": \\\"always\\\"\\n          },\\n          \\\"effect\\\": {\\n            \\\"kind\\\": \\\"ignoreCover\\\"\\n          },\\n          \\\"lifetime\\\": \\\"ThisAttack\\\",\\n          \\\"seat\\\": \\\"Actor\\\"\\n        }\\n      ],\\n      \\\"activated\\\": [],\\n      \\\"scope\\\": \\\"Weapon\\\",\\n      \\\"engineArgumentCount\\\": 0,\\n      \\\"valence\\\": \\\"Positive\\\",\\n      \\\"description\\\": \\\"Fires at targets out of line of sight and ignores cover; -1 to hit if the unit moved this activation.\\\"\\n    },\\n    \\\"intArguments\\\": [],\\n    \\\"arguments\\\": []\\n  }\\n]\",\"Name\":\"Siege Launcher\",\"RangeInches\":24.0,\"Attacks\":1,\"ArmorPenetration\":2,\"EffectKey\":null},{\"_ruleDefinitionsJson\":\"[\\n  {\\n    \\\"requestedName\\\": \\\"Limited\\\",\\n    \\\"definition\\\": {\\n      \\\"name\\\": \\\"Limited\\\",\\n      \\\"passive\\\": [],\\n      \\\"activated\\\": [],\\n      \\\"scope\\\": \\\"Weapon\\\",\\n      \\\"engineArgumentCount\\\": 0,\\n      \\\"valence\\\": \\\"Neutral\\\",\\n      \\\"description\\\": \\\"This weapon may only be used once per game.\\\"\\n    },\\n    \\\"intArguments\\\": [],\\n    \\\"arguments\\\": []\\n  },\\n  {\\n    \\\"requestedName\\\": \\\"Deadly(3)\\\",\\n    \\\"definition\\\": {\\n      \\\"name\\\": \\\"Deadly\\\",\\n      \\\"passive\\\": [\\n        {\\n          \\\"hookID\\\": \\\"Shooting_OnPreApplyWound\\\",\\n          \\\"condition\\\": {\\n            \\\"kind\\\": \\\"always\\\"\\n          },\\n          \\\"effect\\\": {\\n            \\\"kind\\\": \\\"multiplyWounds\\\",\\n            \\\"multiplier\\\": {\\n              \\\"kind\\\": \\\"arg\\\",\\n              \\\"index\\\": 0\\n            }\\n          },\\n          \\\"lifetime\\\": \\\"ThisAttack\\\",\\n          \\\"seat\\\": \\\"Actor\\\"\\n        }\\n      ],\\n      \\\"activated\\\": [],\\n      \\\"scope\\\": \\\"Weapon\\\",\\n      \\\"engineArgumentCount\\\": 0,\\n      \\\"valence\\\": \\\"Positive\\\",\\n      \\\"description\\\": \\\"Each wound from this weapon is multiplied; excess wounds don\\\\u0027t carry over to other models.\\\"\\n    },\\n    \\\"intArguments\\\": [\\n      3\\n    ],\\n    \\\"arguments\\\": [\\n      {\\n        \\\"intValue\\\": 3,\\n        \\\"strValue\\\": null\\n      }\\n    ]\\n  }\\n]\",\"Name\":\"Thermal Lance\",\"RangeInches\":18.0,\"Attacks\":1,\"ArmorPenetration\":4,\"EffectKey\":null},{\"_ruleDefinitionsJson\":null,\"Name\":\"Hand Axe\",\"RangeInches\":0.0,\"Attacks\":1,\"ArmorPenetration\":0,\"EffectKey\":null}],\"ID\":{\"ID\":\"3061dc27-7654-416a-9a26-9715d575b065\"},\"TotalWounds\":1.0,\"WoundsDealt\":0.0,\"Position\":{\"Position3D\":{\"X\":11.062991,\"Y\":0.0,\"Z\":39.0,\"XY\":{\"X\":11.062991,\"Y\":0.0},\"XZ\":{\"X\":11.062991,\"Y\":39.0}},\"Position2D\":{\"X\":11.062991,\"Y\":39.0},\"x\":11.062991,\"y\":0.0,\"z\":39.0},\"Facing\":{\"X\":0.0,\"Y\":-1.0},\"BaseShape\":{\"$type\":\"baseShape.circle\",\"RadiusInches\":0.5511811,\"BoundingRadiusInches\":0.5511811,\"CircumscribedRadiusInches\":0.5511811}}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 5
+        },
+        "Index": 18,
+        "Generation": 1
+      },
+      "JsonValue": "{\"_tokens\":{\"_tokens\":[]},\"_ruleDefinitionsJson\":null,\"RemainingWoundsBinding\":{\"TypeID\":{\"ID\":2},\"Index\":18,\"Generation\":1},\"PositionBinding\":{\"TypeID\":{\"ID\":4},\"Index\":18,\"Generation\":1},\"FacingBinding\":{\"TypeID\":{\"ID\":15},\"Index\":18,\"Generation\":1},\"Weapons\":[{\"_ruleDefinitionsJson\":null,\"Name\":\"Stick\",\"RangeInches\":0.0,\"Attacks\":1,\"ArmorPenetration\":0,\"EffectKey\":null}],\"ID\":{\"ID\":\"55e0aed1-a919-4a6e-a5b5-63042e425ec6\"},\"TotalWounds\":6.0,\"WoundsDealt\":0.0,\"Position\":{\"Position3D\":{\"X\":22.0,\"Y\":0.0,\"Z\":24.2,\"XY\":{\"X\":22.0,\"Y\":0.0},\"XZ\":{\"X\":22.0,\"Y\":24.2}},\"Position2D\":{\"X\":22.0,\"Y\":24.2},\"x\":22.0,\"y\":0.0,\"z\":24.2},\"Facing\":{\"X\":0.0,\"Y\":-1.0},\"BaseShape\":{\"$type\":\"baseShape.circle\",\"RadiusInches\":0.5511811,\"BoundingRadiusInches\":0.5511811,\"CircumscribedRadiusInches\":0.5511811}}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 5
+        },
+        "Index": 19,
+        "Generation": 1
+      },
+      "JsonValue": "{\"_tokens\":{\"_tokens\":[]},\"_ruleDefinitionsJson\":null,\"RemainingWoundsBinding\":{\"TypeID\":{\"ID\":2},\"Index\":19,\"Generation\":1},\"PositionBinding\":{\"TypeID\":{\"ID\":4},\"Index\":19,\"Generation\":1},\"FacingBinding\":{\"TypeID\":{\"ID\":15},\"Index\":19,\"Generation\":1},\"Weapons\":[{\"_ruleDefinitionsJson\":null,\"Name\":\"Stick\",\"RangeInches\":0.0,\"Attacks\":1,\"ArmorPenetration\":0,\"EffectKey\":null}],\"ID\":{\"ID\":\"c3ac1d38-ae19-4a62-841d-2ed5145e09a4\"},\"TotalWounds\":6.0,\"WoundsDealt\":0.0,\"Position\":{\"Position3D\":{\"X\":23.2,\"Y\":0.0,\"Z\":24.2,\"XY\":{\"X\":23.2,\"Y\":0.0},\"XZ\":{\"X\":23.2,\"Y\":24.2}},\"Position2D\":{\"X\":23.2,\"Y\":24.2},\"x\":23.2,\"y\":0.0,\"z\":24.2},\"Facing\":{\"X\":0.0,\"Y\":-1.0},\"BaseShape\":{\"$type\":\"baseShape.circle\",\"RadiusInches\":0.5511811,\"BoundingRadiusInches\":0.5511811,\"CircumscribedRadiusInches\":0.5511811}}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 5
+        },
+        "Index": 20,
+        "Generation": 1
+      },
+      "JsonValue": "{\"_tokens\":{\"_tokens\":[]},\"_ruleDefinitionsJson\":null,\"RemainingWoundsBinding\":{\"TypeID\":{\"ID\":2},\"Index\":20,\"Generation\":1},\"PositionBinding\":{\"TypeID\":{\"ID\":4},\"Index\":20,\"Generation\":1},\"FacingBinding\":{\"TypeID\":{\"ID\":15},\"Index\":20,\"Generation\":1},\"Weapons\":[{\"_ruleDefinitionsJson\":null,\"Name\":\"Stick\",\"RangeInches\":0.0,\"Attacks\":1,\"ArmorPenetration\":0,\"EffectKey\":null}],\"ID\":{\"ID\":\"fb5febf9-5b18-42cf-8cb2-80e160b86e64\"},\"TotalWounds\":6.0,\"WoundsDealt\":0.0,\"Position\":{\"Position3D\":{\"X\":24.4,\"Y\":0.0,\"Z\":24.2,\"XY\":{\"X\":24.4,\"Y\":0.0},\"XZ\":{\"X\":24.4,\"Y\":24.2}},\"Position2D\":{\"X\":24.4,\"Y\":24.2},\"x\":24.4,\"y\":0.0,\"z\":24.2},\"Facing\":{\"X\":0.0,\"Y\":-1.0},\"BaseShape\":{\"$type\":\"baseShape.circle\",\"RadiusInches\":0.5511811,\"BoundingRadiusInches\":0.5511811,\"CircumscribedRadiusInches\":0.5511811}}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 5
+        },
+        "Index": 21,
+        "Generation": 1
+      },
+      "JsonValue": "{\"_tokens\":{\"_tokens\":[]},\"_ruleDefinitionsJson\":null,\"RemainingWoundsBinding\":{\"TypeID\":{\"ID\":2},\"Index\":21,\"Generation\":1},\"PositionBinding\":{\"TypeID\":{\"ID\":4},\"Index\":21,\"Generation\":1},\"FacingBinding\":{\"TypeID\":{\"ID\":15},\"Index\":21,\"Generation\":1},\"Weapons\":[{\"_ruleDefinitionsJson\":null,\"Name\":\"Stick\",\"RangeInches\":0.0,\"Attacks\":1,\"ArmorPenetration\":0,\"EffectKey\":null}],\"ID\":{\"ID\":\"237b390a-baa9-46da-bfb2-d9823c14fcb4\"},\"TotalWounds\":6.0,\"WoundsDealt\":0.0,\"Position\":{\"Position3D\":{\"X\":34.0,\"Y\":0.0,\"Z\":32.0,\"XY\":{\"X\":34.0,\"Y\":0.0},\"XZ\":{\"X\":34.0,\"Y\":32.0}},\"Position2D\":{\"X\":34.0,\"Y\":32.0},\"x\":34.0,\"y\":0.0,\"z\":32.0},\"Facing\":{\"X\":0.0,\"Y\":-1.0},\"BaseShape\":{\"$type\":\"baseShape.circle\",\"RadiusInches\":0.5511811,\"BoundingRadiusInches\":0.5511811,\"CircumscribedRadiusInches\":0.5511811}}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 5
+        },
+        "Index": 22,
+        "Generation": 1
+      },
+      "JsonValue": "{\"_tokens\":{\"_tokens\":[]},\"_ruleDefinitionsJson\":null,\"RemainingWoundsBinding\":{\"TypeID\":{\"ID\":2},\"Index\":22,\"Generation\":1},\"PositionBinding\":{\"TypeID\":{\"ID\":4},\"Index\":22,\"Generation\":1},\"FacingBinding\":{\"TypeID\":{\"ID\":15},\"Index\":22,\"Generation\":1},\"Weapons\":[{\"_ruleDefinitionsJson\":null,\"Name\":\"Stick\",\"RangeInches\":0.0,\"Attacks\":1,\"ArmorPenetration\":0,\"EffectKey\":null}],\"ID\":{\"ID\":\"6fa55620-87e6-4705-bb4e-028713f188a3\"},\"TotalWounds\":6.0,\"WoundsDealt\":0.0,\"Position\":{\"Position3D\":{\"X\":35.2,\"Y\":0.0,\"Z\":32.0,\"XY\":{\"X\":35.2,\"Y\":0.0},\"XZ\":{\"X\":35.2,\"Y\":32.0}},\"Position2D\":{\"X\":35.2,\"Y\":32.0},\"x\":35.2,\"y\":0.0,\"z\":32.0},\"Facing\":{\"X\":0.0,\"Y\":-1.0},\"BaseShape\":{\"$type\":\"baseShape.circle\",\"RadiusInches\":0.5511811,\"BoundingRadiusInches\":0.5511811,\"CircumscribedRadiusInches\":0.5511811}}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 5
+        },
+        "Index": 23,
+        "Generation": 1
+      },
+      "JsonValue": "{\"_tokens\":{\"_tokens\":[]},\"_ruleDefinitionsJson\":null,\"RemainingWoundsBinding\":{\"TypeID\":{\"ID\":2},\"Index\":23,\"Generation\":1},\"PositionBinding\":{\"TypeID\":{\"ID\":4},\"Index\":23,\"Generation\":1},\"FacingBinding\":{\"TypeID\":{\"ID\":15},\"Index\":23,\"Generation\":1},\"Weapons\":[{\"_ruleDefinitionsJson\":null,\"Name\":\"Stick\",\"RangeInches\":0.0,\"Attacks\":1,\"ArmorPenetration\":0,\"EffectKey\":null}],\"ID\":{\"ID\":\"c8e0ac8c-59dd-4934-a885-a42cf22ed82f\"},\"TotalWounds\":6.0,\"WoundsDealt\":0.0,\"Position\":{\"Position3D\":{\"X\":36.4,\"Y\":0.0,\"Z\":32.0,\"XY\":{\"X\":36.4,\"Y\":0.0},\"XZ\":{\"X\":36.4,\"Y\":32.0}},\"Position2D\":{\"X\":36.4,\"Y\":32.0},\"x\":36.4,\"y\":0.0,\"z\":32.0},\"Facing\":{\"X\":0.0,\"Y\":-1.0},\"BaseShape\":{\"$type\":\"baseShape.circle\",\"RadiusInches\":0.5511811,\"BoundingRadiusInches\":0.5511811,\"CircumscribedRadiusInches\":0.5511811}}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 6
+        },
+        "Index": 0,
+        "Generation": 1
+      },
+      "JsonValue": "{\"PlayerID\":{\"ID\":\"5639c958-b6db-4244-ae9c-e47fde5ad4aa\"},\"SlotID\":0,\"TeamNumber\":0,\"Name\":\"[Empty]\",\"IsFilled\":false}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 6
+        },
+        "Index": 1,
+        "Generation": 1
+      },
+      "JsonValue": "{\"PlayerID\":{\"ID\":\"d9eef97e-4bcd-4af9-ae61-461fddb5de2d\"},\"SlotID\":1,\"TeamNumber\":1,\"Name\":\"[Empty]\",\"IsFilled\":false}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 7
+        },
+        "Index": 0,
+        "Generation": 1
+      },
+      "JsonValue": "{\"TeamNumber\":0,\"Players\":{\"$type\":\"System.Collections.Generic.List`1[[FDG.PlayerID, FutureOfDarkGrimness]], System.Private.CoreLib\",\"$values\":[{\"ID\":\"5639c958-b6db-4244-ae9c-e47fde5ad4aa\"}]}}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 7
+        },
+        "Index": 1,
+        "Generation": 1
+      },
+      "JsonValue": "{\"TeamNumber\":1,\"Players\":{\"$type\":\"System.Collections.Generic.List`1[[FDG.PlayerID, FutureOfDarkGrimness]], System.Private.CoreLib\",\"$values\":[{\"ID\":\"d9eef97e-4bcd-4af9-ae61-461fddb5de2d\"}]}}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 8
+        },
+        "Index": 0,
+        "Generation": 1
+      },
+      "JsonValue": "{\"_tokens\":{\"_tokens\":[]},\"_ruleDefinitionsJson\":\"[\\n  {\\n    \\\"requestedName\\\": \\\"Disembark\\\",\\n    \\\"definition\\\": {\\n      \\\"name\\\": \\\"Disembark\\\",\\n      \\\"passive\\\": [],\\n      \\\"activated\\\": [\\n        {\\n          \\\"triggerHook\\\": \\\"Activation_OnActionChoice\\\",\\n          \\\"cost\\\": {\\n            \\\"kind\\\": \\\"oncePerActivation\\\"\\n          },\\n          \\\"targetSelector\\\": {\\n            \\\"rangeInches\\\": 0,\\n            \\\"minCount\\\": 1,\\n            \\\"maxCount\\\": 1,\\n            \\\"targetAffinity\\\": \\\"Self\\\",\\n            \\\"requireLineOfSight\\\": false,\\n            \\\"requiredToken\\\": null,\\n            \\\"singleModel\\\": false,\\n            \\\"requiredRule\\\": null\\n          },\\n          \\\"effect\\\": {\\n            \\\"kind\\\": \\\"disembark\\\"\\n          },\\n          \\\"availableWhen\\\": {\\n            \\\"kind\\\": \\\"tokenPresent\\\",\\n            \\\"tType\\\": {\\n              \\\"id\\\": \\\"EmbarkedIn\\\"\\n            },\\n            \\\"minCount\\\": 1\\n          },\\n          \\\"label\\\": \\\"\\\"\\n        }\\n      ],\\n      \\\"scope\\\": \\\"Unit\\\",\\n      \\\"engineArgumentCount\\\": 0,\\n      \\\"valence\\\": \\\"Neutral\\\",\\n      \\\"description\\\": \\\"Leave the transport this unit is embarked in, placing within 6\\\\u0022 of it.\\\"\\n    },\\n    \\\"intArguments\\\": [],\\n    \\\"arguments\\\": []\\n  },\\n  {\\n    \\\"requestedName\\\": \\\"Embark\\\",\\n    \\\"definition\\\": {\\n      \\\"name\\\": \\\"Embark\\\",\\n      \\\"passive\\\": [],\\n      \\\"activated\\\": [\\n        {\\n          \\\"triggerHook\\\": \\\"Activation_OnActionChoice\\\",\\n          \\\"cost\\\": {\\n            \\\"kind\\\": \\\"oncePerActivation\\\"\\n          },\\n          \\\"targetSelector\\\": {\\n            \\\"rangeInches\\\": 0,\\n            \\\"minCount\\\": 1,\\n            \\\"maxCount\\\": 1,\\n            \\\"targetAffinity\\\": \\\"Self\\\",\\n            \\\"requireLineOfSight\\\": false,\\n            \\\"requiredToken\\\": null,\\n            \\\"singleModel\\\": false,\\n            \\\"requiredRule\\\": null\\n          },\\n          \\\"effect\\\": {\\n            \\\"kind\\\": \\\"embark\\\"\\n          },\\n          \\\"availableWhen\\\": {\\n            \\\"kind\\\": \\\"always\\\"\\n          },\\n          \\\"label\\\": \\\"\\\"\\n        }\\n      ],\\n      \\\"scope\\\": \\\"Unit\\\",\\n      \\\"engineArgumentCount\\\": 0,\\n      \\\"valence\\\": \\\"Neutral\\\",\\n      \\\"description\\\": \\\"Board a friendly transport that has room, within move range.\\\"\\n    },\\n    \\\"intArguments\\\": [],\\n    \\\"arguments\\\": []\\n  }\\n]\",\"_heroAttachment\":null,\"ModelBindings\":[{\"TypeID\":{\"ID\":5},\"Index\":0,\"Generation\":1},{\"TypeID\":{\"ID\":5},\"Index\":1,\"Generation\":1},{\"TypeID\":{\"ID\":5},\"Index\":2,\"Generation\":1}],\"ID\":{\"ID\":\"7aaa7f00-b232-457b-a0ed-e4cf96a2278a\"},\"PlayerID\":{\"ID\":\"5639c958-b6db-4244-ae9c-e47fde5ad4aa\"},\"Name\":\"Blademasters\",\"Quality\":3,\"Defense\":4,\"PointCost\":0}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 8
+        },
+        "Index": 1,
+        "Generation": 1
+      },
+      "JsonValue": "{\"_tokens\":{\"_tokens\":[]},\"_ruleDefinitionsJson\":\"[\\n  {\\n    \\\"requestedName\\\": \\\"Disembark\\\",\\n    \\\"definition\\\": {\\n      \\\"name\\\": \\\"Disembark\\\",\\n      \\\"passive\\\": [],\\n      \\\"activated\\\": [\\n        {\\n          \\\"triggerHook\\\": \\\"Activation_OnActionChoice\\\",\\n          \\\"cost\\\": {\\n            \\\"kind\\\": \\\"oncePerActivation\\\"\\n          },\\n          \\\"targetSelector\\\": {\\n            \\\"rangeInches\\\": 0,\\n            \\\"minCount\\\": 1,\\n            \\\"maxCount\\\": 1,\\n            \\\"targetAffinity\\\": \\\"Self\\\",\\n            \\\"requireLineOfSight\\\": false,\\n            \\\"requiredToken\\\": null,\\n            \\\"singleModel\\\": false,\\n            \\\"requiredRule\\\": null\\n          },\\n          \\\"effect\\\": {\\n            \\\"kind\\\": \\\"disembark\\\"\\n          },\\n          \\\"availableWhen\\\": {\\n            \\\"kind\\\": \\\"tokenPresent\\\",\\n            \\\"tType\\\": {\\n              \\\"id\\\": \\\"EmbarkedIn\\\"\\n            },\\n            \\\"minCount\\\": 1\\n          },\\n          \\\"label\\\": \\\"\\\"\\n        }\\n      ],\\n      \\\"scope\\\": \\\"Unit\\\",\\n      \\\"engineArgumentCount\\\": 0,\\n      \\\"valence\\\": \\\"Neutral\\\",\\n      \\\"description\\\": \\\"Leave the transport this unit is embarked in, placing within 6\\\\u0022 of it.\\\"\\n    },\\n    \\\"intArguments\\\": [],\\n    \\\"arguments\\\": []\\n  },\\n  {\\n    \\\"requestedName\\\": \\\"Embark\\\",\\n    \\\"definition\\\": {\\n      \\\"name\\\": \\\"Embark\\\",\\n      \\\"passive\\\": [],\\n      \\\"activated\\\": [\\n        {\\n          \\\"triggerHook\\\": \\\"Activation_OnActionChoice\\\",\\n          \\\"cost\\\": {\\n            \\\"kind\\\": \\\"oncePerActivation\\\"\\n          },\\n          \\\"targetSelector\\\": {\\n            \\\"rangeInches\\\": 0,\\n            \\\"minCount\\\": 1,\\n            \\\"maxCount\\\": 1,\\n            \\\"targetAffinity\\\": \\\"Self\\\",\\n            \\\"requireLineOfSight\\\": false,\\n            \\\"requiredToken\\\": null,\\n            \\\"singleModel\\\": false,\\n            \\\"requiredRule\\\": null\\n          },\\n          \\\"effect\\\": {\\n            \\\"kind\\\": \\\"embark\\\"\\n          },\\n          \\\"availableWhen\\\": {\\n            \\\"kind\\\": \\\"always\\\"\\n          },\\n          \\\"label\\\": \\\"\\\"\\n        }\\n      ],\\n      \\\"scope\\\": \\\"Unit\\\",\\n      \\\"engineArgumentCount\\\": 0,\\n      \\\"valence\\\": \\\"Neutral\\\",\\n      \\\"description\\\": \\\"Board a friendly transport that has room, within move range.\\\"\\n    },\\n    \\\"intArguments\\\": [],\\n    \\\"arguments\\\": []\\n  }\\n]\",\"_heroAttachment\":null,\"ModelBindings\":[{\"TypeID\":{\"ID\":5},\"Index\":3,\"Generation\":1},{\"TypeID\":{\"ID\":5},\"Index\":4,\"Generation\":1},{\"TypeID\":{\"ID\":5},\"Index\":5,\"Generation\":1}],\"ID\":{\"ID\":\"f92bb921-01d2-42a1-876d-b0049328dfaf\"},\"PlayerID\":{\"ID\":\"5639c958-b6db-4244-ae9c-e47fde5ad4aa\"},\"Name\":\"Marksmen\",\"Quality\":3,\"Defense\":4,\"PointCost\":0}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 8
+        },
+        "Index": 2,
+        "Generation": 1
+      },
+      "JsonValue": "{\"_tokens\":{\"_tokens\":[]},\"_ruleDefinitionsJson\":\"[\\n  {\\n    \\\"requestedName\\\": \\\"Tough(6)\\\",\\n    \\\"definition\\\": {\\n      \\\"name\\\": \\\"Tough\\\",\\n      \\\"passive\\\": [\\n        {\\n          \\\"hookID\\\": \\\"Lifecycle_OnUnitCreated\\\",\\n          \\\"condition\\\": {\\n            \\\"kind\\\": \\\"always\\\"\\n          },\\n          \\\"effect\\\": {\\n            \\\"kind\\\": \\\"setMaxWounds\\\",\\n            \\\"amount\\\": {\\n              \\\"kind\\\": \\\"arg\\\",\\n              \\\"index\\\": 0\\n            }\\n          },\\n          \\\"lifetime\\\": \\\"UntilEndOfGame\\\",\\n          \\\"seat\\\": \\\"Actor\\\"\\n        }\\n      ],\\n      \\\"activated\\\": [],\\n      \\\"scope\\\": \\\"Unit\\\",\\n      \\\"engineArgumentCount\\\": 0,\\n      \\\"valence\\\": \\\"Positive\\\",\\n      \\\"description\\\": \\\"Each model in the unit has multiple wounds instead of one.\\\"\\n    },\\n    \\\"intArguments\\\": [\\n      6\\n    ],\\n    \\\"arguments\\\": [\\n      {\\n        \\\"intValue\\\": 6,\\n        \\\"strValue\\\": null\\n      }\\n    ]\\n  },\\n  {\\n    \\\"requestedName\\\": \\\"Disembark\\\",\\n    \\\"definition\\\": {\\n      \\\"name\\\": \\\"Disembark\\\",\\n      \\\"passive\\\": [],\\n      \\\"activated\\\": [\\n        {\\n          \\\"triggerHook\\\": \\\"Activation_OnActionChoice\\\",\\n          \\\"cost\\\": {\\n            \\\"kind\\\": \\\"oncePerActivation\\\"\\n          },\\n          \\\"targetSelector\\\": {\\n            \\\"rangeInches\\\": 0,\\n            \\\"minCount\\\": 1,\\n            \\\"maxCount\\\": 1,\\n            \\\"targetAffinity\\\": \\\"Self\\\",\\n            \\\"requireLineOfSight\\\": false,\\n            \\\"requiredToken\\\": null,\\n            \\\"singleModel\\\": false,\\n            \\\"requiredRule\\\": null\\n          },\\n          \\\"effect\\\": {\\n            \\\"kind\\\": \\\"disembark\\\"\\n          },\\n          \\\"availableWhen\\\": {\\n            \\\"kind\\\": \\\"tokenPresent\\\",\\n            \\\"tType\\\": {\\n              \\\"id\\\": \\\"EmbarkedIn\\\"\\n            },\\n            \\\"minCount\\\": 1\\n          },\\n          \\\"label\\\": \\\"\\\"\\n        }\\n      ],\\n      \\\"scope\\\": \\\"Unit\\\",\\n      \\\"engineArgumentCount\\\": 0,\\n      \\\"valence\\\": \\\"Neutral\\\",\\n      \\\"description\\\": \\\"Leave the transport this unit is embarked in, placing within 6\\\\u0022 of it.\\\"\\n    },\\n    \\\"intArguments\\\": [],\\n    \\\"arguments\\\": []\\n  },\\n  {\\n    \\\"requestedName\\\": \\\"Embark\\\",\\n    \\\"definition\\\": {\\n      \\\"name\\\": \\\"Embark\\\",\\n      \\\"passive\\\": [],\\n      \\\"activated\\\": [\\n        {\\n          \\\"triggerHook\\\": \\\"Activation_OnActionChoice\\\",\\n          \\\"cost\\\": {\\n            \\\"kind\\\": \\\"oncePerActivation\\\"\\n          },\\n          \\\"targetSelector\\\": {\\n            \\\"rangeInches\\\": 0,\\n            \\\"minCount\\\": 1,\\n            \\\"maxCount\\\": 1,\\n            \\\"targetAffinity\\\": \\\"Self\\\",\\n            \\\"requireLineOfSight\\\": false,\\n            \\\"requiredToken\\\": null,\\n            \\\"singleModel\\\": false,\\n            \\\"requiredRule\\\": null\\n          },\\n          \\\"effect\\\": {\\n            \\\"kind\\\": \\\"embark\\\"\\n          },\\n          \\\"availableWhen\\\": {\\n            \\\"kind\\\": \\\"always\\\"\\n          },\\n          \\\"label\\\": \\\"\\\"\\n        }\\n      ],\\n      \\\"scope\\\": \\\"Unit\\\",\\n      \\\"engineArgumentCount\\\": 0,\\n      \\\"valence\\\": \\\"Neutral\\\",\\n      \\\"description\\\": \\\"Board a friendly transport that has room, within move range.\\\"\\n    },\\n    \\\"intArguments\\\": [],\\n    \\\"arguments\\\": []\\n  }\\n]\",\"_heroAttachment\":null,\"ModelBindings\":[{\"TypeID\":{\"ID\":5},\"Index\":6,\"Generation\":1},{\"TypeID\":{\"ID\":5},\"Index\":7,\"Generation\":1},{\"TypeID\":{\"ID\":5},\"Index\":8,\"Generation\":1}],\"ID\":{\"ID\":\"79e0c80c-c008-4a87-a2cb-d535f21657cd\"},\"PlayerID\":{\"ID\":\"5639c958-b6db-4244-ae9c-e47fde5ad4aa\"},\"Name\":\"Melee Dummies\",\"Quality\":5,\"Defense\":4,\"PointCost\":0}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 8
+        },
+        "Index": 3,
+        "Generation": 1
+      },
+      "JsonValue": "{\"_tokens\":{\"_tokens\":[]},\"_ruleDefinitionsJson\":\"[\\n  {\\n    \\\"requestedName\\\": \\\"Tough(6)\\\",\\n    \\\"definition\\\": {\\n      \\\"name\\\": \\\"Tough\\\",\\n      \\\"passive\\\": [\\n        {\\n          \\\"hookID\\\": \\\"Lifecycle_OnUnitCreated\\\",\\n          \\\"condition\\\": {\\n            \\\"kind\\\": \\\"always\\\"\\n          },\\n          \\\"effect\\\": {\\n            \\\"kind\\\": \\\"setMaxWounds\\\",\\n            \\\"amount\\\": {\\n              \\\"kind\\\": \\\"arg\\\",\\n              \\\"index\\\": 0\\n            }\\n          },\\n          \\\"lifetime\\\": \\\"UntilEndOfGame\\\",\\n          \\\"seat\\\": \\\"Actor\\\"\\n        }\\n      ],\\n      \\\"activated\\\": [],\\n      \\\"scope\\\": \\\"Unit\\\",\\n      \\\"engineArgumentCount\\\": 0,\\n      \\\"valence\\\": \\\"Positive\\\",\\n      \\\"description\\\": \\\"Each model in the unit has multiple wounds instead of one.\\\"\\n    },\\n    \\\"intArguments\\\": [\\n      6\\n    ],\\n    \\\"arguments\\\": [\\n      {\\n        \\\"intValue\\\": 6,\\n        \\\"strValue\\\": null\\n      }\\n    ]\\n  },\\n  {\\n    \\\"requestedName\\\": \\\"Disembark\\\",\\n    \\\"definition\\\": {\\n      \\\"name\\\": \\\"Disembark\\\",\\n      \\\"passive\\\": [],\\n      \\\"activated\\\": [\\n        {\\n          \\\"triggerHook\\\": \\\"Activation_OnActionChoice\\\",\\n          \\\"cost\\\": {\\n            \\\"kind\\\": \\\"oncePerActivation\\\"\\n          },\\n          \\\"targetSelector\\\": {\\n            \\\"rangeInches\\\": 0,\\n            \\\"minCount\\\": 1,\\n            \\\"maxCount\\\": 1,\\n            \\\"targetAffinity\\\": \\\"Self\\\",\\n            \\\"requireLineOfSight\\\": false,\\n            \\\"requiredToken\\\": null,\\n            \\\"singleModel\\\": false,\\n            \\\"requiredRule\\\": null\\n          },\\n          \\\"effect\\\": {\\n            \\\"kind\\\": \\\"disembark\\\"\\n          },\\n          \\\"availableWhen\\\": {\\n            \\\"kind\\\": \\\"tokenPresent\\\",\\n            \\\"tType\\\": {\\n              \\\"id\\\": \\\"EmbarkedIn\\\"\\n            },\\n            \\\"minCount\\\": 1\\n          },\\n          \\\"label\\\": \\\"\\\"\\n        }\\n      ],\\n      \\\"scope\\\": \\\"Unit\\\",\\n      \\\"engineArgumentCount\\\": 0,\\n      \\\"valence\\\": \\\"Neutral\\\",\\n      \\\"description\\\": \\\"Leave the transport this unit is embarked in, placing within 6\\\\u0022 of it.\\\"\\n    },\\n    \\\"intArguments\\\": [],\\n    \\\"arguments\\\": []\\n  },\\n  {\\n    \\\"requestedName\\\": \\\"Embark\\\",\\n    \\\"definition\\\": {\\n      \\\"name\\\": \\\"Embark\\\",\\n      \\\"passive\\\": [],\\n      \\\"activated\\\": [\\n        {\\n          \\\"triggerHook\\\": \\\"Activation_OnActionChoice\\\",\\n          \\\"cost\\\": {\\n            \\\"kind\\\": \\\"oncePerActivation\\\"\\n          },\\n          \\\"targetSelector\\\": {\\n            \\\"rangeInches\\\": 0,\\n            \\\"minCount\\\": 1,\\n            \\\"maxCount\\\": 1,\\n            \\\"targetAffinity\\\": \\\"Self\\\",\\n            \\\"requireLineOfSight\\\": false,\\n            \\\"requiredToken\\\": null,\\n            \\\"singleModel\\\": false,\\n            \\\"requiredRule\\\": null\\n          },\\n          \\\"effect\\\": {\\n            \\\"kind\\\": \\\"embark\\\"\\n          },\\n          \\\"availableWhen\\\": {\\n            \\\"kind\\\": \\\"always\\\"\\n          },\\n          \\\"label\\\": \\\"\\\"\\n        }\\n      ],\\n      \\\"scope\\\": \\\"Unit\\\",\\n      \\\"engineArgumentCount\\\": 0,\\n      \\\"valence\\\": \\\"Neutral\\\",\\n      \\\"description\\\": \\\"Board a friendly transport that has room, within move range.\\\"\\n    },\\n    \\\"intArguments\\\": [],\\n    \\\"arguments\\\": []\\n  }\\n]\",\"_heroAttachment\":null,\"ModelBindings\":[{\"TypeID\":{\"ID\":5},\"Index\":9,\"Generation\":1},{\"TypeID\":{\"ID\":5},\"Index\":10,\"Generation\":1},{\"TypeID\":{\"ID\":5},\"Index\":11,\"Generation\":1}],\"ID\":{\"ID\":\"840980ef-181f-4f70-8704-0ce793e5f508\"},\"PlayerID\":{\"ID\":\"5639c958-b6db-4244-ae9c-e47fde5ad4aa\"},\"Name\":\"Target Dummies\",\"Quality\":5,\"Defense\":4,\"PointCost\":0}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 8
+        },
+        "Index": 4,
+        "Generation": 1
+      },
+      "JsonValue": "{\"_tokens\":{\"_tokens\":[]},\"_ruleDefinitionsJson\":\"[\\n  {\\n    \\\"requestedName\\\": \\\"Disembark\\\",\\n    \\\"definition\\\": {\\n      \\\"name\\\": \\\"Disembark\\\",\\n      \\\"passive\\\": [],\\n      \\\"activated\\\": [\\n        {\\n          \\\"triggerHook\\\": \\\"Activation_OnActionChoice\\\",\\n          \\\"cost\\\": {\\n            \\\"kind\\\": \\\"oncePerActivation\\\"\\n          },\\n          \\\"targetSelector\\\": {\\n            \\\"rangeInches\\\": 0,\\n            \\\"minCount\\\": 1,\\n            \\\"maxCount\\\": 1,\\n            \\\"targetAffinity\\\": \\\"Self\\\",\\n            \\\"requireLineOfSight\\\": false,\\n            \\\"requiredToken\\\": null,\\n            \\\"singleModel\\\": false,\\n            \\\"requiredRule\\\": null\\n          },\\n          \\\"effect\\\": {\\n            \\\"kind\\\": \\\"disembark\\\"\\n          },\\n          \\\"availableWhen\\\": {\\n            \\\"kind\\\": \\\"tokenPresent\\\",\\n            \\\"tType\\\": {\\n              \\\"id\\\": \\\"EmbarkedIn\\\"\\n            },\\n            \\\"minCount\\\": 1\\n          },\\n          \\\"label\\\": \\\"\\\"\\n        }\\n      ],\\n      \\\"scope\\\": \\\"Unit\\\",\\n      \\\"engineArgumentCount\\\": 0,\\n      \\\"valence\\\": \\\"Neutral\\\",\\n      \\\"description\\\": \\\"Leave the transport this unit is embarked in, placing within 6\\\\u0022 of it.\\\"\\n    },\\n    \\\"intArguments\\\": [],\\n    \\\"arguments\\\": []\\n  },\\n  {\\n    \\\"requestedName\\\": \\\"Embark\\\",\\n    \\\"definition\\\": {\\n      \\\"name\\\": \\\"Embark\\\",\\n      \\\"passive\\\": [],\\n      \\\"activated\\\": [\\n        {\\n          \\\"triggerHook\\\": \\\"Activation_OnActionChoice\\\",\\n          \\\"cost\\\": {\\n            \\\"kind\\\": \\\"oncePerActivation\\\"\\n          },\\n          \\\"targetSelector\\\": {\\n            \\\"rangeInches\\\": 0,\\n            \\\"minCount\\\": 1,\\n            \\\"maxCount\\\": 1,\\n            \\\"targetAffinity\\\": \\\"Self\\\",\\n            \\\"requireLineOfSight\\\": false,\\n            \\\"requiredToken\\\": null,\\n            \\\"singleModel\\\": false,\\n            \\\"requiredRule\\\": null\\n          },\\n          \\\"effect\\\": {\\n            \\\"kind\\\": \\\"embark\\\"\\n          },\\n          \\\"availableWhen\\\": {\\n            \\\"kind\\\": \\\"always\\\"\\n          },\\n          \\\"label\\\": \\\"\\\"\\n        }\\n      ],\\n      \\\"scope\\\": \\\"Unit\\\",\\n      \\\"engineArgumentCount\\\": 0,\\n      \\\"valence\\\": \\\"Neutral\\\",\\n      \\\"description\\\": \\\"Board a friendly transport that has room, within move range.\\\"\\n    },\\n    \\\"intArguments\\\": [],\\n    \\\"arguments\\\": []\\n  }\\n]\",\"_heroAttachment\":null,\"ModelBindings\":[{\"TypeID\":{\"ID\":5},\"Index\":12,\"Generation\":1},{\"TypeID\":{\"ID\":5},\"Index\":13,\"Generation\":1},{\"TypeID\":{\"ID\":5},\"Index\":14,\"Generation\":1}],\"ID\":{\"ID\":\"1ccc8f08-ca23-45f9-82fa-8c7f14723045\"},\"PlayerID\":{\"ID\":\"d9eef97e-4bcd-4af9-ae61-461fddb5de2d\"},\"Name\":\"Blademasters\",\"Quality\":3,\"Defense\":4,\"PointCost\":0}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 8
+        },
+        "Index": 5,
+        "Generation": 1
+      },
+      "JsonValue": "{\"_tokens\":{\"_tokens\":[]},\"_ruleDefinitionsJson\":\"[\\n  {\\n    \\\"requestedName\\\": \\\"Disembark\\\",\\n    \\\"definition\\\": {\\n      \\\"name\\\": \\\"Disembark\\\",\\n      \\\"passive\\\": [],\\n      \\\"activated\\\": [\\n        {\\n          \\\"triggerHook\\\": \\\"Activation_OnActionChoice\\\",\\n          \\\"cost\\\": {\\n            \\\"kind\\\": \\\"oncePerActivation\\\"\\n          },\\n          \\\"targetSelector\\\": {\\n            \\\"rangeInches\\\": 0,\\n            \\\"minCount\\\": 1,\\n            \\\"maxCount\\\": 1,\\n            \\\"targetAffinity\\\": \\\"Self\\\",\\n            \\\"requireLineOfSight\\\": false,\\n            \\\"requiredToken\\\": null,\\n            \\\"singleModel\\\": false,\\n            \\\"requiredRule\\\": null\\n          },\\n          \\\"effect\\\": {\\n            \\\"kind\\\": \\\"disembark\\\"\\n          },\\n          \\\"availableWhen\\\": {\\n            \\\"kind\\\": \\\"tokenPresent\\\",\\n            \\\"tType\\\": {\\n              \\\"id\\\": \\\"EmbarkedIn\\\"\\n            },\\n            \\\"minCount\\\": 1\\n          },\\n          \\\"label\\\": \\\"\\\"\\n        }\\n      ],\\n      \\\"scope\\\": \\\"Unit\\\",\\n      \\\"engineArgumentCount\\\": 0,\\n      \\\"valence\\\": \\\"Neutral\\\",\\n      \\\"description\\\": \\\"Leave the transport this unit is embarked in, placing within 6\\\\u0022 of it.\\\"\\n    },\\n    \\\"intArguments\\\": [],\\n    \\\"arguments\\\": []\\n  },\\n  {\\n    \\\"requestedName\\\": \\\"Embark\\\",\\n    \\\"definition\\\": {\\n      \\\"name\\\": \\\"Embark\\\",\\n      \\\"passive\\\": [],\\n      \\\"activated\\\": [\\n        {\\n          \\\"triggerHook\\\": \\\"Activation_OnActionChoice\\\",\\n          \\\"cost\\\": {\\n            \\\"kind\\\": \\\"oncePerActivation\\\"\\n          },\\n          \\\"targetSelector\\\": {\\n            \\\"rangeInches\\\": 0,\\n            \\\"minCount\\\": 1,\\n            \\\"maxCount\\\": 1,\\n            \\\"targetAffinity\\\": \\\"Self\\\",\\n            \\\"requireLineOfSight\\\": false,\\n            \\\"requiredToken\\\": null,\\n            \\\"singleModel\\\": false,\\n            \\\"requiredRule\\\": null\\n          },\\n          \\\"effect\\\": {\\n            \\\"kind\\\": \\\"embark\\\"\\n          },\\n          \\\"availableWhen\\\": {\\n            \\\"kind\\\": \\\"always\\\"\\n          },\\n          \\\"label\\\": \\\"\\\"\\n        }\\n      ],\\n      \\\"scope\\\": \\\"Unit\\\",\\n      \\\"engineArgumentCount\\\": 0,\\n      \\\"valence\\\": \\\"Neutral\\\",\\n      \\\"description\\\": \\\"Board a friendly transport that has room, within move range.\\\"\\n    },\\n    \\\"intArguments\\\": [],\\n    \\\"arguments\\\": []\\n  }\\n]\",\"_heroAttachment\":null,\"ModelBindings\":[{\"TypeID\":{\"ID\":5},\"Index\":15,\"Generation\":1},{\"TypeID\":{\"ID\":5},\"Index\":16,\"Generation\":1},{\"TypeID\":{\"ID\":5},\"Index\":17,\"Generation\":1}],\"ID\":{\"ID\":\"e2bfbca0-d2e3-4808-b64b-2188c0fd8788\"},\"PlayerID\":{\"ID\":\"d9eef97e-4bcd-4af9-ae61-461fddb5de2d\"},\"Name\":\"Marksmen\",\"Quality\":3,\"Defense\":4,\"PointCost\":0}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 8
+        },
+        "Index": 6,
+        "Generation": 1
+      },
+      "JsonValue": "{\"_tokens\":{\"_tokens\":[]},\"_ruleDefinitionsJson\":\"[\\n  {\\n    \\\"requestedName\\\": \\\"Tough(6)\\\",\\n    \\\"definition\\\": {\\n      \\\"name\\\": \\\"Tough\\\",\\n      \\\"passive\\\": [\\n        {\\n          \\\"hookID\\\": \\\"Lifecycle_OnUnitCreated\\\",\\n          \\\"condition\\\": {\\n            \\\"kind\\\": \\\"always\\\"\\n          },\\n          \\\"effect\\\": {\\n            \\\"kind\\\": \\\"setMaxWounds\\\",\\n            \\\"amount\\\": {\\n              \\\"kind\\\": \\\"arg\\\",\\n              \\\"index\\\": 0\\n            }\\n          },\\n          \\\"lifetime\\\": \\\"UntilEndOfGame\\\",\\n          \\\"seat\\\": \\\"Actor\\\"\\n        }\\n      ],\\n      \\\"activated\\\": [],\\n      \\\"scope\\\": \\\"Unit\\\",\\n      \\\"engineArgumentCount\\\": 0,\\n      \\\"valence\\\": \\\"Positive\\\",\\n      \\\"description\\\": \\\"Each model in the unit has multiple wounds instead of one.\\\"\\n    },\\n    \\\"intArguments\\\": [\\n      6\\n    ],\\n    \\\"arguments\\\": [\\n      {\\n        \\\"intValue\\\": 6,\\n        \\\"strValue\\\": null\\n      }\\n    ]\\n  },\\n  {\\n    \\\"requestedName\\\": \\\"Disembark\\\",\\n    \\\"definition\\\": {\\n      \\\"name\\\": \\\"Disembark\\\",\\n      \\\"passive\\\": [],\\n      \\\"activated\\\": [\\n        {\\n          \\\"triggerHook\\\": \\\"Activation_OnActionChoice\\\",\\n          \\\"cost\\\": {\\n            \\\"kind\\\": \\\"oncePerActivation\\\"\\n          },\\n          \\\"targetSelector\\\": {\\n            \\\"rangeInches\\\": 0,\\n            \\\"minCount\\\": 1,\\n            \\\"maxCount\\\": 1,\\n            \\\"targetAffinity\\\": \\\"Self\\\",\\n            \\\"requireLineOfSight\\\": false,\\n            \\\"requiredToken\\\": null,\\n            \\\"singleModel\\\": false,\\n            \\\"requiredRule\\\": null\\n          },\\n          \\\"effect\\\": {\\n            \\\"kind\\\": \\\"disembark\\\"\\n          },\\n          \\\"availableWhen\\\": {\\n            \\\"kind\\\": \\\"tokenPresent\\\",\\n            \\\"tType\\\": {\\n              \\\"id\\\": \\\"EmbarkedIn\\\"\\n            },\\n            \\\"minCount\\\": 1\\n          },\\n          \\\"label\\\": \\\"\\\"\\n        }\\n      ],\\n      \\\"scope\\\": \\\"Unit\\\",\\n      \\\"engineArgumentCount\\\": 0,\\n      \\\"valence\\\": \\\"Neutral\\\",\\n      \\\"description\\\": \\\"Leave the transport this unit is embarked in, placing within 6\\\\u0022 of it.\\\"\\n    },\\n    \\\"intArguments\\\": [],\\n    \\\"arguments\\\": []\\n  },\\n  {\\n    \\\"requestedName\\\": \\\"Embark\\\",\\n    \\\"definition\\\": {\\n      \\\"name\\\": \\\"Embark\\\",\\n      \\\"passive\\\": [],\\n      \\\"activated\\\": [\\n        {\\n          \\\"triggerHook\\\": \\\"Activation_OnActionChoice\\\",\\n          \\\"cost\\\": {\\n            \\\"kind\\\": \\\"oncePerActivation\\\"\\n          },\\n          \\\"targetSelector\\\": {\\n            \\\"rangeInches\\\": 0,\\n            \\\"minCount\\\": 1,\\n            \\\"maxCount\\\": 1,\\n            \\\"targetAffinity\\\": \\\"Self\\\",\\n            \\\"requireLineOfSight\\\": false,\\n            \\\"requiredToken\\\": null,\\n            \\\"singleModel\\\": false,\\n            \\\"requiredRule\\\": null\\n          },\\n          \\\"effect\\\": {\\n            \\\"kind\\\": \\\"embark\\\"\\n          },\\n          \\\"availableWhen\\\": {\\n            \\\"kind\\\": \\\"always\\\"\\n          },\\n          \\\"label\\\": \\\"\\\"\\n        }\\n      ],\\n      \\\"scope\\\": \\\"Unit\\\",\\n      \\\"engineArgumentCount\\\": 0,\\n      \\\"valence\\\": \\\"Neutral\\\",\\n      \\\"description\\\": \\\"Board a friendly transport that has room, within move range.\\\"\\n    },\\n    \\\"intArguments\\\": [],\\n    \\\"arguments\\\": []\\n  }\\n]\",\"_heroAttachment\":null,\"ModelBindings\":[{\"TypeID\":{\"ID\":5},\"Index\":18,\"Generation\":1},{\"TypeID\":{\"ID\":5},\"Index\":19,\"Generation\":1},{\"TypeID\":{\"ID\":5},\"Index\":20,\"Generation\":1}],\"ID\":{\"ID\":\"d49908b2-f8f3-4b6f-8be8-a5e65131f3d1\"},\"PlayerID\":{\"ID\":\"d9eef97e-4bcd-4af9-ae61-461fddb5de2d\"},\"Name\":\"Melee Dummies\",\"Quality\":5,\"Defense\":4,\"PointCost\":0}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 8
+        },
+        "Index": 7,
+        "Generation": 1
+      },
+      "JsonValue": "{\"_tokens\":{\"_tokens\":[]},\"_ruleDefinitionsJson\":\"[\\n  {\\n    \\\"requestedName\\\": \\\"Tough(6)\\\",\\n    \\\"definition\\\": {\\n      \\\"name\\\": \\\"Tough\\\",\\n      \\\"passive\\\": [\\n        {\\n          \\\"hookID\\\": \\\"Lifecycle_OnUnitCreated\\\",\\n          \\\"condition\\\": {\\n            \\\"kind\\\": \\\"always\\\"\\n          },\\n          \\\"effect\\\": {\\n            \\\"kind\\\": \\\"setMaxWounds\\\",\\n            \\\"amount\\\": {\\n              \\\"kind\\\": \\\"arg\\\",\\n              \\\"index\\\": 0\\n            }\\n          },\\n          \\\"lifetime\\\": \\\"UntilEndOfGame\\\",\\n          \\\"seat\\\": \\\"Actor\\\"\\n        }\\n      ],\\n      \\\"activated\\\": [],\\n      \\\"scope\\\": \\\"Unit\\\",\\n      \\\"engineArgumentCount\\\": 0,\\n      \\\"valence\\\": \\\"Positive\\\",\\n      \\\"description\\\": \\\"Each model in the unit has multiple wounds instead of one.\\\"\\n    },\\n    \\\"intArguments\\\": [\\n      6\\n    ],\\n    \\\"arguments\\\": [\\n      {\\n        \\\"intValue\\\": 6,\\n        \\\"strValue\\\": null\\n      }\\n    ]\\n  },\\n  {\\n    \\\"requestedName\\\": \\\"Disembark\\\",\\n    \\\"definition\\\": {\\n      \\\"name\\\": \\\"Disembark\\\",\\n      \\\"passive\\\": [],\\n      \\\"activated\\\": [\\n        {\\n          \\\"triggerHook\\\": \\\"Activation_OnActionChoice\\\",\\n          \\\"cost\\\": {\\n            \\\"kind\\\": \\\"oncePerActivation\\\"\\n          },\\n          \\\"targetSelector\\\": {\\n            \\\"rangeInches\\\": 0,\\n            \\\"minCount\\\": 1,\\n            \\\"maxCount\\\": 1,\\n            \\\"targetAffinity\\\": \\\"Self\\\",\\n            \\\"requireLineOfSight\\\": false,\\n            \\\"requiredToken\\\": null,\\n            \\\"singleModel\\\": false,\\n            \\\"requiredRule\\\": null\\n          },\\n          \\\"effect\\\": {\\n            \\\"kind\\\": \\\"disembark\\\"\\n          },\\n          \\\"availableWhen\\\": {\\n            \\\"kind\\\": \\\"tokenPresent\\\",\\n            \\\"tType\\\": {\\n              \\\"id\\\": \\\"EmbarkedIn\\\"\\n            },\\n            \\\"minCount\\\": 1\\n          },\\n          \\\"label\\\": \\\"\\\"\\n        }\\n      ],\\n      \\\"scope\\\": \\\"Unit\\\",\\n      \\\"engineArgumentCount\\\": 0,\\n      \\\"valence\\\": \\\"Neutral\\\",\\n      \\\"description\\\": \\\"Leave the transport this unit is embarked in, placing within 6\\\\u0022 of it.\\\"\\n    },\\n    \\\"intArguments\\\": [],\\n    \\\"arguments\\\": []\\n  },\\n  {\\n    \\\"requestedName\\\": \\\"Embark\\\",\\n    \\\"definition\\\": {\\n      \\\"name\\\": \\\"Embark\\\",\\n      \\\"passive\\\": [],\\n      \\\"activated\\\": [\\n        {\\n          \\\"triggerHook\\\": \\\"Activation_OnActionChoice\\\",\\n          \\\"cost\\\": {\\n            \\\"kind\\\": \\\"oncePerActivation\\\"\\n          },\\n          \\\"targetSelector\\\": {\\n            \\\"rangeInches\\\": 0,\\n            \\\"minCount\\\": 1,\\n            \\\"maxCount\\\": 1,\\n            \\\"targetAffinity\\\": \\\"Self\\\",\\n            \\\"requireLineOfSight\\\": false,\\n            \\\"requiredToken\\\": null,\\n            \\\"singleModel\\\": false,\\n            \\\"requiredRule\\\": null\\n          },\\n          \\\"effect\\\": {\\n            \\\"kind\\\": \\\"embark\\\"\\n          },\\n          \\\"availableWhen\\\": {\\n            \\\"kind\\\": \\\"always\\\"\\n          },\\n          \\\"label\\\": \\\"\\\"\\n        }\\n      ],\\n      \\\"scope\\\": \\\"Unit\\\",\\n      \\\"engineArgumentCount\\\": 0,\\n      \\\"valence\\\": \\\"Neutral\\\",\\n      \\\"description\\\": \\\"Board a friendly transport that has room, within move range.\\\"\\n    },\\n    \\\"intArguments\\\": [],\\n    \\\"arguments\\\": []\\n  }\\n]\",\"_heroAttachment\":null,\"ModelBindings\":[{\"TypeID\":{\"ID\":5},\"Index\":21,\"Generation\":1},{\"TypeID\":{\"ID\":5},\"Index\":22,\"Generation\":1},{\"TypeID\":{\"ID\":5},\"Index\":23,\"Generation\":1}],\"ID\":{\"ID\":\"d4a4e2ce-4b78-4585-890b-d134cd8142ce\"},\"PlayerID\":{\"ID\":\"d9eef97e-4bcd-4af9-ae61-461fddb5de2d\"},\"Name\":\"Target Dummies\",\"Quality\":5,\"Defense\":4,\"PointCost\":0}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 9
+        },
+        "Index": 0,
+        "Generation": 1
+      },
+      "JsonValue": "{\"UnitBindings\":[{\"TypeID\":{\"ID\":8},\"Index\":0,\"Generation\":1},{\"TypeID\":{\"ID\":8},\"Index\":1,\"Generation\":1},{\"TypeID\":{\"ID\":8},\"Index\":2,\"Generation\":1},{\"TypeID\":{\"ID\":8},\"Index\":3,\"Generation\":1}],\"_armyRuleDataJson\":\"{\\n  \\\"ruleDefinitions\\\": [\\n    {\\n      \\\"name\\\": \\\"Mysterious\\\",\\n      \\\"passive\\\": [],\\n      \\\"activated\\\": [],\\n      \\\"scope\\\": \\\"Weapon\\\",\\n      \\\"engineArgumentCount\\\": 0,\\n      \\\"valence\\\": \\\"Neutral\\\",\\n      \\\"description\\\": \\\"\\\"\\n    }\\n  ],\\n  \\\"spells\\\": [],\\n  \\\"auxiliaryUnits\\\": null,\\n  \\\"defaultRangedEffectSet\\\": null,\\n  \\\"defaultMeleeEffectSet\\\": null\\n}\",\"PlayerID\":{\"ID\":\"5639c958-b6db-4244-ae9c-e47fde5ad4aa\"},\"ArmyName\":\"Rule Showcase (#333 demo army)\",\"Faction\":\"\",\"PointsLimit\":0}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 9
+        },
+        "Index": 1,
+        "Generation": 1
+      },
+      "JsonValue": "{\"UnitBindings\":[{\"TypeID\":{\"ID\":8},\"Index\":4,\"Generation\":1},{\"TypeID\":{\"ID\":8},\"Index\":5,\"Generation\":1},{\"TypeID\":{\"ID\":8},\"Index\":6,\"Generation\":1},{\"TypeID\":{\"ID\":8},\"Index\":7,\"Generation\":1}],\"_armyRuleDataJson\":\"{\\n  \\\"ruleDefinitions\\\": [\\n    {\\n      \\\"name\\\": \\\"Mysterious\\\",\\n      \\\"passive\\\": [],\\n      \\\"activated\\\": [],\\n      \\\"scope\\\": \\\"Weapon\\\",\\n      \\\"engineArgumentCount\\\": 0,\\n      \\\"valence\\\": \\\"Neutral\\\",\\n      \\\"description\\\": \\\"\\\"\\n    }\\n  ],\\n  \\\"spells\\\": [],\\n  \\\"auxiliaryUnits\\\": null,\\n  \\\"defaultRangedEffectSet\\\": null,\\n  \\\"defaultMeleeEffectSet\\\": null\\n}\",\"PlayerID\":{\"ID\":\"d9eef97e-4bcd-4af9-ae61-461fddb5de2d\"},\"ArmyName\":\"Rule Showcase (#333 demo army)\",\"Faction\":\"\",\"PointsLimit\":0}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 12
+        },
+        "Index": 0,
+        "Generation": 1
+      },
+      "JsonValue": "{\"OwnerIDBinding\":{\"TypeID\":{\"ID\":13},\"Index\":0,\"Generation\":1},\"Position\":{\"Position3D\":{\"X\":8.0,\"Y\":0.0,\"Z\":8.0,\"XY\":{\"X\":8.0,\"Y\":0.0},\"XZ\":{\"X\":8.0,\"Y\":8.0}},\"Position2D\":{\"X\":8.0,\"Y\":8.0},\"x\":8.0,\"y\":0.0,\"z\":8.0},\"OwnerID\":null}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 12
+        },
+        "Index": 1,
+        "Generation": 1
+      },
+      "JsonValue": "{\"OwnerIDBinding\":{\"TypeID\":{\"ID\":13},\"Index\":1,\"Generation\":1},\"Position\":{\"Position3D\":{\"X\":40.0,\"Y\":0.0,\"Z\":40.0,\"XY\":{\"X\":40.0,\"Y\":0.0},\"XZ\":{\"X\":40.0,\"Y\":40.0}},\"Position2D\":{\"X\":40.0,\"Y\":40.0},\"x\":40.0,\"y\":0.0,\"z\":40.0},\"OwnerID\":null}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 13
+        },
+        "Index": 0,
+        "Generation": 1
+      },
+      "JsonValue": "{\"ID\":\"00000000-0000-0000-0000-000000000000\"}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 13
+        },
+        "Index": 1,
+        "Generation": 1
+      },
+      "JsonValue": "{\"ID\":\"00000000-0000-0000-0000-000000000000\"}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 14
+        },
+        "Index": 0,
+        "Generation": 1
+      },
+      "JsonValue": "{\"Stage\":\"MainPhase\",\"TeamActivateOrder\":[0,1],\"CurrentRoundTeamFinishOrder\":[],\"CurrentTeamIndex\":1,\"CurrentPlayerIndexPerTeam\":{\"0\":0,\"1\":0},\"UnactivatedUnits\":[{\"TypeID\":{\"ID\":8},\"Index\":0,\"Generation\":1},{\"TypeID\":{\"ID\":8},\"Index\":1,\"Generation\":1},{\"TypeID\":{\"ID\":8},\"Index\":2,\"Generation\":1},{\"TypeID\":{\"ID\":8},\"Index\":3,\"Generation\":1},{\"TypeID\":{\"ID\":8},\"Index\":4,\"Generation\":1},{\"TypeID\":{\"ID\":8},\"Index\":5,\"Generation\":1},{\"TypeID\":{\"ID\":8},\"Index\":6,\"Generation\":1},{\"TypeID\":{\"ID\":8},\"Index\":7,\"Generation\":1}],\"Settings\":{\"ArmyPoints\":2000,\"CoverProximityExceptions\":true,\"TerrainPieceCount\":20,\"TerrainPointsTotal\":30,\"TerrainPointsPerTurn\":3,\"RandomnessType\":\"Realistic\",\"DiceSeed\":42,\"TurnStyle\":\"Standard\",\"ObjectivePlacementMode\":\"AutoPlaced\",\"TerrainPlacementMode\":\"AutoFromLayout\",\"TerrainLayoutPath\":null,\"TableBackground\":\"Forest\"},\"RoundCount\":1,\"ActivatingUnit\":null}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 15
+        },
+        "Index": 0,
+        "Generation": 1
+      },
+      "JsonValue": "{\"X\":0.0,\"Y\":1.0}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 15
+        },
+        "Index": 1,
+        "Generation": 1
+      },
+      "JsonValue": "{\"X\":0.0,\"Y\":1.0}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 15
+        },
+        "Index": 2,
+        "Generation": 1
+      },
+      "JsonValue": "{\"X\":0.0,\"Y\":1.0}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 15
+        },
+        "Index": 3,
+        "Generation": 1
+      },
+      "JsonValue": "{\"X\":0.0,\"Y\":1.0}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 15
+        },
+        "Index": 4,
+        "Generation": 1
+      },
+      "JsonValue": "{\"X\":0.0,\"Y\":1.0}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 15
+        },
+        "Index": 5,
+        "Generation": 1
+      },
+      "JsonValue": "{\"X\":0.0,\"Y\":1.0}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 15
+        },
+        "Index": 6,
+        "Generation": 1
+      },
+      "JsonValue": "{\"X\":0.0,\"Y\":1.0}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 15
+        },
+        "Index": 7,
+        "Generation": 1
+      },
+      "JsonValue": "{\"X\":0.0,\"Y\":1.0}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 15
+        },
+        "Index": 8,
+        "Generation": 1
+      },
+      "JsonValue": "{\"X\":0.0,\"Y\":1.0}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 15
+        },
+        "Index": 9,
+        "Generation": 1
+      },
+      "JsonValue": "{\"X\":0.0,\"Y\":1.0}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 15
+        },
+        "Index": 10,
+        "Generation": 1
+      },
+      "JsonValue": "{\"X\":0.0,\"Y\":1.0}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 15
+        },
+        "Index": 11,
+        "Generation": 1
+      },
+      "JsonValue": "{\"X\":0.0,\"Y\":1.0}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 15
+        },
+        "Index": 12,
+        "Generation": 1
+      },
+      "JsonValue": "{\"X\":0.0,\"Y\":-1.0}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 15
+        },
+        "Index": 13,
+        "Generation": 1
+      },
+      "JsonValue": "{\"X\":0.0,\"Y\":-1.0}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 15
+        },
+        "Index": 14,
+        "Generation": 1
+      },
+      "JsonValue": "{\"X\":0.0,\"Y\":-1.0}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 15
+        },
+        "Index": 15,
+        "Generation": 1
+      },
+      "JsonValue": "{\"X\":0.0,\"Y\":-1.0}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 15
+        },
+        "Index": 16,
+        "Generation": 1
+      },
+      "JsonValue": "{\"X\":0.0,\"Y\":-1.0}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 15
+        },
+        "Index": 17,
+        "Generation": 1
+      },
+      "JsonValue": "{\"X\":0.0,\"Y\":-1.0}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 15
+        },
+        "Index": 18,
+        "Generation": 1
+      },
+      "JsonValue": "{\"X\":0.0,\"Y\":-1.0}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 15
+        },
+        "Index": 19,
+        "Generation": 1
+      },
+      "JsonValue": "{\"X\":0.0,\"Y\":-1.0}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 15
+        },
+        "Index": 20,
+        "Generation": 1
+      },
+      "JsonValue": "{\"X\":0.0,\"Y\":-1.0}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 15
+        },
+        "Index": 21,
+        "Generation": 1
+      },
+      "JsonValue": "{\"X\":0.0,\"Y\":-1.0}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 15
+        },
+        "Index": 22,
+        "Generation": 1
+      },
+      "JsonValue": "{\"X\":0.0,\"Y\":-1.0}"
+    },
+    {
+      "DataReference": {
+        "TypeID": {
+          "ID": 15
+        },
+        "Index": 23,
+        "Generation": 1
+      },
+      "JsonValue": "{\"X\":0.0,\"Y\":-1.0}"
+    }
+  ]
+}
