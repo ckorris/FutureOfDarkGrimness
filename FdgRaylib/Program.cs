@@ -280,6 +280,100 @@ if (b2aIdx >= 0 && b2aIdx + 2 < args.Length)
     return;
 }
 
+// --retrofit-editable <fileOrDir> [more...]  (#357): make already-saved armies re-editable in the Forge.
+// A plain .fdgarmy stores the RESULT of its upgrade picks, never the picks, so the Forge cannot reopen it
+// (#307). This solves the picks back out against the bundled book (SelectionSolver) and attaches them as an
+// editable session, leaving the playable half byte-for-byte alone. Idempotent - a file that already carries
+// a session is skipped. Writes in place ONLY when every unit solved exactly; add --dry-run to report first.
+int editableIdx = Array.IndexOf(args, "--retrofit-editable");
+if (editableIdx >= 0 && editableIdx + 1 < args.Length)
+{
+    bool dryRun = args.Contains("--dry-run");
+    List<string> targets = args.Skip(editableIdx + 1).TakeWhile(a => !a.StartsWith("--"))
+        .SelectMany(t => Directory.Exists(t)
+            ? Directory.GetFiles(t, "*" + ArmyListFile.EXTENSION_WITH_PERIOD).OrderBy(p => p).ToArray()
+            : new[] { t })
+        .ToList();
+
+    var books = new List<BookFile>();
+    string booksDir = Path.Combine(AppContext.BaseDirectory, "Assets", "Books");
+    if (Directory.Exists(booksDir))
+        foreach (string p in Directory.EnumerateFiles(booksDir, "*" + BookFile.EXTENSION_WITH_PERIOD).OrderBy(p => p))
+            try
+            {
+                BookFile? b = JsonSerializer.Deserialize<BookFile>(File.ReadAllText(p), RuleJson.Options);
+                if (b is not null) books.Add(b);
+            }
+            catch { /* a malformed book just means one fewer faction can be matched */ }
+
+    int converted = 0, alreadyEditable = 0, failed = 0;
+    foreach (string path in targets)
+    {
+        string name = Path.GetFileName(path);
+        BuiltArmyFile? army;
+        try { army = JsonSerializer.Deserialize<BuiltArmyFile>(File.ReadAllText(path), RuleJson.Options); }
+        catch (Exception ex) { Console.WriteLine($"  UNREADABLE {name}: {ex.Message}"); failed++; continue; }
+
+        if (army is null) { Console.WriteLine($"  UNREADABLE {name}: not an army list."); failed++; continue; }
+        if (army.Selections is not null && army.Book is not null)
+        {
+            Console.WriteLine($"  already editable: {name}");
+            alreadyEditable++;
+            continue;
+        }
+
+        BookFile? book = books.FirstOrDefault(b =>
+            string.Equals(b.Faction, army.Faction, StringComparison.OrdinalIgnoreCase)
+            || string.Equals(b.Name, army.Faction, StringComparison.OrdinalIgnoreCase));
+        if (book is null)
+        {
+            Console.WriteLine($"  NO BOOK    {name}: no bundled book matches faction '{army.Faction}'.");
+            failed++;
+            continue;
+        }
+
+        ArmySolve solve = SelectionSolver.Solve(book, army);
+        if (!solve.Complete)
+        {
+            Console.WriteLine($"  UNSOLVED   {name}: {solve.SolvedCount}/{solve.Units.Count} units solved.");
+            foreach (UnitSolve u in solve.Units.Where(u => !u.Solved))
+                Console.WriteLine($"               - {u.UnitName}: {u.Failure}");
+            failed++;
+            continue;
+        }
+
+        BuiltArmyFile attached = EditableSession.Attach(army, solve.Selections!, book);
+
+        // Hard guard: this tool ADDS an editable session, it never re-prices or re-shapes the army. Compare
+        // the playable projection (the base-type view, which is all the engine ever reads) before and after,
+        // and refuse to write if a single byte moved.
+        string before = JsonSerializer.Serialize<ArmyListFile>(army, RuleJson.Options);
+        string after = JsonSerializer.Serialize<ArmyListFile>(attached, RuleJson.Options);
+        if (before != after)
+        {
+            Console.WriteLine($"  REFUSED    {name}: the playable half would change - not written.");
+            failed++;
+            continue;
+        }
+
+        if (!dryRun) File.WriteAllText(path, JsonSerializer.Serialize(attached, attached.GetType(), RuleJson.Options));
+        Console.WriteLine($"  {(dryRun ? "would convert" : "converted")}: {name} ({solve.Units.Count} units)");
+
+        // What reopening it in the Forge would change (#356 shows the same figures in its modal). Nonzero is
+        // expected on an OPR import - their points are theirs - but the user should see it before playing.
+        EditableSessionDrift? drift = EditableSession.Measure(attached);
+        if (drift is { Differs: true })
+            Console.WriteLine($"               reopening rebuilds it as {drift.RebuiltPoints} pts "
+                + $"(saved: {drift.SavedPoints}), {drift.RebuiltUnitCount} units (saved: {drift.SavedUnitCount})"
+                + (drift.DroppedUnits.Count > 0 ? $", dropping {string.Join(", ", drift.DroppedUnits)}" : ""));
+        converted++;
+    }
+
+    Console.WriteLine($"Retrofit complete: {converted} converted, {alreadyEditable} already editable, " +
+        $"{failed} left alone (of {targets.Count}).{(dryRun ? " [dry run - nothing written]" : "")}");
+    return;
+}
+
 // --retrofit-effects <fileOrDir> [more...]  (#239): stamp weapon effect-set keys into existing data.
 // Books get their faction's default sets; armies get army-level defaults plus per-weapon keyword keys
 // (explicit keys already in a file are never touched). Idempotent — re-run after a keyword-table change.
