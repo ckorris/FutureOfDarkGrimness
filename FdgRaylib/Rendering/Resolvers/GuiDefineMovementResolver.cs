@@ -56,6 +56,11 @@ public class GuiDefineMovementResolver
         return len > 1e-4f ? new Float2(dx / len, dz / len) : fallback;
     }
 
+    // Two attitudes that are the same heading - the common case, where #340's two-attitude clamp collapses
+    // back to one pass. Mirrors MovementUtilities.FacingsEqual (engine side).
+    private static bool FacingsEqual(Float2 a, Float2 b)
+        => MathF.Abs(a.X - b.X) < 1e-4f && MathF.Abs(a.Y - b.Y) < 1e-4f;
+
     // #312: where a model's ghost STANDS while planning -- the last committed waypoint at the facing it
     // was placed with (#282), or the resting base for a model with no waypoints yet. This single
     // definition feeds BOTH the final-ghost draw and the hover/click hit test, so the visible ghost and
@@ -160,15 +165,9 @@ public class GuiDefineMovementResolver
             foreach (Position p in waypoints)
                 points.Add(new GhostPathPoint(PreviewQuantize.Inches(p.x), PreviewQuantize.Inches(p.z)));
 
-            // Facing at the committed endpoint - same derivation as the local final ghost (#150).
-            Float2 finalFacing = m.Facing;
-            if (waypoints.Count > 0)
-            {
-                IReadOnlyList<float> stored = pt.GetModelFacingOffsets(m);
-                float committedOffset = stored.Count > 0 ? stored[^1] : 0f;
-                Position beforeLast = waypoints.Count >= 2 ? waypoints[waypoints.Count - 2] : m.Position;
-                finalFacing = RotateFloat2(TravelFacing(beforeLast, waypoints[^1], m.Facing), committedOffset);
-            }
+            // Facing at the committed endpoint - literally the same derivation as the local final ghost and
+            // the click hit test (#150/#312), so a remote viewer's ghost cannot drift from the placer's.
+            Float2 finalFacing = PlannedPose(pt, m, waypoints).facing;
 
             var (mAdvance, mRush, mCharge) = request.BudgetFor(m.ID);
             bool hasChargeBand = mCharge > mRush + 0.0001f;
@@ -532,6 +531,12 @@ public class GuiDefineMovementResolver
         if (!group && _selectedModel != null && overTable && !io.WantCaptureMouse)
         {
             var anchor = pt.GetModelLastPathPosition(_selectedModel);
+            // #340: the attitude the model is STANDING at - what it departs this leg with. The live rotation
+            // belongs to the node being placed; the clamps below must not apply it to the ground under the
+            // anchor, or a model beside a wall or an enemy base can't be turned at all.
+            Float2 anchorFacing = PlannedPose(pt, _selectedModel,
+                paths.TryGetValue(_selectedModel, out var anchorPath)
+                    ? anchorPath : (IReadOnlyList<Position>)System.Array.Empty<Position>()).facing;
             float totalSoFar = pt.GetTotalDistanceMoved(_selectedModel);
             float cap        = advanceOnly ? maxAdvance : maxCharge;
             float remaining  = cap - totalSoFar;
@@ -592,7 +597,8 @@ public class GuiDefineMovementResolver
             // #155: other units' bases block the slide - stop the ghost just short of first contact so the
             // preview can't draw a move that passes through another model. Fly-over units (Strafing) skip it.
             if (allowed > 0.0001f && dist > 0.0001f && !request.CanMoveThroughEnemies)
-                allowed = EnemyClampTravel(anchor, dx / dist, dz / dist, allowed, _selectedModel, ghostFacing, request);
+                allowed = EnemyClampTravel(anchor, dx / dist, dz / dist, allowed, _selectedModel,
+                    anchorFacing, ghostFacing, request);
 
             // #291: and the table edge stops it too - the model's whole BASE has to stay on the board, which
             // for a vehicle bites long before its centre reaches the edge. Clamped here (not just rejected at
@@ -608,7 +614,7 @@ public class GuiDefineMovementResolver
             {
                 if (allowedIgnoringDifficult > 0.0001f && !request.CanMoveThroughEnemies)
                     allowedIgnoringDifficult = EnemyClampTravel(anchor, dx / dist, dz / dist,
-                        allowedIgnoringDifficult, _selectedModel, ghostFacing, request);
+                        allowedIgnoringDifficult, _selectedModel, anchorFacing, ghostFacing, request);
                 if (allowedIgnoringDifficult > 0.0001f)
                     allowedIgnoringDifficult = MovementUtilities.ClampTravelToTable(anchor, dx / dist, dz / dist,
                         allowedIgnoringDifficult, _selectedModel.BaseShape, ghostFacing);
@@ -1027,6 +1033,15 @@ public class GuiDefineMovementResolver
             Float2 StepFacing(Position from, Position to, IModel m) =>
                 RotateFloat2(TravelFacing(from, to, m.Facing), _groupFacingAngle);
 
+            // #340: each phantom's DEPARTING attitude - where its base is standing right now, at the offset
+            // its last committed step was placed with. The live group rotation belongs to the step being
+            // placed, so the enemy clamp must not measure it against the ground the unit is still on.
+            var departFacings = new Float2[models.Count];
+            for (int i = 0; i < models.Count; i++)
+                departFacings[i] = PlannedPose(pt, models[i],
+                    paths.TryGetValue(models[i], out var committedPath)
+                        ? committedPath : (IReadOnlyList<Position>)System.Array.Empty<Position>()).facing;
+
             // #317: `includeDifficult: false` re-runs the identical solve with only the difficult-terrain
             // clamp switched off, which is exactly the counterfactual the gray shortfall phantoms show.
             bool Feasible(IReadOnlyList<Position> candidate, bool includeDifficult = true)
@@ -1049,7 +1064,8 @@ public class GuiDefineMovementResolver
                     if (enemyClampActive)
                     {
                         float dirX = (to.x - from.x) / stepDist, dirZ = (to.z - from.z) / stepDist;
-                        float enemyAllowed = EnemyClampTravel(from, dirX, dirZ, stepDist, models[i], facing, request);
+                        float enemyAllowed = EnemyClampTravel(from, dirX, dirZ, stepDist, models[i],
+                            departFacings[i], facing, request);
                         if (stepDist > enemyAllowed + 0.001f) return false;
                     }
                     // #291: no model of the group may end with its base off the table. Reported as
@@ -1763,7 +1779,29 @@ public class GuiDefineMovementResolver
     /// ENDING on them, by WouldOverlapAnyModel), mirroring the engine rule (#205). Own-unit models are
     /// ignored too (their spacing is cohesion/overlap); reaching contact still leaves a charger inside melee
     /// range, so this doesn't block charges.</summary>
+    /// <summary>
+    /// How far the ghost may slide from <paramref name="anchor"/> before its base would touch an enemy's.
+    ///
+    /// #340: a leg's ROTATION is not validated - the base turns from the attitude it is standing at
+    /// (<paramref name="departFacing"/>) to the one being placed (<paramref name="arriveFacing"/>) somewhere
+    /// along the way - so the ghost may travel as far as EITHER attitude allows. Measuring only the live
+    /// attitude froze a rotated ghost where it stood: the turn it had not made yet was measured against the
+    /// ground it was still on, and a model beside an enemy base could not be turned at all. The engine gate
+    /// applies the same either-attitude rule, so this can never propose further than the gate accepts.
+    /// </summary>
     private float EnemyClampTravel(Position anchor, float dirX, float dirZ, float allowed,
+        IModel movingModel, Float2 departFacing, Float2 arriveFacing, DefineMovementPathRequest request)
+    {
+        // The arriving attitude first: it is the one the ghost draws, and when it is unobstructed (the common
+        // case) the second pass never runs.
+        float limited = EnemyClampTravelAt(anchor, dirX, dirZ, allowed, movingModel, arriveFacing, request);
+        if (limited >= allowed || FacingsEqual(departFacing, arriveFacing)) return limited;
+
+        return MathF.Max(limited,
+            EnemyClampTravelAt(anchor, dirX, dirZ, allowed, movingModel, departFacing, request));
+    }
+
+    private float EnemyClampTravelAt(Position anchor, float dirX, float dirZ, float allowed,
         IModel movingModel, Float2 facing, DefineMovementPathRequest request)
     {
         var start = new Float2(anchor.x, anchor.z);
