@@ -459,7 +459,10 @@ public class TableTooltipOverlay
             float barY = stackTopY - 3f - HealthBarRenderer.Height;
             if (HealthBarRenderer.ShouldShow(remainingW, maxW)
                 && !Occluded(cx - barW * 0.5f, barY, barW, HealthBarRenderer.Height))
-                HealthBarRenderer.Draw(drawList, cx, barY, barW, remainingW, maxW);
+                // #347: with the model-loss boundaries ticked on it, so "how many more hits before I lose a
+                // body" reads off the bar instead of being arithmetic.
+                HealthBarRenderer.Draw(drawList, cx, barY, barW, remainingW, maxW,
+                    HealthBarRenderer.CasualtyTicks(unit));
         }
     }
 
