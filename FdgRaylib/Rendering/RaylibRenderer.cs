@@ -969,6 +969,9 @@ public class RaylibRenderer
 
             int cx = l.OriginX + (int)(draw.Position.x * l.Scale);
             int cy = l.OriginY + (int)((TableHIn - draw.Position.z) * l.Scale);
+            // #340: and the same facing source, so a halo can't stay square to the table while the base it
+            // rings turns underneath it.
+            Float2 facing = draw.Facing ?? model.Facing;
 
             // #250: follow the model's true base shape, like DrawModels does — a rectangle-based model
             // used to get a circular halo that contradicted the base drawn under it. Inflations are in
@@ -976,9 +979,9 @@ public class RaylibRenderer
             const float HaloInflateIn = 0.18f; // just outside the base
             float pulseInflateIn = HaloInflateIn + (3f + 6f * pulse) / l.Scale;
 
-            ModelBaseRenderer.DrawFilledRaylib(model.BaseShape, cx, cy, l.Scale, fill, ring, model.Facing, HaloInflateIn);
+            ModelBaseRenderer.DrawFilledRaylib(model.BaseShape, cx, cy, l.Scale, fill, ring, facing, HaloInflateIn);
             ModelBaseRenderer.DrawOutlineRaylib(model.BaseShape, cx, cy, l.Scale, halo,
-                thickness: 1f, inflateInches: pulseInflateIn, facing: model.Facing);
+                thickness: 1f, inflateInches: pulseInflateIn, facing: facing);
         }
     }
 
@@ -1018,14 +1021,18 @@ public class RaylibRenderer
 
             int cx = l.OriginX + (int)(draw.Position.x * l.Scale);
             int cy = l.OriginY + (int)((TableHIn - draw.Position.z) * l.Scale);
+            // #340: the presentation player owns the facing mid-animation for the same reason it owns the
+            // position - the authoritative one is already at the END of the move while the glide is playing,
+            // so drawing model.Facing here would snap the turn on before the model set off.
+            Float2 facing = draw.Facing ?? model.Facing;
 
             Color baseColor = draw.Tint is { } tint ? new Color(tint.R, tint.G, tint.B, (byte)255) : color;
             byte a = (byte)Math.Clamp(draw.Alpha * 255f, 0f, 255f);
             Color fill    = new(baseColor.R, baseColor.G, baseColor.B, a);
             Color outline = new((byte)0, (byte)0, (byte)0, a);
 
-            ModelBaseRenderer.DrawFilledRaylib(model.BaseShape, cx, cy, l.Scale, fill, outline, model.Facing);
-            ModelBaseRenderer.DrawHeadingRaylib(model.BaseShape, cx, cy, l.Scale, model.Facing,
+            ModelBaseRenderer.DrawFilledRaylib(model.BaseShape, cx, cy, l.Scale, fill, outline, facing);
+            ModelBaseRenderer.DrawHeadingRaylib(model.BaseShape, cx, cy, l.Scale, facing,
                 new Color((byte)255, (byte)255, (byte)255, a));
 
             // Joined-Hero marker (#227): a white, dark-outlined star centred on the hero model's base. Drawn

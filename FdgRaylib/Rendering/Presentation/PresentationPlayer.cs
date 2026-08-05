@@ -268,7 +268,7 @@ public class PresentationPlayer : IPresentationSink
             {
                 case UnitMovedBeat moved:
                     foreach (ModelMove move in moved.Moves)
-                        _glides[move.Model.ID] = new GlideState(move.Waypoints);
+                        _glides[move.Model.ID] = new GlideState(move.Waypoints, move.Facings);
                     break;
                 case ModelDiedBeat died:
                     _deaths[died.Model.ID] = new DeathState(died.Position);
@@ -746,7 +746,7 @@ public class PresentationPlayer : IPresentationSink
             }
 
             if (_glides.TryGetValue(id, out var glide))
-                return new ModelDrawState(true, glide.Current, 1f, null);
+                return new ModelDrawState(true, glide.Current, 1f, null, glide.Facing);
 
             if (_wounded.Contains(id))
                 return new ModelDrawState(true, model.Position, 1f, HurtTint);
@@ -760,19 +760,40 @@ public class PresentationPlayer : IPresentationSink
 
     // ---------------- per-model animation state ----------------
 
-    /// <summary>Linear glide along a polyline, time distributed across segments by length.</summary>
+    /// <summary>
+    /// Linear glide along a polyline, time distributed across segments by length.
+    ///
+    /// <para>#340: the model also TURNS across each segment, from the attitude it left the previous node
+    /// with to the one its next node was placed at. The placement rule lets a rotation belong to a single
+    /// node without applying to the ground before it, so the turn has to become visible somewhere - here,
+    /// spread over the leg into that node, rather than snapped on before the animation even starts (which
+    /// is what <c>CommitPositions</c> does to the authoritative facing). A beat with no facings (AI moves,
+    /// aircraft, holds) leaves <see cref="Facing"/> null and the renderer draws the model's own.</para>
+    /// </summary>
     private sealed class GlideState
     {
         private readonly Position[] _points;
+        private readonly Float2[]? _facings; // 1:1 with _points when present
         private readonly float[] _cumulative; // cumulative length up to each point
         private readonly float _total;
 
         public Position Current { get; private set; }
 
-        public GlideState(IReadOnlyList<Position> waypoints)
+        /// <summary>The attitude to draw this frame, or null to use the model's authoritative facing.</summary>
+        public Float2? Facing { get; private set; }
+
+        public GlideState(IReadOnlyList<Position> waypoints, IReadOnlyList<Float2>? facings = null)
         {
             _points = new Position[waypoints.Count];
             for (int i = 0; i < waypoints.Count; i++) _points[i] = waypoints[i];
+
+            // Only a list that pairs 1:1 with the polyline is usable: a mismatched one would turn the model
+            // toward the wrong node, which reads far worse on screen than simply not turning it.
+            if (facings != null && facings.Count == _points.Length && _points.Length > 0)
+            {
+                _facings = new Float2[facings.Count];
+                for (int i = 0; i < facings.Count; i++) _facings[i] = facings[i];
+            }
 
             _cumulative = new float[_points.Length];
             float running = 0f;
@@ -783,11 +804,26 @@ public class PresentationPlayer : IPresentationSink
             }
             _total = running;
             Current = _points.Length > 0 ? _points[0] : new Position(0f, 0f);
+            Facing = _facings?[0];
         }
 
         public void SetProgress(float t)
         {
-            if (_points.Length == 1 || _total <= 0f) { Current = _points[^1]; return; }
+            if (_points.Length == 1) { Current = _points[0]; Facing = _facings?[0]; return; }
+
+            if (_total <= 0f)
+            {
+                // Every point is the same spot - a pivot in place. There is nothing to glide, but the turn
+                // still has to play, so progress runs over the polyline by INDEX rather than by length.
+                Current = _points[^1];
+                if (_facings != null)
+                {
+                    float scaled = Math.Clamp(t, 0f, 1f) * (_facings.Length - 1);
+                    int seg = Math.Min((int)scaled, _facings.Length - 2);
+                    Facing = TurnToward(_facings[seg], _facings[seg + 1], scaled - seg);
+                }
+                return;
+            }
 
             float target = t * _total;
             for (int i = 1; i < _points.Length; i++)
@@ -797,6 +833,7 @@ public class PresentationPlayer : IPresentationSink
                     float segLen = _cumulative[i] - _cumulative[i - 1];
                     float f = segLen <= 0f ? 1f : Math.Clamp((target - _cumulative[i - 1]) / segLen, 0f, 1f);
                     Current = Lerp(_points[i - 1], _points[i], f);
+                    if (_facings != null) Facing = TurnToward(_facings[i - 1], _facings[i], f);
                     return;
                 }
             }
@@ -810,6 +847,19 @@ public class PresentationPlayer : IPresentationSink
 
         private static Position Lerp(Position a, Position b, float f) =>
             new Position(a.x + (b.x - a.x) * f, a.z + (b.z - a.z) * f);
+
+        // Shortest-arc turn between two unit headings. The ANGLE is what gets interpolated: lerping the
+        // vectors componentwise would cut across the arc (a base would visibly shrink through the turn) and
+        // collapses to nothing at exactly 180deg.
+        private static Float2 TurnToward(Float2 from, Float2 to, float f)
+        {
+            float a0 = MathF.Atan2(from.Y, from.X);
+            float delta = MathF.Atan2(to.Y, to.X) - a0;
+            while (delta > MathF.PI) delta -= MathF.Tau;
+            while (delta < -MathF.PI) delta += MathF.Tau;
+            float a = a0 + delta * f;
+            return new Float2(MathF.Cos(a), MathF.Sin(a));
+        }
     }
 
     /// <summary>Red tint throughout, holding full alpha briefly then fading to nothing.</summary>
@@ -858,12 +908,17 @@ public readonly struct ModelDrawState
     /// <summary>Replacement color (death = red, hurt = orange), or null to use the player's team color.</summary>
     public TextColor? Tint { get; }
 
-    public ModelDrawState(bool visible, Position position, float alpha, TextColor? tint)
+    /// <summary>#340: the attitude to draw the base at mid-animation (a move turns the model as it glides),
+    /// or null to use the model's authoritative facing - which is where every non-move state leaves it.</summary>
+    public Float2? Facing { get; }
+
+    public ModelDrawState(bool visible, Position position, float alpha, TextColor? tint, Float2? facing = null)
     {
         Visible = visible;
         Position = position;
         Alpha = alpha;
         Tint = tint;
+        Facing = facing;
     }
 
     public static ModelDrawState Hidden => new ModelDrawState(false, new Position(0f, 0f), 0f, null);
