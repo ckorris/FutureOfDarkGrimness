@@ -6,6 +6,34 @@ from origin/master. Standing precedent: numbers are never reused, and when two p
 claim the same number, the *unmerged local* item yields to the *merged* one and takes a fresh number.
 A per-clone pre-push hook blocks duplicate numbers across the index and the archive.
 
+> **2026-08-04 - reconciliation 48 (RESOLVED).** The SAME item colliding a second time, hours after
+> reconciliation 47 moved it. This clone renumbered deploy-normally 331 -> **333** against an `origin/master`
+> whose highest number was 332, then spent the session on #334 (forced-charge band) without pushing; by the
+> pre-push fetch, origin had landed **333 = confirm unmoved models on Done**, merged. Merged wins again:
+> **deploy-normally 333 -> 335** (`WorkItems/335-deploy-normally-button.md`). #334 did NOT collide and keeps
+> its number, so 335 is the first free number above it. Markers moved before publication in both repos,
+> the same list as 47 plus `docs/ResolverGuide.md`; upstream's own `#333` markers (`MovementStage`,
+> `MovementUtilities`, `MovementBackOutTests`, `ModelRoster`, `ModelRosterTests`, and the CLI/GUI Done
+> confirmation) were left untouched. Both repos' commit messages saying "#331"/"#333" stay as-is per
+> precedent. **The lesson is now unambiguous across 46, 47 and 48: a pre-filing fetch cannot close the gap
+> between filing and pushing, and this clone has NO pre-push hook installed** - three collisions on one item
+> is what that costs. Install it (snippet in `WorkItems/README.md`) before filing anything else here.
+>
+> **2026-08-04 - reconciliation 47 (RESOLVED).** The mirror image of 46, from the other side. This clone
+> filed **331 = "Deploy Normally" is its own button** against an `origin/master` whose highest number was
+> 330; meanwhile the *other* session filed **331 = victory fireworks**, pushed it, closed it and archived
+> it. Merged wins, so the unmerged local item yields: **deploy-normally 331 -> 333**
+> (`WorkItems/333-deploy-normally-button.md`), 333 being the first free number above origin's archived 332.
+> Markers moved before publication in both repos: the engine's `SelectionRequest`, `AiSelectionResolver`,
+> `AiStringSelectionResolver`, `ChooseDeployActionStage`, `ChooseUnitToDeployStage`,
+> `TransportDeploymentChoiceTests`, `AiSelectionResolverTests`, `AiStringSelectionResolverTests`; the app's
+> `GuiSelectionResolver`, CLI `SelectionResolver`, `SelectionResolverTests`, `docs/ResolverGuide.md`; plus
+> the detail file + filename and the index line. Upstream's own `#331` markers (`TeamScoreTally`,
+> `VictoryCalculationStage`, `VictoryFireworks`, `ViewSettings`, `RaylibRenderer`) were left untouched -
+> they are the winning item. The two commit messages saying "#331" stay as-is per precedent. Note for the
+> next session: 46 and 47 are the same collision seen from each clone, and neither pre-filing fetch was
+> stale at the time it ran. The pre-push hook is the only thing that closes this gap; install it.
+>
 > **2026-08-04 - reconciliation 46 (RESOLVED).** This session filed **330 = early match decision** (end a
 > match once no remaining play can change the result) from an `origin/master` index whose highest number
 > was 329, and **331 = victory fireworks** immediately after. Between those two filings and the push,

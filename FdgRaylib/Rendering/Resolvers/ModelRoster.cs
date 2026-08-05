@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using FDG;
 
 namespace FdgRaylib.Rendering.Resolvers;
@@ -94,6 +95,29 @@ public static class ModelRoster
     }
 
     /// <summary>
+    /// How far a model must travel before it counts as having moved. A float epsilon, not a game rule: a
+    /// committed distance is a sum of 2D hops, so a waypoint dropped on a model's own position can land a
+    /// hair off zero. Shared by <see cref="BuildRow"/> and <see cref="UnmovedOrdinals"/> so the greyed rows
+    /// and #333's Done warning can never disagree about who has moved.
+    /// </summary>
+    public const float DistanceEpsilon = 0.0001f;
+
+    /// <summary>
+    /// #333: the 1-based roster ordinals of the models that have not moved at all, in roster order — the
+    /// same "Model N" numbers the rows show. Done raises its confirmation from this list: finishing with
+    /// models still on the start line is nearly always one the player forgot, because single mode moves one
+    /// model at a time and this roster is the only place the stragglers are visible.
+    /// </summary>
+    /// <param name="movedInches">Committed distance per living model, in roster order.</param>
+    public static List<int> UnmovedOrdinals(IReadOnlyList<float> movedInches)
+    {
+        var ordinals = new List<int>();
+        for (int i = 0; i < movedInches.Count; i++)
+            if (movedInches[i] <= DistanceEpsilon) ordinals.Add(i + 1);
+        return ordinals;
+    }
+
+    /// <summary>
     /// One roster row's numbers. <paramref name="cappedByTerrain"/> is #155's difficult-terrain cap: a model
     /// whose COMMITTED path already crossed difficult terrain has a lower real maximum than its budget, and
     /// the row must show the number the move will actually be held to.
@@ -101,7 +125,7 @@ public static class ModelRoster
     public static ModelRosterRow BuildRow(int ordinal, float movedInches, float maxAdvanceInches,
         float maxDistanceInches, bool cappedByTerrain)
     {
-        const float Epsilon = 0.0001f;
+        const float Epsilon = DistanceEpsilon;
         float max = cappedByTerrain
             ? MathF.Min(maxDistanceInches, GameWideConstants.DIFFICULT_TERRAIN_MOVE_CAP_INCHES)
             : maxDistanceInches;

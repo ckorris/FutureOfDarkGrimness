@@ -4,6 +4,7 @@ using FDG.Data;
 using FDG.StageResolution;
 using FDG.StageResolution.Requests;
 using FDG.Stages;
+using FDG.Utilities;
 using FdgRaylib.Placement;
 using FdgRaylib.Rendering.Previews;
 using ImGuiNET;
@@ -92,6 +93,11 @@ public class GuiDefineMovementResolver
     // source only, and a frame-old value must never decide which model a click on the table selects.
     private IModel? _panelHoveredModel;
     private bool _stayInAdvance; // toggle — off by default, reset each Resolve
+    /// <summary>#333: the "models still on the start line" confirmation is up. While it is, it owns the
+    /// keyboard and the table — otherwise the same Enter press would answer the popup and re-press Done
+    /// behind it, and a stray click would drop a waypoint the player never saw them place.</summary>
+    private bool _donePopupOpen;
+    private const string DonePopupTitle = "Finish the move?";
     private bool _showTargeting = true; // toggle — on by default, persists across Resolve calls (covers both ranged + melee)
 
     // #162 tactical overlay hook: hover-anchored fields, band snap, pips. Null in headless / before
@@ -214,6 +220,18 @@ public class GuiDefineMovementResolver
     // #317: impassible terrain flags every phantom of a blocked group step, so its label draws once per frame.
     private bool _frameImpassibleLabelDrawn;
 
+    // #334: per-frame forced-charge state, all of it rebuilt at the top of Draw and read by the canvas passes
+    // and the info panel. A move may legally END inside the 1" standoff band - the movement validator lets it
+    // through on purpose (#206) - but the unit then cannot Pass at Choose Action, so it must Charge. That
+    // consequence was invisible until after the move was committed.
+    private readonly List<ForcedChargeUtilities.StandoffPose> _frameEnemyPoses = new();
+    private readonly List<IUnit> _frameEnemyUnits = new();       // parallel to _frameEnemyPoses
+    private readonly List<int> _frameBandEnemies = new();        // reachable subset: which bands to draw
+    private readonly HashSet<int> _frameContactedEnemies = new();
+    private readonly List<(Position from, Position to)> _frameForcedLinks = new();
+    private readonly List<string> _frameForcedUnitNames = new();
+    private int _frameForcedMoverCount;
+
     // Move bands: Advance (green, can shoot after), Rush (yellow, can't shoot), Charge (orange,
     // only legal if at least one model ends in melee). The Charge band only exists for units
     // whose Charge distance is greater than their Rush distance — when equal, there are only
@@ -275,6 +293,25 @@ public class GuiDefineMovementResolver
     // #317: the impassible label takes the red of the wash it explains, lightened to stay readable as text -
     // deliberately NOT the shortfall gray, since this move is refused rather than merely shortened.
     private static readonly uint ImpassibleTextCol     = ImGui.ColorConvertFloat4ToU32(new Vector4(1.00f, 0.50f, 0.47f, 1f));
+    // #334: the 1" forced-charge standoff band. A DARK / burnt orange (owner's call, 2026-08-04 GUI verify -
+    // the first pass was magenta and read too soft for a boundary this consequential).
+    //
+    // Note what this hue is deliberately living next to: bright orange (1.00, 0.55, 0.10) is already the
+    // CHARGE DISTANCE band and the Rush label - a budget, not an obligation, and confusing the two is exactly
+    // the risk this item exists to remove. These separate from it by VALUE, not hue: distinctly deeper and
+    // browner, and they hug enemy bases while the charge rings are big circles centred on the mover, so the
+    // two never draw the same shape in the same place. If either palette is ever retuned, retune both.
+    // Faint = "this is where the obligation starts"; bright = "your move ends in it".
+    private static readonly uint StandoffBandCol       = ImGui.ColorConvertFloat4ToU32(new Vector4(0.85f, 0.33f, 0.02f, 0.60f));
+    private static readonly uint StandoffBandHotCol    = ImGui.ColorConvertFloat4ToU32(new Vector4(0.90f, 0.35f, 0.03f, 1.00f));
+    private static readonly uint StandoffLinkCol       = ImGui.ColorConvertFloat4ToU32(new Vector4(0.90f, 0.35f, 0.03f, 0.95f));
+    private static readonly uint StandoffGhostFill     = ImGui.ColorConvertFloat4ToU32(new Vector4(0.88f, 0.34f, 0.03f, 0.50f));
+    // Lifted off the band colour so it stays legible on the dark panel, and kept deeper than RushTextCol
+    // (1.00, 0.55, 0.10) so the warning never reads as another Rush line.
+    private static readonly Vector4 StandoffTextCol    = new(0.98f, 0.42f, 0.10f, 1f);
+    // Solid enough to read as a drawn boundary rather than a wash, at both weights.
+    private const float StandoffBandThickness    = 2.0f;
+    private const float StandoffBandHotThickness = 3.5f;
 
     public GuiDefineMovementResolver(ITableState tableState, FormationModeState formationMode,
         bool coverProximityExceptions = true)
@@ -327,6 +364,7 @@ public class GuiDefineMovementResolver
             _manualOffsets.Clear();
             _formationCycle = null;
             _panelHoveredModel = null;
+            _donePopupOpen = false;
         }
         return tcs.Task;
     }
@@ -347,7 +385,10 @@ public class GuiDefineMovementResolver
         // Shared pointer/keyboard state and the current placement mode. Resolved before anything is
         // drawn so the hover highlight below and the click handler at the end of Draw agree.
         bool overTable = IsOverTable(io.MousePos.X, io.MousePos.Y);
-        bool wantInput = !io.WantCaptureMouse && !io.WantCaptureKeyboard;
+        // #333: the Done confirmation owns both input channels while it is up. Folded into wantInput here
+        // rather than checked at each key, so Backspace/R/Tab/G are muted by construction; the modal's own
+        // WantCaptureMouse would cover the clicks, but the table gate below says so explicitly too.
+        bool wantInput = !io.WantCaptureMouse && !io.WantCaptureKeyboard && !_donePopupOpen;
         bool advanceOnly = _stayInAdvance || ImGui.IsKeyDown(ImGuiKey.LeftShift) || ImGui.IsKeyDown(ImGuiKey.RightShift);
         bool group = _formationMode.IsGroup;
 
@@ -405,6 +446,11 @@ public class GuiDefineMovementResolver
         if (!group && _selectedModel != null)
             (maxAdvance, maxRush, maxCharge) = request.BudgetFor(_selectedModel.ID);
         bool  hasChargeBand = maxCharge > maxRush + 0.0001f;
+
+        // #334: the forced-charge bands go down FIRST, under the paths and ghosts - they mark ground, and a
+        // player aiming a waypoint must be able to see the boundary through whatever is drawn over it.
+        RebuildStandoffBands(request, pt, paths);
+        DrawStandoffBands(dl);
 
         // 1) Draw each model's start circle + committed path lines + final ghost circle
         foreach (var kvp in paths)
@@ -631,8 +677,12 @@ public class GuiDefineMovementResolver
                     shortfallHint.Header, shortfallHint.Detail, ShortfallTextCol);
             }
 
-            // Ghost base (true shape) + heading.
-            uint fill = ghostOverlaps ? OverlapFill : FillColorFor(ghostBand);
+            // Ghost base (true shape) + heading. #334: a ghost sitting inside the standoff band takes the
+            // forced-charge tint, so the model itself says what it is about to commit to - checked here
+            // rather than read from the contact pass below, which has not run for this frame yet.
+            uint fill = ghostOverlaps ? OverlapFill
+                : IsInsideStandoffBand(ghostPos.Value, _selectedModel.BaseShape, ghostFacing) ? StandoffGhostFill
+                : FillColorFor(ghostBand);
             ModelBaseRenderer.DrawFilledImGui(dl, _selectedModel.BaseShape, new Vector2(gx, gy), _scale, fill, GhostOutline, 1.5f, ghostFacing);
             ModelBaseRenderer.DrawHeadingImGui(dl, _selectedModel.BaseShape, new Vector2(gx, gy), _scale, ghostFacing, GhostOutline);
 
@@ -647,11 +697,28 @@ public class GuiDefineMovementResolver
         }
 
         // Group mode: rigidly rotate + translate the whole unit; one left-click commits a group step.
+        // #333: the confirmation takes the table with it - passing overTable = false is what mutes the
+        // group ghost's own commit / undo clicks, which read io.WantCaptureMouse rather than wantInput.
         if (group)
-            DrawGroupGhostAndInput(dl, io, request, pt, paths, overTable, wantInput,
+            DrawGroupGhostAndInput(dl, io, request, pt, paths, overTable && !_donePopupOpen, wantInput,
                 maxAdvance, maxRush, maxCharge, hasChargeBand, advanceOnly,
                 terrain, difficultActive, dangerousActive,
                 committedCrossedDifficult, committedCrossedDangerous, bindings);
+
+        // #334: measure the move against the standoff band now that both modes' pending positions exist, then
+        // repaint the violated bands bright over the faint ones and link each trapped model to what traps it.
+        // Runs after the ghost/phantom draw so the highlight sits on top of what it is explaining.
+        Dictionary<IModel, Position>? standoffPending = null;
+        if (group)
+        {
+            standoffPending = _groupGhostPositions;
+        }
+        else if (_selectedModel != null && ghostPos.HasValue)
+        {
+            standoffPending = new Dictionary<IModel, Position> { [_selectedModel] = ghostPos.Value };
+        }
+        MeasureStandoffContacts(request, pt, paths, standoffPending);
+        DrawStandoffContacts(dl);
 
         // #155: dangerous-terrain badge pass, ghost-aware (the selected model's live ghost in single mode /
         // every live phantom in group mode counts as a pending final segment). Draws a warning badge beside
@@ -712,7 +779,7 @@ public class GuiDefineMovementResolver
         _snapshotRequest = request;
 
         // 4) Mouse / keyboard input (single mode — group mode handles its own clicks above)
-        if (!group && overTable && !io.WantCaptureMouse)
+        if (!group && overTable && !io.WantCaptureMouse && !_donePopupOpen)
         {
             // Left-click: if it lands on a model's footprint, select that model (#295 -- the only way
             // to switch models now that Space commits); otherwise place a waypoint for the selected model at
@@ -1231,6 +1298,16 @@ public class GuiDefineMovementResolver
             ImGui.TextWrapped("Difficult terrain: already moved too far to enter - stopped at the terrain edge");
             ImGui.PopStyleColor();
         }
+        // #334: the forced-charge consequence, loudest of the warnings because it is the only one that
+        // changes what the player may do NEXT rather than what this move costs. Done stays live - the move is
+        // legal (#206), and a unit closing to contact on purpose must not be told it made a mistake.
+        if (_frameForcedMoverCount > 0)
+        {
+            ImGui.PushStyleColor(ImGuiCol.Text, StandoffTextCol);
+            ImGui.TextWrapped(ForcedChargeWarning(_frameForcedMoverCount, _frameForcedUnitNames,
+                request.UnitDataBinding.GetValue().GetMeleeWeapons().Count > 0));
+            ImGui.PopStyleColor();
+        }
 
         bool group = _formationMode.IsGroup;
 
@@ -1316,19 +1393,35 @@ public class GuiDefineMovementResolver
         if (cohesion.FarthestPair.HasValue)
             issues.Add($"Cohesion: two models would be {cohesion.FarthestPair.Value.dist:F2}\" apart (max {FormatInches(GameWideConstants.MAX_MODEL_DISTANCE_FROM_ALL_OTHER_MODELS_INCHES)}\")");
 
+        // #333: who is still standing on the start line, in the roster's own order, so the confirmation
+        // names the same "Model N" the greyed rows above do.
+        var livingModels = LivingModels(request);
+        var unmovedOrdinals = ModelRoster.UnmovedOrdinals(
+            livingModels.Select(m => pt.GetTotalDistanceMoved(m)).ToList());
+
         bool canSubmit = issues.Count == 0;
         // Primary: Done -- larger, accented, commits on click or the Confirm key (gated on a valid move).
+        // Muted while the confirmation is up (#333), so the same Enter press cannot both answer the popup
+        // and re-press Done behind it.
         bool donePressed = ResolverButtons.Primary("Done",
-            new Vector2(fullW, ResolverPanelLayout.OptionRowHeight()), enabled: canSubmit);   // #298
+            new Vector2(fullW, ResolverPanelLayout.OptionRowHeight()),
+            enabled: canSubmit && !_donePopupOpen);   // #298
         if (ImGui.IsItemHovered(ImGuiHoveredFlags.AllowWhenDisabled))
             ImGui.SetTooltip(canSubmit
                 ? $"Commit this move and continue. {ResolverKeybinds.Confirm.Parenthetical}"
                 : string.Join("\n", issues));
         if (donePressed)
         {
-            Complete(tcs, results);
-            ImGui.End();
-            return;
+            // #333: a move that leaves models on the start line is nearly always one the player forgot -
+            // single mode moves one model at a time, and the roster is the only place the stragglers show.
+            // Deliberate ones exist (screening, a model boxed in), so this asks rather than blocks.
+            if (unmovedOrdinals.Count > 0) _donePopupOpen = true;
+            else
+            {
+                Complete(tcs, results);
+                ImGui.End();
+                return;
+            }
         }
 
         // Back: abandon the move entirely. Distinct from "Skip all", which commits a 0" move and still
@@ -1386,7 +1479,89 @@ public class GuiDefineMovementResolver
             else if (_selectedModel != null) pt.ClearModelSteps(_selectedModel);
         }
 
+        if (DrawDoneConfirmation(request, pt, unmovedOrdinals, livingModels.Count, tcs))
+        {
+            ImGui.End();
+            return;
+        }
+
         ImGui.End();
+    }
+
+    /// <summary>
+    /// #333: the "models are still on the start line" confirmation. Two shapes, because the two mistakes
+    /// are different: leaving SOME models behind costs their move for the activation and is usually a
+    /// forgotten model, while leaving them ALL behind spends the unit's Move action on nothing at all — and
+    /// that one is worth saying out loud, since Back (not Done) is what keeps the action. Names the models
+    /// rather than asking an abstract "are you sure?", the same way #319's Done-shooting popup names the
+    /// weapons. Returns true when the resolver has completed (the caller must stop drawing the panel).
+    ///
+    /// <para>Mouse-only, like #319's: the Confirm key is muted while this is up, so a player who commits by
+    /// keyboard cannot blow straight through the question they were just asked.</para>
+    /// </summary>
+    private bool DrawDoneConfirmation(DefineMovementPathRequest request, PathTemplate pt,
+        List<int> unmovedOrdinals, int livingCount,
+        TaskCompletionSource<CancellableResult<List<ModelMoveEntry>>> tcs)
+    {
+        if (!_donePopupOpen) return false;
+
+        // Keep the modal request alive across frames (OpenPopup is consumed by the first BeginPopupModal).
+        if (!ImGui.IsPopupOpen(DonePopupTitle)) ImGui.OpenPopup(DonePopupTitle);
+        var center = ImGui.GetMainViewport().GetCenter();
+        ImGui.SetNextWindowPos(center, ImGuiCond.Appearing, new Vector2(0.5f, 0.5f));
+        if (!ImGui.BeginPopupModal(DonePopupTitle, ImGuiWindowFlags.AlwaysAutoResize)) return false;
+
+        string unitName = request.UnitDataBinding.GetValue().Name;
+        bool nobodyMoved = unmovedOrdinals.Count >= livingCount;
+
+        if (nobodyMoved)
+        {
+            ImGui.TextWrapped($"No model in {unitName} has moved.");
+        }
+        else
+        {
+            ImGui.TextWrapped($"{unmovedOrdinals.Count} of {livingCount} models in {unitName} "
+                + $"{(unmovedOrdinals.Count == 1 ? "has" : "have")} not moved:");
+            foreach (int ordinal in unmovedOrdinals)
+                ImGui.BulletText($"Model {ordinal}");
+        }
+
+        ImGui.Spacing();
+        ImGui.PushStyleColor(ImGuiCol.Text, new Vector4(0.85f, 0.75f, 0.30f, 1f));
+        ImGui.TextWrapped(nobodyMoved
+            ? "Finishing now spends the unit's Move action and leaves it exactly where it stands."
+            : "Finishing now leaves them where they stand for the rest of this activation.");
+        ImGui.PopStyleColor();
+
+        if (nobodyMoved)
+        {
+            ImGui.PushStyleColor(ImGuiCol.Text, new Vector4(0.45f, 0.80f, 0.45f, 1f));
+            ImGui.TextWrapped(request.AllowCancel
+                ? "The unit will not count as having moved this round. To keep the Move action itself, "
+                  + "close this and use Back instead."
+                : "The unit will not count as having moved this round.");
+            ImGui.PopStyleColor();
+        }
+
+        ImGui.Spacing();
+        float confirmH = ResolverPanelLayout.OptionRowHeight();
+        if (ImGui.Button("Finish the move", new Vector2(160f, confirmH)))
+        {
+            ImGui.CloseCurrentPopup();
+            ImGui.EndPopup();
+            // Rebuilt here rather than captured at the click: the popup can stand for many frames, and the
+            // committed path is the one thing that must be read at the instant it is submitted.
+            Complete(tcs, pt.GetResultsAsList(EPathFacingDerivation.TravelDirection));
+            return true;
+        }
+        ImGui.SameLine();
+        if (ImGui.Button("Keep moving", new Vector2(160f, confirmH)))
+        {
+            ImGui.CloseCurrentPopup();
+            _donePopupOpen = false;
+        }
+        ImGui.EndPopup();
+        return false;
     }
 
     /// <summary>#326: this model's roster numbers — how far it has gone against its OWN budget (#093: a
@@ -1663,6 +1838,186 @@ public class GuiDefineMovementResolver
             if (anyLiving) unitKey++;
         }
         return footprints;
+    }
+
+    // ---- #334: the forced-charge standoff band ------------------------------------------------------
+    //
+    // The rule itself lives in the engine (ForcedChargeUtilities), shared with the ChooseActionStage gate
+    // this is previewing, so the band drawn here and the Pass that gets greyed out later cannot disagree.
+    // Everything below is about WHICH poses to feed it and WHERE to draw the answer.
+
+    /// <summary>
+    /// Rebuilds the frame's enemy poses and decides which of them get a band drawn. Called once at the top of
+    /// the canvas pass, before anything reads the results.
+    ///
+    /// Only enemies the unit could actually CLOSE WITH this activation get a band: the point is to show the
+    /// boundary the player is about to walk into, and a band around an enemy forty inches away is noise
+    /// around a decision that cannot be made. Reach is measured per model from where its ghost currently
+    /// stands, against its own remaining hard-cap budget (#093), plus the band's own width - so the far edge
+    /// of a drawn band is always somewhere the unit could really reach.
+    ///
+    /// Reserve units are skipped for the same reason the engine skips them (#263): their models sit at the
+    /// origin, and a band around the table corner is a lie.
+    /// </summary>
+    private void RebuildStandoffBands(DefineMovementPathRequest request, PathTemplate pt,
+        IReadOnlyDictionary<IModel, IReadOnlyList<Position>> paths)
+    {
+        _frameEnemyPoses.Clear();
+        _frameEnemyUnits.Clear();
+        _frameBandEnemies.Clear();
+        _frameContactedEnemies.Clear();
+        _frameForcedLinks.Clear();
+        _frameForcedUnitNames.Clear();
+        _frameForcedMoverCount = 0;
+
+        foreach (IUnit u in _tableState.Units.Objects)
+        {
+            if (!IsEnemyUnit(u, request) || !u.GetIsOnBattlefield()) continue;
+            foreach (IModel m in u.Models)
+            {
+                if (!m.GetIsAlive()) continue;
+                _frameEnemyPoses.Add(new ForcedChargeUtilities.StandoffPose(m.Position, m.BaseShape, m.Facing));
+                _frameEnemyUnits.Add(u);
+            }
+        }
+        if (_frameEnemyPoses.Count == 0) return;
+
+        for (int e = 0; e < _frameEnemyPoses.Count; e++)
+        {
+            foreach (var kvp in paths)
+            {
+                IModel m = kvp.Key;
+                var (_, at, facing) = PlannedPose(pt, m, kvp.Value);
+                float remaining = MathF.Max(0f,
+                    request.BudgetFor(m.ID).maxDistance - pt.GetTotalDistanceMoved(m));
+                float gap = ForcedChargeUtilities.Gap(
+                    new ForcedChargeUtilities.StandoffPose(at, m.BaseShape, facing), _frameEnemyPoses[e]);
+                if (gap <= remaining + GameWideConstants.ENEMY_STANDOFF_DISTANCE_INCHES)
+                {
+                    _frameBandEnemies.Add(e);
+                    break;
+                }
+            }
+        }
+    }
+
+    /// <summary>
+    /// Measures the move as currently planned against the band and records what the panel and the highlight
+    /// pass need. <paramref name="pending"/> carries the live ghost (single mode) or every phantom (group
+    /// mode), so the answer tracks the mouse rather than only the committed waypoints.
+    ///
+    /// Poses, not just positions: a rectangular base measures by its true oriented footprint (#150), and the
+    /// facing a model ends on can change the gap by the whole width-vs-length spread of its base (#312).
+    /// </summary>
+    private void MeasureStandoffContacts(DefineMovementPathRequest request, PathTemplate pt,
+        IReadOnlyDictionary<IModel, IReadOnlyList<Position>> paths,
+        IReadOnlyDictionary<IModel, Position>? pending)
+    {
+        if (_frameEnemyPoses.Count == 0) return;
+
+        var movers = new List<ForcedChargeUtilities.StandoffPose>(paths.Count);
+        var moverModels = new List<IModel>(paths.Count);
+        foreach (var kvp in paths)
+        {
+            IModel m = kvp.Key;
+            var (_, at, facing) = PlannedPose(pt, m, kvp.Value);
+            if (pending != null && pending.TryGetValue(m, out Position ghost))
+            {
+                Position from = kvp.Value.Count > 0 ? kvp.Value[^1] : m.Position;
+                facing = RotateFloat2(TravelFacing(from, ghost, m.Facing), LiveFacingOffset(m));
+                at = ghost;
+            }
+            movers.Add(new ForcedChargeUtilities.StandoffPose(at, m.BaseShape, facing));
+            moverModels.Add(m);
+        }
+
+        var contacts = ForcedChargeUtilities.FindContacts(movers, _frameEnemyPoses);
+        var contactedMovers = new HashSet<IModel>();
+        foreach (var c in contacts)
+        {
+            contactedMovers.Add(moverModels[c.MoverIndex]);
+            _frameContactedEnemies.Add(c.EnemyIndex);
+            _frameForcedLinks.Add((movers[c.MoverIndex].Centre, _frameEnemyPoses[c.EnemyIndex].Centre));
+            string name = _frameEnemyUnits[c.EnemyIndex].Name;
+            if (!_frameForcedUnitNames.Contains(name)) _frameForcedUnitNames.Add(name);
+        }
+        _frameForcedMoverCount = contactedMovers.Count;
+    }
+
+    // The rotation the player is holding right now, which shapes the LIVE ghost only - committed waypoints
+    // keep the offset they were placed with (#282). Group mode rotates the whole unit as one.
+    private float LiveFacingOffset(IModel model) =>
+        _formationMode.IsGroup ? _groupFacingAngle : _manualOffsets.GetValueOrDefault(model);
+
+    /// <summary>True when this single pose sits inside some enemy's band - the cheap check the live ghost
+    /// uses to tint itself in the same frame it is drawn, before the full contact pass has run.</summary>
+    private bool IsInsideStandoffBand(Position at, IBaseShape shape, Float2 facing)
+    {
+        var pose = new ForcedChargeUtilities.StandoffPose(at, shape, facing);
+        foreach (var enemy in _frameEnemyPoses)
+            if (ForcedChargeUtilities.IsInsideStandoff(ForcedChargeUtilities.Gap(pose, enemy))) return true;
+        return false;
+    }
+
+    /// <summary>The faint pass: every reachable enemy's band, drawn under the paths and ghosts so it reads as
+    /// ground marking rather than as another thing on top of the models.</summary>
+    private void DrawStandoffBands(ImDrawListPtr dl)
+    {
+        foreach (int e in _frameBandEnemies)
+        {
+            var pose = _frameEnemyPoses[e];
+            var (px, py) = InchesToPixel(pose.Centre.x, pose.Centre.z);
+            ModelBaseRenderer.DrawBandOutlineImGui(dl, pose.BaseShape, new Vector2(px, py), _scale,
+                GameWideConstants.ENEMY_STANDOFF_DISTANCE_INCHES, StandoffBandCol, StandoffBandThickness,
+                pose.Facing);
+        }
+    }
+
+    /// <summary>The hot pass: the bands the planned move actually violates, redrawn bright and thick over the
+    /// faint ones, with a link from each offending model to the enemy that traps it. Drawn last so it sits on
+    /// top of the ghosts it is talking about.</summary>
+    private void DrawStandoffContacts(ImDrawListPtr dl)
+    {
+        foreach ((Position from, Position to) in _frameForcedLinks)
+        {
+            var (fx, fy) = InchesToPixel(from.x, from.z);
+            var (tx, ty) = InchesToPixel(to.x, to.z);
+            dl.AddLine(new Vector2(fx, fy), new Vector2(tx, ty), StandoffLinkCol, 2f);
+        }
+        foreach (int e in _frameContactedEnemies)
+        {
+            var pose = _frameEnemyPoses[e];
+            var (px, py) = InchesToPixel(pose.Centre.x, pose.Centre.z);
+            ModelBaseRenderer.DrawBandOutlineImGui(dl, pose.BaseShape, new Vector2(px, py), _scale,
+                GameWideConstants.ENEMY_STANDOFF_DISTANCE_INCHES, StandoffBandHotCol, StandoffBandHotThickness,
+                pose.Facing);
+        }
+    }
+
+    /// <summary>
+    /// The panel line, in the same slot and voice as the terrain-consequence warnings (#155). Names the enemy,
+    /// because "an enemy" is not enough to find on a crowded table, and names the consequence in the
+    /// vocabulary of the menu it will appear in ("cannot Pass").
+    ///
+    /// <paramref name="hasMeleeWeapons"/> is the difference between a warning and a trap. Pass is gated by
+    /// proximity alone, but Charge needs a melee weapon (<c>ChooseActionStage.GetCanCharge</c>) - so a
+    /// rifle-only unit that ends inside the band can neither Pass nor Charge and falls through to the engine's
+    /// zero-options fallback. Saying "it must Charge" there would be flatly untrue, and the true version is
+    /// the more useful warning of the two.
+    /// </summary>
+    internal static string ForcedChargeWarning(int moverCount, IReadOnlyList<string> enemyUnitNames,
+        bool hasMeleeWeapons)
+    {
+        string models = moverCount == 1 ? "1 model ends" : $"{moverCount} models end";
+        string who = enemyUnitNames.Count == 0
+            ? "an enemy"
+            : string.Join(", ", enemyUnitNames);
+        string consequence = hasMeleeWeapons
+            ? " - this unit cannot Pass, it must Charge."
+            : " - this unit cannot Pass, and has no melee weapon to Charge with.";
+        return $"FORCED CHARGE: {models} within "
+             + $"{FormatInches(GameWideConstants.ENEMY_STANDOFF_DISTANCE_INCHES)}\" of {who}"
+             + consequence;
     }
 
     /// <summary>The "show me why" overlay for an impassible-flagged path: washes the offending terrain

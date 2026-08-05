@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Numerics;
 using FDG;
 using ImGuiNET;
@@ -98,6 +99,96 @@ public static class ModelBaseRenderer
 
         float pr = (shape.BoundingRadiusInches + inflateInches) * scale;
         dl.AddCircle(center, pr, outline, CircleSegments, thickness);
+    }
+
+    /// <summary>
+    /// The outline of a base grown outward by <paramref name="bandInches"/> — the EXACT Minkowski sum of the
+    /// base with a disc of that radius (#334, the 1" forced-charge standoff band).
+    ///
+    /// <see cref="IBaseShape.Footprint"/> hands back a rounded convex hull (#150: corners + a rounding
+    /// radius), so growing it is just <c>Rounding + band</c>: a circle becomes a bigger circle, an oriented
+    /// rectangle becomes a rounded rectangle whose corners are band-radius arcs. Deliberately NOT
+    /// <see cref="DrawOutlineImGui"/>'s <c>inflateInches</c>, which pushes a rectangle's half-extents out and
+    /// leaves square corners — fine for a selection ring, but here the outline IS a rules boundary, and
+    /// square corners would claim ground the rule leaves legal. Any future shape gets this for free, since
+    /// the footprint seam is all this reads.
+    /// </summary>
+    public static void DrawBandOutlineImGui(ImDrawListPtr dl, IBaseShape shape, Vector2 center, float scale,
+        float bandInches, uint color, float thickness = 1.5f, Float2 facing = default)
+    {
+        Float2[] outline = BandOutline(shape, Forward(facing), bandInches);
+        if (outline.Length < 3) return;
+
+        // Table Z maps to screen −y.
+        foreach (Float2 p in outline)
+            dl.PathLineTo(new Vector2(center.X + p.X * scale, center.Y - p.Y * scale));
+        dl.PathStroke(color, ImDrawFlags.Closed, thickness);
+    }
+
+    // Arc resolution per hull corner. A circle base is one "corner" and gets the full ring.
+    private const int BandArcSegments = 16;
+
+    /// <summary>
+    /// The band outline as offsets from the base centre, in table inches (X right, Y = table Z) — the pure
+    /// geometry behind <see cref="DrawBandOutlineImGui"/>, split out so it can be unit-tested without an ImGui
+    /// context (the same split <c>ModelRoster</c> uses for its layout arithmetic). Every returned point is
+    /// exactly <paramref name="bandInches"/> from the base's surface.
+    /// </summary>
+    internal static Float2[] BandOutline(IBaseShape shape, Float2 facing, float bandInches)
+    {
+        BaseFootprint fp = shape.Footprint(new Position(0f, 0f), Forward(facing));
+        float radius = fp.Rounding + bandInches;
+        Float2[] hull = fp.Corners;
+        if (hull.Length == 0 || radius <= 0f) return System.Array.Empty<Float2>();
+
+        var points = new List<Float2>(hull.Length * BandArcSegments);
+
+        // A single hull point (any circular base) is just a ring about it.
+        if (hull.Length == 1)
+        {
+            for (int i = 0; i < CircleSegments; i++)
+            {
+                float a = i * MathF.PI * 2f / CircleSegments;
+                points.Add(new Float2(hull[0].X + radius * MathF.Cos(a), hull[0].Y + radius * MathF.Sin(a)));
+            }
+            return points.ToArray();
+        }
+
+        // Wind counter-clockwise (shoelace > 0 in table space) so the outward normal of edge a→b is
+        // consistently (dy, −dx) and the corner arcs sweep in increasing angle.
+        var v = new List<Float2>(hull);
+        double area = 0;
+        for (int i = 0; i < v.Count; i++)
+        {
+            Float2 a = v[i], b = v[(i + 1) % v.Count];
+            area += (double)a.X * b.Y - (double)b.X * a.Y;
+        }
+        if (area < 0) v.Reverse();
+
+        // One arc per corner, from the incoming edge's outward normal round to the outgoing edge's. The arc
+        // endpoints ARE the ends of the offset straight edges, so consecutive arcs joined by the closing
+        // polyline reproduce the whole rounded outline — no separate edge pass needed.
+        int n = v.Count;
+        for (int i = 0; i < n; i++)
+        {
+            float aIn  = OutwardNormalAngle(v[(i - 1 + n) % n], v[i]);
+            float aOut = OutwardNormalAngle(v[i], v[(i + 1) % n]);
+            while (aOut < aIn - 1e-5f) aOut += MathF.PI * 2f;
+
+            for (int s = 0; s <= BandArcSegments; s++)
+            {
+                float a = aIn + (aOut - aIn) * s / BandArcSegments;
+                points.Add(new Float2(v[i].X + radius * MathF.Cos(a), v[i].Y + radius * MathF.Sin(a)));
+            }
+        }
+        return points.ToArray();
+    }
+
+    // Angle of the outward normal of the edge a→b, for a hull wound counter-clockwise so (dy, −dx) is outward.
+    private static float OutwardNormalAngle(Float2 a, Float2 b)
+    {
+        float dx = b.X - a.X, dy = b.Y - a.Y;
+        return MathF.Atan2(-dx, dy);
     }
 
     // Heading marker (#150): a small triangle at the model's front, pointing along its Facing. Drawn just

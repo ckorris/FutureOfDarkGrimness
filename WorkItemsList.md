@@ -17,6 +17,8 @@ When closing an item: write the Outcome in its detail file, tick the line, and m
 
 ## Movement
 
+- [~] 334 — The 1" forced-charge band was invisible while moving: ending inside it is legal (#206) but costs the unit its Pass, which only showed up a stage later. Engine predicate extracted to `ForcedChargeUtilities` (gate + preview share it); GUI draws the band around reachable enemies, tints the ghost and warns in the panel; CLI prints the same. Implemented + tested + GUI hand-verified 2026-08-04. ([WorkItems/334](WorkItems/334-forced-charge-proximity-preview.md))
+
 - [~] 312 — "Charge offered but won't allow" + partial one-at-a-time moves (2026-07-31 game): ValidateChargeReach + end-state validators now true base-to-base at end facing; enemy-pin click removed; click hit-test follows planned ghost poses. Implemented + tested; awaiting GUI hand-verify + networked re-test. Was #310 pre-reconciliation-36. ([WorkItems/312](WorkItems/312-charge-wont-allow-and-swallowed-clicks.md))
 
 - [~] 291 — Models could move partially off the table: the movement validator had no bounds rule at all (the GUI only constrained a model's CENTRE, so big vehicle bases overhung). Footprint-exact "not worsened" rule in all four validators + shared preview clamp. Implemented + tested; awaiting GUI hand-verify. ([WorkItems/291](WorkItems/291-models-may-not-move-off-table.md))
@@ -31,6 +33,7 @@ When closing an item: write the Outcome in its detail file, tick the line, and m
 - [~] 277 — Formation cycling in Group mode (Ctrl+Wheel: line/5x2/4-3-3..., index 0 = current shape) for deploy/teleport/movement/consolidation, layout math consolidated into engine FormationLibrary; implemented + tested, awaiting GUI hand-verify. ([WorkItems/277](WorkItems/277-formation-cycling.md))
 - [~] 282 — Rotating mid-path (Wheel/R) re-oriented already-committed waypoints (single scalar offset applied to the whole path): PathTemplate now captures the offset per waypoint at placement, so rotation only shapes the next ghost; implemented + tested, awaiting GUI hand-verify. ([WorkItems/282](WorkItems/282-rotation-only-affects-ghost.md))
 - [~] 283 — Consolidation group rotation was preview-only (facing offsets silently dropped at Done AND ConsolidateStage never applied entry facings): executed via a new rotate-in-place derivation on #282's per-step offsets; implemented + tested, awaiting GUI hand-verify. ([WorkItems/283](WorkItems/283-consolidation-rotation-executes.md))
+- [~] 333 — Done with models still on the start line now asks first (names them, roster ordinals), and a unit that travelled 0" no longer stamps MovedThisRound (Skip all used to). Implemented + tested, CLI hand-driven; awaiting GUI hand-verify of the popup. ([WorkItems/333](WorkItems/333-confirm-unmoved-models-on-done.md))
 - [~] 295 — Single-model moves switch models by clicking the model (hover-highlighted) instead of Space, which frees Space to join Enter as the universal Confirm key across all resolvers; bindings + advertised text centralised in `ResolverKeybinds`. Implemented + tested; awaiting GUI hand-verify. ([WorkItems/295](WorkItems/295-click-to-select-model-space-confirms.md))
 
 - [ ] 284 — Deploy overlap (YellowDeployedOverGreen): commit-time guard SHIPPED (warn + auto-repair at all 5 mandatory-placement seams); root cause still open (occupants invisible/uncommitted at deploy time - stale-engine race suspected; watch for the WARNING log line). Was #282 pre-reconciliation-27. ([WorkItems/284](WorkItems/284-deploy-overlap-invisible-occupants.md))
@@ -90,6 +93,8 @@ Corpus coverage is now complete too: **0 of 13,870** book rule references are de
 - [~] 257 — Team-based victory scoring: teammates pool objectives, unique top team wins, banner names every winning player ("Alpha and Bravo win!"); `GameResult.WinnerPlayers` added, 1v1 results byte-identical. Implemented + tested; awaiting GUI hand-verify. ([WorkItems/257](WorkItems/257-team-victory-scoring.md))
 
 ## Transport
+
+- [~] 335 — Deploying into a transport was reachable only by pressing Back: `SelectionRequest.CancelLabel` lets the stage name its exit, so the button reads "Deploy Normally" (and the CLI, which had no cancel path at all, lists it as `[0]`). The AI now never embarks at all (owner's call - no drop-off plan), at both the deploy prompt and the action menu. Implemented + tested + headless-verified; awaiting GUI hand-verify. ([WorkItems/335](WorkItems/335-deploy-normally-button.md))
 
 - [~] 315 — Duplicate-named units in transports were indistinguishable in the activation picker: engine label suffix "Warriors (in Rhino)" + GUI hover rings the transport (distinct style) + canvas-hover on a transport emphasises its occupants' rows (#286 two-way rule). ([WorkItems/315](WorkItems/315-embarked-activation-disambiguation.md))
 
