@@ -809,8 +809,8 @@ public class GuiDefineMovementResolver
                 }
             }
 
-            // Right-click clears the selected model's last waypoint, if any (same as Backspace; right-click
-            // clears the last path point in ALL modes).
+            // Right-click clears the selected model's last waypoint, if any (right-click clears the
+            // last path point in ALL modes — the app-wide undo gesture, #343).
             if (ImGui.IsMouseClicked(ImGuiMouseButton.Right) && _selectedModel != null
                 && paths.TryGetValue(_selectedModel, out var selList) && selList.Count > 0)
             {
@@ -818,37 +818,16 @@ public class GuiDefineMovementResolver
             }
         }
 
-        // Backspace: undo first, back out second (#248). With waypoints down it removes the last one
-        // (selected model in single mode, one per model in group mode - parity with right-click);
-        // key-repeat walks the whole path back. A FRESH press (edge-only, #240) with nothing left to
-        // undo abandons the move entirely, same as the Back button - only where AllowCancel (player-
-        // chosen moves; mandatory placements have no back-destination). Esc never cancels here: it
-        // opens the in-game menu, so you can reach Options mid-plan without losing the path.
-        if (wantInput && ImGui.IsKeyPressed(ImGuiKey.Backspace))
+        // #343 canonical scheme: Backspace = back out, right-click = undo. Backspace's undo role
+        // (#248's undo-first-back-second) is gone — the same key must not undo in one resolver and
+        // abandon the work in another (deployment's Backspace was always back-only). Edge-only (#240);
+        // only where AllowCancel (player-chosen moves; mandatory moves have no back-destination).
+        // Esc never cancels here: it opens the in-game menu, so you can reach Options mid-plan
+        // without losing the path.
+        if (wantInput && request.AllowCancel && ResolverHotkeys.IsBackPressed())
         {
-            bool undone = false;
-            if (group)
-            {
-                // Snapshot the keys: RemoveLastStep may mutate the underlying path map.
-                foreach (var m in paths.Keys.ToList())
-                    if (paths.TryGetValue(m, out var groupList) && groupList.Count > 0)
-                    {
-                        pt.RemoveLastStep(m);
-                        undone = true;
-                    }
-            }
-            else if (_selectedModel != null
-                && paths.TryGetValue(_selectedModel, out var list) && list.Count > 0)
-            {
-                pt.RemoveLastStep(_selectedModel);
-                undone = true;
-            }
-
-            if (!undone && request.AllowCancel && ImGui.IsKeyPressed(ImGuiKey.Backspace, repeat: false))
-            {
-                CompleteCancelled(tcs);
-                return;
-            }
+            CompleteCancelled(tcs);
+            return;
         }
 
         // R / Shift+R rotates the selected model's facing — an offset from its direction of travel (#150).
@@ -903,7 +882,7 @@ public class GuiDefineMovementResolver
     private static void DrawSingleModeHints()
     {
         ImGui.TextDisabled($"{ResolverHotkeys.CycleHint}: pick model   L-click: place waypoint");
-        ImGui.TextDisabled("R-click: undo   Backspace: undo / back");
+        ImGui.TextDisabled("R-click: undo   Backspace: back");
     }
 
     private static readonly float GroupRotationStep = MathF.PI / 12f; // 15° per wheel notch / key press
@@ -1240,8 +1219,8 @@ public class GuiDefineMovementResolver
             _formationCycle?.Reset();
         }
 
-        // Right-click clears the last group waypoint (one per model), if any — mirrors single mode + Backspace
-        // so right-click clears the last path point in ALL modes.
+        // Right-click clears the last group waypoint (one per model), if any — mirrors single mode,
+        // so right-click clears the last path point in ALL modes (the app-wide undo gesture, #343).
         if (overTable && !io.WantCaptureMouse && ImGui.IsMouseClicked(ImGuiMouseButton.Right))
         {
             foreach (var m in models)
@@ -1338,7 +1317,8 @@ public class GuiDefineMovementResolver
                 ? "current"
                 : $"{_formationCycle.Label} ({_formationCycle.Index + 1}/{_formationCycle.Count})";
             ImGui.TextUnformatted($"Group move - rotation {deg:0} deg   formation: {formation}");
-            ImGui.TextDisabled("Wheel / R / Shift+R: rotate 15 deg   Ctrl+Wheel: formation   L-click: place step");
+            ImGui.TextDisabled("Wheel / R / Shift+R: rotate 15 deg   Ctrl+Wheel: formation");
+            ImGui.TextDisabled("L-click: place step   R-click: undo   Backspace: back");
         }
         else
         {

@@ -19,6 +19,11 @@ Trait matrix built across all `Gui*Resolver.cs`. Key inconsistencies:
 - The canvas selectors highlight the hovered unit/model ring from a hovered dialog button (`OnValidOptionHovered`) AND from a canvas hover (`GetHoverLabel`). `GuiCancellableUnitSelectionResolver` has the canvas->ring half but **not** the button->ring half (same gap `GuiUnitSelectionResolver` had before this session). Fold into fix A.
 
 ### C. Right-click semantics parity
+**2026-08-05 — the deploy half landed via #343**, at ACTION granularity rather than the "remove the
+last placed model" sketch below (a group drop / drag-edit / Restart each reverse as one gesture;
+`PlacementHistory`). #343 also amended the canonical scheme: **Backspace is NOT a secondary undo
+binding** — it backs out only, everywhere (movement/consolidation Backspace-undo removed, owner call).
+
 Right-click means "undo/cancel the last action" across the canvas resolvers — **except deploy**:
 - movement / consolidation: right-click clears the last waypoint (fixed this session).
 - objective placement / one-terrain placement: right-click (or Esc) cancels the pending/selected ghost.
@@ -35,8 +40,8 @@ Right-click means "undo/cancel the last action" across the canvas resolvers — 
 
 ## Canonical interaction scheme (proposed — confirm on pickup)
 - **Left-click** = place / select (on a model = select; on empty valid ground with a model selected = place a waypoint; single decisive picks just select).
-- **Right-click** = undo/cancel the last action (clear last waypoint / remove last placed model / cancel a pending ghost).
-- **Backspace** = same as right-click undo where a path exists (kept as a secondary binding).
+- **Right-click** = undo/cancel the last action (clear last waypoint / undo the last placement gesture / cancel a pending ghost). (#343: deploy's is action-granular.)
+- **Backspace** = back out only, NEVER undo (#343 superseded the original "secondary undo binding" wording here).
 - **G** = toggle Group/Single (shared). **R / Shift+R / wheel** = rotate facing.
 - Every unit/model selector: stats on the button + button<->canvas hover-highlight + click-to-select-on-canvas.
 

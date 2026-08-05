@@ -26,12 +26,12 @@ public static class PlacementPanelLayout
     // come from ResolverPanelLayout, shared with every other resolver panel.
     public static float DoneButtonHeight(float lineHeight)    => ResolverPanelLayout.OptionRowHeight(lineHeight);
     public static float BackButtonHeight(float lineHeight)    => ResolverPanelLayout.ActionRowHeight(lineHeight);
-    public static float SecondaryRowHeight(float lineHeight)  => ResolverPanelLayout.ActionRowHeight(lineHeight);   // Undo / Auto-place share one row
+    public static float SecondaryRowHeight(float lineHeight)  => ResolverPanelLayout.ActionRowHeight(lineHeight);   // Undo (#343: Auto-place removed)
     public static float RestartButtonHeight(float lineHeight) => ResolverPanelLayout.ActionRowHeight(lineHeight);
 
     /// <summary>
     /// Height of everything drawn BELOW the stat box: the status line, the optional cohesion and
-    /// table-edge lines, and the button stack (Done, optional Back, Undo/Auto-place, separator, Restart).
+    /// table-edge lines, and the button stack (Done, optional Back, Undo, separator, Restart).
     /// </summary>
     /// <param name="itemSpacingY">ImGui's <c>ItemSpacing.Y</c> — the gap the layout adds after each item.</param>
     /// <param name="lineHeight">ImGui's <c>GetTextLineHeight()</c> — what the button heights scale with.</param>

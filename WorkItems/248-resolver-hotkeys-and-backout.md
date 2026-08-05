@@ -1,6 +1,10 @@
 # 248 — Resolver keyboard hotkeys + activation back-out
 
 **Status**: done (awaiting GUI hand-verification)
+
+> **2026-08-05 (#343):** the movement Backspace "undo first, back out second" rule this item
+> established is gone — Backspace now backs out only (edge-only, `AllowCancel`), and right-click is
+> the sole undo gesture app-wide. Everything else here stands.
 **Related**: #161 (resolver consistency — the shared keyboard list helper absorbs part of its dedup finding), #202 (built the AllowCancel/CancellableResult back-out plumbing this extends), #237 (Enter-as-commit precedent), #240 (repeat:false stuck-key rule), #246 (EscapeRouter)
 
 ## Goal

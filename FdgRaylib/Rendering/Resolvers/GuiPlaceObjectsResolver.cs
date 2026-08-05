@@ -27,6 +27,10 @@ public class GuiPlaceObjectsResolver<T>
     private TaskCompletionSource<CancellableResult<List<PlacedObjectEntry<T>>>>? _tcs;
     private readonly List<PlacedObjectEntry<T>> _placed = new();
 
+    // #343 — undo history at action granularity (place / drag / group drop / restart), so Undo reverses
+    // the last GESTURE rather than popping the roster-ordered list. Main-thread only (Draw-scoped).
+    private readonly PlacementHistory<T> _history = new();
+
     // Index into _placed of the model currently being re-placed by drag (single mode); null = none.
     private int? _dragIndex;
 
@@ -183,6 +187,7 @@ public class GuiPlaceObjectsResolver<T>
         {
             _tcs = tcs;
             _placed.Clear();
+            _history.Clear();
             _dragIndex = null;
             _groupRotationDeploy = 0f;
             _singleRotationDeploy = 0f;
@@ -248,6 +253,15 @@ public class GuiPlaceObjectsResolver<T>
             DrawGroupDeploy(dl, io, request, zone, enemies, minEnemyDist, overTable, wantInput);
         else
             DrawSingleDeploy(dl, io, request, zone, enemies, minEnemyDist, overTable);
+
+        // #343: right-click = undo the last action, the canonical scheme shared with movement and
+        // consolidation. While a model is picked up it cancels the pick-up instead — the model stays
+        // where it was; nothing was committed, so nothing is recorded or undone.
+        if (overTable && !io.WantCaptureMouse && ImGui.IsMouseClicked(ImGuiMouseButton.Right))
+        {
+            if (_dragIndex.HasValue) { _dragIndex = null; _errorMessage = null; }
+            else UndoLastAction();
+        }
 
         IUnit? owner = FindOwningUnit(request);
 
@@ -331,7 +345,12 @@ public class GuiPlaceObjectsResolver<T>
             }
             if (clicked)
             {
-                if (valid) { _placed[k] = new PlacedObjectEntry<T>(binding, cand, facing); _dragIndex = null; _errorMessage = null; }
+                if (valid)
+                {
+                    _history.RecordDrag(k, _placed[k]); // #343: the pre-drag entry, still intact until here
+                    _placed[k] = new PlacedObjectEntry<T>(binding, cand, facing);
+                    _dragIndex = null; _errorMessage = null;
+                }
                 else { _errorMessage = why; _errorExpiry = ImGui.GetTime() + 2.5; }
             }
             return;
@@ -366,7 +385,12 @@ public class GuiPlaceObjectsResolver<T>
         }
         if (clicked)
         {
-            if (ok) { _placed.Add(new PlacedObjectEntry<T>(currentBinding, candidate, facing)); _errorMessage = null; }
+            if (ok)
+            {
+                _placed.Add(new PlacedObjectEntry<T>(currentBinding, candidate, facing));
+                _history.RecordPlace(); // #343
+                _errorMessage = null;
+            }
             else { _errorMessage = reason; _errorExpiry = ImGui.GetTime() + 2.5; }
         }
     }
@@ -479,6 +503,10 @@ public class GuiPlaceObjectsResolver<T>
 
             if (allValid && touchOk)
             {
+                // #343: recorded with the ghost rotation so an undo brings the formation ghost back
+                // oriented as it was dropped (a drop always starts from an empty placed list — this
+                // handler only runs while _placed.Count == 0).
+                _history.RecordGroupDrop(_groupRotationDeploy);
                 _placed.Clear();
                 for (int i = 0; i < n; i++) _placed.Add(new PlacedObjectEntry<T>(models[i], positions[i], facings[i]));
                 _groupRotationDeploy = 0f;
@@ -687,9 +715,9 @@ public class GuiPlaceObjectsResolver<T>
         // the stat box given exactly the space that is left (#288). Order of appearance is unchanged.
         string statusText = _errorMessage ??
             (dropping              ? "Position the unit in the blue zone. Wheel / R rotate, Ctrl+Wheel changes formation. Click drops the whole unit." :
-             _dragIndex.HasValue   ? "Click to drop the picked-up model." :
-             _placed.Count < total ? "Click empty space to place the next model, or click a placed model to move it." :
-                                     "Click any placed model to pick it up and move it.");
+             _dragIndex.HasValue   ? "Click to drop the picked-up model. R-click puts it back." :
+             _placed.Count < total ? "Click empty space to place the next model, or click a placed model to move it. R-click undoes." :
+                                     "Click any placed model to pick it up and move it. R-click undoes.");
         Vector4 statusColor = _errorMessage != null
             ? new Vector4(1f, 0.4f, 0.4f, 1f)
             : new Vector4(0.6f, 0.6f, 0.6f, 1f);
@@ -749,7 +777,6 @@ public class GuiPlaceObjectsResolver<T>
 
         ImGui.Spacing();
         float fullW = panelW - ImGui.GetStyle().WindowPadding.X * 2;
-        float halfW = (fullW - ImGui.GetStyle().ItemSpacing.X) / 2f;
         // #298: button heights come from the font via PlacementPanelLayout, which is also what
         // MeasureFooterHeight costs them at - the two must not drift.
         float lineH     = ImGui.GetTextLineHeight();
@@ -775,7 +802,7 @@ public class GuiPlaceObjectsResolver<T>
         // hard-coded "stays aboard its transport" became a lie the moment deployment allowed cancelling).
         if (request.AllowCancel)
         {
-            // #248: Backspace = back here too (no waypoint-undo exists yet in placement - #161 C).
+            // #343 canonical scheme: Backspace = back out, right-click = undo — everywhere.
             if (ResolverButtons.Deemphasized("Back (Backspace)", new Vector2(fullW, backH))
                 || ResolverHotkeys.IsBackPressed())
             {
@@ -787,34 +814,22 @@ public class GuiPlaceObjectsResolver<T>
                 ImGui.SetTooltip(request.CancelHint);
         }
 
-        // Secondary row: Undo + Auto-place.
-        ImGui.BeginDisabled(_placed.Count == 0);
-        if (ImGui.Button("Undo", new Vector2(halfW, secondH)))
-        {
-            _placed.RemoveAt(_placed.Count - 1);
-            _dragIndex = null;
-            _errorMessage = null;
-        }
+        // Secondary row: Undo. #343 — action-granular (drag-edits and group drops reverse as one
+        // gesture each), driven by the history rather than the placed list: after Restart the list is
+        // empty but the restart itself can still be undone. Right-click is the canvas gesture for the
+        // same thing; the button is the discoverable surface and advertises it.
+        ImGui.BeginDisabled(!_history.CanUndo);
+        if (ImGui.Button("Undo (R-click)", new Vector2(fullW, secondH)))
+            UndoLastAction();
         ImGui.EndDisabled();
 
-        ImGui.SameLine();
-        ImGui.BeginDisabled(_placed.Count >= total);
-        if (ImGui.Button("Auto-place", new Vector2(halfW, secondH)))
-        {
-            if (AutoPlaceRemaining(request)) _errorMessage = null;
-            else
-            {
-                _errorMessage = "Could not auto-place all remaining models - zone too crowded.";
-                _errorExpiry  = ImGui.GetTime() + 3.0;
-            }
-        }
-        ImGui.EndDisabled();
-
-        // Destructive: Restart -- set apart below a separator, red-tinted.
+        // Destructive: Restart -- set apart below a separator, red-tinted. Undoable (#343): it is a
+        // single un-confirmed click, so it must not be the one gesture here that destroys work for good.
         ImGui.Separator();
         ImGui.BeginDisabled(_placed.Count == 0);
         if (ResolverButtons.Destructive("Restart", new Vector2(fullW, restartH)))
         {
+            _history.RecordRestart(_placed);
             _placed.Clear();
             _dragIndex = null;
             _errorMessage = null;
@@ -822,6 +837,18 @@ public class GuiPlaceObjectsResolver<T>
         ImGui.EndDisabled();
 
         ImGui.End();
+    }
+
+    /// <summary>#343 — pops one action off the history and inverts it. A group-drop undo empties the
+    /// placed list, which is what re-opens the formation ghost (gated on <c>_placed.Count == 0</c>),
+    /// and restores the rotation the drop was made with. Clears any pick-up: the dragged index may no
+    /// longer exist after the inversion.</summary>
+    private void UndoLastAction()
+    {
+        if (!_history.TryUndo(_placed, out float? groupRotation)) return;
+        if (groupRotation.HasValue) _groupRotationDeploy = groupRotation.Value;
+        _dragIndex = null;
+        _errorMessage = null;
     }
 
     /// <summary>
@@ -881,81 +908,10 @@ public class GuiPlaceObjectsResolver<T>
         return null;
     }
 
-    /// <summary>Tries to place all remaining models into free spots; returns false if any can't fit.</summary>
-    private bool AutoPlaceRemaining(PlaceObjectsRequest<T> request)
-    {
-        var zone = request.DeploymentZone;
-        Float2 deployFacing = PlacementUtilities.DefaultDeployFacing(zone.Bounds, _tableH);
-
-        // Per-axis step so a wide rectangle packs tight rows (not one long row), + a column cap so the unit
-        // stays a compact block inside the 9" all-pairs rule (#150).
-        float stepX = 2f * 0.1f, stepZ = 2f * 0.1f;
-        foreach (var b0 in request.ModelsToPlace)
-        {
-            var (hx, hz) = HalfExtents(b0.GetValue(), deployFacing);
-            stepX = MathF.Max(stepX, 2f * hx + 0.1f);
-            stepZ = MathF.Max(stepZ, 2f * hz + 0.1f);
-        }
-        int total = request.ModelsToPlace.Count;
-        int targetCols = Math.Max(1, (int)MathF.Ceiling(MathF.Sqrt(total)));
-        float startCz = zone.Bounds.CenterZ;
-
-        float minEnemyDist = request.MinDistanceFromEnemiesInches;
-        var enemies = minEnemyDist > 0f ? GetEnemyPositions(request.TargetPlayerID) : _noEnemies;
-
-        for (int i = _placed.Count; i < request.ModelsToPlace.Count; i++)
-        {
-            var binding = request.ModelsToPlace[i];
-
-            // #197 reposition: the block-packing search aims at a deployment lane and knows nothing about this
-            // model's own radius. Standing still is always inside it and always legal.
-            if (request.MaxDistanceFromStartInches > 0f)
-            {
-                _placed.Add(new PlacedObjectEntry<T>(binding, StartPositionOf(binding.GetValue())));
-                continue;
-            }
-
-            float r = GetBaseRadius(binding.GetValue());
-            IBaseShape shape = GetBaseShape(binding.GetValue());
-            if (!TryFindAutoPosition(r, shape, deployFacing, stepX, stepZ, targetCols, zone, startCz, enemies, minEnemyDist, out Position pos))
-                return false;
-            _placed.Add(new PlacedObjectEntry<T>(binding, pos, deployFacing));
-        }
-        return true;
-    }
-
-    private bool TryFindAutoPosition(float r, IBaseShape shape, Float2 facing, float stepX, float stepZ, int targetCols,
-        IBoundedZone zone, float startCz, List<Position> enemies, float minEnemyDist, out Position result)
-    {
-        // Fill a compact ~targetCols-wide block, anchored at the first placed model, scanning Z rows outward.
-        ZoneBounds b = zone.Bounds;
-        float xStart = _placed.Count > 0 ? _placed[0].Position.x : b.Left + r;
-        float rowXEnd = MathF.Min(b.Right - r, xStart + (targetCols - 1) * stepX + 0.001f);
-        int maxRows = (int)((b.Top - b.Bottom) / stepZ) + 1;
-        for (int rowOffset = 0; rowOffset <= maxRows; rowOffset++)
-        {
-            int signCount = rowOffset == 0 ? 1 : 2;
-            for (int s = 0; s < signCount; s++)
-            {
-                float z = startCz + (s == 0 ? rowOffset : -rowOffset) * stepZ;
-                if (z < b.Bottom + r || z > b.Top - r) continue;
-
-                for (float x = xStart; x <= rowXEnd; x += stepX)
-                {
-                    var c = new Position(x, z);
-                    if (!PlacementUtilities.IsBaseWithinZone(c, shape, facing, zone)) continue;
-                    if (CheckOverlap(c, shape, facing) != null) continue;
-                    if (PlacementUtilities.OverlapsImpassibleTerrain(c, shape, facing, _tableState.Terrain.Objects)) continue;
-                    PlaceObjectsRequest<T>? req = ConstraintRequest;
-                    if (req != null && PlacementDistanceRules.ViolatesEnemyDistance(req, c, enemies)) continue;
-                    if (!IsInCohesion(c, shape, facing, -1)) continue;
-                    result = c; return true;
-                }
-            }
-        }
-        result = default;
-        return false;
-    }
+    // #343: the GUI-side auto-placer (`AutoPlaceRemaining` + its grid scan) was deleted with the
+    // Auto-place button, its only caller. AI players place through the engine-side
+    // AiPlaceObjectsResolver / TacticianPlaceObjectsResolver, and headless EOF placement uses the CLI
+    // resolver's own FindAutoPosition — neither ever touched this class.
 
     private static readonly List<Position> _noEnemies = new();
     private static readonly List<PlacementDisc> _noDiscs = new();
@@ -1087,7 +1043,7 @@ public class GuiPlaceObjectsResolver<T>
     private void CompleteWith(TaskCompletionSource<CancellableResult<List<PlacedObjectEntry<T>>>> tcs,
         CancellableResult<List<PlacedObjectEntry<T>>> result)
     {
-        lock (_lock) { _request = null; _tcs = null; _placed.Clear(); }
+        lock (_lock) { _request = null; _tcs = null; _placed.Clear(); _history.Clear(); }
         // #230: drop the field anchor with the request so the overlay stops drawing this placement's reach
         // (and we stop holding the unit) the instant it is committed.
         _ghostFieldPositions.Clear();

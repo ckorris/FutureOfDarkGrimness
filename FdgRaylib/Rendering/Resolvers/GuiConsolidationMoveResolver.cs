@@ -337,19 +337,14 @@ public class GuiConsolidationMoveResolver
                 }
             }
 
-            // Right-click clears the selected model's last waypoint, if any (same as Backspace; right-click
-            // clears the last path point in ALL modes).
+            // Right-click clears the selected model's last waypoint, if any (right-click clears the
+            // last path point in ALL modes — the app-wide undo gesture; Backspace stopped undoing
+            // in #343: it is the back-out key, and consolidation has no back-destination).
             if (ImGui.IsMouseClicked(ImGuiMouseButton.Right) && _selectedModel != null
                 && paths.TryGetValue(_selectedModel, out var selList) && selList.Count > 0)
             {
                 pt.RemoveLastStep(_selectedModel);
             }
-        }
-
-        if (wantInput && _selectedModel != null && ImGui.IsKeyPressed(ImGuiKey.Backspace))
-        {
-            if (paths.TryGetValue(_selectedModel, out var list) && list.Count > 0)
-                pt.RemoveLastStep(_selectedModel);
         }
 
         // #295: Space no longer cycles models here -- click the model you want (hover-highlighted above),
@@ -479,9 +474,9 @@ public class GuiConsolidationMoveResolver
             _formationCycle?.Reset(); // #277: the committed step's shape is the current shape now
         }
 
-        // Right-click / Backspace undo the last committed group step (one per model).
-        if ((wantInput && ImGui.IsKeyPressed(ImGuiKey.Backspace))
-            || (overTable && !io.WantCaptureMouse && ImGui.IsMouseClicked(ImGuiMouseButton.Right)))
+        // Right-click undoes the last committed group step (one per model). #343: right-click only —
+        // Backspace is the back-out key app-wide, and consolidation has no back-destination.
+        if (overTable && !io.WantCaptureMouse && ImGui.IsMouseClicked(ImGuiMouseButton.Right))
         {
             foreach (var m in models)
                 if (paths.TryGetValue(m, out var l) && l.Count > 0) pt.RemoveLastStep(m);
@@ -563,10 +558,10 @@ public class GuiConsolidationMoveResolver
                 ? "current"
                 : $"{_formationCycle.Label} ({_formationCycle.Index + 1}/{_formationCycle.Count})";
             ImGui.TextUnformatted($"Formation: {formation}");
-            ImGui.TextDisabled("Drag: move unit   Wheel/R: rotate   Ctrl+Wheel: formation\nL-click: commit   R-click/Bksp: undo");
+            ImGui.TextDisabled("Drag: move unit   Wheel/R: rotate   Ctrl+Wheel: formation\nL-click: commit   R-click: undo");
         }
         else
-            ImGui.TextDisabled("L-click a model: switch to it   L-click elsewhere: place waypoint\nR-click/Bksp: undo");
+            ImGui.TextDisabled("L-click a model: switch to it   L-click elsewhere: place waypoint\nR-click: undo");
 
         ImGui.Spacing();
         float spacing = ImGui.GetStyle().ItemSpacing.X;

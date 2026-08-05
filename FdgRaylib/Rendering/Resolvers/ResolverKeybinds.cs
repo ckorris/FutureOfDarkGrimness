@@ -42,7 +42,7 @@ internal sealed class ResolverKeybind
     /// sticky key -- reads as held for the rest of the session, and with repeat on ImGui re-fires
     /// "pressed" every repeat interval, so every panel carrying the binding commits itself the moment it
     /// appears. Pass <paramref name="repeat"/> = true only for non-commit intents where holding the key
-    /// should keep walking (Back undoing a path point at a time).</para>
+    /// should keep walking (no caller today: the last one was Backspace-as-undo, removed in #343).</para>
     ///
     /// <para>Muted while a text field has focus (typing in chat must never commit a panel) or the in-game
     /// Esc menu is open -- the menu blocks clicks, but manual key checks would otherwise still fire
@@ -71,8 +71,10 @@ internal static class ResolverKeybinds
         new("Confirm", "Enter/Space", ImGuiKey.Enter, ImGuiKey.KeypadEnter, ImGuiKey.Space);
 
     /// <summary>
-    /// Undo the last step / back out of the panel. Esc is deliberately NOT bound: it opens the in-game
-    /// menu, so you can reach Options mid-plan without the same press first discarding the plan (#248).
+    /// Back out of the panel. Never undo: right-click is the undo gesture app-wide (#343 — the same key
+    /// must not undo in one resolver and abandon the work in another). Esc is deliberately NOT bound: it
+    /// opens the in-game menu, so you can reach Options mid-plan without the same press first discarding
+    /// the plan (#248).
     /// </summary>
     public static readonly ResolverKeybind Back = new("Back", "Backspace", ImGuiKey.Backspace);
 }

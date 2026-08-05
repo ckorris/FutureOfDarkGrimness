@@ -156,6 +156,15 @@ and every button, tooltip and Options line followed. Muting (typing / Esc-menu o
 Panel-LOCAL keys stay put: an option list's number keys, `R` to rotate, `G` for group mode, `Y`/`N`. The
 table is for what is shared across resolvers, which is what goes stale in text.
 
+**Undo vs back (#343)**: right-click = undo the last action; Backspace = back out, NEVER undo. One key
+must not undo in one resolver and abandon the work in another, which is what #248's undo-first-back-second
+Backspace did once deployment (where Backspace was always back-only) became cancellable. Deployment's undo
+is ACTION-granular (`PlacementHistory`): a group drop or Restart reverses as one step and re-opens the
+formation ghost with its rotation, a drag-edit restores the pre-drag pose, and right-click during a
+pick-up cancels the pick-up. Movement/consolidation right-click still clears the last waypoint (one per
+model in group mode). The GUI auto-placer went with the Auto-place button (AI and CLI-EOF placement have
+their own, engine/CLI-side).
+
 **Selecting one model of a unit is a click on that model** (single-mode movement and consolidation). The
 click and the hover highlight that advertises it read the same `ModelPicker.HitTest`; paint a highlight
 from anything else and it will eventually disagree with the click.
