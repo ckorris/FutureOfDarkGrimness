@@ -2,6 +2,7 @@ using System.Numerics;
 using FDG.Data;
 using FDG.StageResolution;
 using FDG.StageResolution.Requests;
+using FdgRaylib.Rendering;
 using ImGuiNET;
 
 namespace FdgRaylib.Rendering.Resolvers;
@@ -26,6 +27,12 @@ public class GuiSelectionResolver<T> : IStageResolver<SelectionRequest<T>, DataB
     // painted on rows a subclass flags via IsRowEmphasized, e.g. a hovered transport's occupants.
     private static readonly uint RowEmphasisCol   = ImGui.ColorConvertFloat4ToU32(new Vector4(1f, 0.95f, 0.30f, 0.90f));
     private static readonly uint RowEmphasisBgCol = ImGui.ColorConvertFloat4ToU32(new Vector4(1f, 0.95f, 0.30f, 0.13f));
+
+    // #337: the status-badge run inside a heading. The amber the Shaken banners use (255,170,60), so the
+    // badge in the list and the banner that announces the recovery are visibly the same fact; dimmed on a
+    // greyed-out row so it can't out-shout the pickable options above it.
+    private static readonly uint BadgeCol    = ImGui.ColorConvertFloat4ToU32(new Vector4(1.00f, 0.67f, 0.24f, 1f));
+    private static readonly uint BadgeDimCol = ImGui.ColorConvertFloat4ToU32(new Vector4(0.62f, 0.45f, 0.22f, 1f));
 
     public Task<DataBinding<T>> Resolve(SelectionRequest<T> request)
     {
@@ -81,6 +88,9 @@ public class GuiSelectionResolver<T> : IStageResolver<SelectionRequest<T>, DataB
         // so a grayed-out unit reads the same as a pickable one -- only its heading and disabled state differ.
         int total = validCount + invalidCount;
         var headings   = new string[total];
+        // #337: null for a heading with no status badge in it, which is nearly all of them — that row then
+        // draws through the plain single-string path it always did.
+        var headingSegs = new IReadOnlyList<RuleHoverText.Segment>?[total];
         var detailWrap = new List<string>[total];
         var rowHeights = new float[total];
         for (int i = 0; i < total; i++)
@@ -94,6 +104,9 @@ public class GuiSelectionResolver<T> : IStageResolver<SelectionRequest<T>, DataB
             // #248: valid options advertise their number key in the heading ("[1] Warriors").
             if (isValid) heading = ResolverHotkeys.NumberPrefix(i) + heading;
             headings[i]   = isValid ? heading : $"{heading}  ({request.InvalidOptions[i - validCount].Reason})";
+            // Built from the FINAL heading (hotkey prefix and invalid-reason suffix included) so the
+            // segments concatenate back to exactly what would otherwise be drawn.
+            headingSegs[i] = HeadingSegments(option, headings[i]);
             detailWrap[i] = new List<string>();
             foreach (string d in details)
                 detailWrap[i].AddRange(WrapDetail(d, smallScale, wrapW));
@@ -137,6 +150,7 @@ public class GuiSelectionResolver<T> : IStageResolver<SelectionRequest<T>, DataB
         float listY = pad + instrH;
         float y = listY;
         bool emphasisScrolled = false;   // #315: scroll at most one emphasised row into view per frame
+        bool tooltipClaimed = false;     // #337: one tooltip per frame - a hovered badge outranks the row's
         for (int i = 0; i < total; i++)
         {
             bool isValid = i < validCount;
@@ -181,7 +195,16 @@ public class GuiSelectionResolver<T> : IStageResolver<SelectionRequest<T>, DataB
 
             float tx = origin.X + textPadX;
             float ty = origin.Y + btnPadY;
-            dl.AddText(new Vector2(tx, ty), isValid ? headCol : headDimCol, headings[i]);
+            // #337: a heading carrying a status badge draws segment by segment so the badge run can take
+            // its own colour, underline and tooltip (the #292 rule-hover treatment). Everything else takes
+            // the original single AddText, so no other picker changes at all.
+            uint thisHeadCol = isValid ? headCol : headDimCol;
+            string? badgeTip = null;
+            if (headingSegs[i] is { } segs)
+                badgeTip = RuleHoverText.DrawInline(dl, new Vector2(tx, ty), segs, thisHeadCol,
+                    isValid ? BadgeCol : BadgeDimCol, hoverEnabled: hovered && !tooltipClaimed);
+            else
+                dl.AddText(new Vector2(tx, ty), thisHeadCol, headings[i]);
             float wy = ty + mainLineH;
             foreach (string line in detailWrap[i])
             {
@@ -198,7 +221,15 @@ public class GuiSelectionResolver<T> : IStageResolver<SelectionRequest<T>, DataB
                 OnValidOptionHighlighted(request.ValidOptions[i]);
             }
 
-            if (isValid && hovered) OnValidOptionHovered(request.ValidOptions[i]);
+            // #337: hovering the badge itself explains the STATUS instead of raising the row's full stat
+            // block - the player is asking about the amber run, not about the unit's weapons. Two tooltips
+            // in one frame would draw on top of each other, so the badge claims the frame when it fires.
+            if (badgeTip != null)
+            {
+                RuleHoverText.ShowTooltip(badgeTip);
+                tooltipClaimed = true;
+            }
+            else if (isValid && hovered) OnValidOptionHovered(request.ValidOptions[i]);
             if (isValid && clicked) picked ??= request.ValidOptions[i].Option;
 
             y += rowHeights[i] + ImGui.GetStyle().ItemSpacing.Y;
@@ -244,8 +275,19 @@ public class GuiSelectionResolver<T> : IStageResolver<SelectionRequest<T>, DataB
     protected virtual (string Heading, IReadOnlyList<string> Details) OptionContent(DataBinding<T> option, string name)
         => (name, System.Array.Empty<string>());
 
+    /// <summary>
+    /// #337: the finished heading split into runs so part of it can be coloured, underlined and given its
+    /// own tooltip — used for the status badge an activation row carries ("(Shaken - recovers)"). Return
+    /// null (the default) for the ordinary case: the heading is then drawn as one string exactly as before.
+    /// Concatenating the returned segments' <c>Text</c> MUST reproduce <paramref name="heading"/>, since
+    /// the row is sized from the plain string.
+    /// </summary>
+    protected virtual IReadOnlyList<RuleHoverText.Segment>? HeadingSegments(
+        DataBinding<T> option, string heading) => null;
+
     /// <summary>Called while a valid option's dialog button is hovered — lets subclasses highlight the
-    /// corresponding object on the table canvas.</summary>
+    /// corresponding object on the table canvas. Not called when the hover landed on a heading badge with
+    /// its own tooltip (#337).</summary>
     protected virtual void OnValidOptionHovered(SelectionRequest<T>.ValidOption opt) { }
 
     /// <summary>#248: called while a valid option carries the keyboard highlight (arrow navigation).

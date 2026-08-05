@@ -69,6 +69,13 @@ public class GuiUnitSelectionResolver : GuiSelectionResolver<UnitData>, IGuiCanv
         return UnitOptionLabel.Build(name, liveModels, unit.Quality, unit.Defense, weapons);
     }
 
+    // #337: the engine appends a status badge to the picker label of a unit whose activation will not be a
+    // normal one ("Blade Squad (Shaken - recovers)" - it skips the action menu and spends the activation
+    // recovering). Splitting it out here draws that run amber and underlined, with the token catalog's own
+    // sentence on hover; a label with no badge returns null and draws exactly as it always did.
+    protected override IReadOnlyList<RuleHoverText.Segment>? HeadingSegments(
+        DataBinding<UnitData> option, string heading) => UnitStatusBadge.Segments(heading);
+
     // Hovering a valid option highlights its models on the canvas AND raises a full-spec tooltip (#223): the
     // same read-only stat block the canvas hover shows, so the player can compare units to deploy / activate
     // without hunting the board. Called from the base draw loop while the option's button is the hovered item.
