@@ -6,6 +6,26 @@ from origin/master. Standing precedent: numbers are never reused, and when two p
 claim the same number, the *unmerged local* item yields to the *merged* one and takes a fresh number.
 A per-clone pre-push hook blocks duplicate numbers across the index and the archive.
 
+> **2026-08-05 - reconciliation 52 (RESOLVED).** Fourth collision of this exact shape in two days, and the
+> first to be caused BY a prior reconciliation. This session filed **340 = a rotation dialled in mid-path
+> rotated the model where it was STANDING** against an `origin/master` whose index+archive topped out at
+> 339 (fetched immediately before filing, per the rule) - but 339 was itself reconciliation 50's output,
+> and while this work was being built the parallel session hit reconciliation 51 and renumbered its
+> Takedown item **337 -> 340**, pushing it. So the number this session read as the next free one was
+> claimed an hour later by a renumber, not by a fresh filing. Merged wins per standing precedent:
+> **rotation-belongs-to-the-node 340 -> 341** (`WorkItems/341-rotation-belongs-to-the-node.md`; 341 free
+> on index + archive). The renumber landed before publication - detail file + filename, the archive entry
+> (the item was closed in the same pass), six engine source/test files, five app files, and
+> `docs/ResolverGuide.md`. **Left as-is on purpose:** the eight pre-renumber commit messages saying "#340",
+> per every prior reconciliation. Both merges of origin/master were clean: the incoming work is entirely
+> shooting-side (Takedown per-rifle targets) and touches no file this item changed, and the only conflict
+> was the superproject's submodule pointer, resolved by taking this clone's engine branch, which had
+> already merged origin's.
+>
+> **Corollary to 51's lesson:** a fetched high-water mark is not just stale on new filings, it is stale on
+> *renumbers* - a number that was free when you filed can be taken later by an item that already existed
+> under a different number. Nothing makes a number safe before push.
+
 > **2026-08-04 - reconciliation 51 (RESOLVED).** Third collision of the day, and the same trap as 49 and
 > 50: this session filed **337 = Takedown/Sniper aims one rifle at a time** against an `origin/master`
 > whose index topped out at 336 (fetched immediately before filing, per the rule), built and closed it in

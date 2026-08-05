@@ -68,7 +68,7 @@ rule; app-side state lives in `FormationCycle`, input in `GroupInput` (both
 - **Rotation only shapes the live ghost (#282).** `PathTemplate.AddStep` captures the manual offset
   per waypoint at placement; committed waypoints keep the facing they were placed with (on screen and
   in the executed result), so a late Wheel/R never re-orients the already-planned path.
-- **...and only the node it is placed at (#340).** Capturing the offset per waypoint was not enough on its
+- **...and only the node it is placed at (#341).** Capturing the offset per waypoint was not enough on its
   own, because the *validators* swept each leg as one rigid base at its ARRIVING attitude — and a swept base
   covers its start point, so the turn was applied to the ground the model set off from. A model hugging a
   wall could not be turned at all. A leg now runs between two attitudes and its rotation is not validated:
@@ -193,7 +193,7 @@ next slice to get the same treatment; until then it keeps the click-only afforda
 
 ## Validation gotchas
 
-- **The two-attitude leg rule (#340)**: a path is a sequence of POSES (position + the facing that node was
+- **The two-attitude leg rule (#341)**: a path is a sequence of POSES (position + the facing that node was
   placed with), and the rotation *between* two poses is deliberately not validated — the base turns
   somewhere along the leg and the animation decides when. So the swept tests come in two polarities and a
   caller must say which it means (`MovementUtilities.ELegAttitudeRule`):

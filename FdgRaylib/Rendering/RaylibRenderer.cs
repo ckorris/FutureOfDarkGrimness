@@ -969,7 +969,7 @@ public class RaylibRenderer
 
             int cx = l.OriginX + (int)(draw.Position.x * l.Scale);
             int cy = l.OriginY + (int)((TableHIn - draw.Position.z) * l.Scale);
-            // #340: and the same facing source, so a halo can't stay square to the table while the base it
+            // #341: and the same facing source, so a halo can't stay square to the table while the base it
             // rings turns underneath it.
             Float2 facing = draw.Facing ?? model.Facing;
 
@@ -1021,7 +1021,7 @@ public class RaylibRenderer
 
             int cx = l.OriginX + (int)(draw.Position.x * l.Scale);
             int cy = l.OriginY + (int)((TableHIn - draw.Position.z) * l.Scale);
-            // #340: the presentation player owns the facing mid-animation for the same reason it owns the
+            // #341: the presentation player owns the facing mid-animation for the same reason it owns the
             // position - the authoritative one is already at the END of the move while the glide is playing,
             // so drawing model.Facing here would snap the turn on before the model set off.
             Float2 facing = draw.Facing ?? model.Facing;

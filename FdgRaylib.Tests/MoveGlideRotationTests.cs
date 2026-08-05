@@ -8,7 +8,7 @@ using NUnit.Framework;
 
 namespace FdgRaylib.Tests;
 
-// #340: a move beat carries the attitude at each waypoint, and the glide TURNS the model between them
+// #341: a move beat carries the attitude at each waypoint, and the glide TURNS the model between them
 // instead of snapping it. That is the visible half of "a rotation belongs to the node it was placed at":
 // the engine no longer applies a turn to the ground before its node, so the turn has to happen across the
 // leg into it. Before this the authoritative facing was already final when the animation started, so every

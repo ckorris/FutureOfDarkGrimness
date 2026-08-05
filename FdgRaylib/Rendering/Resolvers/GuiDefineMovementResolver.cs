@@ -56,7 +56,7 @@ public class GuiDefineMovementResolver
         return len > 1e-4f ? new Float2(dx / len, dz / len) : fallback;
     }
 
-    // Two attitudes that are the same heading - the common case, where #340's two-attitude clamp collapses
+    // Two attitudes that are the same heading - the common case, where #341's two-attitude clamp collapses
     // back to one pass. Mirrors MovementUtilities.FacingsEqual (engine side).
     private static bool FacingsEqual(Float2 a, Float2 b)
         => MathF.Abs(a.X - b.X) < 1e-4f && MathF.Abs(a.Y - b.Y) < 1e-4f;
@@ -285,7 +285,7 @@ public class GuiDefineMovementResolver
     // model's oriented footprint is drawn at the point of first contact. The collision is often NOT under
     // the node being placed - an earlier leg can be the one that collides - so the plain red flag read as
     // "can't place here though nothing is between the last point and this one".
-    // #340: the contact may now also be a NODE POSE rather than a leg (a rotation the base has room to
+    // #341: the contact may now also be a NODE POSE rather than a leg (a rotation the base has room to
     // travel with but not to stand in), which draws as the oriented footprint at that node with no line -
     // the collision is the attitude, not the ground crossed to reach it.
     private static readonly uint CrossingZoneFill      = ImGui.ColorConvertFloat4ToU32(new Vector4(1.00f, 0.25f, 0.25f, 0.22f));
@@ -533,7 +533,7 @@ public class GuiDefineMovementResolver
         if (!group && _selectedModel != null && overTable && !io.WantCaptureMouse)
         {
             var anchor = pt.GetModelLastPathPosition(_selectedModel);
-            // #340: the attitude the model is STANDING at - what it departs this leg with. The live rotation
+            // #341: the attitude the model is STANDING at - what it departs this leg with. The live rotation
             // belongs to the node being placed; the clamps below must not apply it to the ground under the
             // anchor, or a model beside a wall or an enemy base can't be turned at all.
             Float2 anchorFacing = PlannedPose(pt, _selectedModel,
@@ -1035,7 +1035,7 @@ public class GuiDefineMovementResolver
             Float2 StepFacing(Position from, Position to, IModel m) =>
                 RotateFloat2(TravelFacing(from, to, m.Facing), _groupFacingAngle);
 
-            // #340: each phantom's DEPARTING attitude - where its base is standing right now, at the offset
+            // #341: each phantom's DEPARTING attitude - where its base is standing right now, at the offset
             // its last committed step was placed with. The live group rotation belongs to the step being
             // placed, so the enemy clamp must not measure it against the ground the unit is still on.
             var departFacings = new Float2[models.Count];
@@ -1784,7 +1784,7 @@ public class GuiDefineMovementResolver
     /// <summary>
     /// How far the ghost may slide from <paramref name="anchor"/> before its base would touch an enemy's.
     ///
-    /// #340: a leg's ROTATION is not validated - the base turns from the attitude it is standing at
+    /// #341: a leg's ROTATION is not validated - the base turns from the attitude it is standing at
     /// (<paramref name="departFacing"/>) to the one being placed (<paramref name="arriveFacing"/>) somewhere
     /// along the way - so the ghost may travel as far as EITHER attitude allows. Measuring only the live
     /// attitude froze a rotated ghost where it stood: the turn it had not made yet was measured against the

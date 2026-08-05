@@ -763,7 +763,7 @@ public class PresentationPlayer : IPresentationSink
     /// <summary>
     /// Linear glide along a polyline, time distributed across segments by length.
     ///
-    /// <para>#340: the model also TURNS across each segment, from the attitude it left the previous node
+    /// <para>#341: the model also TURNS across each segment, from the attitude it left the previous node
     /// with to the one its next node was placed at. The placement rule lets a rotation belong to a single
     /// node without applying to the ground before it, so the turn has to become visible somewhere - here,
     /// spread over the leg into that node, rather than snapped on before the animation even starts (which
@@ -908,7 +908,7 @@ public readonly struct ModelDrawState
     /// <summary>Replacement color (death = red, hurt = orange), or null to use the player's team color.</summary>
     public TextColor? Tint { get; }
 
-    /// <summary>#340: the attitude to draw the base at mid-animation (a move turns the model as it glides),
+    /// <summary>#341: the attitude to draw the base at mid-animation (a move turns the model as it glides),
     /// or null to use the model's authoritative facing - which is where every non-move state leaves it.</summary>
     public Float2? Facing { get; }
 

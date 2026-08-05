@@ -1,6 +1,7 @@
-# 340 — A rotation dialled in mid-path rotated the model where it was STANDING
+# 341 — A rotation dialled in mid-path rotated the model where it was STANDING
 
-**Status**: in-progress (implemented + tested; awaiting GUI hand-verify)
+**Status**: DONE — closed 2026-08-05, hand-verified in the running app by the owner
+(filed as #340; renumbered to 341 at push time, reconciliation 52)
 **Related**: #150 (per-waypoint travel facing), #282 (offsets captured per waypoint), #283 (consolidation
 rotate-in-place), #312 (end-state at end facing), #213/#317 (impassible preview), #155 (difficult clamp)
 
@@ -119,14 +120,27 @@ Applies to movement (single + group) and to consolidation (owner's call, 2026-08
 ## Verification
 
 - Engine 2831/2831, app 1077/1077, `dotnet build` clean, headless smoke exits 0 (run at every commit).
-- Commits: engine `c0b0304` (rule) -> `617e51f` (consolidation tests) -> `1ffbc8e` (beat facings);
-  superproject `fa3abbb` (clamps + bump) -> `8fc736f` (glide rotation + bump).
-- **Not verified in the GUI.** The owner's scenario is a hand-verify: park a rectangular model beside a
-  wall, rotate, and place a node clear of the wall's end - the ghost must stay green and Done must accept.
-  Then repeat with the node still alongside the wall: the ghost must go red with the offending piece washed
-  and the model's oriented footprint drawn AT that node. Watch the move play: the model should turn across
-  the leg rather than arrive pre-turned.
+- Commits: engine `c0b0304` (rule) -> `617e51f` (consolidation tests) -> `1ffbc8e` (beat facings) ->
+  `ef75bb2` (doc comments); superproject `fa3abbb` (clamps + bump) -> `8fc736f` (glide rotation + bump) ->
+  `954ed01` (docs + index) -> `192eaa0` (ledger gaps).
+- **GUI hand-verified by the owner, 2026-08-05**, and closed on their say-so. The scenario is the report's
+  own: park a rectangular model beside a wall, rotate, place a node clear of the wall's end (ghost stays
+  green, Done accepts); repeat with the node still alongside the wall (ghost reddens, offending piece
+  washed, oriented footprint drawn AT that node); watch the move play (the model turns across the leg
+  rather than arriving pre-turned).
 
 ## Outcome
 
-_(pending)_
+**Done.** A path is a sequence of poses, and the rotation between two of them is the animation's business,
+not the validator's. The three requirements hold: a rotation belongs to the node it was placed at, the
+glide interpolates rotation between nodes, and legality ignores the interpolation while checking every
+node's pose. Movement (single + group) and consolidation, per the owner's scope call.
+
+Two things were deliberately left standing rather than quietly dropped, both recorded under Decisions: a
+model that STARTS with its base overlapping impassible terrain can no longer even pivot (the node-pose
+check closes the one escape that skipping zero-length legs used to leave it), and the GUI's
+`EnemyClampTravel` two-attitude change carries no test of its own.
+
+Filed as #340 and renumbered to **341** at push time - the fourth same-day collision of this shape; see
+`Reconciliations.md`, reconciliation 52. The pre-renumber commit messages say "#340", per standing
+precedent.
