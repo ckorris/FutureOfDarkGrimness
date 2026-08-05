@@ -6,6 +6,19 @@ from origin/master. Standing precedent: numbers are never reused, and when two p
 claim the same number, the *unmerged local* item yields to the *merged* one and takes a fresh number.
 A per-clone pre-push hook blocks duplicate numbers across the index and the archive.
 
+> **2026-08-04 - reconciliation 48 (RESOLVED).** The SAME item colliding a second time, hours after
+> reconciliation 47 moved it. This clone renumbered deploy-normally 331 -> **333** against an `origin/master`
+> whose highest number was 332, then spent the session on #334 (forced-charge band) without pushing; by the
+> pre-push fetch, origin had landed **333 = confirm unmoved models on Done**, merged. Merged wins again:
+> **deploy-normally 333 -> 335** (`WorkItems/335-deploy-normally-button.md`). #334 did NOT collide and keeps
+> its number, so 335 is the first free number above it. Markers moved before publication in both repos,
+> the same list as 47 plus `docs/ResolverGuide.md`; upstream's own `#333` markers (`MovementStage`,
+> `MovementUtilities`, `MovementBackOutTests`, `ModelRoster`, `ModelRosterTests`, and the CLI/GUI Done
+> confirmation) were left untouched. Both repos' commit messages saying "#331"/"#333" stay as-is per
+> precedent. **The lesson is now unambiguous across 46, 47 and 48: a pre-filing fetch cannot close the gap
+> between filing and pushing, and this clone has NO pre-push hook installed** - three collisions on one item
+> is what that costs. Install it (snippet in `WorkItems/README.md`) before filing anything else here.
+>
 > **2026-08-04 - reconciliation 47 (RESOLVED).** The mirror image of 46, from the other side. This clone
 > filed **331 = "Deploy Normally" is its own button** against an `origin/master` whose highest number was
 > 330; meanwhile the *other* session filed **331 = victory fireworks**, pushed it, closed it and archived

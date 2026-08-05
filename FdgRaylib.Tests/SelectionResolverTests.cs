@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace FdgRaylib.Tests;
 
-// #333 — a playtester reported having to press Back to deploy a unit next to a transport. The GUI at least
+// #335 — a playtester reported having to press Back to deploy a unit next to a transport. The GUI at least
 // HAD a Back button to stumble onto; the CLI resolver had no cancel path whatsoever, so with a transport
 // eligible "deploy normally" could not be typed at all. Both front ends now take the wording from the
 // request (SelectionRequest.CancelLabel), which is what these pin: the option is listed, it is named, and

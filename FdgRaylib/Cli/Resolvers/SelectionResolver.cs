@@ -14,7 +14,7 @@ public class SelectionResolver<T> : IStageResolver<SelectionRequest<T>, DataBind
         for (int i = 0; i < request.ValidOptions.Count; i++)
             Console.WriteLine($"  [{i + 1}] {request.ValidOptions[i].Name}");
 
-        // #333: a cancellable selection had no CLI representation at all — the GUI's Back button simply did
+        // #335: a cancellable selection had no CLI representation at all — the GUI's Back button simply did
         // not exist here, so "deploy normally" was unreachable next to a transport. It is [0], named by the
         // request (usually "Back"), and replies null exactly like the GUI's button does.
         if (request.AllowCancel)

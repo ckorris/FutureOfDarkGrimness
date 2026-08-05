@@ -17,7 +17,7 @@ When closing an item: write the Outcome in its detail file, tick the line, and m
 
 ## Movement
 
-- [~] 334 — The 1" forced-charge band was invisible while moving: ending inside it is legal (#206) but costs the unit its Pass, which only showed up a stage later. Engine predicate extracted to `ForcedChargeUtilities` (gate + preview share it); GUI draws the band around reachable enemies, tints the ghost and warns in the panel; CLI prints the same. Implemented + tested + headless-verified; awaiting GUI hand-verify. ([WorkItems/334](WorkItems/334-forced-charge-proximity-preview.md))
+- [~] 334 — The 1" forced-charge band was invisible while moving: ending inside it is legal (#206) but costs the unit its Pass, which only showed up a stage later. Engine predicate extracted to `ForcedChargeUtilities` (gate + preview share it); GUI draws the band around reachable enemies, tints the ghost and warns in the panel; CLI prints the same. Implemented + tested + GUI hand-verified 2026-08-04. ([WorkItems/334](WorkItems/334-forced-charge-proximity-preview.md))
 
 - [~] 312 — "Charge offered but won't allow" + partial one-at-a-time moves (2026-07-31 game): ValidateChargeReach + end-state validators now true base-to-base at end facing; enemy-pin click removed; click hit-test follows planned ghost poses. Implemented + tested; awaiting GUI hand-verify + networked re-test. Was #310 pre-reconciliation-36. ([WorkItems/312](WorkItems/312-charge-wont-allow-and-swallowed-clicks.md))
 
@@ -94,7 +94,7 @@ Corpus coverage is now complete too: **0 of 13,870** book rule references are de
 
 ## Transport
 
-- [~] 333 — Deploying into a transport was reachable only by pressing Back: `SelectionRequest.CancelLabel` lets the stage name its exit, so the button reads "Deploy Normally" (and the CLI, which had no cancel path at all, lists it as `[0]`). The AI now never embarks at all (owner's call - no drop-off plan), at both the deploy prompt and the action menu. Implemented + tested + headless-verified; awaiting GUI hand-verify. ([WorkItems/333](WorkItems/333-deploy-normally-button.md))
+- [~] 335 — Deploying into a transport was reachable only by pressing Back: `SelectionRequest.CancelLabel` lets the stage name its exit, so the button reads "Deploy Normally" (and the CLI, which had no cancel path at all, lists it as `[0]`). The AI now never embarks at all (owner's call - no drop-off plan), at both the deploy prompt and the action menu. Implemented + tested + headless-verified; awaiting GUI hand-verify. ([WorkItems/335](WorkItems/335-deploy-normally-button.md))
 
 - [~] 315 — Duplicate-named units in transports were indistinguishable in the activation picker: engine label suffix "Warriors (in Rhino)" + GUI hover rings the transport (distinct style) + canvas-hover on a transport emphasises its occupants' rows (#286 two-way rule). ([WorkItems/315](WorkItems/315-embarked-activation-disambiguation.md))
 

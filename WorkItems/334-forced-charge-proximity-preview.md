@@ -1,6 +1,6 @@
 # 334 — Show the 1" forced-charge band while moving
 
-**Status**: in-progress
+**Status**: in-progress (implemented + tested + GUI hand-verified; open facet: consolidation/charge moves do not draw the band)
 **Related**: #206 (forced-charge moved from a move-time rejection to a Choose Action gate), #155 (the
 terrain-consequence warning pattern this copies), #150 (oriented base footprints), #326 (model roster)
 
@@ -48,6 +48,32 @@ band (both front ends carry every rule the other does).
 
 ## Notes
 
+### 2026-08-04 - GUI hand-verified (Chris), band recoloured
+Verified in the GUI on `Scenarios/334-forced-charge-band.json` (below): *"It works well!"* Two follow-up
+calls from that pass, both applied:
+
+- **Solid, not washed.** Faint band alpha 0.30 -> 0.60 and 1.5px -> 2.0px; hot band 0.95 -> 1.00 and
+  3.0px -> 3.5px. The first pass read as a wash rather than a drawn boundary.
+- **Dark orange, not magenta.** Owner's call, after a first attempt at red was rejected too. Landed on burnt
+  orange (0.85, 0.33, 0.02) / (0.90, 0.35, 0.03). Worth knowing WHY this is delicate: bright orange
+  (1.00, 0.55, 0.10) is already the CHARGE DISTANCE band and the Rush label, so this hue now separates from
+  the thing it must never be confused with by VALUE and SHAPE alone (deeper and browner; hugs enemy bases
+  while the charge rings are big circles centred on the mover) rather than by hue, which is what the magenta
+  bought for free. If either palette is retuned, retune both.
+
+**Demo scenario** (`Scenarios/334-forced-charge-band.json` + `armies/334-Band{Probe,Targets}.fdgarmy`,
+compiled save committed alongside): Blade Squad (melee) and Gun Squad (rifle-only, the no-melee-weapon
+wording) face a 2" CIRCLE base at (30,20) and a 1.5"x3" RECTANGLE base at (42,20) turned 45 degrees - the
+two cases the band geometry has to get right - plus Distant Watchers parked at (8-12,42) to show the reach
+filter drawing no band. Charge is correctly greyed at the opening menu ("No enemies within melee range"), so
+Move is the only real action and the band cannot be skipped past.
+
+One process note worth keeping: mid-verify I claimed from the GUI log that no Move had been opened and the
+band never drew. That was wrong - **a completed move emits no engine log line at all**; every movement line
+in a headless run comes from the CLI resolver's own console prints, and the GUI resolver prints nothing. A
+GUI session's log is therefore identical whether or not the player moved. Don't infer GUI behaviour from
+its absence in the log.
+
 ### 2026-08-04 - implemented (engine `e912127`; awaiting GUI hand-verify)
 Engine 2804/0, app 1038/0, headless smoke exits 0 with the warning firing in play.
 
@@ -68,6 +94,8 @@ Built as planned. Three things the build itself taught, all folded in:
 - **Band colour is magenta on purpose.** Orange was the tempting choice and is wrong: on this canvas orange is
   the CHARGE DISTANCE band - a budget, not an obligation - and conflating "how far you may move" with "what
   you will be forced to do" is the exact confusion this item exists to remove.
+  *(SUPERSEDED at the GUI verify above - the owner chose a dark orange anyway. The reasoning still stands as
+  the reason that choice needs care, which is why it is left here rather than deleted.)*
 
 Ordering inside the frame: bands go down before the paths and ghosts (they mark ground), the violated bands
 and link lines go on top after the ghosts are known. The live ghost tints itself from its own cheap check
