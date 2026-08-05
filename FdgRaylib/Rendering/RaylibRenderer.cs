@@ -852,10 +852,13 @@ public class RaylibRenderer
                 ? _colorForPlayer!(obj.OwnerID.Value)
                 : ObjectiveNeutralColor;
 
-            // Translucent 3" seizure zone.
+            // Translucent 3" seizure zone, clipped to the felt: a marker placed near an edge has part
+            // of its radius hanging off the table, and that part is not table, so it isn't drawn.
             float seizurePx = ObjectiveSeizureRadiusInches * l.Scale;
+            TableClip.BeginScissor(l.Scale, l.OriginX, l.OriginY, TableHIn);
             Raylib.DrawCircle(cx, cy, seizurePx, new Color(baseColor.R, baseColor.G, baseColor.B, (byte)45));
             Raylib.DrawCircleLines(cx, cy, seizurePx, new Color(baseColor.R, baseColor.G, baseColor.B, (byte)180));
+            Raylib.EndScissorMode();
 
             // Solid inner marker.
             float markerPx = ObjectiveMarkerRadiusInches * l.Scale;

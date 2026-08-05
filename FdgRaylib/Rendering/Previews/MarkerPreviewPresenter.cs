@@ -45,11 +45,14 @@ public class MarkerPreviewPresenter : IRemotePreviewPresenter
         uint outline = o.Valid ? PlayerTint(playerColor, 0.85f) : InvalidOutline;
 
         // Seizure ring, dimmer than the placer's own (remote previews deliberately read quieter).
+        // Clipped to the felt, same as the placer's ghost - WYSIWYG holds at the edges too.
         float seizurePx = o.SeizureRadiusInches * ctx.Scale;
         uint ringFill = ImGui.ColorConvertFloat4ToU32(
             new Vector4(0.70f, 0.70f, 0.70f, o.Pending ? 0.20f : 0.12f));
+        TableClip.PushClipRect(dl, ctx.Scale, ctx.OriginX, ctx.OriginY, ctx.TableH);
         dl.AddCircleFilled(center, seizurePx, ringFill);
         dl.AddCircle(center, seizurePx, outline, 48, 2f);
+        dl.PopClipRect();
 
         // Marker disc + number - same neutral grey as the renderer's committed markers.
         float radiusPx = o.BaseRadiusInches * ctx.Scale;
