@@ -28,4 +28,27 @@ public static class ViewSettings
 
     /// <summary>#331: firework bursts in the winning side's colours behind the game-over card.</summary>
     public static bool ShowVictoryFireworks = true;
+
+    /// <summary>
+    /// #344: multiplier on how long a dice-roll panel LINGERS on the #327 stack after it has settled.
+    /// 1.0 is the tuned default; the slider spans <see cref="DiceLingerMin"/>..<see cref="DiceLingerMax"/>,
+    /// so a player who reads fast can clear the caption zone in a third of the time and one who wants to
+    /// study the arithmetic can double it.
+    ///
+    /// <para>The linger is the only part that scales. A panel's lifetime is <c>paced + linger</c>, and the
+    /// PACED part is the engine's own wait on the beat (<c>PresentationBeat.NominalDuration</c>) - the
+    /// window the dice tumble and settle in. Scaling that would retire the panel before the roll it is
+    /// showing had finished, on a client whose engine is still waiting. So the knob moves the part that is
+    /// purely "how long you get to re-read it", which is what the setting is actually for.</para>
+    ///
+    /// <para>Session-scoped like every other flag here, deliberately: these are display toggles, not saved
+    /// preferences (<c>UserConfig</c> holds the lobby/host settings).</para>
+    /// </summary>
+    public static float DiceLingerScale = 1f;
+
+    /// <summary>Shortest the dice panels may linger: a third of the default (#344).</summary>
+    public const float DiceLingerMin = 1f / 3f;
+
+    /// <summary>Longest the dice panels may linger: twice the default (#344).</summary>
+    public const float DiceLingerMax = 2f;
 }

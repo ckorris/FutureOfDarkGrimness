@@ -146,6 +146,13 @@ public sealed class EscapeMenuOverlay
         ImGui.Checkbox("Show all tokens (T, dev)", ref ViewSettings.ShowAllTokens);
         ImGui.Checkbox("Victory fireworks", ref ViewSettings.ShowVictoryFireworks);
 
+        // #344: how long a settled dice panel stays up. Shown as a multiplier of the tuned default rather
+        // than in seconds - the actual lifetime varies with the roll (a panel carrying modifier chips
+        // already lingers longer), so a seconds figure would be a lie for most rolls.
+        ImGui.SliderFloat("Dice popup time", ref ViewSettings.DiceLingerScale,
+            ViewSettings.DiceLingerMin, ViewSettings.DiceLingerMax, "%.2fx");
+        ImGui.TextDisabled("1.00x is the default. Hovering the dice always freezes them.");
+
         if (_tactical != null)
         {
             SectionHeader("Tactical overlay");

@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using FDG;
 using FDG.Presentation.Beats;
+using FdgRaylib.Rendering;
 using FdgRaylib.Rendering.Presentation;
 using NUnit.Framework;
 
@@ -42,6 +43,10 @@ public class DiceStackTests
     // A normal roll: the engine paces its 1800ms envelope, then the panel lingers 3s more.
     private const float Paced        = 1.8f;
     private const float PanelLife    = 4.8f;
+
+    // #344's slider is a static display setting, so every test runs at the default unless it says otherwise.
+    [TearDown]
+    public void ResetDiceLingerScale() => ViewSettings.DiceLingerScale = 1f;
 
     [Test]
     public void ARoll_OwnsTheActiveSlotForItsEnvelope_AndItsPanelOutlivesIt()
@@ -115,6 +120,45 @@ public class DiceStackTests
         Assert.That(stack, Has.Count.EqualTo(3), "a burst of rolls cannot bury the table");
         Assert.That(((DiceRolledBeat)stack[0].beat).Label, Is.EqualTo("Roll 2"), "the oldest drop out...");
         Assert.That(((DiceRolledBeat)stack[2].beat).Label, Is.EqualTo("Roll 4"), "...and the newest always survives");
+    }
+
+    // #344 — the Options slider scales the LINGER (the "let me re-read that" tail), never the paced part.
+    // Scaling the paced part would retire the panel while the engine was still waiting on the roll it is
+    // showing, i.e. the dice would vanish mid-tumble.
+    [Test]
+    public void TheDiceLingerSetting_ScalesTheLingerAndLeavesThePacedPartAlone()
+    {
+        const float Linger = PanelLife - Paced;   // 3.0s at 1.00x
+
+        ViewSettings.DiceLingerScale = ViewSettings.DiceLingerMin;   // a third
+        var quick = new PresentationPlayer();
+        quick.OnBeat(Dice());
+        quick.Update(Paced + 0.05f);
+        Assert.That(quick.GetRollStack(), Has.Count.EqualTo(1),
+            "the panel still outlives the engine's own wait at the shortest setting - the dice are never "
+            + "pulled while the roll they show is still being paced");
+        quick.Update(Linger / 3f);
+        Assert.That(quick.GetRollStack(), Is.Empty, "and it clears in a third of the default linger");
+
+        ViewSettings.DiceLingerScale = ViewSettings.DiceLingerMax;   // double
+        var slow = new PresentationPlayer();
+        slow.OnBeat(Dice());
+        slow.Update(PanelLife + 0.05f);
+        Assert.That(slow.GetRollStack(), Has.Count.EqualTo(1), "still up well past the default lifetime");
+        slow.Update(Linger);
+        Assert.That(slow.GetRollStack(), Is.Empty, "gone at paced + 2x linger");
+    }
+
+    [Test]
+    public void TheDiceLingerSetting_IsClampedAgainstAStrayValue()
+    {
+        ViewSettings.DiceLingerScale = 0f;   // would otherwise retire the panel the frame it appeared
+        var player = new PresentationPlayer();
+        player.OnBeat(Dice());
+        player.Update(Paced + 0.05f);
+
+        Assert.That(player.GetRollStack(), Has.Count.EqualTo(1),
+            "a 0 scale floors at the minimum rather than showing the dice for no time at all");
     }
 
     [Test]

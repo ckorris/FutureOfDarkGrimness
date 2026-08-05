@@ -83,8 +83,18 @@ public class PresentationPlayer : IPresentationSink
             // overhang is what makes panels overlap and therefore stack.
             float paced = (float)(beat.Held ? beat.HoldLeadIn : beat.NominalDuration).TotalSeconds;
             int infoBlocks = beat is DiceRolledBeat dice ? dice.InfoBlocks : 0;
-            Lifetime = paced + RollLingerSeconds + RollLingerPerInfoBlock * infoBlocks;
+            // #344: the player's own pacing preference scales the LINGER only — never the paced part, which
+            // is the engine's wait and the window the dice are still tumbling in (see ViewSettings for why).
+            // Read at construction, so changing the slider affects the next roll rather than yanking the one
+            // on screen out from under a reader.
+            float linger = (RollLingerSeconds + RollLingerPerInfoBlock * infoBlocks) * LingerScale();
+            Lifetime = paced + linger;
         }
+
+        // Clamped defensively: the field is public and a stray 0 would make panels vanish the frame they
+        // appeared, which reads as the dice never having been shown at all.
+        private static float LingerScale() =>
+            Math.Clamp(ViewSettings.DiceLingerScale, ViewSettings.DiceLingerMin, ViewSettings.DiceLingerMax);
 
         /// <summary>0..1 against the beat's own envelope — drives the overlay's tumble-then-settle. A
         /// panel outlives its envelope, so this simply saturates at 1 and stays settled.</summary>
