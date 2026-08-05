@@ -118,8 +118,14 @@ bit-identical; confirm rather than assume.
     seed also faulted in control), worst cell Dwarf-vs-Hives -14pp = 2.0 sigma on a 50-game cell
     (a 64-cell scan expects ~3 past 2 sigma; per-army aggregates level). Decision cost flat
     (31.29 -> 31.21ms mean; worst p95 552 -> 569ms, same load). Hashes: control
-    `65C3DB4896788FAC`, fix `A5C4FF16B5E8F1EE`. Gradient slice benched separately vs a
-    post-geometry control (numbers added below when that A/B lands).
+    `65C3DB4896788FAC`, fix `A5C4FF16B5E8F1EE`. **Gradient slice A/B (isolated: control = geometry
+    + #216 + #170 build, hash `221D7FD8F0733551`, so #170's deploy shift is on both sides):
+    aggregate 84.42% -> 84.84%** (+0.4pp, inside sigma; hash `CA79CA44195000DF`), faults 1 -> 0
+    across 3200 games (the recurring DE-vs-Hives seed-1016 "fault" completed in 31s on an unloaded
+    machine - every watchdog fault this session was CPU-contention from concurrent benches, none a
+    regression), decision cost 27.6ms mean / 477ms worst p95 (lowest of the session). Only >=10pp
+    cell: Dwarf-vs-Hives +12pp - the same noisy cell that read -14pp in the geometry A/B, now
+    recovered. Cross-read: the #170 deploy fix alone moved the pool 83.71% -> 84.42%.
 
 - 2026-07-25: filed. Found while pinning the #264 Strider half; no fix attempted, no scope cut —
   #264's grid flag was landed as correct-and-ready rather than blocked on this.
