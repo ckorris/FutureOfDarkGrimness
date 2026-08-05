@@ -1,8 +1,6 @@
 # 330 — Pile-in maximizes base contact (slot assignment instead of formation-keeping rays)
 
-**Opened:** 2026-08-04. **Status:** implemented + tested; awaiting GUI hand-verify (watch a
-multi-model melee - rear ranks should wrap around to open flanks, and the log line should show
-the contact tally climbing).
+**Opened:** 2026-08-04. **Status:** DONE 2026-08-04 (owner hand-verified in the GUI).
 
 ## Goal
 
@@ -70,4 +68,15 @@ b2b + 4" vertical). Verified in code 2026-08-04; no change needed.
 
 ## Outcome
 
-(pending)
+Shipped 2026-08-04, same day as opened. Engine `23fdbf2`: contact-slot assignment around chargers
+(36 sampled directions per charging model, bounded bisection on SurfaceGap2D, most-constrained
+defender first, deterministic tie-breaks), swept/overlap validation via the existing #150
+primitives, old ray-step retained as the fallback, coherency revert kept + a residual-overlap
+revert added. `PileInStage` log line reports the contact tally. 5 new tests (14 in `PileInTests`),
+incl. the owner-requested partial-terrain wraps; suite 2666/2666 at commit (2760/2760 after the
+rule-log-wording merge). Hand-verified by owner 2026-08-04 in the GUI via
+`Scenarios/pilein-wrap-demo.json` / `PileInWrap.fdgsave` (lone tough charger vs a 5-model block
+with a wall clipping the wrap arc): "works quite well".
+
+The note's other half (2" attack gate both sides) needed no work - already live via #017's
+`MeleeRangeUtilities` chokepoint.
