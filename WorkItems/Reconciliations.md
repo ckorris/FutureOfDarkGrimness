@@ -6,6 +6,27 @@ from origin/master. Standing precedent: numbers are never reused, and when two p
 claim the same number, the *unmerged local* item yields to the *merged* one and takes a fresh number.
 A per-clone pre-push hook blocks duplicate numbers across the index and the archive.
 
+> **2026-08-04 - reconciliation 49 (RESOLVED).** Third session in a row to collide on **333**, and the
+> second to lose it to `origin/master`'s *confirm unmoved models on Done*. This session filed
+> **333 = melee weapon rules read the way shooting's do** against an `origin/master` whose index + archive
+> topped out at 332, implemented and committed it across three commits (engine + app), then found on the
+> pre-push fetch that origin had moved 11 commits: 333 was merged, and reconciliation 48 had already spent
+> **335** renumbering ITS 333 away. Merged wins per standing precedent, and the local item takes the first
+> free number above everything on origin: **melee weapon rules 333 -> 336**
+> (`WorkItems/336-melee-rules-match-shooting.md`). The renumber landed everywhere before publication - the
+> detail file, the index line, the engine + app source comments and tests, and the showcase scenario
+> (`Scenarios/336-weapon-rules-showcase.json`, renamed with it). **Left as-is on purpose:** the three
+> pre-renumber commit messages saying "#333", matching every prior reconciliation's precedent that commit
+> messages are not rewritten. The engine and app merges of origin/master were clean - the 11 incoming
+> commits (#334 forced-charge band, #335 deploy-normally) touched no file this item changed, and the only
+> conflict was the submodule pointer, resolved by taking this clone's engine branch, which had already
+> merged origin's.
+>
+> **Worth noting for the next session:** 333 has now been contested three times because three clones each
+> filed from a stale index. The rule in CLAUDE.md is `git fetch origin` *immediately* before filing, and
+> even that is not enough on a long session - this session's fetch was correct when it filed and stale by
+> the time it pushed. Re-checking the number at push time, not just at filing time, is the actual guard.
+
 > **2026-08-04 - reconciliation 48 (RESOLVED).** The SAME item colliding a second time, hours after
 > reconciliation 47 moved it. This clone renumbered deploy-normally 331 -> **333** against an `origin/master`
 > whose highest number was 332, then spent the session on #334 (forced-charge band) without pushing; by the
