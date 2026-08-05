@@ -1,6 +1,6 @@
 # 332 — End a match once the result can no longer change
 
-**Status**: in-progress (implemented + tested; awaiting GUI hand-verify)
+**Status**: done
 **Related**: #257 (team victory scoring), #195 (authoritative round number in `ReconcileObjectivesStage`), #040 (game-over card), #191 (benchmark harness reads `RoundsPlayed`)
 
 ## Goal
@@ -88,3 +88,27 @@ Aircraft also has a permanently non-increasing score (Aircraft can neither seize
 adds a rules-coupling risk for no practical gain; left out on purpose.
 
 ## Outcome
+
+Closed 2026-08-04, GUI hand-verified. `ReconcileObjectivesStage` takes its existing
+`ToVictoryCalculation` edge early when `MatchDecision.IsResultFixed` says the outcome is settled: every
+side but at most one has no living units *anywhere* (never `GetIsOnBattlefield`, so reserve / embarked /
+flown-off / pending-Reinforcement units all keep a side in the game), and the survivor already leads
+outright. All sides dead ends it too, since the board is frozen. A Headline banner plus a log line explain
+the short stop, carried by a single `Announce` - which logs and banners in one call, and whose two channels
+already replicate, so the whole feature needed no wire, `GameResult`, or client change.
+
+18 tests (15 on the helper, 3 driving the real stage through a recording layer), mutation-verified against
+the two mistakes that matter: skipping reserve units in the living scan, and relaxing the sole-lead check
+from `>=` to `>`. Engine suite 2787/2787. End-to-end on `Scenarios/332-match-already-decided.json`, headless
+and in the GUI: round 3, `rounds=3`, round 4 never played.
+
+**Deliberately not built**, and not deferred - these are scope decisions, not debts:
+- Reachability ("they lead 3-1 and cannot reach two markers"). That needs movement budgets, terrain,
+  Ambush arrival anywhere on a board edge, transports and Aircraft, and it is the only place a false
+  positive could come from. The shipped rule cannot produce one.
+- The Aircraft-only refinement: a side whose only survivors are Aircraft also has a permanently
+  non-increasing score, so it could count as inert. Sound, but exotic enough that the rules coupling costs
+  more than it buys.
+
+Renumbered from #330 the same day (reconciliation 46). Made the game-over card worth looking at, which is
+what prompted #331.

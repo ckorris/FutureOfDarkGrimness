@@ -1,6 +1,6 @@
 # 331 — Victory fireworks in the winning side's colours
 
-**Status**: in-progress (implemented + tested; awaiting GUI hand-verify)
+**Status**: done
 **Related**: #332 (the early match end that made the game-over card worth looking at), #257 (team-pooled
 scoring), #221 (player colour palette), #246 (Options panel)
 
@@ -53,3 +53,27 @@ a full pool drops new sparks rather than allocating. Pinned by a test that runs 
 ceiling.
 
 ## Outcome
+
+Closed 2026-08-04, GUI hand-verified ("it looks great"). Firework bursts draw behind the game-over card in
+the winning side's player colours: a team win alternates its members' colours shell by shell, a tie fires
+every tied side's, and a game nobody won fires nothing.
+
+The load-bearing part was not the particles. The renderer cannot be *told* who won - `GameResult` is
+host-side only and never crosses the wire - so the #257 pooled tally was extracted out of
+`VictoryCalculationStage` into `TeamScoreTally` and both now call it, over objectives and player slots that
+DO replicate. Host and client therefore derive the same winner from the same state instead of the renderer
+running a lookalike that could disagree.
+
+Tuned for the 30 FPS cap, which turned out to be the real design constraint: cost was never in question
+against a 33ms budget, but fast pinpoint sparks strobe at that frame rate, so each particle draws as a line
+from its previous position to its current one. That segment *is* the spark, and it is cheaper than the
+circle it replaces. Pool is a preallocated 900-entry array that never grows; a two-simulated-minute test
+pins the peak under 600. Draw order came free - all raw Raylib drawing precedes `rlImGui.Begin()`, so the
+particles sit over the board and under the card with no layering work.
+
+18 tests across the two repos (9 `TeamScoreTallyTests`, 9 `VictoryFireworksTests`). Engine 2787/2787, app
+1020/1020. Off-switchable via Options > Victory fireworks.
+
+The three taste calls were defaulted rather than asked (owner asked for simple) and went unchallenged on
+review: fireworks show for winner and loser alike, ties are shared rather than suppressed, team colours
+alternate. Any of them is a one-line change if that ever stops being right.

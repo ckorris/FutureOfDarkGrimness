@@ -87,10 +87,6 @@ Corpus coverage is now complete too: **0 of 13,870** book rule references are de
 
 ## Victory & scoring
 
-- [~] 332 — Match grinds on after the result is fixed (tabled opponent + sole objective lead at end of round 3 still played round 4). Ends early on a provably-decided state; Headline banner + log line explain the short stop to both players. Implemented + tested (mutation-verified); GUI hand-verified 2026-08-04. Was #330 pre-reconciliation-46. ([WorkItems/332](WorkItems/332-early-match-decision.md))
-
-- [~] 331 — Victory fireworks behind the game-over card, in the winning side's player colours; team wins alternate teammates' colours, ties fire every tied side's. Tally shared with the engine (`TeamScoreTally`) so a client colours the same winner the host does. Implemented + tested; GUI hand-verified 2026-08-04. ([WorkItems/331](WorkItems/331-victory-fireworks.md))
-
 - [~] 257 — Team-based victory scoring: teammates pool objectives, unique top team wins, banner names every winning player ("Alpha and Bravo win!"); `GameResult.WinnerPlayers` added, 1v1 results byte-identical. Implemented + tested; awaiting GUI hand-verify. ([WorkItems/257](WorkItems/257-team-victory-scoring.md))
 
 ## Transport
