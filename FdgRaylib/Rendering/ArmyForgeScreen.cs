@@ -14,6 +14,25 @@ using TinyDialogsNet;
 
 namespace FdgRaylib.Rendering;
 
+/// <summary>#307: how a Save/Load status line should read. A failure must never share the success channel.</summary>
+internal enum EForgeStatusKind { Info, Success, Error }
+
+/// <summary>#307: why a Save needs confirming before it writes. <see cref="ESaveGuard.None"/> is the ordinary
+/// path and costs the user no extra click.</summary>
+internal enum ESaveGuard
+{
+    /// <summary>Write it - the list on screen is a real, edited list.</summary>
+    None,
+
+    /// <summary>The last load was REJECTED and nothing has changed since, so what is about to be written is
+    /// whatever the screen already held - not the file the user tried to open. The reported data-loss path.</summary>
+    UnchangedAfterFailedLoad,
+
+    /// <summary>The list has no units. Saving writes an empty army, which is almost never the intent when the
+    /// target is an existing file.</summary>
+    EmptyList,
+}
+
 // #153 — the catalog army builder ("Army Forge"). Three-pane layout (roster | list | config).
 //   P1: read-only book viewer.
 //   P2 (this): build a list — add/remove roster units, live points via ListCompiler, Save/Load the single
@@ -50,6 +69,23 @@ public class ArmyForgeScreen : IAppScreen
     private int? _selectedListIndex;
     private string? _statusHint;
     private int? _pendingBookIndex;
+
+    // #307: the status line is TYPED. It used to print every outcome through ImGui.TextDisabled, so
+    // "that army has no embedded book" (a REJECTED load, screen contents unchanged) was typographically
+    // identical to "Saved X.fdgarmy" - which is how a user walked from a failed load straight into Save
+    // and wrote the pristine startup default over a path they meant to hold a real army.
+    private EForgeStatusKind _statusKind = EForgeStatusKind.Info;
+
+    // #307: set when a load is REJECTED, cleared when one succeeds. Holds the modal text plus a fingerprint
+    // of the list as it stood at the moment of the failure, so Save can tell "you have not touched anything
+    // since that load failed" (the data-loss path) from a deliberate save of an edited list.
+    private string? _loadFailureMessage;
+    private string? _failedLoadFingerprint;
+
+    // #307: a Save held between the file dialog and the guard modal - the path is only known after the
+    // dialog returns, and a popup can only be raised from inside Draw.
+    private string? _pendingSavePath;
+    private ESaveGuard _pendingSaveGuard;
 
     // #241 Import-from-share-link modal state. The fetch runs on a worker task (HTTP must not stall the
     // ImGui thread); Draw polls for completion. Only Draw (main thread) reads/writes these fields.
@@ -141,6 +177,74 @@ public class ArmyForgeScreen : IAppScreen
             ImGui.CloseCurrentPopup();
         }
         ImGui.EndPopup();
+    }
+
+    // #307: a rejected load is a MODAL, not a status line. The report this item was filed from is a user who
+    // read a greyed-out rejection as a success and pressed Save; the one thing the dialog has to land is
+    // "the screen still holds what it held before", because that is what Save will write.
+    private void DrawLoadFailedModal()
+    {
+        bool open = true;
+        ImGui.SetNextWindowSize(new Vector2(560, 0), ImGuiCond.Appearing);
+        if (!ImGui.BeginPopupModal(LoadFailedTitle, ref open, ImGuiWindowFlags.AlwaysAutoResize)) return;
+
+        WrappedText(_loadFailureMessage ?? "The army could not be loaded.", RedText, 540f);
+        ImGui.Spacing();
+        if (ImGui.Button("OK", ButtonSize("OK", 120f))) ImGui.CloseCurrentPopup();
+        ImGui.EndPopup();
+    }
+
+    // #307: the last gate before a write that would not be the army the user thinks it is. Confirm, never
+    // block - the whole screen is advisory (#003).
+    private void DrawSaveGuardModal()
+    {
+        bool open = true;
+        ImGui.SetNextWindowSize(new Vector2(560, 0), ImGuiCond.Appearing);
+        if (!ImGui.BeginPopupModal(SaveGuardTitle, ref open, ImGuiWindowFlags.AlwaysAutoResize)) return;
+
+        WrappedText(
+            SaveGuardMessage(_pendingSaveGuard, Path.GetFileName(_pendingSavePath ?? ""), _book.Name, _list.Units.Count),
+            YellowText, 540f);
+        ImGui.Spacing();
+        if (ImGui.Button("Save anyway", ButtonSize("Save anyway", 140f)))
+        {
+            if (_pendingSavePath is string path) WriteArmy(path, Compile());
+            // Confirming IS the acknowledgement that the screen holds what it holds - do not re-warn about
+            // the same failed load on every subsequent save.
+            _failedLoadFingerprint = null;
+            ClearPendingSave();
+            ImGui.CloseCurrentPopup();
+        }
+        ImGui.SameLine();
+        if (ImGui.Button("Cancel", ButtonSize("Cancel", 140f)))
+        {
+            SetStatus(EForgeStatusKind.Info, "Save canceled - nothing was written.");
+            ClearPendingSave();
+            ImGui.CloseCurrentPopup();
+        }
+        ImGui.EndPopup();
+    }
+
+    private void ClearPendingSave()
+    {
+        _pendingSavePath = null;
+        _pendingSaveGuard = ESaveGuard.None;
+    }
+
+    private static Vector4 StatusColor(EForgeStatusKind kind) => kind switch
+    {
+        EForgeStatusKind.Error => RedText,
+        EForgeStatusKind.Success => GreenText,
+        _ => ImGui.GetStyle().Colors[(int)ImGuiCol.TextDisabled],
+    };
+
+    private static void WrappedText(string text, Vector4 color, float wrapWidth)
+    {
+        ImGui.PushStyleColor(ImGuiCol.Text, color);
+        ImGui.PushTextWrapPos(ImGui.GetCursorPosX() + wrapWidth);
+        ImGui.TextUnformatted(text);
+        ImGui.PopTextWrapPos();
+        ImGui.PopStyleColor();
     }
 
     // ── #241 Import from an Army Forge share link ───────────────────────────────────────────────────────
@@ -335,7 +439,12 @@ public class ArmyForgeScreen : IAppScreen
         string hint = $"Imported '{session.Selections.Name}' into the Forge";
         if (session.ExcludedUnits.Count > 0) hint += $" - {session.ExcludedUnits.Count} unit(s) excluded";
         if (session.UnitPointsDeltas.Count > 0) hint += $" - {session.UnitPointsDeltas.Count} points delta(s) vs Army Forge";
-        _statusHint = hint;
+        SetStatus(EForgeStatusKind.Success, hint);
+
+        // #307: an import IS a successful adopt - the screen now holds this list, so a later Save is
+        // legitimate and must not inherit an earlier load failure's guard.
+        _loadFailureMessage = null;
+        _failedLoadFingerprint = null;
     }
 
     private bool SaveImported(ArmyListFile army)
@@ -344,8 +453,16 @@ public class ArmyForgeScreen : IAppScreen
         if (canceled || string.IsNullOrEmpty(path)) return false;
         if (Path.GetExtension(path) != ArmyListFile.EXTENSION_WITH_PERIOD)
             path = Path.ChangeExtension(path, ArmyListFile.EXTENSION_WITH_PERIOD);
-        File.WriteAllText(path, JsonSerializer.Serialize(army, RuleJson.Options));
-        _statusHint = $"Imported {Path.GetFileName(path)}";
+        try
+        {
+            File.WriteAllText(path, JsonSerializer.Serialize(army, RuleJson.Options));
+        }
+        catch (Exception ex) // #307: never report a write that did not happen as a success
+        {
+            SetStatus(EForgeStatusKind.Error, $"SAVE FAILED - {ex.Message}");
+            return false;
+        }
+        SetStatus(EForgeStatusKind.Success, $"Imported {Path.GetFileName(path)}");
         return true;
     }
 
@@ -449,10 +566,16 @@ public class ArmyForgeScreen : IAppScreen
         }
         DrawSwitchBookConfirm();
         DrawImportModal();
+        DrawLoadFailedModal();
+        DrawSaveGuardModal();
         if (_statusHint is not null)
         {
             ImGui.SameLine();
-            ImGui.TextDisabled(_statusHint);
+            // TextUnformatted, not TextColored/Text: the line can carry a file name or an exception message,
+            // and a stray '%' in either would be eaten as a printf directive.
+            ImGui.PushStyleColor(ImGuiCol.Text, StatusColor(_statusKind));
+            ImGui.TextUnformatted(_statusHint);
+            ImGui.PopStyleColor();
         }
 
         // Legality badge.
@@ -1088,10 +1211,29 @@ public class ArmyForgeScreen : IAppScreen
         if (Path.GetExtension(path) != ArmyListFile.EXTENSION_WITH_PERIOD)
             path = Path.ChangeExtension(path, ArmyListFile.EXTENSION_WITH_PERIOD);
 
+        // #307: a save that would write something other than an army the user built gets one confirm naming
+        // the target file. The ordinary path (a real list, deliberately saved) is untouched - no extra click.
+        ESaveGuard guard = PendingSaveGuard();
+        if (guard == ESaveGuard.None) { WriteArmy(path, compiled); return; }
+
+        _pendingSavePath = path;
+        _pendingSaveGuard = guard;
+        ImGui.OpenPopup(SaveGuardTitle);
+    }
+
+    private void WriteArmy(string path, BuiltArmyFile compiled)
+    {
         // Serialize the DERIVED type so the embedded selections + book ride along (the engine ignores them on
         // load; the Forge reads them back to re-edit). See BuiltArmyFile.
-        File.WriteAllText(path, JsonSerializer.Serialize(compiled, RuleJson.Options));
-        _statusHint = $"Saved {Path.GetFileName(path)}";
+        try
+        {
+            File.WriteAllText(path, JsonSerializer.Serialize(compiled, RuleJson.Options));
+            SetStatus(EForgeStatusKind.Success, $"Saved {Path.GetFileName(path)}");
+        }
+        catch (Exception ex) // read-only target, vanished directory, permissions - never leave it looking saved
+        {
+            SetStatus(EForgeStatusKind.Error, $"SAVE FAILED - {ex.Message}");
+        }
     }
 
     private void Load()
@@ -1099,14 +1241,104 @@ public class ArmyForgeScreen : IAppScreen
         var (canceled, paths) = TinyDialogs.OpenFileDialog("Load Army", ArmyPaths.DefaultDialogPath, false, ArmyFilter);
         if (canceled) return;
         string path = paths?.FirstOrDefault() ?? "";
-        if (!File.Exists(path)) return;
+        if (string.IsNullOrEmpty(path)) return; // no file picked (incl. #285's silent no-op with no dialog helper)
 
-        BuiltArmyFile? loaded = JsonSerializer.Deserialize<BuiltArmyFile>(File.ReadAllText(path), RuleJson.Options);
-        if (loaded is null) return;
-        _statusHint = AdoptLoaded(loaded)
-            ? $"Loaded {Path.GetFileName(path)}"
-            : "That .fdgarmy has no embedded book - open it in the Army Builder instead.";
+        string fileName = Path.GetFileName(path);
+        BuiltArmyFile? loaded = null;
+        string? readError = null;
+        if (!File.Exists(path))
+        {
+            readError = "That file no longer exists.";
+        }
+        else
+        {
+            // #307: a malformed .fdgarmy used to throw straight out of Draw (JsonException) and take the
+            // renderer with it; a missing file and a null deserialize both returned in silence.
+            try { loaded = JsonSerializer.Deserialize<BuiltArmyFile>(File.ReadAllText(path), RuleJson.Options); }
+            catch (Exception ex) { readError = "That file could not be read:\n\n" + ex.Message; }
+        }
+
+        if (!TryAdopt(loaded, fileName, readError)) ImGui.OpenPopup(LoadFailedTitle);
     }
+
+    // ── #307: load/save outcome state (ImGui-free, so the whole decision chain is testable) ─────────────
+
+    internal const string LoadFailedTitle = "Load failed";
+    internal const string SaveGuardTitle = "Save this list?";
+
+    internal const string NoEmbeddedBookReason =
+        "That army carries no embedded book, so the Forge cannot reopen it for editing. It was almost "
+        + "certainly written by the Army Builder - open it there instead. The army itself is fine and still "
+        + "plays normally.";
+
+    /// <summary>Adopt a file that has just been read, recording the outcome: status line, modal text, and the
+    /// list fingerprint the Save guard compares against. Returns false when the load was REJECTED, which is
+    /// the caller's cue to raise the modal.</summary>
+    internal bool TryAdopt(BuiltArmyFile? loaded, string fileName, string? readError)
+    {
+        string? reason = null;
+        if (readError is not null) reason = readError;
+        else if (loaded is null) reason = "That file is empty, or is not an army list.";
+        else if (!AdoptLoaded(loaded)) reason = NoEmbeddedBookReason;
+
+        if (reason is null)
+        {
+            _loadFailureMessage = null;
+            _failedLoadFingerprint = null;
+            SetStatus(EForgeStatusKind.Success, $"Loaded {fileName}");
+            return true;
+        }
+
+        _loadFailureMessage = LoadFailureMessage(fileName, reason);
+        _failedLoadFingerprint = ListFingerprint(_list);
+        SetStatus(EForgeStatusKind.Error, $"LOAD FAILED - {fileName} was not opened");
+        return false;
+    }
+
+    /// <summary>Which confirm (if any) the next Save needs, from the screen's current state.</summary>
+    internal ESaveGuard PendingSaveGuard()
+    {
+        bool failedLoadPending = _failedLoadFingerprint is not null;
+        bool untouchedSince = failedLoadPending && _failedLoadFingerprint == ListFingerprint(_list);
+        return EvaluateSaveGuard(_list.Units.Count, failedLoadPending, untouchedSince);
+    }
+
+    internal static ESaveGuard EvaluateSaveGuard(int unitCount, bool failedLoadPending, bool untouchedSince)
+    {
+        // The failed-load reason is the more specific story, so it outranks a bare empty list.
+        if (failedLoadPending && untouchedSince) return ESaveGuard.UnchangedAfterFailedLoad;
+        return unitCount == 0 ? ESaveGuard.EmptyList : ESaveGuard.None;
+    }
+
+    /// <summary>Structural fingerprint of the editable list - equal lists give equal strings. Used only to
+    /// answer "has anything changed since that load failed", so any faithful serialization will do.</summary>
+    internal static string ListFingerprint(BuilderList list) => JsonSerializer.Serialize(list, RuleJson.Options);
+
+    internal static string LoadFailureMessage(string fileName, string reason) =>
+        $"{fileName} was NOT loaded.\n\n{reason}\n\n"
+        + "The list on screen has not changed - it is still whatever was here before. Saving now would write "
+        + "THAT list, not the file you just picked.";
+
+    internal static string SaveGuardMessage(ESaveGuard guard, string fileName, string bookName, int unitCount)
+    {
+        string writing = unitCount == 0
+            ? $"an EMPTY {bookName} list"
+            : $"the {bookName} list on screen ({unitCount} unit{(unitCount == 1 ? "" : "s")})";
+        string lead = guard == ESaveGuard.UnchangedAfterFailedLoad
+            ? "Your last load did not take effect, and nothing has changed on screen since."
+            : "This list has no units in it.";
+        return $"{lead}\n\nSaving now writes {writing} to:\n    {fileName}\n\n"
+            + "If that file already holds an army you want to keep, this will overwrite it. Cancel unless "
+            + "writing this list is what you meant to do.";
+    }
+
+    private void SetStatus(EForgeStatusKind kind, string text)
+    {
+        _statusKind = kind;
+        _statusHint = text;
+    }
+
+    internal (EForgeStatusKind Kind, string? Text) Status => (_statusKind, _statusHint);
 
     // ── Pure formatting seams (unit-tested; ImGui itself is hand-verified) ──────────────────────────────
 
