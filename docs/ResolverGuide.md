@@ -163,7 +163,10 @@ is ACTION-granular (`PlacementHistory`): a group drop or Restart reverses as one
 formation ghost with its rotation, a drag-edit restores the pre-drag pose, and right-click during a
 pick-up cancels the pick-up. Movement/consolidation right-click still clears the last waypoint (one per
 model in group mode). The GUI auto-placer went with the Auto-place button (AI and CLI-EOF placement have
-their own, engine/CLI-side).
+their own, engine/CLI-side). Terrain placement (#346) reverses one step per right-click at BOTH of its
+steps — a frozen ghost un-freezes, a chosen template goes back to the piece list — and the panel now says
+so; it previously advertised **Esc**, which has opened the in-game menu since #248 and never cancelled a
+resolver, so the one line telling a stuck player how to get out named the wrong key.
 
 **Selecting one model of a unit is a click on that model** (single-mode movement and consolidation). The
 click and the hover highlight that advertises it read the same `ModelPicker.HitTest`; paint a highlight

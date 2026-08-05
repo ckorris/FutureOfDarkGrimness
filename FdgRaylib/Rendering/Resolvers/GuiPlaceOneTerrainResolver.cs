@@ -17,8 +17,14 @@ namespace FdgRaylib.Rendering.Resolvers;
 ///   AwaitingClick     — a chosen template's ghost follows the cursor. Outline green
 ///                       when the placement is legal (in-bounds, no overlap); red
 ///                       otherwise. Click commits to AwaitingConfirm.
-///   AwaitingConfirm   — frozen ghost; Confirm/Cancel panel appears.
-///                       Enter = Confirm; Esc = Cancel back to template selection.
+///                       Right-click / Backspace returns to TemplateSelection.
+///   AwaitingConfirm   — frozen ghost; Confirm/Cancel panel appears. Enter confirms;
+///                       right-click / Backspace un-freezes back to AwaitingClick;
+///                       the Cancel button returns to TemplateSelection.
+///
+/// <para>#346: Esc does NOT cancel this panel and never has — it opens the in-game menu (#248). The
+/// panel's own hint line used to say it did, which is the likeliest root of "it isn't clear how to
+/// cancel"; every hint now comes from <see cref="ResolverKeybinds"/> so it cannot go stale again.</para>
 /// </summary>
 public class GuiPlaceOneTerrainResolver
     : IStageResolver<PlaceOneTerrainRequest, TerrainPlacementResult>, IGuiResolver, IGuiCanvasOverlay,
@@ -155,7 +161,12 @@ public class GuiPlaceOneTerrainResolver
                 DrawGhost(dl, template.TerrainType, placedShape, valid: stillValid, frozen: true);
                 _ghostSnapshot = (placedShape, template.TerrainType, stillValid, true); // #280
 
-                if (ResolverHotkeys.IsBackPressed()) // #248: Backspace = back; Esc opens the in-game menu
+                // #248: Backspace = back; Esc opens the in-game menu. #346: right-click un-freezes too, so
+                // the "undo one step" gesture #343 made universal works at BOTH placement steps - the panel
+                // now advertises it here, and an advertised gesture has to work.
+                bool unfreeze = ResolverHotkeys.IsBackPressed()
+                    || (!io.WantCaptureMouse && ImGui.IsMouseClicked(ImGuiMouseButton.Right));
+                if (unfreeze)
                 {
                     lock (_lock) { _pendingCenter = null; }
                     pending = null;
@@ -268,9 +279,14 @@ public class GuiPlaceOneTerrainResolver
         if (pending.HasValue && selected.HasValue)
         {
             ImGui.TextWrapped($"Place {DescribeTemplate(request.Pool[selected.Value])} here?");
+            DrawPieceDetails(request.Pool[selected.Value]);   // #346
             DrawSelectedPieceDebtWarning(request, selected.Value);
             ImGui.TextDisabled($"Center: ({pending.Value.X:F1}\", {pending.Value.Y:F1}\")  Rotation: {rotationDegrees:F0} deg");
             ImGui.TextDisabled("Mouse wheel or R / Shift+R to rotate 15 deg.");
+            // #346: the way out, spelled out. Two different backs are reachable from here and the panel
+            // used to advertise neither, so a player who had clicked in the wrong spot had to guess.
+            DrawBackHint($"{ResolverKeybinds.Back.Hint} or right-click: pick a different spot.");
+            DrawBackHint("Cancel: back to the list of pieces.");
             ImGui.Spacing();
 
             // Primary: Confirm (accent + Enter). Cancel is de-emphasized.
@@ -288,9 +304,14 @@ public class GuiPlaceOneTerrainResolver
         else if (selected.HasValue)
         {
             ImGui.TextWrapped($"Placing: {DescribeTemplate(request.Pool[selected.Value])}");
+            DrawPieceDetails(request.Pool[selected.Value]);   // #346
             DrawSelectedPieceDebtWarning(request, selected.Value);
             ImGui.TextDisabled($"Rotation: {rotationDegrees:F0} deg (wheel or R / Shift+R = 15 deg)");
-            ImGui.TextDisabled("Hover to preview. Left-click to place. Right-click or Esc to switch template.");
+            ImGui.TextDisabled("Hover to preview. Left-click to place.");
+            // #346: was "Right-click or Esc to switch template" - Esc has opened the in-game menu since
+            // #248 and never cancelled this panel, so the one line telling you how to get out named a key
+            // that does something else entirely.
+            DrawBackHint($"Right-click or {ResolverKeybinds.Back.Hint}: back to the list of pieces.");
         }
         else
         {
@@ -299,6 +320,37 @@ public class GuiPlaceOneTerrainResolver
         }
 
         ImGui.End();
+    }
+
+    /// <summary>
+    /// #346: what the piece being placed actually does - its height (which is what decides whether it
+    /// blocks a sight line at all, and which nothing else in this panel shows) and one line per rules
+    /// effect its type confers. The panel used to show only the type NAME, which is the rules' vocabulary
+    /// rather than their consequence, and terrain is placed before anyone has met those rules in play.
+    /// The footprint is deliberately absent: <see cref="DescribeTemplate"/> already carries it on the
+    /// line above.
+    /// </summary>
+    private static void DrawPieceDetails(TerrainPieceEntry entry)
+    {
+        if (entry.HeightInches > 0f) ImGui.TextDisabled($"{entry.HeightInches:0.#}\" tall");
+
+        ImGui.PushTextWrapPos(0f);
+        foreach (string effect in TerrainEffectText.Effects(entry.TerrainType))
+        {
+            ImGui.TextDisabled($"- {effect}");
+        }
+        ImGui.PopTextWrapPos();
+    }
+
+    /// <summary>#346: a way-out hint, in the panel's normal text colour rather than TextDisabled - it is
+    /// the line a stuck player is hunting for, and dimming it is what hid it.</summary>
+    private static void DrawBackHint(string text)
+    {
+        ImGui.PushStyleColor(ImGuiCol.Text, new Vector4(0.62f, 0.80f, 0.95f, 1f));
+        ImGui.PushTextWrapPos(0f);
+        ImGui.TextUnformatted(text);
+        ImGui.PopTextWrapPos();
+        ImGui.PopStyleColor();
     }
 
     /// <summary>#301 - the yellow "this borrows from your next turn" line while a debt piece is being placed.</summary>
