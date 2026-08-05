@@ -92,6 +92,11 @@ public class GuiDefineMovementResolver
     // source only, and a frame-old value must never decide which model a click on the table selects.
     private IModel? _panelHoveredModel;
     private bool _stayInAdvance; // toggle — off by default, reset each Resolve
+    /// <summary>#333: the "models still on the start line" confirmation is up. While it is, it owns the
+    /// keyboard and the table — otherwise the same Enter press would answer the popup and re-press Done
+    /// behind it, and a stray click would drop a waypoint the player never saw them place.</summary>
+    private bool _donePopupOpen;
+    private const string DonePopupTitle = "Finish the move?";
     private bool _showTargeting = true; // toggle — on by default, persists across Resolve calls (covers both ranged + melee)
 
     // #162 tactical overlay hook: hover-anchored fields, band snap, pips. Null in headless / before
@@ -327,6 +332,7 @@ public class GuiDefineMovementResolver
             _manualOffsets.Clear();
             _formationCycle = null;
             _panelHoveredModel = null;
+            _donePopupOpen = false;
         }
         return tcs.Task;
     }
@@ -347,7 +353,10 @@ public class GuiDefineMovementResolver
         // Shared pointer/keyboard state and the current placement mode. Resolved before anything is
         // drawn so the hover highlight below and the click handler at the end of Draw agree.
         bool overTable = IsOverTable(io.MousePos.X, io.MousePos.Y);
-        bool wantInput = !io.WantCaptureMouse && !io.WantCaptureKeyboard;
+        // #333: the Done confirmation owns both input channels while it is up. Folded into wantInput here
+        // rather than checked at each key, so Backspace/R/Tab/G are muted by construction; the modal's own
+        // WantCaptureMouse would cover the clicks, but the table gate below says so explicitly too.
+        bool wantInput = !io.WantCaptureMouse && !io.WantCaptureKeyboard && !_donePopupOpen;
         bool advanceOnly = _stayInAdvance || ImGui.IsKeyDown(ImGuiKey.LeftShift) || ImGui.IsKeyDown(ImGuiKey.RightShift);
         bool group = _formationMode.IsGroup;
 
@@ -647,8 +656,10 @@ public class GuiDefineMovementResolver
         }
 
         // Group mode: rigidly rotate + translate the whole unit; one left-click commits a group step.
+        // #333: the confirmation takes the table with it - passing overTable = false is what mutes the
+        // group ghost's own commit / undo clicks, which read io.WantCaptureMouse rather than wantInput.
         if (group)
-            DrawGroupGhostAndInput(dl, io, request, pt, paths, overTable, wantInput,
+            DrawGroupGhostAndInput(dl, io, request, pt, paths, overTable && !_donePopupOpen, wantInput,
                 maxAdvance, maxRush, maxCharge, hasChargeBand, advanceOnly,
                 terrain, difficultActive, dangerousActive,
                 committedCrossedDifficult, committedCrossedDangerous, bindings);
@@ -712,7 +723,7 @@ public class GuiDefineMovementResolver
         _snapshotRequest = request;
 
         // 4) Mouse / keyboard input (single mode — group mode handles its own clicks above)
-        if (!group && overTable && !io.WantCaptureMouse)
+        if (!group && overTable && !io.WantCaptureMouse && !_donePopupOpen)
         {
             // Left-click: if it lands on a model's footprint, select that model (#295 -- the only way
             // to switch models now that Space commits); otherwise place a waypoint for the selected model at
@@ -1316,19 +1327,35 @@ public class GuiDefineMovementResolver
         if (cohesion.FarthestPair.HasValue)
             issues.Add($"Cohesion: two models would be {cohesion.FarthestPair.Value.dist:F2}\" apart (max {FormatInches(GameWideConstants.MAX_MODEL_DISTANCE_FROM_ALL_OTHER_MODELS_INCHES)}\")");
 
+        // #333: who is still standing on the start line, in the roster's own order, so the confirmation
+        // names the same "Model N" the greyed rows above do.
+        var livingModels = LivingModels(request);
+        var unmovedOrdinals = ModelRoster.UnmovedOrdinals(
+            livingModels.Select(m => pt.GetTotalDistanceMoved(m)).ToList());
+
         bool canSubmit = issues.Count == 0;
         // Primary: Done -- larger, accented, commits on click or the Confirm key (gated on a valid move).
+        // Muted while the confirmation is up (#333), so the same Enter press cannot both answer the popup
+        // and re-press Done behind it.
         bool donePressed = ResolverButtons.Primary("Done",
-            new Vector2(fullW, ResolverPanelLayout.OptionRowHeight()), enabled: canSubmit);   // #298
+            new Vector2(fullW, ResolverPanelLayout.OptionRowHeight()),
+            enabled: canSubmit && !_donePopupOpen);   // #298
         if (ImGui.IsItemHovered(ImGuiHoveredFlags.AllowWhenDisabled))
             ImGui.SetTooltip(canSubmit
                 ? $"Commit this move and continue. {ResolverKeybinds.Confirm.Parenthetical}"
                 : string.Join("\n", issues));
         if (donePressed)
         {
-            Complete(tcs, results);
-            ImGui.End();
-            return;
+            // #333: a move that leaves models on the start line is nearly always one the player forgot -
+            // single mode moves one model at a time, and the roster is the only place the stragglers show.
+            // Deliberate ones exist (screening, a model boxed in), so this asks rather than blocks.
+            if (unmovedOrdinals.Count > 0) _donePopupOpen = true;
+            else
+            {
+                Complete(tcs, results);
+                ImGui.End();
+                return;
+            }
         }
 
         // Back: abandon the move entirely. Distinct from "Skip all", which commits a 0" move and still
@@ -1386,7 +1413,89 @@ public class GuiDefineMovementResolver
             else if (_selectedModel != null) pt.ClearModelSteps(_selectedModel);
         }
 
+        if (DrawDoneConfirmation(request, pt, unmovedOrdinals, livingModels.Count, tcs))
+        {
+            ImGui.End();
+            return;
+        }
+
         ImGui.End();
+    }
+
+    /// <summary>
+    /// #333: the "models are still on the start line" confirmation. Two shapes, because the two mistakes
+    /// are different: leaving SOME models behind costs their move for the activation and is usually a
+    /// forgotten model, while leaving them ALL behind spends the unit's Move action on nothing at all — and
+    /// that one is worth saying out loud, since Back (not Done) is what keeps the action. Names the models
+    /// rather than asking an abstract "are you sure?", the same way #319's Done-shooting popup names the
+    /// weapons. Returns true when the resolver has completed (the caller must stop drawing the panel).
+    ///
+    /// <para>Mouse-only, like #319's: the Confirm key is muted while this is up, so a player who commits by
+    /// keyboard cannot blow straight through the question they were just asked.</para>
+    /// </summary>
+    private bool DrawDoneConfirmation(DefineMovementPathRequest request, PathTemplate pt,
+        List<int> unmovedOrdinals, int livingCount,
+        TaskCompletionSource<CancellableResult<List<ModelMoveEntry>>> tcs)
+    {
+        if (!_donePopupOpen) return false;
+
+        // Keep the modal request alive across frames (OpenPopup is consumed by the first BeginPopupModal).
+        if (!ImGui.IsPopupOpen(DonePopupTitle)) ImGui.OpenPopup(DonePopupTitle);
+        var center = ImGui.GetMainViewport().GetCenter();
+        ImGui.SetNextWindowPos(center, ImGuiCond.Appearing, new Vector2(0.5f, 0.5f));
+        if (!ImGui.BeginPopupModal(DonePopupTitle, ImGuiWindowFlags.AlwaysAutoResize)) return false;
+
+        string unitName = request.UnitDataBinding.GetValue().Name;
+        bool nobodyMoved = unmovedOrdinals.Count >= livingCount;
+
+        if (nobodyMoved)
+        {
+            ImGui.TextWrapped($"No model in {unitName} has moved.");
+        }
+        else
+        {
+            ImGui.TextWrapped($"{unmovedOrdinals.Count} of {livingCount} models in {unitName} "
+                + $"{(unmovedOrdinals.Count == 1 ? "has" : "have")} not moved:");
+            foreach (int ordinal in unmovedOrdinals)
+                ImGui.BulletText($"Model {ordinal}");
+        }
+
+        ImGui.Spacing();
+        ImGui.PushStyleColor(ImGuiCol.Text, new Vector4(0.85f, 0.75f, 0.30f, 1f));
+        ImGui.TextWrapped(nobodyMoved
+            ? "Finishing now spends the unit's Move action and leaves it exactly where it stands."
+            : "Finishing now leaves them where they stand for the rest of this activation.");
+        ImGui.PopStyleColor();
+
+        if (nobodyMoved)
+        {
+            ImGui.PushStyleColor(ImGuiCol.Text, new Vector4(0.45f, 0.80f, 0.45f, 1f));
+            ImGui.TextWrapped(request.AllowCancel
+                ? "The unit will not count as having moved this round. To keep the Move action itself, "
+                  + "close this and use Back instead."
+                : "The unit will not count as having moved this round.");
+            ImGui.PopStyleColor();
+        }
+
+        ImGui.Spacing();
+        float confirmH = ResolverPanelLayout.OptionRowHeight();
+        if (ImGui.Button("Finish the move", new Vector2(160f, confirmH)))
+        {
+            ImGui.CloseCurrentPopup();
+            ImGui.EndPopup();
+            // Rebuilt here rather than captured at the click: the popup can stand for many frames, and the
+            // committed path is the one thing that must be read at the instant it is submitted.
+            Complete(tcs, pt.GetResultsAsList(EPathFacingDerivation.TravelDirection));
+            return true;
+        }
+        ImGui.SameLine();
+        if (ImGui.Button("Keep moving", new Vector2(160f, confirmH)))
+        {
+            ImGui.CloseCurrentPopup();
+            _donePopupOpen = false;
+        }
+        ImGui.EndPopup();
+        return false;
     }
 
     /// <summary>#326: this model's roster numbers — how far it has gone against its OWN budget (#093: a
