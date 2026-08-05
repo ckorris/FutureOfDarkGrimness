@@ -544,7 +544,7 @@ public class ArmyForgeScreenTests
     //          the screen's untouched startup default over a path the user picked for a real army.
 
     /// <summary>A plain (Army-Builder-shaped) army: no embedded selections/book, exactly the shape every
-    /// tracked <c>armies/*3k.fdgarmy</c> has, and the shape the Forge rejects.</summary>
+    /// tracked <c>armies/</c> list had before #357 retrofitted them, and the shape the Forge rejects.</summary>
     private static BuiltArmyFile PlainArmy() => new() { Selections = null, Book = null };
 
     [Test]
@@ -552,7 +552,7 @@ public class ArmyForgeScreenTests
     {
         var screen = new ArmyForgeScreen(DemoBook.Build());
 
-        Assert.That(screen.TryAdopt(PlainArmy(), "Eternal Dynasty 3k.fdgarmy", null),
+        Assert.That(screen.TryAdopt(PlainArmy(), "3k - Eternal Dynasty.fdgarmy", null),
             Is.EqualTo(ELoadOutcome.Rejected));
         Assert.That(screen.Status.Kind, Is.EqualTo(EForgeStatusKind.Error));
         Assert.That(screen.Status.Text, Does.Contain("LOAD FAILED"));
@@ -561,10 +561,10 @@ public class ArmyForgeScreenTests
     [Test]
     public void LoadFailureMessage_NamesTheFile_AndWarnsWhatSaveWouldWrite()
     {
-        string message = ArmyForgeScreen.LoadFailureMessage("Eternal Dynasty 3k.fdgarmy",
+        string message = ArmyForgeScreen.LoadFailureMessage("3k - Eternal Dynasty.fdgarmy",
             ArmyForgeScreen.NoEmbeddedBookReason);
 
-        Assert.That(message, Does.Contain("Eternal Dynasty 3k.fdgarmy"));
+        Assert.That(message, Does.Contain("3k - Eternal Dynasty.fdgarmy"));
         Assert.That(message, Does.Contain("NOT loaded"));
         Assert.That(message, Does.Contain("Army Builder"));
         // The sentence the whole item exists for: the screen did not change, so Save writes the OLD list.
@@ -580,7 +580,7 @@ public class ArmyForgeScreenTests
         var screen = new ArmyForgeScreen(DemoBook.Build());
         Assert.That(screen.PendingSaveGuard(), Is.EqualTo(ESaveGuard.EmptyList), "empty startup list");
 
-        screen.TryAdopt(PlainArmy(), "Eternal Dynasty 3k.fdgarmy", null);
+        screen.TryAdopt(PlainArmy(), "3k - Eternal Dynasty.fdgarmy", null);
 
         Assert.That(screen.PendingSaveGuard(), Is.EqualTo(ESaveGuard.UnchangedAfterFailedLoad));
     }
@@ -596,7 +596,7 @@ public class ArmyForgeScreenTests
 
         Assert.That(screen.PendingSaveGuard(), Is.EqualTo(ESaveGuard.None), "an edited list saves freely");
 
-        screen.TryAdopt(PlainArmy(), "Eternal Dynasty 3k.fdgarmy", null);
+        screen.TryAdopt(PlainArmy(), "3k - Eternal Dynasty.fdgarmy", null);
 
         Assert.That(screen.PendingSaveGuard(), Is.EqualTo(ESaveGuard.UnchangedAfterFailedLoad));
     }
@@ -606,7 +606,7 @@ public class ArmyForgeScreenTests
     {
         var screen = new ArmyForgeScreen(DemoBook.Build());
         screen.AddToList("warriors");
-        screen.TryAdopt(PlainArmy(), "Eternal Dynasty 3k.fdgarmy", null);
+        screen.TryAdopt(PlainArmy(), "3k - Eternal Dynasty.fdgarmy", null);
 
         screen.AddToList("gunners"); // deliberate edit - the user now knows what is on screen
 
@@ -618,7 +618,7 @@ public class ArmyForgeScreenTests
     {
         var screen = new ArmyForgeScreen(DemoBook.Build());
         screen.AddToList("warriors");
-        screen.TryAdopt(PlainArmy(), "Eternal Dynasty 3k.fdgarmy", null);
+        screen.TryAdopt(PlainArmy(), "3k - Eternal Dynasty.fdgarmy", null);
 
         // A Forge-authored file (embedded selections + book) is adopted, so the screen holds what it says.
         Assert.That(screen.TryAdopt(screen.Compile(), "Warband.fdgarmy", null), Is.EqualTo(ELoadOutcome.Adopted));
@@ -643,8 +643,8 @@ public class ArmyForgeScreenTests
     public void SaveGuardMessage_NamesTheTargetFileAndWhatWouldBeWritten()
     {
         string stale = ArmyForgeScreen.SaveGuardMessage(ESaveGuard.UnchangedAfterFailedLoad,
-            "Eternal Dynasty 3k.fdgarmy", "Alien Hives", 0);
-        Assert.That(stale, Does.Contain("Eternal Dynasty 3k.fdgarmy"));
+            "3k - Eternal Dynasty.fdgarmy", "Alien Hives", 0);
+        Assert.That(stale, Does.Contain("3k - Eternal Dynasty.fdgarmy"));
         Assert.That(stale, Does.Contain("did not take effect"));
         Assert.That(stale, Does.Contain("EMPTY Alien Hives list"));
         Assert.That(stale, Does.Contain("overwrite"));

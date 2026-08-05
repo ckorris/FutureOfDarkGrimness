@@ -95,7 +95,7 @@ pair solves to two linked entries; name normalization). 15/15 in that fixture.
 - **Hand-authored armies remain out of reach when their unit names are not in any bundled book** - the
   solver needs a roster entry to search. Nothing in `armies/` hit this, but a freeform list would.
 - **No GUI hand-verify** that a retrofitted file actually opens in the Forge - only the engine round-trip
-  and the drift measure were exercised. Repro: launch the Forge, Load `armies/Titan Lords 3k.fdgarmy`.
+  and the drift measure were exercised. Repro: launch the Forge, Load `armies/3k - Titan Lords.fdgarmy`.
 
 ## Outcome
 

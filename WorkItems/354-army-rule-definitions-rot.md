@@ -21,7 +21,7 @@ saved before those commits.
 Reproduced:
 
 ```
-$ dotnet run --project FdgRaylib/FdgRaylib.csproj -- --headless --army "armies/Saurian Starhost 3k.fdgarmy"
+$ dotnet run --project FdgRaylib/FdgRaylib.csproj -- --headless --army "armies/3k - Saurian Starhost.fdgarmy"
 [rules] Skipping unimplemented special rule 'Heavy Impact(3)' on unit 'Ripjawdactyl Riders'.
 ```
 
@@ -31,14 +31,14 @@ $ dotnet run --project FdgRaylib/FdgRaylib.csproj -- --headless --army "armies/S
 
 | List | Faction | Inert |
 |---|---|---|
-| `Saurian Starhost 3k.fdgarmy` (root + `armies/`) | Saurian Starhost | Heavy Impact |
-| `armies/Eternal Dynasty 3k.fdgarmy` | Eternal Dynasty | Vengeance |
-| `armies/Alien Hives 2k - Horde Melee.fdgarmy` | Alien Hives | Piercing Growth |
-| `armies/DAO Union 3k.fdgarmy` | DAO Union | Ambush Beacon |
-| `armies/Goblin Reclaimers 3k.fdgarmy` | Goblin Reclaimers | Instinctive |
+| `3k - Saurian Starhost.fdgarmy` (root + `armies/`) | Saurian Starhost | Heavy Impact |
+| `armies/3k - Eternal Dynasty.fdgarmy` | Eternal Dynasty | Vengeance |
+| `armies/2k - Alien Hives - Horde Melee.fdgarmy` | Alien Hives | Piercing Growth |
+| `armies/3k - DAO Union.fdgarmy` | DAO Union | Ambush Beacon |
+| `armies/3k - Goblin Reclaimers.fdgarmy` | Goblin Reclaimers | Instinctive |
 | `armies/High Elf Fleets 2k - Caster-Heavy.fdgarmy` | High Elf Fleets | Piercing Spotter |
-| `armies/Human Defense Force 2k - Tough and Vehicle-Heavy.fdgarmy` | Human Defense Force | Extended Buff Range, Mobile Artillery |
-| `armies/Robot Legions 2k - Mixed.fdgarmy` | Robot Legions | Casting Buff |
+| `armies/2k - Human Defense Force - Tough and Vehicle-Heavy.fdgarmy` | Human Defense Force | Extended Buff Range, Mobile Artillery |
+| `armies/2k - Robot Legions - Mixed.fdgarmy` | Robot Legions | Casting Buff |
 
 The `dist/` builds cut 2026-08-03 ship the same stale armies.
 
@@ -100,9 +100,9 @@ including the ASCII pin.
 
 Verified: engine 2842 green, app 1086 green, `dotnet build` clean, default headless smoke
 exits 0. Both reported armies load with **zero** rule drops and play to a result:
-`--headless --army "armies/Saurian Starhost 3k.fdgarmy"` and the Eternal Dynasty 3k list.
+`--headless --army "armies/3k - Saurian Starhost.fdgarmy"` and the Eternal Dynasty 3k list.
 
-**Residual, not a bug in this fix:** the reported `armies/Saurian Starhost 3k.fdgarmy` bought
+**Residual, not a bug in this fix:** the reported `armies/3k - Saurian Starhost.fdgarmy` bought
 "Replace all Energy Shields and CCWs -> Shock Pistol", so its Ripjawdactyl Riders carry no
 melee weapon and never charge - Heavy Impact resolves and attaches now, but that list can
 never trigger it. A `--trace-rules` run shows them only ever as the Subject of someone else's
