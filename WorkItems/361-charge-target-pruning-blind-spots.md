@@ -105,21 +105,29 @@ enumeration (reachable charges keep their pruning slot), and routed-charge conta
 (circumscribed goal placement + validated NudgeToContact - fighting charges reach the scorer AS
 charges). The reported exhibit went from "slid 6 inches west for nothing" to "charges the APC it
 was standing next to". Four pins, each proved red; suite 2892; solo D1 bit-identical throughout;
-pool aggregate 85.42-85.52% vs the 84.39% baseline with 0 faults. Recorded, not built: the
-difficult-terrain circumscribed conservatism, and the all-enemies gap grading mislabel (see
-Notes).
+pool aggregate 85.42-85.52% vs the 84.39% baseline with 0 faults. Same-day follow-up (Chris:
+"pretty wrong - how hard to fix?"): the all-enemies gap grading mislabel fixed too - see the
+follow-up note. Recorded, not built: the difficult-terrain circumscribed conservatism.
 
 ## Notes
 
+- 2026-08-05 (last): the all-enemies grading mislabel fixed as a same-day follow-up (engine
+  `1183f55`). BuildCharge's feasibility gap now measures against the TARGET's models only
+  (new `MovementPlanner.UnitFootprints`, shared with NudgeToContact); the construction
+  machinery (refine, ladder) keeps the all-enemies lists, which are what make the move legal.
+  The mislabel was worse than cosmetic: a charge that dead-ended in contact with a bystander
+  was declared for real and the stage's #312 reach check rejected it at resolve time (#216
+  degradation class). Pin `ChargeGrade_DeadEndOnABystander_IsNotAReachableCharge` proved red
+  (bystander one base-width in front of the target - the pre-fix grade was a playable
+  Charge). Suite 2893/2893; D1 bit-identical; benchmarked on Chris's melee proxy (Hives as
+  Tactician vs the whole pool, 400 games, full-pool baseline rows from the facet-4 run):
+  90.38% vs 90.00%, 0 faults, Hives mirror 78 -> 85 - the melee-densest cell, where a
+  false charge declaration costs a whole activation.
 - 2026-08-05 (later): facet 4 built - the "routed charges never refine to contact" follow-up
   graduated from a recorded observation to the fourth facet after Chris confirmed the charge
-  was the expected pick. Remaining recorded observations, NOT built:
+  was the expected pick. Remaining recorded observation, NOT built:
   - Difficult-terrain detection also uses the circumscribed radius now - rect-based units get
     the 6" cap slightly more often than the true footprint requires (conservative, legal).
-  - Charge feasibility still grades `gap` against ALL enemies (`MinEnemyGap(move,
-    enemyFootprints)`), so a charge that dead-ends 0.2" from a BYSTANDER could in principle
-    grade Reachable; NudgeToContact measures target-only, which masks the common case, but the
-    grading itself is a latent mislabel.
   - The `BaseRadiusInches = 0.5` aside filed earlier was a misreading of the save (that value
     was another model's); the Hive Lord's base data is correct - the bug was the planner's use
     of the inscribed approximation, not the import.
