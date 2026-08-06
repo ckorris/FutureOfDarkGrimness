@@ -15,6 +15,30 @@ candidate. Pinned by a scenario reproducing the source save's corner-wall setup.
 
 ## Notes
 
+- 2026-08-05 (facet 3 - the mirror): **incoming fire now respects the same walls** (engine
+  7498717). `AttackContext.SightBlocked` generalized to `SightFactor` (float, default 1 = clear,
+  so every caller that supplies no geometry keeps the old distance-only estimate). Offense still
+  passes 0 for a cut lane - that shot would be taken FROM the endpoint being priced, so blocked
+  means no shot. Every incoming estimate passes `TacticianWeights.BlockedThreatShare` (0.4)
+  instead: `Score`'s retaliation, the projected-threat forecast (sighted from the PROJECTED
+  position - that is the position the term prices from), `BestAlternativeTargetValue` (must move
+  with the numerator or the share compares a wall-discounted "us" to a see-through-walls "them"),
+  and `WantsDisembark`'s transport bail-out check. **Discount, not zero**: retaliation is a
+  NEXT-activation threat and the shooter moves before it shoots, so a cut lane costs it a
+  repositioning move it may not have - a hard zero would invent perfect hard cover and teach the
+  whole army to hug walls. 0.4 is a stated prior (the generator's own arc search shows a clear
+  lane is usually findable within one move), tunable like any weight via `--weights`.
+  Melee threat deliberately untouched: a charge needs a path, not a sight line.
+  - Pins: `TacticianLineOfSightTests` now 7 - partial factor scales linearly, Indirect ignores
+    both 0 and partial factors, and `Score_WallShadowEndpoint_PricesIncomingFireBelowOpenGround`
+    (two endpoints equidistant from a gunline we cannot answer; the covered one must price safer,
+    and must still price BELOW zero - cover is worth something, not everything).
+  - Verified: suite 2900 green; full `dotnet build`; headless smoke exit 0; scenario
+    `363-wall-shadow-engage` byte-identical behavior (side-step 0.3708, volley wipes the unit,
+    Hold-in-shadow 0.0000 - the Targets carry no guns, so nothing to discount); save replay of
+    the rewound BattleBrothers state picks the same RushObjective winner (0.2500), with the
+    wall-shadow candidates all pricing up: the old phantom advance -0.1789 -> -0.1477, the engage
+    endpoints behind the wall -0.0758/-0.0789. The cowering bias in that table is gone.
 - 2026-08-05 (later): facets 1+2 implemented + verified (engine 8c875a7). AttackContext gains
   `SightBlocked` (default false - every other call site unchanged); EstimateShooting skips
   LoS-bound weapons when set, exempting Indirect via `SightRuleQueries.IgnoresTerrain` per
@@ -54,11 +78,15 @@ candidate. Pinned by a scenario reproducing the source save's corner-wall setup.
   scorer's centroid altitude everywhere else. Cheap (~candidates x enemies segments), and
   the approximation errs the safe way: it may undervalue a marginal per-model shot, but it
   can no longer walk into a wall's shadow expecting one.
-- **Deferred facet (recorded, not silently cut): retaliation/projected-threat symmetry.**
-  Incoming-fire estimates (`Score`'s retaliation term, projected threat, escort valuation)
-  still see through walls, so after this item threat is overestimated exactly where cover
-  is best - a mild cowering bias. Fixing it flips sign on a much broader behavior surface
-  and deserves its own benchmark pass.
+- ~~**Deferred facet: retaliation/projected-threat symmetry.**~~ DONE 2026-08-05 (facet 3,
+  above). The "escort valuation" named in the original deferral turned out to be melee-only
+  (`ScreenLane` prices the ward's exposure with `EstimateMelee`), so it needs no sight gate.
+- **Still open (recorded, not silently cut): melee threat reaches through IMPASSIBLE terrain.**
+  `MeleeThreatReach` / the charge-threat clamps are straight-line, so an enemy that would have
+  to walk the long way around a solid block still prices as if it could charge through it. Same
+  route-vs-straight-line family as #264's approach fix, not a sight problem - left for its own
+  slice. `DeploymentMatchup`'s estimate stays distance-only on purpose: at deployment there are
+  no positions yet to draw a line between.
 
 ## Outcome
 
