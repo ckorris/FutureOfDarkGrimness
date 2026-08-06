@@ -312,6 +312,17 @@ does not want to do silently. Separate call from anything here.
 
 ## Notes (newest first)
 
+- 2026-08-06 (slice 2a SHIPPED). `MeleeThreatTotal()` now skips melee enemies that could not reach
+  us this activation - `MeleeThreatReach(enemy, self) < Distance(now, enemyCentroid) -
+  RushDistance(self) - 1`, mirroring the numerator's reach test against the whole candidate
+  envelope rather than one endpoint. Endpoint-independent, so the per-activation cache is
+  unchanged. **Pin 17 was verified to FAIL on the pre-fix binary before being accepted**: corridor
+  plus three sword squads massed on x=25, z=42..48, shadowed+charged scored **0.1202** against
+  open+safe **0.1052** - the habit flipping exactly the decision case 14 exists to protect - and
+  the correct order returns with the fix. Pins 14/15/16 stayed green throughout (they have one
+  melee enemy, which is why they never saw this). Suite 2911 green, full build, headless smoke
+  exit 0.
+
 - 2026-08-06 (audit before the Tier 2 handoff; Chris agreed with all findings). (1) The melee
   denominator dilutes against melee-heavy armies - promoted to slice 2a, see the handoff plan.
   (2) The centroid ray is all-or-nothing PER ENEMY (one test decides a whole unit's mass
