@@ -274,9 +274,9 @@ screen instead of emergent from six weights.
 | 5 | 12" progress exposed vs 4" shadowed | picks exposed | 1 |
 | 6 | objective reachable, expect to lose 2 of 10 | goes anyway | 2 |
 | 7 | expected wipeout | balks | 2 |
-| 8 | same casualties, full strength vs pushed past half | only the second balks | 2 |
-| 9 | same scenario, quality 3+ vs 5+ | 5+ balks first | 2 |
-| 10 | lethal scenario, round 1 vs round 4 | balks, then goes | 2 |
+| 8 | same volley, full strength vs pushed past half | only the second balks (wipeout proximity, since 2c) | 2 |
+| 9 | ~~same scenario, quality 3+ vs 5+~~ | CUT in 2c: sub-wipeout discrimination, pool-incompatible | - |
+| 10 | lethal trade, round 1 vs round 4 | veto price 0.354 -> exactly 0 (price pin since 2c) | 2 |
 | 11 | good shot available vs cover with no shot | takes the shot | 1 |
 | 12 | 2 of 10 left, surrounded, objective in reach | rushes it, does not freeze | 2 |
 | 13 | one enemy engaged, others on a flank | prefers the spot exposed only to the target | 1 |
@@ -285,6 +285,7 @@ screen instead of emergent from six weights.
 | 16 | melee reaches BOTH sides equally | still prefers the shadowed one | 1c |
 | 17 | corridor + a distant melee blob reaching neither endpoint | shadowed+charged still loses; 14/15/16 unchanged | 2a |
 | 18 | cheap chaff vs a gunline / cheap body on a charge lane | still tarpits, still screens (existing pins, kept green by netting) | 2b |
+| 19 | two converging gunlines vs five small squads | convergence vetoes, massed focus does not | 2c |
 
 Pins 4 and 5 jointly DEFINE `MoveCoverHabit`. Pin 3 means the change provably cannot disturb the
 existing bench pool, which demotes the 640-game gate to a formality run once at the end.
@@ -320,6 +321,39 @@ changing it changes how every generated map plays, which `DefaultTerrainPool`'s 
 does not want to do silently. Separate call from anything here.
 
 ## Notes (newest first)
+
+- 2026-08-06 (slice 2c BUILT - the wipeout-only veto; pool run pending, acceptance gated on it).
+  Implemented exactly as proposed in the review note below, with two deviations the pins forced,
+  both in the good direction:
+
+  1. **Pin 8 SURVIVES.** Predicted cut, but "same volley, only the unit pushed past half strength
+     balks" holds under the veto for a plainer reason than the morale knee: five remaining wounds
+     are twice as easy to WIPE as ten, so wipeout proximity tracks being worn. The behaviour Chris
+     asked for outlived the mechanism built for it. Only pin 9 (quality scaling) is actually cut -
+     a 3+/5+ distinction exists only below wipeout, and sub-wipeout pricing is what the pool
+     forbids. Its tombstone comment stays in the fixture.
+  2. **Pin 10 became a price pin, not a flip pin.** In an objective-free scene, any gunline big
+     enough to wipe the unit is already priced negative by retaliation ungated, so no scene exists
+     where "ungated goes AND the veto fires" - recorded rather than hidden. The pin now asserts
+     the veto's PRICE on the lethal advance: 0.354 in round 1 decaying to EXACTLY 0.000 in round 4
+     (bit-for-bit, since the attrition half is (total-round)/total and there is no marker). Round
+     decay emergent from the horizon, never a scalar - same mechanism, sharper assertion.
+
+  Pin 19 now pins the estimator's two veto-relevant properties: two 28-model gunlines CONVERGING
+  (7 wounds each, 10.5 under decay) must veto when neither alone does - kills Max - and five
+  12-model squads whose plain SUM reads 15 must stay silent (decay reads 5.8) - kills the sum.
+
+  Calibration (Calibrate prints it): W floor 0.8 - below it pin 8's worn balk never appears; at
+  0.5 only a literal full-wipe volley registers; W 0.4 cannot satisfy pin 7 at all. No pin-driven
+  ceiling: thresholds barely move with W (38 -> 36 guns across 0.8 -> 1.5) because the decision
+  comes from P reaching 1, not the weight - the veto property working. **W = 1.0**, a margin above
+  the floor; the pool run referees the ceiling. Deleted with the reshape: `LethalityShakenSeverity`,
+  the shoot/melee split, `KneeSmearFraction`, the Shaken auto-fail special case (all knee
+  machinery; the GF v3.5.1 rout-is-melee-only finding stays recorded in these notes).
+
+  Engine `24ca1b0` (absorbs the ranked-decay experiment the veto builds on). Suite 2917 green,
+  full build, headless smoke exit 0. Acceptance: ONE 640-game pool run, within ~1 sigma of the
+  85.39% gate-off baseline, else revert 2b+2c and keep 2a. No further redesigns either way.
 
 - 2026-08-06 (Tier 2 review on Fable - PROPOSED next step, awaiting sign-off; nothing built). The
   full-history review sharpened the post-mortem into a structural claim: **in an argmax over one
