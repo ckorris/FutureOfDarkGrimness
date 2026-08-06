@@ -172,6 +172,15 @@ candidate. Pinned by a scenario reproducing the source save's corner-wall setup.
 
 ## Outcome
 
+**SUPERSEDED IN PART, 2026-08-06: facet 3 was replaced by #365 the day after it shipped.** Facets
+1+2 (offense-side exact LoS, the generator's clear-lane arc search) stand and are still the fix for
+the phantom volley. Facet 3 - the threat-side mirror - was the wrong shape: a boolean LoS test
+against where a shooter stands NOW, used to price what it does AFTER it moves, which put a cliff in
+the score. `BlockedThreatShare` is deleted; threat is priced through walls again and cover earns a
+bounded habit bonus instead. The tuning datum below is what exposed it (both 0.2 and 0.4 were
+defensible, which is the signature of tuning the height of a cliff). See
+`WorkItems/365-cover-as-a-habit.md`.
+
 **Closed 2026-08-06.** All three facets shipped and gated. The Tactician no longer prices a shot
 it cannot take, no longer fails to find the firing position two steps to the side, and no longer
 treats a wall as if it were made of glass when the guns point the other way.

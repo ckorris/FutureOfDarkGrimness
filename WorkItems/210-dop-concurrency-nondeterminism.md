@@ -40,6 +40,17 @@ game by game.
 
 ## Notes (newest first)
 
+**2026-08-06 (later) - the bit-identical repeat below does NOT mean the race narrowed; it means the
+BINARY was the same.** While gating #365, two builds differing only by a hoist of a duplicated
+`HasLineOfSight` call - verified behaviour-neutral - were run on the same matchup (Alien Hives vs
+Orks, tactician vs solorules, seeds 1000+, 10 games): at DOP 16 they differed on **8 of 10 games**;
+at `--dop 1` both produced hash `A5236375796FBCDA`. So determinism at DOP 16 is a PER-BINARY
+property on this box, and the 640-game repeat below (same binary, bit-identical) is consistent with
+that rather than evidence of a narrowed race. Practical rule for gates: any A/B rebuilds, therefore
+any A/B carries schedule noise - compare paired game-by-game, never by hash equality. It also gives
+whoever picks this up a much cheaper repro than the 20-game tactician cell: one neutral refactor,
+one matchup, DOP 16 vs DOP 1.
+
 **2026-08-06 — a 640-game Tactician-vs-SoloRules pool repeat came back BIT-IDENTICAL at DOP 16**
 (#363's gate: control vs a control REPEAT of the same build, run sequentially ~50 minutes apart on
 a 32-core box, 8-army pool x 64 ordered matchups x 10 games, seeds from 1000, Realistic dice).
