@@ -1,6 +1,6 @@
 # 357 - Retrofit already-saved armies so the Forge can reopen them
 
-**Status**: implemented 2026-08-05, awaiting GUI hand-verify
+**Status**: CLOSED 2026-08-05 - hand-verified in the running app
 **Related**: #356 (Save As carries the session going forward - this is its retroactive half), #307 (the
 dead end being removed), #107 (combined pairs), #323 (starved replace, which the bound had to learn),
 #218/#219 (why price cannot be a match criterion)
@@ -94,9 +94,18 @@ pair solves to two linked entries; name normalization). 15/15 in that fixture.
   search space. Reported unsolved.
 - **Hand-authored armies remain out of reach when their unit names are not in any bundled book** - the
   solver needs a roster entry to search. Nothing in `armies/` hit this, but a freeform list would.
-- **No GUI hand-verify** that a retrofitted file actually opens in the Forge - only the engine round-trip
-  and the drift measure were exercised. Repro: launch the Forge, Load `armies/3k - Titan Lords.fdgarmy`.
-
 ## Outcome
 
-_(written when the item closes)_
+**Closed 2026-08-05.** Owner hand-verified in the running app: `armies/3k - Titan Lords.fdgarmy` - a file
+that carried no editable session until this ran - loads correctly in the Forge. That was the one open
+verification; the whole corpus is now reopenable (22 of 22).
+
+Engine `ed6d997`, superproject `c71f68f`. Both pushed to origin/master 2026-08-05.
+
+Deliberately left undone, recorded here rather than dropped:
+- **Asymmetric combined pairs** (the two halves upgraded differently). None exist in the corpus and solving
+  them would square the search space; they report unsolved rather than being guessed at.
+- **Armies whose unit names are in no bundled book** stay unreachable - the solver needs a roster entry to
+  search against. Nothing in `armies/` hit this; a freeform hand-authored list would.
+- **No `--refresh-army-rules`** (#354's residual): this attaches sessions, it does not re-stamp the frozen
+  rule definitions in the 10 lists pinning superseded copies.
