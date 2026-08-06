@@ -19,6 +19,37 @@ Give the user (and future testers) a way to report a bug from inside the app rat
 - 2026-08-05: **Abuse posture** (same philosophy as #271): ~1MB compressed body cap, decompressed-size cap, per-IP min-interval rate limit, and a hard total-storage cap that REJECTS new reports rather than evicting stored ones (a flood must not delete real reports). Free-tier only; storage in a second SQLite DO class, no R2 (R2 wants a payment card).
 - 2026-08-05: **Build stamp folded in**: `InformationalVersion` stamped by `build-dist.sh` from git; local builds report a dev version. Without it reports can't be tied to a binary.
 
+## Next steps (deploy + end-to-end test) - all that remains to close this item
+All from `~/Projects/fdg-raylib_Green/tools/list-server` (needs the Node 22 installed 2026-08-05):
+
+1. Deploy the Worker with the new /reports endpoints:
+   ```bash
+   npx wrangler deploy
+   ```
+2. One-time: set the admin token (generate with `openssl rand -hex 24`, keep it in your password manager - it is what fetch-reports.sh authenticates with):
+   ```bash
+   npx wrangler secret put ADMIN_TOKEN
+   ```
+3. Prod smoke (registers + cleans up its own test entries, safe on the live server):
+   ```bash
+   ./smoke.sh https://fdg-list-server.ckorris.workers.dev <admin-token>
+   ```
+4. End-to-end test: play any game, Esc -> Report a Bug -> type a fake bug -> Send.
+   Expect "Report sent. Thank you!". Then fetch it:
+   ```bash
+   ADMIN_TOKEN=<admin-token> ./fetch-reports.sh https://fdg-list-server.ckorris.workers.dev
+   ```
+   The report lands in `tools/list-server/reports/<timestamp>-<id>.json` (description + log +
+   embedded save). Add `--delete` to clear fetched reports off the server.
+5. Then: write the Outcome here, tick the index line, move to Archive.
+
+Caveats until step 1 is done: in-game Send against the live server fails with
+"Upload failed (server answered 404)" - by design it still writes the local copy
+(`BugReports/` beside the executable; `FdgRaylib/bin/Debug/net8.0/BugReports/` for dotnet run).
+To test without deploying: `npx wrangler dev`, launch the game with
+`FDG_LIST_SERVER_URL=http://localhost:8787`, fetch with `./fetch-reports.sh http://localhost:8787`
+(dev admin token is the built-in default).
+
 ## Deferred facets (explicit, not silently cut)
 - Reporting from CLI/headless mode and from non-game screens (main menu, army builder) — escape-menu only for now.
 - GitHub-issue push notification on new report.
