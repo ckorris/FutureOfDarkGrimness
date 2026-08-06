@@ -1,6 +1,6 @@
 # 365 — Cover as a habit: two-tier positioning for the Tactician
 
-**Status**: open (slice 1 SHIPPED 2026-08-06; slice 2 handoff plan below, not started)
+**Status**: CLOSED 2026-08-06 (Tier 1 + slice 2a shipped; Tier 2 measured and rejected)
 **Related**: #363 (facet 3 is REPLACED by this, see below), #364 (melee path-vs-straight-line,
 still open), #191 (Tactician umbrella), #194 (FdgLab)
 
@@ -321,6 +321,24 @@ changing it changes how every generated map plays, which `DefaultTerrainPool`'s 
 does not want to do silently. Separate call from anything here.
 
 ## Notes (newest first)
+
+- 2026-08-06 (slice 2c measured - REJECTED, Tier 2 removed, item closed). The wipeout-only veto
+  scored **81.33%** against the 85.39% no-term baseline: -4.06pp, z -3.11, 130 flips of which 82
+  worsened. The pre-agreed acceptance gate was ~1 sigma; this is three. Removed in engine
+  `e13e3be` per the agreement - no further redesigns.
+
+  The per-army table is the diagnosis: the worst losses are Alien Hives and Orks (-6.9pp each),
+  the melee/horde armies - units whose CORRECT play is walking through near-lethal fire, because
+  arriving is their whole value and the approach credit that prices the arrival is (by design) not
+  banked against the veto. With an inevitably optimistic threat estimate (every enemy in range
+  assumed to fire on us), "certain death" fires on exactly the crossings those armies must make.
+  Even the veto - zero almost everywhere, decisive where it fires - is caution the pool punishes.
+
+  What removal keeps: slice 2a (the melee-denominator fix, pinned by 17, measured neutral at
+  85.39% vs the 85.70% control), the OneTimeSetUp weight-capture fix in the cover fixture, and the
+  Tier 1 habit untouched. Removal is decision-identical to the measured `leth0` run - the term
+  there was an exact multiplication by zero over side-effect-free helpers - so 85.39% stands as
+  this exact configuration's measurement and no fifth pool run was needed.
 
 - 2026-08-06 (slice 2c BUILT - the wipeout-only veto; pool run pending, acceptance gated on it).
   Implemented exactly as proposed in the review note below, with two deviations the pins forced,
@@ -780,4 +798,24 @@ does not want to do silently. Separate call from anything here.
 
 ## Outcome
 
-(open)
+**Tier 1 shipped; Tier 2 rejected by measurement; closed 2026-08-06.**
+
+Shipped: the bounded wall-hugging habit (`MoveCoverHabit` 0.05, shooting share minus reachable
+melee share, each normalised against its own kind of threat and the melee denominator restricted
+to threat that can actually reach this activation - slice 2a). Pins 1-5, 11, 13-17 in
+`TacticianCoverHabitTests`. Pool: 85.16% (1c) / 85.39% (2a) against an 85.70% pre-#363 control -
+a coin flip on maps that are 2.2% blocking terrain, which is what pin 3 predicted; the pins are
+the specification, the pool the regression net.
+
+Rejected: every formulation of the lethality gate. A morale-knee curve lost 4-14pp across three
+threat aggregations, monotonically in perceived threat; the game-level post-mortem showed it
+changing 27 of 28 decisions (a second retaliation term, not a gate); the wipeout-only veto built
+from that finding lost 4.06pp (z -3.11), worst for melee armies whose correct play is crossing
+near-lethal fire. Structural lesson, worth the price of admission: **in an argmax over one unit's
+candidates, f(threat at endpoint) x candidate-constant is just another retaliation term** - and
+this pool punishes added caution at every magnitude tried. If quality-aware or convergence-aware
+caution ever returns, its home is retaliation's response curve, never a goal-overriding term.
+
+Left open elsewhere: #364 (melee path-vs-straight-line). Queued ideas recorded in the handoff
+section: the Shaken-enemy threat discount (split by activation state), the FdgLab terrain lever,
+the RepresentativeCenterZ classification call, retaliation sum-with-share.
