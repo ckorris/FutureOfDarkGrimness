@@ -1,6 +1,6 @@
 # 363 — Tactician is line-of-sight-blind: phantom volleys through walls
 
-**Status**: in-progress
+**Status**: closed 2026-08-06
 **Related**: #191 (Tactician umbrella), #360 (move-penalty pricing seams), #361 (charge
 targeting blind spots - same estimate-vs-engine family)
 
@@ -14,6 +14,41 @@ distance with a clear lane, so "step around the wall and actually shoot" exists 
 candidate. Pinned by a scenario reproducing the source save's corner-wall setup.
 
 ## Notes
+
+- 2026-08-06 (pool gate, all three facets): **NO REGRESSION.** 8-army pool, Tactician (A) vs
+  SoloRules (B), 64 ordered matchups x 10 games = 640 games per run, DOP 16, seeds from 1000,
+  Realistic dice, each build in its own worktree, runs SEQUENTIAL so load conditions match.
+  Reports: `FdgLab/reports/363-gate/{control,control-b,facet12,facet3}/` (gitignored; numbers of
+  record are here).
+
+  | run | engine | score | delta | paired flips | faults |
+  |---|---|---|---|---|---|
+  | control | `1183f55` (pre-#363) | 85.7% | - | - | 0 |
+  | control-b | `1183f55` again | 85.7% | +0.00pp | **0** | 0 |
+  | facets 1+2 | `8c875a7` | 85.2% | -0.55pp (z -0.70) | 57 (8.9%) | 0 |
+  | facet 3 | `7498717` | 84.8% | -0.86pp (z -0.88) | 83 (13.0%) | 0 |
+
+  - The control REPEAT is the reason the small deltas are readable: same code, same options, run
+    again after the others - **outcome hash bit-identical (`6638851179176049`), zero flipped
+    games**. So the harness contributed no noise here (a datum for #210, which is about exactly
+    this), every flip below is caused by the change, and the only remaining uncertainty is
+    sampling. Sigma is therefore computed PAIRED, over the games that actually moved (win<->loss
+    counts 1, win<->tie 0.5): 0.78pp and 0.97pp, against the 1.98pp unpaired bound. Both deltas
+    are inside 1 sigma; of 83 flips at facet 3, a neutral change would split them ~evenly and the
+    observed net is ~5.5 game-equivalents.
+  - Per-army rows (facet 3): Battle Brothers +1.9 (the archetype the source save came from),
+    Dark Elf +0.6, Hives 0.0, HDF -0.6, Orks -1.9, Robot Legions -1.9, Dwarf Guilds -2.5, HEF
+    -2.5. Cell noise at 80 games/row is ~4pp, so this is flat with no collapsed row.
+  - Cost: decision mean 64.27 -> 63.40 -> 64.25ms, per-game wall 26.3 -> 25.9 -> 26.0s. The sight
+    tests are free at this scale.
+  - Honest limit, same as #296's gate: this 1v1 2k pool is a NO-REGRESSION instrument, not a
+    measure of the fix. The Tactician already wins ~85% here, and the pathology needs terrain
+    between two shooters - the save replay, the scenario and the pins are the evidence the
+    behavior changed; the pool is the evidence nothing else broke.
+  - Behavior spot-check on one identical game (same seed/armies, facet12 vs facet3 builds): 196
+    narration lines differ - candidate scores rise and the ranking reshuffles - while the tally of
+    CHOSEN intents is unchanged (8 AdvanceOnObjective, 4 EngageAtRange, 1 each Rush/Hold/Escort/
+    Charge/Block). Pricing moved; the cowering failure mode did not appear.
 
 - 2026-08-05 (facet 3 - the mirror): **incoming fire now respects the same walls** (engine
   7498717). `AttackContext.SightBlocked` generalized to `SightFactor` (float, default 1 = clear,
@@ -90,4 +125,26 @@ candidate. Pinned by a scenario reproducing the source save's corner-wall setup.
 
 ## Outcome
 
-(open)
+**Closed 2026-08-06.** All three facets shipped and gated. The Tactician no longer prices a shot
+it cannot take, no longer fails to find the firing position two steps to the side, and no longer
+treats a wall as if it were made of glass when the guns point the other way.
+
+What the source save does now: the 6" advance into the corner wall's shadow that started this
+(+0.2220, followed by "No actions available - passing") prices -0.1477, and the squad rushes 12"
+toward the objective at (15,20) instead - honest play, since the volley it "gave up" was worth
+~0 against 2+-save-in-cover Revenants.
+
+Shipped: `AttackContext.SightFactor` (offense 0 on a cut lane, incoming at
+`BlockedThreatShare` 0.4, Indirect exempt per weapon); `MacroActionGenerator.ClearLaneGoal`'s
+15-degree arc search for a band endpoint that can actually see the target; sight gates on
+retaliation, projected threat, the retaliation share's denominator, and the transport bail-out.
+7 pins in `TacticianLineOfSightTests`, suite 2900 green, scenario `363-wall-shadow-engage.json`
+(+ `363-Gunline`/`363-Targets` signal armies), 4 x 640-game pool gate above.
+
+Left open on purpose, filed rather than dropped: **#364** - melee threat is still straight-line,
+so a charge prices as if it could cross Impassible terrain the real move has to walk around. Same
+"estimates ignore terrain" family, different mechanism (path, not sight).
+
+Not done and not needed: no GUI hand-verify - the planner runs identical code in both modes and
+the evidence here is headless-reproducible. Worth a look next time you play near terrain, though:
+the thing to watch is a unit CHOOSING cover it used to ignore.

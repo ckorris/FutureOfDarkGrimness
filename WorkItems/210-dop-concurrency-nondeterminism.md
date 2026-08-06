@@ -40,6 +40,17 @@ game by game.
 
 ## Notes (newest first)
 
+**2026-08-06 — a 640-game Tactician-vs-SoloRules pool repeat came back BIT-IDENTICAL at DOP 16**
+(#363's gate: control vs a control REPEAT of the same build, run sequentially ~50 minutes apart on
+a 32-core box, 8-army pool x 64 ordered matchups x 10 games, seeds from 1000, Realistic dice).
+Same outcome hash `6638851179176049`, zero flipped games out of 640. That is the opposite of the
+2026-07-26 datum above (17/20 flips on a tactician-vs-tactician cell), so whatever the race is, it
+is NOT hit uniformly: candidates worth checking when this item is picked up are (a) profile mix -
+that cell was tactician on BOTH sides, twice the planner concurrency, (b) DOP 16 against 32 real
+cores here vs the earlier machine/load, (c) code that has landed since (#209-adjacent ordering
+fixes, the #361 pathfinder work). Worth reproducing the old cell before hunting further - the bug
+may have narrowed or moved.
+
 **2026-07-26 — tactician cells quantified during the #191 perf pass: outcome flips are an order
 of magnitude worse than the solo baseline.** Same code (the #191 grid-cache build), same args,
 two DOP-16 runs of a 20-game tactician-vs-tactician bench (Hives vs Orks, seeds 3000+): hashes
