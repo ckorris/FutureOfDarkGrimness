@@ -321,6 +321,210 @@ does not want to do silently. Separate call from anything here.
 
 ## Notes (newest first)
 
+- 2026-08-06 (Tier 2 review on Fable - PROPOSED next step, awaiting sign-off; nothing built). The
+  full-history review sharpened the post-mortem into a structural claim: **in an argmax over one
+  unit's candidates, any term of the form `f(threat at endpoint) x candidate-constant` is just
+  another retaliation term** - the constant cannot change which candidate wins, only f can, so the
+  term's whole effect is its threat gradient, reshaped by the knee. "Goals dominate except at
+  certain death" is expressible additively ONLY as a term that is ~zero on almost every candidate
+  and large on the few that are near-certain death - a rare VETO, not a curve. Every measured
+  variant (three aggregations, W 0.4-1.7) was a curve, so the concept was never tested.
+
+  Implied-P extraction from the replayed flip (penalty / W / (forfeit-banked), the charges pin the
+  P=1 ceiling): every move candidate sat at P 0.17-0.42; only the two charges hit 1.0, and they
+  were not the argmax winners with the gate off. **A wipeout-only veto would have been silent on
+  that entire activation** - the flip would not have happened.
+
+  The pin conflict dissolves with the knee. Pin 9 (quality discrimination at the knee) is the
+  single reason the weight needed >= 1.0, and >= 1.0 is what every pool run condemns. A veto needs
+  only pin 7's floor: W x forfeit > the goal margin at P=1, which the existing calibration data
+  puts at W >= ~0.5; ~0.7-0.8 has comfortable margin and fires on a handful of candidates per game
+  instead of 27 of 28.
+
+  **Refined slice 2c (proposed):**
+  - `ProbabilityLost` collapses to one continuous ramp near wipeout (0 below ~0.8 x remaining
+    wounds, 1 at ~remaining). No knee, no smear-from-quarter-health, no quality term, no
+    shoot/melee split - delete `LethalityShakenSeverity` and the split accumulators (the GF v3.5.1
+    rout-is-melee-only finding stays recorded here; it simply has no seat in a wipeout-only veto).
+  - KEEP: `RankedThreat` decay aggregation (bounded 2x worst - the veto's estimator must not
+    overestimate, and false vetoes are its one failure mode), `ForfeitedContribution` with the
+    banked-value netting (the doomed-remnant cancellation and the chaff/tarpit exemption both live
+    there), pins 6, 7, 12, 17, 19.
+  - **Pin 10 SURVIVES**, correcting the earlier claim that it dies: round decay lives in the
+    forfeiture (attrition half is zero in round 4), not in the P-curve, so "balks round 1, goes
+    round 4" still holds at P=1.
+  - Pins 8 and 9 are the explicit scope cut: the morale knee and quality scaling ARE sub-wipeout
+    discrimination, which is precisely what the pool forbids at any weight that lets them resolve.
+    The knee idea is not dead - if it ever returns, its natural home is retaliation's response
+    curve (a magnitude adjustment to an existing threat term), never a goal-overriding term.
+  - Recalibrate W with the existing Calibrate harness, then ONE 640-game pool run. Accept only
+    within ~1 sigma of the 85.39% gate-off baseline; otherwise revert 2b entirely, keep 2a, close
+    Tier 2 as measured-and-rejected. No third redesign either way - the spend is capped.
+  - The deeper alternative, named for the record and deferred: the score's true accounting error is
+    crediting objective flips the unit will not survive to collect (scoring is at END of round);
+    the faithful fix multiplies the objective credit by P(survive to reconcile) from the enemies
+    yet to activate (`IGameProgress.UnactivatedUnits` carries this). Rejected for now: it is
+    multiplicative surgery on the most-tuned term in the scorer and it re-opens the remnant-freeze
+    unless handled with care.
+
+- 2026-08-06 (game-level post-mortem before dropping Tier 2 - Chris: "it might be that the
+  implementation is bad, not the concept". **He is right, and the distinction matters.**) Replayed a
+  flipped game at `--dop 1` with `smoke --log-decisions`: Alien Hives vs Battle Brothers, seed 1000,
+  which goes 3-0 with the gate off and 1-1 with it on. Reproduced exactly both ways.
+
+  What the gate actually does in a real game, measured over that one game's 28-32 Tactician
+  activations:
+
+  | | gate off | gate on |
+  |---|---|---|
+  | plan lines that differ | - | **27 of 28** |
+  | activations whose BEST candidate scores below zero | 4 | **23** |
+
+  It is not a gate. It changes essentially every decision, and it drives the best available option
+  negative in about three quarters of activations. Two consequences follow, neither intended:
+
+  - Because `ForfeitedContribution` is deliberately CONSTANT across a unit's candidates, the term
+    reduces to `MoveLethality x constant x P(threat at this endpoint)`. That is a **second
+    retaliation term** with a nonlinear response curve and an effective coefficient several times
+    `MoveRetaliation` (0.45, itself the product of several tuning gates). Nothing about it is a
+    veto; it is a threat field laid over the whole board.
+  - Driving `substantive` negative almost everywhere also silently disables `MoveReachableBonus`
+    for almost every candidate, since that tie-break is gated on `substantive > 0`.
+
+  The single largest penalty in the game was **-2.04 on `ChargeToContact vs Battle Tank`** (0.2374
+  becoming -1.8066) - a Horde Melee army's unit refusing the charge that is the entire reason the
+  army exists. Its own high `UnitValue` inflates its forfeiture, so under this formulation **the
+  better the unit, the more cowardly it becomes**. Worth keeping in mind for any redesign: value as
+  a multiplier on reluctance has that perverse edge.
+
+  Also worth recording because it corrects an assumption in the earlier analysis: the unit does NOT
+  freeze. It still moved and still rushed a marker - just the nearer one at (36,34) instead of
+  pushing to (34,13). The pool damage is not paralysis, it is systematically trading ambition for
+  safety on nearly every activation.
+
+  **So the concept was never tested.** "A rare veto that fires only on genuine certain death" and
+  "a continuous threat field over every candidate" are different things, and only the second one was
+  measured. That does not resurrect the design as built - the numbers stand - but it does mean the
+  -14pp is evidence against the IMPLEMENTATION, not against Chris's original idea.
+
+- 2026-08-06 (ranked decay measured - and the finding is now about the GATE, not the aggregation).
+  Chris chose diminishing-returns aggregation over the share, for two good reasons: a share depends
+  on how many units YOUR army brought (a 3-unit elite list and a 12-unit horde get ~4x different
+  treatment from the same threat), and it requires predicting the opponent's target choice - the
+  same class of guess this item ruled out of scope for Tier 1. Implemented as `RankedThreat`: rank
+  the enemies that can reach the endpoint, weight the worst fully, the next by
+  `LethalityFocusDecay` (0.5), the next by its square. Bounded at 2x the worst single threat.
+
+  **It scored 71.17% - worse than both share variants.** Which, on reflection, is exactly what the
+  mechanism predicts: the share was dividing by ~8, and decay divides by nothing, so decay PERCEIVES
+  MORE THREAT than the share-normalised sum did (~5.8 wounds where the share gave ~1.9 on the same
+  board). Every result now lines up on one axis:
+
+  | variant | perceived threat | pool |
+  |---|---|---|
+  | gate off (slice 2a only) | - | **85.39%** |
+  | MoveLethality 0.4 | sum x share | 84.92% |
+  | MoveLethality 0.8 | sum x share | 81.56% |
+  | share normalised over our army, W=1.7 | lowest | 77.89% |
+  | retaliation's share, W=1.7 | higher | 75.55% |
+  | ranked decay, no share, W=1.7 | highest | 71.17% |
+
+  **The harm scales monotonically with how much threat the gate perceives, across every aggregation
+  tried.** That is not an aggregation bug - it is the gate itself. Making the Tactician more
+  cautious loses games, and the only settings that are pool-safe are the ones where the term barely
+  fires. The pins need `MoveLethality >= 1.0` for pin 9 to resolve at all, and there is no
+  aggregation at which W >= 1.0 is pool-neutral. **The pin floor and pool neutrality are
+  incompatible.** Six carefully constructed cases say the gate behaves as designed; 640 games say
+  the design costs between 1 and 14 percentage points depending on how loudly it speaks.
+
+  Honest caveat, recorded so nobody over-reads this: the pool opponent is `solorules`, and caution
+  may simply be undervalued against a bot that walks into you. But it is the only instrument there
+  is, and "it might do better against an opponent we cannot measure" is not a case for shipping a
+  term that overrides goals.
+
+- 2026-08-06 (a second structural reason the gate bites too often, independent of the share). The
+  free zone is far narrower than the design intent reads. With `smear = 0.25 x MaxWounds`, a fresh
+  unit's ramp starts at `kneeStart = (rem - max/2) - 0.25 x max = 0.25 x max` - so P leaves zero at
+  **a quarter of the unit's health**, not at the half-strength knee. Chris's "lose 2 of 10 and take
+  the objective" clears it only just (0.20 against 0.25); 3 of 10 is already priced. Combined with a
+  forfeiture around 1.1 for a valuable unit near a marker, even P = 0.3 yields a ~0.56 penalty,
+  which is the size of the entire objective term - so the gate overrides goals at casualty levels
+  that are entirely ordinary. Narrowing the smear widens the free zone but sharpens the curve back
+  toward the cliff it exists to avoid; that tension is unresolved and belongs to any redesign.
+
+- 2026-08-06 (the share fix was real but NOT sufficient - the gate is harmful for deeper reasons).
+  Correcting the targeting share to `ours / (ours + every other unit of ours)` recovered 2.3pp of
+  the 9.8 and no more: **77.89%** against **85.39%** with the gate off. So the diagnosis below was
+  right about the mechanism and wrong about it being the whole story - a summed threat term
+  penalises FORWARD movement no matter how carefully the share is priced, because advancing is
+  precisely what brings more enemies into range.
+
+  | variant | pool | vs gate-off |
+  |---|---|---|
+  | gate off (slice 2a only) | 85.39% | - |
+  | gate, retaliation's share (first cut) | 75.55% | -9.84pp |
+  | gate, share normalised over all friendlies | 77.89% | -7.50pp |
+
+  Two implementation errors were found and fixed on the way, both mine, neither the cause:
+  - The corrected pool first measured "us" at our CURRENT position while the numerator measured us
+    at the ENDPOINT, so the ratio could exceed 1 and needed a clamp. It sums the other units only
+    now, which is well-formed by construction.
+  - `Squad` in the gate fixture laid models out downward from the centre, so a 60-model gunline's
+    centroid drifted ~5" and fell out of range of the very endpoint the scene existed to threaten -
+    the scene scored nothing at all and read as "the gate does not fire". Model blocks are centred
+    symmetrically now. Worth remembering when writing scenes with large units.
+
+  **Chris's objection, which lands (2026-08-06):** "when I play the real game, I think less about
+  what my opponent will choose to shoot, and I just try to make it difficult regardless." Predicting
+  the opponent's TARGET CHOICE is the same class of guess as predicting their MOVEMENT, which this
+  very item ruled out of scope for Tier 1 - "offense is a fact, threat is a forecast". Tier 2
+  imported exactly that kind of prediction without anyone noticing it contradicts the principle two
+  slices earlier.
+
+  The counter-argument, recorded because it constrains any redesign: the share is not decoration,
+  it is the only thing keeping a SUM from being nonsense. With no discount at all, three to six
+  enemies reach a typical forward endpoint and their combined raw wounds are several times the
+  unit's remaining wounds, so P is 1 on every advance and the gate applies its full penalty to every
+  forward move - strictly worse than either row above. "Remove the share" therefore only works if
+  the SUM goes too, which is the worst-single-threat variant now being measured.
+
+- 2026-08-06 (the gate's first pool run was a REGRESSION, and why - kept as the record even though
+  the cause is fixed below). Tier 2 as first written scored **75.55%** against 85.39% with the gate
+  switched off: **-9.8pp, z -6.14, all eight armies worse**, 205 flips of which 142 worsened. Not
+  noise, and the opposite of the "expect flat" the handoff plan predicted. A weight sweep on the
+  same binary (`--weights MoveLethality=...`, so the only difference is the scalar) showed the
+  damage is monotonic and the term is only harmless when it is nearly inert:
+
+  | MoveLethality | pool score | vs gate-off |
+  |---|---|---|
+  | 0 (gate off, slice 2a only) | 85.39% | - |
+  | 0.4 | 84.92% | -0.47pp |
+  | 0.8 | 81.56% | -3.83pp |
+  | 1.7 (shipped by pins) | 75.55% | -9.84pp |
+
+  Since the pins need >= 1.0 to resolve pin 9 at all, "tune it down" was not available: the
+  aggregation was wrong, not the magnitude.
+
+  **Cause.** The gate summed raw wounds across enemies but weighted each by RETALIATION's share,
+  `ours/(ours + BestAlternativeTargetValue)` with a 0.25 pessimism floor. That share is built for a
+  term that takes a MAX over enemies - and `BestAlternativeTargetValue` is itself a Max over
+  friendlies, the single best other target - so it sits near 0.5 for a typical unit. Summed over
+  eight enemies it modelled roughly HALF THE ENEMY ARMY shooting one squad every round, which put
+  killWounds past the half-strength knee on ordinary forward moves and turned the gate into a
+  second, far larger retaliation term on every advance. The per-army table reads exactly that way:
+  the worst losses were the Caster-Heavy (-13.8pp) and Horde Melee (-13.1pp) lists, the ones that
+  most need to cross open ground.
+
+  The audit finding that produced this ("retaliation's Math.Max underprices convergent fire, so the
+  gate must SUM") was right about Max and wrong to reuse Max's share underneath a sum.
+
+  **Every pin missed it, and that is the reusable lesson.** All six gate scenes have exactly ONE
+  friendly unit, where the targeting share is 1.0 by construction, so not one of them exercised the
+  share at all - the term they were calibrating was invisible to them. Constructed pins verify the
+  decision you thought to construct; they cannot tell you the model is mispriced in a shape you did
+  not think of. **Pin 19 now covers it** (a squad among five equally shootable friendlies must be
+  gated far less than a lone one), and it fails on the pre-fix build for the right reason.
+
 - 2026-08-06 (slice 2b SHIPPED - Tier 2, the lethality gate). `MoveLethality = 1.7`,
   `LethalityBlockedDiscount = 0.8`, `LethalityShakenSeverity = 0.6`. Pins 6-10 and 12 green in the
   new `TacticianLethalityGateTests` (6 + an Explicit Calibrate). Suite 2917 green, full build,
