@@ -7,7 +7,8 @@
 Give the user (and future testers) a way to report a bug from inside the app rather than out-of-band. Not yet scoped to a mechanism — options include an in-app "report bug" action that dumps recent log/state to a file for the user to send, versus something that files directly to a tracker. Surface the design fork before building.
 
 ## Notes
-- 2026-08-05: Both slices landed (9ca9d7b Worker, bb0854a app). Verified: engine 2862 green, app 1116 green (8 new in `BugReportTests`), full build, headless smoke exit 0. **Outstanding verification** (no Node.js on this machine, and GUI needs hands): (1) `wrangler dev` + `./smoke.sh` for the new /reports checks, (2) deploy: `npx wrangler deploy` + one-time `npx wrangler secret put ADMIN_TOKEN`, (3) GUI hand-check of the escape-menu Report a Bug flow (send as host: save included; status line honest on no-network).
+- 2026-08-05 (later): Local `wrangler dev` + `./smoke.sh` SMOKE PASSED (all 14 sections, needed Node 22 via NodeSource - apt ships 18), and owner hand-verified the GUI flow. **Remaining: deploy** (`npx wrangler deploy` + one-time `npx wrangler secret put ADMIN_TOKEN`, then prod smoke). Known cosmetic quirk: workerd logs an uncaught "Can't read from request stream" after 429 responses (body returned unconsumed) - pre-existing on the registry's 429 too, clients unaffected.
+- 2026-08-05: Both slices landed (9ca9d7b Worker, bb0854a app). Verified: engine 2862 green, app 1116 green (8 new in `BugReportTests`), full build, headless smoke exit 0.
 - 2026-08-05: Design agreed with owner (see Decisions). Building: Worker slice first, then app slice.
 - 2026-07-15: Filed from user playtest feedback. No mechanism decided yet.
 
