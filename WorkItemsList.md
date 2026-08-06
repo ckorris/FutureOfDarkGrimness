@@ -117,7 +117,6 @@ Master plan: `docs/ai-agent-plan.md` (heuristics -> MCTS -> learned value net; g
 - [~] 296 — Tactician crowded-game drift (#264's friendly-congestion + team-game sibling): 2v2 scoring is team-BLIND (teammate priced as enemy everywhere but deployment/spells), screen credit pays behind the ward, no front-first activation order, markers undervalued vs safety. All four fix slices landed + observation-verified; pool bench in progress. ([WorkItems/296](WorkItems/296-tactician-crowded-game-drift.md))
 - [~] 297 — Objectives held per SIDE (Chris's call): allied players guarding one marker no longer contest it to neutral; `ITeamExtensions.ReconcileObjectiveOwner` is the one authority for reconcile + AI projection, 1v1 bit-identical. Backend done; UI treatment (team-colored markers/scoreboard) awaiting Chris's pick. ([WorkItems/297](WorkItems/297-team-owned-objectives.md))
 - [ ] 360 — Move-penalty shooters (Indirect/Mobile Artillery): retaliation never prices the Mobile Artillery unmoved-token forfeit; forced approaches should overshoot for range slack + objective coverage. Filed with fix sketches. Was #357 pre-reconciliation-55. ([WorkItems/360](WorkItems/360-artillery-move-economics.md))
-- [ ] 361 — Tactician never considered the reachable charge (Hive Lord save): nearest-enemies union, circumscribed planning clearance for rect bases, nearest-first family order. Built, 3 pins red-proved, suite 2891 green, D1 identical; pool bench pending. ([WorkItems/361](WorkItems/361-charge-target-pruning-blind-spots.md))
 
 ## Networking & infrastructure
 

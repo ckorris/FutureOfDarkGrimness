@@ -1,6 +1,6 @@
 # 361 — Tactician never considered the reachable charge (value pruning + zero-progress construction)
 
-**Status**: facets 1-3 built + verified 2026-08-05; facet 4 (routed-charge contact refinement) in progress
+**Status**: CLOSED 2026-08-05 - all four facets built and verified (see Outcome)
 **Related**: #191 (Tactician umbrella), #359 (congestion/routing - shares the funnel mechanics),
 #264 (routing fallbacks), #312 (charge-reach gate), #149/#150/#341 (base shapes / swept-base validator)
 
@@ -51,39 +51,75 @@ feasibility with GENERATION order as tiebreak, and generation was value-first, s
    nearest-enemy-first. Value picks WHO is targeted, never the order; the stable in-family
    pruning rank then keeps the reachable charge under a tight budget.
 
-Pins (Tests/MacroActionGeneratorTests, all three proved red against the pre-fix generator):
+4. **Facet 4 - routed charges refine to contact** (second commit, after Chris asked "the pick
+   isn't to charge the APC?"): two flaws in `BuildCharge`'s routed branch. The contact goal
+   was placed with the INSCRIBED contactDistance, so a rect base's front edge landed inside
+   the target, the validator rejected every long arc, and the ladder stalled the charge
+   mid-route (the APC charge died at 3" of a 9" dogleg); now placed with circumscribed radii
+   on both sides (always legal, slightly short). And route arrival is grid-quantized (the
+   squad charge missed the 0.25" contact grade by 0.01"); new
+   `MovementPlanner.NudgeToContact` translates the arrived formation toward the TARGET's
+   nearest model (target-only gap measurement - contact with a bystander must not read as
+   arrival) to the contact gap, kept only if the extended move fully re-validates. The
+   out-of-reach approach standoff got the same circumscribed treatment.
+
+Pins (Tests/MacroActionGeneratorTests, all four proved red against the pre-fix generator):
 - `ChargeToContact_CheapNearbyEnemy_SurvivesValuePruning` (facet 1, the Hive Lord shape)
 - `ChargeToContact_BigRectBaseParkedByRotatedTerrain_StillMakesProgress` (facet 2, exact save
   geometry: the rect base, the 225-degree bar, the 10" enemy; asserts not-Blocked and >= 3"
   closed)
 - `ChargeFamily_RanksNearestEnemyFirst_WhenFeasibilityTies` (facet 3)
+- `ChargeToContact_RoutedAroundTerrain_RefinesToBaseContact` (facet 4, same scene as facet 2's
+  pin but asserts ActionType Charge + Reachable + gap <= 0.25")
 
 ## Verification
 
+Facets 1-3 (commit `401f2fe`):
 - Engine suite 2891/2891 green (2888 + the three pins).
-- Save replay (`analyze ... --unit "Hive Lord"`): the wedge is gone - candidates route and
-  validate; the Blood APC charge is now a scored row (BudgetClipped, 2.8" progress); the
-  squad charge-approach grades Reachable at 1" standoff and scores 0.42; the winner is an
-  east reposition (0.46) toward the team's objective cluster instead of the old dead west
-  slide (-0.09). Defect behavior (reachable charges invisible / everything Blocked-at-zero)
-  eliminated.
+- Save replay: the wedge gone, the APC charge scored (BudgetClipped), but the PICK was still
+  an east reposition (0.46) - both fighting charges were demoted to approaches by the routed
+  construction, which became facet 4.
 - Solo D1 identity: `4B73F1B9DBBC8102` / `E86503B238B27EA1` - both bit-identical (solo
   resolvers untouched; circle-only armies see identical geometry).
 - Pool bench tactician-vs-solorules 3200 games (hash `3D5D010A3A155595`): aggregate 85.52%
   vs the #359 baseline 84.39% (+1.13pp, sigma ~0.65pp), 0 faults, 0 timeouts across all 64
   cells; decision cost flat (mean 28.50ms, worst p95 515ms). Hives mirror 76%, RL mirror 84%.
 
+Facet 4:
+- Engine suite 2892/2892 green.
+- Save replay: **ChooseAction -> Charge, target Blood APC** - Reachable base contact at
+  (45.5,21.4), score 1.51; the squad charge is a real Charge too (0.84, second); the old
+  west slide is nowhere. The exhibit now plays the move a human sees instantly.
+- Solo D1 identity: both hashes bit-identical again.
+- Pool bench 3200 games (hash `6E781E5D634061ED`): aggregate 85.42% - flat vs facets 1-3's
+  85.52% (-0.10pp, sigma ~0.65pp), +1.03pp over the pre-#361 baseline; 0 faults, 0 timeouts;
+  decision cost flat (mean 28.48ms). Hives mirror 76 -> 78, RL mirror 84. More real charges
+  at no win-rate cost.
+
+## Outcome
+
+All four facets built and verified 2026-08-05: nearest-enemies union (targeted families always
+evaluate the enemy standing next to us), circumscribed planning clearance (router and swept-base
+validator finally see the same world - the rect-base wedge class is gone), nearest-first family
+enumeration (reachable charges keep their pruning slot), and routed-charge contact refinement
+(circumscribed goal placement + validated NudgeToContact - fighting charges reach the scorer AS
+charges). The reported exhibit went from "slid 6 inches west for nothing" to "charges the APC it
+was standing next to". Four pins, each proved red; suite 2892; solo D1 bit-identical throughout;
+pool aggregate 85.42-85.52% vs the 84.39% baseline with 0 faults. Recorded, not built: the
+difficult-terrain circumscribed conservatism, and the all-enemies gap grading mislabel (see
+Notes).
+
 ## Notes
 
-- 2026-08-05: built all three facets; diagnosis correction above. Follow-up observations
-  recorded, NOT built:
-  - **Routed charges never refine to contact**: the routed `BuildCharge` branch stops at the
-    grid-quantized goal - the squad charge achieved a 0.26" gap and missed the Reachable grade
-    by 0.01" (`ContactFeasibleGapInches = 0.25`), so a melee monster standing a hair from an
-    enemy plays a Rush-to-standoff instead of a fighting charge. The straight branch's
-    `RefineStepTowardGap` (or a final-leg refinement) would close it.
+- 2026-08-05 (later): facet 4 built - the "routed charges never refine to contact" follow-up
+  graduated from a recorded observation to the fourth facet after Chris confirmed the charge
+  was the expected pick. Remaining recorded observations, NOT built:
   - Difficult-terrain detection also uses the circumscribed radius now - rect-based units get
     the 6" cap slightly more often than the true footprint requires (conservative, legal).
+  - Charge feasibility still grades `gap` against ALL enemies (`MinEnemyGap(move,
+    enemyFootprints)`), so a charge that dead-ends 0.2" from a BYSTANDER could in principle
+    grade Reachable; NudgeToContact measures target-only, which masks the common case, but the
+    grading itself is a latent mislabel.
   - The `BaseRadiusInches = 0.5` aside filed earlier was a misreading of the save (that value
     was another model's); the Hive Lord's base data is correct - the bug was the planner's use
     of the inscribed approximation, not the import.
