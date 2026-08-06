@@ -1,6 +1,6 @@
 # 365 — Cover as a habit: two-tier positioning for the Tactician
 
-**Status**: open (slice 1 in progress)
+**Status**: open (slice 1 SHIPPED 2026-08-06; slice 2 handoff plan below, not started)
 **Related**: #363 (facet 3 is REPLACED by this, see below), #364 (melee path-vs-straight-line,
 still open), #191 (Tactician umbrella), #194 (FdgLab)
 
@@ -82,7 +82,7 @@ discontinuity. The coarseness that matters is "does not anticipate enemy MOVEMEN
 share model already satisfies - it measures present geometry and only ever spends a bounded
 tiebreaker on it.
 
-## Tier 2 - the lethality gate (slice 2, not started)
+## Tier 2 - the lethality gate (slice 2 - actionable handoff plan below)
 
 The only term allowed to interrupt a goal:
 
@@ -112,6 +112,146 @@ never serve both roles, which is exactly why 0.4 felt arbitrary and 0.2 felt lik
 **Round decay is NOT a separate mechanism.** It is emergent from "expected remaining contribution"
 being horizon-limited (Chris's correction: dying is not free in round 4 if you were contesting).
 
+## Handoff plan for slice 2 (2026-08-06, written for the implementing session)
+
+Chris signed off on the 2026-08-06 audit and this plan. Order of work: **2a first** (small,
+de-risks the habit under the gate), then 2b. One slice at a time, verify + commit + ledger note
+per slice, per the working conventions.
+
+### Slice 2a - fix the melee denominator (a defect, found by audit, not by pins or pool)
+
+`MeleeThreatTotal()` sums EVERY melee-capable enemy on the table; the numerator counts only what
+reaches the endpoint. Against a melee-heavy army (say 8 melee units) one pack reaching the covered
+corridor side is ~1/8 of the denominator: penalty ~ -0.006 against a cover bonus of up to +0.05 -
+numerically adjacent to the 1b corridor failure this half of the habit exists to prevent. Masked in
+the pins because both CorridorScene variants have exactly ONE melee enemy.
+
+Fix: restrict the denominator to melee enemies whose threat could matter THIS activation - mirror
+the numerator's reach test, but against the whole candidate envelope instead of one endpoint:
+
+    relevant iff TacticalAnalysis.MeleeThreatReach(enemy, self, _evaluator)
+                 >= Distance(now, enemyPos) - TacticalAnalysis.RushDistance(self, _evaluator) - 1f
+
+(`now` = current centroid; RushDistance = the largest move any candidate makes - swap in a tighter
+envelope helper if one exists; the -1f mirrors the numerator's slack.) Still endpoint-independent,
+so the `_meleeThreatTotal` cache shape is untouched.
+
+**Pin 17**: CorridorScene plus a second powerful melee unit ~40" away that reaches neither
+endpoint. Assert the shadowed+charged side still LOSES to open+safe - and that pins 14/15/16 stay
+green (the distant blob must change nothing they assert).
+
+### Slice 2b - the lethality gate
+
+The one term allowed to interrupt a goal. In `Score`, after the habit:
+
+    substantive -= TacticianWeights.MoveLethality * pDestroyed * ForfeitedContribution();
+
+Two new weights (plain `public static float`, so `TrySet` picks them up for free):
+`MoveLethality` (calibrated below) and `LethalityBlockedDiscount` (default ~0.8f).
+
+**killWounds** - accumulated per candidate inside the EXISTING enemy loop; the estimates are
+already computed there, add no new EstimateShooting/EstimateMelee calls:
+
+    shootW_e   = incoming.ExpectedWounds * (hasLane ? 1f : LethalityBlockedDiscount)
+    meleeW_e   = the RAW EstimateMelee(...).AttackerAttack.ExpectedWounds when the reach test
+                 passes (NOT the 0.5-scaled `meleeThreat` local - that factor is threat
+                 pricing, not a wounds estimate)
+    killWounds += Math.Max(shootW_e, meleeW_e) * share_e
+
+- RAW wounds, never `ValueFraction` - it clamps at min(1, wounds/remaining), which saturates
+  exactly where the gate must discriminate: 1.2x lethal and 3x lethal look identical through it.
+- SUM across enemies, max(shoot, melee) per enemy: one activation does one or the other, and
+  they ALL activate. Do not copy retaliation's Math.Max aggregation - a lethality gate blind to
+  convergent fire is blind to the main thing it exists to see.
+- `share_e` = the existing one-ply reply share (ours/(ours + BestAlternativeTargetValue), with
+  the RetaliationShareFloor) - the enemy may prefer another target.
+- Cover counts at MOST of its mass (the discount, not zero): optimism is cheap in the habit and
+  expensive here. This asymmetry is why one scalar could never serve both tiers.
+- NO engaged-target exemption (unlike the habit): the unit we chose to fight can kill us, and
+  chosen exposure is still exposure when pricing death.
+
+**pDestroyed(killWounds)** - piecewise, CONTINUOUS in killWounds, no steps anywhere (the facet-3
+lesson: a cliff in the goal-interrupting term is the worst possible place for one). All inputs
+live on UnitData already:
+
+    woundsToHalf = max(0f, self.RemainingWounds - self.MaxWounds / 2f)
+                   (the engine's half-strength line - RemainingWounds * 2 <= MaxWounds;
+                    MaxWounds is Tough-aware at creation)
+    woundsToWipe = self.RemainingWounds
+    pMoraleFail  = clamp((self.Quality - 1) / 6f, 0f, 1f)
+                   = 1f when self.Tokens.HasToken(TokenType.Shaken) - MoraleUtilities
+                   short-circuits a Shaken unit's tests to auto-fail, no die rolled
+                   (Fearless's 4+ reroll halves the effective fail chance - fine to DEFER;
+                   record the deferral in the notes if so, never cut it silently)
+
+Shape: 0 below the knee ("lose 2 of 10 is exactly free"); ramps up to pMoraleFail as killWounds
+crosses woundsToHalf; linear from pMoraleFail at the knee to 1.0 at woundsToWipe; 1 beyond. Ramp
+widths are implementation detail - the constraints are continuity and the pins.
+
+**ForfeitedContribution()** - endpoint-INDEPENDENT, cached per activation (reset next to
+`_meleeThreatTotal` in BeginActivation). This is the load-bearing choice: across candidates the
+penalty varies only through pDestroyed, so a surrounded unit (P ~ 1 everywhere) sees a constant,
+it cancels in the argmax, and the goal wins - pin 12's rush. Two halves, both in the value
+currency everything else uses:
+
+- Attrition half, horizon-DECAYED: UnitValue(self)/100 x roundsRemaining/totalRounds.
+- Objective half, NOT decayed (Chris's correction - round-4 death costs the marker you were
+  contesting): when the unit holds/contests a marker, or stands within one move of a relevant
+  one, add a flip-scale amount in the MoveObjective currency, urgency-scaled (urgency RISES
+  late, which is correct here). Reuse the marker helpers the planner already has
+  (`_markerContestable`, TacticalAnalysis's objective-eligibility gate).
+- Round decay stays EMERGENT from these two. Never a scalar.
+
+**Do NOT** (each looks like an improvement and re-breaks a settled decision):
+
+- Do not nullify the candidate's own goal on expected death ("it dies before end of round, so
+  the rush scores nothing") - that re-introduces the freeze and contradicts drawn-fire
+  neutrality. Pin 12 enforces this.
+- Do not use ValueFraction anywhere in the gate.
+- Do not retune MoveRetaliation as part of this. The gate's sum partially compensates for
+  retaliation's Max-blindness to convergent fire; revisit retaliation only after Tier 2 plays.
+- Charge candidates: the defender's immediate return strike is already priced in the offense
+  margin, and the gate adds its NEXT-activation threat on top. The slight overlap is accepted -
+  no exemption; the pins arbitrate.
+
+**Calibration** - measured, not chosen, same method as Tier 1: an `[Explicit]` Calibrate harness
+in the new fixture prints the bracket, and MoveLethality sits at its geometric centre.
+
+- Floor (pin 7): at pDestroyed ~ 1 with a fresh unit's contribution, the penalty must beat the
+  goal side of a wipeout walk - up to ~1.3 x 0.75 for a late flip, plus the 0.05 reachable
+  bonus, plus approach terms.
+- Ceiling (pins 6/12): must never stop the profitable rush. P = 0 below the knee by
+  construction; the ramp region is what needs the headroom.
+- The MoveReachableBonus sign gate (`substantive > 0`) shifts the effective bracket exactly as
+  it did for Tier 1 - a penalty pushing a candidate below zero also strips 0.05. Measure WITH
+  it, as Tier 1's harness did.
+
+**Pins**: 6, 7, 8, 9, 10, 12 from the table below. New fixture `TacticianLethalityGateTests.cs`,
+`[TestFixture, NonParallelizable]`, snapshot/restore the static weights in TearDown - copy the
+TacticianCoverHabitTests pattern verbatim. Pin 10's scene must keep the unit OFF-marker so the
+attrition half alone carries the round-1-vs-round-4 contrast (a contesting unit's objective half
+correctly does not decay, which would mask it).
+
+**Verify + ship** (per slice, 2a and 2b separately): engine suite green, full `dotnet build`,
+headless smoke exit 0; submodule-first commit cadence; dated note here, newest on top. After 2b:
+one 640-game pool run as the formality regression net (same pool/seeds/options as the slice-1
+gate) - expect flat; compare PAIRED game-by-game, never by hash equality (#210: DOP-16
+determinism is per-binary, and every A/B rebuilds).
+
+### After Tier 2 - queued wins, explicitly OUT of this item's scope
+
+1. **Shaken enemies are priced as full threats** in retaliation and projected threat, though a
+   Shaken unit spends its activation recovering. VERIFY the engine actually enforces
+   idle-recovery first (known-stubs rule), then discount. Cheap sharpening of every threat term.
+2. **FdgLab terrain lever**: GameRunner hardcodes GameSettings.GetDefault(); the engine supports
+   ETerrainPlacementMode.LoadFromFile. The missing instrument for all cover work - without it
+   every gate on this family of changes is structurally a coin flip.
+3. **#364** - melee path-vs-straight-line reach (open item; over-fearing today).
+4. **RepresentativeCenterZ classification** - possible bug (5 of 6 blocking pieces read as
+   deployment-zone furniture), map-wide impact, needs its own decision.
+5. **Retaliation sum-with-share** - the principled fix for the Max weakness; biggest and most
+   dangerous lever, only after Tier 2 plays.
+
 ## Tests - the pins ARE the spec
 
 Constructed decision cases, not mass games (Chris): the exchange rate should be reviewable in one
@@ -135,6 +275,7 @@ screen instead of emergent from six weights.
 | 14 | covered side within charge reach vs open side outside it | picks the open side | 1b |
 | 15 | same, checking the habit itself | lands at exactly zero (withheld, not double-charged) | 1c |
 | 16 | melee reaches BOTH sides equally | still prefers the shadowed one | 1c |
+| 17 | corridor + a distant melee blob reaching neither endpoint | shadowed+charged still loses; 14/15/16 unchanged | 2a |
 
 Pins 4 and 5 jointly DEFINE `MoveCoverHabit`. Pin 3 means the change provably cannot disturb the
 existing bench pool, which demotes the 640-game gate to a formality run once at the end.
@@ -170,6 +311,19 @@ changing it changes how every generated map plays, which `DefaultTerrainPool`'s 
 does not want to do silently. Separate call from anything here.
 
 ## Notes (newest first)
+
+- 2026-08-06 (audit before the Tier 2 handoff; Chris agreed with all findings). (1) The melee
+  denominator dilutes against melee-heavy armies - promoted to slice 2a, see the handoff plan.
+  (2) The centroid ray is all-or-nothing PER ENEMY (one test decides a whole unit's mass
+  muffled/not) - accepted for a bounded habit; the gate discounts rather than zeroes blocked
+  lanes for exactly this reason. (3) Endpoints-not-paths - already recorded under limitations.
+  (4) Retaliation's Math.Max underprices convergent fire (every enemy activates each round; Max
+  prices one) - the gate must SUM; retaliation itself stays untouched. (5) ValueFraction
+  saturates at min(1, wounds/remaining), which disqualifies it for the gate. (6) The
+  MoveReachableBonus sign gate shifts every calibration bracket. (7) The bench pool measures
+  nothing about this work (2.2% blocking terrain) - slice 1 shipped on argument (85.16% vs the
+  85.70% control, z -0.54, flips 44/48 - a coin flip, as predicted); pins are the spec, the pool
+  is only the net, and finding (1) came from inspection, not from either.
 
 - 2026-08-06 (slice 1c - the two halves must NOT share a denominator). Chris, on the clamped form
   proposed after 1b: "it would be pretty often that melee could reach you whether you choose one
