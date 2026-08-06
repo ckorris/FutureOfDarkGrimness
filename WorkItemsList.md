@@ -117,6 +117,7 @@ Master plan: `docs/ai-agent-plan.md` (heuristics -> MCTS -> learned value net; g
 - [~] 297 — Objectives held per SIDE (Chris's call): allied players guarding one marker no longer contest it to neutral; `ITeamExtensions.ReconcileObjectiveOwner` is the one authority for reconcile + AI projection, 1v1 bit-identical. Backend done; UI treatment (team-colored markers/scoreboard) awaiting Chris's pick. ([WorkItems/297](WorkItems/297-team-owned-objectives.md))
 - [ ] 360 — Move-penalty shooters (Indirect/Mobile Artillery): retaliation never prices the Mobile Artillery unmoved-token forfeit; forced approaches should overshoot for range slack + objective coverage. Filed with fix sketches. Was #357 pre-reconciliation-55. ([WorkItems/360](WorkItems/360-artillery-move-economics.md))
 - [~] 362 — Move/placement input fixes: click on the selected model places (small moves for big bases), placement rotation gates split (wheel=mouse, R=keyboard), group mode faces the unit along ONE heading, Tab cycling added to single-mode consolidation. Implemented + tested; awaiting GUI hand-verify. ([WorkItems/362](WorkItems/362-move-placement-input-fixes.md))
+- [~] 363 — Tactician was LoS-blind: phantom volleys through walls propped up bad advances (BattleBrothers save). Offense term LoS-gated (Indirect exempt) + EngageAtRange clear-lane goals shipped + pinned; open facet: retaliation/projected-threat symmetry (threat still sees through walls - cowering bias). ([WorkItems/363](WorkItems/363-tactician-los-blind-shooting.md))
 
 ## Networking & infrastructure
 
