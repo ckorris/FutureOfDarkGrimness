@@ -276,6 +276,7 @@ screen instead of emergent from six weights.
 | 15 | same, checking the habit itself | lands at exactly zero (withheld, not double-charged) | 1c |
 | 16 | melee reaches BOTH sides equally | still prefers the shadowed one | 1c |
 | 17 | corridor + a distant melee blob reaching neither endpoint | shadowed+charged still loses; 14/15/16 unchanged | 2a |
+| 18 | cheap chaff vs a gunline / cheap body on a charge lane | still tarpits, still screens (existing pins, kept green by netting) | 2b |
 
 Pins 4 and 5 jointly DEFINE `MoveCoverHabit`. Pin 3 means the change provably cannot disturb the
 existing bench pool, which demotes the 640-game gate to a formality run once at the end.
@@ -311,6 +312,76 @@ changing it changes how every generated map plays, which `DefaultTerrainPool`'s 
 does not want to do silently. Separate call from anything here.
 
 ## Notes (newest first)
+
+- 2026-08-06 (slice 2b SHIPPED - Tier 2, the lethality gate). `MoveLethality = 1.7`,
+  `LethalityBlockedDiscount = 0.8`, `LethalityShakenSeverity = 0.6`. Pins 6-10 and 12 green in the
+  new `TacticianLethalityGateTests` (6 + an Explicit Calibrate). Suite 2917 green, full build,
+  headless smoke exit 0. **Three things came out different from the handoff plan, all of them
+  because the plan told me to check rather than assume:**
+
+  1. **Shooting cannot delete a unit by breaking it.** The plan's morale knee assumed crossing half
+     strength turns a failed test "from suppression into deletion". The engine says otherwise, and
+     correctly: `ResolveRangedMoraleStage` - "a non-melee morale failure never Routs - Rout is a
+     melee-only result, GF v3.5.1"; only `AssignMeleeMoralePenaltyStage` Routs. So the gate tracks
+     `killWoundsShoot` and `killWoundsMelee` apart and blends the knee's severity by which kind is
+     doing the wounding. Pricing a gunline as though it could delete would have units flinching
+     away from fire they should walk through.
+  2. **Getting Shaken is not cheap** (Chris, mid-slice): "you lose at least a quarter of the unit's
+     lifetime potential instantly." Three concrete costs - an activation burned recovering (one of
+     four), counting toward NO objective while Shaken, and auto-failing the next morale test, which
+     makes a later melee loss a certain Rout. `LethalityShakenSeverity = 0.6` blends a total loss of
+     the objective half against a ~quarter loss of the attrition half. **Deferred, not cut:**
+     pricing those two halves separately is the more faithful model and wants its own probability
+     track and pins.
+  3. **The gate nets against value the move already banked** - damage dealt from the endpoint and a
+     body interposed on a charge lane; NOT objective deltas (ReconcileObjectivesStage scores at END
+     of round, so a unit that dies first never collects) and NOT approach credit. This was NOT in
+     the plan and was forced by measurement: without it the gate billed a unit for a death the plan
+     was already paying for, `CheapChaff_ChargesTheGunline_ToTarpitIt` and
+     `CheapUnit_ScreensTheValuableShooters_FromTheHorde` both broke from ~1.05 upward, pin 9 needed
+     >= 1.0, and the weight had exactly ONE admissible value - overfitting, not calibration. Netting
+     removed that ceiling (chaff/screen pass to 4.0+) and opened the real bracket below. Same shape
+     as pin 15's Tier 1 double-charge, in the other direction.
+
+  **Calibration (measured, printed by `Calibrate`).** Smallest gunline that makes a unit refuse a
+  marker it could otherwise take:
+
+  | W | fresh Q4 | worn Q4 | fresh Q3 | fresh Q5 | |
+  |---|---|---|---|---|---|
+  | 0.8 | 30 | 20 | 30 | 30 | pin 9 cannot resolve - 3+ and 5+ balk together |
+  | 1.0 | 28 | 18 | 28 | 26 | **floor**: quality starts to decide |
+  | 1.5 | 22 | 14 | 24 | 22 | |
+  | 2.0 | 20 | 12 | 22 | 18 | |
+  | 3.0 | 18 | 10 | 20 | 16 | **ceiling**: a worn unit freezes for half of what it has left |
+  | 6.0 | 14 | 6 | 16 | 14 | |
+
+  1.7 is the geometric centre, ~1.7x clear of both ends. Below 1.0 pin 9 reads BACKWARDS - a 3+ unit
+  is worth more, so raw value outweighs the morale odds and the veteran balks first. Note the fresh
+  column flattens near 14 at any weight: P is identically zero below the knee, so the gate cannot
+  make a healthy unit flinch at ordinary casualties however it is tuned - Chris's "lose 2 of 10 and
+  take the objective" is a property of the curve's SHAPE, not of the number.
+
+  - Pins 8 and 9 are threshold-ordering pins (smallest gunline that makes each unit balk) rather
+    than single hand-tuned scenes. A flip test needs the ungated margin to land between two gate
+    costs that differ by ~25%, which is knife-edge and specifies nothing robust; the threshold form
+    is literally "5+ balks first" and survives retuning. Each still asserts one concrete decision at
+    a volley between the two thresholds, and checks the ungated scene goes, so the flip provably
+    belongs to the gate and not to retaliation.
+  - Quality only bites AT the knee, so pin 9 uses FRESH squads. A unit already deep past half
+    strength is near-certain to break whatever its Quality (P 0.84 vs 0.88), and the pin cannot see
+    a 5% difference.
+  - Pin 10 is deliberately objective-free: with no marker in play the forfeiture is the attrition
+    half alone, which is the half that decays. 20 guns, round 1 BALKS (-0.1531) and round 4 GOES
+    (+0.1182), ungated both GO - round decay emergent from the horizon, never its own scalar.
+  - Pin 12 (doomed remnant): ungated +0.8209, gated +0.8709. The gate slightly FAVOURS the rush,
+    because P is a shade higher standing still - the cancellation working as designed.
+  - **Test-infrastructure bug found and fixed in both fixtures.** `private static readonly float
+    Shipped... = TacticianWeights.X;` on a beforefieldinit type initialises on FIRST ACCESS, and the
+    first access is inside TearDown (or Calibrate's restore) - AFTER a test has zeroed the weight.
+    It captured 0 as "the shipped default" and silently disabled the gate for the rest of the run;
+    it cost a full calibration pass reading numbers that meant nothing. Both fixtures now capture in
+    `[OneTimeSetUp]`, which is ordered before any test body. The cover-habit fixture had the same
+    latent bug and was passing only by luck of type-load timing.
 
 - 2026-08-06 (slice 2a SHIPPED). `MeleeThreatTotal()` now skips melee enemies that could not reach
   us this activation - `MeleeThreatReach(enemy, self) < Distance(now, enemyCentroid) -
