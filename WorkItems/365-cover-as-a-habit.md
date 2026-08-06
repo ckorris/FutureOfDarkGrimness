@@ -241,8 +241,16 @@ determinism is per-binary, and every A/B rebuilds).
 ### After Tier 2 - queued wins, explicitly OUT of this item's scope
 
 1. **Shaken enemies are priced as full threats** in retaliation and projected threat, though a
-   Shaken unit spends its activation recovering. VERIFY the engine actually enforces
-   idle-recovery first (known-stubs rule), then discount. Cheap sharpening of every threat term.
+   Shaken unit spends its activation recovering. VERIFY the engine actually enforces idle-recovery
+   first (known-stubs rule), then discount. Cheap sharpening of every threat term.
+   **The discount must be split by whether that enemy has already activated this round** (Chris,
+   2026-08-06): a Shaken enemy that has NOT yet activated can recover this round and shoot early
+   next round, quite possibly before our unit acts again - so its threat is delayed by roughly one
+   activation, not removed, and it earns only a small discount. One that has ALREADY activated
+   burns its NEXT activation recovering, which buys us a whole extra activation of safety, so it
+   earns a large one. `IGameProgress.UnactivatedUnits` already carries exactly this fact and is
+   already replicated to both host and client - its own docstring notes the tactical overlay uses
+   it to show only unactivated enemies as projecting threat, so the precedent is set.
 2. **FdgLab terrain lever**: GameRunner hardcodes GameSettings.GetDefault(); the engine supports
    ETerrainPlacementMode.LoadFromFile. The missing instrument for all cover work - without it
    every gate on this family of changes is structurally a coin flip.
