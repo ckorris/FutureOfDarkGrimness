@@ -118,6 +118,7 @@ Master plan: `docs/ai-agent-plan.md` (heuristics -> MCTS -> learned value net; g
 - [ ] 360 — Move-penalty shooters (Indirect/Mobile Artillery): retaliation never prices the Mobile Artillery unmoved-token forfeit; forced approaches should overshoot for range slack + objective coverage. Filed with fix sketches. Was #357 pre-reconciliation-55. ([WorkItems/360](WorkItems/360-artillery-move-economics.md))
 - [~] 362 — Move/placement input fixes: click on the selected model places (small moves for big bases), placement rotation gates split (wheel=mouse, R=keyboard), group mode faces the unit along ONE heading, Tab cycling added to single-mode consolidation. Implemented + tested; awaiting GUI hand-verify. ([WorkItems/362](WorkItems/362-move-placement-input-fixes.md))
 - [ ] 364 — Melee threat is straight-line: `MeleeThreatReach` prices a charge through Impassible terrain that the real charge has to walk around, so the AI over-fears melee behind hard cover. Path-side sibling of #363, split out of it. ([WorkItems/364](WorkItems/364-melee-threat-through-impassible.md))
+- [ ] 365 — FdgLab bench has no terrain lever: every game plays the auto layout, whose maps average ~3 blocking pieces on 2.2% of the table (5 of 6 solid pieces are classed as deployment-zone furniture and dropped 60% of the time), so LoS work can be cleared but never measured. Engine already supports LoadFromFile; FdgLab does not expose it. ([WorkItems/365](WorkItems/365-fdglab-terrain-lever.md))
 
 ## Networking & infrastructure
 

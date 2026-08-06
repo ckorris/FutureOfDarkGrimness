@@ -15,6 +15,51 @@ candidate. Pinned by a scenario reproducing the source save's corner-wall setup.
 
 ## Notes
 
+- 2026-08-06 (BlockedThreatShare tuning, 0.2 vs 0.4): **0.2 measures mildly BETTER, but the pool
+  cannot settle it.** Same 640-game pool/seeds/options as the gate, both runs on one fresh Release
+  binary, sequential; `--weights BlockedThreatShare=<v>`. Reports:
+  `FdgLab/reports/363-gate/{share04,share02}/`.
+
+  | run | share | score | vs 0.4 | vs pre-#363 control |
+  |---|---|---|---|---|
+  | share04 | 0.4 (shipped default) | 84.84% | - | -0.86pp |
+  | share02 | 0.2 | 85.62% | **+0.78pp** (z +2.24) | -0.08pp |
+
+  - share04 reproduced the recorded facet-3 run EXACTLY (same score, same W/T/L, zero flipped
+    games) despite being a Release build against facet3's Debug one - so config is outcome-neutral
+    here and the 0.2 pairing is against a clean same-binary control. (Timing is not comparable
+    across those two: Release runs 45.6ms/decision and 18.4s/game vs Debug's 65.2/26.0.)
+  - Only 17 of 640 games flip between 0.2 and 0.4 - a far smaller perturbation than adding the
+    sight gate at all (83 flips). Breakdown: 10 tie->win, 1 loss->win, 4 win->tie, 2 loss->tie;
+    net +5.0 game-equivalents. Sign test 13/17 one-sided p=0.025, two-sided p=0.049 - REAL but
+    borderline, and not a pre-registered hypothesis. 0 faults in both runs.
+  - At 0.2 the whole facet-3 cost disappears: -0.08pp against the pre-#363 control (z -0.08), i.e.
+    indistinguishable from the baseline, where 0.4 sat -0.86pp below it.
+  - **Direction matters: LOWER share = blocked incoming fire counts for less = MORE cover-seeking.**
+    So this leans against the prior recorded in the Decisions section below ("a hard zero would
+    invent perfect hard cover and teach the whole army to hug walls"). It does not refute it -
+    0.2 is not 0.0 - but the shipped 0.4 is not the measured optimum on this pool.
+  - **Not retuned on this evidence, deliberately.** The pool's maps are nearly LoS-free (see the
+    terrain audit below), so 17 flips is what "a handful of wall situations per game" looks like;
+    borderline significance on a near-null instrument is not a mandate. The tuning question is
+    reopened properly by a terrain-dense pool, not by more games on this one. 0.6 (and 0.0, which
+    would test the prior head-on) not run - deferred, not dropped.
+
+- 2026-08-06 (terrain audit - why this pool under-measures the fix): the bench uses
+  `GameSettings.GetDefault()`, i.e. `AutoFromLayout` over `DefaultTerrainPool`. Of its 6
+  Blocking|Impassible pieces, `PlaceTerrainStage.RepresentativeCenterZ` (AVERAGE of a composite's
+  parts' centre-Z, not the AABB centre) puts FIVE inside a deployment zone, where
+  `DeploymentZonePlacementChance` = 0.4 drops them 60% of the time - and deployment zones are
+  behind the armies, not between them. Only the Central building (6x4 = 24 sq in, jittered up to
+  10") is always on the table. Expected map: ~3.0 blocking pieces, 77.6 sq in = **2.2% of the
+  72x48 table**. The other pieces (2 forests, 2 sandbag lines, mine field, rubble) are
+  Cover/Difficult/Dangerous, and `HasLineOfSight` reads the Blocking flag only, so #363 never sees
+  them. Consequence: this pool is structurally a no-regression instrument for any LoS work, and
+  cannot be made into a measurement of one by adding games. FdgLab has no terrain lever today
+  (`GameRunner` hardcodes `GetDefault()`) though the engine already supports
+  `ETerrainPlacementMode.LoadFromFile` + `TerrainLayoutPath` (placed verbatim - no jitter, no
+  dropout). Filed as **#365**.
+
 - 2026-08-06 (pool gate, all three facets): **NO REGRESSION.** 8-army pool, Tactician (A) vs
   SoloRules (B), 64 ordered matchups x 10 games = 640 games per run, DOP 16, seeds from 1000,
   Realistic dice, each build in its own worktree, runs SEQUENTIAL so load conditions match.
@@ -62,7 +107,9 @@ candidate. Pinned by a scenario reproducing the source save's corner-wall setup.
   NEXT-activation threat and the shooter moves before it shoots, so a cut lane costs it a
   repositioning move it may not have - a hard zero would invent perfect hard cover and teach the
   whole army to hug walls. 0.4 is a stated prior (the generator's own arc search shows a clear
-  lane is usually findable within one move), tunable like any weight via `--weights`.
+  lane is usually findable within one move), tunable like any weight via `--weights`. **Measured
+  2026-08-06: 0.2 scores +0.78pp above 0.4 on the gate pool (borderline, and on near-LoS-free
+  maps) - see the tuning note at the top. Left at 0.4 pending a terrain-dense instrument.**
   Melee threat deliberately untouched: a charge needs a path, not a sight line.
   - Pins: `TacticianLineOfSightTests` now 7 - partial factor scales linearly, Indirect ignores
     both 0 and partial factors, and `Score_WallShadowEndpoint_PricesIncomingFireBelowOpenGround`
