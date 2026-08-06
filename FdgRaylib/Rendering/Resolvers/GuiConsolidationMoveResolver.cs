@@ -156,9 +156,7 @@ public class GuiConsolidationMoveResolver
         var tcs = new TaskCompletionSource<List<ModelMoveEntry>>();
         // Consolidation uses a single hard cap; the "advance" threshold is irrelevant here.
         var template = new PathTemplate(request.UnitDataBinding, request.MaxDistanceInches, request.MaxDistanceInches);
-        var first = request.UnitDataBinding.GetValue().ModelBindings
-            .Select(mb => mb.GetValue() as IModel)
-            .FirstOrDefault(m => m != null && m.GetIsAlive());
+        var first = LivingModels(request).FirstOrDefault();
 
         lock (_lock)
         {
@@ -320,12 +318,13 @@ public class GuiConsolidationMoveResolver
         // 4) Input
         if (overTable && !io.WantCaptureMouse)
         {
-            // Left-click: select a model whose start footprint is hit (#295 -- the only way to switch models
-            // now that Space commits); otherwise place a waypoint for the selected model at the clamped ghost
-            // position. Left-click places (consistent with movement).
+            // Left-click: select a DIFFERENT model whose footprint is hit (#295); otherwise place a
+            // waypoint for the selected model at the clamped ghost position. A click on the selected
+            // model's own footprint places, never re-selects -- a big base must be able to take a step
+            // shorter than its own extent. Left-click places (consistent with movement).
             if (ImGui.IsMouseClicked(ImGuiMouseButton.Left))
             {
-                if (hoveredModel != null)
+                if (hoveredModel != null && !ReferenceEquals(hoveredModel, _selectedModel))
                 {
                     _selectedModel = hoveredModel;
                 }
@@ -347,8 +346,20 @@ public class GuiConsolidationMoveResolver
             }
         }
 
-        // #295: Space no longer cycles models here -- click the model you want (hover-highlighted above),
-        // which frees Space to join Enter as the universal Confirm key.
+        // #295: Space no longer cycles models here -- it is Confirm. Up/Down and Tab/Shift+Tab walk the
+        // unit's models instead, the same keys movement's roster answers to (#326); consolidation has no
+        // roster panel yet, so the keys and the model click are its two selection surfaces.
+        if (wantInput)
+        {
+            int cycle = ResolverHotkeys.CycleDelta();
+            if (cycle != 0)
+            {
+                var roster = LivingModels(request);
+                int index = ModelRoster.Cycle(roster.FindIndex(m => ReferenceEquals(m, _selectedModel)),
+                    roster.Count, cycle);
+                if (index >= 0) _selectedModel = roster[index];
+            }
+        }
 
         DrawInfoPanel(screenW, request, pt, tcs, terrain);
     }
@@ -367,7 +378,7 @@ public class GuiConsolidationMoveResolver
         float maxDist = request.MaxDistanceInches;
 
         // Wheel/R rotate; Ctrl+Wheel cycles the target formation (#277, shared GroupInput semantics).
-        var (rotationDelta, formationDelta) = GroupInput.Read(wantInput);
+        var (rotationDelta, formationDelta) = GroupInput.Read(!io.WantCaptureMouse, !io.WantCaptureKeyboard);
         if (rotationDelta != 0f) { _groupRotation += rotationDelta; _groupFacingAngle += rotationDelta; }
         if (_formationCycle == null)
         {
@@ -546,7 +557,7 @@ public class GuiConsolidationMoveResolver
         }
         else
         {
-            ImGui.TextDisabled("No model selected. Left-click a model on the table.");
+            ImGui.TextDisabled($"No model selected. Left-click a model on the table, or press {ResolverHotkeys.CycleHint}.");
         }
 
         // #215: Group/Single toggle (shared with the movement + deployment resolvers).
@@ -561,7 +572,7 @@ public class GuiConsolidationMoveResolver
             ImGui.TextDisabled("Drag: move unit   Wheel/R: rotate   Ctrl+Wheel: formation\nL-click: commit   R-click: undo");
         }
         else
-            ImGui.TextDisabled("L-click a model: switch to it   L-click elsewhere: place waypoint\nR-click: undo");
+            ImGui.TextDisabled($"L-click another model: switch to it   {ResolverHotkeys.CycleHint}: pick model\nL-click: place waypoint   R-click: undo");
 
         ImGui.Spacing();
         float spacing = ImGui.GetStyle().ItemSpacing.X;
@@ -657,6 +668,13 @@ public class GuiConsolidationMoveResolver
         }
         return false;
     }
+
+    private static List<IModel> LivingModels(ConsolidationMoveRequest request) =>
+        request.UnitDataBinding.GetValue().ModelBindings
+            .Select(mb => mb.GetValue() as IModel)
+            .Where(m => m != null && m.GetIsAlive())
+            .Select(m => m!)
+            .ToList();
 
     private static List<(IModel model, Position pos)> BuildFinalPositions(
         IReadOnlyDictionary<IModel, IReadOnlyList<Position>> paths,

@@ -168,9 +168,12 @@ steps — a frozen ghost un-freezes, a chosen template goes back to the piece li
 so; it previously advertised **Esc**, which has opened the in-game menu since #248 and never cancelled a
 resolver, so the one line telling a stuck player how to get out named the wrong key.
 
-**Selecting one model of a unit is a click on that model** (single-mode movement and consolidation). The
-click and the hover highlight that advertises it read the same `ModelPicker.HitTest`; paint a highlight
-from anything else and it will eventually disagree with the click.
+**Selecting one model of a unit is a click on that model** (single-mode movement and consolidation) —
+**unless it is already the selected model**, in which case the click places a waypoint like any other
+table click: a big base must be able to take a step shorter than its own extent, so the selected model's
+footprint is never a click-swallowing hotspot. The switch click and the hover highlight that advertises
+it read the same `ModelPicker.HitTest`; paint a highlight from anything else and it will eventually
+disagree with the click.
 
 ## The model roster (#326)
 
@@ -200,8 +203,8 @@ worth keeping:
 - `ModelRoster` is arithmetic only (no ImGui), so the budget is unit-tested in `ModelRosterTests` — same
   split as `PlacementPanelLayout` and `ActionMenuLayout`.
 
-Consolidation (`GuiConsolidationMoveResolver`) carries the identical click-to-select gesture and is the
-next slice to get the same treatment; until then it keeps the click-only affordance.
+Consolidation (`GuiConsolidationMoveResolver`) carries the identical click-to-select gesture and answers
+the same `ResolverHotkeys.CycleDelta()` keys, but has no roster panel yet — that is still the next slice.
 
 ## Validation gotchas
 

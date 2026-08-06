@@ -312,4 +312,48 @@ public class GroupFormationUtilitiesTests
         AssertPos(result.NewPositions[0], 1f, 1f, "model0");
         AssertPos(result.NewPositions[1], 3f, 1f, "model1");
     }
+
+    // ---- GroupHeading: the ONE facing a group step points the whole unit along. Models whose
+    // travels diverge (a formation morph) must not each face their own way — that is the scattered-
+    // bikers bug: a unit deployed with mixed facings re-formed into every direction at once.
+
+    private static void AssertFacing(Float2 actual, float x, float y, string msg = "")
+    {
+        Assert.That(actual.X, Is.EqualTo(x).Within(Tol), $"{msg} X");
+        Assert.That(actual.Y, Is.EqualTo(y).Within(Tol), $"{msg} Y");
+    }
+
+    [Test]
+    public void GroupHeading_FollowsCentroidTravel_NotPerModelTravel()
+    {
+        // Two models converging on a line ahead: travels point (+1,+1) and (+1,-1), but the UNIT
+        // moves along +x, and that is the one heading both share.
+        var from = new[] { new Position(0f, 0f), new Position(0f, 4f) };
+        var to   = new[] { new Position(2f, 1f), new Position(2f, 3f) };
+        var facings = new[] { new Float2(0f, 1f), new Float2(0f, 1f) };
+
+        AssertFacing(GroupFormationUtilities.GroupHeading(from, to, facings), 1f, 0f);
+    }
+
+    [Test]
+    public void GroupHeading_InPlaceMorph_FallsBackToAverageFacing()
+    {
+        // A symmetric morph moves models but not the centroid; scattered facings average out to +x.
+        var from = new[] { new Position(0f, 0f), new Position(0f, 4f) };
+        var to   = new[] { new Position(0f, 4f), new Position(0f, 0f) };
+        var facings = new[] { new Float2(0.7071f, 0.7071f), new Float2(0.7071f, -0.7071f) };
+
+        AssertFacing(GroupFormationUtilities.GroupHeading(from, to, facings), 1f, 0f);
+    }
+
+    [Test]
+    public void GroupHeading_OpposedFacings_FallBackToFirst()
+    {
+        // Zero centroid travel AND facings that cancel exactly: any answer is arbitrary, so it must
+        // at least be deterministic — the first model's.
+        var from = new[] { new Position(0f, 0f), new Position(2f, 0f) };
+        var facings = new[] { new Float2(0f, 1f), new Float2(0f, -1f) };
+
+        AssertFacing(GroupFormationUtilities.GroupHeading(from, from, facings), 0f, 1f);
+    }
 }

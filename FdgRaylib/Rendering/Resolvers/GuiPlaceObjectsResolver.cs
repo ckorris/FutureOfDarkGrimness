@@ -324,7 +324,7 @@ public class GuiPlaceObjectsResolver<T>
         // Rotation input rotates the facing of the one model being placed / dragged (#150); the pending
         // rotation persists across placements (place several facing the same way) and resets on Resolve.
         // Shared GroupInput semantics (#277); the formation delta has no meaning in single mode.
-        var (singleRotationDelta, _) = GroupInput.Read(!io.WantCaptureMouse && !io.WantCaptureKeyboard);
+        var (singleRotationDelta, _) = GroupInput.Read(!io.WantCaptureMouse, !io.WantCaptureKeyboard);
         _singleRotationDeploy += singleRotationDelta;
         Float2 facing = RotateFloat2(
             PlacementUtilities.DefaultDeployFacing(zone.Bounds, _tableH), _singleRotationDeploy);
@@ -409,7 +409,7 @@ public class GuiPlaceObjectsResolver<T>
 
         // Rotation input: wheel both ways; R clockwise, Shift+R counter-clockwise. Ctrl+Wheel cycles
         // the formation (#277).
-        var (rotationDelta, formationDelta) = GroupInput.Read(wantInput);
+        var (rotationDelta, formationDelta) = GroupInput.Read(!io.WantCaptureMouse, !io.WantCaptureKeyboard);
         _groupRotationDeploy += rotationDelta;
 
         // Per-axis half-extents at the un-rotated deploy facing so the formation layout packs a wide rectangle
@@ -715,8 +715,8 @@ public class GuiPlaceObjectsResolver<T>
         // the stat box given exactly the space that is left (#288). Order of appearance is unchanged.
         string statusText = _errorMessage ??
             (dropping              ? "Position the unit in the blue zone. Wheel / R rotate, Ctrl+Wheel changes formation. Click drops the whole unit." :
-             _dragIndex.HasValue   ? "Click to drop the picked-up model. R-click puts it back." :
-             _placed.Count < total ? "Click empty space to place the next model, or click a placed model to move it. R-click undoes." :
+             _dragIndex.HasValue   ? "Click to drop the picked-up model. Wheel / R rotate. R-click puts it back." :
+             _placed.Count < total ? "Click empty space to place the next model, or click a placed model to move it. Wheel / R rotate. R-click undoes." :
                                      "Click any placed model to pick it up and move it. R-click undoes.");
         Vector4 statusColor = _errorMessage != null
             ? new Vector4(1f, 0.4f, 0.4f, 1f)

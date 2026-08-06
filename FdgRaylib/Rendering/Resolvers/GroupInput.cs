@@ -12,24 +12,29 @@ internal static class GroupInput
 {
     public static readonly float RotationStep = MathF.PI / 12f; // 15 deg per wheel notch / key press
 
-    /// <summary>Rotation delta (radians) and formation-cycle delta for this frame; zeros when the
-    /// UI has mouse/keyboard capture (<paramref name="wantInput"/> false).</summary>
-    public static (float rotationDelta, int formationDelta) Read(bool wantInput)
+    /// <summary>
+    /// Rotation delta (radians) and formation-cycle delta for this frame. The wheel and the key are
+    /// gated SEPARATELY — the wheel by mouse capture, R by keyboard capture — because tying both to
+    /// one combined flag let a latched keyboard capture (ImGui nav focus after any panel-button
+    /// click) silently kill the wheel too, which read as "rotation stopped working". Both are muted
+    /// while typing or while the Esc menu is open, same as <see cref="ResolverHotkeys"/>.
+    /// </summary>
+    public static (float rotationDelta, int formationDelta) Read(bool wantMouse, bool wantKeyboard)
     {
-        if (!wantInput) return (0f, 0);
         var io = ImGui.GetIO();
+        if (io.WantTextInput || EscapeRouter.MenuOpen) return (0f, 0);
         bool shift = ImGui.IsKeyDown(ImGuiKey.LeftShift) || ImGui.IsKeyDown(ImGuiKey.RightShift);
         // Legacy io.KeyCtrl isn't populated by every backend, so also check the keys directly.
         bool ctrl = io.KeyCtrl || ImGui.IsKeyDown(ImGuiKey.LeftCtrl) || ImGui.IsKeyDown(ImGuiKey.RightCtrl);
 
         float rotation = 0f;
         int cycle = 0;
-        if (io.MouseWheel != 0f)
+        if (wantMouse && io.MouseWheel != 0f)
         {
             if (ctrl) cycle = io.MouseWheel > 0f ? 1 : -1;
             else rotation += io.MouseWheel > 0f ? RotationStep : -RotationStep;
         }
-        if (ImGui.IsKeyPressed(ImGuiKey.R))
+        if (wantKeyboard && ImGui.IsKeyPressed(ImGuiKey.R))
             rotation += shift ? RotationStep : -RotationStep;
         return (rotation, cycle);
     }
