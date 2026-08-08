@@ -1,6 +1,6 @@
 # 226 — In-app bug reporting system
 
-**Status**: in progress
+**Status**: done (closed 2026-08-05)
 **Related**: #271 (list server — reports ride the same Worker), #054 (clients can't save — client reports are log-only), #187 (RecoverySave — template for the local bundle writer)
 
 ## Goal
@@ -62,3 +62,16 @@ To test without deploying: `npx wrangler dev`, launch the game with
 - Client-side save capture (blocked on #054).
 
 ## Outcome
+Closed 2026-08-05. In-game bug reporting is live end to end: **Report a Bug** in the escape menu takes the player's notes, always writes a local bundle to `BugReports/` beside the executable, then fire-and-forget uploads it gzipped to `POST /reports` on the existing #271 Cloudflare Worker (no new service, free tier, `wrangler deploy` version `19f49225-8ccb-45e7-ad86-ded6fa0e9ebb`). Retrieval is pull: `fetch-reports.sh` with the `ADMIN_TOKEN` secret. Local-first ordering means an offline or failed upload still leaves a complete report on disk, and the status line says so honestly rather than claiming success.
+
+The bundle carries description, build stamp, protocol version, platform, player name, the session's log and chat merged in true arrival order (newest 4000 lines), the crash.log tail, and - on the host only - the full save. A disclosure above the Send button itemizes every one of those, including the two that are not the reporter's own data (other players' chat, and their army lists inside the save) and the IP the drop box records.
+
+Two things this item pulled in that were missing generally: an app **build stamp** (`InformationalVersion`, stamped from git by `build-dist.sh`, `dev` otherwise) - without it a report cannot be tied to a binary; and gitignoring `tools/list-server/reports/`, since fetched bundles carry other people's data.
+
+Abuse posture mirrors #271's: uploads are unauthenticated by necessity, so 1MB compressed / 16MB decompressed caps, a per-IP interval, and total caps that REJECT rather than evict (a flood must not delete real reports). Reads are admin-token-only and fail CLOSED when the secret is unset - verified in production, where `/reports` answered 503 before the secret and 403 after.
+
+Verification: engine 2862 green, app 1118 green (10 new in `BugReportTests`), full build, headless smoke exit 0, local `wrangler dev` smoke passed, and the deployed Worker passed `smoke.sh` against production (all 14 sections). GUI hand-verified by owner.
+
+**The one path never exercised as a whole** is an actual in-game Send reaching the deployed server (the GUI check predated the deploy, so its upload would have 404'd). Every component of it is independently verified - the uploader's exact wire format is what `smoke.sh` posts, and `ListServerConfig` is proven by the live server browser - but if a real report never arrives, start there. Steps are in "Next steps" above, and a leftover `SMOKEMARKER` test report from a failed smoke run may still be in the drop box until a `fetch-reports.sh --delete` clears it.
+
+Deliberately not built (see Deferred facets): CLI/headless and non-game-screen reporting, GitHub-issue push notification, client-side save capture (blocked on #054).
