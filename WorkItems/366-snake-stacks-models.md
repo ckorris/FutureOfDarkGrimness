@@ -18,6 +18,23 @@ degenerate snake. Engine suite green, headless smoke exit 0.
 
 ## Notes
 
+- 2026-08-08: **Slice 2 landed** (engine `e6690f4`) - the validator rule, plus a correction to slice 1.
+  `ValidateNoSelfOverlap` runs in all four `ValidatePaths` forms and in `ValidateConsolidationPaths`,
+  "not worsened" like the friendly-overlap and off-table rules; new `EErrorReasonType.EndedOnOwnUnitModel`
+  with GUI text. Four pins in `MovementValidationTests` (same spot / overlapping-but-not-coincident /
+  clear / already-stacked-still-moves); the two rejection pins are red without the rule.
+  Turning the rule on immediately broke three existing tests, all of them honest catches:
+  - `BeyondRush_DifferentModelEndsInMelee_Accepted` - the FIXTURE ended two 0.75" bases 1" apart. It was
+    about charge reach, never about spacing; the overshooter is now offset off the lane.
+  - the two `TacticianWalledUnitTests` corridor cases - these exposed a SECOND latent defect (below).
+  Suite 2917/2917, app 1140/1140, `dotnet build` clean, smoke exit 0.
+
+- 2026-08-08: **Latent defect found by the new rule**: the snake staggered ranks by ARC length, but
+  around a bend equal arc steps are a much shorter straight-line gap, so consecutive ranks bunched into
+  each other at exactly the corners the snake exists to round. Invisible for as long as nothing checked a
+  unit against its own models. Ranks now back off along the route (bounded, `SnakeRankBackoffSteps`)
+  until they clear the rank ahead by a full base width.
+
 - 2026-08-08: **Slice 1 landed** (engine `048e72b`) - `BuildSnakeToSide` no longer floors overrunning
   ranks onto `path[0]`; they hold position (`MinSnakeRankArcInches`). Two red-by-design pins in
   `MovementPlannerTests`: `BuildSnakeCandidate_ArcShorterThanTheFile_NeverStacksTwoModelsOnOneSpot`
@@ -54,8 +71,9 @@ degenerate snake. Engine suite green, headless smoke exit 0.
 
 ## Decisions
 
-- 2026-08-08: For ranks that do not fit the arc, **hold position** rather than (a) extending the file
-  backwards behind `path[0]` or (c) refusing the snake outright. (a) is the geometrically honest column
+- 2026-08-08 (**reversed same day** - see the entry below): for ranks that do not fit the arc, **hold
+  position** rather than (a) extending the file backwards behind `path[0]` or (c) refusing the snake
+  outright. (a) is the geometrically honest column
   and would let the existing `ForwardProgress` gate reject the degenerate case for free, but forming a
   column from a blob genuinely costs backward movement - which is the very thing being reported. (c)
   would regress the #256/#264 cases the snake exists for (the walled Battle Brothers pocket cleared at a
@@ -63,5 +81,23 @@ degenerate snake. Engine suite green, headless smoke exit 0.
   mostly STRETCHES the unit into the file" - and means no model ever moves backwards in a snake; the file
   forms over successive activations. Cost: a held model can be overlapped by an advancing one, which is
   exactly what the new same-unit validator is there to catch, so the ladder backs off instead.
+
+- 2026-08-08: **Reversed to (a), the backward file extension.** Holding was chosen to guarantee no model
+  ever moves backwards in a snake, and it does fix the reported save - but with the same-unit validator
+  switched on it broke both `TacticianWalledUnitTests` corridor cases: a held model sits in the path of an
+  advancing one, the snake fails validation, and the walled unit can no longer file out of its pocket.
+  That is the case #256/#264 built the snake for. Forming a column out of a blob genuinely costs the rear
+  models ground, so (a) is the honest geometry, and it is self-policing: the tail's cost is then visible to
+  the ladder's existing `ForwardProgress` gate, which rejects a snake that nets backwards. Measured on the
+  save's geometry: the honest tail drops the candidate's centroid gain from +0.30" to -0.06", i.e. below
+  `MinBackoffStepInches`, so the reported unit would not have snaked at all. Recorded because the reasoning
+  inverts: the property "no model moves backwards" is NOT compatible with the snake's purpose.
+
+- 2026-08-08: `PlanMoveToward_GoalCellInsideWallInflation_StillRoundsTheWall` was re-pinned rather than
+  relaxed. Its 2.5" centroid bound encoded the stacked file's geometry; a file that no longer overlaps
+  itself is physically longer, so the centroid trails 2.9" instead of 2.4". Verified the behaviour that
+  matters is unchanged - the lead model lands EXACTLY on the marker in both, and seizure is per model, not
+  per centroid - so the test now asserts the lead model on the marker (a stronger claim than it made
+  before) with the centroid bounded by the 3" seizure radius.
 
 ## Outcome
