@@ -22,7 +22,12 @@ Give the user (and future testers) a way to report a bug from inside the app rat
 ## Next steps (deploy + end-to-end test) - all that remains to close this item
 All from `~/Projects/fdg-raylib_Green/tools/list-server` (needs the Node 22 installed 2026-08-05):
 
-1. Deploy the Worker with the new /reports endpoints:
+1. ~~Deploy the Worker with the new /reports endpoints~~ **DONE 2026-08-05**, version
+   `19f49225-8ccb-45e7-ad86-ded6fa0e9ebb`, both DO bindings live. Verified from outside:
+   `GET /` 200, `GET /servers` 200 (registry survived the v2 migration), `GET /reports` 503
+   "admin token not configured" - the fail-closed path, which local dev can't exercise because
+   `.dev.vars` always supplies a token. NB the first request right after deploy hit a stale edge
+   node and 404'd; it settled within seconds.
    ```bash
    npx wrangler deploy
    ```
