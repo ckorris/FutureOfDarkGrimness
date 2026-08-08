@@ -70,8 +70,12 @@ public class ArmyForgeScreen : IAppScreen
         $"FDG Army (*{ArmyListFile.EXTENSION_WITH_PERIOD})",
         new[] { $"*{ArmyListFile.EXTENSION_WITH_PERIOD}" });
 
-    private readonly List<BookFile> _library;
-    private readonly string[] _libraryNames;
+    // The public ctor loads the library on a worker task: parsing all 47 bundled books (~9 MB of JSON)
+    // took ~0.5s on the startup path, before the window even existed. Every member that reads the
+    // books/list joins the task via EnsureLibrary() first; the test-seam ctor fills these synchronously.
+    private Task<List<BookFile>>? _libraryTask;
+    private List<BookFile> _library = null!;
+    private string[] _libraryNames = null!;
     private int _bookIndex;
     private BookFile _book = null!; // always set through UseBook() before any read (both ctors call it)
 
@@ -79,7 +83,7 @@ public class ArmyForgeScreen : IAppScreen
     // definitions). Rebuilt whenever _book changes - a switch, a load, or a share-link import - since a
     // faction's own rules only exist in its own book.
     private RuleGlossary _glossary = RuleGlossary.Empty;
-    private BuilderList _list;
+    private BuilderList _list = null!; // set with the library (ctor test seam / EnsureLibrary)
     private string? _selectedRosterId;
     private int? _selectedListIndex;
     private string? _statusHint;
@@ -118,7 +122,16 @@ public class ArmyForgeScreen : IAppScreen
 
     public ArmyForgeScreen()
     {
-        _library = LoadLibrary();
+        _libraryTask = Task.Run(LoadLibrary);
+    }
+
+    /// <summary>Joins the background library load and adopts the first book as current. No-op once the
+    /// library is present (always, for a screen built through the test-seam ctor).</summary>
+    private void EnsureLibrary()
+    {
+        if (_library is not null) return;
+        _library = _libraryTask!.GetAwaiter().GetResult();
+        _libraryTask = null;
         _libraryNames = _library.Select(b => b.Name).ToArray();
         _bookIndex = 0;
         UseBook(_library[0]);
@@ -540,10 +553,11 @@ public class ArmyForgeScreen : IAppScreen
 
     // ── List-mutation seams (unit-tested without ImGui) ─────────────────────────────────────────────────
 
-    internal BuilderList List => _list;
+    internal BuilderList List { get { EnsureLibrary(); return _list; } }
 
     internal void AddToList(string rosterId)
     {
+        EnsureLibrary();
         RosterUnit? roster = _book.Units.FirstOrDefault(u => u.Id == rosterId);
         if (roster is null) return;
         _list.Units.Add(new BuilderUnit { RosterUnitId = roster.Id, ModelCount = roster.BaseModelCount });
@@ -553,6 +567,7 @@ public class ArmyForgeScreen : IAppScreen
 
     internal void RemoveFromList(int index)
     {
+        EnsureLibrary();
         if (index < 0 || index >= _list.Units.Count) return;
         string? removedId = _list.Units[index].Id;
         _list.Units.RemoveAt(index);
@@ -567,15 +582,24 @@ public class ArmyForgeScreen : IAppScreen
         _selectedListIndex = _list.Units.Count == 0 ? null : Math.Min(_selectedListIndex ?? 0, _list.Units.Count - 1);
     }
 
-    internal BuiltArmyFile Compile() => ListCompiler.Compile(_book, _list);
+    internal BuiltArmyFile Compile()
+    {
+        EnsureLibrary();
+        return ListCompiler.Compile(_book, _list);
+    }
 
-    internal IReadOnlyList<ListIssue> Issues() => ListValidator.Validate(_book, _list, Compile());
+    internal IReadOnlyList<ListIssue> Issues()
+    {
+        EnsureLibrary();
+        return ListValidator.Validate(_book, _list, Compile());
+    }
 
     /// <summary>Reopen a saved army into an editable session. Succeeds only if the file carries the embedded
     /// book + selections (a Forge-authored .fdgarmy); a hand-authored army returns false (it still plays, it
     /// just isn't catalog-editable).</summary>
     internal bool AdoptLoaded(BuiltArmyFile loaded)
     {
+        EnsureLibrary();
         if (loaded.Selections is null || loaded.Book is null) return false;
         UseBook(loaded.Book);
         _list = loaded.Selections;
@@ -590,6 +614,7 @@ public class ArmyForgeScreen : IAppScreen
 
     public void Draw(int screenW, int screenH)
     {
+        EnsureLibrary();
         // Recompile + revalidate every frame — cheap, and keeps points/panes/legality in sync with the list.
         // `compiled` is the play-time output (#107 combined pairs merged) for Save/points; `rows` is the
         // row-aligned unmerged view every per-row pane indexes with list positions.
@@ -960,6 +985,7 @@ public class ArmyForgeScreen : IAppScreen
     /// half resolves to the other. Mirrors the validity condition the compiler uses to merge.</summary>
     internal int CombinePartnerIndex(int idx)
     {
+        EnsureLibrary();
         if (idx < 0 || idx >= _list.Units.Count) return -1;
         BuilderUnit bu = _list.Units[idx];
         for (int i = 0; i < _list.Units.Count; i++)
@@ -981,6 +1007,7 @@ public class ArmyForgeScreen : IAppScreen
     /// eligible (multi-model, non-Hero) unit; a no-op when already in the requested state.</summary>
     internal void SetCombined(int idx, bool on)
     {
+        EnsureLibrary();
         if (idx < 0 || idx >= _list.Units.Count) return;
         int partner = CombinePartnerIndex(idx);
         if (on)
@@ -1378,6 +1405,7 @@ public class ArmyForgeScreen : IAppScreen
     /// is the caller's cue to raise the matching modal.</summary>
     internal ELoadOutcome TryAdopt(BuiltArmyFile? loaded, string fileName, string? readError)
     {
+        EnsureLibrary();
         string? reason = null;
         if (readError is not null) reason = readError;
         else if (loaded is null) reason = "That file is empty, or is not an army list.";
@@ -1436,6 +1464,7 @@ public class ArmyForgeScreen : IAppScreen
     /// <summary>Which confirm (if any) the next Save needs, from the screen's current state.</summary>
     internal ESaveGuard PendingSaveGuard()
     {
+        EnsureLibrary();
         bool failedLoadPending = _failedLoadFingerprint is not null;
         bool untouchedSince = failedLoadPending && _failedLoadFingerprint == ListFingerprint(_list);
         return EvaluateSaveGuard(_list.Units.Count, failedLoadPending, untouchedSince);
