@@ -72,6 +72,10 @@ Abuse posture mirrors #271's: uploads are unauthenticated by necessity, so 1MB c
 
 Verification: engine 2862 green, app 1118 green (10 new in `BugReportTests`), full build, headless smoke exit 0, local `wrangler dev` smoke passed, and the deployed Worker passed `smoke.sh` against production (all 14 sections). GUI hand-verified by owner.
 
-**The one path never exercised as a whole** is an actual in-game Send reaching the deployed server (the GUI check predated the deploy, so its upload would have 404'd). Every component of it is independently verified - the uploader's exact wire format is what `smoke.sh` posts, and `ListServerConfig` is proven by the live server browser - but if a real report never arrives, start there. Steps are in "Next steps" above, and a leftover `SMOKEMARKER` test report from a failed smoke run may still be in the drop box until a `fetch-reports.sh --delete` clears it.
+**Full round trip confirmed 2026-08-08**: a report filed from inside a live game uploaded to the deployed Worker and was pulled back with `fetch-reports.sh` (that script's first-ever run - it works). The fetched bundle was complete and well-formed: 138 merged log lines with debug and chat lines correctly tagged and interleaved in arrival order, a 234KB save that parses as the ordinary `Version`/`TypeMap`/`Entries` save shape (so a report is replayable through Load Game), platform, player name, protocol version 4. Size 311.8KB raw -> **20.1KB gzipped**, i.e. 2% of the 1MB cap, confirming the ~15:1 compression the whole design leans on.
+
+Two things that surfaced from reading a real bundle:
+- `appVersion` on a `dotnet run` build reads `dev+<full git sha>` - the SDK appends the source commit by itself, so even non-dist builds are traceable to a commit. Better than assumed when the stamp was designed.
+- **`crashLog` carries stale crashes.** The real report's tail held crashes from 2026-07-27/28, twelve days before the session and unrelated to it, because `crash.log` is append-only across runs. Nothing is wrong, but a reader can easily mistake an old crash for the reported one. Worth either filtering to entries newer than process start or labelling the block - not done.
 
 Deliberately not built (see Deferred facets): CLI/headless and non-game-screen reporting, GitHub-issue push notification, client-side save capture (blocked on #054).
