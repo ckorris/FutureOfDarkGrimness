@@ -18,3 +18,7 @@ FdgLab/reports/
 # List server (#264) local artifacts
 tools/list-server/node_modules/
 tools/list-server/.wrangler/
+# #226: local secrets, and fetched bug reports - the latter carry other people's player
+# names, army lists and full game saves, so they must never land in the repo.
+tools/list-server/.dev.vars
+tools/list-server/reports/

@@ -44,9 +44,13 @@ ADMIN_TOKEN=<secret> ./fetch-reports.sh https://fdg-list-server.<account>.worker
 ```bash
 cd tools/list-server
 npm install
+cp .dev.vars.example .dev.vars   # local-only ADMIN_TOKEN; .dev.vars is gitignored
 npx wrangler dev          # serves http://localhost:8787
 ./smoke.sh                # in another terminal; asserts the whole API surface
 ```
+
+Needs Node 22+ (wrangler refuses to start on older; Ubuntu's apt ships 18 - use NodeSource).
+Without `.dev.vars` the report read endpoints answer 503 and smoke sections 12-14 fail.
 
 Under `wrangler dev` the observed IP is loopback, so the reachability probe reports
 `null` ("unknown") by design — private/loopback ranges are never dialed.
@@ -62,8 +66,13 @@ npx wrangler secret put ADMIN_TOKEN   # one-time (#226): the token fetch-reports
 ./smoke.sh https://fdg-list-server.<account>.workers.dev <admin-token>
 ```
 
-(Local `wrangler dev` reads `ADMIN_TOKEN` from `.dev.vars` instead — a committed,
-deliberately public dev-only value that smoke.sh defaults to.)
+`wrangler secret put` stores the token encrypted at Cloudflare and never writes it to
+disk, so the real token never enters this repo. Local `wrangler dev` reads a separate
+throwaway `ADMIN_TOKEN` from `.dev.vars` (gitignored; copy it from `.dev.vars.example`) —
+never put the production token there.
+
+Fetched reports land in `reports/`, which is gitignored: they carry other people's player
+names, army lists and full game saves.
 
 The printed URL is what the game reads from its list-server config (see
 `FdgRaylib/ListServer/ListServerConfig.cs`). Free-tier limits (100k requests/day) exceed
