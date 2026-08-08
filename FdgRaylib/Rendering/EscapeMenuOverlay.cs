@@ -284,6 +284,7 @@ public sealed class EscapeMenuOverlay
 
         lines.Add("- your IP address, recorded by the report server");
         lines.Add("");
+        lines.Add("Everyone in this game is told you sent a report, since it carries their chat too.");
         lines.Add($"A copy is kept in {BugReport.BugReportStore.DirectoryName}/ next to the game.");
         return lines;
     }

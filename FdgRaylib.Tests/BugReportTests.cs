@@ -203,6 +203,100 @@ public class BugReportTests
             "a client has no save to send (#054) - promising one would be a lie");
     }
 
+    // ---- Announcement to the other players ----------------------------------------------
+
+    [Test]
+    public void Announcement_IsAsciiOnly_AndMentionsTheSaveOnlyForHosts()
+    {
+        string host = BugReporter.AnnouncementText(isHost: true);
+        string client = BugReporter.AnnouncementText(isHost: false);
+
+        foreach (string text in new[] { host, client })
+        {
+            foreach (char c in text)
+                Assert.That(c, Is.InRange(' ', '~'), $"non-ASCII '{c}' in announcement: {text}");
+            Assert.That(text, Does.Contain("bug report"));
+            Assert.That(text, Does.Contain("chat"), "the other players' chat is the point of telling them");
+        }
+
+        Assert.That(host, Does.Contain("save"));
+        Assert.That(client, Does.Not.Contain("save"), "a client's report has no save (#054)");
+    }
+
+    [Test]
+    public void Send_AnnouncesToTheTable_WithTheLocalCopyAlreadyWritten()
+    {
+        var announced = new List<string>();
+        var reporter = new BugReporter(null, null, () => "{}", announced.Add);
+
+        reporter.Send("something broke");
+
+        Assert.That(announced, Has.Count.EqualTo(1));
+        Assert.That(announced[0], Is.EqualTo(BugReporter.AnnouncementText(isHost: true)));
+        Assert.That(reporter.LastLocalPath, Is.Not.Null,
+            "the announcement must not outrun the report actually being retained");
+    }
+
+    [Test]
+    public void Send_DoesNotAnnounce_WhenNothingWasRetained()
+    {
+        // Local write fails AND no list server is configured: nothing left the machine, so
+        // telling the table a report went out would be a lie.
+        string? previousUrl = Environment.GetEnvironmentVariable("FDG_LIST_SERVER_URL");
+        try
+        {
+            // Not http(s) - ListServerConfig treats a malformed value as "unconfigured".
+            Environment.SetEnvironmentVariable("FDG_LIST_SERVER_URL", "not-a-url");
+            ListServerConfigReset();
+
+            var announced = new List<string>();
+            var reporter = new BugReporter(null, null, null, announced.Add, writeLocal: (_, _) => null);
+            reporter.Send("something broke");
+
+            Assert.That(reporter.LastLocalPath, Is.Null);
+            Assert.That(reporter.UploadState, Is.EqualTo(BugReporter.EUploadState.NotConfigured));
+            Assert.That(announced, Is.Empty, "nothing was retained, so nothing should be announced");
+        }
+        finally
+        {
+            Environment.SetEnvironmentVariable("FDG_LIST_SERVER_URL", previousUrl);
+            ListServerConfigReset();
+        }
+    }
+
+    [Test]
+    public void Send_StillAnnounces_WhenOnlyTheLocalCopySurvives()
+    {
+        // The upload can't be attempted, but the local file exists and is meant to be sent on by
+        // hand - the other players' data is still captured, so they are still told.
+        string? previousUrl = Environment.GetEnvironmentVariable("FDG_LIST_SERVER_URL");
+        try
+        {
+            Environment.SetEnvironmentVariable("FDG_LIST_SERVER_URL", "not-a-url");
+            ListServerConfigReset();
+
+            var announced = new List<string>();
+            var reporter = new BugReporter(null, null, null, announced.Add,
+                writeLocal: (_, _) => "/tmp/pretend-report.json");
+            reporter.Send("something broke");
+
+            Assert.That(announced, Has.Count.EqualTo(1));
+        }
+        finally
+        {
+            Environment.SetEnvironmentVariable("FDG_LIST_SERVER_URL", previousUrl);
+            ListServerConfigReset();
+        }
+    }
+
+    // ListServerConfig memoizes its resolution on first read; clear it so an env change takes.
+    private static void ListServerConfigReset()
+    {
+        typeof(FdgRaylib.ListServer.ListServerConfig)
+            .GetField("_resolved", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static)!
+            .SetValue(null, false);
+    }
+
     // ---- Uploader gzip -----------------------------------------------------------------
 
     [Test]

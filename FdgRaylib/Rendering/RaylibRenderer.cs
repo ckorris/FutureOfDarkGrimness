@@ -225,8 +225,12 @@ public class RaylibRenderer
             taskDisplay?.LocalPlayerIDs ?? [], resolverOverlay);
         _escapeMenu.AttachSave(saveGameToJson);
         // #226: the bug reporter captures this launch's log + chat and (on the host) the save hook,
-        // so a report carries everything the session knows.
-        _escapeMenu.AttachBugReport(new BugReport.BugReporter(log, playerMessageUI?.ChatLog, saveGameToJson));
+        // so a report carries everything the session knows. The announce hook rides the chat relay
+        // so the other players - whose chat and army lists a report carries - are told it happened.
+        _escapeMenu.AttachBugReport(new BugReport.BugReporter(log, playerMessageUI?.ChatLog, saveGameToJson,
+            announce: playerMessageUI == null
+                ? null
+                : text => playerMessageUI.Submit(text, EChatMessageType.Global)));
         _measurementOverlay.Attach(tableState);
         // [overlay] messages are developer detail (rebuild-budget warnings) -> the Debug log category.
         _tacticalOverlay.Attach(tableState, msg => _log?.Add(msg, new TextColor(255, 180, 90, 255), isDebug: true),

@@ -29,16 +29,38 @@ public sealed class BugReporter
     private readonly GameLog? _log;
     private readonly GameLog? _chatLog;
     private readonly Func<string?>? _saveGameToJson;
+    private readonly Action<string>? _announce;
+    private readonly Func<string, DateTime, string?> _writeLocal;
 
     private volatile EUploadState _uploadState = EUploadState.None;
     private volatile string? _lastUploadError;
 
-    public BugReporter(GameLog? log, GameLog? chatLog, Func<string?>? saveGameToJson)
+    /// <param name="announce">Posts a line to every player in the game (the chat relay). A report
+    /// carries data belonging to the OTHER players - their chat, and their army lists inside the
+    /// host's save - and they never see the disclosure the reporter agreed to, so they are told a
+    /// report went out. Null disables the notice (no chat sink wired).</param>
+    /// <param name="writeLocal">Writes the bundle and returns the path, or null on failure.
+    /// Defaults to <see cref="BugReportStore.TryWrite"/>; a test seam, like the bundle builder's
+    /// crash-log path, so the "nothing was retained" branch can be exercised without arranging
+    /// a real filesystem failure.</param>
+    public BugReporter(GameLog? log, GameLog? chatLog, Func<string?>? saveGameToJson,
+        Action<string>? announce = null, Func<string, DateTime, string?>? writeLocal = null)
     {
         _log = log;
         _chatLog = chatLog;
         _saveGameToJson = saveGameToJson;
+        _announce = announce;
+        _writeLocal = writeLocal ?? BugReportStore.TryWrite;
     }
+
+    /// <summary>
+    /// What the other players are told. Mirrors the disclosure's honesty about the save: only a
+    /// host's report carries one (a client has nothing to serialize - #054), so only a host's
+    /// notice mentions it.
+    /// </summary>
+    internal static string AnnouncementText(bool isHost) => isHost
+        ? "I sent a bug report to the developer. It includes this game's log, our chat, and a full save of the game."
+        : "I sent a bug report to the developer. It includes this game's log and our chat.";
 
     public EUploadState UploadState => _uploadState;
     public string? LastUploadError => _lastUploadError;
@@ -52,21 +74,30 @@ public sealed class BugReporter
         if (_uploadState == EUploadState.InFlight) return;
 
         string json = BugReportBundleBuilder.Build(description, _log, _chatLog, _saveGameToJson);
-        LastLocalPath = BugReportStore.TryWrite(json, DateTime.UtcNow);
+        LastLocalPath = _writeLocal(json, DateTime.UtcNow);
 
         string? baseUrl = ListServerConfig.BaseUrl;
         if (baseUrl == null)
         {
             _uploadState = EUploadState.NotConfigured;
-            return;
+        }
+        else
+        {
+            _uploadState = EUploadState.InFlight;
+            _ = Task.Run(async () =>
+            {
+                string? error = await BugReportUploader.TryUploadAsync(json, baseUrl).ConfigureAwait(false);
+                _lastUploadError = error;
+                _uploadState = error == null ? EUploadState.Succeeded : EUploadState.Failed;
+            });
         }
 
-        _uploadState = EUploadState.InFlight;
-        _ = Task.Run(async () =>
-        {
-            string? error = await BugReportUploader.TryUploadAsync(json, baseUrl).ConfigureAwait(false);
-            _lastUploadError = error;
-            _uploadState = error == null ? EUploadState.Succeeded : EUploadState.Failed;
-        });
+        // Tell the table AFTER the snapshot is taken, so this notice isn't itself captured in the
+        // chat log the report carries. Skipped when nothing was retained (no local file AND no
+        // upload attempted) - announcing a report that does not exist anywhere would be a lie.
+        // Announced without waiting for the upload result: a failed upload still leaves the local
+        // copy, which is meant to be sent on by hand.
+        bool retained = LastLocalPath != null || _uploadState == EUploadState.InFlight;
+        if (retained) _announce?.Invoke(AnnouncementText(_saveGameToJson != null));
     }
 }
