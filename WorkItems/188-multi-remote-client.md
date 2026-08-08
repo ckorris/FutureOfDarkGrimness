@@ -28,12 +28,15 @@ right players, and per-player request routing (#088) reaches the right client.
     team or color pick reaches the host and all other clients.
   - **Mutation-checked.** Reintroducing the QF5 broadcast turns 4 of the identity tests red (including a
     client unable to edit the slot it is playing), so they are not vacuous.
-  - **Team-number finding, needs a ruling.** The 2026-07-08 note guessed right. `FirstEmptyTeam` returns
-    `(ETeamOption)(_playerInfosFull.Count + 1)` with no cap, but `ETeamOption` defines Team1..Team4 and
-    nothing in the engine caps the roster at four - so a fifth player defaults to an undefined enum
-    value, which `SetPlayerTeam` would then reject as out of range if they tried to re-pick it. Pinned as
-    current behavior in `FifthPlayer_DefaultsToATeamOutsideTheDefinedRange`, deliberately NOT fixed:
-    the fix is a design choice (cap the lobby at 4, clamp the default, or widen `ETeamOption`).
+  - **Team-number finding, RULED AND FIXED same day** (engine `e0326a3`). The 2026-07-08 note guessed
+    right: `FirstEmptyTeam` returned `(ETeamOption)(_playerInfosFull.Count + 1)` with no cap while
+    `ETeamOption` defined only Team1..Team4 and nothing capped the roster, so a fifth player defaulted to
+    an undefined enum value that `SetPlayerTeam` then rejected as out of range. Chris's call: widen to 8
+    teams. `ETeamOption` now runs Team1..Team8; new `TeamOptions.MaxTeamNumber` reads the bound off the
+    enum itself so a future widening is a one-line edit, and the default assignment, the host's range
+    check and the app's team dropdown all derive from it. Past the cap, arrivals double up on the last
+    team rather than taking an undefined value. Covered by three tests (up to the cap, past the cap, a
+    pick above the cap).
   - **Still open, unchanged:** everything above is the lobby layer. In-game per-player request routing
     (#088, `RequestMessageSender` + `PlayerSlotManager`), reply attribution, N-client chat/log de-dup
     (#105/#077), and the #076 disconnect lifecycle at 3 players are all now testable on this fixture but
@@ -46,7 +49,9 @@ right players, and per-player request routing (#088) reaches the right client.
 - 2026-08-08: Fixture is shared and multi-client by default; the single-client doubles are gone. A client
   calling `Disconnect()` still does not notify the host (the real host learns from its read loop, which the
   double does not model) - use `LoopbackNetworkHost.DropClient` to simulate the host-side notice.
-- 2026-08-08: Five-player team default left as-is pending a ruling (see the finding above).
+- 2026-08-08: Team cap set at 8 (Chris). The bound lives in `TeamOptions.MaxTeamNumber`, derived from
+  `ETeamOption`, not hard-coded at any call site. A roster larger than the cap is allowed and doubles up
+  on the last team - the engine still imposes no maximum player count.
 
 ## Outcome
 (pending)

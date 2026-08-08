@@ -387,8 +387,10 @@ public class LobbyScreen : IAppScreen
         ImGui.EndDisabled();
     }
 
-    // #255: the team cell - a dropdown of Team 1..Team N, N = player count (as many teams as players;
-    // multiple players per team is the point, but launch is blocked while ALL share one team). The
+    // #255: the team cell - a dropdown of Team 1..Team N, N = player count capped at the highest team
+    // the engine defines (#188; as many teams as players, multiple players per team is the point, but
+    // launch is blocked while ALL share one team). Offering a team past the cap would have written an
+    // undefined ETeamOption that the host then rejected as out of range. The
     // current value renders faithfully even when out of range (a stale team left by a departed player -
     // kept by design). Picks write through the view model (host: applies + rebroadcasts; client:
     // requests its own row from the host), same gate as Load Army / Color. Disabled when resuming -
@@ -400,7 +402,7 @@ public class LobbyScreen : IAppScreen
         ImGui.SetNextItemWidth(ImGui.GetContentRegionAvail().X);
         if (ImGui.BeginCombo($"##team{rowIdx}", $"Team {(int)info.TeamNumber}"))
         {
-            for (int n = 1; n <= playerCount; n++)
+            for (int n = 1; n <= Math.Min(playerCount, TeamOptions.MaxTeamNumber); n++)
             {
                 if (ImGui.Selectable($"Team {n}", n == (int)info.TeamNumber))
                     _viewModel.SetPlayerTeam(info.PlayerID, (ETeamOption)n);
