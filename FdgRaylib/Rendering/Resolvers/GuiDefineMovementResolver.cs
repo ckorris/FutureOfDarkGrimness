@@ -789,14 +789,15 @@ public class GuiDefineMovementResolver
         // 4) Mouse / keyboard input (single mode — group mode handles its own clicks above)
         if (!group && overTable && !io.WantCaptureMouse && !_donePopupOpen)
         {
-            // Left-click: if it lands on a model's footprint, select that model (#295 -- the only way
-            // to switch models now that Space commits); otherwise place a waypoint for the selected model at
-            // the clamped ghost position (blocked if it would overlap another model). Left-click places in
-            // BOTH single and group mode (consistency). `hoveredModel` is the same hit test the highlight
-            // drew with, so what lights up is exactly what a click selects.
+            // Left-click: if it lands on a DIFFERENT model's footprint, select that model (#295);
+            // otherwise place a waypoint for the selected model at the clamped ghost position (blocked
+            // if it would overlap another model). A click on the selected model's own footprint places,
+            // never re-selects -- a big base must be able to take a step shorter than its own extent.
+            // Left-click places in BOTH single and group mode (consistency). `hoveredModel` is the same
+            // hit test the highlight drew with, so what lights up is exactly what a click selects.
             if (ImGui.IsMouseClicked(ImGuiMouseButton.Left))
             {
-                if (hoveredModel != null)
+                if (hoveredModel != null && !ReferenceEquals(hoveredModel, _selectedModel))
                 {
                     _selectedModel = hoveredModel;
                 }
@@ -909,7 +910,7 @@ public class GuiDefineMovementResolver
         // Rotation input: wheel both ways; R clockwise, Shift+R counter-clockwise. Ctrl+Wheel cycles
         // the target formation (#277): index 0 keeps the unit's current shape (pure rigid move), the
         // rest re-form the unit into a FormationLibrary shape as it moves.
-        var (rotationDelta, formationDelta) = GroupInput.Read(wantInput);
+        var (rotationDelta, formationDelta) = GroupInput.Read(!io.WantCaptureMouse, !io.WantCaptureKeyboard);
         if (rotationDelta != 0f) { _groupRotation += rotationDelta; _groupFacingAngle += rotationDelta; }
         if (_formationCycle == null)
         {
@@ -1109,24 +1110,39 @@ public class GuiDefineMovementResolver
         IUnit ownUnit = request.UnitDataBinding.GetValue();
         bool allValid = plan.WithinBudget && !terrainBlocked;
         var blocked = new bool[models.Count];
-        // Each phantom's live facing (its travel direction rotated by the accumulated group offset), computed
-        // once so the overlap check measures the same oriented footprint the ghost draws (#150).
+        // Group mode moves the unit as ONE body, so every phantom shares one heading: the unit's own
+        // direction of travel (its centroid delta), rotated by the accumulated manual offset. Deriving it
+        // per model from that model's travel scattered the facings whenever the models' travels diverged -
+        // a formation morph or a coherency repair sends each model a different way, and a unit re-formed
+        // out of a scattered deployment ended up facing every direction at once. For a rigid translation
+        // the two derivations agree, so plain drags are unchanged.
+        Float2 groupHeading = GroupFormationUtilities.GroupHeading(
+            lastPositions, newPositions, models.Select(m => m.Facing).ToList());
         var groupFacings = new Float2[models.Count];
+        // The offset committed with each model's step must land that model's travel-derived facing
+        // (MovementFacingUtilities.WaypointFacings, the executed result's derivation) on the shared
+        // heading, so the move that plays is the move the phantoms showed.
+        var stepOffsets = new float[models.Count];
+        float headingAngle = _groupFacingAngle + MathF.Atan2(groupHeading.Y, groupHeading.X);
         bool anyMovement = false;
         for (int i = 0; i < models.Count; i++)
         {
-            groupFacings[i] = RotateFloat2(
-                TravelFacing(lastPositions[i], newPositions[i], models[i].Facing), _groupFacingAngle);
+            var rawPath = new List<Position>(paths[models[i]]) { newPositions[i] };
+            Float2 rawTravel = MovementFacingUtilities.WaypointFacings(
+                models[i].Position, rawPath, models[i].Facing)[^1];
+            stepOffsets[i] = headingAngle - MathF.Atan2(rawTravel.Y, rawTravel.X);
+            groupFacings[i] = RotateFloat2(rawTravel, stepOffsets[i]);
             blocked[i] = GroupPositionBlocked(newPositions[i], models[i].BaseShape, groupFacings[i], ownUnit);
             // #213: also block a phantom whose PATH crosses impassible terrain (GroupPositionBlocked only
             // checks the END position sitting on it). Red base + red line + no commit, same as any block.
             if (!blocked[i] && !request.IgnoresImpassibleTerrain && bindings.TryGetValue(models[i], out var gimpB))
             {
                 var gimpPath = new List<Position>(paths.TryGetValue(models[i], out var gp) ? gp : (IReadOnlyList<Position>)System.Array.Empty<Position>()) { newPositions[i] };
-                // #282: carry the per-waypoint facings (stored offsets + the live angle for the phantom node)
-                // so the swept-base check runs against the same oriented footprints the phantoms draw and the
-                // Done gate validates - without them a rotated rect base could preview legal and fail Done.
-                var gimpOffsets = new List<float>(pt.GetModelFacingOffsets(models[i])) { _groupFacingAngle };
+                // #282: carry the per-waypoint facings (stored offsets + this model's live offset for the
+                // phantom node) so the swept-base check runs against the same oriented footprints the
+                // phantoms draw and the Done gate validates - without them a rotated rect base could
+                // preview legal and fail Done.
+                var gimpOffsets = new List<float>(pt.GetModelFacingOffsets(models[i])) { stepOffsets[i] };
                 var gimpFacings = MovementFacingUtilities.WaypointFacings(models[i].Position, gimpPath,
                     models[i].Facing, gimpOffsets);
                 if (MovementUtilities.FindFirstImpassibleCrossing(new ModelMoveEntry(gimpB, gimpPath, gimpFacings), terrain)
@@ -1152,8 +1168,7 @@ public class GuiDefineMovementResolver
             {
                 float missed = Position.GetDistance2D(newPositions[i], difficultFreePositions[i]);
                 if (missed < DifficultShortfallPlan.MIN_SHORTFALL_INCHES) continue;
-                Float2 wouldBeFacing = RotateFloat2(
-                    TravelFacing(lastPositions[i], difficultFreePositions[i], models[i].Facing), _groupFacingAngle);
+                Float2 wouldBeFacing = RotateFloat2(groupHeading, _groupFacingAngle);
                 DrawDifficultShortfall(dl, models[i], newPositions[i], difficultFreePositions[i], wouldBeFacing);
                 maxShortfall = MathF.Max(maxShortfall, missed);
                 labelX += difficultFreePositions[i].x;
@@ -1212,7 +1227,7 @@ public class GuiDefineMovementResolver
             && allValid && anyMovement)
         {
             for (int i = 0; i < models.Count; i++)
-                pt.AddStep(models[i], newPositions[i], _groupFacingAngle); // #282: this step keeps this attitude
+                pt.AddStep(models[i], newPositions[i], stepOffsets[i]); // #282: this step keeps this attitude
             _groupRotation = 0f;
             // #277: the committed step baked the picked shape into the waypoints — it IS the current
             // shape now, so further dragging is rigid until the player cycles again.

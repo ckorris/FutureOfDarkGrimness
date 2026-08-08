@@ -19,6 +19,24 @@ from the garrison-release/dilution work).
 
 ## Notes (newest first)
 
+**2026-08-05 — LEDGER TRUTH-UP + the repair pass is now PINNED for the friendly-stacking arm.
+The "resolver-level repair still open" residual below was STALE: the repair landed 2026-07-23 as
+#264 slice 4 (`76c3c48`)** - `TacticianMovementResolver.TryRepairWithinRequestBudgets` re-plans
+toward the rejected plan's own destination under the request's budgets (friendly-aware via
+`PlanMoveToward`) before conceding to solo, and #264 slice 5 (`39c2c49`) added the degradation
+log line. What #264 pinned, though, was only the BUDGET-mismatch arm (the Slow-hero scene). This
+session added `TacticianMovementResolverTests`:
+- `PlanEndingStackedOnAFriendly_IsRepairedTowardTheSameGoal_NotSoloFallback` - the #205 scenario
+  this item was filed about, reached via a fake `IMovePlanSource` handing the resolver a plan that
+  parks every model exactly on a friendly base. Scene-checked (the stacked plan provably fails the
+  re-check), then asserts: solo NOT called, repaired move passes the same re-check, every endpoint
+  clear of every friendly base, and the unit still closes >=5" of the 10" gap to the planned
+  destination - intent preserved, not discarded.
+- `NoCachedPlan_DegradesToSolo` - documents the one legitimate fallback arm.
+Engine suite 2868/2868. **Remaining open (unchanged): the DE/RL mirror-drift attribution** -
+transcript diff same seed A5-9 vs current per the #210 workflow, or fold into the Opus clean
+re-gate; the close condition below still stands.
+
 **2026-07-11 (later) — charge fix does NOT recover the mirror drift; drift-driver hypothesis
 REJECTED.** DE/RL mirrors rerun post-fix (FdgLab/reports/216-recheck/): RL 78.0 with an
 IDENTICAL outcome hash to the pre-fix run (the fix changed nothing in those 50 games); DE 82.0

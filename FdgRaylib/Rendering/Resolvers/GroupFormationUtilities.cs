@@ -18,6 +18,28 @@ public static class GroupFormationUtilities
         return new Position(sx / points.Count, sz / points.Count);
     }
 
+    /// <summary>
+    /// The one heading a group-mode step faces the whole unit along: the unit's direction of travel
+    /// (centroid delta from <paramref name="from"/> to <paramref name="to"/>). A step that moves no
+    /// centroid (an in-place formation morph or pure rotation) falls back to the average of
+    /// <paramref name="facings"/> - for a unit whose models face every direction, any single answer
+    /// is a judgement call, and the average is the one the wheel then adjusts from. Perfectly
+    /// opposing facings fall back to the first.
+    /// </summary>
+    public static Float2 GroupHeading(IReadOnlyList<Position> from, IReadOnlyList<Position> to,
+        IReadOnlyList<Float2> facings)
+    {
+        float dx = 0f, dz = 0f;
+        for (int i = 0; i < from.Count; i++) { dx += to[i].x - from[i].x; dz += to[i].z - from[i].z; }
+        float len = MathF.Sqrt(dx * dx + dz * dz);
+        if (len > 1e-3f * from.Count) return new Float2(dx / len, dz / len);
+
+        float fx = 0f, fy = 0f;
+        foreach (var f in facings) { fx += f.X; fy += f.Y; }
+        float flen = MathF.Sqrt(fx * fx + fy * fy);
+        return flen > 1e-3f ? new Float2(fx / flen, fy / flen) : facings[0];
+    }
+
     /// <summary>Rotate <paramref name="p"/> about <paramref name="pivot"/> by (cos,sin), then translate by (tx,tz).</summary>
     public static Position RigidTransform(Position p, Position pivot, float cos, float sin, float tx, float tz)
     {

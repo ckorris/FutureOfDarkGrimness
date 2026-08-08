@@ -539,4 +539,238 @@ public class ArmyForgeScreenTests
 
         Assert.That(screen.Issues().Any(i => i.Severity == ListIssueSeverity.Error), Is.True);
     }
+
+    // ── #307: a rejected load must not be mistakable for a loaded one, and Save must not quietly write ───
+    //          the screen's untouched startup default over a path the user picked for a real army.
+
+    /// <summary>A plain (Army-Builder-shaped) army: no embedded selections/book, exactly the shape every
+    /// tracked <c>armies/</c> list had before #357 retrofitted them, and the shape the Forge rejects.</summary>
+    private static BuiltArmyFile PlainArmy() => new() { Selections = null, Book = null };
+
+    [Test]
+    public void TryAdopt_RejectsAPlainArmy_AndSaysTheScreenIsUnchanged()
+    {
+        var screen = new ArmyForgeScreen(DemoBook.Build());
+
+        Assert.That(screen.TryAdopt(PlainArmy(), "3k - Eternal Dynasty.fdgarmy", null),
+            Is.EqualTo(ELoadOutcome.Rejected));
+        Assert.That(screen.Status.Kind, Is.EqualTo(EForgeStatusKind.Error));
+        Assert.That(screen.Status.Text, Does.Contain("LOAD FAILED"));
+    }
+
+    [Test]
+    public void LoadFailureMessage_NamesTheFile_AndWarnsWhatSaveWouldWrite()
+    {
+        string message = ArmyForgeScreen.LoadFailureMessage("3k - Eternal Dynasty.fdgarmy",
+            ArmyForgeScreen.NoEmbeddedBookReason);
+
+        Assert.That(message, Does.Contain("3k - Eternal Dynasty.fdgarmy"));
+        Assert.That(message, Does.Contain("NOT loaded"));
+        Assert.That(message, Does.Contain("Army Builder"));
+        // The sentence the whole item exists for: the screen did not change, so Save writes the OLD list.
+        Assert.That(message, Does.Contain("has not changed"));
+        Assert.That(message, Does.Contain("Saving now would write"));
+    }
+
+    [Test]
+    public void SaveGuard_FiresOnThePristineDefault_TheReportedDataLossPath()
+    {
+        // The report: launch the Forge, Load a plain army (rejected), press Save. The screen still holds the
+        // startup default, and the old code wrote it out with no warning at all.
+        var screen = new ArmyForgeScreen(DemoBook.Build());
+        Assert.That(screen.PendingSaveGuard(), Is.EqualTo(ESaveGuard.EmptyList), "empty startup list");
+
+        screen.TryAdopt(PlainArmy(), "3k - Eternal Dynasty.fdgarmy", null);
+
+        Assert.That(screen.PendingSaveGuard(), Is.EqualTo(ESaveGuard.UnchangedAfterFailedLoad));
+    }
+
+    [Test]
+    public void SaveGuard_FiresWhenARejectedLoadLeavesAnEarlierArmyOnScreen()
+    {
+        // The nastier variant: a real list IS on screen, so an empty-list check alone would miss it - Save
+        // would write army A over the path of army B, the file the user just failed to open.
+        var screen = new ArmyForgeScreen(DemoBook.Build());
+        screen.AddToList("warriors");
+        screen.AddToList("gunners");
+
+        Assert.That(screen.PendingSaveGuard(), Is.EqualTo(ESaveGuard.None), "an edited list saves freely");
+
+        screen.TryAdopt(PlainArmy(), "3k - Eternal Dynasty.fdgarmy", null);
+
+        Assert.That(screen.PendingSaveGuard(), Is.EqualTo(ESaveGuard.UnchangedAfterFailedLoad));
+    }
+
+    [Test]
+    public void SaveGuard_ClearsOnceTheUserEditsAfterTheFailure()
+    {
+        var screen = new ArmyForgeScreen(DemoBook.Build());
+        screen.AddToList("warriors");
+        screen.TryAdopt(PlainArmy(), "3k - Eternal Dynasty.fdgarmy", null);
+
+        screen.AddToList("gunners"); // deliberate edit - the user now knows what is on screen
+
+        Assert.That(screen.PendingSaveGuard(), Is.EqualTo(ESaveGuard.None));
+    }
+
+    [Test]
+    public void SaveGuard_ClearsAfterASuccessfulLoad()
+    {
+        var screen = new ArmyForgeScreen(DemoBook.Build());
+        screen.AddToList("warriors");
+        screen.TryAdopt(PlainArmy(), "3k - Eternal Dynasty.fdgarmy", null);
+
+        // A Forge-authored file (embedded selections + book) is adopted, so the screen holds what it says.
+        Assert.That(screen.TryAdopt(screen.Compile(), "Warband.fdgarmy", null), Is.EqualTo(ELoadOutcome.Adopted));
+        Assert.That(screen.Status.Kind, Is.EqualTo(EForgeStatusKind.Success));
+        Assert.That(screen.PendingSaveGuard(), Is.EqualTo(ESaveGuard.None));
+    }
+
+    [Test]
+    public void TryAdopt_ReportsReadFailuresInsteadOfReturningInSilence()
+    {
+        var screen = new ArmyForgeScreen(DemoBook.Build());
+
+        Assert.That(screen.TryAdopt(null, "broken.fdgarmy", "That file could not be read:\n\nUnexpected token"),
+            Is.EqualTo(ELoadOutcome.Rejected));
+        Assert.That(screen.Status.Text, Does.Contain("broken.fdgarmy"));
+
+        // A null deserialize (valid JSON, no army) gets its own reason rather than the no-book one.
+        Assert.That(screen.TryAdopt(null, "empty.fdgarmy", null), Is.EqualTo(ELoadOutcome.Rejected));
+    }
+
+    [Test]
+    public void SaveGuardMessage_NamesTheTargetFileAndWhatWouldBeWritten()
+    {
+        string stale = ArmyForgeScreen.SaveGuardMessage(ESaveGuard.UnchangedAfterFailedLoad,
+            "3k - Eternal Dynasty.fdgarmy", "Alien Hives", 0);
+        Assert.That(stale, Does.Contain("3k - Eternal Dynasty.fdgarmy"));
+        Assert.That(stale, Does.Contain("did not take effect"));
+        Assert.That(stale, Does.Contain("EMPTY Alien Hives list"));
+        Assert.That(stale, Does.Contain("overwrite"));
+
+        string empty = ArmyForgeScreen.SaveGuardMessage(ESaveGuard.EmptyList, "Warband.fdgarmy", "Alien Hives", 0);
+        Assert.That(empty, Does.Contain("no units"));
+
+        // Plural agreement on the non-empty (stale-content) wording.
+        string one = ArmyForgeScreen.SaveGuardMessage(ESaveGuard.UnchangedAfterFailedLoad, "a.fdgarmy", "Book", 1);
+        Assert.That(one, Does.Contain("(1 unit)"));
+        string many = ArmyForgeScreen.SaveGuardMessage(ESaveGuard.UnchangedAfterFailedLoad, "a.fdgarmy", "Book", 3);
+        Assert.That(many, Does.Contain("(3 units)"));
+    }
+
+    [Test]
+    public void ListFingerprint_TracksListContent()
+    {
+        var a = new ArmyForgeScreen(DemoBook.Build());
+        var b = new ArmyForgeScreen(DemoBook.Build());
+        Assert.That(ArmyForgeScreen.ListFingerprint(a.List), Is.EqualTo(ArmyForgeScreen.ListFingerprint(b.List)));
+
+        a.AddToList("warriors");
+        Assert.That(ArmyForgeScreen.ListFingerprint(a.List), Is.Not.EqualTo(ArmyForgeScreen.ListFingerprint(b.List)));
+    }
+
+    // ── #356: an imported "Save As" army carries an editable session, and reopening it discloses drift ──
+
+    /// <summary>The two halves of an imported file: Army Forge's verbatim units (what plays) and our
+    /// reconstruction (what the Forge would rebuild). Here they disagree, as a real import can.</summary>
+    private static BuiltArmyFile ImportedArmyWithDrift()
+    {
+        var screen = new ArmyForgeScreen(DemoBook.Build());
+        screen.AddToList("warriors");
+        screen.AddToList("gunners");
+        BuiltArmyFile playable = screen.Compile();
+        playable.UnattributedPoints = 25; // Army Forge priced upgrades it publishes no cost for (#219)
+
+        return (BuiltArmyFile)ArmyForgeScreen.ImportedFileToWrite(
+            playable, screen.List, DemoBook.Build());
+    }
+
+    [Test]
+    public void ImportedFileToWrite_AttachesTheEditableSession_SoSaveAsIsNotADeadEnd()
+    {
+        var screen = new ArmyForgeScreen(DemoBook.Build());
+        screen.AddToList("warriors");
+        ArmyListFile playable = screen.Compile();
+
+        ArmyListFile written = ArmyForgeScreen.ImportedFileToWrite(playable, screen.List, DemoBook.Build());
+
+        Assert.That(written, Is.InstanceOf<BuiltArmyFile>());
+        Assert.That(((BuiltArmyFile)written).Selections, Is.Not.Null);
+        Assert.That(((BuiltArmyFile)written).Book, Is.Not.Null);
+
+        // And it survives the trip to disk as the derived type, so it really does reopen.
+        string json = JsonSerializer.Serialize(written, written.GetType(), RuleJson.Options);
+        var back = JsonSerializer.Deserialize<BuiltArmyFile>(json, RuleJson.Options)!;
+        Assert.That(new ArmyForgeScreen(DemoBook.Build()).AdoptLoaded(back), Is.True);
+    }
+
+    [Test]
+    public void ImportedFileToWrite_StaysPlain_WhenNoBundledBookMatched()
+    {
+        var screen = new ArmyForgeScreen(DemoBook.Build());
+        screen.AddToList("warriors");
+        ArmyListFile playable = screen.Compile();
+
+        Assert.That(ArmyForgeScreen.ImportedFileToWrite(playable, null, null), Is.SameAs(playable));
+        Assert.That(ArmyForgeScreen.ImportedFileToWrite(playable, screen.List, null), Is.SameAs(playable));
+    }
+
+    [Test]
+    public void Reopening_AForgeAuthoredFile_AdoptsSilently()
+    {
+        // Both halves came from one compile, so there is nothing to disclose - no modal, straight in.
+        var screen = new ArmyForgeScreen(DemoBook.Build());
+        screen.AddToList("warriors");
+
+        var fresh = new ArmyForgeScreen(DemoBook.Build());
+        Assert.That(fresh.TryAdopt(screen.Compile(), "Warband.fdgarmy", null), Is.EqualTo(ELoadOutcome.Adopted));
+        Assert.That(fresh.List.Units, Has.Count.EqualTo(1));
+    }
+
+    [Test]
+    public void Reopening_AnImportedFileThatWouldChange_AsksFirst_AndChangesNothingYet()
+    {
+        var screen = new ArmyForgeScreen(DemoBook.Build());
+        screen.AddToList("gunners"); // the list already on screen
+
+        Assert.That(screen.TryAdopt(ImportedArmyWithDrift(), "Imported.fdgarmy", null),
+            Is.EqualTo(ELoadOutcome.NeedsDriftConfirm));
+
+        // Nothing adopted yet - the screen still holds its own list until the user accepts.
+        Assert.That(screen.List.Units.Select(u => u.RosterUnitId), Is.EqualTo(new[] { "gunners" }));
+    }
+
+    [Test]
+    public void ReopenDriftMessage_ShowsWhatChanges_AndOnlyWhatChanges()
+    {
+        EditableSessionDrift drift = EditableSession.Measure(ImportedArmyWithDrift())!;
+        string message = ArmyForgeScreen.ReopenDriftMessage("Imported.fdgarmy", drift);
+
+        Assert.That(message, Does.Contain("Imported.fdgarmy"));
+        Assert.That(message, Does.Contain("Points: "));
+        Assert.That(message, Does.Contain("not touched until you save"));
+        // Same units both ways here - only the price differs, so no unit lines are invented.
+        Assert.That(message, Does.Not.Contain("Units: "));
+        Assert.That(message, Does.Not.Contain("Dropped: "));
+    }
+
+    [Test]
+    public void GuardAndFailureText_IsAsciiOnly()
+    {
+        // CLAUDE.md: the ImGui font atlas bakes Basic Latin + Latin-1 only; anything above U+00FF draws as '?'.
+        var texts = new[]
+        {
+            ArmyForgeScreen.NoEmbeddedBookReason,
+            ArmyForgeScreen.LoadFailedTitle,
+            ArmyForgeScreen.SaveGuardTitle,
+            ArmyForgeScreen.LoadFailureMessage("a.fdgarmy", ArmyForgeScreen.NoEmbeddedBookReason),
+            ArmyForgeScreen.SaveGuardMessage(ESaveGuard.UnchangedAfterFailedLoad, "a.fdgarmy", "Book", 2),
+            ArmyForgeScreen.SaveGuardMessage(ESaveGuard.EmptyList, "a.fdgarmy", "Book", 0),
+            ArmyForgeScreen.ReopenDriftTitle,
+            ArmyForgeScreen.ReopenDriftMessage("a.fdgarmy", EditableSession.Measure(ImportedArmyWithDrift())!),
+        };
+        foreach (string text in texts)
+            Assert.That(text.All(c => c <= 0xFF), Is.True, $"non-Latin-1 character in: {text}");
+    }
 }

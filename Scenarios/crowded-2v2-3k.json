@@ -7,9 +7,9 @@
     "diceSeed": 42
   },
   "players": [
-    { "army": "../armies/Saurian Starhost 3k.fdgarmy", "team": 0 },
-    { "army": "../armies/Goblin Reclaimers 3k.fdgarmy", "team": 0 },
-    { "army": "../armies/Soul-Snatcher Cults 3k.fdgarmy", "team": 1 },
-    { "army": "../armies/Dark Elf Raiders 3k.fdgarmy", "team": 1 }
+    { "army": "../armies/3k - Saurian Starhost.fdgarmy", "team": 0 },
+    { "army": "../armies/3k - Goblin Reclaimers.fdgarmy", "team": 0 },
+    { "army": "../armies/3k - Soul-Snatcher Cults.fdgarmy", "team": 1 },
+    { "army": "../armies/3k - Dark Elf Raiders.fdgarmy", "team": 1 }
   ]
 }

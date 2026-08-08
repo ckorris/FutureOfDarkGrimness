@@ -95,7 +95,7 @@ strike-back models, an armed attacker is unaffected, nobody-in-contact still end
 exit, which is precisely the behavior this item changed.
 
 **Verified:** engine suite 2852 green, app suite 1086 green, `dotnet build` clean, default headless
-smoke exits 0. Live confirmation, `--seed 7 --army "armies/Orks 2k - Horde Mixed.fdgarmy"`: an
+smoke exits 0. Live confirmation, `--seed 7 --army "armies/2k - Orks - Horde Mixed.fdgarmy"`: an
 Assault Buggy (Impact(3), no melee weapon) charged Orc Warriors -> 3 impact wounds killed a model ->
 "the melee resolves with no attacks from the attacker" -> Orc Warriors struck back with a Heavy Claw
 -> "Attackers won melee 3 vs. 0" -> morale test -> fatigue -> consolidate. A vehicle-heavy HDF game
