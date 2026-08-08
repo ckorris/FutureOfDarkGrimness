@@ -17,6 +17,10 @@ When closing an item: write the Outcome in its detail file, tick the line, and m
 
 ## Movement
 
+- [ ] 366 — The on-path snake (#256 S4) clamps every rank that overruns the arc onto ONE route point, so a
+  big unit ends with its own models stacked; no validator forbids a same-unit end-overlap, and the collapse
+  reads as forward progress to the ladder. ([WorkItems/366](WorkItems/366-snake-stacks-models.md))
+
 - [~] 334 — The 1" forced-charge band was invisible while moving: ending inside it is legal (#206) but costs the unit its Pass, which only showed up a stage later. Engine predicate extracted to `ForcedChargeUtilities` (gate + preview share it); GUI draws the band around reachable enemies, tints the ghost and warns in the panel; CLI prints the same. Implemented + tested + GUI hand-verified 2026-08-04. ([WorkItems/334](WorkItems/334-forced-charge-proximity-preview.md))
 
 - [~] 339 — A charged unit that strikes back and kills the charger got no consolidation: `ConsolidateStage` keyed off the attacking seat, so a dead attacker skipped the stage and the unit that won the melee never moved. The survivor of a wipeout now consolidates 3" from either seat (prompted out of turn). Implemented + tested; awaiting GUI hand-verify. ([WorkItems/339](WorkItems/339-strike-back-survivor-consolidates.md))
