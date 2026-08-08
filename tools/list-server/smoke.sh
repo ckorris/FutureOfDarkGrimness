@@ -107,7 +107,12 @@ check "GET /reports without token is 403" 403 "$(req GET /reports)"
 check "GET /reports with a wrong token is 403" 403 "$(req GET /reports "" "X-Admin-Token: nope")"
 
 echo "13. report listing and fetch"
-check "GET /reports is 200" 200 "$(req GET /reports "" "X-Admin-Token: $ADMIN_TOKEN")"
+LIST_CODE=$(req GET /reports "" "X-Admin-Token: $ADMIN_TOKEN")
+check "GET /reports is 200" 200 "$LIST_CODE"
+if [ "$LIST_CODE" = "403" ]; then
+  echo "  HINT: that admin token is wrong. The default only works against 'wrangler dev';"
+  echo "        against a deployed Worker pass the real one:  $0 $BASE <admin-token>"
+fi
 grep -q "$REPORT_ID" /tmp/fdg_smoke_body && echo "  ok: listed" || { echo "  FAIL: not listed"; FAILED=1; }
 grep -q '"hasSave":true' /tmp/fdg_smoke_body && echo "  ok: hasSave extracted" || { echo "  FAIL: hasSave missing"; FAILED=1; }
 check "GET /reports/id is 200" 200 "$(req GET "/reports/$REPORT_ID" "" "X-Admin-Token: $ADMIN_TOKEN")"
@@ -116,7 +121,9 @@ grep -q 'SMOKEMARKER' /tmp/fdg_smoke_body && echo "  ok: body round-tripped" || 
 echo "14. report delete"
 check "DELETE /reports/id without token is 403" 403 "$(req DELETE "/reports/$REPORT_ID")"
 check "DELETE /reports/id is 200" 200 "$(req DELETE "/reports/$REPORT_ID" "" "X-Admin-Token: $ADMIN_TOKEN")"
-req GET /reports "" "X-Admin-Token: $ADMIN_TOKEN" > /dev/null
+# The listing must have SUCCEEDED before "not in the body" means "deleted" - a 403 body
+# contains no report id either, so grepping it blind reports a delete that never happened.
+check "post-delete listing is 200" 200 "$(req GET /reports "" "X-Admin-Token: $ADMIN_TOKEN")"
 grep -q "$REPORT_ID" /tmp/fdg_smoke_body && { echo "  FAIL: still listed after delete"; FAILED=1; } || echo "  ok: gone from listing"
 
 echo ""
