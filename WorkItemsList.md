@@ -17,9 +17,10 @@ When closing an item: write the Outcome in its detail file, tick the line, and m
 
 ## Movement
 
-- [ ] 366 — The on-path snake (#256 S4) clamps every rank that overruns the arc onto ONE route point, so a
-  big unit ends with its own models stacked; no validator forbids a same-unit end-overlap, and the collapse
-  reads as forward progress to the ladder. ([WorkItems/366](WorkItems/366-snake-stacks-models.md))
+- [~] 366 — Snake (#256 S4) piled every rank that overran the arc onto one route point, so a big unit ended
+  with its own models stacked and its front rank dragged backwards; no validator forbade a same-unit
+  end-overlap. Snake re-shaped, `ValidateNoSelfOverlap` added, snake value gate raised. Implemented +
+  tested; awaiting in-game confirmation. ([WorkItems/366](WorkItems/366-snake-stacks-models.md))
 
 - [~] 334 — The 1" forced-charge band was invisible while moving: ending inside it is legal (#206) but costs the unit its Pass, which only showed up a stage later. Engine predicate extracted to `ForcedChargeUtilities` (gate + preview share it); GUI draws the band around reachable enemies, tints the ghost and warns in the panel; CLI prints the same. Implemented + tested + GUI hand-verified 2026-08-04. ([WorkItems/334](WorkItems/334-forced-charge-proximity-preview.md))
 

@@ -1,6 +1,6 @@
 # 366 — The on-path snake stacks a unit's own models (and no validator forbids it)
 
-**Status**: in-progress
+**Status**: implemented + tested; awaiting in-game confirmation
 **Related**: #256 (S4 snake), #264 (issue 4/5 snake gating), #205 (friendly end-overlap), #159 (lenient coherency)
 
 ## Goal
@@ -17,6 +17,22 @@ end-overlap ("not worsened", so an already-stacked unit isn't frozen), and the l
 degenerate snake. Engine suite green, headless smoke exit 0.
 
 ## Notes
+
+- 2026-08-08: **Slice 3 landed** (engine `cafb873`) - the snake's value gate. Its bar was the bare
+  `MinBackoffStepInches` (0.05"), which the collapse cleared easily. Instrumented every accepted snake
+  across the suite: legitimate ones gain 0.44-0.95 of their arc (n=232, median 0.76), degenerate ones
+  0.04, so `SnakeMinProgressFraction` is 0.25 - a wide margin either side. Pin:
+  `ValidateWithBackoff_SnakeThatBarelyAdvances_IsRejectedForTheHalvingLadder`, red without the gate.
+
+- 2026-08-08: **Measured against the reported save.** `FdgLab analyze` on
+  `YellowWarriorsMovedBackAndSomehowModelsOverlap.fdgsave`, same unit, same state:
+  - before: every macro action scored -0.0004 and ended at the same (6.3,2.7) - a 0.85" nudge that the
+    ladder manufactured for each one, with Hold at -0.0099 losing to all of them;
+  - after: top candidate 0.1338, `RushObjective` end (4.5,6.5) - a real 4.4" advance up-field - and the
+    degenerate candidates are honestly reported `Blocked` instead of a fake `BudgetClipped` nudge.
+  Bench A/B (builtin vs builtin-basic, tactician both sides, 40 games): pre-#366 71.3% 25/8/7, post-#366
+  71.3% 24/7/9, **0 faults / 0 timeouts both**, decision cost flat (39.9 -> 39.8ms mean). Feasibility
+  probe 100% (gate >= 95%), 0 generator faults. Suite 2918/2918, app 1140/1140, build clean, smoke 0.
 
 - 2026-08-08: **Slice 2 landed** (engine `e6690f4`) - the validator rule, plus a correction to slice 1.
   `ValidateNoSelfOverlap` runs in all four `ValidatePaths` forms and in `ValidateConsolidationPaths`,
@@ -101,3 +117,25 @@ degenerate snake. Engine suite green, headless smoke exit 0.
   before) with the centroid bounded by the 3" seizure radius.
 
 ## Outcome
+
+Three defects, all engine-side, landed as three slices (engine `048e72b` -> `e6690f4` -> `cafb873`).
+
+1. **The snake stacked models.** `BuildSnakeToSide` floored every rank that overran the arc onto one
+   route point. Ranks now extend the file behind the route start, and are staggered by REAL distance
+   rather than arc length - the second defect, latent until a validator existed to catch it, since equal
+   arc steps are a much shorter straight-line gap around a bend.
+2. **Nothing forbade it.** `ValidateNoSelfOverlap` in all four `ValidatePaths` forms and in
+   `ValidateConsolidationPaths`, "not worsened" so an already-stacked unit is not frozen. New
+   `EErrorReasonType.EndedOnOwnUnitModel` with GUI text. The GUI already blocked a human from doing it,
+   which is why it read as guarded.
+3. **The AI chose it.** The snake's progress bar went from 0.05" absolute to a quarter of its arc.
+
+The backwards movement was not a separate defect: the pile sat at the route start, which is the pre-move
+centroid, so every model ahead of it had to walk back into the pile.
+
+**Deferred / not done:** no GUI or in-game hand-verify yet - the whole item is engine-side and measured
+through the suite, the bench and `analyze` on the reporting save, but nobody has watched a live game
+confirm the yellow Warriors advance normally. **Recorded, not built:** a model that IS advancing may still
+travel backwards along the route while funnelling onto the route line from a flank (measured -0.90" on
+the save's geometry). That is the corridor behaviour #256/#264 built the snake for, and the attempt to
+forbid it outright is what the reversal in Decisions is about.
