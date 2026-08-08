@@ -234,9 +234,11 @@ public sealed class EscapeMenuOverlay
         ImGui.Spacing();
 
         ImGui.PushTextWrapPos(0f);
-        ImGui.TextDisabled("Sends your notes with the game log, recent crash log, and (as host) " +
-            $"a full game save to the developer. A copy is kept in {BugReport.BugReportStore.DirectoryName}/ " +
-            "next to the game.");
+        foreach (string line in BugReportDisclosureLines(IsHost))
+        {
+            if (line.Length == 0) ImGui.Spacing();
+            else ImGui.TextDisabled(line);
+        }
         ImGui.PopTextWrapPos();
         ImGui.Spacing();
 
@@ -256,6 +258,34 @@ public sealed class EscapeMenuOverlay
         ImGui.Separator();
         ImGui.Spacing();
         if (FullWidthButton("Back")) _inBugReport = false;
+    }
+
+    /// <summary>
+    /// The #226 disclosure, shown BEFORE the Send button so the decision to send is an informed
+    /// one. A report carries far more than the typed notes, and some of it is about OTHER people
+    /// (their chat lines, their army lists inside the save) or identifies the reporter (player
+    /// name, and the IP the drop box records) - so each of those is named rather than summarized
+    /// as "diagnostics". An empty entry renders as vertical spacing.
+    /// </summary>
+    /// <param name="isHost">Only the host's report can carry a save (a client has nothing to
+    /// serialize - #054), so only the host is told a save is going.</param>
+    internal static IReadOnlyList<string> BugReportDisclosureLines(bool isHost)
+    {
+        var lines = new List<string>
+        {
+            "What this sends to the developer:",
+            "- your notes, player name, game version and operating system",
+            "- this session's log and chat, including other players' messages",
+            "- recent crash logs, if there are any",
+        };
+
+        if (isHost)
+            lines.Add("- a full save of this game, with every player's army list");
+
+        lines.Add("- your IP address, recorded by the report server");
+        lines.Add("");
+        lines.Add($"A copy is kept in {BugReport.BugReportStore.DirectoryName}/ next to the game.");
+        return lines;
     }
 
     private void DrawBugReportStatus()

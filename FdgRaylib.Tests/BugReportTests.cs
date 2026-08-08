@@ -159,6 +159,50 @@ public class BugReportTests
         Assert.That(BugReportStore.TryWrite("", DateTime.UtcNow, _dir), Is.Null);
     }
 
+    // ---- Disclosure --------------------------------------------------------------------
+
+    [Test]
+    public void Disclosure_IsAsciiOnly()
+    {
+        // The ImGui font atlas bakes Basic Latin + Latin-1 only, so a stray em dash or curly
+        // quote would render as '?' in-game. No lint guards hand-authored UI strings, hence this.
+        foreach (bool isHost in new[] { true, false })
+        {
+            foreach (string line in EscapeMenuOverlay.BugReportDisclosureLines(isHost))
+            {
+                foreach (char c in line)
+                {
+                    Assert.That(c, Is.InRange(' ', '~'),
+                        $"non-ASCII character '{c}' (U+{(int)c:X4}) in disclosure line: {line}");
+                }
+            }
+        }
+    }
+
+    [Test]
+    public void Disclosure_NamesEveryThingTheBundleCarries()
+    {
+        string host = string.Join("\n", EscapeMenuOverlay.BugReportDisclosureLines(isHost: true));
+        string client = string.Join("\n", EscapeMenuOverlay.BugReportDisclosureLines(isHost: false));
+
+        // The parts that aren't the reporter's own data must be named for BOTH roles - other
+        // players' chat, and the IP the drop box records.
+        foreach (string text in new[] { host, client })
+        {
+            Assert.That(text, Does.Contain("chat"));
+            Assert.That(text, Does.Contain("other players"));
+            Assert.That(text, Does.Contain("IP address"));
+            Assert.That(text, Does.Contain("player name"));
+            Assert.That(text, Does.Contain(BugReportStore.DirectoryName),
+                "the local-copy location must be disclosed too");
+        }
+
+        Assert.That(host, Does.Contain("save"),
+            "a host's report carries the game save, so a host must be told");
+        Assert.That(client, Does.Not.Contain("save"),
+            "a client has no save to send (#054) - promising one would be a lie");
+    }
+
     // ---- Uploader gzip -----------------------------------------------------------------
 
     [Test]
