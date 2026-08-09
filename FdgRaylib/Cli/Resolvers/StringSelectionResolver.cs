@@ -46,6 +46,24 @@ public class StringSelectionResolver : IStageResolver<StringSelectionRequest, st
                 // rather than the second line starting at column 0.
                 foreach (string line in desc.Split('\n'))
                     Console.WriteLine($"        {line}");
+
+                // #369: rules the description NAMES (the "Courage" a Courage Buff confers) spelled out
+                // under it, one per line and indented a step further so they read as belonging to the
+                // description rather than to the option. The GUI underlines them in place and hovers the
+                // text; the CLI has no hover, so it prints them, exactly as it already does for the weapon
+                // rules in OptionRules above. An undocumented one still gets a line - "not enforced" is
+                // worth knowing before choosing.
+                if (request.OptionDescriptionRules != null
+                    && request.OptionDescriptionRules.TryGetValue(opt, out var descRules))
+                {
+                    foreach (StringSelectionRequest.OptionRule rule in descRules)
+                    {
+                        Console.WriteLine($"          {rule.Name} - "
+                            + (string.IsNullOrWhiteSpace(rule.Description)
+                                ? "not described; the engine may not enforce this rule."
+                                : rule.Description));
+                    }
+                }
             }
 
             if (request.SecondaryActions != null

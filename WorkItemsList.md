@@ -47,6 +47,8 @@ When closing an item: write the Outcome in its detail file, tick the line, and m
 
 ## Shooting & cover
 
+- [~] 368 — Shooting weapon rows named the weapon but never said how many copies were firing, so a five-rifle volley and a single rifle read identically; both front ends now print the datasheet "3x" prefix the melee menu already uses, off `WeaponOption.CopiesRemaining`. Implemented + tested + CLI-verified; awaiting GUI hand-verify. ([WorkItems/368](WorkItems/368-shooting-weapon-copy-count.md))
+
 - [~] 201 — Shooting *out of* cover grants the defender cover: fixed 2026-07-21 via lobby-toggled proximity house rules (default on: 2" exit w/ both-hugging amendment + 6" shared cover), previews kept truthful; implemented + tested on `201-cover-proximity`, awaiting GUI hand-verify. ([WorkItems/201](WorkItems/201-cover-attacker-side.md))
 - [~] 276 — Attack animation truthfulness: occluded/out-of-range carriers no longer roll dice (engine bug) nor draw beams; split Takedown shots fire one beam each, rotating snipers. Implemented + tested; awaiting GUI hand-verify. ([WorkItems/276](WorkItems/276-attack-animation-truthfulness.md))
 
@@ -62,6 +64,8 @@ When closing an item: write the Outcome in its detail file, tick the line, and m
 ## Special rules — framework
 
 - [~] 367 — Ability actions in the Choose Action menu were listed as a bare rule name ("Courage Buff") with no descriptor text, so a bonus action never explained itself. `AbilityOffer` now carries its `SpecialRuleDefinition` and the menu passes each offer's `Description` through as `OptionDescriptions`, which both front ends already render. Implemented + tested + CLI-verified on the Blessed Sisters Procession Altar; awaiting GUI hand-verify. ([WorkItems/367](WorkItems/367-ability-action-descriptions.md))
+
+- [~] 369 — Follow-on to #367: an ability description names the rule it CONFERS ("...which gains Courage...") and that name was plain prose. `EffectRuleReferences` derives the referenced names from the effect (not a text scan), and a new `OptionDescriptionRules` map gives them the #292/#336 treatment - underlined in place with a hover (GUI), indented line (CLI). Implemented + tested + CLI-verified; awaiting GUI hand-verify. ([WorkItems/369](WorkItems/369-description-rule-hovers.md))
 
 - [~] 314 — Takedown granted line-of-sight AND cover bypass (snipers shot through Blocking terrain) from a wrong row in the #042 checklist; the rule text grants neither. Both hooks removed, and its real "resolved before other weapons" ordering clause implemented on #028's gate. Implemented + tested; awaiting GUI hand-verify. ([WorkItems/314](WorkItems/314-takedown-facet-correction.md)) Was #311, then #313, pre-reconciliation-38.
 

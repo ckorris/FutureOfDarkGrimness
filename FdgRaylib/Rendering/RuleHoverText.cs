@@ -84,19 +84,27 @@ public static class RuleHoverText
     /// <paramref name="textColor"/> to leave them looking like the rest of the line.</param>
     /// <param name="hoverEnabled">False suppresses hit-testing (e.g. the window isn't hovered, or another
     /// tooltip has already claimed the frame), so the underlines still draw but no tooltip is reported.</param>
+    /// <param name="fontScale">#369: draws at this fraction of the current font size, for a caller whose
+    /// text is smaller than the window's - a menu row's subtext renders at 0.82. Passed explicitly rather
+    /// than read from <c>SetWindowFontScale</c>, which neither <c>CalcTextSize</c> nor the draw list's
+    /// default-size <c>AddText</c> honours, so a scaled caller would otherwise measure and paint at full
+    /// size and land its underlines nowhere near its glyphs. 1 (the default) is the unscaled path.</param>
     public static string? DrawInline(ImDrawListPtr drawList, Vector2 origin,
-        IReadOnlyList<Segment> segments, uint textColor, uint ruleColor, bool hoverEnabled)
+        IReadOnlyList<Segment> segments, uint textColor, uint ruleColor, bool hoverEnabled,
+        float fontScale = 1f)
     {
-        float lineHeight = ImGui.GetTextLineHeight();
+        float lineHeight = ImGui.GetTextLineHeight() * fontScale;
+        float fontSize = ImGui.GetFontSize() * fontScale;
+        ImFontPtr font = ImGui.GetFont();
         Vector2 mouse = ImGui.GetMousePos();
         string? tooltip = null;
         float x = 0f;
 
         foreach (Segment segment in segments)
         {
-            float width = ImGui.CalcTextSize(segment.Text).X;
+            float width = ImGui.CalcTextSize(segment.Text).X * fontScale;
             Vector2 at = origin + new Vector2(x, 0f);
-            drawList.AddText(at, segment.IsRule ? ruleColor : textColor, segment.Text);
+            drawList.AddText(font, fontSize, at, segment.IsRule ? ruleColor : textColor, segment.Text);
 
             if (segment.IsRule)
             {

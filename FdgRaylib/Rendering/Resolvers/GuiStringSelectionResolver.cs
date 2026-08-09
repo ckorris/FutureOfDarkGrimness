@@ -75,6 +75,15 @@ public class GuiStringSelectionResolver : IStageResolver<StringSelectionRequest,
         /// Empty when the row has no rules and <see cref="Lines"/> is what gets drawn.</summary>
         public List<List<RuleHoverText.Segment>> SegmentLines { get; set; } = new();
 
+        /// <summary>#369: <see cref="Desc"/> split around the rule names it MENTIONS (a buff's
+        /// "...which gains Courage..."), so the subtext gets the same underline-and-hover treatment the
+        /// label does. Null when the description names no rule, which keeps the plain ImGui text path.</summary>
+        public IReadOnlyList<RuleHoverText.Segment>? DescSegments { get; set; }
+
+        /// <summary>#369: <see cref="DescSegments"/> wrapped to the description's width, one entry per
+        /// drawn line. Measured at the subtext's own smaller font scale.</summary>
+        public List<List<RuleHoverText.Segment>> DescSegmentLines { get; set; } = new();
+
         /// <summary>How many text lines the label occupies, whichever of the two paths drew it.</summary>
         public int LineCount => Segments != null ? SegmentLines.Count : Lines.Count;
 
@@ -160,6 +169,7 @@ public class GuiStringSelectionResolver : IStageResolver<StringSelectionRequest,
             var row = new MenuRow(opt, LabelFor(opt, letters[i]), desc, i);
             AttachSecondary(row, request, letters[i]);
             AttachRuleSegments(row, request, row.Label, tail: string.Empty);
+            AttachDescriptionSegments(row, request);
             rows.Add(row);
         }
         for (int i = 0; i < invalidCount; i++)
@@ -196,10 +206,24 @@ public class GuiStringSelectionResolver : IStageResolver<StringSelectionRequest,
                 else
                     row.Lines = ResolverText.Wrap(row.Label, labelWrap);
                 row.ButtonHeight = MathF.Max(btnH, row.LineCount * lineH + btnPadY * 2f);
-                row.TotalHeight = row.Desc == null
-                    ? row.ButtonHeight + gapAfterBtn
-                    : row.ButtonHeight + 2f
-                      + ImGui.CalcTextSize(row.Desc, false, descWrapMeasure).Y * descScale + gapAfterDesc;
+                if (row.Desc == null)
+                {
+                    row.TotalHeight = row.ButtonHeight + gapAfterBtn;
+                }
+                else if (row.DescSegments != null)
+                {
+                    // #369: measured in the same scaled-equivalent space as the wrap width above - the
+                    // segments are measured unscaled and the resulting line count costed at descScale.
+                    row.DescSegmentLines =
+                        OptionRuleSegments.Wrap(row.DescSegments, MeasureText, descWrapMeasure);
+                    row.TotalHeight = row.ButtonHeight + 2f
+                        + row.DescSegmentLines.Count * lineH * descScale + gapAfterDesc;
+                }
+                else
+                {
+                    row.TotalHeight = row.ButtonHeight + 2f
+                        + ImGui.CalcTextSize(row.Desc, false, descWrapMeasure).Y * descScale + gapAfterDesc;
+                }
                 total += row.TotalHeight;
             }
             return total;
@@ -282,6 +306,10 @@ public class GuiStringSelectionResolver : IStageResolver<StringSelectionRequest,
         // here", exactly as the shoot panel tints its stat subline. A greyed row keeps its own dim colour
         // for both - an unavailable option must not advertise itself with a bright run.
         uint ruleCol = ImGui.ColorConvertFloat4ToU32(new Vector4(0.82f, 0.86f, 0.95f, 1f));
+
+        // #369: the subtext's own colour, matching what the plain ImGui path below pushes for it, so a
+        // description that gained hoverable rule names did not also change shade.
+        uint descCol = ImGui.ColorConvertFloat4ToU32(new Vector4(0.62f, 0.66f, 0.74f, 1f));
 
         // #292's one-tooltip-per-frame rule: the rows are hand-drawn, so a hovered rule name is collected
         // across the loop and raised after it.
@@ -380,7 +408,26 @@ public class GuiStringSelectionResolver : IStageResolver<StringSelectionRequest,
 
             // Optional subtext under the option (a weapon rule's text, a spell's effect summary):
             // smaller and dimmed.
-            if (row.Desc != null)
+            if (row.DescSegments != null)
+            {
+                // #369: the subtext names rules of its own ("...which gains Courage..."), so it draws the
+                // same way a rule-bearing label does - hand-drawn segments with the names underlined in
+                // place and hoverable - rather than as one flat string. Drawn at descScale explicitly:
+                // SetWindowFontScale would move the glyphs and leave the measurements behind.
+                float descY = origin.Y + row.ButtonHeight + 2f;
+                foreach (List<RuleHoverText.Segment> segmentLine in row.DescSegmentLines)
+                {
+                    // Called for every line unconditionally - DrawInline draws as well as hit-tests, so
+                    // folding it into `??=` would stop drawing the moment a tooltip was found (see the
+                    // label loop above, where that exact bug was).
+                    string? hovered = RuleHoverText.DrawInline(dl,
+                        new Vector2(origin.X + descIndent, descY), segmentLine, descCol, ruleCol,
+                        listHovered, descScale);
+                    ruleTooltip ??= hovered;
+                    descY += lineH * descScale;
+                }
+            }
+            else if (row.Desc != null)
             {
                 ImGui.SetCursorPos(new Vector2(descIndent, y + row.ButtonHeight + 2f));
                 ImGui.PushStyleColor(ImGuiCol.Text, new Vector4(0.62f, 0.66f, 0.74f, 1f));
@@ -567,6 +614,28 @@ public class GuiStringSelectionResolver : IStageResolver<StringSelectionRequest,
             segments = withTail;
         }
         row.Segments = segments;
+    }
+
+    /// <summary>
+    /// #369: the same treatment one step down - splits the row's DESCRIPTION around the rule names it
+    /// mentions, from <see cref="StringSelectionRequest.OptionDescriptionRules"/>. A separate map from
+    /// <see cref="StringSelectionRequest.OptionRules"/> because it annotates a different string: an
+    /// ability row's label IS a rule name ("Courage Buff"), so the label matcher would find the "Courage"
+    /// inside it and explain the wrong rule. Leaves <see cref="MenuRow.DescSegments"/> null when the
+    /// description names none, which keeps the plain ImGui subtext path.
+    /// </summary>
+    internal static void AttachDescriptionSegments(MenuRow row, StringSelectionRequest request)
+    {
+        if (row.Desc == null
+            || request.OptionDescriptionRules == null
+            || !request.OptionDescriptionRules.TryGetValue(row.Option,
+                out List<StringSelectionRequest.OptionRule>? rules)
+            || rules.Count == 0)
+        {
+            return;
+        }
+
+        row.DescSegments = OptionRuleSegments.Build(row.Desc, rules);
     }
 
     /// <summary>ImGui text measurement, as the plain function <see cref="OptionRuleSegments.Wrap"/> wants

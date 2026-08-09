@@ -207,11 +207,17 @@ public class GuiChooseRangedAttackResolver
             uint colSub = selectableW
                 ? ImGui.ColorConvertFloat4ToU32(new Vector4(0.65f, 0.65f, 0.70f, 1f))
                 : ImGui.ColorConvertFloat4ToU32(new Vector4(0.50f, 0.50f, 0.50f, 1f));
-            dl.AddText(rMin + new Vector2(4, 2), colTxt, wo.Weapon.Name);
+            // #368: how many copies of this weapon the unit is firing, as a "3x" prefix - the same
+            // datasheet convention the melee weapon menu already reads in ("3x Blade - A2, AP0"). A volley
+            // of three rifles and a single rifle rolled visually identical here, and the count is the first
+            // thing a player compares weapons on. CopiesRemaining is the pool this firing draws from, so a
+            // Takedown weapon (which spends one copy per pass) counts down as it fires.
+            string weaponLabel = $"{wo.CopiesRemaining}x {wo.Weapon.Name}";
+            dl.AddText(rMin + new Vector2(4, 2), colTxt, weaponLabel);
             // #319: a once-per-game weapon says so on its row, in both states - "ONCE PER GAME" while it
             // still has its shot (firing it is irreversible, and that has to be visible BEFORE the click),
             // "SPENT" once it is gone. Amber for the live one, gray for the used one.
-            float badgeX = 4 + ImGui.CalcTextSize(wo.Weapon.Name + "  ").X;
+            float badgeX = 4 + ImGui.CalcTextSize(weaponLabel + "  ").X;
             if (wo.LimitedRule != null)
             {
                 string badge = wo.LimitedAlreadyFired ? "SPENT" : "ONCE PER GAME";
@@ -364,7 +370,7 @@ public class GuiChooseRangedAttackResolver
             var ts = wo.WeaponTargetStats[_selectedTargetTIdx];
             var tu = ts.TargetUnit.GetValue();
 
-            ImGui.TextUnformatted(wo.Weapon.GetWeaponNameAndStats());
+            ImGui.TextUnformatted(wo.Weapon.GetWeaponNameAndStats(wo.CopiesRemaining));
 
             // #319: the consequence, not just the rule name. Firing a once-per-game weapon is the most
             // irreversible thing this panel can do, and the player can still walk away from it (Hold fire),

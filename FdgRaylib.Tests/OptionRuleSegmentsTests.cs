@@ -209,4 +209,54 @@ public class OptionRuleSegmentsTests
         Assert.That(string.Concat(lines.SelectMany(l => l).Select(s => s.Text)),
             Is.EqualTo("2x Interminablyverbosename - A1, AP0"));
     }
+
+    // #369: the same treatment one level down - a menu row's DESCRIPTION names the rule the ability
+    // confers, and that name gets underlined and hovered inside the subtext. Deliberately a different map
+    // from OptionRules: the label here IS a rule name, so the label matcher would find the "Courage"
+    // inside "Courage Buff" and explain the wrong rule.
+    [Test]
+    public void AttachDescriptionSegments_SplitsTheSubtextAroundTheRuleItNames()
+    {
+        const string option = "Courage Buff";
+        const string desc = "Pick one friendly unit, which gains Courage for its next relevant roll.";
+
+        var row = new GuiStringSelectionResolver.MenuRow(option, option, desc, 0);
+        var request = new StringSelectionRequest(
+            new PlayerID(System.Guid.NewGuid()), "Choose Action",
+            new List<string> { option },
+            new List<StringSelectionRequest.InvalidOption>(),
+            optionDescriptions: new Dictionary<string, string> { [option] = desc },
+            optionDescriptionRules: new Dictionary<string, List<StringSelectionRequest.OptionRule>>
+                { [option] = new() { Rule("Courage", "+1 to this unit's morale test rolls.") } });
+
+        GuiStringSelectionResolver.AttachDescriptionSegments(row, request);
+
+        Assert.That(row.DescSegments, Is.Not.Null);
+        Assert.That(Rebuild(row.DescSegments!), Is.EqualTo(desc),
+            "the subtext still reads exactly as the engine wrote it");
+
+        RuleHoverText.Segment ruleSegment = row.DescSegments!.Single(segment => segment.IsRule);
+        Assert.That(ruleSegment.Text, Is.EqualTo("Courage"));
+        Assert.That(ruleSegment.Description, Is.EqualTo("+1 to this unit's morale test rolls."));
+
+        Assert.That(row.Segments, Is.Null,
+            "the LABEL is untouched - nothing underlines the 'Courage' inside 'Courage Buff'");
+    }
+
+    // A menu whose descriptions name no rules keeps the plain word-wrapped subtext path.
+    [Test]
+    public void AttachDescriptionSegments_LeavesAPlainDescriptionAlone()
+    {
+        const string option = "Mend";
+        var row = new GuiStringSelectionResolver.MenuRow(option, option, "Heal D3 wounds.", 0);
+        var request = new StringSelectionRequest(
+            new PlayerID(System.Guid.NewGuid()), "Choose Action",
+            new List<string> { option },
+            new List<StringSelectionRequest.InvalidOption>(),
+            optionDescriptions: new Dictionary<string, string> { [option] = "Heal D3 wounds." });
+
+        GuiStringSelectionResolver.AttachDescriptionSegments(row, request);
+
+        Assert.That(row.DescSegments, Is.Null);
+    }
 }

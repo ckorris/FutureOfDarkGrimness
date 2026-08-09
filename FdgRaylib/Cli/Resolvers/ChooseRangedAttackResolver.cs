@@ -19,7 +19,9 @@ public class ChooseRangedAttackResolver : IStageResolver<ChooseRangedAttackReque
 
         foreach (var weaponOption in request.WeaponOptions)
         {
-            string weaponStats = weaponOption.Weapon.GetWeaponNameAndStats();
+            // #368: prefixed with the copy count ("3x Rifle - 24\", A1, AP0"), the datasheet convention the
+            // melee weapon menu already uses. CopiesRemaining is the pool this firing draws from.
+            string weaponStats = weaponOption.Weapon.GetWeaponNameAndStats(weaponOption.CopiesRemaining);
             // #042/#052: attribute any cover-/LoS-ignore to the responsible rule, so the player sees why a
             // blocked or in-cover unit is still a normal target (e.g. "(Indirect ignores line of sight)").
             weaponStats += SightRuleLabel.Parenthetical(
