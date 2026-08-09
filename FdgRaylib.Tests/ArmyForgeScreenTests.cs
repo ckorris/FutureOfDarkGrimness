@@ -16,6 +16,16 @@ namespace FdgRaylib.Tests;
 public class ArmyForgeScreenTests
 {
     [Test]
+    public void BackgroundLibraryLoad_JoinsOnFirstUse()
+    {
+        // The public ctor parses the bundled book library on a worker task (it is ~0.5s of JSON, which
+        // used to delay the window at startup); every entry point joins the load before touching state.
+        var screen = new ArmyForgeScreen();
+        Assert.That(screen.List.BookName, Is.Not.Empty);
+        Assert.That(screen.Compile().Units, Is.Empty);
+    }
+
+    [Test]
     public void PointsHeader_ShowsTotalOverLimit()
     {
         Assert.That(ArmyForgeScreen.PointsHeader(271, 500), Is.EqualTo("271 / 500 pts"));

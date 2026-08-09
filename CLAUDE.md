@@ -45,6 +45,10 @@ dotnet build
 # Run with Raylib window (requires a display)
 dotnet run --project FdgRaylib/FdgRaylib.csproj
 
+# For normal play prefer the built binary: `dotnet run` re-runs MSBuild's up-to-date check every
+# launch (~2.7s of overhead before the app starts)
+./FdgRaylib/bin/Debug/net8.0/FdgRaylib
+
 # Run headless (CLI only, no window — useful for piped/automated play)
 dotnet run --project FdgRaylib/FdgRaylib.csproj -- --headless
 
