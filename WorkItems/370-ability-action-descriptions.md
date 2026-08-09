@@ -1,4 +1,4 @@
-# 367 - Ability-derived action menu entries carry no descriptor text
+# 370 - Ability-derived action menu entries carry no descriptor text
 
 ## Goal
 

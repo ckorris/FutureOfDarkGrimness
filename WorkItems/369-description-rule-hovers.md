@@ -2,7 +2,7 @@
 
 ## Goal
 
-Follow-on to [#367](367-ability-action-descriptions.md). An ability action now carries its rule's
+Follow-on to [#370](370-ability-action-descriptions.md). An ability action now carries its rule's
 description, but that description is written in terms of the rule it CONFERS - "...which gains Courage
 for its next relevant roll" - and Courage is the rule the player does not know. The name sat in the
 subtext as plain prose with no way to learn what it does.
