@@ -61,6 +61,8 @@ When closing an item: write the Outcome in its detail file, tick the line, and m
 
 ## Special rules — framework
 
+- [~] 367 — Ability actions in the Choose Action menu were listed as a bare rule name ("Courage Buff") with no descriptor text, so a bonus action never explained itself. `AbilityOffer` now carries its `SpecialRuleDefinition` and the menu passes each offer's `Description` through as `OptionDescriptions`, which both front ends already render. Implemented + tested + CLI-verified on the Blessed Sisters Procession Altar; awaiting GUI hand-verify. ([WorkItems/367](WorkItems/367-ability-action-descriptions.md))
+
 - [~] 314 — Takedown granted line-of-sight AND cover bypass (snipers shot through Blocking terrain) from a wrong row in the #042 checklist; the rule text grants neither. Both hooks removed, and its real "resolved before other weapons" ordering clause implemented on #028's gate. Implemented + tested; awaiting GUI hand-verify. ([WorkItems/314](WorkItems/314-takedown-facet-correction.md)) Was #311, then #313, pre-reconciliation-38.
 
 - [~] 290 — Advance-and-shoot gate re-derived the allowance AFTER `ExecuteMoveStage` spent the one-shot movement grant that paid for the move (Inspiring Bots -> Rapid Advance on a Slow unit: advanced 8", then couldn't shoot); the allowance is now recorded with the distance. Implemented + tested; awaiting GUI hand-verify. ([WorkItems/290](WorkItems/290-move-shoot-allowance-consumed-grant.md))
