@@ -49,6 +49,20 @@ public class LobbyScreen : IAppScreen
     private string? _lastLaunchError;
     private IReadOnlyList<string> _launchProblems = Array.Empty<string>();
 
+    // #372 bot starter armies. The folder scan is process-wide and starts the first time a lobby opens
+    // (SetViewModel touches it), because the armies folder doesn't change under us and re-reading 12 MB
+    // of JSON per lobby would be waste. The ROTATION is per-lobby, so a fresh lobby re-rolls freely.
+    private static readonly Lazy<ArmyCatalog> SharedArmyCatalog =
+        new(() => new ArmyCatalog(), LazyThreadSafetyMode.ExecutionAndPublication);
+
+    private BotArmyPicker? _botArmyPicker;
+
+    // Bot slots this lobby has already handed a starter army. Keyed by PlayerID, not by "does the slot
+    // have an army", because AddAiPlayer gives every bot a 100-pt "Test Army" stub - there is no
+    // unassigned state to watch for. Also stops a re-roll or a hand-picked Load Army from being
+    // immediately overwritten on the next frame.
+    private readonly HashSet<Guid> _autoArmiedBots = new();
+
     // Host connection info shown so the host knows what address to share (QF9). The port mirrors
     // CommandProtocol.TEMP_PORT (internal to the engine assembly, so it's restated here).
     private const int ListenPort = 6389;
@@ -66,6 +80,12 @@ public class LobbyScreen : IAppScreen
         _viewModel = viewModel;
         _chatInput = "";
         _pendingGame = null;
+
+        // #372: start the armies scan as soon as a lobby exists (it runs on a background task) and give
+        // this lobby its own rotation, so re-opening one starts the bots' army cycle over.
+        _botArmyPicker = null;
+        _autoArmiedBots.Clear();
+        _ = SharedArmyCatalog.Value;
         viewModel.OnLaunched += game => _pendingGame = game;
         // Fires on the engine thread; the renderer just records it and reacts on the main thread.
         viewModel.OnGameEnded += result => OnGameEnded?.Invoke(result);
@@ -242,6 +262,8 @@ public class LobbyScreen : IAppScreen
 
     private void DrawPlayerList(float panelW)
     {
+        AutoArmyNewBots();
+
         IReadOnlyList<LobbyPlayerInfoSummary> players = _viewModel!.PlayerInfos;
 
         // Rows 50% taller: the extra height comes from cell padding (applied top+bottom each row).
@@ -320,6 +342,23 @@ public class LobbyScreen : IAppScreen
                     if (UiButton.NavigateSmall($"Load Army##{i}"))
                         TryLoadArmyForPlayer(info.PlayerID);
                     ImGui.EndDisabled();
+
+                    // #372: re-roll a bot's starter army. Bots only - a human picks their own list, and
+                    // the button would be a way to stomp another player's choice from the host seat.
+                    if (info.PlayerType == EPlayerType.AI)
+                    {
+                        ImGui.SameLine();
+                        ImGui.BeginDisabled(!canModify || !ArmyCatalogReady);
+                        if (UiButton.NavigateSmall($"New Army##{i}"))
+                            AssignBotArmy(info.PlayerID, players);
+                        ImGui.EndDisabled();
+                        if (ImGui.IsItemHovered())
+                            ImGui.SetTooltip(ArmyCatalogReady
+                                ? "Swap in another army from the armies folder, closest to the points\n" +
+                                  "limit first. Skips armies other players are using, and won't repeat\n" +
+                                  "one until this bot has seen them all."
+                                : "Reading the armies folder...");
+                    }
                 }
             }
 
@@ -342,6 +381,80 @@ public class LobbyScreen : IAppScreen
             ImGui.SameLine();
             if (UiButton.Navigate("Add DerpBot"))
                 _viewModel.AddAiPlayer(EAiProfile.SoloRules);
+        }
+    }
+
+    // #372 --------------------------------------------------------------------------------------------
+    // Bot starter armies. A bot is added with a hard-coded 100-pt "Test Army" stub (engine-side, in
+    // LobbyViewModel_Host.AddAiPlayer), which is never what anyone wants to play against; the lobby swaps
+    // in a real list from the armies folder as soon as the scan is in. App-side on purpose: the armies
+    // FOLDER is an app concept (ArmyPaths), and the engine has no business reading the user's disk.
+
+    private static bool ArmyCatalogReady => SharedArmyCatalog.Value.IsLoaded;
+
+    /// <summary>Hands every bot that hasn't had one a starter army. Host-only (nobody else may write
+    /// another slot's army) and skipped when resuming, where the saved armies are the point. No-op until
+    /// the background scan finishes, and no-op forever if there is no armies folder to scan.</summary>
+    private void AutoArmyNewBots()
+    {
+        if (!_viewModel!.HasHostPrivileges || _viewModel.IsResumeMode) return;
+        if (!ArmyCatalogReady) return;
+
+        IReadOnlyList<LobbyPlayerInfoSummary> players = _viewModel.PlayerInfos;
+
+        foreach (LobbyPlayerInfoSummary info in players)
+        {
+            if (info.PlayerType != EPlayerType.AI) continue;
+            if (!_autoArmiedBots.Add(info.PlayerID.ID)) continue;
+
+            AssignBotArmy(info.PlayerID, players);
+        }
+
+        // A slot that left must not keep its rotation alive. Pruned unconditionally rather than behind a
+        // count comparison: a bot leaving as a human joins keeps the count level, and the roster is at
+        // most eight rows, so there is nothing to save by guessing.
+        var live = players.Select(p => p.PlayerID.ID).ToHashSet();
+        foreach (Guid gone in _autoArmiedBots.Where(id => !live.Contains(id)).ToList())
+        {
+            _autoArmiedBots.Remove(gone);
+            _botArmyPicker?.Forget(gone);
+        }
+    }
+
+    /// <summary>Picks and loads the next army for one bot. Silently does nothing when the folder holds no
+    /// readable armies, or when the chosen file fails to load - the bot keeps whatever it had.</summary>
+    private void AssignBotArmy(PlayerID playerID, IReadOnlyList<LobbyPlayerInfoSummary> players)
+    {
+        _botArmyPicker ??= new BotArmyPicker(SharedArmyCatalog.Value.Entries);
+
+        // What everyone ELSE is holding, by the same name|faction|points identity the catalog uses - the
+        // roster is the only view that covers remote clients, whose army file path never crosses the wire.
+        var inUseByOthers = players
+            .Where(p => p.PlayerID != playerID && p.ArmyListSummary.IsAssigned)
+            .Select(p => ArmyCatalogEntry.KeyFor(
+                p.ArmyListSummary.ArmyName, p.ArmyListSummary.FactionName, p.ArmyListSummary.PointCost))
+            .ToHashSet();
+
+        if (_botArmyPicker.PickNext(playerID.ID, _viewModel!.ArmyPoints, inUseByOthers) is not { } pick)
+            return;
+
+        if (LoadArmyFile(pick.Path) is { } army) _viewModel.UpdateArmyListFile(playerID, army);
+    }
+
+    /// <summary>Reads a .fdgarmy off disk, or null if it can't be read. Deserialized as BuiltArmyFile so a
+    /// Forge-built army keeps its embedded book + selections - the #153 launch gate validates them
+    /// host-side. A hand-authored army just leaves them null.</summary>
+    private static FDG.ArmyBuilding.BuiltArmyFile? LoadArmyFile(string path)
+    {
+        try
+        {
+            return File.Exists(path)
+                ? JsonSerializer.Deserialize<FDG.ArmyBuilding.BuiltArmyFile>(File.ReadAllText(path), RuleJson.Options)
+                : null;
+        }
+        catch (Exception e) when (e is IOException or JsonException or UnauthorizedAccessException)
+        {
+            return null;
         }
     }
 
@@ -816,13 +929,11 @@ public class LobbyScreen : IAppScreen
         if (canceled) return;
 
         string path = paths?.FirstOrDefault() ?? "";
-        if (!File.Exists(path)) return;
+        if (LoadArmyFile(path) is not { } loaded) return;
 
-        // Deserialize as BuiltArmyFile so a Forge-built army keeps its embedded book + selections — the
-        // #153 launch gate validates them host-side. A hand-authored army just leaves them null.
-        var loaded = JsonSerializer.Deserialize<FDG.ArmyBuilding.BuiltArmyFile>(File.ReadAllText(path), RuleJson.Options);
-        if (loaded is null) return;
-
+        // #372: a hand-picked army marks the slot as served, so AutoArmyNewBots never overwrites it on a
+        // later frame (it would, for a bot whose army was loaded before the folder scan came back).
+        _autoArmiedBots.Add(playerID.ID);
         _viewModel!.UpdateArmyListFile(playerID, loaded);
     }
 

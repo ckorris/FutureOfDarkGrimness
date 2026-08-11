@@ -1,0 +1,53 @@
+# 372 — Bot starter armies (auto-pick near the points limit + re-roll)
+
+**Status**: implemented, awaiting GUI hand-verify
+**Related**: #153 (launch gate / BuiltArmyFile), #191 A6 (the two bot profiles), #241/#219 (UnattributedPoints)
+
+## Goal
+A bot added in the lobby should arrive with a real army near the lobby's points limit instead of the
+hard-coded 100-pt "Test Army" stub, and the host should be able to cycle it onto a different one. Done =
+adding a bot gives it a playable list from `armies/`; a per-row button swaps it for another, skipping
+armies other players hold and never repeating one until that bot has seen them all.
+
+## Notes
+
+- 2026-08-11: Implemented app-side in three pieces.
+  - `FdgRaylib/ArmyCatalog.cs` - streaming index of the armies folder. `ArmyCatalogEntry`
+    (path/name/faction/points) + a `Utf8JsonReader` scan that `Skip()`s every top-level property it
+    doesn't need. Runs on a background task; `IsLoaded` gates the lobby instead of blocking the draw
+    thread. Process-wide (`LobbyScreen.SharedArmyCatalog`), since the folder doesn't change under us.
+  - `FdgRaylib/Rendering/BotArmyPicker.cs` - pure ranking + rotation, no IO and no ImGui.
+  - `LobbyScreen` - `AutoArmyNewBots()` (called at the top of `DrawPlayerList`) and a "New Army" button
+    on AI rows only.
+- 2026-08-11: Tests - `ArmyCatalogTests` (8) and `BotArmyPickerTests` (11). App suite 1171 green, engine
+  suite 2948 green.
+- 2026-08-11: **Not yet hand-verified in the GUI.** Two things to eyeball: the Actions column
+  (0.17f stretch) now carries two small buttons - "Load Army" + "New Army" - and may be cramped; and the
+  first frames of a lobby show the bot's 100-pt stub until the background scan lands.
+
+## Decisions
+
+- **App-side, not engine-side.** The engine is usually the right home, but the armies *folder* is an app
+  concept (`ArmyPaths`) and the engine has no business reading the user's disk. The engine's
+  `AddAiPlayer` stub army is deliberately left in place as the fallback for when there is no armies
+  folder at all (a bare `dotnet run` from an odd cwd, or a stripped install).
+- **Rotation keyed on PlayerID, not on "has an army".** `AddAiPlayer` gives every bot the 100-pt stub, so
+  there is no unassigned state to detect. `_autoArmiedBots` records which slots have been served; a
+  hand-picked Load Army also marks the slot, so the auto-picker can never stomp a deliberate choice on a
+  later frame.
+- **Identity is `name|faction|points`, not the file path.** "Is another player already using this army?"
+  has to work for a REMOTE client too, and their army reaches the host as an `ArmyListSummary` with no
+  path in it. Two files agreeing on all three fields are the same list for this purpose.
+- **An over-limit army sorts behind every legal one**, however far out. Ranking purely by distance from
+  the limit would hand a bot a 2200-pt list in a 2000-pt lobby ahead of a 1000-pt one, and the #153
+  launch gate flags exactly that. Over-limit is the last resort, not the second choice.
+- **A unit-less army file is not indexed.** It parses fine but is unplayable, and at 0 points it would
+  otherwise rank first in a low-points lobby.
+- **Points are summed by streaming, and a test pins that to the real thing.** The bundled lists are
+  Forge-built and carry a full book snapshot each (~12 MB across the folder), so a full deserialize per
+  file is too slow to do on the UI thread and wasteful even off it. `IndexedPointsMatchAFullDeserializeOf
+  EveryShippedArmy` asserts the streaming reader agrees with `ArmyListFile.TotalPoints` on every shipped
+  army, so the shortcut can't silently drift (`UnattributedPoints` was the easy thing to miss).
+
+## Outcome
+_Open until GUI hand-verify._

@@ -160,6 +160,10 @@ detection, host-IP display, DNS host entry. See `NetworkingHandoff-2026-07-08.md
 - [ ] 161 — Resolver UI consistency pass: stat/highlight parity, right-click undo on deploy, shared canvas-selector base (also absorbs the `GuiModelSelectionResolver` alive-filter gap), dialog chrome. Findings + canonical click scheme in the detail file. ([WorkItems/161](WorkItems/161-resolver-consistency.md))
 - [~] 056 — Presentation beat stream: architecture shipped and live on master; remaining animation polish + a hands-on pass. ([WorkItems/056](WorkItems/056-presentation-beat-stream.md))
 - [~] 268 — Terrain palette split from the auto layout (which fed both, so appending would have made every generated map denser): 18 new templates, mostly small impassible objects, plus an optional `TerrainPieceEntry.Name` so a 30-row picker reads. Implemented + tested; awaiting GUI hand-verify. ([WorkItems/268](WorkItems/268-terrain-palette-expansion.md))
+- [~] 372 - Bot starter armies: a new bot gets a real list from `armies/` near the points limit instead of
+  the 100-pt test stub, plus a per-row "New Army" re-roll that skips armies other players hold and cycles
+  the folder before repeating. Implemented + tested; awaiting GUI hand-verify. ([WorkItems/372](WorkItems/372-bot-starter-armies.md))
+
 - [ ] 373 - Bolt Action turn style: random activation order weighted by activations remaining. Declared in
   `ETurnStyle` and synced/saved, but no rules code reads it; the lobby dropdown was removed 2026-08-11
   pending a real implementation. ([WorkItems/373](WorkItems/373-bolt-action-turn-style.md))
