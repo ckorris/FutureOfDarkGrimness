@@ -635,6 +635,12 @@ public class LobbyScreen : IAppScreen
             tooltip: "How dice are resolved.\n" +
                      "Realistic: real dice are rolled - whole hits, swingy and unpredictable.\n" +
                      "Probabilistic: results use expected values - smoother, less luck.");
+        DrawEnumCombo("Shooting",      _viewModel.ShootingMode,   _viewModel.SetShootingMode,
+            displayName: ShootingModeLabel,
+            tooltip: "When a shooting unit commits to its targets.\n" +
+                     "One At A Time: fire a weapon, see what it killed, then aim the next one.\n" +
+                     "Declare First: aim every weapon before any dice are rolled. Shots aimed\n" +
+                     "at a unit that an earlier weapon wipes out are lost.");
         // Turn Style is deliberately NOT offered (#373): ETurnStyle.BoltAction is declared in the engine's
         // GameSettings but nothing in the state machine reads TurnStyle, so the dropdown advertised a
         // rule that never fired. The setting (and its config/save plumbing) stays put for when the
@@ -856,6 +862,14 @@ public class LobbyScreen : IAppScreen
     {
         EObjectivePlacementMode.AutoPlaced => "Auto-Placed",
         EObjectivePlacementMode.PlayerPlaced => "Player-Placed",
+        _ => mode.ToString(),
+    };
+
+    // #371. Spelled out rather than left as the enum name, which would read "OneAtATime".
+    private static string ShootingModeLabel(EShootingMode mode) => mode switch
+    {
+        EShootingMode.OneAtATime => "One At A Time",
+        EShootingMode.DeclareFirst => "Declare First",
         _ => mode.ToString(),
     };
 

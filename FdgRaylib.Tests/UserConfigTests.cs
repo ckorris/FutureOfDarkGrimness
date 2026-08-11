@@ -57,6 +57,7 @@ public class UserConfigTests
         {
             Assert.That(saved.ArmyPoints, Is.EqualTo(engine.ArmyPoints));
             Assert.That(saved.TurnStyle, Is.EqualTo(engine.TurnStyle));
+            Assert.That(saved.ShootingMode, Is.EqualTo(engine.ShootingMode));
             Assert.That(saved.RandomnessType, Is.EqualTo(engine.RandomnessType));
             Assert.That(saved.TerrainPlacementMode, Is.EqualTo(engine.TerrainPlacementMode));
             Assert.That(saved.TerrainPieceCount, Is.EqualTo(engine.TerrainPieceCount));
@@ -83,6 +84,7 @@ public class UserConfigTests
             {
                 ArmyPoints = 1250,
                 TurnStyle = ETurnStyle.BoltAction,
+                ShootingMode = EShootingMode.DeclareFirst,
                 RandomnessType = ERandomnessType.Probabilistic,
                 TerrainPlacementMode = ETerrainPlacementMode.AlternatingPoints,
                 TerrainPieceCount = 14,
@@ -105,6 +107,7 @@ public class UserConfigTests
             Assert.That(read.ListPublicly, Is.True);
             Assert.That(read.HostSettings.ArmyPoints, Is.EqualTo(1250));
             Assert.That(read.HostSettings.TurnStyle, Is.EqualTo(ETurnStyle.BoltAction));
+            Assert.That(read.HostSettings.ShootingMode, Is.EqualTo(EShootingMode.DeclareFirst));
             Assert.That(read.HostSettings.RandomnessType, Is.EqualTo(ERandomnessType.Probabilistic));
             Assert.That(read.HostSettings.TerrainPlacementMode, Is.EqualTo(ETerrainPlacementMode.AlternatingPoints));
             Assert.That(read.HostSettings.TerrainPieceCount, Is.EqualTo(14));
@@ -184,6 +187,7 @@ public class UserConfigTests
         {
             ArmyPoints = 1750,
             TurnStyle = ETurnStyle.BoltAction,
+            ShootingMode = EShootingMode.DeclareFirst,
             RandomnessType = ERandomnessType.Probabilistic,
             TerrainPlacementMode = ETerrainPlacementMode.Alternating,
             TerrainPieceCount = 11,
@@ -200,6 +204,7 @@ public class UserConfigTests
         {
             Assert.That(lobby.ArmyPoints, Is.EqualTo(1750));
             Assert.That(lobby.TurnStyle, Is.EqualTo(ETurnStyle.BoltAction));
+            Assert.That(lobby.ShootingMode, Is.EqualTo(EShootingMode.DeclareFirst));
             Assert.That(lobby.RandomnessType, Is.EqualTo(ERandomnessType.Probabilistic));
             Assert.That(lobby.TerrainPlacementMode, Is.EqualTo(ETerrainPlacementMode.Alternating));
             Assert.That(lobby.TerrainCount, Is.EqualTo(11));
@@ -244,6 +249,7 @@ public class UserConfigTests
             HasHostPrivileges = true,
             ArmyPoints = 3000,
             TurnStyle = ETurnStyle.BoltAction,
+            ShootingMode = EShootingMode.DeclareFirst,
             RandomnessType = ERandomnessType.Probabilistic,
             TerrainPlacementMode = ETerrainPlacementMode.AlternatingPoints,
             TerrainCount = 8,
@@ -263,6 +269,7 @@ public class UserConfigTests
         {
             Assert.That(nextLobby.ArmyPoints, Is.EqualTo(3000));
             Assert.That(nextLobby.TurnStyle, Is.EqualTo(ETurnStyle.BoltAction));
+            Assert.That(nextLobby.ShootingMode, Is.EqualTo(EShootingMode.DeclareFirst));
             Assert.That(nextLobby.RandomnessType, Is.EqualTo(ERandomnessType.Probabilistic));
             Assert.That(nextLobby.TerrainPlacementMode, Is.EqualTo(ETerrainPlacementMode.AlternatingPoints));
             Assert.That(nextLobby.TerrainCount, Is.EqualTo(8));
@@ -292,6 +299,7 @@ public class UserConfigTests
         public EObjectivePlacementMode ObjectivePlacementMode { get; set; }
         public ERandomnessType RandomnessType { get; set; }
         public ETurnStyle TurnStyle { get; set; }
+        public EShootingMode ShootingMode { get; set; }
         public bool CoverProximityExceptions { get; set; } = true;
         public ETableBackground TableBackground { get; set; }
 
@@ -304,6 +312,7 @@ public class UserConfigTests
         public void SetObjectivePlacementMode(EObjectivePlacementMode mode) => ObjectivePlacementMode = mode;
         public void SetRandomnessType(ERandomnessType randomnessType) => RandomnessType = randomnessType;
         public void SetTurnStyle(ETurnStyle turnStyle) => TurnStyle = turnStyle;
+        public void SetShootingMode(EShootingMode shootingMode) => ShootingMode = shootingMode;
         public void SetCoverProximityExceptions(bool enabled) => CoverProximityExceptions = enabled;
         public void SetTableBackground(ETableBackground background) => TableBackground = background;
 
@@ -327,6 +336,7 @@ public class UserConfigTests
         public IObservable<EObjectivePlacementMode> ObjectivePlacementModeObservable => throw new NotSupportedException();
         public IObservable<ERandomnessType> RandomnessTypeObservable => throw new NotSupportedException();
         public IObservable<ETurnStyle> TurnStyleObservable => throw new NotSupportedException();
+        public IObservable<EShootingMode> ShootingModeObservable => throw new NotSupportedException();
         public IObservable<bool> CoverProximityExceptionsObservable => throw new NotSupportedException();
         public IObservable<ETableBackground> TableBackgroundObservable => throw new NotSupportedException();
         public string ServerName => throw new NotSupportedException();

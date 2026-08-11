@@ -167,6 +167,7 @@ public sealed class HostGameSettings
     public EObjectivePlacementMode ObjectivePlacementMode { get; set; }
     public ERandomnessType RandomnessType { get; set; }
     public ETurnStyle TurnStyle { get; set; }
+    public EShootingMode ShootingMode { get; set; }
     public bool CoverProximityExceptions { get; set; }
 
     /// <summary>The engine's own defaults - one source of truth for what a fresh config holds.</summary>
@@ -183,6 +184,7 @@ public sealed class HostGameSettings
         ObjectivePlacementMode = settings.ObjectivePlacementMode,
         RandomnessType         = settings.RandomnessType,
         TurnStyle              = settings.TurnStyle,
+        ShootingMode           = settings.ShootingMode,
         CoverProximityExceptions = settings.CoverProximityExceptionsEnabled,
     };
 
@@ -198,6 +200,7 @@ public sealed class HostGameSettings
         ObjectivePlacementMode = viewModel.ObjectivePlacementMode,
         RandomnessType         = viewModel.RandomnessType,
         TurnStyle              = viewModel.TurnStyle,
+        ShootingMode           = viewModel.ShootingMode,
         CoverProximityExceptions = viewModel.CoverProximityExceptions,
     };
 
@@ -218,6 +221,7 @@ public sealed class HostGameSettings
         viewModel.SetObjectivePlacementMode(ObjectivePlacementMode);
         viewModel.SetRandomnessType(RandomnessType);
         viewModel.SetTurnStyle(TurnStyle);
+        viewModel.SetShootingMode(ShootingMode);
         viewModel.SetCoverProximityExceptions(CoverProximityExceptions);
     }
 }
