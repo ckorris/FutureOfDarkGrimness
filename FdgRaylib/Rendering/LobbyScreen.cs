@@ -290,10 +290,7 @@ public class LobbyScreen : IAppScreen
                 ImGui.TextUnformatted(info.ArmyListSummary.FactionName);
 
                 ImGui.TableNextColumn();
-                bool overPoints = info.ArmyListSummary.PointCost > _viewModel.ArmyPoints;
-                if (overPoints) ImGui.PushStyleColor(ImGuiCol.Text, new Vector4(1f, 0.3f, 0.3f, 1f));
-                ImGui.TextUnformatted(info.ArmyListSummary.PointCost.ToString());
-                if (overPoints) ImGui.PopStyleColor();
+                DrawPointsCell(info.ArmyListSummary, _viewModel.ArmyPoints);
 
                 ImGui.TableNextColumn();
                 DrawTeamCell(i, info, players.Count);
@@ -346,6 +343,26 @@ public class LobbyScreen : IAppScreen
             if (UiButton.Navigate("Add DerpBot"))
                 _viewModel.AddAiPlayer(EAiProfile.SoloRules);
         }
+    }
+
+    private static readonly Vector4 OverPointsColor  = new(1f, 0.3f, 0.3f, 1f);
+    private static readonly Vector4 UnderPointsColor = new(1f, 0.85f, 0.25f, 1f);
+
+    // The Pts cell. Red over the limit (the #153 launch gate flags it), yellow well under it. The rule
+    // itself is LobbyPointsStatus.Classify so it can be unit-tested away from ImGui.
+    private static void DrawPointsCell(ArmyListSummary summary, int pointsLimit)
+    {
+        ELobbyPointsStatus status =
+            LobbyPointsStatus.Classify(summary.IsAssigned, summary.PointCost, pointsLimit);
+
+        if (status != ELobbyPointsStatus.Ok)
+            ImGui.PushStyleColor(ImGuiCol.Text,
+                status == ELobbyPointsStatus.Over ? OverPointsColor : UnderPointsColor);
+        ImGui.TextUnformatted(summary.PointCost.ToString());
+        if (status != ELobbyPointsStatus.Ok) ImGui.PopStyleColor();
+
+        if (status == ELobbyPointsStatus.Under && ImGui.IsItemHovered())
+            ImGui.SetTooltip($"{pointsLimit - summary.PointCost} points under the {pointsLimit} limit.");
     }
 
     // #221: the colour cell - a swatch of the row's effective colour + a dropdown of the 8 palette options,
