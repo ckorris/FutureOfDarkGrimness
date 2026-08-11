@@ -505,11 +505,10 @@ public class LobbyScreen : IAppScreen
             tooltip: "How dice are resolved.\n" +
                      "Realistic: real dice are rolled - whole hits, swingy and unpredictable.\n" +
                      "Probabilistic: results use expected values - smoother, less luck.");
-        DrawEnumCombo("Turn Style",    _viewModel.TurnStyle,      _viewModel.SetTurnStyle,
-            tooltip: "How the next unit to activate is decided.\n" +
-                     "Standard: players take turns choosing one of their units to activate.\n" +
-                     "Bolt Action: whose turn it is is random, weighted by how many\n" +
-                     "activations each player has left.");
+        // Turn Style is deliberately NOT offered (#373): ETurnStyle.BoltAction is declared in the engine's
+        // GameSettings but nothing in the state machine reads TurnStyle, so the dropdown advertised a
+        // rule that never fired. The setting (and its config/save plumbing) stays put for when the
+        // random weighted-activation order is actually built; only the lobby control is gone.
 
         ImGui.EndDisabled();
 
