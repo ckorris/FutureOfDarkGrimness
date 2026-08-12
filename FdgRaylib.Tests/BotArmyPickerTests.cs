@@ -69,25 +69,83 @@ public class BotArmyPickerTests
         Assert.That(NewPicker().PickNext(SlotA, Limit, taken)?.Name, Is.EqualTo("Nearest"));
     }
 
+    // The rotation covers the LEGAL armies and then starts over. It used to run off the end of them and
+    // into the over-limit ones - re-rolling a few times in the lobby started offering armies the launch
+    // gate rejects, which is the bug this pins.
     [Test]
-    public void RerollingWalksTheWholeCatalogBeforeRepeating()
+    public void RerollingWalksEveryLegalArmyThenStartsOver()
     {
         BotArmyPicker picker = NewPicker();
-        string[] first = Enumerable.Range(0, Catalog.Count)
+        string[] picks = Enumerable.Range(0, 6)
             .Select(_ => picker.PickNext(SlotA, Limit, NobodyElse)!.Value.Name).ToArray();
 
-        Assert.That(first, Is.EqualTo(new[] { "Nearest", "Near", "Far", "Over" }),
-            "the rotation should walk the ranked order");
-        Assert.That(first.Distinct().Count(), Is.EqualTo(Catalog.Count), "no repeats within one cycle");
+        Assert.That(picks, Is.EqualTo(new[]
+        {
+            "Nearest", "Near", "Far",     // every legal army, closest first...
+            "Nearest", "Near", "Far",     // ...then the same cycle again
+        }));
     }
 
     [Test]
-    public void TheRotationStartsOverOnceEveryArmyHasBeenShown()
+    public void AnOverLimitArmyIsNeverHandedOutWhileALegalOneExists()
     {
         BotArmyPicker picker = NewPicker();
-        for (int i = 0; i < Catalog.Count; i++) picker.PickNext(SlotA, Limit, NobodyElse);
+        string[] picks = Enumerable.Range(0, 20)
+            .Select(_ => picker.PickNext(SlotA, Limit, NobodyElse)!.Value.Name).ToArray();
+
+        Assert.That(picks, Has.None.EqualTo("Over"),
+            "restarting the legal cycle beats reaching for an army the launch gate would flag");
+    }
+
+    // ...but an over-limit list is still better than no list at all.
+    [Test]
+    public void AnOverLimitArmyIsUsedWhenTheFolderHasNothingLegal()
+    {
+        var overOnly = new List<ArmyCatalogEntry> { Army("Over", 2200), Army("WayOver", 5000) };
+        BotArmyPicker picker = new(overOnly);
+
+        Assert.That(picker.PickNext(SlotA, Limit, NobodyElse)?.Name, Is.EqualTo("Over"),
+            "closest first, even when every option is illegal");
+        Assert.That(picker.PickNext(SlotA, Limit, NobodyElse)?.Name, Is.EqualTo("WayOver"),
+            "and the no-repeat rotation still applies");
+    }
+
+    [Test]
+    public void TheRotationStartsOverOnceEveryLegalArmyHasBeenShown()
+    {
+        BotArmyPicker picker = NewPicker();
+        picker.PickNext(SlotA, Limit, NobodyElse);
+        picker.PickNext(SlotA, Limit, NobodyElse);
+        picker.PickNext(SlotA, Limit, NobodyElse);   // Nearest, Near, Far - the legal ones are exhausted
 
         Assert.That(picker.PickNext(SlotA, Limit, NobodyElse)?.Name, Is.EqualTo("Nearest"));
+    }
+
+    // Moving the limit changes both which armies are legal and which is closest, so every rotation
+    // recorded against the old number is meaningless - a 1000-pt lobby must not carry on from where the
+    // 2000-pt one left off.
+    [Test]
+    public void ChangingThePointsLimitRestartsTheRotation()
+    {
+        BotArmyPicker picker = NewPicker();
+        picker.PickNext(SlotA, Limit, NobodyElse);          // Nearest (1990)
+
+        Assert.That(picker.PickNext(SlotA, 1000, NobodyElse)?.Name, Is.EqualTo("Far"),
+            "the 1000-pt limit re-picks from scratch, closest to 1000");
+        Assert.That(picker.PickNext(SlotA, Limit, NobodyElse)?.Name, Is.EqualTo("Nearest"),
+            "and moving back re-picks from scratch again");
+    }
+
+    [Test]
+    public void ChangingThePointsLimitResetsEverySlotNotJustTheOneAsking()
+    {
+        BotArmyPicker picker = NewPicker();
+        picker.PickNext(SlotA, Limit, NobodyElse);          // Nearest
+        picker.PickNext(SlotB, Limit, NobodyElse);          // Nearest too - slots rotate independently
+        picker.PickNext(SlotA, 1000, NobodyElse);           // limit moves, every rotation is dropped
+
+        Assert.That(picker.PickNext(SlotB, 1000, NobodyElse)?.Name, Is.EqualTo("Far"),
+            "slot B starts the 1000-pt cycle from the top rather than resuming a stale one");
     }
 
     // Each slot cycles independently; two bots don't share one cursor. They still avoid each other via

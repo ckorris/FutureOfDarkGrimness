@@ -11,6 +11,20 @@ armies other players hold and never repeating one until that bot has seen them a
 
 ## Notes
 
+- 2026-08-12: **Two fixes and a rename, from Chris playing it.**
+  - Bug: after a few re-rolls the picker started offering armies OVER the points limit. Ranking put them
+    last but the no-repeat rotation walked straight off the end of the legal ones into them. Over-limit
+    is now a genuine last resort - a separate pool used only when the folder holds nothing legal at all -
+    and exhausting the legal armies restarts that cycle instead. Two existing tests encoded the old
+    walk-the-whole-catalog behaviour and were rewritten (the behaviour they pinned is the reported bug).
+  - The rotation now resets when the points limit changes: both "which armies are legal" and "which is
+    closest" are answers to that number, so every recorded rotation is stale the moment it moves.
+  - "New Army" -> "Random Army", and it is on EVERY player row rather than bots only. Permission is
+    entirely `CheckCanModifyPlayerIDInfo`, the same gate Load Army uses - the host owns its own and the
+    bots' rows but not a connected client's, and a client owns only its own. So nobody can roll another
+    player's army and a client cannot roll for a bot, without a second permission rule to keep in sync.
+  - The Actions column went 0.17f -> 0.22f (from Army and Faction) now that every row carries two
+    buttons; the disabled-state tooltip says whose army it is.
 - 2026-08-11: Implemented app-side in three pieces.
   - `FdgRaylib/ArmyCatalog.cs` - streaming index of the armies folder. `ArmyCatalogEntry`
     (path/name/faction/points) + a `Utf8JsonReader` scan that `Skip()`s every top-level property it

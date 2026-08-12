@@ -284,12 +284,14 @@ public class LobbyScreen : IAppScreen
         {
             ImGui.TableSetupColumn("Name",    ImGuiTableColumnFlags.WidthStretch, 0.16f);
             ImGui.TableSetupColumn("Type",    ImGuiTableColumnFlags.WidthStretch, 0.07f);
-            ImGui.TableSetupColumn("Army",    ImGuiTableColumnFlags.WidthStretch, 0.18f);
-            ImGui.TableSetupColumn("Faction", ImGuiTableColumnFlags.WidthStretch, 0.14f);
+            ImGui.TableSetupColumn("Army",    ImGuiTableColumnFlags.WidthStretch, 0.15f);
+            ImGui.TableSetupColumn("Faction", ImGuiTableColumnFlags.WidthStretch, 0.12f);
             ImGui.TableSetupColumn("Pts",     ImGuiTableColumnFlags.WidthStretch, 0.06f);
             ImGui.TableSetupColumn("Team",    ImGuiTableColumnFlags.WidthStretch, 0.10f);
             ImGui.TableSetupColumn("Color",   ImGuiTableColumnFlags.WidthStretch, 0.12f);
-            ImGui.TableSetupColumn("Actions", ImGuiTableColumnFlags.WidthStretch, 0.17f);
+            // #372: every row now carries Load Army AND Random Army, so Actions takes the width back
+            // from Army/Faction (both of which wrap gracefully; a clipped button does not).
+            ImGui.TableSetupColumn("Actions", ImGuiTableColumnFlags.WidthStretch, 0.22f);
             ImGui.PushStyleColor(ImGuiCol.Text, HeaderAccent);
             ImGui.TableHeadersRow();
             ImGui.PopStyleColor();
@@ -343,22 +345,20 @@ public class LobbyScreen : IAppScreen
                         TryLoadArmyForPlayer(info.PlayerID);
                     ImGui.EndDisabled();
 
-                    // #372: re-roll a bot's starter army. Bots only - a human picks their own list, and
-                    // the button would be a way to stomp another player's choice from the host seat.
-                    if (info.PlayerType == EPlayerType.AI)
-                    {
-                        ImGui.SameLine();
-                        ImGui.BeginDisabled(!canModify || !ArmyCatalogReady);
-                        if (UiButton.NavigateSmall($"New Army##{i}"))
-                            AssignBotArmy(info.PlayerID, players);
-                        ImGui.EndDisabled();
-                        if (ImGui.IsItemHovered())
-                            ImGui.SetTooltip(ArmyCatalogReady
-                                ? "Swap in another army from the armies folder, closest to the points\n" +
-                                  "limit first. Skips armies other players are using, and won't repeat\n" +
-                                  "one until this bot has seen them all."
-                                : "Reading the armies folder...");
-                    }
+                    // #372: roll a random army from the folder. Offered on EVERY row, not just bots -
+                    // it is the fastest way for a human to get a legal list too. Who may press it is
+                    // decided entirely by CheckCanModifyPlayerIDInfo, the same gate Load Army uses: the
+                    // host owns its own and the bots' rows but not a connected client's, and a client
+                    // owns only its own. So nobody can roll another player's army, and a client cannot
+                    // roll for a bot.
+                    ImGui.SameLine();
+                    ImGui.BeginDisabled(!canModify || !ArmyCatalogReady);
+                    if (UiButton.NavigateSmall($"Random Army##{i}"))
+                        AssignRandomArmy(info.PlayerID, players);
+                    ImGui.EndDisabled();
+                    // AllowWhenDisabled: the greyed-out case is the one that most needs explaining.
+                    if (ImGui.IsItemHovered(ImGuiHoveredFlags.AllowWhenDisabled))
+                        ImGui.SetTooltip(RandomArmyTooltip(canModify, info));
                 }
             }
 
@@ -392,6 +392,19 @@ public class LobbyScreen : IAppScreen
 
     private static bool ArmyCatalogReady => SharedArmyCatalog.Value.IsLoaded;
 
+    /// <summary>Why the Random Army button is or isn't available on a given row.</summary>
+    private static string RandomArmyTooltip(bool canModify, LobbyPlayerInfoSummary info)
+    {
+        if (!canModify)
+            return $"{info.PlayerName} picks their own army - only they can change it.";
+        if (!ArmyCatalogReady)
+            return "Reading the armies folder...";
+        return "Roll another army from the armies folder, closest to the points limit\n" +
+               "first. Skips armies other players are using, never repeats one until\n" +
+               "this slot has seen them all, and never picks one over the limit unless\n" +
+               "the folder has nothing legal.";
+    }
+
     /// <summary>Hands every bot that hasn't had one a starter army. Host-only (nobody else may write
     /// another slot's army) and skipped when resuming, where the saved armies are the point. No-op until
     /// the background scan finishes, and no-op forever if there is no armies folder to scan.</summary>
@@ -407,7 +420,7 @@ public class LobbyScreen : IAppScreen
             if (info.PlayerType != EPlayerType.AI) continue;
             if (!_autoArmiedBots.Add(info.PlayerID.ID)) continue;
 
-            AssignBotArmy(info.PlayerID, players);
+            AssignRandomArmy(info.PlayerID, players);
         }
 
         // A slot that left must not keep its rotation alive. Pruned unconditionally rather than behind a
@@ -421,10 +434,15 @@ public class LobbyScreen : IAppScreen
         }
     }
 
-    /// <summary>Picks and loads the next army for one bot. Silently does nothing when the folder holds no
-    /// readable armies, or when the chosen file fails to load - the bot keeps whatever it had.</summary>
-    private void AssignBotArmy(PlayerID playerID, IReadOnlyList<LobbyPlayerInfoSummary> players)
+    /// <summary>Picks and loads the next army for one slot - a bot being seeded, or any player pressing
+    /// Random Army. Silently does nothing when the folder holds no readable armies, or when the chosen
+    /// file fails to load, so the slot keeps whatever it had.</summary>
+    private void AssignRandomArmy(PlayerID playerID, IReadOnlyList<LobbyPlayerInfoSummary> players)
     {
+        // A rolled army is a deliberate pick, exactly like a hand-loaded one: mark the slot served so
+        // AutoArmyNewBots cannot overwrite a bot's roll on the next frame.
+        _autoArmiedBots.Add(playerID.ID);
+
         _botArmyPicker ??= new BotArmyPicker(SharedArmyCatalog.Value.Entries);
 
         // What everyone ELSE is holding, by the same name|faction|points identity the catalog uses - the
