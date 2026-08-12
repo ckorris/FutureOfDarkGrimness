@@ -12,6 +12,43 @@ and the save, and the shoot loop honours it in both front ends and for both AI p
 
 ## Notes
 
+- 2026-08-12: **Declare First now SHOWS the queue, and a second mode bug turned up while checking
+  Limited.** Chris played it and reported that pressing Fire with guns still left feels like a
+  malfunction - which it does, because the panel silently loses a weapon and comes straight back.
+  - Engine: `ICombatActionContext.PendingDeclarations` (weapon / declared target / copies) and a
+    `PendingDeclaration` struct beside `AttackedDefender`; `ChooseRangedAttackRequest` gains
+    `DeclareFirst` + `Declarations` (its own `DeclaredShot` DTO - the request layer is what a remote
+    player deserializes, so it must stay free of state-machine types). Both are mode-gated, so One At A
+    Time is handed `false` and an empty list on every path, including a re-entry with a queue.
+  - GUI: declared shots stay in the weapon list as INERT rows above the choosable ones - teal committed
+    bar, numbered in firing order, each naming its target ("Shooting at Ork Boyz"). Not a Selectable, so
+    they cannot be clicked or reached by the Left/Right weapon cycle. Fire! -> "Declare", "Done
+    shooting" -> "Done declaring", and the confirmation popup's title/body/buttons follow (its ImGui ID
+    is pinned with `###RangedStopConfirm` so the label can move without the modal vanishing).
+  - CLI: the same declaration list and the reworded instruction / [0] exit.
+  - Wording lives in `DeclaredShotText` (ImGui-free) with 9 tests, one of which is the ASCII gate.
+- 2026-08-12: **Bug found and fixed: `AimPendingAttackOneCopyAtATime` and `TrimPendingAttack` both bailed
+  unless EXACTLY ONE attack was queued.** They are called right after `SetAttackWeapon`, so under One At
+  A Time the queue is always length 1 and the guard was invisible - but under Declare First earlier
+  declarations are still sitting in front, so from the SECOND declaration onward #340 Takedown splitting
+  and #276 line-of-sight trimming silently did nothing. A Takedown volley would have fired as one burst
+  at one target; an out-of-sight-trimmed weapon would have rolled dice it had no right to. Both now edit
+  the LAST queued entry, which meant turning the pending `Queue` into a FIFO `List` (a Queue cannot
+  express a tail edit). Two regression tests in `TakedownRuleIntegrationTests`, both confirmed to fail
+  against the old guards.
+- 2026-08-12: **Limited works correctly under Declare First** (Chris asked). Declaring IS the commit in
+  both modes - there is no un-aiming - so `MarkFired` / `MarkOneCarrierFired` at declaration time is
+  right, the weapon leaves the pool and cannot be declared twice, and nothing downstream re-checks
+  spent-ness at fire time. Confirmed live: a Limited+Takedown Crossbow-Mod spends one carrier per
+  declaration and the pool counts 3 -> 2 -> 1 across three declarations in one action. Two new tests,
+  including the deliberately uncomfortable one: a rocket declared at a unit an earlier weapon then wipes
+  out is spent for the game without ever rolling. That is the bargain, not a bug - pinned so it cannot
+  be "fixed" by accident.
+- 2026-08-12: Re-verified headlessly in both modes with `Scenarios/340-sniper-split-targets` and
+  `336-weapon-rules-showcase` (deterministic, and they actually shoot - the free-play armies had drifted
+  into melee). Declare First logs the declaration block, per-declaration targets and the split
+  Crossbow-Mod copies; One At A Time logs none of it and still splits Takedown. Both exit 0. Engine 2961
+  green, app 1184 green.
 - 2026-08-11: Implemented. Signed off with Chris on both forks before building (below).
   - `GameSettings.ShootingMode` + `EShootingMode`, `OneAtATime` declared first so `default(GameSettings)`
     and every pre-#371 save resolve to the old behaviour. NOT resume-overridable - it is a rules setting.

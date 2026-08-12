@@ -35,9 +35,14 @@ public class GuiChooseRangedAttackResolver
     private (int wIdx, int tIdx) _canvasHoveredOption = (-1, -1);
 
     // #319: "Done shooting" ends the action with weapons still loaded, so it asks first (user sign-off).
-    // Main-thread only, cleared with the request in Complete.
-    private const string DonePopupTitle = "End the shoot action?";
+    // Main-thread only, cleared with the request in Complete. #371: the visible title depends on the
+    // shooting mode, so it comes from DeclaredShotText - which pins the ImGui ID with a ### suffix.
     private bool _donePopupOpen;
+
+    // #371: the committed-shot accent. Deliberately not the disabled gray a spent weapon wears and not
+    // the amber a once-per-game one does - a declared shot is neither unavailable nor a warning, it is
+    // locked in, and teal is the only reading left that says so.
+    private static readonly Vector4 DeclaredAccent = new(0.35f, 0.80f, 0.72f, 1f);
 
     public GuiChooseRangedAttackResolver(ITableState tableState) => _tableState = tableState;
 
@@ -165,6 +170,7 @@ public class GuiChooseRangedAttackResolver
         // raised after it, because ImGui allows one tooltip per frame and the rows are drawn by hand.
         bool weaponColHovered = ImGui.IsWindowHovered(ImGuiHoveredFlags.ChildWindows);
         string? ruleTooltip = null;
+        DrawDeclaredShots(request, rowH);
         for (int wi = 0; wi < request.WeaponOptions.Count; wi++)
         {
             var wo            = request.WeaponOptions[wi];
@@ -506,8 +512,15 @@ public class GuiChooseRangedAttackResolver
         ImGui.PushStyleColor(ImGuiCol.ButtonHovered, new Vector4(0.78f, 0.27f, 0.27f, 1f));
         ImGui.PushStyleColor(ImGuiCol.ButtonActive,  new Vector4(0.55f, 0.16f, 0.16f, 1f));
         if (!canFire) ImGui.BeginDisabled(true);
-        bool fireClicked = ImGui.Button($"Fire!  {ResolverKeybinds.Confirm.Parenthetical}##fire", new Vector2(footW, rowH));
+        // #371: "Declare" under Declare First. The commit is just as irreversible either way (a
+        // once-per-game weapon is spent the moment it is aimed), so it keeps the red accent - only the
+        // promise about what happens NEXT changes.
+        bool fireClicked = ImGui.Button(
+            $"{DeclaredShotText.CommitLabel(request.DeclareFirst)}  {ResolverKeybinds.Confirm.Parenthetical}##fire",
+            new Vector2(footW, rowH));
         if (!canFire) ImGui.EndDisabled();
+        if (ImGui.IsItemHovered(ImGuiHoveredFlags.AllowWhenDisabled))
+            ImGui.SetTooltip(DeclaredShotText.CommitTooltip(request.DeclareFirst));
         ImGui.PopStyleColor(3);
         // #240: edge-only (repeat: false) so a stuck key can't fire volleys on its own; #248: the
         // shared helper also mutes it while typing or while the in-game menu is open.
@@ -542,10 +555,11 @@ public class GuiChooseRangedAttackResolver
             // #319: a weapon has fired, so this ENDS the action - shots the unit still has go unfired.
             // That is the point (a Limited weapon you would rather keep), but it is also irreversible,
             // so it asks first.
-            if (ResolverButtons.Deemphasized("Done shooting", new Vector2(halfW, rowH)))
+            if (ResolverButtons.Deemphasized(DeclaredShotText.StopLabel(request.DeclareFirst),
+                    new Vector2(halfW, rowH)))
             {
                 _donePopupOpen = true;
-                ImGui.OpenPopup(DonePopupTitle);
+                ImGui.OpenPopup(DeclaredShotText.StopTitle(request.DeclareFirst));
             }
         }
         else
@@ -591,6 +605,52 @@ public class GuiChooseRangedAttackResolver
     }
 
     /// <summary>
+    /// #371 Declare First: the shots already aimed, drawn above the weapons still to be chosen.
+    ///
+    /// <para>Without this the panel simply loses a weapon every time the player commits and comes
+    /// straight back - which reads as the dialog eating the click, not as a rule working. The rows are
+    /// INERT (a Dummy, not a Selectable): a declared shot cannot be un-aimed, so it must not look
+    /// clickable, and it must not steal a slot in the Left/Right weapon cycle either.</para>
+    ///
+    /// <para>Each row names the unit its shots are owed to, because that is the fact the next weapon's
+    /// target choice depends on - piling every gun onto one unit is how a player wastes a volley in this
+    /// mode. They are numbered in firing order for the same reason: order decides whose shots are lost
+    /// if a target dies partway through.</para>
+    /// </summary>
+    private static void DrawDeclaredShots(ChooseRangedAttackRequest request, float rowH)
+    {
+        if (request.Declarations.Count == 0) return;
+
+        ImGui.PushStyleColor(ImGuiCol.Text, DeclaredAccent);
+        ImGui.TextUnformatted(DeclaredShotText.DeclaredHeading);
+        ImGui.PopStyleColor();
+
+        var dl        = ImGui.GetWindowDrawList();
+        uint colAccent = ImGui.ColorConvertFloat4ToU32(DeclaredAccent);
+        uint colName   = ImGui.ColorConvertFloat4ToU32(new Vector4(0.78f, 0.80f, 0.86f, 1f));
+        float lineH    = ImGui.GetTextLineHeight();
+
+        for (int di = 0; di < request.Declarations.Count; di++)
+        {
+            DeclaredShot shot = request.Declarations[di];
+
+            ImGui.Dummy(new Vector2(ImGui.GetContentRegionAvail().X, rowH));
+            Vector2 rMin = ImGui.GetItemRectMin();
+            Vector2 rMax = ImGui.GetItemRectMax();
+
+            // Committed bar down the left edge - the "locked in" cue, and what separates these rows from
+            // the grayed-out unavailable weapons further down the same list.
+            dl.AddRectFilled(rMin, new Vector2(rMin.X + 3f, rMax.Y), colAccent, 1f);
+            dl.AddText(rMin + new Vector2(10f, 2f), colName,
+                DeclaredShotText.WeaponLine(di + 1, shot.Copies, shot.Weapon.Name));
+            dl.AddText(rMin + new Vector2(10f, lineH + 4f), colAccent,
+                DeclaredShotText.TargetLine(shot.TargetUnit.GetValue().Name));
+        }
+
+        ImGui.Separator();
+    }
+
+    /// <summary>
     /// #319: the "Done shooting" confirmation. Ending the action here gives up every shot the unit has
     /// left this turn, so the popup names them rather than asking an abstract "are you sure?" - and calls
     /// out that a once-per-game weapon is the one thing this KEEPS, since that is usually why the player
@@ -601,11 +661,13 @@ public class GuiChooseRangedAttackResolver
     {
         if (!_donePopupOpen) return false;
 
+        string title = DeclaredShotText.StopTitle(request.DeclareFirst);
+
         // Keep the modal request alive across frames (OpenPopup is consumed by the first BeginPopupModal).
-        if (!ImGui.IsPopupOpen(DonePopupTitle)) ImGui.OpenPopup(DonePopupTitle);
+        if (!ImGui.IsPopupOpen(title)) ImGui.OpenPopup(title);
         var center = ImGui.GetMainViewport().GetCenter();
         ImGui.SetNextWindowPos(center, ImGuiCond.Appearing, new Vector2(0.5f, 0.5f));
-        if (!ImGui.BeginPopupModal(DonePopupTitle, ImGuiWindowFlags.AlwaysAutoResize)) return false;
+        if (!ImGui.BeginPopupModal(title, ImGuiWindowFlags.AlwaysAutoResize)) return false;
 
         var giveUp = WeaponsGivenUpByStopping(request.WeaponOptions);
         var limited = giveUp.Where(wo => wo.LimitedRule != null).ToList();
@@ -623,7 +685,7 @@ public class GuiChooseRangedAttackResolver
 
         ImGui.Spacing();
         ImGui.PushStyleColor(ImGuiCol.Text, new Vector4(0.85f, 0.75f, 0.30f, 1f));
-        ImGui.TextWrapped("Ending the shoot action now gives up those shots for this turn.");
+        ImGui.TextWrapped(DeclaredShotText.StopWarning(request.DeclareFirst, request.Declarations.Count));
         ImGui.PopStyleColor();
         if (limited.Count > 0)
         {
@@ -636,7 +698,7 @@ public class GuiChooseRangedAttackResolver
 
         ImGui.Spacing();
         float confirmH = ResolverPanelLayout.OptionRowHeight();
-        if (ImGui.Button("End the shoot", new Vector2(150f, confirmH)))
+        if (ImGui.Button(DeclaredShotText.StopConfirmLabel(request.DeclareFirst), new Vector2(150f, confirmH)))
         {
             ImGui.CloseCurrentPopup();
             ImGui.EndPopup();
@@ -644,7 +706,7 @@ public class GuiChooseRangedAttackResolver
             return true;
         }
         ImGui.SameLine();
-        if (ImGui.Button("Keep shooting", new Vector2(150f, confirmH)))
+        if (ImGui.Button(request.DeclareFirst ? "Keep declaring" : "Keep shooting", new Vector2(150f, confirmH)))
         {
             ImGui.CloseCurrentPopup();
             _donePopupOpen = false;

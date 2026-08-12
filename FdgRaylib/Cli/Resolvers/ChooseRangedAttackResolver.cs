@@ -12,7 +12,25 @@ public class ChooseRangedAttackResolver : IStageResolver<ChooseRangedAttackReque
         var attackerUnit = request.AttackingUnit.GetValue();
         Console.WriteLine();
         Console.WriteLine($"--- Shoot: {attackerUnit.Name} ---");
-        Console.WriteLine("  Choose a weapon and target. Models out of range/LOS cannot contribute.");
+        // #371: under Declare First a choice AIMS the weapon and comes straight back for the next one -
+        // say so, or the repeated prompt reads as the menu ignoring the answer.
+        Console.WriteLine(request.DeclareFirst
+            ? "  Aim a weapon at a target. Nothing is rolled until every weapon has been aimed."
+            : "  Choose a weapon and target. Models out of range/LOS cannot contribute.");
+
+        // #371: what this unit has already committed to, in firing order - the fact the next target
+        // choice depends on, since shots aimed at a unit an earlier weapon wipes out are lost.
+        if (request.Declarations.Count > 0)
+        {
+            Console.WriteLine();
+            Console.WriteLine("  Already declared (fires in this order):");
+            for (int i = 0; i < request.Declarations.Count; i++)
+            {
+                DeclaredShot shot = request.Declarations[i];
+                Console.WriteLine($"    {i + 1}. {shot.Copies}x {shot.Weapon.Name} -> " +
+                    shot.TargetUnit.GetValue().Name);
+            }
+        }
         Console.WriteLine();
 
         var options = new List<(string label, RangedAttackChoice? choice)>();
@@ -114,8 +132,14 @@ public class ChooseRangedAttackResolver : IStageResolver<ChooseRangedAttackReque
         if (request.AllowCancel)
             Console.WriteLine($"  [0] Back");
         else if (request.AllowStopShooting)
-            Console.WriteLine($"  [0] Done shooting - end the action with {holdFireWeapons.Count} weapon" +
-                $"{(holdFireWeapons.Count != 1 ? "s" : "")} unfired");
+        {
+            // #371: under Declare First this stops DECLARING - what is already aimed still gets rolled.
+            string plural = holdFireWeapons.Count != 1 ? "s" : "";
+            Console.WriteLine(request.DeclareFirst
+                ? $"  [0] Done declaring - leave {holdFireWeapons.Count} weapon{plural} unaimed and roll " +
+                  $"the {request.Declarations.Count} already declared"
+                : $"  [0] Done shooting - end the action with {holdFireWeapons.Count} weapon{plural} unfired");
+        }
 
         // First selectable option, for EOF default.
         int firstSelectable = options.FindIndex(o => o.choice != null);
