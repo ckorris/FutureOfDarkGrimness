@@ -1,6 +1,6 @@
 # 371 — Shooting mode: Declare First / One At A Time
 
-**Status**: implemented, awaiting GUI hand-verify
+**Status**: CLOSED 2026-08-12 - hand-verified in the running app by Chris
 **Related**: #319 (hold fire / the two exits), #340 (one firing per weapon choice), #028/#314 (resolve-first
 weapons), #276 (eligible-copy trim), #157 (the superseded burst split)
 
@@ -119,8 +119,10 @@ and the save, and the shoot loop honours it in both front ends and for both AI p
   / Background only, so the mode can be reached from the lobby but not from `--scenario`. Deliberately
   out of scope (the ask was a lobby option); worth adding when #167's ledger work next touches the
   scenario schema.
-- **The Tactician loses overkill avoidance under Declare First** (audited 2026-08-11, code-read; no test
-  yet). Mechanically both profiles are fine - neither resolver sees the mode, both answer one
+- **The Tactician loses overkill avoidance under Declare First** - split out as **#374** when this item
+  closed, so it is not buried here. Half the fix shipped with this item (`Declarations` on the request is
+  exactly the plumbing it was missing); what remains is the scoring change and its tests. Audited
+  2026-08-11 by code-read; no test yet. Mechanically both profiles are fine - neither resolver sees the mode, both answer one
   (weapon, target) request at a time and always `Selected` (never `Cancelled`), so they simply declare
   everything they can, and the lost-shots path handles a declaration whose target died (observed once in
   the DerpBot headless run above). The QUALITY regression is in
@@ -139,4 +141,24 @@ and the save, and the shoot loop honours it in both front ends and for both AI p
   discounting `remaining` by the already-declared expected wounds. Own slice, not folded in here.
 
 ## Outcome
-_Open until GUI hand-verify._
+
+Shipped and hand-verified in the running app. The lobby offers Declare First / One At A Time, One At A
+Time is the default and behaves exactly as it did pre-#371 on every path, and the setting rides the
+lobby, the wire, the config and the save.
+
+Declare First shows its queue rather than silently swallowing weapons: the shooting panel keeps declared
+shots as inert accented rows naming their targets, the commit button reads "Declare", and the exit reads
+"Done declaring". Limited is correct without change - declaring IS the commit in both modes - and a
+weapon declared into a unit an earlier one wipes out is spent for the game without rolling, which is the
+bargain, pinned so it cannot be "fixed" by accident.
+
+Two bugs were found and fixed along the way rather than shipped: the drain was first gated on the pending
+queue instead of the mode (caught by five pre-existing tests that were briefly and wrongly edited to fit
+it - Chris called that out; they are back verbatim), and both queue adjusters bailed unless exactly one
+attack was queued, which silently disabled #340 Takedown splitting and #276 line-of-sight trimming from
+the second declaration onward.
+
+Engine 2961 green, app 1184 green. Left open on purpose: **#374** (Tactician overkill), no scenario /
+headless switch for the mode, and no ShootStage-level harness test for the full re-entry loop.
+
+Engine `282cdf3`, `a3e2cf0`, `44bb6ee`; superproject `b5ccf4f`, `9d575e4`, `d65fe8a`, `2354991`.

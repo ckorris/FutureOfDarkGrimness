@@ -134,7 +134,8 @@ Master plan: `docs/ai-agent-plan.md` (heuristics -> MCTS -> learned value net; g
 
 Internet-play readiness pass (QF1-10) landed 2026-07-08 — password gate, keepalive/NoDelay, single-buffer
 frames, targeted PlayerID assignment, greeting-timeout eviction, post-launch join gate, client host-loss
-detection, host-IP display, DNS host entry. See `NetworkingHandoff-2026-07-08.md`. Remainders below.
+detection, host-IP display, DNS host entry. (Detail was in `NetworkingHandoff-2026-07-08.md`, deleted
+from the tree 2026-08-12 - recover it from git history if needed.) Remainders below.
 
 - [~] 187 — Disconnect recovery: a dropped connection now ends with its own `EGameOutcome.Disconnect`, and the host auto-writes `Saves/recovery-<utc>.fdgsave` (newest 5) named on the game-over card; rejoin covered by the suite's first real-socket tests (saved-PlayerID adoption, distinct slots). Implemented + tested; awaiting the two-machine hand-verify in the detail file. ([WorkItems/187](WorkItems/187-disconnect-recovery.md))
 - [~] 188 — Multi-remote-client support: live-test 3+ players / 2+ remote clients. Shared multi-client loopback fixture + 12 lobby tests landed 2026-08-08 (identity/QF5 pin, roster order, teams); in-game routing (#088), N-client log de-dup and the #076 drop path are testable on it but uncovered, and the live multi-machine verify is still open. ([WorkItems/188](WorkItems/188-multi-remote-client.md))
@@ -160,13 +161,9 @@ detection, host-IP display, DNS host entry. See `NetworkingHandoff-2026-07-08.md
 - [ ] 161 — Resolver UI consistency pass: stat/highlight parity, right-click undo on deploy, shared canvas-selector base (also absorbs the `GuiModelSelectionResolver` alive-filter gap), dialog chrome. Findings + canonical click scheme in the detail file. ([WorkItems/161](WorkItems/161-resolver-consistency.md))
 - [~] 056 — Presentation beat stream: architecture shipped and live on master; remaining animation polish + a hands-on pass. ([WorkItems/056](WorkItems/056-presentation-beat-stream.md))
 - [~] 268 — Terrain palette split from the auto layout (which fed both, so appending would have made every generated map denser): 18 new templates, mostly small impassible objects, plus an optional `TerrainPieceEntry.Name` so a 30-row picker reads. Implemented + tested; awaiting GUI hand-verify. ([WorkItems/268](WorkItems/268-terrain-palette-expansion.md))
-- [~] 371 - Shooting mode lobby setting: Declare First (aim every weapon before any dice; shots at a
-  target an earlier weapon wiped are lost) vs One At A Time (default, the old behaviour). Implemented +
-  tested + headless-verified; awaiting GUI hand-verify. ([WorkItems/371](WorkItems/371-declare-first-shooting.md))
-
-- [~] 372 - Bot starter armies: a new bot gets a real list from `armies/` near the points limit instead of
-  the 100-pt test stub, plus a per-row "New Army" re-roll that skips armies other players hold and cycles
-  the folder before repeating. Implemented + tested; awaiting GUI hand-verify. ([WorkItems/372](WorkItems/372-bot-starter-armies.md))
+- [ ] 374 - Tactician over-commits under Declare First: its score reads live wounds, so with no dice
+  between declarations every weapon sees an undamaged target and the whole arsenal piles onto one unit.
+  Split from #371; the request already carries the declarations. ([WorkItems/374](WorkItems/374-tactician-declare-first-overkill.md))
 
 - [ ] 373 - Bolt Action turn style: random activation order weighted by activations remaining. Declared in
   `ETurnStyle` and synced/saved, but no rules code reads it; the lobby dropdown was removed 2026-08-11
@@ -209,7 +206,8 @@ detection, host-IP display, DNS host entry. See `NetworkingHandoff-2026-07-08.md
 
 ## 2026-06-10 audit follow-ups
 
-From `Audit-6-10-2026.md`; `Audit-6-10-2026-Followup-2026-07-06.md` is the status diff.
+From `Audit-6-10-2026.md`, with `Audit-6-10-2026-Followup-2026-07-06.md` as the status diff. Both were
+deleted from the tree 2026-08-12; recover them from git history if a follow-up needs the detail.
 
 - [ ] 062 — Store hygiene: name-keyed type map, single non-generic `DataBinding<>` converter, free-list `Create`. (The rename-fragility *risk* is already closed by #070; this is internal cleanup.)
 - [ ] 063 — Data-store unit tests: capacity exhaustion, generation reuse after `Destroy`, `IsValid` reason codes, `CreateFromReference` rejection paths.
@@ -223,7 +221,8 @@ From `Audit-6-10-2026.md`; `Audit-6-10-2026-Followup-2026-07-06.md` is the statu
 
 ## 2026-07-06 special-rules audit follow-ups
 
-From `SpecialRulesAudit.md` (15 fixes already landed; plan detail, file paths, and approach live in its section 5).
+From `SpecialRulesAudit.md`, section 5 (15 fixes already landed; that section held the plan detail, file
+paths and approach). Deleted from the tree 2026-08-12 - recover from git history if needed.
 
 - [~] 168 — Rule-load diagnostics surfaced in the UI: aggregated "N rules ... not implemented" in the game log at launch (buffered `RuleLoadWarnings`, GUI modes) + live army-builder pane lines on a store-free `ArmyRuleAudit` parity-pinned to the launch path. Implemented + tested; awaiting GUI hand-verify. ([WorkItems/168](WorkItems/168-rule-load-diagnostics-ui.md))
 - [~] 164 — `DealHits.WithRules` resolver seam so Blast(3) multiplies pre-attack/Strafing hits (Breath Attack residual). Shared `SyntheticHitResolution` fold + dispatch-time rule resolution landed 2026-07-19 (also fixed Strafing dropping the effect's AP); awaiting GUI hand-verify. ([WorkItems/164](WorkItems/164-dealhits-withrules-seam.md))
@@ -233,7 +232,8 @@ From `SpecialRulesAudit.md` (15 fixes already landed; plan detail, file paths, a
 
 ## 2026-07-07 audit follow-ups
 
-From `Audit-2026-07-06-New-Subsystems.md` (13 smaller findings were fixed in that pass; its §8 is the full bug log).
+From `Audit-2026-07-06-New-Subsystems.md` (13 smaller findings were fixed in that pass; its §8 was the
+full bug log). Deleted from the tree 2026-08-12 - recover from git history if needed.
 
 - [ ] 184 — Counter strike sequencing: engine's whole-unit role swap vs RAW per-weapon interleave (counter weapons first, charger, then the rest); exact for homogeneous units, over-grants for mixed/hero-joined ones. Deferred by design from #183. [Notes](WorkItems/184-counter-strike-sequencing.md)
 - [ ] 171 — Army Forge: enforce `UpgradeSection.MinPicks` (importer sets it for OPR "exactly" selects; validator errors on under-pick). Dormant today. Relates #156.

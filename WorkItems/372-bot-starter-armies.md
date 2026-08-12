@@ -1,6 +1,6 @@
 # 372 — Bot starter armies (auto-pick near the points limit + re-roll)
 
-**Status**: implemented, awaiting GUI hand-verify
+**Status**: CLOSED 2026-08-12 - hand-verified in the running app by Chris
 **Related**: #153 (launch gate / BuiltArmyFile), #191 A6 (the two bot profiles), #241/#219 (UnattributedPoints)
 
 ## Goal
@@ -35,9 +35,10 @@ armies other players hold and never repeating one until that bot has seen them a
     on AI rows only.
 - 2026-08-11: Tests - `ArmyCatalogTests` (8) and `BotArmyPickerTests` (11). App suite 1171 green, engine
   suite 2948 green.
-- 2026-08-11: **Not yet hand-verified in the GUI.** Two things to eyeball: the Actions column
-  (0.17f stretch) now carries two small buttons - "Load Army" + "New Army" - and may be cramped; and the
-  first frames of a lobby show the bot's 100-pt stub until the background scan lands.
+- 2026-08-11: Not yet hand-verified in the GUI. Two things to eyeball: the Actions column (0.17f
+  stretch) now carries two small buttons and may be cramped (widened to 0.22f on 2026-08-12); and the
+  first frames of a lobby show the bot's 100-pt stub until the background scan lands. Both checked out
+  on 2026-08-12.
 
 ## Decisions
 
@@ -64,4 +65,19 @@ armies other players hold and never repeating one until that bot has seen them a
   army, so the shortcut can't silently drift (`UnattributedPoints` was the easy thing to miss).
 
 ## Outcome
-_Open until GUI hand-verify._
+
+Shipped and hand-verified in the running app. A new bot arrives with a real list from `armies/` near the
+lobby's points limit instead of the 100-pt stub, and every player row carries a "Random Army" button that
+rolls another one - closest to the limit first, skipping armies other players hold, never repeating until
+the slot has seen them all, and never offering one over the limit unless the folder has nothing legal.
+Permission is `CheckCanModifyPlayerIDInfo` alone, the same gate Load Army uses, so a client can roll only
+its own row and never a bot's.
+
+Two follow-up fixes from Chris playing it landed the same week: the rotation used to walk off the end of
+the legal armies into the over-limit ones, and it did not reset when the points limit moved. Both are
+pinned, and the two tests that had encoded the old walk-the-whole-catalog behaviour were rewritten - that
+behaviour was the bug.
+
+App suite 1184 green.
+
+Superproject `5b32462`, `e182bcf`.
