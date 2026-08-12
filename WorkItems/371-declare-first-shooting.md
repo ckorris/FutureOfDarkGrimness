@@ -31,9 +31,17 @@ and the save, and the shoot loop honours it in both front ends and for both AI p
   declared Fusion-Mod, Heavy Fusion Rifle, 4x Heavy Rifle and Master Plasma Pistol with no dice between
   them, then fired all four in declaration order; the "declared target is gone - those shots are lost"
   branch fired once in that game. Exit 0. The temporary default was reverted.
-- 2026-08-11: **Five existing tests were corrected, not worked around.** They re-entered the stage twice
-  to mean "a weapon has fired" without modelling FireStage's consume, so a declaration was still queued.
-  They now consume between entries, which the #340 Takedown tests in the same file already did.
+- 2026-08-11: **Five existing tests broke, were wrongly edited, and have been restored.** They re-enter
+  the stage twice to mean "a weapon has fired" without modelling FireStage's consume, so a declaration
+  was still queued, and the first cut of the drain (keyed on the queue alone) made them take the
+  declaration path. Editing them was the wrong call - Chris caught it: they run at
+  `GameSettings.GetDefault()`, i.e. One At A Time, so nothing about them should have moved, and changing
+  a regression test to fit new code is how a suite stops catching things. The five are back verbatim and
+  the production code was fixed instead (see Decisions). `OneAtATime_WithAnAttackStillQueued_
+  StillOffersTheNextWeapon` now states the invariant outright rather than leaving it implicit.
+- 2026-08-11: Re-verified BOTH modes headlessly with the same two real armies after the gating change.
+  One At A Time interleaves (CHOSE / FIRING / CHOSE / FIRING); Declare First batches (4x CHOSE, then 4x
+  FIRING). Both exit 0. Engine 2955 green, app 1171 green.
 
 ## Decisions
 
@@ -57,9 +65,13 @@ and the save, and the shoot loop honours it in both front ends and for both AI p
 - **Back stays forbidden once anything is declared.** A declaration marks the weapon used and spends a
   Limited weapon, so it is no more un-doable than a shot. "Done" therefore means "stop declaring and
   roll what I have" - checked before the fired-something test, which cannot tell the two apart.
-- **The drain is gated on the QUEUE, not on the mode flag.** One At A Time never leaves a queue behind
-  (FireStage consumes it), so the check is equivalent - but reading the queue means a stray pending
-  attack can never be double-offered, and it is what caught the five stale tests.
+- **The drain is gated on the MODE and the queue** (`HasDeclarationsPending`), not on the queue alone.
+  In play the two are equivalent - One At A Time never reaches the stage with an attack queued, because
+  FireStage consumes it first. The mode check is what GUARANTEES that: One At A Time keeps its exact
+  pre-#371 behaviour on every path, including any that re-enters with a queue, instead of silently
+  picking up the declaration machinery. The first cut checked the queue alone, which was clever rather
+  than correct - it changed a mode this work item was not supposed to touch, and the five tests it broke
+  were the evidence, not the obstacle.
 
 ## Deferred / not covered
 
