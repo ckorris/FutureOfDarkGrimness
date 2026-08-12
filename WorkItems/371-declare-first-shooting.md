@@ -70,8 +70,24 @@ and the save, and the shoot loop honours it in both front ends and for both AI p
   / Background only, so the mode can be reached from the lobby but not from `--scenario`. Deliberately
   out of scope (the ask was a lobby option); worth adding when #167's ledger work next touches the
   scenario schema.
-- AI behaviour under Declare First is structurally sound (both resolvers answer per request and never
-  see the mode) but is not covered by an AI-specific test.
+- **The Tactician loses overkill avoidance under Declare First** (audited 2026-08-11, code-read; no test
+  yet). Mechanically both profiles are fine - neither resolver sees the mode, both answer one
+  (weapon, target) request at a time and always `Selected` (never `Cancelled`), so they simply declare
+  everything they can, and the lost-shots path handles a declaration whose target died (observed once in
+  the DerpBot headless run above). The QUALITY regression is in
+  `TacticianRangedAttackResolver.Resolve`: its score reads live table state -
+  `float remaining = Math.Max(1f, target.RemainingWounds)`, `living`, `CombatMath.ExpectedKillsFrom`.
+  Under One At A Time those already reflect the damage previous weapons did, so a nearly-dead target's
+  `fractionKilled` saturates and `ShootingKillBonus` stops paying, which is what pushes the next weapon
+  onto a fresh unit. Under Declare First every request is answered before any dice, so every weapon
+  scores the target as undamaged and the bot stacks its whole arsenal into one unit.
+  DerpBot (`AiChooseRangedAttackResolver`) never read wounds at all, but it got the same feedback
+  implicitly - a dead unit stops appearing in the next request's options - so it over-commits too.
+  Net effect: Declare First quietly favours the human, who can reason "that will die to the first
+  volley" where the bot cannot.
+  A fix means carrying the pending declarations on `ChooseRangedAttackRequest` (it has `PreviousTarget`
+  today, which neither AI reads, and one previous target is not enough for cumulative wounds) and
+  discounting `remaining` by the already-declared expected wounds. Own slice, not folded in here.
 
 ## Outcome
 _Open until GUI hand-verify._
