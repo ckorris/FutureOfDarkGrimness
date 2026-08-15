@@ -17,6 +17,12 @@ and that the deployment prompt reads as two alternatives rather than one option 
 
 ## Notes
 
+- 2026-08-15: **Partial reversal (owner's call): the TACTICIAN now embarks at deploy time** (#191
+  A5-10) - Chris, reviewing a save where the bot walked infantry past empty transports: "you should
+  pretty much always do that." The Tactician has since grown the drop-off plan the 2026-08-04 note
+  said was missing (A5-5 arrival timing, M12 DeliverCargo, #355). `TacticianUnitSelectionResolver`
+  answers the prompt (tightest-fit hold) and biases deploy order transports-first; solo and Gunline
+  keep the decline below unchanged. Tests: `TacticianDeployEmbarkTests`.
 - 2026-08-04: **The AI never embarks** (owner's call, same session): *"It's very rarely the correct thing to
   do in a real game, and requires more forethought than that level of AI has."* Two seams, both in the AI
   layer rather than the rules:

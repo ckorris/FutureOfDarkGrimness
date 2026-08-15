@@ -20,6 +20,23 @@ pin tests.
 
 ## Notes (newest first)
 
+**2026-08-15 - A5-10: deploy-time embark (owner's reversal of the #335 decline, Tactician
+only).** Chris, reviewing a save where the Dark Elf Raiders bot walked its infantry past empty
+transports: "you should pretty much always do that" - reversing his own 2026-08-04 #335 call
+("very rarely the correct thing"), which predated the pieces that make riding pay (A5-5 arrival
+timing, M12 DeliverCargo, #355 disembark-to-charge). Two additions to
+`TacticianUnitSelectionResolver`, both keyed the same way the solo decline is: (1) the
+deploy-time embark prompt (cancel label = `DEPLOY_NORMALLY_CHOICE`) is now ANSWERED with a
+transport - tightest fit (least remaining capacity among the engine-validated offers, ties keep
+list order) so small squads don't squat in big holds; (2) the A5-9 deploy-order pick deploys
+transports before everything else (within groups the sensitivity order stands), since the
+embark offer only exists for a hold already on the table. Requires the tableState+evaluator
+ctor args; the scaffold shape (no table state) still falls through to the solo decline (G3).
+Solo and Gunline keep #335 unchanged. Tests: `TacticianDeployEmbarkTests` (4: end-to-end embark
+through the real `ChooseDeployActionStage`, tightest-fit pick, transport-first deploy order,
+no-tableState fallback declines). Verify: engine suite 2965/0 (+4), full build clean, headless
+smoke exit 0. Mid-game embark stays cut (Appendix A: MoveToEmbark) - deploy-time only.
+
 **2026-07-27 — OVERNIGHT WIDE-MULTIPLIER CAMPAIGN: DEFAULTS STAND AGAIN (second null, now with
 in-run confirms).** Chris asked for a second auto-tuning round (23:25 -> 07:00 window). The
 engine had moved to `24d77f8` since yesterday's campaign (origin merge incl. #291's
