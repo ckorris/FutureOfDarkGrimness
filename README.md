@@ -112,6 +112,7 @@ There's a few things yet to come:
 
 - **Age of Fantasy armies:** Sorry, I don't play fantasy, so this has not been a priority. I will add them eventually.
 - **3D movement**: The engine _mostly_ supports three dimensions, but the UI doesn't have a good way of doing that since it's all rendered in 2D. That said, if someone used the rules engine with a 3D game engine, it's mostly a matter of implementing colliders.
+- **Campaign Rules and Multi-Army Lists:** I intend to do both. 
 - **Replays:** Would also be great to make battle reports.
 - **Observer Mode:** Shouldn't be that hard, but I haven't done it yet.  
 
