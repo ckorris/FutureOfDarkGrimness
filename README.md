@@ -62,7 +62,7 @@ You can also add local players for hotseat-style, or combine them with more than
 
 ## Installation
 
-Download the latest release for your platform from the [Releases page](https://github.com/ckorris/fdg-raylib/releases) and extract it anywhere. 
+Download the latest release for your platform from the [Releases page](https://github.com/ckorris/FutureOfDarkGrimness/releases) and extract it anywhere. 
 
 - On **Windows**, unzip and run `FdgRaylib.exe` (SmartScreen may warn since the app is unsigned. Click "More info" -> "Run anyway"). 
 - On **Linux**, untar and run `./FdgRaylib`. 
