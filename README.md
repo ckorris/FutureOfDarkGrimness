@@ -118,3 +118,23 @@ If you want to build your own front-end, or use the rules engine to power an exi
 <img width="3831" height="2067" alt="Screenshot from 2026-08-15 15-04-22" src="https://github.com/user-attachments/assets/15ef7a93-7978-4a2a-8d03-66dc24e02e68" />
 
 <img width="3834" height="2062" alt="Screenshot from 2026-08-15 15-01-03" src="https://github.com/user-attachments/assets/396c3309-ba5d-403d-bb13-cf2603029549" />
+
+
+## Similar Projects
+
+I'm not the first person to do something like this. Check out some other projects that bring OnePageRules to the screen: 
+
+**Niemandsland - A 3D Tabletop Simulator for OnePageRules Game Systems**
+Discord: https://discord.com/channels/610199287346888743/1520340158409605242/1520340158409605242
+GitHub: https://github.com/DutchMaxwell/Niemandsland/releases/tag/v0.3.12.0-alpha
+
+**Udo's Wargaming Simulator**
+Discord: https://discord.com/channels/610199287346888743/1523007809866957030/1523007809866957030
+Website: https://udos3dworld.com/WargamingSimulator/
+
+**Grimdark Future Tactics**
+Discord: https://discord.com/channels/610199287346888743/1523023020615143655/1523023020615143655
+Website: https://www.joshuaates.com/OnePageRulesGame/index.html
+
+
+
