@@ -136,21 +136,15 @@ I'm not the first person to do something like this. Check out some other project
 
 **Niemandsland - A 3D Tabletop Simulator for OnePageRules Game Systems**
 
-Discord post [here](https://discord.com/channels/610199287346888743/1520340158409605242/1520340158409605242)
-
-GitHub [here](https://github.com/DutchMaxwell/Niemandsland/releases/tag/v0.3.12.0-alpha)
+Discord post [here](https://discord.com/channels/610199287346888743/1520340158409605242/1520340158409605242), GitHub [here](https://github.com/DutchMaxwell/Niemandsland/releases/tag/v0.3.12.0-alpha).
 
 **Udo's Wargaming Simulator**
 
-Discord post [here](https://discord.com/channels/610199287346888743/1523007809866957030/1523007809866957030)
-
-Website [here](https://udos3dworld.com/WargamingSimulator/)
+Discord post [here](https://discord.com/channels/610199287346888743/1523007809866957030/1523007809866957030), website [here](https://udos3dworld.com/WargamingSimulator/).
 
 **Grimdark Future Tactics**
 
-Discord post [here](https://discord.com/channels/610199287346888743/1523023020615143655/1523023020615143655)
-
-Website [here](https://www.joshuaates.com/OnePageRulesGame/index.html)
+Discord post [here](https://discord.com/channels/610199287346888743/1523023020615143655/1523023020615143655), website [here](https://www.joshuaates.com/OnePageRulesGame/index.html).
 
 
 
