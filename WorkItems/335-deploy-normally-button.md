@@ -17,12 +17,17 @@ and that the deployment prompt reads as two alternatives rather than one option 
 
 ## Notes
 
-- 2026-08-15: **Partial reversal (owner's call): the TACTICIAN now embarks at deploy time** (#191
-  A5-10) - Chris, reviewing a save where the bot walked infantry past empty transports: "you should
-  pretty much always do that." The Tactician has since grown the drop-off plan the 2026-08-04 note
-  said was missing (A5-5 arrival timing, M12 DeliverCargo, #355). `TacticianUnitSelectionResolver`
-  answers the prompt (tightest-fit hold) and biases deploy order transports-first; solo and Gunline
-  keep the decline below unchanged. Tests: `TacticianDeployEmbarkTests`.
+- 2026-08-15: **Reversal complete (owner's call, twice in one day): EVERY profile now embarks at
+  deploy time** (#191 A5-10 Tactician, A5-10b all profiles). Chris, reviewing a save where the bot
+  walked infantry past empty transports: "you should pretty much always do that", then sharpened it
+  to the real distinction - deploy-time loading is almost always right, MID-GAME embarking is
+  almost always wrong. So: `AiSelectionResolver` accepts the prompt (first offer; Tactician
+  refines to tightest fit), both AI layers deploy transports first, and the solo bot gets the
+  get-out rule the 2026-08-04 note said was missing (`ShouldDisembark`, 12" arrival trigger).
+  What SURVIVES of the decline below: mid-game Embark stays filtered for every profile, and the
+  DEPLOY_NORMALLY_CHOICE discriminator both layers key on is unchanged. Tests:
+  `TacticianDeployEmbarkTests`, flipped `AiSelectionResolverTests` / `TransportDeploymentChoiceTests`,
+  +3 disembark-timing cases in `AiStringSelectionResolverTests`.
 - 2026-08-04: **The AI never embarks** (owner's call, same session): *"It's very rarely the correct thing to
   do in a real game, and requires more forethought than that level of AI has."* Two seams, both in the AI
   layer rather than the rules:

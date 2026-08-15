@@ -16,9 +16,36 @@ harness). Order: any, but all three before Phase A. Related: #066 (AI resolver l
 **Standing authorizations (Chris, 2026-07-09):** engine submodule modification within
 `Ai/Tactician/` + the named P/B seams; new project `FdgLab/` in this repo; Python+ONNX stack.
 Solo-rules bot behavior is frozen (benchmark baseline) — refactors sharing its machinery need
-pin tests.
+pin tests. *(Amended 2026-08-15, owner's call: the freeze is lifted for transport behavior —
+solo now embarks at deploy time and has a disembark trigger, see the A5-10b note. Benchmark
+numbers recorded before that date were measured against the pre-A5-10b solo bot; future
+campaigns re-base.)*
 
 ## Notes (newest first)
+
+**2026-08-15 (cont.) - A5-10b: deploy-time embark extended to EVERY profile; solo gets a
+get-out rule.** Chris sharpened the policy the same day: "Units should very rarely embark into
+a transport AFTER deployment. During deployment, it's almost always best" - i.e. the deploy-vs-
+midgame distinction, for all bots, not just the Tactician (and he chose to lift the solo
+behavior freeze knowingly - AskUserQuestion, option "Extend it to solo too"). Changes:
+`AiSelectionResolver<T>` now ACCEPTS the deploy-time embark prompt (first offered transport)
+and, given the new optional `RuleEvaluator` (wired in `BuildSoloRules`), picks transports first
+at the deploy-order prompt; `AiStringSelectionResolver` gains the solo-grade get-out rule
+`ShouldDisembark` (disembark when any loaded friendly transport is within 12" - 6" placement +
+one move - of an enemy model or a not-already-allied-held objective; the active unit is not
+threaded through Choose Action, so it reads all loaded friendly transports - exact with one,
+worst case a slightly early hop with several) plus the ranked Disembark branch above
+Charge/Move/Shoot/Pass. Mid-game EMBARK stays filtered for everyone (the surviving half of
+#335). Gunline inherits all of it via BuildSoloRules; the Tactician keeps its tightest-fit +
+A5-5 edition, and its scaffold-mode fallthrough now accepts first-offer instead of declining.
+`ChooseUnitToDeployStage.CHOOSE_UNIT_INSTRUCTIONS` promoted to a stage const (both AI layers
+key on it; Tactician's `DeployOrderInstructions` aliases it). Tests: `AiSelectionResolverTests`
+decline test FLIPPED to accept + new transports-first order test;
+`AiStringSelectionResolverTests` +3 (near-objective disembarks, far keeps riding, near-enemy
+disembarks); `TransportDeploymentChoiceTests` end-to-end AI test flipped to embark;
+`TacticianDeployEmbarkTests` fallback test now pins first-offer accept. Verify: engine suite
+2969/0 (+4 net), full build clean, headless smoke exit 0 (test army has no transports - branch
+inert there).
 
 **2026-08-15 - A5-10: deploy-time embark (owner's reversal of the #335 decline, Tactician
 only).** Chris, reviewing a save where the Dark Elf Raiders bot walked its infantry past empty
