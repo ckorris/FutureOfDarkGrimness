@@ -9,8 +9,8 @@ This is GrimDark Future as a video game. Use armies imported from the official A
 
 This is a fan project that’s not officially affiliated with OnePageRules.
 
-
 <br>
+
 
 ## More than a Virtual Tabletop
 
@@ -50,12 +50,6 @@ You can also add local players for hotseat-style, or combine them with more than
 
 <br>
 
-## Playing your First Game
-
-The best way to try it out is to play a solo game against a bot. Launch the game, open Host, and choose a point amount on the right hand side. Press the button to add a "Tactician Bot. Then load an army for each of you from one of the premade armies in the "Armies" folder.
-
-<br>
-
 ## Other features:
 
 - An option to randomize terrain/objective placement to get into the fight faster.
@@ -65,6 +59,30 @@ The best way to try it out is to play a solo game against a bot. Launch the game
 - Saving and loading games.
 
 <br>
+
+## Installation
+
+Download the latest release for your platform from the [Releases page](https://github.com/ckorris/fdg-raylib/releases) and extract it anywhere. 
+
+- On **Windows**, unzip and run `FdgRaylib.exe` (SmartScreen may warn since the app is unsigned. Click "More info" -> "Run anyway"). 
+- On **Linux**, untar and run `./FdgRaylib`. 
+- On **macOS**, grab `osx-arm64` for Apple Silicon or `osx-x64` for Intel, untar, then from a Terminal in that folder run `xattr -dr com.apple.quarantine .` followed by `./FdgRaylib` (one-time step, since Gatekeeper blocks unsigned apps). Note that I haven't actually tried this as I don't own a Mac.
+
+<br>
+
+## Importing an army
+
+If you want to use an army from OnePageRules' Army Forge, then open that army. In the top right, click the three dots, followed by Share List, and Share as Link. Copy the link, then in Future of Dark Grimness, open the Army Forge. Press Import in the top right, and paste the link in the prompt. Then press Save As and put it in your Armies folder.
+
+
+## Playing your First Game
+
+The best way to try it out is to play a solo game against a bot. Launch the game, open Host, and choose a point amount on the right hand side. Press the button to add a "Tactician Bot. Then load an army for each of you from one of the premade armies in the "Armies" folder. Press Launch, and enjoy!
+
+
+<br>
+
+
 
 ## Bug Reporting
 
@@ -78,6 +96,18 @@ The client-side experience over a network.
 Bot behavior in a really crowded game.
 
 <br>
+
+## Unsupported
+
+There's a few things yet to come: 
+
+- **Age of Fantasy armies:** Sorry, I don't play fantasy, so this has not been a priority. I will add them eventually.
+- **3D movement**: The engine _mostly_ supports three dimensions, but the UI doesn't have a good way of doing that since it's all rendered in 2D. That said, if someone used the rules engine with a 3D game engine, it's mostly a matter of implementing colliders.
+- **Replays:** Would also be great to make battle reports.
+- **Observer Mode:** Shouldn't be that hard, but I haven't done it yet.  
+
+<br>
+
 
 ## Dev Stuff:
 

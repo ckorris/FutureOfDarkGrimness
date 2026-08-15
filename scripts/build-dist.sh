@@ -21,10 +21,10 @@
 # third-party license notices, and a copy of the repo's armies/ sample lists.
 #
 # Output lands in dist/:
-#   dist/FdgRaylib-win-x64/     + FdgRaylib-win-x64.zip
-#   dist/FdgRaylib-linux-x64/   + FdgRaylib-linux-x64.tar.gz
-#   dist/FdgRaylib-osx-arm64/   + FdgRaylib-osx-arm64.tar.gz
-#   dist/FdgRaylib-osx-x64/     + FdgRaylib-osx-x64.tar.gz
+#   dist/FdgRaylib-win-x64/     + FdgRaylib-win-x64-<RULES_VERSION>.zip
+#   dist/FdgRaylib-linux-x64/   + FdgRaylib-linux-x64-<RULES_VERSION>.tar.gz
+#   dist/FdgRaylib-osx-arm64/   + FdgRaylib-osx-arm64-<RULES_VERSION>.tar.gz
+#   dist/FdgRaylib-osx-x64/     + FdgRaylib-osx-x64-<RULES_VERSION>.tar.gz
 #
 set -euo pipefail
 
@@ -33,6 +33,10 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 PROJECT="$ROOT_DIR/FdgRaylib/FdgRaylib.csproj"
 DIST_DIR="$ROOT_DIR/dist"
+
+# Release archives are stamped with the OnePageRules rules-set version the build
+# implements, e.g. FdgRaylib-win-x64-OPR_3_5_1.zip. Override: RULES_VERSION=... scripts/build-dist.sh
+RULES_VERSION="${RULES_VERSION:-OPR_3_5_1}"
 
 # Trimming is intentionally OFF: the app uses Newtonsoft with TypeNameHandling.Auto
 # (reflection-based) for .fdgarmy files, which a trimmer would break.
@@ -195,8 +199,8 @@ EOF
 # --- Windows ------------------------------------------------------------------
 if [[ $BUILD_WIN -eq 1 ]]; then
   publish_one "win-x64" "FdgRaylib-win-x64"
-  echo ">> Zipping FdgRaylib-win-x64.zip"
-  ( cd "$DIST_DIR" && zip -rq "FdgRaylib-win-x64.zip" "FdgRaylib-win-x64" )
+  echo ">> Zipping FdgRaylib-win-x64-$RULES_VERSION.zip"
+  ( cd "$DIST_DIR" && zip -rq "FdgRaylib-win-x64-$RULES_VERSION.zip" "FdgRaylib-win-x64" )
 fi
 
 # --- Linux --------------------------------------------------------------------
@@ -204,8 +208,8 @@ if [[ $BUILD_LINUX -eq 1 ]]; then
   publish_one "linux-x64" "FdgRaylib-linux-x64"
   # Ensure the launcher is executable, then tar (tar preserves the +x bit).
   chmod +x "$DIST_DIR/FdgRaylib-linux-x64/FdgRaylib"
-  echo ">> Tarring FdgRaylib-linux-x64.tar.gz"
-  tar -czf "$DIST_DIR/FdgRaylib-linux-x64.tar.gz" -C "$DIST_DIR" "FdgRaylib-linux-x64"
+  echo ">> Tarring FdgRaylib-linux-x64-$RULES_VERSION.tar.gz"
+  tar -czf "$DIST_DIR/FdgRaylib-linux-x64-$RULES_VERSION.tar.gz" -C "$DIST_DIR" "FdgRaylib-linux-x64"
 fi
 
 # --- macOS --------------------------------------------------------------------
@@ -214,15 +218,15 @@ fi
 if [[ $BUILD_MAC_ARM -eq 1 ]]; then
   publish_one "osx-arm64" "FdgRaylib-osx-arm64"
   chmod +x "$DIST_DIR/FdgRaylib-osx-arm64/FdgRaylib"
-  echo ">> Tarring FdgRaylib-osx-arm64.tar.gz"
-  tar -czf "$DIST_DIR/FdgRaylib-osx-arm64.tar.gz" -C "$DIST_DIR" "FdgRaylib-osx-arm64"
+  echo ">> Tarring FdgRaylib-osx-arm64-$RULES_VERSION.tar.gz"
+  tar -czf "$DIST_DIR/FdgRaylib-osx-arm64-$RULES_VERSION.tar.gz" -C "$DIST_DIR" "FdgRaylib-osx-arm64"
 fi
 
 if [[ $BUILD_MAC_X64 -eq 1 ]]; then
   publish_one "osx-x64" "FdgRaylib-osx-x64"
   chmod +x "$DIST_DIR/FdgRaylib-osx-x64/FdgRaylib"
-  echo ">> Tarring FdgRaylib-osx-x64.tar.gz"
-  tar -czf "$DIST_DIR/FdgRaylib-osx-x64.tar.gz" -C "$DIST_DIR" "FdgRaylib-osx-x64"
+  echo ">> Tarring FdgRaylib-osx-x64-$RULES_VERSION.tar.gz"
+  tar -czf "$DIST_DIR/FdgRaylib-osx-x64-$RULES_VERSION.tar.gz" -C "$DIST_DIR" "FdgRaylib-osx-x64"
 fi
 
 # --- summary ------------------------------------------------------------------
