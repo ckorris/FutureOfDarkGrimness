@@ -11,7 +11,7 @@ This is a fan project that’s not officially affiliated with OnePageRules.
 
 <br>
 
-
+https://github.com/ckorris/FutureOfDarkGrimness
 ## More than a Virtual Tabletop
 
 <img width="712" height="401" alt="TerrainObjZonePick_small" src="https://github.com/user-attachments/assets/90da9357-68bf-46c4-8ebf-fbb84a56ee9d" />
@@ -98,11 +98,12 @@ The best way to try it out is to play a solo game against a bot. Launch the game
 I’ve playtested this a lot, but there’s bound to be bugs. If you see a bug, please use the Report Bug option in the escape menu to tell me. Or you can ping me on Discord [LINK] or open up a Github issue.
 
 Here’s places where I most expect bugs:
-Army-specific special rules, especially more complex ones.
-Distances/collisions with rectangular bases.
-Games that were saved and then loaded.
-The client-side experience over a network.
-Bot behavior in a really crowded game.
+
+- Army-specific special rules, especially more complex ones.
+- Distances/collisions with rectangular bases.
+- Games that were saved and then loaded.
+- The client-side experience over a network.
+- Bot behavior in a really crowded game.
 
 <br>
 
@@ -130,7 +131,7 @@ If you want to build your own front-end, or use the rules engine to power an exi
 <img width="3834" height="2062" alt="Screenshot from 2026-08-15 15-01-03" src="https://github.com/user-attachments/assets/396c3309-ba5d-403d-bb13-cf2603029549" />
 
 
-## Similar Projects
+## Similar Projectshttps://github.com/ckorris/FutureOfDarkGrimness
 
 I'm not the first person to do something like this. Check out some other projects that bring OnePageRules to the screen: 
 
