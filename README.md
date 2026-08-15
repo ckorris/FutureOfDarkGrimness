@@ -72,7 +72,16 @@ Download the latest release for your platform from the [Releases page](https://g
 
 ## Importing an army
 
-If you want to use an army from OnePageRules' Army Forge, then open that army. In the top right, click the three dots, followed by Share List, and Share as Link. Copy the link, then in Future of Dark Grimness, open the Army Forge. Press Import in the top right, and paste the link in the prompt. Then press Save As and put it in your Armies folder.
+If you want to use an army from OnePageRules' Army Forge, then open that army. In the top right, click the three dots, followed by Share List, and Share as Link. 
+
+<img width="449" height="581" alt="Screenshot from 2026-08-15 15-53-58" src="https://github.com/user-attachments/assets/d3fbf82b-5760-4df4-8529-67c801a717dc" />
+<img width="1219" height="241" alt="Screenshot from 2026-08-15 15-58-12" src="https://github.com/user-attachments/assets/7190af7c-afeb-4d4b-aee3-2babb320e1ec" />
+
+
+Copy the link, then in Future of Dark Grimness, open the Army Forge. Press Import in the top right, and paste the link in the prompt. Then press Save As and put it in your Armies folder.
+
+<img width="1090" height="442" alt="Screenshot from 2026-08-15 15-59-35" src="https://github.com/user-attachments/assets/150a5b67-9591-4d37-914f-14734689c659" />
+<img width="925" height="651" alt="Screenshot from 2026-08-15 15-59-46" src="https://github.com/user-attachments/assets/feaaa640-31a6-4e59-8d67-6fce54077578" />
 
 
 ## Playing your First Game
@@ -125,16 +134,22 @@ If you want to build your own front-end, or use the rules engine to power an exi
 I'm not the first person to do something like this. Check out some other projects that bring OnePageRules to the screen: 
 
 **Niemandsland - A 3D Tabletop Simulator for OnePageRules Game Systems**
-Discord: https://discord.com/channels/610199287346888743/1520340158409605242/1520340158409605242
-GitHub: https://github.com/DutchMaxwell/Niemandsland/releases/tag/v0.3.12.0-alpha
+
+Discord post [here](https://discord.com/channels/610199287346888743/1520340158409605242/1520340158409605242)
+
+GitHub [here](https://github.com/DutchMaxwell/Niemandsland/releases/tag/v0.3.12.0-alpha)
 
 **Udo's Wargaming Simulator**
-Discord: https://discord.com/channels/610199287346888743/1523007809866957030/1523007809866957030
-Website: https://udos3dworld.com/WargamingSimulator/
+
+Discord post [here](https://discord.com/channels/610199287346888743/1523007809866957030/1523007809866957030)
+
+Website [here](https://udos3dworld.com/WargamingSimulator/)
 
 **Grimdark Future Tactics**
-Discord: https://discord.com/channels/610199287346888743/1523023020615143655/1523023020615143655
-Website: https://www.joshuaates.com/OnePageRulesGame/index.html
+
+Discord post [here](https://discord.com/channels/610199287346888743/1523023020615143655/1523023020615143655)
+
+Website [here](https://www.joshuaates.com/OnePageRulesGame/index.html)
 
 
 
