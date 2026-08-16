@@ -19,7 +19,7 @@ https://github.com/ckorris/FutureOfDarkGrimness
 
 
 
-The game enforces all rules from start to finish, prompting every stage of play, from placing terrain to blasting your opponents into oblivion, to announcing the victor. With all the setup, measurements, and rules calculation handled, you spend your time analyzing the board and executing strategies. 
+The game enforces all rules from start to finish, prompting every stage of play, from placing terrain, to blasting your opponents into oblivion, to announcing the victor. With all the setup, measurements, and rules calculation handled, you spend your time analyzing the board and executing strategies. 
 
 The result is a highly-streamlined form of play. Games against humans can take less than half the time, and games against the bot can take as little as 15-30 minutes.
 
@@ -53,7 +53,7 @@ You can also add local players for hotseat-style, or combine them with more than
 ## Other features:
 
 - An option to randomize terrain/objective placement to get into the fight faster.
-- “Probabilistic” mode that uses the most likely outcome in every calculation. 5 attacks and Quality 4 will always deal 2.5 wounds. There’s a few exceptions made for binary outcomes like morale tests, because there’s no practical way to split that result.
+- “Probabilistic” mode that uses the most likely outcome in every calculation. 5 attacks at Quality 4 will always deal 2.5 wounds. There’s a few exceptions made for binary outcomes like morale tests, because there’s no practical way to split that result.
 - UI that previews what you can hit (and what can hit you) before every move.
 - Options for common house rules, like having to declare all your shooting all at once, or being able to ignore thin cover that you’re right up against.
 - Saving and loading games.
@@ -131,7 +131,7 @@ If you want to build your own front-end, or use the rules engine to power an exi
 <img width="3834" height="2062" alt="Screenshot from 2026-08-15 15-01-03" src="https://github.com/user-attachments/assets/396c3309-ba5d-403d-bb13-cf2603029549" />
 
 
-## Similar Projectshttps://github.com/ckorris/FutureOfDarkGrimness
+## Similar Projects
 
 I'm not the first person to do something like this. Check out some other projects that bring OnePageRules to the screen: 
 
