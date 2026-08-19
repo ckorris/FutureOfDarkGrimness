@@ -152,4 +152,11 @@ Discord post [here](https://discord.com/channels/610199287346888743/152302302061
 Website [here](https://www.joshuaates.com/OnePageRulesGame/index.html)
 
 
+## License
+
+This project is licensed under the [MIT License](LICENSE). The same applies to the [rules engine repo](https://github.com/ckorris/FutureOfDarkGrimness-RulesEngine).
+
+**Scope:** the MIT license covers the source code and the original assets authored for this project. GrimDark Future, Army Forge, and all associated game names, faction and unit names, rules, and game data are the property of OnePageRules, used here unofficially and without affiliation or endorsement — nothing in the MIT license grants any rights to that material. The contents of the `armies` folder are Army Forge exports provided for convenience and are not relicensed.
+
+
 
