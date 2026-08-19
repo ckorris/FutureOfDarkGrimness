@@ -64,9 +64,23 @@ You can also add local players for hotseat-style, or combine them with more than
 
 Download the latest release for your platform from the [Releases page](https://github.com/ckorris/FutureOfDarkGrimness/releases) and extract it anywhere. 
 
-- On **Windows**, unzip and run `FdgRaylib.exe` (SmartScreen may warn since the app is unsigned. Click "More info" -> "Run anyway"). 
+- On **Windows**, unzip and run `FdgRaylib.exe`. 
 - On **Linux**, untar and run `./FdgRaylib`. 
 - On **macOS**, grab `osx-arm64` for Apple Silicon or `osx-x64` for Intel, untar, then from a Terminal in that folder run `xattr -dr com.apple.quarantine .` followed by `./FdgRaylib` (one-time step, since Gatekeeper blocks unsigned apps). Note that I haven't actually tried this as I don't own a Mac.
+
+### Windows will warn you about this app
+
+The first time you run `FdgRaylib.exe`, SmartScreen may show a "Windows protected your PC" dialog. That's because the app is new and hasn't built up a download reputation yet, not because anything is wrong with it. Click **More info**, then **Run anyway**.
+
+<!-- TODO: drop a screenshot of the SmartScreen dialog here -->
+
+<!-- Uncomment once the first SignPath-signed release ships:
+Windows releases are code-signed via SignPath Foundation (see "Code signing policy" below), which makes this warning go away as the certificate builds reputation.
+-->
+
+### Verifying your download
+
+Each release includes a `SHA256SUMS.txt` covering all the archives. To check that your download is intact and untampered, run `sha256sum -c SHA256SUMS.txt --ignore-missing` (Linux; on macOS use `shasum -a 256 -c SHA256SUMS.txt --ignore-missing`) in the download folder, or on Windows compare `CertUtil -hashfile <archive> SHA256` against the listed value.
 
 <br>
 
@@ -152,7 +166,25 @@ Discord post [here](https://discord.com/channels/610199287346888743/152302302061
 Website [here](https://www.joshuaates.com/OnePageRulesGame/index.html)
 
 
-## License
+## Code signing policy
+
+*Free code signing provided by [SignPath.io](https://about.signpath.io), certificate by [SignPath Foundation](https://signpath.org)*
+
+This is a solo-maintainer project: the author, reviewer, and approver roles are all held by [@ckorris](https://github.com/ckorris). All external pull requests are reviewed by the maintainer before merge, and each signing request is manually approved by the maintainer.
+
+Only the Windows build is signed; the Linux and macOS builds are unsigned.
+
+### Privacy
+
+The app collects no telemetry or analytics, and nothing is transferred over the network except as a result of these user-initiated actions:
+
+- **Hosting a game** opens a listening TCP port (default 6389), asks your router on your local network (via UPnP/NAT-PMP) to forward that port, and fetches your public IP address from api.ipify.org so the lobby can show you the address other players should connect to.
+- **Hosting with "List publicly" checked** registers the game with the project's public server list (a small service run by the maintainer) and refreshes the entry every 30 seconds: the server name you typed, port, player count, game state, protocol/compatibility version, and whether a password is set (never the password itself). The list service records your public IP so other players can connect to you; the entry is visible to anyone browsing the server list and expires about 90 seconds after you stop hosting. Browsing the server list downloads that list and sends nothing about you beyond the request itself.
+- **Joining a game** connects directly to the host address you enter or pick from the list.
+- **Importing an Army Forge share link** fetches that list and its army books from OnePageRules' Army Forge API.
+- **Report Bug** (in the escape menu) saves a report locally and uploads it to the maintainer: your description, build version, OS, in-game player name, the game log (including the game's chat), the tail of a crash log if one exists, and - when you are the host - a save of the current game, which includes every player's army list. All of this is disclosed on the report screen before you send, and the other players in the game are notified that a report was sent.
+
+
 
 This project is licensed under the [MIT License](LICENSE). The same applies to the [rules engine repo](https://github.com/ckorris/FutureOfDarkGrimness-RulesEngine).
 
