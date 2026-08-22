@@ -5,9 +5,14 @@
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <!-- #226: the build stamp bug reports carry (see AppVersion.cs). Dist builds override this
+         via scripts/build-dist.sh -p:InformationalVersion=git-<sha>-<date>; everything else is "dev". -->
+    <InformationalVersion>dev</InformationalVersion>
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Mono.Nat" Version="3.0.4" />
     <PackageReference Include="Raylib-cs" Version="7.0.2" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="rlImgui-cs" Version="3.2.0" />
@@ -16,6 +21,10 @@
 
   <ItemGroup>
     <ProjectReference Include="..\FutureOfDarkGrimness\FutureOfDarkGrimness.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="FdgRaylib.Tests" />
   </ItemGroup>
 
   <ItemGroup>

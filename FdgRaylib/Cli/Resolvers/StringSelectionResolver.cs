@@ -10,30 +10,142 @@ public class StringSelectionResolver : IStageResolver<StringSelectionRequest, st
         Console.WriteLine();
         Console.WriteLine(request.Instructions);
 
-        for (int i = 0; i < request.ValidOptions.Count; i++)
-            Console.WriteLine($"  [{i + 1}] {request.ValidOptions[i]}");
+        // #321: a companion action belongs to another option's row (melee: hold this weapon back instead
+        // of attacking with it), so it is printed UNDER its owner as an "s"-keyed sub-choice rather than
+        // as a peer in the numbered list - the CLI's version of the GUI's second button on the row.
+        var companionOptions = new HashSet<string>(StringComparer.Ordinal);
+        if (request.SecondaryActions != null)
+        {
+            foreach (var secondary in request.SecondaryActions.Values)
+                companionOptions.Add(secondary.Option);
+        }
 
-        if (request.InvalidOptions.Count > 0)
+        for (int i = 0; i < request.ValidOptions.Count; i++)
+        {
+            string opt = request.ValidOptions[i];
+            if (companionOptions.Contains(opt)) continue;
+            Console.WriteLine($"  [{i + 1}] {opt}");
+
+            // #298/#336: one indented line per documented special rule the option carries. The CLI has no
+            // hover, so unlike the GUI it spells every rule out in place; an UNdocumented rule is skipped,
+            // because a bare name here would only repeat what the option label already printed.
+            if (request.OptionRules != null
+                && request.OptionRules.TryGetValue(opt, out var rules))
+            {
+                foreach (StringSelectionRequest.OptionRule rule in rules)
+                {
+                    if (string.IsNullOrWhiteSpace(rule.Description)) continue;
+                    Console.WriteLine($"        {rule.Name} - {rule.Description}");
+                }
+            }
+
+            if (request.OptionDescriptions != null
+                && request.OptionDescriptions.TryGetValue(opt, out string? desc))
+            {
+                // A description can be several lines; indent each so the block stays under its option
+                // rather than the second line starting at column 0.
+                foreach (string line in desc.Split('\n'))
+                    Console.WriteLine($"        {line}");
+
+                // #369: rules the description NAMES (the "Courage" a Courage Buff confers) spelled out
+                // under it, one per line and indented a step further so they read as belonging to the
+                // description rather than to the option. The GUI underlines them in place and hovers the
+                // text; the CLI has no hover, so it prints them, exactly as it already does for the weapon
+                // rules in OptionRules above. An undocumented one still gets a line - "not enforced" is
+                // worth knowing before choosing.
+                if (request.OptionDescriptionRules != null
+                    && request.OptionDescriptionRules.TryGetValue(opt, out var descRules))
+                {
+                    foreach (StringSelectionRequest.OptionRule rule in descRules)
+                    {
+                        Console.WriteLine($"          {rule.Name} - "
+                            + (string.IsNullOrWhiteSpace(rule.Description)
+                                ? "not described; the engine may not enforce this rule."
+                                : rule.Description));
+                    }
+                }
+            }
+
+            if (request.SecondaryActions != null
+                && request.SecondaryActions.TryGetValue(opt, out var companion))
+            {
+                // The short label alone: the companion sits under the option it belongs to, so repeating
+                // that option's full text ("Hold back: 3x Blade - A2, AP0") only stutters.
+                bool available = request.ValidOptions.Contains(companion.Option);
+                if (available)
+                {
+                    Console.WriteLine($"      [s{i + 1}] {companion.ShortLabel}");
+                }
+                else
+                {
+                    string reason = request.InvalidOptions
+                        .FirstOrDefault(o => o.Option == companion.Option)?.Reason ?? "not available";
+                    Console.WriteLine($"      [--] {companion.ShortLabel} ({reason})");
+                }
+
+                // The companion's own subtext (what holding back preserves) belongs under IT, not under
+                // the weapon - it describes the decline, not the attack.
+                if (request.OptionDescriptions != null
+                    && request.OptionDescriptions.TryGetValue(companion.Option, out string? companionDesc))
+                {
+                    foreach (string line in companionDesc.Split('\n'))
+                        Console.WriteLine($"            {line}");
+                }
+            }
+        }
+
+        // Companions already appeared under their owner, so they are not repeated here.
+        var otherInvalid = request.InvalidOptions
+            .Where(opt => !companionOptions.Contains(opt.Option)).ToList();
+        if (otherInvalid.Count > 0)
         {
             Console.WriteLine("  Unavailable:");
-            foreach (var opt in request.InvalidOptions)
+            foreach (var opt in otherInvalid)
                 Console.WriteLine($"    - {opt.Option} ({opt.Reason})");
         }
+
+        // #248: a cancellable menu (pristine activation's action menu) offers [0] Back, replying null.
+        // The EOF default stays the FIRST VALID OPTION, never the cancel — piped/automated runs must not
+        // loop the turn by backing out forever.
+        if (request.AllowCancel)
+            Console.WriteLine("  [0] Back");
 
         while (true)
         {
             Console.Write("Choice: ");
             string? input = Console.ReadLine()?.Trim();
 
-            if (input == null) return Task.FromResult(request.ValidOptions[0]); // EOF default: first option
+            // EOF default: first option - and never a companion, which is an opt-OUT (an automated run
+            // that declined its weapons every melee would fight with nothing).
+            if (input == null)
+                return Task.FromResult(request.ValidOptions.First(o => !companionOptions.Contains(o)));
 
-            if (int.TryParse(input, out int choice) &&
-                choice >= 1 && choice <= request.ValidOptions.Count)
+            // #321: "s3" takes option 3's companion action.
+            if (input.StartsWith("s", StringComparison.OrdinalIgnoreCase)
+                && int.TryParse(input.AsSpan(1), out int ownerNumber)
+                && ownerNumber >= 1 && ownerNumber <= request.ValidOptions.Count
+                && request.SecondaryActions != null
+                && request.SecondaryActions.TryGetValue(request.ValidOptions[ownerNumber - 1],
+                    out var chosenCompanion)
+                && request.ValidOptions.Contains(chosenCompanion.Option))
             {
-                return Task.FromResult(request.ValidOptions[choice - 1]);
+                return Task.FromResult(chosenCompanion.Option);
             }
 
-            Console.WriteLine($"Enter a number between 1 and {request.ValidOptions.Count}.");
+            if (int.TryParse(input, out int choice))
+            {
+                if (request.AllowCancel && choice == 0) return Task.FromResult<string>(null!);
+                if (choice >= 1 && choice <= request.ValidOptions.Count
+                    && !companionOptions.Contains(request.ValidOptions[choice - 1]))
+                {
+                    return Task.FromResult(request.ValidOptions[choice - 1]);
+                }
+            }
+
+            string companionHint = companionOptions.Count > 0 ? ", sN for an option's second action" : "";
+            Console.WriteLine(request.AllowCancel
+                ? $"Enter a number between 1 and {request.ValidOptions.Count}{companionHint}, or 0 to go back."
+                : $"Enter a number between 1 and {request.ValidOptions.Count}{companionHint}.");
         }
     }
 }

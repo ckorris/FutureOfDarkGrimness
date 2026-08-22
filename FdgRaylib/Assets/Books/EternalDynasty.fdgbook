@@ -1,0 +1,5780 @@
+{
+  "name": "Eternal Dynasty",
+  "faction": "Eternal Dynasty",
+  "version": "OPR v3.5.3",
+  "source": "OnePageRules - Army Forge (army-forge.onepagerules.com)",
+  "license": "CC-BY-SA 4.0",
+  "defaultRangedEffectSet": "laser-beam",
+  "defaultMeleeEffectSet": "titan-impact",
+  "units": [
+    {
+      "id": "8sSO8Od",
+      "name": "ONI Captain",
+      "quality": 3,
+      "defense": 3,
+      "baseModelCount": 1,
+      "minModels": 1,
+      "maxModels": 1,
+      "basePointCost": 95,
+      "base": {
+        "shape": "Circle",
+        "diameterInches": 1.5748031,
+        "widthInches": 0.984252,
+        "heightInches": 1.968504
+      },
+      "weapons": [
+        {
+          "name": "Great Mace",
+          "quantity": 1,
+          "rangeInches": 0,
+          "attacks": 2,
+          "armorPenetration": 0,
+          "specialRules": [
+            {
+              "kind": "coreNumeric",
+              "name": "Blast",
+              "numericValue": 3
+            }
+          ]
+        },
+        {
+          "name": "Heavy Bash",
+          "quantity": 1,
+          "rangeInches": 0,
+          "attacks": 2,
+          "armorPenetration": 1,
+          "specialRules": []
+        }
+      ],
+      "rules": [
+        {
+          "kind": "core",
+          "name": "Hero"
+        },
+        {
+          "kind": "coreNumeric",
+          "name": "Tough",
+          "numericValue": 6
+        },
+        {
+          "kind": "core",
+          "name": "Clan Warrior"
+        }
+      ],
+      "items": [],
+      "sections": [
+        {
+          "id": "Ab3iqMD",
+          "label": "Replace Great Mace",
+          "variant": "Replace",
+          "affects": "One",
+          "targets": [
+            "Great Mace"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "UXGs0",
+              "label": "Heavy Sword (A4, AP(1), Rending), Combat Shield (Shielded)",
+              "cost": 35,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Heavy Sword",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 4,
+                  "armorPenetration": 1,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Rending"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Combat Shield",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Shielded"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            },
+            {
+              "id": "De_GruT",
+              "label": "2x Heavy Flame-Fist (12\u0022, A1, AP(1), Blast(3), Reliable)",
+              "cost": 30,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Heavy Flame-Fist",
+                  "quantity": 2,
+                  "rangeInches": 12,
+                  "attacks": 1,
+                  "armorPenetration": 1,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Blast",
+                      "numericValue": 3
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Reliable"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "AktPCfP",
+              "label": "Great Sword (A6, AP(1), Rending)",
+              "cost": 35,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Great Sword",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 6,
+                  "armorPenetration": 1,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Rending"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "SscSd",
+              "label": "Heavy Glaive (A6, AP(2))",
+              "cost": 35,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Heavy Glaive",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 6,
+                  "armorPenetration": 2,
+                  "specialRules": []
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "py2bJ5h",
+          "label": "Replace any Heavy Flame-Fist",
+          "variant": "Replace",
+          "affects": "Any",
+          "targets": [
+            "Heavy Flame-Fist"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "qGTUd-u",
+              "label": "Heavy Gun-Fist (24\u0022, A3)",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Heavy Gun-Fist",
+                  "quantity": 1,
+                  "rangeInches": 24,
+                  "attacks": 3,
+                  "armorPenetration": 0,
+                  "specialRules": []
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "e1t2rSi",
+              "label": "Heavy Shred-Fist (18\u0022, A3, Rending)",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Heavy Shred-Fist",
+                  "quantity": 1,
+                  "rangeInches": 18,
+                  "attacks": 3,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Rending"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "nDYS0VP",
+              "label": "Heavy Fist (A3, AP(4))",
+              "cost": 15,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Heavy Fist",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 3,
+                  "armorPenetration": 4,
+                  "specialRules": []
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "ITADvfn",
+              "label": "Heavy Rocket-Fist (24\u0022, A1, AP(1), Blast(3), Indirect)",
+              "cost": 20,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Heavy Rocket-Fist",
+                  "quantity": 1,
+                  "rangeInches": 24,
+                  "attacks": 1,
+                  "armorPenetration": 1,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Blast",
+                      "numericValue": 3
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Indirect"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "D4xqrtB",
+              "label": "Heavy Fusion-Fist (18\u0022, A1, AP(4), Deadly(3))",
+              "cost": 25,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Heavy Fusion-Fist",
+                  "quantity": 1,
+                  "rangeInches": 18,
+                  "attacks": 1,
+                  "armorPenetration": 4,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Deadly",
+                      "numericValue": 3
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "eR1qHmr",
+              "label": "Heavy Plasma-Fist (24\u0022, A3, AP(4))",
+              "cost": 55,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Heavy Plasma-Fist",
+                  "quantity": 1,
+                  "rangeInches": 24,
+                  "attacks": 3,
+                  "armorPenetration": 4,
+                  "specialRules": []
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "oQHii",
+              "label": "Heavy Missile-Fist (30\u0022, A3, AP(3), Unstoppable)",
+              "cost": 55,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Heavy Missile-Fist",
+                  "quantity": 1,
+                  "rangeInches": 30,
+                  "attacks": 3,
+                  "armorPenetration": 3,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Unstoppable"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "5iH2AJq",
+          "label": "Upgrade with",
+          "variant": "Upgrade",
+          "affects": "One",
+          "targets": [],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "OiWJrIS",
+              "label": "Jetpack (Ambush, Flying)",
+              "cost": 45,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Jetpack",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Ambush"
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Flying"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "YLnrb_d",
+          "label": "Upgrade with one",
+          "variant": "Upgrade",
+          "affects": "One",
+          "targets": [],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "GDqeD2a",
+              "label": "Attack Drone (Drone Laser Gun (18\u0022, A1, Limited, Tear))",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Drone Laser Gun",
+                  "quantity": 1,
+                  "rangeInches": 18,
+                  "attacks": 1,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Limited"
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Tear"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Attack Drone",
+                  "quantity": 1,
+                  "rules": []
+                }
+              ],
+              "modelsGained": 0
+            },
+            {
+              "id": "7LDvJ",
+              "label": "Energy Drone (Ignores Cover Aura)",
+              "cost": 15,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Energy Drone",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Ignores Cover Aura"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "1AY_r1S",
+          "label": "Upgrade with one",
+          "variant": "Upgrade",
+          "affects": "One",
+          "targets": [],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "s4jtQSvi",
+              "label": "Captain (Clan Warrior Boost Aura)",
+              "cost": 10,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Captain",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Clan Warrior Boost Aura"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            },
+            {
+              "id": "uTUI-y3T",
+              "label": "Spirit-Core Bearer (Rapid Charge Aura)",
+              "cost": 15,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Spirit-Core Bearer",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Rapid Charge Aura"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            },
+            {
+              "id": "WAhquGUQ",
+              "label": "Sentinel (Fearless Aura)",
+              "cost": 20,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Sentinel",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Fearless Aura"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            },
+            {
+              "id": "eZc7qKDwPT",
+              "label": "Sergeant (Piercing Hunter Aura)",
+              "cost": 40,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Sergeant",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Piercing Hunter Aura"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "bEeuIws",
+      "name": "Dynasty Leader",
+      "quality": 3,
+      "defense": 4,
+      "baseModelCount": 1,
+      "minModels": 1,
+      "maxModels": 1,
+      "basePointCost": 50,
+      "base": {
+        "shape": "Circle",
+        "diameterInches": 0.984252,
+        "widthInches": 0.984252,
+        "heightInches": 1.968504
+      },
+      "weapons": [
+        {
+          "name": "Dynasty Pistol",
+          "quantity": 1,
+          "rangeInches": 12,
+          "attacks": 2,
+          "armorPenetration": 1,
+          "specialRules": []
+        },
+        {
+          "name": "CCW",
+          "quantity": 1,
+          "rangeInches": 0,
+          "attacks": 2,
+          "armorPenetration": 0,
+          "specialRules": []
+        }
+      ],
+      "rules": [
+        {
+          "kind": "core",
+          "name": "Hero"
+        },
+        {
+          "kind": "coreNumeric",
+          "name": "Tough",
+          "numericValue": 3
+        },
+        {
+          "kind": "core",
+          "name": "Clan Warrior"
+        }
+      ],
+      "items": [],
+      "sections": [
+        {
+          "id": "YLnrb_d",
+          "label": "Upgrade with one",
+          "variant": "Upgrade",
+          "affects": "One",
+          "targets": [],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "GDqeD2a",
+              "label": "Attack Drone (Drone Laser Gun (18\u0022, A1, Limited, Tear))",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Drone Laser Gun",
+                  "quantity": 1,
+                  "rangeInches": 18,
+                  "attacks": 1,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Limited"
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Tear"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Attack Drone",
+                  "quantity": 1,
+                  "rules": []
+                }
+              ],
+              "modelsGained": 0
+            },
+            {
+              "id": "7LDvJ",
+              "label": "Energy Drone (Ignores Cover Aura)",
+              "cost": 15,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Energy Drone",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Ignores Cover Aura"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "zYHjl1I",
+          "label": "Replace Dynasty Pistol and CCW",
+          "variant": "Replace",
+          "affects": "One",
+          "targets": [
+            "Dynasty Pistol",
+            "CCW"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "sI-nC",
+              "label": "2x Leader Auto-Gun (12\u0022, A2, Rending), Martial Arts (A1)",
+              "cost": 10,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Leader Auto-Gun",
+                  "quantity": 2,
+                  "rangeInches": 12,
+                  "attacks": 2,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Rending"
+                    }
+                  ]
+                },
+                {
+                  "name": "Martial Arts",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 1,
+                  "armorPenetration": 0,
+                  "specialRules": []
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "crZ9P",
+              "label": "2x Royal Sword (A2, AP(1), Rending)",
+              "cost": 15,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Royal Sword",
+                  "quantity": 2,
+                  "rangeInches": 0,
+                  "attacks": 2,
+                  "armorPenetration": 1,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Rending"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "wD4-2",
+              "label": "2x Royal Sickle (A2, AP(2))",
+              "cost": 15,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Royal Sickle",
+                  "quantity": 2,
+                  "rangeInches": 0,
+                  "attacks": 2,
+                  "armorPenetration": 2,
+                  "specialRules": []
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "gfuVZ",
+              "label": "Spear-Shock (18\u0022, A3, AP(1)), Spear (A3, AP(1))",
+              "cost": 30,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Spear-Shock",
+                  "quantity": 1,
+                  "rangeInches": 18,
+                  "attacks": 3,
+                  "armorPenetration": 1,
+                  "specialRules": []
+                },
+                {
+                  "name": "Spear",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 3,
+                  "armorPenetration": 1,
+                  "specialRules": []
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "Ja4wZgV",
+          "label": "Replace Dynasty Pistol",
+          "variant": "Replace",
+          "affects": "One",
+          "targets": [
+            "Dynasty Pistol"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "_tz4n",
+              "label": "Leader Shotgun (12\u0022, A3, AP(1))",
+              "cost": 10,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Leader Shotgun",
+                  "quantity": 1,
+                  "rangeInches": 12,
+                  "attacks": 3,
+                  "armorPenetration": 1,
+                  "specialRules": []
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "-rTQTwD",
+              "label": "Leader Carbine (18\u0022, A3)",
+              "cost": 10,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Leader Carbine",
+                  "quantity": 1,
+                  "rangeInches": 18,
+                  "attacks": 3,
+                  "armorPenetration": 0,
+                  "specialRules": []
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "_rw-P",
+              "label": "Leader Long Rifle (30\u0022, A2)",
+              "cost": 10,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Leader Long Rifle",
+                  "quantity": 1,
+                  "rangeInches": 30,
+                  "attacks": 2,
+                  "armorPenetration": 0,
+                  "specialRules": []
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "StkT8z9",
+          "label": "Replace CCW",
+          "variant": "Replace",
+          "affects": "One",
+          "targets": [
+            "CCW"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "-rDhY",
+              "label": "Royal Sickle (A2, AP(2))",
+              "cost": 10,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Royal Sickle",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 2,
+                  "armorPenetration": 2,
+                  "specialRules": []
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "jXiwN",
+              "label": "Royal Sword (A2, AP(1), Rending)",
+              "cost": 10,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Royal Sword",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 2,
+                  "armorPenetration": 1,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Rending"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "9GWPz",
+              "label": "Hook Sword (A1, AP(2), Deadly(3))",
+              "cost": 15,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Hook Sword",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 1,
+                  "armorPenetration": 2,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Deadly",
+                      "numericValue": 3
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "_sDvYbo",
+          "label": "Upgrade with one",
+          "variant": "Upgrade",
+          "affects": "One",
+          "targets": [],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "pfGozCg",
+              "label": "Hover Alert-Drone (Repel Ambushers)",
+              "cost": 15,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Hover Alert-Drone",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Repel Ambushers"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            },
+            {
+              "id": "NhLWmJuVsQ",
+              "label": "Royal Guard Master (Regeneration, Versatile Attack)",
+              "cost": 20,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Royal Guard Master",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Regeneration"
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Versatile Attack"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            },
+            {
+              "id": "tACrG",
+              "label": "Ninja Master (Ambush, Stealth, Teleport)",
+              "cost": 35,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Ninja Master",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Ambush"
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Stealth"
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Teleport"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "XBczKoN",
+          "label": "Upgrade with one",
+          "variant": "Upgrade",
+          "affects": "One",
+          "targets": [],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "WHfDf",
+              "label": "Captain (Clan Warrior Boost Aura)",
+              "cost": 10,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Captain",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Clan Warrior Boost Aura"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            },
+            {
+              "id": "5g_uQuGyY8",
+              "label": "Sentinel (Fearless Aura)",
+              "cost": 20,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Sentinel",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Fearless Aura"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            },
+            {
+              "id": "c2hPm",
+              "label": "Warlord (Counter-Attack Aura)",
+              "cost": 35,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Warlord",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Counter-Attack Aura"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            },
+            {
+              "id": "ttrp9",
+              "label": "Sage (Caster(2))",
+              "cost": 40,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Sage",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Caster",
+                      "numericValue": 2
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            },
+            {
+              "id": "mKMzc",
+              "label": "Sergeant (Piercing Hunter Aura)",
+              "cost": 40,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Sergeant",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Piercing Hunter Aura"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "tBFpCN2",
+      "name": "Warriors",
+      "quality": 4,
+      "defense": 4,
+      "baseModelCount": 5,
+      "minModels": 5,
+      "maxModels": 5,
+      "basePointCost": 90,
+      "base": {
+        "shape": "Circle",
+        "diameterInches": 0.984252,
+        "widthInches": 0.984252,
+        "heightInches": 1.968504
+      },
+      "weapons": [
+        {
+          "name": "Long Rifle",
+          "quantity": 5,
+          "rangeInches": 30,
+          "attacks": 1,
+          "armorPenetration": 0,
+          "specialRules": []
+        },
+        {
+          "name": "CCW",
+          "quantity": 5,
+          "rangeInches": 0,
+          "attacks": 1,
+          "armorPenetration": 0,
+          "specialRules": []
+        }
+      ],
+      "rules": [
+        {
+          "kind": "core",
+          "name": "Clan Warrior"
+        }
+      ],
+      "items": [],
+      "sections": [
+        {
+          "id": "VTysuTe",
+          "label": "Upgrade one model with one",
+          "variant": "Upgrade",
+          "affects": "One",
+          "targets": [],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "xiu4bVs",
+              "label": "Attack Drone (Drone Laser Gun (18\u0022, A1, Limited, Tear))",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Drone Laser Gun",
+                  "quantity": 1,
+                  "rangeInches": 18,
+                  "attacks": 1,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Limited"
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Tear"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Attack Drone",
+                  "quantity": 1,
+                  "rules": []
+                }
+              ],
+              "modelsGained": 0
+            },
+            {
+              "id": "LA6wLd5",
+              "label": "Energy Drone (Ignores Cover Aura)",
+              "cost": 10,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Energy Drone",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Ignores Cover Aura"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            },
+            {
+              "id": "US-KuV2",
+              "label": "Shield Drone (Stealth Aura)",
+              "cost": 25,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Shield Drone",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Stealth Aura"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "ON5ZO3I",
+          "label": "Replace all Long Rifles",
+          "variant": "Replace",
+          "affects": "All",
+          "targets": [
+            "Long Rifles"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "prDG6tH",
+              "label": "Shotgun (12\u0022, A2, AP(1))",
+              "cost": 15,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Shotgun",
+                  "quantity": 1,
+                  "rangeInches": 12,
+                  "attacks": 2,
+                  "armorPenetration": 1,
+                  "specialRules": []
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "otFL3q7",
+              "label": "Carbine (18\u0022, A2)",
+              "cost": 15,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Carbine",
+                  "quantity": 1,
+                  "rangeInches": 18,
+                  "attacks": 2,
+                  "armorPenetration": 0,
+                  "specialRules": []
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "fosEypP",
+          "label": "Replace one Long Rifle",
+          "variant": "Replace",
+          "affects": "One",
+          "targets": [
+            "Long Rifle"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "gkw6bMI",
+              "label": "Flamer (12\u0022, A1, Blast(3), Reliable)",
+              "cost": 10,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Flamer",
+                  "quantity": 1,
+                  "rangeInches": 12,
+                  "attacks": 1,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Blast",
+                      "numericValue": 3
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Reliable"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "4qMNiYP",
+              "label": "Shred Rifle (18\u0022, A2, Rending)",
+              "cost": 10,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Shred Rifle",
+                  "quantity": 1,
+                  "rangeInches": 18,
+                  "attacks": 2,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Rending"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "SG_Ukxc",
+              "label": "Plasma Rifle (24\u0022, A1, AP(4))",
+              "cost": 10,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Plasma Rifle",
+                  "quantity": 1,
+                  "rangeInches": 24,
+                  "attacks": 1,
+                  "armorPenetration": 4,
+                  "specialRules": []
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "D38XYVt",
+              "label": "Fusion Rifle (12\u0022, A1, AP(4), Deadly(3))",
+              "cost": 20,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Fusion Rifle",
+                  "quantity": 1,
+                  "rangeInches": 12,
+                  "attacks": 1,
+                  "armorPenetration": 4,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Deadly",
+                      "numericValue": 3
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "qstLI",
+              "label": "Shishi Turret (Rocket (24\u0022, A1, Blast(3), Indirect))",
+              "cost": 15,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Rocket",
+                  "quantity": 1,
+                  "rangeInches": 24,
+                  "attacks": 1,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Blast",
+                      "numericValue": 3
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Indirect"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Shishi Turret",
+                  "quantity": 1,
+                  "rules": []
+                }
+              ],
+              "modelsGained": 0
+            },
+            {
+              "id": "hN_rU",
+              "label": "Shishi Turret (Missiles (30\u0022, A2, AP(3), Unstoppable))",
+              "cost": 35,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Missiles",
+                  "quantity": 1,
+                  "rangeInches": 30,
+                  "attacks": 2,
+                  "armorPenetration": 3,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Unstoppable"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Shishi Turret",
+                  "quantity": 1,
+                  "rules": []
+                }
+              ],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "DzIX-_8",
+          "label": "Replace one Long Rifle and CCW",
+          "variant": "Replace",
+          "affects": "One",
+          "targets": [
+            "Long Rifle",
+            "CCW"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "JPPHfen9",
+              "label": "Twin Heavy Pistol (12\u0022, A2, AP(1)), CCW (A1)",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Twin Heavy Pistol",
+                  "quantity": 1,
+                  "rangeInches": 12,
+                  "attacks": 2,
+                  "armorPenetration": 1,
+                  "specialRules": []
+                },
+                {
+                  "name": "CCW",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 1,
+                  "armorPenetration": 0,
+                  "specialRules": []
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "GjCgpsV7",
+              "label": "Heavy Pistol (12\u0022, A1, AP(1)), Royal Sword (A2, AP(1), Rending)",
+              "cost": 10,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Heavy Pistol",
+                  "quantity": 1,
+                  "rangeInches": 12,
+                  "attacks": 1,
+                  "armorPenetration": 1,
+                  "specialRules": []
+                },
+                {
+                  "name": "Royal Sword",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 2,
+                  "armorPenetration": 1,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Rending"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "bRXq7hb",
+          "label": "Upgrade one model with",
+          "variant": "Upgrade",
+          "affects": "One",
+          "targets": [],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "8_8b0uLdkr",
+              "label": "Honor-Bound (Vengeance)",
+              "cost": 15,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Honor-Bound",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Vengeance"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kBJrV-w",
+      "name": "Scouts",
+      "quality": 4,
+      "defense": 5,
+      "baseModelCount": 5,
+      "minModels": 5,
+      "maxModels": 5,
+      "basePointCost": 100,
+      "base": {
+        "shape": "Circle",
+        "diameterInches": 0.984252,
+        "widthInches": 0.984252,
+        "heightInches": 1.968504
+      },
+      "weapons": [
+        {
+          "name": "Long Rifle",
+          "quantity": 5,
+          "rangeInches": 30,
+          "attacks": 1,
+          "armorPenetration": 0,
+          "specialRules": []
+        },
+        {
+          "name": "CCW",
+          "quantity": 5,
+          "rangeInches": 0,
+          "attacks": 1,
+          "armorPenetration": 0,
+          "specialRules": []
+        }
+      ],
+      "rules": [
+        {
+          "kind": "core",
+          "name": "Scout"
+        },
+        {
+          "kind": "core",
+          "name": "Clan Warrior"
+        }
+      ],
+      "items": [],
+      "sections": [
+        {
+          "id": "VTysuTe",
+          "label": "Upgrade one model with one",
+          "variant": "Upgrade",
+          "affects": "One",
+          "targets": [],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "xiu4bVs",
+              "label": "Attack Drone (Drone Laser Gun (18\u0022, A1, Limited, Tear))",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Drone Laser Gun",
+                  "quantity": 1,
+                  "rangeInches": 18,
+                  "attacks": 1,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Limited"
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Tear"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Attack Drone",
+                  "quantity": 1,
+                  "rules": []
+                }
+              ],
+              "modelsGained": 0
+            },
+            {
+              "id": "LA6wLd5",
+              "label": "Energy Drone (Ignores Cover Aura)",
+              "cost": 10,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Energy Drone",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Ignores Cover Aura"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            },
+            {
+              "id": "US-KuV2",
+              "label": "Shield Drone (Stealth Aura)",
+              "cost": 25,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Shield Drone",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Stealth Aura"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "BPZo1T4",
+          "label": "Replace any Long Rifle",
+          "variant": "Replace",
+          "affects": "Any",
+          "targets": [
+            "Long Rifle"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "xIaJd",
+              "label": "Carbine (18\u0022, A2)",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Carbine",
+                  "quantity": 1,
+                  "rangeInches": 18,
+                  "attacks": 2,
+                  "armorPenetration": 0,
+                  "specialRules": []
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "C83dFwC",
+          "label": "Replace up to three Long Rifles",
+          "variant": "Replace",
+          "affects": "Any",
+          "targets": [
+            "Long Rifles"
+          ],
+          "maxApplications": 3,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "gTZ_Mmv",
+              "label": "Energy Rifle (36\u0022, A1, AP(4))",
+              "cost": 20,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Energy Rifle",
+                  "quantity": 1,
+                  "rangeInches": 36,
+                  "attacks": 1,
+                  "armorPenetration": 4,
+                  "specialRules": []
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "piDSZzn",
+              "label": "Sniper Rifle (30\u0022, A1, AP(1), Reliable, Takedown)",
+              "cost": 25,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Sniper Rifle",
+                  "quantity": 1,
+                  "rangeInches": 30,
+                  "attacks": 1,
+                  "armorPenetration": 1,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Takedown"
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Reliable"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "zz8hFH3",
+          "label": "Upgrade one model with",
+          "variant": "Upgrade",
+          "affects": "One",
+          "targets": [],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "HdF_Tbl",
+              "label": "Dynastic Triangulator (Ambush Beacon)",
+              "cost": 15,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Dynastic Triangulator",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Ambush Beacon"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "6S-Xqit",
+      "name": "Ninja",
+      "quality": 3,
+      "defense": 5,
+      "baseModelCount": 5,
+      "minModels": 5,
+      "maxModels": 5,
+      "basePointCost": 170,
+      "base": {
+        "shape": "Circle",
+        "diameterInches": 0.984252,
+        "widthInches": 0.984252,
+        "heightInches": 1.968504
+      },
+      "weapons": [
+        {
+          "name": "Auto-Gun",
+          "quantity": 5,
+          "rangeInches": 12,
+          "attacks": 1,
+          "armorPenetration": 0,
+          "specialRules": [
+            {
+              "kind": "core",
+              "name": "Rending"
+            }
+          ]
+        },
+        {
+          "name": "Sword",
+          "quantity": 5,
+          "rangeInches": 0,
+          "attacks": 1,
+          "armorPenetration": 1,
+          "specialRules": [
+            {
+              "kind": "core",
+              "name": "Rending"
+            }
+          ]
+        }
+      ],
+      "rules": [
+        {
+          "kind": "core",
+          "name": "Ambush"
+        },
+        {
+          "kind": "core",
+          "name": "Teleport"
+        },
+        {
+          "kind": "core",
+          "name": "Stealth"
+        },
+        {
+          "kind": "core",
+          "name": "Clan Warrior"
+        }
+      ],
+      "items": [],
+      "sections": [
+        {
+          "id": "DC99aLy",
+          "label": "Replace any Auto-Gun and Sword",
+          "variant": "Replace",
+          "affects": "Any",
+          "targets": [
+            "Auto-Gun",
+            "Sword"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "-iI0H_1-k5",
+              "label": "Auto-Gun (12\u0022, A1, Rending), Sickle (A1, AP(2))",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Auto-Gun",
+                  "quantity": 1,
+                  "rangeInches": 12,
+                  "attacks": 1,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Rending"
+                    }
+                  ]
+                },
+                {
+                  "name": "Sickle",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 1,
+                  "armorPenetration": 2,
+                  "specialRules": []
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "BwYgH",
+              "label": "2x Sword (A1, AP(1), Rending)",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Sword",
+                  "quantity": 2,
+                  "rangeInches": 0,
+                  "attacks": 1,
+                  "armorPenetration": 1,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Rending"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "I6JwNYkW-4",
+              "label": "2x Sickle (A1, AP(2))",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Sickle",
+                  "quantity": 2,
+                  "rangeInches": 0,
+                  "attacks": 1,
+                  "armorPenetration": 2,
+                  "specialRules": []
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "Y5M4AZtMUW",
+              "label": "2x Auto-Gun (12\u0022, A1, Rending), Martial Arts (A1)",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Auto-Gun",
+                  "quantity": 2,
+                  "rangeInches": 12,
+                  "attacks": 1,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Rending"
+                    }
+                  ]
+                },
+                {
+                  "name": "Martial Arts",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 1,
+                  "armorPenetration": 0,
+                  "specialRules": []
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "nT_lDKZ",
+      "name": "Royal Guard",
+      "quality": 3,
+      "defense": 4,
+      "baseModelCount": 5,
+      "minModels": 5,
+      "maxModels": 5,
+      "basePointCost": 180,
+      "base": {
+        "shape": "Circle",
+        "diameterInches": 0.984252,
+        "widthInches": 0.984252,
+        "heightInches": 1.968504
+      },
+      "weapons": [
+        {
+          "name": "Spear-Shot",
+          "quantity": 5,
+          "rangeInches": 12,
+          "attacks": 1,
+          "armorPenetration": 0,
+          "specialRules": []
+        },
+        {
+          "name": "Spear",
+          "quantity": 5,
+          "rangeInches": 0,
+          "attacks": 2,
+          "armorPenetration": 1,
+          "specialRules": []
+        }
+      ],
+      "rules": [
+        {
+          "kind": "core",
+          "name": "Clan Warrior"
+        },
+        {
+          "kind": "core",
+          "name": "Versatile Attack"
+        },
+        {
+          "kind": "core",
+          "name": "Regeneration"
+        }
+      ],
+      "items": [],
+      "sections": [
+        {
+          "id": "4kSaT3U",
+          "label": "Replace one Spear-Shot",
+          "variant": "Replace",
+          "affects": "One",
+          "targets": [
+            "Spear-Shot"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "bZSmr7t",
+              "label": "Spear-Flame (12\u0022, A1, Blast(3), Limited, Reliable)",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Spear-Flame",
+                  "quantity": 1,
+                  "rangeInches": 12,
+                  "attacks": 1,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Blast",
+                      "numericValue": 3
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Reliable"
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Limited"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "_8-zMw2",
+              "label": "Spear-Plasma (24\u0022, A1, AP(4), Limited)",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Spear-Plasma",
+                  "quantity": 1,
+                  "rangeInches": 24,
+                  "attacks": 1,
+                  "armorPenetration": 4,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Limited"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "WU6bxcp",
+              "label": "Spear-Fuse (12\u0022, A1, AP(4), Deadly(3), Limited)",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Spear-Fuse",
+                  "quantity": 1,
+                  "rangeInches": 12,
+                  "attacks": 1,
+                  "armorPenetration": 4,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Deadly",
+                      "numericValue": 3
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Limited"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "q9VAaXE",
+              "label": "Spear-Shred (9\u0022, A3, Rending)",
+              "cost": 15,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Spear-Shred",
+                  "quantity": 1,
+                  "rangeInches": 9,
+                  "attacks": 3,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Rending"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "bRXq7hb",
+          "label": "Upgrade one model with",
+          "variant": "Upgrade",
+          "affects": "One",
+          "targets": [],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "8_8b0uLdkr",
+              "label": "Honor-Bound (Vengeance)",
+              "cost": 15,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Honor-Bound",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Vengeance"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "CdkWnvx",
+      "name": "Attack Drones",
+      "quality": 4,
+      "defense": 4,
+      "baseModelCount": 5,
+      "minModels": 5,
+      "maxModels": 5,
+      "basePointCost": 120,
+      "base": {
+        "shape": "Circle",
+        "diameterInches": 0.984252,
+        "widthInches": 0.984252,
+        "heightInches": 1.968504
+      },
+      "weapons": [
+        {
+          "name": "Laser Gun",
+          "quantity": 5,
+          "rangeInches": 18,
+          "attacks": 1,
+          "armorPenetration": 0,
+          "specialRules": [
+            {
+              "kind": "core",
+              "name": "Tear"
+            }
+          ]
+        },
+        {
+          "name": "Taser",
+          "quantity": 5,
+          "rangeInches": 0,
+          "attacks": 1,
+          "armorPenetration": 0,
+          "specialRules": []
+        }
+      ],
+      "rules": [
+        {
+          "kind": "core",
+          "name": "Strider"
+        },
+        {
+          "kind": "core",
+          "name": "Clan Warrior"
+        }
+      ],
+      "items": [],
+      "sections": [
+        {
+          "id": "6HcG0EC",
+          "label": "Replace one Laser Gun",
+          "variant": "Replace",
+          "affects": "One",
+          "targets": [
+            "Laser Gun"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "h1PYOOy",
+              "label": "Heavy Laser Gun (24\u0022, A1, Deadly(3), Tear)",
+              "cost": 30,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Heavy Laser Gun",
+                  "quantity": 1,
+                  "rangeInches": 24,
+                  "attacks": 1,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Deadly",
+                      "numericValue": 3
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Tear"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "bILTbNt",
+      "name": "ONIs",
+      "quality": 3,
+      "defense": 3,
+      "baseModelCount": 3,
+      "minModels": 3,
+      "maxModels": 3,
+      "basePointCost": 180,
+      "base": {
+        "shape": "Circle",
+        "diameterInches": 1.5748031,
+        "widthInches": 0.984252,
+        "heightInches": 1.968504
+      },
+      "weapons": [
+        {
+          "name": "Bash",
+          "quantity": 3,
+          "rangeInches": 0,
+          "attacks": 1,
+          "armorPenetration": 0,
+          "specialRules": []
+        },
+        {
+          "name": "Heavy Fist",
+          "quantity": 6,
+          "rangeInches": 0,
+          "attacks": 1,
+          "armorPenetration": 4,
+          "specialRules": []
+        }
+      ],
+      "rules": [
+        {
+          "kind": "coreNumeric",
+          "name": "Tough",
+          "numericValue": 3
+        },
+        {
+          "kind": "core",
+          "name": "Clan Warrior"
+        }
+      ],
+      "items": [],
+      "sections": [
+        {
+          "id": "5ar-WCw",
+          "label": "Replace any Heavy Fist",
+          "variant": "Replace",
+          "affects": "Any",
+          "targets": [
+            "Heavy Fist"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "M_627RW",
+              "label": "Gun-Fist (24\u0022, A2)",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Gun-Fist",
+                  "quantity": 1,
+                  "rangeInches": 24,
+                  "attacks": 2,
+                  "armorPenetration": 0,
+                  "specialRules": []
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "IGin4xV",
+              "label": "Shred-Fist (18\u0022, A2, Rending)",
+              "cost": 10,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Shred-Fist",
+                  "quantity": 1,
+                  "rangeInches": 18,
+                  "attacks": 2,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Rending"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "5v30Yp_",
+              "label": "Plasma-Fist (24\u0022, A2, AP(4))",
+              "cost": 40,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Plasma-Fist",
+                  "quantity": 1,
+                  "rangeInches": 24,
+                  "attacks": 2,
+                  "armorPenetration": 4,
+                  "specialRules": []
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "1dcQNy8",
+          "label": "Replace one Heavy Fist",
+          "variant": "Replace",
+          "affects": "One",
+          "targets": [
+            "Heavy Fist"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "Gjv3O",
+              "label": "Flame-Fist (12\u0022, A1, Blast(3), Reliable)",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Flame-Fist",
+                  "quantity": 1,
+                  "rangeInches": 12,
+                  "attacks": 1,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Blast",
+                      "numericValue": 3
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Reliable"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "2r1w6",
+              "label": "Fusion-Fist (12\u0022, A1, AP(4), Deadly(3))",
+              "cost": 20,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Fusion-Fist",
+                  "quantity": 1,
+                  "rangeInches": 12,
+                  "attacks": 1,
+                  "armorPenetration": 4,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Deadly",
+                      "numericValue": 3
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "XR9DY",
+              "label": "Rocket-Fist (24\u0022, A1, Blast(3), Indirect)",
+              "cost": 20,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Rocket-Fist",
+                  "quantity": 1,
+                  "rangeInches": 24,
+                  "attacks": 1,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Blast",
+                      "numericValue": 3
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Indirect"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "99TW4",
+              "label": "Missile-Fist (30\u0022, A2, AP(3), Unstoppable)",
+              "cost": 40,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Missile-Fist",
+                  "quantity": 1,
+                  "rangeInches": 30,
+                  "attacks": 2,
+                  "armorPenetration": 3,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Unstoppable"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "S-Dt1iB",
+          "label": "Any model may replace 2x Heavy Fist",
+          "variant": "Replace",
+          "affects": "One",
+          "targets": [
+            "2x Heavy Fist"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 2,
+          "options": [
+            {
+              "id": "_FX3A",
+              "label": "Sword (A2, AP(1), Rending), Combat Shield (Shielded)",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Sword",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 2,
+                  "armorPenetration": 1,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Rending"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Combat Shield",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Shielded"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            },
+            {
+              "id": "7TIhtQ1",
+              "label": "Heavy Glaive (A3, AP(2))",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Heavy Glaive",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 3,
+                  "armorPenetration": 2,
+                  "specialRules": []
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "yBSVVKB",
+          "label": "Upgrade all models with",
+          "variant": "Upgrade",
+          "affects": "All",
+          "targets": [],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "LGBieIm",
+              "label": "Jetpacks (Ambush, Flying)",
+              "cost": 65,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Jetpacks",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Ambush"
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Flying"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "VTysuTe",
+          "label": "Upgrade one model with one",
+          "variant": "Upgrade",
+          "affects": "One",
+          "targets": [],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "xiu4bVs",
+              "label": "Attack Drone (Drone Laser Gun (18\u0022, A1, Limited, Tear))",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Drone Laser Gun",
+                  "quantity": 1,
+                  "rangeInches": 18,
+                  "attacks": 1,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Limited"
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Tear"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Attack Drone",
+                  "quantity": 1,
+                  "rules": []
+                }
+              ],
+              "modelsGained": 0
+            },
+            {
+              "id": "LA6wLd5",
+              "label": "Energy Drone (Ignores Cover Aura)",
+              "cost": 0,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Energy Drone",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Ignores Cover Aura"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            },
+            {
+              "id": "US-KuV2",
+              "label": "Shield Drone (Stealth Aura)",
+              "cost": 45,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Shield Drone",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Stealth Aura"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "bRXq7hb",
+          "label": "Upgrade one model with",
+          "variant": "Upgrade",
+          "affects": "One",
+          "targets": [],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "8_8b0uLdkr",
+              "label": "Honor-Bound (Vengeance)",
+              "cost": 15,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Honor-Bound",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Vengeance"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "e54b888",
+      "name": "Cyber-Bird Swarms",
+      "quality": 5,
+      "defense": 6,
+      "baseModelCount": 3,
+      "minModels": 3,
+      "maxModels": 3,
+      "basePointCost": 95,
+      "base": {
+        "shape": "Circle",
+        "diameterInches": 1.5748031,
+        "widthInches": 0.984252,
+        "heightInches": 1.968504
+      },
+      "weapons": [
+        {
+          "name": "Swarm Attacks",
+          "quantity": 3,
+          "rangeInches": 0,
+          "attacks": 3,
+          "armorPenetration": 0,
+          "specialRules": [
+            {
+              "kind": "core",
+              "name": "Rending"
+            }
+          ]
+        }
+      ],
+      "rules": [
+        {
+          "kind": "core",
+          "name": "Flying"
+        },
+        {
+          "kind": "coreNumeric",
+          "name": "Tough",
+          "numericValue": 3
+        },
+        {
+          "kind": "core",
+          "name": "Clan Warrior"
+        }
+      ],
+      "items": [],
+      "sections": [
+        {
+          "id": "C3HsWGu",
+          "label": "Upgrade all models with one",
+          "variant": "Upgrade",
+          "affects": "All",
+          "targets": [],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "8pkC9NI3fY",
+              "label": "Vanguard Hunt Master (Scout)",
+              "cost": 15,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Vanguard Hunt Master",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Scout"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            },
+            {
+              "id": "EE3I2k_",
+              "label": "Combat Hunt Master (Unpredictable Fighter)",
+              "cost": 15,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Combat Hunt Master",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Unpredictable Fighter"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "6LpK3Hi",
+      "name": "Cyber Lizards",
+      "quality": 4,
+      "defense": 4,
+      "baseModelCount": 5,
+      "minModels": 5,
+      "maxModels": 5,
+      "basePointCost": 85,
+      "base": {
+        "shape": "Rectangle",
+        "diameterInches": 1.1023622,
+        "widthInches": 1.3779528,
+        "heightInches": 2.3622048
+      },
+      "weapons": [
+        {
+          "name": "Toxin Claws",
+          "quantity": 5,
+          "rangeInches": 0,
+          "attacks": 2,
+          "armorPenetration": 0,
+          "specialRules": [
+            {
+              "kind": "core",
+              "name": "Bane"
+            }
+          ]
+        }
+      ],
+      "rules": [
+        {
+          "kind": "core",
+          "name": "Strider"
+        },
+        {
+          "kind": "core",
+          "name": "Clan Warrior"
+        }
+      ],
+      "items": [],
+      "sections": [
+        {
+          "id": "C3HsWGu",
+          "label": "Upgrade all models with one",
+          "variant": "Upgrade",
+          "affects": "All",
+          "targets": [],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "8pkC9NI3fY",
+              "label": "Vanguard Hunt Master (Scout)",
+              "cost": 15,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Vanguard Hunt Master",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Scout"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            },
+            {
+              "id": "EE3I2k_",
+              "label": "Combat Hunt Master (Unpredictable Fighter)",
+              "cost": 20,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Combat Hunt Master",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Unpredictable Fighter"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "OaKZu-Y",
+      "name": "Cyber Beast",
+      "quality": 3,
+      "defense": 4,
+      "baseModelCount": 1,
+      "minModels": 1,
+      "maxModels": 1,
+      "basePointCost": 95,
+      "base": {
+        "shape": "Circle",
+        "diameterInches": 1.968504,
+        "widthInches": 0.984252,
+        "heightInches": 1.968504
+      },
+      "weapons": [
+        {
+          "name": "Heavy Fist",
+          "quantity": 1,
+          "rangeInches": 0,
+          "attacks": 6,
+          "armorPenetration": 1,
+          "specialRules": []
+        }
+      ],
+      "rules": [
+        {
+          "kind": "core",
+          "name": "Furious"
+        },
+        {
+          "kind": "coreNumeric",
+          "name": "Tough",
+          "numericValue": 6
+        },
+        {
+          "kind": "core",
+          "name": "Clan Warrior"
+        }
+      ],
+      "items": [],
+      "sections": [
+        {
+          "id": "C3HsWGu",
+          "label": "Upgrade all models with one",
+          "variant": "Upgrade",
+          "affects": "All",
+          "targets": [],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "8pkC9NI3fY",
+              "label": "Vanguard Hunt Master (Scout)",
+              "cost": 20,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Vanguard Hunt Master",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Scout"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            },
+            {
+              "id": "EE3I2k_",
+              "label": "Combat Hunt Master (Unpredictable Fighter)",
+              "cost": 20,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Combat Hunt Master",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Unpredictable Fighter"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "oIvvEaL",
+      "name": "Dynasty APC",
+      "quality": 4,
+      "defense": 2,
+      "baseModelCount": 1,
+      "minModels": 1,
+      "maxModels": 1,
+      "basePointCost": 180,
+      "base": {
+        "shape": "Rectangle",
+        "diameterInches": 1.1023622,
+        "widthInches": 2.047244,
+        "heightInches": 3.543307
+      },
+      "weapons": [
+        {
+          "name": "Heavy Flamer",
+          "quantity": 1,
+          "rangeInches": 12,
+          "attacks": 1,
+          "armorPenetration": 1,
+          "specialRules": [
+            {
+              "kind": "coreNumeric",
+              "name": "Blast",
+              "numericValue": 3
+            },
+            {
+              "kind": "core",
+              "name": "Reliable"
+            }
+          ]
+        }
+      ],
+      "rules": [
+        {
+          "kind": "core",
+          "name": "Fast"
+        },
+        {
+          "kind": "core",
+          "name": "Strider"
+        },
+        {
+          "kind": "coreNumeric",
+          "name": "Tough",
+          "numericValue": 6
+        },
+        {
+          "kind": "coreNumeric",
+          "name": "Impact",
+          "numericValue": 3
+        },
+        {
+          "kind": "coreNumeric",
+          "name": "Transport",
+          "numericValue": 11
+        },
+        {
+          "kind": "core",
+          "name": "Clan Warrior"
+        }
+      ],
+      "items": [],
+      "sections": [
+        {
+          "id": "kqKYIyi",
+          "label": "Replace Heavy Flamer",
+          "variant": "Replace",
+          "affects": "One",
+          "targets": [
+            "Heavy Flamer"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "vaMM5",
+              "label": "Heavy Auto-Gun (18\u0022, A4, Rending)",
+              "cost": 10,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Heavy Auto-Gun",
+                  "quantity": 1,
+                  "rangeInches": 18,
+                  "attacks": 4,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Rending"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "Mc0hP-F",
+              "label": "Heavy Laser Gun (24\u0022, A1, Deadly(3), Tear)",
+              "cost": 15,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Heavy Laser Gun",
+                  "quantity": 1,
+                  "rangeInches": 24,
+                  "attacks": 1,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Deadly",
+                      "numericValue": 3
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Tear"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "MTUdB9s",
+      "name": "Dynasty Tank",
+      "quality": 4,
+      "defense": 2,
+      "baseModelCount": 1,
+      "minModels": 1,
+      "maxModels": 1,
+      "basePointCost": 380,
+      "base": {
+        "shape": "Rectangle",
+        "diameterInches": 1.1023622,
+        "widthInches": 3.6220472,
+        "heightInches": 4.7244096
+      },
+      "weapons": [
+        {
+          "name": "Artillery Gun",
+          "quantity": 1,
+          "rangeInches": 24,
+          "attacks": 4,
+          "armorPenetration": 0,
+          "specialRules": [
+            {
+              "kind": "coreNumeric",
+              "name": "Blast",
+              "numericValue": 3
+            },
+            {
+              "kind": "core",
+              "name": "Indirect"
+            }
+          ]
+        },
+        {
+          "name": "Heavy Flamer",
+          "quantity": 1,
+          "rangeInches": 12,
+          "attacks": 1,
+          "armorPenetration": 1,
+          "specialRules": [
+            {
+              "kind": "coreNumeric",
+              "name": "Blast",
+              "numericValue": 3
+            },
+            {
+              "kind": "core",
+              "name": "Reliable"
+            }
+          ]
+        }
+      ],
+      "rules": [
+        {
+          "kind": "core",
+          "name": "Fast"
+        },
+        {
+          "kind": "core",
+          "name": "Strider"
+        },
+        {
+          "kind": "coreNumeric",
+          "name": "Tough",
+          "numericValue": 12
+        },
+        {
+          "kind": "coreNumeric",
+          "name": "Impact",
+          "numericValue": 6
+        },
+        {
+          "kind": "core",
+          "name": "Clan Warrior"
+        }
+      ],
+      "items": [],
+      "sections": [
+        {
+          "id": "kqKYIyi",
+          "label": "Replace Heavy Flamer",
+          "variant": "Replace",
+          "affects": "One",
+          "targets": [
+            "Heavy Flamer"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "vaMM5",
+              "label": "Heavy Auto-Gun (18\u0022, A4, Rending)",
+              "cost": 10,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Heavy Auto-Gun",
+                  "quantity": 1,
+                  "rangeInches": 18,
+                  "attacks": 4,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Rending"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "Mc0hP-F",
+              "label": "Heavy Laser Gun (24\u0022, A1, Deadly(3), Tear)",
+              "cost": 15,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Heavy Laser Gun",
+                  "quantity": 1,
+                  "rangeInches": 24,
+                  "attacks": 1,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Deadly",
+                      "numericValue": 3
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Tear"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "VFgCCPq",
+          "label": "Replace Artillery Gun",
+          "variant": "Replace",
+          "affects": "One",
+          "targets": [
+            "Artillery Gun"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "aoQXmlE",
+              "label": "Heavy Anti-Tank Cannon (30\u0022, A2, AP(3), Deadly(6))",
+              "cost": 55,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Heavy Anti-Tank Cannon",
+                  "quantity": 1,
+                  "rangeInches": 30,
+                  "attacks": 2,
+                  "armorPenetration": 3,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Deadly",
+                      "numericValue": 6
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "lMuE5Ho",
+              "label": "Heavy Battle Cannon (30\u0022, A4, AP(2), Blast(3))",
+              "cost": 60,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Heavy Battle Cannon",
+                  "quantity": 1,
+                  "rangeInches": 30,
+                  "attacks": 4,
+                  "armorPenetration": 2,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Blast",
+                      "numericValue": 3
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "wuxvn5i",
+              "label": "Heavy Autocannon (36\u0022, A9, AP(2))",
+              "cost": 70,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Heavy Autocannon",
+                  "quantity": 1,
+                  "rangeInches": 36,
+                  "attacks": 9,
+                  "armorPenetration": 2,
+                  "specialRules": []
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "cu0eIWL",
+      "name": "Dragon Speeder",
+      "quality": 4,
+      "defense": 2,
+      "baseModelCount": 1,
+      "minModels": 1,
+      "maxModels": 1,
+      "basePointCost": 190,
+      "base": {
+        "shape": "Rectangle",
+        "diameterInches": 1.1023622,
+        "widthInches": 2.7559056,
+        "heightInches": 4.133858
+      },
+      "weapons": [
+        {
+          "name": "Hull Auto-Gun",
+          "quantity": 1,
+          "rangeInches": 18,
+          "attacks": 2,
+          "armorPenetration": 0,
+          "specialRules": [
+            {
+              "kind": "core",
+              "name": "Rending"
+            }
+          ]
+        },
+        {
+          "name": "Twin Burst Laser Gun",
+          "quantity": 1,
+          "rangeInches": 18,
+          "attacks": 4,
+          "armorPenetration": 0,
+          "specialRules": [
+            {
+              "kind": "core",
+              "name": "Tear"
+            }
+          ]
+        }
+      ],
+      "rules": [
+        {
+          "kind": "core",
+          "name": "Fast"
+        },
+        {
+          "kind": "core",
+          "name": "Strider"
+        },
+        {
+          "kind": "coreNumeric",
+          "name": "Tough",
+          "numericValue": 6
+        },
+        {
+          "kind": "coreNumeric",
+          "name": "Impact",
+          "numericValue": 3
+        },
+        {
+          "kind": "core",
+          "name": "Clan Warrior"
+        }
+      ],
+      "items": [],
+      "sections": [
+        {
+          "id": "Mgak2ND",
+          "label": "Replace Twin Burst Laser Gun",
+          "variant": "Replace",
+          "affects": "One",
+          "targets": [
+            "Twin Burst Laser Gun"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "uw5E9tU",
+              "label": "Twin Heavy Laser Gun (24\u0022, A2, Deadly(3), Tear)",
+              "cost": 35,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Twin Heavy Laser Gun",
+                  "quantity": 1,
+                  "rangeInches": 24,
+                  "attacks": 2,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Deadly",
+                      "numericValue": 3
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Tear"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "vauKPWv",
+          "label": "Replace Hull Auto-Gun",
+          "variant": "Replace",
+          "affects": "One",
+          "targets": [
+            "Hull Auto-Gun"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "roYJO",
+              "label": "Hull Flamer (12\u0022, A2, AP(1), Reliable)",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Hull Flamer",
+                  "quantity": 1,
+                  "rangeInches": 12,
+                  "attacks": 2,
+                  "armorPenetration": 1,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Reliable"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "tLIt4",
+              "label": "Hull Laser Gun (24\u0022, A2, Tear)",
+              "cost": 15,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Hull Laser Gun",
+                  "quantity": 1,
+                  "rangeInches": 24,
+                  "attacks": 2,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Tear"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "pGBiXQk",
+          "label": "Upgrade with",
+          "variant": "Upgrade",
+          "affects": "One",
+          "targets": [],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "SOrxHcd-",
+              "label": "Targeting Beam (Increased Shooting Range Mark)",
+              "cost": 35,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Targeting Beam",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Increased Shooting Range Mark"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "0ql6EX3",
+      "name": "Ninja Walker",
+      "quality": 3,
+      "defense": 2,
+      "baseModelCount": 1,
+      "minModels": 1,
+      "maxModels": 1,
+      "basePointCost": 335,
+      "base": {
+        "shape": "Circle",
+        "diameterInches": 2.3622048,
+        "widthInches": 0.984252,
+        "heightInches": 1.968504
+      },
+      "weapons": [
+        {
+          "name": "Heavy Burst Auto-Gun",
+          "quantity": 1,
+          "rangeInches": 18,
+          "attacks": 8,
+          "armorPenetration": 0,
+          "specialRules": [
+            {
+              "kind": "core",
+              "name": "Rending"
+            }
+          ]
+        },
+        {
+          "name": "Rope-Sickle",
+          "quantity": 1,
+          "rangeInches": 12,
+          "attacks": 1,
+          "armorPenetration": 0,
+          "specialRules": [
+            {
+              "kind": "coreNumeric",
+              "name": "Deadly",
+              "numericValue": 3
+            }
+          ]
+        },
+        {
+          "name": "Stomp",
+          "quantity": 1,
+          "rangeInches": 0,
+          "attacks": 4,
+          "armorPenetration": 1,
+          "specialRules": []
+        }
+      ],
+      "rules": [
+        {
+          "kind": "core",
+          "name": "Ambush"
+        },
+        {
+          "kind": "coreNumeric",
+          "name": "Fear",
+          "numericValue": 2
+        },
+        {
+          "kind": "core",
+          "name": "Stealth"
+        },
+        {
+          "kind": "coreNumeric",
+          "name": "Tough",
+          "numericValue": 9
+        },
+        {
+          "kind": "core",
+          "name": "Clan Warrior"
+        }
+      ],
+      "items": [],
+      "sections": [
+        {
+          "id": "FEK8bCk",
+          "label": "Replace Heavy Burst Auto-Gun",
+          "variant": "Replace",
+          "affects": "One",
+          "targets": [
+            "Heavy Burst Auto-Gun"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "-urYOJ3",
+              "label": "Sword-Laser (12\u0022, A4, Tear), Heavy Sword (A6, AP(1), Rending)",
+              "cost": 15,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Sword-Laser",
+                  "quantity": 1,
+                  "rangeInches": 12,
+                  "attacks": 4,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Tear"
+                    }
+                  ]
+                },
+                {
+                  "name": "Heavy Sword",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 6,
+                  "armorPenetration": 1,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Rending"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "yKO2VZq",
+          "label": "Replace Rope-Sickle",
+          "variant": "Replace",
+          "affects": "One",
+          "targets": [
+            "Rope-Sickle"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "nBT_j8z",
+              "label": "Rope-Blade (12\u0022, A4, Rending)",
+              "cost": 20,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Rope-Blade",
+                  "quantity": 1,
+                  "rangeInches": 12,
+                  "attacks": 4,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Rending"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "HsG3fFc",
+              "label": "Displacement Pack (Teleport)",
+              "cost": 40,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Displacement Pack",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Teleport"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "pGBiXQk",
+          "label": "Upgrade with",
+          "variant": "Upgrade",
+          "affects": "One",
+          "targets": [],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "SOrxHcd-",
+              "label": "Targeting Beam (Increased Shooting Range Mark)",
+              "cost": 35,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Targeting Beam",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Increased Shooting Range Mark"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "aGmn975",
+      "name": "ONI Walker",
+      "quality": 3,
+      "defense": 2,
+      "baseModelCount": 1,
+      "minModels": 1,
+      "maxModels": 1,
+      "basePointCost": 335,
+      "base": {
+        "shape": "Circle",
+        "diameterInches": 2.3622048,
+        "widthInches": 0.984252,
+        "heightInches": 1.968504
+      },
+      "weapons": [
+        {
+          "name": "Heavy Flamethrower",
+          "quantity": 1,
+          "rangeInches": 12,
+          "attacks": 4,
+          "armorPenetration": 1,
+          "specialRules": [
+            {
+              "kind": "coreNumeric",
+              "name": "Blast",
+              "numericValue": 3
+            },
+            {
+              "kind": "core",
+              "name": "Reliable"
+            }
+          ]
+        },
+        {
+          "name": "Stomp",
+          "quantity": 1,
+          "rangeInches": 0,
+          "attacks": 4,
+          "armorPenetration": 1,
+          "specialRules": []
+        }
+      ],
+      "rules": [
+        {
+          "kind": "coreNumeric",
+          "name": "Fear",
+          "numericValue": 2
+        },
+        {
+          "kind": "coreNumeric",
+          "name": "Tough",
+          "numericValue": 12
+        },
+        {
+          "kind": "core",
+          "name": "Clan Warrior"
+        }
+      ],
+      "items": [],
+      "sections": [
+        {
+          "id": "iSIV2ie",
+          "label": "Replace Heavy Flamethrower",
+          "variant": "Replace",
+          "affects": "One",
+          "targets": [
+            "Heavy Flamethrower"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "__gmQ",
+              "label": "Rocket Launcher (24\u0022, A4, Blast(3), Indirect)",
+              "cost": 20,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Rocket Launcher",
+                  "quantity": 1,
+                  "rangeInches": 24,
+                  "attacks": 4,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Blast",
+                      "numericValue": 3
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Indirect"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "o_6YXlG",
+              "label": "Heavy Blast Cannon (24\u0022, A4, AP(2), Blast(3))",
+              "cost": 80,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Heavy Blast Cannon",
+                  "quantity": 1,
+                  "rangeInches": 24,
+                  "attacks": 4,
+                  "armorPenetration": 2,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Blast",
+                      "numericValue": 3
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "F1ATleg",
+              "label": "Heavy Strike Cannon (30\u0022, A2, AP(3), Deadly(6))",
+              "cost": 95,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Heavy Strike Cannon",
+                  "quantity": 1,
+                  "rangeInches": 30,
+                  "attacks": 2,
+                  "armorPenetration": 3,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Deadly",
+                      "numericValue": 6
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "kACjT",
+              "label": "Missile Launcher (30\u0022, A8, AP(3), Unstoppable)",
+              "cost": 115,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Missile Launcher",
+                  "quantity": 1,
+                  "rangeInches": 30,
+                  "attacks": 8,
+                  "armorPenetration": 3,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Unstoppable"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "NFeE0RQ",
+          "label": "Upgrade with one",
+          "variant": "Upgrade",
+          "affects": "One",
+          "targets": [],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "--fyg35",
+              "label": "Attack Drone (Laser Gun (18\u0022, A1, Tear))",
+              "cost": 15,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Laser Gun",
+                  "quantity": 1,
+                  "rangeInches": 18,
+                  "attacks": 1,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Tear"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Attack Drone",
+                  "quantity": 1,
+                  "rules": []
+                }
+              ],
+              "modelsGained": 0
+            },
+            {
+              "id": "dkLZM3_",
+              "label": "Shield Drone (Stealth)",
+              "cost": 30,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Shield Drone",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Stealth"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "O1HU74Z",
+      "name": "Samurai Titan",
+      "quality": 3,
+      "defense": 2,
+      "baseModelCount": 1,
+      "minModels": 1,
+      "maxModels": 1,
+      "basePointCost": 560,
+      "base": {
+        "shape": "Rectangle",
+        "diameterInches": 1.1023622,
+        "widthInches": 3.6220472,
+        "heightInches": 4.7244096
+      },
+      "weapons": [
+        {
+          "name": "Heavy Titan Sword",
+          "quantity": 1,
+          "rangeInches": 0,
+          "attacks": 12,
+          "armorPenetration": 2,
+          "specialRules": [
+            {
+              "kind": "core",
+              "name": "Rending"
+            }
+          ]
+        },
+        {
+          "name": "Stomp",
+          "quantity": 1,
+          "rangeInches": 0,
+          "attacks": 6,
+          "armorPenetration": 2,
+          "specialRules": []
+        }
+      ],
+      "rules": [
+        {
+          "kind": "coreNumeric",
+          "name": "Fear",
+          "numericValue": 3
+        },
+        {
+          "kind": "coreNumeric",
+          "name": "Tough",
+          "numericValue": 18
+        },
+        {
+          "kind": "core",
+          "name": "Fearless"
+        },
+        {
+          "kind": "core",
+          "name": "Clan Warrior"
+        }
+      ],
+      "items": [],
+      "sections": [
+        {
+          "id": "uFuDP74",
+          "label": "Replace Heavy Titan Sword",
+          "variant": "Replace",
+          "affects": "One",
+          "targets": [
+            "Heavy Titan Sword"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "E27jCOs",
+              "label": "Titan Heavy Laser Rifle (24\u0022, A4, Deadly(3), Tear)",
+              "cost": 85,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Titan Heavy Laser Rifle",
+                  "quantity": 1,
+                  "rangeInches": 24,
+                  "attacks": 4,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Deadly",
+                      "numericValue": 3
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Tear"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "UEt81Wo",
+              "label": "Titan Heavy Plasma Rifle (24\u0022, A4, AP(4), Blast(3))",
+              "cost": 135,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Titan Heavy Plasma Rifle",
+                  "quantity": 1,
+                  "rangeInches": 24,
+                  "attacks": 4,
+                  "armorPenetration": 4,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Blast",
+                      "numericValue": 3
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "QNj4c6l",
+              "label": "Titan Heavy Shred Rifle (24\u0022, A18, Rending)",
+              "cost": 135,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Titan Heavy Shred Rifle",
+                  "quantity": 1,
+                  "rangeInches": 24,
+                  "attacks": 18,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Rending"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "fAzHpKC",
+          "label": "Upgrade with",
+          "variant": "Upgrade",
+          "affects": "One",
+          "targets": [],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "t8BChtR",
+              "label": "Force Field (Stealth)",
+              "cost": 45,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Force Field",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Stealth"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "5deb40E",
+      "name": "Macaque Titan",
+      "quality": 3,
+      "defense": 2,
+      "baseModelCount": 1,
+      "minModels": 1,
+      "maxModels": 1,
+      "basePointCost": 725,
+      "base": {
+        "shape": "Rectangle",
+        "diameterInches": 1.1023622,
+        "widthInches": 4.8031497,
+        "heightInches": 6.2992125
+      },
+      "weapons": [
+        {
+          "name": "Stomp",
+          "quantity": 1,
+          "rangeInches": 0,
+          "attacks": 6,
+          "armorPenetration": 2,
+          "specialRules": []
+        },
+        {
+          "name": "Titan Fists",
+          "quantity": 1,
+          "rangeInches": 0,
+          "attacks": 12,
+          "armorPenetration": 4,
+          "specialRules": []
+        }
+      ],
+      "rules": [
+        {
+          "kind": "core",
+          "name": "Bounding"
+        },
+        {
+          "kind": "coreNumeric",
+          "name": "Fear",
+          "numericValue": 3
+        },
+        {
+          "kind": "core",
+          "name": "Fearless"
+        },
+        {
+          "kind": "core",
+          "name": "Furious"
+        },
+        {
+          "kind": "core",
+          "name": "Strider"
+        },
+        {
+          "kind": "coreNumeric",
+          "name": "Tough",
+          "numericValue": 18
+        },
+        {
+          "kind": "core",
+          "name": "Clan Warrior"
+        }
+      ],
+      "items": [],
+      "sections": []
+    },
+    {
+      "id": "XHJ8f1_",
+      "name": "Dragon Titan",
+      "quality": 3,
+      "defense": 2,
+      "baseModelCount": 1,
+      "minModels": 1,
+      "maxModels": 1,
+      "basePointCost": 865,
+      "base": {
+        "shape": "Rectangle",
+        "diameterInches": 1.1023622,
+        "widthInches": 4.8031497,
+        "heightInches": 6.2992125
+      },
+      "weapons": [
+        {
+          "name": "Fire Torrent",
+          "quantity": 1,
+          "rangeInches": 18,
+          "attacks": 3,
+          "armorPenetration": 1,
+          "specialRules": [
+            {
+              "kind": "coreNumeric",
+              "name": "Blast",
+              "numericValue": 3
+            },
+            {
+              "kind": "core",
+              "name": "Reliable"
+            }
+          ]
+        },
+        {
+          "name": "Dragon Strike",
+          "quantity": 1,
+          "rangeInches": 0,
+          "attacks": 12,
+          "armorPenetration": 0,
+          "specialRules": [
+            {
+              "kind": "core",
+              "name": "Rending"
+            }
+          ]
+        },
+        {
+          "name": "Stomp",
+          "quantity": 1,
+          "rangeInches": 0,
+          "attacks": 6,
+          "armorPenetration": 2,
+          "specialRules": []
+        }
+      ],
+      "rules": [
+        {
+          "kind": "coreNumeric",
+          "name": "Caster",
+          "numericValue": 4
+        },
+        {
+          "kind": "coreNumeric",
+          "name": "Fear",
+          "numericValue": 3
+        },
+        {
+          "kind": "core",
+          "name": "Fearless"
+        },
+        {
+          "kind": "core",
+          "name": "Flying"
+        },
+        {
+          "kind": "core",
+          "name": "Regeneration"
+        },
+        {
+          "kind": "coreNumeric",
+          "name": "Tough",
+          "numericValue": 18
+        },
+        {
+          "kind": "core",
+          "name": "Clan Warrior"
+        }
+      ],
+      "items": [],
+      "sections": []
+    },
+    {
+      "id": "hWQCHhE",
+      "name": "Artillery Titan",
+      "quality": 3,
+      "defense": 2,
+      "baseModelCount": 1,
+      "minModels": 1,
+      "maxModels": 1,
+      "basePointCost": 750,
+      "base": {
+        "shape": "Rectangle",
+        "diameterInches": 1.1023622,
+        "widthInches": 4.8031497,
+        "heightInches": 6.2992125
+      },
+      "weapons": [
+        {
+          "name": "Guided Missiles",
+          "quantity": 1,
+          "rangeInches": 30,
+          "attacks": 1,
+          "armorPenetration": 2,
+          "specialRules": [
+            {
+              "kind": "coreNumeric",
+              "name": "Deadly",
+              "numericValue": 6
+            },
+            {
+              "kind": "core",
+              "name": "Unstoppable"
+            }
+          ]
+        },
+        {
+          "name": "Titan Blast Cannon",
+          "quantity": 1,
+          "rangeInches": 30,
+          "attacks": 2,
+          "armorPenetration": 2,
+          "specialRules": [
+            {
+              "kind": "coreNumeric",
+              "name": "Blast",
+              "numericValue": 6
+            },
+            {
+              "kind": "core",
+              "name": "Indirect"
+            }
+          ]
+        },
+        {
+          "name": "Rocket Pod",
+          "quantity": 1,
+          "rangeInches": 24,
+          "attacks": 2,
+          "armorPenetration": 0,
+          "specialRules": [
+            {
+              "kind": "coreNumeric",
+              "name": "Blast",
+              "numericValue": 3
+            },
+            {
+              "kind": "core",
+              "name": "Indirect"
+            }
+          ]
+        },
+        {
+          "name": "Stomp",
+          "quantity": 1,
+          "rangeInches": 0,
+          "attacks": 6,
+          "armorPenetration": 2,
+          "specialRules": []
+        }
+      ],
+      "rules": [
+        {
+          "kind": "coreNumeric",
+          "name": "Fear",
+          "numericValue": 3
+        },
+        {
+          "kind": "core",
+          "name": "Fearless"
+        },
+        {
+          "kind": "core",
+          "name": "Slow"
+        },
+        {
+          "kind": "coreNumeric",
+          "name": "Tough",
+          "numericValue": 18
+        },
+        {
+          "kind": "core",
+          "name": "Clan Warrior"
+        }
+      ],
+      "items": [],
+      "sections": [
+        {
+          "id": "BXwJmKS",
+          "label": "Replace Titan Blast Cannon",
+          "variant": "Replace",
+          "affects": "One",
+          "targets": [
+            "Titan Blast Cannon"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "yhcXM6Q",
+              "label": "Titan Strike Cannon (36\u0022, A2, AP(3), Deadly(6))",
+              "cost": 20,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Titan Strike Cannon",
+                  "quantity": 1,
+                  "rangeInches": 36,
+                  "attacks": 2,
+                  "armorPenetration": 3,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Deadly",
+                      "numericValue": 6
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "9rxuU5v",
+          "label": "Replace Rocket Pod",
+          "variant": "Replace",
+          "affects": "One",
+          "targets": [
+            "Rocket Pod"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "cxVw9Ds",
+              "label": "Missile Pod (30\u0022, A4, AP(3), Unstoppable)",
+              "cost": 45,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Missile Pod",
+                  "quantity": 1,
+                  "rangeInches": 30,
+                  "attacks": 4,
+                  "armorPenetration": 3,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Unstoppable"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Amkoitz",
+      "name": "Captain WuKaon",
+      "quality": 3,
+      "defense": 3,
+      "baseModelCount": 1,
+      "minModels": 1,
+      "maxModels": 1,
+      "basePointCost": 185,
+      "base": {
+        "shape": "Circle",
+        "diameterInches": 1.968504,
+        "widthInches": 0.984252,
+        "heightInches": 1.968504
+      },
+      "weapons": [
+        {
+          "name": "The Banded-Stave",
+          "quantity": 1,
+          "rangeInches": 0,
+          "attacks": 8,
+          "armorPenetration": 1,
+          "specialRules": [
+            {
+              "kind": "core",
+              "name": "Shred"
+            }
+          ]
+        }
+      ],
+      "rules": [
+        {
+          "kind": "core",
+          "name": "Bounding"
+        },
+        {
+          "kind": "core",
+          "name": "Furious"
+        },
+        {
+          "kind": "core",
+          "name": "Hero"
+        },
+        {
+          "kind": "coreNumeric",
+          "name": "Tough",
+          "numericValue": 6
+        },
+        {
+          "kind": "core",
+          "name": "Unique"
+        },
+        {
+          "kind": "core",
+          "name": "Clan Warrior"
+        }
+      ],
+      "items": [
+        {
+          "name": "Saryu Armour",
+          "quantity": 1,
+          "rules": [
+            {
+              "kind": "core",
+              "name": "Fortified"
+            }
+          ]
+        }
+      ],
+      "sections": []
+    },
+    {
+      "id": "UkOaKOI",
+      "name": "Syen \u0026 Xaotyan",
+      "quality": 4,
+      "defense": 4,
+      "baseModelCount": 1,
+      "minModels": 1,
+      "maxModels": 1,
+      "basePointCost": 125,
+      "base": {
+        "shape": "Rectangle",
+        "diameterInches": 1.1023622,
+        "widthInches": 1.8110236,
+        "heightInches": 2.952756
+      },
+      "weapons": [
+        {
+          "name": "Stun Staff",
+          "quantity": 1,
+          "rangeInches": 0,
+          "attacks": 3,
+          "armorPenetration": 0,
+          "specialRules": [
+            {
+              "kind": "core",
+              "name": "Surge"
+            }
+          ]
+        }
+      ],
+      "rules": [
+        {
+          "kind": "core",
+          "name": "Hero"
+        },
+        {
+          "kind": "core",
+          "name": "Scout"
+        },
+        {
+          "kind": "core",
+          "name": "Stealth"
+        },
+        {
+          "kind": "core",
+          "name": "Strider"
+        },
+        {
+          "kind": "coreNumeric",
+          "name": "Tough",
+          "numericValue": 3
+        },
+        {
+          "kind": "core",
+          "name": "Unique"
+        },
+        {
+          "kind": "core",
+          "name": "Clan Warrior"
+        }
+      ],
+      "items": [
+        {
+          "name": "Xaotyan",
+          "quantity": 1,
+          "rules": [
+            {
+              "kind": "coreNumeric",
+              "name": "Tough",
+              "numericValue": 3
+            }
+          ]
+        }
+      ],
+      "sections": []
+    },
+    {
+      "id": "5G92a0s",
+      "name": "Commander Xao",
+      "quality": 3,
+      "defense": 4,
+      "baseModelCount": 1,
+      "minModels": 1,
+      "maxModels": 1,
+      "basePointCost": 110,
+      "base": {
+        "shape": "Circle",
+        "diameterInches": 0.984252,
+        "widthInches": 0.984252,
+        "heightInches": 1.968504
+      },
+      "weapons": [
+        {
+          "name": "Dual Royal Swords",
+          "quantity": 1,
+          "rangeInches": 0,
+          "attacks": 4,
+          "armorPenetration": 1,
+          "specialRules": [
+            {
+              "kind": "core",
+              "name": "Rending"
+            }
+          ]
+        }
+      ],
+      "rules": [
+        {
+          "kind": "core",
+          "name": "Hero"
+        },
+        {
+          "kind": "coreNumeric",
+          "name": "Tough",
+          "numericValue": 3
+        },
+        {
+          "kind": "core",
+          "name": "Unique"
+        },
+        {
+          "kind": "core",
+          "name": "Clan Warrior"
+        },
+        {
+          "kind": "core",
+          "name": "Regeneration"
+        }
+      ],
+      "items": [
+        {
+          "name": "Dynastic Banner",
+          "quantity": 1,
+          "rules": [
+            {
+              "kind": "core",
+              "name": "Precision Fighter Aura"
+            }
+          ]
+        },
+        {
+          "name": "Myushu992",
+          "quantity": 1,
+          "rules": [
+            {
+              "kind": "core",
+              "name": "Repel Ambushers"
+            }
+          ]
+        }
+      ],
+      "sections": []
+    },
+    {
+      "id": "EjXfUOe",
+      "name": "Captain Lyao",
+      "quality": 3,
+      "defense": 4,
+      "baseModelCount": 1,
+      "minModels": 1,
+      "maxModels": 1,
+      "basePointCost": 105,
+      "base": {
+        "shape": "Circle",
+        "diameterInches": 0.984252,
+        "widthInches": 0.984252,
+        "heightInches": 1.968504
+      },
+      "weapons": [
+        {
+          "name": "Twin Shotgun",
+          "quantity": 1,
+          "rangeInches": 12,
+          "attacks": 4,
+          "armorPenetration": 1,
+          "specialRules": []
+        },
+        {
+          "name": "Ironbane Swords",
+          "quantity": 1,
+          "rangeInches": 0,
+          "attacks": 2,
+          "armorPenetration": 1,
+          "specialRules": [
+            {
+              "kind": "core",
+              "name": "Rending"
+            }
+          ]
+        }
+      ],
+      "rules": [
+        {
+          "kind": "core",
+          "name": "Hero"
+        },
+        {
+          "kind": "coreNumeric",
+          "name": "Tough",
+          "numericValue": 3
+        },
+        {
+          "kind": "core",
+          "name": "Unique"
+        },
+        {
+          "kind": "core",
+          "name": "Clan Warrior"
+        }
+      ],
+      "items": [
+        {
+          "name": "Seasoned Leader",
+          "quantity": 1,
+          "rules": [
+            {
+              "kind": "core",
+              "name": "Rapid Advance Aura"
+            }
+          ]
+        }
+      ],
+      "sections": []
+    },
+    {
+      "id": "uS-DM9n",
+      "name": "Sage Myan",
+      "quality": 4,
+      "defense": 4,
+      "baseModelCount": 1,
+      "minModels": 1,
+      "maxModels": 1,
+      "basePointCost": 100,
+      "base": {
+        "shape": "Circle",
+        "diameterInches": 1.5748031,
+        "widthInches": 0.984252,
+        "heightInches": 1.968504
+      },
+      "weapons": [
+        {
+          "name": "Spirit Blast",
+          "quantity": 1,
+          "rangeInches": 12,
+          "attacks": 1,
+          "armorPenetration": 0,
+          "specialRules": [
+            {
+              "kind": "coreNumeric",
+              "name": "Blast",
+              "numericValue": 3
+            }
+          ]
+        },
+        {
+          "name": "Spirit Pulse",
+          "quantity": 1,
+          "rangeInches": 0,
+          "attacks": 3,
+          "armorPenetration": 0,
+          "specialRules": []
+        }
+      ],
+      "rules": [
+        {
+          "kind": "coreNumeric",
+          "name": "Caster",
+          "numericValue": 1
+        },
+        {
+          "kind": "core",
+          "name": "Hero"
+        },
+        {
+          "kind": "coreNumeric",
+          "name": "Tough",
+          "numericValue": 3
+        },
+        {
+          "kind": "core",
+          "name": "Unique"
+        },
+        {
+          "kind": "core",
+          "name": "Clan Warrior"
+        }
+      ],
+      "items": [
+        {
+          "name": "Golden Avatar",
+          "quantity": 1,
+          "rules": [
+            {
+              "kind": "core",
+              "name": "Casting Buff"
+            }
+          ]
+        },
+        {
+          "name": "Laughing Sage",
+          "quantity": 1,
+          "rules": [
+            {
+              "kind": "core",
+              "name": "Melee Evasion Aura"
+            }
+          ]
+        }
+      ],
+      "sections": []
+    },
+    {
+      "id": "9fAeLEX",
+      "name": "Sergeant Wou",
+      "quality": 3,
+      "defense": 4,
+      "baseModelCount": 1,
+      "minModels": 1,
+      "maxModels": 1,
+      "basePointCost": 105,
+      "base": {
+        "shape": "Circle",
+        "diameterInches": 1.2598425,
+        "widthInches": 0.984252,
+        "heightInches": 1.968504
+      },
+      "weapons": [
+        {
+          "name": "Vine-Hook",
+          "quantity": 1,
+          "rangeInches": 9,
+          "attacks": 1,
+          "armorPenetration": 2,
+          "specialRules": [
+            {
+              "kind": "coreNumeric",
+              "name": "Deadly",
+              "numericValue": 3
+            },
+            {
+              "kind": "core",
+              "name": "Limited"
+            }
+          ]
+        },
+        {
+          "name": "Hwan Spear",
+          "quantity": 1,
+          "rangeInches": 0,
+          "attacks": 3,
+          "armorPenetration": 1,
+          "specialRules": [
+            {
+              "kind": "core",
+              "name": "Tear"
+            }
+          ]
+        }
+      ],
+      "rules": [
+        {
+          "kind": "core",
+          "name": "Ambush"
+        },
+        {
+          "kind": "core",
+          "name": "Hero"
+        },
+        {
+          "kind": "core",
+          "name": "Stealth"
+        },
+        {
+          "kind": "core",
+          "name": "Teleport"
+        },
+        {
+          "kind": "coreNumeric",
+          "name": "Tough",
+          "numericValue": 3
+        },
+        {
+          "kind": "core",
+          "name": "Unique"
+        },
+        {
+          "kind": "core",
+          "name": "Clan Warrior"
+        }
+      ],
+      "items": [],
+      "sections": []
+    }
+  ],
+  "ruleDefinitions": [
+    {
+      "name": "Unique",
+      "passive": [],
+      "activated": [],
+      "scope": "Unit",
+      "engineArgumentCount": 0,
+      "valence": "Neutral",
+      "description": "Your army may only include one copy of this unit."
+    },
+    {
+      "name": "Tear",
+      "passive": [
+        {
+          "hookID": "Shooting_OnHitRollComplete",
+          "condition": {
+            "kind": "targetMajorityHasTough",
+            "minToughValue": 9
+          },
+          "effect": {
+            "kind": "rollModifier",
+            "rollKind": "Save",
+            "delta": -4
+          },
+          "lifetime": "ThisAttack",
+          "seat": "Actor"
+        }
+      ],
+      "activated": [],
+      "scope": "Weapon",
+      "engineArgumentCount": 0,
+      "valence": "Positive",
+      "description": "Against units where most models have Tough 9\u002B, this weapon gets AP(\u002B4)."
+    },
+    {
+      "name": "Clan Warrior",
+      "passive": [
+        {
+          "hookID": "Shooting_OnHitRollComplete",
+          "condition": {
+            "kind": "unmodifiedRollEquals",
+            "dieValue": 6
+          },
+          "effect": {
+            "kind": "addExtraHit",
+            "onRollValue": 6,
+            "count": 1
+          },
+          "lifetime": "ThisAttack",
+          "seat": "Actor"
+        }
+      ],
+      "activated": [],
+      "scope": "Unit",
+      "engineArgumentCount": 0,
+      "valence": "Positive",
+      "description": "Each unmodified 6 to hit scores an extra hit."
+    },
+    {
+      "name": "Clan Warrior Boost",
+      "passive": [
+        {
+          "hookID": "Shooting_OnHitRollComplete",
+          "condition": {
+            "kind": "and",
+            "left": {
+              "kind": "unitHasRule",
+              "ruleName": "Clan Warrior"
+            },
+            "right": {
+              "kind": "unmodifiedRollEquals",
+              "dieValue": 5
+            }
+          },
+          "effect": {
+            "kind": "addExtraHit",
+            "onRollValue": 5,
+            "count": 1
+          },
+          "lifetime": "ThisAttack",
+          "seat": "Actor"
+        }
+      ],
+      "activated": [],
+      "scope": "Unit",
+      "engineArgumentCount": 0,
+      "valence": "Positive",
+      "description": "If this model has Clan Warrior, unmodified 5s or 6s to hit each score an extra hit (instead of only 6). The base rule already covers the 6s."
+    },
+    {
+      "name": "Clan Warrior Boost Aura",
+      "passive": [
+        {
+          "hookID": "Lifecycle_OnUnitCreated",
+          "condition": {
+            "kind": "always"
+          },
+          "effect": {
+            "kind": "aura",
+            "ruleName": "Clan Warrior Boost"
+          },
+          "lifetime": "UntilEndOfGame",
+          "seat": "Actor"
+        }
+      ],
+      "activated": [],
+      "scope": "Unit",
+      "engineArgumentCount": 0,
+      "valence": "Positive",
+      "description": "This model and its unit gain Clan Warrior Boost."
+    },
+    {
+      "name": "Precision Fighter Aura",
+      "passive": [
+        {
+          "hookID": "Lifecycle_OnUnitCreated",
+          "condition": {
+            "kind": "always"
+          },
+          "effect": {
+            "kind": "aura",
+            "ruleName": "Precision Fighter"
+          },
+          "lifetime": "UntilEndOfGame",
+          "seat": "Actor"
+        }
+      ],
+      "activated": [],
+      "scope": "Unit",
+      "engineArgumentCount": 0,
+      "valence": "Positive",
+      "description": "This model and its unit gain Precision Fighter."
+    },
+    {
+      "name": "Increased Shooting Range Mark",
+      "passive": [],
+      "activated": [
+        {
+          "triggerHook": "Activation_OnBeforeAttackAction",
+          "cost": {
+            "kind": "oncePerActivation"
+          },
+          "targetSelector": {
+            "rangeInches": 18,
+            "minCount": 1,
+            "maxCount": 1,
+            "targetAffinity": "Foe",
+            "requireLineOfSight": true,
+            "requiredToken": null,
+            "singleModel": false,
+            "requiredRule": null
+          },
+          "effect": {
+            "kind": "markTarget",
+            "ruleName": "Increased Shooting Range"
+          },
+          "availableWhen": {
+            "kind": "always"
+          },
+          "label": ""
+        }
+      ],
+      "scope": "Unit",
+      "engineArgumentCount": 0,
+      "valence": "Positive",
+      "description": "Once per activation, before attacking, pick one enemy unit within 18 inches in line of sight. The first friendly attack against it this activation gets Increased Shooting Range."
+    },
+    {
+      "name": "Ignores Cover Aura",
+      "passive": [
+        {
+          "hookID": "Lifecycle_OnUnitCreated",
+          "condition": {
+            "kind": "always"
+          },
+          "effect": {
+            "kind": "aura",
+            "ruleName": "Ignores Cover when Shooting"
+          },
+          "lifetime": "UntilEndOfGame",
+          "seat": "Actor"
+        }
+      ],
+      "activated": [],
+      "scope": "Unit",
+      "engineArgumentCount": 0,
+      "valence": "Positive",
+      "description": "This model and its unit gain Ignores Cover when Shooting."
+    },
+    {
+      "name": "Versatile Attack",
+      "passive": [],
+      "activated": [
+        {
+          "triggerHook": "Activation_OnActivationStart",
+          "cost": {
+            "kind": "oncePerActivation"
+          },
+          "targetSelector": {
+            "rangeInches": 0,
+            "minCount": 1,
+            "maxCount": 1,
+            "targetAffinity": "Self",
+            "requireLineOfSight": false,
+            "requiredToken": null,
+            "singleModel": false,
+            "requiredRule": null
+          },
+          "effect": {
+            "kind": "addRule",
+            "ruleName": "Versatile Attack (Piercing)",
+            "scope": "ThisActivation"
+          },
+          "availableWhen": {
+            "kind": "always"
+          },
+          "label": "AP(\u002B1)"
+        },
+        {
+          "triggerHook": "Activation_OnActivationStart",
+          "cost": {
+            "kind": "oncePerActivation"
+          },
+          "targetSelector": {
+            "rangeInches": 0,
+            "minCount": 1,
+            "maxCount": 1,
+            "targetAffinity": "Self",
+            "requireLineOfSight": false,
+            "requiredToken": null,
+            "singleModel": false,
+            "requiredRule": null
+          },
+          "effect": {
+            "kind": "addRule",
+            "ruleName": "Versatile Attack (Precision)",
+            "scope": "ThisActivation"
+          },
+          "availableWhen": {
+            "kind": "always"
+          },
+          "label": "\u002B1 to hit"
+        }
+      ],
+      "scope": "Unit",
+      "engineArgumentCount": 0,
+      "valence": "Positive",
+      "description": "When this unit is activated, pick one effect until the end of the activation: when shooting or charging enemies over 9 inches away, it gets either AP(\u002B1) or \u002B1 to hit rolls."
+    },
+    {
+      "name": "Bounding",
+      "passive": [
+        {
+          "hookID": "Activation_OnActivationStart",
+          "condition": {
+            "kind": "allModelsHaveThisRule"
+          },
+          "effect": {
+            "kind": "repositionAtActivation",
+            "distance": {
+              "kind": "d3"
+            },
+            "plusInches": 1
+          },
+          "lifetime": "ThisActivation",
+          "seat": "Actor"
+        }
+      ],
+      "activated": [],
+      "scope": "Unit",
+      "engineArgumentCount": 0,
+      "valence": "Positive",
+      "description": "When this unit is activated, it may place all its models anywhere fully within D3\u002B1 inches of their position."
+    },
+    {
+      "name": "Casting Buff",
+      "passive": [],
+      "activated": [
+        {
+          "triggerHook": "Activation_OnBeforeAttackAction",
+          "cost": {
+            "kind": "oncePerActivation"
+          },
+          "targetSelector": {
+            "rangeInches": 12,
+            "minCount": 1,
+            "maxCount": 1,
+            "targetAffinity": "Friend",
+            "requireLineOfSight": false,
+            "requiredToken": null,
+            "singleModel": false,
+            "requiredRule": "Caster"
+          },
+          "effect": {
+            "kind": "statModifier",
+            "roll": "Cast",
+            "delta": 1,
+            "lifetimeScope": "NextTrigger"
+          },
+          "availableWhen": {
+            "kind": "always"
+          },
+          "label": ""
+        }
+      ],
+      "scope": "Unit",
+      "engineArgumentCount": 0,
+      "valence": "Positive",
+      "description": "Once per activation, before attacking, pick one friendly unit within 12\u0022 with Caster, which gets \u002B1 to casting rolls once (next time the effect would apply)."
+    },
+    {
+      "name": "Repel Ambushers",
+      "passive": [
+        {
+          "hookID": "Lifecycle_OnCapabilityQuery",
+          "condition": {
+            "kind": "always"
+          },
+          "effect": {
+            "kind": "repelAmbushers",
+            "distanceInches": 12
+          },
+          "lifetime": "UntilEndOfGame",
+          "seat": "Actor"
+        }
+      ],
+      "activated": [],
+      "scope": "Unit",
+      "engineArgumentCount": 0,
+      "valence": "Positive",
+      "description": "Enemy units using Ambush must be set up over 12\u0022 away from this model\u0027s unit."
+    },
+    {
+      "name": "Ambush Beacon",
+      "passive": [
+        {
+          "hookID": "Lifecycle_OnCapabilityQuery",
+          "condition": {
+            "kind": "always"
+          },
+          "effect": {
+            "kind": "ambushBeacon",
+            "rangeInches": 6
+          },
+          "lifetime": "UntilEndOfGame",
+          "seat": "Actor"
+        }
+      ],
+      "activated": [],
+      "scope": "Unit",
+      "engineArgumentCount": 0,
+      "valence": "Positive",
+      "description": "Friendly units using Ambush may ignore distance restrictions from enemies if they are deployed within 6\u0022 of this model."
+    },
+    {
+      "name": "Vengeance",
+      "passive": [
+        {
+          "hookID": "Shooting_OnUnitDestroyed",
+          "condition": {
+            "kind": "always"
+          },
+          "effect": {
+            "kind": "grantTokenToKiller",
+            "tType": {
+              "id": "PersistentHitBonusMarker"
+            },
+            "count": {
+              "kind": "literal",
+              "value": 1
+            },
+            "clear": {
+              "kind": "manualOnly"
+            },
+            "maxTotal": 0
+          },
+          "lifetime": "UntilEndOfGame",
+          "seat": "Subject"
+        }
+      ],
+      "activated": [],
+      "scope": "Unit",
+      "engineArgumentCount": 0,
+      "valence": "Positive",
+      "description": "When this unit is destroyed, place a marker on the unit that destroyed it. Friendly units get \u002B1 to hit rolls against that unit for the rest of the game."
+    },
+    {
+      "name": "Precision Fighter",
+      "passive": [
+        {
+          "hookID": "Shooting_OnHitRollModifier",
+          "condition": {
+            "kind": "isMelee"
+          },
+          "effect": {
+            "kind": "rollModifier",
+            "rollKind": "Hit",
+            "delta": 1
+          },
+          "lifetime": "ThisAttack",
+          "seat": "Actor"
+        }
+      ],
+      "activated": [],
+      "scope": "Unit",
+      "engineArgumentCount": 0,
+      "valence": "Positive",
+      "description": "\u002B1 to hit rolls in melee."
+    },
+    {
+      "name": "Ignores Cover when Shooting",
+      "passive": [
+        {
+          "hookID": "Shooting_OnSaveRollModifier",
+          "condition": {
+            "kind": "always"
+          },
+          "effect": {
+            "kind": "ignoreCover"
+          },
+          "lifetime": "ThisAttack",
+          "seat": "Actor"
+        }
+      ],
+      "activated": [],
+      "scope": "Weapon",
+      "engineArgumentCount": 0,
+      "valence": "Positive",
+      "description": "When shooting, this weapon\u0027s attacks ignore cover."
+    },
+    {
+      "name": "Versatile Attack (Piercing)",
+      "passive": [
+        {
+          "hookID": "Shooting_OnHitRollComplete",
+          "condition": {
+            "kind": "attackedFromOverInches",
+            "distanceInches": 9
+          },
+          "effect": {
+            "kind": "rollModifier",
+            "rollKind": "Save",
+            "delta": -1
+          },
+          "lifetime": "ThisAttack",
+          "seat": "Actor"
+        }
+      ],
+      "activated": [],
+      "scope": "Unit",
+      "engineArgumentCount": 0,
+      "valence": "Positive",
+      "description": "AP(\u002B1) when shooting or charging enemies over 9 inches away, for this activation."
+    },
+    {
+      "name": "Versatile Attack (Precision)",
+      "passive": [
+        {
+          "hookID": "Shooting_OnHitRollModifier",
+          "condition": {
+            "kind": "attackedFromOverInches",
+            "distanceInches": 9
+          },
+          "effect": {
+            "kind": "rollModifier",
+            "rollKind": "Hit",
+            "delta": 1
+          },
+          "lifetime": "ThisAttack",
+          "seat": "Actor"
+        }
+      ],
+      "activated": [],
+      "scope": "Unit",
+      "engineArgumentCount": 0,
+      "valence": "Positive",
+      "description": "\u002B1 to hit when shooting or charging enemies over 9 inches away, for this activation."
+    }
+  ],
+  "spells": [
+    {
+      "name": "Spirit Power",
+      "threshold": 1,
+      "target": {
+        "rangeInches": 12,
+        "minCount": 1,
+        "maxCount": 1,
+        "targetAffinity": "Friend",
+        "requireLineOfSight": false,
+        "requiredToken": null,
+        "singleModel": false,
+        "requiredRule": null
+      },
+      "effect": {
+        "kind": "addRule",
+        "ruleName": "Flying",
+        "scope": "NextTrigger"
+      }
+    },
+    {
+      "name": "Soul Spear",
+      "threshold": 1,
+      "target": {
+        "rangeInches": 24,
+        "minCount": 1,
+        "maxCount": 1,
+        "targetAffinity": "Foe",
+        "requireLineOfSight": true,
+        "requiredToken": null,
+        "singleModel": true,
+        "requiredRule": null
+      },
+      "effect": {
+        "kind": "dealHits",
+        "count": 1,
+        "withRules": [
+          "Tear"
+        ],
+        "armorPenetration": 0
+      }
+    },
+    {
+      "name": "Spirit Resolve",
+      "threshold": 2,
+      "target": {
+        "rangeInches": 12,
+        "minCount": 1,
+        "maxCount": 2,
+        "targetAffinity": "Friend",
+        "requireLineOfSight": false,
+        "requiredToken": null,
+        "singleModel": false,
+        "requiredRule": null
+      },
+      "effect": {
+        "kind": "addRule",
+        "ruleName": "Clan Warrior Boost",
+        "scope": "NextTrigger"
+      }
+    },
+    {
+      "name": "Mind Vortex",
+      "threshold": 2,
+      "target": {
+        "rangeInches": 12,
+        "minCount": 1,
+        "maxCount": 2,
+        "targetAffinity": "Foe",
+        "requireLineOfSight": true,
+        "requiredToken": null,
+        "singleModel": false,
+        "requiredRule": null
+      },
+      "effect": {
+        "kind": "dealHits",
+        "count": 2,
+        "withRules": [],
+        "armorPenetration": 2
+      }
+    },
+    {
+      "name": "Eternal Guidance",
+      "threshold": 3,
+      "target": {
+        "rangeInches": 18,
+        "minCount": 1,
+        "maxCount": 3,
+        "targetAffinity": "Foe",
+        "requireLineOfSight": false,
+        "requiredToken": null,
+        "singleModel": false,
+        "requiredRule": null
+      },
+      "effect": {
+        "kind": "markTarget",
+        "ruleName": "\u002B6\u0022 range when shooting"
+      }
+    },
+    {
+      "name": "Dragon Breath",
+      "threshold": 3,
+      "target": {
+        "rangeInches": 12,
+        "minCount": 1,
+        "maxCount": 1,
+        "targetAffinity": "Foe",
+        "requireLineOfSight": true,
+        "requiredToken": null,
+        "singleModel": false,
+        "requiredRule": null
+      },
+      "effect": {
+        "kind": "dealHits",
+        "count": 9,
+        "withRules": [],
+        "armorPenetration": 0
+      }
+    }
+  ]
+}

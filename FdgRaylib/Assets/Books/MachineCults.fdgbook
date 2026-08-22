@@ -1,0 +1,5074 @@
+{
+  "name": "Machine Cults",
+  "faction": "Machine Cults",
+  "version": "OPR v3.5.3",
+  "source": "OnePageRules - Army Forge (army-forge.onepagerules.com)",
+  "license": "CC-BY-SA 4.0",
+  "defaultRangedEffectSet": "ballistic-slug",
+  "defaultMeleeEffectSet": "shock-melee",
+  "units": [
+    {
+      "id": "4ajpg-M",
+      "name": "High Cyborg-Priest",
+      "quality": 4,
+      "defense": 4,
+      "baseModelCount": 1,
+      "minModels": 1,
+      "maxModels": 1,
+      "basePointCost": 155,
+      "base": {
+        "shape": "Circle",
+        "diameterInches": 1.2598425,
+        "widthInches": 0.984252,
+        "heightInches": 1.968504
+      },
+      "weapons": [
+        {
+          "name": "Revolver",
+          "quantity": 1,
+          "rangeInches": 12,
+          "attacks": 3,
+          "armorPenetration": 1,
+          "specialRules": []
+        },
+        {
+          "name": "Axe-Halberd",
+          "quantity": 1,
+          "rangeInches": 0,
+          "attacks": 6,
+          "armorPenetration": 4,
+          "specialRules": []
+        }
+      ],
+      "rules": [
+        {
+          "kind": "core",
+          "name": "Hero"
+        },
+        {
+          "kind": "core",
+          "name": "Machine-Fog"
+        },
+        {
+          "kind": "coreNumeric",
+          "name": "Tough",
+          "numericValue": 6
+        },
+        {
+          "kind": "core",
+          "name": "Strider"
+        }
+      ],
+      "items": [],
+      "sections": [
+        {
+          "id": "ElKwH4v",
+          "label": "Upgrade with one",
+          "variant": "Upgrade",
+          "affects": "One",
+          "targets": [],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "h7nsn",
+              "label": "Macro Pistol (12\u0022, A3)",
+              "cost": 10,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Macro Pistol",
+                  "quantity": 1,
+                  "rangeInches": 12,
+                  "attacks": 3,
+                  "armorPenetration": 0,
+                  "specialRules": []
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "twMAC",
+              "label": "P-Repeater (18\u0022, A2, Lacerate)",
+              "cost": 15,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "P-Repeater",
+                  "quantity": 1,
+                  "rangeInches": 18,
+                  "attacks": 2,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Lacerate"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "EfxfRzv",
+              "label": "Supersonic Cannon (12\u0022, A1, AP(1), Blast(3), Reliable)",
+              "cost": 25,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Supersonic Cannon",
+                  "quantity": 1,
+                  "rangeInches": 12,
+                  "attacks": 1,
+                  "armorPenetration": 1,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Blast",
+                      "numericValue": 3
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Reliable"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "s5489-S",
+              "label": "Eradicator (24\u0022, A1, AP(1), Blast(3))",
+              "cost": 25,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Eradicator",
+                  "quantity": 1,
+                  "rangeInches": 24,
+                  "attacks": 1,
+                  "armorPenetration": 1,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Blast",
+                      "numericValue": 3
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "flEV7Ce",
+              "label": "Rail Gun (18\u0022, A1, AP(3), Deadly(3))",
+              "cost": 35,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Rail Gun",
+                  "quantity": 1,
+                  "rangeInches": 18,
+                  "attacks": 1,
+                  "armorPenetration": 3,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Deadly",
+                      "numericValue": 3
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "q4RQjlT",
+              "label": "V-Blaster (24\u0022, A3, Rending)",
+              "cost": 35,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "V-Blaster",
+                  "quantity": 1,
+                  "rangeInches": 24,
+                  "attacks": 3,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Rending"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "fXQyFt8",
+          "label": "Upgrade with one",
+          "variant": "Upgrade",
+          "affects": "One",
+          "targets": [],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "p5tKI",
+              "label": "Machine-Preserver (Melee Shrouding Aura)",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Machine-Preserver",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Melee Shrouding Aura"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            },
+            {
+              "id": "7Ch1QrX",
+              "label": "Preacher (Unpredictable Fighter Aura)",
+              "cost": 30,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Preacher",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Unpredictable Fighter Aura"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            },
+            {
+              "id": "WMrFSXc",
+              "label": "Engineer (Mend)",
+              "cost": 40,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Engineer",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Mend"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            },
+            {
+              "id": "8-_4e_gBKu",
+              "label": "Canticle Chanter (Machine-Fog Boost Aura)",
+              "cost": 40,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Canticle Chanter",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Machine-Fog Boost Aura"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            },
+            {
+              "id": "VC9Z-lM",
+              "label": "Psy-Hacker (Caster(2))",
+              "cost": 50,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Psy-Hacker",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Caster",
+                      "numericValue": 2
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            },
+            {
+              "id": "5ccN_w1",
+              "label": "Deacon (Rending when Shooting Aura)",
+              "cost": 65,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Deacon",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Rending when Shooting Aura"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            },
+            {
+              "id": "DwEgGb9",
+              "label": "Master Psy-Hacker (Caster(3))",
+              "cost": 80,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Master Psy-Hacker",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Caster",
+                      "numericValue": 3
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "k5VOrZ1",
+          "label": "Upgrade with",
+          "variant": "Upgrade",
+          "affects": "One",
+          "targets": [],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "TdAV29qe",
+              "label": "Cult Assault (Versatile Attack)",
+              "cost": 15,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Cult Assault",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Versatile Attack"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hvRc6eE",
+      "name": "Sect Leader",
+      "quality": 3,
+      "defense": 4,
+      "baseModelCount": 1,
+      "minModels": 1,
+      "maxModels": 1,
+      "basePointCost": 70,
+      "base": {
+        "shape": "Circle",
+        "diameterInches": 1.2598425,
+        "widthInches": 0.984252,
+        "heightInches": 1.968504
+      },
+      "weapons": [
+        {
+          "name": "Leader F-Blaster",
+          "quantity": 1,
+          "rangeInches": 9,
+          "attacks": 3,
+          "armorPenetration": 0,
+          "specialRules": []
+        },
+        {
+          "name": "Leader Taser Sword",
+          "quantity": 1,
+          "rangeInches": 0,
+          "attacks": 3,
+          "armorPenetration": 0,
+          "specialRules": [
+            {
+              "kind": "core",
+              "name": "Surge"
+            }
+          ]
+        }
+      ],
+      "rules": [
+        {
+          "kind": "core",
+          "name": "Hero"
+        },
+        {
+          "kind": "core",
+          "name": "Strider"
+        },
+        {
+          "kind": "coreNumeric",
+          "name": "Tough",
+          "numericValue": 3
+        },
+        {
+          "kind": "core",
+          "name": "Machine-Fog"
+        }
+      ],
+      "items": [],
+      "sections": [
+        {
+          "id": "10UYZuP",
+          "label": "Replace Leader F-Blaster and Leader Taser Sword",
+          "variant": "Replace",
+          "affects": "One",
+          "targets": [
+            "Leader F-Blaster",
+            "Leader Taser Sword"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "k69C1",
+              "label": "Leader Dual S-Blades (A4, AP(1), Rending)",
+              "cost": 10,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Leader Dual S-Blades",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 4,
+                  "armorPenetration": 1,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Rending"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "cRHu0",
+              "label": "Leader S-Razor \u0026 Claw (A4, AP(2))",
+              "cost": 10,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Leader S-Razor \u0026 Claw",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 4,
+                  "armorPenetration": 2,
+                  "specialRules": []
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "6zZdj",
+              "label": "Leader Burst Carbine (18\u0022, A3), Energy Sword (A3, AP(1), Rending)",
+              "cost": 25,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Leader Burst Carbine",
+                  "quantity": 1,
+                  "rangeInches": 18,
+                  "attacks": 3,
+                  "armorPenetration": 0,
+                  "specialRules": []
+                },
+                {
+                  "name": "Energy Sword",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 3,
+                  "armorPenetration": 1,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Rending"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "b4Z9LEZ",
+          "label": "Upgrade with one",
+          "variant": "Upgrade",
+          "affects": "One",
+          "targets": [],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "wVbuf",
+              "label": "Stalker (Fast, Furious)",
+              "cost": 10,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Stalker",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Fast"
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Furious"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            },
+            {
+              "id": "0XC7g",
+              "label": "Infiltrator (Grounded Stealth, Scout)",
+              "cost": 20,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Infiltrator",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Grounded Stealth"
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Scout"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "4VBbcAy",
+          "label": "Upgrade with one",
+          "variant": "Upgrade",
+          "affects": "One",
+          "targets": [],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "loK0gkeQ",
+              "label": "Machine-Preserver (Melee Shrouding Aura)",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Machine-Preserver",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Melee Shrouding Aura"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            },
+            {
+              "id": "d9RSrpPW",
+              "label": "Preacher (Unpredictable Fighter Aura)",
+              "cost": 30,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Preacher",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Unpredictable Fighter Aura"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            },
+            {
+              "id": "9A7l1WAe",
+              "label": "Machine-Modifier (Teleport Aura)",
+              "cost": 50,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Machine-Modifier",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Teleport Aura"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            },
+            {
+              "id": "9s2Wa1ky",
+              "label": "Psy-Hacker (Caster(2))",
+              "cost": 50,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Psy-Hacker",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Caster",
+                      "numericValue": 2
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            },
+            {
+              "id": "sROOzUu3",
+              "label": "Deacon (Rending when Shooting Aura)",
+              "cost": 65,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Deacon",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Rending when Shooting Aura"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "iGyqlfa",
+      "name": "Cult Leader",
+      "quality": 4,
+      "defense": 4,
+      "baseModelCount": 1,
+      "minModels": 1,
+      "maxModels": 1,
+      "basePointCost": 55,
+      "base": {
+        "shape": "Circle",
+        "diameterInches": 1.2598425,
+        "widthInches": 0.984252,
+        "heightInches": 1.968504
+      },
+      "weapons": [
+        {
+          "name": "Leader R-Pistol",
+          "quantity": 1,
+          "rangeInches": 9,
+          "attacks": 2,
+          "armorPenetration": 0,
+          "specialRules": [
+            {
+              "kind": "core",
+              "name": "Shred"
+            }
+          ]
+        },
+        {
+          "name": "Tech-Sword",
+          "quantity": 1,
+          "rangeInches": 0,
+          "attacks": 2,
+          "armorPenetration": 0,
+          "specialRules": []
+        }
+      ],
+      "rules": [
+        {
+          "kind": "core",
+          "name": "Hero"
+        },
+        {
+          "kind": "core",
+          "name": "Strider"
+        },
+        {
+          "kind": "coreNumeric",
+          "name": "Tough",
+          "numericValue": 3
+        },
+        {
+          "kind": "core",
+          "name": "Machine-Fog"
+        }
+      ],
+      "items": [],
+      "sections": [
+        {
+          "id": "mPa4HwK",
+          "label": "Replace Leader R-Pistol",
+          "variant": "Replace",
+          "affects": "One",
+          "targets": [
+            "Leader R-Pistol"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "aH5568p",
+              "label": "Leader P-Pistol (9\u0022, A3, Lacerate)",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Leader P-Pistol",
+                  "quantity": 1,
+                  "rangeInches": 9,
+                  "attacks": 3,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Lacerate"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "OlomW",
+              "label": "Leader Revolver (12\u0022, A2, AP(1))",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Leader Revolver",
+                  "quantity": 1,
+                  "rangeInches": 12,
+                  "attacks": 2,
+                  "armorPenetration": 1,
+                  "specialRules": []
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "dsaUAwb",
+              "label": "Leader Arc Pistol (9\u0022, A3, Rending)",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Leader Arc Pistol",
+                  "quantity": 1,
+                  "rangeInches": 9,
+                  "attacks": 3,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Rending"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "YB6PM",
+              "label": "Leader R-Fusil (18\u0022, A2, Shred)",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Leader R-Fusil",
+                  "quantity": 1,
+                  "rangeInches": 18,
+                  "attacks": 2,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Shred"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "O8kvKQo",
+              "label": "Leader G-Rifle (30\u0022, A2, AP(1))",
+              "cost": 15,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Leader G-Rifle",
+                  "quantity": 1,
+                  "rangeInches": 30,
+                  "attacks": 2,
+                  "armorPenetration": 1,
+                  "specialRules": []
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "hIOUu",
+              "label": "Leader Uranium Rifle (30\u0022, A2, AP(1), Reliable, Shred, Takedown)",
+              "cost": 60,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Leader Uranium Rifle",
+                  "quantity": 1,
+                  "rangeInches": 30,
+                  "attacks": 2,
+                  "armorPenetration": 1,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Shred"
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Reliable"
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Takedown"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "uG0jS",
+              "label": "Leader R-Jezzail (30\u0022, A4, Reliable, Shred, Takedown)",
+              "cost": 85,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Leader R-Jezzail",
+                  "quantity": 1,
+                  "rangeInches": 30,
+                  "attacks": 4,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Shred"
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Reliable"
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Takedown"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "8jenFIN",
+          "label": "Replace Tech-Sword",
+          "variant": "Replace",
+          "affects": "One",
+          "targets": [
+            "Tech-Sword"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "1ws-_dJ",
+              "label": "Taser Sword (A2, Surge)",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Taser Sword",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 2,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Surge"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "vajv7ps",
+              "label": "R-Sword (A2, AP(1), Shred)",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "R-Sword",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 2,
+                  "armorPenetration": 1,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Shred"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "Hl2hA60",
+              "label": "Arc Sword (A2, AP(1), Rending)",
+              "cost": 10,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Arc Sword",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 2,
+                  "armorPenetration": 1,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Rending"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "eYS1WmJ",
+              "label": "Axe-Halberd (A2, AP(4))",
+              "cost": 15,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Axe-Halberd",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 2,
+                  "armorPenetration": 4,
+                  "specialRules": []
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "x3lubJB",
+          "label": "Upgrade with one",
+          "variant": "Upgrade",
+          "affects": "One",
+          "targets": [],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "oPUiGoZsP8",
+              "label": "Shock Priests Leader (Furious, Melee Slayer, Regeneration)",
+              "cost": 15,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Shock Priests Leader",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Furious"
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Melee Slayer"
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Regeneration"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            },
+            {
+              "id": "xYE5m",
+              "label": "Stalker Wings (Ambush, Crossing Attack(1), Flying)",
+              "cost": 20,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Stalker Wings",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Ambush"
+                    },
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Crossing Attack",
+                      "numericValue": 1
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Flying"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            },
+            {
+              "id": "14ncT",
+              "label": "Sentinel Stilts (Bounding, Stealth)",
+              "cost": 20,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Sentinel Stilts",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Stealth"
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Bounding"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            },
+            {
+              "id": "-5lOG",
+              "label": "Cyborg Horse (Fast, Tough(3))",
+              "cost": 55,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Cyborg Horse",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Fast"
+                    },
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Tough",
+                      "numericValue": 3
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            },
+            {
+              "id": "pMWBu2Mxxt",
+              "label": "Raider Horse (Scout, Tough(3))",
+              "cost": 55,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Raider Horse",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Scout"
+                    },
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Tough",
+                      "numericValue": 3
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "ExvUzPH",
+          "label": "Upgrade with one",
+          "variant": "Upgrade",
+          "affects": "One",
+          "targets": [],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "SsJIOwZm",
+              "label": "Machine-Preserver (Melee Shrouding Aura)",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Machine-Preserver",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Melee Shrouding Aura"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            },
+            {
+              "id": "8G0OHZVD",
+              "label": "Engineer (Mend)",
+              "cost": 40,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Engineer",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Mend"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            },
+            {
+              "id": "MhHCUawf",
+              "label": "Canticle Chanter (Machine-Fog Boost Aura)",
+              "cost": 40,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Canticle Chanter",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Machine-Fog Boost Aura"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            },
+            {
+              "id": "sVXlWfZN",
+              "label": "Machine-Modifier (Teleport Aura)",
+              "cost": 50,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Machine-Modifier",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Teleport Aura"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            },
+            {
+              "id": "Uwg9QiMn",
+              "label": "Psy-Hacker (Caster(2))",
+              "cost": 50,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Psy-Hacker",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Caster",
+                      "numericValue": 2
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            },
+            {
+              "id": "8Ds53YCZ",
+              "label": "Deacon (Rending when Shooting Aura)",
+              "cost": 65,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Deacon",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Rending when Shooting Aura"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "k5VOrZ1",
+          "label": "Upgrade with",
+          "variant": "Upgrade",
+          "affects": "One",
+          "targets": [],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "TdAV29qe",
+              "label": "Cult Assault (Versatile Attack)",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Cult Assault",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Versatile Attack"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "L6kGWgk",
+      "name": "Cult Rangers",
+      "quality": 4,
+      "defense": 4,
+      "baseModelCount": 5,
+      "minModels": 5,
+      "maxModels": 5,
+      "basePointCost": 110,
+      "base": {
+        "shape": "Circle",
+        "diameterInches": 0.984252,
+        "widthInches": 0.984252,
+        "heightInches": 1.968504
+      },
+      "weapons": [
+        {
+          "name": "R-Fusil",
+          "quantity": 5,
+          "rangeInches": 18,
+          "attacks": 1,
+          "armorPenetration": 0,
+          "specialRules": [
+            {
+              "kind": "core",
+              "name": "Shred"
+            }
+          ]
+        },
+        {
+          "name": "CCW",
+          "quantity": 5,
+          "rangeInches": 0,
+          "attacks": 1,
+          "armorPenetration": 0,
+          "specialRules": []
+        }
+      ],
+      "rules": [
+        {
+          "kind": "core",
+          "name": "Strider"
+        },
+        {
+          "kind": "core",
+          "name": "Machine-Fog"
+        }
+      ],
+      "items": [],
+      "sections": [
+        {
+          "id": "l3bIZJj",
+          "label": "Replace all R-Fusils",
+          "variant": "Replace",
+          "affects": "All",
+          "targets": [
+            "R-Fusils"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "AYpCI",
+              "label": "G-Rifle (30\u0022, A1, AP(1))",
+              "cost": 25,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "G-Rifle",
+                  "quantity": 1,
+                  "rangeInches": 30,
+                  "attacks": 1,
+                  "armorPenetration": 1,
+                  "specialRules": []
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "vemz-bD",
+          "label": "Replace one R-Fusil",
+          "variant": "Replace",
+          "affects": "One",
+          "targets": [
+            "R-Fusil"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "nTanhQn",
+              "label": "Arc Gun (18\u0022, A2, Rending)",
+              "cost": 10,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Arc Gun",
+                  "quantity": 1,
+                  "rangeInches": 18,
+                  "attacks": 2,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Rending"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "9-I4Ari",
+              "label": "Flamer (12\u0022, A1, Blast(3), Reliable)",
+              "cost": 10,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Flamer",
+                  "quantity": 1,
+                  "rangeInches": 12,
+                  "attacks": 1,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Blast",
+                      "numericValue": 3
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Reliable"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "W50lpJz",
+              "label": "Fusion Rifle (12\u0022, A1, AP(4), Deadly(3))",
+              "cost": 20,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Fusion Rifle",
+                  "quantity": 1,
+                  "rangeInches": 12,
+                  "attacks": 1,
+                  "armorPenetration": 4,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Deadly",
+                      "numericValue": 3
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "t_PxoPu",
+              "label": "Plasma Carbine (18\u0022, A2, AP(4))",
+              "cost": 25,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Plasma Carbine",
+                  "quantity": 1,
+                  "rangeInches": 18,
+                  "attacks": 2,
+                  "armorPenetration": 4,
+                  "specialRules": []
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "re-VF2_",
+              "label": "Uranium Rifle (30\u0022, A1, AP(1), Reliable, Shred, Takedown)",
+              "cost": 25,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Uranium Rifle",
+                  "quantity": 1,
+                  "rangeInches": 30,
+                  "attacks": 1,
+                  "armorPenetration": 1,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Shred"
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Reliable"
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Takedown"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "O_8eU9M",
+          "label": "Replace one R-Fusil and CCW",
+          "variant": "Replace",
+          "affects": "One",
+          "targets": [
+            "R-Fusil",
+            "CCW"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "9c54YV3c",
+              "label": "R-Pistol (9\u0022, A1, Shred), Taser Sword (A2, Surge)",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "R-Pistol",
+                  "quantity": 1,
+                  "rangeInches": 9,
+                  "attacks": 1,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Shred"
+                    }
+                  ]
+                },
+                {
+                  "name": "Taser Sword",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 2,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Surge"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "A0BGRe1",
+          "label": "Replace R-Pistol",
+          "variant": "Replace",
+          "affects": "One",
+          "targets": [
+            "R-Pistol"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "ogdzVE_4",
+              "label": "P-Pistol (9\u0022, A2, Lacerate)",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "P-Pistol",
+                  "quantity": 1,
+                  "rangeInches": 9,
+                  "attacks": 2,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Lacerate"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "VVsJd7y1",
+              "label": "Revolver (12\u0022, A1, AP(1))",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Revolver",
+                  "quantity": 1,
+                  "rangeInches": 12,
+                  "attacks": 1,
+                  "armorPenetration": 1,
+                  "specialRules": []
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "sNp6wyph",
+              "label": "Arc Pistol (9\u0022, A2, Rending)",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Arc Pistol",
+                  "quantity": 1,
+                  "rangeInches": 9,
+                  "attacks": 2,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Rending"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "MHoynE-g",
+              "label": "G-Rifle (30\u0022, A1, AP(1))",
+              "cost": 10,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "G-Rifle",
+                  "quantity": 1,
+                  "rangeInches": 30,
+                  "attacks": 1,
+                  "armorPenetration": 1,
+                  "specialRules": []
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "voNBYIi",
+          "label": "Replace Taser Sword",
+          "variant": "Replace",
+          "affects": "One",
+          "targets": [
+            "Taser Sword"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "O7Do2c8c",
+              "label": "R-Sword (A2, AP(1), Shred)",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "R-Sword",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 2,
+                  "armorPenetration": 1,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Shred"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "Fr5H29Bn",
+              "label": "Arc Sword (A2, AP(1), Rending)",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Arc Sword",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 2,
+                  "armorPenetration": 1,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Rending"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "PXEr4ELi",
+              "label": "Axe-Halberd (A2, AP(4))",
+              "cost": 10,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Axe-Halberd",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 2,
+                  "armorPenetration": 4,
+                  "specialRules": []
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "9w7Ytuf",
+          "label": "Upgrade all models with",
+          "variant": "Upgrade",
+          "affects": "All",
+          "targets": [],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "5g0IQ",
+              "label": "Machine-Creed Canticles (Versatile Attack)",
+              "cost": 15,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Machine-Creed Canticles",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Versatile Attack"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "XivtB59",
+      "name": "Shock Priests",
+      "quality": 4,
+      "defense": 5,
+      "baseModelCount": 5,
+      "minModels": 5,
+      "maxModels": 5,
+      "basePointCost": 135,
+      "base": {
+        "shape": "Circle",
+        "diameterInches": 1.2598425,
+        "widthInches": 0.984252,
+        "heightInches": 1.968504
+      },
+      "weapons": [
+        {
+          "name": "Shock Staff",
+          "quantity": 5,
+          "rangeInches": 0,
+          "attacks": 2,
+          "armorPenetration": 0,
+          "specialRules": [
+            {
+              "kind": "core",
+              "name": "Rending"
+            }
+          ]
+        }
+      ],
+      "rules": [
+        {
+          "kind": "core",
+          "name": "Furious"
+        },
+        {
+          "kind": "core",
+          "name": "Regeneration"
+        },
+        {
+          "kind": "core",
+          "name": "Machine-Fog"
+        },
+        {
+          "kind": "core",
+          "name": "Melee Slayer"
+        }
+      ],
+      "items": [],
+      "sections": [
+        {
+          "id": "MXTGXSC",
+          "label": "Replace all Shock Staffs",
+          "variant": "Replace",
+          "affects": "All",
+          "targets": [
+            "Shock Staffs"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "GHBWIHw",
+              "label": "Gauntlet Shocks (12\u0022, A2, Surge), Taser Gauntlet (A2, Surge)",
+              "cost": 15,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Taser Gauntlet",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 2,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Surge"
+                    }
+                  ]
+                },
+                {
+                  "name": "Gauntlet Shocks",
+                  "quantity": 1,
+                  "rangeInches": 12,
+                  "attacks": 2,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Surge"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "9w7Ytuf",
+          "label": "Upgrade all models with",
+          "variant": "Upgrade",
+          "affects": "All",
+          "targets": [],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "5g0IQ",
+              "label": "Machine-Creed Canticles (Versatile Attack)",
+              "cost": 15,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Machine-Creed Canticles",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Versatile Attack"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "GGy44eL",
+      "name": "Sect Stalkers",
+      "quality": 3,
+      "defense": 4,
+      "baseModelCount": 5,
+      "minModels": 5,
+      "maxModels": 5,
+      "basePointCost": 180,
+      "base": {
+        "shape": "Circle",
+        "diameterInches": 1.5748031,
+        "widthInches": 0.984252,
+        "heightInches": 1.968504
+      },
+      "weapons": [
+        {
+          "name": "Dual S-Blades",
+          "quantity": 5,
+          "rangeInches": 0,
+          "attacks": 2,
+          "armorPenetration": 1,
+          "specialRules": [
+            {
+              "kind": "core",
+              "name": "Rending"
+            }
+          ]
+        }
+      ],
+      "rules": [
+        {
+          "kind": "core",
+          "name": "Fast"
+        },
+        {
+          "kind": "core",
+          "name": "Furious"
+        },
+        {
+          "kind": "core",
+          "name": "Strider"
+        },
+        {
+          "kind": "core",
+          "name": "Machine-Fog"
+        }
+      ],
+      "items": [],
+      "sections": [
+        {
+          "id": "jbEOewE",
+          "label": "Replace all Dual S-Blades",
+          "variant": "Replace",
+          "affects": "All",
+          "targets": [
+            "Dual S-Blades"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "eC3RKIUt9T",
+              "label": "S-Razor \u0026 Claw (A2, AP(2))",
+              "cost": 0,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "S-Razor \u0026 Claw",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 2,
+                  "armorPenetration": 2,
+                  "specialRules": []
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "yGkGR8v",
+          "label": "Upgrade one model with",
+          "variant": "Upgrade",
+          "affects": "One",
+          "targets": [],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "XZ-SoF5",
+              "label": "Metal Spike (A1, AP(1), Deadly(3), Limited)",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Metal Spike",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 1,
+                  "armorPenetration": 1,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Deadly",
+                      "numericValue": 3
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Limited"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "v6H89UD",
+      "name": "Sect Infiltrators",
+      "quality": 3,
+      "defense": 4,
+      "baseModelCount": 5,
+      "minModels": 5,
+      "maxModels": 5,
+      "basePointCost": 180,
+      "base": {
+        "shape": "Circle",
+        "diameterInches": 1.5748031,
+        "widthInches": 0.984252,
+        "heightInches": 1.968504
+      },
+      "weapons": [
+        {
+          "name": "F-Blaster",
+          "quantity": 5,
+          "rangeInches": 9,
+          "attacks": 2,
+          "armorPenetration": 0,
+          "specialRules": []
+        },
+        {
+          "name": "Taser Sword",
+          "quantity": 5,
+          "rangeInches": 0,
+          "attacks": 2,
+          "armorPenetration": 0,
+          "specialRules": [
+            {
+              "kind": "core",
+              "name": "Surge"
+            }
+          ]
+        }
+      ],
+      "rules": [
+        {
+          "kind": "core",
+          "name": "Scout"
+        },
+        {
+          "kind": "core",
+          "name": "Strider"
+        },
+        {
+          "kind": "core",
+          "name": "Grounded Stealth"
+        },
+        {
+          "kind": "core",
+          "name": "Machine-Fog"
+        }
+      ],
+      "items": [],
+      "sections": [
+        {
+          "id": "Qps6MBf",
+          "label": "Replace all F-Blasters and Taser Swords",
+          "variant": "Replace",
+          "affects": "All",
+          "targets": [
+            "F-Blasters",
+            "Taser Swords"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "G4xJj",
+              "label": "Burst Carbine (18\u0022, A2), Energy Sword (A2, AP(1), Rending)",
+              "cost": 80,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Burst Carbine",
+                  "quantity": 1,
+                  "rangeInches": 18,
+                  "attacks": 2,
+                  "armorPenetration": 0,
+                  "specialRules": []
+                },
+                {
+                  "name": "Energy Sword",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 2,
+                  "armorPenetration": 1,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Rending"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ykvshtT",
+      "name": "Sky Stalkers",
+      "quality": 3,
+      "defense": 4,
+      "baseModelCount": 5,
+      "minModels": 5,
+      "maxModels": 5,
+      "basePointCost": 185,
+      "base": {
+        "shape": "Circle",
+        "diameterInches": 1.5748031,
+        "widthInches": 0.984252,
+        "heightInches": 1.968504
+      },
+      "weapons": [
+        {
+          "name": "F-Carbine",
+          "quantity": 5,
+          "rangeInches": 18,
+          "attacks": 2,
+          "armorPenetration": 0,
+          "specialRules": []
+        },
+        {
+          "name": "CCW",
+          "quantity": 5,
+          "rangeInches": 0,
+          "attacks": 1,
+          "armorPenetration": 0,
+          "specialRules": []
+        }
+      ],
+      "rules": [
+        {
+          "kind": "core",
+          "name": "Ambush"
+        },
+        {
+          "kind": "core",
+          "name": "Flying"
+        },
+        {
+          "kind": "core",
+          "name": "Machine-Fog"
+        }
+      ],
+      "items": [],
+      "sections": [
+        {
+          "id": "W8upL8B",
+          "label": "Replace all F-Carbines",
+          "variant": "Replace",
+          "affects": "All",
+          "targets": [
+            "F-Carbines"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "XQok6",
+              "label": "P-Thrower (12\u0022, A2, Reliable, Lacerate)",
+              "cost": 10,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "P-Thrower",
+                  "quantity": 1,
+                  "rangeInches": 12,
+                  "attacks": 2,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Reliable"
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Lacerate"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "QgZayRp",
+          "label": "Replace one F-Carbine and CCW",
+          "variant": "Replace",
+          "affects": "One",
+          "targets": [
+            "F-Carbine",
+            "CCW"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "zAlCozi",
+              "label": "F-Blaster (9\u0022, A2), Taser Sword (A2, Surge)",
+              "cost": 0,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "F-Blaster",
+                  "quantity": 1,
+                  "rangeInches": 9,
+                  "attacks": 2,
+                  "armorPenetration": 0,
+                  "specialRules": []
+                },
+                {
+                  "name": "Taser Sword",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 2,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Surge"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "X8PCw79",
+          "label": "Upgrade all models with",
+          "variant": "Upgrade",
+          "affects": "All",
+          "targets": [],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "g4hlgzF",
+              "label": "Sky-Grenadier (Crossing Attack(1))",
+              "cost": 20,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Sky-Grenadier",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Crossing Attack",
+                      "numericValue": 1
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "HGxRxOr",
+      "name": "Raider Cavalry",
+      "quality": 4,
+      "defense": 4,
+      "baseModelCount": 3,
+      "minModels": 3,
+      "maxModels": 3,
+      "basePointCost": 185,
+      "base": {
+        "shape": "Rectangle",
+        "diameterInches": 1.1023622,
+        "widthInches": 1.3779528,
+        "heightInches": 2.3622048
+      },
+      "weapons": [
+        {
+          "name": "Twin P-Pistol",
+          "quantity": 3,
+          "rangeInches": 9,
+          "attacks": 4,
+          "armorPenetration": 0,
+          "specialRules": [
+            {
+              "kind": "core",
+              "name": "Lacerate"
+            }
+          ]
+        },
+        {
+          "name": "CCW",
+          "quantity": 3,
+          "rangeInches": 0,
+          "attacks": 1,
+          "armorPenetration": 0,
+          "specialRules": []
+        }
+      ],
+      "rules": [
+        {
+          "kind": "core",
+          "name": "Strider"
+        },
+        {
+          "kind": "coreNumeric",
+          "name": "Tough",
+          "numericValue": 3
+        },
+        {
+          "kind": "core",
+          "name": "Machine-Fog"
+        }
+      ],
+      "items": [
+        {
+          "name": "Cyborg Hooves",
+          "quantity": 3,
+          "rules": [
+            {
+              "kind": "core",
+              "name": "Fast"
+            }
+          ]
+        }
+      ],
+      "sections": [
+        {
+          "id": "dvFaFaa",
+          "label": "Replace any Twin P-Pistol",
+          "variant": "Replace",
+          "affects": "Any",
+          "targets": [
+            "Twin P-Pistol"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "RnJQJ",
+              "label": "G-Carbine (18\u0022, A2, AP(1))",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "G-Carbine",
+                  "quantity": 1,
+                  "rangeInches": 18,
+                  "attacks": 2,
+                  "armorPenetration": 1,
+                  "specialRules": []
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "bbolvt_",
+          "label": "Replace one G-Carbine",
+          "variant": "Replace",
+          "affects": "One",
+          "targets": [
+            "G-Carbine"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "sIy0rqo",
+              "label": "Twin P-Blaster (18\u0022, A4, Lacerate)",
+              "cost": 10,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Twin P-Blaster",
+                  "quantity": 1,
+                  "rangeInches": 18,
+                  "attacks": 4,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Lacerate"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "ytWkJNa",
+          "label": "Replace one G-Carbine and CCW",
+          "variant": "Replace",
+          "affects": "One",
+          "targets": [
+            "G-Carbine",
+            "CCW"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "Gh6p_",
+              "label": "Revolver (12\u0022, A1, AP(1)), Raider Sabre (A3, AP(1))",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Raider Sabre",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 3,
+                  "armorPenetration": 1,
+                  "specialRules": []
+                },
+                {
+                  "name": "Revolver",
+                  "quantity": 1,
+                  "rangeInches": 12,
+                  "attacks": 1,
+                  "armorPenetration": 1,
+                  "specialRules": []
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "VZ-rA",
+              "label": "P-Pistol (9\u0022, A2, Lacerate), Energy Sword (A2, AP(1), Rending)",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "P-Pistol",
+                  "quantity": 1,
+                  "rangeInches": 9,
+                  "attacks": 2,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Lacerate"
+                    }
+                  ]
+                },
+                {
+                  "name": "Energy Sword",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 2,
+                  "armorPenetration": 1,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Rending"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "sihw7lZ",
+          "label": "Upgrade all models with",
+          "variant": "Upgrade",
+          "affects": "All",
+          "targets": [],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "wXGL1SG",
+              "label": "P-Breath (6\u0022, A2, Limited, Lacerate)",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "P-Breath",
+                  "quantity": 1,
+                  "rangeInches": 6,
+                  "attacks": 2,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Limited"
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Lacerate"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "HjEBZc5",
+          "label": "Replace all Cyborg Hooves",
+          "variant": "Replace",
+          "affects": "All",
+          "targets": [
+            "Cyborg Hooves"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "5Uc8dq0RXJ",
+              "label": "Raider Hooves (Scout)",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Raider Hooves",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Scout"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "9w7Ytuf",
+          "label": "Upgrade all models with",
+          "variant": "Upgrade",
+          "affects": "All",
+          "targets": [],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "5g0IQ",
+              "label": "Machine-Creed Canticles (Versatile Attack)",
+              "cost": 15,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Machine-Creed Canticles",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Versatile Attack"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "tT9cuP3",
+      "name": "Cult Gunners",
+      "quality": 4,
+      "defense": 4,
+      "baseModelCount": 3,
+      "minModels": 3,
+      "maxModels": 3,
+      "basePointCost": 145,
+      "base": {
+        "shape": "Circle",
+        "diameterInches": 1.2598425,
+        "widthInches": 0.984252,
+        "heightInches": 1.968504
+      },
+      "weapons": [
+        {
+          "name": "Eraser Beam",
+          "quantity": 3,
+          "rangeInches": 30,
+          "attacks": 1,
+          "armorPenetration": 1,
+          "specialRules": [
+            {
+              "kind": "coreNumeric",
+              "name": "Blast",
+              "numericValue": 3
+            }
+          ]
+        },
+        {
+          "name": "Strike",
+          "quantity": 3,
+          "rangeInches": 0,
+          "attacks": 1,
+          "armorPenetration": 0,
+          "specialRules": []
+        }
+      ],
+      "rules": [
+        {
+          "kind": "core",
+          "name": "Machine-Fog"
+        },
+        {
+          "kind": "core",
+          "name": "Relentless"
+        },
+        {
+          "kind": "core",
+          "name": "Strider"
+        }
+      ],
+      "items": [],
+      "sections": [
+        {
+          "id": "gAT_Plh",
+          "label": "Replace any Eraser Beam",
+          "variant": "Replace",
+          "affects": "Any",
+          "targets": [
+            "Eraser Beam"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "a8e1OD3dDx",
+              "label": "Neutron Laser (36\u0022, A1, AP(3), Deadly(3))",
+              "cost": 25,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Neutron Laser",
+                  "quantity": 1,
+                  "rangeInches": 36,
+                  "attacks": 1,
+                  "armorPenetration": 3,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Deadly",
+                      "numericValue": 3
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "9h8jvJV",
+          "label": "Upgrade all models with one",
+          "variant": "Upgrade",
+          "affects": "All",
+          "targets": [],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "kY_eWSiVSO",
+              "label": "Light P-Pistol (9\u0022, A1, Lacerate)",
+              "cost": 10,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Light P-Pistol",
+                  "quantity": 1,
+                  "rangeInches": 9,
+                  "attacks": 1,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Lacerate"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "fRcjmVAZ4q",
+              "label": "Light Arc Pistol (9\u0022, A1, Rending)",
+              "cost": 15,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Light Arc Pistol",
+                  "quantity": 1,
+                  "rangeInches": 9,
+                  "attacks": 1,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Rending"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "9w7Ytuf",
+          "label": "Upgrade all models with",
+          "variant": "Upgrade",
+          "affects": "All",
+          "targets": [],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "5g0IQ",
+              "label": "Machine-Creed Canticles (Versatile Attack)",
+              "cost": 25,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Machine-Creed Canticles",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Versatile Attack"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "M2Yr_Lr",
+      "name": "Destroyer Cyborgs",
+      "quality": 4,
+      "defense": 4,
+      "baseModelCount": 3,
+      "minModels": 3,
+      "maxModels": 3,
+      "basePointCost": 230,
+      "base": {
+        "shape": "Circle",
+        "diameterInches": 2.3622048,
+        "widthInches": 0.984252,
+        "heightInches": 1.968504
+      },
+      "weapons": [
+        {
+          "name": "G-Cannon",
+          "quantity": 3,
+          "rangeInches": 24,
+          "attacks": 1,
+          "armorPenetration": 2,
+          "specialRules": [
+            {
+              "kind": "coreNumeric",
+              "name": "Blast",
+              "numericValue": 3
+            }
+          ]
+        },
+        {
+          "name": "Cyborg Claw",
+          "quantity": 3,
+          "rangeInches": 0,
+          "attacks": 3,
+          "armorPenetration": 0,
+          "specialRules": []
+        }
+      ],
+      "rules": [
+        {
+          "kind": "coreNumeric",
+          "name": "Tough",
+          "numericValue": 3
+        },
+        {
+          "kind": "core",
+          "name": "Machine-Fog"
+        }
+      ],
+      "items": [],
+      "sections": [
+        {
+          "id": "GSILuxw",
+          "label": "Replace any G-Cannon",
+          "variant": "Replace",
+          "affects": "Any",
+          "targets": [
+            "G-Cannon"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "4zNP2Uv",
+              "label": "Plasma Cannon (30\u0022, A1, AP(4), Blast(3))",
+              "cost": 20,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Plasma Cannon",
+                  "quantity": 1,
+                  "rangeInches": 30,
+                  "attacks": 1,
+                  "armorPenetration": 4,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Blast",
+                      "numericValue": 3
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "fynlPNX",
+          "label": "Replace one G-Cannon",
+          "variant": "Replace",
+          "affects": "One",
+          "targets": [
+            "G-Cannon"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "0klSalP",
+              "label": "Plasma Cannon (30\u0022, A1, AP(4), Blast(3)), P-Blaster (18\u0022, A2, Lacerate)",
+              "cost": 35,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "P-Blaster",
+                  "quantity": 1,
+                  "rangeInches": 18,
+                  "attacks": 2,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Lacerate"
+                    }
+                  ]
+                },
+                {
+                  "name": "Plasma Cannon",
+                  "quantity": 1,
+                  "rangeInches": 30,
+                  "attacks": 1,
+                  "armorPenetration": 4,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Blast",
+                      "numericValue": 3
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "83FypDf",
+              "label": "Plasma Cannon (30\u0022, A1, AP(4), Blast(3)), Flamer (12\u0022, A1, Blast(3), Reliable)",
+              "cost": 40,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Flamer",
+                  "quantity": 1,
+                  "rangeInches": 12,
+                  "attacks": 1,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Blast",
+                      "numericValue": 3
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Reliable"
+                    }
+                  ]
+                },
+                {
+                  "name": "Plasma Cannon",
+                  "quantity": 1,
+                  "rangeInches": 30,
+                  "attacks": 1,
+                  "armorPenetration": 4,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Blast",
+                      "numericValue": 3
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "SGQH2IV",
+      "name": "Breacher Cyborgs",
+      "quality": 4,
+      "defense": 3,
+      "baseModelCount": 3,
+      "minModels": 3,
+      "maxModels": 3,
+      "basePointCost": 270,
+      "base": {
+        "shape": "Circle",
+        "diameterInches": 2.3622048,
+        "widthInches": 0.984252,
+        "heightInches": 1.968504
+      },
+      "weapons": [
+        {
+          "name": "Contortion Cannon",
+          "quantity": 3,
+          "rangeInches": 24,
+          "attacks": 1,
+          "armorPenetration": 3,
+          "specialRules": [
+            {
+              "kind": "coreNumeric",
+              "name": "Deadly",
+              "numericValue": 3
+            }
+          ]
+        },
+        {
+          "name": "Cyborg Claw",
+          "quantity": 3,
+          "rangeInches": 0,
+          "attacks": 3,
+          "armorPenetration": 0,
+          "specialRules": []
+        }
+      ],
+      "rules": [
+        {
+          "kind": "coreNumeric",
+          "name": "Tough",
+          "numericValue": 3
+        },
+        {
+          "kind": "core",
+          "name": "Machine-Fog"
+        }
+      ],
+      "items": [],
+      "sections": [
+        {
+          "id": "2fbKiWP",
+          "label": "Replace any Contortion Cannon",
+          "variant": "Replace",
+          "affects": "Any",
+          "targets": [
+            "Contortion Cannon"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "WSVAbnkthh",
+              "label": "Heavy Arc Gun (36\u0022, A3, Rending)",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Heavy Arc Gun",
+                  "quantity": 1,
+                  "rangeInches": 36,
+                  "attacks": 3,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Rending"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "Y2AL0Gw",
+          "label": "Replace all Cyborg Claws",
+          "variant": "Replace",
+          "affects": "All",
+          "targets": [
+            "Cyborg Claws"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "P0e2phD",
+              "label": "Arc Claw (A3, AP(1), Rending)",
+              "cost": 35,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Arc Claw",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 3,
+                  "armorPenetration": 1,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Rending"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "c9GZxU3",
+      "name": "Landing Craft",
+      "quality": 4,
+      "defense": 2,
+      "baseModelCount": 1,
+      "minModels": 1,
+      "maxModels": 1,
+      "basePointCost": 210,
+      "base": {
+        "shape": "Rectangle",
+        "diameterInches": 1.1023622,
+        "widthInches": 2.047244,
+        "heightInches": 3.543307
+      },
+      "weapons": [
+        {
+          "name": "Twin P-Machinegun",
+          "quantity": 1,
+          "rangeInches": 30,
+          "attacks": 4,
+          "armorPenetration": 0,
+          "specialRules": [
+            {
+              "kind": "core",
+              "name": "Lacerate"
+            }
+          ]
+        }
+      ],
+      "rules": [
+        {
+          "kind": "core",
+          "name": "Fast"
+        },
+        {
+          "kind": "coreNumeric",
+          "name": "Impact",
+          "numericValue": 3
+        },
+        {
+          "kind": "core",
+          "name": "Strider"
+        },
+        {
+          "kind": "coreNumeric",
+          "name": "Tough",
+          "numericValue": 6
+        },
+        {
+          "kind": "coreNumeric",
+          "name": "Transport",
+          "numericValue": 11
+        },
+        {
+          "kind": "core",
+          "name": "Machine-Fog"
+        }
+      ],
+      "items": [],
+      "sections": [
+        {
+          "id": "sfUlTnr",
+          "label": "Upgrade with",
+          "variant": "Upgrade",
+          "affects": "One",
+          "targets": [],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "CpbGg",
+              "label": "Twin P-Machinegun (30\u0022, A4, Lacerate)",
+              "cost": 40,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Twin P-Machinegun",
+                  "quantity": 1,
+                  "rangeInches": 30,
+                  "attacks": 4,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Lacerate"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "y5c_wLy",
+      "name": "Attack Craft",
+      "quality": 4,
+      "defense": 2,
+      "baseModelCount": 1,
+      "minModels": 1,
+      "maxModels": 1,
+      "basePointCost": 405,
+      "base": {
+        "shape": "Rectangle",
+        "diameterInches": 1.1023622,
+        "widthInches": 3.6220472,
+        "heightInches": 4.7244096
+      },
+      "weapons": [
+        {
+          "name": "Energy Cannon",
+          "quantity": 1,
+          "rangeInches": 30,
+          "attacks": 2,
+          "armorPenetration": 0,
+          "specialRules": [
+            {
+              "kind": "coreNumeric",
+              "name": "Blast",
+              "numericValue": 3
+            },
+            {
+              "kind": "core",
+              "name": "Indirect"
+            }
+          ]
+        },
+        {
+          "name": "Triple P-Machinegun",
+          "quantity": 1,
+          "rangeInches": 30,
+          "attacks": 6,
+          "armorPenetration": 0,
+          "specialRules": [
+            {
+              "kind": "core",
+              "name": "Lacerate"
+            }
+          ]
+        }
+      ],
+      "rules": [
+        {
+          "kind": "core",
+          "name": "Fast"
+        },
+        {
+          "kind": "coreNumeric",
+          "name": "Impact",
+          "numericValue": 6
+        },
+        {
+          "kind": "core",
+          "name": "Strider"
+        },
+        {
+          "kind": "coreNumeric",
+          "name": "Tough",
+          "numericValue": 12
+        },
+        {
+          "kind": "core",
+          "name": "Machine-Fog"
+        }
+      ],
+      "items": [],
+      "sections": [
+        {
+          "id": "Frrefr_",
+          "label": "Replace Energy Cannon",
+          "variant": "Replace",
+          "affects": "One",
+          "targets": [
+            "Energy Cannon"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "Oc4oV",
+              "label": "Iron Cannon (36\u0022, A2, AP(2), Deadly(3), Unstoppable)",
+              "cost": 40,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Iron Cannon",
+                  "quantity": 1,
+                  "rangeInches": 36,
+                  "attacks": 2,
+                  "armorPenetration": 2,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Deadly",
+                      "numericValue": 3
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Unstoppable"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "PkDjFUu",
+          "label": "Upgrade with",
+          "variant": "Upgrade",
+          "affects": "One",
+          "targets": [],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "kC_8rPY",
+              "label": "Disruption Missile (24\u0022, A3, AP(1))",
+              "cost": 35,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Disruption Missile",
+                  "quantity": 1,
+                  "rangeInches": 24,
+                  "attacks": 3,
+                  "armorPenetration": 1,
+                  "specialRules": []
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "k5VOrZ1",
+          "label": "Upgrade with",
+          "variant": "Upgrade",
+          "affects": "One",
+          "targets": [],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "TdAV29qe",
+              "label": "Cult Assault (Versatile Attack)",
+              "cost": 40,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Cult Assault",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Versatile Attack"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "KcJMZWi",
+      "name": "Crawler Tank",
+      "quality": 4,
+      "defense": 2,
+      "baseModelCount": 1,
+      "minModels": 1,
+      "maxModels": 1,
+      "basePointCost": 365,
+      "base": {
+        "shape": "Rectangle",
+        "diameterInches": 1.1023622,
+        "widthInches": 4.8031497,
+        "heightInches": 6.2992125
+      },
+      "weapons": [
+        {
+          "name": "Heavy Eraser Beam",
+          "quantity": 1,
+          "rangeInches": 36,
+          "attacks": 2,
+          "armorPenetration": 1,
+          "specialRules": [
+            {
+              "kind": "coreNumeric",
+              "name": "Blast",
+              "numericValue": 3
+            }
+          ]
+        },
+        {
+          "name": "Twin P-Machinegun",
+          "quantity": 1,
+          "rangeInches": 30,
+          "attacks": 4,
+          "armorPenetration": 0,
+          "specialRules": [
+            {
+              "kind": "core",
+              "name": "Lacerate"
+            }
+          ]
+        },
+        {
+          "name": "Crushing Legs",
+          "quantity": 1,
+          "rangeInches": 0,
+          "attacks": 2,
+          "armorPenetration": 2,
+          "specialRules": []
+        },
+        {
+          "name": "Stomp",
+          "quantity": 1,
+          "rangeInches": 0,
+          "attacks": 4,
+          "armorPenetration": 1,
+          "specialRules": []
+        }
+      ],
+      "rules": [
+        {
+          "kind": "core",
+          "name": "Strider"
+        },
+        {
+          "kind": "coreNumeric",
+          "name": "Tough",
+          "numericValue": 12
+        },
+        {
+          "kind": "core",
+          "name": "Machine-Fog"
+        }
+      ],
+      "items": [],
+      "sections": [
+        {
+          "id": "gQKxsOg",
+          "label": "Replace Heavy Eraser Beam",
+          "variant": "Replace",
+          "affects": "One",
+          "targets": [
+            "Heavy Eraser Beam"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "E8RSs",
+              "label": "Twin P-Cannon (24\u0022, A8, Lacerate)",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Twin P-Cannon",
+                  "quantity": 1,
+                  "rangeInches": 24,
+                  "attacks": 8,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Lacerate"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "Ui5gL",
+              "label": "Heavy Neutron Laser (36\u0022, A2, AP(3), Deadly(3)), P-Machinegun (30\u0022, A2, Lacerate)",
+              "cost": 60,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "P-Machinegun",
+                  "quantity": 1,
+                  "rangeInches": 30,
+                  "attacks": 2,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Lacerate"
+                    }
+                  ]
+                },
+                {
+                  "name": "Heavy Neutron Laser",
+                  "quantity": 1,
+                  "rangeInches": 36,
+                  "attacks": 2,
+                  "armorPenetration": 3,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Deadly",
+                      "numericValue": 3
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "5pkyh",
+              "label": "Icarus AA-System (36\u0022, A6, AP(3), Unstoppable)",
+              "cost": 75,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Icarus AA-System",
+                  "quantity": 1,
+                  "rangeInches": 36,
+                  "attacks": 6,
+                  "armorPenetration": 3,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Unstoppable"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "lkGqzqs",
+          "label": "Upgrade with",
+          "variant": "Upgrade",
+          "affects": "One",
+          "targets": [],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "N9e2L7V",
+              "label": "Repair Arm (Regeneration)",
+              "cost": 45,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Repair Arm",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Regeneration"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "k5VOrZ1",
+          "label": "Upgrade with",
+          "variant": "Upgrade",
+          "affects": "One",
+          "targets": [],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "TdAV29qe",
+              "label": "Cult Assault (Versatile Attack)",
+              "cost": 40,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Cult Assault",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Versatile Attack"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Pgo3CU0",
+      "name": "Dragoon Walker",
+      "quality": 4,
+      "defense": 2,
+      "baseModelCount": 1,
+      "minModels": 1,
+      "maxModels": 1,
+      "basePointCost": 175,
+      "base": {
+        "shape": "Rectangle",
+        "diameterInches": 1.1023622,
+        "widthInches": 2.7559056,
+        "heightInches": 4.133858
+      },
+      "weapons": [
+        {
+          "name": "Stomp",
+          "quantity": 1,
+          "rangeInches": 0,
+          "attacks": 2,
+          "armorPenetration": 1,
+          "specialRules": []
+        },
+        {
+          "name": "Taser Lance",
+          "quantity": 1,
+          "rangeInches": 0,
+          "attacks": 4,
+          "armorPenetration": 1,
+          "specialRules": [
+            {
+              "kind": "core",
+              "name": "Surge"
+            },
+            {
+              "kind": "core",
+              "name": "Thrust"
+            }
+          ]
+        }
+      ],
+      "rules": [
+        {
+          "kind": "core",
+          "name": "Fast"
+        },
+        {
+          "kind": "coreNumeric",
+          "name": "Fear",
+          "numericValue": 1
+        },
+        {
+          "kind": "core",
+          "name": "Strider"
+        },
+        {
+          "kind": "coreNumeric",
+          "name": "Tough",
+          "numericValue": 6
+        },
+        {
+          "kind": "core",
+          "name": "Machine-Fog"
+        }
+      ],
+      "items": [],
+      "sections": [
+        {
+          "id": "b1k1UTs",
+          "label": "Replace Taser Lance",
+          "variant": "Replace",
+          "affects": "One",
+          "targets": [
+            "Taser Lance"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "v6R3TLi",
+              "label": "R-Jezzail (30\u0022, A3, Reliable, Shred, Takedown)",
+              "cost": 35,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "R-Jezzail",
+                  "quantity": 1,
+                  "rangeInches": 30,
+                  "attacks": 3,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Shred"
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Reliable"
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Takedown"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "SFek4pv",
+          "label": "Upgrade with",
+          "variant": "Upgrade",
+          "affects": "One",
+          "targets": [],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "afHLtxQ",
+              "label": "P-Repeater (18\u0022, A2, Lacerate)",
+              "cost": 15,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "P-Repeater",
+                  "quantity": 1,
+                  "rangeInches": 18,
+                  "attacks": 2,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Lacerate"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "3pc6RBX",
+          "label": "Upgrade with",
+          "variant": "Upgrade",
+          "affects": "One",
+          "targets": [],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "bXifW0eA",
+              "label": "Power Hacker (Piercing Debuff)",
+              "cost": 65,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Power Hacker",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Piercing Debuff"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ulCeEQs",
+      "name": "Combat Robot",
+      "quality": 4,
+      "defense": 2,
+      "baseModelCount": 1,
+      "minModels": 1,
+      "maxModels": 1,
+      "basePointCost": 195,
+      "base": {
+        "shape": "Circle",
+        "diameterInches": 2.3622048,
+        "widthInches": 0.984252,
+        "heightInches": 1.968504
+      },
+      "weapons": [
+        {
+          "name": "Heavy Flamer",
+          "quantity": 1,
+          "rangeInches": 12,
+          "attacks": 1,
+          "armorPenetration": 1,
+          "specialRules": [
+            {
+              "kind": "coreNumeric",
+              "name": "Blast",
+              "numericValue": 3
+            },
+            {
+              "kind": "core",
+              "name": "Reliable"
+            }
+          ]
+        },
+        {
+          "name": "Dual Energy Fists",
+          "quantity": 1,
+          "rangeInches": 0,
+          "attacks": 4,
+          "armorPenetration": 4,
+          "specialRules": []
+        },
+        {
+          "name": "Stomp",
+          "quantity": 1,
+          "rangeInches": 0,
+          "attacks": 2,
+          "armorPenetration": 1,
+          "specialRules": []
+        }
+      ],
+      "rules": [
+        {
+          "kind": "coreNumeric",
+          "name": "Fear",
+          "numericValue": 1
+        },
+        {
+          "kind": "core",
+          "name": "Fearless"
+        },
+        {
+          "kind": "coreNumeric",
+          "name": "Tough",
+          "numericValue": 6
+        },
+        {
+          "kind": "core",
+          "name": "Machine-Fog"
+        }
+      ],
+      "items": [],
+      "sections": [
+        {
+          "id": "CpIXj8t",
+          "label": "Replace Dual Energy Fist and Heavy Flamer",
+          "variant": "Replace",
+          "affects": "One",
+          "targets": [
+            "Dual Energy Fist",
+            "Heavy Flamer"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "UULEYJo",
+              "label": "Twin P-Cannon (24\u0022, A8, Lacerate)",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Twin P-Cannon",
+                  "quantity": 1,
+                  "rangeInches": 24,
+                  "attacks": 8,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Lacerate"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "arr00q0",
+          "label": "Replace Heavy Flamer",
+          "variant": "Replace",
+          "affects": "One",
+          "targets": [
+            "Heavy Flamer"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "pLk5-vM",
+              "label": "P-Cannon (24\u0022, A4, Lacerate)",
+              "cost": 10,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "P-Cannon",
+                  "quantity": 1,
+                  "rangeInches": 24,
+                  "attacks": 4,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Lacerate"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "vQ0CAQ4",
+          "label": "Upgrade with any",
+          "variant": "Upgrade",
+          "affects": "One",
+          "targets": [],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 2,
+          "options": [
+            {
+              "id": "Yw6Cs4r",
+              "label": "Robot Smith (Regeneration)",
+              "cost": 20,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Robot Smith",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Regeneration"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            },
+            {
+              "id": "hfqwgiWgyT",
+              "label": "Power Hacker (Piercing Debuff)",
+              "cost": 65,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Power Hacker",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Piercing Debuff"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "vnhLLJx",
+      "name": "Iron Walker",
+      "quality": 4,
+      "defense": 2,
+      "baseModelCount": 1,
+      "minModels": 1,
+      "maxModels": 1,
+      "basePointCost": 250,
+      "base": {
+        "shape": "Rectangle",
+        "diameterInches": 1.1023622,
+        "widthInches": 2.7559056,
+        "heightInches": 4.133858
+      },
+      "weapons": [
+        {
+          "name": "Twin Laser Cannon",
+          "quantity": 1,
+          "rangeInches": 36,
+          "attacks": 2,
+          "armorPenetration": 3,
+          "specialRules": [
+            {
+              "kind": "coreNumeric",
+              "name": "Deadly",
+              "numericValue": 3
+            }
+          ]
+        },
+        {
+          "name": "Stomp",
+          "quantity": 1,
+          "rangeInches": 0,
+          "attacks": 2,
+          "armorPenetration": 1,
+          "specialRules": []
+        }
+      ],
+      "rules": [
+        {
+          "kind": "core",
+          "name": "Fast"
+        },
+        {
+          "kind": "coreNumeric",
+          "name": "Fear",
+          "numericValue": 1
+        },
+        {
+          "kind": "core",
+          "name": "Strider"
+        },
+        {
+          "kind": "coreNumeric",
+          "name": "Tough",
+          "numericValue": 6
+        },
+        {
+          "kind": "core",
+          "name": "Machine-Fog"
+        }
+      ],
+      "items": [],
+      "sections": [
+        {
+          "id": "pg6fHDc",
+          "label": "Replace Twin Laser Cannon",
+          "variant": "Replace",
+          "affects": "One",
+          "targets": [
+            "Twin Laser Cannon"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "EWUNe",
+              "label": "Twin Autocannon (36\u0022, A6, AP(2))",
+              "cost": 0,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Twin Autocannon",
+                  "quantity": 1,
+                  "rangeInches": 36,
+                  "attacks": 6,
+                  "armorPenetration": 2,
+                  "specialRules": []
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "3pc6RBX",
+          "label": "Upgrade with",
+          "variant": "Upgrade",
+          "affects": "One",
+          "targets": [],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "bXifW0eA",
+              "label": "Power Hacker (Piercing Debuff)",
+              "cost": 65,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Power Hacker",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Piercing Debuff"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "dwRC34p",
+      "name": "Arch Fighter",
+      "quality": 4,
+      "defense": 2,
+      "baseModelCount": 1,
+      "minModels": 1,
+      "maxModels": 1,
+      "basePointCost": 260,
+      "base": {
+        "shape": "Rectangle",
+        "diameterInches": 1.1023622,
+        "widthInches": 3.6220472,
+        "heightInches": 4.7244096
+      },
+      "weapons": [
+        {
+          "name": "Twin P-Machinegun",
+          "quantity": 1,
+          "rangeInches": 30,
+          "attacks": 4,
+          "armorPenetration": 0,
+          "specialRules": [
+            {
+              "kind": "core",
+              "name": "Lacerate"
+            }
+          ]
+        },
+        {
+          "name": "Bomb Rack",
+          "quantity": 1,
+          "rangeInches": 0,
+          "attacks": 2,
+          "armorPenetration": 1,
+          "specialRules": [
+            {
+              "kind": "coreNumeric",
+              "name": "Blast",
+              "numericValue": 3
+            },
+            {
+              "kind": "core",
+              "name": "Strafing"
+            }
+          ]
+        }
+      ],
+      "rules": [
+        {
+          "kind": "core",
+          "name": "Aircraft"
+        },
+        {
+          "kind": "coreNumeric",
+          "name": "Tough",
+          "numericValue": 6
+        },
+        {
+          "kind": "core",
+          "name": "Machine-Fog"
+        }
+      ],
+      "items": [],
+      "sections": [
+        {
+          "id": "wYNsBL5",
+          "label": "Upgrade with",
+          "variant": "Upgrade",
+          "affects": "One",
+          "targets": [],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "vRCmqYEufe",
+              "label": "Assault Module (Transport(11))",
+              "cost": 70,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Assault Module",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Transport",
+                      "numericValue": 11
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "UBnnvms",
+      "name": "Arch Gunship",
+      "quality": 4,
+      "defense": 2,
+      "baseModelCount": 1,
+      "minModels": 1,
+      "maxModels": 1,
+      "basePointCost": 285,
+      "base": {
+        "shape": "Rectangle",
+        "diameterInches": 1.1023622,
+        "widthInches": 3.6220472,
+        "heightInches": 4.7244096
+      },
+      "weapons": [
+        {
+          "name": "P-Machinegun",
+          "quantity": 1,
+          "rangeInches": 30,
+          "attacks": 2,
+          "armorPenetration": 0,
+          "specialRules": [
+            {
+              "kind": "core",
+              "name": "Lacerate"
+            }
+          ]
+        },
+        {
+          "name": "Rear Laser Cannon",
+          "quantity": 1,
+          "rangeInches": 24,
+          "attacks": 2,
+          "armorPenetration": 3,
+          "specialRules": [
+            {
+              "kind": "coreNumeric",
+              "name": "Deadly",
+              "numericValue": 3
+            }
+          ]
+        },
+        {
+          "name": "Twin P-Blaster",
+          "quantity": 1,
+          "rangeInches": 18,
+          "attacks": 4,
+          "armorPenetration": 0,
+          "specialRules": [
+            {
+              "kind": "core",
+              "name": "Lacerate"
+            }
+          ]
+        }
+      ],
+      "rules": [
+        {
+          "kind": "core",
+          "name": "Aircraft"
+        },
+        {
+          "kind": "coreNumeric",
+          "name": "Tough",
+          "numericValue": 6
+        },
+        {
+          "kind": "core",
+          "name": "Machine-Fog"
+        }
+      ],
+      "items": [],
+      "sections": []
+    }
+  ],
+  "ruleDefinitions": [
+    {
+      "name": "Corrode Weapons Effect",
+      "passive": [
+        {
+          "hookID": "Shooting_OnHitRollComplete",
+          "condition": {
+            "kind": "not",
+            "inner": {
+              "kind": "isMelee"
+            }
+          },
+          "effect": {
+            "kind": "reduceArmorPenetration",
+            "amount": 1
+          },
+          "lifetime": "ThisAttack",
+          "seat": "Actor"
+        }
+      ],
+      "activated": [],
+      "scope": "Unit",
+      "engineArgumentCount": 0,
+      "valence": "Negative",
+      "description": "This unit\u0027s shooting has its AP reduced by 1, to a minimum of AP(0) (from Corrode Weapons)."
+    },
+    {
+      "name": "Melee Slayer",
+      "passive": [
+        {
+          "hookID": "Shooting_OnHitRollComplete",
+          "condition": {
+            "kind": "and",
+            "left": {
+              "kind": "isMelee"
+            },
+            "right": {
+              "kind": "targetMajorityHasTough",
+              "minToughValue": 3
+            }
+          },
+          "effect": {
+            "kind": "rollModifier",
+            "rollKind": "Save",
+            "delta": -2
+          },
+          "lifetime": "ThisAttack",
+          "seat": "Actor"
+        }
+      ],
+      "activated": [],
+      "scope": "Unit",
+      "engineArgumentCount": 0,
+      "valence": "Positive",
+      "description": "This model\u0027s melee attacks get AP(\u002B2) against units where most models have Tough 3\u002B."
+    },
+    {
+      "name": "Machine-Fog",
+      "passive": [
+        {
+          "hookID": "Shooting_OnHitRollModifier",
+          "condition": {
+            "kind": "and",
+            "left": {
+              "kind": "attackedFromOverInches",
+              "distanceInches": 9
+            },
+            "right": {
+              "kind": "allModelsHaveThisRule"
+            }
+          },
+          "effect": {
+            "kind": "rollModifier",
+            "rollKind": "Hit",
+            "delta": -1
+          },
+          "lifetime": "ThisAttack",
+          "seat": "Subject"
+        }
+      ],
+      "activated": [],
+      "scope": "Unit",
+      "engineArgumentCount": 0,
+      "valence": "Positive",
+      "description": "Enemies shooting or charging this unit from over 9 inches away get -1 to hit."
+    },
+    {
+      "name": "Machine-Fog Boost",
+      "passive": [
+        {
+          "hookID": "Shooting_OnHitRollModifier",
+          "condition": {
+            "kind": "and",
+            "left": {
+              "kind": "not",
+              "inner": {
+                "kind": "attackedFromOverInches",
+                "distanceInches": 9
+              }
+            },
+            "right": {
+              "kind": "allModelsHaveThisRule"
+            }
+          },
+          "effect": {
+            "kind": "rollModifier",
+            "rollKind": "Hit",
+            "delta": -1
+          },
+          "lifetime": "ThisAttack",
+          "seat": "Subject"
+        }
+      ],
+      "activated": [],
+      "scope": "Unit",
+      "engineArgumentCount": 0,
+      "valence": "Positive",
+      "description": "Enemies attacking this unit always get -1 to hit from Machine-Fog (not only from over 9 inches away)."
+    },
+    {
+      "name": "Machine-Fog Boost Aura",
+      "passive": [
+        {
+          "hookID": "Lifecycle_OnUnitCreated",
+          "condition": {
+            "kind": "always"
+          },
+          "effect": {
+            "kind": "aura",
+            "ruleName": "Machine-Fog Boost"
+          },
+          "lifetime": "UntilEndOfGame",
+          "seat": "Actor"
+        }
+      ],
+      "activated": [],
+      "scope": "Unit",
+      "engineArgumentCount": 0,
+      "valence": "Positive",
+      "description": "This model and its unit gain Machine-Fog Boost."
+    },
+    {
+      "name": "Rending when Shooting Aura",
+      "passive": [
+        {
+          "hookID": "Lifecycle_OnUnitCreated",
+          "condition": {
+            "kind": "always"
+          },
+          "effect": {
+            "kind": "aura",
+            "ruleName": "Rending when shooting"
+          },
+          "lifetime": "UntilEndOfGame",
+          "seat": "Actor"
+        }
+      ],
+      "activated": [],
+      "scope": "Unit",
+      "engineArgumentCount": 0,
+      "valence": "Positive",
+      "description": "This model and its unit gain Rending when shooting."
+    },
+    {
+      "name": "Versatile Attack",
+      "passive": [],
+      "activated": [
+        {
+          "triggerHook": "Activation_OnActivationStart",
+          "cost": {
+            "kind": "oncePerActivation"
+          },
+          "targetSelector": {
+            "rangeInches": 0,
+            "minCount": 1,
+            "maxCount": 1,
+            "targetAffinity": "Self",
+            "requireLineOfSight": false,
+            "requiredToken": null,
+            "singleModel": false,
+            "requiredRule": null
+          },
+          "effect": {
+            "kind": "addRule",
+            "ruleName": "Versatile Attack (Piercing)",
+            "scope": "ThisActivation"
+          },
+          "availableWhen": {
+            "kind": "always"
+          },
+          "label": "AP(\u002B1)"
+        },
+        {
+          "triggerHook": "Activation_OnActivationStart",
+          "cost": {
+            "kind": "oncePerActivation"
+          },
+          "targetSelector": {
+            "rangeInches": 0,
+            "minCount": 1,
+            "maxCount": 1,
+            "targetAffinity": "Self",
+            "requireLineOfSight": false,
+            "requiredToken": null,
+            "singleModel": false,
+            "requiredRule": null
+          },
+          "effect": {
+            "kind": "addRule",
+            "ruleName": "Versatile Attack (Precision)",
+            "scope": "ThisActivation"
+          },
+          "availableWhen": {
+            "kind": "always"
+          },
+          "label": "\u002B1 to hit"
+        }
+      ],
+      "scope": "Unit",
+      "engineArgumentCount": 0,
+      "valence": "Positive",
+      "description": "When this unit is activated, pick one effect until the end of the activation: when shooting or charging enemies over 9 inches away, it gets either AP(\u002B1) or \u002B1 to hit rolls."
+    },
+    {
+      "name": "Bounding",
+      "passive": [
+        {
+          "hookID": "Activation_OnActivationStart",
+          "condition": {
+            "kind": "allModelsHaveThisRule"
+          },
+          "effect": {
+            "kind": "repositionAtActivation",
+            "distance": {
+              "kind": "d3"
+            },
+            "plusInches": 1
+          },
+          "lifetime": "ThisActivation",
+          "seat": "Actor"
+        }
+      ],
+      "activated": [],
+      "scope": "Unit",
+      "engineArgumentCount": 0,
+      "valence": "Positive",
+      "description": "When this unit is activated, it may place all its models anywhere fully within D3\u002B1 inches of their position."
+    },
+    {
+      "name": "Piercing Debuff",
+      "passive": [],
+      "activated": [
+        {
+          "triggerHook": "Activation_OnBeforeAttackAction",
+          "cost": {
+            "kind": "oncePerActivation"
+          },
+          "targetSelector": {
+            "rangeInches": 18,
+            "minCount": 1,
+            "maxCount": 1,
+            "targetAffinity": "Foe",
+            "requireLineOfSight": true,
+            "requiredToken": null,
+            "singleModel": false,
+            "requiredRule": null
+          },
+          "effect": {
+            "kind": "addRule",
+            "ruleName": "Piercing Debuff Effect",
+            "scope": "NextTrigger"
+          },
+          "availableWhen": {
+            "kind": "always"
+          },
+          "label": ""
+        }
+      ],
+      "scope": "Unit",
+      "engineArgumentCount": 0,
+      "valence": "Positive",
+      "description": "Once per activation, before attacking, pick one enemy unit within 18\u0022 in line of sight, which loses AP(\u002B1) when attacking once (next time the effect would apply)."
+    },
+    {
+      "name": "Grounded Stealth",
+      "passive": [
+        {
+          "hookID": "Shooting_OnHitRollModifier",
+          "condition": {
+            "kind": "and",
+            "left": {
+              "kind": "allModelsHaveThisRule"
+            },
+            "right": {
+              "kind": "mostModelsWithinInchesOfTerrain",
+              "distanceInches": 1
+            }
+          },
+          "effect": {
+            "kind": "rollModifier",
+            "rollKind": "Hit",
+            "delta": -1
+          },
+          "lifetime": "ThisAttack",
+          "seat": "Subject"
+        }
+      ],
+      "activated": [],
+      "scope": "Unit",
+      "engineArgumentCount": 0,
+      "valence": "Positive",
+      "description": "If most models in this unit are within 1 inch of terrain, enemies get -1 to hit rolls when attacking this unit."
+    },
+    {
+      "name": "Rending when shooting",
+      "passive": [
+        {
+          "hookID": "Shooting_OnHitRollComplete",
+          "condition": {
+            "kind": "and",
+            "left": {
+              "kind": "not",
+              "inner": {
+                "kind": "isMelee"
+              }
+            },
+            "right": {
+              "kind": "unmodifiedRollEquals",
+              "dieValue": 6
+            }
+          },
+          "effect": {
+            "kind": "perHitSaveModifier",
+            "onRollValue": 6,
+            "delta": -4
+          },
+          "lifetime": "ThisAttack",
+          "seat": "Actor"
+        },
+        {
+          "hookID": "Shooting_OnSaveRollComplete",
+          "condition": {
+            "kind": "not",
+            "inner": {
+              "kind": "isMelee"
+            }
+          },
+          "effect": {
+            "kind": "ignoreRule",
+            "ruleName": "Regeneration"
+          },
+          "lifetime": "ThisAttack",
+          "seat": "Actor"
+        }
+      ],
+      "activated": [],
+      "scope": "Weapon",
+      "engineArgumentCount": 0,
+      "valence": "Positive",
+      "description": "When shooting, an unmodified 6 to hit gives the attack AP(\u002B4), and the attack ignores Regeneration."
+    },
+    {
+      "name": "Versatile Attack (Piercing)",
+      "passive": [
+        {
+          "hookID": "Shooting_OnHitRollComplete",
+          "condition": {
+            "kind": "attackedFromOverInches",
+            "distanceInches": 9
+          },
+          "effect": {
+            "kind": "rollModifier",
+            "rollKind": "Save",
+            "delta": -1
+          },
+          "lifetime": "ThisAttack",
+          "seat": "Actor"
+        }
+      ],
+      "activated": [],
+      "scope": "Unit",
+      "engineArgumentCount": 0,
+      "valence": "Positive",
+      "description": "AP(\u002B1) when shooting or charging enemies over 9 inches away, for this activation."
+    },
+    {
+      "name": "Versatile Attack (Precision)",
+      "passive": [
+        {
+          "hookID": "Shooting_OnHitRollModifier",
+          "condition": {
+            "kind": "attackedFromOverInches",
+            "distanceInches": 9
+          },
+          "effect": {
+            "kind": "rollModifier",
+            "rollKind": "Hit",
+            "delta": 1
+          },
+          "lifetime": "ThisAttack",
+          "seat": "Actor"
+        }
+      ],
+      "activated": [],
+      "scope": "Unit",
+      "engineArgumentCount": 0,
+      "valence": "Positive",
+      "description": "\u002B1 to hit when shooting or charging enemies over 9 inches away, for this activation."
+    },
+    {
+      "name": "Piercing Debuff Effect",
+      "passive": [
+        {
+          "hookID": "Shooting_OnHitRollComplete",
+          "condition": {
+            "kind": "always"
+          },
+          "effect": {
+            "kind": "reduceArmorPenetration",
+            "amount": 1
+          },
+          "lifetime": "ThisAttack",
+          "seat": "Actor"
+        }
+      ],
+      "activated": [],
+      "scope": "Unit",
+      "engineArgumentCount": 0,
+      "valence": "Negative",
+      "description": "This unit\u0027s attacks have their AP reduced by 1, to a minimum of AP(0)."
+    }
+  ],
+  "spells": [
+    {
+      "name": "Cyborg Assault",
+      "threshold": 1,
+      "target": {
+        "rangeInches": 12,
+        "minCount": 1,
+        "maxCount": 1,
+        "targetAffinity": "Friend",
+        "requireLineOfSight": false,
+        "requiredToken": null,
+        "singleModel": false,
+        "requiredRule": null
+      },
+      "effect": {
+        "kind": "addRule",
+        "ruleName": "Hit \u0026 Run Shooter",
+        "scope": "NextTrigger"
+      }
+    },
+    {
+      "name": "Power Beam",
+      "threshold": 1,
+      "target": {
+        "rangeInches": 18,
+        "minCount": 1,
+        "maxCount": 1,
+        "targetAffinity": "Foe",
+        "requireLineOfSight": true,
+        "requiredToken": null,
+        "singleModel": true,
+        "requiredRule": null
+      },
+      "effect": {
+        "kind": "dealHits",
+        "count": 2,
+        "withRules": [],
+        "armorPenetration": 1
+      }
+    },
+    {
+      "name": "Shrouding Incense",
+      "threshold": 2,
+      "target": {
+        "rangeInches": 12,
+        "minCount": 1,
+        "maxCount": 2,
+        "targetAffinity": "Friend",
+        "requireLineOfSight": false,
+        "requiredToken": null,
+        "singleModel": false,
+        "requiredRule": null
+      },
+      "effect": {
+        "kind": "addRule",
+        "ruleName": "Machine-Fog Boost",
+        "scope": "NextTrigger"
+      }
+    },
+    {
+      "name": "Searing Shrapnel",
+      "threshold": 2,
+      "target": {
+        "rangeInches": 12,
+        "minCount": 1,
+        "maxCount": 1,
+        "targetAffinity": "Foe",
+        "requireLineOfSight": true,
+        "requiredToken": null,
+        "singleModel": false,
+        "requiredRule": null
+      },
+      "effect": {
+        "kind": "dealHits",
+        "count": 4,
+        "withRules": [
+          "Lacerate"
+        ],
+        "armorPenetration": 1
+      }
+    },
+    {
+      "name": "Corrode Weapons",
+      "threshold": 3,
+      "target": {
+        "rangeInches": 18,
+        "minCount": 1,
+        "maxCount": 3,
+        "targetAffinity": "Foe",
+        "requireLineOfSight": false,
+        "requiredToken": null,
+        "singleModel": false,
+        "requiredRule": null
+      },
+      "effect": {
+        "kind": "addRule",
+        "ruleName": "Corrode Weapons Effect",
+        "scope": "NextTrigger"
+      }
+    },
+    {
+      "name": "Crushing Force",
+      "threshold": 3,
+      "target": {
+        "rangeInches": 12,
+        "minCount": 1,
+        "maxCount": 1,
+        "targetAffinity": "Foe",
+        "requireLineOfSight": true,
+        "requiredToken": null,
+        "singleModel": false,
+        "requiredRule": null
+      },
+      "effect": {
+        "kind": "dealHits",
+        "count": 6,
+        "withRules": [],
+        "armorPenetration": 2
+      }
+    }
+  ]
+}

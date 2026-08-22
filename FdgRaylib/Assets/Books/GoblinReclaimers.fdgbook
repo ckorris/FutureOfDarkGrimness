@@ -1,0 +1,6861 @@
+{
+  "name": "Goblin Reclaimers",
+  "faction": "Goblin Reclaimers",
+  "version": "OPR v3.5.3",
+  "source": "OnePageRules - Army Forge (army-forge.onepagerules.com)",
+  "license": "CC-BY-SA 4.0",
+  "defaultRangedEffectSet": "ballistic-slug",
+  "defaultMeleeEffectSet": "crude-melee",
+  "units": [
+    {
+      "id": "E8xb3jd",
+      "name": "Death Walker Champ",
+      "quality": 4,
+      "defense": 3,
+      "baseModelCount": 1,
+      "minModels": 1,
+      "maxModels": 1,
+      "basePointCost": 155,
+      "base": {
+        "shape": "Circle",
+        "diameterInches": 1.968504,
+        "widthInches": 0.984252,
+        "heightInches": 1.968504
+      },
+      "weapons": [
+        {
+          "name": "Rapid Rocket Launcher",
+          "quantity": 1,
+          "rangeInches": 18,
+          "attacks": 2,
+          "armorPenetration": 2,
+          "specialRules": [
+            {
+              "kind": "coreNumeric",
+              "name": "Deadly",
+              "numericValue": 3
+            }
+          ]
+        },
+        {
+          "name": "Heavy Claw",
+          "quantity": 1,
+          "rangeInches": 0,
+          "attacks": 6,
+          "armorPenetration": 1,
+          "specialRules": []
+        }
+      ],
+      "rules": [
+        {
+          "kind": "core",
+          "name": "Hero"
+        },
+        {
+          "kind": "core",
+          "name": "Mischievous"
+        },
+        {
+          "kind": "coreNumeric",
+          "name": "Tough",
+          "numericValue": 6
+        }
+      ],
+      "items": [],
+      "sections": [
+        {
+          "id": "xuq0CEz",
+          "label": "Upgrade with one",
+          "variant": "Upgrade",
+          "affects": "One",
+          "targets": [],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "ZP5Xs",
+              "label": "Master Annoyer (Mischievous Boost Aura)",
+              "cost": 20,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Master Annoyer",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Mischievous Boost Aura"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            },
+            {
+              "id": "6u6DD",
+              "label": "Scrap Protector (Melee Evasion Aura)",
+              "cost": 30,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Scrap Protector",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Melee Evasion Aura"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            },
+            {
+              "id": "2ppNqeHIiv",
+              "label": "Junk Technician (Quick Shot Aura)",
+              "cost": 35,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Junk Technician",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Quick Shot Aura"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            },
+            {
+              "id": "_Z12uyk",
+              "label": "Weirdo (Caster(2))",
+              "cost": 45,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Weirdo",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Caster",
+                      "numericValue": 2
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            },
+            {
+              "id": "RFuPL",
+              "label": "Grand Strategist (Re-Deployment)",
+              "cost": 65,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Grand Strategist",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Re-Deployment"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "6P0LoK2",
+          "label": "Replace Rapid Rocket Launcher",
+          "variant": "Replace",
+          "affects": "One",
+          "targets": [
+            "Rapid Rocket Launcher"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "_ZAYQnWK",
+              "label": "Rapid Heavy Flamer (12\u0022, A2, AP(1), Blast(3), Reliable)",
+              "cost": 0,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Rapid Heavy Flamer",
+                  "quantity": 1,
+                  "rangeInches": 12,
+                  "attacks": 2,
+                  "armorPenetration": 1,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Blast",
+                      "numericValue": 3
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Reliable"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "YiZ65vow",
+              "label": "Rapid Heavy Machinegun (30\u0022, A6, AP(1))",
+              "cost": 25,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Rapid Heavy Machinegun",
+                  "quantity": 1,
+                  "rangeInches": 30,
+                  "attacks": 6,
+                  "armorPenetration": 1,
+                  "specialRules": []
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "XZdDXzx3",
+              "label": "Heavy Bubble Cannon (30\u0022, A1, AP(4), Blast(6))",
+              "cost": 30,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Heavy Bubble Cannon",
+                  "quantity": 1,
+                  "rangeInches": 30,
+                  "attacks": 1,
+                  "armorPenetration": 4,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Blast",
+                      "numericValue": 6
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "mwHXLrAo",
+              "label": "Heavy Chucker Cannon (24\u0022, A8, Rending)",
+              "cost": 55,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Heavy Chucker Cannon",
+                  "quantity": 1,
+                  "rangeInches": 24,
+                  "attacks": 8,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Rending"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "F3ATZOK",
+          "label": "Replace Heavy Claw",
+          "variant": "Replace",
+          "affects": "One",
+          "targets": [
+            "Heavy Claw"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "wgqk8rR2",
+              "label": "Heavy Saw (A2, AP(2), Deadly(3))",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Heavy Saw",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 2,
+                  "armorPenetration": 2,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Deadly",
+                      "numericValue": 3
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "z5hi0Bk",
+      "name": "Killer Tank Champ",
+      "quality": 4,
+      "defense": 3,
+      "baseModelCount": 1,
+      "minModels": 1,
+      "maxModels": 1,
+      "basePointCost": 140,
+      "base": {
+        "shape": "Circle",
+        "diameterInches": 2.3622048,
+        "widthInches": 0.984252,
+        "heightInches": 1.968504
+      },
+      "weapons": [
+        {
+          "name": "Rapid Rocket Launcher",
+          "quantity": 1,
+          "rangeInches": 18,
+          "attacks": 2,
+          "armorPenetration": 2,
+          "specialRules": [
+            {
+              "kind": "coreNumeric",
+              "name": "Deadly",
+              "numericValue": 3
+            }
+          ]
+        },
+        {
+          "name": "Crew",
+          "quantity": 1,
+          "rangeInches": 0,
+          "attacks": 2,
+          "armorPenetration": 0,
+          "specialRules": []
+        }
+      ],
+      "rules": [
+        {
+          "kind": "core",
+          "name": "Fast"
+        },
+        {
+          "kind": "core",
+          "name": "Hero"
+        },
+        {
+          "kind": "core",
+          "name": "Mischievous"
+        },
+        {
+          "kind": "coreNumeric",
+          "name": "Tough",
+          "numericValue": 6
+        }
+      ],
+      "items": [],
+      "sections": [
+        {
+          "id": "xuq0CEz",
+          "label": "Upgrade with one",
+          "variant": "Upgrade",
+          "affects": "One",
+          "targets": [],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "ZP5Xs",
+              "label": "Master Annoyer (Mischievous Boost Aura)",
+              "cost": 20,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Master Annoyer",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Mischievous Boost Aura"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            },
+            {
+              "id": "6u6DD",
+              "label": "Scrap Protector (Melee Evasion Aura)",
+              "cost": 30,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Scrap Protector",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Melee Evasion Aura"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            },
+            {
+              "id": "2ppNqeHIiv",
+              "label": "Junk Technician (Quick Shot Aura)",
+              "cost": 35,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Junk Technician",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Quick Shot Aura"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            },
+            {
+              "id": "_Z12uyk",
+              "label": "Weirdo (Caster(2))",
+              "cost": 45,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Weirdo",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Caster",
+                      "numericValue": 2
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            },
+            {
+              "id": "RFuPL",
+              "label": "Grand Strategist (Re-Deployment)",
+              "cost": 65,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Grand Strategist",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Re-Deployment"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "6P0LoK2",
+          "label": "Replace Rapid Rocket Launcher",
+          "variant": "Replace",
+          "affects": "One",
+          "targets": [
+            "Rapid Rocket Launcher"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "_ZAYQnWK",
+              "label": "Rapid Heavy Flamer (12\u0022, A2, AP(1), Blast(3), Reliable)",
+              "cost": 0,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Rapid Heavy Flamer",
+                  "quantity": 1,
+                  "rangeInches": 12,
+                  "attacks": 2,
+                  "armorPenetration": 1,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Blast",
+                      "numericValue": 3
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Reliable"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "YiZ65vow",
+              "label": "Rapid Heavy Machinegun (30\u0022, A6, AP(1))",
+              "cost": 25,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Rapid Heavy Machinegun",
+                  "quantity": 1,
+                  "rangeInches": 30,
+                  "attacks": 6,
+                  "armorPenetration": 1,
+                  "specialRules": []
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "XZdDXzx3",
+              "label": "Heavy Bubble Cannon (30\u0022, A1, AP(4), Blast(6))",
+              "cost": 30,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Heavy Bubble Cannon",
+                  "quantity": 1,
+                  "rangeInches": 30,
+                  "attacks": 1,
+                  "armorPenetration": 4,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Blast",
+                      "numericValue": 6
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "mwHXLrAo",
+              "label": "Heavy Chucker Cannon (24\u0022, A8, Rending)",
+              "cost": 55,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Heavy Chucker Cannon",
+                  "quantity": 1,
+                  "rangeInches": 24,
+                  "attacks": 8,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Rending"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "kOwCVCk",
+          "label": "Upgrade with",
+          "variant": "Upgrade",
+          "affects": "One",
+          "targets": [],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "8u5hxirlMD",
+              "label": "Self-Destruction Payload (Deathstrike(6))",
+              "cost": 10,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Self-Destruction Payload",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Deathstrike",
+                      "numericValue": 6
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "F8XwFML",
+      "name": "Boss Champ",
+      "quality": 4,
+      "defense": 5,
+      "baseModelCount": 1,
+      "minModels": 1,
+      "maxModels": 1,
+      "basePointCost": 35,
+      "base": {
+        "shape": "Circle",
+        "diameterInches": 0.984252,
+        "widthInches": 0.984252,
+        "heightInches": 1.968504
+      },
+      "weapons": [
+        {
+          "name": "Boss Pistol",
+          "quantity": 1,
+          "rangeInches": 12,
+          "attacks": 2,
+          "armorPenetration": 0,
+          "specialRules": []
+        },
+        {
+          "name": "CCW",
+          "quantity": 1,
+          "rangeInches": 0,
+          "attacks": 2,
+          "armorPenetration": 0,
+          "specialRules": []
+        }
+      ],
+      "rules": [
+        {
+          "kind": "core",
+          "name": "Hero"
+        },
+        {
+          "kind": "core",
+          "name": "Mischievous"
+        },
+        {
+          "kind": "coreNumeric",
+          "name": "Tough",
+          "numericValue": 3
+        }
+      ],
+      "items": [],
+      "sections": [
+        {
+          "id": "xuq0CEz",
+          "label": "Upgrade with one",
+          "variant": "Upgrade",
+          "affects": "One",
+          "targets": [],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "ZP5Xs",
+              "label": "Master Annoyer (Mischievous Boost Aura)",
+              "cost": 20,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Master Annoyer",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Mischievous Boost Aura"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            },
+            {
+              "id": "6u6DD",
+              "label": "Scrap Protector (Melee Evasion Aura)",
+              "cost": 30,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Scrap Protector",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Melee Evasion Aura"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            },
+            {
+              "id": "2ppNqeHIiv",
+              "label": "Junk Technician (Quick Shot Aura)",
+              "cost": 35,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Junk Technician",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Quick Shot Aura"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            },
+            {
+              "id": "_Z12uyk",
+              "label": "Weirdo (Caster(2))",
+              "cost": 45,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Weirdo",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Caster",
+                      "numericValue": 2
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            },
+            {
+              "id": "RFuPL",
+              "label": "Grand Strategist (Re-Deployment)",
+              "cost": 65,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Grand Strategist",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Re-Deployment"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "C0DAde8",
+          "label": "Replace Boss Pistol and CCW",
+          "variant": "Replace",
+          "affects": "One",
+          "targets": [
+            "Boss Pistol",
+            "CCW"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "p4NFQ2FG",
+              "label": "Dual Killer Claws (A4, Rending)",
+              "cost": 10,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Dual Killer Claws",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 4,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Rending"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "waqi7OQ",
+          "label": "Replace Boss Pistol",
+          "variant": "Replace",
+          "affects": "One",
+          "targets": [
+            "Boss Pistol"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "FEzD5gBU",
+              "label": "Chucker Pistol (9\u0022, A2, Rending)",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Chucker Pistol",
+                  "quantity": 1,
+                  "rangeInches": 9,
+                  "attacks": 2,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Rending"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "6DQseXyy",
+              "label": "Flamer Pistol (6\u0022, A1, Blast(3), Reliable)",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Flamer Pistol",
+                  "quantity": 1,
+                  "rangeInches": 6,
+                  "attacks": 1,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Blast",
+                      "numericValue": 3
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Reliable"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "ttMEqgLw",
+              "label": "Boss Carbine (18\u0022, A2)",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Boss Carbine",
+                  "quantity": 1,
+                  "rangeInches": 18,
+                  "attacks": 2,
+                  "armorPenetration": 0,
+                  "specialRules": []
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "L8L4zf3l",
+              "label": "Bubble Pistol (12\u0022, A1, AP(4))",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Bubble Pistol",
+                  "quantity": 1,
+                  "rangeInches": 12,
+                  "attacks": 1,
+                  "armorPenetration": 4,
+                  "specialRules": []
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "4WvA3lmR40",
+              "label": "Smasher Pistol (6\u0022, A1, AP(4), Deadly(3))",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Smasher Pistol",
+                  "quantity": 1,
+                  "rangeInches": 6,
+                  "attacks": 1,
+                  "armorPenetration": 4,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Deadly",
+                      "numericValue": 3
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "bCgvXAEn",
+              "label": "Boss Shotgun (12\u0022, A3, AP(1))",
+              "cost": 10,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Boss Shotgun",
+                  "quantity": 1,
+                  "rangeInches": 12,
+                  "attacks": 3,
+                  "armorPenetration": 1,
+                  "specialRules": []
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "AeV7i43H",
+              "label": "Bolt-Smasher Pistol (9\u0022, A1, Deadly(3), Tear)",
+              "cost": 10,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Bolt-Smasher Pistol",
+                  "quantity": 1,
+                  "rangeInches": 9,
+                  "attacks": 1,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Deadly",
+                      "numericValue": 3
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Tear"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "o6j-KFn",
+          "label": "Take one Boss Carbine attachment",
+          "variant": "Upgrade",
+          "affects": "One",
+          "targets": [
+            "Boss Carbine"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "agThjcUV",
+              "label": "Chucker-Mod (18\u0022, A2, Limited, Rending)",
+              "cost": 10,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Chucker-Mod",
+                  "quantity": 1,
+                  "rangeInches": 18,
+                  "attacks": 2,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Rending"
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Limited"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "62mWt70J",
+              "label": "Flamer-Mod (12\u0022, A1, Blast(3), Limited, Reliable)",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Flamer-Mod",
+                  "quantity": 1,
+                  "rangeInches": 12,
+                  "attacks": 1,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Blast",
+                      "numericValue": 3
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Reliable"
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Limited"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "75qUJ8Vu",
+              "label": "Bubble-Mod (24\u0022, A1, AP(4), Limited)",
+              "cost": 10,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Bubble-Mod",
+                  "quantity": 1,
+                  "rangeInches": 24,
+                  "attacks": 1,
+                  "armorPenetration": 4,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Limited"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "uQMPM076",
+              "label": "Bolt-Smasher-Mod (18\u0022, A1, Deadly(3), Limited, Tear)",
+              "cost": 10,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Bolt-Smasher-Mod",
+                  "quantity": 1,
+                  "rangeInches": 18,
+                  "attacks": 1,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Deadly",
+                      "numericValue": 3
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Limited"
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Tear"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "wVJeGfj",
+          "label": "Replace CCW",
+          "variant": "Replace",
+          "affects": "One",
+          "targets": [
+            "CCW"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "C7kqs3bd",
+              "label": "Killer Hammer (A1, Blast(3))",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Killer Hammer",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 1,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Blast",
+                      "numericValue": 3
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "Pq2hW3QA",
+              "label": "Killer Sword (A2, AP(1), Rending)",
+              "cost": 10,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Killer Sword",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 2,
+                  "armorPenetration": 1,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Rending"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "byJ5fUzj",
+              "label": "Killer Saw (A1, AP(2), Deadly(3))",
+              "cost": 10,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Killer Saw",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 1,
+                  "armorPenetration": 2,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Deadly",
+                      "numericValue": 3
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "JaAiKqqV",
+              "label": "Killer Fist (A2, AP(4))",
+              "cost": 15,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Killer Fist",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 2,
+                  "armorPenetration": 4,
+                  "specialRules": []
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "tWYAkfF",
+          "label": "Upgrade with one",
+          "variant": "Upgrade",
+          "affects": "One",
+          "targets": [],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "YT8WZuPU",
+              "label": "Trekker Bike (Agile, Scout)",
+              "cost": 10,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Trekker Bike",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Agile"
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Scout"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            },
+            {
+              "id": "qGpTDY7pFI",
+              "label": "Speeder Bike (Fast, Vanguard)",
+              "cost": 15,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Speeder Bike",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Fast"
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Vanguard"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            },
+            {
+              "id": "Hu154QrA",
+              "label": "Commando Leader (Scout, Strider)",
+              "cost": 15,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Commando Leader",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Scout"
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Strider"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            },
+            {
+              "id": "nD-JFOR5",
+              "label": "Jetpack (Ambush, Flying)",
+              "cost": 15,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Jetpack",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Ambush"
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Flying"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            },
+            {
+              "id": "gXHCt3hC",
+              "label": "Combat Bug (Rending Claws (A2, Rending), Bounding, Regeneration, Strider, Tough(3))",
+              "cost": 85,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Rending Claws",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 2,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Rending"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Combat Bug",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Bounding"
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Regeneration"
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Strider"
+                    },
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Tough",
+                      "numericValue": 3
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "VIoVkOK",
+      "name": "Champ",
+      "quality": 5,
+      "defense": 6,
+      "baseModelCount": 1,
+      "minModels": 1,
+      "maxModels": 1,
+      "basePointCost": 20,
+      "base": {
+        "shape": "Circle",
+        "diameterInches": 0.984252,
+        "widthInches": 0.984252,
+        "heightInches": 1.968504
+      },
+      "weapons": [
+        {
+          "name": "Boss Pistol",
+          "quantity": 1,
+          "rangeInches": 12,
+          "attacks": 2,
+          "armorPenetration": 0,
+          "specialRules": []
+        },
+        {
+          "name": "CCW",
+          "quantity": 1,
+          "rangeInches": 0,
+          "attacks": 2,
+          "armorPenetration": 0,
+          "specialRules": []
+        }
+      ],
+      "rules": [
+        {
+          "kind": "core",
+          "name": "Hero"
+        },
+        {
+          "kind": "coreNumeric",
+          "name": "Tough",
+          "numericValue": 3
+        },
+        {
+          "kind": "core",
+          "name": "Mischievous"
+        }
+      ],
+      "items": [],
+      "sections": [
+        {
+          "id": "2EBAS7C",
+          "label": "Replace Boss Pistol and CCW",
+          "variant": "Replace",
+          "affects": "One",
+          "targets": [
+            "Boss Pistol",
+            "CCW"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "9EMxe",
+              "label": "Dual Killer Claws (A4, Rending)",
+              "cost": 10,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Dual Killer Claws",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 4,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Rending"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "NnEicrP",
+          "label": "Replace Boss Pistol",
+          "variant": "Replace",
+          "affects": "One",
+          "targets": [
+            "Boss Pistol"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "Lmyrr",
+              "label": "Bubble Pistol (12\u0022, A1, AP(4))",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Bubble Pistol",
+                  "quantity": 1,
+                  "rangeInches": 12,
+                  "attacks": 1,
+                  "armorPenetration": 4,
+                  "specialRules": []
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "oYv_l",
+              "label": "Chucker Pistol (9\u0022, A2, Rending)",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Chucker Pistol",
+                  "quantity": 1,
+                  "rangeInches": 9,
+                  "attacks": 2,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Rending"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "dkl5v",
+              "label": "Boss Carbine (18\u0022, A2)",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Boss Carbine",
+                  "quantity": 1,
+                  "rangeInches": 18,
+                  "attacks": 2,
+                  "armorPenetration": 0,
+                  "specialRules": []
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "J_5OB",
+              "label": "Flamer Pistol (6\u0022, A1, Blast(3), Reliable)",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Flamer Pistol",
+                  "quantity": 1,
+                  "rangeInches": 6,
+                  "attacks": 1,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Blast",
+                      "numericValue": 3
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Reliable"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "mH09Msqg1N",
+              "label": "Smasher Pistol (6\u0022, A1, AP(4), Deadly(3))",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Smasher Pistol",
+                  "quantity": 1,
+                  "rangeInches": 6,
+                  "attacks": 1,
+                  "armorPenetration": 4,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Deadly",
+                      "numericValue": 3
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "eo-E58kohz",
+              "label": "Boss Shotgun (12\u0022, A3, AP(1))",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Boss Shotgun",
+                  "quantity": 1,
+                  "rangeInches": 12,
+                  "attacks": 3,
+                  "armorPenetration": 1,
+                  "specialRules": []
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "MFvOq",
+              "label": "Bolt-Smasher Pistol (9\u0022, A1, Deadly(3), Tear)",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Bolt-Smasher Pistol",
+                  "quantity": 1,
+                  "rangeInches": 9,
+                  "attacks": 1,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Deadly",
+                      "numericValue": 3
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Tear"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "qtvEfig",
+          "label": "Replace CCW",
+          "variant": "Replace",
+          "affects": "One",
+          "targets": [
+            "CCW"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "QH-sL",
+              "label": "Killer Hammer (A1, Blast(3))",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Killer Hammer",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 1,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Blast",
+                      "numericValue": 3
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "dThnA",
+              "label": "Killer Saw (A1, AP(2), Deadly(3))",
+              "cost": 10,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Killer Saw",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 1,
+                  "armorPenetration": 2,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Deadly",
+                      "numericValue": 3
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "gG55-",
+              "label": "Killer Sword (A2, AP(1), Rending)",
+              "cost": 10,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Killer Sword",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 2,
+                  "armorPenetration": 1,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Rending"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "6DyQQ",
+              "label": "Killer Fist (A2, AP(4))",
+              "cost": 10,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Killer Fist",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 2,
+                  "armorPenetration": 4,
+                  "specialRules": []
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "RQ1sPkb",
+          "label": "Upgrade with",
+          "variant": "Upgrade",
+          "affects": "One",
+          "targets": [],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "INHaJBUV",
+              "label": "Trash Goggles (Good Shot)",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Trash Goggles",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Good Shot"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "QImAhW2",
+          "label": "Upgrade with one",
+          "variant": "Upgrade",
+          "affects": "One",
+          "targets": [],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "SzeCRDvP",
+              "label": "Trekker Bike (Agile, Scout)",
+              "cost": 10,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Trekker Bike",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Agile"
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Scout"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            },
+            {
+              "id": "IBvoWHLSkW",
+              "label": "Speeder Bike (Fast, Vanguard)",
+              "cost": 10,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Speeder Bike",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Fast"
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Vanguard"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            },
+            {
+              "id": "t2DqyJYK",
+              "label": "Commando Leader (Scout, Strider)",
+              "cost": 10,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Commando Leader",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Scout"
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Strider"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            },
+            {
+              "id": "GTtTgwFa",
+              "label": "Jetpack (Ambush, Flying)",
+              "cost": 10,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Jetpack",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Ambush"
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Flying"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            },
+            {
+              "id": "2TNdMx1_",
+              "label": "Combat Bug (Rending Claws (A2, Rending), Armor(5), Bounding, Regeneration, Strider, Tough(3))",
+              "cost": 75,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Rending Claws",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 2,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Rending"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Combat Bug",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Armor",
+                      "numericValue": 5
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Bounding"
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Regeneration"
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Strider"
+                    },
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Tough",
+                      "numericValue": 3
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "vKDSZe1",
+          "label": "Upgrade with one",
+          "variant": "Upgrade",
+          "affects": "One",
+          "targets": [],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "74CHQEfv",
+              "label": "Expert Tactician (Precision Fighter Aura)",
+              "cost": 20,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Expert Tactician",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Precision Fighter Aura"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            },
+            {
+              "id": "qUTGrFwa",
+              "label": "Master Annoyer (Mischievous Boost Aura)",
+              "cost": 20,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Master Annoyer",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Mischievous Boost Aura"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            },
+            {
+              "id": "4Q07ch5U",
+              "label": "Junk Technician (Quick Shot Aura)",
+              "cost": 35,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Junk Technician",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Quick Shot Aura"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            },
+            {
+              "id": "errQpt5U",
+              "label": "Weirdo (Caster(2))",
+              "cost": 45,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Weirdo",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Caster",
+                      "numericValue": 2
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            },
+            {
+              "id": "TFjwBbNSu6",
+              "label": "Grand Strategist (Re-Deployment)",
+              "cost": 65,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Grand Strategist",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Re-Deployment"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "u6NKuTu",
+      "name": "Shooter Mob",
+      "quality": 5,
+      "defense": 6,
+      "baseModelCount": 10,
+      "minModels": 10,
+      "maxModels": 10,
+      "basePointCost": 95,
+      "base": {
+        "shape": "Circle",
+        "diameterInches": 0.984252,
+        "widthInches": 0.984252,
+        "heightInches": 1.968504
+      },
+      "weapons": [
+        {
+          "name": "Scrap Gun",
+          "quantity": 10,
+          "rangeInches": 18,
+          "attacks": 1,
+          "armorPenetration": 0,
+          "specialRules": []
+        },
+        {
+          "name": "CCW",
+          "quantity": 10,
+          "rangeInches": 0,
+          "attacks": 1,
+          "armorPenetration": 0,
+          "specialRules": []
+        }
+      ],
+      "rules": [
+        {
+          "kind": "core",
+          "name": "Mischievous"
+        }
+      ],
+      "items": [],
+      "sections": [
+        {
+          "id": "SyCar8F",
+          "label": "Replace up to two Scrap Guns",
+          "variant": "Replace",
+          "affects": "Any",
+          "targets": [
+            "Scrap Guns"
+          ],
+          "maxApplications": 2,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "ewFMy",
+              "label": "Bubble Rifle (24\u0022, A1, AP(4))",
+              "cost": 10,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Bubble Rifle",
+                  "quantity": 1,
+                  "rangeInches": 24,
+                  "attacks": 1,
+                  "armorPenetration": 4,
+                  "specialRules": []
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "Fjjm0",
+              "label": "Chucker Rifle (18\u0022, A2, Rending)",
+              "cost": 15,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Chucker Rifle",
+                  "quantity": 1,
+                  "rangeInches": 18,
+                  "attacks": 2,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Rending"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "HXTvVJSN0Z",
+              "label": "Smasher Rifle (12\u0022, A1, AP(4), Deadly(3))",
+              "cost": 15,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Smasher Rifle",
+                  "quantity": 1,
+                  "rangeInches": 12,
+                  "attacks": 1,
+                  "armorPenetration": 4,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Deadly",
+                      "numericValue": 3
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "YKbhz",
+              "label": "Flamer (12\u0022, A1, Blast(3), Reliable)",
+              "cost": 20,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Flamer",
+                  "quantity": 1,
+                  "rangeInches": 12,
+                  "attacks": 1,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Blast",
+                      "numericValue": 3
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Reliable"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "6SV3-",
+              "label": "Bolt-Smasher Rifle (18\u0022, A1, Deadly(3), Tear)",
+              "cost": 20,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Bolt-Smasher Rifle",
+                  "quantity": 1,
+                  "rangeInches": 18,
+                  "attacks": 1,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Deadly",
+                      "numericValue": 3
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Tear"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "5cxUx-u",
+          "label": "Upgrade one model with one",
+          "variant": "Upgrade",
+          "affects": "One",
+          "targets": [],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "MYqHu",
+              "label": "Junk Banner (Courage Aura)",
+              "cost": 10,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Junk Banner",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Courage Aura"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            },
+            {
+              "id": "8AQiM",
+              "label": "Medical Training (Regeneration Aura)",
+              "cost": 40,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Medical Training",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Regeneration Aura"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "z5IpTKy",
+          "label": "Upgrade all models with",
+          "variant": "Upgrade",
+          "affects": "All",
+          "targets": [],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "KTxABr9zbd",
+              "label": "Trash Goggles (Good Shot)",
+              "cost": 20,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Trash Goggles",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Good Shot"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "JXlBKP1",
+          "label": "Upgrade all models with",
+          "variant": "Upgrade",
+          "affects": "All",
+          "targets": [],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "2o8kY",
+              "label": "Ramshackle Crew (Instinctive)",
+              "cost": 15,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Ramshackle Crew",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Instinctive"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "2tFZ--L",
+      "name": "Storm Mob",
+      "quality": 5,
+      "defense": 6,
+      "baseModelCount": 10,
+      "minModels": 10,
+      "maxModels": 10,
+      "basePointCost": 110,
+      "base": {
+        "shape": "Circle",
+        "diameterInches": 0.984252,
+        "widthInches": 0.984252,
+        "heightInches": 1.968504
+      },
+      "weapons": [
+        {
+          "name": "Pistol",
+          "quantity": 10,
+          "rangeInches": 12,
+          "attacks": 1,
+          "armorPenetration": 0,
+          "specialRules": []
+        },
+        {
+          "name": "CCW",
+          "quantity": 10,
+          "rangeInches": 0,
+          "attacks": 2,
+          "armorPenetration": 0,
+          "specialRules": []
+        }
+      ],
+      "rules": [
+        {
+          "kind": "core",
+          "name": "Mischievous"
+        }
+      ],
+      "items": [],
+      "sections": [
+        {
+          "id": "mXUkop8",
+          "label": "Replace up to two Pistols",
+          "variant": "Replace",
+          "affects": "Any",
+          "targets": [
+            "Pistols"
+          ],
+          "maxApplications": 2,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "WFwk3",
+              "label": "Chucker Pistol (9\u0022, A2, Rending)",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Chucker Pistol",
+                  "quantity": 1,
+                  "rangeInches": 9,
+                  "attacks": 2,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Rending"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "ie3B0Ka",
+              "label": "Bubble Pistol (12\u0022, A1, AP(4))",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Bubble Pistol",
+                  "quantity": 1,
+                  "rangeInches": 12,
+                  "attacks": 1,
+                  "armorPenetration": 4,
+                  "specialRules": []
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "dGbeWNVNdC",
+              "label": "Smasher Pistol (6\u0022, A1, AP(4), Deadly(3))",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Smasher Pistol",
+                  "quantity": 1,
+                  "rangeInches": 6,
+                  "attacks": 1,
+                  "armorPenetration": 4,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Deadly",
+                      "numericValue": 3
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "h3BGMum",
+              "label": "Flamer Pistol (6\u0022, A1, Blast(3), Reliable)",
+              "cost": 10,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Flamer Pistol",
+                  "quantity": 1,
+                  "rangeInches": 6,
+                  "attacks": 1,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Blast",
+                      "numericValue": 3
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Reliable"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "PZwYCZ2",
+              "label": "Bolt-Smasher Pistol (9\u0022, A1, Deadly(3), Tear)",
+              "cost": 10,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Bolt-Smasher Pistol",
+                  "quantity": 1,
+                  "rangeInches": 9,
+                  "attacks": 1,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Deadly",
+                      "numericValue": 3
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Tear"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "UMm7PBI",
+          "label": "Replace up to two Pistols and CCWS",
+          "variant": "Replace",
+          "affects": "Any",
+          "targets": [
+            "Pistols",
+            "CCWS"
+          ],
+          "maxApplications": 2,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "bAlX8",
+              "label": "Pistol (12\u0022, A1), Killer Hammer (A1, Blast(3))",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Pistol",
+                  "quantity": 1,
+                  "rangeInches": 12,
+                  "attacks": 1,
+                  "armorPenetration": 0,
+                  "specialRules": []
+                },
+                {
+                  "name": "Killer Hammer",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 1,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Blast",
+                      "numericValue": 3
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "knlxn",
+              "label": "Pistol (12\u0022, A1), Killer Saw (A1, AP(2), Deadly(3))",
+              "cost": 10,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Pistol",
+                  "quantity": 1,
+                  "rangeInches": 12,
+                  "attacks": 1,
+                  "armorPenetration": 0,
+                  "specialRules": []
+                },
+                {
+                  "name": "Killer Saw",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 1,
+                  "armorPenetration": 2,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Deadly",
+                      "numericValue": 3
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "pkVty",
+              "label": "Pistol (12\u0022, A1), Killer Sword (A2, AP(1), Rending)",
+              "cost": 10,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Pistol",
+                  "quantity": 1,
+                  "rangeInches": 12,
+                  "attacks": 1,
+                  "armorPenetration": 0,
+                  "specialRules": []
+                },
+                {
+                  "name": "Killer Sword",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 2,
+                  "armorPenetration": 1,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Rending"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "kwyAF",
+              "label": "Pistol (12\u0022, A1), Killer Fist (A2, AP(4))",
+              "cost": 10,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Pistol",
+                  "quantity": 1,
+                  "rangeInches": 12,
+                  "attacks": 1,
+                  "armorPenetration": 0,
+                  "specialRules": []
+                },
+                {
+                  "name": "Killer Fist",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 2,
+                  "armorPenetration": 4,
+                  "specialRules": []
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "Cs3R7",
+              "label": "Dual Killer Claws (A4, Rending)",
+              "cost": 15,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Dual Killer Claws",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 4,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Rending"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "GGDZITN",
+          "label": "Upgrade all models with",
+          "variant": "Upgrade",
+          "affects": "All",
+          "targets": [],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "_KDeo",
+              "label": "Jetpack (Ambush, Flying)",
+              "cost": 35,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Jetpack",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Ambush"
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Flying"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "z5IpTKy",
+          "label": "Upgrade all models with",
+          "variant": "Upgrade",
+          "affects": "All",
+          "targets": [],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "KTxABr9zbd",
+              "label": "Trash Goggles (Good Shot)",
+              "cost": 10,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Trash Goggles",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Good Shot"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "JXlBKP1",
+          "label": "Upgrade all models with",
+          "variant": "Upgrade",
+          "affects": "All",
+          "targets": [],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "2o8kY",
+              "label": "Ramshackle Crew (Instinctive)",
+              "cost": 20,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Ramshackle Crew",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Instinctive"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "t2iqo8w",
+      "name": "Freaks",
+      "quality": 5,
+      "defense": 6,
+      "baseModelCount": 10,
+      "minModels": 10,
+      "maxModels": 10,
+      "basePointCost": 170,
+      "base": {
+        "shape": "Circle",
+        "diameterInches": 0.984252,
+        "widthInches": 0.984252,
+        "heightInches": 1.968504
+      },
+      "weapons": [
+        {
+          "name": "Rending Claws",
+          "quantity": 10,
+          "rangeInches": 0,
+          "attacks": 2,
+          "armorPenetration": 0,
+          "specialRules": [
+            {
+              "kind": "core",
+              "name": "Rending"
+            }
+          ]
+        }
+      ],
+      "rules": [
+        {
+          "kind": "core",
+          "name": "Unpredictable Fighter"
+        },
+        {
+          "kind": "core",
+          "name": "Mischievous"
+        }
+      ],
+      "items": [],
+      "sections": [
+        {
+          "id": "k9B2gJ2",
+          "label": "Upgrade all models with",
+          "variant": "Upgrade",
+          "affects": "All",
+          "targets": [],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "quBL5",
+              "label": "Rapid Mutations (Regeneration)",
+              "cost": 25,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Rapid Mutations",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Regeneration"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "JXlBKP1",
+          "label": "Upgrade all models with",
+          "variant": "Upgrade",
+          "affects": "All",
+          "targets": [],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "2o8kY",
+              "label": "Ramshackle Crew (Instinctive)",
+              "cost": 10,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Ramshackle Crew",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Instinctive"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "jDur5gr",
+      "name": "Commandos",
+      "quality": 5,
+      "defense": 6,
+      "baseModelCount": 5,
+      "minModels": 5,
+      "maxModels": 5,
+      "basePointCost": 65,
+      "base": {
+        "shape": "Circle",
+        "diameterInches": 0.984252,
+        "widthInches": 0.984252,
+        "heightInches": 1.968504
+      },
+      "weapons": [
+        {
+          "name": "Scrap Gun",
+          "quantity": 5,
+          "rangeInches": 18,
+          "attacks": 1,
+          "armorPenetration": 0,
+          "specialRules": []
+        },
+        {
+          "name": "CCW",
+          "quantity": 5,
+          "rangeInches": 0,
+          "attacks": 1,
+          "armorPenetration": 0,
+          "specialRules": []
+        }
+      ],
+      "rules": [
+        {
+          "kind": "core",
+          "name": "Scout"
+        },
+        {
+          "kind": "core",
+          "name": "Strider"
+        },
+        {
+          "kind": "core",
+          "name": "Mischievous"
+        }
+      ],
+      "items": [],
+      "sections": [
+        {
+          "id": "zKecJAO",
+          "label": "Replace all Scrap Guns and CCWS",
+          "variant": "Replace",
+          "affects": "All",
+          "targets": [
+            "Scrap Guns",
+            "CCWS"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "ysWHI",
+              "label": "Pistol (12\u0022, A1), CCW (A2)",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Pistol",
+                  "quantity": 1,
+                  "rangeInches": 12,
+                  "attacks": 1,
+                  "armorPenetration": 0,
+                  "specialRules": []
+                },
+                {
+                  "name": "CCW",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 2,
+                  "armorPenetration": 0,
+                  "specialRules": []
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "jrRFp",
+              "label": "Shotgun (12\u0022, A2, AP(1)), CCW (A1)",
+              "cost": 20,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Shotgun",
+                  "quantity": 1,
+                  "rangeInches": 12,
+                  "attacks": 2,
+                  "armorPenetration": 1,
+                  "specialRules": []
+                },
+                {
+                  "name": "CCW",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 1,
+                  "armorPenetration": 0,
+                  "specialRules": []
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "Ln3JVOy",
+          "label": "Replace one Scrap Gun",
+          "variant": "Replace",
+          "affects": "One",
+          "targets": [
+            "Scrap Gun"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "wHJ75",
+              "label": "Bubble Rifle (24\u0022, A1, AP(4))",
+              "cost": 10,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Bubble Rifle",
+                  "quantity": 1,
+                  "rangeInches": 24,
+                  "attacks": 1,
+                  "armorPenetration": 4,
+                  "specialRules": []
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "a3jTz",
+              "label": "Chucker Rifle (18\u0022, A2, Rending)",
+              "cost": 15,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Chucker Rifle",
+                  "quantity": 1,
+                  "rangeInches": 18,
+                  "attacks": 2,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Rending"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "jAVtXklxhb",
+              "label": "Smasher Rifle (12\u0022, A1, AP(4), Deadly(3))",
+              "cost": 15,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Smasher Rifle",
+                  "quantity": 1,
+                  "rangeInches": 12,
+                  "attacks": 1,
+                  "armorPenetration": 4,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Deadly",
+                      "numericValue": 3
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "hC6NZ",
+              "label": "Flamer (12\u0022, A1, Blast(3), Reliable)",
+              "cost": 20,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Flamer",
+                  "quantity": 1,
+                  "rangeInches": 12,
+                  "attacks": 1,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Blast",
+                      "numericValue": 3
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Reliable"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "DboyO",
+              "label": "Bolt-Smasher Rifle (18\u0022, A1, Deadly(3), Tear)",
+              "cost": 20,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Bolt-Smasher Rifle",
+                  "quantity": 1,
+                  "rangeInches": 18,
+                  "attacks": 1,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Deadly",
+                      "numericValue": 3
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Tear"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "5iiGnlf",
+          "label": "Replace up to three Scrap Guns",
+          "variant": "Replace",
+          "affects": "Any",
+          "targets": [
+            "Scrap Guns"
+          ],
+          "maxApplications": 3,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "x3h9J",
+              "label": "Scrap Sniper (24\u0022, A1, AP(1), Reliable, Takedown)",
+              "cost": 30,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Scrap Sniper",
+                  "quantity": 1,
+                  "rangeInches": 24,
+                  "attacks": 1,
+                  "armorPenetration": 1,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Reliable"
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Takedown"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "3ayPX-S",
+          "label": "Upgrade all models with",
+          "variant": "Upgrade",
+          "affects": "All",
+          "targets": [],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "JBskd",
+              "label": "Camo Cloaks (Stealth)",
+              "cost": 15,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Camo Cloaks",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Stealth"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "z5IpTKy",
+          "label": "Upgrade all models with",
+          "variant": "Upgrade",
+          "affects": "All",
+          "targets": [],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "KTxABr9zbd",
+              "label": "Trash Goggles (Good Shot)",
+              "cost": 10,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Trash Goggles",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Good Shot"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "RJMV2f5",
+      "name": "Boss Mob",
+      "quality": 4,
+      "defense": 5,
+      "baseModelCount": 5,
+      "minModels": 5,
+      "maxModels": 5,
+      "basePointCost": 110,
+      "base": {
+        "shape": "Circle",
+        "diameterInches": 0.984252,
+        "widthInches": 0.984252,
+        "heightInches": 1.968504
+      },
+      "weapons": [
+        {
+          "name": "Boss Pistol",
+          "quantity": 5,
+          "rangeInches": 12,
+          "attacks": 2,
+          "armorPenetration": 0,
+          "specialRules": []
+        },
+        {
+          "name": "CCW",
+          "quantity": 5,
+          "rangeInches": 0,
+          "attacks": 2,
+          "armorPenetration": 0,
+          "specialRules": []
+        }
+      ],
+      "rules": [
+        {
+          "kind": "core",
+          "name": "Mischievous"
+        }
+      ],
+      "items": [],
+      "sections": [
+        {
+          "id": "8GnAF8W",
+          "label": "Replace any Boss Pistol",
+          "variant": "Replace",
+          "affects": "Any",
+          "targets": [
+            "Boss Pistol"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "6X3ky",
+              "label": "Shotgun (12\u0022, A2, AP(1))",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Shotgun",
+                  "quantity": 1,
+                  "rangeInches": 12,
+                  "attacks": 2,
+                  "armorPenetration": 1,
+                  "specialRules": []
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "8_i7T",
+              "label": "Boss Carbine (18\u0022, A2)",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Boss Carbine",
+                  "quantity": 1,
+                  "rangeInches": 18,
+                  "attacks": 2,
+                  "armorPenetration": 0,
+                  "specialRules": []
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "FoqN4OT",
+          "label": "Replace one Boss Pistol",
+          "variant": "Replace",
+          "affects": "One",
+          "targets": [
+            "Boss Pistol"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "93oGe",
+              "label": "Flamer (12\u0022, A1, Blast(3), Reliable)",
+              "cost": 15,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Flamer",
+                  "quantity": 1,
+                  "rangeInches": 12,
+                  "attacks": 1,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Blast",
+                      "numericValue": 3
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Reliable"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "YEaTw",
+              "label": "Chucker Rifle (18\u0022, A2, Rending)",
+              "cost": 15,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Chucker Rifle",
+                  "quantity": 1,
+                  "rangeInches": 18,
+                  "attacks": 2,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Rending"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "yfdOI",
+              "label": "Bubble Rifle (24\u0022, A1, AP(4))",
+              "cost": 15,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Bubble Rifle",
+                  "quantity": 1,
+                  "rangeInches": 24,
+                  "attacks": 1,
+                  "armorPenetration": 4,
+                  "specialRules": []
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "Px5xtll_g3",
+              "label": "Smasher Rifle (12\u0022, A1, AP(4), Deadly(3))",
+              "cost": 20,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Smasher Rifle",
+                  "quantity": 1,
+                  "rangeInches": 12,
+                  "attacks": 1,
+                  "armorPenetration": 4,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Deadly",
+                      "numericValue": 3
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "ncJ1S",
+              "label": "Bolt-Smasher Rifle (18\u0022, A1, Deadly(3), Tear)",
+              "cost": 30,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Bolt-Smasher Rifle",
+                  "quantity": 1,
+                  "rangeInches": 18,
+                  "attacks": 1,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Deadly",
+                      "numericValue": 3
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Tear"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "8Mn4pZt",
+          "label": "Take one Boss Carbine attachment",
+          "variant": "Upgrade",
+          "affects": "One",
+          "targets": [
+            "Boss Carbine"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "eDmK_",
+              "label": "Chucker-Mod (18\u0022, A2, Limited, Rending)",
+              "cost": 10,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Chucker-Mod",
+                  "quantity": 1,
+                  "rangeInches": 18,
+                  "attacks": 2,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Rending"
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Limited"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "ipRUW",
+              "label": "Flamer-Mod (12\u0022, A1, Blast(3), Limited, Reliable)",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Flamer-Mod",
+                  "quantity": 1,
+                  "rangeInches": 12,
+                  "attacks": 1,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Blast",
+                      "numericValue": 3
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Reliable"
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Limited"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "YLwsE",
+              "label": "Bubble-Mod (24\u0022, A1, AP(4), Limited)",
+              "cost": 10,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Bubble-Mod",
+                  "quantity": 1,
+                  "rangeInches": 24,
+                  "attacks": 1,
+                  "armorPenetration": 4,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Limited"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "Tm3oH",
+              "label": "Bolt-Smasher-Mod (18\u0022, A1, Deadly(3), Limited, Tear)",
+              "cost": 10,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Bolt-Smasher-Mod",
+                  "quantity": 1,
+                  "rangeInches": 18,
+                  "attacks": 1,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Deadly",
+                      "numericValue": 3
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Limited"
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Tear"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "ykAOBSS",
+          "label": "Replace one CCW",
+          "variant": "Replace",
+          "affects": "One",
+          "targets": [
+            "CCW"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "Y_par",
+              "label": "Killer Hammer (A1, Blast(3))",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Killer Hammer",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 1,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Blast",
+                      "numericValue": 3
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "eluIl",
+              "label": "Killer Sword (A2, AP(1), Rending)",
+              "cost": 10,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Killer Sword",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 2,
+                  "armorPenetration": 1,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Rending"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "zRA4p",
+              "label": "Killer Saw (A1, AP(2), Deadly(3))",
+              "cost": 10,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Killer Saw",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 1,
+                  "armorPenetration": 2,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Deadly",
+                      "numericValue": 3
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "EfCS0",
+              "label": "Killer Fist (A2, AP(4))",
+              "cost": 15,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Killer Fist",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 2,
+                  "armorPenetration": 4,
+                  "specialRules": []
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "5cxUx-u",
+          "label": "Upgrade one model with one",
+          "variant": "Upgrade",
+          "affects": "One",
+          "targets": [],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "MYqHu",
+              "label": "Junk Banner (Courage Aura)",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Junk Banner",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Courage Aura"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            },
+            {
+              "id": "8AQiM",
+              "label": "Medical Training (Regeneration Aura)",
+              "cost": 20,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Medical Training",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Regeneration Aura"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "2nLGvXr",
+      "name": "Scout Bikers",
+      "quality": 5,
+      "defense": 6,
+      "baseModelCount": 5,
+      "minModels": 5,
+      "maxModels": 5,
+      "basePointCost": 70,
+      "base": {
+        "shape": "Rectangle",
+        "diameterInches": 1.1023622,
+        "widthInches": 1.3779528,
+        "heightInches": 2.3622048
+      },
+      "weapons": [
+        {
+          "name": "Pistol",
+          "quantity": 5,
+          "rangeInches": 12,
+          "attacks": 1,
+          "armorPenetration": 0,
+          "specialRules": []
+        },
+        {
+          "name": "CCW",
+          "quantity": 5,
+          "rangeInches": 0,
+          "attacks": 2,
+          "armorPenetration": 0,
+          "specialRules": []
+        }
+      ],
+      "rules": [
+        {
+          "kind": "core",
+          "name": "Mischievous"
+        }
+      ],
+      "items": [
+        {
+          "name": "Trekker Tires",
+          "quantity": 5,
+          "rules": [
+            {
+              "kind": "core",
+              "name": "Agile"
+            },
+            {
+              "kind": "core",
+              "name": "Scout"
+            }
+          ]
+        }
+      ],
+      "sections": [
+        {
+          "id": "CFpBxpw",
+          "label": "Replace one Pistol",
+          "variant": "Replace",
+          "affects": "One",
+          "targets": [
+            "Pistol"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "mvMxB",
+              "label": "Chucker Pistol (9\u0022, A2, Rending)",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Chucker Pistol",
+                  "quantity": 1,
+                  "rangeInches": 9,
+                  "attacks": 2,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Rending"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "slcIW",
+              "label": "Bubble Pistol (12\u0022, A1, AP(4))",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Bubble Pistol",
+                  "quantity": 1,
+                  "rangeInches": 12,
+                  "attacks": 1,
+                  "armorPenetration": 4,
+                  "specialRules": []
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "2x1rxXUNUR",
+              "label": "Smasher Pistol (6\u0022, A1, AP(4), Deadly(3))",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Smasher Pistol",
+                  "quantity": 1,
+                  "rangeInches": 6,
+                  "attacks": 1,
+                  "armorPenetration": 4,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Deadly",
+                      "numericValue": 3
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "czAjK",
+              "label": "Flamer Pistol (6\u0022, A1, Blast(3), Reliable)",
+              "cost": 10,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Flamer Pistol",
+                  "quantity": 1,
+                  "rangeInches": 6,
+                  "attacks": 1,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Blast",
+                      "numericValue": 3
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Reliable"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "Quogw",
+              "label": "Bolt-Smasher Pistol (9\u0022, A1, Deadly(3), Tear)",
+              "cost": 10,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Bolt-Smasher Pistol",
+                  "quantity": 1,
+                  "rangeInches": 9,
+                  "attacks": 1,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Deadly",
+                      "numericValue": 3
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Tear"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "0RvIAq1",
+          "label": "Replace one Pistol and CCW",
+          "variant": "Replace",
+          "affects": "One",
+          "targets": [
+            "Pistol",
+            "CCW"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "UkwfB",
+              "label": "Pistol (12\u0022, A1), Killer Hammer (A1, Blast(3))",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Pistol",
+                  "quantity": 1,
+                  "rangeInches": 12,
+                  "attacks": 1,
+                  "armorPenetration": 0,
+                  "specialRules": []
+                },
+                {
+                  "name": "Killer Hammer",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 1,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Blast",
+                      "numericValue": 3
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "gvlk7",
+              "label": "Pistol (12\u0022, A1), Killer Saw (A1, AP(2), Deadly(3))",
+              "cost": 10,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Pistol",
+                  "quantity": 1,
+                  "rangeInches": 12,
+                  "attacks": 1,
+                  "armorPenetration": 0,
+                  "specialRules": []
+                },
+                {
+                  "name": "Killer Saw",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 1,
+                  "armorPenetration": 2,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Deadly",
+                      "numericValue": 3
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "AsLcp",
+              "label": "Pistol (12\u0022, A1), Killer Sword (A2, AP(1), Rending)",
+              "cost": 10,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Pistol",
+                  "quantity": 1,
+                  "rangeInches": 12,
+                  "attacks": 1,
+                  "armorPenetration": 0,
+                  "specialRules": []
+                },
+                {
+                  "name": "Killer Sword",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 2,
+                  "armorPenetration": 1,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Rending"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "-ji6w",
+              "label": "Pistol (12\u0022, A1), Killer Fist (A2, AP(4))",
+              "cost": 10,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Pistol",
+                  "quantity": 1,
+                  "rangeInches": 12,
+                  "attacks": 1,
+                  "armorPenetration": 0,
+                  "specialRules": []
+                },
+                {
+                  "name": "Killer Fist",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 2,
+                  "armorPenetration": 4,
+                  "specialRules": []
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "RsxsO-F",
+          "label": "Replace all Trekker Tires",
+          "variant": "Replace",
+          "affects": "All",
+          "targets": [
+            "Trekker Tires"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "7kWlwutvoY",
+              "label": "Speeder Tires (Fast, Vanguard)",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Speeder Tires",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Fast"
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Vanguard"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "z5IpTKy",
+          "label": "Upgrade all models with",
+          "variant": "Upgrade",
+          "affects": "All",
+          "targets": [],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "KTxABr9zbd",
+              "label": "Trash Goggles (Good Shot)",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Trash Goggles",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Good Shot"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "JXlBKP1",
+          "label": "Upgrade all models with",
+          "variant": "Upgrade",
+          "affects": "All",
+          "targets": [],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "2o8kY",
+              "label": "Ramshackle Crew (Instinctive)",
+              "cost": 10,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Ramshackle Crew",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Instinctive"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Biinmvj",
+      "name": "Looters",
+      "quality": 5,
+      "defense": 6,
+      "baseModelCount": 3,
+      "minModels": 3,
+      "maxModels": 3,
+      "basePointCost": 120,
+      "base": {
+        "shape": "Circle",
+        "diameterInches": 0.984252,
+        "widthInches": 0.984252,
+        "heightInches": 1.968504
+      },
+      "weapons": [
+        {
+          "name": "Heavy Machinegun",
+          "quantity": 3,
+          "rangeInches": 30,
+          "attacks": 3,
+          "armorPenetration": 1,
+          "specialRules": []
+        },
+        {
+          "name": "CCW",
+          "quantity": 3,
+          "rangeInches": 0,
+          "attacks": 1,
+          "armorPenetration": 0,
+          "specialRules": []
+        }
+      ],
+      "rules": [
+        {
+          "kind": "core",
+          "name": "Relentless"
+        },
+        {
+          "kind": "core",
+          "name": "Mischievous"
+        }
+      ],
+      "items": [],
+      "sections": [
+        {
+          "id": "7W8Sj2X",
+          "label": "Replace any Heavy Machinegun",
+          "variant": "Replace",
+          "affects": "Any",
+          "targets": [
+            "Heavy Machinegun"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "0ndkmRka8Q",
+              "label": "Heavy Flamer (12\u0022, A1, AP(1), Blast(3), Reliable)",
+              "cost": -5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Heavy Flamer",
+                  "quantity": 1,
+                  "rangeInches": 12,
+                  "attacks": 1,
+                  "armorPenetration": 1,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Blast",
+                      "numericValue": 3
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Reliable"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "FqQ3izwHZz",
+              "label": "Heavy Smasher Rifle (18\u0022, A1, AP(4), Deadly(3))",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Heavy Smasher Rifle",
+                  "quantity": 1,
+                  "rangeInches": 18,
+                  "attacks": 1,
+                  "armorPenetration": 4,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Deadly",
+                      "numericValue": 3
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "f0kWw0lzEN",
+              "label": "Heavy Bolt-Smasher Rifle (24\u0022, A1, Deadly(3), Tear)",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Heavy Bolt-Smasher Rifle",
+                  "quantity": 1,
+                  "rangeInches": 24,
+                  "attacks": 1,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Deadly",
+                      "numericValue": 3
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Tear"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "_HtLW",
+              "label": "Bubble Cannon (30\u0022, A1, AP(4), Blast(3))",
+              "cost": 20,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Bubble Cannon",
+                  "quantity": 1,
+                  "rangeInches": 30,
+                  "attacks": 1,
+                  "armorPenetration": 4,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Blast",
+                      "numericValue": 3
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "oFj9A",
+              "label": "Chucker Cannon (24\u0022, A4, Rending)",
+              "cost": 25,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Chucker Cannon",
+                  "quantity": 1,
+                  "rangeInches": 24,
+                  "attacks": 4,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Rending"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "z5IpTKy",
+          "label": "Upgrade all models with",
+          "variant": "Upgrade",
+          "affects": "All",
+          "targets": [],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "KTxABr9zbd",
+              "label": "Trash Goggles (Good Shot)",
+              "cost": 30,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Trash Goggles",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Good Shot"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "jHkvoAd",
+      "name": "Bug Riders",
+      "quality": 5,
+      "defense": 5,
+      "baseModelCount": 3,
+      "minModels": 3,
+      "maxModels": 3,
+      "basePointCost": 160,
+      "base": {
+        "shape": "Circle",
+        "diameterInches": 1.5748031,
+        "widthInches": 0.984252,
+        "heightInches": 1.968504
+      },
+      "weapons": [
+        {
+          "name": "Scrap Gun",
+          "quantity": 3,
+          "rangeInches": 18,
+          "attacks": 1,
+          "armorPenetration": 0,
+          "specialRules": []
+        },
+        {
+          "name": "CCW",
+          "quantity": 3,
+          "rangeInches": 0,
+          "attacks": 1,
+          "armorPenetration": 0,
+          "specialRules": []
+        },
+        {
+          "name": "Rending Claws",
+          "quantity": 3,
+          "rangeInches": 0,
+          "attacks": 2,
+          "armorPenetration": 0,
+          "specialRules": [
+            {
+              "kind": "core",
+              "name": "Rending"
+            }
+          ]
+        }
+      ],
+      "rules": [
+        {
+          "kind": "core",
+          "name": "Bounding"
+        },
+        {
+          "kind": "core",
+          "name": "Regeneration"
+        },
+        {
+          "kind": "core",
+          "name": "Strider"
+        },
+        {
+          "kind": "coreNumeric",
+          "name": "Tough",
+          "numericValue": 3
+        },
+        {
+          "kind": "core",
+          "name": "Mischievous"
+        }
+      ],
+      "items": [],
+      "sections": [
+        {
+          "id": "wRMZha6",
+          "label": "Replace any Scrap Guns",
+          "variant": "Replace",
+          "affects": "Any",
+          "targets": [
+            "Scrap Guns"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "83uQb",
+              "label": "Bubble Rifle (24\u0022, A1, AP(4))",
+              "cost": 10,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Bubble Rifle",
+                  "quantity": 1,
+                  "rangeInches": 24,
+                  "attacks": 1,
+                  "armorPenetration": 4,
+                  "specialRules": []
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "c9bw8",
+              "label": "Chucker Rifle (18\u0022, A2, Rending)",
+              "cost": 15,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Chucker Rifle",
+                  "quantity": 1,
+                  "rangeInches": 18,
+                  "attacks": 2,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Rending"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "cv8ZC2DwhP",
+              "label": "Smasher Rifle (12\u0022, A1, AP(4), Deadly(3))",
+              "cost": 15,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Smasher Rifle",
+                  "quantity": 1,
+                  "rangeInches": 12,
+                  "attacks": 1,
+                  "armorPenetration": 4,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Deadly",
+                      "numericValue": 3
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "SjZMV",
+              "label": "Flamer (12\u0022, A1, Blast(3), Reliable)",
+              "cost": 20,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Flamer",
+                  "quantity": 1,
+                  "rangeInches": 12,
+                  "attacks": 1,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Blast",
+                      "numericValue": 3
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Reliable"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "ycK2H",
+              "label": "Bolt-Smasher Rifle (18\u0022, A1, Deadly(3), Tear)",
+              "cost": 20,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Bolt-Smasher Rifle",
+                  "quantity": 1,
+                  "rangeInches": 18,
+                  "attacks": 1,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Deadly",
+                      "numericValue": 3
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Tear"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "z5IpTKy",
+          "label": "Upgrade all models with",
+          "variant": "Upgrade",
+          "affects": "All",
+          "targets": [],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "KTxABr9zbd",
+              "label": "Trash Goggles (Good Shot)",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Trash Goggles",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Good Shot"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "uzV2zZS",
+      "name": "Killer Tanks",
+      "quality": 5,
+      "defense": 3,
+      "baseModelCount": 3,
+      "minModels": 3,
+      "maxModels": 3,
+      "basePointCost": 155,
+      "base": {
+        "shape": "Circle",
+        "diameterInches": 2.3622048,
+        "widthInches": 0.984252,
+        "heightInches": 1.968504
+      },
+      "weapons": [
+        {
+          "name": "Rocket Launcher",
+          "quantity": 3,
+          "rangeInches": 18,
+          "attacks": 1,
+          "armorPenetration": 2,
+          "specialRules": [
+            {
+              "kind": "coreNumeric",
+              "name": "Deadly",
+              "numericValue": 3
+            }
+          ]
+        },
+        {
+          "name": "Crew",
+          "quantity": 3,
+          "rangeInches": 0,
+          "attacks": 1,
+          "armorPenetration": 0,
+          "specialRules": []
+        }
+      ],
+      "rules": [
+        {
+          "kind": "core",
+          "name": "Fast"
+        },
+        {
+          "kind": "coreNumeric",
+          "name": "Tough",
+          "numericValue": 3
+        },
+        {
+          "kind": "core",
+          "name": "Mischievous"
+        }
+      ],
+      "items": [],
+      "sections": [
+        {
+          "id": "FCcU3df",
+          "label": "Replace any Rocket Launcher",
+          "variant": "Replace",
+          "affects": "Any",
+          "targets": [
+            "Rocket Launcher"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "VPw-8Da",
+              "label": "Heavy Machinegun (30\u0022, A3, AP(1))",
+              "cost": 10,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Heavy Machinegun",
+                  "quantity": 1,
+                  "rangeInches": 30,
+                  "attacks": 3,
+                  "armorPenetration": 1,
+                  "specialRules": []
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "u9ctj",
+              "label": "Heavy Flamer (12\u0022, A1, AP(1), Blast(3), Reliable)",
+              "cost": 10,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Heavy Flamer",
+                  "quantity": 1,
+                  "rangeInches": 12,
+                  "attacks": 1,
+                  "armorPenetration": 1,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Blast",
+                      "numericValue": 3
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Reliable"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "CCOKd",
+              "label": "Chucker Cannon (24\u0022, A4, Rending)",
+              "cost": 25,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Chucker Cannon",
+                  "quantity": 1,
+                  "rangeInches": 24,
+                  "attacks": 4,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Rending"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "qb-0-",
+              "label": "Bubble Cannon (30\u0022, A1, AP(4), Blast(3))",
+              "cost": 25,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Bubble Cannon",
+                  "quantity": 1,
+                  "rangeInches": 30,
+                  "attacks": 1,
+                  "armorPenetration": 4,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Blast",
+                      "numericValue": 3
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "z5IpTKy",
+          "label": "Upgrade all models with",
+          "variant": "Upgrade",
+          "affects": "All",
+          "targets": [],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "KTxABr9zbd",
+              "label": "Trash Goggles (Good Shot)",
+              "cost": 25,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Trash Goggles",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Good Shot"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "h9TDWAL",
+          "label": "Upgrade all models with",
+          "variant": "Upgrade",
+          "affects": "All",
+          "targets": [],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "_-B03WtttC",
+              "label": "Self-Destruction Payload (Deathstrike(3))",
+              "cost": 15,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Self-Destruction Payload",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Deathstrike",
+                      "numericValue": 3
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "UUu1IPo",
+      "name": "Death Walkers",
+      "quality": 5,
+      "defense": 3,
+      "baseModelCount": 3,
+      "minModels": 3,
+      "maxModels": 3,
+      "basePointCost": 170,
+      "base": {
+        "shape": "Circle",
+        "diameterInches": 1.968504,
+        "widthInches": 0.984252,
+        "heightInches": 1.968504
+      },
+      "weapons": [
+        {
+          "name": "Rocket Launcher",
+          "quantity": 3,
+          "rangeInches": 18,
+          "attacks": 1,
+          "armorPenetration": 2,
+          "specialRules": [
+            {
+              "kind": "coreNumeric",
+              "name": "Deadly",
+              "numericValue": 3
+            }
+          ]
+        },
+        {
+          "name": "Mini-Claw",
+          "quantity": 3,
+          "rangeInches": 0,
+          "attacks": 3,
+          "armorPenetration": 1,
+          "specialRules": []
+        }
+      ],
+      "rules": [
+        {
+          "kind": "coreNumeric",
+          "name": "Tough",
+          "numericValue": 3
+        },
+        {
+          "kind": "core",
+          "name": "Mischievous"
+        }
+      ],
+      "items": [],
+      "sections": [
+        {
+          "id": "5UFVgVR",
+          "label": "Replace any Mini-Claw",
+          "variant": "Replace",
+          "affects": "Any",
+          "targets": [
+            "Mini-Claw"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "z3UjtQZ",
+              "label": "Mini-Saw (A1, AP(2), Deadly(3))",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Mini-Saw",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 1,
+                  "armorPenetration": 2,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Deadly",
+                      "numericValue": 3
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "FCcU3df",
+          "label": "Replace any Rocket Launcher",
+          "variant": "Replace",
+          "affects": "Any",
+          "targets": [
+            "Rocket Launcher"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "VPw-8Da",
+              "label": "Heavy Machinegun (30\u0022, A3, AP(1))",
+              "cost": 10,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Heavy Machinegun",
+                  "quantity": 1,
+                  "rangeInches": 30,
+                  "attacks": 3,
+                  "armorPenetration": 1,
+                  "specialRules": []
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "u9ctj",
+              "label": "Heavy Flamer (12\u0022, A1, AP(1), Blast(3), Reliable)",
+              "cost": 10,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Heavy Flamer",
+                  "quantity": 1,
+                  "rangeInches": 12,
+                  "attacks": 1,
+                  "armorPenetration": 1,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Blast",
+                      "numericValue": 3
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Reliable"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "CCOKd",
+              "label": "Chucker Cannon (24\u0022, A4, Rending)",
+              "cost": 25,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Chucker Cannon",
+                  "quantity": 1,
+                  "rangeInches": 24,
+                  "attacks": 4,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Rending"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "qb-0-",
+              "label": "Bubble Cannon (30\u0022, A1, AP(4), Blast(3))",
+              "cost": 25,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Bubble Cannon",
+                  "quantity": 1,
+                  "rangeInches": 30,
+                  "attacks": 1,
+                  "armorPenetration": 4,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Blast",
+                      "numericValue": 3
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "z5IpTKy",
+          "label": "Upgrade all models with",
+          "variant": "Upgrade",
+          "affects": "All",
+          "targets": [],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "KTxABr9zbd",
+              "label": "Trash Goggles (Good Shot)",
+              "cost": 25,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Trash Goggles",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Good Shot"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "S7oIg4m",
+      "name": "Big Bug",
+      "quality": 5,
+      "defense": 4,
+      "baseModelCount": 1,
+      "minModels": 1,
+      "maxModels": 1,
+      "basePointCost": 140,
+      "base": {
+        "shape": "Circle",
+        "diameterInches": 2.3622048,
+        "widthInches": 0.984252,
+        "heightInches": 1.968504
+      },
+      "weapons": [
+        {
+          "name": "Rocket Launcher",
+          "quantity": 2,
+          "rangeInches": 18,
+          "attacks": 1,
+          "armorPenetration": 2,
+          "specialRules": [
+            {
+              "kind": "coreNumeric",
+              "name": "Deadly",
+              "numericValue": 3
+            }
+          ]
+        },
+        {
+          "name": "Stomp",
+          "quantity": 1,
+          "rangeInches": 0,
+          "attacks": 2,
+          "armorPenetration": 1,
+          "specialRules": []
+        }
+      ],
+      "rules": [
+        {
+          "kind": "core",
+          "name": "Bounding"
+        },
+        {
+          "kind": "core",
+          "name": "Regeneration"
+        },
+        {
+          "kind": "core",
+          "name": "Strider"
+        },
+        {
+          "kind": "coreNumeric",
+          "name": "Tough",
+          "numericValue": 6
+        },
+        {
+          "kind": "core",
+          "name": "Mischievous"
+        },
+        {
+          "kind": "coreNumeric",
+          "name": "Fear",
+          "numericValue": 1
+        }
+      ],
+      "items": [],
+      "sections": [
+        {
+          "id": "FCcU3df",
+          "label": "Replace any Rocket Launcher",
+          "variant": "Replace",
+          "affects": "Any",
+          "targets": [
+            "Rocket Launcher"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "VPw-8Da",
+              "label": "Heavy Machinegun (30\u0022, A3, AP(1))",
+              "cost": 10,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Heavy Machinegun",
+                  "quantity": 1,
+                  "rangeInches": 30,
+                  "attacks": 3,
+                  "armorPenetration": 1,
+                  "specialRules": []
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "u9ctj",
+              "label": "Heavy Flamer (12\u0022, A1, AP(1), Blast(3), Reliable)",
+              "cost": 10,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Heavy Flamer",
+                  "quantity": 1,
+                  "rangeInches": 12,
+                  "attacks": 1,
+                  "armorPenetration": 1,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Blast",
+                      "numericValue": 3
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Reliable"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "CCOKd",
+              "label": "Chucker Cannon (24\u0022, A4, Rending)",
+              "cost": 25,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Chucker Cannon",
+                  "quantity": 1,
+                  "rangeInches": 24,
+                  "attacks": 4,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Rending"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "qb-0-",
+              "label": "Bubble Cannon (30\u0022, A1, AP(4), Blast(3))",
+              "cost": 25,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Bubble Cannon",
+                  "quantity": 1,
+                  "rangeInches": 30,
+                  "attacks": 1,
+                  "armorPenetration": 4,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Blast",
+                      "numericValue": 3
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "9bLPZpG",
+          "label": "Upgrade with any",
+          "variant": "Upgrade",
+          "affects": "One",
+          "targets": [],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 2,
+          "options": [
+            {
+              "id": "6g7LTKRK",
+              "label": "Trash Goggles (Good Shot)",
+              "cost": 20,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Trash Goggles",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Good Shot"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            },
+            {
+              "id": "VeG05e0wR-",
+              "label": "Targeted Frenzy (Unpredictable Shooter Mark)",
+              "cost": 40,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Targeted Frenzy",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Unpredictable Shooter Mark"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "1-RTd1N",
+      "name": "Super Tank",
+      "quality": 4,
+      "defense": 2,
+      "baseModelCount": 1,
+      "minModels": 1,
+      "maxModels": 1,
+      "basePointCost": 370,
+      "base": {
+        "shape": "Circle",
+        "diameterInches": 2.3622048,
+        "widthInches": 0.984252,
+        "heightInches": 1.968504
+      },
+      "weapons": [
+        {
+          "name": "Heavy Lobber Mortar",
+          "quantity": 1,
+          "rangeInches": 24,
+          "attacks": 1,
+          "armorPenetration": 1,
+          "specialRules": [
+            {
+              "kind": "coreNumeric",
+              "name": "Blast",
+              "numericValue": 6
+            },
+            {
+              "kind": "core",
+              "name": "Indirect"
+            }
+          ]
+        },
+        {
+          "name": "Sponson-Flamers",
+          "quantity": 1,
+          "rangeInches": 12,
+          "attacks": 2,
+          "armorPenetration": 0,
+          "specialRules": [
+            {
+              "kind": "coreNumeric",
+              "name": "Blast",
+              "numericValue": 3
+            },
+            {
+              "kind": "core",
+              "name": "Reliable"
+            }
+          ]
+        }
+      ],
+      "rules": [
+        {
+          "kind": "core",
+          "name": "Fast"
+        },
+        {
+          "kind": "core",
+          "name": "Fearless"
+        },
+        {
+          "kind": "coreNumeric",
+          "name": "Impact",
+          "numericValue": 6
+        },
+        {
+          "kind": "core",
+          "name": "Mischievous"
+        },
+        {
+          "kind": "coreNumeric",
+          "name": "Tough",
+          "numericValue": 12
+        }
+      ],
+      "items": [],
+      "sections": [
+        {
+          "id": "F10Gxi7",
+          "label": "Replace Heavy Lobber Mortar",
+          "variant": "Replace",
+          "affects": "One",
+          "targets": [
+            "Heavy Lobber Mortar"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "jXIapjRJ",
+              "label": "Heavy Tractor Beam (36\u0022, A4, AP(2), Unstoppable)",
+              "cost": 30,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Heavy Tractor Beam",
+                  "quantity": 1,
+                  "rangeInches": 36,
+                  "attacks": 4,
+                  "armorPenetration": 2,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Unstoppable"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "nm84xa6KUu",
+              "label": "Heavy Smasher Cannon (24\u0022, A1, AP(4), Deadly(6))",
+              "cost": 30,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Heavy Smasher Cannon",
+                  "quantity": 1,
+                  "rangeInches": 24,
+                  "attacks": 1,
+                  "armorPenetration": 4,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Deadly",
+                      "numericValue": 6
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "RdZf615a",
+              "label": "Heavy Bubble Cannon (30\u0022, A1, AP(4), Blast(6))",
+              "cost": 40,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Heavy Bubble Cannon",
+                  "quantity": 1,
+                  "rangeInches": 30,
+                  "attacks": 1,
+                  "armorPenetration": 4,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Blast",
+                      "numericValue": 6
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "NAPz5jHR",
+              "label": "Heavy Bolt-Smasher Cannon (30\u0022, A2, Deadly(3), Tear)",
+              "cost": 55,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Heavy Bolt-Smasher Cannon",
+                  "quantity": 1,
+                  "rangeInches": 30,
+                  "attacks": 2,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Deadly",
+                      "numericValue": 3
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Tear"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "q2-PgCAa",
+              "label": "Heavy Chucker Cannon (24\u0022, A8, Rending)",
+              "cost": 60,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Heavy Chucker Cannon",
+                  "quantity": 1,
+                  "rangeInches": 24,
+                  "attacks": 8,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Rending"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "YXB7Geb",
+          "label": "Replace Sponson-Flamer",
+          "variant": "Replace",
+          "affects": "One",
+          "targets": [
+            "Sponson-Flamer"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "jlzVI",
+              "label": "Sponson-MGs (30\u0022, A6, AP(1))",
+              "cost": 45,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Sponson-MGs",
+                  "quantity": 1,
+                  "rangeInches": 30,
+                  "attacks": 6,
+                  "armorPenetration": 1,
+                  "specialRules": []
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "K8bw12O",
+          "label": "Upgrade with any",
+          "variant": "Upgrade",
+          "affects": "One",
+          "targets": [],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 5,
+          "options": [
+            {
+              "id": "SLTE6",
+              "label": "Pintle-Gun (30\u0022, A1, AP(2))",
+              "cost": 20,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Pintle-Gun",
+                  "quantity": 1,
+                  "rangeInches": 30,
+                  "attacks": 1,
+                  "armorPenetration": 2,
+                  "specialRules": []
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "ABooa",
+              "label": "Dozer Blade (Strider)",
+              "cost": 20,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Dozer Blade",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Strider"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            },
+            {
+              "id": "O3u6UHHtRP",
+              "label": "Self-Destruction Payload (Deathstrike(12))",
+              "cost": 20,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Self-Destruction Payload",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Deathstrike",
+                      "numericValue": 12
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            },
+            {
+              "id": "Zp5Pm",
+              "label": "Cargo Hold (Transport(11))",
+              "cost": 35,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Cargo Hold",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Transport",
+                      "numericValue": 11
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            },
+            {
+              "id": "Z8S_YcQ3P7",
+              "label": "Targeted Frenzy (Unpredictable Shooter Mark)",
+              "cost": 40,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Targeted Frenzy",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Unpredictable Shooter Mark"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "0wy6JQL",
+      "name": "Mega Walker",
+      "quality": 4,
+      "defense": 2,
+      "baseModelCount": 1,
+      "minModels": 1,
+      "maxModels": 1,
+      "basePointCost": 405,
+      "base": {
+        "shape": "Rectangle",
+        "diameterInches": 1.1023622,
+        "widthInches": 3.6220472,
+        "heightInches": 4.7244096
+      },
+      "weapons": [
+        {
+          "name": "Bubble Cannon",
+          "quantity": 1,
+          "rangeInches": 30,
+          "attacks": 1,
+          "armorPenetration": 4,
+          "specialRules": [
+            {
+              "kind": "coreNumeric",
+              "name": "Blast",
+              "numericValue": 3
+            }
+          ]
+        },
+        {
+          "name": "Heavy Machinegun",
+          "quantity": 1,
+          "rangeInches": 30,
+          "attacks": 3,
+          "armorPenetration": 1,
+          "specialRules": []
+        },
+        {
+          "name": "Lobber Mortar",
+          "quantity": 1,
+          "rangeInches": 24,
+          "attacks": 1,
+          "armorPenetration": 1,
+          "specialRules": [
+            {
+              "kind": "coreNumeric",
+              "name": "Blast",
+              "numericValue": 3
+            },
+            {
+              "kind": "core",
+              "name": "Indirect"
+            }
+          ]
+        },
+        {
+          "name": "Great Saw",
+          "quantity": 1,
+          "rangeInches": 0,
+          "attacks": 2,
+          "armorPenetration": 2,
+          "specialRules": [
+            {
+              "kind": "coreNumeric",
+              "name": "Deadly",
+              "numericValue": 3
+            }
+          ]
+        }
+      ],
+      "rules": [
+        {
+          "kind": "coreNumeric",
+          "name": "Fear",
+          "numericValue": 2
+        },
+        {
+          "kind": "core",
+          "name": "Fearless"
+        },
+        {
+          "kind": "core",
+          "name": "Mischievous"
+        },
+        {
+          "kind": "coreNumeric",
+          "name": "Tough",
+          "numericValue": 12
+        }
+      ],
+      "items": [],
+      "sections": []
+    },
+    {
+      "id": "OKeEdqy",
+      "name": "Artillery Gun",
+      "quality": 5,
+      "defense": 3,
+      "baseModelCount": 1,
+      "minModels": 1,
+      "maxModels": 1,
+      "basePointCost": 95,
+      "base": {
+        "shape": "Circle",
+        "diameterInches": 2.3622048,
+        "widthInches": 0.984252,
+        "heightInches": 1.968504
+      },
+      "weapons": [
+        {
+          "name": "Heavy Lobber Mortar",
+          "quantity": 1,
+          "rangeInches": 24,
+          "attacks": 1,
+          "armorPenetration": 1,
+          "specialRules": [
+            {
+              "kind": "coreNumeric",
+              "name": "Blast",
+              "numericValue": 6
+            },
+            {
+              "kind": "core",
+              "name": "Indirect"
+            }
+          ]
+        },
+        {
+          "name": "Crew",
+          "quantity": 1,
+          "rangeInches": 0,
+          "attacks": 3,
+          "armorPenetration": 0,
+          "specialRules": []
+        }
+      ],
+      "rules": [
+        {
+          "kind": "coreNumeric",
+          "name": "Tough",
+          "numericValue": 3
+        },
+        {
+          "kind": "core",
+          "name": "Mischievous"
+        },
+        {
+          "kind": "core",
+          "name": "Artillery"
+        }
+      ],
+      "items": [],
+      "sections": [
+        {
+          "id": "zR5BqjS",
+          "label": "Replace Heavy Lobber Mortar",
+          "variant": "Replace",
+          "affects": "One",
+          "targets": [
+            "Heavy Lobber Mortar"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "P3fkn200",
+              "label": "Heavy Tractor Beam (36\u0022, A4, AP(2), Unstoppable)",
+              "cost": 25,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Heavy Tractor Beam",
+                  "quantity": 1,
+                  "rangeInches": 36,
+                  "attacks": 4,
+                  "armorPenetration": 2,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Unstoppable"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "ai_Sw1VZl1",
+              "label": "Heavy Smasher Cannon (24\u0022, A1, AP(4), Deadly(6))",
+              "cost": 25,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Heavy Smasher Cannon",
+                  "quantity": 1,
+                  "rangeInches": 24,
+                  "attacks": 1,
+                  "armorPenetration": 4,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Deadly",
+                      "numericValue": 6
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "mcZt0a62",
+              "label": "Heavy Bubble Mortar (24\u0022, A1, AP(4), Blast(6), Indirect)",
+              "cost": 45,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Heavy Bubble Mortar",
+                  "quantity": 1,
+                  "rangeInches": 24,
+                  "attacks": 1,
+                  "armorPenetration": 4,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Blast",
+                      "numericValue": 6
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Indirect"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "M_6gA0R3",
+              "label": "Heavy Bolt-Smasher Cannon (30\u0022, A2, Deadly(3), Tear)",
+              "cost": 45,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Heavy Bolt-Smasher Cannon",
+                  "quantity": 1,
+                  "rangeInches": 30,
+                  "attacks": 2,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Deadly",
+                      "numericValue": 3
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Tear"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "amhGUene",
+              "label": "Boosted Chucker Cannon (24\u0022, A6, Indirect, Rending)",
+              "cost": 50,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Boosted Chucker Cannon",
+                  "quantity": 1,
+                  "rangeInches": 24,
+                  "attacks": 6,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Rending"
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Indirect"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "dNY0tI5",
+          "label": "Upgrade with",
+          "variant": "Upgrade",
+          "affects": "One",
+          "targets": [],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "8uUWfsHOr_",
+              "label": "Trash Goggles (Good Shot)",
+              "cost": 15,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Trash Goggles",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Good Shot"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "0oejS_N",
+      "name": "Waskatsin",
+      "quality": 4,
+      "defense": 3,
+      "baseModelCount": 1,
+      "minModels": 1,
+      "maxModels": 1,
+      "basePointCost": 205,
+      "base": {
+        "shape": "Circle",
+        "diameterInches": 1.968504,
+        "widthInches": 0.984252,
+        "heightInches": 1.968504
+      },
+      "weapons": [
+        {
+          "name": "Rad-Machinegun",
+          "quantity": 1,
+          "rangeInches": 24,
+          "attacks": 6,
+          "armorPenetration": 0,
+          "specialRules": [
+            {
+              "kind": "core",
+              "name": "Shred"
+            }
+          ]
+        },
+        {
+          "name": "Ventslicer Chainsaw",
+          "quantity": 1,
+          "rangeInches": 0,
+          "attacks": 2,
+          "armorPenetration": 2,
+          "specialRules": [
+            {
+              "kind": "coreNumeric",
+              "name": "Deadly",
+              "numericValue": 3
+            }
+          ]
+        }
+      ],
+      "rules": [
+        {
+          "kind": "core",
+          "name": "Hero"
+        },
+        {
+          "kind": "core",
+          "name": "Mischievous"
+        },
+        {
+          "kind": "coreNumeric",
+          "name": "Tough",
+          "numericValue": 6
+        },
+        {
+          "kind": "core",
+          "name": "Unique"
+        }
+      ],
+      "items": [
+        {
+          "name": "Rad-Glow",
+          "quantity": 1,
+          "rules": [
+            {
+              "kind": "core",
+              "name": "Dangerous Terrain Debuff"
+            }
+          ]
+        },
+        {
+          "name": "Rad-Armor",
+          "quantity": 1,
+          "rules": [
+            {
+              "kind": "coreNumeric",
+              "name": "Retaliate",
+              "numericValue": 1
+            }
+          ]
+        }
+      ],
+      "sections": []
+    }
+  ],
+  "ruleDefinitions": [
+    {
+      "name": "Unique",
+      "passive": [],
+      "activated": [],
+      "scope": "Unit",
+      "engineArgumentCount": 0,
+      "valence": "Neutral",
+      "description": "Your army may only include one copy of this unit."
+    },
+    {
+      "name": "Tear",
+      "passive": [
+        {
+          "hookID": "Shooting_OnHitRollComplete",
+          "condition": {
+            "kind": "targetMajorityHasTough",
+            "minToughValue": 9
+          },
+          "effect": {
+            "kind": "rollModifier",
+            "rollKind": "Save",
+            "delta": -4
+          },
+          "lifetime": "ThisAttack",
+          "seat": "Actor"
+        }
+      ],
+      "activated": [],
+      "scope": "Weapon",
+      "engineArgumentCount": 0,
+      "valence": "Positive",
+      "description": "Against units where most models have Tough 9\u002B, this weapon gets AP(\u002B4)."
+    },
+    {
+      "name": "Unpredictable Shooter Mark",
+      "passive": [],
+      "activated": [
+        {
+          "triggerHook": "Activation_OnBeforeAttackAction",
+          "cost": {
+            "kind": "oncePerActivation"
+          },
+          "targetSelector": {
+            "rangeInches": 18,
+            "minCount": 1,
+            "maxCount": 1,
+            "targetAffinity": "Foe",
+            "requireLineOfSight": true,
+            "requiredToken": null,
+            "singleModel": false,
+            "requiredRule": null
+          },
+          "effect": {
+            "kind": "markTarget",
+            "ruleName": "Unpredictable Shooter"
+          },
+          "availableWhen": {
+            "kind": "always"
+          },
+          "label": ""
+        }
+      ],
+      "scope": "Unit",
+      "engineArgumentCount": 0,
+      "valence": "Positive",
+      "description": "Once per activation, before attacking, pick one enemy unit within 18 inches in line of sight. The first friendly unit to shoot it this activation rolls one die: on a 1-3 its attacks get AP(\u002B1); on a 4-6 \u002B1 to hit instead."
+    },
+    {
+      "name": "Mischievous",
+      "passive": [
+        {
+          "hookID": "Shooting_OnSaveRollComplete",
+          "condition": {
+            "kind": "always"
+          },
+          "effect": {
+            "kind": "reroll",
+            "roll": "Save",
+            "condition": {
+              "kind": "onUnmodifiedValue",
+              "minValue": 6
+            }
+          },
+          "lifetime": "ThisAttack",
+          "seat": "Actor"
+        }
+      ],
+      "activated": [],
+      "scope": "Weapon",
+      "engineArgumentCount": 0,
+      "valence": "Positive",
+      "description": "The defender must re-roll unmodified Defense 6s."
+    },
+    {
+      "name": "Precision Fighter Aura",
+      "passive": [
+        {
+          "hookID": "Lifecycle_OnUnitCreated",
+          "condition": {
+            "kind": "always"
+          },
+          "effect": {
+            "kind": "aura",
+            "ruleName": "Precision Fighter"
+          },
+          "lifetime": "UntilEndOfGame",
+          "seat": "Actor"
+        }
+      ],
+      "activated": [],
+      "scope": "Unit",
+      "engineArgumentCount": 0,
+      "valence": "Positive",
+      "description": "This model and its unit gain Precision Fighter."
+    },
+    {
+      "name": "Bounding",
+      "passive": [
+        {
+          "hookID": "Activation_OnActivationStart",
+          "condition": {
+            "kind": "allModelsHaveThisRule"
+          },
+          "effect": {
+            "kind": "repositionAtActivation",
+            "distance": {
+              "kind": "d3"
+            },
+            "plusInches": 1
+          },
+          "lifetime": "ThisActivation",
+          "seat": "Actor"
+        }
+      ],
+      "activated": [],
+      "scope": "Unit",
+      "engineArgumentCount": 0,
+      "valence": "Positive",
+      "description": "When this unit is activated, it may place all its models anywhere fully within D3\u002B1 inches of their position."
+    },
+    {
+      "name": "Armor",
+      "passive": [
+        {
+          "hookID": "Lifecycle_OnUnitCreated",
+          "condition": {
+            "kind": "always"
+          },
+          "effect": {
+            "kind": "setDefense",
+            "defense": {
+              "kind": "arg",
+              "index": 0
+            }
+          },
+          "lifetime": "UntilEndOfGame",
+          "seat": "Actor"
+        }
+      ],
+      "activated": [],
+      "scope": "Unit",
+      "engineArgumentCount": 1,
+      "valence": "Positive",
+      "description": "Counts as having Defense X\u002B in place of the model\u0027s own Defense stat."
+    },
+    {
+      "name": "Mischievous Boost",
+      "passive": [
+        {
+          "hookID": "Shooting_OnSaveRollComplete",
+          "condition": {
+            "kind": "attackedFromOverInches",
+            "distanceInches": 9
+          },
+          "effect": {
+            "kind": "reroll",
+            "roll": "Save",
+            "condition": {
+              "kind": "onUnmodifiedValue",
+              "minValue": 5
+            }
+          },
+          "lifetime": "ThisAttack",
+          "seat": "Actor"
+        }
+      ],
+      "activated": [],
+      "scope": "Weapon",
+      "engineArgumentCount": 0,
+      "valence": "Positive",
+      "description": "If this model has Mischievous, when it shoots or charges enemies over 9 inches away, enemies taking hits from it must re-roll successful unmodified defense results of 5-6. Save re-rolls compose by the widest band, so this states the full 5-6 rather than an increment."
+    },
+    {
+      "name": "Mischievous Boost Aura",
+      "passive": [
+        {
+          "hookID": "Lifecycle_OnUnitCreated",
+          "condition": {
+            "kind": "always"
+          },
+          "effect": {
+            "kind": "aura",
+            "ruleName": "Mischievous Boost"
+          },
+          "lifetime": "UntilEndOfGame",
+          "seat": "Actor"
+        }
+      ],
+      "activated": [],
+      "scope": "Unit",
+      "engineArgumentCount": 0,
+      "valence": "Positive",
+      "description": "This model and its unit get Mischievous Boost."
+    },
+    {
+      "name": "Dangerous Terrain Debuff",
+      "passive": [],
+      "activated": [
+        {
+          "triggerHook": "Activation_OnBeforeAttackAction",
+          "cost": {
+            "kind": "oncePerActivation"
+          },
+          "targetSelector": {
+            "rangeInches": 18,
+            "minCount": 1,
+            "maxCount": 1,
+            "targetAffinity": "Foe",
+            "requireLineOfSight": true,
+            "requiredToken": null,
+            "singleModel": false,
+            "requiredRule": null
+          },
+          "effect": {
+            "kind": "addRule",
+            "ruleName": "Dangerous Terrain Debuff Effect",
+            "scope": "NextTrigger"
+          },
+          "availableWhen": {
+            "kind": "always"
+          },
+          "label": ""
+        }
+      ],
+      "scope": "Unit",
+      "engineArgumentCount": 0,
+      "valence": "Positive",
+      "description": "Once per activation, before attacking, pick one enemy unit within 18\u0022 in line of sight, which counts as being in Dangerous Terrain once (next time the effect would apply)."
+    },
+    {
+      "name": "Quick Shot Aura",
+      "passive": [
+        {
+          "hookID": "Lifecycle_OnUnitCreated",
+          "condition": {
+            "kind": "always"
+          },
+          "effect": {
+            "kind": "aura",
+            "ruleName": "Quick Shot"
+          },
+          "lifetime": "UntilEndOfGame",
+          "seat": "Actor"
+        }
+      ],
+      "activated": [],
+      "scope": "Unit",
+      "engineArgumentCount": 0,
+      "valence": "Positive",
+      "description": "This model and its unit get Quick Shot."
+    },
+    {
+      "name": "Instinctive",
+      "passive": [
+        {
+          "hookID": "Lifecycle_OnCapabilityQuery",
+          "condition": {
+            "kind": "allModelsHaveThisRule"
+          },
+          "effect": {
+            "kind": "compelClosestTarget"
+          },
+          "lifetime": "UntilEndOfGame",
+          "seat": "Actor"
+        },
+        {
+          "hookID": "Shooting_OnHitRollModifier",
+          "condition": {
+            "kind": "and",
+            "left": {
+              "kind": "tokenPresent",
+              "tType": {
+                "id": "CompelledToAttack"
+              },
+              "minCount": 1
+            },
+            "right": {
+              "kind": "not",
+              "inner": {
+                "kind": "isMelee"
+              }
+            }
+          },
+          "effect": {
+            "kind": "rollModifier",
+            "rollKind": "Hit",
+            "delta": 1
+          },
+          "lifetime": "UntilEndOfGame",
+          "seat": "Actor"
+        },
+        {
+          "hookID": "Shooting_OnHitRollModifier",
+          "condition": {
+            "kind": "and",
+            "left": {
+              "kind": "tokenPresent",
+              "tType": {
+                "id": "CompelledToAttack"
+              },
+              "minCount": 1
+            },
+            "right": {
+              "kind": "and",
+              "left": {
+                "kind": "isMelee"
+              },
+              "right": {
+                "kind": "isCharging"
+              }
+            }
+          },
+          "effect": {
+            "kind": "rollModifier",
+            "rollKind": "Hit",
+            "delta": 1
+          },
+          "lifetime": "UntilEndOfGame",
+          "seat": "Actor"
+        }
+      ],
+      "activated": [],
+      "scope": "Unit",
+      "engineArgumentCount": 0,
+      "valence": "Positive",
+      "description": "When this model is activated, if it is able to shoot/charge an enemy unit, it must immediately attack the closest valid target and gets \u002B1 to hit rolls for that attack."
+    },
+    {
+      "name": "Precision Fighter",
+      "passive": [
+        {
+          "hookID": "Shooting_OnHitRollModifier",
+          "condition": {
+            "kind": "isMelee"
+          },
+          "effect": {
+            "kind": "rollModifier",
+            "rollKind": "Hit",
+            "delta": 1
+          },
+          "lifetime": "ThisAttack",
+          "seat": "Actor"
+        }
+      ],
+      "activated": [],
+      "scope": "Unit",
+      "engineArgumentCount": 0,
+      "valence": "Positive",
+      "description": "\u002B1 to hit rolls in melee."
+    },
+    {
+      "name": "Dangerous Terrain Debuff Effect",
+      "passive": [
+        {
+          "hookID": "Movement_OnMoveThroughTerrain",
+          "condition": {
+            "kind": "always"
+          },
+          "effect": {
+            "kind": "countAsInTerrain",
+            "terrain": "Dangerous"
+          },
+          "lifetime": "ThisActivation",
+          "seat": "Actor"
+        }
+      ],
+      "activated": [],
+      "scope": "Unit",
+      "engineArgumentCount": 0,
+      "valence": "Negative",
+      "description": "This unit counts as being in Dangerous Terrain on its next move - each moving model rolls a die, taking a wound on a 1."
+    },
+    {
+      "name": "Quick Shot",
+      "passive": [
+        {
+          "hookID": "Activation_OnActionChoice",
+          "condition": {
+            "kind": "always"
+          },
+          "effect": {
+            "kind": "shootAfterRush"
+          },
+          "lifetime": "ThisActivation",
+          "seat": "Actor"
+        }
+      ],
+      "activated": [],
+      "scope": "Unit",
+      "engineArgumentCount": 0,
+      "valence": "Positive",
+      "description": "This model may shoot after using Rush actions."
+    }
+  ],
+  "spells": [
+    {
+      "name": "Ammo Boost",
+      "threshold": 1,
+      "target": {
+        "rangeInches": 12,
+        "minCount": 1,
+        "maxCount": 1,
+        "targetAffinity": "Friend",
+        "requireLineOfSight": false,
+        "requiredToken": null,
+        "singleModel": false,
+        "requiredRule": null
+      },
+      "effect": {
+        "kind": "addRule",
+        "ruleName": "Mischievous Boost",
+        "scope": "NextTrigger"
+      }
+    },
+    {
+      "name": "Zap!",
+      "threshold": 1,
+      "target": {
+        "rangeInches": 12,
+        "minCount": 1,
+        "maxCount": 1,
+        "targetAffinity": "Foe",
+        "requireLineOfSight": true,
+        "requiredToken": null,
+        "singleModel": false,
+        "requiredRule": null
+      },
+      "effect": {
+        "kind": "dealHits",
+        "count": 2,
+        "withRules": [
+          "Surge"
+        ],
+        "armorPenetration": 1
+      }
+    },
+    {
+      "name": "Mob Frenzy",
+      "threshold": 2,
+      "target": {
+        "rangeInches": 18,
+        "minCount": 1,
+        "maxCount": 2,
+        "targetAffinity": "Foe",
+        "requireLineOfSight": false,
+        "requiredToken": null,
+        "singleModel": false,
+        "requiredRule": null
+      },
+      "effect": {
+        "kind": "markTarget",
+        "ruleName": "Unpredictable Shooter"
+      }
+    },
+    {
+      "name": "Boom!",
+      "threshold": 2,
+      "target": {
+        "rangeInches": 18,
+        "minCount": 1,
+        "maxCount": 1,
+        "targetAffinity": "Foe",
+        "requireLineOfSight": true,
+        "requiredToken": null,
+        "singleModel": false,
+        "requiredRule": null
+      },
+      "effect": {
+        "kind": "dealHits",
+        "count": 2,
+        "withRules": [
+          "Blast(3)"
+        ],
+        "armorPenetration": 0
+      }
+    },
+    {
+      "name": "Shroud Field",
+      "threshold": 3,
+      "target": {
+        "rangeInches": 12,
+        "minCount": 1,
+        "maxCount": 3,
+        "targetAffinity": "Friend",
+        "requireLineOfSight": false,
+        "requiredToken": null,
+        "singleModel": false,
+        "requiredRule": null
+      },
+      "effect": {
+        "kind": "addRule",
+        "ruleName": "\u002B1 to defense rolls",
+        "scope": "NextTrigger"
+      }
+    },
+    {
+      "name": "Pow!",
+      "threshold": 3,
+      "target": {
+        "rangeInches": 6,
+        "minCount": 1,
+        "maxCount": 1,
+        "targetAffinity": "Foe",
+        "requireLineOfSight": true,
+        "requiredToken": null,
+        "singleModel": false,
+        "requiredRule": null
+      },
+      "effect": {
+        "kind": "dealHits",
+        "count": 3,
+        "withRules": [
+          "Deadly(3)",
+          "Tear"
+        ],
+        "armorPenetration": 0
+      }
+    }
+  ]
+}

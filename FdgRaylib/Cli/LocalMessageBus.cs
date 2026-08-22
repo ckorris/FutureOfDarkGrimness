@@ -11,6 +11,12 @@ public class LocalMessageBus : IMessageBusHost, IMessageBusClient
 {
     private readonly Dictionary<Type, List<Delegate>> _handlers = new();
 
+    // In-process single-machine play has no real connections, so a client never "disconnects" here.
+    // Implemented to satisfy IMessageBusHost (#076); never raised.
+#pragma warning disable CS0067
+    public event Action<ConnectionID>? OnClientDisconnected;
+#pragma warning restore CS0067
+
     public void RegisterForMessageEvent<T>(Action<T> onMessageReceived)
     {
         if (!_handlers.TryGetValue(typeof(T), out var list))
@@ -22,6 +28,22 @@ public class LocalMessageBus : IMessageBusHost, IMessageBusClient
     }
 
     public void DeregisterForMessageEvent<T>(Action<T> handler)
+    {
+        if (_handlers.TryGetValue(typeof(T), out var list))
+            list.Remove(handler);
+    }
+
+    public void RegisterForConnectionMessageEvent<T>(Action<T, ConnectionID> handler)
+    {
+        if (!_handlers.TryGetValue(typeof(T), out var list))
+        {
+            list = new List<Delegate>();
+            _handlers[typeof(T)] = list;
+        }
+        list.Add(handler);
+    }
+
+    public void DeregisterForConnectionMessageEvent<T>(Action<T, ConnectionID> handler)
     {
         if (_handlers.TryGetValue(typeof(T), out var list))
             list.Remove(handler);
@@ -45,8 +67,12 @@ public class LocalMessageBus : IMessageBusHost, IMessageBusClient
         return Task.CompletedTask;
     }
 
-    // Only needed when processing network messages; not applicable locally.
-    public ConnectionID GetCurrentMessageConnectionID() => ConnectionID.Host;
+    public Task SendCommandToLocalAsync<TMessage>(TMessage message)
+    {
+        // Single-machine play is all in-process anyway, so local delivery is just a dispatch.
+        Dispatch(message);
+        return Task.CompletedTask;
+    }
 
     public void Dispose() { }
 
@@ -55,8 +81,14 @@ public class LocalMessageBus : IMessageBusHost, IMessageBusClient
         if (message == null) return;
         if (_handlers.TryGetValue(typeof(TMessage), out var list))
         {
+            // Local play has no real connections; connection-aware handlers see the host id.
             foreach (var handler in list.ToList())
-                ((Action<TMessage>)handler)(message);
+            {
+                if (handler is Action<TMessage> plain)
+                    plain(message);
+                else if (handler is Action<TMessage, ConnectionID> withConnection)
+                    withConnection(message, ConnectionID.Host);
+            }
         }
     }
 }

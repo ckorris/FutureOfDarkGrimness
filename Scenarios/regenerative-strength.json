@@ -1,0 +1,29 @@
+{
+  "name": "Regenerative Strength (#197 P12): the Volley Squad shoots the Pain Fueled Beast, whose Regeneration ignores a FRACTION of the wounds under the probabilistic roller - and banks an equal fraction of a marker. The Beast (already activated in round 1, so the shooting lands first) then charges in round 2, where exactly one of its two melee weapons gets +X attacks on the player's say-so. Watch for: 'banks N Regenerative Strength marker(s)', then one offer, then an attack count above the weapon's printed A-value.",
+  "round": 1,
+  "activePlayer": 1,
+  "settings": {
+    "randomness": "Probabilistic"
+  },
+  "players": [
+    {
+      "army": "armies/PainFueled.fdgarmy",
+      "units": [
+        {
+          "unit": "Pain Fueled Beast",
+          "models": [[24, 20]],
+          "activated": true
+        }
+      ]
+    },
+    {
+      "army": "armies/RegenProbeShooters.fdgarmy",
+      "units": [
+        {
+          "unit": "Volley Squad",
+          "models": [[22, 31], [23, 31], [24, 31], [25, 31], [26, 31]]
+        }
+      ]
+    }
+  ]
+}

@@ -9,6 +9,9 @@ public static class TerrainLoader
     private static readonly JsonSerializerSettings _settings = new JsonSerializerSettings
     {
         TypeNameHandling = TypeNameHandling.Auto,
+        // Mirror the engine-side TerrainLayoutLoader (#272): untrusted terrain files must resolve
+        // their polymorphic IZone $type through the allowlist, never the permissive default binder.
+        SerializationBinder = new AllowlistSerializationBinder(),
     };
 
     public static TerrainLayoutFile? TryLoadFromFile(string path, out string? error)

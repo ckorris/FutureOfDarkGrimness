@@ -1,0 +1,4341 @@
+{
+  "name": "Rebel Guerrillas",
+  "faction": "Rebel Guerrillas",
+  "version": "OPR v3.5.3",
+  "source": "OnePageRules - Army Forge (army-forge.onepagerules.com)",
+  "license": "CC-BY-SA 4.0",
+  "defaultRangedEffectSet": "ballistic-slug",
+  "defaultMeleeEffectSet": "energy-blade",
+  "units": [
+    {
+      "id": "oeM_chu",
+      "name": "Simian Champion",
+      "quality": 4,
+      "defense": 4,
+      "baseModelCount": 1,
+      "minModels": 1,
+      "maxModels": 1,
+      "basePointCost": 95,
+      "base": {
+        "shape": "Circle",
+        "diameterInches": 1.5748031,
+        "widthInches": 0.984252,
+        "heightInches": 1.968504
+      },
+      "weapons": [
+        {
+          "name": "Massive Fist",
+          "quantity": 1,
+          "rangeInches": 0,
+          "attacks": 6,
+          "armorPenetration": 1,
+          "specialRules": []
+        }
+      ],
+      "rules": [
+        {
+          "kind": "core",
+          "name": "Furious"
+        },
+        {
+          "kind": "core",
+          "name": "Hero"
+        },
+        {
+          "kind": "coreNumeric",
+          "name": "Tough",
+          "numericValue": 6
+        },
+        {
+          "kind": "core",
+          "name": "Guerrilla"
+        }
+      ],
+      "items": [],
+      "sections": [
+        {
+          "id": "PJlt_2s",
+          "label": "Upgrade any model with",
+          "variant": "Upgrade",
+          "affects": "Any",
+          "targets": [],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "ygpVz2R",
+              "label": "Claw Gauntlets (Bane in Melee)",
+              "cost": 10,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Claw Gauntlets",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Bane in Melee"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "jKSemv8",
+          "label": "Upgrade with one",
+          "variant": "Upgrade",
+          "affects": "One",
+          "targets": [],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "ZWP-Crp",
+              "label": "Resistance Spirit (Shielded Aura)",
+              "cost": 15,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Resistance Spirit",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Shielded Aura"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            },
+            {
+              "id": "WfE1__1",
+              "label": "Pathfinder (Strider Aura)",
+              "cost": 20,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Pathfinder",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Strider Aura"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            },
+            {
+              "id": "pWqWIhGokH",
+              "label": "Revolutionary (Guerrilla Boost Aura)",
+              "cost": 25,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Revolutionary",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Guerrilla Boost Aura"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            },
+            {
+              "id": "kfW0lVR",
+              "label": "Captain (Rending in Melee Aura)",
+              "cost": 40,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Captain",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Rending in Melee Aura"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "yHBMPqu",
+      "name": "Rebel Leader",
+      "quality": 4,
+      "defense": 5,
+      "baseModelCount": 1,
+      "minModels": 1,
+      "maxModels": 1,
+      "basePointCost": 40,
+      "base": {
+        "shape": "Circle",
+        "diameterInches": 0.984252,
+        "widthInches": 0.984252,
+        "heightInches": 1.968504
+      },
+      "weapons": [
+        {
+          "name": "Leader Pistol",
+          "quantity": 1,
+          "rangeInches": 12,
+          "attacks": 2,
+          "armorPenetration": 0,
+          "specialRules": []
+        },
+        {
+          "name": "CCW",
+          "quantity": 1,
+          "rangeInches": 0,
+          "attacks": 2,
+          "armorPenetration": 0,
+          "specialRules": []
+        }
+      ],
+      "rules": [
+        {
+          "kind": "core",
+          "name": "Hero"
+        },
+        {
+          "kind": "core",
+          "name": "Guerrilla"
+        },
+        {
+          "kind": "coreNumeric",
+          "name": "Tough",
+          "numericValue": 3
+        }
+      ],
+      "items": [],
+      "sections": [
+        {
+          "id": "Ts3w_7H",
+          "label": "Replace Leader Pistol",
+          "variant": "Replace",
+          "affects": "One",
+          "targets": [
+            "Leader Pistol"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "58X8k74",
+              "label": "Flamer Pistol (6\u0022, A1, Blast(3), Reliable)",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Flamer Pistol",
+                  "quantity": 1,
+                  "rangeInches": 6,
+                  "attacks": 1,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Blast",
+                      "numericValue": 3
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Reliable"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "09kZ-",
+              "label": "Leader Shred Pistol (9\u0022, A3, Rending)",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Leader Shred Pistol",
+                  "quantity": 1,
+                  "rangeInches": 9,
+                  "attacks": 3,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Rending"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "u8H9J1V",
+              "label": "Fusion Pistol (6\u0022, A1, AP(4), Deadly(3))",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Fusion Pistol",
+                  "quantity": 1,
+                  "rangeInches": 6,
+                  "attacks": 1,
+                  "armorPenetration": 4,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Deadly",
+                      "numericValue": 3
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "TlClU",
+              "label": "Leader Carbine (18\u0022, A3)",
+              "cost": 10,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Leader Carbine",
+                  "quantity": 1,
+                  "rangeInches": 18,
+                  "attacks": 3,
+                  "armorPenetration": 0,
+                  "specialRules": []
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "2nTfZit",
+              "label": "Leader Shotgun (12\u0022, A3, AP(1))",
+              "cost": 10,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Leader Shotgun",
+                  "quantity": 1,
+                  "rangeInches": 12,
+                  "attacks": 3,
+                  "armorPenetration": 1,
+                  "specialRules": []
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "Bp2Zhle",
+              "label": "Leader Plasma Pistol (12\u0022, A2, AP(4))",
+              "cost": 15,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Leader Plasma Pistol",
+                  "quantity": 1,
+                  "rangeInches": 12,
+                  "attacks": 2,
+                  "armorPenetration": 4,
+                  "specialRules": []
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "JVrd9rF",
+              "label": "Leader Sniper Rifle (30\u0022, A2, AP(1), Reliable, Takedown)",
+              "cost": 55,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Leader Sniper Rifle",
+                  "quantity": 1,
+                  "rangeInches": 30,
+                  "attacks": 2,
+                  "armorPenetration": 1,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Takedown"
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Reliable"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "zj9YJj4",
+          "label": "Replace CCW",
+          "variant": "Replace",
+          "affects": "One",
+          "targets": [
+            "CCW"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "Q18r1RW",
+              "label": "Energy Sword (A2, AP(1), Rending)",
+              "cost": 10,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Energy Sword",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 2,
+                  "armorPenetration": 1,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Rending"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "dKOZLs-GS_",
+              "label": "Energy Lance (A2, AP(1), Thrust)",
+              "cost": 10,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Energy Lance",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 2,
+                  "armorPenetration": 1,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Thrust"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "4MDA0zL",
+              "label": "Energy Fist (A2, AP(4))",
+              "cost": 15,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Energy Fist",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 2,
+                  "armorPenetration": 4,
+                  "specialRules": []
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "N_qyqzV",
+          "label": "Upgrade with one",
+          "variant": "Upgrade",
+          "affects": "One",
+          "targets": [],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "zLIdQDDYoF",
+              "label": "Pioneer Leader (Ambush, Counter-Attack)",
+              "cost": 10,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Pioneer Leader",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Ambush"
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Counter-Attack"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            },
+            {
+              "id": "H0WHN",
+              "label": "Wings (Ambush, Flying)",
+              "cost": 15,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Wings",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Ambush"
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Flying"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            },
+            {
+              "id": "UlJtKrfmQn",
+              "label": "Elites Leader (Fearless, Stealth)",
+              "cost": 15,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Elites Leader",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Fearless"
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Stealth"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            },
+            {
+              "id": "09XT4",
+              "label": "Spotter Leader (Scout, Stealth)",
+              "cost": 15,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Spotter Leader",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Scout"
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Stealth"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            },
+            {
+              "id": "ADmoO",
+              "label": "Combat Bike (Fast, Tough(3))",
+              "cost": 40,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Combat Bike",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Fast"
+                    },
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Tough",
+                      "numericValue": 3
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "quXTMet",
+          "label": "Upgrade with one",
+          "variant": "Upgrade",
+          "affects": "One",
+          "targets": [],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "0VTietnJ1U",
+              "label": "Bounty Hunter (Takedown Strike)",
+              "cost": 15,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Bounty Hunter",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Takedown Strike"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            },
+            {
+              "id": "vgH9nBfZ",
+              "label": "Pathfinder (Strider Aura)",
+              "cost": 20,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Pathfinder",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Strider Aura"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            },
+            {
+              "id": "Df3XKhnM",
+              "label": "Revolutionary (Guerrilla Boost Aura)",
+              "cost": 25,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Revolutionary",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Guerrilla Boost Aura"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            },
+            {
+              "id": "GqYrohet",
+              "label": "Sergeant (Bane when Shooting Aura)",
+              "cost": 25,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Sergeant",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Bane when Shooting Aura"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            },
+            {
+              "id": "m2R78z1c",
+              "label": "Captain (Rending in Melee Aura)",
+              "cost": 40,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Captain",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Rending in Melee Aura"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            },
+            {
+              "id": "eOKAmKXo",
+              "label": "Psy-Monk (Caster(2))",
+              "cost": 45,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Psy-Monk",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Caster",
+                      "numericValue": 2
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "vSXH5yF",
+      "name": "Rebels",
+      "quality": 5,
+      "defense": 5,
+      "baseModelCount": 10,
+      "minModels": 10,
+      "maxModels": 10,
+      "basePointCost": 150,
+      "base": {
+        "shape": "Circle",
+        "diameterInches": 0.984252,
+        "widthInches": 0.984252,
+        "heightInches": 1.968504
+      },
+      "weapons": [
+        {
+          "name": "Carbine",
+          "quantity": 10,
+          "rangeInches": 18,
+          "attacks": 2,
+          "armorPenetration": 0,
+          "specialRules": []
+        },
+        {
+          "name": "CCW",
+          "quantity": 10,
+          "rangeInches": 0,
+          "attacks": 1,
+          "armorPenetration": 0,
+          "specialRules": []
+        }
+      ],
+      "rules": [
+        {
+          "kind": "core",
+          "name": "Guerrilla"
+        }
+      ],
+      "items": [],
+      "sections": [
+        {
+          "id": "B8rT88F",
+          "label": "Replace any Carbine",
+          "variant": "Replace",
+          "affects": "Any",
+          "targets": [
+            "Carbine"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "hkHCdrd",
+              "label": "Shotgun (12\u0022, A2, AP(1))",
+              "cost": 0,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Shotgun",
+                  "quantity": 1,
+                  "rangeInches": 12,
+                  "attacks": 2,
+                  "armorPenetration": 1,
+                  "specialRules": []
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "rGzHboh",
+          "label": "Replace up to three Carbines",
+          "variant": "Replace",
+          "affects": "Any",
+          "targets": [
+            "Carbines"
+          ],
+          "maxApplications": 3,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "L9wwayL",
+              "label": "Plasma Rifle (24\u0022, A1, AP(4))",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Plasma Rifle",
+                  "quantity": 1,
+                  "rangeInches": 24,
+                  "attacks": 1,
+                  "armorPenetration": 4,
+                  "specialRules": []
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "A2keZOu",
+              "label": "Shred Rifle (18\u0022, A2, Rending)",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Shred Rifle",
+                  "quantity": 1,
+                  "rangeInches": 18,
+                  "attacks": 2,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Rending"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "GdeuRDv",
+          "label": "Replace one Carbine",
+          "variant": "Replace",
+          "affects": "One",
+          "targets": [
+            "Carbine"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "ow6Mq",
+              "label": "Fusion Rifle (12\u0022, A1, AP(4), Deadly(3))",
+              "cost": 10,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Fusion Rifle",
+                  "quantity": 1,
+                  "rangeInches": 12,
+                  "attacks": 1,
+                  "armorPenetration": 4,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Deadly",
+                      "numericValue": 3
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "M5Kdd",
+              "label": "Rocket Launcher (18\u0022, A1, AP(2), Deadly(3))",
+              "cost": 10,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Rocket Launcher",
+                  "quantity": 1,
+                  "rangeInches": 18,
+                  "attacks": 1,
+                  "armorPenetration": 2,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Deadly",
+                      "numericValue": 3
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "jqye9",
+              "label": "Flamer (12\u0022, A1, Blast(3), Reliable)",
+              "cost": 10,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Flamer",
+                  "quantity": 1,
+                  "rangeInches": 12,
+                  "attacks": 1,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Blast",
+                      "numericValue": 3
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Reliable"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "ltlKD",
+              "label": "Cluster-GL (24\u0022, A1, Blast(3), Lacerate, Precise)",
+              "cost": 15,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Cluster-GL",
+                  "quantity": 1,
+                  "rangeInches": 24,
+                  "attacks": 1,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Precise"
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Lacerate"
+                    },
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Blast",
+                      "numericValue": 3
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "-auuk",
+              "label": "Minigun (24\u0022, A4, AP(1))",
+              "cost": 20,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Minigun",
+                  "quantity": 1,
+                  "rangeInches": 24,
+                  "attacks": 4,
+                  "armorPenetration": 1,
+                  "specialRules": []
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "jvUIr1g",
+          "label": "Upgrade one model with one",
+          "variant": "Upgrade",
+          "affects": "One",
+          "targets": [],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "8QFsLUy",
+              "label": "Gun Drone (24\u0022, A1, AP(1), Limited)",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Gun Drone",
+                  "quantity": 1,
+                  "rangeInches": 24,
+                  "attacks": 1,
+                  "armorPenetration": 1,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Limited"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "UJvS1m9dMH",
+              "label": "Spotting Beacon (Piercing Tag(1))",
+              "cost": 25,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Spotting Beacon",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Piercing Tag",
+                      "numericValue": 1
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            },
+            {
+              "id": "xnJSctQ",
+              "label": "Medical Training (Regeneration Aura)",
+              "cost": 40,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Medical Training",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Regeneration Aura"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "jd2GDOU",
+          "label": "Replace one Carbine and CCW",
+          "variant": "Replace",
+          "affects": "One",
+          "targets": [
+            "Carbine",
+            "CCW"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "mr7PrmBT",
+              "label": "Sgt. Pistol (12\u0022, A1), Energy Sword (A2, AP(1), Rending)",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Sgt. Pistol",
+                  "quantity": 1,
+                  "rangeInches": 12,
+                  "attacks": 1,
+                  "armorPenetration": 0,
+                  "specialRules": []
+                },
+                {
+                  "name": "Energy Sword",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 2,
+                  "armorPenetration": 1,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Rending"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "iwBwCI5",
+          "label": "Replace Sgt. Pistol",
+          "variant": "Replace",
+          "affects": "One",
+          "targets": [
+            "Sgt. Pistol"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "BMei0sLa",
+              "label": "Shred Pistol (9\u0022, A2, Rending)",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Shred Pistol",
+                  "quantity": 1,
+                  "rangeInches": 9,
+                  "attacks": 2,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Rending"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "wniC87Tz",
+              "label": "Plasma Pistol (12\u0022, A1, AP(4))",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Plasma Pistol",
+                  "quantity": 1,
+                  "rangeInches": 12,
+                  "attacks": 1,
+                  "armorPenetration": 4,
+                  "specialRules": []
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "msy3pqq",
+          "label": "Replace Energy Sword",
+          "variant": "Replace",
+          "affects": "One",
+          "targets": [
+            "Energy Sword"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "m6rBRB9b",
+              "label": "Energy Fist (A2, AP(4))",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Energy Fist",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 2,
+                  "armorPenetration": 4,
+                  "specialRules": []
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "LX-BhMs",
+      "name": "Strikers",
+      "quality": 5,
+      "defense": 5,
+      "baseModelCount": 10,
+      "minModels": 10,
+      "maxModels": 10,
+      "basePointCost": 125,
+      "base": {
+        "shape": "Circle",
+        "diameterInches": 0.984252,
+        "widthInches": 0.984252,
+        "heightInches": 1.968504
+      },
+      "weapons": [
+        {
+          "name": "Pistol",
+          "quantity": 10,
+          "rangeInches": 12,
+          "attacks": 1,
+          "armorPenetration": 0,
+          "specialRules": []
+        },
+        {
+          "name": "CCW",
+          "quantity": 10,
+          "rangeInches": 0,
+          "attacks": 2,
+          "armorPenetration": 0,
+          "specialRules": []
+        }
+      ],
+      "rules": [
+        {
+          "kind": "core",
+          "name": "Guerrilla"
+        }
+      ],
+      "items": [],
+      "sections": [
+        {
+          "id": "bWEH0KG",
+          "label": "Replace any Pistol",
+          "variant": "Replace",
+          "affects": "Any",
+          "targets": [
+            "Pistol"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "3thEIXv",
+              "label": "Burst Gun (6\u0022, A2)",
+              "cost": 0,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Burst Gun",
+                  "quantity": 1,
+                  "rangeInches": 6,
+                  "attacks": 2,
+                  "armorPenetration": 0,
+                  "specialRules": []
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "8MQKGr_",
+          "label": "Replace up to two Pistols",
+          "variant": "Replace",
+          "affects": "Any",
+          "targets": [
+            "Pistols"
+          ],
+          "maxApplications": 2,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "Pc7VbyP",
+              "label": "Plasma Pistol (12\u0022, A1, AP(4))",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Plasma Pistol",
+                  "quantity": 1,
+                  "rangeInches": 12,
+                  "attacks": 1,
+                  "armorPenetration": 4,
+                  "specialRules": []
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "9WymyN4",
+              "label": "Flamer (12\u0022, A1, Blast(3), Reliable)",
+              "cost": 15,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Flamer",
+                  "quantity": 1,
+                  "rangeInches": 12,
+                  "attacks": 1,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Blast",
+                      "numericValue": 3
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Reliable"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "0hS9_Lk",
+          "label": "Replace up to two CCWs",
+          "variant": "Replace",
+          "affects": "Any",
+          "targets": [
+            "CCWs"
+          ],
+          "maxApplications": 2,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "vQeKxYb",
+              "label": "Energy Sword (A2, AP(1), Rending)",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Energy Sword",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 2,
+                  "armorPenetration": 1,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Rending"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "NymuhrS",
+          "label": "Upgrade all models with",
+          "variant": "Upgrade",
+          "affects": "All",
+          "targets": [],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "6t55QQW",
+              "label": "Wings (Ambush, Flying)",
+              "cost": 35,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Wings",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Ambush"
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Flying"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "sqK8y4h",
+          "label": "Replace one Pistol and CCW",
+          "variant": "Replace",
+          "affects": "One",
+          "targets": [
+            "Pistol",
+            "CCW"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "TzDirclK",
+              "label": "Sgt. Pistol (12\u0022, A1), Energy Sword (A2, AP(1), Rending)",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Sgt. Pistol",
+                  "quantity": 1,
+                  "rangeInches": 12,
+                  "attacks": 1,
+                  "armorPenetration": 0,
+                  "specialRules": []
+                },
+                {
+                  "name": "Energy Sword",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 2,
+                  "armorPenetration": 1,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Rending"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "k8WRcDM",
+          "label": "Replace Sgt. Pistol",
+          "variant": "Replace",
+          "affects": "One",
+          "targets": [
+            "Sgt. Pistol"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "kjIsOCtw",
+              "label": "Shred Pistol (9\u0022, A2, Rending)",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Shred Pistol",
+                  "quantity": 1,
+                  "rangeInches": 9,
+                  "attacks": 2,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Rending"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "chDU9hwr",
+              "label": "Plasma Pistol (12\u0022, A1, AP(4))",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Plasma Pistol",
+                  "quantity": 1,
+                  "rangeInches": 12,
+                  "attacks": 1,
+                  "armorPenetration": 4,
+                  "specialRules": []
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "Im7jq0_",
+          "label": "Replace Energy Sword",
+          "variant": "Replace",
+          "affects": "One",
+          "targets": [
+            "Energy Sword"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "uLsdvItt",
+              "label": "Energy Fist (A2, AP(4))",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Energy Fist",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 2,
+                  "armorPenetration": 4,
+                  "specialRules": []
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "e_dNKSO",
+      "name": "Spotters",
+      "quality": 5,
+      "defense": 5,
+      "baseModelCount": 5,
+      "minModels": 5,
+      "maxModels": 5,
+      "basePointCost": 100,
+      "base": {
+        "shape": "Circle",
+        "diameterInches": 0.984252,
+        "widthInches": 0.984252,
+        "heightInches": 1.968504
+      },
+      "weapons": [
+        {
+          "name": "Carbine",
+          "quantity": 5,
+          "rangeInches": 18,
+          "attacks": 2,
+          "armorPenetration": 0,
+          "specialRules": []
+        },
+        {
+          "name": "CCW",
+          "quantity": 5,
+          "rangeInches": 0,
+          "attacks": 1,
+          "armorPenetration": 0,
+          "specialRules": []
+        }
+      ],
+      "rules": [
+        {
+          "kind": "core",
+          "name": "Scout"
+        },
+        {
+          "kind": "core",
+          "name": "Stealth"
+        },
+        {
+          "kind": "core",
+          "name": "Guerrilla"
+        }
+      ],
+      "items": [],
+      "sections": [
+        {
+          "id": "4BvUwta",
+          "label": "Replace up to three Carbines",
+          "variant": "Replace",
+          "affects": "Any",
+          "targets": [
+            "Carbines"
+          ],
+          "maxApplications": 3,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "DJ1kh",
+              "label": "Sniper Rifle (30\u0022, A1, AP(1), Reliable, Takedown)",
+              "cost": 25,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Sniper Rifle",
+                  "quantity": 1,
+                  "rangeInches": 30,
+                  "attacks": 1,
+                  "armorPenetration": 1,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Takedown"
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Reliable"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "avhq52N",
+          "label": "Replace one Sniper Rifle",
+          "variant": "Replace",
+          "affects": "One",
+          "targets": [
+            "Sniper Rifle"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "gRqzFan",
+              "label": "Piercing Rifle (30\u0022, A1, AP(4), Deadly(3))",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Piercing Rifle",
+                  "quantity": 1,
+                  "rangeInches": 30,
+                  "attacks": 1,
+                  "armorPenetration": 4,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Deadly",
+                      "numericValue": 3
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "k98D0ll",
+              "label": "Cluster Power Rifle (30\u0022, A1, AP(4), Blast(3), Lacerate, Precise)",
+              "cost": 35,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Cluster Power Rifle",
+                  "quantity": 1,
+                  "rangeInches": 30,
+                  "attacks": 1,
+                  "armorPenetration": 4,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Precise"
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Lacerate"
+                    },
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Blast",
+                      "numericValue": 3
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "xOoMNOI",
+          "label": "Upgrade one model with",
+          "variant": "Upgrade",
+          "affects": "One",
+          "targets": [],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "PGpoT-aV",
+              "label": "Spotting Beacon (Piercing Tag(1))",
+              "cost": 25,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Spotting Beacon",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Piercing Tag",
+                      "numericValue": 1
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "RaOE4sP",
+      "name": "Elites",
+      "quality": 4,
+      "defense": 4,
+      "baseModelCount": 5,
+      "minModels": 5,
+      "maxModels": 5,
+      "basePointCost": 120,
+      "base": {
+        "shape": "Circle",
+        "diameterInches": 0.984252,
+        "widthInches": 0.984252,
+        "heightInches": 1.968504
+      },
+      "weapons": [
+        {
+          "name": "Carbine",
+          "quantity": 5,
+          "rangeInches": 18,
+          "attacks": 2,
+          "armorPenetration": 0,
+          "specialRules": []
+        },
+        {
+          "name": "CCW",
+          "quantity": 5,
+          "rangeInches": 0,
+          "attacks": 1,
+          "armorPenetration": 0,
+          "specialRules": []
+        }
+      ],
+      "rules": [
+        {
+          "kind": "core",
+          "name": "Fearless"
+        },
+        {
+          "kind": "core",
+          "name": "Guerrilla"
+        }
+      ],
+      "items": [],
+      "sections": [
+        {
+          "id": "owY6Vmr",
+          "label": "Replace any Carbine",
+          "variant": "Replace",
+          "affects": "Any",
+          "targets": [
+            "Carbine"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "enYnm",
+              "label": "Shotgun (12\u0022, A2, AP(1))",
+              "cost": 0,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Shotgun",
+                  "quantity": 1,
+                  "rangeInches": 12,
+                  "attacks": 2,
+                  "armorPenetration": 1,
+                  "specialRules": []
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "OofPnsD",
+          "label": "Replace up to two Carbines",
+          "variant": "Replace",
+          "affects": "Any",
+          "targets": [
+            "Carbines"
+          ],
+          "maxApplications": 2,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "0UjSi",
+              "label": "Shred Rifle (18\u0022, A2, Rending)",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Shred Rifle",
+                  "quantity": 1,
+                  "rangeInches": 18,
+                  "attacks": 2,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Rending"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "nsah1",
+              "label": "Plasma Rifle (24\u0022, A1, AP(4))",
+              "cost": 10,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Plasma Rifle",
+                  "quantity": 1,
+                  "rangeInches": 24,
+                  "attacks": 1,
+                  "armorPenetration": 4,
+                  "specialRules": []
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "NiS3YXT",
+          "label": "Replace one Carbine",
+          "variant": "Replace",
+          "affects": "One",
+          "targets": [
+            "Carbine"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "MvY3s",
+              "label": "Flamer (12\u0022, A1, Blast(3), Reliable)",
+              "cost": 10,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Flamer",
+                  "quantity": 1,
+                  "rangeInches": 12,
+                  "attacks": 1,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Blast",
+                      "numericValue": 3
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Reliable"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "MVrso",
+              "label": "Fusion Rifle (12\u0022, A1, AP(4), Deadly(3))",
+              "cost": 15,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Fusion Rifle",
+                  "quantity": 1,
+                  "rangeInches": 12,
+                  "attacks": 1,
+                  "armorPenetration": 4,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Deadly",
+                      "numericValue": 3
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "d2jui",
+              "label": "Rocket Launcher (18\u0022, A1, AP(2), Deadly(3))",
+              "cost": 15,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Rocket Launcher",
+                  "quantity": 1,
+                  "rangeInches": 18,
+                  "attacks": 1,
+                  "armorPenetration": 2,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Deadly",
+                      "numericValue": 3
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "2nK9A",
+              "label": "Cluster-GL (24\u0022, A1, Blast(3), Lacerate, Precise)",
+              "cost": 20,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Cluster-GL",
+                  "quantity": 1,
+                  "rangeInches": 24,
+                  "attacks": 1,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Precise"
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Lacerate"
+                    },
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Blast",
+                      "numericValue": 3
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "ElrQC",
+              "label": "Minigun (24\u0022, A4, AP(1))",
+              "cost": 35,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Minigun",
+                  "quantity": 1,
+                  "rangeInches": 24,
+                  "attacks": 4,
+                  "armorPenetration": 1,
+                  "specialRules": []
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "DgjtOVD",
+          "label": "Upgrade one model with one",
+          "variant": "Upgrade",
+          "affects": "One",
+          "targets": [],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "8Gs25",
+              "label": "Medical Training (Regeneration Aura)",
+              "cost": 20,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Medical Training",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Regeneration Aura"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            },
+            {
+              "id": "9lgOsCnjN-",
+              "label": "Spotting Beacon (Piercing Tag(1))",
+              "cost": 25,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Spotting Beacon",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Piercing Tag",
+                      "numericValue": 1
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "H-ovpu1",
+          "label": "Upgrade all models with",
+          "variant": "Upgrade",
+          "affects": "All",
+          "targets": [],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "FIcWH",
+              "label": "Camo Cloaks (Stealth)",
+              "cost": 15,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Camo Cloaks",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Stealth"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "9e631rC",
+          "label": "Replace one Carbine and CCW",
+          "variant": "Replace",
+          "affects": "One",
+          "targets": [
+            "Carbine",
+            "CCW"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "IQE8T-UY",
+              "label": "Sgt. Pistol (12\u0022, A1), Energy Sword (A2, AP(1), Rending)",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Sgt. Pistol",
+                  "quantity": 1,
+                  "rangeInches": 12,
+                  "attacks": 1,
+                  "armorPenetration": 0,
+                  "specialRules": []
+                },
+                {
+                  "name": "Energy Sword",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 2,
+                  "armorPenetration": 1,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Rending"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "lbowOtF",
+          "label": "Replace Sgt. Pistol",
+          "variant": "Replace",
+          "affects": "One",
+          "targets": [
+            "Sgt. Pistol"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "GXTMSV-r",
+              "label": "Shred Pistol (9\u0022, A2, Rending)",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Shred Pistol",
+                  "quantity": 1,
+                  "rangeInches": 9,
+                  "attacks": 2,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Rending"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "RNQkwfer",
+              "label": "Plasma Pistol (12\u0022, A1, AP(4))",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Plasma Pistol",
+                  "quantity": 1,
+                  "rangeInches": 12,
+                  "attacks": 1,
+                  "armorPenetration": 4,
+                  "specialRules": []
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "QK2ulFU",
+          "label": "Replace Energy Sword",
+          "variant": "Replace",
+          "affects": "One",
+          "targets": [
+            "Energy Sword"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "umjOgOco",
+              "label": "Energy Fist (A2, AP(4))",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Energy Fist",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 2,
+                  "armorPenetration": 4,
+                  "specialRules": []
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "vNMlF2w",
+      "name": "Pioneers",
+      "quality": 5,
+      "defense": 5,
+      "baseModelCount": 5,
+      "minModels": 5,
+      "maxModels": 5,
+      "basePointCost": 90,
+      "base": {
+        "shape": "Circle",
+        "diameterInches": 0.984252,
+        "widthInches": 0.984252,
+        "heightInches": 1.968504
+      },
+      "weapons": [
+        {
+          "name": "Shotgun",
+          "quantity": 5,
+          "rangeInches": 12,
+          "attacks": 2,
+          "armorPenetration": 1,
+          "specialRules": []
+        },
+        {
+          "name": "CCW",
+          "quantity": 5,
+          "rangeInches": 0,
+          "attacks": 1,
+          "armorPenetration": 0,
+          "specialRules": []
+        }
+      ],
+      "rules": [
+        {
+          "kind": "core",
+          "name": "Ambush"
+        },
+        {
+          "kind": "core",
+          "name": "Counter-Attack"
+        },
+        {
+          "kind": "core",
+          "name": "Guerrilla"
+        }
+      ],
+      "items": [],
+      "sections": [
+        {
+          "id": "911u9lh",
+          "label": "Replace one Shotgun",
+          "variant": "Replace",
+          "affects": "One",
+          "targets": [
+            "Shotgun"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "fGv5vTj",
+              "label": "Fusion Rifle (12\u0022, A1, AP(4), Deadly(3))",
+              "cost": 10,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Fusion Rifle",
+                  "quantity": 1,
+                  "rangeInches": 12,
+                  "attacks": 1,
+                  "armorPenetration": 4,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Deadly",
+                      "numericValue": 3
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "QcKew4N",
+              "label": "Flamer (12\u0022, A1, Blast(3), Reliable)",
+              "cost": 10,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Flamer",
+                  "quantity": 1,
+                  "rangeInches": 12,
+                  "attacks": 1,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Blast",
+                      "numericValue": 3
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Reliable"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "nt9nCbk",
+          "label": "Replace any CCW",
+          "variant": "Replace",
+          "affects": "Any",
+          "targets": [
+            "CCW"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "jcxfWjY",
+              "label": "Energy Sword (A2, AP(1), Rending)",
+              "cost": 15,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Energy Sword",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 2,
+                  "armorPenetration": 1,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Rending"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "-xrZrHb",
+              "label": "Energy Fist (A2, AP(4))",
+              "cost": 15,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Energy Fist",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 2,
+                  "armorPenetration": 4,
+                  "specialRules": []
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "FPwUc8W",
+      "name": "Snipers",
+      "quality": 5,
+      "defense": 5,
+      "baseModelCount": 3,
+      "minModels": 3,
+      "maxModels": 3,
+      "basePointCost": 130,
+      "base": {
+        "shape": "Circle",
+        "diameterInches": 0.984252,
+        "widthInches": 0.984252,
+        "heightInches": 1.968504
+      },
+      "weapons": [
+        {
+          "name": "Sniper Rifle",
+          "quantity": 3,
+          "rangeInches": 30,
+          "attacks": 1,
+          "armorPenetration": 1,
+          "specialRules": [
+            {
+              "kind": "core",
+              "name": "Reliable"
+            },
+            {
+              "kind": "core",
+              "name": "Takedown"
+            }
+          ]
+        },
+        {
+          "name": "CCW",
+          "quantity": 3,
+          "rangeInches": 0,
+          "attacks": 1,
+          "armorPenetration": 0,
+          "specialRules": []
+        }
+      ],
+      "rules": [
+        {
+          "kind": "core",
+          "name": "Ambushing Piercing Shot"
+        },
+        {
+          "kind": "core",
+          "name": "Guerrilla"
+        }
+      ],
+      "items": [],
+      "sections": []
+    },
+    {
+      "id": "dZyUl-l",
+      "name": "Simians",
+      "quality": 4,
+      "defense": 4,
+      "baseModelCount": 3,
+      "minModels": 3,
+      "maxModels": 3,
+      "basePointCost": 135,
+      "base": {
+        "shape": "Circle",
+        "diameterInches": 1.5748031,
+        "widthInches": 0.984252,
+        "heightInches": 1.968504
+      },
+      "weapons": [
+        {
+          "name": "Heavy Fist",
+          "quantity": 3,
+          "rangeInches": 0,
+          "attacks": 3,
+          "armorPenetration": 1,
+          "specialRules": []
+        }
+      ],
+      "rules": [
+        {
+          "kind": "core",
+          "name": "Furious"
+        },
+        {
+          "kind": "coreNumeric",
+          "name": "Tough",
+          "numericValue": 3
+        },
+        {
+          "kind": "core",
+          "name": "Guerrilla"
+        }
+      ],
+      "items": [],
+      "sections": [
+        {
+          "id": "Lt8BygJ",
+          "label": "Upgrade any model with",
+          "variant": "Upgrade",
+          "affects": "Any",
+          "targets": [],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "pxLMx_Ky",
+              "label": "Claw Gauntlets (Bane in Melee)",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Claw Gauntlets",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Bane in Melee"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "KzrV2u_",
+      "name": "Chelonians",
+      "quality": 3,
+      "defense": 3,
+      "baseModelCount": 3,
+      "minModels": 3,
+      "maxModels": 3,
+      "basePointCost": 220,
+      "base": {
+        "shape": "Circle",
+        "diameterInches": 1.5748031,
+        "widthInches": 0.984252,
+        "heightInches": 1.968504
+      },
+      "weapons": [
+        {
+          "name": "Wrist-Flamer",
+          "quantity": 3,
+          "rangeInches": 12,
+          "attacks": 1,
+          "armorPenetration": 0,
+          "specialRules": [
+            {
+              "kind": "coreNumeric",
+              "name": "Blast",
+              "numericValue": 3
+            },
+            {
+              "kind": "core",
+              "name": "Reliable"
+            }
+          ]
+        },
+        {
+          "name": "Wrist-Blade",
+          "quantity": 3,
+          "rangeInches": 0,
+          "attacks": 3,
+          "armorPenetration": 1,
+          "specialRules": []
+        }
+      ],
+      "rules": [
+        {
+          "kind": "core",
+          "name": "Slow"
+        },
+        {
+          "kind": "coreNumeric",
+          "name": "Tough",
+          "numericValue": 3
+        },
+        {
+          "kind": "core",
+          "name": "Guerrilla"
+        }
+      ],
+      "items": [],
+      "sections": [
+        {
+          "id": "M6qYPBq",
+          "label": "Replace any Wrist-Flamer",
+          "variant": "Replace",
+          "affects": "Any",
+          "targets": [
+            "Wrist-Flamer"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "WaQLgsUiQI",
+              "label": "Light Cluster-GL (18\u0022, A1, Blast(3), Lacerate, Precise)",
+              "cost": 15,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Light Cluster-GL",
+                  "quantity": 1,
+                  "rangeInches": 18,
+                  "attacks": 1,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Precise"
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Lacerate"
+                    },
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Blast",
+                      "numericValue": 3
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "qbxSMhe",
+      "name": "Bikers",
+      "quality": 5,
+      "defense": 5,
+      "baseModelCount": 3,
+      "minModels": 3,
+      "maxModels": 3,
+      "basePointCost": 110,
+      "base": {
+        "shape": "Rectangle",
+        "diameterInches": 1.1023622,
+        "widthInches": 1.3779528,
+        "heightInches": 2.3622048
+      },
+      "weapons": [
+        {
+          "name": "Burst Pistol",
+          "quantity": 3,
+          "rangeInches": 12,
+          "attacks": 3,
+          "armorPenetration": 0,
+          "specialRules": []
+        },
+        {
+          "name": "CCW",
+          "quantity": 3,
+          "rangeInches": 0,
+          "attacks": 2,
+          "armorPenetration": 0,
+          "specialRules": []
+        }
+      ],
+      "rules": [
+        {
+          "kind": "core",
+          "name": "Fast"
+        },
+        {
+          "kind": "coreNumeric",
+          "name": "Tough",
+          "numericValue": 3
+        },
+        {
+          "kind": "core",
+          "name": "Guerrilla"
+        }
+      ],
+      "items": [],
+      "sections": [
+        {
+          "id": "IqxwYqW",
+          "label": "Replace all CCWs",
+          "variant": "Replace",
+          "affects": "All",
+          "targets": [
+            "CCWs"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "Lr3uq",
+              "label": "Energy Lance (A2, AP(1), Thrust)",
+              "cost": 20,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Energy Lance",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 2,
+                  "armorPenetration": 1,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Thrust"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "qsqO5bC",
+          "label": "Replace one Burst Pistol",
+          "variant": "Replace",
+          "affects": "One",
+          "targets": [
+            "Burst Pistol"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "fRWgfic",
+              "label": "Plasma Rifle (24\u0022, A1, AP(4))",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Plasma Rifle",
+                  "quantity": 1,
+                  "rangeInches": 24,
+                  "attacks": 1,
+                  "armorPenetration": 4,
+                  "specialRules": []
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "xH3dAXe",
+              "label": "Shred Rifle (18\u0022, A2, Rending)",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Shred Rifle",
+                  "quantity": 1,
+                  "rangeInches": 18,
+                  "attacks": 2,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Rending"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "ClHJzMs",
+              "label": "Fusion Rifle (12\u0022, A1, AP(4), Deadly(3))",
+              "cost": 10,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Fusion Rifle",
+                  "quantity": 1,
+                  "rangeInches": 12,
+                  "attacks": 1,
+                  "armorPenetration": 4,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Deadly",
+                      "numericValue": 3
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "h_txrTq",
+              "label": "Flamer (12\u0022, A1, Blast(3), Reliable)",
+              "cost": 10,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Flamer",
+                  "quantity": 1,
+                  "rangeInches": 12,
+                  "attacks": 1,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Blast",
+                      "numericValue": 3
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Reliable"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "01QXWMr",
+              "label": "Cluster-GL (24\u0022, A1, Blast(3), Lacerate, Precise)",
+              "cost": 15,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Cluster-GL",
+                  "quantity": 1,
+                  "rangeInches": 24,
+                  "attacks": 1,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Precise"
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Lacerate"
+                    },
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Blast",
+                      "numericValue": 3
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "3y6lNhG",
+          "label": "Replace one Burst Pistol and CCW",
+          "variant": "Replace",
+          "affects": "One",
+          "targets": [
+            "Burst Pistol",
+            "CCW"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "avLbZr_F",
+              "label": "Sgt. Pistol (12\u0022, A1), Energy Sword (A2, AP(1), Rending)",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Sgt. Pistol",
+                  "quantity": 1,
+                  "rangeInches": 12,
+                  "attacks": 1,
+                  "armorPenetration": 0,
+                  "specialRules": []
+                },
+                {
+                  "name": "Energy Sword",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 2,
+                  "armorPenetration": 1,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Rending"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "bA_psnE",
+          "label": "Replace Sgt. Pistol",
+          "variant": "Replace",
+          "affects": "One",
+          "targets": [
+            "Sgt. Pistol"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "9ofIW0s7",
+              "label": "Shred Pistol (9\u0022, A2, Rending)",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Shred Pistol",
+                  "quantity": 1,
+                  "rangeInches": 9,
+                  "attacks": 2,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Rending"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "tHab_8J6",
+              "label": "Plasma Pistol (12\u0022, A1, AP(4))",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Plasma Pistol",
+                  "quantity": 1,
+                  "rangeInches": 12,
+                  "attacks": 1,
+                  "armorPenetration": 4,
+                  "specialRules": []
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "mL_f13c",
+          "label": "Replace Energy Sword",
+          "variant": "Replace",
+          "affects": "One",
+          "targets": [
+            "Energy Sword"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "8ksh_mOT",
+              "label": "Energy Fist (A2, AP(4))",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Energy Fist",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 2,
+                  "armorPenetration": 4,
+                  "specialRules": []
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "5mFoIK2",
+      "name": "Jeep",
+      "quality": 4,
+      "defense": 2,
+      "baseModelCount": 1,
+      "minModels": 1,
+      "maxModels": 1,
+      "basePointCost": 165,
+      "base": {
+        "shape": "Rectangle",
+        "diameterInches": 1.1023622,
+        "widthInches": 3.6220472,
+        "heightInches": 4.7244096
+      },
+      "weapons": [
+        {
+          "name": "Twin Flamer",
+          "quantity": 1,
+          "rangeInches": 12,
+          "attacks": 2,
+          "armorPenetration": 0,
+          "specialRules": [
+            {
+              "kind": "coreNumeric",
+              "name": "Blast",
+              "numericValue": 3
+            },
+            {
+              "kind": "core",
+              "name": "Reliable"
+            }
+          ]
+        }
+      ],
+      "rules": [
+        {
+          "kind": "core",
+          "name": "Fast"
+        },
+        {
+          "kind": "coreNumeric",
+          "name": "Impact",
+          "numericValue": 3
+        },
+        {
+          "kind": "core",
+          "name": "Strider"
+        },
+        {
+          "kind": "coreNumeric",
+          "name": "Tough",
+          "numericValue": 6
+        },
+        {
+          "kind": "core",
+          "name": "Guerrilla"
+        }
+      ],
+      "items": [],
+      "sections": [
+        {
+          "id": "bWefjLL",
+          "label": "Upgrade with",
+          "variant": "Upgrade",
+          "affects": "One",
+          "targets": [],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "CFu_2KAzQX",
+              "label": "Rebel Radio (Courage Buff)",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Rebel Radio",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Courage Buff"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            },
+            {
+              "id": "ks5F3",
+              "label": "Heavy Plating (Fortified)",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Heavy Plating",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Fortified"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "SpXR67B",
+          "label": "Replace Twin Flamer",
+          "variant": "Replace",
+          "affects": "One",
+          "targets": [
+            "Twin Flamer"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "VMEr2",
+              "label": "Super-Heavy Fusion Rifle (18\u0022, A1, AP(4), Deadly(6))",
+              "cost": 20,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Super-Heavy Fusion Rifle",
+                  "quantity": 1,
+                  "rangeInches": 18,
+                  "attacks": 1,
+                  "armorPenetration": 4,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Deadly",
+                      "numericValue": 6
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "r-aIy",
+              "label": "Twin Heavy Machinegun (30\u0022, A6, AP(1))",
+              "cost": 40,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Twin Heavy Machinegun",
+                  "quantity": 1,
+                  "rangeInches": 30,
+                  "attacks": 6,
+                  "armorPenetration": 1,
+                  "specialRules": []
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "UHlKCI4",
+          "label": "Upgrade with one",
+          "variant": "Upgrade",
+          "affects": "One",
+          "targets": [],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "XNa9d5CuU4",
+              "label": "Rebel Assault (Furious Mark)",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Rebel Assault",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Furious Mark"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            },
+            {
+              "id": "10m-Qn5",
+              "label": "Extra Seats (Transport(6))",
+              "cost": 20,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Extra Seats",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Transport",
+                      "numericValue": 6
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            },
+            {
+              "id": "llWBh1efTF",
+              "label": "Spotting Beacon (Piercing Tag(1))",
+              "cost": 25,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Spotting Beacon",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Piercing Tag",
+                      "numericValue": 1
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "FU3Dj2v",
+      "name": "Assault Vehicle",
+      "quality": 4,
+      "defense": 2,
+      "baseModelCount": 1,
+      "minModels": 1,
+      "maxModels": 1,
+      "basePointCost": 175,
+      "base": {
+        "shape": "Rectangle",
+        "diameterInches": 1.1023622,
+        "widthInches": 3.6220472,
+        "heightInches": 4.7244096
+      },
+      "weapons": [
+        {
+          "name": "Pintle-Machinegun",
+          "quantity": 1,
+          "rangeInches": 30,
+          "attacks": 2,
+          "armorPenetration": 1,
+          "specialRules": []
+        },
+        {
+          "name": "Gatling Gun",
+          "quantity": 1,
+          "rangeInches": 18,
+          "attacks": 6,
+          "armorPenetration": 0,
+          "specialRules": []
+        }
+      ],
+      "rules": [
+        {
+          "kind": "core",
+          "name": "Fast"
+        },
+        {
+          "kind": "coreNumeric",
+          "name": "Impact",
+          "numericValue": 3
+        },
+        {
+          "kind": "coreNumeric",
+          "name": "Tough",
+          "numericValue": 6
+        },
+        {
+          "kind": "core",
+          "name": "Guerrilla"
+        }
+      ],
+      "items": [],
+      "sections": [
+        {
+          "id": "bWefjLL",
+          "label": "Upgrade with",
+          "variant": "Upgrade",
+          "affects": "One",
+          "targets": [],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "CFu_2KAzQX",
+              "label": "Rebel Radio (Courage Buff)",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Rebel Radio",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Courage Buff"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            },
+            {
+              "id": "ks5F3",
+              "label": "Heavy Plating (Fortified)",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Heavy Plating",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Fortified"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "3MNdiIN",
+          "label": "Replace Gatling Gun",
+          "variant": "Replace",
+          "affects": "One",
+          "targets": [
+            "Gatling Gun"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "XezCQopjG3",
+              "label": "Light Cluster Cannon (30\u0022, A1, Blast(3), Lacerate, Precise)",
+              "cost": 0,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Light Cluster Cannon",
+                  "quantity": 1,
+                  "rangeInches": 30,
+                  "attacks": 1,
+                  "armorPenetration": 0,
+                  "specialRules": [
+                    {
+                      "kind": "core",
+                      "name": "Precise"
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Lacerate"
+                    },
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Blast",
+                      "numericValue": 3
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "8I6DjNk",
+              "label": "Light Battle Cannon (24\u0022, A1, AP(2), Blast(3))",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Light Battle Cannon",
+                  "quantity": 1,
+                  "rangeInches": 24,
+                  "attacks": 1,
+                  "armorPenetration": 2,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Blast",
+                      "numericValue": 3
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "iI4aQ",
+              "label": "Flamer Cannon (18\u0022, A1, AP(1), Blast(3), Reliable)",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Flamer Cannon",
+                  "quantity": 1,
+                  "rangeInches": 18,
+                  "attacks": 1,
+                  "armorPenetration": 1,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Blast",
+                      "numericValue": 3
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Reliable"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "lpUM7kp",
+              "label": "Laser Cannon (36\u0022, A1, AP(3), Deadly(3))",
+              "cost": 20,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Laser Cannon",
+                  "quantity": 1,
+                  "rangeInches": 36,
+                  "attacks": 1,
+                  "armorPenetration": 3,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Deadly",
+                      "numericValue": 3
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "tpruz3H",
+              "label": "Fusion Cannon (24\u0022, A1, AP(4), Deadly(6))",
+              "cost": 40,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Fusion Cannon",
+                  "quantity": 1,
+                  "rangeInches": 24,
+                  "attacks": 1,
+                  "armorPenetration": 4,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Deadly",
+                      "numericValue": 6
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "pZASE5g",
+      "name": "Combat Walker",
+      "quality": 4,
+      "defense": 2,
+      "baseModelCount": 1,
+      "minModels": 1,
+      "maxModels": 1,
+      "basePointCost": 165,
+      "base": {
+        "shape": "Circle",
+        "diameterInches": 2.3622048,
+        "widthInches": 0.984252,
+        "heightInches": 1.968504
+      },
+      "weapons": [
+        {
+          "name": "Super-Heavy Fusion Rifle",
+          "quantity": 1,
+          "rangeInches": 18,
+          "attacks": 1,
+          "armorPenetration": 4,
+          "specialRules": [
+            {
+              "kind": "coreNumeric",
+              "name": "Deadly",
+              "numericValue": 6
+            }
+          ]
+        },
+        {
+          "name": "Stomp",
+          "quantity": 1,
+          "rangeInches": 0,
+          "attacks": 2,
+          "armorPenetration": 1,
+          "specialRules": []
+        }
+      ],
+      "rules": [
+        {
+          "kind": "coreNumeric",
+          "name": "Fear",
+          "numericValue": 1
+        },
+        {
+          "kind": "coreNumeric",
+          "name": "Tough",
+          "numericValue": 6
+        },
+        {
+          "kind": "core",
+          "name": "Guerrilla"
+        }
+      ],
+      "items": [],
+      "sections": [
+        {
+          "id": "bWefjLL",
+          "label": "Upgrade with",
+          "variant": "Upgrade",
+          "affects": "One",
+          "targets": [],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "CFu_2KAzQX",
+              "label": "Rebel Radio (Courage Buff)",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Rebel Radio",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Courage Buff"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            },
+            {
+              "id": "ks5F3",
+              "label": "Heavy Plating (Fortified)",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Heavy Plating",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Fortified"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "MfWGsdf",
+          "label": "Replace Super-Heavy Fusion Rifle",
+          "variant": "Replace",
+          "affects": "One",
+          "targets": [
+            "Super-Heavy Fusion Rifle"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "IFyRUi7",
+              "label": "Heavy Flamer (12\u0022, A1, AP(1), Blast(3), Reliable), Walker Chainsaw (A6, AP(1))",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Heavy Flamer",
+                  "quantity": 1,
+                  "rangeInches": 12,
+                  "attacks": 1,
+                  "armorPenetration": 1,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Blast",
+                      "numericValue": 3
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Reliable"
+                    }
+                  ]
+                },
+                {
+                  "name": "Walker Chainsaw",
+                  "quantity": 1,
+                  "rangeInches": 0,
+                  "attacks": 6,
+                  "armorPenetration": 1,
+                  "specialRules": []
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "Oa-2bwd",
+              "label": "Twin Plasma Cannon (30\u0022, A2, AP(4), Blast(3))",
+              "cost": 55,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Twin Plasma Cannon",
+                  "quantity": 1,
+                  "rangeInches": 30,
+                  "attacks": 2,
+                  "armorPenetration": 4,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Blast",
+                      "numericValue": 3
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "R2uvn",
+              "label": "Twin Laser Machinegun (30\u0022, A6, AP(3))",
+              "cost": 60,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Twin Laser Machinegun",
+                  "quantity": 1,
+                  "rangeInches": 30,
+                  "attacks": 6,
+                  "armorPenetration": 3,
+                  "specialRules": []
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        },
+        {
+          "id": "42tvbm6",
+          "label": "Upgrade with",
+          "variant": "Upgrade",
+          "affects": "One",
+          "targets": [],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "h5-WnHhM",
+              "label": "Rebel Assault (Furious Mark)",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [],
+              "rulesGained": [],
+              "itemsGained": [
+                {
+                  "name": "Rebel Assault",
+                  "quantity": 1,
+                  "rules": [
+                    {
+                      "kind": "core",
+                      "name": "Furious Mark"
+                    }
+                  ]
+                }
+              ],
+              "modelsGained": 0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "K-3lYJ-",
+      "name": "Light Dropship",
+      "quality": 4,
+      "defense": 2,
+      "baseModelCount": 1,
+      "minModels": 1,
+      "maxModels": 1,
+      "basePointCost": 320,
+      "base": {
+        "shape": "Rectangle",
+        "diameterInches": 1.1023622,
+        "widthInches": 3.6220472,
+        "heightInches": 4.7244096
+      },
+      "weapons": [
+        {
+          "name": "Twin Heavy Machinegun",
+          "quantity": 1,
+          "rangeInches": 30,
+          "attacks": 6,
+          "armorPenetration": 1,
+          "specialRules": []
+        },
+        {
+          "name": "Minigun",
+          "quantity": 1,
+          "rangeInches": 24,
+          "attacks": 4,
+          "armorPenetration": 1,
+          "specialRules": []
+        }
+      ],
+      "rules": [
+        {
+          "kind": "core",
+          "name": "Aircraft"
+        },
+        {
+          "kind": "coreNumeric",
+          "name": "Tough",
+          "numericValue": 6
+        },
+        {
+          "kind": "coreNumeric",
+          "name": "Transport",
+          "numericValue": 11
+        }
+      ],
+      "items": [],
+      "sections": [
+        {
+          "id": "TpunCcb",
+          "label": "Replace Twin Heavy Machinegun",
+          "variant": "Replace",
+          "affects": "One",
+          "targets": [
+            "Twin Heavy Machinegun"
+          ],
+          "maxApplications": 0,
+          "minPicks": 0,
+          "maxPicks": 1,
+          "options": [
+            {
+              "id": "750NrZc",
+              "label": "Twin Missile Launcher (30\u0022, A2, AP(2), Deadly(3), Unstoppable)",
+              "cost": 5,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Twin Missile Launcher",
+                  "quantity": 1,
+                  "rangeInches": 30,
+                  "attacks": 2,
+                  "armorPenetration": 2,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Deadly",
+                      "numericValue": 3
+                    },
+                    {
+                      "kind": "core",
+                      "name": "Unstoppable"
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            },
+            {
+              "id": "7X54T",
+              "label": "Twin Laser Cannon (36\u0022, A2, AP(3), Deadly(3))",
+              "cost": 30,
+              "costUnpriced": false,
+              "weaponsGained": [
+                {
+                  "name": "Twin Laser Cannon",
+                  "quantity": 1,
+                  "rangeInches": 36,
+                  "attacks": 2,
+                  "armorPenetration": 3,
+                  "specialRules": [
+                    {
+                      "kind": "coreNumeric",
+                      "name": "Deadly",
+                      "numericValue": 3
+                    }
+                  ]
+                }
+              ],
+              "rulesGained": [],
+              "itemsGained": [],
+              "modelsGained": 0
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "ruleDefinitions": [
+    {
+      "name": "Furious Mark",
+      "passive": [],
+      "activated": [
+        {
+          "triggerHook": "Activation_OnBeforeAttackAction",
+          "cost": {
+            "kind": "oncePerActivation"
+          },
+          "targetSelector": {
+            "rangeInches": 18,
+            "minCount": 1,
+            "maxCount": 1,
+            "targetAffinity": "Foe",
+            "requireLineOfSight": true,
+            "requiredToken": null,
+            "singleModel": false,
+            "requiredRule": null
+          },
+          "effect": {
+            "kind": "markTarget",
+            "ruleName": "Furious"
+          },
+          "availableWhen": {
+            "kind": "always"
+          },
+          "label": ""
+        }
+      ],
+      "scope": "Unit",
+      "engineArgumentCount": 0,
+      "valence": "Positive",
+      "description": "Once per activation, before attacking, pick one enemy unit within 18 inches in line of sight. The first friendly attack against it this activation gets Furious."
+    },
+    {
+      "name": "Courage Buff",
+      "passive": [],
+      "activated": [
+        {
+          "triggerHook": "Activation_OnBeforeAttackAction",
+          "cost": {
+            "kind": "oncePerActivation"
+          },
+          "targetSelector": {
+            "rangeInches": 12,
+            "minCount": 1,
+            "maxCount": 1,
+            "targetAffinity": "Friend",
+            "requireLineOfSight": false,
+            "requiredToken": null,
+            "singleModel": false,
+            "requiredRule": null
+          },
+          "effect": {
+            "kind": "addRule",
+            "ruleName": "Courage",
+            "scope": "NextTrigger"
+          },
+          "availableWhen": {
+            "kind": "always"
+          },
+          "label": ""
+        }
+      ],
+      "scope": "Unit",
+      "engineArgumentCount": 0,
+      "valence": "Positive",
+      "description": "Once per activation, before attacking, pick one friendly unit within 12 inches, which gains Courage for its next relevant roll."
+    },
+    {
+      "name": "Strider Aura",
+      "passive": [
+        {
+          "hookID": "Lifecycle_OnUnitCreated",
+          "condition": {
+            "kind": "always"
+          },
+          "effect": {
+            "kind": "aura",
+            "ruleName": "Strider"
+          },
+          "lifetime": "UntilEndOfGame",
+          "seat": "Actor"
+        }
+      ],
+      "activated": [],
+      "scope": "Unit",
+      "engineArgumentCount": 0,
+      "valence": "Positive",
+      "description": "This model and its unit gain Strider."
+    },
+    {
+      "name": "Piercing Tag",
+      "passive": [],
+      "activated": [
+        {
+          "triggerHook": "Activation_OnBeforeAttackAction",
+          "cost": {
+            "kind": "oncePerGame"
+          },
+          "targetSelector": {
+            "rangeInches": 24,
+            "minCount": 1,
+            "maxCount": 1,
+            "targetAffinity": "Foe",
+            "requireLineOfSight": true,
+            "requiredToken": null,
+            "singleModel": false,
+            "requiredRule": null
+          },
+          "effect": {
+            "kind": "grantToken",
+            "tType": {
+              "id": "SpendableApBonusMarker"
+            },
+            "count": {
+              "kind": "arg",
+              "index": 0
+            },
+            "clear": {
+              "kind": "manualOnly"
+            },
+            "maxTotal": 0
+          },
+          "availableWhen": {
+            "kind": "always"
+          },
+          "label": ""
+        }
+      ],
+      "scope": "Unit",
+      "engineArgumentCount": 1,
+      "valence": "Positive",
+      "description": "Once per game during its activation: pick one enemy within 24 inches in line of sight and place X markers on it. Attackers may remove markers from it before it rolls to block, gaining AP(\u002B1) per removed marker."
+    },
+    {
+      "name": "Ambushing Piercing Shot",
+      "passive": [
+        {
+          "hookID": "Deployment_OnPreDeploymentSelect",
+          "condition": {
+            "kind": "always"
+          },
+          "effect": {
+            "kind": "deferDeployment",
+            "timing": "LaterRound",
+            "placementRangeInches": 9,
+            "minArrivalRound": 2,
+            "mandatoryArrival": false
+          },
+          "lifetime": "UntilEndOfGame",
+          "seat": "Actor"
+        },
+        {
+          "hookID": "Shooting_OnHitRollComplete",
+          "condition": {
+            "kind": "and",
+            "left": {
+              "kind": "not",
+              "inner": {
+                "kind": "isMelee"
+              }
+            },
+            "right": {
+              "kind": "tokenPresent",
+              "tType": {
+                "id": "ArrivedFromReserve"
+              },
+              "minCount": 1
+            }
+          },
+          "effect": {
+            "kind": "rollModifier",
+            "rollKind": "Save",
+            "delta": -1
+          },
+          "lifetime": "ThisAttack",
+          "seat": "Actor"
+        }
+      ],
+      "activated": [],
+      "scope": "Unit",
+      "engineArgumentCount": 0,
+      "valence": "Positive",
+      "description": "Counts as having Ambush, and its weapons get AP(\u002B1) when shooting on the round in which it deploys via this rule."
+    },
+    {
+      "name": "Takedown Strike",
+      "passive": [],
+      "activated": [
+        {
+          "triggerHook": "Combat_OnAttackWindow",
+          "cost": {
+            "kind": "oncePerGame"
+          },
+          "targetSelector": {
+            "rangeInches": 0,
+            "minCount": 1,
+            "maxCount": 1,
+            "targetAffinity": "Foe",
+            "requireLineOfSight": false,
+            "requiredToken": null,
+            "singleModel": false,
+            "requiredRule": null
+          },
+          "effect": {
+            "kind": "extraAttack",
+            "weaponName": "Takedown Strike",
+            "attacks": 1,
+            "armorPenetration": 2,
+            "withRules": [
+              "Reliable",
+              "Deadly(3)",
+              "Takedown"
+            ]
+          },
+          "availableWhen": {
+            "kind": "isMelee"
+          },
+          "label": ""
+        }
+      ],
+      "scope": "Unit",
+      "engineArgumentCount": 0,
+      "valence": "Positive",
+      "description": "Once per game, when it\u0027s this model\u0027s turn to attack in melee, it may make one extra attack at Quality 2\u002B with AP(2), Deadly(3), and Takedown."
+    }
+  ],
+  "spells": [
+    {
+      "name": "Aura of Peace",
+      "threshold": 1,
+      "target": {
+        "rangeInches": 12,
+        "minCount": 1,
+        "maxCount": 1,
+        "targetAffinity": "Friend",
+        "requireLineOfSight": false,
+        "requiredToken": null,
+        "singleModel": false,
+        "requiredRule": null
+      },
+      "effect": {
+        "kind": "addRule",
+        "ruleName": "\u002B1 to morale test rolls",
+        "scope": "NextTrigger"
+      }
+    },
+    {
+      "name": "Mind Breaker",
+      "threshold": 1,
+      "target": {
+        "rangeInches": 12,
+        "minCount": 1,
+        "maxCount": 1,
+        "targetAffinity": "Foe",
+        "requireLineOfSight": true,
+        "requiredToken": null,
+        "singleModel": false,
+        "requiredRule": null
+      },
+      "effect": {
+        "kind": "dealHits",
+        "count": 2,
+        "withRules": [
+          "Surge"
+        ],
+        "armorPenetration": 1
+      }
+    },
+    {
+      "name": "Bad Omen",
+      "threshold": 2,
+      "target": {
+        "rangeInches": 18,
+        "minCount": 1,
+        "maxCount": 2,
+        "targetAffinity": "Foe",
+        "requireLineOfSight": false,
+        "requiredToken": null,
+        "singleModel": false,
+        "requiredRule": null
+      },
+      "effect": {
+        "kind": "markTarget",
+        "ruleName": "Furious"
+      }
+    },
+    {
+      "name": "Wave of Discord",
+      "threshold": 2,
+      "target": {
+        "rangeInches": 18,
+        "minCount": 1,
+        "maxCount": 1,
+        "targetAffinity": "Foe",
+        "requireLineOfSight": true,
+        "requiredToken": null,
+        "singleModel": false,
+        "requiredRule": null
+      },
+      "effect": {
+        "kind": "dealHits",
+        "count": 2,
+        "withRules": [
+          "Blast(3)",
+          "Lacerate"
+        ],
+        "armorPenetration": 0
+      }
+    },
+    {
+      "name": "Deep Meditation",
+      "threshold": 3,
+      "target": {
+        "rangeInches": 12,
+        "minCount": 1,
+        "maxCount": 3,
+        "targetAffinity": "Friend",
+        "requireLineOfSight": false,
+        "requiredToken": null,
+        "singleModel": false,
+        "requiredRule": null
+      },
+      "effect": {
+        "kind": "addRule",
+        "ruleName": "\u002B1 to hit rolls when shooting",
+        "scope": "NextTrigger"
+      }
+    },
+    {
+      "name": "Piercing Pulse",
+      "threshold": 3,
+      "target": {
+        "rangeInches": 24,
+        "minCount": 1,
+        "maxCount": 1,
+        "targetAffinity": "Foe",
+        "requireLineOfSight": true,
+        "requiredToken": null,
+        "singleModel": true,
+        "requiredRule": null
+      },
+      "effect": {
+        "kind": "dealHits",
+        "count": 3,
+        "withRules": [],
+        "armorPenetration": 4
+      }
+    }
+  ]
+}

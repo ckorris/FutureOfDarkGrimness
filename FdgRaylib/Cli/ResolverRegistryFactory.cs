@@ -11,60 +11,121 @@ public static class ResolverRegistryFactory
     /// <summary>Headless / CLI build — all decisions via stdin.</summary>
     public static IStageResolverRegistry Build(ITableState tableState)
     {
+        // #191 A4-1's request split: unit activation is its own request type; it renders through the
+        // same stdin selection flow via the adapter.
+        var selectUnit = new SelectionResolver<UnitData>();
+        var cancelSelectUnitCli = new CancellableSelectionResolver<UnitData>();
         return new StageResolverRegistry()
             .RegisterResolver(new YesNoResolver())
             .RegisterResolver(new StringSelectionResolver())
+            .RegisterResolver(new ChooseAbilityEffectResolver())
+            .RegisterResolver(new ChooseSpellResolver())
+            .RegisterResolver(new CastAssistResolver())
             .RegisterResolver(new ChooseDeploymentZoneResolver())
             .RegisterResolver(new ChooseRangedAttackResolver())
             .RegisterResolver(new DefineMovementPathResolver(tableState))
+            .RegisterResolver(new AircraftAdvanceResolver())
+            .RegisterResolver(new ConsolidationMoveResolver(tableState))
             .RegisterResolver(new AssignWoundsResolver())
-            .RegisterResolver(new SelectionResolver<UnitData>())
+            .RegisterResolver(selectUnit)
+            .RegisterResolver(new DerivedRequestAdapter<ChooseUnitToActivateRequest,
+                SelectionRequest<UnitData>, FDG.Data.DataBinding<UnitData>>(selectUnit))
             .RegisterResolver(new SelectionResolver<ModelData>())
             .RegisterResolver(new SelectionResolver<RectangularZone>())
-            .RegisterResolver(new CancellableSelectionResolver<UnitData>())
-            .RegisterResolver(new PlaceObjectsResolver<ModelData>(tableState));
+            .RegisterResolver(cancelSelectUnitCli)
+            // #191 A4-3's split: the melee-defender pick renders through the same stdin flow.
+            .RegisterResolver(new DerivedRequestAdapter<ChooseMeleeDefenderRequest,
+                CancellableSelectionRequest<UnitData>, CancellableResult<FDG.Data.DataBinding<UnitData>>>(
+                cancelSelectUnitCli))
+            .RegisterResolver(new PlaceObjectsResolver<ModelData>(tableState))
+            .RegisterResolver(new PlaceOneTerrainResolver(tableState));
     }
 
     /// <summary>GUI build — interactive resolvers where implemented, CLI fallback otherwise.</summary>
-    public static (IStageResolverRegistry Registry, GuiResolverOverlay Overlay) BuildGui(ITableState tableState)
+    /// <param name="coverProximityExceptions">The launched game's #201 setting (lobby toggle,
+    /// default on) so cover previews match what the host's cover stage will roll.</param>
+    /// <param name="tableBackground">The launched game's #265 cosmetic table surface (lobby setting).
+    /// Passed through to the overlay purely so the renderer can pick it up at TransitionToGame.</param>
+    public static (IStageResolverRegistry Registry, GuiResolverOverlay Overlay) BuildGui(ITableState tableState,
+        bool coverProximityExceptions = true,
+        ETableBackground tableBackground = ETableBackground.Forest)
     {
-        var overlay = new GuiResolverOverlay();
+        var overlay = new GuiResolverOverlay
+        {
+            CoverProximityExceptions = coverProximityExceptions,
+            TableBackground = tableBackground,
+        };
+
+        // Shared Group/Single preference: one instance so flipping the mode in deployment carries
+        // to movement and vice-versa, remembered for the whole game.
+        var formationMode = new FormationModeState();
 
         var yesNo         = new GuiYesNoResolver();
-        var selectUnit    = new GuiSelectionResolver<UnitData>();
-        var selectModel   = new GuiSelectionResolver<ModelData>();
+        var selectUnit    = new GuiUnitSelectionResolver();   // canvas click-to-select (spell targets, melee defender)
+        var selectModel   = new GuiModelSelectionResolver();     // canvas click-to-select + stats (Takedown, single-model spells)
         var selectZone    = new GuiSelectionResolver<RectangularZone>();
-        var cancelSelectUnit = new GuiCancellableSelectionResolver<UnitData>();
+        var cancelSelectUnit = new GuiCancellableUnitSelectionResolver();   // canvas click-to-select (#100 pre-attack targeting)
+        var meleeDefender    = new GuiChooseMeleeDefenderResolver();        // #237: sole-defender charge confirm card
         var strSel        = new GuiStringSelectionResolver();
+        var abilityEffect = new GuiChooseAbilityEffectResolver();   // #197 P5a "pick one effect" at activation start
+        var chooseSpell   = new GuiChooseSpellResolver();           // #244 spell pick + self-boost stepper
+        var castAssist    = new GuiCastAssistResolver();
         var deployZone    = new GuiChooseDeploymentZoneResolver();
         var rangedAttack  = new GuiChooseRangedAttackResolver(tableState);
         var assignWounds  = new GuiAssignWoundsResolver();
-        var movement      = new GuiDefineMovementResolver(tableState);
-        var placeObjects  = new GuiPlaceObjectsResolver<ModelData>(tableState);
+        var movement      = new GuiDefineMovementResolver(tableState, formationMode, coverProximityExceptions);
+        var aircraftMove  = new GuiAircraftAdvanceResolver();
+        var consolidate   = new GuiConsolidationMoveResolver(tableState, formationMode);
+        var placeObjects  = new GuiPlaceObjectsResolver<ModelData>(tableState, formationMode);
+        var placeObjective = new GuiPlaceObjectiveResolver(tableState);
+        var placeTerrain   = new GuiPlaceOneTerrainResolver(tableState);
         overlay.Register(yesNo);
         overlay.Register(selectUnit);
         overlay.Register(selectModel);
         overlay.Register(selectZone);
         overlay.Register(cancelSelectUnit);
+        overlay.Register(meleeDefender);
         overlay.Register(strSel);
+        overlay.Register(abilityEffect);
+        overlay.Register(chooseSpell);
+        overlay.Register(castAssist);
         overlay.Register(deployZone);
         overlay.Register(rangedAttack);
         overlay.Register(assignWounds);
         overlay.Register(movement);
+        overlay.Register(aircraftMove);
+        overlay.Register(consolidate);
         overlay.Register(placeObjects);
+        overlay.Register(placeObjective);
+        overlay.Register(placeTerrain);
 
         var registry = new StageResolverRegistry()
             .RegisterResolver(yesNo)                                         // GUI
             .RegisterResolver(selectUnit)                                    // GUI
+            // #191 A4-1's request split: activation forwards to the SAME canvas click-to-select
+            // resolver instance, so the overlay's pending/draw state works unchanged.
+            .RegisterResolver(new DerivedRequestAdapter<ChooseUnitToActivateRequest,
+                SelectionRequest<UnitData>, FDG.Data.DataBinding<UnitData>>(selectUnit))
             .RegisterResolver(selectModel)                                   // GUI
             .RegisterResolver(selectZone)                                    // GUI
             .RegisterResolver(cancelSelectUnit)                              // GUI
+            // #191 A4-3's split kept: melee-defender has its own resolver, which inherits the canvas
+            // picker for 2+ defenders and renders a one-click confirm card for a sole defender (#237).
+            .RegisterResolver<ChooseMeleeDefenderRequest, CancellableResult<FDG.Data.DataBinding<UnitData>>>(
+                meleeDefender)
             .RegisterResolver(strSel)                                        // GUI
+            .RegisterResolver(abilityEffect)                                 // GUI
+            .RegisterResolver(chooseSpell)                                   // GUI
+            .RegisterResolver(castAssist)                                    // GUI
             .RegisterResolver(deployZone)                                    // GUI
             .RegisterResolver(rangedAttack)                                  // GUI
             .RegisterResolver(assignWounds)                                  // GUI
             .RegisterResolver(movement)                                      // GUI
-            .RegisterResolver(placeObjects);                                 // GUI
+            .RegisterResolver(aircraftMove)                                  // GUI
+            .RegisterResolver(consolidate)                                   // GUI
+            .RegisterResolver(placeObjects)                                  // GUI
+            .RegisterResolver(placeObjective)                                // GUI
+            .RegisterResolver(placeTerrain);                                 // GUI
 
         return (registry, overlay);
     }
