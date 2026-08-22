@@ -49,6 +49,15 @@ Slow-style negative movementBonus; C4), Great Sergeant (two addExtraHit hook ent
 
 ## Notes
 
+- [x] 2026-08-22 S3 Ravage Aura DONE - data only, zero engine change (owner ruling). Standalone
+  Unit-scoped def at Melee_OnChargeContact: dealAutoWounds literal 1 at 6+, so DealAutoWounds'
+  carrier count (all living models) contributes 1 die/model and the stage's threshold-group SUM
+  makes it arithmetically identical to upgrading every model to Ravage(X+1). Attachment safe:
+  champion items fold rules into unit.SpecialRules at list-compile (ListCompiler.AddGrantedRule),
+  so the stage's model-less Actor seat sees it. 3 app tests (RavageAuraShippedDataTests incl. the
+  additive-sum proof: Ravage(2)x2 models + aura = 6 dice = Ravage(3)x2). Census dead 20 -> 17
+  (-3, the Orcs refs). Remaining dead: Retreating Strike 14 (owner-deferred), Bloodthirsty
+  Fighter 2, Reckless Piercing Aura 1 (base Reckless Piercing is grant-only, no direct refs).
 - [x] 2026-08-22 S2 Vale Oath Boost DONE. Engine (submodule c90067c): Effect.ClearTokenOnRoll now
   emits a SINK op; TokenClearRollSink folds best (lowest) threshold per token type
   (WoundIgnoreSink discipline, clamp [2,6]); TokenClearRolls makes ONE decisive roll per type via

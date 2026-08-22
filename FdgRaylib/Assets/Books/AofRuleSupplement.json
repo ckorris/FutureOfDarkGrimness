@@ -2618,5 +2618,31 @@
     "engineArgumentCount": 0,
     "valence": "Positive",
     "description": "This model and its unit gain Vale Oath Boost."
+  },
+  {
+    "name": "Ravage Aura",
+    "passive": [
+      {
+        "hookID": "Melee_OnChargeContact",
+        "condition": {
+          "kind": "always"
+        },
+        "effect": {
+          "kind": "dealAutoWounds",
+          "diceCountPerModel": {
+            "kind": "literal",
+            "value": 1
+          },
+          "successThreshold": 6
+        },
+        "lifetime": "ThisAttack",
+        "seat": "Actor"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "This model and its unit gain Ravage(+1): when it is this unit's turn to attack in melee, it rolls 1 extra Ravage die per model, and each 6+ deals one wound to the target."
   }
 ]
