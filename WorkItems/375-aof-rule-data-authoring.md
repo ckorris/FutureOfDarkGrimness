@@ -1,6 +1,6 @@
 # 375 — AoF rules pt.1: data authoring (renames + composable residue)
 
-**Status**: in progress (2026-08-22 — infra + census + classification done; authoring batches C1-C9 next)
+**Status**: done (closed 2026-08-22 — census floor reached: every dead ref is a #376 name)
 **Related**: #376 (primitives half), #377 (spells), #378 (books), mirrors the #196/#197 split that closed GDF coverage. Reference doc: `/home/chris/Projects/GDF Armies/Age of Fantasy/Special Rules and Spells by Army.md` (local only, copyrighted extract — never copy its text into the repo; see the CLAUDE.md in that folder).
 
 ## Goal
@@ -196,3 +196,29 @@ validate-rules closure will catch any of them that ever becomes reachable.
     AoF-worded descriptions).
 
 ## Outcome
+
+**Closed 2026-08-22, same session it started.** Every AoF-book rule name expressible in the
+existing vocabulary now resolves to a definition that fires, authored as data on branch
+`375-aof-rule-data-authoring` (14 commits, `b90bebb`..`7fea4ff`, engine submodule untouched
+throughout - 2969 engine tests green at every step).
+
+- **Census arc: 7,815 references; dead 2,411 raw -> 495 after the GDF bake -> 34**, where 34 =
+  exactly the 10 #376 names' references minus the two grant-only ones (8 referenced names), 0
+  scope-mismatch throughout. Zero dead refs attributable to authorable rules - the item's goal.
+- **77 work-list names + 2 divergent redefinitions + 2 wargear quirks authored**: 75 defs in the
+  new `AofRuleSupplement.json` + 9 per-book override files (`AofBookOverrides/<Book>.json`, baked
+  as that book's last supplement). 10 names handed to #376 with mechanism-level reasons, each
+  recorded in both ledgers the day it was found.
+- **Infra that outlives the item**: multi-file supplement merge (later-wins) in the three CLI
+  flags; `RuleSupplementSet`; `Defines()` over both files; lint fixture walking both supplements
+  + all override files (1280 app tests green); the AoF census corpus (40 local book imports off
+  Army Forge snapshots, local-only) and `classify-rules.py` (machine classification of the two
+  reference docs - reproduced the filing appraisal exactly: 306 names / 852 instances / 7
+  divergent).
+- **Verified end-to-end**: full loop (validate, fire-lint, engine suite, 40-book rebake,
+  GDF-book byte-identity, headless smoke) before every commit; final smokes played complete
+  headless games with compiled Lust Disciples and Ghostly Undead armies - zero rule drops,
+  Ethereal's teleport live in the log.
+- **Side-finds**: #380 filed (GDF Melee Slayer isMelee over-grant); the AoF/GDF Disciples
+  book-name collision recorded for #378; #378 must pass a book's `AofBookOverrides/` file as the
+  last `--apply-rules` argument, and the census regression pin lands with #378's bundled books.
