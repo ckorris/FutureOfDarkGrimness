@@ -88,6 +88,9 @@ wrapper within a batch):
   worry dissolves), Good Fighter (-> Precision Fighter), Takedown when Shooting (core Takedown's
   targetIndividualModel entry; ordering + per-copy aiming are effect/query-driven, not
   name-driven). Census dead 185 -> 79 (-106, exact).
+- [x] C7b Destroyer trio (-> Infected chain, 3 defs) - the F5 extra-wound-on-1 family fell through
+  the C1-C7 batch plan entirely; the census caught it. Dead 53 -> 36 (-17, exact). Remaining dead
+  = the 10 known names: 8 deferred to #376 (34 refs) + the AP / Counter in Melee quirks (C9).
 - [x] C7 wrappers DONE (11 defs): Buff wrappers (Melee Evasion / Piercing Assault / Rapid Rush /
   Versatile Attack - all grant existing core/supplement bases), Mark wrappers (Piercing Fighting
   -> grants Piercing Fighter, Rapid Charge, Surge), Feats (Precision + Piercing on the Speed Feat
