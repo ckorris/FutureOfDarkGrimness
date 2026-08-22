@@ -1,6 +1,6 @@
 # 376 — AoF rules pt.2: new engine primitives
 
-**Status**: todo
+**Status**: in progress (started 2026-08-22)
 **Related**: #375 (data half; feeds this item its list), mirrors #197. Engine submodule work — submodule-first commit cadence, full engine suite green. Reference doc: `/home/chris/Projects/GDF Armies/Age of Fantasy/Special Rules and Spells by Army.md` (local only, do not copy text into the repo).
 
 ## Goal
@@ -49,6 +49,25 @@ Slow-style negative movementBonus; C4), Great Sergeant (two addExtraHit hook ent
 
 ## Notes
 
+- [x] 2026-08-22 S1 Grounded contexts DONE. Engine (submodule e74517a): IHasTerrain on
+  MoveActionDeclaredContext + SaveRollCompleteContext (optional trailing TerrainPieces, the
+  Hit* pattern); terrain threaded through every movement-budget query the AI uses
+  (MovementRuleQueries + TacticalAnalysis optional param; TacticianPlanner reuses its #363
+  snapshot; ActivationResolver/PlaceObjects/RangedAttack/LaneGeometry/MacroActionGenerator all
+  pass table terrain; ChooseActionStage embark reach + DisembarkStage leash too);
+  AssignWoundsStage passes the live layout; CombatMath valuation stays deliberately empty
+  (commented); RuleFireLint gains terrain-populated variants at both hooks. 6 engine tests
+  (GroundedSpeedProtectionRuleIntegrationTests: fires/empty/far x both hooks + validator
+  accepts). Data: Grounded Speed (3 entries, per-action actionTypeIs gate - the Ethereal
+  triple-count trap - +2/+4/+4), Grounded Protection (ignoreWoundOnRoll 5, Subject), Grounded
+  Protection Aura. 8 app tests (GroundedAofShippedDataTests, incl. the no-cross-talk pin).
+  Census dead 34 -> 22 (-12, exact: Speed 4 + Protection family 8). Full loop green
+  (validate 327 defs / app 1283+8 / engine 2975 / GDF byte-identical / smoke exit 0).
+- 2026-08-22: STARTED. Branches: superproject `376-aof-rule-engine-primitives` (off the
+  unmerged #375 branch, which holds the AoF supplement this item completes), engine submodule
+  `376-aof-rule-primitives` (off pinned b3c47af). Book texts for all 6 mechanics confirmed
+  against the reference doc. Engine-seam recon in flight; design forks to be surfaced for
+  sign-off before building (slice order proposal to follow).
 - 2026-08-22 (#375 C5): Vale Oath Boost (+ Aura) moved here (double-roll composition, above).
 - 2026-08-22 (#375 C4): Grounded Speed moved here (context capability gap, above); Ethereal
   and Great Sergeant fell out of the borderline list as data.
@@ -56,5 +75,33 @@ Slow-style negative movementBonus; C4), Great Sergeant (two addExtraHit hook ent
   (histograms, never int-locked roll-derived values).
 
 ## Decisions
+
+- 2026-08-22 owner sign-offs (AskUserQuestion, after engine-seam recon):
+  - **Ravage Aura = data-only standalone def** (no engine change): ResolveRavageWoundsStage
+    already groups InvokeDealAutoWounds by threshold and sums dice, so a Unit-scoped def
+    contributing 1 die/living model at the same hook+threshold is arithmetically identical to
+    every model having Ravage(X+1). Accepted caveats: UI shows it as its own rule; a unit with
+    no base Ravage still rolls 1 die/model.
+  - **Bloodthirsty Fighter = real bonus swing**: bonus attacks re-enter the shared
+    hit->save->wound chain as a child (fresh CombatMetadata, no-chaining guard on metadata);
+    weapon rules apply to bonus attacks; AI CombatMath mirrored + pin test.
+  - **Grounded Speed = thread terrain to the AI**: optional trailing terrain param on the
+    movement budget queries (MovementRuleQueries, TacticalAnalysis.ChargeBudget); callers
+    holding table state pass it so planner and executor agree; unreachable spots default empty.
+  - **Retreating Strike DEFERRED by owner** ("I need to look into the rule more") - not built
+    in this pass; its refs stay dead until the owner rules on the trigger question (charger
+    move-back fires no hook today; options recorded in the recon notes above). Re-raise before
+    closing the item.
+- 2026-08-22 doctrine decisions (in-repo precedent, surfaced not asked; flag to reopen):
+  - **Vale Oath Boost = threshold fold**: clearTokenOnRoll becomes a sink op; the round-start
+    stage folds best (lowest) threshold per token type and makes ONE decisive roll
+    (WoundIgnoreSink + CastSpellStage doctrine). Boost authored at the full band (3), per the
+    RerollSink min-threshold rule. Owner-ruled facet: two DISTINCT recovery rules on one unit
+    (e.g. Steadfast + Battleborn - no shipped unit has both) now fold to one roll at the best
+    threshold instead of rolling twice.
+  - **Reckless Piercing = failure arm on grantTokenOnRoll** (MoraleTestThen.OnFailure
+    precedent): one die, two outcomes; 2+ arm = round-end boon token, 1 arm = Subject-seat
+    self-debuff token (Mobile Artillery shape, sign flipped). Rest is shipped vocabulary
+    (single-ability YesNo offer at activation start, roundEnd token clears).
 
 ## Outcome
