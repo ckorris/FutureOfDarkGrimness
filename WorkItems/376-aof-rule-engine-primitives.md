@@ -49,6 +49,15 @@ Slow-style negative movementBonus; C4), Great Sergeant (two addExtraHit hook ent
 
 ## Notes
 
+- [x] 2026-08-22 S4 Reckless Piercing DONE. Engine (submodule fb16b1d): grantTokenOnRoll
+  gains an optional onFailure effect applied to the same unit on a miss (MoraleTestThen
+  application pattern; service logs/presents "backfired") - one die, two exclusive outcomes.
+  2 engine tests in TargetBonusMarkerTests. Data: base = opt-in ability at activation start
+  (single offer -> YesNo, oncePerActivation) rolling 2+ boon / 1 exposed (both tokens roundEnd)
+  + two token-gated passive arms at hook 73 (Actor Save -1 out; Subject Save -1 in - the corpus'
+  first hostile Subject-seat save modifier, Mobile Artillery shape sign-flipped); Aura confers.
+  6 app tests (RecklessPiercingShippedDataTests). Census dead 17 -> 16 (the Aura's 1 ref; base
+  was grant-only). Remaining dead: Retreating Strike 14 (owner-deferred), Bloodthirsty Fighter 2.
 - [x] 2026-08-22 S3 Ravage Aura DONE - data only, zero engine change (owner ruling). Standalone
   Unit-scoped def at Melee_OnChargeContact: dealAutoWounds literal 1 at 6+, so DealAutoWounds'
   carrier count (all living models) contributes 1 die/model and the stage's threshold-group SUM

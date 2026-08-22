@@ -2644,5 +2644,131 @@
     "engineArgumentCount": 0,
     "valence": "Positive",
     "description": "This model and its unit gain Ravage(+1): when it is this unit's turn to attack in melee, it rolls 1 extra Ravage die per model, and each 6+ deals one wound to the target."
+  },
+  {
+    "name": "Reckless Piercing",
+    "passive": [
+      {
+        "hookID": "Shooting_OnHitRollComplete",
+        "condition": {
+          "kind": "and",
+          "left": {
+            "kind": "allModelsHaveThisRule"
+          },
+          "right": {
+            "kind": "tokenPresent",
+            "tType": {
+              "id": "RecklessPiercingBoon"
+            },
+            "minCount": 1
+          }
+        },
+        "effect": {
+          "kind": "rollModifier",
+          "rollKind": "Save",
+          "delta": -1
+        },
+        "lifetime": "ThisAttack",
+        "seat": "Actor"
+      },
+      {
+        "hookID": "Shooting_OnHitRollComplete",
+        "condition": {
+          "kind": "and",
+          "left": {
+            "kind": "allModelsHaveThisRule"
+          },
+          "right": {
+            "kind": "tokenPresent",
+            "tType": {
+              "id": "RecklessPiercingExposed"
+            },
+            "minCount": 1
+          }
+        },
+        "effect": {
+          "kind": "rollModifier",
+          "rollKind": "Save",
+          "delta": -1
+        },
+        "lifetime": "ThisAttack",
+        "seat": "Subject"
+      }
+    ],
+    "activated": [
+      {
+        "triggerHook": "Activation_OnActivationStart",
+        "cost": {
+          "kind": "oncePerActivation"
+        },
+        "targetSelector": {
+          "rangeInches": 0,
+          "minCount": 1,
+          "maxCount": 1,
+          "targetAffinity": "Self",
+          "requireLineOfSight": false,
+          "requiredToken": null,
+          "singleModel": false,
+          "requiredRule": null
+        },
+        "effect": {
+          "kind": "grantTokenOnRoll",
+          "tType": {
+            "id": "RecklessPiercingBoon"
+          },
+          "count": {
+            "kind": "literal",
+            "value": 1
+          },
+          "clear": {
+            "kind": "roundEnd"
+          },
+          "minRoll": 2,
+          "onFailure": {
+            "kind": "grantToken",
+            "tType": {
+              "id": "RecklessPiercingExposed"
+            },
+            "count": {
+              "kind": "literal",
+              "value": 1
+            },
+            "clear": {
+              "kind": "roundEnd"
+            }
+          }
+        },
+        "availableWhen": {
+          "kind": "allModelsHaveThisRule"
+        },
+        "label": "Reckless Piercing"
+      }
+    ],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Neutral",
+    "description": "When this unit is activated, it may roll one die. On a 2+ its weapons get AP(+1) when attacking until the end of the round, but on a 1 enemy units get AP(+1) on their weapons when attacking it instead."
+  },
+  {
+    "name": "Reckless Piercing Aura",
+    "passive": [
+      {
+        "hookID": "Lifecycle_OnUnitCreated",
+        "condition": {
+          "kind": "always"
+        },
+        "effect": {
+          "kind": "aura",
+          "ruleName": "Reckless Piercing"
+        },
+        "lifetime": "UntilEndOfGame",
+        "seat": "Actor"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "This model and its unit gain Reckless Piercing."
   }
 ]
