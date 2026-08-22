@@ -178,5 +178,256 @@
     "engineArgumentCount": 0,
     "valence": "Positive",
     "description": "Once per activation, before attacking, pick one friendly unit within 12 inches, which gains Angelic Blessing Boost for its next relevant roll."
+  },
+  {
+    "name": "Empyrean Spirit",
+    "passive": [
+      {
+        "hookID": "Shooting_OnHitRollModifier",
+        "condition": {
+          "kind": "and",
+          "left": {
+            "kind": "attackedFromOverInches",
+            "distanceInches": 9
+          },
+          "right": {
+            "kind": "allModelsHaveThisRule"
+          }
+        },
+        "effect": {
+          "kind": "rollModifier",
+          "rollKind": "Hit",
+          "delta": -1
+        },
+        "lifetime": "ThisAttack",
+        "seat": "Subject"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "Enemies shooting or charging this unit from over 9 inches away get -1 to hit."
+  },
+  {
+    "name": "Empyrean Spirit Boost",
+    "passive": [
+      {
+        "hookID": "Shooting_OnHitRollModifier",
+        "condition": {
+          "kind": "and",
+          "left": {
+            "kind": "not",
+            "inner": {
+              "kind": "attackedFromOverInches",
+              "distanceInches": 9
+            }
+          },
+          "right": {
+            "kind": "allModelsHaveThisRule"
+          }
+        },
+        "effect": {
+          "kind": "rollModifier",
+          "rollKind": "Hit",
+          "delta": -1
+        },
+        "lifetime": "ThisAttack",
+        "seat": "Subject"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "Enemies attacking this unit always get -1 to hit from Empyrean Spirit (not only from over 9 inches away)."
+  },
+  {
+    "name": "Empyrean Spirit Boost Aura",
+    "passive": [
+      {
+        "hookID": "Lifecycle_OnUnitCreated",
+        "condition": {
+          "kind": "always"
+        },
+        "effect": {
+          "kind": "aura",
+          "ruleName": "Empyrean Spirit Boost"
+        },
+        "lifetime": "UntilEndOfGame",
+        "seat": "Actor"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "This model and its unit gain Empyrean Spirit Boost."
+  },
+  {
+    "name": "Ossified",
+    "passive": [
+      {
+        "hookID": "Shooting_OnHitRollComplete",
+        "condition": {
+          "kind": "and",
+          "left": {
+            "kind": "attackedFromOverInches",
+            "distanceInches": 9
+          },
+          "right": {
+            "kind": "allModelsHaveThisRule"
+          }
+        },
+        "effect": {
+          "kind": "reduceArmorPenetration",
+          "amount": 1
+        },
+        "lifetime": "ThisAttack",
+        "seat": "Subject"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "Hits on this unit from over 9 inches away count as AP reduced by 1, to a minimum of 0."
+  },
+  {
+    "name": "Ossified Boost",
+    "passive": [
+      {
+        "hookID": "Shooting_OnHitRollComplete",
+        "condition": {
+          "kind": "and",
+          "left": {
+            "kind": "not",
+            "inner": {
+              "kind": "attackedFromOverInches",
+              "distanceInches": 9
+            }
+          },
+          "right": {
+            "kind": "allModelsHaveThisRule"
+          }
+        },
+        "effect": {
+          "kind": "reduceArmorPenetration",
+          "amount": 1
+        },
+        "lifetime": "ThisAttack",
+        "seat": "Subject"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "Hits on this unit always count as AP reduced by 1 from Ossified (not only from over 9 inches away)."
+  },
+  {
+    "name": "Ossified Boost Aura",
+    "passive": [
+      {
+        "hookID": "Lifecycle_OnUnitCreated",
+        "condition": {
+          "kind": "always"
+        },
+        "effect": {
+          "kind": "aura",
+          "ruleName": "Ossified Boost"
+        },
+        "lifetime": "UntilEndOfGame",
+        "seat": "Actor"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "This model and its unit gain Ossified Boost."
+  },
+  {
+    "name": "Warden",
+    "passive": [
+      {
+        "hookID": "Shooting_OnHitRollComplete",
+        "condition": {
+          "kind": "and",
+          "left": {
+            "kind": "attackedFromOverInches",
+            "distanceInches": 9
+          },
+          "right": {
+            "kind": "allModelsHaveThisRule"
+          }
+        },
+        "effect": {
+          "kind": "reduceArmorPenetration",
+          "amount": 1
+        },
+        "lifetime": "ThisAttack",
+        "seat": "Subject"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "Hits on this unit from over 9 inches away count as AP reduced by 1, to a minimum of 0."
+  },
+  {
+    "name": "Warden Boost",
+    "passive": [
+      {
+        "hookID": "Shooting_OnHitRollComplete",
+        "condition": {
+          "kind": "and",
+          "left": {
+            "kind": "not",
+            "inner": {
+              "kind": "attackedFromOverInches",
+              "distanceInches": 9
+            }
+          },
+          "right": {
+            "kind": "allModelsHaveThisRule"
+          }
+        },
+        "effect": {
+          "kind": "reduceArmorPenetration",
+          "amount": 1
+        },
+        "lifetime": "ThisAttack",
+        "seat": "Subject"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "Hits on this unit always count as AP reduced by 1 from Warden (not only from over 9 inches away)."
+  },
+  {
+    "name": "Warden Boost Aura",
+    "passive": [
+      {
+        "hookID": "Lifecycle_OnUnitCreated",
+        "condition": {
+          "kind": "always"
+        },
+        "effect": {
+          "kind": "aura",
+          "ruleName": "Warden Boost"
+        },
+        "lifetime": "UntilEndOfGame",
+        "seat": "Actor"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "This model and its unit gain Warden Boost."
   }
 ]

@@ -55,8 +55,8 @@ wrapper within a batch):
   chain), Angelic Blessing (+Boost, +Boost Buff -> Knightborn). Census dead 495 -> 434 (-61, exact).
   Ethereal turned out to be a reposition rule, not a wound ignore (the plan's guess was wrong) -
   moved to C4, nothing dropped.
-- [ ] C2 defensive-distance family (F4 clones): Empyrean Spirit trio (-> Changebound/Screened),
-  Ossified trio + Warden trio (-> Guardian/Primeborn).
+- [x] C2 defensive-distance family DONE: Empyrean Spirit trio (-> Changebound chain), Ossified trio
+  + Warden trio (-> Guardian chain), 9 defs. Census dead 434 -> 373 (-61, exact).
 - [ ] C3 on-6 offense family: Bestial trio (-> Scrapper/Mischievous reroll), Lucky trio
   (-> Devout/Ferocious), Royal Warrior trio (-> Bloodborn/Clan Warrior/Primal),
   Great Sergeant (-> Sergeant, per-model).
