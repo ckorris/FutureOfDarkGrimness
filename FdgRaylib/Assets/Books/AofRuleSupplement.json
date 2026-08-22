@@ -1253,5 +1253,521 @@
     "engineArgumentCount": 0,
     "valence": "Positive",
     "description": "Once per activation, before attacking, pick one friendly unit within 12 inches, which gains Entrenched for its next relevant roll."
+  },
+  {
+    "name": "Buccaneer",
+    "passive": [
+      {
+        "hookID": "Shooting_OnHitRollModifier",
+        "condition": {
+          "kind": "and",
+          "left": {
+            "kind": "not",
+            "inner": {
+              "kind": "isMelee"
+            }
+          },
+          "right": {
+            "kind": "distanceGreaterThan",
+            "distanceInches": 9
+          }
+        },
+        "effect": {
+          "kind": "rollModifier",
+          "rollKind": "Hit",
+          "delta": 1
+        },
+        "lifetime": "ThisAttack",
+        "seat": "Actor"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "When shooting enemies over 9 inches away, this model gets +1 to hit."
+  },
+  {
+    "name": "Buccaneer Boost",
+    "passive": [
+      {
+        "hookID": "Shooting_OnHitRollModifier",
+        "condition": {
+          "kind": "and",
+          "left": {
+            "kind": "unitHasRule",
+            "ruleName": "Buccaneer"
+          },
+          "right": {
+            "kind": "and",
+            "left": {
+              "kind": "not",
+              "inner": {
+                "kind": "isMelee"
+              }
+            },
+            "right": {
+              "kind": "not",
+              "inner": {
+                "kind": "distanceGreaterThan",
+                "distanceInches": 9
+              }
+            }
+          }
+        },
+        "effect": {
+          "kind": "rollModifier",
+          "rollKind": "Hit",
+          "delta": 1
+        },
+        "lifetime": "ThisAttack",
+        "seat": "Actor"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "If this model has Buccaneer, it always gets +1 to hit when shooting (not only over 9 inches away)."
+  },
+  {
+    "name": "Buccaneer Boost Aura",
+    "passive": [
+      {
+        "hookID": "Lifecycle_OnUnitCreated",
+        "condition": {
+          "kind": "always"
+        },
+        "effect": {
+          "kind": "aura",
+          "ruleName": "Buccaneer Boost"
+        },
+        "lifetime": "UntilEndOfGame",
+        "seat": "Actor"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "This model and its unit gain Buccaneer Boost."
+  },
+  {
+    "name": "Vinci Tech (Piercing)",
+    "passive": [
+      {
+        "hookID": "Shooting_OnHitRollComplete",
+        "condition": {
+          "kind": "attackedFromOverInches",
+          "distanceInches": 9
+        },
+        "effect": {
+          "kind": "rollModifier",
+          "rollKind": "Save",
+          "delta": -1
+        },
+        "lifetime": "ThisAttack",
+        "seat": "Actor"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "AP(+1) when shooting or charging enemies over 9 inches away, for this activation."
+  },
+  {
+    "name": "Vinci Tech (Precision)",
+    "passive": [
+      {
+        "hookID": "Shooting_OnHitRollModifier",
+        "condition": {
+          "kind": "attackedFromOverInches",
+          "distanceInches": 9
+        },
+        "effect": {
+          "kind": "rollModifier",
+          "rollKind": "Hit",
+          "delta": 1
+        },
+        "lifetime": "ThisAttack",
+        "seat": "Actor"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "+1 to hit when shooting or charging enemies over 9 inches away, for this activation."
+  },
+  {
+    "name": "Vinci Tech",
+    "passive": [],
+    "activated": [
+      {
+        "triggerHook": "Activation_OnActivationStart",
+        "cost": {
+          "kind": "oncePerActivation"
+        },
+        "targetSelector": {
+          "rangeInches": 0,
+          "minCount": 1,
+          "maxCount": 1,
+          "targetAffinity": "Self",
+          "requireLineOfSight": false,
+          "requiredToken": null,
+          "singleModel": false,
+          "requiredRule": null
+        },
+        "effect": {
+          "kind": "addRule",
+          "ruleName": "Vinci Tech (Piercing)",
+          "scope": "ThisActivation"
+        },
+        "availableWhen": {
+          "kind": "always"
+        },
+        "label": "AP(+1)"
+      },
+      {
+        "triggerHook": "Activation_OnActivationStart",
+        "cost": {
+          "kind": "oncePerActivation"
+        },
+        "targetSelector": {
+          "rangeInches": 0,
+          "minCount": 1,
+          "maxCount": 1,
+          "targetAffinity": "Self",
+          "requireLineOfSight": false,
+          "requiredToken": null,
+          "singleModel": false,
+          "requiredRule": null
+        },
+        "effect": {
+          "kind": "addRule",
+          "ruleName": "Vinci Tech (Precision)",
+          "scope": "ThisActivation"
+        },
+        "availableWhen": {
+          "kind": "always"
+        },
+        "label": "+1 to hit"
+      }
+    ],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "When this unit is activated, pick one effect until the end of the activation: when shooting or charging enemies over 9 inches away, it gets either AP(+1) or +1 to hit rolls."
+  },
+  {
+    "name": "Good Fighter",
+    "passive": [
+      {
+        "hookID": "Shooting_OnHitRollModifier",
+        "condition": {
+          "kind": "isMelee"
+        },
+        "effect": {
+          "kind": "rollModifier",
+          "rollKind": "Hit",
+          "delta": 1
+        },
+        "lifetime": "ThisAttack",
+        "seat": "Actor"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "+1 to hit rolls in melee."
+  },
+  {
+    "name": "Shadowborn",
+    "passive": [
+      {
+        "hookID": "Shooting_OnRangeCheck",
+        "condition": {
+          "kind": "allModelsHaveThisRule"
+        },
+        "effect": {
+          "kind": "rangeModifier",
+          "delta": -4,
+          "minResultInches": 6
+        },
+        "lifetime": "ThisActivation",
+        "seat": "Subject"
+      },
+      {
+        "hookID": "Movement_OnChargeDeclared",
+        "condition": {
+          "kind": "allModelsHaveThisRule"
+        },
+        "effect": {
+          "kind": "movementBonus",
+          "actionType": "Charge",
+          "distanceInches": -2,
+          "minResultInches": 6
+        },
+        "lifetime": "ThisActivation",
+        "seat": "Subject"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "Enemies get -4 inches range when shooting this unit and -2 inches of movement when charging it (each to a minimum of 6 inches)."
+  },
+  {
+    "name": "Shadowborn Boost",
+    "passive": [
+      {
+        "hookID": "Shooting_OnRangeCheck",
+        "condition": {
+          "kind": "allModelsHaveThisRule"
+        },
+        "effect": {
+          "kind": "rangeModifier",
+          "delta": -4,
+          "minResultInches": 6
+        },
+        "lifetime": "ThisActivation",
+        "seat": "Subject"
+      },
+      {
+        "hookID": "Movement_OnChargeDeclared",
+        "condition": {
+          "kind": "allModelsHaveThisRule"
+        },
+        "effect": {
+          "kind": "movementBonus",
+          "actionType": "Charge",
+          "distanceInches": -2,
+          "minResultInches": 6
+        },
+        "lifetime": "ThisActivation",
+        "seat": "Subject"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "If all models in this unit have Shadowborn, enemies get -8 inches range when shooting it and -4 inches of movement when charging it (instead of only -4 and -2; each to a minimum of 6 inches)."
+  },
+  {
+    "name": "Shadowborn Boost Aura",
+    "passive": [
+      {
+        "hookID": "Lifecycle_OnUnitCreated",
+        "condition": {
+          "kind": "always"
+        },
+        "effect": {
+          "kind": "aura",
+          "ruleName": "Shadowborn Boost"
+        },
+        "lifetime": "UntilEndOfGame",
+        "seat": "Actor"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "This model and its unit gain Shadowborn Boost."
+  },
+  {
+    "name": "Vinci Tech Boost",
+    "passive": [
+      {
+        "hookID": "Shooting_OnHitRollComplete",
+        "condition": {
+          "kind": "and",
+          "left": {
+            "kind": "unitHasRule",
+            "ruleName": "Vinci Tech"
+          },
+          "right": {
+            "kind": "attackedFromOverInches",
+            "distanceInches": 9
+          }
+        },
+        "effect": {
+          "kind": "rollModifier",
+          "rollKind": "Save",
+          "delta": -1
+        },
+        "lifetime": "ThisAttack",
+        "seat": "Actor"
+      },
+      {
+        "hookID": "Shooting_OnHitRollModifier",
+        "condition": {
+          "kind": "and",
+          "left": {
+            "kind": "unitHasRule",
+            "ruleName": "Vinci Tech"
+          },
+          "right": {
+            "kind": "attackedFromOverInches",
+            "distanceInches": 9
+          }
+        },
+        "effect": {
+          "kind": "rollModifier",
+          "rollKind": "Hit",
+          "delta": 1
+        },
+        "lifetime": "ThisAttack",
+        "seat": "Actor"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "If this model has Vinci Tech, it gets both AP(+1) and +1 to hit rolls when shooting or charging enemies over 9 inches away (no need to pick one)."
+  },
+  {
+    "name": "Vinci Tech Boost Aura",
+    "passive": [
+      {
+        "hookID": "Lifecycle_OnUnitCreated",
+        "condition": {
+          "kind": "always"
+        },
+        "effect": {
+          "kind": "aura",
+          "ruleName": "Vinci Tech Boost"
+        },
+        "lifetime": "UntilEndOfGame",
+        "seat": "Actor"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "This model and its unit gain Vinci Tech Boost."
+  },
+  {
+    "name": "Takedown when Shooting",
+    "passive": [
+      {
+        "hookID": "Shooting_OnShootTargetsSelected",
+        "condition": {
+          "kind": "always"
+        },
+        "effect": {
+          "kind": "targetIndividualModel"
+        },
+        "lifetime": "ThisAttack",
+        "seat": "Actor"
+      }
+    ],
+    "activated": [],
+    "scope": "Weapon",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "When shooting, may fire at a single chosen model in the target unit; all wounds hit that model. Must be resolved before the unit's other weapons."
+  },
+  {
+    "name": "Wild Veil",
+    "passive": [
+      {
+        "hookID": "Shooting_OnRangeCheck",
+        "condition": {
+          "kind": "allModelsHaveThisRule"
+        },
+        "effect": {
+          "kind": "rangeModifier",
+          "delta": -4,
+          "minResultInches": 6
+        },
+        "lifetime": "ThisActivation",
+        "seat": "Subject"
+      },
+      {
+        "hookID": "Movement_OnChargeDeclared",
+        "condition": {
+          "kind": "allModelsHaveThisRule"
+        },
+        "effect": {
+          "kind": "movementBonus",
+          "actionType": "Charge",
+          "distanceInches": -2,
+          "minResultInches": 6
+        },
+        "lifetime": "ThisActivation",
+        "seat": "Subject"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "Enemies get -4 inches range when shooting this unit and -2 inches of movement when charging it (each to a minimum of 6 inches)."
+  },
+  {
+    "name": "Wild Veil Boost",
+    "passive": [
+      {
+        "hookID": "Shooting_OnRangeCheck",
+        "condition": {
+          "kind": "allModelsHaveThisRule"
+        },
+        "effect": {
+          "kind": "rangeModifier",
+          "delta": -4,
+          "minResultInches": 6
+        },
+        "lifetime": "ThisActivation",
+        "seat": "Subject"
+      },
+      {
+        "hookID": "Movement_OnChargeDeclared",
+        "condition": {
+          "kind": "allModelsHaveThisRule"
+        },
+        "effect": {
+          "kind": "movementBonus",
+          "actionType": "Charge",
+          "distanceInches": -2,
+          "minResultInches": 6
+        },
+        "lifetime": "ThisActivation",
+        "seat": "Subject"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "If all models in this unit have Wild Veil, enemies get -8 inches range when shooting it and -4 inches of movement when charging it (instead of only -4 and -2; each to a minimum of 6 inches)."
+  },
+  {
+    "name": "Wild Veil Boost Aura",
+    "passive": [
+      {
+        "hookID": "Lifecycle_OnUnitCreated",
+        "condition": {
+          "kind": "always"
+        },
+        "effect": {
+          "kind": "aura",
+          "ruleName": "Wild Veil Boost"
+        },
+        "lifetime": "UntilEndOfGame",
+        "seat": "Actor"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "This model and its unit gain Wild Veil Boost."
   }
 ]

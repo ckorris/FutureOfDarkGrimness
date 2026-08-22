@@ -79,9 +79,15 @@ wrapper within a batch):
   (+ its Aura) -> #376**: Shaken recovery rides clearTokenOnRoll, an imperative executable that
   rolls per firing entry - base 4+ plus a boosted 3+ would roll TWICE (P 0.833 vs the intended
   0.667); a threshold shift is not composable as data (2 refs stay dead).
-- [ ] C6 conditional modifiers/misc offense: Buccaneer trio (-> Targeting Visor), Vinci Tech trio
-  (-> Watchborn/Versatile Attack), Shadowborn trio + Wild Veil trio (-> Darkborn variants),
-  Good Fighter, Takedown when Shooting.
+- [x] C6 conditional modifiers/misc offense DONE (16 defs): Buccaneer trio (-> Targeting Visor
+  chain), Vinci Tech (-> Versatile Attack choice machinery, helpers cloned as Vinci Tech
+  (Piercing)/(Precision)) + Boost (both effects, >9" gate KEPT - the AoF text's "instead of"
+  clause removes the pick, not the distance gate; interpretive call, flag if play disagrees) +
+  Aura, Shadowborn + Wild Veil families (Darkborn (Defensive) shape as JSON; the min-clamp Boosts
+  compose fine - RangeRuleQueries sums deltas and takes the max floor, so the #376 borderline
+  worry dissolves), Good Fighter (-> Precision Fighter), Takedown when Shooting (core Takedown's
+  targetIndividualModel entry; ordering + per-copy aiming are effect/query-driven, not
+  name-driven). Census dead 185 -> 79 (-106, exact).
 - [ ] C7 wrappers: Piercing Assault Buff, Melee Evasion Buff, Rapid Rush Buff, Versatile Attack
   Buff, Piercing Fighting Mark, Rapid Charge Mark, Surge Mark, Precision Feat, Piercing Feat,
   Grounded Protection (+Aura).
