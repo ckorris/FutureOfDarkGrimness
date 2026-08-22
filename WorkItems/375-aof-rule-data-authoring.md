@@ -41,10 +41,61 @@ distinct rule names, 852 instances.
 
 ## Notes
 
+- 2026-08-22 (session 2, slice A): **Multi-supplement infra shipped** (`b90bebb`, app-side only):
+  empty `AofRuleSupplement.json` beside the GDF one; `--import-opr`/`--apply-rules`/
+  `--validate-rules` accept 1+ supplement files merged later-wins by name (new app-side
+  `RuleSupplementSet.LoadMerged`); `BundledBookRulebook.Defines()` reads both files; lint fixture
+  walks both files (concat, not merge, so an AoF redefinition never shadows the GDF entry out of
+  the lint) + 3 merge-semantics tests. Verified: app suite 1185 green, GDF-alone validation
+  unchanged (251 defs), GDF book re-baked with GDF+AoF byte-identical, headless smoke exit 0,
+  engine untouched.
+- 2026-08-22 (session 2, slice 0): **AoF corpus acquired + baseline census.** All 40 official AoF
+  book JSONs fetched (Army Forge API, gameSystem=4, slug `age-of-fantasy`, index verified 40/40
+  vs the local PDFs) into `../GDF Armies/Age of Fantasy/opr-json-snapshots/`; imported clean via
+  `--import-opr` (no game-system gate in `OprBookImporter`) into local uncommitted
+  `../GDF Armies/Age of Fantasy/fdgbooks-baseline/` (raw) and `fdgbooks-gdfbaked/` (GDF-supplement
+  baked). `--rule-coverage` needed zero changes. **Baseline: 7,815 references; raw dead 2,411
+  (197 names); after GDF bake dead 495 (64 names); 0 scope-mismatch either way.** The 64-name
+  dead list undercounts the authoring surface: the census does not walk granted names (e.g.
+  `Bestial Boost` hides behind `Bestial Boost Aura`), so the appraisal's ~128-name list stays the
+  work list; census + validate-rules granted-name closure is the done gate. Census outputs saved
+  beside the appraisal artifacts. Oddities to chase: `AP` and `Counter in Melee` each 1 dead ref
+  (data quirk?). Naming: index "Chivalrous Kingdoms" = PDF "Chivalrous Knights"; AoF's four
+  "Change/Lust/Plague/War Disciples" book names COLLIDE with GDF's own Disciples books - matters
+  for #378 bundling (BundledBookRulebook faction matching is name-based) - recorded there when it
+  lands.
+- 2026-08-22 (session 2): Work started on branch `375-aof-rule-data-authoring`. The filing
+  session's appraisal artifacts (reference doc split into 8 batches, the 57-name residue
+  list incl. #376's four primitives, a 23-rule within-AoF text-variant checklist, and the
+  346-name engine vocabulary snapshot) were recovered from its ephemeral scratchpad and
+  preserved at `../GDF Armies/Age of Fantasy/appraisal-2026-08-22/` (local only - contains
+  copyrighted text). The full 67-name rename mapping was NOT persisted; it is
+  machine-re-derivable by normalized-text comparison of the AoF reference doc against the
+  GDF one + the implemented-vocabulary list, and rebuilding it is part of the census work.
+  Note the memory/index examples cover only 7 of the 67. The "7 same-name divergent rules"
+  list is also unpersisted beyond three examples (Fortified Growth marker timing, LoS
+  clauses on Difficult Terrain Debuff and Quick Shot Mark) - re-derive alongside.
 - 2026-08-22: Filed. Appraisal numbers above come from a machine-verified comparison of the
   reference doc against CoreRuleCatalog + GdfRuleSupplement + book defs; ~94% of the 852
   instances resolve via existing behavior modulo renames.
 
 ## Decisions
+
+- 2026-08-22 (owner sign-off on the filed forks):
+  - **Separate `AofRuleSupplement.json`**, beside the GDF one. The supplement CLI flags
+    (`--apply-rules`, `--import-opr`, `--validate-rules`) learn to take multiple supplement
+    files, merged later-wins by name, so AoF books bake against GDF+AoF. The 7 GDF-divergent
+    same-name rules become plain AoF-supplement entries (they win only in AoF bakes);
+    per-book `ruleDefinitions` overrides are reserved for names that diverge WITHIN AoF, if
+    the census finds any. `BundledBookRulebook.Defines()` learns the second filename. All
+    app-side; engine untouched (mirrors #196's guardrail - anything needing engine -> #376).
+  - **Census corpus = local AoF book imports.** Fetch AoF Army Forge JSON snapshots into
+    `../GDF Armies/Age of Fantasy/` (local only, like GDF's `opr-json-snapshots/`), import
+    to `.fdgbook`s in a local uncommitted dir, point the existing `--rule-coverage` at it
+    (the flag already takes any directory). True attachment-scope census mirroring #196;
+    #378 keeps product integration (slug parameterization, bundling, picker UX).
+  - **Renames are cloned defs, not aliases** - re-affirms #196's "data, not aliases"
+    (alias shares the definition instance; `ignoreRule` compares identity; clones carry
+    AoF-worded descriptions).
 
 ## Outcome
