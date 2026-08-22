@@ -57,9 +57,10 @@ wrapper within a batch):
   moved to C4, nothing dropped.
 - [x] C2 defensive-distance family DONE: Empyrean Spirit trio (-> Changebound chain), Ossified trio
   + Warden trio (-> Guardian chain), 9 defs. Census dead 434 -> 373 (-61, exact).
-- [ ] C3 on-6 offense family: Bestial trio (-> Scrapper/Mischievous reroll), Lucky trio
-  (-> Devout/Ferocious), Royal Warrior trio (-> Bloodborn/Clan Warrior/Primal),
-  Great Sergeant (-> Sergeant, per-model).
+- [x] C3 on-6 offense family DONE: Bestial trio (-> Mischievous chain), Lucky trio (-> Devout
+  chain), Royal Warrior trio (-> Clan Warrior chain; the Boost's near-miss was substitution
+  ambiguity, GDF's Clan Warrior Boost is equally ungated - exact clone), Great Sergeant
+  (Sergeant + a second 5s hook entry, Weapon scope), 10 defs. Census dead 373 -> 301 (-72, exact).
 - [ ] C4 movement/reposition: Royal Legion trio (-> Lustbound), Wave-Step trio (-> Rapid Blink),
   Drakesworn (-> Fanatic/Vanguard, core template), Grounded Speed, Traversal, Ethereal
   (reposition-at-activation + move penalties; moved from C1).
