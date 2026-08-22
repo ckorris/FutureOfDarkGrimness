@@ -2327,5 +2327,63 @@
     "engineArgumentCount": 0,
     "valence": "Positive",
     "description": "Gains a marker at the start of each round while on the table and not Shaken (max 4). If all models have this rule, every two markers reduce attackers' AP by 1 (min AP(0), up to 2)."
+  },
+  {
+    "name": "Counter in Melee",
+    "passive": [
+      {
+        "hookID": "Melee_OnCounterTrigger",
+        "condition": {
+          "kind": "always"
+        },
+        "effect": {
+          "kind": "strikeFirst"
+        },
+        "lifetime": "ThisActivation",
+        "seat": "Subject"
+      },
+      {
+        "hookID": "Melee_OnChargeContact",
+        "condition": {
+          "kind": "always"
+        },
+        "effect": {
+          "kind": "reduceImpactDicePerModel"
+        },
+        "lifetime": "ThisAttack",
+        "seat": "Subject"
+      }
+    ],
+    "activated": [],
+    "scope": "Weapon",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "When charged, this unit strikes first and the charger rolls one fewer Impact die per living model."
+  },
+  {
+    "name": "AP",
+    "passive": [
+      {
+        "hookID": "Shooting_OnHitRollComplete",
+        "condition": {
+          "kind": "not",
+          "inner": {
+            "kind": "isMelee"
+          }
+        },
+        "effect": {
+          "kind": "rollModifier",
+          "rollKind": "Save",
+          "delta": -1
+        },
+        "lifetime": "ThisAttack",
+        "seat": "Actor"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 1,
+    "valence": "Positive",
+    "description": "The unit's ranged attacks get AP(1)."
   }
 ]
