@@ -1,6 +1,6 @@
 # 375 — AoF rules pt.1: data authoring (renames + composable residue)
 
-**Status**: todo
+**Status**: in progress (2026-08-22 — infra + census + classification done; authoring batches C1-C9 next)
 **Related**: #376 (primitives half), #377 (spells), #378 (books), mirrors the #196/#197 split that closed GDF coverage. Reference doc: `/home/chris/Projects/GDF Armies/Age of Fantasy/Special Rules and Spells by Army.md` (local only, copyrighted extract — never copy its text into the repo; see the CLAUDE.md in that folder).
 
 ## Goal
@@ -38,6 +38,50 @@ distinct rule names, 852 instances.
   systems and with #378's book bundling.
 - Whether renames are aliases (one def, many names) or cloned defs; the rule-name hover
   glossary (#259) and rule tracing should show the AoF-facing name either way.
+
+## Authoring work list (slice B output, 2026-08-22)
+
+Machine-derived by `../GDF Armies/Age of Fantasy/appraisal-2026-08-22/classify-rules.py`
+(normalized-text comparison of the two reference docs, self-name masked, rename-substitution to
+fixpoint; full texts in `authoring-ledger.md` there - LOCAL ONLY, never commit text). Parse
+reproduces the appraisal exactly: 306 distinct names, 852 instances. Work list = 62 census-dead
+names + 15 grant-closure names = **77 to author**, plus the 7 same-name divergent redefinitions
+(invisible to the census - their names resolve, their AoF text differs).
+
+Batches (one commit each, #196 verification loop + AoF rebake before every commit; base before
+wrapper within a batch):
+
+- [ ] C1 ignore-wound family: Cursed Undead (+Boost, +Boost Buff -> Self-Repair chain),
+  Angelic Blessing (+Boost, +Boost Buff -> Knightborn), Ethereal (spell-only ignore).
+- [ ] C2 defensive-distance family (F4 clones): Empyrean Spirit trio (-> Changebound/Screened),
+  Ossified trio + Warden trio (-> Guardian/Primeborn).
+- [ ] C3 on-6 offense family: Bestial trio (-> Scrapper/Mischievous reroll), Lucky trio
+  (-> Devout/Ferocious), Royal Warrior trio (-> Bloodborn/Clan Warrior/Primal),
+  Great Sergeant (-> Sergeant, per-model).
+- [ ] C4 movement/reposition: Royal Legion trio (-> Lustbound), Wave-Step trio (-> Rapid Blink),
+  Drakesworn (-> Fanatic/Vanguard, core template), Grounded Speed, Traversal.
+- [ ] C5 morale/steadfast + champion wargear: Unmovable + Vale Oath trio
+  (-> Battleborn/Honor Code/Steadfast), Steadfast Buff, Great Banner (-> Courage Buff),
+  Great Musician, Hold the Line Boost Buff, Defense Buff.
+- [ ] C6 conditional modifiers/misc offense: Buccaneer trio (-> Targeting Visor), Vinci Tech trio
+  (-> Watchborn/Versatile Attack), Shadowborn trio + Wild Veil trio (-> Darkborn variants),
+  Good Fighter, Takedown when Shooting.
+- [ ] C7 wrappers: Piercing Assault Buff, Melee Evasion Buff, Rapid Rush Buff, Versatile Attack
+  Buff, Piercing Fighting Mark, Rapid Charge Mark, Surge Mark, Precision Feat, Piercing Feat,
+  Grounded Protection (+Aura).
+- [ ] C8 divergent-7 AoF redefinitions: Difficult Terrain Debuff, Fortified Growth, Hold the Line,
+  Mobile Artillery, Piercing Spotter, Precision Shooting Mark, Quick Shot Mark.
+- [ ] C9 loose ends: `AP` + `Counter in Melee` book-data quirks (1 ref each, not on any rules
+  page); review the 9 within-AoF text-variant names (Lustbound, Lustbound Boost, Melee Shrouding,
+  Melee Slayer, Mind Control, Piercing Assault Buff, Shatter, Versatile Attack, Warbound Boost)
+  for mechanical meaning vs typo.
+- **-> #376 hand-off (5 names, confirmed non-composable):** Bloodthirsty Fighter,
+  Retreating Strike, Reckless Piercing, Reckless Piercing Aura, Ravage Aura (argumented grant).
+
+Doc-only names needing NOTHING (defined on rules pages, never referenced by AoF unit/upgrade
+data, not granted by any work-list rule): Break, Butcher, Slam, Slayer, Slash, +1 to Defense,
+Storm of Change/Lust/Plague/War, Unwieldy and the like - deliberately skipped; the census +
+validate-rules closure will catch any of them that ever becomes reachable.
 
 ## Notes
 
