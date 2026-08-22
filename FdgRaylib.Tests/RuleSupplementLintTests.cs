@@ -35,6 +35,13 @@ public class RuleSupplementLintTests
         ["Melee Slayer"] = "AP(+2) in melee vs Tough 3+ (targetMajorityHasTough); lint has no Tough-majority target context.",
         ["Ranged Slayer"] = "AP(+2) at range vs Tough 3+ (targetMajorityHasTough); lint has no Tough-majority target context.",
 
+        // #375 C4. Effect.Teleport deliberately queues no operations: ChooseActionStage routes any offer
+        // whose ability effect is Effect.Teleport to the dedicated TeleportStage (routing is by effect
+        // TYPE, not rule name - ChooseActionStage.cs "#197 Teleport" branch), which enacts the 6"
+        // placement. Same reason core Teleport lives outside the operation pipeline; mechanism proven by
+        // TeleportRuleIntegrationTests. Ethereal's movement-penalty entries DO pass the lint - only the
+        // teleport ability trips it.
+        ["Ethereal"] = "activated teleport enacted by TeleportStage (routed on Effect.Teleport), not by operations.",
     };
 
     // Every bundled supplement file, each definition linted individually - deliberately NOT the

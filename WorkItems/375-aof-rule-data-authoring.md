@@ -61,9 +61,17 @@ wrapper within a batch):
   chain), Royal Warrior trio (-> Clan Warrior chain; the Boost's near-miss was substitution
   ambiguity, GDF's Clan Warrior Boost is equally ungated - exact clone), Great Sergeant
   (Sergeant + a second 5s hook entry, Weapon scope), 10 defs. Census dead 373 -> 301 (-72, exact).
-- [ ] C4 movement/reposition: Royal Legion trio (-> Lustbound), Wave-Step trio (-> Rapid Blink),
-  Drakesworn (-> Fanatic/Vanguard, core template), Grounded Speed, Traversal, Ethereal
-  (reposition-at-activation + move penalties; moved from C1).
+- [x] C4 movement/reposition DONE (9 defs): Wave-Step trio (-> Rapid Blink chain incl. the
+  d3-increment Boost), Royal Legion trio (matches the Titan-Lords Lustbound VARIANT, not base
+  Lustbound: rangeModifier +4 shooting + movementBonus +2 Charge, hand-authored on the Versatile
+  Reach (Range) shape), Drakesworn (Vanguard's shape as JSON: post-deploy triggeredMove 9),
+  Traversal (ignoreEnemyMovementBlock, consumed at MovementRuleQueries; the "friendly" clause is
+  redundant - friendlies never block movement here), Ethereal (activated Effect.Teleport +
+  Slow-style negative movementBonus entries; fire-lint allowlisted - ChooseActionStage routes on
+  the effect TYPE to TeleportStage, name is only the menu label, 6" matches the stage constant).
+  Census dead 301 -> 219 (-82, exact). **Grounded Speed -> #376**: mostModelsWithinInchesOfTerrain
+  requires IHasTerrain and MoveActionDeclaredContext does not provide it - the #196 "context
+  capability" class, deferred not forced (4 refs stay dead until then).
 - [ ] C5 morale/steadfast + champion wargear: Unmovable + Vale Oath trio
   (-> Battleborn/Honor Code/Steadfast), Steadfast Buff, Great Banner (-> Courage Buff),
   Great Musician, Hold the Line Boost Buff, Defense Buff.
@@ -79,8 +87,9 @@ wrapper within a batch):
   page); review the 9 within-AoF text-variant names (Lustbound, Lustbound Boost, Melee Shrouding,
   Melee Slayer, Mind Control, Piercing Assault Buff, Shatter, Versatile Attack, Warbound Boost)
   for mechanical meaning vs typo.
-- **-> #376 hand-off (5 names, confirmed non-composable):** Bloodthirsty Fighter,
-  Retreating Strike, Reckless Piercing, Reckless Piercing Aura, Ravage Aura (argumented grant).
+- **-> #376 hand-off (6 names, confirmed non-composable):** Bloodthirsty Fighter,
+  Retreating Strike, Reckless Piercing, Reckless Piercing Aura, Ravage Aura (argumented grant),
+  Grounded Speed (movement-declare context lacks IHasTerrain; 2026-08-22, C4).
 
 Doc-only names needing NOTHING (defined on rules pages, never referenced by AoF unit/upgrade
 data, not granted by any work-list rule): Break, Butcher, Slam, Slayer, Slash, +1 to Defense,

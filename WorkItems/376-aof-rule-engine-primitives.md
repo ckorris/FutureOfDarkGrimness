@@ -27,13 +27,21 @@ adjust the boundary in both directions):
   1 round-long enemy AP buff against you. May fall out of the Unpredictable branch
   machinery; adjudicate before building.
 
-Borderline (try as data in #375 first; move here only if the vocabulary refuses): Ethereal
-(pre-attack 6" reposition + move penalties), Vale Oath Boost (Shaken recovery threshold
-3+), Shadowborn/Wild Veil Boost min-clamps on range/charge debuffs, Great Sergeant (extra
-hit on 5-6 rather than 6).
+- **Grounded Speed** (added 2026-08-22 from #375 C4) — terrain-conditional movement bonus:
+  `mostModelsWithinInchesOfTerrain` requires `IHasTerrain`, which `MoveActionDeclaredContext`
+  does not provide. Small slice: give the movement-declare context terrain access, then the
+  rule itself is plain data (already drafted and reverted in #375 C4 - see its ledger).
+
+Borderline (try as data in #375 first; move here only if the vocabulary refuses): Vale Oath
+Boost (Shaken recovery threshold 3+), Shadowborn/Wild Veil Boost min-clamps on range/charge
+debuffs. RESOLVED as data in #375: Ethereal (rides Effect.Teleport's stage routing +
+Slow-style negative movementBonus; C4), Great Sergeant (two addExtraHit hook entries, 5 and
+6; C3).
 
 ## Notes
 
+- 2026-08-22 (#375 C4): Grounded Speed moved here (context capability gap, above); Ethereal
+  and Great Sergeant fell out of the borderline list as data.
 - 2026-08-22: Filed from the appraisal residue. Dice invariant applies throughout
   (histograms, never int-locked roll-derived values).
 
