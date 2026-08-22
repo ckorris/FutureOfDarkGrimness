@@ -1,6 +1,9 @@
 # 376 — AoF rules pt.2: new engine primitives
 
-**Status**: in progress (started 2026-08-22)
+**Status**: in progress (started 2026-08-22) - 5 of 6 slices DONE; blocked on the owner's
+Retreating Strike ruling (deferred at the 2026-08-22 fork sign-off: "I need to look into the
+rule more"). Census dead = 14, all Retreating Strike. Trigger options + recon are in the
+Decisions/Goal sections; once ruled, it is the last slice before close.
 **Related**: #375 (data half; feeds this item its list), mirrors #197. Engine submodule work — submodule-first commit cadence, full engine suite green. Reference doc: `/home/chris/Projects/GDF Armies/Age of Fantasy/Special Rules and Spells by Army.md` (local only, do not copy text into the repo).
 
 ## Goal
