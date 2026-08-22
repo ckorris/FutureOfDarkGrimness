@@ -44,14 +44,25 @@ public class RuleSupplementLintTests
         ["Ethereal"] = "activated teleport enacted by TeleportStage (routed on Effect.Teleport), not by operations.",
     };
 
-    // Every bundled supplement file, each definition linted individually - deliberately NOT the
-    // later-wins merge (#375): an AoF redefinition of a shared name must not shadow the GDF entry
-    // out of the lint.
-    private static IEnumerable<(string Tag, SpecialRuleDefinition Rule)> AllSupplementRules() =>
-        FdgRaylib.Import.RuleSupplementSet.BundledFileNames
-            .Select(f => Path.Combine(AppContext.BaseDirectory, "Assets", "Books", f))
-            .SelectMany(path => BookRuleSupplement.LoadDefinitions(File.ReadAllText(path))
-                .Select(rule => (Path.GetFileNameWithoutExtension(path).Replace("RuleSupplement", ""), rule)));
+    // Every bundled supplement file plus every per-book override file (#375 C9: AofBookOverrides/,
+    // baked as a book's LAST supplement), each definition linted individually - deliberately NOT the
+    // later-wins merge: an AoF or per-book redefinition of a shared name must not shadow the other
+    // versions out of the lint.
+    private static IEnumerable<(string Tag, SpecialRuleDefinition Rule)> AllSupplementRules()
+    {
+        string books = Path.Combine(AppContext.BaseDirectory, "Assets", "Books");
+        IEnumerable<(string, string)> files = FdgRaylib.Import.RuleSupplementSet.BundledFileNames
+            .Select(f => (Path.Combine(books, f), Path.GetFileNameWithoutExtension(f).Replace("RuleSupplement", "")));
+        string overridesDir = Path.Combine(books, "AofBookOverrides");
+        if (Directory.Exists(overridesDir))
+        {
+            files = files.Concat(Directory.EnumerateFiles(overridesDir, "*.json")
+                .OrderBy(p => p, StringComparer.Ordinal)
+                .Select(p => (p, "Ovr " + Path.GetFileNameWithoutExtension(p))));
+        }
+        return files.SelectMany(x => BookRuleSupplement.LoadDefinitions(File.ReadAllText(x.Item1))
+            .Select(rule => (x.Item2, rule)));
+    }
 
     private static IEnumerable<TestCaseData> SupplementRules() =>
         AllSupplementRules()

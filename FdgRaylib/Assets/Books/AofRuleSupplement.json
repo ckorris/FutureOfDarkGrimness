@@ -2385,5 +2385,35 @@
     "engineArgumentCount": 1,
     "valence": "Positive",
     "description": "The unit's ranged attacks get AP(1)."
+  },
+  {
+    "name": "Melee Slayer",
+    "passive": [
+      {
+        "hookID": "Shooting_OnHitRollComplete",
+        "condition": {
+          "kind": "and",
+          "left": {
+            "kind": "isCharging"
+          },
+          "right": {
+            "kind": "targetMajorityHasTough",
+            "minToughValue": 3
+          }
+        },
+        "effect": {
+          "kind": "rollModifier",
+          "rollKind": "Save",
+          "delta": -2
+        },
+        "lifetime": "ThisAttack",
+        "seat": "Actor"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "When this model charges, its weapons get AP(+2) against units where most models have Tough 3+."
   }
 ]

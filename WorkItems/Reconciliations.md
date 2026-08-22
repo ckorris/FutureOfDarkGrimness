@@ -662,3 +662,7 @@ A per-clone pre-push hook blocks duplicate numbers across the index and the arch
 > **370** on `origin/master`'s index (archive max 367); 371-373 were filed locally on 2026-08-11 and are
 > still unpushed at the time of filing. **374 = Tactician over-commits under Declare First** (split out
 > of #371 as that item closed) is the next free number. No collision.
+
+> **2026-08-22 — number 380 filed clean.** `git fetch origin` before filing: origin/master index
+> high-water mark 379 (the #375-#379 AoF items), archive max 372. **380 = GDF Melee Slayer charge
+> gate** (found by #375's within-AoF variant review). No collision.

@@ -105,10 +105,26 @@ wrapper within a batch):
   LoS (matching the AoF text), and Hold the Line / Mobile Artillery / Piercing Spotter /
   Precision Shooting Mark diverge only in grammar/typo - no redefinition, recorded here. AoF-baked
   books verified to embed the AoF versions (later-wins).
-- [ ] C9 loose ends: `AP` + `Counter in Melee` book-data quirks (1 ref each, not on any rules
-  page); review the 9 within-AoF text-variant names (Lustbound, Lustbound Boost, Melee Shrouding,
-  Melee Slayer, Mind Control, Piercing Assault Buff, Shatter, Versatile Attack, Warbound Boost)
-  for mechanical meaning vs typo.
+- [x] C9 loose ends DONE. (a) The two wargear quirks authored as data: `Counter in Melee` = core
+  Counter clone (Counter is already melee-only, the qualifier is redundant); `AP` (Wood Elves
+  Barbed Arrows, coreNumeric AP(1) as an item rule) = Unit-scoped ranged-gated Save -1 with
+  engineArgumentCount 1 - the arg is UNREAD (data effects cannot read args), exact for the only
+  carrier; the description states "(1)" so any future AP(2) reference would be visibly wrong, and
+  this ledger is the record. (b) Within-AoF variant review: 8 of 9 names mechanically meaningful
+  (Piercing Assault Buff's missing "once" rider is an OPR text omission - cosmetic, standard
+  NextTrigger def kept). Owner chose **per-book override files**: `Assets/Books/AofBookOverrides/
+  <Book>.json`, baked as that book's LAST supplement (zero new code - slice A's multi-supplement
+  flags). Nine files authored: Lust Disciples (melee-wide Melee Slayer + banded regen-ignoring
+  Shatter + ungated Versatile Attack helpers), Change/Plague Disciples (ungated VA helpers), War
+  Disciples (ungated VA helpers + ungated Warbound Boost), Giant Tribes Lust Disciples + Rift
+  Daemons of Lust (range-variant Lustbound pair; RD-Lust also no-LoS Mind Control), Vampiric
+  Undead (no-LoS Mind Control), Chivalrous Kingdoms + Dark Elves (unclamped Melee Shrouding -
+  overrides CORE by replace-by-name, bake warns as designed). AoF-global Melee Slayer authored
+  charge-gated (the 16-book majority + RAW). Lint fixture extended to walk override files.
+  Per-book divergence verified in the baked books (Beastmen isCharging vs Lust Disciples isMelee;
+  RD-Lust rangeModifier vs HW-Lust movement). **#378 pickup**: its bundling must pass
+  `AofBookOverrides/<Book>.json` as the last --apply-rules argument when present. The GDF-side
+  Melee Slayer over-grant is filed as **#380** (owner: separate item).
 - **-> #376 hand-off (10 names, confirmed non-composable):** Bloodthirsty Fighter,
   Retreating Strike, Reckless Piercing, Reckless Piercing Aura, Ravage Aura (argumented grant),
   Grounded Speed (movement-declare context lacks IHasTerrain; C4), Vale Oath Boost + Vale Oath
