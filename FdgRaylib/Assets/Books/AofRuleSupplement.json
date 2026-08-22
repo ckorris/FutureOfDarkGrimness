@@ -2770,5 +2770,28 @@
     "engineArgumentCount": 0,
     "valence": "Positive",
     "description": "This model and its unit gain Reckless Piercing."
+  },
+  {
+    "name": "Bloodthirsty Fighter",
+    "passive": [
+      {
+        "hookID": "Shooting_OnSaveRollComplete",
+        "condition": {
+          "kind": "isMelee"
+        },
+        "effect": {
+          "kind": "addBonusAttack",
+          "onRollValue": 1,
+          "count": 1
+        },
+        "lifetime": "ThisAttack",
+        "seat": "Actor"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "For each unmodified 1 enemies roll when blocking hits from this unit's weapons in melee, it rolls one extra attack with that weapon. The extra attacks cannot generate more."
   }
 ]

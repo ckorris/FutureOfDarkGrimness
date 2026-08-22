@@ -49,6 +49,21 @@ Slow-style negative movementBonus; C4), Great Sergeant (two addExtraHit hook ent
 
 ## Notes
 
+- [x] 2026-08-22 S5 Bloodthirsty Fighter DONE - the defender-dice-feed-attacker seam. Engine
+  (submodule f22295c): Effect.AddBonusAttack (save-histogram At(1) read, melee-gated by data);
+  BonusAttackSink (sum, fractional); AssignWoundsStage posts BonusAttackResults unless the batch
+  is itself a bonus (no chaining); ResolveBonusMeleeAttacksStage runs the earned count as a REAL
+  child chain with the same weapon (new AttackCountOverride on ICombatMetadata; Regenerative
+  Strength not re-offered), wired inside SwingMeleeWeaponStage - strike-backs get it free; lint
+  hook-76 arm widened. CombatMath prices the follow-up first-order (nested weapon on-6 rules not
+  re-priced - conservative; noted in-code) + engine/AI pin test green. 4 scripted-dice
+  integration tests (exact roll-count termination proves no chaining; dead-defender lapse;
+  control) + pin + 2 app shipped-data tests; full MeleeStage wiring covered by existing
+  end-to-end tests + a live forced-charge scenario smoke (exit 0). Data: Unit-scoped def (both
+  corpus carriers hold it as a base unit rule). Owner-ruled facets: "may" auto-taken (never
+  harmful); a joined hero's own weapon batch would also earn (no corpus unit mixes); impact
+  hits / synthetic batches never earn (not weapon swings). Census dead 16 -> 14 = Retreating
+  Strike ONLY (owner-deferred).
 - [x] 2026-08-22 S4 Reckless Piercing DONE. Engine (submodule fb16b1d): grantTokenOnRoll
   gains an optional onFailure effect applied to the same unit on a miss (MoraleTestThen
   application pattern; service logs/presents "backfired") - one die, two exclusive outcomes.
