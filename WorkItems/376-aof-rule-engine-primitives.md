@@ -32,6 +32,10 @@ adjust the boundary in both directions):
   does not provide. Small slice: give the movement-declare context terrain access, then the
   rule itself is plain data (already drafted and reverted in #375 C4 - see its ledger).
 
+- **Grounded Protection (+ Aura)** (added 2026-08-22 from #375 C7) — terrain-conditional
+  ignore-wound (5+): same IHasTerrain gap on `SaveRollCompleteContext`. Fix both contexts in
+  one slice; both rules are then plain data (drafts in #375 C4/C7 history).
+
 - **Vale Oath Boost (+ Aura)** (added 2026-08-22 from #375 C5) — Shaken recovery at 3+
   instead of 4+. `clearTokenOnRoll` resolves as `InvokeClearTokenOnRoll`, an imperative
   executable that rolls once PER FIRING ENTRY, so base (4+) plus a boosted entry (3+) gives

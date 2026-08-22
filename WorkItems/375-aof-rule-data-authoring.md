@@ -88,19 +88,24 @@ wrapper within a batch):
   worry dissolves), Good Fighter (-> Precision Fighter), Takedown when Shooting (core Takedown's
   targetIndividualModel entry; ordering + per-copy aiming are effect/query-driven, not
   name-driven). Census dead 185 -> 79 (-106, exact).
-- [ ] C7 wrappers: Piercing Assault Buff, Melee Evasion Buff, Rapid Rush Buff, Versatile Attack
-  Buff, Piercing Fighting Mark, Rapid Charge Mark, Surge Mark, Precision Feat, Piercing Feat,
-  Grounded Protection (+Aura).
+- [x] C7 wrappers DONE (11 defs): Buff wrappers (Melee Evasion / Piercing Assault / Rapid Rush /
+  Versatile Attack - all grant existing core/supplement bases), Mark wrappers (Piercing Fighting
+  -> grants Piercing Fighter, Rapid Charge, Surge), Feats (Precision + Piercing on the Speed Feat
+  once-per-game self-grant shape, each with its own Boost helper). Census dead 79 -> 53 (-26,
+  exact). **Grounded Protection (+ Aura) -> #376**: same class as Grounded Speed -
+  SaveRollCompleteContext lacks IHasTerrain, and re-homing the entry to the hit-roll hook risks
+  the emit-but-never-consumed trap (8 refs stay dead).
 - [ ] C8 divergent-7 AoF redefinitions: Difficult Terrain Debuff, Fortified Growth, Hold the Line,
   Mobile Artillery, Piercing Spotter, Precision Shooting Mark, Quick Shot Mark.
 - [ ] C9 loose ends: `AP` + `Counter in Melee` book-data quirks (1 ref each, not on any rules
   page); review the 9 within-AoF text-variant names (Lustbound, Lustbound Boost, Melee Shrouding,
   Melee Slayer, Mind Control, Piercing Assault Buff, Shatter, Versatile Attack, Warbound Boost)
   for mechanical meaning vs typo.
-- **-> #376 hand-off (8 names, confirmed non-composable):** Bloodthirsty Fighter,
+- **-> #376 hand-off (10 names, confirmed non-composable):** Bloodthirsty Fighter,
   Retreating Strike, Reckless Piercing, Reckless Piercing Aura, Ravage Aura (argumented grant),
   Grounded Speed (movement-declare context lacks IHasTerrain; C4), Vale Oath Boost + Vale Oath
-  Boost Aura (clearTokenOnRoll threshold not composable - double roll; C5).
+  Boost Aura (clearTokenOnRoll threshold not composable - double roll; C5), Grounded Protection
+  + Grounded Protection Aura (save-roll context lacks IHasTerrain; C7).
 
 Doc-only names needing NOTHING (defined on rules pages, never referenced by AoF unit/upgrade
 data, not granted by any work-list rule): Break, Butcher, Slam, Slayer, Slash, +1 to Defense,
