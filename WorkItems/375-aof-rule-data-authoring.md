@@ -51,15 +51,18 @@ names + 15 grant-closure names = **77 to author**, plus the 7 same-name divergen
 Batches (one commit each, #196 verification loop + AoF rebake before every commit; base before
 wrapper within a batch):
 
-- [ ] C1 ignore-wound family: Cursed Undead (+Boost, +Boost Buff -> Self-Repair chain),
-  Angelic Blessing (+Boost, +Boost Buff -> Knightborn), Ethereal (spell-only ignore).
+- [x] C1 ignore-wound family DONE: Cursed Undead (+Boost, +Boost Buff -> Self-Repair/Plaguebound
+  chain), Angelic Blessing (+Boost, +Boost Buff -> Knightborn). Census dead 495 -> 434 (-61, exact).
+  Ethereal turned out to be a reposition rule, not a wound ignore (the plan's guess was wrong) -
+  moved to C4, nothing dropped.
 - [ ] C2 defensive-distance family (F4 clones): Empyrean Spirit trio (-> Changebound/Screened),
   Ossified trio + Warden trio (-> Guardian/Primeborn).
 - [ ] C3 on-6 offense family: Bestial trio (-> Scrapper/Mischievous reroll), Lucky trio
   (-> Devout/Ferocious), Royal Warrior trio (-> Bloodborn/Clan Warrior/Primal),
   Great Sergeant (-> Sergeant, per-model).
 - [ ] C4 movement/reposition: Royal Legion trio (-> Lustbound), Wave-Step trio (-> Rapid Blink),
-  Drakesworn (-> Fanatic/Vanguard, core template), Grounded Speed, Traversal.
+  Drakesworn (-> Fanatic/Vanguard, core template), Grounded Speed, Traversal, Ethereal
+  (reposition-at-activation + move penalties; moved from C1).
 - [ ] C5 morale/steadfast + champion wargear: Unmovable + Vale Oath trio
   (-> Battleborn/Honor Code/Steadfast), Steadfast Buff, Great Banner (-> Courage Buff),
   Great Musician, Hold the Line Boost Buff, Defense Buff.
