@@ -49,6 +49,17 @@ Slow-style negative movementBonus; C4), Great Sergeant (two addExtraHit hook ent
 
 ## Notes
 
+- [x] 2026-08-22 S2 Vale Oath Boost DONE. Engine (submodule c90067c): Effect.ClearTokenOnRoll now
+  emits a SINK op; TokenClearRollSink folds best (lowest) threshold per token type
+  (WoundIgnoreSink discipline, clamp [2,6]); TokenClearRolls makes ONE decisive roll per type via
+  the unchanged GameOperationServices.ClearTokenOnRoll (beat + banner intact); stage calls it
+  after the executor; lint round-start arm widened. InvokeClearTokenOnRoll executable REMOVED
+  (ops are transient, no save impact). 4 new engine tests (base+boost fold to 3, distinct-defs
+  fold to 4 = the owner-ruled facet pin, clamp/per-type independence, single-die beat at folded
+  threshold). Data: Vale Oath Boost (full band 3, gated tokenPresent Shaken + unitHasRule Vale
+  Oath - Boost alone conjures no roll) + Aura. 5 app tests (ValeOathShippedDataTests). Census
+  dead 22 -> 20 (-2, exact). Full loop green (329 defs / app 1298 / engine 2979 / GDF
+  byte-identical / smoke exit 0).
 - [x] 2026-08-22 S1 Grounded contexts DONE. Engine (submodule e74517a): IHasTerrain on
   MoveActionDeclaredContext + SaveRollCompleteContext (optional trailing TerrainPieces, the
   Hit* pattern); terrain threaded through every movement-budget query the AI uses

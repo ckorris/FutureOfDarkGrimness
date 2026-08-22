@@ -2560,5 +2560,63 @@
     "engineArgumentCount": 0,
     "valence": "Positive",
     "description": "This model and its unit gain Grounded Protection."
+  },
+  {
+    "name": "Vale Oath Boost",
+    "passive": [
+      {
+        "hookID": "Round_OnRoundStart",
+        "condition": {
+          "kind": "and",
+          "left": {
+            "kind": "tokenPresent",
+            "tType": {
+              "id": "Shaken"
+            },
+            "minCount": 1
+          },
+          "right": {
+            "kind": "unitHasRule",
+            "ruleName": "Vale Oath"
+          }
+        },
+        "effect": {
+          "kind": "clearTokenOnRoll",
+          "tType": {
+            "id": "Shaken"
+          },
+          "minRoll": 3
+        },
+        "lifetime": "ThisRound",
+        "seat": "Actor"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "If this unit has Vale Oath, its roll to stop being Shaken succeeds on a 3+ instead of only on a 4+."
+  },
+  {
+    "name": "Vale Oath Boost Aura",
+    "passive": [
+      {
+        "hookID": "Lifecycle_OnUnitCreated",
+        "condition": {
+          "kind": "always"
+        },
+        "effect": {
+          "kind": "aura",
+          "ruleName": "Vale Oath Boost"
+        },
+        "lifetime": "UntilEndOfGame",
+        "seat": "Actor"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "This model and its unit gain Vale Oath Boost."
   }
 ]
