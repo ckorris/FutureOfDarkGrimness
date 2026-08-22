@@ -249,6 +249,18 @@ full bug log). Deleted from the tree 2026-08-12 - recover from git history if ne
 
 ---
 
+## Age of Fantasy
+
+Same core ruleset as GDF; 40 faction books. Verified rules/spells reference doc lives outside the repo (`GDF Armies/Age of Fantasy/`, local only). Appraisal 2026-08-22: ~94% of 852 rule instances resolve via existing behavior modulo renames; all 240 spells fit existing spell-effect patterns.
+
+- [ ] 375 — AoF rules pt.1: data authoring — 67 exact-text renames + 13 derivatives + ~41 composable residue names + 7 per-book same-name overrides; mirrors #196. ([WorkItems/375](WorkItems/375-aof-rule-data-authoring.md))
+- [ ] 376 — AoF rules pt.2: new engine primitives — Bloodthirsty Fighter, Retreating Strike, argumented aura grant (Ravage(+1)), Reckless Piercing; #375's census sets the final boundary; mirrors #197. ([WorkItems/376](WorkItems/376-aof-rule-engine-primitives.md))
+- [ ] 377 — AoF spells: author all 240 (40 books x 6) as SpellDefinition data; no new machinery expected (120 dealHits / 88 addRule-once / 20 markTarget / 5 morale / 7 terrain-or-move outliers). ([WorkItems/377](WorkItems/377-aof-spell-authoring.md))
+- [ ] 378 — AoF armies in the Army Forge: parameterize the hardcoded `grimdark-future` slug, fetch AoF snapshots, bundle 40 `.fdgbook`s, game-system picker UX (design fork). ([WorkItems/378](WorkItems/378-aof-army-forge-books.md))
+- [ ] 379 — AoF weapon animations + sounds: extend the #239 `WeaponEffectCatalog` with fantasy effect-set keys (arrows, breath, arcane, fantasy melee) + sound cues; keys assigned in #378's bundles. ([WorkItems/379](WorkItems/379-aof-weapon-effects-av.md))
+
+---
+
 ## Awaiting verification
 
 Implemented, merged, suite green — held open only until confirmed by hand in the running app.
