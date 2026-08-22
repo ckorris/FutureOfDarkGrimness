@@ -1013,5 +1013,245 @@
     "engineArgumentCount": 0,
     "valence": "Neutral",
     "description": "Once per activation, before attacking, place each model fully within 6 inches of its position. Moves -6 inches on Advance and on Rush/Charge."
+  },
+  {
+    "name": "Unmovable",
+    "passive": [
+      {
+        "hookID": "Round_OnRoundStart",
+        "condition": {
+          "kind": "and",
+          "left": {
+            "kind": "tokenPresent",
+            "tType": {
+              "id": "Shaken"
+            },
+            "minCount": 1
+          },
+          "right": {
+            "kind": "allModelsHaveThisRule"
+          }
+        },
+        "effect": {
+          "kind": "clearTokenOnRoll",
+          "tType": {
+            "id": "Shaken"
+          },
+          "minRoll": 4
+        },
+        "lifetime": "ThisRound",
+        "seat": "Actor"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "If this unit is Shaken at the start of the round, roll one die. On a 4+ it stops being Shaken."
+  },
+  {
+    "name": "Vale Oath",
+    "passive": [
+      {
+        "hookID": "Round_OnRoundStart",
+        "condition": {
+          "kind": "and",
+          "left": {
+            "kind": "tokenPresent",
+            "tType": {
+              "id": "Shaken"
+            },
+            "minCount": 1
+          },
+          "right": {
+            "kind": "allModelsHaveThisRule"
+          }
+        },
+        "effect": {
+          "kind": "clearTokenOnRoll",
+          "tType": {
+            "id": "Shaken"
+          },
+          "minRoll": 4
+        },
+        "lifetime": "ThisRound",
+        "seat": "Actor"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "If this unit is Shaken at the start of the round, roll one die. On a 4+ it stops being Shaken."
+  },
+  {
+    "name": "Steadfast Buff",
+    "passive": [],
+    "activated": [
+      {
+        "triggerHook": "Activation_OnBeforeAttackAction",
+        "cost": {
+          "kind": "oncePerActivation"
+        },
+        "targetSelector": {
+          "rangeInches": 12,
+          "minCount": 1,
+          "maxCount": 1,
+          "targetAffinity": "Friend",
+          "requireLineOfSight": false,
+          "requiredToken": null,
+          "singleModel": false,
+          "requiredRule": null
+        },
+        "effect": {
+          "kind": "addRule",
+          "ruleName": "Steadfast",
+          "scope": "NextTrigger"
+        },
+        "availableWhen": {
+          "kind": "always"
+        }
+      }
+    ],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "Once per activation, before attacking, pick one friendly unit within 12 inches, which gains Steadfast for its next relevant roll."
+  },
+  {
+    "name": "Great Banner",
+    "passive": [],
+    "activated": [
+      {
+        "triggerHook": "Activation_OnBeforeAttackAction",
+        "cost": {
+          "kind": "oncePerActivation"
+        },
+        "targetSelector": {
+          "rangeInches": 12,
+          "minCount": 1,
+          "maxCount": 1,
+          "targetAffinity": "Friend",
+          "requireLineOfSight": false,
+          "requiredToken": null,
+          "singleModel": false,
+          "requiredRule": null
+        },
+        "effect": {
+          "kind": "addRule",
+          "ruleName": "Courage",
+          "scope": "NextTrigger"
+        },
+        "availableWhen": {
+          "kind": "always"
+        }
+      }
+    ],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "Once per activation, before attacking, pick one friendly unit within 12 inches, which gains Courage for its next relevant roll."
+  },
+  {
+    "name": "Great Musician",
+    "passive": [],
+    "activated": [
+      {
+        "triggerHook": "Activation_OnBeforeAttackAction",
+        "cost": {
+          "kind": "oncePerActivation"
+        },
+        "targetSelector": {
+          "rangeInches": 12,
+          "minCount": 1,
+          "maxCount": 1,
+          "targetAffinity": "Friend",
+          "requireLineOfSight": false,
+          "requiredToken": null,
+          "singleModel": false,
+          "requiredRule": null
+        },
+        "effect": {
+          "kind": "addRule",
+          "ruleName": "Musician",
+          "scope": "NextTrigger"
+        },
+        "availableWhen": {
+          "kind": "always"
+        }
+      }
+    ],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "Once per activation, before attacking, pick one friendly unit within 12 inches, which gains Musician for its next relevant roll."
+  },
+  {
+    "name": "Hold the Line Boost Buff",
+    "passive": [],
+    "activated": [
+      {
+        "triggerHook": "Activation_OnBeforeAttackAction",
+        "cost": {
+          "kind": "oncePerActivation"
+        },
+        "targetSelector": {
+          "rangeInches": 12,
+          "minCount": 1,
+          "maxCount": 1,
+          "targetAffinity": "Friend",
+          "requireLineOfSight": false,
+          "requiredToken": null,
+          "singleModel": false,
+          "requiredRule": null
+        },
+        "effect": {
+          "kind": "addRule",
+          "ruleName": "Hold the Line Boost",
+          "scope": "NextTrigger"
+        },
+        "availableWhen": {
+          "kind": "always"
+        }
+      }
+    ],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "Once per activation, before attacking, pick one friendly unit within 12 inches, which gains Hold the Line Boost for its next relevant roll."
+  },
+  {
+    "name": "Defense Buff",
+    "passive": [],
+    "activated": [
+      {
+        "triggerHook": "Activation_OnBeforeAttackAction",
+        "cost": {
+          "kind": "oncePerActivation"
+        },
+        "targetSelector": {
+          "rangeInches": 12,
+          "minCount": 1,
+          "maxCount": 1,
+          "targetAffinity": "Friend",
+          "requireLineOfSight": false,
+          "requiredToken": null,
+          "singleModel": false,
+          "requiredRule": null
+        },
+        "effect": {
+          "kind": "addRule",
+          "ruleName": "Entrenched",
+          "scope": "NextTrigger"
+        },
+        "availableWhen": {
+          "kind": "always"
+        }
+      }
+    ],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "Once per activation, before attacking, pick one friendly unit within 12 inches, which gains Entrenched for its next relevant roll."
   }
 ]

@@ -32,14 +32,20 @@ adjust the boundary in both directions):
   does not provide. Small slice: give the movement-declare context terrain access, then the
   rule itself is plain data (already drafted and reverted in #375 C4 - see its ledger).
 
-Borderline (try as data in #375 first; move here only if the vocabulary refuses): Vale Oath
-Boost (Shaken recovery threshold 3+), Shadowborn/Wild Veil Boost min-clamps on range/charge
-debuffs. RESOLVED as data in #375: Ethereal (rides Effect.Teleport's stage routing +
+- **Vale Oath Boost (+ Aura)** (added 2026-08-22 from #375 C5) — Shaken recovery at 3+
+  instead of 4+. `clearTokenOnRoll` resolves as `InvokeClearTokenOnRoll`, an imperative
+  executable that rolls once PER FIRING ENTRY, so base (4+) plus a boosted entry (3+) gives
+  two recovery rolls (P 0.833) instead of one at 3+ (0.667). Needs either a threshold-shift
+  parameter folded before the roll or a best-threshold-wins fold like WoundIgnoreSink.
+
+Borderline (try as data in #375 first; move here only if the vocabulary refuses):
+Shadowborn/Wild Veil Boost min-clamps on range/charge debuffs. RESOLVED as data in #375: Ethereal (rides Effect.Teleport's stage routing +
 Slow-style negative movementBonus; C4), Great Sergeant (two addExtraHit hook entries, 5 and
 6; C3).
 
 ## Notes
 
+- 2026-08-22 (#375 C5): Vale Oath Boost (+ Aura) moved here (double-roll composition, above).
 - 2026-08-22 (#375 C4): Grounded Speed moved here (context capability gap, above); Ethereal
   and Great Sergeant fell out of the borderline list as data.
 - 2026-08-22: Filed from the appraisal residue. Dice invariant applies throughout

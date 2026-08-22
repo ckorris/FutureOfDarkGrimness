@@ -72,9 +72,13 @@ wrapper within a batch):
   Census dead 301 -> 219 (-82, exact). **Grounded Speed -> #376**: mostModelsWithinInchesOfTerrain
   requires IHasTerrain and MoveActionDeclaredContext does not provide it - the #196 "context
   capability" class, deferred not forced (4 refs stay dead until then).
-- [ ] C5 morale/steadfast + champion wargear: Unmovable + Vale Oath trio
-  (-> Battleborn/Honor Code/Steadfast), Steadfast Buff, Great Banner (-> Courage Buff),
-  Great Musician, Hold the Line Boost Buff, Defense Buff.
+- [x] C5 morale/steadfast + champion wargear DONE (7 defs): Unmovable + Vale Oath (-> Steadfast
+  clone), Steadfast Buff / Great Banner / Great Musician / Hold the Line Boost Buff / Defense Buff
+  (all F13 Buff wrappers; grants target the GDF bases Steadfast, Courage, Musician, Hold the Line
+  Boost, Entrenched - no new bases needed). Census dead 219 -> 185 (-34, exact). **Vale Oath Boost
+  (+ its Aura) -> #376**: Shaken recovery rides clearTokenOnRoll, an imperative executable that
+  rolls per firing entry - base 4+ plus a boosted 3+ would roll TWICE (P 0.833 vs the intended
+  0.667); a threshold shift is not composable as data (2 refs stay dead).
 - [ ] C6 conditional modifiers/misc offense: Buccaneer trio (-> Targeting Visor), Vinci Tech trio
   (-> Watchborn/Versatile Attack), Shadowborn trio + Wild Veil trio (-> Darkborn variants),
   Good Fighter, Takedown when Shooting.
@@ -87,9 +91,10 @@ wrapper within a batch):
   page); review the 9 within-AoF text-variant names (Lustbound, Lustbound Boost, Melee Shrouding,
   Melee Slayer, Mind Control, Piercing Assault Buff, Shatter, Versatile Attack, Warbound Boost)
   for mechanical meaning vs typo.
-- **-> #376 hand-off (6 names, confirmed non-composable):** Bloodthirsty Fighter,
+- **-> #376 hand-off (8 names, confirmed non-composable):** Bloodthirsty Fighter,
   Retreating Strike, Reckless Piercing, Reckless Piercing Aura, Ravage Aura (argumented grant),
-  Grounded Speed (movement-declare context lacks IHasTerrain; 2026-08-22, C4).
+  Grounded Speed (movement-declare context lacks IHasTerrain; C4), Vale Oath Boost + Vale Oath
+  Boost Aura (clearTokenOnRoll threshold not composable - double roll; C5).
 
 Doc-only names needing NOTHING (defined on rules pages, never referenced by AoF unit/upgrade
 data, not granted by any work-list rule): Break, Butcher, Slam, Slayer, Slash, +1 to Defense,
