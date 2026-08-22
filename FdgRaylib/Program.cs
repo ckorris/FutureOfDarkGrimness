@@ -1,6 +1,7 @@
 using System.Text.Json;
 using FdgRaylib.Cli;
 using FdgRaylib.Config;
+using FdgRaylib.Import;
 using FdgRaylib.ListServer;
 using FdgRaylib.Rendering;
 using FDG;
@@ -94,9 +95,20 @@ if (profileIdx >= 0 && profileIdx + 1 < args.Length)
     }
 }
 
-// --import-opr <in.json> <out.fdgbook> [supplement.json]  (#153 P0b): one-time OnePageRules Army Forge
-// JSON → .fdgbook snapshot, via the engine importer. Data is OPR's, used under CC-BY-SA (stamped on the
-// book). The optional supplement embeds curated rule definitions the book references (see --apply-rules).
+// The flag's file arguments from startIdx up to the next --flag (#375: the supplement CLI flags take
+// one or more supplement files).
+static List<string> TrailingPaths(string[] args, int startIdx)
+{
+    List<string> paths = new();
+    for (int i = startIdx; i < args.Length && !args[i].StartsWith("--"); i++)
+        paths.Add(args[i]);
+    return paths;
+}
+
+// --import-opr <in.json> <out.fdgbook> [supplement.json ...]  (#153 P0b): one-time OnePageRules Army
+// Forge JSON → .fdgbook snapshot, via the engine importer. Data is OPR's, used under CC-BY-SA (stamped
+// on the book). Optional supplements embed curated rule definitions the book references (see
+// --apply-rules); multiple files merge later-wins by name (#375).
 int importIdx = Array.IndexOf(args, "--import-opr");
 if (importIdx >= 0 && importIdx + 2 < args.Length)
 {
@@ -106,9 +118,10 @@ if (importIdx >= 0 && importIdx + 2 < args.Length)
         source: "OnePageRules - Army Forge (army-forge.onepagerules.com)",
         license: "CC-BY-SA 4.0",
         warn: msg => Console.WriteLine($"  {msg}"));
-    if (importIdx + 3 < args.Length && !args[importIdx + 3].StartsWith("--"))
+    var importSupplementPaths = TrailingPaths(args, importIdx + 3);
+    if (importSupplementPaths.Count > 0)
     {
-        var supplement = BookRuleSupplement.LoadDefinitions(File.ReadAllText(args[importIdx + 3]));
+        var supplement = RuleSupplementSet.LoadMerged(importSupplementPaths);
         var embedded = BookRuleSupplement.Apply(book, supplement, msg => Console.WriteLine($"  {msg}"));
         Console.WriteLine($"  supplement: embedded {embedded.Count} rule definitions ({string.Join(", ", embedded)})");
     }
@@ -212,16 +225,18 @@ if (importBookIdx >= 0 && importBookIdx + 1 < args.Length)
     return;
 }
 
-// --apply-rules <book.fdgbook> <supplement.json>  (#153): merge curated rule definitions into an existing
-// book snapshot in place — the definitions the book references (plus what those grant) embed into the
-// book's ruleDefinitions, replace-by-name, so re-applying after editing the supplement is idempotent.
+// --apply-rules <book.fdgbook> <supplement.json ...>  (#153): merge curated rule definitions into an
+// existing book snapshot in place — the definitions the book references (plus what those grant) embed
+// into the book's ruleDefinitions, replace-by-name, so re-applying after editing the supplement is
+// idempotent. Multiple supplement files merge later-wins by name before the bake (#375: AoF books bake
+// against GDF + AoF, so an AoF redefinition of a shared name wins; GDF books keep GDF alone).
 // Validation is hard-fail; an invalid supplement leaves the book untouched.
 int applyIdx = Array.IndexOf(args, "--apply-rules");
 if (applyIdx >= 0 && applyIdx + 2 < args.Length)
 {
     string bookPath = args[applyIdx + 1];
     BookFile book = JsonSerializer.Deserialize<BookFile>(File.ReadAllText(bookPath), RuleJson.Options)!;
-    var supplement = BookRuleSupplement.LoadDefinitions(File.ReadAllText(args[applyIdx + 2]));
+    var supplement = RuleSupplementSet.LoadMerged(TrailingPaths(args, applyIdx + 2));
     var embedded = BookRuleSupplement.Apply(book, supplement, msg => Console.WriteLine($"  {msg}"));
     File.WriteAllText(bookPath, JsonSerializer.Serialize(book, RuleJson.Options));
     Console.WriteLine($"'{book.Name}': embedded {embedded.Count} rule definitions " +
@@ -229,12 +244,14 @@ if (applyIdx >= 0 && applyIdx + 2 < args.Length)
     return;
 }
 
-// --validate-rules <supplement.json>  (#153): authoring aid — strict-parse the supplement and validate
-// every definition (hook/capability fit, granted names resolve, no duplicates) without touching a book.
+// --validate-rules <supplement.json ...>  (#153): authoring aid — strict-parse the supplement(s) and
+// validate every definition (hook/capability fit, granted names resolve, no duplicates) without touching
+// a book. Multiple files validate as one later-wins merged universe (#375), so an AoF definition may
+// grant a GDF-supplement name; validate a file alone to check it is self-contained.
 int validateIdx = Array.IndexOf(args, "--validate-rules");
 if (validateIdx >= 0 && validateIdx + 1 < args.Length)
 {
-    var supplement = BookRuleSupplement.LoadDefinitions(File.ReadAllText(args[validateIdx + 1]));
+    var supplement = RuleSupplementSet.LoadMerged(TrailingPaths(args, validateIdx + 1));
     var problems = BookRuleSupplement.ValidateAll(supplement);
     foreach (string problem in problems)
         Console.WriteLine($"  {problem}");

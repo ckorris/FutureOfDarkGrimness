@@ -50,11 +50,12 @@ public sealed class BundledBookRulebook : ICurrentRulebook
     }
 
     /// <summary>
-    /// Answered from <c>GdfRuleSupplement.json</c> rather than by walking all 47 books: the supplement
-    /// is the layer every book's definitions are stamped FROM, so its names cover every book definition
-    /// except a handful of per-book "... Effect" helpers, and those are only ever granted by another
-    /// rule - never named as a list rule entry, so they cannot reach this question. One small file
-    /// instead of ~7 MB of book JSON, on a path that only runs when a reference failed to resolve.
+    /// Answered from the bundled supplement files (<see cref="RuleSupplementSet.BundledFileNames"/>)
+    /// rather than by walking all the books: the supplements are the layer every book's definitions are
+    /// stamped FROM, so their names cover every book definition except a handful of per-book
+    /// "... Effect" helpers, and those are only ever granted by another rule - never named as a list
+    /// rule entry, so they cannot reach this question. Small files instead of ~7 MB of book JSON, on a
+    /// path that only runs when a reference failed to resolve.
     /// </summary>
     public bool Defines(string ruleName)
     {
@@ -103,17 +104,20 @@ public sealed class BundledBookRulebook : ICurrentRulebook
     private static HashSet<string> LoadSupplementNames()
     {
         HashSet<string> names = new(StringComparer.OrdinalIgnoreCase);
-        string path = Path.Combine(BooksDirectory, "GdfRuleSupplement.json");
-        if (!File.Exists(path)) return names;
+        foreach (string fileName in RuleSupplementSet.BundledFileNames)
+        {
+            string path = Path.Combine(BooksDirectory, fileName);
+            if (!File.Exists(path)) continue;
 
-        try
-        {
-            foreach (SpecialRuleDefinition definition in BookRuleSupplement.LoadDefinitions(File.ReadAllText(path)))
-                names.Add(definition.Name);
-        }
-        catch
-        {
-            // A malformed supplement costs the outdated-vs-unimplemented distinction, nothing more.
+            try
+            {
+                foreach (SpecialRuleDefinition definition in BookRuleSupplement.LoadDefinitions(File.ReadAllText(path)))
+                    names.Add(definition.Name);
+            }
+            catch
+            {
+                // A malformed supplement costs the outdated-vs-unimplemented distinction, nothing more.
+            }
         }
 
         return names;

@@ -37,12 +37,18 @@ public class RuleSupplementLintTests
 
     };
 
-    private static string SupplementPath =>
-        Path.Combine(AppContext.BaseDirectory, "Assets", "Books", "GdfRuleSupplement.json");
+    // Every bundled supplement file, each definition linted individually - deliberately NOT the
+    // later-wins merge (#375): an AoF redefinition of a shared name must not shadow the GDF entry
+    // out of the lint.
+    private static IEnumerable<(string Tag, SpecialRuleDefinition Rule)> AllSupplementRules() =>
+        FdgRaylib.Import.RuleSupplementSet.BundledFileNames
+            .Select(f => Path.Combine(AppContext.BaseDirectory, "Assets", "Books", f))
+            .SelectMany(path => BookRuleSupplement.LoadDefinitions(File.ReadAllText(path))
+                .Select(rule => (Path.GetFileNameWithoutExtension(path).Replace("RuleSupplement", ""), rule)));
 
     private static IEnumerable<TestCaseData> SupplementRules() =>
-        BookRuleSupplement.LoadDefinitions(File.ReadAllText(SupplementPath))
-            .Select(rule => new TestCaseData(rule).SetArgDisplayNames(rule.Name));
+        AllSupplementRules()
+            .Select(x => new TestCaseData(x.Rule).SetArgDisplayNames($"{x.Tag}:{x.Rule.Name}"));
 
     [TestCaseSource(nameof(SupplementRules))]
     public void EverySupplementRuleFires(SpecialRuleDefinition rule)
@@ -65,8 +71,7 @@ public class RuleSupplementLintTests
     [Test]
     public void AllowlistNamesExistInSupplement()
     {
-        var supplementNames = BookRuleSupplement.LoadDefinitions(File.ReadAllText(SupplementPath))
-            .Select(r => r.Name).ToHashSet();
+        var supplementNames = AllSupplementRules().Select(x => x.Rule.Name).ToHashSet();
         var unknown = Allowlist.Keys.Where(name => !supplementNames.Contains(name)).ToList();
         Assert.That(unknown, Is.Empty,
             "Allowlist entries with no matching supplement rule: " + string.Join(", ", unknown));
