@@ -2189,5 +2189,143 @@
     "engineArgumentCount": 0,
     "valence": "Positive",
     "description": "This model and its unit gain Destroyer Boost."
+  },
+  {
+    "name": "Difficult Terrain Debuff",
+    "passive": [],
+    "activated": [
+      {
+        "triggerHook": "Activation_OnBeforeAttackAction",
+        "cost": {
+          "kind": "oncePerActivation"
+        },
+        "targetSelector": {
+          "rangeInches": 18,
+          "minCount": 1,
+          "maxCount": 1,
+          "targetAffinity": "Foe",
+          "requireLineOfSight": true,
+          "requiredToken": null,
+          "singleModel": false,
+          "requiredRule": null
+        },
+        "effect": {
+          "kind": "addRule",
+          "ruleName": "Difficult Terrain Debuff Effect",
+          "scope": "NextTrigger"
+        },
+        "availableWhen": {
+          "kind": "always"
+        }
+      }
+    ],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "Once per activation, before attacking, pick one enemy unit within 18 inches in line of sight, which counts as being in Difficult Terrain once (next time the effect would apply)."
+  },
+  {
+    "name": "Fortified Growth",
+    "passive": [
+      {
+        "hookID": "Round_OnRoundStart",
+        "condition": {
+          "kind": "and",
+          "left": {
+            "kind": "and",
+            "left": {
+              "kind": "not",
+              "inner": {
+                "kind": "tokenPresent",
+                "tType": {
+                  "id": "InReserve"
+                },
+                "minCount": 1
+              }
+            },
+            "right": {
+              "kind": "and",
+              "left": {
+                "kind": "not",
+                "inner": {
+                  "kind": "tokenPresent",
+                  "tType": {
+                    "id": "EmbarkedIn"
+                  },
+                  "minCount": 1
+                }
+              },
+              "right": {
+                "kind": "not",
+                "inner": {
+                  "kind": "tokenPresent",
+                  "tType": {
+                    "id": "OffTableFromForcedMove"
+                  },
+                  "minCount": 1
+                }
+              }
+            }
+          },
+          "right": {
+            "kind": "not",
+            "inner": {
+              "kind": "tokenPresent",
+              "tType": {
+                "id": "Shaken"
+              },
+              "minCount": 1
+            }
+          }
+        },
+        "effect": {
+          "kind": "grantToken",
+          "tType": {
+            "id": "FortifiedGrowthMarker"
+          },
+          "count": {
+            "kind": "literal",
+            "value": 1
+          },
+          "clear": {
+            "kind": "manualOnly"
+          },
+          "maxTotal": 4
+        },
+        "lifetime": "ThisRound",
+        "seat": "Actor"
+      },
+      {
+        "hookID": "Shooting_OnHitRollComplete",
+        "condition": {
+          "kind": "and",
+          "left": {
+            "kind": "allModelsHaveThisRule"
+          },
+          "right": {
+            "kind": "tokenPresent",
+            "tType": {
+              "id": "FortifiedGrowthMarker"
+            },
+            "minCount": 2
+          }
+        },
+        "effect": {
+          "kind": "tokenScaledReduceArmorPenetration",
+          "tType": {
+            "id": "FortifiedGrowthMarker"
+          },
+          "perMarkers": 2,
+          "maxReduction": 2
+        },
+        "lifetime": "ThisAttack",
+        "seat": "Subject"
+      }
+    ],
+    "activated": [],
+    "scope": "Unit",
+    "engineArgumentCount": 0,
+    "valence": "Positive",
+    "description": "Gains a marker at the start of each round while on the table and not Shaken (max 4). If all models have this rule, every two markers reduce attackers' AP by 1 (min AP(0), up to 2)."
   }
 ]

@@ -98,8 +98,13 @@ wrapper within a batch):
   exact). **Grounded Protection (+ Aura) -> #376**: same class as Grounded Speed -
   SaveRollCompleteContext lacks IHasTerrain, and re-homing the entry to the hit-roll hook risks
   the emit-but-never-consumed trap (8 refs stay dead).
-- [ ] C8 divergent-7 AoF redefinitions: Difficult Terrain Debuff, Fortified Growth, Hold the Line,
-  Mobile Artillery, Piercing Spotter, Precision Shooting Mark, Quick Shot Mark.
+- [x] C8 divergent-7 DONE: only TWO needed redefinitions - Difficult Terrain Debuff (AoF adds a
+  line-of-sight requirement to the pick) and Fortified Growth (start-of-round accrual gated on
+  not-Shaken, markers never lost, AP per TWO markers with the 2+ marker gate stated in the
+  condition so the effect can never no-op). Quick Shot Mark's shipped GDF def already requires
+  LoS (matching the AoF text), and Hold the Line / Mobile Artillery / Piercing Spotter /
+  Precision Shooting Mark diverge only in grammar/typo - no redefinition, recorded here. AoF-baked
+  books verified to embed the AoF versions (later-wins).
 - [ ] C9 loose ends: `AP` + `Counter in Melee` book-data quirks (1 ref each, not on any rules
   page); review the 9 within-AoF text-variant names (Lustbound, Lustbound Boost, Melee Shrouding,
   Melee Slayer, Mind Control, Piercing Assault Buff, Shatter, Versatile Attack, Warbound Boost)
