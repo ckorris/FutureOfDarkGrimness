@@ -72,15 +72,9 @@ Download the latest release for your platform from the [Releases page](https://g
 
 The first time you run `FdgRaylib.exe`, SmartScreen may show a "Windows protected your PC" dialog. That's because the app is new and hasn't built up a download reputation yet, not because anything is wrong with it. Click **More info**, then **Run anyway**.
 
-<!-- TODO: drop a screenshot of the SmartScreen dialog here -->
-
 <!-- Uncomment once the first SignPath-signed release ships:
 Windows releases are code-signed via SignPath Foundation (see "Code signing policy" below), which makes this warning go away as the certificate builds reputation.
 -->
-
-### Verifying your download
-
-Each release includes a `SHA256SUMS.txt` covering all the archives. To check that your download is intact and untampered, run `sha256sum -c SHA256SUMS.txt --ignore-missing` (Linux; on macOS use `shasum -a 256 -c SHA256SUMS.txt --ignore-missing`) in the download folder, or on Windows compare `CertUtil -hashfile <archive> SHA256` against the listed value.
 
 <br>
 
