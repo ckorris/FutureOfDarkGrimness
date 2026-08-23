@@ -17,6 +17,7 @@ public class BugReportTests
 {
     private string _dir = "";
     private string? _previousConfigDir;
+    private string? _previousListServerUrl;
 
     [SetUp]
     public void SetUp()
@@ -27,12 +28,21 @@ public class BugReportTests
         // config file (same isolation UserConfigTests uses).
         _previousConfigDir = Environment.GetEnvironmentVariable("FDG_CONFIG_DIR");
         Environment.SetEnvironmentVariable("FDG_CONFIG_DIR", _dir);
+        // Force ListServerConfig to "unconfigured" for the WHOLE fixture. Without this, any test
+        // that calls BugReporter.Send with the compiled-in default URL uploads a real report to
+        // the production drop box - which happened on every suite run for two weeks before the
+        // 42-report pileup was noticed. (A non-http(s) value is treated as unconfigured.)
+        _previousListServerUrl = Environment.GetEnvironmentVariable("FDG_LIST_SERVER_URL");
+        Environment.SetEnvironmentVariable("FDG_LIST_SERVER_URL", "not-a-url");
+        ListServerConfigReset();
     }
 
     [TearDown]
     public void TearDown()
     {
         Environment.SetEnvironmentVariable("FDG_CONFIG_DIR", _previousConfigDir);
+        Environment.SetEnvironmentVariable("FDG_LIST_SERVER_URL", _previousListServerUrl);
+        ListServerConfigReset();
         try { Directory.Delete(_dir, recursive: true); } catch { /* best-effort */ }
     }
 
@@ -227,7 +237,10 @@ public class BugReportTests
     public void Send_AnnouncesToTheTable_WithTheLocalCopyAlreadyWritten()
     {
         var announced = new List<string>();
-        var reporter = new BugReporter(null, null, () => "{}", announced.Add);
+        // writeLocal redirected into the temp dir: the default writes to BugReports/ beside the
+        // test binary, which accumulated one stray file per suite run.
+        var reporter = new BugReporter(null, null, () => "{}", announced.Add,
+            writeLocal: (json, stamp) => BugReportStore.TryWrite(json, stamp, _dir));
 
         reporter.Send("something broke");
 
@@ -240,53 +253,30 @@ public class BugReportTests
     [Test]
     public void Send_DoesNotAnnounce_WhenNothingWasRetained()
     {
-        // Local write fails AND no list server is configured: nothing left the machine, so
-        // telling the table a report went out would be a lie.
-        string? previousUrl = Environment.GetEnvironmentVariable("FDG_LIST_SERVER_URL");
-        try
-        {
-            // Not http(s) - ListServerConfig treats a malformed value as "unconfigured".
-            Environment.SetEnvironmentVariable("FDG_LIST_SERVER_URL", "not-a-url");
-            ListServerConfigReset();
+        // Local write fails AND no list server is configured (the fixture SetUp already forces
+        // "unconfigured"): nothing left the machine, so telling the table a report went out
+        // would be a lie.
+        var announced = new List<string>();
+        var reporter = new BugReporter(null, null, null, announced.Add, writeLocal: (_, _) => null);
+        reporter.Send("something broke");
 
-            var announced = new List<string>();
-            var reporter = new BugReporter(null, null, null, announced.Add, writeLocal: (_, _) => null);
-            reporter.Send("something broke");
-
-            Assert.That(reporter.LastLocalPath, Is.Null);
-            Assert.That(reporter.UploadState, Is.EqualTo(BugReporter.EUploadState.NotConfigured));
-            Assert.That(announced, Is.Empty, "nothing was retained, so nothing should be announced");
-        }
-        finally
-        {
-            Environment.SetEnvironmentVariable("FDG_LIST_SERVER_URL", previousUrl);
-            ListServerConfigReset();
-        }
+        Assert.That(reporter.LastLocalPath, Is.Null);
+        Assert.That(reporter.UploadState, Is.EqualTo(BugReporter.EUploadState.NotConfigured));
+        Assert.That(announced, Is.Empty, "nothing was retained, so nothing should be announced");
     }
 
     [Test]
     public void Send_StillAnnounces_WhenOnlyTheLocalCopySurvives()
     {
-        // The upload can't be attempted, but the local file exists and is meant to be sent on by
-        // hand - the other players' data is still captured, so they are still told.
-        string? previousUrl = Environment.GetEnvironmentVariable("FDG_LIST_SERVER_URL");
-        try
-        {
-            Environment.SetEnvironmentVariable("FDG_LIST_SERVER_URL", "not-a-url");
-            ListServerConfigReset();
+        // The upload can't be attempted (the fixture forces "unconfigured"), but the local file
+        // exists and is meant to be sent on by hand - the other players' data is still captured,
+        // so they are still told.
+        var announced = new List<string>();
+        var reporter = new BugReporter(null, null, null, announced.Add,
+            writeLocal: (_, _) => "/tmp/pretend-report.json");
+        reporter.Send("something broke");
 
-            var announced = new List<string>();
-            var reporter = new BugReporter(null, null, null, announced.Add,
-                writeLocal: (_, _) => "/tmp/pretend-report.json");
-            reporter.Send("something broke");
-
-            Assert.That(announced, Has.Count.EqualTo(1));
-        }
-        finally
-        {
-            Environment.SetEnvironmentVariable("FDG_LIST_SERVER_URL", previousUrl);
-            ListServerConfigReset();
-        }
+        Assert.That(announced, Has.Count.EqualTo(1));
     }
 
     // ListServerConfig memoizes its resolution on first read; clear it so an env change takes.
