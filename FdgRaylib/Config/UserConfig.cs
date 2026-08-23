@@ -169,6 +169,8 @@ public sealed class HostGameSettings
     public ETurnStyle TurnStyle { get; set; }
     public EShootingMode ShootingMode { get; set; }
     public bool CoverProximityExceptions { get; set; }
+    public bool SeeThroughFriendlyUnits { get; set; }
+    public bool UnlimitedSplitFire { get; set; }
 
     /// <summary>The engine's own defaults - one source of truth for what a fresh config holds.</summary>
     public static HostGameSettings FromDefaults() => From(GameSettings.GetDefault());
@@ -186,6 +188,8 @@ public sealed class HostGameSettings
         TurnStyle              = settings.TurnStyle,
         ShootingMode           = settings.ShootingMode,
         CoverProximityExceptions = settings.CoverProximityExceptionsEnabled,
+        SeeThroughFriendlyUnits = settings.SeeThroughFriendlyUnits,
+        UnlimitedSplitFire     = settings.UnlimitedSplitFire,
     };
 
     /// <summary>Snapshots what the lobby panel currently shows.</summary>
@@ -202,6 +206,8 @@ public sealed class HostGameSettings
         TurnStyle              = viewModel.TurnStyle,
         ShootingMode           = viewModel.ShootingMode,
         CoverProximityExceptions = viewModel.CoverProximityExceptions,
+        SeeThroughFriendlyUnits = viewModel.SeeThroughFriendlyUnits,
+        UnlimitedSplitFire     = viewModel.UnlimitedSplitFire,
     };
 
     /// <summary>
@@ -223,5 +229,7 @@ public sealed class HostGameSettings
         viewModel.SetTurnStyle(TurnStyle);
         viewModel.SetShootingMode(ShootingMode);
         viewModel.SetCoverProximityExceptions(CoverProximityExceptions);
+        viewModel.SetSeeThroughFriendlyUnits(SeeThroughFriendlyUnits);
+        viewModel.SetUnlimitedSplitFire(UnlimitedSplitFire);
     }
 }

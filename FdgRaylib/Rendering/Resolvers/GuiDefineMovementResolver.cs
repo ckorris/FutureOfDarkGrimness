@@ -315,16 +315,21 @@ public class GuiDefineMovementResolver
     private const float StandoffBandHotThickness = 3.5f;
 
     public GuiDefineMovementResolver(ITableState tableState, FormationModeState formationMode,
-        bool coverProximityExceptions = true)
+        bool coverProximityExceptions = true, bool seeThroughFriendlyUnits = false)
     {
         _tableState = tableState;
         _formationMode = formationMode;
         _coverProximityExceptions = coverProximityExceptions;
+        _seeThroughFriendlyUnits = seeThroughFriendlyUnits;
     }
 
     // #201: the launched game's cover-proximity-exceptions setting, so the aim-line preview's
     // cover verdict (dashed line / cover tag) matches what CoverCheckStage will actually roll.
     private readonly bool _coverProximityExceptions;
+
+    // #384: the launched game's see-through-allies LoS house rule, so the fire-line preview's
+    // blockers match what the shoot stage will rule after this move.
+    private readonly bool _seeThroughFriendlyUnits;
 
     public void UpdateLayout(float scale, int originX, int originY, float tableH)
     {
@@ -2292,7 +2297,8 @@ public class GuiDefineMovementResolver
         foreach (IUnit enemyUnit in _tableState.Units.Objects)
         {
             if (!IsEnemyUnit(enemyUnit, request) || !enemyUnit.GetIsOnBattlefield()) continue;
-            var modelBlockers = LineOfSightUtilities.BuildModelBlockers(_tableState, ourUnit, enemyUnit);
+            var modelBlockers = LineOfSightUtilities.BuildModelBlockers(_tableState, ourUnit, enemyUnit,
+                _seeThroughFriendlyUnits);
             var combined = new List<ITerrain>(terrainSnapshot.Count + modelBlockers.Count);
             combined.AddRange(terrainSnapshot);
             combined.AddRange(modelBlockers);

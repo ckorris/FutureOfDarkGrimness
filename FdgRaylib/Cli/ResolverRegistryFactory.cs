@@ -46,14 +46,19 @@ public static class ResolverRegistryFactory
     /// default on) so cover previews match what the host's cover stage will roll.</param>
     /// <param name="tableBackground">The launched game's #265 cosmetic table surface (lobby setting).
     /// Passed through to the overlay purely so the renderer can pick it up at TransitionToGame.</param>
+    /// <param name="seeThroughFriendlyUnits">The launched game's #384 LoS house rule (lobby toggle).
+    /// Defaults to false = the official rules, matching GameSettings.GetDefault, so a launch path
+    /// that forgets to stamp it fails toward the engine's default rather than silently diverging.</param>
     public static (IStageResolverRegistry Registry, GuiResolverOverlay Overlay) BuildGui(ITableState tableState,
         bool coverProximityExceptions = true,
-        ETableBackground tableBackground = ETableBackground.Forest)
+        ETableBackground tableBackground = ETableBackground.Forest,
+        bool seeThroughFriendlyUnits = false)
     {
         var overlay = new GuiResolverOverlay
         {
             CoverProximityExceptions = coverProximityExceptions,
             TableBackground = tableBackground,
+            SeeThroughFriendlyUnits = seeThroughFriendlyUnits,
         };
 
         // Shared Group/Single preference: one instance so flipping the mode in deployment carries
@@ -71,9 +76,10 @@ public static class ResolverRegistryFactory
         var chooseSpell   = new GuiChooseSpellResolver();           // #244 spell pick + self-boost stepper
         var castAssist    = new GuiCastAssistResolver();
         var deployZone    = new GuiChooseDeploymentZoneResolver();
-        var rangedAttack  = new GuiChooseRangedAttackResolver(tableState);
+        var rangedAttack  = new GuiChooseRangedAttackResolver(tableState, seeThroughFriendlyUnits);
         var assignWounds  = new GuiAssignWoundsResolver();
-        var movement      = new GuiDefineMovementResolver(tableState, formationMode, coverProximityExceptions);
+        var movement      = new GuiDefineMovementResolver(tableState, formationMode, coverProximityExceptions,
+            seeThroughFriendlyUnits);
         var aircraftMove  = new GuiAircraftAdvanceResolver();
         var consolidate   = new GuiConsolidationMoveResolver(tableState, formationMode);
         var placeObjects  = new GuiPlaceObjectsResolver<ModelData>(tableState, formationMode);

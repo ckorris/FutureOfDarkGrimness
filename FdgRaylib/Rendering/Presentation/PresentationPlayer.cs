@@ -58,9 +58,10 @@ public class PresentationPlayer : IPresentationSink
     // so panels fade instead of popping.
     private const float RollFadeInSeconds  = 0.12f;
     private const float RollFadeOutSeconds = 0.35f;
-    // Hovering the stack freezes every panel's timer (and the overlay un-dims the older ones), so a
-    // player who wants to re-read a roll can, without slowing down one who doesn't. Set from the render
-    // thread once the overlay knows the stack's own screen bounds.
+    // Hovering the stack freezes every panel's LINGER (and the overlay un-dims the older ones), so a
+    // player who wants to re-read a roll can, without slowing down one who doesn't. The paced part is
+    // never frozen (#386) — see the ageing loop in Update. Set from the render thread once the overlay
+    // knows the stack's own screen bounds.
     private bool _rollHovered;
 
     /// <summary>
@@ -72,6 +73,7 @@ public class PresentationPlayer : IPresentationSink
     private sealed class RollPanel
     {
         public readonly PresentationBeat Beat;
+        public readonly float PacedSeconds;   // the engine's own wait on this roll — never frozen (#386)
         public readonly float Lifetime;
         public float Elapsed;
 
@@ -82,6 +84,7 @@ public class PresentationPlayer : IPresentationSink
             // lead-in. Either way the linger is what the panel gets ON TOP of the paced part — that
             // overhang is what makes panels overlap and therefore stack.
             float paced = (float)(beat.Held ? beat.HoldLeadIn : beat.NominalDuration).TotalSeconds;
+            PacedSeconds = paced;
             int infoBlocks = beat is DiceRolledBeat dice ? dice.InfoBlocks : 0;
             // #344: the player's own pacing preference scales the LINGER only — never the paced part, which
             // is the engine's wait and the window the dice are still tumbling in (see ViewSettings for why).
@@ -399,15 +402,22 @@ public class PresentationPlayer : IPresentationSink
             // #327: the roll stack, likewise independent of the active slot - each panel lives its own
             // fixed lifetime and retires when it runs out. Aged AFTER the dequeue above, like every other
             // concurrent track, so a panel that appeared this frame gets this frame's time too.
-            // Hovering the stack freezes all of them at once.
-            if (!_rollHovered)
+            // Hovering the stack freezes the LINGER only (#386): the paced part always advances, because
+            // the engine waits out the same envelope in real time and play carries on behind the panel -
+            // a tumble frozen under the pointer would show dice still rolling while the wounds they
+            // caused are audibly being applied. The stack grows toward a parked cursor, so this is not a
+            // deliberate-hover-only path.
+            for (int i = _rollStack.Count - 1; i >= 0; i--)
             {
-                for (int i = _rollStack.Count - 1; i >= 0; i--)
+                RollPanel panel = _rollStack[i];
+                if (_rollHovered)
                 {
-                    RollPanel panel = _rollStack[i];
-                    panel.Elapsed += dtSeconds;
-                    if (panel.Elapsed >= panel.Lifetime) _rollStack.RemoveAt(i);
+                    if (panel.Elapsed < panel.PacedSeconds)
+                        panel.Elapsed = Math.Min(panel.Elapsed + dtSeconds, panel.PacedSeconds);
+                    continue;
                 }
+                panel.Elapsed += dtSeconds;
+                if (panel.Elapsed >= panel.Lifetime) _rollStack.RemoveAt(i);
             }
 
             // #275: the banner track, likewise independent of the active slot. Pure display - nothing
@@ -671,8 +681,9 @@ public class PresentationPlayer : IPresentationSink
     }
 
     /// <summary>
-    /// #327. Tells the player the pointer is over the roll stack, which freezes every panel's timer until
-    /// it leaves — the "wait, why did that happen?" affordance. Set from the render thread each frame
+    /// #327. Tells the player the pointer is over the roll stack, which freezes every panel's linger
+    /// until it leaves — the "wait, why did that happen?" affordance (a roll that is still being paced
+    /// settles regardless, #386). Set from the render thread each frame
     /// from the bounds the overlay reports; a one-frame lag is invisible.
     /// </summary>
     public void SetRollStackHovered(bool hovered)

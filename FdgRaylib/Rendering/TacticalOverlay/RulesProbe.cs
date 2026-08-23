@@ -28,10 +28,16 @@ public sealed class RulesProbe
     // cover in spots where a proximity exception voids it. Recorded in WorkItems/201 + #162.
     private readonly bool _coverProximityExceptions;
 
-    public RulesProbe(ITableState tableState, bool coverProximityExceptions = true)
+    // #384: the launched game's see-through-allies LoS house rule; the blocker lists the pips and
+    // field are built from must match the engine's, or the overlay paints shots the stage refuses.
+    private readonly bool _seeThroughFriendlyUnits;
+
+    public RulesProbe(ITableState tableState, bool coverProximityExceptions = true,
+        bool seeThroughFriendlyUnits = false)
     {
         _tableState = tableState;
         _coverProximityExceptions = coverProximityExceptions;
+        _seeThroughFriendlyUnits = seeThroughFriendlyUnits;
     }
 
     /// <summary>
@@ -64,13 +70,14 @@ public sealed class RulesProbe
     /// <summary>
     /// The terrain + model blockers a shot from <paramref name="movingUnit"/> at
     /// <paramref name="target"/> must clear, assembled exactly as the shooting stages do:
-    /// <see cref="LineOfSightUtilities.BuildModelBlockers"/> (excludes the mover's team and the target's
-    /// own models) concatenated with the live terrain snapshot. Pass to <see cref="BestSight"/>.
+    /// <see cref="LineOfSightUtilities.BuildModelBlockers"/> under the game's #384 see-through-allies
+    /// setting, concatenated with the live terrain snapshot. Pass to <see cref="BestSight"/>.
     /// </summary>
     public List<ITerrain> BuildBlockers(IUnit movingUnit, IUnit target)
     {
         var blockers = new List<ITerrain>(_tableState.Terrain.Objects);
-        blockers.AddRange(LineOfSightUtilities.BuildModelBlockers(_tableState, movingUnit, target));
+        blockers.AddRange(LineOfSightUtilities.BuildModelBlockers(_tableState, movingUnit, target,
+            _seeThroughFriendlyUnits));
         return blockers;
     }
 

@@ -47,6 +47,8 @@ When closing an item: write the Outcome in its detail file, tick the line, and m
 
 ## Shooting & cover
 
+- [~] 384 — Two lobby house-rule toggles, both default off: See-Through Allies (on = the old any-same-team-model-never-blocks-LoS; off = official rules, only own unit + target transparent, AI lane-aware) and Unlimited Split Fire (lifts the 2-unit shoot-action cap). Implemented + tested; awaiting GUI hand-verify. ([WorkItems/384](WorkItems/384-house-rule-lobby-options.md))
+- [~] 385 — Dead models swayed the cover roll and kept occluded shots alive (stages iterated raw bindings; the preview filtered alive). Cover majority and the unit-sees-unit gate are now single shared engine functions (`CoverMajority`, `ShotEligibility.UnitSeesUnit`) used by preview + resolution alike. Implemented + tested; awaiting GUI hand-verify. ([WorkItems/385](WorkItems/385-dead-models-cover-occlusion.md))
 - [~] 368 — Shooting weapon rows named the weapon but never said how many copies were firing, so a five-rifle volley and a single rifle read identically; both front ends now print the datasheet "3x" prefix the melee menu already uses, off `WeaponOption.CopiesRemaining`. Implemented + tested + CLI-verified; awaiting GUI hand-verify. ([WorkItems/368](WorkItems/368-shooting-weapon-copy-count.md))
 
 - [~] 201 — Shooting *out of* cover grants the defender cover: fixed 2026-07-21 via lobby-toggled proximity house rules (default on: 2" exit w/ both-hugging amendment + 6" shared cover), previews kept truthful; implemented + tested on `201-cover-proximity`, awaiting GUI hand-verify. ([WorkItems/201](WorkItems/201-cover-attacker-side.md))
@@ -150,6 +152,7 @@ from the tree 2026-08-12 - recover it from git history if needed.) Remainders be
 
 ## Client / renderer
 
+- [~] 386 — Dice panels froze mid-tumble while wounds resolved audibly (seen while screen-recording): #327's hover-freeze captured a parked/stale cursor as the stack grew to meet it, and froze the engine-paced part. Hover now freezes the linger only + `IsCursorOnScreen` gate. Implemented + tested; awaiting user re-record. ([WorkItems/386](WorkItems/386-dice-stack-hover-freeze-desync.md))
 - [~] 344 — Options slider for how long dice-roll popups stay up (1/3x .. 2x, default 1x): scales the panel's LINGER only, never the engine-paced tumble. Implemented + tested; awaiting GUI hand-verify. ([WorkItems/344](WorkItems/344-dice-popup-duration-option.md))
 - [~] 346 — Terrain placement panel said "Right-click or Esc to switch template" (Esc opens the menu, #248), so the only way-out hint named the wrong key; now Backspace/right-click, in a visible colour, both placement steps, plus footprint/height/rules-effect lines for the piece being placed. Implemented; awaiting GUI hand-verify. ([WorkItems/346](WorkItems/346-terrain-placement-hints.md))
 - [~] 347 — Health bars gained casualty ticks: a hairline at every model-loss boundary (Tough-aware, none for one-model units), so "how many more hits before a body drops" reads off the bar. Implemented + tested; awaiting GUI hand-verify. ([WorkItems/347](WorkItems/347-health-bar-casualty-ticks.md))

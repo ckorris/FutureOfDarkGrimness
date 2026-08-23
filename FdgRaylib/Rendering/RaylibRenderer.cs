@@ -235,8 +235,10 @@ public class RaylibRenderer
         // [overlay] messages are developer detail (rebuild-budget warnings) -> the Debug log category.
         _tacticalOverlay.Attach(tableState, msg => _log?.Add(msg, new TextColor(255, 180, 90, 255), isDebug: true),
             pid => { Color c = colorForPlayer(pid); return (c.R, c.G, c.B); },
-            // #201: the launched game's cover setting rides the resolver overlay (stamped in BuildGui).
-            coverProximityExceptions: resolverOverlay?.CoverProximityExceptions ?? true);
+            // #201/#384: the launched game's cover + LoS settings ride the resolver overlay
+            // (stamped in BuildGui).
+            coverProximityExceptions: resolverOverlay?.CoverProximityExceptions ?? true,
+            seeThroughFriendlyUnits: resolverOverlay?.SeeThroughFriendlyUnits ?? false);
         _tacticalOverlay.AttachMovementResolver(resolverOverlay?.MovementResolver);
         // #230: lets the field anchor on a placement's ghosts when no move job is running.
         _tacticalOverlay.AttachResolverOverlay(resolverOverlay);
@@ -555,7 +557,12 @@ public class RaylibRenderer
                     // stack twice).
                     rollStackBounds = DiceOverlay.DrawStack(_presentationPlayer.GetRollStack(),
                         layout.AreaW, screenH, diceAvoid, _presentationPlayer.IsRollStackHovered);
+                    // #386: GetMousePosition only updates from in-window motion, so once the pointer
+                    // leaves the window (second monitor, OBS) it reports the last in-window position
+                    // forever — a stale point the growing stack can reach and "hover" with nobody there.
+                    // IsCursorOnScreen gates the freeze to a pointer actually over the window.
                     _presentationPlayer.SetRollStackHovered(rollStackBounds is { Width: > 0 }
+                        && Raylib.IsCursorOnScreen()
                         && Raylib.CheckCollisionPointRec(Raylib.GetMousePosition(), rollStackBounds.Value));
                 }
 

@@ -44,7 +44,15 @@ public class GuiChooseRangedAttackResolver
     // locked in, and teal is the only reading left that says so.
     private static readonly Vector4 DeclaredAccent = new(0.35f, 0.80f, 0.72f, 1f);
 
-    public GuiChooseRangedAttackResolver(ITableState tableState) => _tableState = tableState;
+    // #384: the launched game's see-through-allies LoS house rule, so the panel's fire lines pick
+    // the same "nearest visible defender" the volley will resolve against.
+    private readonly bool _seeThroughFriendlyUnits;
+
+    public GuiChooseRangedAttackResolver(ITableState tableState, bool seeThroughFriendlyUnits = false)
+    {
+        _tableState = tableState;
+        _seeThroughFriendlyUnits = seeThroughFriendlyUnits;
+    }
 
     public void UpdateLayout(float scale, int originX, int originY, float tableH)
     {
@@ -890,7 +898,8 @@ public class GuiChooseRangedAttackResolver
         // and so aims at the nearest model, blocked or not — which is exactly what it shoots.
         IReadOnlyList<ITerrain>? blockers = wo.IgnoresTerrain
             ? null
-            : ShotEligibility.BuildBlockers(_tableState, request.AttackingUnit.GetValue(), targetUnit);
+            : ShotEligibility.BuildBlockers(_tableState, request.AttackingUnit.GetValue(), targetUnit,
+                _seeThroughFriendlyUnits);
 
         uint colorLabel = ImGui.ColorConvertFloat4ToU32(new Vector4(0.85f, 1.00f, 0.85f, 0.95f));
         uint colorLabelBg = ImGui.ColorConvertFloat4ToU32(new Vector4(0f, 0f, 0f, 0.55f));
