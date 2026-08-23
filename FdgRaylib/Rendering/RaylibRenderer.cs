@@ -557,7 +557,12 @@ public class RaylibRenderer
                     // stack twice).
                     rollStackBounds = DiceOverlay.DrawStack(_presentationPlayer.GetRollStack(),
                         layout.AreaW, screenH, diceAvoid, _presentationPlayer.IsRollStackHovered);
+                    // #386: GetMousePosition only updates from in-window motion, so once the pointer
+                    // leaves the window (second monitor, OBS) it reports the last in-window position
+                    // forever — a stale point the growing stack can reach and "hover" with nobody there.
+                    // IsCursorOnScreen gates the freeze to a pointer actually over the window.
                     _presentationPlayer.SetRollStackHovered(rollStackBounds is { Width: > 0 }
+                        && Raylib.IsCursorOnScreen()
                         && Raylib.CheckCollisionPointRec(Raylib.GetMousePosition(), rollStackBounds.Value));
                 }
 

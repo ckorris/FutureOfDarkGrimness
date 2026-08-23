@@ -193,24 +193,46 @@ public class DiceStackTests
             "fading over its tail instead of popping");
     }
 
+    // #386 — hover freezes the LINGER, never the paced part. The engine waits out a roll's envelope in
+    // real time regardless of the pointer, so a panel whose tumble froze under the cursor would show
+    // dice still rolling while the wounds they caused are audibly being applied. The stack grows upward
+    // toward a parked cursor (screen-recording sessions surfaced this), so the freeze is not a
+    // deliberate-hover-only path and must never hold back the settle.
     [Test]
-    public void Hovering_FreezesEveryPanel()
+    public void Hovering_FreezesTheLinger_ButTheRollStillSettles()
     {
         var player = new PresentationPlayer();
         player.OnBeat(Dice());
         player.Update(0.2f);
-        float before = player.GetRollStack()[0].progress;
 
         player.SetRollStackHovered(true);
         Assert.That(player.IsRollStackHovered, Is.True);
         player.Update(10f); // far past its lifetime
 
         Assert.That(player.GetRollStack(), Has.Count.EqualTo(1), "frozen panels do not expire");
-        Assert.That(player.GetRollStack()[0].progress, Is.EqualTo(before), "nor advance");
+        Assert.That(player.GetRollStack()[0].progress, Is.EqualTo(1f).Within(1e-4f),
+            "but the paced part kept advancing — the dice settle in lockstep with the engine's own "
+            + "wait even under a parked cursor");
 
         player.SetRollStackHovered(false);
         player.Update(PanelLife + 0.1f);
-        Assert.That(player.GetRollStack(), Is.Empty, "and they resume ageing on release");
+        Assert.That(player.GetRollStack(), Is.Empty, "and the linger resumes on release");
+    }
+
+    [Test]
+    public void Hovering_MidLinger_HoldsThePanelThere()
+    {
+        // The re-read affordance #327 built the freeze for is intact: a settled panel holds under the
+        // pointer at full strength instead of fading away mid-read.
+        var player = new PresentationPlayer();
+        player.OnBeat(Dice());
+        player.Update(Paced + 0.5f);   // settled, mid-linger
+
+        player.SetRollStackHovered(true);
+        player.Update(10f); // far past its lifetime
+
+        Assert.That(player.GetRollStack(), Has.Count.EqualTo(1), "held for as long as the pointer stays");
+        Assert.That(player.GetRollStack()[0].alpha, Is.EqualTo(1f), "at full strength, not mid-fade");
     }
 
     [Test]
