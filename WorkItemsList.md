@@ -262,7 +262,6 @@ full bug log). Deleted from the tree 2026-08-12 - recover from git history if ne
 Same core ruleset as GDF; 40 faction books. Verified rules/spells reference doc lives outside the repo (`GDF Armies/Age of Fantasy/`, local only). Appraisal 2026-08-22: ~94% of 852 rule instances resolve via existing behavior modulo renames; all 240 spells fit existing spell-effect patterns.
 
 - [ ] 381 — AoF Retreating Strike: post-melee move-end strike — BLOCKED on the owner's trigger ruling (charger's move-back fires no hook); the last dead AoF rule, 14 refs. ([WorkItems/381](WorkItems/381-retreating-strike.md))
-- [ ] 377 — AoF spells: author all 240 (40 books x 6) as SpellDefinition data; no new machinery expected (120 dealHits / 88 addRule-once / 20 markTarget / 5 morale / 7 terrain-or-move outliers). ([WorkItems/377](WorkItems/377-aof-spell-authoring.md))
 - [ ] 378 — AoF armies in the Army Forge: parameterize the hardcoded `grimdark-future` slug, fetch AoF snapshots, bundle 40 `.fdgbook`s, game-system picker UX (design fork). ([WorkItems/378](WorkItems/378-aof-army-forge-books.md))
 - [ ] 379 — AoF weapon animations + sounds: extend the #239 `WeaponEffectCatalog` with fantasy effect-set keys (arrows, breath, arcane, fantasy melee) + sound cues; keys assigned in #378's bundles. ([WorkItems/379](WorkItems/379-aof-weapon-effects-av.md))
 
@@ -272,6 +271,8 @@ Same core ruleset as GDF; 40 faction books. Verified rules/spells reference doc 
 
 Implemented, merged, suite green — held open only until confirmed by hand in the running app.
 Tick and move to the archive once verified. The detail files carry the full ledgers.
+
+- [~] 377 — All 240 AoF spells live as data (census 0 dead spell refs both systems, parity 240/240 vs print, cast sweep 240+282 clean); fixed 21 silent-no-op spells in SHIPPED GDF books along the way. Verify: the two GUI checks in the detail file (GDF-side; AoF needs #378). ([WorkItems/377](WorkItems/377-aof-spell-authoring.md))
 
 - [~] 326 — Single-model moves show a roster of the unit's models with each one's distance travelled: pick by row click, Up/Down, Tab/Shift+Tab, or the table click #295 left as the only way in (which a playtester never found). Space stays Confirm. Consolidation gets the same roster as slice 2. Verify: the six GUI checks in the detail file. ([WorkItems/326](WorkItems/326-single-model-move-roster.md))
 - [~] 324 — A single-target "Replace all X" now leaves the copies that specialist swaps below it were bought for (5 pistols, trade 1, then replace-all -> 4 rifles + the 1), and "-es" plural targets match ("Bashes" -> the "Bash" weapon, which was silently free). Multi-target all-swaps (88 corpus pairs) deferred pending the aggregate weapon-model question. Verify: DAO Union Tactical Grunts - take "Replace all Pulse Rifles" then "Replace one Pulse Rifle -> Plasma Rifle"; expect 4 carbines + 1 plasma at 150 pts. ([WorkItems/324](WorkItems/324-all-swap-yields-and-plurals.md))

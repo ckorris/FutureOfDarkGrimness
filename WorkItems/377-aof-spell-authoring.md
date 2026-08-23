@@ -1,6 +1,6 @@
 # 377 — AoF spells: author all 240 army spells as data
 
-**Status**: in-progress (started 2026-08-23)
+**Status**: done pending hand-verify (implemented + machine-verified 2026-08-23; GUI check below)
 **Related**: #378 (spells land inside the `.fdgbook` spells arrays it produces), #375/#376 (spells reference AoF rule names that must resolve). Reference doc: `/home/chris/Projects/GDF Armies/Age of Fantasy/Special Rules and Spells by Army.md` (local only, do not copy text into the repo).
 
 ## Goal
@@ -48,22 +48,53 @@ books after the rules land or accept the engine's skip-with-warning until then.
   only via spell marks), and "+6-inch range when shooting" (both as a self-grant and as a MARK -
   the mark form needs a range-check peek, see D3).
 
-## Slice plan (2026-08-23)
+## Slice plan (2026-08-23) — ALL DONE same session
 
 1. [x] Census/audit/load-preflight for spell refs (engine: SpellRuleReferences helper,
    ArmyListSpellResolution grant pre-flight, ArmyRuleAudit walk + parity; app: --rule-coverage
-   walks spells, dynamic breakdown). Engine suite 2992 green.
-2. [ ] Core catalog defs (#093 section) for the 8 gated/named phrases (D2) + integration tests.
-3. [ ] Range-mark peek seam (D3) + tests.
-4. [ ] Importer: ungated "gets +/-N to <roll> rolls once" -> Effect.StatModifier (D1) + tests.
-5. [ ] Rebake GDF bundled books; census -> 0 dead spell refs GDF, AoF dead = 14 (#381 only);
-   app test pinning bundled-book spell coverage. AoF books rebaked locally.
-6. [ ] Engine integration tests: spell-granted countAsInTerrain + movementBonus synthesized
-   rules fire on the next move (the filed seam probe).
-7. [ ] Local parity audit: baked spell JSON vs the reference doc (threshold/range/count/hits/
-   AP/affinity/singleModel/granted name) across all 240; fix importer mis-parses found.
-8. [ ] Headless probe: cast every AoF spell in-game (generated caster armies per book); tally
-   here; close.
+   walks spells, dynamic breakdown). Engine `082fcc8`, superproject `fe51b50`.
+2. [x] Core catalog defs (#093 section) for the 8 gated/named phrases (D2) + integration tests
+   (AP gates + Slayer arms at the save seam in ThrustRuleIntegrationTests, gated phrase rule
+   claimed from a mark in HitRollRuleIntegrationTests incl. the spent-for-nothing shooting
+   claim, SpellPhraseCloneTests parity pins). RuleFireLint gained Tough(9)-majority defender
+   variants; the 4 app allowlist entries (Shatter/Tear/Melee+Ranged Slayer) retired as stale.
+   GDF dead 21 -> 13. Engine `75d7241`, superproject `0af811e`.
+3. [x] Range-mark peek seam (D3): EffectiveRange structurally peeks target marks for
+   Shooting_OnRangeCheck RangeModifier entries (ShootAfterRushRules pattern, peek never
+   spends); DetermineHitRollStage runs one live range evaluation per SHOOTING attack so a
+   one-shot range grant (Battle Rune) is spent by the shot that used it (melee never spends).
+   Tests both ways. Engine `4d5323f`, superproject `04dcc3e`.
+4. [x] Importer StatModifierShape (D1): ungated "+/-N to hit/defense/morale test/casting rolls
+   [when attacking]" -> Effect.StatModifier(NextTrigger); gated phrases stay grants. Importer
+   test covers all four roll kinds + the gated fall-through. Engine `ce9c189`.
+5. [x] Books: NOT a regen — the bundled books carry post-bake live-API passes (#219 prices,
+   #383 shapes) that a full re-import would wipe (found: rebake drifts a Support Grunts cost
+   25 -> 30 vs the live-refreshed data). New `OprBookImporter.RestampSpells` + app
+   `--import-spells <snapshotDir> <book|dir>` re-stamps ONLY spells (synthesized defs swapped
+   in place, position preserved). 13 GDF books changed semantically (addRule-phrase ->
+   statModifier) + HEF picks up #376's onFailure serialization field. **GDF census: 14,088
+   refs, 0 dead. AoF rebake (full regen - those books carry no post-passes): 7,991 refs, dead
+   = exactly #381's 14 Retreating Strike.** New BookSpellCoverageTests pins every bundled
+   book's spell refs through the shared load ladder (empty allowlist, stale-entry guard).
+   Engine `0882546`, superproject `377a089`.
+6. [x] Seam probe: spell-granted countAsInTerrain (importer's exact "Desert Storm Effect"
+   shape, granted NextTrigger as a RuleGrant token) caps all projected budgets WITHOUT
+   spending, and ExecuteMoveStage spends it - "once" means once. PASSED with no engine change:
+   the machinery was already correct; the filed seam concern is closed. (movementBonus grants
+   were already pinned by the existing GrantOnce Quick tests.) Engine `2042623`.
+7. [x] Parity audit (`appraisal-2026-08-22/spell-parity-audit.py`, local): independent
+   re-parse of all 240 printed spell texts vs the baked JSON - threshold/range/maxCount/
+   affinity/singleModel/effect kind + numbers + synthesized def parameters. **240/240 match,
+   0 mismatches.** Two accepted API-vs-PDF drifts recorded: (a) "AP(2) each" wording (import
+   handles it); (b) PDF flavor rule names Slash/Butcher/Break are API Surge/Surge/Crack - the
+   PDF adds Ignores-Cover/Regeneration riders the API text dropped; books follow the API
+   (canonical machine source, same doctrine as the #375 census).
+8. [x] Corpus cast sweep (`SpellCorpusProbeTests`, engine; FDG_SPELL_PROBE_BOOKS env var,
+   skips unset): every spell CAST through the real CastSpellStage - first-castable pick,
+   targets, wounds, forced moves - asserting completion, exact threshold spend, zero
+   RuleDiagnostics. **AoF 240/240 across 40 books; GDF bundled 282/282 across 47.** Plus an
+   end-to-end headless game with a compiled Beastmen army (exit 0, zero rule warnings).
+   Engine `f2ba812`, superproject `83f0397`.
 
 ## Decisions
 
@@ -98,3 +129,33 @@ books after the rules land or accept the engine's skip-with-warning until then.
   Shooting_OnRangeCheck.
 
 ## Outcome
+
+**Implemented and machine-verified 2026-08-23, one session** (8 slices, engine `082fcc8`..`f2ba812`,
+superproject `fe51b50`..`83f0397`). The filing assumption was wrong in a useful way: #375's bake had
+already parsed all 240 AoF spells into the local books - the real work was COVERAGE, which had a
+census-shaped hole. Spell rule references were invisible to `--rule-coverage`, the #168 audit, and
+army load alike; opening that seam found 21 dead spell refs in the SHIPPED GDF books (spells casting
+as silent no-ops since #156) and 20 more in the AoF bake, fixed via three mechanisms chosen by where
+each name's consumption lives: Effect.StatModifier at import for ungated numeric phrases (the cast
+roll folds tokens only - a rule-shaped "-3 to casting rolls" can never fire), 8 core-catalog phrase
+rules for gated/named grants (core so already-baked books and saved armies resolve them with no
+rebake), and a range-mark peek + one-shot range-grant spend seam for the "+6\" range against it"
+marks that mark-claiming alone could never deliver.
+
+End state: **GDF bundled books 14,088 references / 0 dead; AoF local books 7,991 / dead = exactly
+#381's 14 Retreating Strike refs. Parity audit 240/240 against the printed texts. Corpus cast sweep
+240/240 AoF + 282/282 GDF through the real CastSpellStage with zero diagnostics.** Durable tooling:
+spell-aware census + load pre-flight + audit parity, `--import-spells` targeted re-stamp,
+BookSpellCoverageTests (bundled books, auto-extends when #378 bundles AoF), SpellCorpusProbeTests
+(any books dir), the parity audit script, and RuleFireLint's Tough-majority contexts (4 allowlist
+entries retired). Engine 3016 green, app 1367 green, headless smokes exit 0.
+
+**#378 pickups**: bundle-time spell verification = run BookSpellCoverageTests (auto) + the two local
+sweeps against the bundled set; AoF books are full regens (no post-bake passes yet) - if #378 ever
+runs the price/shape refreshers on them, switch their spell updates to `--import-spells` too.
+
+**Hand-verify (GUI, the one open loop)**: in a GDF game, cast Blessed Sisters' "Burn the Heretic"
+at an enemy Caster - expect a "-3 to casting rolls" style token on the target and its next cast
+rolling at the shifted threshold; and any mark spell (e.g. Custodian Brothers "The Founder's Curse")
+- expect "Marked: Shred when attacking" on the target and the next friendly attack into it showing
+the bonus. AoF spells become GUI-reachable only when #378 bundles the books.
