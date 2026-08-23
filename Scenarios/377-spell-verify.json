@@ -9,11 +9,11 @@
       "units": [
         {
           "unit": "Coven Magus",
-          "models": [[14, 16]],
+          "models": [[26, 26]],
           "tokens": [{ "type": "SpellTokens", "count": 15 }]
         },
         { "unit": "Verifier Rifles", "models": [[18, 16], [20, 16], [22, 16], [24, 16], [26, 16]] },
-        { "unit": "Verifier Scouts", "models": [[30, 16], [32, 16], [34, 16]] }
+        { "unit": "Verifier Scouts", "models": [[36, 12], [38, 12], [40, 12]] }
       ]
     },
     {
@@ -21,11 +21,15 @@
       "units": [
         {
           "unit": "Hostile Adept",
-          "models": [[14, 28]],
+          "models": [[14, 34]],
           "tokens": [{ "type": "SpellTokens", "count": 10 }]
         },
-        { "unit": "Hostile Blob", "models": [[18, 28], [20, 28], [22, 28], [24, 28], [26, 28]] },
-        { "unit": "Distant Lurkers", "models": [[30, 43], [32, 43], [34, 43]] }
+        { "unit": "Hostile Blob", "models": [[14, 30], [16, 30], [18, 30], [20, 30], [22, 30]] },
+        {
+          "unit": "Distant Lurkers",
+          "models": [[36, 40], [38, 40], [40, 40]],
+          "activated": true
+        }
       ]
     }
   ]
