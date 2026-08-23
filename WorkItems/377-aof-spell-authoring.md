@@ -1,6 +1,6 @@
 # 377 — AoF spells: author all 240 army spells as data
 
-**Status**: done pending hand-verify (implemented + machine-verified 2026-08-23; GUI check below)
+**Status**: done (GUI hand-verified 2026-08-23; archived)
 **Related**: #378 (spells land inside the `.fdgbook` spells arrays it produces), #375/#376 (spells reference AoF rule names that must resolve). Reference doc: `/home/chris/Projects/GDF Armies/Age of Fantasy/Special Rules and Spells by Army.md` (local only, do not copy text into the repo).
 
 ## Goal
@@ -154,7 +154,12 @@ entries retired). Engine 3016 green, app 1367 green, headless smokes exit 0.
 sweeps against the bundled set; AoF books are full regens (no post-bake passes yet) - if #378 ever
 runs the price/shape refreshers on them, switch their spell updates to `--import-spells` too.
 
-**Hand-verify (GUI, the one open loop)**: `--scenario Scenarios/377-spell-verify.json` (or load
+**Hand-verified 2026-08-23** in the running app via the scenario below - all four checks passed:
+cast-debuff token landed ("-3 to casting rolls" on the Adept, log-confirmed), "Marked: Shred when
+attacking" + the shot into the marked Blob, the Battle Rune range grant, and the Eternal Guidance
+range mark making the 27" Distant Lurkers targetable. (Cast-roll dice ran cold - three legitimate
+failed 4+ casts across runs - and the first scenario cut placed the Lurkers outside the Magus's 18"
+spell range; fixed in the committed scenario.) The original check text: `--scenario Scenarios/377-spell-verify.json` (or load
 `377-SpellVerify.fdgsave`) - a Caster with the four shipped spell shapes vs AI targets. Checks:
 (1) "Burn the Heretic" on the Hostile Adept -> cast-modifier token lands; if the AI Adept casts,
 its roll breakdown shows the granted -3 (needs a 6). (2) "The Founder's Curse" on the Hostile Blob
