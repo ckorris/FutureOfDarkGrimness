@@ -59,6 +59,40 @@ public static class RuleCoverageReport
                     Record(byName, resolved.Definition.Name, "scope-mismatch");
                 }
             }
+
+            // #377 — spell references, previously invisible to this census: a damage spell's WithRules
+            // names (argument-parsed, Weapon scope — ArmyListSpellResolution.ResolveWeaponRuleNames) and
+            // the names spells grant as rules (raw, argument-less — RuleEvaluator.CollectGrantedRules
+            // screens out argument-reading definitions because grants carry none). Both classified
+            // through the same ResolveOrDescribeDrop ladder the load paths use.
+            foreach (SpellDefinition spell in book.Spells)
+            {
+                foreach (string ruleName in SpellRuleReferences.WeaponRuleNames(spell.Effect))
+                {
+                    totalRefs++;
+                    SpecialRuleEntry entry = SpecialRuleEntryParser.Parse(ruleName);
+                    ArmyListRuleResolution.ResolveOrDescribeDrop(resolver, entry, ERuleScope.Weapon,
+                        $"spell '{spell.Name}'", out RuleDrop? drop);
+                    if (drop != null)
+                    {
+                        Record(byName, drop.Value.RuleName, ClassOf(drop.Value.Reason));
+                    }
+                }
+
+                foreach (string ruleName in SpellRuleReferences.GrantedRuleNames(spell.Effect))
+                {
+                    totalRefs++;
+                    ArmyListRuleResolution.ResolveOrDescribeDrop(resolver,
+                        new SpecialRuleEntry_Core(ruleName), attachmentScope: null,
+                        $"spell '{spell.Name}'", out RuleDrop? drop);
+                    if (drop != null)
+                    {
+                        Record(byName, drop.Value.RuleName,
+                            drop.Value.Reason == ERuleDropReason.MissingArgument
+                                ? "grant-arity" : ClassOf(drop.Value.Reason));
+                    }
+                }
+            }
         }
 
         List<KeyValuePair<string, Tally>> dead = byName.OrderByDescending(kv => kv.Value.Refs)
@@ -70,16 +104,22 @@ public static class RuleCoverageReport
         }
 
         int deadRefs = dead.Sum(kv => kv.Value.Refs);
-        int noDefRefs = dead.Where(kv => kv.Value.FailureClass == "no-definition").Sum(kv => kv.Value.Refs);
-        int noDefNames = dead.Count(kv => kv.Value.FailureClass == "no-definition");
-        int mismatchRefs = dead.Where(kv => kv.Value.FailureClass == "scope-mismatch").Sum(kv => kv.Value.Refs);
-        int mismatchNames = dead.Count(kv => kv.Value.FailureClass == "scope-mismatch");
+        string breakdown = string.Join(", ", dead
+            .GroupBy(kv => kv.Value.FailureClass)
+            .OrderBy(g => g.Key)
+            .Select(g => $"{g.Sum(kv => kv.Value.Refs)} {g.Key} across {g.Count()} names"));
 
         Console.WriteLine();
         Console.WriteLine($"Total references: {totalRefs}");
-        Console.WriteLine($"Dead: {deadRefs} ({noDefRefs} no-definition across {noDefNames} names, " +
-            $"{mismatchRefs} scope-mismatch across {mismatchNames} names)");
+        Console.WriteLine($"Dead: {deadRefs}" + (dead.Count > 0 ? $" ({breakdown})" : ""));
     }
+
+    private static string ClassOf(ERuleDropReason reason) => reason switch
+    {
+        ERuleDropReason.WrongScope => "scope-mismatch",
+        ERuleDropReason.MissingArgument => "missing-argument",
+        _ => "no-definition",
+    };
 
     private static void Record(Dictionary<string, Tally> byName, string name, string failureClass)
     {
