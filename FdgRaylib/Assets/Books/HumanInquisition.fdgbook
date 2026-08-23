@@ -5865,9 +5865,10 @@
         "requiredRule": null
       },
       "effect": {
-        "kind": "addRule",
-        "ruleName": "\u002B1 to morale test rolls",
-        "scope": "NextTrigger"
+        "kind": "statModifier",
+        "roll": "Morale",
+        "delta": 1,
+        "lifetimeScope": "NextTrigger"
       }
     },
     {

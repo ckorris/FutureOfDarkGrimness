@@ -3657,9 +3657,10 @@
         "requiredRule": null
       },
       "effect": {
-        "kind": "addRule",
-        "ruleName": "-1 to hit rolls when attacking",
-        "scope": "NextTrigger"
+        "kind": "statModifier",
+        "roll": "Hit",
+        "delta": -1,
+        "lifetimeScope": "NextTrigger"
       }
     },
     {

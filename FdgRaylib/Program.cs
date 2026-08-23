@@ -272,6 +272,54 @@ if (shapesIdx >= 0 && shapesIdx + 1 < args.Length)
     return;
 }
 
+// --import-spells <snapshotDir> <book.fdgbook | dir>  (#377): re-stamp ONLY the spells (and their
+// synthesized "<Spell> Effect" definitions) on a bundled book (or every .fdgbook in a directory) from
+// the off-repo OPR JSON snapshots, matched by book name -> "<Name>.json". Same targeted-stamp
+// discipline as --import-section-shapes: the bundled books carry post-bake live-API passes (#219
+// prices, #383 shapes) that a full re-import would wipe. Writes in place only when spells changed.
+int spellsIdx = Array.IndexOf(args, "--import-spells");
+if (spellsIdx >= 0 && spellsIdx + 2 < args.Length)
+{
+    try
+    {
+        string snapshotDir = args[spellsIdx + 1];
+        string target = args[spellsIdx + 2];
+        string[] bookPaths = Directory.Exists(target)
+            ? Directory.EnumerateFiles(target, "*" + BookFile.EXTENSION_WITH_PERIOD).OrderBy(p => p).ToArray()
+            : new[] { target };
+        if (bookPaths.Length == 0) { Console.WriteLine($"No {BookFile.EXTENSION_WITH_PERIOD} files in '{target}'."); return; }
+
+        int totalStamped = 0, missing = 0;
+        foreach (string path in bookPaths)
+        {
+            string before = File.ReadAllText(path);
+            BookFile book = JsonSerializer.Deserialize<BookFile>(before, RuleJson.Options)!;
+            string snapshotPath = Path.Combine(snapshotDir, book.Name + ".json");
+            if (!File.Exists(snapshotPath))
+            {
+                Console.WriteLine($"  {book.Name}: no snapshot '{snapshotPath}' - skipped.");
+                missing++;
+                continue;
+            }
+            int stamped = OprBookImporter.RestampSpells(book, File.ReadAllText(snapshotPath),
+                msg => Console.WriteLine($"  {msg}"));
+            string after = JsonSerializer.Serialize(book, RuleJson.Options);
+            if (after != before) File.WriteAllText(path, after);
+            totalStamped += stamped;
+            Console.WriteLine($"  {book.Name}: {stamped} spell(s) stamped" +
+                (after == before ? " (unchanged)" : ""));
+        }
+        Console.WriteLine($"Done: {bookPaths.Length - missing}/{bookPaths.Length} book(s) stamped, " +
+            $"{totalStamped} spell(s).");
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"Spell re-stamp failed: {ex.Message}");
+        Environment.Exit(1);
+    }
+    return;
+}
+
 // --apply-rules <book.fdgbook> <supplement.json ...>  (#153): merge curated rule definitions into an
 // existing book snapshot in place — the definitions the book references (plus what those grant) embed
 // into the book's ruleDefinitions, replace-by-name, so re-applying after editing the supplement is

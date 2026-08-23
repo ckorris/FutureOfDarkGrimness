@@ -9605,9 +9605,10 @@
         "requiredRule": null
       },
       "effect": {
-        "kind": "addRule",
-        "ruleName": "-1 to defense rolls",
-        "scope": "NextTrigger"
+        "kind": "statModifier",
+        "roll": "Save",
+        "delta": -1,
+        "lifetimeScope": "NextTrigger"
       }
     },
     {

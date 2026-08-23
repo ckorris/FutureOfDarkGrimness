@@ -7287,7 +7287,8 @@
             "clear": {
               "kind": "manualOnly"
             },
-            "minRoll": 4
+            "minRoll": 4,
+            "onFailure": null
           },
           "availableWhen": {
             "kind": "always"
