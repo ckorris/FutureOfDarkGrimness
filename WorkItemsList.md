@@ -63,6 +63,7 @@ When closing an item: write the Outcome in its detail file, tick the line, and m
 
 ## Special rules — framework
 
+- [~] 382 — A joined hero's creation-time aura never fired (the join relocates it onto the hero model, which `UnitCreationRules` never walked), leaving all "X Aura" grants inert on combined units — the reported Robot Legions Reanimation failure. Fixed + tested; awaiting GUI hand-verify. ([WorkItems/382](WorkItems/382-joined-hero-aura-inert.md))
 - [~] 370 — Ability actions in the Choose Action menu were listed as a bare rule name ("Courage Buff") with no descriptor text, so a bonus action never explained itself. `AbilityOffer` now carries its `SpecialRuleDefinition` and the menu passes each offer's `Description` through as `OptionDescriptions`, which both front ends already render. Implemented + tested + CLI-verified on the Blessed Sisters Procession Altar; awaiting GUI hand-verify. ([WorkItems/370](WorkItems/370-ability-action-descriptions.md))
 
 - [~] 369 — Follow-on to #370: an ability description names the rule it CONFERS ("...which gains Courage...") and that name was plain prose. `EffectRuleReferences` derives the referenced names from the effect (not a text scan), and a new `OptionDescriptionRules` map gives them the #292/#336 treatment - underlined in place with a hover (GUI), indented line (CLI). Implemented + tested + CLI-verified; awaiting GUI hand-verify. ([WorkItems/369](WorkItems/369-description-rule-hovers.md))
@@ -94,6 +95,7 @@ Corpus coverage is now complete too: **0 of 13,870** book rule references are de
 
 ## Army Forge
 
+- [ ] 383 — OPR "Any model may replace/take ..." sections import as pick-one-per-option checkboxes; they are per-model counted steppers (section total = model count), so e.g. 3 Hive Warriors can't take 3x Ravager Gun. Importer classifier + `PerModelBudget` flag + 22 bundled sections re-stamped. ([WorkItems/383](WorkItems/383-per-model-any-upgrade-sections.md))
 - [~] 218 — "Replace All" charged per model instead of flat. Convention confirmed from a real share list and fixed 2026-07-19 (Havoc list reconciles 1120 both ways; 200 priced All options were overcharging). Open: `Affects.Any` pricing unverified (1185 options ride on it) + GUI hand-verify. ([WorkItems/218](WorkItems/218-army-forge-replace-all-cost.md))
 - [ ] 220 — Version control for Army Forge lists (undo/revision history); mechanism not yet decided, surface the design fork first. ([WorkItems/220](WorkItems/220-army-forge-list-version-control.md))
 - [~] 236 — Freeform builder silently stripped a Forge army's embedded book/selections on save; now gated behind an explicit "Save detached" confirm. Implemented + tested; modal awaits GUI hand-verify. ([WorkItems/236](WorkItems/236-freeform-save-strips-forge-block.md))
