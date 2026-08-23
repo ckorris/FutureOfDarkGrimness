@@ -235,8 +235,10 @@ public class RaylibRenderer
         // [overlay] messages are developer detail (rebuild-budget warnings) -> the Debug log category.
         _tacticalOverlay.Attach(tableState, msg => _log?.Add(msg, new TextColor(255, 180, 90, 255), isDebug: true),
             pid => { Color c = colorForPlayer(pid); return (c.R, c.G, c.B); },
-            // #201: the launched game's cover setting rides the resolver overlay (stamped in BuildGui).
-            coverProximityExceptions: resolverOverlay?.CoverProximityExceptions ?? true);
+            // #201/#384: the launched game's cover + LoS settings ride the resolver overlay
+            // (stamped in BuildGui).
+            coverProximityExceptions: resolverOverlay?.CoverProximityExceptions ?? true,
+            seeThroughFriendlyUnits: resolverOverlay?.SeeThroughFriendlyUnits ?? false);
         _tacticalOverlay.AttachMovementResolver(resolverOverlay?.MovementResolver);
         // #230: lets the field anchor on a placement's ghosts when no move job is running.
         _tacticalOverlay.AttachResolverOverlay(resolverOverlay);

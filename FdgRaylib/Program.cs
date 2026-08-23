@@ -803,7 +803,8 @@ else
                     saveGameToJson: () => GameSaveSerializer.Save(parts.Store),
                     onLaunched: renderer.TransitionToGame,
                     coverProximityExceptions: scenarioSettings.CoverProximityExceptionsEnabled,
-                    tableBackground: scenarioSettings.TableBackground);
+                    tableBackground: scenarioSettings.TableBackground,
+                    seeThroughFriendlyUnits: scenarioSettings.SeeThroughFriendlyUnits);
 
                 var scenarioServer = new FDGServer(parts.Store, parts.Bus, parts.Slots,
                     new RealtimePresentationClock());

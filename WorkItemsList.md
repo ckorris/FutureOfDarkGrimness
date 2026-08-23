@@ -47,6 +47,7 @@ When closing an item: write the Outcome in its detail file, tick the line, and m
 
 ## Shooting & cover
 
+- [~] 384 — Two lobby house-rule toggles, both default off: See-Through Allies (on = the old any-same-team-model-never-blocks-LoS; off = official rules, only own unit + target transparent, AI lane-aware) and Unlimited Split Fire (lifts the 2-unit shoot-action cap). Implemented + tested; awaiting GUI hand-verify. ([WorkItems/384](WorkItems/384-house-rule-lobby-options.md))
 - [~] 368 — Shooting weapon rows named the weapon but never said how many copies were firing, so a five-rifle volley and a single rifle read identically; both front ends now print the datasheet "3x" prefix the melee menu already uses, off `WeaponOption.CopiesRemaining`. Implemented + tested + CLI-verified; awaiting GUI hand-verify. ([WorkItems/368](WorkItems/368-shooting-weapon-copy-count.md))
 
 - [~] 201 — Shooting *out of* cover grants the defender cover: fixed 2026-07-21 via lobby-toggled proximity house rules (default on: 2" exit w/ both-hugging amendment + 6" shared cover), previews kept truthful; implemented + tested on `201-cover-proximity`, awaiting GUI hand-verify. ([WorkItems/201](WorkItems/201-cover-attacker-side.md))

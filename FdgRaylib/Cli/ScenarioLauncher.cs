@@ -74,6 +74,8 @@ public static class ScenarioLauncher
             progress.Settings = settings;
         }
         int? effectiveSeed = progress?.Settings.DiceSeed;
+        // #384: the save's LoS house rule reaches the AI planners (absent progress -> official rules).
+        bool seeThroughFriendlyUnits = progress?.Settings.SeeThroughFriendlyUnits ?? false;
 
         foreach (DataReference oldInfo in store.GetAllDataReferences<PlayerSlotInfo>().ToList())
             store.Destroy(oldInfo);
@@ -102,7 +104,7 @@ public static class ScenarioLauncher
                 var aiGame = new FDGGame_AsLocal(store, bus);
                 FDG.StageResolution.IStageResolverRegistry registry = AiProfileFactory.BuildRegistry(
                     aiProfile, aiGame.TableState, savedInfos[i].PlayerID, effectiveSeed,
-                    slots[i].SlotID, decisionLogFor?.Invoke(i));
+                    slots[i].SlotID, decisionLogFor?.Invoke(i), seeThroughFriendlyUnits);
                 slots[i].AssignPlayerController(new ScenarioAiPlayerController(
                     $"Player {i + 1} (AI)", savedInfos[i].PlayerID, aiGame, registry,
                     logSink: i == 0 ? logSink : null));

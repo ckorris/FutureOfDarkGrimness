@@ -67,6 +67,10 @@ public class GuiResolverOverlay
     /// </summary>
     public bool CoverProximityExceptions { get; set; } = true;
 
+    // #384: the launched game's see-through-allies LoS house rule (lobby toggle, default off =
+    // official rules), stamped in BuildGui so previews match what the engine will rule.
+    public bool SeeThroughFriendlyUnits { get; set; }
+
     /// <summary>
     /// The launched game's #265 table background (lobby setting, synced to every player, saved with
     /// the game), stamped by <c>ResolverRegistryFactory.BuildGui</c>. Rides the overlay for the same

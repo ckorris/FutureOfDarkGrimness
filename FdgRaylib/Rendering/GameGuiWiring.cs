@@ -31,11 +31,15 @@ public static class GameGuiWiring
     /// default on), threaded into the GUI resolvers/overlay so cover previews match the engine.</param>
     /// <param name="tableBackground">The launched game's #265 table surface (lobby setting, synced to
     /// every player and saved with the game), carried on the overlay to the renderer.</param>
+    /// <param name="seeThroughFriendlyUnits">The launched game's #384 LoS house rule (lobby toggle,
+    /// default off = official rules), threaded into the GUI resolvers/overlay so fire-line and
+    /// tactical previews match the engine's sight rulings.</param>
     public static void Launch(IFDGGame game, IReadOnlyList<(PlayerID ID, string Name)> players,
         Func<string?>? saveGameToJson, GameLaunchedHandler? onLaunched,
         Func<PlayerID, int?>? colorChoiceForPlayer = null,
         bool coverProximityExceptions = true,
-        ETableBackground tableBackground = ETableBackground.Forest)
+        ETableBackground tableBackground = ETableBackground.Forest,
+        bool seeThroughFriendlyUnits = false)
     {
         // Player -> palette colour (#221: lobby picks win, unpicked slots fill with the free defaults),
         // by both PlayerID (table models) and display name (chat sender lines).
@@ -59,7 +63,7 @@ public static class GameGuiWiring
         RuleLoadWarnings.AttachLog(log);
         var logUI = new GuiLogMessageUI(log);
         var (resolvers, overlay) = ResolverRegistryFactory.BuildGui(game.TableState, coverProximityExceptions,
-            tableBackground);
+            tableBackground, seeThroughFriendlyUnits);
 
         var taskDisplay = new GuiOutstandingTaskDisplay(game.LocalPlayerIDs);
         var presentationPlayer = new PresentationPlayer();

@@ -686,6 +686,24 @@ public class LobbyScreen : IAppScreen
                              "grants nothing unless the target hugs the same piece, and cover shared by\n" +
                              "shooter and target grants nothing when they are closer than 6in.");
 
+        // #384 see-through-allies house rule (default off = official rules).
+        bool seeThroughAllies = _viewModel.SeeThroughFriendlyUnits;
+        if (UiButton.Checkbox("See-Through Allies", ref seeThroughAllies))
+            _viewModel.SetSeeThroughFriendlyUnits(seeThroughAllies);
+        if (ImGui.IsItemHovered())
+            ImGui.SetTooltip("House rule (default off): shots see through ALL friendly units.\n" +
+                             "Off (official rules): only the shooting unit's own models and the target\n" +
+                             "unit are ignored for line of sight - every other unit, friendly or\n" +
+                             "enemy, blocks it.");
+
+        // #384 unlimited split fire house rule (default off).
+        bool unlimitedSplitFire = _viewModel.UnlimitedSplitFire;
+        if (UiButton.Checkbox("Unlimited Split Fire", ref unlimitedSplitFire))
+            _viewModel.SetUnlimitedSplitFire(unlimitedSplitFire);
+        if (ImGui.IsItemHovered())
+            ImGui.SetTooltip("House rule (default off): a shooting unit may split its fire between any\n" +
+                             "number of enemy units. Off: at most 2 distinct units per shoot action.");
+
         ImGui.EndDisabled();
     }
 
@@ -988,7 +1006,9 @@ public class LobbyScreen : IAppScreen
             // #201: the synced lobby setting (host-set, broadcast to clients) so previews match the engine.
             coverProximityExceptions: _viewModel!.CoverProximityExceptions,
             // #265: likewise synced, so host and clients play on the same-looking board.
-            tableBackground: _viewModel!.TableBackground);
+            tableBackground: _viewModel!.TableBackground,
+            // #384: likewise synced, so every player's fire-line previews match the engine's LoS.
+            seeThroughFriendlyUnits: _viewModel!.SeeThroughFriendlyUnits);
     }
 
     private static void DrawIntField(string label, int current, Action<int> setter, string? tooltip = null,

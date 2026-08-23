@@ -196,6 +196,8 @@ public class UserConfigTests
             TerrainLayoutPath = "layout.fdgterrain",
             ObjectivePlacementMode = EObjectivePlacementMode.PlayerPlaced,
             CoverProximityExceptions = false,
+            SeeThroughFriendlyUnits = true,
+            UnlimitedSplitFire = true,
         };
 
         saved.ApplyTo(lobby);
@@ -213,6 +215,8 @@ public class UserConfigTests
             Assert.That(lobby.TerrainLayoutPath, Is.EqualTo("layout.fdgterrain"));
             Assert.That(lobby.ObjectivePlacementMode, Is.EqualTo(EObjectivePlacementMode.PlayerPlaced));
             Assert.That(lobby.CoverProximityExceptions, Is.False);
+            Assert.That(lobby.SeeThroughFriendlyUnits, Is.True);
+            Assert.That(lobby.UnlimitedSplitFire, Is.True);
         });
     }
 
@@ -258,6 +262,8 @@ public class UserConfigTests
             TerrainLayoutPath = null,
             ObjectivePlacementMode = EObjectivePlacementMode.PlayerPlaced,
             CoverProximityExceptions = false,
+            SeeThroughFriendlyUnits = true,
+            UnlimitedSplitFire = true,
         };
         string path = PathFor("config.json");
 
@@ -278,6 +284,8 @@ public class UserConfigTests
             Assert.That(nextLobby.TerrainLayoutPath, Is.Null);
             Assert.That(nextLobby.ObjectivePlacementMode, Is.EqualTo(EObjectivePlacementMode.PlayerPlaced));
             Assert.That(nextLobby.CoverProximityExceptions, Is.False);
+            Assert.That(nextLobby.SeeThroughFriendlyUnits, Is.True);
+            Assert.That(nextLobby.UnlimitedSplitFire, Is.True);
         });
     }
 
@@ -301,6 +309,8 @@ public class UserConfigTests
         public ETurnStyle TurnStyle { get; set; }
         public EShootingMode ShootingMode { get; set; }
         public bool CoverProximityExceptions { get; set; } = true;
+        public bool SeeThroughFriendlyUnits { get; set; }
+        public bool UnlimitedSplitFire { get; set; }
         public ETableBackground TableBackground { get; set; }
 
         public void SetArmyPoints(int armyPoints) => ArmyPoints = armyPoints;
@@ -314,6 +324,8 @@ public class UserConfigTests
         public void SetTurnStyle(ETurnStyle turnStyle) => TurnStyle = turnStyle;
         public void SetShootingMode(EShootingMode shootingMode) => ShootingMode = shootingMode;
         public void SetCoverProximityExceptions(bool enabled) => CoverProximityExceptions = enabled;
+        public void SetSeeThroughFriendlyUnits(bool enabled) => SeeThroughFriendlyUnits = enabled;
+        public void SetUnlimitedSplitFire(bool enabled) => UnlimitedSplitFire = enabled;
         public void SetTableBackground(ETableBackground background) => TableBackground = background;
 
         public void Dispose() { }
@@ -338,6 +350,8 @@ public class UserConfigTests
         public IObservable<ETurnStyle> TurnStyleObservable => throw new NotSupportedException();
         public IObservable<EShootingMode> ShootingModeObservable => throw new NotSupportedException();
         public IObservable<bool> CoverProximityExceptionsObservable => throw new NotSupportedException();
+        public IObservable<bool> SeeThroughFriendlyUnitsObservable => throw new NotSupportedException();
+        public IObservable<bool> UnlimitedSplitFireObservable => throw new NotSupportedException();
         public IObservable<ETableBackground> TableBackgroundObservable => throw new NotSupportedException();
         public string ServerName => throw new NotSupportedException();
         public IReadOnlyList<LobbyChatMessage> ChatMessages => throw new NotSupportedException();
