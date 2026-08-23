@@ -154,8 +154,11 @@ entries retired). Engine 3016 green, app 1367 green, headless smokes exit 0.
 sweeps against the bundled set; AoF books are full regens (no post-bake passes yet) - if #378 ever
 runs the price/shape refreshers on them, switch their spell updates to `--import-spells` too.
 
-**Hand-verify (GUI, the one open loop)**: in a GDF game, cast Blessed Sisters' "Burn the Heretic"
-at an enemy Caster - expect a "-3 to casting rolls" style token on the target and its next cast
-rolling at the shifted threshold; and any mark spell (e.g. Custodian Brothers "The Founder's Curse")
-- expect "Marked: Shred when attacking" on the target and the next friendly attack into it showing
-the bonus. AoF spells become GUI-reachable only when #378 bundles the books.
+**Hand-verify (GUI, the one open loop)**: `--scenario Scenarios/377-spell-verify.json` (or load
+`377-SpellVerify.fdgsave`) - a Caster with the four shipped spell shapes vs AI targets. Checks:
+(1) "Burn the Heretic" on the Hostile Adept -> cast-modifier token lands; if the AI Adept casts,
+its roll breakdown shows the granted -3 (needs a 6). (2) "The Founder's Curse" on the Hostile Blob
+-> "Marked: Shred when attacking"; shooting the Blob with Verifier Rifles shows Shred's extra
+wound on block-1s and clears the mark. (3) "Battle Rune" on the Rifles -> grant badge; spent by
+their first shot. (4) "Eternal Guidance" marking the Distant Lurkers (27" out, rifles are 24") ->
+the Scouts can now target them. AoF spells become GUI-reachable only when #378 bundles the books.
