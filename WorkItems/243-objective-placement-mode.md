@@ -1,6 +1,6 @@
 # 243 — Objective placement mode (Auto-Placed / Player-Placed)
 
-**Status**: awaiting GUI hand-verify
+**Status**: done (GUI hand-verified 2026-08-23; archived)
 **Related**: mirrors #002 terrain-placement modes; consolidates the #001 debug auto-placer onto the DerpBot algorithm
 
 ## Goal

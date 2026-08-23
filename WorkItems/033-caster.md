@@ -1,6 +1,6 @@
 # 033 — Caster(X) subsystem (framework)
 
-**Status**: in-progress
+**Status**: done (GUI hand-verified 2026-08-23; archived)
 **Related**: #010 (custom-action seam — the runway), #042 (rule architecture), #059 (per-army STJ embedding), #034 (spell content — separate), #094 (friendly-Caster ±1 assist — spun off from this item), #093 (per-model activated abilities while joined)
 
 ## Goal

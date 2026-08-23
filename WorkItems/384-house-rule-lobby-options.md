@@ -1,6 +1,6 @@
 # 384 — House-rule lobby options: see-through allies + unlimited split fire
 
-**Status**: in progress
+**Status**: done (GUI hand-verified 2026-08-23; archived)
 **Related**: #044 (ally LoS exclusion, becomes the house rule), #201 (settings-toggle pattern), #363 (AI lane approximation), #371 (shooting mode setting)
 
 ## Goal
