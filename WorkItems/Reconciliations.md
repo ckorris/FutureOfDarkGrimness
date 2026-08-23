@@ -666,3 +666,8 @@ A per-clone pre-push hook blocks duplicate numbers across the index and the arch
 > **2026-08-22 — number 380 filed clean.** `git fetch origin` before filing: origin/master index
 > high-water mark 379 (the #375-#379 AoF items), archive max 372. **380 = GDF Melee Slayer charge
 > gate** (found by #375's within-AoF variant review). No collision.
+
+> **2026-08-22 — number 381 filed clean.** `git fetch origin` before filing: origin/master index
+> high-water mark 379 (the #375-#379 AoF items), archive max 372; 380 was filed locally earlier the
+> same day and is unpushed at the time of filing. **381 = AoF Retreating Strike** (split out of #376
+> as it closed - the owner deferred the trigger ruling). No collision.

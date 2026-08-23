@@ -1,9 +1,6 @@
 # 376 — AoF rules pt.2: new engine primitives
 
-**Status**: in progress (started 2026-08-22) - 5 of 6 slices DONE; blocked on the owner's
-Retreating Strike ruling (deferred at the 2026-08-22 fork sign-off: "I need to look into the
-rule more"). Census dead = 14, all Retreating Strike. Trigger options + recon are in the
-Decisions/Goal sections; once ruled, it is the last slice before close.
+**Status**: done (2026-08-22; Retreating Strike split out to #381 by owner instruction)
 **Related**: #375 (data half; feeds this item its list), mirrors #197. Engine submodule work — submodule-first commit cadence, full engine suite green. Reference doc: `/home/chris/Projects/GDF Armies/Age of Fantasy/Special Rules and Spells by Army.md` (local only, do not copy text into the repo).
 
 ## Goal
@@ -137,8 +134,8 @@ Slow-style negative movementBonus; C4), Great Sergeant (two addExtraHit hook ent
     holding table state pass it so planner and executor agree; unreachable spots default empty.
   - **Retreating Strike DEFERRED by owner** ("I need to look into the rule more") - not built
     in this pass; its refs stay dead until the owner rules on the trigger question (charger
-    move-back fires no hook today; options recorded in the recon notes above). Re-raise before
-    closing the item.
+    move-back fires no hook today). At close (owner instruction, same day) split out to **#381**,
+    which carries the trigger options, the recon facts, and the banked implementation notes.
 - 2026-08-22 doctrine decisions (in-repo precedent, surfaced not asked; flag to reopen):
   - **Vale Oath Boost = threshold fold**: clearTokenOnRoll becomes a sink op; the round-start
     stage folds best (lowest) threshold per token type and makes ONE decisive roll
@@ -152,3 +149,22 @@ Slow-style negative movementBonus; C4), Great Sergeant (two addExtraHit hook ent
     (single-ability YesNo offer at activation start, roundEnd token clears).
 
 ## Outcome
+
+Closed 2026-08-22, opened and closed the same session, five slices in one day. Every AoF rule
+mechanic in the #375 hand-off is live except Retreating Strike, which the owner deferred at the
+fork sign-off and re-homed to **#381** at close - census dead 34 -> **14, all Retreating
+Strike**, 0 scope-mismatch throughout, every batch delta exact. Engine work (submodule
+e74517a..f22295c, 5 commits): IHasTerrain on the movement-declare and save-complete contexts
+with terrain threaded through every AI movement-budget query (planner == resolver, the #264
+issue-7 discipline); the Shaken-recovery threshold fold (clearTokenOnRoll effect now emits a
+sink op, TokenClearRollSink keeps best-per-token-type, TokenClearRolls makes ONE decisive roll -
+base 4+ plus Boost 3+ is one roll at 3+); a failure arm on grantTokenOnRoll (one die, two
+outcomes, the MoraleTestThen application pattern); and the Bloodthirsty seam - defender block
+dice feeding the attacker's attack count as a REAL follow-up batch (AttackCountOverride +
+IsBonusAttack on ICombatMetadata, ResolveBonusMeleeAttacksStage inside the swing chain,
+CombatMath first-order pricing with an engine/AI pin). Ravage Aura needed NO engine work: the
+stage's threshold-group sum makes a standalone 1-die-per-model def arithmetically exact.
+7 data defs authored. Owner-ruled facets recorded per slice (multi-rule recovery folds to one
+roll; Bloodthirsty "may" auto-taken, joined-hero batch edge, non-swing pipelines never earn).
+Verified with the full #196 loop before every commit (engine 2969 -> 2986, app 1280 -> 1315,
+GDF books byte-identical, headless + forced-charge melee smokes exit 0).
