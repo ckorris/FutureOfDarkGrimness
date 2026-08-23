@@ -374,7 +374,9 @@ public class TacticalOverlayController
         IUnit? rangeTarget = req != null && _pins.Count > 0 && _focusIndex >= 0 && _focusIndex < _pins.Count
             ? _pins[_focusIndex].Unit : null;
         var byRange = new Dictionary<float, List<GpuFieldRenderer.BandDisc>>();
-        var byRangeNames = new Dictionary<float, Dictionary<string, int>>();   // for band labels ("4x Rifle")
+        // For band labels ("4x Rifle"); the base range rides along so a label can flag a modified
+        // range against the focused pin ("30\" 4x Rifle (+6\")", #387).
+        var byRangeNames = new Dictionary<float, Dictionary<string, (int Count, float Base)>>();
         var sources = new List<Position>();
 
         foreach (IModel m in movingUnit.Models)
@@ -394,9 +396,9 @@ public class TacticalOverlayController
                     byRange[eff] = discs = new List<GpuFieldRenderer.BandDisc>();
                 discs.Add(new GpuFieldRenderer.BandDisc(gp.x, gp.z,
                     eff + m.BaseRadiusInches + TacticalOverlayConfig.DefaultReferenceRadiusInches));
-                if (!byRangeNames.TryGetValue(eff, out Dictionary<string, int>? names))
-                    byRangeNames[eff] = names = new Dictionary<string, int>();
-                names[w.Name] = names.GetValueOrDefault(w.Name) + 1;
+                if (!byRangeNames.TryGetValue(eff, out Dictionary<string, (int Count, float Base)>? names))
+                    byRangeNames[eff] = names = new Dictionary<string, (int Count, float Base)>();
+                names[w.Name] = (names.GetValueOrDefault(w.Name).Count + 1, w.RangeInches);
             }
         }
 
@@ -414,8 +416,10 @@ public class TacticalOverlayController
         var perBand = new List<(BandSpec band, List<GpuFieldRenderer.BandDisc> discs)>(ranges.Count);
         for (int i = 0; i < ranges.Count; i++)
         {
+            // #387: per-weapon "(+6\")" when the pinned target moved this band off the printed range.
             string names = string.Join(" / ",
-                byRangeNames[ranges[i]].OrderBy(kv => kv.Key).Select(kv => $"{kv.Value}x {kv.Key}"));
+                byRangeNames[ranges[i]].OrderBy(kv => kv.Key).Select(kv =>
+                    $"{kv.Value.Count}x {kv.Key}{RangeDeltaText.Suffix(kv.Value.Base, ranges[i])}"));
             var band = new BandSpec(ranges[i], (byte)(ranges.Count - i), $"{ranges[i]:0.#}\" {names}");
             perBand.Add((band, byRange[ranges[i]]));
         }
@@ -1148,8 +1152,9 @@ public class TacticalOverlayController
     // base range.
     private List<BandSpec> BuildBands(DefineMovementPathRequest req, IUnit weaponSource, IUnit? overrideTarget)
     {
-        // Per effective range, count each weapon name across the unit so the label can show "5x Rifle".
-        var byRange = new Dictionary<float, Dictionary<string, int>>();
+        // Per effective range, count each weapon name across the unit so the label can show "5x Rifle"
+        // (base range kept per name so an override-modified band can flag its delta, #387).
+        var byRange = new Dictionary<float, Dictionary<string, (int Count, float Base)>>();
         foreach (IModel m in weaponSource.Models)
         {
             if (!m.GetIsAlive()) continue;
@@ -1159,9 +1164,9 @@ public class TacticalOverlayController
                 float eff = overrideTarget != null
                     ? EffectiveRange(req, w.Name, overrideTarget.ID, w.RangeInches)
                     : w.RangeInches;
-                if (!byRange.TryGetValue(eff, out Dictionary<string, int>? counts))
-                    byRange[eff] = counts = new Dictionary<string, int>();
-                counts[w.Name] = counts.GetValueOrDefault(w.Name) + 1;
+                if (!byRange.TryGetValue(eff, out Dictionary<string, (int Count, float Base)>? counts))
+                    byRange[eff] = counts = new Dictionary<string, (int Count, float Base)>();
+                counts[w.Name] = (counts.GetValueOrDefault(w.Name).Count + 1, w.RangeInches);
             }
         }
         if (byRange.Count == 0) return new List<BandSpec>();
@@ -1175,7 +1180,8 @@ public class TacticalOverlayController
             float range = ranges[i];
             byte value  = (byte)(k - i);  // shortest -> highest (inner)
             string names = string.Join(" / ",
-                byRange[range].OrderBy(kv => kv.Key).Select(kv => $"{kv.Value}x {kv.Key}"));
+                byRange[range].OrderBy(kv => kv.Key).Select(kv =>
+                    $"{kv.Value.Count}x {kv.Key}{RangeDeltaText.Suffix(kv.Value.Base, range)}"));
             bands.Add(new BandSpec(range, value, $"{range:0.#}\" {names}"));
         }
         return bands;

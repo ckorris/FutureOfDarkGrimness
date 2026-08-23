@@ -346,7 +346,10 @@ public class GuiChooseRangedAttackResolver
                 }
                 else if (!inRange)
                 {
-                    sub    = "Out of range";
+                    // #387: a shortened range (Ranged Shrouding, Melee Shrouding's ranged twin) is the
+                    // fact that explains WHY this row is out of reach - say it.
+                    string outFact = RangeDeltaText.RowFact(wo.Weapon.RangeInches, ts.EffectiveRangeInches);
+                    sub    = outFact.Length > 0 ? $"Out of range - {outFact}" : "Out of range";
                     colSub = ImGui.ColorConvertFloat4ToU32(new Vector4(0.70f, 0.35f, 0.35f, 1f));
                 }
                 else
@@ -354,6 +357,10 @@ public class GuiChooseRangedAttackResolver
                     // #158: the denominator is the target's LIVING models — dead ones aren't shootable.
                     int livingTargets = ts.TargetUnit.GetValue().ModelBindings.Count(mb => mb.GetValue().GetIsAlive());
                     sub = $"{ts.modelsThatCanShoot.Count}/{livingTargets} in range";
+                    // #387: when a rule, grant or mark moved the range off the weapon's printed number,
+                    // show the working number and the delta ("range 30\" (+6\")").
+                    string rangeFact = RangeDeltaText.RowFact(wo.Weapon.RangeInches, ts.EffectiveRangeInches);
+                    if (rangeFact.Length > 0) sub += $", {rangeFact}";
                     // #345: and how much of the volley that actually amounts to, when part of it is held
                     // back. Silent when every copy fires - the common case, where the ratio is noise.
                     string ratio = ShortAttacksRatio(ts.Forecast);
@@ -465,6 +472,15 @@ public class GuiChooseRangedAttackResolver
             ImGui.PushStyleColor(ImGuiCol.Text, new Vector4(0.40f, 0.85f, 0.40f, 1f));
             ImGui.TextUnformatted($"{ts.modelsThatCanShoot.Count} model{(ts.modelsThatCanShoot.Count != 1 ? "s" : "")} in range");
             ImGui.PopStyleColor();
+
+            // #387: the modified working range, spelled out against the printed one.
+            string? rangeDetail = RangeDeltaText.Detail(wo.Weapon.RangeInches, ts.EffectiveRangeInches);
+            if (rangeDetail != null)
+            {
+                ImGui.PushStyleColor(ImGuiCol.Text, new Vector4(0.55f, 0.80f, 0.95f, 1f));
+                ImGui.TextUnformatted(rangeDetail);
+                ImGui.PopStyleColor();
+            }
 
             if (ts.modelsWithWeaponThatCannotShoot.Count > 0)
             {

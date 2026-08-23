@@ -83,6 +83,11 @@ public class ChooseRangedAttackResolver : IStageResolver<ChooseRangedAttackReque
                 }
                 if (cannotShoot > 0)
                     label += $", {cannotShoot} out of range";
+                // #387: a rule, grant or mark moved the range off the weapon's printed number.
+                string rangeFact = FdgRaylib.Rendering.RangeDeltaText.RowFact(
+                    weaponOption.Weapon.RangeInches, targetStats.EffectiveRangeInches);
+                if (rangeFact.Length > 0)
+                    label += $", {rangeFact}";
                 // #042 Blast/Indirect/Takedown: when the weapon ignores cover the +1 doesn't apply, so show
                 // it as ignored rather than a penalty.
                 if (targetStats.HasCover)
