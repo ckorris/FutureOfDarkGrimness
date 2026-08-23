@@ -1,6 +1,6 @@
 # 387 — Show modified weapon range in the shoot panel and movement overlay
 
-**Status**: in-progress (filed 2026-08-23, user-requested during #377 hand-verify)
+**Status**: implemented 2026-08-23 (same session as filed); awaiting GUI hand-verify
 **Related**: #377 (the range-affecting spells that made the gap visible), #102 (RangeModifier
 family), #325 (request-carried display facts doctrine), #230/#247 (tactical overlay bands).
 
@@ -41,3 +41,15 @@ Surfaces:
   unclaimed mark, and a HitTags-style chip list for range sources is a follow-up if wanted.
 
 ## Outcome
+
+Implemented same-session (engine `c38a973`, superproject `32b7915`-era commit). Engine stamps
+`EffectiveRangeInches` on `WeaponTargetStats` from the eligibility check's own number (+2 stage
+tests: buffed 12->18, unmodified =base); app `RangeDeltaText` composes all surfaces (4 tests):
+GUI target rows ("range 30" (+6")", out-of-range rows explain a shortening), target detail pane
+("Range 30" (base 24", +6")"), CLI rows, and the tactical overlay's pinned-target band labels
+(per-weapon "(+6")"). Engine 3033 green, app 1372 green, headless smoke exit 0.
+
+**Hand-verify**: in the 377-spell-verify scenario, cast Battle Rune on the Rifles and Eternal
+Guidance on the Distant Lurkers, then open Shoot with the Scouts - the Lurkers row should read
+"range 30" (+6")" and its detail pane "Range 30" (base 24", +6")". While MOVING the Scouts with
+the Lurkers pinned, the band label should read "30" 3x Rifle (+6")".
