@@ -323,13 +323,53 @@ public class ArmyForgeScreenTests
         Assert.That(compiled.Weapons.Single(w => w.Name == "CCW").Quantity, Is.EqualTo(5));
     }
 
+    // ── #383 "Any model may replace one X" is one pick per MODEL, shared across the options ────────────
+
+    // Reported 2026-08-22 (screenshots: Hive Warriors and Robot Snakes, both [3]): these sections rendered
+    // as one-per-option checkboxes, so a 3-model unit could never take 3x Ravager Gun. Against the SHIPPED
+    // book: the section is a counted stepper offering 3, the options spend one shared per-model budget,
+    // and the compile carries the trio at 3x the option cost.
+    [Test]
+    public void HiveWarriors_AnyModelMayReplaceOneRazorClaws_TakesThreeOfTheSameGun()
+    {
+        BookFile book = JsonSerializer.Deserialize<BookFile>(
+            File.ReadAllText(Path.Combine(AppContext.BaseDirectory, "Assets", "Books",
+                "AlienHives" + BookFile.EXTENSION_WITH_PERIOD)), RuleJson.Options)!;
+        RosterUnit warriors = book.Units.Single(u => u.Name == "Hive Warriors");
+        UpgradeSection section = warriors.Sections.Single(
+            s => s.Label == "Any model may replace one Razor Claws");
+        UpgradeOption ravager = section.Options.Single(o => o.Label.StartsWith("Ravager Gun"));
+        UpgradeOption spitter = section.Options.Single(o => o.Label.StartsWith("Spitter Gun"));
+
+        Assert.That(section.PerModelBudget, Is.True, "the bundled book carries the #383 stamp");
+        Assert.That(section.IsCounted, Is.True, "a stepper, not a checkbox");
+
+        var screen = new ArmyForgeScreen(book);
+        screen.AddToList(warriors.Id);
+        BuilderUnit bu = screen.List.Units[0];
+
+        Assert.That(StepperMaxFor(book, bu, section, ravager), Is.EqualTo(3),
+            "3 models -> up to 3 applications of one option");
+
+        ArmyForgeScreen.SetChoice(bu, section, ravager.Id, 3);
+        Assert.That(StepperMaxFor(book, bu, section, spitter), Is.EqualTo(0),
+            "the options share the per-model budget - 3 guns spend all of it");
+
+        UnitFileEntry compiled = screen.Compile().Units.Single();
+        Assert.That(compiled.Weapons.Single(w => w.Name == "Ravager Gun").Quantity, Is.EqualTo(3));
+        Assert.That(compiled.PointCost, Is.EqualTo(warriors.BasePointCost + 3 * ravager.Cost),
+            "each application is charged");
+    }
+
     private static int StepperMaxFor(BookFile book, BuilderUnit bu, UpgradeSection section, UpgradeOption option)
     {
         (UnitFileEntry unit, var items) = ListCompiler.CompileUnitDetailed(book, bu);
         RosterUnit roster = book.Units.Single(u => u.Id == bu.RosterUnitId);
+        int own = ArmyForgeScreen.ChoiceCount(bu, section.Id, option.Id);
+        int others = section.Options.Sum(o => ArmyForgeScreen.ChoiceCount(bu, section.Id, o.Id)) - own;
         return ArmyForgeScreen.StepperMax(section, roster, unit,
             ListCompiler.AvailableApplications(unit.Weapons, items, section.Targets),
-            ArmyForgeScreen.ChoiceCount(bu, section.Id, option.Id));
+            own, others);
     }
 
     // ── #006 hero-join seams ────────────────────────────────────────────────────────────────────────────

@@ -2618,13 +2618,14 @@
           "id": "S-Dt1iB",
           "label": "Any model may replace 2x Heavy Fist",
           "variant": "Replace",
-          "affects": "One",
+          "affects": "Any",
           "targets": [
             "2x Heavy Fist"
           ],
           "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 2,
+          "perModelBudget": true,
           "options": [
             {
               "id": "_FX3A",

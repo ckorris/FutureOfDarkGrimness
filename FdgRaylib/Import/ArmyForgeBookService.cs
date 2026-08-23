@@ -97,6 +97,57 @@ public static class ArmyForgeBookService
         return new BookCostRefreshReport(bundled.Name, priced, repriced, unmatched, samples);
     }
 
+    /// <summary>What one book's #383 per-model section refresh changed: <see cref="Stamped"/> sections
+    /// were re-classified (Affects -> Any, PerModelBudget set); <see cref="Unmatched"/> bundled sections
+    /// had no (unit, section) key in the live book and were left untouched.</summary>
+    public sealed record SectionShapeRefreshReport(
+        string BookName, int Stamped, int Unmatched, IReadOnlyList<string> Samples);
+
+    /// <summary>Pure, network-free core (#383): re-import <paramref name="rawBookJson"/> with the
+    /// per-model-aware importer and copy each per-model section's classified shape (Affects +
+    /// PerModelBudget) onto <paramref name="bundled"/>, matched by (unit Id, section LABEL) - the
+    /// classification needs the raw `select`/`model` fields the snapshot never stored, and section
+    /// `id`s regenerate on every OPR publish (unit and option ids are stable, section ids are not),
+    /// so the label is the only cross-publish section key. A (unit, label) that appears twice in the
+    /// live book stamps only when every duplicate classifies identically. Only sections the live book
+    /// classifies per-model are touched; all other curation is preserved (the <see cref="RefreshCosts"/>
+    /// discipline). Mutates <paramref name="bundled"/> in place.</summary>
+    public static SectionShapeRefreshReport RefreshPerModelSections(BookFile bundled, string rawBookJson)
+    {
+        BookFile fresh = OprBookImporter.Import(rawBookJson, bundled.Source, bundled.License);
+
+        var freshByKey = new Dictionary<(string Unit, string Label), List<UpgradeSection>>();
+        foreach (RosterUnit u in fresh.Units)
+            foreach (UpgradeSection s in u.Sections)
+            {
+                if (!freshByKey.TryGetValue((u.Id, s.Label), out List<UpgradeSection>? group))
+                    freshByKey[(u.Id, s.Label)] = group = new List<UpgradeSection>();
+                group.Add(s);
+            }
+
+        int stamped = 0, unmatched = 0;
+        var samples = new List<string>();
+        foreach (RosterUnit u in bundled.Units)
+            foreach (UpgradeSection s in u.Sections)
+            {
+                if (!freshByKey.TryGetValue((u.Id, s.Label), out List<UpgradeSection>? group))
+                {
+                    unmatched++;
+                    continue;
+                }
+
+                UpgradeSection f = group[0];
+                if (group.Any(g => g.PerModelBudget != f.PerModelBudget || g.Affects != f.Affects)) continue;
+                if (!f.PerModelBudget || (s.PerModelBudget && s.Affects == f.Affects)) continue;
+
+                s.Affects = f.Affects;
+                s.PerModelBudget = true;
+                stamped++;
+                if (samples.Count < 12) samples.Add($"{u.Name} / {s.Label}");
+            }
+        return new SectionShapeRefreshReport(bundled.Name, stamped, unmatched, samples);
+    }
+
     private static async Task<string> GetAsync(string url, string what, CancellationToken ct)
     {
         HttpResponseMessage response;

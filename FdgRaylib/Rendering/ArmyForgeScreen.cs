@@ -1114,11 +1114,17 @@ public class ArmyForgeScreen : IAppScreen
 
             if (section.IsCounted) // "any"/"up to N" or add-models → a stepper
             {
+                // #383: a per-model section ("Any model may replace/take ...") spends one pick per MODEL,
+                // shared across its options — 3 models may take 3x of one gun OR spread across guns, never
+                // 3 of each. Other counted sections keep independent steppers.
+                int sectionTotal = section.PerModelBudget
+                    ? section.Options.Sum(o => ChoiceCount(bu, section.Id, o.Id))
+                    : 0;
                 foreach (UpgradeOption option in section.Options)
                 {
                     int v = ChoiceCount(bu, section.Id, option.Id);
                     DrawStepper(bu, glossary, section, option, v,
-                        StepperMax(section, roster, compiledUnit, available, v));
+                        StepperMax(section, roster, compiledUnit, available, v, sectionTotal - v));
                 }
             }
             else if (section.MaxPicks <= 1 && section.Options.Count >= 2) // pick one of several → radios
@@ -1163,8 +1169,11 @@ public class ArmyForgeScreen : IAppScreen
     /// <param name="available">Replace-target availability on the FINAL compiled state, where this option's
     /// picks are already consumed - so <paramref name="current"/> comes back into its own budget.</param>
     /// <param name="current">Applications this option currently holds.</param>
+    /// <param name="sectionOthersCount">Applications the section's OTHER options hold — the shared
+    /// per-model budget a <see cref="UpgradeSection.PerModelBudget"/> section spends (#383). Ignored
+    /// for every other section.</param>
     internal static int StepperMax(UpgradeSection section, RosterUnit roster, UnitFileEntry compiledUnit,
-        int available, int current)
+        int available, int current, int sectionOthersCount = 0)
     {
         int hardBound = section.MaxApplications > 0 ? section.MaxApplications : int.MaxValue;
         int poolBound = section.Variant switch
@@ -1173,7 +1182,13 @@ public class ArmyForgeScreen : IAppScreen
             UpgradeVariant.Replace => available + current,
             _ => compiledUnit.ModelCount,
         };
-        return Math.Min(hardBound, poolBound);
+        int max = Math.Min(hardBound, poolBound);
+
+        // #383: one application per model, section-wide - what the other options hold comes off this one's cap.
+        if (section.PerModelBudget)
+            max = Math.Min(max, Math.Max(0, compiledUnit.ModelCount - sectionOthersCount));
+
+        return max;
     }
 
     // Counted-section control: [-] [count] [+] label. The buttons gray individually at their bound (- at 0,

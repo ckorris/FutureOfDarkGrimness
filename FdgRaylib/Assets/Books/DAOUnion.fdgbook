@@ -2780,13 +2780,14 @@
           "id": "CITrs0t",
           "label": "Any model may replace 2x Suit-Burst",
           "variant": "Replace",
-          "affects": "One",
+          "affects": "Any",
           "targets": [
             "2x Suit-Burst"
           ],
           "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 5,
+          "perModelBudget": true,
           "options": [
             {
               "id": "v-Xqa",
@@ -6275,7 +6276,8 @@
             "clear": {
               "kind": "manualOnly"
             },
-            "minRoll": 4
+            "minRoll": 4,
+            "onFailure": null
           },
           "availableWhen": {
             "kind": "always"

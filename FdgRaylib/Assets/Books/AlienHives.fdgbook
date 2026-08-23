@@ -3361,13 +3361,14 @@
           "id": "mToJsNU",
           "label": "Any model may replace one Razor Claws",
           "variant": "Replace",
-          "affects": "One",
+          "affects": "Any",
           "targets": [
             "Razor Claws"
           ],
           "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 3,
+          "perModelBudget": true,
           "options": [
             {
               "id": "A23zi",
@@ -4166,13 +4167,14 @@
           "id": "3kGvMKm",
           "label": "Any model may replace one Razor Claws",
           "variant": "Replace",
-          "affects": "One",
+          "affects": "Any",
           "targets": [
             "Razor Claws"
           ],
           "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 3,
+          "perModelBudget": true,
           "options": [
             {
               "id": "5_QlW",

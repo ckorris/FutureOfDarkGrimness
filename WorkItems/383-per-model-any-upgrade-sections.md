@@ -1,6 +1,6 @@
 # 383 — "Any model may ..." upgrade sections cap at one per option (should be one per model)
 
-**Status**: in-progress
+**Status**: done (awaiting GUI hand-verify)
 **Related**: #153 (importer/Forge), #218 (affects cost semantics), #219 (RefreshCosts field-transfer precedent), #241 (share-list import), #324 (replace pool sharing)
 
 ## Goal
@@ -50,4 +50,18 @@ new imports correctly, and the 22 affected bundled-book sections are re-stamped.
 
 ## Outcome
 
-(pending)
+Engine commit 26b9bb7 + app-side commit: importer classifies select:any + model:true replace/attachment
+sections as `Affects=Any` + `PerModelBudget`; `ListValidator` errors on section totals over the unit's
+model count; `SelectionSolver.CountedBound` caps its search (and returns the model count outright for the
+targets-less attachment form, whose weapon-pool availability reads 0). Forge steppers share the budget
+via `StepperMax(..., sectionOthersCount)`. New `--import-section-shapes <book|dir>` CLI
+(`ArmyForgeBookService.RefreshPerModelSections`) transfers the classification from the live API by
+(unit Id, section LABEL) — section ids regenerate per OPR publish, unlike unit/option ids — and stamped
+all 22 corpus sections across 19 books (idempotent on re-run; `perModelBudget` serializes only when true
+so untouched sections stay byte-identical). Tests: importer decision-table + compile-3x + over-budget
+error (engine), Hive Warriors 3x Ravager Gun end-to-end on the shipped book, and a shipped-data census
+(22 stamped, no strays, the reported sections by name). Bonus fixed: an Army Forge share list carrying
+repeated applications of one option (importer already aggregates `Count`) used to silently compile only
+one; it now compiles them all. Engine suite 2992 green, app suite 1319 green, headless smoke clean.
+GUI hand-verify outstanding: Hive Warriors' "Any model may replace one Razor Claws" and Robot Snakes'
+two "Any model may replace ..." sections show steppers that sum to 3 on a 3-model unit.

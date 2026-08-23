@@ -225,6 +225,53 @@ if (importBookIdx >= 0 && importBookIdx + 1 < args.Length)
     return;
 }
 
+// --import-section-shapes <book.fdgbook | dir>  (#383): re-stamp the per-model "Any model may ..."
+// upgrade sections (Affects=Any + perModelBudget) on a bundled book (or every .fdgbook in a directory)
+// from OPR's live army-book endpoint - the classification needs the raw `select`/`model` fields the
+// snapshot never stored. Same transfer discipline as --import-book: matched by (unit, section) Id,
+// everything else on the snapshot preserved. Writes in place. Exit 0 on success, 1 on any failure.
+int shapesIdx = Array.IndexOf(args, "--import-section-shapes");
+if (shapesIdx >= 0 && shapesIdx + 1 < args.Length)
+{
+    try
+    {
+        string target = args[shapesIdx + 1];
+        string[] bookPaths = Directory.Exists(target)
+            ? Directory.EnumerateFiles(target, "*" + BookFile.EXTENSION_WITH_PERIOD).OrderBy(p => p).ToArray()
+            : new[] { target };
+        if (bookPaths.Length == 0) { Console.WriteLine($"No {BookFile.EXTENSION_WITH_PERIOD} files in '{target}'."); return; }
+
+        var index = FdgRaylib.Import.ArmyForgeBookService.FetchBookIndexAsync().GetAwaiter().GetResult();
+        int totalStamped = 0, missing = 0;
+        foreach (string path in bookPaths)
+        {
+            BookFile book = JsonSerializer.Deserialize<BookFile>(File.ReadAllText(path), RuleJson.Options)!;
+            if (!index.TryGetValue(book.Name, out string? uid))
+            {
+                Console.WriteLine($"  {book.Name}: no OPR official book by that name - skipped.");
+                missing++;
+                continue;
+            }
+            string raw = FdgRaylib.Import.ArmyForgeBookService.FetchBookJsonAsync(uid).GetAwaiter().GetResult();
+            var report = FdgRaylib.Import.ArmyForgeBookService.RefreshPerModelSections(book, raw);
+            if (report.Stamped > 0)
+                File.WriteAllText(path, JsonSerializer.Serialize(book, RuleJson.Options));
+            totalStamped += report.Stamped;
+            Console.WriteLine($"  {report.BookName}: stamped {report.Stamped} per-model section(s), "
+                + $"{report.Unmatched} section(s) not in the live book.");
+            foreach (string s in report.Samples) Console.WriteLine($"      {s}");
+        }
+        Console.WriteLine($"Done: {bookPaths.Length - missing}/{bookPaths.Length} book(s) checked, "
+            + $"{totalStamped} section(s) stamped per-model.");
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"Section-shape refresh failed: {ex.Message}");
+        Environment.Exit(1);
+    }
+    return;
+}
+
 // --apply-rules <book.fdgbook> <supplement.json ...>  (#153): merge curated rule definitions into an
 // existing book snapshot in place — the definitions the book references (plus what those grant) embed
 // into the book's ruleDefinitions, replace-by-name, so re-applying after editing the supplement is

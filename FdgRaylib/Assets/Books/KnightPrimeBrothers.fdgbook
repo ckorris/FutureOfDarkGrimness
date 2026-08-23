@@ -4266,13 +4266,14 @@
           "id": "1-NA-B2",
           "label": "Any model may take one Heavy Rifle attachment",
           "variant": "Upgrade",
-          "affects": "One",
+          "affects": "Any",
           "targets": [
             "Heavy Rifle"
           ],
           "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 5,
+          "perModelBudget": true,
           "options": [
             {
               "id": "Tytex",

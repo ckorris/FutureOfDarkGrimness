@@ -2046,13 +2046,14 @@
           "id": "Wg_rnVb",
           "label": "Any model may replace Spike Whips",
           "variant": "Replace",
-          "affects": "One",
+          "affects": "Any",
           "targets": [
             "Spike Whips"
           ],
           "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 2,
+          "perModelBudget": true,
           "options": [
             {
               "id": "SBY8c9UtjY",
@@ -2108,13 +2109,14 @@
           "id": "cPxxsqe",
           "label": "Any model may replace one Metal Fangs",
           "variant": "Replace",
-          "affects": "One",
+          "affects": "Any",
           "targets": [
             "Metal Fangs"
           ],
           "maxApplications": 0,
           "minPicks": 0,
           "maxPicks": 2,
+          "perModelBudget": true,
           "options": [
             {
               "id": "mWbTxiU",
