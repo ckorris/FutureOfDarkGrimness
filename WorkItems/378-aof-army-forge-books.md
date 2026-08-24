@@ -1,6 +1,6 @@
 # 378 — Age of Fantasy armies in the Army Forge
 
-**Status**: todo
+**Status**: in progress (2026-08-23)
 **Related**: #156 (Army Forge catalog builder), #375/#376 (rules), #377 (spells), #259 (rule glossary shows unenforced rules). Source PDFs + verified rules reference: `/home/chris/Projects/GDF Armies/Age of Fantasy/` (local only).
 
 ## Goal
@@ -33,10 +33,55 @@ Concrete pieces:
 - Snapshot versioning: GDF snapshots are pinned at OPR v3.5.x; pick and record the AoF
   snapshot version (the PDFs on disk are v3.5.2-3.5.3).
 
+## Slice plan (2026-08-23)
+
+1. [x] Engine: `BookFile.GameSystem` + `ArmyListFile.GameSystem` (nullable slug; **absent = GDF**,
+   the owner's versioning ruling). Importer stamps from OPR `gameSystemSlug`; ListCompiler copies
+   book -> army; OprListImporter's share-list gate widens from gf-only to gf/aof and stamps the army.
+   New `GameSystems` (slugs + Normalize/SameSystem). Engine `1ac7b2c`, suite 3038 green.
+2. [ ] Engine: `WeaponEffectAssigner` system-aware - AoF faction-defaults table + minted fantasy keys
+   + AoF keyword tables; name-keyed lookups take the system so the colliding Disciples factions stop
+   inheriting GDF sci-fi sets (already observed in the local bake).
+3. [ ] App: `ArmyForgeBookService` slug/id per book (grimdark-future=2, age-of-fantasy=4);
+   system-aware matching in ArmyForgeShareService.MatchBundledBook, BundledBookRulebook,
+   --retrofit-editable (absent system = GDF preference, so legacy armies keep their books).
+4. [ ] Data: rebake all 40 books from the pinned snapshots (GDF+AoF supplements, per-book
+   `AofBookOverrides/<Book>.json` LAST - #375 C9), bundle as `Assets/Books/AoF-*.fdgbook`;
+   BookSpellCoverageTests allowlist entry for Retreating Strike (#381, 14 refs); GDF books must
+   stay byte-identical; census + suites + headless smoke with a compiled AoF army.
+5. [ ] GUI: Forge screen game-system filter combo (GDF | AoF) gating the book dropdown; lobby
+   warning when the two armies' game systems differ.
+6. [ ] Docs/ledgers: bake recipe recorded, #259 glossary/import-summary honesty spot-checked,
+   #379 handed the per-book key assignments.
+
 ## Notes
 
+- 2026-08-23: Work started. Verified on-disk state: 40 AoF snapshots pinned (36 at v3.5.3, the four
+  Giant Tribes Disciples variants at v3.5.2; fetched 2026-08-22, the corpus #375-#377 verified
+  against - do NOT refetch, that would invalidate the 240/240 spell parity + census results).
+  `fdgbooks-aofbaked/` exists from #377's full regen (spells restamped, costs/per-model shapes
+  correct at import - no #219/#383 live passes needed for fresh imports). Remaining dead refs in
+  the AoF corpus = exactly #381's 14 Retreating Strike spell refs. Found live: the four AoF
+  Disciples books got GDF effect sets stamped (name-keyed FactionDefaultsTable) - the collision the
+  GameSystem field fixes. Share-link import is hard-gated to game system "gf"
+  (OprListImporter.SupportedGameSystem) - widening it is part of slice 1.
 - 2026-08-22: Filed. 40 AoF PDFs on disk; rules/spells appraisal in #375-#377.
 
 ## Decisions
+
+- 2026-08-23 (owner sign-off on the filed forks):
+  - **Picker UX: system filter combo** ("Grimdark Future | Age of Fantasy") next to the Forge book
+    dropdown; the book list shows only the selected system. Defaults to GDF.
+  - **Book identity: `GameSystem` slug field on BookFile** (engine), stamped at import; the 47 GDF
+    books retrofitted to carry "grimdark-future". AoF bundle filenames prefixed `AoF-`; book
+    Name/Faction stay OPR's real names. Name-keyed matchers become system-aware.
+  - **GDF/AoF in one lobby: WARN, don't block** - and for versioning's sake an army with no
+    GameSystem field is assumed GDF everywhere.
+  - **Effect keys: mint the #379 fantasy vocabulary now** (arrow-loose, crossbow-bolt, sling-stone,
+    thrown-spear, ballista-bolt, breath-flame, arcane-bolt + melee gaps as needed); #378 assigns
+    per-faction defaults, #379 implements visuals/sounds. Until #379, unknown keys draw as the
+    global defaults - accepted.
+  - **Snapshot version: pin the 2026-08-22 fetch** (v3.5.3 / v3.5.2 as above), recorded rather than
+    refetched.
 
 ## Outcome
