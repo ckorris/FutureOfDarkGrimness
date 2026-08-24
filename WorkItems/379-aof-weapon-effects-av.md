@@ -36,6 +36,16 @@ Building on #239's seams (all front-end; the engine transports keys as opaque st
 
 ## Notes
 
+- 2026-08-23: **#378 minted the keys and shipped the assignments** (owner-approved fork: assign now,
+  implement visuals here). New ranged keys: arrow-loose, crossbow-bolt, sling-stone, thrown-spear,
+  ballista-bolt, breath-flame, arcane-bolt; new melee keys: great-weapon-smash, spectral-touch,
+  beast-maw (plus reuse of the existing melee/bio/mortar/ballistic sets). Per-faction defaults + the
+  AoF keyword tables live in `WeaponEffectAssigner` (AofFactionDefaultsTable / AofRangedKeywords /
+  AofMeleeKeywords - system-keyed, since four Disciples faction names collide with GDF). Until this
+  item lands, the minted keys draw as the front-end global defaults (ballistic tracer / standard
+  blade) by design - this item's scope is now purely `WeaponEffectCatalog` styles + sound cues for
+  the 10 new keys, plus hand-verify and any per-weapon keyword refinements.
+
 - 2026-08-22: Filed alongside #375-#378.
 
 ## Decisions

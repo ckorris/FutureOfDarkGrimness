@@ -1,6 +1,6 @@
 # 378 — Age of Fantasy armies in the Army Forge
 
-**Status**: in progress (2026-08-23)
+**Status**: implemented 2026-08-23 - awaiting GUI hand-verify (checklist in the 2026-08-23 wrap note)
 **Related**: #156 (Army Forge catalog builder), #375/#376 (rules), #377 (spells), #259 (rule glossary shows unenforced rules). Source PDFs + verified rules reference: `/home/chris/Projects/GDF Armies/Age of Fantasy/` (local only).
 
 ## Goal
@@ -66,10 +66,24 @@ Concrete pieces:
    slug (engine `443a0aa`), host stamps it, LobbyScreen shows a yellow mixed-system note (warn,
    never block; absent field = GDF). App 1547 + engine 3051 green, smoke exit 0. **GUI hand-verify
    still owed** (combo, switch confirm, AoF roster/spells/tooltips, lobby note).
-6. [ ] Docs/ledgers: bake recipe recorded, #259 glossary/import-summary honesty spot-checked,
-   #379 handed the per-book key assignments.
+6. [x] Docs/ledgers: bake recipe = `scripts/bake-aof-books.sh` (self-documenting); #259 honesty holds
+   by construction (RuleGlossary is book-driven - AoF books embed their defs, an undefined name gets
+   the "not enforced" tooltip; share-import InertRules resolves against the system-matched book);
+   #379 handed the minted keys + assignment tables (dated note there); #381 told its refs are now
+   shipped + allowlist-pinned (dated note there); index line updated.
 
 ## Notes
+
+- 2026-08-23 (wrap): All six slices done same session (engine `1ac7b2c`/`aae7f9e`/`2496790`/`443a0aa`,
+  superproject through the slice-6 commit). Full verification: engine 3051 + app 1547 green, census
+  22,079 refs / dead = exactly #381's 14, GDF books byte-untouched, headless smokes (default GDF +
+  compiled AoF Wood Elves + AoF Change Disciples) all exit 0. **GUI hand-verify checklist**: (1) Forge
+  system combo shows GDF/AoF, defaults GDF, switch with a non-empty list raises the confirm; (2) AoF
+  book roster/spells/upgrade editing + #259 hover tooltips (an AoF-renamed rule shows its AoF text;
+  Retreating Strike on Dark Elves shows "not enforced"); (3) save an AoF army, reload it - the combo
+  flips to AoF and picks the right Disciples book; (4) lobby with one GDF + one AoF army shows the
+  yellow mixed-system note and still launches; (5) an AoF battle plays (weapons draw as global-default
+  tracers/blades until #379 - expected).
 
 - 2026-08-23: Work started. Verified on-disk state: 40 AoF snapshots pinned (36 at v3.5.3, the four
   Giant Tribes Disciples variants at v3.5.2; fetched 2026-08-22, the corpus #375-#377 verified

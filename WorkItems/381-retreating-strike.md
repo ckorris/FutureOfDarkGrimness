@@ -39,6 +39,12 @@ Options (recommendation was A):
 
 ## Notes
 
+- 2026-08-23 (#378): the 14 dead references now ship in a BUNDLED book (`Assets/Books/
+  AoF-DarkElves.fdgbook`, unit-attached) and are pinned by `FdgRaylib.Tests/BookRuleCensusTests`'
+  allowlist entry ("Retreating Strike" -> this item). When this item lands: author the def, rebake
+  the Dark Elves book (`scripts/bake-aof-books.sh`), and REMOVE the allowlist entry - its stale
+  guard fails loudly until you do.
+
 - 2026-08-22 (filed from #376's close; number 381 taken after `git fetch origin`, see
   Reconciliations). Implementation notes banked from the #376 recon:
   - Once-per-round must be a RoundEnd-cleared marker, NEVER ActivationEnd: the trigger fires
