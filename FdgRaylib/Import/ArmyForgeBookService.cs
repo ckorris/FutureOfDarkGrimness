@@ -23,9 +23,21 @@ public static class ArmyForgeBookService
 {
     private const string BaseUrl = "https://army-forge.onepagerules.com";
 
-    // Every bundled book is a Grimdark Future faction (verified: all 47 names appear in the GF official list).
-    private const string GameSystemSlug = "grimdark-future";
-    private const int GameSystem = 2;
+    // #378: the numeric ids OPR's endpoints take, per game-system slug (a book's BookFile.GameSystem;
+    // absent means Grimdark Future). GDF=2 and AoF=4 verified against the live API.
+    private static readonly Dictionary<string, int> GameSystemIds = new(StringComparer.OrdinalIgnoreCase)
+    {
+        [GameSystems.GrimdarkFuture] = 2,
+        [GameSystems.AgeOfFantasy] = 4,
+    };
+
+    private static int GameSystemId(string? gameSystem)
+    {
+        string slug = GameSystems.Normalize(gameSystem);
+        if (!GameSystemIds.TryGetValue(slug, out int id))
+            throw new InvalidOperationException($"Unknown OPR game system '{slug}' - no Army Forge id for it.");
+        return id;
+    }
 
     private static readonly HttpClient Http = new() { Timeout = TimeSpan.FromSeconds(30) };
 
@@ -37,11 +49,15 @@ public static class ArmyForgeBookService
     public sealed record BookCostRefreshReport(
         string BookName, int Priced, int Repriced, int Unmatched, IReadOnlyList<string> Samples);
 
-    /// <summary>OPR official-books listing for Grimdark Future, as a case-insensitive book-name -> uid map.</summary>
-    public static async Task<IReadOnlyDictionary<string, string>> FetchBookIndexAsync(CancellationToken ct = default)
+    /// <summary>OPR official-books listing for a game system (#378: null = Grimdark Future), as a
+    /// case-insensitive book-name -> uid map.</summary>
+    public static async Task<IReadOnlyDictionary<string, string>> FetchBookIndexAsync(
+        string? gameSystem = null, CancellationToken ct = default)
     {
+        string slug = GameSystems.Normalize(gameSystem);
         string json = await GetAsync(
-            $"{BaseUrl}/api/army-books?filters=official&gameSystemSlug={GameSystemSlug}", "the book index", ct);
+            $"{BaseUrl}/api/army-books?filters=official&gameSystemSlug={Uri.EscapeDataString(slug)}",
+            $"the {slug} book index", ct);
         var index = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
         using JsonDocument doc = JsonDocument.Parse(json);
         foreach (JsonElement e in doc.RootElement.EnumerateArray())
@@ -53,9 +69,10 @@ public static class ArmyForgeBookService
         return index;
     }
 
-    /// <summary>Fetch the full OPR army-book JSON for a uid (the endpoint that still carries per-option costs).</summary>
-    public static Task<string> FetchBookJsonAsync(string uid, CancellationToken ct = default) =>
-        GetAsync($"{BaseUrl}/api/army-books/{Uri.EscapeDataString(uid)}?gameSystem={GameSystem}",
+    /// <summary>Fetch the full OPR army-book JSON for a uid (the endpoint that still carries per-option
+    /// costs). <paramref name="gameSystem"/> is the book's slug (#378: null = Grimdark Future).</summary>
+    public static Task<string> FetchBookJsonAsync(string uid, string? gameSystem = null, CancellationToken ct = default) =>
+        GetAsync($"{BaseUrl}/api/army-books/{Uri.EscapeDataString(uid)}?gameSystem={GameSystemId(gameSystem)}",
             $"army book '{uid}'", ct);
 
     /// <summary>Pure, network-free core: re-import <paramref name="rawBookJson"/> (now cost-aware) and copy the

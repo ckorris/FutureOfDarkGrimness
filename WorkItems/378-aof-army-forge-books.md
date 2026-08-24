@@ -44,9 +44,11 @@ Concrete pieces:
    ballista-bolt, breath-flame, arcane-bolt; melee: great-weapon-smash, spectral-touch, beast-maw) +
    AoF keyword tables (separate vocabulary - "Bolt Thrower"/"Chain-Sword" must not read as GDF tech).
    Engine `aae7f9e`, suite 3051 green. Key assignments recorded for #379's visuals.
-3. [ ] App: `ArmyForgeBookService` slug/id per book (grimdark-future=2, age-of-fantasy=4);
-   system-aware matching in ArmyForgeShareService.MatchBundledBook, BundledBookRulebook,
-   --retrofit-editable (absent system = GDF preference, so legacy armies keep their books).
+3. [x] App: `ArmyForgeBookService` slug/id per book (grimdark-future=2, age-of-fantasy=4; per-system
+   index fetched lazily in --import-book/--import-section-shapes); system-gated matching in
+   ArmyForgeShareService.MatchBundledBook, BundledBookRulebook (cache keyed by system|faction),
+   --retrofit-editable. `ICurrentRulebook.DefinitionsForFaction` gained the gameSystem param (engine
+   `2496790`). App 1372 + engine 3051 green, headless smoke exit 0.
 4. [ ] Data: rebake all 40 books from the pinned snapshots (GDF+AoF supplements, per-book
    `AofBookOverrides/<Book>.json` LAST - #375 C9), bundle as `Assets/Books/AoF-*.fdgbook`;
    BookSpellCoverageTests allowlist entry for Retreating Strike (#381, 14 refs); GDF books must

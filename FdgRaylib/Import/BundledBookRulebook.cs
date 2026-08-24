@@ -22,8 +22,9 @@ public sealed class BundledBookRulebook : ICurrentRulebook
 
     private readonly object _lock = new();
 
-    // Per faction, cached including the empty result — a list whose faction matches no bundled book
-    // must not re-walk 47 files on every load.
+    // Per (faction, game system), cached including the empty result — a list whose faction matches no
+    // bundled book must not re-walk the book files on every load. The system is part of the key because
+    // four AoF faction names collide with GDF factions (#378); an absent system means GDF.
     private readonly Dictionary<string, IReadOnlyList<SpecialRuleDefinition>> _byFaction =
         new(StringComparer.OrdinalIgnoreCase);
 
@@ -34,17 +35,18 @@ public sealed class BundledBookRulebook : ICurrentRulebook
 
     private static string BooksDirectory => Path.Combine(AppContext.BaseDirectory, "Assets", "Books");
 
-    public IReadOnlyList<SpecialRuleDefinition> DefinitionsForFaction(string faction)
+    public IReadOnlyList<SpecialRuleDefinition> DefinitionsForFaction(string faction, string? gameSystem)
     {
         lock (_lock)
         {
-            if (_byFaction.TryGetValue(faction, out IReadOnlyList<SpecialRuleDefinition>? cached))
+            string key = $"{GameSystems.Normalize(gameSystem)}|{faction}";
+            if (_byFaction.TryGetValue(key, out IReadOnlyList<SpecialRuleDefinition>? cached))
             {
                 return cached;
             }
 
-            IReadOnlyList<SpecialRuleDefinition> definitions = LoadFactionDefinitions(faction);
-            _byFaction[faction] = definitions;
+            IReadOnlyList<SpecialRuleDefinition> definitions = LoadFactionDefinitions(faction, gameSystem);
+            _byFaction[key] = definitions;
             return definitions;
         }
     }
@@ -67,9 +69,11 @@ public sealed class BundledBookRulebook : ICurrentRulebook
     }
 
     // Matches on the book's Faction or its Name — a compiled army's Faction is copied from the book's
-    // Faction, but a hand-authored list may name the book instead. Same tolerance for a malformed book
-    // as the Forge screen and ArmyForgeShareService: skip it, never fail the load.
-    private static IReadOnlyList<SpecialRuleDefinition> LoadFactionDefinitions(string faction)
+    // Faction, but a hand-authored list may name the book instead — within the army's game system
+    // (#378: absent means GDF on both sides, so pre-#378 armies keep finding their GDF books). Same
+    // tolerance for a malformed book as the Forge screen and ArmyForgeShareService: skip it, never
+    // fail the load.
+    private static IReadOnlyList<SpecialRuleDefinition> LoadFactionDefinitions(string faction, string? gameSystem)
     {
         if (string.IsNullOrWhiteSpace(faction) || !Directory.Exists(BooksDirectory))
         {
@@ -90,6 +94,7 @@ public sealed class BundledBookRulebook : ICurrentRulebook
             }
 
             if (book == null) continue;
+            if (!GameSystems.SameSystem(book.GameSystem, gameSystem)) continue;
 
             if (string.Equals(book.Faction, faction, StringComparison.OrdinalIgnoreCase) ||
                 string.Equals(book.Name, faction, StringComparison.OrdinalIgnoreCase))

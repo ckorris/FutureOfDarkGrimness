@@ -90,7 +90,7 @@ public static class ArmyForgeShareService
 
         OprListImportResult result = OprListImporter.Import(listJson, bookJsons);
 
-        BookFile? bundled = MatchBundledBook(result.Army.Faction);
+        BookFile? bundled = MatchBundledBook(result.Army.Faction, result.Army.GameSystem);
         if (bundled is not null)
             OprListImporter.AttachBookDefinitions(result.Army, bundled);
         else if (result.Army.Faction.Length > 0)
@@ -144,9 +144,10 @@ public static class ArmyForgeShareService
         return await response.Content.ReadAsStringAsync(ct);
     }
 
-    // The same bundled snapshots the Forge screen offers (Assets/Books). Name match is case-insensitive;
+    // The same bundled snapshots the Forge screen offers (Assets/Books). Name match is case-insensitive
+    // and system-gated (#378: four AoF faction names collide with GDF books; absent system means GDF);
     // OPR book names and our imported book names come from the same source strings.
-    private static BookFile? MatchBundledBook(string factionName)
+    private static BookFile? MatchBundledBook(string factionName, string? gameSystem)
     {
         if (string.IsNullOrWhiteSpace(factionName)) return null;
         string dir = Path.Combine(AppContext.BaseDirectory, "Assets", "Books");
@@ -157,7 +158,8 @@ public static class ArmyForgeShareService
             try
             {
                 BookFile? book = JsonSerializer.Deserialize<BookFile>(File.ReadAllText(path), RuleJson.Options);
-                if (book is not null && string.Equals(book.Name, factionName, StringComparison.OrdinalIgnoreCase))
+                if (book is not null && string.Equals(book.Name, factionName, StringComparison.OrdinalIgnoreCase)
+                    && GameSystems.SameSystem(book.GameSystem, gameSystem))
                     return book;
             }
             catch { /* skip a malformed book, same tolerance as the Forge screen */ }

@@ -195,18 +195,24 @@ if (importBookIdx >= 0 && importBookIdx + 1 < args.Length)
             : new[] { target };
         if (bookPaths.Length == 0) { Console.WriteLine($"No {BookFile.EXTENSION_WITH_PERIOD} files in '{target}'."); return; }
 
-        var index = FdgRaylib.Import.ArmyForgeBookService.FetchBookIndexAsync().GetAwaiter().GetResult();
+        // #378: the official-book index is per game system - fetched lazily so a GDF-only run never
+        // touches the AoF endpoint (and vice versa). A book with no GameSystem field is GDF.
+        var indexBySystem = new Dictionary<string, IReadOnlyDictionary<string, string>>(StringComparer.OrdinalIgnoreCase);
         int totalPriced = 0, missing = 0;
         foreach (string path in bookPaths)
         {
             BookFile book = JsonSerializer.Deserialize<BookFile>(File.ReadAllText(path), RuleJson.Options)!;
+            string system = FDG.ArmyBuilding.GameSystems.Normalize(book.GameSystem);
+            if (!indexBySystem.TryGetValue(system, out var index))
+                indexBySystem[system] = index =
+                    FdgRaylib.Import.ArmyForgeBookService.FetchBookIndexAsync(system).GetAwaiter().GetResult();
             if (!index.TryGetValue(book.Name, out string? uid))
             {
-                Console.WriteLine($"  {book.Name}: no OPR official book by that name - skipped.");
+                Console.WriteLine($"  {book.Name}: no OPR official {system} book by that name - skipped.");
                 missing++;
                 continue;
             }
-            string raw = FdgRaylib.Import.ArmyForgeBookService.FetchBookJsonAsync(uid).GetAwaiter().GetResult();
+            string raw = FdgRaylib.Import.ArmyForgeBookService.FetchBookJsonAsync(uid, system).GetAwaiter().GetResult();
             var report = FdgRaylib.Import.ArmyForgeBookService.RefreshCosts(book, raw);
             File.WriteAllText(path, JsonSerializer.Serialize(book, RuleJson.Options));
             totalPriced += report.Priced;
@@ -241,18 +247,23 @@ if (shapesIdx >= 0 && shapesIdx + 1 < args.Length)
             : new[] { target };
         if (bookPaths.Length == 0) { Console.WriteLine($"No {BookFile.EXTENSION_WITH_PERIOD} files in '{target}'."); return; }
 
-        var index = FdgRaylib.Import.ArmyForgeBookService.FetchBookIndexAsync().GetAwaiter().GetResult();
+        // #378: per-system index, lazily fetched - same discipline as --import-book above.
+        var indexBySystem = new Dictionary<string, IReadOnlyDictionary<string, string>>(StringComparer.OrdinalIgnoreCase);
         int totalStamped = 0, missing = 0;
         foreach (string path in bookPaths)
         {
             BookFile book = JsonSerializer.Deserialize<BookFile>(File.ReadAllText(path), RuleJson.Options)!;
+            string system = FDG.ArmyBuilding.GameSystems.Normalize(book.GameSystem);
+            if (!indexBySystem.TryGetValue(system, out var index))
+                indexBySystem[system] = index =
+                    FdgRaylib.Import.ArmyForgeBookService.FetchBookIndexAsync(system).GetAwaiter().GetResult();
             if (!index.TryGetValue(book.Name, out string? uid))
             {
-                Console.WriteLine($"  {book.Name}: no OPR official book by that name - skipped.");
+                Console.WriteLine($"  {book.Name}: no OPR official {system} book by that name - skipped.");
                 missing++;
                 continue;
             }
-            string raw = FdgRaylib.Import.ArmyForgeBookService.FetchBookJsonAsync(uid).GetAwaiter().GetResult();
+            string raw = FdgRaylib.Import.ArmyForgeBookService.FetchBookJsonAsync(uid, system).GetAwaiter().GetResult();
             var report = FdgRaylib.Import.ArmyForgeBookService.RefreshPerModelSections(book, raw);
             if (report.Stamped > 0)
                 File.WriteAllText(path, JsonSerializer.Serialize(book, RuleJson.Options));
@@ -434,9 +445,12 @@ if (editableIdx >= 0 && editableIdx + 1 < args.Length)
             continue;
         }
 
+        // #378: the faction-name match is gated on the army's game system (absent = GDF), because four
+        // AoF faction names collide with GDF books and the wrong book solves to the wrong upgrades.
         BookFile? book = books.FirstOrDefault(b =>
-            string.Equals(b.Faction, army.Faction, StringComparison.OrdinalIgnoreCase)
-            || string.Equals(b.Name, army.Faction, StringComparison.OrdinalIgnoreCase));
+            (string.Equals(b.Faction, army.Faction, StringComparison.OrdinalIgnoreCase)
+             || string.Equals(b.Name, army.Faction, StringComparison.OrdinalIgnoreCase))
+            && FDG.ArmyBuilding.GameSystems.SameSystem(b.GameSystem, army.GameSystem));
         if (book is null)
         {
             Console.WriteLine($"  NO BOOK    {name}: no bundled book matches faction '{army.Faction}'.");
