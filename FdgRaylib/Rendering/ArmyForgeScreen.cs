@@ -88,6 +88,21 @@ public class ArmyForgeScreen : IAppScreen
     private int? _selectedListIndex;
     private string? _statusHint;
     private int? _pendingBookIndex;
+    private int? _pendingSystemIndex;
+
+    // #378: the game-system filter over the book dropdown. Every book carries its system (absent =
+    // GDF); the dropdown lists only the selected system's books, which also keeps the four colliding
+    // Disciples names from ever appearing together. The combo is hidden when the library is
+    // single-system (the DemoBook fallback, the test seam).
+    private static readonly (string Label, string Slug)[] Systems =
+    {
+        ("Grimdark Future", GameSystems.GrimdarkFuture),
+        ("Age of Fantasy", GameSystems.AgeOfFantasy),
+    };
+    private int _systemIndex;
+    private int[] _visibleBooks = Array.Empty<int>();   // library indices, dropdown order
+    private string[] _visibleNames = Array.Empty<string>();
+    private bool _showSystemCombo;
 
     // #307: the status line is TYPED. It used to print every outcome through ImGui.TextDisabled, so
     // "that army has no embedded book" (a REJECTED load, screen contents unchanged) was typographically
@@ -133,21 +148,68 @@ public class ArmyForgeScreen : IAppScreen
         _library = _libraryTask!.GetAwaiter().GetResult();
         _libraryTask = null;
         _libraryNames = _library.Select(b => b.Name).ToArray();
-        _bookIndex = 0;
-        UseBook(_library[0]);
+        InitSystems();
+        _bookIndex = _visibleBooks[0];
+        UseBook(_library[_bookIndex]);
         _list = new BuilderList { PointsLimit = DefaultPointsLimit, BookName = _book.Name };
     }
 
+    /// <summary>#378: pick the first system that has books (GDF in the shipped layout) and build the
+    /// filtered dropdown view. The combo only shows when more than one system is represented.</summary>
+    private void InitSystems()
+    {
+        _systemIndex = Math.Max(0, Array.FindIndex(Systems,
+            s => _library.Any(b => GameSystems.SameSystem(b.GameSystem, s.Slug))));
+        _showSystemCombo = _library
+            .Select(b => GameSystems.Normalize(b.GameSystem))
+            .Distinct(StringComparer.OrdinalIgnoreCase).Count() > 1;
+        RebuildVisible();
+    }
+
+    private void RebuildVisible()
+    {
+        _visibleBooks = Enumerable.Range(0, _library.Count)
+            .Where(i => GameSystems.SameSystem(_library[i].GameSystem, Systems[_systemIndex].Slug))
+            .ToArray();
+        // Never an empty dropdown: a library of only unknown-system books (hand-authored oddities)
+        // shows everything unfiltered.
+        if (_visibleBooks.Length == 0) _visibleBooks = Enumerable.Range(0, _library.Count).ToArray();
+        _visibleNames = _visibleBooks.Select(i => _libraryNames[i]).ToArray();
+    }
+
+    internal void SwitchSystem(int systemIndex)
+    {
+        if (systemIndex < 0 || systemIndex >= Systems.Length || systemIndex == _systemIndex) return;
+        _systemIndex = systemIndex;
+        RebuildVisible();
+        SwitchBook(_visibleBooks[0]);
+    }
+
+    /// <summary>The library index of the book matching <paramref name="book"/> by name AND game system
+    /// (#378: name alone is ambiguous for the colliding Disciples books), or -1.</summary>
+    private int FindLibraryIndex(BookFile book) => _library.FindIndex(b =>
+        string.Equals(b.Name, book.Name, StringComparison.OrdinalIgnoreCase)
+        && GameSystems.SameSystem(b.GameSystem, book.GameSystem));
+
     /// <summary>Test seam: a screen whose library is exactly the given book (the tests use DemoBook, which
     /// no longer appears in the real dropdown).</summary>
-    internal ArmyForgeScreen(BookFile book)
+    internal ArmyForgeScreen(BookFile book) : this(new List<BookFile> { book }) { }
+
+    /// <summary>Test seam: a screen over an explicit multi-book library (#378 system-filter tests).</summary>
+    internal ArmyForgeScreen(List<BookFile> library)
     {
-        _library = new List<BookFile> { book };
-        _libraryNames = new[] { book.Name };
-        _bookIndex = 0;
-        UseBook(book);
+        _library = library;
+        _libraryNames = _library.Select(b => b.Name).ToArray();
+        InitSystems();
+        _bookIndex = _visibleBooks[0];
+        UseBook(_library[_bookIndex]);
         _list = new BuilderList { PointsLimit = DefaultPointsLimit, BookName = _book.Name };
     }
+
+    // #378 test accessors (the combo state itself only exists inside Draw).
+    internal int SystemIndex => _systemIndex;
+    internal IReadOnlyList<string> VisibleBookNames => _visibleNames;
+    internal BookFile CurrentBook => _book;
 
     /// <summary>Adopt a book as the one being edited against, rebuilding the rule glossary the #259 hover
     /// tooltips read. Every assignment to <c>_book</c> goes through here so the two can never drift.</summary>
@@ -190,24 +252,30 @@ public class ArmyForgeScreen : IAppScreen
         _selectedRosterId = null;
     }
 
-    // A book switch would discard the current list (its units reference the old book), so confirm first.
+    // A book (or #378 game-system) switch would discard the current list (its units reference the old
+    // book), so confirm first.
     private void DrawSwitchBookConfirm()
     {
         bool open = true;
         if (!ImGui.BeginPopupModal("Switch book?", ref open, ImGuiWindowFlags.AlwaysAutoResize)) return;
 
-        ImGui.TextUnformatted("Switching books will clear your current list. Continue?");
+        ImGui.TextUnformatted(_pendingSystemIndex is not null
+            ? "Switching game systems will clear your current list. Continue?"
+            : "Switching books will clear your current list. Continue?");
         ImGui.Spacing();
         if (ImGui.Button("Switch", new Vector2(120, 0)))
         {
             if (_pendingBookIndex is int idx) SwitchBook(idx);
+            else if (_pendingSystemIndex is int sys) SwitchSystem(sys);
             _pendingBookIndex = null;
+            _pendingSystemIndex = null;
             ImGui.CloseCurrentPopup();
         }
         ImGui.SameLine();
         if (ImGui.Button("Cancel", new Vector2(120, 0)))
         {
             _pendingBookIndex = null;
+            _pendingSystemIndex = null;
             ImGui.CloseCurrentPopup();
         }
         ImGui.EndPopup();
@@ -605,8 +673,17 @@ public class ArmyForgeScreen : IAppScreen
         _list = loaded.Selections;
         _selectedListIndex = _list.Units.Count == 0 ? null : 0;
         _selectedRosterId = null;
-        int idx = Array.IndexOf(_libraryNames, _book.Name);
-        if (idx >= 0) _bookIndex = idx;
+        // #378: match by name AND system (the Disciples names exist in both systems), and point the
+        // system combo at the loaded book's system so the dropdown shows it.
+        int idx = FindLibraryIndex(_book);
+        if (idx >= 0)
+        {
+            _bookIndex = idx;
+            int sys = Array.FindIndex(Systems,
+                s => GameSystems.SameSystem(_library[idx].GameSystem, s.Slug));
+            if (sys >= 0) _systemIndex = sys;
+            RebuildVisible();
+        }
         return true;
     }
 
@@ -653,11 +730,28 @@ public class ArmyForgeScreen : IAppScreen
         }
         ImGui.SameLine();
         ImGui.Text("Army Forge  -");
+        if (_showSystemCombo)
+        {
+            // #378: the game-system filter. Switching clears the list like a book switch, so it gets
+            // the same confirm when the list is non-empty.
+            ImGui.SameLine();
+            ImGui.SetNextItemWidth(160f);
+            int si = _systemIndex;
+            string[] systemLabels = Systems.Select(s => s.Label).ToArray();
+            if (ImGui.Combo("##forge-system", ref si, systemLabels, systemLabels.Length) && si != _systemIndex)
+            {
+                if (_list.Units.Count == 0) SwitchSystem(si);
+                else { _pendingSystemIndex = si; ImGui.OpenPopup("Switch book?"); }
+            }
+        }
         ImGui.SameLine();
         ImGui.SetNextItemWidth(220f);
-        int bi = _bookIndex;
-        if (ImGui.Combo("##forge-book", ref bi, _libraryNames, _libraryNames.Length) && bi != _bookIndex)
+        // The dropdown shows the current system's books only; map the selection back to library indices.
+        int visPos = Math.Max(0, Array.IndexOf(_visibleBooks, _bookIndex));
+        if (ImGui.Combo("##forge-book", ref visPos, _visibleNames, _visibleNames.Length)
+            && _visibleBooks[visPos] != _bookIndex)
         {
+            int bi = _visibleBooks[visPos];
             if (_list.Units.Count == 0) SwitchBook(bi);
             else { _pendingBookIndex = bi; ImGui.OpenPopup("Switch book?"); }
         }

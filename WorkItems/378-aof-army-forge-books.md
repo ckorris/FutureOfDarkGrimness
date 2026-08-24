@@ -60,8 +60,12 @@ Concrete pieces:
    test added (Musician as the AoF-only discriminator - both books define Changebound, a GDF-origin
    name). GDF books untouched (0 modified). App 1541 + engine 3051 green; headless smokes with
    compiled Wood Elves + AoF Change Disciples armies exit 0, fantasy keys live in the army files.
-5. [ ] GUI: Forge screen game-system filter combo (GDF | AoF) gating the book dropdown; lobby
-   warning when the two armies' game systems differ.
+5. [x] GUI: Forge screen game-system filter combo (GDF | AoF) gating the book dropdown (hidden for a
+   single-system library; switching gets the same clear-list confirm as a book switch; AdoptLoaded
+   matches by name AND system and flips the filter). Lobby: `ArmyListSummary` gained the GameSystem
+   slug (engine `443a0aa`), host stamps it, LobbyScreen shows a yellow mixed-system note (warn,
+   never block; absent field = GDF). App 1547 + engine 3051 green, smoke exit 0. **GUI hand-verify
+   still owed** (combo, switch confirm, AoF roster/spells/tooltips, lobby note).
 6. [ ] Docs/ledgers: bake recipe recorded, #259 glossary/import-summary honesty spot-checked,
    #379 handed the per-book key assignments.
 

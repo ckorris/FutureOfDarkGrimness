@@ -367,6 +367,11 @@ public class LobbyScreen : IAppScreen
 
         ImGui.PopStyleVar(); // CellPadding (taller rows)
 
+        // #378: GDF and AoF armies may meet (owner ruling: warn, never block - points and core rules
+        // are compatible). An army with no GameSystem field is a GDF one (pre-#378 files).
+        if (MixedSystemWarning(players.Select(p => p.ArmyListSummary)) is string mixed)
+            ImGui.TextColored(new Vector4(0.90f, 0.80f, 0.35f, 1f), mixed);
+
         // Slots are fixed when resuming a saved game, so no add/remove there.
         if (_viewModel.HasHostPrivileges && !_viewModel.IsResumeMode)
         {
@@ -383,6 +388,27 @@ public class LobbyScreen : IAppScreen
                 _viewModel.AddAiPlayer(EAiProfile.SoloRules);
         }
     }
+
+    /// <summary>#378: the mixed-system lobby note, or null when every assigned army is from one game
+    /// system. ImGui-free so the wording and the absent-means-GDF rule are testable.</summary>
+    internal static string? MixedSystemWarning(IEnumerable<ArmyListSummary> summaries)
+    {
+        List<string> systems = summaries.Where(s => s.IsAssigned)
+            .Select(s => FDG.ArmyBuilding.GameSystems.Normalize(s.GameSystem))
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .OrderBy(s => s, StringComparer.OrdinalIgnoreCase)
+            .ToList();
+        if (systems.Count <= 1) return null;
+        return "! Mixed game systems: " + string.Join(" + ", systems.Select(SystemLabel))
+            + ". Points and core rules are compatible - launch if that is the plan.";
+    }
+
+    private static string SystemLabel(string slug) => slug switch
+    {
+        FDG.ArmyBuilding.GameSystems.GrimdarkFuture => "Grimdark Future",
+        FDG.ArmyBuilding.GameSystems.AgeOfFantasy => "Age of Fantasy",
+        _ => slug,
+    };
 
     // #372 --------------------------------------------------------------------------------------------
     // Bot starter armies. A bot is added with a hard-coded 100-pt "Test Army" stub (engine-side, in

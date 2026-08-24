@@ -25,6 +25,45 @@ public class ArmyForgeScreenTests
         Assert.That(screen.Compile().Units, Is.Empty);
     }
 
+    // ---- #378: the game-system filter over the book dropdown ----------------------------------------
+
+    private static List<BookFile> MixedLibrary() => new()
+    {
+        new BookFile { Name = "Change Disciples", Faction = "Change Disciples" },   // GDF (absent = GDF)
+        new BookFile { Name = "Change Disciples", Faction = "Change Disciples", GameSystem = GameSystems.AgeOfFantasy },
+        new BookFile { Name = "Wood Elves", Faction = "Wood Elves", GameSystem = GameSystems.AgeOfFantasy },
+    };
+
+    [Test]
+    public void SystemFilter_DefaultsToGdf_AndSwitchShowsOnlyThatSystem()
+    {
+        var screen = new ArmyForgeScreen(MixedLibrary());
+
+        Assert.That(screen.SystemIndex, Is.EqualTo(0), "GDF is the default system");
+        Assert.That(screen.VisibleBookNames, Is.EqualTo(new[] { "Change Disciples" }));
+        Assert.That(screen.CurrentBook.GameSystem, Is.Null);
+
+        screen.SwitchSystem(1);
+        Assert.That(screen.VisibleBookNames, Is.EqualTo(new[] { "Change Disciples", "Wood Elves" }));
+        Assert.That(GameSystems.SameSystem(screen.CurrentBook.GameSystem, GameSystems.AgeOfFantasy), Is.True,
+            "switching systems adopts the first book of the new system");
+    }
+
+    [Test]
+    public void AdoptLoaded_SelectsTheBookByNameAndSystem()
+    {
+        // The colliding name is the trap: loading an AoF Change Disciples army must select the AoF
+        // library entry (and flip the system filter), never the GDF book of the same name.
+        var library = MixedLibrary();
+        var screen = new ArmyForgeScreen(library);
+        BuiltArmyFile loaded = ListCompiler.Compile(library[1], new BuilderList { BookName = "Change Disciples" });
+
+        Assert.That(screen.AdoptLoaded(loaded), Is.True);
+        Assert.That(screen.SystemIndex, Is.EqualTo(1));
+        Assert.That(GameSystems.SameSystem(screen.CurrentBook.GameSystem, GameSystems.AgeOfFantasy), Is.True);
+        Assert.That(screen.VisibleBookNames, Does.Contain("Wood Elves"), "the dropdown now shows the AoF list");
+    }
+
     [Test]
     public void PointsHeader_ShowsTotalOverLimit()
     {
