@@ -152,7 +152,7 @@ public class QuickShotAndUnwieldyShippedDataTests
     {
         string[] tracked = { QuickShotAura, QuickShotMark, UnwieldyDebuff };
 
-        foreach (string path in Directory.EnumerateFiles(BooksDirectory, "*" + BookFile.EXTENSION_WITH_PERIOD)
+        foreach (string path in ShippedBooks.GdfPaths()
                      .OrderBy(p => p))
         {
             BookFile book = JsonSerializer.Deserialize<BookFile>(File.ReadAllText(path), RuleJson.Options)!;
@@ -229,7 +229,7 @@ public class QuickShotAndUnwieldyShippedDataTests
     {
         var problems = new List<string>();
 
-        foreach (string path in Directory.EnumerateFiles(BooksDirectory, "*" + BookFile.EXTENSION_WITH_PERIOD)
+        foreach (string path in ShippedBooks.GdfPaths()
                      .OrderBy(p => p))
         {
             BookFile book = JsonSerializer.Deserialize<BookFile>(File.ReadAllText(path), RuleJson.Options)!;

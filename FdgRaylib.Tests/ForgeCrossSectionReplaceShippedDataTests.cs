@@ -30,7 +30,7 @@ public class ForgeCrossSectionReplaceShippedDataTests
     private static string BooksDirectory => Path.Combine(AppContext.BaseDirectory, "Assets", "Books");
 
     private static IEnumerable<TestCaseData> Books() =>
-        Directory.EnumerateFiles(BooksDirectory, "*" + BookFile.EXTENSION_WITH_PERIOD)
+        ShippedBooks.GdfPaths()
             .OrderBy(path => path)
             .Select(path => new TestCaseData(path).SetArgDisplayNames(Path.GetFileNameWithoutExtension(path)));
 
@@ -157,7 +157,7 @@ public class ForgeCrossSectionReplaceShippedDataTests
     {
         var dead = new List<string>();
 
-        foreach (string path in Directory.EnumerateFiles(BooksDirectory, "*" + BookFile.EXTENSION_WITH_PERIOD))
+        foreach (string path in ShippedBooks.GdfPaths())
         {
             BookFile book = Load(path);
             foreach (RosterUnit roster in book.Units)
@@ -201,7 +201,7 @@ public class ForgeCrossSectionReplaceShippedDataTests
     {
         var fedFromBelow = new List<string>();
 
-        foreach (string path in Directory.EnumerateFiles(BooksDirectory, "*" + BookFile.EXTENSION_WITH_PERIOD))
+        foreach (string path in ShippedBooks.GdfPaths())
         {
             BookFile book = Load(path);
             foreach (RosterUnit roster in book.Units)

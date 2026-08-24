@@ -149,7 +149,7 @@ public class TerrainDebuffShippedDataTests
     {
         string[] tracked = { DangerousDeferred, DangerousImmediate, Difficult };
 
-        foreach (string path in Directory.EnumerateFiles(BooksDirectory, "*" + BookFile.EXTENSION_WITH_PERIOD)
+        foreach (string path in ShippedBooks.GdfPaths()
                      .OrderBy(p => p))
         {
             BookFile book = JsonSerializer.Deserialize<BookFile>(File.ReadAllText(path), RuleJson.Options)!;
@@ -198,7 +198,7 @@ public class TerrainDebuffShippedDataTests
             "moved, not the engine");
 
         var unresolved = new List<string>();
-        foreach (string path in Directory.EnumerateFiles(BooksDirectory, "*" + BookFile.EXTENSION_WITH_PERIOD))
+        foreach (string path in ShippedBooks.GdfPaths())
         {
             BookFile book = JsonSerializer.Deserialize<BookFile>(File.ReadAllText(path), RuleJson.Options)!;
             string bookName = Path.GetFileNameWithoutExtension(path);

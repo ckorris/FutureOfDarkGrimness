@@ -62,7 +62,7 @@ public class StrafingShippedDataTests
 
     private static IEnumerable<StrafeSite> StrafeSites()
     {
-        foreach (string path in Directory.EnumerateFiles(BooksDirectory, "*" + BookFile.EXTENSION_WITH_PERIOD)
+        foreach (string path in ShippedBooks.GdfPaths()
                      .OrderBy(p => p))
         {
             BookFile book = JsonSerializer.Deserialize<BookFile>(File.ReadAllText(path), RuleJson.Options)!;

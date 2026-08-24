@@ -29,6 +29,8 @@ public class BookSpellCoverageTests
 {
     // Known-dead spell references, each with a reason. Empty means every spell reference in every
     // bundled book resolves; a stale entry (the name starts resolving) fails the fixture too.
+    // Still empty after #378 bundled the AoF books: their spells' references all resolve (the known
+    // #381 Retreating Strike gap is unit-attached in Dark Elves, pinned by BookRuleCensusTests).
     private static readonly IReadOnlyDictionary<string, string> Allowlist = new Dictionary<string, string>();
 
     private static string BooksDirectory => Path.Combine(AppContext.BaseDirectory, "Assets", "Books");

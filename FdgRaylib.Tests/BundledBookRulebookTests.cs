@@ -70,6 +70,27 @@ public class BundledBookRulebookTests
             "with the bundled book consulted, the saved list fields Heavy Impact(3) again.");
     }
 
+    // #378: four AoF faction names collide with GDF books. The game system routes the lookup - and an
+    // ABSENT system means GDF, so every pre-#378 army keeps finding the book it always found.
+    [Test]
+    public void CollidingDisciplesFaction_RoutesByGameSystem()
+    {
+        BundledBookRulebook.Install();
+
+        var gdf = CurrentRulebook.DefinitionsForFaction("Change Disciples");
+        var aof = CurrentRulebook.DefinitionsForFaction("Change Disciples", FDG.ArmyBuilding.GameSystems.AgeOfFantasy);
+
+        Assert.That(gdf, Is.Not.Empty);
+        Assert.That(aof, Is.Not.Empty);
+        // Both books define the Changebound family (a GDF-origin name AoF's Empyrean Spirit clones),
+        // so the discriminator must be a name only the AoF book embeds: its units reference the AoF
+        // regimental Musician, which no GDF Change Disciples unit carries.
+        Assert.That(aof.Select(d => d.Name), Does.Contain("Musician"),
+            "the AoF Change Disciples book embeds the regimental Musician");
+        Assert.That(gdf.Select(d => d.Name), Does.Not.Contain("Musician"),
+            "the GDF book of the same name must stay the GDF book");
+    }
+
     [Test]
     public void AnUnknownFaction_BackfillsNothing_AndDoesNotThrow()
     {

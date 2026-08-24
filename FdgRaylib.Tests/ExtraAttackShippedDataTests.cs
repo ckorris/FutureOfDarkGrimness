@@ -101,7 +101,7 @@ public class ExtraAttackShippedDataTests
 
     private static IEnumerable<Site> Sites(string ruleName)
     {
-        foreach (string path in Directory.EnumerateFiles(BooksDirectory, "*" + BookFile.EXTENSION_WITH_PERIOD)
+        foreach (string path in ShippedBooks.GdfPaths()
                      .OrderBy(p => p))
         {
             BookFile book = JsonSerializer.Deserialize<BookFile>(File.ReadAllText(path), RuleJson.Options)!;
@@ -169,7 +169,7 @@ public class ExtraAttackShippedDataTests
     {
         var offenders = new List<string>();
 
-        foreach (string path in Directory.EnumerateFiles(BooksDirectory, "*" + BookFile.EXTENSION_WITH_PERIOD)
+        foreach (string path in ShippedBooks.GdfPaths()
                      .OrderBy(p => p))
         {
             BookFile book = JsonSerializer.Deserialize<BookFile>(File.ReadAllText(path), RuleJson.Options)!;

@@ -49,10 +49,17 @@ Concrete pieces:
    ArmyForgeShareService.MatchBundledBook, BundledBookRulebook (cache keyed by system|faction),
    --retrofit-editable. `ICurrentRulebook.DefinitionsForFaction` gained the gameSystem param (engine
    `2496790`). App 1372 + engine 3051 green, headless smoke exit 0.
-4. [ ] Data: rebake all 40 books from the pinned snapshots (GDF+AoF supplements, per-book
-   `AofBookOverrides/<Book>.json` LAST - #375 C9), bundle as `Assets/Books/AoF-*.fdgbook`;
-   BookSpellCoverageTests allowlist entry for Retreating Strike (#381, 14 refs); GDF books must
-   stay byte-identical; census + suites + headless smoke with a compiled AoF army.
+4. [x] Data: all 40 books rebaked from the pinned snapshots via new `scripts/bake-aof-books.sh`
+   (GDF+AoF supplements, per-book `AofBookOverrides/<Book>.json` LAST - #375 C9) and bundled as
+   `Assets/Books/AoF-*.fdgbook` with gameSystem + AoF effect sets stamped. Census over all 87 books:
+   22,079 refs, dead = exactly #381's 14 Retreating Strike (UNIT-attached in AoF Dark Elves, not
+   spell-granted as assumed - spell coverage stayed allowlist-empty). New `BookRuleCensusTests` is
+   the #375-promised census pin (per-book zero-dead + Retreating Strike allowlist + stale guard).
+   The 17 GDF ShippedData census fixtures now enumerate `ShippedBooks.GdfPaths()` (their counts pin
+   the 47-book GDF corpus; AoF is pinned by the all-books fixtures). BundledBookRulebook collision
+   test added (Musician as the AoF-only discriminator - both books define Changebound, a GDF-origin
+   name). GDF books untouched (0 modified). App 1541 + engine 3051 green; headless smokes with
+   compiled Wood Elves + AoF Change Disciples armies exit 0, fantasy keys live in the army files.
 5. [ ] GUI: Forge screen game-system filter combo (GDF | AoF) gating the book dropdown; lobby
    warning when the two armies' game systems differ.
 6. [ ] Docs/ledgers: bake recipe recorded, #259 glossary/import-summary honesty spot-checked,

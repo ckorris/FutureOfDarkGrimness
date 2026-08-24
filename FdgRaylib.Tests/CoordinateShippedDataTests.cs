@@ -95,7 +95,7 @@ public class CoordinateShippedDataTests
 
     private static IEnumerable<Site> Sites()
     {
-        foreach (string path in Directory.EnumerateFiles(BooksDirectory, "*" + BookFile.EXTENSION_WITH_PERIOD)
+        foreach (string path in ShippedBooks.GdfPaths()
                      .OrderBy(p => p))
         {
             BookFile book = JsonSerializer.Deserialize<BookFile>(File.ReadAllText(path), RuleJson.Options)!;
