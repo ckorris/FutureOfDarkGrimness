@@ -39,9 +39,11 @@ Concrete pieces:
    the owner's versioning ruling). Importer stamps from OPR `gameSystemSlug`; ListCompiler copies
    book -> army; OprListImporter's share-list gate widens from gf-only to gf/aof and stamps the army.
    New `GameSystems` (slugs + Normalize/SameSystem). Engine `1ac7b2c`, suite 3038 green.
-2. [ ] Engine: `WeaponEffectAssigner` system-aware - AoF faction-defaults table + minted fantasy keys
-   + AoF keyword tables; name-keyed lookups take the system so the colliding Disciples factions stop
-   inheriting GDF sci-fi sets (already observed in the local bake).
+2. [x] Engine: `WeaponEffectAssigner` system-aware - AoF faction-defaults table (40 entries, from a
+   corpus weapon survey) + minted keys (ranged: arrow-loose, crossbow-bolt, sling-stone, thrown-spear,
+   ballista-bolt, breath-flame, arcane-bolt; melee: great-weapon-smash, spectral-touch, beast-maw) +
+   AoF keyword tables (separate vocabulary - "Bolt Thrower"/"Chain-Sword" must not read as GDF tech).
+   Engine `aae7f9e`, suite 3051 green. Key assignments recorded for #379's visuals.
 3. [ ] App: `ArmyForgeBookService` slug/id per book (grimdark-future=2, age-of-fantasy=4);
    system-aware matching in ArmyForgeShareService.MatchBundledBook, BundledBookRulebook,
    --retrofit-editable (absent system = GDF preference, so legacy armies keep their books).
