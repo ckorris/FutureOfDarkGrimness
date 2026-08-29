@@ -264,7 +264,7 @@ Same core ruleset as GDF; 40 faction books. Verified rules/spells reference doc 
 
 - [ ] 381 — AoF Retreating Strike: post-melee move-end strike — BLOCKED on the owner's trigger ruling (charger's move-back fires no hook); the last dead AoF rule, 14 refs. ([WorkItems/381](WorkItems/381-retreating-strike.md))
 - [ ] 378 — AoF armies in the Army Forge: implemented (40 books bundled, GameSystem field, system filter combo, lobby mixed-system warning) - awaiting GUI hand-verify. ([WorkItems/378](WorkItems/378-aof-army-forge-books.md))
-- [ ] 379 — AoF weapon animations + sounds: extend the #239 `WeaponEffectCatalog` with fantasy effect-set keys (arrows, breath, arcane, fantasy melee) + sound cues; keys assigned in #378's bundles. ([WorkItems/379](WorkItems/379-aof-weapon-effects-av.md))
+- [~] 379 — AoF weapon animations + sounds: 12 effect sets shipped (Arrow form for arrows/bolts/javelins/ballistae, sling/breath/arcane styles, 5 melee incl. cross-system great-weapon-smash, toxic-rend, bombing-run) + 24 synthesized cues + assigner gap fixes. Implemented + tested; awaiting GUI hand-verify. ([WorkItems/379](WorkItems/379-aof-weapon-effects-av.md))
 
 ---
 
