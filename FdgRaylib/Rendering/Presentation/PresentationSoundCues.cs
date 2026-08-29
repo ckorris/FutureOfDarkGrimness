@@ -212,6 +212,15 @@ public static class PresentationSoundCues
     private const string R_Arcane  = "fire-" + WeaponEffectAssigner.Sets.ArcanePsychic;
     private const string R_Shard   = "fire-" + WeaponEffectAssigner.Sets.ShardCrystal;
 
+    // #379 Age of Fantasy ranged keys.
+    private const string R_Arrow   = "fire-" + WeaponEffectAssigner.Sets.ArrowLoose;
+    private const string R_Xbow    = "fire-" + WeaponEffectAssigner.Sets.CrossbowBolt;
+    private const string R_Sling   = "fire-" + WeaponEffectAssigner.Sets.SlingStone;
+    private const string R_Javelin = "fire-" + WeaponEffectAssigner.Sets.ThrownSpear;
+    private const string R_Balli   = "fire-" + WeaponEffectAssigner.Sets.BallistaBolt;
+    private const string R_Breath  = "fire-" + WeaponEffectAssigner.Sets.BreathFlame;
+    private const string R_ArcaneB = "fire-" + WeaponEffectAssigner.Sets.ArcaneBolt;
+
     private const string I_Plasma  = "impact-" + WeaponEffectAssigner.Sets.PlasmaBolt;
     private const string I_Fusion  = "impact-" + WeaponEffectAssigner.Sets.FusionMelta;
     private const string I_Flame   = "impact-" + WeaponEffectAssigner.Sets.FlameJet;
@@ -226,6 +235,14 @@ public static class PresentationSoundCues
     private const string I_Arcane  = "impact-" + WeaponEffectAssigner.Sets.ArcanePsychic;
     private const string I_Shard   = "impact-" + WeaponEffectAssigner.Sets.ShardCrystal;
 
+    private const string I_Arrow   = "impact-" + WeaponEffectAssigner.Sets.ArrowLoose;
+    private const string I_Xbow    = "impact-" + WeaponEffectAssigner.Sets.CrossbowBolt;
+    private const string I_Sling   = "impact-" + WeaponEffectAssigner.Sets.SlingStone;
+    private const string I_Javelin = "impact-" + WeaponEffectAssigner.Sets.ThrownSpear;
+    private const string I_Balli   = "impact-" + WeaponEffectAssigner.Sets.BallistaBolt;
+    private const string I_Breath  = "impact-" + WeaponEffectAssigner.Sets.BreathFlame;
+    private const string I_ArcaneB = "impact-" + WeaponEffectAssigner.Sets.ArcaneBolt;
+
     private const string M_Energy = "melee-" + WeaponEffectAssigner.Sets.EnergyBlade;
     private const string M_Titan  = "melee-" + WeaponEffectAssigner.Sets.TitanImpact;
     private const string M_Shock  = "melee-" + WeaponEffectAssigner.Sets.ShockMelee;
@@ -237,6 +254,13 @@ public static class PresentationSoundCues
     private const string M_Crude  = "melee-" + WeaponEffectAssigner.Sets.CrudeMelee;
     private const string M_Blade  = "melee-" + WeaponEffectAssigner.Sets.BladeStandard;
 
+    // #379 Age of Fantasy + cross-system melee keys.
+    private const string M_Great = "melee-" + WeaponEffectAssigner.Sets.GreatWeaponSmash;
+    private const string M_Spect = "melee-" + WeaponEffectAssigner.Sets.SpectralTouch;
+    private const string M_Maw   = "melee-" + WeaponEffectAssigner.Sets.BeastMaw;
+    private const string M_ToxR  = "melee-" + WeaponEffectAssigner.Sets.ToxicRend;
+    private const string M_Bomb  = "melee-" + WeaponEffectAssigner.Sets.BombingRun;
+
     private const string H_Energy = "meleehit-" + WeaponEffectAssigner.Sets.EnergyBlade;
     private const string H_Titan  = "meleehit-" + WeaponEffectAssigner.Sets.TitanImpact;
     private const string H_Shock  = "meleehit-" + WeaponEffectAssigner.Sets.ShockMelee;
@@ -247,6 +271,12 @@ public static class PresentationSoundCues
     private const string H_Claw   = "meleehit-" + WeaponEffectAssigner.Sets.ClawRend;
     private const string H_Crude  = "meleehit-" + WeaponEffectAssigner.Sets.CrudeMelee;
     private const string H_Blade  = "meleehit-" + WeaponEffectAssigner.Sets.BladeStandard;
+
+    private const string H_Great = "meleehit-" + WeaponEffectAssigner.Sets.GreatWeaponSmash;
+    private const string H_Spect = "meleehit-" + WeaponEffectAssigner.Sets.SpectralTouch;
+    private const string H_Maw   = "meleehit-" + WeaponEffectAssigner.Sets.BeastMaw;
+    private const string H_ToxR  = "meleehit-" + WeaponEffectAssigner.Sets.ToxicRend;
+    private const string H_Bomb  = "meleehit-" + WeaponEffectAssigner.Sets.BombingRun;
 
     /// <summary>
     /// The synthesized placeholder clip for a cue — a distinct "voice" per beat and per weapon
@@ -409,6 +439,45 @@ public static class PresentationSoundCues
             ToneSynth.Tone(1750f, 1400f, 0.10f, 10f, ToneSynth.Waveform.Sine, 0.24f),
             ToneSynth.Tone(2350f, 2350f, 0.06f, 16f, ToneSynth.Waveform.Sine, 0.18f)),
 
+        // ---------------- ranged firing, Age of Fantasy (#379) ----------------
+
+        // Bowstring pluck, then the arrow's soft flight whish.
+        R_Arrow => ToneSynth.Concat(
+            ToneSynth.Tone(620f, 240f, 0.05f, 30f, ToneSynth.Waveform.Triangle, 0.30f),
+            ToneSynth.Noise(0.09f, 20f, 0.12f, seed: 171)),
+
+        // Mechanical latch snap into a heavier, lower twang.
+        R_Xbow => ToneSynth.Concat(
+            ToneSynth.Noise(0.010f, 90f, 0.30f, seed: 172),
+            ToneSynth.Tone(400f, 170f, 0.05f, 26f, ToneSynth.Waveform.Square, 0.24f),
+            ToneSynth.Noise(0.06f, 26f, 0.10f, seed: 173)),
+
+        // Two whirling swish pulses, then the release.
+        R_Sling => ToneSynth.Concat(
+            ToneSynth.Noise(0.06f, 10f, 0.12f, seed: 174),
+            ToneSynth.Noise(0.05f, 12f, 0.18f, seed: 175),
+            ToneSynth.Tone(240f, 420f, 0.05f, 16f, ToneSynth.Waveform.Sine, 0.14f)),
+
+        // A heave: breathy whoosh rising with the throw.
+        R_Javelin => ToneSynth.Concat(
+            ToneSynth.Noise(0.10f, 12f, 0.20f, seed: 176),
+            ToneSynth.Tone(300f, 520f, 0.06f, 16f, ToneSynth.Waveform.Sine, 0.16f)),
+
+        // The war machine's frame slams forward, rope snap after.
+        R_Balli => ToneSynth.Concat(
+            ToneSynth.Tone(110f, 60f, 0.07f, 18f, ToneSynth.Waveform.Square, 0.36f),
+            ToneSynth.Noise(0.04f, 40f, 0.30f, seed: 177)),
+
+        // Deep roar: a low growl leads the gout (flame-jet is the pure hiss; this one has lungs).
+        R_Breath => ToneSynth.Concat(
+            ToneSynth.Tone(70f, 110f, 0.10f, 6f, ToneSynth.Waveform.Square, 0.16f),
+            ToneSynth.Noise(0.24f, 6f, 0.28f, seed: 178)),
+
+        // Quick sparkling chirp up, with a high glint on top.
+        R_ArcaneB => ToneSynth.Concat(
+            ToneSynth.Tone(500f, 1100f, 0.09f, 9f, ToneSynth.Waveform.Sine, 0.22f),
+            ToneSynth.Tone(1500f, 1900f, 0.07f, 14f, ToneSynth.Waveform.Sine, 0.14f)),
+
         // ---------------- ranged impacts (#239) ----------------
 
         // Bright flash + electric sizzle.
@@ -478,6 +547,44 @@ public static class PresentationSoundCues
             ToneSynth.Tone(1850f, 1850f, 0.04f, 25f, ToneSynth.Waveform.Sine, 0.20f), ToneSynth.Silence(0.012f),
             ToneSynth.Tone(2600f, 2600f, 0.05f, 22f, ToneSynth.Waveform.Sine, 0.18f)),
 
+        // ---------------- ranged impacts, Age of Fantasy (#379) ----------------
+
+        // Wood-on-flesh thunk.
+        I_Arrow => ToneSynth.Concat(
+            ToneSynth.Noise(0.012f, 80f, 0.22f, seed: 179),
+            ToneSynth.Tone(210f, 150f, 0.07f, 22f, ToneSynth.Waveform.Sine, 0.30f)),
+
+        // A harder punch — the bolt drives in.
+        I_Xbow => ToneSynth.Concat(
+            ToneSynth.Tone(260f, 140f, 0.05f, 24f, ToneSynth.Waveform.Sine, 0.34f),
+            ToneSynth.Noise(0.03f, 50f, 0.24f, seed: 180)),
+
+        // Stone crack into a dull thud.
+        I_Sling => ToneSynth.Concat(
+            ToneSynth.Noise(0.018f, 70f, 0.30f, seed: 181),
+            ToneSynth.Tone(150f, 95f, 0.09f, 18f, ToneSynth.Waveform.Sine, 0.34f)),
+
+        // Deep puncture: the spear buries itself.
+        I_Javelin => ToneSynth.Concat(
+            ToneSynth.Noise(0.025f, 55f, 0.26f, seed: 182),
+            ToneSynth.Tone(190f, 90f, 0.09f, 15f, ToneSynth.Waveform.Sine, 0.34f)),
+
+        // Splintering crash with real weight behind it.
+        I_Balli => ToneSynth.Concat(
+            ToneSynth.Noise(0.10f, 18f, 0.40f, seed: 183),
+            ToneSynth.Tone(90f, 50f, 0.16f, 10f, ToneSynth.Waveform.Sine, 0.36f)),
+
+        // Crackle, a beat, then the searing hiss settles in.
+        I_Breath => ToneSynth.Concat(
+            ToneSynth.Noise(0.04f, 35f, 0.26f, seed: 184),
+            ToneSynth.Silence(0.02f),
+            ToneSynth.Noise(0.10f, 16f, 0.18f, seed: 185)),
+
+        // Chime pop with a fizzling tail.
+        I_ArcaneB => ToneSynth.Concat(
+            ToneSynth.Tone(1300f, 900f, 0.06f, 16f, ToneSynth.Waveform.Triangle, 0.24f),
+            ToneSynth.Noise(0.07f, 24f, 0.14f, seed: 186)),
+
         // ---------------- melee swings (#239) ----------------
 
         // Electric hum into the sweep.
@@ -525,6 +632,33 @@ public static class PresentationSoundCues
         M_Blade => ToneSynth.Concat(
             ToneSynth.Noise(0.012f, 60f, 0.4f, seed: 21),
             ToneSynth.Tone(950f, 760f, 0.13f, 16f, ToneSynth.Waveform.Triangle, 0.32f)),
+
+        // ---------------- melee swings, Age of Fantasy (#379) ----------------
+
+        // Wind-up breath, then the long two-handed heave.
+        M_Great => ToneSynth.Concat(
+            ToneSynth.Noise(0.07f, 8f, 0.14f, seed: 187),
+            ToneSynth.Noise(0.12f, 10f, 0.26f, seed: 188),
+            ToneSynth.Tone(105f, 62f, 0.09f, 12f, ToneSynth.Waveform.Sine, 0.30f)),
+
+        // An airy, wrong-feeling wail with a cold shimmer over it.
+        M_Spect => ToneSynth.Concat(
+            ToneSynth.Tone(660f, 440f, 0.22f, 4f, ToneSynth.Waveform.Sine, 0.14f),
+            ToneSynth.Tone(1320f, 1180f, 0.12f, 7f, ToneSynth.Waveform.Sine, 0.08f)),
+
+        // Rising snarl into the lunge.
+        M_Maw => ToneSynth.Concat(
+            ToneSynth.Tone(120f, 180f, 0.10f, 7f, ToneSynth.Waveform.Square, 0.20f),
+            ToneSynth.Noise(0.05f, 26f, 0.20f, seed: 189)),
+
+        // Wet hissing swipe — sharper than toxic-melee's squelch.
+        M_ToxR => ToneSynth.Concat(
+            ToneSynth.Noise(0.07f, 18f, 0.20f, seed: 190),
+            ToneSynth.Tone(420f, 230f, 0.06f, 14f, ToneSynth.Waveform.Triangle, 0.14f),
+            ToneSynth.Noise(0.05f, 22f, 0.14f, seed: 191)),
+
+        // The falling bomb whistle.
+        M_Bomb => ToneSynth.Tone(1400f, 500f, 0.22f, 5f, ToneSynth.Waveform.Sine, 0.16f),
 
         // ---------------- melee connects (#239) ----------------
 
@@ -576,6 +710,36 @@ public static class PresentationSoundCues
         H_Blade => ToneSynth.Concat(
             ToneSynth.Tone(1010f, 820f, 0.09f, 15f, ToneSynth.Waveform.Triangle, 0.28f),
             ToneSynth.Noise(0.02f, 60f, 0.20f, seed: 151)),
+
+        // ---------------- melee connects, Age of Fantasy (#379) ----------------
+
+        // Ringing WHAM: metal, then the ground under it.
+        H_Great => ToneSynth.Concat(
+            ToneSynth.Noise(0.03f, 45f, 0.34f, seed: 192),
+            ToneSynth.Tone(320f, 120f, 0.12f, 10f, ToneSynth.Waveform.Triangle, 0.30f),
+            ToneSynth.Tone(80f, 52f, 0.10f, 12f, ToneSynth.Waveform.Sine, 0.34f)),
+
+        // A cold hollow moan, falling away.
+        H_Spect => ToneSynth.Concat(
+            ToneSynth.Tone(520f, 260f, 0.16f, 6f, ToneSynth.Waveform.Triangle, 0.16f),
+            ToneSynth.Tone(180f, 140f, 0.10f, 9f, ToneSynth.Waveform.Sine, 0.18f)),
+
+        // Crunching bite: two chomps and a low tear.
+        H_Maw => ToneSynth.Concat(
+            ToneSynth.Noise(0.035f, 50f, 0.30f, seed: 193),
+            ToneSynth.Silence(0.015f),
+            ToneSynth.Noise(0.05f, 30f, 0.26f, seed: 194),
+            ToneSynth.Tone(140f, 90f, 0.06f, 16f, ToneSynth.Waveform.Sine, 0.28f)),
+
+        // Squelch into an acid sizzle.
+        H_ToxR => ToneSynth.Concat(
+            ToneSynth.Tone(160f, 95f, 0.05f, 18f, ToneSynth.Waveform.Sine, 0.26f),
+            ToneSynth.Noise(0.11f, 15f, 0.16f, seed: 195)),
+
+        // The boom the whistle promised.
+        H_Bomb => ToneSynth.Concat(
+            ToneSynth.Noise(0.14f, 15f, 0.42f, seed: 196),
+            ToneSynth.Tone(66f, 38f, 0.18f, 8f, ToneSynth.Waveform.Sine, 0.38f)),
 
         _ => ToneSynth.Tone(600f, 600f, 0.10f, 22f, ToneSynth.Waveform.Sine, 0.35f),
     };

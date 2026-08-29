@@ -61,10 +61,15 @@ set has a firing cue and an impact cue; each melee set a swing cue and a connect
 
 Ranged set keys: `plasma-bolt`, `fusion-melta`, `flame-jet`, `gravity-pulse`, `gauss-particle`,
 `laser-beam`, `missile-rocket`, `mortar-artillery`, `bio-organic`, `storm-tracer`,
-`ballistic-slug` (global default), `arcane-psychic`, `shard-crystal`.
+`ballistic-slug` (global default), `arcane-psychic`, `shard-crystal`, and the Age of Fantasy set
+(#379): `arrow-loose`, `crossbow-bolt`, `sling-stone`, `thrown-spear`, `ballista-bolt`,
+`breath-flame`, `arcane-bolt`.
 
 Melee set keys: `energy-blade`, `titan-impact`, `shock-melee`, `chain-blade`, `toxic-melee`,
-`daemon-arcane-melee`, `spear-pierce`, `claw-rend`, `crude-melee`, `blade-standard` (global default).
+`daemon-arcane-melee`, `spear-pierce`, `claw-rend`, `crude-melee`, `blade-standard` (global
+default), and the #379 set: `great-weapon-smash` (two-handed blunt weapons, both game systems),
+`spectral-touch`, `beast-maw`, `toxic-rend` (toxic claws — both systems), `bombing-run` (range-0
+Strafing aerial bomb drops — both systems).
 
 Example: `fire-plasma-bolt.wav` + `impact-plasma-bolt.wav` voice every plasma weapon in every army.
 Whiffed volleys never play an impact/connect cue — only shots that actually hit do.

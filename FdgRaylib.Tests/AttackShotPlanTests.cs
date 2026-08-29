@@ -108,6 +108,11 @@ public class WeaponEffectCatalogTests
             WeaponEffectAssigner.Sets.BioOrganic, WeaponEffectAssigner.Sets.StormTracer,
             WeaponEffectAssigner.Sets.BallisticSlug, WeaponEffectAssigner.Sets.ArcanePsychic,
             WeaponEffectAssigner.Sets.ShardCrystal,
+            // #379 Age of Fantasy.
+            WeaponEffectAssigner.Sets.ArrowLoose, WeaponEffectAssigner.Sets.CrossbowBolt,
+            WeaponEffectAssigner.Sets.SlingStone, WeaponEffectAssigner.Sets.ThrownSpear,
+            WeaponEffectAssigner.Sets.BallistaBolt, WeaponEffectAssigner.Sets.BreathFlame,
+            WeaponEffectAssigner.Sets.ArcaneBolt,
         })
         {
             Assert.That(WeaponEffectCatalog.ResolveRangedKey(key), Is.EqualTo(key),
@@ -125,11 +130,60 @@ public class WeaponEffectCatalogTests
             WeaponEffectAssigner.Sets.ToxicMelee, WeaponEffectAssigner.Sets.DaemonArcaneMelee,
             WeaponEffectAssigner.Sets.SpearPierce, WeaponEffectAssigner.Sets.ClawRend,
             WeaponEffectAssigner.Sets.CrudeMelee, WeaponEffectAssigner.Sets.BladeStandard,
+            // #379 Age of Fantasy + cross-system.
+            WeaponEffectAssigner.Sets.GreatWeaponSmash, WeaponEffectAssigner.Sets.SpectralTouch,
+            WeaponEffectAssigner.Sets.BeastMaw, WeaponEffectAssigner.Sets.ToxicRend,
+            WeaponEffectAssigner.Sets.BombingRun,
         })
         {
             Assert.That(WeaponEffectCatalog.ResolveMeleeKey(key), Is.EqualTo(key),
                 $"melee key '{key}' must resolve to itself, not fall back to the default");
         }
+    }
+
+    // #379: the shaft weapons share the new Arrow form, told apart by arc height — a longbow lobs,
+    // a crossbow shoots near-flat.
+    [Test]
+    public void ShaftWeapons_ShareTheArrowForm_WithDescendingArcs()
+    {
+        foreach (string key in new[]
+        {
+            WeaponEffectAssigner.Sets.ArrowLoose, WeaponEffectAssigner.Sets.ThrownSpear,
+            WeaponEffectAssigner.Sets.BallistaBolt, WeaponEffectAssigner.Sets.CrossbowBolt,
+        })
+            Assert.That(WeaponEffectCatalog.Ranged(key).Form,
+                Is.EqualTo(WeaponEffectCatalog.RangedForm.Arrow), key);
+
+        Assert.That(WeaponEffectCatalog.Ranged(WeaponEffectAssigner.Sets.ArrowLoose).ArcScale,
+            Is.GreaterThan(WeaponEffectCatalog.Ranged(WeaponEffectAssigner.Sets.ThrownSpear).ArcScale));
+        Assert.That(WeaponEffectCatalog.Ranged(WeaponEffectAssigner.Sets.ThrownSpear).ArcScale,
+            Is.GreaterThan(WeaponEffectCatalog.Ranged(WeaponEffectAssigner.Sets.CrossbowBolt).ArcScale));
+    }
+
+    // #379: the melee forms match the design — two-handers and bombs smash, ghosts trail, and the
+    // toxic claws keep the claw motion AND the poison accent (the whole point of toxic-rend).
+    [Test]
+    public void AofMeleeForms_MatchTheDesign()
+    {
+        WeaponEffectCatalog.MeleeEffectStyle spectral =
+            WeaponEffectCatalog.Melee(WeaponEffectAssigner.Sets.SpectralTouch);
+        Assert.That((spectral.Form, spectral.Accent, spectral.Afterimage), Is.EqualTo(
+            (WeaponEffectCatalog.MeleeForm.Slash, WeaponEffectCatalog.MeleeAccent.Smoke, true)));
+
+        WeaponEffectCatalog.MeleeEffectStyle maw =
+            WeaponEffectCatalog.Melee(WeaponEffectAssigner.Sets.BeastMaw);
+        Assert.That((maw.Form, maw.Accent), Is.EqualTo(
+            (WeaponEffectCatalog.MeleeForm.Rake, WeaponEffectCatalog.MeleeAccent.Teeth)));
+
+        WeaponEffectCatalog.MeleeEffectStyle toxicRend =
+            WeaponEffectCatalog.Melee(WeaponEffectAssigner.Sets.ToxicRend);
+        Assert.That((toxicRend.Form, toxicRend.Accent), Is.EqualTo(
+            (WeaponEffectCatalog.MeleeForm.Rake, WeaponEffectCatalog.MeleeAccent.Ooze)));
+
+        Assert.That(WeaponEffectCatalog.Melee(WeaponEffectAssigner.Sets.GreatWeaponSmash).Form,
+            Is.EqualTo(WeaponEffectCatalog.MeleeForm.Smash));
+        Assert.That(WeaponEffectCatalog.Melee(WeaponEffectAssigner.Sets.BombingRun).Form,
+            Is.EqualTo(WeaponEffectCatalog.MeleeForm.Smash));
     }
 
     [Test]

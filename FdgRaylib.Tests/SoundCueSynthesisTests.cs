@@ -48,8 +48,8 @@ public class SoundCueSynthesisTests
         // #239: the registered set covers the base beats plus every effect set's fire/impact
         // (ranged) and swing/connect (melee) voices — all must synthesize, and no two identically.
         string[] cues = System.Linq.Enumerable.ToArray(PresentationSoundCues.AllCueKeys());
-        Assert.That(cues.Length, Is.GreaterThanOrEqualTo(6 + 13 * 2 + 10 * 2),
-            "base cues + per-set attack voices");
+        Assert.That(cues.Length, Is.GreaterThanOrEqualTo(6 + 20 * 2 + 15 * 2),
+            "base cues + per-set attack voices (#379 added 7 ranged + 5 melee sets)");
 
         var clips = new short[cues.Length][];
         for (int i = 0; i < cues.Length; i++)

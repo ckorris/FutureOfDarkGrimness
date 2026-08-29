@@ -98,6 +98,7 @@ public static class AttackOverlay
             case RangedForm.Lobbed: DrawLobbed(s, from, end, t, apScale); break;
             case RangedForm.Cone:   DrawCone(s, from, end, t, apScale, shot); break;
             case RangedForm.Glob:   DrawGlob(s, from, end, t, apScale, shot); break;
+            case RangedForm.Arrow:  DrawArrow(s, from, end, t, apScale, hits); break;
         }
 
         if (hits) DrawImpact(s, to, ImpactIntensity(t, s.LandFraction), apScale);
@@ -236,6 +237,49 @@ public static class AttackOverlay
         Raylib.DrawCircleV(head + perp * 2f, 2f * s.Width * apScale, Fade(s.Glow, 0.8f * fade));
     }
 
+    // A thin shaft flying along a shallow parabolic arc, rotating to follow the flight path, with
+    // fletching ticks at the tail (#379). No muzzle flash — bows don't flash. The style's ArcScale
+    // sets the arc height: a longbow lobs, a crossbow shoots near-flat.
+    private static void DrawArrow(RangedEffectStyle s, Vector2 from, Vector2 end, float t,
+        float apScale, bool hits)
+    {
+        float fade = MissFade(t, hits);
+        float dist = Vector2.Distance(from, end);
+        float arc = Math.Clamp(dist * 0.18f, 6f, 55f) * s.ArcScale;
+
+        Vector2 At(float f)
+        {
+            Vector2 p = Vector2.Lerp(from, end, f);
+            p.Y -= arc * MathF.Sin(MathF.PI * Math.Clamp(f, 0f, 1f));
+            return p;
+        }
+
+        // Short fading trail sampled along the curve behind the shaft.
+        for (int k = 1; k <= 3; k++)
+        {
+            float f0 = t - 0.045f * k;
+            if (f0 <= 0f) continue;
+            Raylib.DrawLineEx(At(f0), At(f0 + 0.04f), 1.4f * s.Width,
+                Fade(s.Core, (0.30f - 0.08f * k) * fade));
+        }
+
+        Vector2 pos = At(t);
+        Vector2 tangent = At(Math.Min(1f, t + 0.02f)) - pos;
+        Vector2 dir = tangent.LengthSquared() > 0.0001f
+            ? Vector2.Normalize(tangent) : Vector2.Normalize(end - from);
+        var perp = new Vector2(-dir.Y, dir.X);
+
+        float len = (9f + 5f * apScale) * s.Width;
+        Vector2 tip = pos + dir * (len * 0.5f);
+        Vector2 tail = pos - dir * (len * 0.5f);
+
+        Raylib.DrawLineEx(tail, tip, 1.8f * s.Width, Fade(s.Core, fade)); // shaft
+        Raylib.DrawCircleV(tip, 1.6f * s.Width, Fade(s.Core, fade));      // head
+        // Fletching: two short angled ticks at the tail.
+        Raylib.DrawLineEx(tail, tail - dir * 3f + perp * 2.5f, 1.4f, Fade(s.Glow, fade));
+        Raylib.DrawLineEx(tail, tail - dir * 3f - perp * 2.5f, 1.4f, Fade(s.Glow, fade));
+    }
+
     // ---------------- impacts (hits only) ----------------
 
     private static void DrawImpact(RangedEffectStyle s, Vector2 at, float intensity, float apScale)
@@ -311,7 +355,7 @@ public static class AttackOverlay
             case MeleeForm.Slash:  DrawSlash(s, from, at, t, scale, apScale, hits, shot); break;
             case MeleeForm.Smash:  DrawSmash(s, from, at, t, scale, apScale, hits); break;
             case MeleeForm.Thrust: DrawThrust(s, from, at, t, scale, apScale, hits); break;
-            case MeleeForm.Rake:   DrawRake(s, from, at, t, scale, apScale, hits); break;
+            case MeleeForm.Rake:   DrawRake(s, from, at, t, scale, apScale, hits, shot); break;
         }
     }
 
@@ -470,9 +514,10 @@ public static class AttackOverlay
         if (hits && t > 0.45f) DrawImpactSpark(at, pulse * 0.9f, apScale, s.Blade);
     }
 
-    // Three parallel claw streaks raking through the same sweep.
+    // Three parallel claw streaks raking through the same sweep. #379: accents apply here too
+    // (toxic-rend's ooze, beast-maw's teeth) — they trace the same pivot/arc geometry as a slash.
     private static void DrawRake(MeleeEffectStyle s, Vector2 from, Vector2 at, float t,
-        float scale, float apScale, bool hits)
+        float scale, float apScale, bool hits, int shot)
     {
         float len = Math.Max(16f, scale * 0.5f) * apScale * s.Width;
         float centerAng = MathF.Atan2(at.Y - from.Y, at.X - from.X);
@@ -489,6 +534,8 @@ public static class AttackOverlay
             DrawBladeTriangle(from + offset, ang, len * (1f - 0.12f * Math.Abs(k)), len * 0.045f,
                 Fade(s.Blade, alpha), Fade(s.Edge, alpha));
         }
+
+        DrawSlashAccent(s, from, ang, len, alpha, t, shot);
 
         if (hits && pulse > 0.2f)
         {

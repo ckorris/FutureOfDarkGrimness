@@ -24,6 +24,7 @@ public static class WeaponEffectCatalog
         Lobbed,  // parabolic shell arc, big burst
         Cone,    // expanding particle cone (flame), no projectile head
         Glob,    // wobbling organic lump with droplets
+        Arrow,   // thin fletched shaft on a shallow arc, rotating with its flight path (#379)
     }
 
     /// <summary>What the landing of a hit looks like.</summary>
@@ -48,8 +49,11 @@ public static class WeaponEffectCatalog
     /// <param name="Impact">Landing visual for hits.</param>
     /// <param name="LandFraction">Where in the volley's time slice the shot lands (0..1) — beams
     /// land almost immediately, lobbed shells late. Drives the impact sound cue timing too.</param>
+    /// <param name="ArcScale">Arc height multiplier for <see cref="RangedForm.Arrow"/> (1 = a bow's
+    /// full arc, ~0.35 = a crossbow's flat shot). Other forms ignore it.</param>
     public sealed record RangedEffectStyle(
-        RangedForm Form, Color Core, Color Glow, float Width, ImpactKind Impact, float LandFraction);
+        RangedForm Form, Color Core, Color Glow, float Width, ImpactKind Impact, float LandFraction,
+        float ArcScale = 0f);
 
     /// <param name="Blade">Fill color of the swing.</param>
     /// <param name="Edge">Edge/outline color.</param>
@@ -92,6 +96,23 @@ public static class WeaponEffectCatalog
             new Color(240, 110, 240, 255), new Color(255, 210, 90, 255), 1.4f, ImpactKind.Ring, 0.9f),
         [WeaponEffectAssigner.Sets.ShardCrystal] = new(RangedForm.Bolt,
             new Color(150, 240, 255, 255), new Color(60, 170, 220, 160), 1.0f, ImpactKind.Shatter, 0.85f),
+
+        // #379 Age of Fantasy (keys minted by #378). The four shaft weapons share the Arrow form,
+        // told apart by width, palette, and arc: a bow's full arc down to a ballista's heavy near-line.
+        [WeaponEffectAssigner.Sets.ArrowLoose] = new(RangedForm.Arrow,
+            new Color(225, 205, 160, 255), new Color(150, 115, 70, 255), 0.9f, ImpactKind.Spark, 0.9f, ArcScale: 1f),
+        [WeaponEffectAssigner.Sets.CrossbowBolt] = new(RangedForm.Arrow,
+            new Color(200, 205, 215, 255), new Color(110, 115, 125, 255), 1.15f, ImpactKind.Spark, 0.85f, ArcScale: 0.35f),
+        [WeaponEffectAssigner.Sets.ThrownSpear] = new(RangedForm.Arrow,
+            new Color(195, 160, 110, 255), new Color(120, 90, 55, 255), 1.5f, ImpactKind.Spark, 0.9f, ArcScale: 0.75f),
+        [WeaponEffectAssigner.Sets.BallistaBolt] = new(RangedForm.Arrow,
+            new Color(175, 165, 150, 255), new Color(235, 195, 120, 255), 2.2f, ImpactKind.Shatter, 0.85f, ArcScale: 0.45f),
+        [WeaponEffectAssigner.Sets.SlingStone] = new(RangedForm.Lobbed,
+            new Color(165, 160, 150, 255), new Color(110, 105, 95, 255), 0.8f, ImpactKind.Spark, 0.95f),
+        [WeaponEffectAssigner.Sets.BreathFlame] = new(RangedForm.Cone,
+            new Color(255, 140, 40, 255), new Color(210, 45, 20, 255), 1.6f, ImpactKind.Bloom, 0.6f),
+        [WeaponEffectAssigner.Sets.ArcaneBolt] = new(RangedForm.Bolt,
+            new Color(150, 195, 255, 255), new Color(95, 60, 220, 255), 1.35f, ImpactKind.Bloom, 0.9f),
     };
 
     private static readonly Dictionary<string, MeleeEffectStyle> MeleeStyles = new()
@@ -116,6 +137,19 @@ public static class WeaponEffectCatalog
             new Color(185, 155, 120, 255), new Color(95, 75, 55, 255), 1.3f, MeleeAccent.None, Afterimage: false),
         [WeaponEffectAssigner.Sets.BladeStandard] = new(MeleeForm.Slash,
             new Color(205, 210, 220, 255), new Color(60, 65, 75, 255), 1.0f, MeleeAccent.None, Afterimage: false),
+
+        // #379 Age of Fantasy + the cross-system keys minted with it.
+        [WeaponEffectAssigner.Sets.GreatWeaponSmash] = new(MeleeForm.Smash,
+            new Color(210, 210, 220, 255), new Color(70, 70, 80, 255), 1.25f, MeleeAccent.None, Afterimage: false),
+        [WeaponEffectAssigner.Sets.SpectralTouch] = new(MeleeForm.Slash,
+            new Color(200, 235, 230, 255), new Color(110, 200, 185, 255), 1.0f, MeleeAccent.Smoke, Afterimage: true),
+        [WeaponEffectAssigner.Sets.BeastMaw] = new(MeleeForm.Rake,
+            new Color(235, 225, 195, 255), new Color(140, 120, 85, 255), 1.15f, MeleeAccent.Teeth, Afterimage: false),
+        [WeaponEffectAssigner.Sets.ToxicRend] = new(MeleeForm.Rake,
+            new Color(150, 220, 90, 255), new Color(90, 160, 50, 255), 1.0f, MeleeAccent.Ooze, Afterimage: false),
+        // Smash from directly above + ground ring/cracks reads as the bombs landing.
+        [WeaponEffectAssigner.Sets.BombingRun] = new(MeleeForm.Smash,
+            new Color(255, 170, 60, 255), new Color(205, 60, 20, 255), 1.4f, MeleeAccent.None, Afterimage: false),
     };
 
     /// <summary>The known ranged keys, for per-set sound-cue registration.</summary>
