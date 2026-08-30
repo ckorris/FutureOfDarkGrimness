@@ -150,12 +150,6 @@ from the tree 2026-08-12 - recover it from git history if needed.) Remainders be
 
 ## Client / renderer
 
-- [~] 388 - Human slots arrived with an empty Army cell while bots got a real list (#372): the seeding pass
-  now serves every row this machine may write - host's own row + local humans + bots, and a client's own row
-  on its machine. Seeding confirmed in-game; the two follow-ups it exposed (every lobby opened on the same
-  army - #372's path tiebreak; same-frame rows not seeing each other) are fixed and awaiting hand-verify.
-  ([WorkItems/388](WorkItems/388-human-starter-armies.md))
-
 - [~] 386 — Dice panels froze mid-tumble while wounds resolved audibly (seen while screen-recording): #327's hover-freeze captured a parked/stale cursor as the stack grew to meet it, and froze the engine-paced part. Hover now freezes the linger only + `IsCursorOnScreen` gate. Implemented + tested; awaiting user re-record. ([WorkItems/386](WorkItems/386-dice-stack-hover-freeze-desync.md))
 - [~] 344 — Options slider for how long dice-roll popups stay up (1/3x .. 2x, default 1x): scales the panel's LINGER only, never the engine-paced tumble. Implemented + tested; awaiting GUI hand-verify. ([WorkItems/344](WorkItems/344-dice-popup-duration-option.md))
 - [~] 346 — Terrain placement panel said "Right-click or Esc to switch template" (Esc opens the menu, #248), so the only way-out hint named the wrong key; now Backspace/right-click, in a visible colour, both placement steps, plus footprint/height/rules-effect lines for the piece being placed. Implemented; awaiting GUI hand-verify. ([WorkItems/346](WorkItems/346-terrain-placement-hints.md))

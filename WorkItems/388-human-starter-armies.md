@@ -1,7 +1,6 @@
 # 388 — Human slots get a starter army too (extends #372 past the bots)
 
-**Status**: Implemented + tested 2026-08-30; the seeding itself is confirmed working in-game by Chris.
-Awaiting hand-verify of the follow-up fixes (variety across fresh lobbies; a connected client's own row)
+**Status**: CLOSED 2026-08-30 - hand-verified in the running app by Chris
 **Related**: #372 (bot starter armies - `ArmyCatalog` + `BotArmyPicker`, the machinery this reuses),
 #153 (launch gate), #310 (per-user config)
 
@@ -75,4 +74,8 @@ written by anyone else.
 
 ## Outcome
 
-_(open)_
+Shipped and verified in the running app the same day it was filed. A lobby now opens with a real army on
+every row its machine owns, and consecutive lobbies open on different ones. Not covered, and left for
+whenever it comes up: the networked leg was reasoned through rather than played (a connected client
+seeding its own row), and nothing remembers a player's LAST army across lobbies - #310's config would be
+the place if that is ever wanted over a fresh roll.
