@@ -1,7 +1,7 @@
 # 388 — Human slots get a starter army too (extends #372 past the bots)
 
-**Status**: Implemented + tested 2026-08-30; awaiting GUI hand-verify (host row, added local player,
-and a connected client's own row)
+**Status**: Implemented + tested 2026-08-30; the seeding itself is confirmed working in-game by Chris.
+Awaiting hand-verify of the follow-up fixes (variety across fresh lobbies; a connected client's own row)
 **Related**: #372 (bot starter armies - `ArmyCatalog` + `BotArmyPicker`, the machinery this reuses),
 #153 (launch gate), #310 (per-user config)
 
@@ -12,6 +12,26 @@ added, and a client's own row fills on the client's machine - while a remote pla
 written by anyone else.
 
 ## Notes
+
+- 2026-08-30: **Chris played it: "it was Alien Hives three times in a row."** Two defects, both fixed.
+  - The opening pick of every lobby was a pure function of the folder. `Rank` is closest-to-the-limit
+    with a `ThenBy(Path)` tiebreak, and the bundled folder has FIVE armies at exactly 1000 points, so at
+    a 1000-pt limit the tiebreak decided outright and `1k - Alien Hives.fdgarmy` sorts first; a fresh
+    lobby drops the rotation (`SetViewModel` nulls `_botArmyPicker`), so every lobby opened on it.
+    Probed against the real folder: the fixed opener was Alien Hives at 1000, Blessed Sisters at 2000,
+    Battle Brothers at 3000. Now `BotArmyPicker.BandPercentUnderLimit` (5%) makes every army within 5%
+    of the limit interchangeable and picks among them at RANDOM; below the band the old closest-first
+    order still stands, so a 1000-pt list is still never offered in a 2000-pt lobby. Same probe after:
+    12 fresh lobbies gave 4 / 6 / 8 distinct armies at 1000 / 2000 / 3000, all inside the band.
+  - Rows seeded in the SAME frame could not see each other: `AutoArmyNewSlots` handed every
+    `AssignRandomArmy` call one pre-pass roster snapshot, so `inUseByOthers` was stale for the second
+    slot onward and two rows could land on the same army. Newly reachable via #388 (before it, only bots
+    were seeded, and they are added one at a time). `AssignRandomArmy` now reads `PlayerInfos` itself -
+    the host applies an army update to its roster synchronously - and takes only the PlayerID.
+  - Tests: `BotArmyPickerTests` grew to 17 (a seeded `Random` is now injectable, and the tests that
+    pinned an exact opening army asked for the old deterministic behaviour - they assert band membership
+    now, plus a new `FreshLobbiesDoNotAllOpenOnTheSameArmy` pinning the reported fault). App suite 1556
+    green, engine 3070 green.
 
 - 2026-08-30: **Implemented app-side, entirely inside `LobbyScreen`.** `AutoArmyNewBots` ->
   `AutoArmyNewSlots`, `_autoArmiedBots` -> `_autoArmiedSlots`, and the per-row test moved out into a
@@ -27,6 +47,16 @@ written by anyone else.
   points at the real channel.
 
 ## Decisions
+
+- **A 5% band, not "random among everything legal" and not "random among exact ties"** (owner's call,
+  2026-08-30). Exact-ties-only would have fixed today's folder by luck - five armies happen to tie at
+  1000 - and gone deterministic again the moment someone added a 1998-pt list. Fully random among legal
+  armies would hand out a 1000-pt list in a 2000-pt lobby. The band keeps #372's "close to the limit"
+  intent as a tolerance rather than a total order.
+- **The band is capped at the limit, not just floored.** The last-resort pool (nothing legal in the
+  folder at all) is entirely over-limit, and every one of those would otherwise count as "in band" and
+  be picked at random - handing out a 5000-pt list in a 2000-pt lobby when a 2200-pt one exists. Capped,
+  that pool falls through to closest-first exactly as before.
 
 - **`canModify` is the whole permission rule**, exactly as #372 settled it for the Random Army button.
   A second "who may be auto-armied" rule would be a second thing to keep in sync with the lobby's

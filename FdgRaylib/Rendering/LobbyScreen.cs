@@ -354,7 +354,7 @@ public class LobbyScreen : IAppScreen
                     ImGui.SameLine();
                     ImGui.BeginDisabled(!canModify || !ArmyCatalogReady);
                     if (UiButton.NavigateSmall($"Random Army##{i}"))
-                        AssignRandomArmy(info.PlayerID, players);
+                        AssignRandomArmy(info.PlayerID);
                     ImGui.EndDisabled();
                     // AllowWhenDisabled: the greyed-out case is the one that most needs explaining.
                     if (ImGui.IsItemHovered(ImGuiHoveredFlags.AllowWhenDisabled))
@@ -471,7 +471,7 @@ public class LobbyScreen : IAppScreen
                 continue;
             }
 
-            AssignRandomArmy(info.PlayerID, players); //Marks the slot served.
+            AssignRandomArmy(info.PlayerID); //Marks the slot served.
         }
 
         // A slot that left must not keep its rotation alive. Pruned unconditionally rather than behind a
@@ -485,10 +485,10 @@ public class LobbyScreen : IAppScreen
         }
     }
 
-    /// <summary>Picks and loads the next army for one slot - a bot being seeded, or any player pressing
+    /// <summary>Picks and loads the next army for one slot - one being seeded, or any player pressing
     /// Random Army. Silently does nothing when the folder holds no readable armies, or when the chosen
     /// file fails to load, so the slot keeps whatever it had.</summary>
-    private void AssignRandomArmy(PlayerID playerID, IReadOnlyList<LobbyPlayerInfoSummary> players)
+    private void AssignRandomArmy(PlayerID playerID)
     {
         // A rolled army is a deliberate pick, exactly like a hand-loaded one: mark the slot served so
         // AutoArmyNewSlots cannot overwrite the roll on the next frame. It is also what keeps a client
@@ -499,13 +499,17 @@ public class LobbyScreen : IAppScreen
 
         // What everyone ELSE is holding, by the same name|faction|points identity the catalog uses - the
         // roster is the only view that covers remote clients, whose army file path never crosses the wire.
-        var inUseByOthers = players
+        // Read fresh rather than from the caller's snapshot (#388): the host applies an army update to
+        // its roster synchronously, so when one pass seeds several slots at once - the lobby's own row
+        // and a bot that was added before the folder scan landed - each pick sees the ones before it and
+        // they no longer all land on the same army.
+        var inUseByOthers = _viewModel!.PlayerInfos
             .Where(p => p.PlayerID != playerID && p.ArmyListSummary.IsAssigned)
             .Select(p => ArmyCatalogEntry.KeyFor(
                 p.ArmyListSummary.ArmyName, p.ArmyListSummary.FactionName, p.ArmyListSummary.PointCost))
             .ToHashSet();
 
-        if (_botArmyPicker.PickNext(playerID.ID, _viewModel!.ArmyPoints, inUseByOthers) is not { } pick)
+        if (_botArmyPicker.PickNext(playerID.ID, _viewModel.ArmyPoints, inUseByOthers) is not { } pick)
             return;
 
         if (LoadArmyFile(pick.Path) is { } army) _viewModel.UpdateArmyListFile(playerID, army);
