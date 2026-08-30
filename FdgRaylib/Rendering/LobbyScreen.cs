@@ -49,7 +49,7 @@ public class LobbyScreen : IAppScreen
     private string? _lastLaunchError;
     private IReadOnlyList<string> _launchProblems = Array.Empty<string>();
 
-    // #372 bot starter armies. The folder scan is process-wide and starts the first time a lobby opens
+    // #372/#388 starter armies. The folder scan is process-wide and starts the first time a lobby opens
     // (SetViewModel touches it), because the armies folder doesn't change under us and re-reading 12 MB
     // of JSON per lobby would be waste. The ROTATION is per-lobby, so a fresh lobby re-rolls freely.
     private static readonly Lazy<ArmyCatalog> SharedArmyCatalog =
@@ -57,11 +57,11 @@ public class LobbyScreen : IAppScreen
 
     private BotArmyPicker? _botArmyPicker;
 
-    // Bot slots this lobby has already handed a starter army. Keyed by PlayerID, not by "does the slot
+    // Slots this lobby has already handed a starter army. Keyed by PlayerID, not by "does the slot
     // have an army", because AddAiPlayer gives every bot a 100-pt "Test Army" stub - there is no
     // unassigned state to watch for. Also stops a re-roll or a hand-picked Load Army from being
     // immediately overwritten on the next frame.
-    private readonly HashSet<Guid> _autoArmiedBots = new();
+    private readonly HashSet<Guid> _autoArmiedSlots = new();
 
     // Host connection info shown so the host knows what address to share (QF9). The port mirrors
     // CommandProtocol.TEMP_PORT (internal to the engine assembly, so it's restated here).
@@ -82,9 +82,9 @@ public class LobbyScreen : IAppScreen
         _pendingGame = null;
 
         // #372: start the armies scan as soon as a lobby exists (it runs on a background task) and give
-        // this lobby its own rotation, so re-opening one starts the bots' army cycle over.
+        // this lobby its own rotation, so re-opening one starts the army cycle over.
         _botArmyPicker = null;
-        _autoArmiedBots.Clear();
+        _autoArmiedSlots.Clear();
         _ = SharedArmyCatalog.Value;
         viewModel.OnLaunched += game => _pendingGame = game;
         // Fires on the engine thread; the renderer just records it and reacts on the main thread.
@@ -262,7 +262,7 @@ public class LobbyScreen : IAppScreen
 
     private void DrawPlayerList(float panelW)
     {
-        AutoArmyNewBots();
+        AutoArmyNewSlots();
 
         IReadOnlyList<LobbyPlayerInfoSummary> players = _viewModel!.PlayerInfos;
 
@@ -410,11 +410,12 @@ public class LobbyScreen : IAppScreen
         _ => slug,
     };
 
-    // #372 --------------------------------------------------------------------------------------------
-    // Bot starter armies. A bot is added with a hard-coded 100-pt "Test Army" stub (engine-side, in
-    // LobbyViewModel_Host.AddAiPlayer), which is never what anyone wants to play against; the lobby swaps
-    // in a real list from the armies folder as soon as the scan is in. App-side on purpose: the armies
-    // FOLDER is an app concept (ArmyPaths), and the engine has no business reading the user's disk.
+    // #372/#388 ---------------------------------------------------------------------------------------
+    // Starter armies. A new slot arrives unplayable either way - a bot carries the hard-coded 100-pt
+    // "Test Army" stub (engine-side, in LobbyViewModel_Host.AddAiPlayer) and a human carries no army at
+    // all (the host silently substituted the same stub at launch) - so the lobby swaps in a real list
+    // from the armies folder as soon as the scan is in. App-side on purpose: the armies FOLDER is an app
+    // concept (ArmyPaths), and the engine has no business reading the user's disk.
 
     private static bool ArmyCatalogReady => SharedArmyCatalog.Value.IsLoaded;
 
@@ -431,31 +432,55 @@ public class LobbyScreen : IAppScreen
                "the folder has nothing legal.";
     }
 
-    /// <summary>Hands every bot that hasn't had one a starter army. Host-only (nobody else may write
-    /// another slot's army) and skipped when resuming, where the saved armies are the point. No-op until
-    /// the background scan finishes, and no-op forever if there is no armies folder to scan.</summary>
-    private void AutoArmyNewBots()
+    /// <summary>#388: does this row still need a starter army rolled onto it? Pure, so the rule is
+    /// testable away from ImGui.</summary>
+    /// <param name="canModify">Whether this machine may write the slot's army at all
+    /// (<see cref="ILobbyViewModel.CheckCanModifyPlayerIDInfo"/>): the host owns its own row, its local
+    /// humans and the bots, and a client owns only its own row. Nobody rolls for a remote player.</param>
+    /// <param name="alreadyServed">The slot has been handed an army - rolled or hand-picked - this
+    /// lobby.</param>
+    internal static bool NeedsStarterArmy(EPlayerType playerType, bool armyAssigned, bool canModify,
+        bool alreadyServed)
     {
-        if (!_viewModel!.HasHostPrivileges || _viewModel.IsResumeMode) return;
+        if (!canModify || alreadyServed) return false;
+
+        // A human holding a list keeps it: an army loaded before the folder scan came back, or one that
+        // rode in with the slot. A bot has no such state to read - AddAiPlayer stamps every bot with the
+        // stub, so a bot row is ALWAYS "assigned" and only alreadyServed can tell a fresh one apart.
+        return playerType == EPlayerType.AI || !armyAssigned;
+    }
+
+    /// <summary>Hands a starter army to every slot this machine owns and hasn't served yet: on the host
+    /// its own row, its local humans and the bots; on a client, its own row (#388 - bots only before).
+    /// A remote player's row is never touched, and the whole pass is skipped when resuming, where the
+    /// saved armies are the point. No-op until the background scan finishes, and no-op forever if there
+    /// is no armies folder to scan.</summary>
+    private void AutoArmyNewSlots()
+    {
+        if (_viewModel!.IsResumeMode) return;
         if (!ArmyCatalogReady) return;
 
         IReadOnlyList<LobbyPlayerInfoSummary> players = _viewModel.PlayerInfos;
 
         foreach (LobbyPlayerInfoSummary info in players)
         {
-            if (info.PlayerType != EPlayerType.AI) continue;
-            if (!_autoArmiedBots.Add(info.PlayerID.ID)) continue;
+            if (!NeedsStarterArmy(info.PlayerType, info.ArmyListSummary.IsAssigned,
+                    _viewModel.CheckCanModifyPlayerIDInfo(info.PlayerID),
+                    _autoArmiedSlots.Contains(info.PlayerID.ID)))
+            {
+                continue;
+            }
 
-            AssignRandomArmy(info.PlayerID, players);
+            AssignRandomArmy(info.PlayerID, players); //Marks the slot served.
         }
 
         // A slot that left must not keep its rotation alive. Pruned unconditionally rather than behind a
         // count comparison: a bot leaving as a human joins keeps the count level, and the roster is at
         // most eight rows, so there is nothing to save by guessing.
         var live = players.Select(p => p.PlayerID.ID).ToHashSet();
-        foreach (Guid gone in _autoArmiedBots.Where(id => !live.Contains(id)).ToList())
+        foreach (Guid gone in _autoArmiedSlots.Where(id => !live.Contains(id)).ToList())
         {
-            _autoArmiedBots.Remove(gone);
+            _autoArmiedSlots.Remove(gone);
             _botArmyPicker?.Forget(gone);
         }
     }
@@ -466,8 +491,9 @@ public class LobbyScreen : IAppScreen
     private void AssignRandomArmy(PlayerID playerID, IReadOnlyList<LobbyPlayerInfoSummary> players)
     {
         // A rolled army is a deliberate pick, exactly like a hand-loaded one: mark the slot served so
-        // AutoArmyNewBots cannot overwrite a bot's roll on the next frame.
-        _autoArmiedBots.Add(playerID.ID);
+        // AutoArmyNewSlots cannot overwrite the roll on the next frame. It is also what keeps a client
+        // from rolling its own row twice while the army it just sent is still in flight to the host.
+        _autoArmiedSlots.Add(playerID.ID);
 
         _botArmyPicker ??= new BotArmyPicker(SharedArmyCatalog.Value.Entries);
 
@@ -1007,9 +1033,9 @@ public class LobbyScreen : IAppScreen
         string path = paths?.FirstOrDefault() ?? "";
         if (LoadArmyFile(path) is not { } loaded) return;
 
-        // #372: a hand-picked army marks the slot as served, so AutoArmyNewBots never overwrites it on a
-        // later frame (it would, for a bot whose army was loaded before the folder scan came back).
-        _autoArmiedBots.Add(playerID.ID);
+        // #372: a hand-picked army marks the slot as served, so AutoArmyNewSlots never overwrites it on a
+        // later frame (it would, for a slot whose army was loaded before the folder scan came back).
+        _autoArmiedSlots.Add(playerID.ID);
         _viewModel!.UpdateArmyListFile(playerID, loaded);
     }
 

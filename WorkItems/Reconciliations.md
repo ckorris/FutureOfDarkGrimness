@@ -671,3 +671,7 @@ A per-clone pre-push hook blocks duplicate numbers across the index and the arch
 > high-water mark 379 (the #375-#379 AoF items), archive max 372; 380 was filed locally earlier the
 > same day and is unpushed at the time of filing. **381 = AoF Retreating Strike** (split out of #376
 > as it closed - the owner deferred the trigger ruling). No collision.
+
+> **2026-08-30 - number 388 filed clean.** `git fetch origin` before filing: `origin/master`'s index
+> high-water mark 387, archive max 372, and the local copy matches on both. **388 = human slots get a
+> starter army** (extends #372 past the bots). No collision.
