@@ -95,7 +95,7 @@ The best way to try it out is to play a solo game against a bot. Launch the game
 
 ## Bug Reporting
 
-I’ve playtested this a lot, but there’s bound to be bugs. If you see a bug, please use the Report Bug option in the escape menu to tell me. Or you can ping me on Discord [LINK] or open up a Github issue.
+I’ve playtested this a lot, but there’s bound to be bugs. If you see a bug, please use the Report Bug option in the escape menu to tell me. Or you can ping me on Discord [here](https://discord.com/channels/610199287346888743/1538297424865403032) or open up a Github issue.
 
 Here’s places where I most expect bugs:
 
