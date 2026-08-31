@@ -43,7 +43,8 @@ static int Usage()
                                      into the game log - a decision replay (#191 tooling)
           analyze <save.fdgsave> [--unit substr] [--no-board]   per-unit Tactician candidate-score
                   dump + the action it would take from that exact state - point it at a parked
-                  save from a hand-played game (#191 tooling)
+                  save from a hand-played game (#191 tooling); [--urgency] prepends each army's
+                  activation-urgency table + the unit the resolver would pick next (#389)
           probes  --feasibility [--games N] [--seed-base S] [--a/--b <army>]   #191 A3 gate metric:
                   shadow-runs the MacroActionGenerator at every movement decision of real games and
                   reports the fraction of activations with a valid non-Hold candidate (target >= 95%)

@@ -1,8 +1,11 @@
 using FDG;
 using FDG.Ai.Tactician;
+using FDG.Ai.Tactician.Resolvers;
 using FDG.Data;
 using FDG.Rules.Dispatch;
+using FDG.Rules.Foundation;
 using FDG.SaveLoad;
+using FDG.StageResolution.Requests;
 
 namespace FdgLab;
 
@@ -26,6 +29,7 @@ public static class Analyze
         }
         string? unitFilter = ArgValue(args, "--unit");
         bool board = !args.Contains("--no-board");
+        bool urgency = args.Contains("--urgency");
 
         GameDataStore store = GameSaveSerializer.Load(File.ReadAllText(savePath));
         var tableState = new TableState(store);
@@ -33,6 +37,7 @@ public static class Analyze
         var planner = new TacticianPlanner(tableState, evaluator);
 
         if (board) PrintBoard(tableState);
+        if (urgency) PrintUrgency(tableState, evaluator);
 
         foreach (IArmy army in tableState.Armies.Objects)
         {
@@ -68,6 +73,36 @@ public static class Analyze
             }
         }
         return 0;
+    }
+
+    // #389: the activation-ordering layer, per army - each living unit's urgency score plus the
+    // pick the activation resolver would make among the still-unactivated ones (with the #359
+    // measurement narration, so a bias-decisive pick says so). The candidate tables below show
+    // WHERE a unit would go; this shows WHEN it would get the turn.
+    private static void PrintUrgency(ITableState tableState, RuleEvaluator evaluator)
+    {
+        foreach (IArmy army in tableState.Armies.Objects)
+        {
+            if (army is not ArmyData data) continue;
+            var resolver = new TacticianActivationResolver(tableState, evaluator,
+                planner: null, decisionLog: line => Console.WriteLine($"  pick: {line}"));
+            Console.WriteLine($"--- urgency [{ShortId(army.PlayerID)}] ---");
+            var options = new List<SelectionRequest<UnitData>.ValidOption>();
+            foreach (DataBinding<UnitData> unit in data.UnitBindings)
+            {
+                UnitData u = unit.GetValue();
+                if (!u.GetIsAlive() || !u.GetIsOnBattlefield()) continue;
+                bool activated = u.Tokens.HasToken(TokenType.ActivatedThisRound);
+                Console.WriteLine($"  {resolver.Urgency(unit),8:F4}  {u.Name}" +
+                    (activated ? "  (activated)" : ""));
+                if (!activated) options.Add(new(unit, u.Name));
+            }
+            if (options.Count > 1)
+                resolver.Resolve(new ChooseUnitToActivateRequest(army.PlayerID, options,
+                    new List<SelectionRequest<UnitData>.InvalidOption>())).GetAwaiter().GetResult();
+            else if (options.Count == 1)
+                Console.WriteLine($"  pick: {options[0].Option.GetValue().Name} (only option)");
+        }
     }
 
     // A text substitute for the screenshot: every objective (with its projected owner) and every
