@@ -19,6 +19,10 @@ public class CastAssistResolver : IStageResolver<CastAssistRequest, int>
         Console.WriteLine($"{assister} ({request.AvailableTokens} spell token" +
             $"{(request.AvailableTokens == 1 ? "" : "s")}): spend how many to {verb} {caster}'s cast of " +
             $"{request.SpellName}? ({sign} each)");
+        // What the spell does, indented like the spell picker's subtext - the name alone says nothing
+        // about whether the cast is worth swaying.
+        if (!string.IsNullOrEmpty(request.SpellDescription))
+            Console.WriteLine($"        {request.SpellDescription}");
 
         while (true)
         {

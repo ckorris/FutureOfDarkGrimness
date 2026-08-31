@@ -18,6 +18,9 @@ public class GuiCastAssistResolver : IStageResolver<CastAssistRequest, int>, IGu
 {
     private static readonly Vector4 FriendlyRgba = new(0.30f, 0.60f, 1.00f, 1.00f); // blue
     private static readonly Vector4 EnemyRgba    = new(1.00f, 0.60f, 0.15f, 1.00f); // orange
+    // The spell-effect subtext, in the spell picker's dim style (GuiChooseSpellResolver) so the same
+    // description reads the same in both prompts.
+    private static readonly Vector4 DimTextRgba  = new(0.62f, 0.66f, 0.74f, 1f);
 
     private readonly object _lock = new();
     private CastAssistRequest? _request;
@@ -117,9 +120,16 @@ public class GuiCastAssistResolver : IStageResolver<CastAssistRequest, int>, IGu
                           $"{(request.AvailableTokens == 1 ? "" : "s")})";
         string question = $"Spend tokens to {verb} {caster.Name}'s cast of {request.SpellName}? " +
                           $"({sign}1 each)";
+        // What the spell does, same subtext the caster's own picker shows - the name alone says nothing
+        // about whether the cast is worth swaying. Measured like the picker: wrap width divided by the
+        // font scale, height multiplied back.
+        string description = request.SpellDescription;
+        const float descScale = 0.82f;
         float titleH    = ImGui.CalcTextSize(title).Y;
         float questionH = ImGui.CalcTextSize(question, false, dw - pad * 2f).Y;
-        float headerH   = titleH + 6f + questionH + 12f;
+        float descH     = string.IsNullOrEmpty(description) ? 0f
+            : ImGui.CalcTextSize(description, false, (dw - pad * 2f) / descScale).Y * descScale + 6f;
+        float headerH   = titleH + 6f + questionH + descH + 12f;
 
         ImGui.SetNextWindowPos(Vector2.Zero, ImGuiCond.Always);
         ImGui.SetNextWindowSize(new Vector2(screenW, screenH), ImGuiCond.Always);
@@ -145,6 +155,18 @@ public class GuiCastAssistResolver : IStageResolver<CastAssistRequest, int>, IGu
         ImGui.PushTextWrapPos(dw - pad);
         ImGui.TextUnformatted(question);
         ImGui.PopTextWrapPos();
+
+        if (!string.IsNullOrEmpty(description))
+        {
+            ImGui.SetCursorPos(new Vector2(pad, pad + titleH + 6f + questionH + 6f));
+            ImGui.PushStyleColor(ImGuiCol.Text, DimTextRgba);
+            ImGui.SetWindowFontScale(descScale);
+            ImGui.PushTextWrapPos(dw - pad);
+            ImGui.TextUnformatted(description);
+            ImGui.PopTextWrapPos();
+            ImGui.SetWindowFontScale(1f);
+            ImGui.PopStyleColor();
+        }
 
         // #248: the digit IS the quantity here — 0 = don't spend, N = spend N (keys past the
         // affordable count ignored). Applied once after drawing (complete-once discipline).
