@@ -26,9 +26,9 @@ public class BookRuleCensusTests
     // fails the fixture too - that is the reminder to delete it when the blocking item lands.
     private static readonly IReadOnlyDictionary<string, string> Allowlist = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
     {
-        // #381: post-melee move-end strike, blocked on the owner's trigger ruling. 14 unit-attached
-        // references in the AoF Dark Elves book; #378 bundled it knowing this.
-        ["Retreating Strike"] = "#381 - blocked on the owner's trigger ruling",
+        // Empty since #381 landed (Retreating Strike, the last dead AoF name) - both corpora are at
+        // zero dead references. Add entries only for a name that is KNOWINGLY dead, with the item that
+        // owns it.
     };
 
     private static string BooksDirectory => Path.Combine(AppContext.BaseDirectory, "Assets", "Books");

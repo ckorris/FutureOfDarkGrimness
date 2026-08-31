@@ -2793,5 +2793,60 @@
     "engineArgumentCount": 0,
     "valence": "Positive",
     "description": "For each unmodified 1 enemies roll when blocking hits from this unit's weapons in melee, it rolls one extra attack with that weapon. The extra attacks cannot generate more."
+  },
+  {
+    "name": "Retreating Strike",
+    "passive": [],
+    "activated": [
+      {
+        "triggerHook": "Movement_OnMoveResolved",
+        "cost": {
+          "kind": "oncePerRound"
+        },
+        "targetSelector": {
+          "rangeInches": 3,
+          "minCount": 1,
+          "maxCount": 1,
+          "targetAffinity": "Foe",
+          "requireLineOfSight": false,
+          "requiredToken": null,
+          "singleModel": false,
+          "requiredRule": null
+        },
+        "effect": {
+          "kind": "dealAutoWounds",
+          "diceCountPerModel": {
+            "kind": "arg",
+            "index": 0
+          },
+          "successThreshold": 6
+        },
+        "availableWhen": {
+          "kind": "and",
+          "left": {
+            "kind": "tokenPresent",
+            "tType": {
+              "id": "WasInMeleeThisRound"
+            },
+            "minCount": 1
+          },
+          "right": {
+            "kind": "not",
+            "inner": {
+              "kind": "tokenPresent",
+              "tType": {
+                "id": "Shaken"
+              },
+              "minCount": 1
+            }
+          }
+        },
+        "label": "Retreating Strike"
+      }
+    ],
+    "scope": "Unit",
+    "engineArgumentCount": 1,
+    "valence": "Positive",
+    "description": "Once per round, when this unit ends its move within 3\" of enemy units after being in melee, pick one of them and roll X dice for each model with this rule, or X dice in total for single-model units. For each 6+ the target takes one wound. Cannot be used while Shaken."
   }
 ]

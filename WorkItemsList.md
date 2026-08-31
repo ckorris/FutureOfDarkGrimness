@@ -265,7 +265,7 @@ full bug log). Deleted from the tree 2026-08-12 - recover from git history if ne
 
 Same core ruleset as GDF; 40 faction books. Verified rules/spells reference doc lives outside the repo (`GDF Armies/Age of Fantasy/`, local only). Appraisal 2026-08-22: ~94% of 852 rule instances resolve via existing behavior modulo renames; all 240 spells fit existing spell-effect patterns.
 
-- [ ] 381 — AoF Retreating Strike: post-melee move-end strike — BLOCKED on the owner's trigger ruling (charger's move-back fires no hook); the last dead AoF rule, 14 refs. ([WorkItems/381](WorkItems/381-retreating-strike.md))
+- [~] 381 — AoF Retreating Strike: owner-ruled 2026-08-31 (chosen moves only, Harassing fires first, move-back excluded, Shaken blocks) and implemented same day - Movement_OnMoveResolved lit, def is pure data, census 0 dead both corpora. Awaiting GUI hand-verify (checklist in detail file). ([WorkItems/381](WorkItems/381-retreating-strike.md))
 - [ ] 378 — AoF armies in the Army Forge: implemented (40 books bundled, GameSystem field, system filter combo, lobby mixed-system warning) - awaiting GUI hand-verify. ([WorkItems/378](WorkItems/378-aof-army-forge-books.md))
 - [~] 379 — AoF weapon animations + sounds: 12 effect sets shipped (Arrow form for arrows/bolts/javelins/ballistae, sling/breath/arcane styles, 5 melee incl. cross-system great-weapon-smash, toxic-rend, bombing-run) + 24 synthesized cues + assigner gap fixes. Implemented + tested; awaiting GUI hand-verify. ([WorkItems/379](WorkItems/379-aof-weapon-effects-av.md))
 
