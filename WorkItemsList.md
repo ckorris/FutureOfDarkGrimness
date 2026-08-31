@@ -65,6 +65,7 @@ When closing an item: write the Outcome in its detail file, tick the line, and m
 
 ## Special rules — framework
 
+- [~] 391 — Harassing family fixes (found by #381's survey): the CHARGER now gets the post-melee move too (text is role-neutral; was charged-unit-only, charger first when both offer), and a Shaken unit is refused at the PostCombatMoveGate chokepoint (no Active Special Rules while Shaken). Implemented + tested; awaiting GUI hand-verify. ([WorkItems/391](WorkItems/391-harassing-charger-and-shaken.md))
 - [~] 382 — A joined hero's creation-time aura never fired (the join relocates it onto the hero model, which `UnitCreationRules` never walked), leaving all "X Aura" grants inert on combined units — the reported Robot Legions Reanimation failure. Fixed + tested; awaiting GUI hand-verify. ([WorkItems/382](WorkItems/382-joined-hero-aura-inert.md))
 - [~] 370 — Ability actions in the Choose Action menu were listed as a bare rule name ("Courage Buff") with no descriptor text, so a bonus action never explained itself. `AbilityOffer` now carries its `SpecialRuleDefinition` and the menu passes each offer's `Description` through as `OptionDescriptions`, which both front ends already render. Implemented + tested + CLI-verified on the Blessed Sisters Procession Altar; awaiting GUI hand-verify. ([WorkItems/370](WorkItems/370-ability-action-descriptions.md))
 

@@ -61,13 +61,13 @@ Options (recommendation was A):
 - 2026-08-31 recorded deferrals / adjacent findings (none block the rule as printed):
   - Wipe-out consolidation (the survivor's chosen 3" move) does NOT trigger the strike; nor do
     teleport/reposition placement or disembark. Extend `MoveResolvedContext`'s seams if ever ruled in.
-  - The engine's Harassing offers the post-melee move to the CHARGED unit only (the shipped
-    Melee_OnPostMelee reading), so a unit that CHARGES currently has no chosen post-melee move and
-    cannot strike in its own charge activation. That is a pre-existing Harassing scoping question,
-    not a #381 gap - if Harassing is ever widened to the charger, the strike arm picks it up
-    automatically (it rides the same gate).
-  - Harassing itself is NOT Shaken-gated in the engine (only the strike is, via its data condition);
-    pre-existing, noted during the survey.
+  - ~~The engine's Harassing offers the post-melee move to the CHARGED unit only~~ FIXED same day by
+    #391: both combatants now get the post-melee move (charger first), so a charging carrier reaches
+    its strike through Harassing exactly as the ruling described. The strike arm picked it up
+    automatically (same gate) - the hand-off became a list (`PostCombatMovers`) for the
+    both-combatants-Harass case, drained one strike per pass.
+  - ~~Harassing itself is NOT Shaken-gated in the engine~~ FIXED same day by #391 at the
+    PostCombatMoveGate chokepoint.
   - Solo AI answers the target pick with fewest-living-models and never declines (the bare-request
     resolver); acceptable for a free once-per-round strike, revisit if Tactician needs rule-aware
     targeting.
@@ -80,7 +80,9 @@ Options (recommendation was A):
   survive, take the Harassing move, stay within 3" of an enemy: the Retreating Strike target pick
   appears (cancel declines), dice beat rolls at 6+, wounds land with no save.
 - Same unit, its own later activation: move to within 3" of an enemy - the pick appears at move end.
-- Charge WITH the unit: after the melee and the 1" move-back, NO strike prompt (the excluded arm).
+- Charge WITH the unit (post-#391): after the melee it is offered its Harassing move too - DECLINE
+  it, and after the 1" move-back there is NO strike prompt (the excluded arm); take it, and the
+  strike prompt follows the move.
 - Use it once, trigger again same round: no second prompt; next round it is back.
 
 - 2026-08-23 (#378): the 14 dead references now ship in a BUNDLED book (`Assets/Books/
