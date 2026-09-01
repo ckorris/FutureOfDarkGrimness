@@ -9,6 +9,18 @@ A Raylib-based client for **Future of Dark Grimness** — a tabletop wargame rul
 - **Verify before committing — never commit red.** Run `dotnet test FutureOfDarkGrimness/FutureOfDarkGrimness.csproj` green, and for app-side changes a full `dotnet build`. When a change touches a playable path, also run a headless smoke (`printf "2\n2\n" | dotnet run --project FdgRaylib/FdgRaylib.csproj -- --headless`) and confirm it exits 0 with the expected log line.
 - **Re-verify assumptions before shared/irreversible operations.** Inspect git state before merging to or pushing a shared branch; if a stated premise turns out false (e.g. "master is synced"), surface it before proceeding rather than pressing on.
 
+## Versioning & Releases
+
+Three independent version axes; keep them straight and never merge them into one number:
+
+- **App version** — plain SemVer (`MAJOR.MINOR.PATCH`), the single source of truth in `Directory.Build.props` `<Version>`. Drives `AssemblyVersion`/`FileVersion`/`InformationalVersion` for **both** projects (the props file covers the submodule too). Pre-1.0 while breaking changes are still expected. Bump this one line to rev the app.
+- **OPR rules version** — the OnePageRules ruleset the build implements, `RULES_VERSION` (e.g. `OPR_3_5_1`), a top-of-file env in both `scripts/build-dist.sh` and `.github/workflows/release.yml`. Bump when rebased onto a new OPR ruleset, independently of the app version.
+- **Git tag** — `v<app-version>` (e.g. `v0.2.0`). Kept clean SemVer (sortable, tooling-friendly); the OPR version deliberately stays **out** of the tag. Kept in sync with `<Version>` by hand — CI fails the release if `vX.Y.Z` != props `<Version>`.
+
+Both numbers surface together everywhere a human sees a release, never in the tag: release **title** `Future of Dark Grimness v0.2.0 (OPR 3.5.1)`, **archive names** `FdgRaylib-<rid>-v0.2.0-OPR_3_5_1.{zip,tar.gz}`, and binary **ProductVersion** `0.2.0+opr.3.5.1.git-<sha>-<date>` (OPR + commit as SemVer build metadata after the `+`; local/IDE builds report `<Version>-dev`).
+
+**Cutting a release:** set `<Version>` (+ `RULES_VERSION` if the ruleset changed), then `git tag v<Version> && git push --tags`. The `v*` tag triggers `release.yml`, which runs `build-dist.sh` on CI and publishes the GitHub Release with all four platform archives + `SHA256SUMS.txt`. Releases come from **CI, not a local build** (SignPath requires verifiable automated builds); the local script is for dev/testing. Signing is wired into the same workflow but disabled until SignPath accepts the project — the first release is unsigned by design and is itself the application evidence.
+
 ## Working Conventions
 
 - **One vertical slice at a time.** Implement -> add an integration test mirroring the nearest existing `*RuleIntegrationTests` -> verify (above) -> commit -> update the canonical running record (the work item's dated notes / partial-facet ledger). Don't batch unrelated facets into a single change.

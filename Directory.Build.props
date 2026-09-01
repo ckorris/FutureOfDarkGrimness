@@ -10,7 +10,7 @@
     <Company>Chris Orris</Company>
     <Authors>Chris Orris</Authors>
     <Copyright>Copyright (c) 2026 Chris Orris</Copyright>
-    <Version>0.1.0</Version>
+    <Version>0.2.0</Version>
     <RepositoryUrl>https://github.com/ckorris/FutureOfDarkGrimness</RepositoryUrl>
     <!-- #226: the build stamp bug reports carry (see FdgRaylib/AppVersion.cs). Local/IDE
          builds report "<Version>-dev"; dist/CI builds override it on the command line via
