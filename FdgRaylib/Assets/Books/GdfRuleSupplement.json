@@ -687,7 +687,7 @@
         "condition": {
           "kind": "and",
           "left": {
-            "kind": "isMelee"
+            "kind": "isCharging"
           },
           "right": {
             "kind": "targetMajorityHasTough",
@@ -707,7 +707,7 @@
     "scope": "Unit",
     "engineArgumentCount": 0,
     "valence": "Positive",
-    "description": "This model's melee attacks get AP(+2) against units where most models have Tough 3+."
+    "description": "When this model charges, its weapons get AP(+2) against units where most models have Tough 3+."
   },
   {
     "name": "Melee Slayer Aura",

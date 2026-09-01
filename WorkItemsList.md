@@ -257,12 +257,6 @@ full bug log). Deleted from the tree 2026-08-12 - recover from git history if ne
 
 ---
 
-## Special rules — framework (cont.)
-
-- [ ] 380 — GDF Melee Slayer gates on isMelee but the book text says "when this model charges" -
-  shipped def over-grants on strike-back/non-charge melee; found by #375's variant review.
-  ([WorkItems/380](WorkItems/380-melee-slayer-charge-gate.md))
-
 ## Age of Fantasy
 
 Same core ruleset as GDF; 40 faction books. Verified rules/spells reference doc lives outside the repo (`GDF Armies/Age of Fantasy/`, local only). Appraisal 2026-08-22: ~94% of 852 rule instances resolve via existing behavior modulo renames; all 240 spells fit existing spell-effect patterns.

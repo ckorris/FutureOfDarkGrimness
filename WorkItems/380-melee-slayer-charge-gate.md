@@ -1,6 +1,6 @@
 # 380 — GDF Melee Slayer fires in all melee; book text says only when charging
 
-**Status**: todo
+**Status**: DONE 2026-08-31.
 **Related**: #375 (found by its AoF variant review), #196 F1 (where the def was authored), #042.
 
 ## Goal
@@ -27,3 +27,12 @@ override - authored from that book's own divergent text, not from this bug.
 ## Decisions
 
 ## Outcome
+
+2026-08-31: exactly the prescribed fix. `GdfRuleSupplement.json`'s Melee Slayer condition
+isMelee -> isCharging + description reworded to the book text; `--validate-rules` OK (251 defs);
+`--apply-rules` re-embedded into the 11 GDF books that reference it (each diff exactly the two
+changed lines; AoF books untouched - their supplement always shipped the charge gate and wins the
+merge, and the Havoc Warriors Lust Disciples melee-wide override is that book's own divergent
+text). New `MeleeSlayerShippedDataTests` pins the charge+Tough(3) gate in BOTH supplements (so
+they can't drift apart) and in an embedded book copy (so a supplement edit without the rebake
+fails loudly). App suite 1560 green, census clean. No engine change.

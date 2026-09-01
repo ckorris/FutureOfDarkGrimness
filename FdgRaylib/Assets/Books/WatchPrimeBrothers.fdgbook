@@ -7309,7 +7309,7 @@
           "condition": {
             "kind": "and",
             "left": {
-              "kind": "isMelee"
+              "kind": "isCharging"
             },
             "right": {
               "kind": "targetMajorityHasTough",
@@ -7329,7 +7329,7 @@
       "scope": "Unit",
       "engineArgumentCount": 0,
       "valence": "Positive",
-      "description": "This model\u0027s melee attacks get AP(\u002B2) against units where most models have Tough 3\u002B."
+      "description": "When this model charges, its weapons get AP(\u002B2) against units where most models have Tough 3\u002B."
     },
     {
       "name": "Unstoppable Mark",
