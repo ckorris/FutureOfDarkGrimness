@@ -20,11 +20,12 @@
 # Each output folder gets the published app plus a platform README.txt, the
 # third-party license notices, and a copy of the repo's armies/ sample lists.
 #
-# Output lands in dist/:
-#   dist/FdgRaylib-win-x64/     + FdgRaylib-win-x64-<RULES_VERSION>.zip
-#   dist/FdgRaylib-linux-x64/   + FdgRaylib-linux-x64-<RULES_VERSION>.tar.gz
-#   dist/FdgRaylib-osx-arm64/   + FdgRaylib-osx-arm64-<RULES_VERSION>.tar.gz
-#   dist/FdgRaylib-osx-x64/     + FdgRaylib-osx-x64-<RULES_VERSION>.tar.gz
+# Output lands in dist/ (archives carry BOTH the app version and the OPR rules
+# version, e.g. v0.2.0-OPR_3_5_1, so a downloaded file names both axes):
+#   dist/FdgRaylib-win-x64/     + FdgRaylib-win-x64-<APP>-<RULES_VERSION>.zip
+#   dist/FdgRaylib-linux-x64/   + FdgRaylib-linux-x64-<APP>-<RULES_VERSION>.tar.gz
+#   dist/FdgRaylib-osx-arm64/   + FdgRaylib-osx-arm64-<APP>-<RULES_VERSION>.tar.gz
+#   dist/FdgRaylib-osx-x64/     + FdgRaylib-osx-x64-<APP>-<RULES_VERSION>.tar.gz
 #
 set -euo pipefail
 
@@ -43,12 +44,27 @@ RULES_VERSION="${RULES_VERSION:-OPR_3_5_1}"
 COMMON_ARGS=(-c Release --self-contained true -p:PublishTrimmed=false)
 
 # #226: stamp the build so bug reports can be tied to the binary that produced them
-# (surfaced via AppVersion.cs; non-dist builds report the csproj default "dev").
+# (surfaced via AppVersion.cs; non-dist builds report Directory.Build.props' "<version>-dev").
+# The stamp leads with the app version from Directory.Build.props so the binaries'
+# ProductVersion stays recognizable (SignPath metadata restrictions match on it), then carries
+# the OPR rules version and the git commit as SemVer build metadata after the '+':
+#   0.2.0+opr.3.5.1.git-<sha>-<date>
+# so the ProductVersion in the binary names both the app and the rules version too.
+APP_VERSION="$(sed -n 's:.*<Version>\(.*\)</Version>.*:\1:p' "$ROOT_DIR/Directory.Build.props")"
+# OPR_3_5_1 -> opr.3.5.1 : SemVer build metadata only allows [0-9A-Za-z-] in dot-separated
+# identifiers, so fold the underscores (which are not allowed) to dots and lowercase.
+RULES_TOKEN="$(printf '%s' "$RULES_VERSION" | tr 'A-Z_' 'a-z.')"
 GIT_SHA="$(git -C "$ROOT_DIR" rev-parse --short HEAD 2>/dev/null || echo unknown)"
-GIT_STAMP="git-$GIT_SHA-$(date -u +%Y%m%d)"
+GIT_STAMP="${APP_VERSION:-0.0.0}+${RULES_TOKEN}.git-$GIT_SHA-$(date -u +%Y%m%d)"
 if ! git -C "$ROOT_DIR" diff --quiet 2>/dev/null; then GIT_STAMP="$GIT_STAMP-dirty"; fi
 COMMON_ARGS+=("-p:InformationalVersion=$GIT_STAMP")
 echo ">> Build stamp: $GIT_STAMP"
+
+# Release archive suffix: both axes, so the file itself names the app AND rules version
+# (e.g. FdgRaylib-win-x64-v0.2.0-OPR_3_5_1.zip). Keep RULES_VERSION verbatim here - the
+# archive name is for humans, not SemVer, so the readable OPR_3_5_1 form is right.
+ARCHIVE_SUFFIX="v${APP_VERSION:-0.0.0}-${RULES_VERSION}"
+echo ">> Archive suffix: $ARCHIVE_SUFFIX"
 
 # --- which targets? -----------------------------------------------------------
 # No arg = build everything. An explicit arg turns all off, then enables the pick.
@@ -199,8 +215,8 @@ EOF
 # --- Windows ------------------------------------------------------------------
 if [[ $BUILD_WIN -eq 1 ]]; then
   publish_one "win-x64" "FdgRaylib-win-x64"
-  echo ">> Zipping FdgRaylib-win-x64-$RULES_VERSION.zip"
-  ( cd "$DIST_DIR" && zip -rq "FdgRaylib-win-x64-$RULES_VERSION.zip" "FdgRaylib-win-x64" )
+  echo ">> Zipping FdgRaylib-win-x64-$ARCHIVE_SUFFIX.zip"
+  ( cd "$DIST_DIR" && zip -rq "FdgRaylib-win-x64-$ARCHIVE_SUFFIX.zip" "FdgRaylib-win-x64" )
 fi
 
 # --- Linux --------------------------------------------------------------------
@@ -208,8 +224,8 @@ if [[ $BUILD_LINUX -eq 1 ]]; then
   publish_one "linux-x64" "FdgRaylib-linux-x64"
   # Ensure the launcher is executable, then tar (tar preserves the +x bit).
   chmod +x "$DIST_DIR/FdgRaylib-linux-x64/FdgRaylib"
-  echo ">> Tarring FdgRaylib-linux-x64-$RULES_VERSION.tar.gz"
-  tar -czf "$DIST_DIR/FdgRaylib-linux-x64-$RULES_VERSION.tar.gz" -C "$DIST_DIR" "FdgRaylib-linux-x64"
+  echo ">> Tarring FdgRaylib-linux-x64-$ARCHIVE_SUFFIX.tar.gz"
+  tar -czf "$DIST_DIR/FdgRaylib-linux-x64-$ARCHIVE_SUFFIX.tar.gz" -C "$DIST_DIR" "FdgRaylib-linux-x64"
 fi
 
 # --- macOS --------------------------------------------------------------------
@@ -218,15 +234,15 @@ fi
 if [[ $BUILD_MAC_ARM -eq 1 ]]; then
   publish_one "osx-arm64" "FdgRaylib-osx-arm64"
   chmod +x "$DIST_DIR/FdgRaylib-osx-arm64/FdgRaylib"
-  echo ">> Tarring FdgRaylib-osx-arm64-$RULES_VERSION.tar.gz"
-  tar -czf "$DIST_DIR/FdgRaylib-osx-arm64-$RULES_VERSION.tar.gz" -C "$DIST_DIR" "FdgRaylib-osx-arm64"
+  echo ">> Tarring FdgRaylib-osx-arm64-$ARCHIVE_SUFFIX.tar.gz"
+  tar -czf "$DIST_DIR/FdgRaylib-osx-arm64-$ARCHIVE_SUFFIX.tar.gz" -C "$DIST_DIR" "FdgRaylib-osx-arm64"
 fi
 
 if [[ $BUILD_MAC_X64 -eq 1 ]]; then
   publish_one "osx-x64" "FdgRaylib-osx-x64"
   chmod +x "$DIST_DIR/FdgRaylib-osx-x64/FdgRaylib"
-  echo ">> Tarring FdgRaylib-osx-x64-$RULES_VERSION.tar.gz"
-  tar -czf "$DIST_DIR/FdgRaylib-osx-x64-$RULES_VERSION.tar.gz" -C "$DIST_DIR" "FdgRaylib-osx-x64"
+  echo ">> Tarring FdgRaylib-osx-x64-$ARCHIVE_SUFFIX.tar.gz"
+  tar -czf "$DIST_DIR/FdgRaylib-osx-x64-$ARCHIVE_SUFFIX.tar.gz" -C "$DIST_DIR" "FdgRaylib-osx-x64"
 fi
 
 # --- summary ------------------------------------------------------------------

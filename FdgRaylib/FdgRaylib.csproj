@@ -6,9 +6,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <!-- #226: the build stamp bug reports carry (see AppVersion.cs). Dist builds override this
-         via scripts/build-dist.sh -p:InformationalVersion=git-<sha>-<date>; everything else is "dev". -->
-    <InformationalVersion>dev</InformationalVersion>
+    <!-- #226 build stamp: see Directory.Build.props (InformationalVersion) at the repo root. -->
   </PropertyGroup>
 
   <ItemGroup>
