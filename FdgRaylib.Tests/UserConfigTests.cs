@@ -45,6 +45,7 @@ public class UserConfigTests
         Assert.That(config.ServerName, Is.EqualTo("The Table"));
         Assert.That(config.Port, Is.EqualTo(FDG.Network.NetworkProtocol.DefaultPort));
         Assert.That(config.ListPublicly, Is.False);
+        Assert.That(config.StartFullscreen, Is.True, "a fresh install starts in fullscreen.");
     }
 
     [Test]
@@ -80,6 +81,7 @@ public class UserConfigTests
             ServerName = "Gary's Table",
             Port = 7777,
             ListPublicly = true,
+            StartFullscreen = false,
             HostSettings = new HostGameSettings
             {
                 ArmyPoints = 1250,
@@ -105,6 +107,7 @@ public class UserConfigTests
             Assert.That(read.ServerName, Is.EqualTo("Gary's Table"));
             Assert.That(read.Port, Is.EqualTo(7777));
             Assert.That(read.ListPublicly, Is.True);
+            Assert.That(read.StartFullscreen, Is.False, "a non-default fullscreen choice survives disk.");
             Assert.That(read.HostSettings.ArmyPoints, Is.EqualTo(1250));
             Assert.That(read.HostSettings.TurnStyle, Is.EqualTo(ETurnStyle.BoltAction));
             Assert.That(read.HostSettings.ShootingMode, Is.EqualTo(EShootingMode.DeclareFirst));

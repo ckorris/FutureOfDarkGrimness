@@ -36,6 +36,10 @@ public sealed class UserConfig
     /// <summary>Host dialog: the "List publicly" tick (#271). The password is deliberately never stored.</summary>
     public bool ListPublicly { get; set; }
 
+    /// <summary>Display: start in borderless-windowed fullscreen. F11 toggles it at runtime and writes the
+    /// new choice back here, so it is remembered next launch. On by default on a fresh install.</summary>
+    public bool StartFullscreen { get; set; } = true;
+
     /// <summary>The lobby settings panel, as the last hosted (non-resume) game left it.</summary>
     public HostGameSettings HostSettings { get; set; } = HostGameSettings.FromDefaults();
 

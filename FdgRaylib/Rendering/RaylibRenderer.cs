@@ -5,6 +5,7 @@ using FDG.Players;
 using FDG.Presentation.Beats;
 using FDG.StageResolution.Requests;
 using FdgRaylib.Audio;
+using FdgRaylib.Config;
 using FdgRaylib.Rendering.Presentation;
 using FdgRaylib.Rendering.Resolvers;
 using ImGuiNET;
@@ -431,13 +432,16 @@ public class RaylibRenderer
 
     public void Run()
     {
-        // Start maximized: the old flow resized a 1280x720 window up to near-monitor size WITHOUT
-        // repositioning it, leaving it off-center and not quite filling the screen. The maximized
-        // flag fills the work area properly (taskbar respected), and the window stays resizable;
-        // 1280x720 remains the un-maximize/restore size.
-        Raylib.SetConfigFlags(ConfigFlags.ResizableWindow | ConfigFlags.MaximizedWindow);
+        // Window mode is a remembered per-user setting (#310): borderless-windowed fullscreen by
+        // default, toggled with F11 (main loop below). Borderless covers the whole monitor with no
+        // video-mode change (safest across Linux WMs and multi-monitor) and clean alt-tab. The window
+        // stays resizable so a toggle drops it back to a windowed 1280x720 and back.
+        // ToggleBorderlessWindowed must be called after InitWindow; it sizes the window to the monitor.
+        Raylib.SetConfigFlags(ConfigFlags.ResizableWindow);
         Raylib.InitWindow(1280, 720, "Future of Dark Grimness");
         Raylib.SetTargetFPS(30);
+        if (UserConfig.Current.StartFullscreen)
+            Raylib.ToggleBorderlessWindowed();
 
         // Escape is not a quit key. It reads as "cancel the action I'm in the middle of" - several
         // resolvers already bind it that way - and raylib's default exit key made it tear the window
@@ -485,6 +489,17 @@ public class RaylibRenderer
 
         while (!Raylib.WindowShouldClose() && !_closeRequested)
         {
+            // F11 toggles borderless-windowed fullscreen <-> windowed (so the fullscreen default is
+            // never a trap - Escape does not quit here, see SetExitKey above) and remembers the choice:
+            // the flip keeps StartFullscreen in step with the actual window state, since startup applied
+            // whatever it held. Save is ~0.1ms and only fires on the keypress (#310).
+            if (Raylib.IsKeyPressed(KeyboardKey.F11))
+            {
+                Raylib.ToggleBorderlessWindowed();
+                UserConfig.Current.StartFullscreen = !UserConfig.Current.StartFullscreen;
+                UserConfig.Save();
+            }
+
             int screenW = Raylib.GetScreenWidth();
             int screenH = Raylib.GetScreenHeight();
 
