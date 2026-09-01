@@ -86,6 +86,34 @@ re-observe; 2/3 only if the shape survives.
 
 ## Notes
 
+- 2026-08-31 (cont. 3): **Clean gate landed - numbers of record (post-#392 lineage: per-game
+  armies, Server GC, dop 24, Release; 1920 games/leg, seeds 1000+, ~190s/leg).**
+  - baseline-v2, engine `a64ef2f`+`16977e7`: matrix **88.3** / mirrors 88.5 / worst 61.7
+    (BB-vs-Hives) / 0 faults; hash `2B54D2A0D7C20367`.
+  - opt1-v2, `bac1e8d`+fix: matrix **85.7** / mirrors 85.2 / worst 58.3 (DG-vs-HEF);
+    hash `B57ACC5373969000`.
+  - opt12-v2, master `16977e7`: matrix **86.6** / mirrors 86.7 / worst 60.0 (BB-vs-Hives) /
+    0 faults; hash `F72A403CBD50EAF7`.
+  Read: the shipped pair costs ~1.7 matrix points vs this baseline, option 2 recovering ~0.9 of
+  option 1's ~2.6 dip. A-gate automated criteria pass on every leg (aggregate >= 70, NO cell
+  below 50 anywhere). WATCH ITEM: the dip concentrates against HORDES - biggest moves
+  baseline->shipped are DG-vs-Orks -20 (82->62), BB-vs-Orks -15, HDF-vs-Orks -15,
+  DE-vs-Hives -11.7 - consistent with the #384-aware kill term being over-cautious about
+  sight through 30-model mobs (the per-model shoot stage often finds the shots the
+  closest-model ray does not). If the next hand-played games or gate show the Orks rows
+  degrading further, the first lever is softening the urgency sight gate against horde
+  targets (partial factor instead of binary), not reverting the grounding. Accepted on
+  behavior: the save's pathology (both walled units, both armies) is measurably gone.
+- 2026-08-31 (cont. 2): **Gate legs invalidated by #392 and rerun on the fixed stack.** The
+  first baseline (hash `0ABE7B5AAB4E3440`, matrix 85.7 / mirrors 88.1 / worst 53.3) and the
+  option-1 leg (matrix 85.7 / mirrors 85.6 / worst 58.3) ran on the harness whose concurrent
+  games coupled through shared army files (#392, found mid-gate during Chris's bench-speed
+  question) - an engine change shifts setup interleaving exactly like the perturbations that
+  flipped 7/16 repro games, so those legs cannot separate engine effect from contamination.
+  Recorded here as old-lineage datapoints only. All three legs (pre-#389 `a64ef2f`, option 1
+  `bac1e8d`, option 1+2 `27e2ffe`, each with the #392 engine fix `16977e7` applied) rerun on
+  the fixed harness (per-game armies, Server GC, dop 24) - numbers of record below when they
+  land.
 - 2026-08-31 (cont.): **Option 2 built - the band-edge cliff is now a ramp; the historical slide
   argmax turns out to be mostly HONEST pricing.** The arriving-pressure forecast
   (`TacticianPlanner.Score`, #191 idea 2) had a hard band edge: an endpoint one inch beyond an

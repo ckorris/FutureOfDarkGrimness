@@ -102,9 +102,9 @@ Assault Buggy (Impact(3), no melee weapon) charged Orc Warriors -> 3 impact woun
 rammed 7 times in 4 rounds.
 
 **Not done / open questions:**
-- **A loaded transport can still charge.** No gate existed before and none was added, so an APC full
-  of infantry may ram. Wants an owner ruling; if it should be blocked, the gate is one line in
-  `GetCanCharge`.
+- **A loaded transport can still charge. RESOLVED 2026-09-01 (owner): leave it - a loaded transport
+  should NOT be prevented from charging.** No gate existed before and none was added, so the shipped
+  behavior already matches the ruling; no code change. An APC full of infantry may ram.
 - **No GUI hand-verify yet** - the charge option's availability and its reason string were only
   exercised headless.
 - **The AI's ram valuation is inherited, not tuned.** `CombatMath.EstimateMelee` already priced

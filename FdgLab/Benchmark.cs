@@ -47,15 +47,24 @@ public static class Benchmark
         var work = new List<(Matchup Matchup, int Seed, bool Swapped, GameSpec Spec)>();
         foreach (Matchup matchup in options.Matchups)
         {
-            SlotSpec a = Armies.LoadSlot(matchup.SpecA) with { Profile = options.ProfileA };
-            SlotSpec b = Armies.LoadSlot(matchup.SpecB) with { Profile = options.ProfileB };
+            // #392: a FRESH ArmyListFile per game, never one shared instance per matchup. Army
+            // creation used to sort the shared file's weapon lists in place (engine-side, fixed
+            // there too), and concurrent games racing that sort captured different weapon orders -
+            // outcomes then depended on which games overlapped (7/16 flips between GC modes in the
+            // repro). Per-game loading makes game isolation structural instead of relying on the
+            // engine treating its input as read-only; the extra deserializations are microseconds
+            // against a 5s game.
             int seeds = Math.Max(1, options.GamesPerMatchup / 2);
             for (int s = 0; s < seeds; s++)
             {
                 int seed = options.SeedBase + s;
+                SlotSpec a = Armies.LoadSlot(matchup.SpecA) with { Profile = options.ProfileA };
+                SlotSpec b = Armies.LoadSlot(matchup.SpecB) with { Profile = options.ProfileB };
+                SlotSpec a2 = Armies.LoadSlot(matchup.SpecA) with { Profile = options.ProfileA };
+                SlotSpec b2 = Armies.LoadSlot(matchup.SpecB) with { Profile = options.ProfileB };
                 work.Add((matchup, seed, false, new GameSpec(new[] { a, b }, seed, options.Randomness,
                     options.WatchdogSeconds, CaptureLog: dump, Trace: dump && options.Trace)));
-                work.Add((matchup, seed, true, new GameSpec(new[] { b, a }, seed, options.Randomness,
+                work.Add((matchup, seed, true, new GameSpec(new[] { b2, a2 }, seed, options.Randomness,
                     options.WatchdogSeconds, CaptureLog: dump, Trace: dump && options.Trace)));
             }
         }
