@@ -78,6 +78,17 @@ Windows releases are code-signed via SignPath Foundation (see "Code signing poli
 
 <br>
 
+## Uninstalling
+
+The app is portable - there's no installer. To remove it completely:
+
+- Delete the folder you extracted.
+- Delete its settings folder: `%APPDATA%\FDG` on Windows, or `~/.config/fdg` on Linux and macOS. It holds a single `config.json` (your player name and last-used lobby settings).
+
+Any games you saved stay wherever you chose to save them; delete those `.fdgsave` files yourself if you want them gone.
+
+<br>
+
 ## Importing an army
 
 If you want to use an army from OnePageRules' Army Forge, then open that army. In the top right, click the three dots, followed by Share List, and Share as Link. 
