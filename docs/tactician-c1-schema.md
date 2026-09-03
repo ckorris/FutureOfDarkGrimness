@@ -114,6 +114,23 @@ activated, in reserve, can seize, mobility norm, ranged share, melee share, norm
 to nearest objective, normalized distance to nearest enemy, threat-coverage frac, is-caster,
 owning block (SELF/ALLY/ENEMY one-hot).
 
+## 5b. Boundary subsampling (added 2026-09-03 from step 2's throughput data)
+
+Measured throughput at DOP 16, today's engine: 3.4 games/s (1k mirror), 1.6 (3k vs solo), 0.8
+(3k/4k mirror), 0.5 (2v2). A mixed generation run therefore averages roughly **1 game/s, so about
+85k games/day and ~340k over a four-day window** - at 190-690 boundaries per game that is well
+over 100M rows, or tens of GB gzipped. Disk is not the binding constraint (421GB free), but
+training on it would be.
+
+**Decision: write 1 row in 4 boundaries (`boundary_sample_rate`, uniform, recorded in the
+header).** Rows from one game share a single outcome label and are highly correlated, so the
+700th row of a game is worth far less than the 1st row of a NEW game - subsampling within games
+while maximising game count is the right trade. Uniform (not head- or tail-biased) so early,
+middle and late game phases stay equally represented. Yields ~25M rows over the window, which is
+ample for a 63-feature model and still leaves headroom to lower the rate if v2 wants more.
+
+The rate is a header field, not a constant, so a later run can change it without a schema bump.
+
 ## 6. File format and provenance
 
 Gzipped JSONL, one file per 200 completed games, under `FdgLab/data/<UTC date>/`.
@@ -123,7 +140,7 @@ Header record (first line of every file), per G9 - training data provenance is p
 ```
 schema=1, engine_commit, superproject_commit, created_utc, profile_a, profile_b,
 seed_range, shape, points_level, army_a, army_b, held_out (bool), entity_sample_rate,
-encoder_ms_mean
+boundary_sample_rate, encoder_ms_mean
 ```
 
 `held_out` is stamped from `FdgLab/armies/pool.json`'s `heldOut` list so a held-out pairing can
