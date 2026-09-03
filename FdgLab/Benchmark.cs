@@ -4,8 +4,16 @@ using FDG;
 
 namespace FdgLab;
 
-/// <summary>One army pairing to be played N times with side-swapping.</summary>
-public sealed record Matchup(string SpecA, string SpecB);
+/// <summary>
+/// One pairing to be played N times with side-swapping. Each side is a ROSTER (usually one army;
+/// two for a 2v2 panel cell, B+C campaign section 5) - every existing 1v1 caller builds a
+/// single-element roster via <see cref="OneVsOne"/>, so its report labels, CSV rows and outcome
+/// hash are byte-identical to before this generalization.
+/// </summary>
+public sealed record Matchup(IReadOnlyList<string> SideA, IReadOnlyList<string> SideB)
+{
+    public static Matchup OneVsOne(string specA, string specB) => new(new[] { specA }, new[] { specB });
+}
 
 public sealed record BenchmarkOptions(
     IReadOnlyList<Matchup> Matchups,
@@ -27,7 +35,10 @@ public sealed record BenchmarkOptions(
     bool Trace = false,
     // #191 automated tuning: the raw --weights spec already applied to TacticianWeights, recorded
     // in the report header so a tuned run can never be mistaken for a default one.
-    string? WeightOverrides = null);
+    string? WeightOverrides = null,
+    // B+C campaign: touch this file to pause new game starts (a soak/data-gen driver sharing the
+    // box signals through it); already-running games finish normally.
+    string? PauseFilePath = null);
 
 /// <summary>
 /// The seeded, side-swapped benchmark matrix (#194; plan sec. 6.1). Scoring: for a matchup (A, B),
@@ -58,14 +69,8 @@ public static class Benchmark
             for (int s = 0; s < seeds; s++)
             {
                 int seed = options.SeedBase + s;
-                SlotSpec a = Armies.LoadSlot(matchup.SpecA) with { Profile = options.ProfileA };
-                SlotSpec b = Armies.LoadSlot(matchup.SpecB) with { Profile = options.ProfileB };
-                SlotSpec a2 = Armies.LoadSlot(matchup.SpecA) with { Profile = options.ProfileA };
-                SlotSpec b2 = Armies.LoadSlot(matchup.SpecB) with { Profile = options.ProfileB };
-                work.Add((matchup, seed, false, new GameSpec(new[] { a, b }, seed, options.Randomness,
-                    options.WatchdogSeconds, CaptureLog: dump, Trace: dump && options.Trace)));
-                work.Add((matchup, seed, true, new GameSpec(new[] { b2, a2 }, seed, options.Randomness,
-                    options.WatchdogSeconds, CaptureLog: dump, Trace: dump && options.Trace)));
+                work.Add((matchup, seed, false, BuildSpec(matchup, seed, swapped: false, options, dump)));
+                work.Add((matchup, seed, true, BuildSpec(matchup, seed, swapped: true, options, dump)));
             }
         }
 
@@ -80,8 +85,9 @@ public static class Benchmark
         await Parallel.ForEachAsync(
             Enumerable.Range(0, work.Count),
             new ParallelOptions { MaxDegreeOfParallelism = options.DegreeOfParallelism },
-            async (i, _) =>
+            async (i, ct) =>
             {
+                await PauseGate.WaitWhilePausedAsync(options.PauseFilePath, ct);
                 GameRecord record = await GameRunner.RunGameAsync(work[i].Spec);
                 if (dump)
                     record = DumpGameFiles(options.DumpLogsDir!, work[i], record);
@@ -106,6 +112,22 @@ public static class Benchmark
         return faults == rows.Count ? 1 : 0; // all-fault run means the harness itself is broken
     }
 
+    // #392: a FRESH ArmyListFile per game, never one shared instance per matchup (see the comment
+    // this replaced, above the old inline build). Team seating: side A occupies the FIRST slot
+    // block when not swapped, the SECOND block when swapped - matches GameSpec.TeamGame's
+    // convention and reduces to the historical [a,b]/[b2,a2] order for one-army-per-side matchups.
+    private static GameSpec BuildSpec(Matchup matchup, int seed, bool swapped, BenchmarkOptions options, bool dump)
+    {
+        List<SlotSpec> BuildSide(IReadOnlyList<string> specs, FDG.Ai.EAiProfile profile, int team) =>
+            specs.Select(spec => Armies.LoadSlot(spec) with { Profile = profile, Team = team }).ToList();
+
+        List<SlotSpec> sideA = BuildSide(matchup.SideA, options.ProfileA, team: swapped ? 1 : 0);
+        List<SlotSpec> sideB = BuildSide(matchup.SideB, options.ProfileB, team: swapped ? 0 : 1);
+        List<SlotSpec> slots = swapped ? sideB.Concat(sideA).ToList() : sideA.Concat(sideB).ToList();
+        return new GameSpec(slots, seed, options.Randomness, options.WatchdogSeconds,
+            CaptureLog: dump, Trace: dump && options.Trace);
+    }
+
     // #210: write the game's log/trace the moment it completes and strip them from the kept
     // record, so a full 1800-game run's memory stays flat. The filename is STABLE across runs
     // (matchup + seed + side, never the outcome), so two runs of the same options diff file by
@@ -113,8 +135,8 @@ public static class Benchmark
     private static GameRecord DumpGameFiles(string dir,
         (Matchup Matchup, int Seed, bool Swapped, GameSpec Spec) game, GameRecord record)
     {
-        string baseName = $"{Sanitize(Path.GetFileNameWithoutExtension(game.Matchup.SpecA))}__vs__" +
-                          $"{Sanitize(Path.GetFileNameWithoutExtension(game.Matchup.SpecB))}" +
+        string baseName = $"{Sanitize(string.Join("_", game.Matchup.SideA.Select(Path.GetFileNameWithoutExtension)))}__vs__" +
+                          $"{Sanitize(string.Join("_", game.Matchup.SideB.Select(Path.GetFileNameWithoutExtension)))}" +
                           $"__s{game.Seed}_{(game.Swapped ? "swp" : "fwd")}";
         if (record.Log != null)
             File.WriteAllLines(Path.Combine(dir, baseName + ".log"), record.Log);
@@ -133,11 +155,23 @@ public static class Benchmark
 
     private sealed record GameRow(Matchup Matchup, int Seed, bool Swapped, GameRecord Record)
     {
-        // Army A's slot depends on the side assignment; ties/faults have no winner.
-        public string LabelA => Path.GetFileNameWithoutExtension(Matchup.SpecA);
-        public string LabelB => Path.GetFileNameWithoutExtension(Matchup.SpecB);
-        public bool AWon => Record.WinnerSlot == (Swapped ? 1 : 0);
-        public bool BWon => Record.WinnerSlot == (Swapped ? 0 : 1);
+        public string LabelA => string.Join("+", Matchup.SideA.Select(Path.GetFileNameWithoutExtension));
+        public string LabelB => string.Join("+", Matchup.SideB.Select(Path.GetFileNameWithoutExtension));
+
+        // Slot-block membership depends on the side assignment (BuildSpec's seating convention);
+        // reduces to the historical WinnerSlot==(Swapped?1:0) check when each side is one army.
+        private int SideACount => Matchup.SideA.Count;
+        private int SideBCount => Matchup.SideB.Count;
+        public IEnumerable<int> SideASlots => Swapped ? Enumerable.Range(SideBCount, SideACount) : Enumerable.Range(0, SideACount);
+        public IEnumerable<int> SideBSlots => Swapped ? Enumerable.Range(0, SideBCount) : Enumerable.Range(SideACount, SideBCount);
+
+        public bool AWon => Record.WinnerSlot.HasValue && SideASlots.Contains(Record.WinnerSlot.Value);
+        public bool BWon => Record.WinnerSlot.HasValue && SideBSlots.Contains(Record.WinnerSlot.Value);
+
+        // Summed over the side's own slots this game - equals the single slot's score when a side
+        // is one army (the historical 1v1 case).
+        public int ScoreA => SideASlots.Where(i => i < Record.Result.Scores.Count).Sum(i => Record.Result.Scores[i].ObjectiveCount);
+        public int ScoreB => SideBSlots.Where(i => i < Record.Result.Scores.Count).Sum(i => Record.Result.Scores[i].ObjectiveCount);
     }
 
     /// <summary>
@@ -152,7 +186,7 @@ public static class Benchmark
         {
             GameResult result = row.Record.Result;
             string scores = string.Join(",", result.Scores.Select(s => s.ObjectiveCount));
-            sb.Append($"{row.Matchup.SpecA}|{row.Matchup.SpecB}|{row.Seed}|{row.Swapped}|" +
+            sb.Append($"{string.Join(";", row.Matchup.SideA)}|{string.Join(";", row.Matchup.SideB)}|{row.Seed}|{row.Swapped}|" +
                       $"{result.Outcome}|{row.Record.WinnerSlot?.ToString() ?? "-"}|{scores}|{result.RoundsPlayed}\n");
         }
         return Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(sb.ToString())))[..16];
@@ -223,13 +257,10 @@ public static class Benchmark
         foreach (GameRow row in rows)
         {
             GameResult result = row.Record.Result;
-            // Scores are per slot in slot order; map back to (A, B) through the side assignment.
-            int scoreSlot0 = result.Scores.Count > 0 ? result.Scores[0].ObjectiveCount : 0;
-            int scoreSlot1 = result.Scores.Count > 1 ? result.Scores[1].ObjectiveCount : 0;
-            int scoreA = row.Swapped ? scoreSlot1 : scoreSlot0;
-            int scoreB = row.Swapped ? scoreSlot0 : scoreSlot1;
+            // Each side's score is summed over its own slots this game (its team, for a panel
+            // cell) - equals the single slot's score for the historical one-army-per-side case.
             sb.AppendLine($"{Csv(row.LabelA)},{Csv(row.LabelB)},{row.Seed},{row.Swapped}," +
-                          $"{result.Outcome},{Csv(row.Record.WinnerArmy ?? "")},{scoreA},{scoreB},{result.RoundsPlayed}," +
+                          $"{result.Outcome},{Csv(row.Record.WinnerArmy ?? "")},{row.ScoreA},{row.ScoreB},{result.RoundsPlayed}," +
                           $"{row.Record.WallClock.TotalMilliseconds:F0},{row.Record.Decisions.Count},{row.Record.Decisions.MeanMs:F2}");
         }
 

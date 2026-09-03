@@ -111,7 +111,7 @@ Each step: goal, deliverables, verify, model/effort, box usage. "Ledger" = dated
 ### Step 0 - Branch + plan (DONE 2026-09-03, Sonnet)
 `tactician-bc` in both repos; this file; plan-doc amendment; ledger note.
 
-### Step 1 - Harness generalization (Sonnet / medium; ~1 burst)
+### Step 1 - Harness generalization (Sonnet / medium; ~1 burst) - DONE 2026-09-03
 - `SlotSpec.Team` (default: own team) threaded to `PlayerSlot(teamNumber)`; `GameSpec` helpers
   for 2v2. FFA N-slot already works.
 - Pool manifest: `FdgLab/armies/pool.json` listing armies by point level, sourced from the

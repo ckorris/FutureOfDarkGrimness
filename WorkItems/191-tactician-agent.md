@@ -23,6 +23,32 @@ campaigns re-base.)*
 
 ## Notes (newest first)
 
+**2026-09-03 - STEP 1 (harness generalization) DONE.** `SlotSpec.Team` (nullable, default null
+= own team - every existing 1v1/FFA caller unchanged) threaded to `PlayerSlot(teamNumber)`;
+`GameSpec.TeamGame` helper stamps grouped team seating (team A's slots first, team B's second -
+matches Scenarios/crowded-2v2-3k.json's convention; FDGServer's own `GameBootstrap.AddTeams`
+wires TeamData automatically, no other engine plumbing needed). `Benchmark`'s `Matchup` widened
+from single armies (SpecA/SpecB) to per-side ROSTERS (SideA/SideB) via `Matchup.OneVsOne` for the
+existing 1v1 case - report labels, CSV rows and the outcome hash reduce byte-identically to
+before for every existing 1-army-per-side caller (verified: rerunning the same panel twice
+reproduced the same outcome hash; the 2k main matrix `--pool FdgLab/armies` path is untouched).
+New `bench --panel <name>` reads `FdgLab/armies/pool.json` (generalization manifest, campaign
+doc sec 5): `points-1k` (4 cells), `points-3k` (4 cells), `points-4k` (3 cells, the new 4k lists
+committed alongside), `shape-2v2` (6 cells, 4 at 2k/player + 2 at 3k/player) - all smoke-tested
+with 0 faults, sane joined-roster labels, deterministic hashes. `heldOut` entries recorded per
+the 2026-09-03 correction (pairs at every point level + one 2v2 cell, never a whole level/shape):
+1k HDF-vs-PrimeBrothers, 2k Dwarf-vs-HDF + DE-vs-HEF (unchanged from the campaign doc), 3k
+DE-vs-HEF (deliberate cross-level echo of the 2k held-out pair - a bonus same-matchup-different-
+size generalization probe), 4k AlienHives-vs-HEF, and the 2v2 cell AlienHives+Orks-vs-
+BattleBrothers+HDF. New `PauseGate.WaitWhilePausedAsync` (touch-file cooldown) wired into
+`bench --pause-file PATH`, checked before each game start; will be reused by step 4's self-play
+driver so a soak/bench and data generation can share the box without fighting for cores. Verify:
+engine suite 3166/3167 (1 pre-existing skip) green, full solution build clean, headless smoke
+exit 0; FdgLab has no dedicated test project, so correctness was verified by running each new
+path (1v1 smoke unchanged, both new panels, unknown-panel error message, hash-reproducibility
+on rerun). Next: step 2 (A generalization baseline across all four panels, overnight) and step 3
+(B0 spike).
+
 **2026-09-03 - B+C CAMPAIGN KICKOFF: branch `tactician-bc` (both repos), execution plan
 `docs/tactician-bc-campaign.md`, plan-doc amendment (sec. 14).** Chris asked whether to skip
 Phase B and train a value net directly to use a 4-day unattended window; after weighing it

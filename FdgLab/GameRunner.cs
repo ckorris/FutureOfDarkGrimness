@@ -52,7 +52,9 @@ public static class GameRunner
         for (int i = 0; i < slots.Length; i++)
         {
             SlotSpec slotSpec = spec.Slots[i];
-            slots[i] = new PlayerSlot(i, teamNumber: i, new PlayerID(Guid.NewGuid()), slotSpec.Army, store);
+            // Team=null (the default) means "own team" - every existing 1v1/FFA caller is
+            // unaffected; GameSpec.TeamGame stamps real team numbers for grouped-team games.
+            slots[i] = new PlayerSlot(i, teamNumber: slotSpec.Team ?? i, new PlayerID(Guid.NewGuid()), slotSpec.Army, store);
 
             int slot = i; // the decision sink must not capture the shared loop variable
             Action<string>? decisionLog = spec.LogDecisions && log != null

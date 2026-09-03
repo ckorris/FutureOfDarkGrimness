@@ -31,10 +31,32 @@ public sealed record GameSpec(
     public static GameSpec TwoPlayer(SlotSpec a, SlotSpec b, int seed,
         ERandomnessType randomness = ERandomnessType.Realistic) =>
         new(new[] { a, b }, seed, randomness);
+
+    /// <summary>
+    /// A team game (B+C campaign generalization axis: 2v2 panels, section 5 of
+    /// docs/tactician-bc-campaign.md): every slot in <paramref name="teamA"/> is stamped Team=0,
+    /// every slot in <paramref name="teamB"/> Team=1, concatenated teamA-then-teamB - the same
+    /// grouped seating convention as Scenarios/crowded-2v2-3k.json and ScenarioCompiler (teams
+    /// occupy consecutive slots, not interleaved). FDGServer wires TeamData from these Team
+    /// numbers automatically (GameBootstrap.AddTeams) - no other plumbing needed.
+    /// </summary>
+    public static GameSpec TeamGame(IReadOnlyList<SlotSpec> teamA, IReadOnlyList<SlotSpec> teamB, int seed,
+        ERandomnessType randomness = ERandomnessType.Realistic)
+    {
+        var slots = new List<SlotSpec>(teamA.Count + teamB.Count);
+        slots.AddRange(teamA.Select(s => s with { Team = 0 }));
+        slots.AddRange(teamB.Select(s => s with { Team = 1 }));
+        return new GameSpec(slots, seed, randomness);
+    }
 }
 
-/// <summary>One player slot: an army (already loaded) and the AI profile that plays it.</summary>
-public sealed record SlotSpec(string ArmyLabel, ArmyListFile Army, EAiProfile Profile = EAiProfile.SoloRules);
+/// <summary>
+/// One player slot: an army (already loaded) and the AI profile that plays it.
+/// <see cref="Team"/> is null by default (every slot its own team - free-for-all, matching every
+/// existing 1v1/FFA caller unchanged); set it to group slots into shared teams (2v2 etc).
+/// </summary>
+public sealed record SlotSpec(string ArmyLabel, ArmyListFile Army, EAiProfile Profile = EAiProfile.SoloRules,
+    int? Team = null);
 
 /// <summary>What one game produced. <see cref="Result"/> is the engine's structured record (#192).</summary>
 public sealed record GameRecord(

@@ -1,0 +1,40 @@
+{
+  "_comment": "B+C campaign generalization manifest (docs/tactician-bc-campaign.md sec 5). The 2k main matrix is unchanged: 'bench --pool FdgLab/armies' over the 8 curated files already here. Paths below are relative to the repo root (same convention as --a/--b/--pool). heldOut pairings are excluded from ALL training data (step 4's exporter and step 12's finalize) at every point level and one 2v2 cell - never a whole point level or shape (corrected 2026-09-03). An army may appear in other trained-on pairings; only the exact listed pairing is withheld. Panel cells are informational/non-regression benches and may overlap heldOut pairings (different purpose - panels measure play strength, heldOut measures training generalization).",
+
+  "heldOut": [
+    { "level": "1k", "sideA": ["armies/1k - Human Defense Force.fdgarmy"], "sideB": ["armies/1k - Prime Brothers.fdgarmy"] },
+    { "level": "2k", "sideA": ["FdgLab/armies/Dwarf Guilds 2k - Ambush and Scout-Heavy.fdgarmy"], "sideB": ["FdgLab/armies/Human Defense Force 2k - Tough and Vehicle-Heavy.fdgarmy"] },
+    { "level": "2k", "sideA": ["FdgLab/armies/Dark Elf Raiders 2k - Transport.fdgarmy"], "sideB": ["FdgLab/armies/High Elf Fleets 2k  - Caster-Heavy.fdgarmy"] },
+    { "level": "3k", "sideA": ["armies/3k - Dark Elf Raiders.fdgarmy"], "sideB": ["armies/3k - High Elf Fleets.fdgarmy"] },
+    { "level": "4k", "sideA": ["armies/4k - Alien Hives.fdgarmy"], "sideB": ["armies/4k - High Elf Fleets.fdgarmy"] },
+    { "level": "2v2-2k", "sideA": ["FdgLab/armies/Alien Hives 2k - Horde Melee.fdgarmy", "FdgLab/armies/Orks 2k - Horde Mixed.fdgarmy"], "sideB": ["FdgLab/armies/Battle Brothers 2k - Elite Shooting.fdgarmy", "FdgLab/armies/Human Defense Force 2k - Tough and Vehicle-Heavy.fdgarmy"] }
+  ],
+
+  "panels": {
+    "points-1k": [
+      { "sideA": ["armies/1k - Alien Hives.fdgarmy"], "sideB": ["armies/1k - Blood Brothers.fdgarmy"] },
+      { "sideA": ["armies/1k - Alien Hives.fdgarmy"], "sideB": ["armies/Wormhole Demons of Change 1k.fdgarmy"] },
+      { "sideA": ["armies/1k - Blood Brothers.fdgarmy"], "sideB": ["armies/1k - Human Defense Force.fdgarmy"] },
+      { "sideA": ["armies/Wormhole Demons of Change 1k.fdgarmy"], "sideB": ["armies/1k - Prime Brothers.fdgarmy"] }
+    ],
+    "points-3k": [
+      { "sideA": ["armies/3k - Battle Brothers.fdgarmy"], "sideB": ["armies/3k - Goblin Reclaimers.fdgarmy"] },
+      { "sideA": ["armies/3k - Knight Brothers.fdgarmy"], "sideB": ["armies/3k - Robot Legions.fdgarmy"] },
+      { "sideA": ["armies/3k - Saurian Starhost.fdgarmy"], "sideB": ["armies/3k - Soul-Snatcher Cults.fdgarmy"] },
+      { "sideA": ["armies/3k - Eternal Dynasty.fdgarmy"], "sideB": ["armies/3k - DAO Union.fdgarmy"] }
+    ],
+    "points-4k": [
+      { "sideA": ["armies/4k - Alien Hives.fdgarmy"], "sideB": ["armies/4k - Havoc Brothers.fdgarmy"] },
+      { "sideA": ["armies/4k - Alien Hives.fdgarmy"], "sideB": ["armies/4k - High Elf Fleets.fdgarmy"] },
+      { "sideA": ["armies/4k - Havoc Brothers.fdgarmy"], "sideB": ["armies/4k - High Elf Fleets.fdgarmy"] }
+    ],
+    "shape-2v2": [
+      { "sideA": ["FdgLab/armies/Alien Hives 2k - Horde Melee.fdgarmy", "FdgLab/armies/Orks 2k - Horde Mixed.fdgarmy"], "sideB": ["FdgLab/armies/Battle Brothers 2k - Elite Shooting.fdgarmy", "FdgLab/armies/Human Defense Force 2k - Tough and Vehicle-Heavy.fdgarmy"] },
+      { "sideA": ["FdgLab/armies/Dark Elf Raiders 2k - Transport.fdgarmy", "FdgLab/armies/Robot Legions 2k - Mixed.fdgarmy"], "sideB": ["FdgLab/armies/Dwarf Guilds 2k - Ambush and Scout-Heavy.fdgarmy", "FdgLab/armies/High Elf Fleets 2k  - Caster-Heavy.fdgarmy"] },
+      { "sideA": ["FdgLab/armies/Alien Hives 2k - Horde Melee.fdgarmy", "FdgLab/armies/High Elf Fleets 2k  - Caster-Heavy.fdgarmy"], "sideB": ["FdgLab/armies/Orks 2k - Horde Mixed.fdgarmy", "FdgLab/armies/Battle Brothers 2k - Elite Shooting.fdgarmy"] },
+      { "sideA": ["FdgLab/armies/Dwarf Guilds 2k - Ambush and Scout-Heavy.fdgarmy", "FdgLab/armies/Robot Legions 2k - Mixed.fdgarmy"], "sideB": ["FdgLab/armies/Dark Elf Raiders 2k - Transport.fdgarmy", "FdgLab/armies/Human Defense Force 2k - Tough and Vehicle-Heavy.fdgarmy"] },
+      { "sideA": ["armies/3k - Saurian Starhost.fdgarmy", "armies/3k - Goblin Reclaimers.fdgarmy"], "sideB": ["armies/3k - Soul-Snatcher Cults.fdgarmy", "armies/3k - Dark Elf Raiders.fdgarmy"] },
+      { "sideA": ["armies/3k - Battle Brothers.fdgarmy", "armies/3k - Knight Brothers.fdgarmy"], "sideB": ["armies/3k - Robot Legions.fdgarmy", "armies/3k - Titan Lords.fdgarmy"] }
+    ]
+  }
+}

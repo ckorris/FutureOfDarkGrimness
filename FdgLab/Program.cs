@@ -19,8 +19,14 @@ static int Usage()
         FdgLab - self-play harness (#194)
 
         Commands:
-          bench   --a <army> --b <army> | --pool <dir>   seeded, side-swapped benchmark matrix
+          bench   --a <army> --b <army> | --pool <dir> | --panel <name>   seeded, side-swapped
+                                     benchmark matrix. --panel reads FdgLab/armies/pool.json's
+                                     named generalization panel (B+C campaign, docs/tactician-bc-
+                                     campaign.md sec 5): points-1k | points-3k | points-4k |
+                                     shape-2v2
                   [--profile-a P] [--profile-b P]  AI per army side: solorules | tactician (#191 A4)
+                  [--pause-file PATH]  before each game, wait while PATH exists (cooperative pause
+                                     so a soak/self-play driver can share the box, B+C campaign)
                   [--weights "Name=V;Name=V"]  override TacticianWeights fields for this process
                                      (#191 automated tuning; recorded in the report header)
                   [--games N]        total games per matchup (default 200; played as N/2 seeds x 2 sides)
@@ -60,9 +66,16 @@ static async Task<int> RunBench(string[] args)
     string? a = Arg(args, "--a");
     string? b = Arg(args, "--b");
     string? pool = Arg(args, "--pool");
+    string? panel = Arg(args, "--panel");
 
     var matchups = new List<Matchup>();
-    if (pool != null)
+    if (panel != null)
+    {
+        var loaded = Pool.LoadPanel(panel);
+        if (loaded == null) return 2;
+        matchups.AddRange(loaded);
+    }
+    else if (pool != null)
     {
         // Every ORDERED pair plus each self-mirror once (Chris, 2026-07-10): profile A binds to
         // army A, so an unordered triangle made profile A play alphabetically-early armies far
@@ -74,15 +87,15 @@ static async Task<int> RunBench(string[] args)
         bool triangle = args.Contains("--triangle");
         for (int i = 0; i < armies.Length; i++)
             for (int j = triangle ? i : 0; j < armies.Length; j++)
-                matchups.Add(new Matchup(armies[i], armies[j]));
+                matchups.Add(Matchup.OneVsOne(armies[i], armies[j]));
     }
     else if (a != null && b != null)
     {
-        matchups.Add(new Matchup(a, b));
+        matchups.Add(Matchup.OneVsOne(a, b));
     }
     else
     {
-        Console.Error.WriteLine("bench needs --a and --b, or --pool. See 'fdglab' for usage.");
+        Console.Error.WriteLine("bench needs --a and --b, or --pool, or --panel. See 'fdglab' for usage.");
         return 2;
     }
 
@@ -102,6 +115,7 @@ static async Task<int> RunBench(string[] args)
         OutDir: Arg(args, "--out") ?? Path.Combine("FdgLab", "reports"),
         ProfileA: benchProfileA,
         ProfileB: benchProfileB,
+        PauseFilePath: Arg(args, "--pause-file"),
         DumpLogsDir: Arg(args, "--dump-logs"),
         Trace: args.Contains("--trace"),
         WeightOverrides: Arg(args, "--weights"));
