@@ -23,6 +23,45 @@ campaigns re-base.)*
 
 ## Notes (newest first)
 
+**2026-09-03 - STEP 3 (B0 SPIKE): MECHANISM FINDINGS. R1 (stop/abandon) is answerable with
+EXISTING machinery; prescribing a decision is NOT as simple as answering the request.** Cost
+numbers pending a clean idle-box run (chained behind step 2); these four findings are
+timing-independent and already decide B1's shape.
+
+1. **Finding a boundary needs no engine hook.** DeterminePlayerTurnStage writes GameProgressData
+   at the start of every activation cycle and the next request is that player's
+   ChooseUnitToActivateRequest - so the Nth such request IS the Nth activation boundary, with the
+   world settled from the previous activation. The spike detects boundaries by counting that
+   request type through the registry wrapper (FeasibilityShadow's pattern).
+2. **Stopping a simulated game works today, no engine change (plan R1, "the top engineering
+   unknown", downgraded).** A resolver exception is caught by
+   NetworkedRequestMessageReceiver.HandleRequestMessageAsync, returned as
+   StageTaskRequestErrorMessage, rethrown into the awaiting stage by RequestMessageSender, and
+   unwound by FDGServer.LaunchStateMachineOnceReady's catch into a Fault game-end - the state
+   machine genuinely stops rather than being orphaned. Measured 3/3 then 30/30 stop_observed.
+   Caveat for B1: that path prints a full `[GAME ERROR]` stack trace per simulation (fine once,
+   unacceptable at 10k) and reports the sim as a Fault, so B1 wants either a recognised quiet-stop
+   exception type or the pause hook - a decision the clean cost numbers will inform, not this.
+3. **Advance is deterministic and snapshots chain.** Two natural advances from one snapshot are
+   BYTE-IDENTICAL (G5 holds for the node-expansion primitive, so B4's search can be seeded), and a
+   captured boundary snapshot resumes again - chained to depth 2/2 in the smoke, so a tree walk is
+   not capped at depth 1.
+4. **THE ONE THAT WOULD HAVE BITTEN B1: a prescribed decision must go THROUGH the policy, not
+   around it.** Answering ChooseUnitToActivateRequest at the registry boundary is mechanically
+   correct - the control test (inject the option the policy would itself have picked) reproduces
+   the natural result BYTE-IDENTICALLY under SoloRules, so wire settings, reply type and
+   DataBinding serialization are all right. Under the Tactician the SAME control DIVERGES even
+   when there is only ONE valid option (a forced choice), because
+   `TacticianActivationResolver.Resolve` calls `_planner.BeginActivation(unit)` before returning:
+   bypass the resolver and every later request in that activation is answered by a planner that
+   was never told which unit is acting. In B1 this would have been a silent corruption - search
+   exploring branches whose continuation was computed by a mis-initialised planner, yielding
+   plausible but wrong evaluations. So `Advance(snapshot, compositeDecision)` must inject through
+   a policy-side seam (a forced-choice option on TacticianOptions / the registry) that still runs
+   the planner's own per-activation setup with the PRESCRIBED unit.
+
+Spike lives in `FdgLab/B0Spike.cs` (`fdglab b0`), pure measurement, no Tactician behavior change.
+
 **2026-09-03 - STEP 1 (harness generalization) DONE.** `SlotSpec.Team` (nullable, default null
 = own team - every existing 1v1/FFA caller unchanged) threaded to `PlayerSlot(teamNumber)`;
 `GameSpec.TeamGame` helper stamps grouped team seating (team A's slots first, team B's second -

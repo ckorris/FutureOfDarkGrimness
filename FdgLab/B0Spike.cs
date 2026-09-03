@@ -181,6 +181,47 @@ public static class B0Spike
         Console.WriteLine($"    chained depth reached: {depth}/{chain}" +
                           (chainMs.Count > 0 ? $" | {Describe(chainMs)}" : ""));
 
+        // --- Phase 3c: determinism + prescribed-decision injection -------------------------------
+        // Three things B1 needs that the cost numbers do not establish: that advancing the SAME
+        // snapshot twice gives the SAME result (reproducible search, G5), that the harness can
+        // PRESCRIBE a decision rather than accept the AI's (search explores chosen branches), and
+        // that prescribing actually steers the game (a no-op injection would look like success).
+        Console.WriteLine("\n[3c] Determinism and decision injection");
+        (string? natural1, string n1) = await AdvanceCapturingAsync(snapshot, profile, timeoutSeconds);
+        (string? natural2, string n2) = await AdvanceCapturingAsync(snapshot, profile, timeoutSeconds);
+        (string? injected, string n3) = await AdvanceCapturingAsync(snapshot, profile, timeoutSeconds, injectAt: 1);
+        // CONTROL: inject the option the policy would have chosen anyway. A sound injection must
+        // reproduce the natural result byte for byte; a divergence here means answering the request
+        // at the registry boundary SKIPPED policy state the later requests depend on (the Tactician
+        // resolver calls planner.BeginActivation before returning).
+        (string? control, string n4) = await AdvanceCapturingAsync(snapshot, profile, timeoutSeconds,
+            injectAt: 1, injectFirst: true);
+
+        if (natural1 == null || natural2 == null)
+        {
+            Console.WriteLine($"    inconclusive - natural advance failed ({n1} / {n2})");
+        }
+        else
+        {
+            bool deterministic = natural1 == natural2;
+            Console.WriteLine($"    determinism: two natural advances {(deterministic ? "MATCH" : "DIFFER")}" +
+                              $" -> {(deterministic ? "reproducible (G5 holds for Advance)" : "NOT reproducible - B4 search cannot be seeded")}");
+            if (injected == null)
+                Console.WriteLine($"    injection: FAILED - {n3}");
+            else
+                Console.WriteLine($"    injection (last option): accepted, {n3}; result " +
+                                  $"{(injected != natural1 ? "DIFFERS from natural" : "IDENTICAL to natural")}");
+
+            if (control == null)
+                Console.WriteLine($"    injection control: FAILED - {n4}");
+            else
+                Console.WriteLine($"    injection control (policy's own pick, {n4}): " +
+                    (control == natural1
+                        ? "IDENTICAL to natural -> registry-level injection is side-effect free for this policy"
+                        : "DIFFERS from natural -> BYPASSING THE RESOLVER LOSES POLICY STATE; " +
+                          "B1 must prescribe THROUGH the policy, not around it"));
+        }
+
         // --- Phase 4: leak soak ------------------------------------------------------------------
         if (soak > 0)
         {
@@ -327,19 +368,22 @@ public static class B0Spike
     /// One advance that RETURNS the captured snapshot (Phase 3b's chaining), throw-stopped.
     /// </summary>
     private static async Task<(string? Snapshot, string Note)> AdvanceCapturingAsync(string snapshot,
-        EAiProfile profile, int timeoutSeconds)
+        EAiProfile profile, int timeoutSeconds, int injectAt = 0, bool injectFirst = false)
     {
         GameDataStore store = GameSaveSerializer.Load(snapshot);
         var captured = new TaskCompletionSource<string>(TaskCreationOptions.RunContinuationsAsynchronously);
         var watcher = new BoundaryWatcher(targetOccurrence: 2,
-            onBoundary: () => captured.TrySetResult(GameSaveSerializer.Save(store)), throwAfter: true);
+            onBoundary: () => captured.TrySetResult(GameSaveSerializer.Save(store)), throwAfter: true,
+            injectAtOccurrence: injectAt, injectFirstOption: injectFirst);
 
         var ended = new TaskCompletionSource<GameResult>(TaskCreationOptions.RunContinuationsAsynchronously);
         BuildResumedServer(store, profile, watcher, ended);
 
         Task finished = await Task.WhenAny(captured.Task, ended.Task,
             Task.Delay(TimeSpan.FromSeconds(timeoutSeconds)));
-        if (finished == captured.Task) return (await captured.Task, "ok");
+        if (finished == captured.Task)
+            return (await captured.Task, watcher.InjectedOptionCount >= 0
+                ? $"ok (injected over {watcher.InjectedOptionCount} options)" : "ok");
         if (finished == ended.Task) return (null, $"game ended: {(await ended.Task).ToSummaryLine()}");
         return (null, $"timed out after {timeoutSeconds}s");
     }
@@ -445,22 +489,63 @@ public static class B0Spike
         private readonly int _target;
         private readonly Action _onBoundary;
         private readonly bool _throwAfter;
+        private readonly int _injectAt;
         private int _seen;
+        private int _injectedOptionCount = -1;
 
-        public BoundaryWatcher(int targetOccurrence, Action onBoundary, bool throwAfter)
+        /// <summary>How many options the injected decision had (-1 = injection never fired).</summary>
+        public int InjectedOptionCount => _injectedOptionCount;
+
+        /// <param name="injectAtOccurrence">
+        /// When > 0, the harness ANSWERS that occurrence itself with the LAST valid option instead of
+        /// letting the AI choose - the B1 prescribed-decision primitive. Deliberately the last option,
+        /// because the AI's own pick is usually the first, so a steered game diverges visibly.
+        /// </param>
+        private readonly bool _injectFirst;
+
+        public BoundaryWatcher(int targetOccurrence, Action onBoundary, bool throwAfter,
+            int injectAtOccurrence = 0, bool injectFirstOption = false)
         {
             _target = targetOccurrence;
             _onBoundary = onBoundary;
             _throwAfter = throwAfter;
+            _injectAt = injectAtOccurrence;
+            _injectFirst = injectFirstOption;
         }
 
         public IStageResolverRegistry Wrap(IStageResolverRegistry inner) => new WatchRegistry(inner, this);
 
-        private void Observe()
+        // Returns a reply JSON to inject, or null to let the inner registry answer normally.
+        private string? Observe(string? requestJson, IReadableGameDataStore store)
         {
-            if (Interlocked.Increment(ref _seen) != _target) return;
+            int seen = Interlocked.Increment(ref _seen);
+
+            if (seen == _injectAt && _injectAt > 0 && requestJson != null)
+            {
+                // Mirror StageResolverRegistry.ResolveRequestAsJson_Typed exactly: wire settings for
+                // BOTH directions, and serialize against the declared reply type so TypeNameHandling
+                // records what the awaiting stage expects.
+                Newtonsoft.Json.JsonSerializerSettings wire = FDG.Network.WireJsonSettings.For(store);
+                var request = Newtonsoft.Json.JsonConvert
+                    .DeserializeObject<ChooseUnitToActivateRequest>(requestJson, wire);
+                if (request != null && request.ValidOptions.Count > 0)
+                {
+                    _injectedOptionCount = request.ValidOptions.Count;
+                    // FIRST option is the control: it is what the solo bot would pick anyway, so a
+                    // mechanically sound injection must reproduce the natural result exactly. LAST
+                    // is the steering test.
+                    DataBinding<UnitData> chosen = _injectFirst
+                        ? request.ValidOptions[0].Option
+                        : request.ValidOptions[^1].Option;
+                    return Newtonsoft.Json.JsonConvert.SerializeObject(
+                        chosen, typeof(DataBinding<UnitData>), wire);
+                }
+            }
+
+            if (seen != _target) return null;
             _onBoundary();
             if (_throwAfter) throw new StopSignal();
+            return null;
         }
 
         private sealed class WatchRegistry : IStageResolverRegistry
@@ -484,14 +569,18 @@ public static class B0Spike
             public Task<TReply> ResolveRequest<TRequest, TReply>(TRequest request)
                 where TRequest : IStageTaskRequest<TReply>
             {
-                if (request is ChooseUnitToActivateRequest) _watcher.Observe();
+                if (request is ChooseUnitToActivateRequest) _watcher.Observe(null, null!);
                 return _inner.ResolveRequest<TRequest, TReply>(request);
             }
 
             public Task<string> ResolveRequestAsJson(string typeFullName, string requestJson,
                 IReadableGameDataStore gameDataStore)
             {
-                if (typeFullName == typeof(ChooseUnitToActivateRequest).FullName) _watcher.Observe();
+                if (typeFullName == typeof(ChooseUnitToActivateRequest).FullName)
+                {
+                    string? injected = _watcher.Observe(requestJson, gameDataStore);
+                    if (injected != null) return Task.FromResult(injected);
+                }
                 return _inner.ResolveRequestAsJson(typeFullName, requestJson, gameDataStore);
             }
         }
