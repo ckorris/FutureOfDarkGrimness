@@ -248,6 +248,28 @@
           "armies/3k - Titan Lords.fdgarmy"
         ]
       }
+    ],
+    "shape-2v2-3k": [
+      {
+        "sideA": [
+          "armies/3k - Saurian Starhost.fdgarmy",
+          "armies/3k - Goblin Reclaimers.fdgarmy"
+        ],
+        "sideB": [
+          "armies/3k - Soul-Snatcher Cults.fdgarmy",
+          "armies/3k - Dark Elf Raiders.fdgarmy"
+        ]
+      },
+      {
+        "sideA": [
+          "armies/3k - Battle Brothers.fdgarmy",
+          "armies/3k - Knight Brothers.fdgarmy"
+        ],
+        "sideB": [
+          "armies/3k - Robot Legions.fdgarmy",
+          "armies/3k - Titan Lords.fdgarmy"
+        ]
+      }
     ]
   }
 }
