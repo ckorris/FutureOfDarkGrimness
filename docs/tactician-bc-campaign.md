@@ -263,6 +263,13 @@ Not a degenerate opponent, just a compounding weakness.
 - `shape-2v2`: 4 cells at 2k per player (mixed archetypes per side), 2 cells at 3k per player.
 - `ffa-smoke`: 1 four-player game per gate, must produce a `GameResult` with no fault.
 
+*Watchdog must scale with the cell (measured 2026-09-03).* The 120s default is sized for 2k 1v1
+(~16s/game). A 3k 2v2 cell is 12k points and ~50 units across 4 slots, runs ~686 decisions/game,
+and step 2's first pass lost 7 games in one cell to watchdog timeouts - which silently shrinks
+the denominator a cell's score is computed over. Panels at 3k+ or 2v2 run with `--timeout 600`;
+search profiles (B5) will need more again. A timeout is a MEASUREMENT failure, not a fault of the
+bot, and any cell reporting timeouts is re-run rather than reported.
+
 **Held out for C (never in training data):** specific army PAIRS at every point level - two at
 2k (default: Dwarf-vs-HDF and DE-vs-HEF; Chris may override), one each at 1k, 3k and 4k - plus
 one 2v2 cell. Every point level and both shapes ARE trained on; only those pairs/cells are not.
