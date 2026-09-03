@@ -3,6 +3,9 @@
 Authored 2026-07-09 (superproject `334b58c`, engine `38c5aa5`), signed off by Chris the same day.
 Umbrella work item: **#191** (`WorkItems/191-tactician-agent.md` is the running ledger; this file is
 the design authority). Prerequisites: **#192 / #193 / #194**.
+**Execution plan for Phases B+C (2026-09-03 onward): `docs/tactician-bc-campaign.md`** - branch
+`tactician-bc`, step order, gates with generalization panels, model/effort policy. See the
+2026-09-03 amendment (section 14) for the design deltas it introduced.
 
 **Goal:** an AI opponent that gives a real challenge to human players, with any army against any
 army, running on Chris's desktop (Threadripper 1950X 16C/32T, RTX 4070 Ti SUPER 16GB, 32GB RAM).
@@ -477,6 +480,38 @@ design principle: grow vocabulary on demand).
 3. **Start of D:** full replan from C's results; explicitly decide whether D is worth it versus
    polishing C. D as written is a direction, not a commitment.
 4. **Any gate failed twice:** stop; present analysis + options + recommendation to Chris.
+
+---
+
+## 14. Amendment 2026-09-03 (Chris, signed off) - generalization axes, B then C, execution plan
+
+Recorded per G10 at the start of the B+C campaign (`docs/tactician-bc-campaign.md` is the
+execution plan; this section is the design delta).
+
+- **Ladder order reaffirmed: B then C.** A "skip B, train a value net on A's greedy planner"
+  option was evaluated and rejected (no true afterstate without B1; one-ply search cannot value
+  sacrificial/anticipatory plays; search-free self-improvement loops are collapse-prone). The
+  only C work pulled forward is the C1 exporter, to use idle compute during B's build.
+- **G13 (new invariant). Scale and shape generalization.** From Phase B on, bots are built,
+  benchmarked and trained across point levels {1k, 2k, 3k, 4k} and player shapes {1v1, 2v2}.
+  Concretely: (a) no scoring or feature term carries an absolute (inches, points, wound counts)
+  where a fraction or normalized quantity exists; (b) C1 features aggregate per SIDE (own side,
+  allied, enemy sum, enemy max) so every shape has one input width; (c) B2's search uses a
+  per-side reward vector with max^n backup (each acting player maximizes its own side), reducing
+  bit-identically to two-player in 1v1; (d) search time budgets scale with root branching under a
+  hard cap. 3v3 / 3v2 / FFA are NOT gated - one 4-player FFA no-fault smoke per gate only.
+- **Gates gain panels.** B-gate and C-gate keep the 2k 1v1 main matrix for statistical power and
+  add non-regression panels (1k, 3k, 4k, 2v2) at ~100 games/cell against A's measured baseline;
+  C's held-out set covers army pairs, one point level AND one shape (extends the 6.1 rider). The
+  panel definitions live in the campaign doc, section 5, to keep this doc's gate text stable.
+- **A-gate status.** Automated criteria passed (2026-07-26, 83.9 matrix / no cell < 50 / 0
+  faults). Left formally open and carried, not dropped: hallway probe (built at the B-gate with
+  the probe harness), A6 lobby profile picker, generalization panels for A (measured at campaign
+  step 2, not gated retroactively).
+- **Pre-authorized stop-and-asks:** a minimal pause/step hook at `DeterminePlayerTurnStage` if
+  B0 needs it (pin-tested, solo untouched); lab-side team plumbing (`SlotSpec.Team`).
+- **Branching:** all B+C work on `tactician-bc` (both repos); master merges only at L1 (B-gate)
+  and L2 (C-gate), optionally L0 for the harness tooling.
 
 ---
 

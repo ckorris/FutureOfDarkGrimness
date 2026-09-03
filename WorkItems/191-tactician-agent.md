@@ -23,6 +23,26 @@ campaigns re-base.)*
 
 ## Notes (newest first)
 
+**2026-09-03 - B+C CAMPAIGN KICKOFF: branch `tactician-bc` (both repos), execution plan
+`docs/tactician-bc-campaign.md`, plan-doc amendment (sec. 14).** Chris asked whether to skip
+Phase B and train a value net directly to use a 4-day unattended window; after weighing it
+(no true afterstate without B1, one-ply cannot value sacrificial/anticipatory plays,
+search-free self-play loops collapse) he chose B then C, driven from his phone with
+check-ins every few hours. Decisions D7-D11 recorded in the campaign doc: ladder order
+stands; generalization across points {1k,2k,3k,4k} and shapes {1v1,2v2} is first-class
+(new invariant G13 - fractions not absolutes, per-side feature aggregation, max^n backup,
+branching-scaled budgets; 3v3/FFA not gated, one FFA no-fault smoke); gates gain
+non-regression panels; held-out set for C covers pairs + a point level + a shape; the C1
+exporter is pulled forward as idle-compute filler and its feature schema gets an Opus
+review before the first long run (lock-in); pre-authorized seams: `DeterminePlayerTurnStage`
+pause/step hook if B0 needs it, lab-side `SlotSpec.Team`. Model/effort policy per step with
+a prompt-to-switch protocol (Sonnet default, Opus for lifecycle/UCT/C4/failure analysis,
+Fable for B0 read-out + B1 design, B2 tree shape, C replan). Plan-limit facts verified
+2026-09-03: shared weekly bucket, Fable <= 50% of it and ~2x Opus / ~5x Sonnet, box compute
+is free, subagents count. Next: step 1 (harness: Team, pool manifest, panels, pause file),
+step 2 (A generalization baseline, overnight), step 3 (B0 spike, soak overnight), step 4
+(exporter) before Chris leaves 2026-09-04.
+
 **2026-08-15 (cont.) - A5-10b: deploy-time embark extended to EVERY profile; solo gets a
 get-out rule.** Chris sharpened the policy the same day: "Units should very rarely embark into
 a transport AFTER deployment. During deployment, it's almost always best" - i.e. the deploy-vs-
