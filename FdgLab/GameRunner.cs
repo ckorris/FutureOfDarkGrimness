@@ -26,6 +26,10 @@ public static class GameRunner
         var wall = Stopwatch.StartNew();
         var samples = new List<double>();
         var sampleLock = new object();
+        // #191 step 3/5: per-request-type cost, so "where does an activation's policy time go" is a
+        // measurement instead of a guess. Always collected (a dictionary add against a ~20ms
+        // decision is free); only reported when asked for.
+        var byType = new System.Collections.Concurrent.ConcurrentDictionary<string, TimingRegistry.TypeTally>();
 
         var store = GameDataStore.GameDataStoreBuilder.GetDefault();
         var bus = new LabMessageBus();
@@ -65,7 +69,7 @@ public static class GameRunner
             var registry = BuildRegistry(slotSpec.Profile, aiGame, slots[i].PlayerID, spec.Seed, i, decisionLog);
             if (registryWrapper != null)
                 registry = registryWrapper(registry, aiGame);
-            var timed = new TimingRegistry(registry, samples, sampleLock);
+            var timed = new TimingRegistry(registry, samples, sampleLock, byType);
             slots[i].AssignPlayerController(new LabPlayerController(
                 $"{slotSpec.ArmyLabel} (slot {i})", slots[i].PlayerID, aiGame, timed,
                 logSink: i == 0 ? logSink : null));
@@ -102,7 +106,8 @@ public static class GameRunner
         lock (sampleLock) stats = DecisionStats.From(samples);
         IReadOnlyList<string>? capturedLog;
         lock (logLock) capturedLog = log?.ToArray();
-        return new GameRecord(spec, result, wall.Elapsed, stats, winnerSlot, capturedLog, tracer?.Entries);
+        return new GameRecord(spec, result, wall.Elapsed, stats, winnerSlot, capturedLog, tracer?.Entries,
+            byType.ToDictionary(kv => kv.Key, kv => (kv.Value.Count, kv.Value.TotalMs)));
     }
 
     // The game seed goes in whole; the engine derives the per-player stream by slot ID (#193).

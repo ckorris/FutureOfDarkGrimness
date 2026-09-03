@@ -66,7 +66,9 @@ public sealed record GameRecord(
     DecisionStats Decisions,
     int? WinnerSlot,
     IReadOnlyList<string>? Log = null,
-    IReadOnlyList<string>? Trace = null)
+    IReadOnlyList<string>? Trace = null,
+    /// <summary>Per-request-type decision cost: type name -> (calls, total ms). #191 step 3/5.</summary>
+    IReadOnlyDictionary<string, (long Count, double TotalMs)>? DecisionsByType = null)
 {
     /// <summary>True when the watchdog killed the game rather than the engine finishing it.</summary>
     public bool TimedOut => Result.Outcome == EGameOutcome.Fault && Result.Message.StartsWith("watchdog:");

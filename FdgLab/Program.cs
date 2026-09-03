@@ -45,6 +45,7 @@ static int Usage()
                   [--profile-a P] [--profile-b P]        AI per slot: solorules | tactician |
                                                          gunline (scripted human stand-in: holds
                                                          its line, shoots, claims safe objectives)
+                  [--timing-breakdown]  per-request-type decision cost for the game (#191 step 3/5)
                   [--log-decisions]  with --dump-logs: interleave each planning AI's Choose Action
                                      narration ("[ai N] plan ..." + full scored candidate table)
                                      into the game log - a decision replay (#191 tooling)
@@ -170,6 +171,16 @@ static async Task<int> RunSmoke(string[] args)
         if (dumpDir != null && record.Trace != null)
             File.WriteAllLines(Path.Combine(dumpDir, $"game_{i:D2}_{record.Result.Outcome}.trace"), record.Trace);
         Console.WriteLine($"Game result: {record.Result.ToSummaryLine()}");
+        if (args.Contains("--timing-breakdown") && record.DecisionsByType != null)
+        {
+            Console.WriteLine("Decision cost by request type (the Phase B question: what would a");
+            Console.WriteLine("prescribed macro-action remove for free, vs what a cheap in-sim policy must own):");
+            double grand = record.DecisionsByType.Values.Sum(v => v.TotalMs);
+            foreach (var kv in record.DecisionsByType.OrderByDescending(kv => kv.Value.TotalMs))
+                Console.WriteLine($"  {kv.Key,-34} {kv.Value.TotalMs,9:F0}ms {kv.Value.TotalMs / Math.Max(0.001, grand) * 100,5:F1}%  " +
+                                  $"calls={kv.Value.Count,5} mean={kv.Value.TotalMs / Math.Max(1, kv.Value.Count),6:F2}ms");
+            Console.WriteLine($"  {"TOTAL",-34} {grand,9:F0}ms");
+        }
         if (repeat == 1)
             Console.WriteLine($"winner_army={record.WinnerArmy ?? "none"} wall={record.WallClock.TotalMilliseconds:F0}ms " +
                               $"decisions={record.Decisions.Count} (mean {record.Decisions.MeanMs:F2}ms, p95 {record.Decisions.P95Ms:F1}ms)");
