@@ -502,7 +502,9 @@ execution plan; this section is the design delta).
   hard cap. 3v3 / 3v2 / FFA are NOT gated - one 4-player FFA no-fault smoke per gate only.
 - **Gates gain panels.** B-gate and C-gate keep the 2k 1v1 main matrix for statistical power and
   add non-regression panels (1k, 3k, 4k, 2v2) at ~100 games/cell against A's measured baseline;
-  C's held-out set covers army pairs, one point level AND one shape (extends the 6.1 rider). The
+  C's held-out set is specific army pairs at EVERY point level plus one 2v2 cell (extends the
+  6.1 rider) - never a whole point level or shape, since every level and shape is a deployment
+  target the net must train on (corrected 2026-09-03, Chris's catch). The
   panel definitions live in the campaign doc, section 5, to keep this doc's gate text stable.
 - **A-gate status.** Automated criteria passed (2026-07-26, 83.9 matrix / no cell < 50 / 0
   faults). Left formally open and carried, not dropped: hallway probe (built at the B-gate with

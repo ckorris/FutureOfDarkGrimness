@@ -32,7 +32,7 @@ check-ins every few hours. Decisions D7-D11 recorded in the campaign doc: ladder
 stands; generalization across points {1k,2k,3k,4k} and shapes {1v1,2v2} is first-class
 (new invariant G13 - fractions not absolutes, per-side feature aggregation, max^n backup,
 branching-scaled budgets; 3v3/FFA not gated, one FFA no-fault smoke); gates gain
-non-regression panels; held-out set for C covers pairs + a point level + a shape; the C1
+non-regression panels; held-out set for C is specific pairs at every point level + one 2v2 cell (first draft held out the whole 1k panel - Chris caught that it would leave 1k nearly untrained; corrected same day); the C1
 exporter is pulled forward as idle-compute filler and its feature schema gets an Opus
 review before the first long run (lock-in); pre-authorized seams: `DeterminePlayerTurnStage`
 pause/step hook if B0 needs it, lab-side `SlotSpec.Team`. Model/effort policy per step with

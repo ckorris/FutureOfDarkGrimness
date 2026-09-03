@@ -217,8 +217,8 @@ regenerate a B-play dataset at low volume alongside the A-play set.
 
 ### Step 13 - C2 training (Sonnet / medium; GPU: minutes-hours)
 `FdgLab/python/` (uv-managed: torch, lightgbm, pandas, pyarrow, onnx, onnxruntime): LightGBM
-baseline, then a small MLP. Hold out entire army pairs, one point level, and one shape (section
-5). Loss curves are diagnostics only (G9).
+baseline, then a small MLP. Hold out entire army pairs at every point level plus one 2v2 cell (section
+5); never a whole point level or shape. Loss curves are diagnostics only (G9).
 
 ### Step 14 - C3 ONNX evaluator (Sonnet / medium)
 `IPositionEvaluator` seam engine-side (heuristic impl there); `OnnxPositionEvaluator` app/lab-side
@@ -242,14 +242,18 @@ seeds, side-swapped (plan 6.1). Score = wins + 0.5 ties.
 - `shape-2v2`: 4 cells at 2k per player (mixed archetypes per side), 2 cells at 3k per player.
 - `ffa-smoke`: 1 four-player game per gate, must produce a `GameResult` with no fault.
 
-**Held out for C (never in training data):** two 2k pairs (default: Dwarf-vs-HDF and DE-vs-HEF -
-Chris may override), the whole `points-1k` panel's pairs, and one 2v2 cell. Recorded in
-`pool.json`.
+**Held out for C (never in training data):** specific army PAIRS at every point level - two at
+2k (default: Dwarf-vs-HDF and DE-vs-HEF; Chris may override), one each at 1k, 3k and 4k - plus
+one 2v2 cell. Every point level and both shapes ARE trained on; only those pairs/cells are not.
+(Corrected 2026-09-03 after Chris caught the original "hold out the whole 1k panel": with four
+1k lists that excluded nearly all 1k play, and 1k is a deployment target, not an extrapolation
+probe.) Size extrapolation, if ever wanted, is an informational probe at a level nobody plays
+(e.g. 5k random armies once step 12's generator exists) - never gating. Recorded in `pool.json`.
 
 | Gate | Main matrix | Panels | Probes | Chris |
 |---|---|---|---|---|
 | B | >= 60% vs A, >= 85% vs solo | no panel cell below A's step-2 baseline minus 5 points; ffa-smoke clean; decision time within budget at 4k; memory stable over 500 games | last-round steal, charge-vs-shoot | >= 2 games, verbatim |
-| C | >= 55% vs B | held-out pairs within ~5 points of trained pairs; held-out point level AND held-out shape each within ~5 points | lane-block, buff-anticipation | >= 2 games, verbatim |
+| C | >= 55% vs B | held-out pairs (at every point level) within ~5 points of trained pairs; held-out 2v2 cell within ~5 points | lane-block, buff-anticipation | >= 2 games, verbatim |
 
 Bench compute with search: a 2k 1v1 search game is ~150-300s, so the main matrix is ~12-24h at
 DOP 16 and panels are ~2-3x that in total. Run the main matrix first, panels overnight after,
