@@ -55,6 +55,7 @@ public static class B0Spike
         int advances = IntArg(args, "--advances", 20);
         int soak = IntArg(args, "--soak", 0);
         int chain = IntArg(args, "--chain", 8);
+        int rollouts = IntArg(args, "--rollouts", 5);
         int timeoutSeconds = IntArg(args, "--timeout", 60);
         EAiProfile profile = (Arg(args, "--profile") ?? "tactician").ToLowerInvariant() switch
         {
@@ -222,6 +223,32 @@ public static class B0Spike
                           "B1 must prescribe THROUGH the policy, not around it"));
         }
 
+        // --- Phase 3d: rollout-to-game-end cost --------------------------------------------------
+        // The number that decides B3. The plan specifies rollouts to game end as the leaf estimate;
+        // if one rollout costs many multiples of a node expansion, that is unaffordable per leaf and
+        // the leaf estimate has to be an EVALUATOR instead (which is what Phase C then improves).
+        // Measured, not inferred from bench throughput (G6).
+        if (rollouts > 0)
+        {
+            Console.WriteLine($"\n[3d] Rollout to game end x{rollouts} (from the same mid-game snapshot)");
+            var rollMs = new List<double>();
+            int completed = 0;
+            for (int i = 0; i < rollouts; i++)
+            {
+                var sw = Stopwatch.StartNew();
+                bool ok = await RolloutToEndAsync(snapshot, profile, timeoutSeconds);
+                sw.Stop();
+                if (ok) { completed++; rollMs.Add(sw.Elapsed.TotalMilliseconds); }
+            }
+            if (rollMs.Count > 0)
+            {
+                Console.WriteLine($"    completed={completed}/{rollouts} | {Describe(rollMs)}");
+                Console.WriteLine($"    ONE rollout costs {rollMs.Average() / Math.Max(1, 1):F0}ms " +
+                                  $"= {rollMs.Average() / 243.0:F0}x a measured node expansion (2k reference 243ms)");
+            }
+            else Console.WriteLine($"    no rollout completed within {timeoutSeconds}s");
+        }
+
         // --- Phase 4: leak soak ------------------------------------------------------------------
         if (soak > 0)
         {
@@ -386,6 +413,19 @@ public static class B0Spike
                 ? $"ok (injected over {watcher.InjectedOptionCount} options)" : "ok");
         if (finished == ended.Task) return (null, $"game ended: {(await ended.Task).ToSummaryLine()}");
         return (null, $"timed out after {timeoutSeconds}s");
+    }
+
+    /// <summary>Resume a snapshot and let it play to its natural end (a Phase-B rollout).</summary>
+    private static async Task<bool> RolloutToEndAsync(string snapshot, EAiProfile profile, int timeoutSeconds)
+    {
+        GameDataStore store = GameSaveSerializer.Load(snapshot);
+        // Target occurrence int.MaxValue = never stop at a boundary; the game just runs to the end.
+        var watcher = new BoundaryWatcher(targetOccurrence: int.MaxValue, onBoundary: () => { },
+            throwAfter: false);
+        var ended = new TaskCompletionSource<GameResult>(TaskCreationOptions.RunContinuationsAsynchronously);
+        BuildResumedServer(store, profile, watcher, ended);
+        Task finished = await Task.WhenAny(ended.Task, Task.Delay(TimeSpan.FromSeconds(timeoutSeconds)));
+        return finished == ended.Task;
     }
 
     /// <summary>Round number recorded in a snapshot's GameProgressData, for the chain trace.</summary>
