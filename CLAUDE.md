@@ -4,7 +4,40 @@ A Raylib-based client for **Future of Dark Grimness** — a tabletop wargame rul
 
 ## Git Conventions
 
-- Do not include Claude, AI, or co-author attributions in commit messages.
+- Do not include Claude, AI, or co-author attributions in commit messages. Keep messages brief.
+- **Submodule-first commit cadence.** When engine changes are authorized (the `FutureOfDarkGrimness` submodule), commit the submodule first, then bump the superproject submodule pointer together with any app-side changes in a second commit.
+- **Verify before committing — never commit red.** Run `dotnet test FutureOfDarkGrimness/FutureOfDarkGrimness.csproj` green, and for app-side changes a full `dotnet build`. When a change touches a playable path, also run a headless smoke (`printf "2\n2\n" | dotnet run --project FdgRaylib/FdgRaylib.csproj -- --headless`) and confirm it exits 0 with the expected log line.
+- **Re-verify assumptions before shared/irreversible operations.** Inspect git state before merging to or pushing a shared branch; if a stated premise turns out false (e.g. "master is synced"), surface it before proceeding rather than pressing on.
+
+## Versioning & Releases
+
+Three independent version axes; keep them straight and never merge them into one number:
+
+- **App version** — plain SemVer (`MAJOR.MINOR.PATCH`), the single source of truth in `Directory.Build.props` `<Version>`. Drives `AssemblyVersion`/`FileVersion`/`InformationalVersion` for **both** projects (the props file covers the submodule too). Pre-1.0 while breaking changes are still expected. Bump this one line to rev the app.
+- **OPR rules version** — the OnePageRules ruleset the build implements, `RULES_VERSION` (e.g. `OPR_3_5_1`), a top-of-file env in both `scripts/build-dist.sh` and `.github/workflows/release.yml`. Bump when rebased onto a new OPR ruleset, independently of the app version.
+- **Git tag** — `v<app-version>` (e.g. `v0.2.0`). Kept clean SemVer (sortable, tooling-friendly); the OPR version deliberately stays **out** of the tag. Kept in sync with `<Version>` by hand — CI fails the release if `vX.Y.Z` != props `<Version>`.
+
+Both numbers surface together everywhere a human sees a release, never in the tag: release **title** `Future of Dark Grimness v0.2.0 (OPR 3.5.1)`, **archive names** `FdgRaylib-<rid>-v0.2.0-OPR_3_5_1.{zip,tar.gz}`, and binary **ProductVersion** `0.2.0+opr.3.5.1.git-<sha>-<date>` (OPR + commit as SemVer build metadata after the `+`; local/IDE builds report `<Version>-dev`).
+
+**Cutting a release:** set `<Version>` (+ `RULES_VERSION` if the ruleset changed), then `git tag v<Version> && git push --tags`. The `v*` tag triggers `release.yml`, which runs `build-dist.sh` on CI and publishes the GitHub Release with all four platform archives + `SHA256SUMS.txt`. Releases come from **CI, not a local build** so every published binary traces back to a verifiable automated build; the local script is for dev/testing. Builds are unsigned on every platform (a SignPath Foundation application was denied in September 2026), so the README's SmartScreen/Gatekeeper notes stay.
+
+## Working Conventions
+
+- **One vertical slice at a time.** Implement -> add an integration test mirroring the nearest existing `*RuleIntegrationTests` -> verify (above) -> commit -> update the canonical running record (the work item's dated notes / partial-facet ledger). Don't batch unrelated facets into a single change.
+- **Never silently cut scope.** When deferring a facet or edge case, say so explicitly and record it in the canonical ledger at the same time — don't drop it quietly.
+- **Surface design forks before building anything non-trivial.** Present the options with tradeoffs and a recommendation, and get sign-off before committing to UI or architecture decisions.
+- **Game text is ASCII-only.** The ImGui font atlas bakes only Basic Latin + Latin-1 glyphs, so anything beyond U+00FF (em/en dashes, arrows, ellipsis, `<=`-style symbols as single glyphs, accented letters) renders as `?` in-game. No such characters in any user-facing string: log lines, banners, request instructions/labels, UI text, rule/spell descriptions, or book/army data. Use `-`, `->`, `...`, `<=`, `>=`, `x` instead. `OprBookImporter.AsciiFold` scrubs imported OPR text; hand-authored strings must be born ASCII. (Comments and docs are exempt.)
+
+## Work Items
+
+Long-running engineering tasks are tracked outside this file to keep the context budget tight:
+
+- `WorkItemsList.md` (repo root) — index of **open** work only; read it when starting work-item tasks. **Keep entries to <=3 lines** (number, title, one-sentence scope/status, link) — running notes, commit hashes, and test tallies belong in the detail file, never the index.
+- `WorkItems/NNN-slug.md` — per-item working memory: goal, dated notes (newest on top), decisions, outcome. Created when work starts. Template: `WorkItems/README.md`.
+- `WorkItems/Archive.md` — completed/closed items, moved out of the index. When finishing an item: write its Outcome in the detail file, tick the index line, move it to the archive.
+- `WorkItems/Reconciliations.md` — number-collision log. Numbers are permanent and never reused. **`git fetch origin` BEFORE filing a number and take it from `origin/master`'s index + archive, not your local copy** — the number gets copied into source comments, tests, filenames and docs immediately, so a collision costs a renumber across dozens of references (see reconciliations 39 and 40, two sessions that made the same mistake days apart). Then read the log; on a collision the unmerged local item yields. A per-clone pre-push hook (`.git/hooks/pre-push`, not version-controlled — install snippet in `WorkItems/README.md`) blocks duplicate numbers across index + archive, but only at push time, which is far too late.
+
+This file-based system is for durable, cross-session tracking. The built-in Task tool is still the right place for in-session ad-hoc todos.
 
 ## Projects
 
@@ -13,7 +46,7 @@ A Raylib-based client for **Future of Dark Grimness** — a tabletop wargame rul
 | `FutureOfDarkGrimness` | Class library | Game engine: rules, state machine, unit/model data, stage resolution, networking |
 | `FdgRaylib` | Console exe | Application layer: Raylib + ImGui front end, screens (menu/lobby/army builder), CLI + GUI input resolvers |
 
-`FutureOfDarkGrimness` is a **git submodule** — usually treat it as read-only. Stop and ask before modifying it.
+`FutureOfDarkGrimness` is a **git submodule**, and it is usually where the proper fix belongs — prefer the engine-side change over a client-side workaround when the engine is the real home for the behavior. No need to ask first; follow the submodule-first commit cadence above and verify with the engine suite.
 
 ## Build & Run
 
@@ -24,6 +57,10 @@ dotnet build
 # Run with Raylib window (requires a display)
 dotnet run --project FdgRaylib/FdgRaylib.csproj
 
+# For normal play prefer the built binary: `dotnet run` re-runs MSBuild's up-to-date check every
+# launch (~2.7s of overhead before the app starts)
+./FdgRaylib/bin/Debug/net8.0/FdgRaylib
+
 # Run headless (CLI only, no window — useful for piped/automated play)
 dotnet run --project FdgRaylib/FdgRaylib.csproj -- --headless
 
@@ -32,6 +69,15 @@ printf "2\n2\n" | dotnet run --project FdgRaylib/FdgRaylib.csproj -- --headless
 
 # Slow mode: pause N ms before each resolver call (default 1500ms if no value given)
 dotnet run --project FdgRaylib/FdgRaylib.csproj -- --slow 2000
+
+# Rule tracing: narrate every rule hook evaluation (fired / condition failed / suppressed) via
+# the Debug log channel. In the GUI the console's Debug toggle flips the same switch at runtime.
+dotnet run --project FdgRaylib/FdgRaylib.csproj -- --headless --trace-rules
+
+# Scenario tools (#167, see Scenarios/README.md): compile a scenario JSON to a resumable save,
+# or launch one directly - no main menu, no lobby (slot 0 = you, other slots AI). Works headless too.
+dotnet run --project FdgRaylib/FdgRaylib.csproj -- --make-scenario Scenarios/example-shootout.json out.fdgsave
+dotnet run --project FdgRaylib/FdgRaylib.csproj -- --scenario Scenarios/example-shootout.json
 
 # Run engine tests
 dotnet test FutureOfDarkGrimness/FutureOfDarkGrimness.csproj
@@ -46,21 +92,13 @@ Two top-level modes determined in `Program.cs`:
 **GUI (default)** — `RaylibRenderer.Run()` blocks the main thread. Screen stack starts at `MainMenuScreen` and navigates via `renderer.NavigateTo(IAppScreen)`:
 
 ```
-MainMenu ─┬─► HostModal ────► LobbyScreen ──► (in-game)
-          ├─► ClientModal ──► LobbyScreen ──► (in-game)
-          ├─► ArmyBuilder
-          └─► Quit
+MainMenu -+-> HostModal ----> LobbyScreen --> (in-game)
+          +-> ClientModal --> LobbyScreen --> (in-game)
+          +-> ArmyBuilder / ArmyForge
+          +-> Quit
 ```
 
-Each screen is an `IAppScreen` with `Draw(int screenW, int screenH)` and exposes `Action`-based callbacks for navigation. `Program.cs` wires those callbacks together — that's where the screen graph lives.
-
-The game itself only starts running when `LobbyScreen.HandleLaunch` fires (after the host clicks LAUNCH, on both host and client). Until then no `IFDGGame` exists.
-
-## Networking
-
-Multiplayer goes through `FDGHost` (TCP listener on port 6389) and `FDGClient` (TCP connect). Lobby state on each side is an `ILobbyViewModel` (`LobbyViewModel_Host` or `LobbyViewModel_Client`) — both expose the same observable state (player list, chat, settings) so `LobbyScreen` doesn't need to care which side it's on.
-
-When LAUNCH fires, **both** sides invoke `OnLaunched` with an `IFDGGame`. Both sides then run `LobbyScreen.HandleLaunch`, which calls `ResolverRegistryFactory.BuildGui(tableState)` and `game.AssignInterfaces(...)`. On the client, `FDGGame_AsClient.AssignInterfaces` internally creates a `NetworkedRequestMessageReceiver` that pulls `StageTaskRequestMessage` off the bus, routes them to the local resolver registry, and sends replies back to the host. So the GUI resolver pattern Just Works for networked games — no extra wiring needed on the client side.
+Each screen is an `IAppScreen`; `Program.cs` wires the navigation callbacks — that's where the screen graph lives. The game itself only starts when `LobbyScreen.HandleLaunch` fires (after the host clicks LAUNCH, on both host and client). Until then no `IFDGGame` exists.
 
 ## Threading
 
@@ -69,139 +107,17 @@ When LAUNCH fires, **both** sides invoke `OnLaunched` with an `IFDGGame`. Both s
 
 ## Stage Resolver Pattern
 
-The engine sends `IStageTaskRequest<TResult>` objects through the message bus whenever it needs a player decision. Resolvers implement `IStageResolver<TRequest, TResult>` and are registered with a `StageResolverRegistry`.
+The engine sends `IStageTaskRequest<TResult>` objects through the message bus whenever it needs a player decision; resolvers implement `IStageResolver<TRequest, TResult>`, registered in a `StageResolverRegistry`. There are **two parallel resolver sets** — CLI (`FdgRaylib/Cli/Resolvers/`, stdin/stdout, EOF-safe defaults) and GUI (`FdgRaylib/Rendering/Resolvers/`, ImGui dialogs + canvas overlays); every request type has both. `ResolverRegistryFactory.Build(tableState)` builds the headless registry; `BuildGui(tableState)` returns `(registry, GuiResolverOverlay)`.
 
-There are **two parallel sets of resolvers**:
+**Before touching resolvers, movement, or deployment code, read `docs/ResolverGuide.md`** — GUI overlay architecture, per-request resolver inventory, and the validation gotchas (float-precision margins, the `null` Back-sentinel, deployment spacing) that repeatedly cause bugs when missed.
 
-- `FdgRaylib/Cli/Resolvers/` — stdin/stdout. Used in headless mode and as fallback. Each handles `null` from `Console.ReadLine()` (EOF) with a sensible default so piped input works.
-- `FdgRaylib/Rendering/Resolvers/` — interactive ImGui dialogs and table-canvas interactions. Used in GUI mode. As of this writing **every request type has a GUI resolver**; `BuildGui` registers no CLI fallbacks.
+## Engine reference
 
-`ResolverRegistryFactory.Build(tableState)` builds the headless registry; `BuildGui(tableState)` returns `(registry, GuiResolverOverlay)`.
+`docs/EngineNotes.md` holds the deeper map: networking/lobby wiring, engine concepts (`ITableState`/`IModel`/`DataBinding`), renderer internals, game termination, known engine stubs, and the key-files tree. Two invariants worth repeating here:
 
-### GUI resolver overlay (`FdgRaylib/Rendering/Resolvers/`)
-
-GUI resolvers implement `IGuiResolver`:
-- `bool HasPendingRequest` — true while waiting for a click/decision
-- `void Draw(int screenW, int screenH)` — called from the main thread inside `rlImGui.Begin()/End()`
-
-`GuiResolverOverlay` holds them all and draws whichever has a pending request. `RaylibRenderer` calls `_resolverOverlay.Draw()` once per frame while in-game.
-
-Resolvers that need to interact with the table canvas (movement, placement) additionally implement `IGuiCanvasOverlay`, which receives `UpdateLayout(scale, originX, originY, tableH)` from the renderer each frame so they can do pixel↔inch conversion. They draw rings, ghost models, and zone outlines via `ImGui.GetBackgroundDrawList()` — this puts shapes on top of the Raylib canvas but underneath ImGui windows. Mouse hit-testing uses `ImGui.GetIO().MousePos` and respects `WantCaptureMouse` so clicks on info panels don't bleed through to the table.
-
-### Resolver inventory
-
-| Request | CLI resolver | GUI resolver | Notes |
-|---|---|---|---|
-| `YesNoRequest` | `YesNoResolver` | `GuiYesNoResolver` | EOF default: `true` |
-| `SelectionRequest<T>` | `SelectionResolver<T>` | `GuiSelectionResolver<T>` | Registered for `UnitData`, `ModelData`, `RectangularZone`; GUI has a Back button that resolves `null` |
-| `StringSelectionRequest` | `StringSelectionResolver` | `GuiStringSelectionResolver` | |
-| `ChooseDeploymentZoneRequest` | `ChooseDeploymentZoneResolver` | `GuiChooseDeploymentZoneResolver` | |
-| `ChooseRangedAttackRequest` | `ChooseRangedAttackResolver` | `GuiChooseRangedAttackResolver` | Flattens weapon × target into a single button list; GUI has a Back button that resolves `null` |
-| `AssignWoundsRequest` | `AssignWoundsResolver` | `GuiAssignWoundsResolver` | Stateful — `AssignWoundsResults` accumulates clicks; auto-completes when full |
-| `DefineMovementPathRequest` | `DefineMovementPathResolver` | `GuiDefineMovementResolver` | Click destination on canvas; whole unit moves same Δ |
-| `PlaceObjectsRequest<T>` | `PlaceObjectsResolver<T>` | `GuiPlaceObjectsResolver<T>` | Click each model in turn within deployment zone |
-
-### Validation gotchas
-
-- **Deployment spacing**: `MAX_MODEL_DISTANCE_FROM_ANY_OTHER_MODEL_INCHES` is 1.0" base-to-base. Auto-placement uses 0.1" gap, **not 1.0"** — at exactly 1.0", float accumulation during diagonal movement can push models fractionally over the cohesion limit.
-- **Movement float precision**: `AutoAdvance` caps `step` at `MaxAdvanceDistance - 0.001f`. Without this margin, the resulting 3D move distance can come out fractionally above `MaxAdvanceDistance` and `ChooseActionStage.GetCanShoot` will block shooting after a legal advance.
-- **Back / cancel sentinel**: `GuiSelectionResolver<T>` and `GuiChooseRangedAttackResolver` resolve with `null` when the player clicks Back. Any stage that awaits those requests must null-check the result and activate its `BackToChooseAction` binding rather than proceeding. `ChooseMeleeDefenderStage` and `ChooseRangedAttackStage` already do this.
-- **Charge availability**: `ChooseActionStage.GetCanCharge` queries live unit positions and grays out Charge when no enemy is within `MELEE_RANGE_INCHES_HORIZONTAL` (2"). The check re-runs each time Choose Action is entered, so it stays accurate after movement.
-
-## Engine Concepts
-
-- **`ITableState`**: Live observable view of the game world. Has `Units`, `Models`, `Armies`, `Teams`, `Terrain` — each with `OnObjectCreated`/`OnObjectRemoved` events and an `Objects` enumerable.
-- **`IModel`**: Has `Position` (live), `BaseRadiusInches`, `OnPositionChanged`, `OnWoundsDealt`. A model is in `_tableState.Models` from creation but its `Position` stays at `(0,0,0)` until `SetPosition` is called — code that scans for occupants must filter that out.
-- **`IUnit`**: Has `Models` (list of `IModel`) and `PlayerID`.
-- **`DataBinding<T>`**: Wrapper around a value stored in `GameDataStore`; `GetValue()` is always current.
-- **`LocalMessageBus`**: Implements both `IMessageBusHost` and `IMessageBusClient` — used for single-machine play without a network layer.
-
-## Renderer (`FdgRaylib/Rendering/RaylibRenderer.cs`)
-
-- Reads live state from `ITableState` — no polling, no callbacks into the request system.
-- Subscribes to `ITableState.Models.OnObjectCreated` and each model's `OnPositionChanged`. Models are only drawn after their first `SetPosition` call.
-- Circles drawn at true scale: `BaseRadiusInches * scale px/inch`. Two circles visually touching = bases touching in the game world.
-- Player colours are assigned in `LobbyScreen.HandleLaunch` (palette-indexed) and read at draw time via `Func<PlayerID, Color>`.
-- The `Layout` record (scale + origin) is computed each frame from current screen size; resolver overlay receives it via `UpdateLayout`.
-
-## Game Termination
-
-- `ReconcileObjectivesStage` counts entries and transitions to `VictoryCalculationStage` after 4 rounds (hardcoded stub).
-- `VictoryCalculationStage` logs a tie and calls `IGameContext.NotifyGameEnded("It's a tie!")`.
-- The notification propagates: `GameContext.OnGameEnded` event → `FDGServer.OnGameEnded` event → `CliApp` `TaskCompletionSource` → `RunAsync` returns.
-- In GUI mode the Raylib window stays open after the game ends; the user closes it manually. (Navigating back to the main menu post-game is **not yet wired up**.)
-- Victory is intentionally always a tie for now — in GrimDark Future rules a player can win even if all their models are eliminated (objectives determine winner), so unit counts must never be used as a win condition.
-
-## Known stubs in the engine
-
-The engine has substantial gaps. Don't assume rules are enforced just because a stage exists. Surveyed Apr 2026:
-
-**Won't end the game properly**
-- `ReconcileObjectivesStage` — hardcoded 4-round counter; no objective control logic
-- `VictoryCalculationStage` — always declares a tie
-- `MapSetupStage` — no terrain or objective placement (TODO)
-
-**Movement validation is partial**
-- `MovementUtilities.ValidateMovingThroughImpassibleTerrain` — implemented; blocks moves whose path intersects any `Impassible`-flagged terrain piece
-- `MovementUtilities.ValidateMovingThroughEnemyUnits` — empty (TODO)
-- LoS is fully implemented: `ChooseRangedAttackStage` and `OcclusionCheckStage` call `LineOfSightUtilities.HasLineOfSight` with terrain + model-base circular blockers (excluding the attacking and defending unit's own models)
-
-**Melee is barely implemented**
-- `DetermineInRangeAttackersStage` / `DetermineInRangeDefendersStage` — skip range checks; any model can fight
-- `PileInStage` — no-op
-
-**Fatigue & morale absent**
-- `ApplyFatigueStage` — logs and exits
-- `AssignMeleeMoralePenaltyStage` — no-op (waits on fatigue)
-- `RollForMoraleStage` — modifiers TODO
-
-**Round/turn machinery placeholders**
-- `StartOfRoundExtraActionStage`, `ReconcileNewRoundStage` — transition with no work
-- `ApplyNonMovementTerrainEffectsStage` — implemented: rolls d6 per model whose path crosses `Dangerous` terrain; deals 1 wound on a roll of 1
-- `ChooseActionStage` — custom-action branch hardcoded `false`
-
-**Half-built**
-- `RangedContext.SetAttackWeapon` and friends — `NotImplementedException` on multiple paths
-- `AssignWoundsResults` — no priority for "tough" models, wound-split validation missing
-- `AssignWoundsResults.AutoFill()` has a bug (`modelWoundsRemaining` always 0); the GUI/CLI wound resolvers fill manually instead
-
-## Key Files
-
-```
-FdgRaylib/
-  Program.cs                               Entry point; wires screen graph and Raylib loop
-  Cli/
-    CliApp.cs                              Headless app: Prepare() + RunAsync()
-    ArmyLoader.cs                          Prompts for army; EOF → built-in test army
-    LocalMessageBus.cs                     In-process message bus (single-machine play)
-    ResolverRegistryFactory.cs             Build()/BuildGui() — assemble resolver registry
-    Resolvers/                             CLI (stdin/stdout) resolvers, one per request type
-  Rendering/
-    RaylibRenderer.cs                      Window loop, screen dispatch, in-game canvas
-    IAppScreen.cs                          Screen interface used by the screen stack
-    MainMenuScreen.cs / ArmyBuilderScreen.cs
-    HostModal.cs / ClientModal.cs / LobbyScreen.cs
-    Resolvers/
-      IGuiResolver.cs                      Has-pending + Draw
-      IGuiCanvasOverlay.cs                 Optional layout receiver for table interactions
-      GuiResolverOverlay.cs                Holds resolvers; draws active one each frame
-      Gui*Resolver.cs                      One per request type (see inventory above)
-
-FutureOfDarkGrimness/                      Submodule — read-only by default
-  GameModel/
-    FDGServer.cs                           State machine driver; creates army data
-    FDGGame_AsLocal.cs / FDGGame_AsClient.cs
-  Network/
-    Connection/
-      FDGHost.cs / FDGClient.cs            TCP host/client over port 6389
-      Lobby/LobbyViewModel_*.cs            Observable lobby state (host & client)
-    NetworkedRequestMessageReceiver.cs     Bridges network requests → local resolvers
-  TableState/                              Observable game world
-  StageResolution/                         Request/resolver infrastructure
-  StateMachine/                            Turn structure, deployment, movement, combat
-  Tests/                                   NUnit test suite
-```
+- **The engine has real gaps** — never assume a rule is enforced because a stage exists. Check "Known stubs" in `docs/EngineNotes.md` before relying on engine behavior.
+- **Objectives decide the winner** — a player can win with all their models eliminated. Never use unit counts as a win condition.
 
 ## Army Files
 
-Army lists use the `.fdgarmy` extension (JSON, with `TypeNameHandling.Auto`). The CLI prompts for a file path; EOF falls back to a built-in two-unit test army (5× Warriors with rifles + 3× Heavy Gunners with heavy rifles). The Army Builder screen edits these files via `TinyDialogs` save/load dialogs.
+Army lists use the `.fdgarmy` extension (JSON, with `TypeNameHandling.Auto`). The CLI prompts for a file path; EOF falls back to a built-in two-unit test army (5x Warriors with rifles + 3x Heavy Gunners with heavy rifles). The Army Builder screen edits these files via `TinyDialogs` save/load dialogs; the Army Forge screen builds them from bundled faction books (`FdgRaylib/Assets/Books/`).

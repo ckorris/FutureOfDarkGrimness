@@ -1,6 +1,7 @@
 using FDG;
 using FDG.StageResolution;
 using FDG.StageResolution.Requests;
+using FdgRaylib.Rendering;
 
 namespace FdgRaylib.Cli.Resolvers;
 
@@ -16,14 +17,18 @@ public class AssignWoundsResolver : IStageResolver<AssignWoundsRequest, AssignWo
 
         while (!results.IsFinishedAssigning)
         {
-            Console.WriteLine($"  Wounds: {results.TotalAssignedWounds}/{results.TotalWoundsToAssign} assigned");
+            // #287: the shared rounder - the raw floats printed "8.666667", and F0 below hid the fraction.
+            Console.WriteLine("  Wounds: " +
+                $"{WoundFormat.Fraction(results.TotalAssignedWounds, results.TotalWoundsToAssign)} assigned");
 
             var models = results.PendingWounds;
             for (int i = 0; i < models.Count; i++)
             {
                 var m = models[i].Model.GetValue();
-                float remaining = m.TotalWounds - m.WoundsDealt;
-                Console.WriteLine($"  [{i + 1}] Model (wounds remaining: {remaining:F0})");
+                float pending   = models[i].Wounds;
+                float remaining = m.TotalWounds - m.WoundsDealt - pending;
+                string assigned = pending > 0 ? $", {WoundFormat.Format(pending)} already assigned" : "";
+                Console.WriteLine($"  [{i + 1}] Model (wounds remaining: {WoundFormat.Format(remaining)}{assigned})");
             }
 
             Console.Write("  Choice: ");
@@ -31,7 +36,7 @@ public class AssignWoundsResolver : IStageResolver<AssignWoundsRequest, AssignWo
 
             if (input == null || input == "a" || string.IsNullOrEmpty(input))
             {
-                AutoFillRemaining(results);
+                results.AutoFill();
                 break;
             }
 
@@ -49,13 +54,4 @@ public class AssignWoundsResolver : IStageResolver<AssignWoundsRequest, AssignWo
         return Task.FromResult(results);
     }
 
-    // AutoFill on AssignWoundsResults has a bug (modelWoundsRemaining always 0), so fill manually.
-    private static void AutoFillRemaining(AssignWoundsResults results)
-    {
-        foreach (var pw in results.PendingWounds)
-        {
-            if (results.IsFinishedAssigning) break;
-            results.TryAddWounds(pw.Model);
-        }
-    }
 }

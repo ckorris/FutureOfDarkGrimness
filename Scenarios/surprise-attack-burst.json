@@ -1,0 +1,72 @@
+{
+  "name": "Surprise Attack: the Burrow Assassin's first activation bursts 5 dice into an enemy 4in away (two in range, so the pick is prompted); the Lone Assassin, alone in a corner, loses its burst instead of banking it",
+  "round": 1,
+  "activePlayer": 0,
+  "settings": {
+    "randomness": "Probabilistic"
+  },
+  "players": [
+    {
+      "army": "armies/SurpriseAssassins.fdgarmy",
+      "units": [
+        {
+          "unit": "Burrow Assassin",
+          "models": [
+            [
+              24,
+              20
+            ]
+          ]
+        },
+        {
+          "unit": "Lone Assassin",
+          "models": [
+            [
+              6,
+              6
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "army": "armies/Dummies.fdgarmy",
+      "units": [
+        {
+          "unit": "Dummies",
+          "models": [
+            [
+              22,
+              24
+            ],
+            [
+              23,
+              24
+            ],
+            [
+              24,
+              24
+            ],
+            [
+              25,
+              24
+            ],
+            [
+              26,
+              24
+            ]
+          ]
+        },
+        {
+          "unit": "Tough Dummy",
+          "models": [
+            [
+              28,
+              23
+            ]
+          ]
+        }
+      ]
+    }
+  ]
+}

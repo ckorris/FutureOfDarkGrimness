@@ -1,0 +1,1883 @@
+Special Rules Architecture — Implementation Checklist
+======================================================
+
+Companion to WorkItems/042-special-rules-architecture.md.
+Order phases top-to-bottom. Each phase ends at a build/test checkpoint.
+
+Mark progress inline:  [ ] todo   [~] in-progress   [x] done
+
+
+PHASE 0 — Decisions (admin, 5 minutes)            [DONE 2026-05-24]
+--------------------------------------
+
+[x] Rule system lives in FutureOfDarkGrimness/Rules/
+[x] Namespaces FDG.Rules.Foundation / FDG.Rules.Tokens (folder-based)
+[x] Tests in FutureOfDarkGrimness/Tests/, NUnit, reuse FixedDiceRoller
+
+
+PHASE 1 — Foundation data types (no logic)        [DONE 2026-05-24]
+------------------------------------------
+
+In FutureOfDarkGrimness/Rules/Foundation/:
+
+[x] EHookID.cs            37 hook IDs, explicit numeric values with ~10-spare
+                          gaps; phase order Round → Deployment → Lifecycle →
+                          Activation → Movement → Shooting → Melee → Morale →
+                          Casting. ALL filenames adopted E-prefix convention.
+[x] ELifetime.cs          enum (ThisAttack, ThisActivation, ThisRound,
+                          NextTrigger, Aura, UntilEndOfGame)
+[x] TokenType.cs          readonly record struct (string Id) — identity-only,
+                          no IsSingleton metadata (deliberate; see arch doc).
+                          Engine constants Shaken / Fatigued / SpellTokens
+                          plus matching SHAKEN_ID / FATIGUED_ID /
+                          SPELL_TOKENS_ID const strings.
+[x] TokenClearTrigger.cs  abstract record + sealed subtypes: ManualOnly,
+                          RoundEnd, ActivationEnd, AttackEnd, FirstTrigger,
+                          UnitDestroyed, OwnerDestroyed, CustomHook(EHookID)
+[x] Cost.cs               abstract record + sealed subtypes: OncePerActivation,
+                          OncePerRound, OncePerGame, SpellTokens(int),
+                          ConsumesToken(TokenType TType, int Count = 1)
+[x] TargetSelector.cs     record (float RangeInches, int Min/MaxCount,
+                          ETargetAffinity, bool RequireLoS, TokenType? Required)
+[x] ETargetAffinity.cs    enum: Self, Friend, Foe, Any  (Any added beyond spec)
+
+CHECKPOINT: dotnet build passes.   ✓
+
+
+PHASE 2 — Token system (first real implementation)  [DONE 2026-05-24]
+--------------------------------------------------
+
+Pre-work:
+[x] UnitID added at GameObjects/Core/UnitID.cs (mirrors PlayerID exactly).
+    IUnit.ID added; UnitData generates Guid.NewGuid() in all constructors;
+    [JsonConstructor] accepts optional UnitID? id = null. IModel has no ID
+    (not needed for the token system; deferred to save/load work).
+
+In FutureOfDarkGrimness/Rules/Tokens/:
+
+[x] TokenPayload.cs       abstract record; no concrete subtypes yet
+[x] Token.cs              positional record: Type, Count, ClearTrigger (required,
+                          non-nullable), Payload? = null, OwnerUnitID? = null,
+                          CreatedAtHook? = null
+[x] ITokenContainer.cs    AddToken, RemoveTokens(type, count) → int actually
+                          removed, HasToken, GetTokenCount, GetAllTokens(type?),
+                          TokensWithOwner; three events: OnTokenAdded,
+                          OnTokenRemoved, OnTokenCountChanged. All events
+                          [JsonIgnore] — observers re-attach on rehydration.
+[x] TokenContainer.cs     stacks by (Type, OwnerUnitID); OWNER-AGNOSTIC for
+                          removal (RemoveTokens iterates across all matching
+                          entries in insertion order); does NOT enforce
+                          singleton caps (deferred to effect-dispatch layer
+                          Phase 7d, since the failure mode is cosmetic).
+
+Engine integration:
+[x] IUnit.Tokens          { get; } — doc comment notes events don't survive load
+[x] IModel.Tokens         { get; } — same
+[x] UnitData / ModelData  [JsonProperty] private TokenContainer _tokens = new()
+                          plus [JsonIgnore] public ITokenContainer projection.
+
+Tests:
+
+[x] TokenContainerTests.cs   16 tests (AddToken new/stack/diff-owner/non-pos;
+                             RemoveTokens partial/full/missing/over/across-
+                             owners/non-pos; HasToken/GetTokenCount/GetAllTokens/
+                             TokensWithOwner)
+[x] TokenRoundTripTests.cs   3 tests (model token round-trip, unit token
+                             round-trip with cross-owner Unstoppable Marks and
+                             TokenClearTrigger subtype preservation, empty
+                             container round-trip)
+[x] UnitIDTests.cs           4 tests (assigned-on-construction, uniqueness,
+                             explicit-from-JsonConstructor, GameDataStore
+                             round-trip)
+
+CHECKPOINT: 175 tests green.   ✓
+
+Notes on what differs from the original sketch (see architecture doc's
+"Phase 1 & 2 implementation notes" for full rationale):
+  - TokenType IsSingleton lives on the type itself (instance property +
+    custom Equals + throw on mismatch), not in a centralized registry.
+  - TokenContainer is owner-agnostic for removal; singleton enforcement is
+    deferred to the effect-dispatch layer (Phase 7d).
+  - Three events instead of two (OnTokenAdded / OnTokenCountChanged /
+    OnTokenRemoved), each fired at most once per mutation.
+  - Token.ClearTrigger is required (non-nullable); ManualOnly for permanent.
+
+
+PHASE 3 — Rule data model (data shapes only)         [DONE 2026-05-24]
+--------------------------------------------
+
+In FutureOfDarkGrimness/Rules/Definitions/  (renamed from Model/ to avoid
+collision with IModel):
+
+[x] EStatKind.cs                 enum: Quality, Defense, Tough
+[x] EActionType.cs               enum: Hold, Advance, Rush, Charge
+[x] ERollKind.cs                 enum: Hit, Save, Morale
+[x] RerollCondition.cs           abstract record (user-authored)
+[x] DiceExpression.cs            abstract record + subtypes: DX(int Sides),
+                                       DXPlusY(int Sides, int AddValue),
+                                       CoinFlip, D3, D6
+                                       (user kept generic DX alongside named
+                                       D3/D6/CoinFlip rather than collapsing
+                                       to one approach — flagged as overlap)
+[x] Condition.cs                 abstract record + sealed subtypes:
+                                       Always, UnitHasRule, TargetHasRule,
+                                       ActionTypeIs, UnmodifiedRollEquals,
+                                       DistanceGreaterThan,
+                                       StatGreaterOrEqualTo(EStatKind, int),
+                                       TargetMajorityHasTough, TokenPresent,
+                                       And, Or, Not
+[x] Effect.cs                    abstract record + sealed subtypes:
+                                       StatModifier(EStatKind, int, ELifetime),
+                                       RollModifier, Reroll, AddExtraHit,
+                                       AddExtraWound, MovementBonus,
+                                       IgnoreRule, AddRule, Aura, DealHits,
+                                       Heal(DiceExpression),
+                                       GrantToken(TokenType, int, TokenClearTrigger),
+                                       ConsumeToken, TriggeredMove, Reactivate
+[x] RuleOperation.cs             abstract record + sealed subtypes — token ops
+                                       split by target type (Unit vs Model)
+                                       for compile-time safety; no marker
+                                       interface, IEntityRef dropped from plan.
+                                       Order tag for SuppressRule is dispatcher
+                                       sidecar metadata, not a record field.
+                                       ApplyRollModifier, ApplyReroll,
+                                       InsertExtraHits, InsertExtraWounds,
+                                       ApplyStatModifier, ApplyMovementBonus,
+                                       SuppressRule, GrantTokenToUnit,
+                                       GrantTokenToModel, ConsumeTokensFromUnit,
+                                       ConsumeTokensFromModel,
+                                       InvokeTriggeredMove, InvokeReactivate,
+                                       InvokeDealHits, InvokeHeal
+[x] HookEntry.cs                 record (EHookID, Condition, Effect, ELifetime)
+[x] ActivatedAbility.cs          record (EHookID TriggerHook, Cost,
+                                       TargetSelector, Effect, Condition
+                                       AvailableWhen)
+[x] SpecialRuleDefinition.cs     record (string Name, string? DisplayName,
+                                       IReadOnlyList<HookEntry> Passive,
+                                       IReadOnlyList<ActivatedAbility> Activated,
+                                       IReadOnlyList<string>? Aliases)
+
+CHECKPOINT: dotnet build passes. No tests added (data shapes only).   ✓
+
+Notes on what differs from the original sketch:
+  - All enums use E-prefix project convention (EStatKind, EActionType,
+    ERollKind, ELifetime, EHookID).
+  - Condition.StatGreaterOrEqualTo takes both EStatKind and int (not just int)
+    so the comparison knows which stat to read.
+  - Effect.StatModifier takes ELifetime (without it, persistent stat tweaks
+    couldn't declare their duration). Effect.GrantToken takes Count and
+    TokenClearTrigger (without them, every grant would lack count and clear
+    policy).
+  - DiceExpression keeps both generic DX(int) and specific D3/D6/CoinFlip;
+    overlap between e.g. DX(3) and D3 is a known wart (different types,
+    same semantics). Resolve when a real test forces the issue.
+  - Aura kept separate from AddRule (Aura propagates unit-wide; AddRule grants
+    to bearer only).
+  - Heal is the only Effect with a DiceExpression amount; everything else
+    uses plain int/float for fixed authored values.
+  - IEntityRef marker interface dropped — token operations are split into
+    Unit/Model variants for compile-time safety instead.
+
+
+PHASE 4 — Hook bus, minimal                       [DONE 2026-05-24]
+---------------------------
+
+Created in FutureOfDarkGrimness/Rules/Dispatch/:
+
+[x] IHookContext.cs              marker interface; EHookID Hook { get; }
+[x] IRuleHookBus.cs              interface: Dispatch(IHookContext) returns
+                                       IReadOnlyList<RuleOperation>
+[x] RuleHookBus.cs               concrete; initial impl returns empty list (stub)
+[x] IRuleResolver.cs             interface: ResolvedRule Resolve(string)
+                                       (returns wrapper, not bare definition)
+[x] ResolvedRule.cs              record (string RequestedName, SpecialRuleDefinition
+                                       Definition). Preserves the caller's name
+                                       alongside the resolved definition so
+                                       identity-based IgnoreRule and alias-aware
+                                       display both work.
+[x] RuleResolver.cs              concrete sealed class; single Dictionary keyed
+                                       by both canonical names AND aliases →
+                                       same SpecialRuleDefinition instance.
+                                       Register / RegisterAlias / Resolve.
+                                       Throws on collisions and missing lookups.
+
+Concrete contexts (add only as tests need them):
+
+[ ] HitRollCompleteContext.cs    (Attacker, Defender, Weapon, Hits[], IsCharging)
+[ ] (more added later per test)
+
+CHECKPOINT: bus exists, Dispatch returns empty list. dotnet build passes.   ✓
+
+Notes on what differs from the original sketch:
+  - Aliases moved off SpecialRuleDefinition (Phase 3 retrofit) and onto the
+    resolver. Core rule data no longer has to know about army-specific renames.
+  - IRuleResolver.Resolve returns ResolvedRule, not SpecialRuleDefinition.
+    The wrapper carries the requested name so IgnoreRule comparisons are by
+    Definition reference (alias-transparent) while UI keeps the army-flavored
+    name for display ("Healing Pods (Regeneration)").
+  - DisplayName also dropped from SpecialRuleDefinition — aliases cover the
+    rename case; revisit only if a real need emerges.
+  - Concrete hook contexts deferred to Phase 5/6 — added when the first red
+    test needs to construct one.
+
+
+PHASE 5 — Test harness                                            [DONE 2026-05-28]
+----------------------
+
+Create in FutureOfDarkGrimness/Tests/RulesHarness/:
+
+[x] TestRuleHarness.cs           class with:
+                                       - Resolver (RuleResolver)
+                                       - Bus (RuleHookBus)
+                                       - GameContext (TestGameContext +
+                                         FixedDiceRoller)
+                                       - BuildUnit(playerName, modelCount,
+                                         params specialRules)
+                                       - AttachRule(unit, definition)
+                                       - Fire(IHookContext) shorthand
+[x] RuleAssertions.cs            HasOperation<T>() NUnit-style helper
+
+Smoke test in FutureOfDarkGrimness/Tests/SpecialRuleTests.cs:
+
+[x] HarnessFires_NoRules_ReturnsEmpty
+
+CHECKPOINT: smoke test green. Harness API stabilizes as you write red tests next.   ✓
+
+Implementation notes (2026-05-28):
+  - Rule->unit linkage added now (chosen over a harness-private map): IUnit gains
+    IReadOnlyList<ResolvedRule> RuleDefinitions; UnitData stores it in a backing
+    list with a [JsonIgnore] accessor + AttachRuleDefinition(ResolvedRule).
+    Stores ResolvedRule (not bare definition) so alias display survives. [JsonIgnore]
+    is deliberate: production resolves rules from army-list names at load (existing
+    TODO), so names are the persisted form, not full definitions. IModel got no
+    equivalent yet — deferred to the first model-scoped rule test.
+  - BuildUnit takes rule *names* (params string[]), resolved via Resolver — exercises
+    the alias path. AttachRule(unit, definition) is the direct, resolver-free path.
+  - Concrete hook contexts still deferred; added a minimal internal TestHookContext
+    record (Hook only) so the smoke test can fire the bus. First real context lands
+    in Phase 6.
+  - Refactor: TerrainTestHelpers.cs (all generic, nothing terrain-specific) split
+    into Tests/Doubles/{FixedDice,TestGameContext,NullServices,NoOpLayer}.cs — same
+    FDG.Tests namespace + internal visibility, so the 7 consuming test files compiled
+    unchanged. Full suite stayed green (176 tests).
+
+
+PHASE 6 — Curated failing tests (RED)
+-------------------------------------
+
+In FutureOfDarkGrimness/Tests/SpecialRuleTests.cs.
+
+Each test:
+  - constructs a TestRuleHarness
+  - builds attacker/defender units
+  - registers the rule definition inline (no JSON yet)
+  - fires the relevant hook context
+  - asserts on the returned RuleOperation queue
+
+[ ] 01. Furious_OnUnmodified6Hit_AddsExtraHit
+[ ] 02. Stealth_WhenShotFromBeyond9_AppliesMinus1ToHit
+[ ] 03. Fast_OnAdvance_AddsTwoInches
+[ ] 04. MeleeShrouding_OnEnemyCharge_AppliesMinus3MovementToEnemy
+[ ] 05. Bane_OnDefenseUnmodified6_TriggersReroll
+[ ] 06. Rending_OnHitRoll6_PromotesToAP4
+[ ] 07. Mend_OnPreAttack_OffersAbilityWithCost
+[ ] 08. Mend_WhenAccepted_HealsTargetModel
+[ ] 09. SpellAdvancedSight_WhenCast_AppliesNextTimeBuffToTargets
+[ ] 10. PiercingFrenzy_OnEnemyUnitDestroyed_AddsMarkerToken
+[ ] 11. PiercingFrenzy_WithTwoMarkers_AddsAPPlus2InRolls
+[ ] 12. RegenerationAura_AppliesRegenerationToWholeUnit
+[ ] 13. Infiltrate_UsesAmbushPrimitive_WithDistanceOverride
+[ ] 14. UnpredictableFighter_RollsAndAppliesOneOfTwoBranches
+[ ] 15. UnstoppableMark_PlacesTokenOnEnemy_WithOwnerSet
+[ ] 16. UnstoppableMark_WhenOwnerDestroyed_TokenRemoved
+[ ] 17. Vanguard_AfterDeploy_OffersReposition_Within9Inches
+[ ] 18. MartialProwess_OnNextActivator_OffersReactivation_OncePerGame
+[ ] 19. Strafing_DuringMoveThroughEnemy_OffersMidMoveAttack
+[ ] 20. HarassingBoost_WithMajorityHasHarassing_OverridesHarassingDistance
+
+CHECKPOINT: all 20 tests fail (red baseline). Commit this state — it's the spec.
+
+STATUS (2026-05-28): Scope expanded to "every GF v3.5.1 core rule except AP."
+  30 of 32 core rules now have RED tests; suite is 176 green, 42 RED.
+  - The 18 numbered shape tests above (01-12, 15-19) are kept as system-shape
+    coverage (offer/accept, auras, tokens) using illustrative FACTION rules;
+    items 13, 14, 20 (Infiltrate / UnpredictableFighter / HarassingBoost) are
+    still TODO and flip green in Phase 7e/7f.
+  - Core-rule coverage added on top: Furious, Stealth, Fast, Rending, Surge,
+    Relentless, Slow, Thrust, Indirect, Reliable, Unstoppable, Fearless,
+    Regeneration, Tough, Blast, Impact, Fear, Deadly, Bane (session 1) +
+    Caster, Artillery, Limited, Counter, Takedown, Immobile, Aircraft, Flying,
+    Strider, Scout, Ambush (session 2).
+  - DEFERRED: Hero and Transport(X) are static metadata with no natural runtime
+    operation; skipped until the #042 engine refactor defines unit-joining /
+    morale-delegation / transport embark primitives. See arch doc "Phase 6
+    completion notes" for rationale.
+  - SOURCE NOTE: the OPR Community Wiki is an OLDER cut than v3.5.1 (drops
+    Takedown/Artillery/Limited, adds Lance/Lock-On/Poison/Sniper/Entrenched).
+    Trust the v3.5.1 PDF for rule text.
+
+
+PHASE 7 — Implementation (GREEN, iterative)
+-------------------------------------------
+
+IMPLEMENTATION PROGRESS (2026-06-06) — suite 215 green / 8 red (231 / 8 after merging
+master's +16 LoS/terrain tests). ALL passively-dispatchable rules now green:
+
+  * SWITCHES -> POLYMORPHISM. The 06-03 EvaluateCondition/MapEffect switches in
+    RuleEvaluator are GONE. Logic now lives on the records: Condition.Evaluate(RuleInvocation)
+    and Effect.Apply(RuleInvocation, ops). RuleEvaluator is just the loop now.
+    Capability requirement carried by a GENERIC INTERMEDIATE: CapabilityCondition<TCap> /
+    CapabilityEffect<TCap> (Rules/Definitions) where the type arg IS the required capability
+    — one binding in the leaf's base clause gives both the typed EvaluateCore/ApplyCore body
+    and the reflectable RequiredCapabilities (= [typeof(TCap)]). Capability-free primitives
+    override the untyped method directly; composites (And/Not) union/passthrough children.
+    New marker ICapability (Foundation) tags capability interfaces. WHY (not the switch):
+    rules will be authored as JSON via a tool that links this library, never by hand — the
+    compiler never sees a tool-composed rule, so compile-time exhaustiveness was never the
+    guard; per-record methods + a runtime validator is the honest shape.
+  * RULE VALIDATOR (the authored-rule safety net). Rules/Dispatch/RuleValidator.cs:
+    Validate(SpecialRuleDefinition) -> RuleViolation[] checks each HookEntry's condition+effect
+    RequiredCapabilities against the capabilities its hook's context provides. Empty req =
+    always valid; unknown hook = skipped. Shared by engine-at-load AND the future tool
+    (validate-before-save; also drives the tool's dropdowns so a bad pairing is unconstructible).
+    HookContextCatalog.cs supplies hook->provided-capabilities, built BY REFLECTION (read each
+    IHookContext's constant Hook off an uninitialized instance) — no hand-maintained table.
+    4 tests in Tests/RuleValidatorTests.cs.
+  * RULEINVOCATION (bearer + args threading). Evaluate/Apply now take
+    RuleInvocation(IHookContext Hook, IUnit Bearer, IReadOnlyList<RuleArgument> Arguments)
+    instead of the bare context (bearer/args can't live on the hook ctx — same event is
+    evaluated for several units/seats). Built per-rule in RuleEvaluator's loop. ValueSource
+    gained Resolve(arguments) (Literal -> value; Arg(i) -> arguments[i]). This unblocked the
+    arg-bearing effects (Deadly/Tough/Blast/Impact/Fear), bearer-targeted GrantToken
+    (Caster/Piercing Frenzy/Limited; new TokenType.RuleGrant), Aura (one rule-grant token on
+    the bearer; per-model expansion still deferred), and TokenPresent (reads Bearer.Tokens).
+    Public RuleEvaluator.Evaluate(unit,seat,context) + harness Evaluate(...) signatures unchanged.
+  * CAPABILITIES/CONTEXTS added: IHasActionType (in Definitions, not Foundation — it refs
+    EActionType, a Definitions type, and Foundation stays dependency-free), IHasAttackerMoved
+    (Foundation). HitRollCompleteContext now also : IHasDistance (Relentless's And);
+    HitRollModifierContext : IHasAttackerMoved (Indirect); MoveActionDeclaredContext :
+    IHasActionType (Fast/Slow/Immobile).
+  * ALL passive rules migrated to Evaluate (seats verified by going green; defensive rules —
+    Stealth, Melee Shrouding, Regeneration, Counter, Aircraft — carry ERuleSeat.Subject).
+  * 8 RED REMAIN, both groups out of scope for PASSIVE dispatch:
+      - 7 activated abilities (Mend x2, Advanced Sight, Unstoppable Mark place, Vanguard,
+        Martial Prowess, Strafing) — still on GatherOffers/ResolveAbility bus stub. => PHASE 7c
+        (next milestone; clears 6 of the 8).
+      - 1 token-clear (Unstoppable Mark owner-destroyed) — needs a TokenClearService walking
+        containers on OnUnitDestroyed to remove OwnerDestroyed tokens. Not a queue concern.
+  * BUS now backs only: the no-rules smoke test (harness.Fire) + the 7 activated-ability tests
+    (OfferAbilities/Accept). Retires at 7c.
+  * STILL DEFERRED (unchanged): C#-catalog/JSON loader (defs still inline in tests), behavior-
+    level execution of queued ops (PHASE 8), per-model aura expansion, Hero/Transport.
+
+IMPLEMENTATION PROGRESS (2026-06-03, post-break session) — suite 179 green / 40 red:
+
+  * 7-spine LANDED, but NOT as a bus. Decided the "bus" was dead weight: the caller
+    always knows the units and roles involved and needs the operation queue back
+    synchronously (a query, not a broadcast). So dispatch is a stateless
+    Rules/Dispatch/RuleEvaluator.cs with:
+        Evaluate(IUnit unit, ERuleSeat seat, IHookContext context) -> IReadOnlyList<RuleOperation>
+    The caller (stage / test) addresses each involved unit directly, once per seat
+    (e.g. attacker as Actor, defender as Subject), and applies the returned ops.
+  * SEAT MODEL: ERuleSeat { Actor, Subject } (Rules/Foundation). It's a field on
+    HookEntry, defaulting to Actor; only defensive entries state Subject. An entry
+    fires only when entry.Seat == the seat the caller is evaluating, so a wrong-seat
+    rule simply can't match (Stealth on a shooter does nothing — there's a test).
+  * CONDITIONS read context fields via tiny CAPABILITY INTERFACES (Rules/Dispatch/
+    IHasDistance, IHasUnmodifiedHitRolls) so the evaluator never downcasts to a
+    concrete context. EvaluateCondition / MapEffect are pattern-match switches over
+    the closed Condition/Effect sum types (default: throw — gaps surface loudly).
+    Add a capability interface per new field on demand.
+  * DICE RESULTS = IDiceResults (the engine's per-face histogram), NOT int lists.
+    Roll-bearing contexts (HitRollComplete, SaveRollComplete) and IHasUnmodifiedHitRolls
+    carry IDiceResults; "natural 6" is results.At(6). Dice-DERIVED operation counts
+    are float (InsertExtraHits / InsertExtraWounds / InvokeHeal) because they are
+    fractional under the ProbabilisticDiceRoller (n dice -> n/6 sixes). Authored
+    counts (multipliers, dice-to-roll, fixed hit counts) stay int. Tests build
+    histograms via Tests/RulesHarness/TestDice.Faces(...). THIS IS A PROJECT-WIDE
+    INVARIANT: never int-lock a value that derives from a die roll.
+  * DONE so far (via Evaluate): Stealth (Subject, DistanceGreaterThan -> ApplyRollModifier)
+    and Furious (Actor, UnmodifiedRollEquals/At(6) -> InsertExtraHits). Conditions
+    implemented: DistanceGreaterThan, UnmodifiedRollEquals. Effects: RollModifier,
+    AddExtraHit.
+  * THE BUS IS DYING, NOT DEAD. RuleHookBus + harness.Fire still back the 34 not-yet-
+    migrated passive tests; GatherOffers/ResolveAbility (7 activated-ability tests:
+    1 OfferAbilities + 6 Accept) have no evaluator home until 7c. MIGRATION RULE:
+    flip each test Fire->Evaluate WHEN its rule is implemented (the green verifies the
+    seat). Do NOT bulk-migrate unimplemented rules (sets seats blind, just trades
+    clean-red for throw-red). Delete Dispatch/Fire when the last passive rule migrates;
+    delete the rest of the bus at 7c.
+  * NOT DONE: a canonical rule catalog (C# or JSON). Stealth/Furious definitions are
+    still inline in tests. Deliberately deferred — JSON loader will own this later;
+    a notepad file holds the catalog meanwhile. Don't build a C# CoreRules catalog now.
+
+Turn the 42 RED tests green. NOTE (2026-05-28): the sub-phase mapping below was
+written for the original 20 curated tests; the corpus is now 42 (all v3.5.1 core
+rules except AP/Hero/Transport, plus the shape tests). The numbered references
+(01-20) still point at the curated shape tests; the named core rules are listed
+per bucket alongside them.
+
+KEY REFRAME: nearly every test is QUEUE-LEVEL — it asserts an operation was
+queued, not that it executed. So the bulk of the 42 go green from the dispatcher
+spine + condition evaluator + effect->operation mapping (7-spine/7a/7b) alone.
+The structural core rules (Aircraft, Immobile, Counter, Scout, Ambush, Flying,
+Strider, Takedown, Caster, Artillery, Limited) need NO execution to pass — only
+correct queuing. Execution is Phase 8 / the #042 engine track.
+
+[ ] 7-spine — Dispatcher (RuleHookBus.Dispatch), the piece everything needs
+       Implement: walk the relevant units' ResolvedRules, match HookEntry by
+       EHookID against the firing context, evaluate Condition, translate matching
+       Effects -> RuleOperation(s), resolving ValueSource.Arg(i) against the
+       firing rule's Arguments.
+       CRUX DECISION — SETTLED 2026-05-29 (see arch doc "Phase 7 design notes"):
+       A rule is an egocentric statement keyed on a perspective-anchored "when"
+       (perspective FUSED into the trigger, not a separable side-tag — so a
+       wrong-seat rule simply can't match). Dispatch evaluates rules carried ONLY
+       by the units the firing event NAMES as participants (target for
+       defender-side whens, attacker for attacker-side whens — the old
+       GetDefender/GetAttackerSpecialRules scoping, as data). NO board scan.
+       Relational rules (Fear, Melee Shrouding) read another unit's rules only
+       when that unit is a participant in the same event, via a TargetHasRule-style
+       condition. Conditions stay SEPARATE from whens (whens = moment x seat;
+       quantitative/comparative tests = conditions) so whens stay finite and
+       conditions can stack. Per-event flow: when fires -> evaluate conditions
+       (maybe none) -> add effect to queue.
+
+[ ] 7a — Condition evaluator
+       Implement: walk Condition AST against an IHookContext, return bool. This is
+       where the deliberately-minimal contexts grow fields (distance, unmodified
+       rolls, action type, AttackerMoved, round number, ...) as the evaluator
+       needs to read them.
+       Conditions exercised: Always, UnmodifiedRollEquals, DistanceGreaterThan,
+       ActionTypeIs, AfterMoving, TokenPresent, And/Or/Not.
+       Tests green: 01-04 + Stealth, Fast, Slow, Relentless, Indirect, Artillery,
+       Immobile.
+
+[ ] 7b — Effect -> Operation mapping (the spine's translation table)
+       Implement: RollModifier, AddExtraHit, AddExtraWound, Reroll, MovementBonus,
+       IgnoreRule, QualityFloor, RangeModifier, StrikeFirst, TargetIndividualModel,
+       RestrictActions, IgnoreTerrainEffects, DeferDeployment, and the arg-driven
+       set (MultiplyWounds, MultiplyHits, ChargeImpactHits, ExtraMeleeWoundCount,
+       SetMaxWounds) each translate into matching RuleOperation entries. AddExtraHit
+       expands per matching die; ValueSource.Arg resolves against the rule args.
+       Tests green: 05, 06 + Furious, Surge, Rending, Thrust, Reliable, Unstoppable,
+       Fearless, Regeneration, Tough, Blast, Impact, Fear, Deadly, Bane, Counter,
+       Takedown, Aircraft, Flying, Strider, Scout, Ambush.
+       COMPOSITION (decided 2026-05-29): keep declarative stacking; whens-as-pipeline
+       -points give ordering for free. Suppression (IgnoreRule/SuppressRule) resolves
+       in a FIRST PASS (apply removals, then fold the rest). Set-vs-add within a when
+       is rare — add a fixed effect-kind precedence only when a real pair forces it.
+       OPEN QUESTION to settle HERE before writing the fold: do effect-generated
+       outputs re-enter the when-pipeline? (Do AddExtraHit's hits re-fire hit whens /
+       re-trigger Furious?) Default assumption: NO — generated hits are terminal.
+
+[x] 7c — Activated abilities end-to-end                              [DONE 2026-06-06]
+       Implement: real GatherOffers/ResolveAbility — offer/accept, ability cost
+       gating, target selector resolution, ability effect emission.
+       Tests green: 07, 08, 09 (Mend offer/accept, Advanced Sight) + 15, 17, 18,
+       19 (Unstoppable Mark place, Vanguard, Martial Prowess, Strafing). Suite
+       238 / 1 (the lone red is test 16 = 7g owner-destroyed cleanup).
+       DONE as direct dispatch on RuleEvaluator (bus stub retired), NOT a bus:
+         * GatherOffers/ResolveAbility added to RuleEvaluator, mirroring Evaluate.
+           Harness OfferAbilities/Accept re-point to it. Bus.GatherOffers/
+           ResolveAbility deleted; Bus.Dispatch lingers only for harness.Fire
+           (smoke test + test 16) until 7g.
+         * TARGET THREADING: RuleInvocation gained `IUnit? Target` (effects land on
+           `Target ?? Bearer` via EffectiveTarget), `IDiceRoller? DiceRoller`, and
+           Hook went nullable (accepted abilities resolve off the live-event path;
+           only capability effects read Hook, and they only fire under Evaluate).
+           Reuses the ONE polymorphic Effect.Apply for passive AND activated — no
+           parallel switch. Six effects got target-aware Apply bodies (GrantToken
+           edited; AddRule/Heal/TriggeredMove/Reactivate/DealHits added).
+         * TOKEN OWNER stays UnitID (NOT player): OwnerDestroyed is per-unit, player
+           is derivable from unit but not vice-versa (cited Unstoppable Mark). Owner
+           = bearer whenever a token lands on a unit != bearer (EffectiveTarget.ID !=
+           Bearer.ID), null self-targeted — uniform across GrantToken/AddRule, falls
+           out of Target ?? Bearer, no per-effect branching.
+         * COST OPS emitted in ResolveAbility (queue = full transaction): SpellTokens/
+           ConsumesToken -> ConsumeTokensFromUnit; OncePer* -> grant a per-ability
+           "AbilityUsed:<rule>" marker (ActivationEnd/RoundEnd/ManualOnly clear).
+           Affordability filtered in GatherOffers. UNTESTED-BUT-EMITTED (only
+           SpellTokens affordability is exercised by test 07; the 6 Accept tests
+           assert only the effect op): OncePer* cost ops, Heal amount, Heal model
+           pick (first model). Their EXECUTION + the used-marker/FirstTrigger
+           clearing is 7d / Phase 8.
+         * NEW: Definitions/IHasActingUnit (capability; in Definitions not Foundation
+           because it refs IUnit, same rule as IHasActionType) — PreAttackContext
+           implements it so GatherOffers reads the acting unit off a bare context.
+           DiceExpression gained `int Sides` (D3=>3, D6=>6) so Heal can roll.
+
+[ ] 7d — Token-aware effects
+       Implement: GrantToken / ConsumeToken effect -> operation (GrantToken count
+       now via ValueSource — Caster grants Arg(0)); TokenPresent and similar
+       conditions read live token state.
+       Tests green: 10, 11 (Piercing Frenzy) + Caster, Limited.
+
+[ ] 7e — Aura (now: whole-unit promotion) + parameter override
+       SCOPE CUT 2026-05-29: distance auras DROPPED (corpus has none; building a
+       proximity scan for a non-existent case = speculative generality). The only
+       real "aura" is a Hero joined to a unit -> STATIC PROMOTION (rule becomes one
+       the unit carries, resolved at join time, off the event path; permanent in
+       v1). Hero is already deferred, so test 12 ("applies to whole unit") collapses
+       to "the unit carries the rule, every model benefits" — no scan/token/re-check.
+       Still implement: parameter overrides in rule references.
+       Tests green: 12 (trivial under promotion), 13, 20 (Infiltrate, Harassing Boost).
+       NOTE: 13/20 tests not yet written (still TODO from Phase 6).
+
+[ ] 7f — Random branches
+       Implement: random trigger type — engine rolls a die, applies one of N branches.
+       Tests green: 14 (Unpredictable Fighter). NOTE: test not yet written.
+
+[x] 7g — Cross-unit tokens + cleanup                                 [DONE 2026-06-06]
+       Implement: TokenContainer cleanup on owner destruction.
+       Tests green: 15, 16 (Unstoppable Mark place + owner-destroyed cleanup).
+       Suite 241 / 0 — Phase 7's full RED baseline is now green.
+         * TokenClearService (Rules/Tokens): ClearForDestroyedOwner(destroyedOwner,
+           containers) walks every container, and for each token the dead unit OWNS
+           (TokensWithOwner) whose ClearTrigger is OwnerDestroyed, removes it. Tokens
+           the dead unit owns under a different trigger are left alone (clearing is
+           trigger-driven, not "all tokens owned by A" — supersedes the early sketch).
+           Hook- and store-agnostic: caller supplies the containers + the dead unit's
+           ID (harness walks the store; a real stage will walk ITableState later).
+         * NOT a bus subscription (bus is dead). Harness.Fire routes a
+           UnitDestroyedContext to the service (the stand-in for the destroying stage);
+           other hooks still hit the vestigial Bus.Dispatch stub.
+         * NEW container API: ITokenContainer.RemoveTokensWithOwner(type, owner, count)
+           — owner-SCOPED removal, since the existing RemoveTokens is owner-AGNOSTIC
+           (Phase 2 deliberately pushed owner-scoping "to the layer above"). Without it,
+           one placer's mark couldn't clear without risking another placer's same-type
+           mark. TokenContainer refactored so both removers share a private
+           RemoveMatching(predicate, count) core. +2 TokenContainerTests (owner-scoped
+           removal leaves other owners' tokens; missing owner is a no-op).
+
+[~] 7h — Engine primitives (DEPENDS ON 042)
+       Implement: TriggeredMove, Reactivate, mid-move attack as callable
+       subsystems. Wire RuleOperation invocations to call them.
+       Tests green: 17, 18, 19 (Vanguard, Martial Prowess, Strafing).
+       DONE 2026-06-07 (see INTEGRATION PROGRESS cont. 11): TriggeredMove is a callable
+       subsystem (MovementExecutor) and InvokeTriggeredMove is wired through the new
+       ExecutableOperation/OperationExecutor seam -> Vanguard (17) now has behavior-level
+       coverage. Reactivate (18) and mid-move attack (19) remain queue-level; they slot
+       into the same seam next.
+
+
+PHASE 8 — Behavior-level coverage (second pass, after queue-level is green)
+---------------------------------------------------------------------------
+
+INTEGRATION PROGRESS (2026-06-07) — first rule live in a real stage. Suite 245/0.
+  * Stealth's -1-to-hit flows through the REAL DetermineHitRollNeededStage. 4 tests in
+    Tests/HitRollRuleIntegrationTests.cs (>9" raises threshold to 5; <9" no-op; on the
+    attacker no-op by seat; no-rules baseline 4). This retires the "can a real stage build
+    the context, call Evaluate for both seats, and apply the queue" risk.
+  * APPLICATION PATTERN (now the standard; full rationale in arch doc "Integration notes"):
+    stage fires a "when" (build context + RuleEvaluator.EvaluateAll(ctx, (unit,seat)...)),
+    hands the queue to a SINK that folds it, reads back a plain value. Stage interprets NO
+    operation. Operation->sink dispatch = SinkOperation<TSink> + OfType<SinkOperation<TSink>>
+    + virtual ApplyTo (mirrors CapabilityEffect<TCap>). Do NOT switch on concrete op types,
+    do NOT put no-op ApplyTo on the RuleOperation base. Sink has a write face (interface in
+    Definitions) + read face (concrete method).
+  * Wired: IGameContext.RuleEvaluator (built in GameContext from its roller + textOutput),
+    EvaluateAll, IRollModifierSink/RollModifierSink, SinkOperation<TSink> (ApplyRollModifier
+    rebased), per-rule game-log (RuleEvaluator optional ITextOutput; RuleOperation.Describe()).
+  * NEXT: extra-hit path (Surge) at RollToHitStage needs scalar->IDiceResults bridge (real
+    Phase-8 execution); more sinks (save reuses IRollModifierSink w/ ERollKind.Save; movement;
+    wound) as stages get wired; army-list->registry resolution for live in-game rules.
+
+INTEGRATION PROGRESS (2026-06-07, cont.) — Artillery + Indirect live in the hit stage. Suite 249/0.
+  * Two more hit-roll-modifier rules now flow through the real DetermineHitRollNeededStage, reusing
+    the wired RollModifierSink (no new sink): Artillery (+1 to hit beyond 9", Actor seat -> threshold
+    4->3) and Indirect (-1 to hit after moving, Actor -> 4->5). +4 tests in HitRollRuleIntegrationTests
+    (behavior file, kept separate from the queue corpus in SpecialRuleTests).
+  * Artillery was pure attach (distance already computed in the stage). Indirect needed real
+    "did the attacker move this activation" data: threaded UnitActionContext.HasMoved -> CombatActionContext
+    (new optional ctor arg attackerMoved, sourced in ShootStage/MeleeStage.GetNewChildContext from
+    contextSelf.HasMoved) -> CombatMetadata.AttackerMoved (new optional ctor arg, default false) ->
+    HitRollModifierContext.AttackerMoved. Removed the hard-coded `AttackerMoved: false` TODO in the stage.
+  * COMBAT-KIND GAP (still latent, now more relevant): DetermineHitRollNeededStage is shared by shooting
+    AND melee, and HitRollModifierContext carries no shoot-vs-melee flag. AttackerMoved is now threaded for
+    melee too (a charge sets HasMoved), so a charging unit carrying Indirect would wrongly take -1 in melee.
+    Harmless today (Indirect only lands on indirect-fire weapons, not yet auto-attached), but add a
+    combatKind capability to the context before Surge/Thrust/Furious (melee hit rules) land.
+
+INTEGRATION PROGRESS (2026-06-07, cont. 2) — second sink: Fast + Slow live in movement. Suite 251/0.
+  * SECOND SINK proves the SinkOperation<TSink> pattern generalizes (was the open question): a new
+    IMovementModifierSink (write face, Rules/Definitions) + MovementModifierSink (read face, Rules/Dispatch)
+    keyed by EActionType/float, exact mirror of IRollModifierSink/RollModifierSink (ERollKind/int).
+    ApplyMovementBonus rebased onto SinkOperation<IMovementModifierSink> (ApplyTo + Describe). No new design.
+  * WIRED in MovementActionContext ctor (the real production path that builds the move budget). Because the
+    context holds THREE budgets at once (Advance/Rush/Charge) and the action isn't pinned yet, it evaluates
+    EvaluateAll once PER action type (each with that action's current base distance) into ONE sink, then adds
+    Net(action) to each budget. Legacy ISpecialRule_Movement precursor loop left intact above it (coexist).
+  * 2 tests in Tests/MovementRuleIntegrationTests.cs (separate behavior file): Fast +2" Advance only (no leak
+    into Rush/Charge), Slow -2/-4/-4 across all three. Baselines from a no-rule unit (survive constant changes).
+  * Rules now live in real stages: Stealth/Artillery/Indirect (hit sink) + Fast/Slow (movement sink) = 5.
+
+INTEGRATION PROGRESS (2026-06-07, cont. 3) — THIRD sink + scalar->histogram bridge. Suite 257/0.
+  * EXTRA-HIT PATH live: Surge / Relentless / Furious flow through the REAL RollToHitStage. This is the
+    "real teeth" slice — first op that MUTATES A COLLECTION (appends hits) rather than folding a scalar.
+    6 tests in Tests/ExtraHitRuleIntegrationTests.cs (FixedDiceRoller(6) -> every die a natural 6, so each
+    case is "2 hits with the rule, 1 without"): Surge ungated; Relentless >9" gate (fires far, not near);
+    Furious melee gate (fires in melee, not shooting).
+  * THIRD SINK: IHitInjectionSink (write face, Definitions) + HitInjectionSink (read face, Dispatch) —
+    single float accumulator (no key), TotalExtraHits. InsertExtraHits rebased onto SinkOperation<IHitInjectionSink>.
+    SinkOperation<TSink> now proven across THREE shapes: keyed-int (roll), keyed-float (movement), scalar-float
+    (hits). Pattern holds.
+  * SCALAR->IDiceResults BRIDGE (the design crux): RollToHitStage builds HitRollCompleteContext from the
+    UNMODIFIED rolls + distance + IsMelee, EvaluateAll(Actor), folds the sink, and if TotalExtraHits>0 appends
+    ONE synthetic SuccessfulHitInfo whose DiceResults.TotalRolls == count (placed at top face = auto-success).
+    Float count preserved end-to-end (probabilistic-roller safe; honors the dice invariant). Face is cosmetic:
+    the save stage (DetermineSaveRollsNeededStage) counts by TotalRolls + weapon AP, never reads a hit's face.
+    Generated hits are TERMINAL — not re-evaluated against 6-rules (no infinite Furious). RollToHitResults'
+    SuccessfulHitList was already designed to grow ("effects might add more"), so this is the intended seam.
+  * STEP 0 (combat-kind) shipped with this slice: IHasCombatKind capability + Condition.IsMelee; IsMelee threaded
+    CombatActionContext._isMelee -> CombatMetadata.IsMelee -> HitRollCompleteContext.IsMelee (mirror of AttackerMoved).
+    HookContextCatalog picks up the new provided capability by reflection automatically.
+  * DEFERRED -> WorkItem #051: Furious's CHARGE gate (melee gate done; "on a charge" needs action-state threading
+    like AttackerMoved). Held until melee subsystem (#017/#020) is fleshed out. Furious currently fires on any
+    melee 6, not just charges.
+  * LEGACY COEXISTENCE: a legacy Relentless (ICombatEffect<RollToHitResults>) still appends extra hits the old way.
+    Our tests attach only #042 rules so no double-count; reconcile when the legacy combat-effect pipeline retires.
+  * Rules now live in real stages: Stealth/Artillery/Indirect (hit) + Fast/Slow (movement) + Surge/Relentless/Furious
+    (extra-hit) = 8.
+
+INTEGRATION PROGRESS (2026-06-07, cont. 4) — ARMY-LIST -> RULE-REGISTRY RESOLUTION (#026). Suite 257/0.
+  * The //TEST hack in FDGServer.CreateArmies (hardcoded Stealth onto player 2) is DELETED. Real units now
+    carry their declared #042 rules in a live game, resolved from army-list names at army-load.
+  * CORE-RULE CATALOG (the single source of truth, was the design fork — chose C# over JSON, matching
+    "core rules live in C#"; JSON loader stays deferred for army-SPECIFIC rules): Rules/Dispatch/CoreRuleCatalog.cs
+    holds the 8 live rule definitions (moved verbatim out of the 3 integration-test files, which now reference
+    CoreRuleCatalog.<Rule> — so the green integration suite VALIDATES the catalog, no drift) + a 9th, Very Fast
+    (Fast doubled: Advance +4"), added as a demo of the data path. `All` is computed-on-access (not a static
+    field) to dodge static-init ordering vs the per-rule properties. CreateResolver() registers every def.
+  * RESOLUTION at load: FDGServer.CreateArmies builds one RuleResolver from the catalog and threads it into
+    CreateArmyDataFromArmyFile; per unit, AttachRulesFromArmyList maps each UnitFileEntry.SpecialRules entry to
+    (lookupName, args) via DescribeRuleEntry (Core->Name; CoreNumeric->Name + [Int(value)]; Alias->aliased rule)
+    and TryResolve+AttachRuleDefinition. UNKNOWN-RULE POLICY (the other fork — chose skip+log over throw):
+    a valid-but-unimplemented core rule (Tough/Hero/Rending/...) is skipped with a Debug.WriteLine warning, so
+    partial/realistic armies still load and implemented rules still fire. New: IRuleResolver.TryResolve (non-
+    throwing) so skip-and-warn isn't exception-as-control-flow.
+  * BUILT-IN TEST ARMY (FdgRaylib/Cli/ArmyLoader.cs, app side) now declares rules: Warriors carry Stealth +
+    Very Fast, Heavy Gunners carry Surge — so the EOF-default headless run demonstrates the data path.
+  * LIVE HEADLESS RUN confirmed end-to-end (printf "2\n2\n" | dotnet run -- --headless): game ran all 4 rounds,
+    logged "Warriors's Very Fast added +4\" to Advance movement" (movement sink) and "Warriors's Stealth added
+    -1 to Hit rolls" (hit sink) repeatedly, zero errors, zero skip-warnings (all 3 names resolved). Surge did
+    NOT get a live chance — default auto-play kept units out of shooting range/LoS ("No enemies in range"), so
+    no hit rolls fired; its live RollToHitStage path stays proven by ExtraHitRuleIntegrationTests (now catalog-
+    backed). Milestone met: declared rules load from army data and fire in real stages, hack gone.
+
+INTEGRATION PROGRESS (2026-06-07, cont. 5) — FOURTH sink: wound multiplier (Deadly) live. Suite 259/0.
+  * Deadly(X) now flows through the REAL AssignWoundsStage: the stage fires Shooting_OnPreApplyWound, the
+    RuleEvaluator queues MultiplyWounds, and a new WoundModifierSink folds the net multiplier into the wound
+    count the stage hands to the player. Stage interprets no op (reads one scalar) — same pattern as the other
+    three sinks. FOURTH SinkOperation<TSink> shape: scalar-INT multiplier (roll=keyed-int, movement=keyed-float,
+    hits=scalar-float, wounds=scalar-int). Pattern holds.
+  * SINK: IWoundModifierSink (write face, Definitions, Multiply(int)) + WoundModifierSink (read face, Dispatch,
+    NetMultiplier init 1, product-compounding). RuleOperation.MultiplyWounds rebased onto
+    SinkOperation<IWoundModifierSink> (ApplyTo + Describe); it stays a RuleOperation, so the existing
+    Deadly_OnWound_MultipliesByArgument queue test (SpecialRuleTests) keeps passing — no churn.
+  * DEADLY in the catalog (CoreRuleCatalog.Deadly) — first NUMERIC rule wired live. The X flows in through
+    FDGServer's existing DescribeRuleEntry (SpecialRuleEntry_CoreNumeric -> [Int(X)]), so a .fdgarmy listing
+    "Deadly(3)" attaches with Arguments=[Int(3)] and triples wounds. Closes the numeric-arg load loop for #026.
+  * 2 tests in Tests/WoundRuleIntegrationTests.cs driving the real stage: no-rule baseline (1 failed save -> 1
+    wound to assign) and Deadly(3) (-> 3). Defender has 5 wounds so the multiplied count stays sub-lethal and
+    lands in the "ask the player" branch; a CapturingWoundRequester records the requested count (NullPlayerRequester
+    never completes, so that branch needs a real reply). New test-local WoundTestContext (RuleEvaluator + injectable
+    requester), mirroring ChooseRangedAttack's TestGameContextWithRequester.
+  * SCOPE (stated, not silently cut): this multiplies the TOTAL wound count — faithful for total damage. Deadly's
+    per-wound / single-model / no-carry-over allocation nuance stays Phase-8 (the stage already has a tough-aware
+    allocation TODO). Commented at the seam.
+  * SAVE-ROLL SINK DROPPED (was the checklist's floated "next"): no #042 UNIT rule drives a save modifier (AP is a
+    weapon stat, Cover is terrain). ApplyRollModifier is already SinkOperation<IRollModifierSink> keyed by ERollKind,
+    so wiring the save stage is trivial THE DAY a save-modifying unit rule exists — building it now = speculative.
+  * Rules now live in real stages: Stealth/Artillery/Indirect (hit) + Fast/Very Fast/Slow (movement) +
+    Surge/Relentless/Furious (extra-hit) + Deadly (wound) = 10 across FOUR sinks.
+
+INTEGRATION PROGRESS (2026-06-07, cont. 6) — SUPPRESSION FIRST-PASS (IgnoreRule/SuppressRule). Suite 262/0.
+  * The EvaluateAll TODO seam is GONE. A queued SuppressRule("X") now removes, from the combined
+    operation queue, every op whose ORIGIN RULE's canonical name is "X" — unblocking Bane/Rending/
+    Unstoppable's "ignore Regeneration" facet (the mechanism; those rules aren't catalog-live yet).
+    The SuppressRule meta-op is itself consumed (a stage never applies it). Pattern: collect-tagged ->
+    suppress -> fold, exactly as the 7b note prescribed.
+  * ORIGIN TRACKING is dispatcher SIDECAR, not a field on RuleOperation (honors the long-standing
+    RuleOperation.cs doc note): a private readonly record struct TaggedOperation(Op, Origin ResolvedRule,
+    Bearer IUnit) pairs each produced op with its source during CollectTagged; the public API still
+    returns bare IReadOnlyList<RuleOperation>. CollectTagged is shared by Evaluate (per-unit) and
+    EvaluateAll (combined).
+  * MATCH BY CANONICAL NAME (the design fork — chose name-match over resolver reference-identity):
+    suppression compares SuppressRule.RuleName against origin.Definition.Name, so an alias-renamed
+    victim (a unit authoring Regeneration as "Healing Pods", Definition.Name still "Regeneration") is
+    caught with NO resolver dependency on RuleEvaluator. Full reference-identity (resolving the
+    suppressor's own aliased name) deferred — no corpus rule needs it.
+  * SCOPE — suppression runs ONLY in EvaluateAll, not per-unit Evaluate. Cross-unit suppression
+    (attacker Unstoppable vs defender Regeneration) only exists once participants are combined, and the
+    queue-level test Unstoppable_IgnoresRegeneration asserts single-unit Evaluate still RETURNS the
+    SuppressRule op. Evaluate stays raw; EvaluateAll resolves.
+  * LOG CAVEAT CLOSED (the coupled deferred item below): logging moved AFTER the suppression pass in
+    EvaluateAll — suppressed victim ops log nothing (phantom fixed), each SuppressRule logs "X ignored Y"
+    (new SuppressRule.Describe() override) then is dropped, survivors log normally. Per-unit Evaluate
+    logs all its ops (accurate — no suppression there).
+  * 3 tests in SpecialRuleTests (queue-level, via new harness EvaluateAll wrapper): Unstoppable removes
+    Regeneration's IgnoreWound from the combined queue + consumes the SuppressRule; baseline (no
+    suppressor -> IgnoreWound survives); alias victim ("Healing Pods") suppressed by canonical name.
+  * NOT WIRED LIVE: no save-roll/Regeneration stage exists (save-roll sink was dropped, cont. 5;
+    Regeneration's IgnoreWound isn't in a stage), so suppression is proven at the EvaluateAll queue
+    level — the same level the seam lives at. Live application follows when a Regeneration stage gets
+    wired (Phase 8). Bane/Rending not added to CoreRuleCatalog here.
+
+INTEGRATION PROGRESS (2026-06-07, cont. 7) — FIFTH sink: wound-ignore (Regeneration) live + suppression
+end-to-end through the REAL stage. Suite 264/0.
+  * Regeneration now flows through the REAL AssignWoundsStage: the stage fires Shooting_OnSaveRollComplete
+    for BOTH participants (attacker Actor, defender Subject), folds a new WoundIgnoreSink, then rolls one
+    d6 per wound at the sink's threshold and subtracts the 5+ count. Stage interprets no op (reads only
+    HasIgnore + Threshold, owns the roll). FIFTH SinkOperation<TSink> shape: keyed-int (roll), keyed-float
+    (movement), scalar-float (hits), scalar-int (wound multiplier), and now best-of threshold (wound
+    ignore). Pattern holds.
+  * SUPPRESSION IS LIVE end-to-end (the payoff of cont. 6, which was queue-level only): because the stage
+    evaluates both seats in ONE EvaluateAll, an attacker's Unstoppable (IgnoreRule("Regeneration"), Actor)
+    is consumed by the suppression first-pass before the ignore sink folds, so Regeneration is cancelled at
+    the real wound stage. This supersedes cont. 6's "NOT WIRED LIVE" caveat.
+  * SINK: IWoundIgnoreSink (write face, Definitions, IgnoreOn(int)) + WoundIgnoreSink (read face, Dispatch:
+    keeps the BEST/lowest threshold, exposes HasIgnore + Threshold; per-source separate rolls deferred —
+    corpus has only Regeneration). RuleOperation.IgnoreWound rebased onto SinkOperation<IWoundIgnoreSink>
+    (ApplyTo + Describe) — still a RuleOperation, so the queue tests (Regeneration_OnWound + the 3 cont. 6
+    suppression tests) keep passing unchanged.
+  * CATALOG: Regeneration (5+, Subject) and Unstoppable (suppressor, Actor) added to CoreRuleCatalog +
+    All. Both now resolve from army data (Unstoppable's second facet — ignore negative modifiers —
+    deferred to a modifier-immunity effect).
+  * THE PER-WOUND ROLL is genuine execution: ProbabilisticDiceRoller makes it deterministic in tests
+    (N dice -> N/6 per face -> Regeneration(5+) ignores N/3; honors the dice invariant — ignored count is
+    a float). The stage rebuilds the unmodified save histogram from failed+successful subsets
+    (CombineSaveRolls) so SaveRollCompleteContext is honest for a future Bane (At(6)); Regeneration itself
+    reads nothing from it (Condition.Always).
+  * ORDERING: wound-ignore applied AFTER Deadly's multiply (rulebook tags Deadly "resolved first"). The
+    Deadly x Regeneration per-wound/single-model interaction is the existing Phase-8 allocation nuance; the
+    integration tests exercise Regeneration ALONE so they don't depend on it.
+  * 2 tests in Tests/WoundIgnoreRuleIntegrationTests.cs driving the real stage (WoundTestContext roller now
+    injectable): Regeneration defender ignores a third of wounds (3 -> 2); Unstoppable attacker suppresses
+    it end-to-end (3 -> 3). Headless 4-round game ran clean (no shooting reached, but the AssignWoundsStage
+    path is structurally exercised + green via the integration tests).
+  * Rules now live in real stages: Stealth/Artillery/Indirect (hit) + Fast/Very Fast/Slow (movement) +
+    Surge/Relentless/Furious (extra-hit) + Deadly (wound-multiplier) + Regeneration (wound-ignore) = 11,
+    plus Unstoppable (suppressor), across FIVE sinks.
+
+INTEGRATION PROGRESS (2026-06-07, cont. 8) — SIXTH sink: quality floor (Reliable) live. Suite 266/0.
+  * Reliable now flows through the REAL DetermineHitRollNeededStage: "this unit's Quality is treated as
+    2+, still modifiable." A new QualityFloorSink folds QualityFloor ops to the best (lowest) value; the
+    stage improves the BASE quality (min(quality, floor)) BEFORE the existing RollModifierSink stacks
+    per-roll modifiers. SIXTH SinkOperation<TSink> shape (best-of int, mirroring the wound-ignore sink's
+    best-of threshold). Two sinks now fold from the SAME EvaluateAll(OnHitRollModifier) call — Reliable
+    rides the call Stealth/Artillery/Indirect already made; pure attach, no new evaluation.
+  * SINK: IQualityFloorSink (write face, Definitions, FloorTo(int)) + QualityFloorSink (read face,
+    Dispatch: keeps lowest, exposes HasFloor + Quality). RuleOperation.QualityFloor rebased onto
+    SinkOperation<IQualityFloorSink> (ApplyTo + Describe) — still a RuleOperation, so the queue test
+    Reliable_AttacksAtQuality2Plus keeps passing unchanged.
+  * CATALOG: Reliable (Actor, OnHitRollModifier, Always -> QualityFloor(2)) added to CoreRuleCatalog + All.
+  * 2 tests added to HitRollRuleIntegrationTests (same stage, reuses RunStage/MakeUnit): Reliable floors
+    base quality 4 -> 2; Reliable + Stealth-defender proves "still modifiable" (floor 2, then -1 -> 3).
+  * Rules now live in real stages: Stealth/Artillery/Indirect + Reliable (hit) + Fast/Very Fast/Slow
+    (movement) + Surge/Relentless/Furious (extra-hit) + Deadly (wound-multiplier) + Regeneration
+    (wound-ignore) = 12, plus Unstoppable (suppressor), across SIX sinks.
+
+INTEGRATION PROGRESS (2026-06-07, cont. 9) — SEVENTH sink: max wounds (Tough) live at army-load. Suite 268/0.
+  * Tough(X) now sets each model's max wounds for real: it fires Lifecycle_OnUnitCreated -> SetMaxWounds(Arg(0)),
+    a new MaxWoundsSink folds the value, and the applicator calls IModel.SetMaxWounds on every model in the
+    unit. SEVENTH SinkOperation<TSink> shape (best-of MAX int). Once TotalWounds reflects Tough, the rest of
+    the wound system already handles multi-wound models — RemainingWounds, GetIsAlive, the AssignWoundsStage
+    lethal/auto branches, and AssignWoundsResults absorption (AutoFill/TryAddWounds cap per model by
+    TotalWounds) all key off TotalWounds, so no allocation code was needed for absorption.
+  * NOT A STAGE — a LIFECYCLE applicator. OnUnitCreated isn't fired by the state machine; the caller is
+    army-load. New Rules/Dispatch/UnitCreationRules.Apply(unit, evaluator) fires the hook, folds the sink,
+    applies. FDGServer calls it per unit AFTER _gameContext is built (CreateArmies runs before the
+    GameContext/RuleEvaluator exists, and #042 rules attach after models are constructed) — so it walks the
+    store post-setup using the real evaluator (game log included). The integration test calls the same
+    applicator (no drift).
+  * MODEL MUTATION: ModelData.TotalWounds is now { get; private set; } and IModel gained SetMaxWounds(int)
+    (sets TotalWounds + refills RemainingWoundsBinding — a creation-time primitive, models start full).
+    CalculateTotalWounds still returns the default for non-tough models. SINK: IMaxWoundsSink (write face,
+    Definitions, SetMax(int)) + MaxWoundsSink (read face, Dispatch, keeps highest). RuleOperation.SetMaxWounds
+    rebased onto SinkOperation<IMaxWoundsSink> (ApplyTo + Describe) — queue test Tough_OnCreation_SetsMaxWounds
+    keeps passing.
+  * CATALOG: Tough (Actor, Lifecycle_OnUnitCreated, Always -> SetMaxWounds(Arg(0)), UntilEndOfGame) added to
+    CoreRuleCatalog + All. Numeric arg flows via the existing DescribeRuleEntry path (Tough(3) -> [Int(3)]),
+    like Deadly — closes the numeric-arg load loop for a second rule.
+  * 2 tests in Tests/ToughRuleIntegrationTests.cs: Tough(3) -> every model TotalWounds 3, unit RemainingWounds
+    9 (3 models x 3); no-Tough -> models keep 1. Headless 4-round game ran clean (a player won on objectives;
+    the per-unit OnUnitCreated army-load loop runs with no error/regression).
+  * DEFERRED (stated, confirmed with user): the tough-aware allocation ORDER (most-wounded tough first, heroes
+    last) stays the existing AssignWoundsResults TODO — a player-choice refinement on code flagged buggy, and
+    its heroes-last half needs Hero (unimplemented). Numeric absorption works without it.
+  * SAVE/LOAD CAVEAT (pre-existing, documented): TotalWounds is [JsonIgnore] and recomputed via
+    CalculateTotalWounds (=1) on load, so Tough max-wounds won't survive a JSON round-trip until OnUnitCreated
+    is re-fired at load. Out of scope; no current test round-trips a tough unit.
+  * Rules now live in real stages/lifecycle: + Tough (max-wounds) = 13, plus Unstoppable (suppressor),
+    across SEVEN sinks.
+
+INTEGRATION PROGRESS (2026-06-07, cont. 10) — Bane + Rending live (save reroll + save modifier). Suite 272/0.
+  Two cross-stage rules; the first ops that are PRODUCED at one "when" and CONSUMED at another stage.
+  * RENDING (NO new sink — reuses RollModifierSink w/ ERollKind.Save, finally the save-modifier sink
+    anticipated in cont. 5): an unmodified 6 to hit promotes AP, modelled as RollModifier(Save,-4). Fired
+    at OnHitRollComplete (where the UNMODIFIED roll is correct — synthetic Surge hits sit at face 6 and
+    would pollute a later read). RollToHitStage folds it from the same hit-complete ops and stashes the
+    scalar on new RollToHitResults.SaveModifier; DetermineSaveRollsNeededStage applies it
+    (baseDefenseWithAP -= SaveModifier, mirroring the hit stage's HitRollNeeded -= Net convention).
+    Fold-at-production / carry-scalar / apply-at-consumption — the pattern for an op whose effect lands on
+    a later stage. SIMPLIFICATION (queue-test model): flat -4 to ALL saves when ANY hit rolled a 6; true
+    per-hit AP deferred. 2 tests in RendingRuleIntegrationTests (drives RollToHit -> DetermineSaveRollsNeeded:
+    natural 6 -> threshold 4->8; no-Rending -> 4).
+  * BANE (EIGHTH sink): the defender re-rolls unmodified Defense 6s. ApplyReroll(Save, OnUnmodifiedValue)
+    rebased onto SinkOperation<IRerollSink>; RerollSink read face RerollSavesOnUnmodifiedMax. AssignWoundsStage
+    now fires OnSaveRollComplete ONCE (hoisted before Deadly) and, on Bane, re-rolls each successful save
+    group's natural-max (6) count, adding the new failures (DiceRoller.Roll(n).Below(clamp(saveNeeded))) to
+    the wound total BEFORE Deadly multiplies. OnUnmodifiedValue interpreted as "unmodified max face (6)" —
+    only corpus case; add a value field if a non-6 reroll rule appears. 2 tests in BaneRuleIntegrationTests
+    (ProbabilisticDiceRoller: 1 failed + reroll 2 sixes = 1 + 2x3/6 = 2; no-Bane = 1).
+  * SUPPRESSION PAYOFF: Bane's and Rending's shared W19 "ignore Regeneration" facet is just an extra
+    OnSaveRollComplete IgnoreRule HookEntry on each catalog def — evaluated in the existing both-seats
+    AssignWoundsStage call and cancelled via the suppression first-pass. No new wiring; three rules now
+    drive it (Unstoppable, Bane, Rending).
+  * REORDER: AssignWoundsStage save-complete EvaluateAll moved ahead of the Deadly (pre-apply-wound) block
+    so its queue feeds both the reroll (before Deadly) and the wound-ignore (after Deadly). Existing
+    Regeneration/suppression integration tests unchanged and green (same ops, same folds, hoisted).
+  * Both rules added to CoreRuleCatalog (+ All). DEFERRED: per-hit AP (Rending); non-6 reroll value;
+    morale reroll (Fearless stays queue-only).
+  * Rules now live in real stages/lifecycle: + Rending (save modifier) + Bane (save reroll) = 15 primary
+    rules, plus Unstoppable (suppressor), across EIGHT sinks (RollModifier[hit+save], Movement, HitInjection,
+    WoundModifier, WoundIgnore, QualityFloor, MaxWounds, Reroll).
+
+INTEGRATION PROGRESS (2026-06-07, cont. 11) — ENGINE-PRIMITIVE REFACTOR begins (Phase 7h): MOVEMENT
+exposed as an invocable subsystem; InvokeTriggeredMove (Vanguard) wired live. Suite 275/0.
+  * THE BEACHHEAD for the PARALLEL "042 — expose core operations as invocable subsystems" item.
+    Movement is the smallest primitive and directly unblocks InvokeTriggeredMove -> Vanguard. The other
+    two 7h primitives (Reactivate/Martial Prowess, mid-move DealHits/Strafing) slot into the SAME seam in
+    later slices and are untouched here (still queue-level green, plain RuleOperations).
+  * MOVEMENT PRIMITIVE (pure refactor first, suite stayed 272/0): new FDG.Stages.MovementExecutor lifts the
+    SetPosition commit loop out of ExecuteMoveStage and the dangerous-terrain-wound logic out of
+    ApplyNonMovementTerrainEffectsStage into ApplyDangerousTerrainEffects + CommitPositions (KEPT SEPARATE —
+    the normal flow runs them as distinct stages; merging would double-apply terrain). Both stages now
+    delegate. TryMove(unit, paths, maxInches) is the out-of-band entry: validates via the single-budget
+    ValidatePaths overload (no charge semantics) then Commits; returns false + reasons with NO mutation on
+    invalid input. This is THE deliverable — "move a unit" is now callable from anywhere.
+  * IMPERATIVE-OP EXECUTION SEAM (the imperative mirror of SinkOperation<TSink>, as the user chose): new
+    ExecutableOperation : RuleOperation with Execute(IOperationServices) (Rules/Definitions), write-face
+    IOperationServices (only MoveUnit so far), and OperationExecutor (Rules/Dispatch) that runs a queue's
+    imperative ops via ONE OfType<ExecutableOperation> filter. RuleOperation.InvokeTriggeredMove rebased onto
+    ExecutableOperation (Execute -> services.MoveUnit; + Describe) — still a RuleOperation, so the queue test
+    (test 17, Vanguard) keeps passing unchanged. SINKS fold scalars; this seam ENACTS imperative effects —
+    the "Tier-1 world-effect executor" the arch doc anticipated. WHY a seam now (not inline): the user picked
+    the general shape so Reactivate/DealHits add an IOperationServices member + an ExecutableOperation body
+    with no new design (no speculative members added for them yet).
+  * ENGINE-SIDE IMPL: FDG.Stages.GameOperationServices(IGameContext) implements IOperationServices.MoveUnit
+    by resolving the IUnit -> DataBinding<UnitData> through the store's armies (by UnitID, mirroring
+    GetEnemyModelPositions), building a DefineMovementPathRequest with the single maxInches budget in all
+    three slots, awaiting the player's destination via the existing requester, then calling
+    MovementExecutor.TryMove (throws RequestResponseInvalidException on an invalid response, like DefinePathStage).
+  * BEHAVIOR TEST (Phase-8 rhythm): Tests/TriggeredMoveRuleIntegrationTests.cs (3 tests, separate behavior file).
+    TryMove direct: a 3" move commits new positions; a 20" move is rejected and positions are UNCHANGED.
+    Vanguard through the seam: ResolveAbility (test 17's ability shape) -> OperationExecutor.Execute ->
+    GameOperationServices -> MovementExecutor, with only the player's destination faked via a CannedMovePathRequester
+    (mirrors WoundRuleIntegrationTests' CapturingWoundRequester); asserts the 9" budget reaches the resolver and
+    every model actually moved. Headless 4-round game ran clean (auto-advance moves flow through the refactored
+    MovementExecutor.Commit).
+  * DEFERRED (stated, not silently cut): the deployment GatherOffers/accept flow + GUI/CLI reposition UX that
+    would surface Vanguard in a LIVE game (so Vanguard is NOT added to CoreRuleCatalog yet — no live firing
+    site); InvokeReactivate (Martial Prowess) and InvokeDealHits (Strafing) execution — next slices on this seam.
+
+INTEGRATION PROGRESS (2026-06-07, cont. 12) — Vanguard LIVE in a real game: deployment offer/accept/execute
+chain wired (the cont. 11 deferral, now closed). Suite 275/0; verified in a headless human-vs-AI game.
+  * FIRST PRODUCTION USE of GatherOffers/ResolveAbility/OperationExecutor (was test-only). DeployUnitStage,
+    right after it commits model positions, fires the new UnitDeployedContext (Hook=Deployment_OnUnitDeployed,
+    IHasActingUnit) via RuleEvaluator.GatherOffers; for each offer it asks the OWNING player a YesNoRequest,
+    and on accept runs ResolveAbility -> OperationExecutor.Execute(ops, new GameOperationServices(GameContext)).
+    Self-targeted only for now (Vanguard); a log line "{unit} used {rule}." marks acceptance.
+  * NO NEW RESOLVERS NEEDED — reused DefineMovementPathRequest (already has CLI/GUI/AI resolvers) for the move
+    and YesNoRequest (ditto) for accept. So the AI player resolves the whole thing with its EXISTING
+    AiYesNoResolver (always accepts) + AiDefineMovementResolver (advances toward nearest enemy); the human gets
+    the CLI/GUI YesNo + movement resolvers. Honoring "give the AI a resolver" was free — both request types were
+    already covered; verified rather than added.
+  * CATALOG + ARMY: Vanguard added to CoreRuleCatalog (+ All) as an ActivatedAbility (Deployment_OnUnitDeployed,
+    OncePerGame, Self, TriggeredMove 9"); Warriors in ArmyLoader's built-in test army now declare it, so it
+    resolves from army-list names and fires in the EOF-default headless run.
+  * HEADLESS PROOF (printf "2\n2\n" | ... --headless): BOTH players' Warriors logged "Warriors used Vanguard."
+    and repositioned up to 9" toward the enemy right after deploying (Player 1 via the CLI [y/n] prompt;
+    Player 2 via the AI resolver, silently) — two activations, zero exceptions, game ran to a normal finish.
+    Heavy Gunners (no Vanguard) correctly got no offer.
+  * STILL DEFERRED: cost-op EXECUTION (the OncePerGame "used" marker token is emitted by ResolveAbility but
+    OperationExecutor only runs ExecutableOperations, so the marker isn't applied — moot for Vanguard since a
+    unit deploys once; real once-per-round/game gating lands with token-op execution, Phase 7d). Non-Self target
+    selection at deployment (none in corpus). InvokeReactivate / InvokeDealHits — next slices on this seam.
+
+INTEGRATION PROGRESS (2026-06-07, cont. 13) — DEPLOY primitive: Scout (deferred deployment) live. Suite 277/0.
+  * SECOND engine subsystem exposed (after movement): the deploy/defer-reserve-place-later primitive, landing
+    a real core-32 rule — Scout. (Ambush is the explicit NEXT slice; it reuses this primitive — round-2+
+    arrival + >9"-from-enemies placement. User chose Scout-first.)
+  * DEFER MARKER PARAMETERIZED: RuleOperation.DeferDeployment + Effect.DeferDeployment now carry
+    (EDeferTiming Timing = AfterNormalDeployment, float PlacementRangeInches = 0f), defaulted so the existing
+    Scout/Ambush queue tests (bare new Effect.DeferDeployment()) keep compiling + asserting the type. New enum
+    EDeferTiming (Definitions); Ambush adds a LaterRound value next slice. DeferDeployment STAYS a plain
+    RuleOperation (a marker the deploy subsystem READS, like SuppressRule) — NOT an ExecutableOperation: it
+    mutates deploy-turn-scoped reserve state not reachable from the IOperationServices/IGameContext seam.
+  * RESERVE (shared primitive): DeploymentTurnContext ctor fires Deployment_OnPreDeploymentSelect per unit via
+    RuleEvaluator.Evaluate; units whose queue has DeferDeployment go to a new DeferredUnits reserve
+    (DeferredUnitEntry record) instead of UndeployedUnits. The normal loop + termination are unchanged and
+    finish with Scouts still reserved.
+  * PLACEMENT: new PlaceDeferredUnitsStage runs after the normal deploy loop (DeployAllUnitsStage rewired:
+    OnFinishedDeployingAllUnits -> PlaceDeferredUnitsStage -> ToMain). For each AfterNormalDeployment entry it
+    builds a FORWARD-EXPANDED zone (owner's deployment zone extended toward table center in Z by the range,
+    clamped at center; direction derived from zone-vs-center), creates a DataBinding<RectangularZone>, and
+    reuses the normal PlaceObjectsRequest<ModelData> flow (so CLI/GUI/AI place resolvers all work — NO new
+    resolvers). So Scout genuinely forward-deploys, not "deploy later in own zone".
+  * CATALOG + ARMY: CoreRuleCatalog.Scout (Deployment_OnPreDeploymentSelect, Always, DeferDeployment(
+    AfterNormalDeployment, 12f), Actor) + All. Built-in test army's Heavy Gunners declare Scout.
+  * TESTS: existing Scout/Ambush queue tests stay green (defaults). New Tests/ScoutRuleIntegrationTests.cs (3):
+    queue test + TWO-scout reserve (both in DeferredUnits, normal unit in pool) + TWO-scout placement
+    (PlacementCount==2, zone forward-expanded, every model ends forward). The two-unit cases deterministically
+    prove the partition + placement LOOP over multiple deferred units.
+  * HEADLESS: Scout-carrying Heavy Gunners are withheld during normal deploy, then "Entered Place Deferred
+    Units stage" -> "Heavy Gunners deployed via Scout" -> forward placement; game runs all 4 rounds, a player
+    wins, zero exceptions. NOTE: only one "deployed via Scout" console line shows for two players' scouts — a
+    console-output race (the AI deploys on a background thread; concurrent Console writes drop/merge one
+    server-log line). The placement itself is correct for both (the two-scout integration test proves the loop
+    places all reserved units); it's a cosmetic logging artifact, not a logic bug.
+  * Rules now live across TWO engine subsystems: movement (Vanguard) + deploy (Scout), both on the #042
+    "expose core operations as invocable subsystems" track.
+
+INTEGRATION PROGRESS (2026-06-07, cont. 14) — Ambush (round-2+ reserve arrival) live, faithful >9"-from-
+enemies placement. Suite 281/0.
+  * Completes the deploy subsystem's two core rules (Scout + Ambush), both on the shared defer/reserve
+    primitive. User chose faithful placement + player-chosen arrival round.
+  * EDeferTiming.LaterRound added; CoreRuleCatalog.Ambush (PreDeploymentSelect -> DeferDeployment(LaterRound,
+    9), Actor) + All. DeferDeployment's PlacementRangeInches is now interpreted per timing: Scout = forward
+    zone extension; Ambush = min distance from enemies. No deployment-stage change — the existing partition
+    reserves it and PlaceDeferredUnitsStage already skips non-AfterNormalDeployment, leaving it unplaced.
+  * RESERVE = UNPLACED (no token): a never-deployed unit's models sit at origin (0,0,0); that IS the reserve
+    state and self-clears on placement. The arrival pass finds reserves by re-evaluating PreDeploymentSelect
+    (data-driven, no rule-name hardcoding) + the unplaced filter.
+  * ARRIVAL: StartOfRoundExtraActionStage (was an empty placeholder), RoundCount >= 2, scans alive+unplaced
+    units that yield DeferDeployment(LaterRound), asks the owner YesNoRequest per unit (all resolvers handle
+    it; AI auto-accepts), and on accept places via a WHOLE-TABLE PlaceObjectsRequest with the 9" enemy-distance
+    constraint, then SetPosition + logs "arrived from Ambush." Decline keeps it in reserve for a later round.
+  * FAITHFUL >9"-FROM-ENEMIES (the resolver ripple the user approved): PlaceObjectsRequest gained
+    MinDistanceFromEnemiesInches (default 0 = unchanged for deployment/Scout). All three place resolvers honor
+    it (enemy = PlayerID != target, mirroring AiDefineMovementResolver): AI scans a Z-row grid for a legal
+    deep-strike spot; CLI rejects typed/auto positions too close; GUI rejects clicks + shows the rule. Proven
+    deterministically by AiPlaceObjectsResolverTests (>9" from a mid-table enemy).
+  * RESERVES DON'T PLAY UNTIL THEY ARRIVE (caught in headless: pre-fix the reserve activated + was targetable
+    in round 1, bypassing Ambush). New IUnit.GetIsOnBattlefield() (any living model off origin); applied at the
+    activation pool (SingleRoundContext.SetUnactivatedUnits) and ranged target enumeration
+    (ChooseRangedAttackStage). Melee defender selection + objective seizure already filter by position-distance,
+    so reserves at origin are naturally excluded there. Arrival happens in StartOfRound (before SingleRound
+    builds the pool), so an arrived unit joins that round's pool.
+  * ARMY: built-in test army gains an "Infiltrators" unit (Ambush). TESTS: AmbushRuleIntegrationTests (round
+    gate / accept-with-9"-constraint / decline) + AiPlaceObjectsResolverTests; existing Ambush queue test
+    stays green. HEADLESS confirmed: Infiltrators withheld through round 1, both players' arrive at the start
+    of round 2, only then activate/are targetable; 4 rounds, zero exceptions.
+  * DEFERRED: "can't seize/contest the round it arrives" objective nuance (needs round-cleared "arrived this
+    round" tracking in ReconcileObjectivesStage); team-aware enemy detection (player-based for now).
+  * Deploy subsystem now covers Scout + Ambush; movement covers Vanguard. Remaining 7h primitives: Reactivate
+    (Martial Prowess), mid-move DealHits (Strafing) + the Impact core rule on the deal-hits seam.
+
+INTEGRATION PROGRESS (2026-06-08, cont. 15) — Thrust live (first of the 5 core-COMBAT rules);
+shared IsCharging thread landed. Suite 286/0.
+  * NEW SHARED FOUNDATION — IsCharging thread (mirrors the IsMelee/AttackerMoved threads): new
+    capability IHasCharging (Foundation) + Condition.IsCharging (Definitions). CombatActionContext +
+    CombatMetadata gained an isCharging bool; KEY SIMPLIFICATION — melee is only ever entered via a
+    Charge action (MainUnitActionStage: chooseAction.ToCharge.Bind(melee)), so the charger's swing is
+    charging (MeleeStage.GetNewChildContext isCharging:true) and a strike-back is not (StrikeBackStage
+    default false). No separate "charged this activation" flag needed. HitRollModifierContext gained
+    IsMelee (closes the cont. 1 combat-kind gap) + IsCharging; HitRollCompleteContext gained IsCharging;
+    DetermineHitRollNeededStage + RollToHitStage now source both off the metadata. This thread also
+    unblocks the deferred Furious charge-gate (#051) whenever it's wanted.
+  * THRUST = pure catalog + the thread, NO new sink/stage: it rides the EXISTING hit-roll-modifier sink
+    (+1 to hit at OnHitRollModifier, lowering the threshold) and the EXISTING save-modifier carry
+    (AP(+1) modelled as RollModifier(Save,-1) at OnHitRollComplete -> RollToHitResults.SaveModifier ->
+    DetermineSaveRollsNeededStage), each gated on And(IsMelee, IsCharging). Same machinery as
+    Artillery/Stealth (hit) and Rending (save). CoreRuleCatalog.Thrust (+All); count 19 -> 20 live defs.
+  * QUEUE TEST realigned: the inline Thrust shape test moved off the conceptual Melee_OnChargeContact
+    hook onto the live OnHitRollModifier/OnHitRollComplete hooks with the IsMelee+IsCharging gate, so the
+    corpus matches the catalog (two Evaluate calls, one per hook). (ChargeContactContext/CounterTrigger
+    stay in use by the Impact/Counter queue tests.)
+  * TESTS: Tests/ThrustRuleIntegrationTests.cs (5) drives the REAL stages — charging melee lowers the
+    hit threshold 4->3 and carries SaveModifier -1; a strike-back (melee, not charging) and shooting both
+    no-op by the gate. Full suite 281 -> 286.
+  * ARMY + HEADLESS: built-in Warriors gained a melee Blade (RangeInches 0) + declare Thrust. Headless
+    4-round game: Warriors charge repeatedly and log "Warriors's Thrust added +1 to Hit rolls" /
+    "added -1 to Save rolls"; melee runs clean end-to-end (charge -> swing -> strikeback-skip -> winner),
+    game finishes on objectives with zero exceptions. This also DE-RISKS Impact/Counter — melee is
+    confirmed playable in headless before those slices build on it.
+  * Thrust is FULLY implemented (no deferred facet) — moved to the "fully implemented" set in Appendix C.
+
+INTEGRATION PROGRESS (2026-06-08, cont. 16) — Blast live (NINTH sink: hit multiplier). Suite 289/0.
+  * NINTH SinkOperation<TSink> shape: scalar-INT MULTIPLIER for hits (mirrors the wound-multiplier sink
+    but for the hit count). IHitMultiplierSink (write face, Definitions, Multiply(int)) + HitMultiplierSink
+    (read face, Dispatch, NetMultiplier init 1, product-compounding). RuleOperation.MultiplyHits rebased
+    onto SinkOperation<IHitMultiplierSink> (ApplyTo + Describe) — stays a RuleOperation, so the existing
+    Blast_OnHit_MultipliesHitsByArgument queue test keeps passing unchanged.
+  * FOLDED IN RollToHitStage, AFTER the hit-injection append — the concrete realization of Blast's
+    "after other rules" ORDERING flag (the 7b precedence question): it multiplies the POST-injection total
+    (so Surge's extra hits are included), then CAPS at the target unit's living-model count, and appends
+    the delta as synthetic hits via the existing SyntheticHits bridge. PRECEDENCE DECISION (settled here,
+    documented at the fold site + Appendix C): operation-application order is realized by WHERE each sink
+    is folded in the stage pipeline — NOT a central priority list in OperationExecutor. Blast folds after
+    injection; Takedown will fire pre-rolls; Deadly already precedes wound-ignore. No OperationExecutor change.
+  * CATALOG: CoreRuleCatalog.Blast (OnHitRollComplete, Always -> MultiplyHits(Arg(0)), Actor) + All;
+    count 20 -> 21 live defs. Numeric arg flows via the existing DescribeRuleEntry path (Blast(3) -> [Int(3)]),
+    like Deadly/Tough.
+  * TESTS: Tests/BlastRuleIntegrationTests.cs (3) drives the REAL RollToHitStage with FixedDiceRoller(6)
+    (1 base hit): no-rule -> 1; Blast(3) vs 5 models -> 3; Blast(10) vs 2 models -> capped at 2. Suite 286 -> 289.
+  * ARMY + HEADLESS: built-in Heavy Gunners declare Blast(3). Headless 4-round game logs the multiply and
+    the cap live ("Blast multiplied 2 hits x3, capped at 5 target models -> 5 total"; "1 hits x3, capped at
+    2 target models -> 2 total"), game finishes on objectives, zero exceptions.
+  * DEFERRED (Appendix C): Blast's "ignore cover" facet (W9) — the target's cover save bonus is not yet
+    suppressed.
+
+INTEGRATION PROGRESS (2026-06-08, cont. 17) — Takedown live (targeting restructure, shooting). Suite 292/0.
+  * FIRST TARGETING-STRUCTURE rule: Takedown re-scopes a shooting attack to ONE chosen model ("a unit of
+    [1]"). NOT a sink — it's a marker (TargetIndividualModel, a plain RuleOperation) read by two stages,
+    plus a new cross-stage result (IndividualTargetResult, in BuildTargetListStage.cs).
+  * BuildTargetListStage (shooting only, gated on !IsMelee — the hook is a shooting "when" and melee reuses
+    this stage) fires OnShootTargetsSelected for the attacker; if TargetIndividualModel is queued, it asks
+    the ATTACKER to pick a living model via the existing SelectionRequest<ModelData> (registered in all
+    three registries — CLI/GUI/AI, so no new resolver) and stashes IndividualTargetResult on the metadata.
+    The target list itself is left FULL (so LoS/occlusion/cover are unaffected — the LoS-ignore facet is
+    deferred), keeping the change to wound allocation only.
+  * AssignWoundsStage, when an IndividualTargetResult is present, BYPASSES the normal allocation branches
+    and funnels all wounds to that one model — capped at its remaining wounds, NO carry-over to the rest of
+    the unit. New single-model AssignWoundsResults(DataBinding<ModelData>, float) ctor (only that model in
+    PendingWounds); caller caps the count so AutoFill always places every wound.
+  * CATALOG: CoreRuleCatalog.Takedown (OnShootTargetsSelected, Always -> TargetIndividualModel, Actor) +
+    All; count 21 -> 22 live defs. PRECEDENCE: Takedown's "resolved first" flag is moot — the model is
+    picked pre-rolls, so it's already first (consistent with the cont. 16 sink-fold-placement decision).
+  * TESTS: Tests/TakedownRuleIntegrationTests.cs (3): BuildTargetListStage stashes the attacker's pick (and
+    no-Takedown stashes nothing); AssignWoundsStage confines 2 failed saves to a 1-wound model -> 1 wound,
+    rest of the unit untouched (cap + no carry-over). New CannedModelSelectionRequester. Suite 289 -> 292.
+  * ARMY + HEADLESS: built-in Infiltrators (Ambush) declare Takedown; after they arrive (round 2+) and
+    shoot, the log shows the single-model targeting. Game finishes on objectives, zero exceptions.
+  * DEFERRED (Appendix C): "ignore intervening LoS/cover" facet (W9).
+
+INTEGRATION PROGRESS (2026-06-08, cont. 18) — Impact live (charge-contact auto-hits; new melee sub-stage).
+Suite 295/0.
+  * FIRST NEW MELEE STRUCTURE: a charge-contact moment didn't exist; new ResolveImpactHitsStage runs in
+    MeleeStage right after ChooseMeleeDefender and BEFORE PileIn/swings. Because melee is only entered via
+    Charge, only the charger reaches it (strike-back never runs it), so "on the charge" needs no flag.
+  * TENTH sink: IImpactSink (write face, Definitions, AddDice(int)) + ImpactSink (read face, Dispatch,
+    TotalDice, summing). RuleOperation.ChargeImpactHits rebased onto SinkOperation<IImpactSink> (queue test
+    Impact_OnCharge_RollsArgumentImpactDice stays green).
+  * THE STAGE: fires ChargeContactContext (attacker, Actor), folds ImpactSink -> X dice, rolls them, each
+    2+ a hit (AtOrAbove(2), float — probabilistic-safe), and runs those hits through the EXISTING save->wound
+    sub-pipeline (DetermineSaveRollsNeeded -> RollToSave -> AssignWounds -> ApplyWounds) against the defender.
+    The weaponless impact attack rides a synthetic AP-0 "Impact" weapon + a seeded RollToHitResults (the
+    SyntheticHits scalar->IDiceResults bridge, reused from RollToHitStage). Zero impact dice / zero hits ->
+    the stage skips straight to PileIn (OnImpactResolved). It's a ParentStage whose Enter computes the hits
+    first, then runs the child pipeline only if there are any.
+  * CATALOG: CoreRuleCatalog.Impact (Melee_OnChargeContact, Always -> ChargeImpactHits(Arg(0)), Actor) + All;
+    count 22 -> 23 live defs. Numeric arg via the existing DescribeRuleEntry path (Impact(2) -> [Int(2)]).
+  * TESTS: Tests/ImpactRuleIntegrationTests.cs (3) drive the REAL stage end-to-end: Impact(3) wipes a
+    2-wound defender before any swing; no-Impact leaves it untouched (skip path); Impact(3) sub-lethal vs a
+    5-wound unit assigns exactly 3 wounds (captured). Needed a test-local AllOnFaceDiceRoller — FixedDiceRoller
+    models a SINGLE die (TotalRolls==1) so it can't drive a multi-die roll; the new roller puts every rolled
+    die on a face so Roll(n) scales. Suite 292 -> 295.
+  * ARMY + HEADLESS: built-in Warriors (melee Blade) declare Impact(2). Headless 4-round game: Warriors charge
+    and log "Warriors's Impact rolled 2 dice -> N hit(s) on the charge" before the normal swing; game finishes
+    on objectives, zero exceptions.
+  * DEFERRED (Appendix C): the "not fatigued" gate (fatigue absent) — Impact always rolls; Counter's companion
+    "-1 impact roll per Counter model" facet.
+
+INTEGRATION PROGRESS (2026-06-08, cont. 19) — Counter live (strike-order reversal). ALL FIVE core-COMBAT
+rules now live. Suite 297/0.
+  * THE STRIKE-ORDER REVERSAL: a charged unit with Counter strikes FIRST. New DetermineStrikeOrderStage
+    runs in MeleeStage after charge-contact (Impact) and before PileIn: fires CounterTriggerContext for the
+    defender (Subject seat), and on a queued StrikeFirst op SWAPS the attacker/defender roles via a new
+    CombatActionContext.SwapCombatRoles(). The entire existing swing/strike-back flow then runs unchanged
+    with roles reversed — the Counter unit takes the main (first) swing; the charger is offered the
+    strike-back. Chosen over an explicit second-swing branch because the whole downstream flow already keys
+    off AttackingUnit/DefendingUnit, and DetermineMeleeWinner is symmetric in *RemainingWoundsAtStart.
+  * SwapCombatRoles swaps AttackingUnit<->DefendingUnit + their at-start wounds, REBUILDS the melee-weapon
+    pool from the new attacker, and CLEARS IsCharging (the formerly-defending unit is not charging — so it
+    doesn't wrongly pick up Thrust). AttackingUnit became { get; private set; } and _isCharging lost its
+    readonly. The swap touches only the melee context — never models/positions/wounds — so it cannot affect
+    weapon enumeration elsewhere (relevant to the fix below).
+  * CATALOG: CoreRuleCatalog.Counter (Melee_OnCounterTrigger, Always -> StrikeFirst, Subject) + All;
+    count 23 -> 24 live defs. Order: runs AFTER Impact, so the charger still deals its impact hits before
+    the Counter unit strikes (faithful; the "-1 impact per Counter model" reduction is deferred, Appendix C).
+  * TESTS: Tests/CounterRuleIntegrationTests.cs (2) drive the REAL DetermineStrikeOrderStage: a charged
+    Counter defender becomes the attacker (roles + at-start wounds swapped); no-Counter keeps normal order.
+    Suite 295 -> 297.
+  * CRASH (diagnosed here, FIXED in cont. 20): a headless "Available weapon dictionary was empty" throw.
+    *** THIS ENTRY'S DIAGNOSIS WAS WRONG *** — it was read as a concurrency race in ChooseRangedAttackStage
+    and "fixed" by a graceful guard there. The exception MESSAGE is mislabeled ("...ChooseRangedAttackStage")
+    but is actually thrown by ChooseMeleeWeaponStage (copy-paste typo), and the real cause is Counter's swap.
+    See cont. 20 for the correct root cause + fix; the misguided ranged-stage guard was reverted.
+  * ARMY + HEADLESS: built-in Heavy Gunners gain a melee "Fists" + Counter; when Warriors charge them,
+    Counter logs "Heavy Gunners's Counter: it strikes first against the charging Warriors" and the Heavy
+    Gunners swing before the Warriors strike back. Game finishes, no exceptions.
+  * MILESTONE: the five not-yet-started core-COMBAT rules (Thrust, Blast, Impact, Takedown, Counter) are all
+    live end-to-end. 24 core rules now live; 19 across sinks + Takedown (targeting marker) + Impact/Counter
+    (melee structure). The 7b precedence question is settled (sink-fold/hook placement realizes ordering).
+
+INTEGRATION PROGRESS (2026-06-08, cont. 20) — Counter crash: CORRECT root cause + fix (supersedes cont. 19's
+crash diagnosis). Suite 298/0.
+  * THE BUG: a headless unhandled exception "Available weapon dictionary was empty when entering
+    ChooseRangedAttackStage". The message is a COPY-PASTE TYPO — it is thrown by ChooseMeleeWeaponStage
+    (the nameof() referenced the wrong stage), which misdirected cont. 19 into a bogus "ranged shooting
+    concurrency race" story. The stack trace (ChooseMeleeWeaponStage.Enter) made the real site obvious.
+  * REAL ROOT CAUSE: weapons are distributed across a unit's models ROUND-ROBIN (UnitData ctor: model i
+    gets unitWeapons[i], i+ModelCount, ...). With 2 weapons over 3 models, only ONE model carries the melee
+    weapon. If that model dies earlier in the game, the unit has ZERO melee weapons while other models live.
+    Counter's swap (cont. 19) then makes that melee-weaponless unit the attacker, which enters
+    ChooseMeleeWeaponStage with an empty pool and throws. The normal melee flow never hit this (chargers
+    have a melee weapon; the strike-back is guarded in OfferStrikeBackStage) — Counter's swap was a new,
+    unguarded path into the first-swing slot.
+  * FIX (the real one): DetermineStrikeOrderStage now swaps ONLY if the Counter unit has a living melee
+    weapon (context.DefendingUnit.GetMeleeWeapons().Count > 0) — a unit that cannot fight cannot strike
+    first. Mirrors OfferStrikeBackStage's existing guard. Plus: fixed the mislabeled exception message
+    (nameof ChooseMeleeWeaponStage), and REVERTED the cont. 19 ranged-stage graceful guard (it addressed a
+    phantom — the ranged empty-dict is unreachable single-threaded and was never the throw site).
+  * TEST: CounterRuleIntegrationTests gains CounterUnitWithoutMeleeWeapons_DoesNotStrikeFirst (no swap when
+    the Counter unit has no melee weapons); the existing swap tests now arm their models with a melee weapon
+    so the guard passes. Suite 297 -> 298. Headless verification loop: the previously-intermittent crash
+    (~25% of games) no longer reproduces; Counter still fires and reverses strike order.
+  * LESSON: trust the STACK TRACE over the exception message string (which can lie). The cont. 19 "fix" and
+    its concurrency narrative were wrong; this is the correction.
+
+INTEGRATION PROGRESS (2026-06-08, cont. 21) — Blast ignore-cover live + per-weapon sight info on the
+movement + ranged-target resolver requests. Suite 301/0.
+  * BLAST NOW IGNORES COVER (its second facet — Blast is fully implemented, removed from Appendix C). New
+    Effect.IgnoreCover + RuleOperation.IgnoreCover (a MARKER op, matched by OfType like Takedown/Suppress —
+    not a numeric sink). Blast gains a 2nd HookEntry at Shooting_OnSaveRollModifier (Always -> IgnoreCover),
+    via a minimal CoverIgnoreContext(attacker) — cover-ignore is a weapon property, target-independent.
+    CoverCheckStage drops the +1 cover bonus when the attacker's weapon ignores cover. 3 tests in
+    BlastCoverRuleIntegrationTests (real CoverCheckStage: in-cover defender -> bonus 1 without Blast, 0 with;
+    + the derivation). NOTE: the headless auto-game places no terrain (MapSetup stubs), so cover never arises
+    live — the integration test (explicit Cover terrain) is the proof.
+  * RESOLVER-INFO THREADING (user-requested; resolvers NOT modified, just given the data). Per-weapon flags
+    "ignores cover" / "ignores terrain" now ride BOTH resolver requests so movement + target-selection can
+    later represent post-move shootability and cover-/terrain-blocked-but-shootable targets:
+      - ChooseRangedAttackRequest.WeaponOption gains IgnoresCover + IgnoresTerrain; BuildWeaponOptions sets
+        them per weapon (also feeds GetCanShoot, which shares that builder).
+      - DefineMovementPathRequest gains List<WeaponSightProfile> (Weapon, IgnoresCover, IgnoresTerrain) for
+        the unit's ranged weapons; built at both construction sites (DefinePathStage + GameOperationServices)
+        via the new WeaponSightProfileBuilder.
+    SINGLE SOURCE OF TRUTH: Rules/Dispatch/SightRuleQueries derives the flags from the unit's #042 rules, used
+    by the cover stage, the targeting builder, and the movement builder alike — so they can't disagree.
+    Unit-scoped today (Blast is a unit rule); the queries take a Weapon so the derivation can tighten
+    per-weapon when weapon-scoped rules land, without callers changing shape.
+  * INDIRECT SEAM: IgnoresTerrain is a real field on both requests but always false for now — Indirect's
+    "fire at non-LoS targets as if in LoS" facet (W9) is unimplemented, and Flying/Strider's
+    IgnoreTerrainEffects is MOVEMENT terrain, not LoS, so it must NOT feed this. Derivation lands with Indirect.
+
+INTEGRATION PROGRESS (2026-06-08, cont. 22) — two pre-existing headless crashes fixed (exposed by #042's
+melee/charges, not caused by the rules). Suite 304/0; 10/10 headless games clean (exit 0, no crash).
+  * CASUALTY-COHESION CRASH (intermittent, ~25% of games). Root cause: weapons are distributed round-robin
+    so casualties leave HOLES in a formation — surviving neighbours of a dead model end up >1" apart,
+    breaking the 1" cohesion rule. BOTH movement resolvers (AI AiDefineMovementResolver + CLI
+    DefineMovementPathResolver.AutoAdvance, used by player 1 via piped EOF) RIGIDLY TRANSLATED the
+    formation, preserving the hole, so DefinePathStage's cohesion validation rejected the move and THREW
+    RequestResponseInvalidException (a hard crash; a holed unit can't even "stay in place"). Fix: new shared
+    FDG.Stages.CohesiveFormation (PackGrid + ClampRepackStep) RE-FORMS the living models into a tight grid
+    (0.1" base-to-base) at the destination, always cohesion-valid, clamped so each model stays within the
+    move budget; dead models are omitted (stay put). Both resolvers now call it. 3 tests in
+    CohesiveFormationTests validate the output against the real ValidatePaths cohesion check.
+    NOTE: a GUI human could still pick a cohesion-breaking move and hit the same DefinePathStage throw —
+    making that stage re-prompt instead of throw is a separate interactive-robustness follow-up.
+  * POST-GAME HANG (every headless game). Root cause: the FDGServer CONSTRUCTOR launched the state machine,
+    and in headless every resolver completes synchronously (piped EOF / AI) so the WHOLE GAME ran inside
+    `new FDGServer(...)` — before CliApp could subscribe to OnGameEnded. The game-ended signal was missed,
+    so `await gameEnded.Task` never completed and the process hung (timeout-reaped; my earlier "exit 0"
+    readings were a PIPESTATUS bug reading printf's exit, not the game's). Fix: LaunchStateMachineOnceReady
+    now `await Task.Yield()`s first, so construction returns immediately and the game runs on a continuation
+    — callers subscribe before it ends. Plus a try/catch around the (now detached) state machine that logs
+    a fault and fires OnGameEnded, so a future game error surfaces + exits cleanly instead of silently
+    hanging. Headless games now exit 0 and log "Game ended: ..." reliably.
+
+INTEGRATION PROGRESS (2026-06-08, cont. 23) — Furious charge-gate closed (#051 resolved). Suite 305/0.
+  * Furious's deferred "only while charging" condition (cont. 3 -> WorkItem #051) is now live — unblocked by
+    the shared IsCharging thread added in cont. 15 (for Thrust). Furious's catalog condition is now
+    And(IsMelee, And(IsCharging, UnmodifiedRollEquals(6))), so the extra hit fires only on the CHARGER's
+    melee swing (HitRollCompleteContext.IsCharging is true only there) — not on a strike-back or in shooting.
+  * TESTS: ExtraHitRuleIntegrationTests threads isCharging through its RunStage and now covers all three
+    cases against the real RollToHitStage: charging melee -> +1 hit; melee-but-not-charging (strike-back) ->
+    no extra; shooting -> no extra. (The curated SpecialRuleTests "01" shape test stays minimal — it tests
+    the AddExtraHit -> InsertExtraHits MECHANISM, not Furious's full gating.)
+  * ARMY: built-in Warriors (melee Blade, charge) declare Furious, so it CAN fire on charges; like Surge
+    (cont. 4) it's RNG-gated (needs a natural 6 during a charging melee), so a given headless run may not
+    show it — the FixedDiceRoller(6) integration test is the deterministic proof.
+  * Furious is now FULLY implemented (no deferred facet) — moved to the Appendix C "fully implemented" set.
+
+INTEGRATION PROGRESS (2026-06-08, cont. 24) — Reactivate (Martial Prowess) live: a unit may activate a
+  SECOND time, once per game. Suite 310/0; headless exit 0, reactivation fires once then the gate holds.
+  * SEAM CHOICE — MARKER, not ExecutableOperation. Like Scout/Ambush's DeferDeployment (see RuleOperation
+    .DeferDeployment doc), InvokeReactivate stays a plain RuleOperation the stage READS, because it mutates
+    activation-turn-scoped state (the round's unactivated pool in SingleRoundContext) that the
+    IOperationServices seam — which only sees IGameContext — can't reach. The ExecutableOperation seam
+    (Vanguard/Strafing) is for effects reachable through IGameContext; this isn't one.
+  * WIRING: new NextActivatorRequestedContext(IUnit) : IHookContext, IHasActingUnit at hook
+    Activation_OnNextActivatorRequested. DeterminePlayerTurnStage, after advancing to the active player and
+    BEFORE the SingleTurnStage snapshot, fires the hook for each of that player's already-activated, on-table
+    units, GatherOffers -> YesNo -> ResolveAbility, then applies the queue stage-side: GrantTokenToUnit ->
+    AddToken (the cost marker), InvokeReactivate -> ISingleRoundContext.ReinstateUnitForActivation (new
+    method; re-adds the unit to _unactivatedUnits so it reappears as a Choose-Unit option and a later
+    MarkUnitAsActivated won't throw). Catalog: CoreRuleCatalog.MartialProwess ("Martial Prowess") + .All.
+  * COST ENFORCED LOCALLY (important finding): NOTHING in production applies the once-per cost ops —
+    RuleEvaluator.EmitCostOps PRODUCES GrantTokenToUnit/ConsumeTokensFromUnit, but OperationExecutor runs
+    only ExecutableOperations, so the marker is never granted anywhere (latent no-op; harmless for Vanguard
+    since a unit deploys once). For Reactivate an unenforced OncePerGame would loop forever, so the stage
+    grants the marker itself. A general cost-op applier is deferred (Appendix C) — it would also fix Vanguard.
+  * TESTS: ReactivateRuleIntegrationTests (5) — dispatch offers + queues InvokeReactivate & cost marker;
+    once-per-game closes after the marker; ReinstateUnitForActivation round-trip lets MarkUnitAsActivated
+    re-run without throwing; the real DeterminePlayerTurnStage reinstates+marks on accept and does neither
+    on decline.
+  * ARMY: built-in Heavy Gunners declare "Martial Prowess" (player has 3 units, so the bearer can be
+    already-activated while another unit is still pending — the condition the offer needs).
+  * DEFERRED (Appendix C): (a) reactivation is only OFFERED while the player still has a pending normal
+    activation that turn — if the bearer is the player's LAST unit, TryAdvanceToNextPlayer ends their turns
+    before the offer fires (round-end doesn't consult pending reactivations); (b) no general cost-op applier
+    (once-per costs enforced only where a stage does it by hand — here and, unenforced, Vanguard).
+
+INTEGRATION PROGRESS (2026-06-08, cont. 25) — Strafing (mid-move attack) live: passing through an enemy
+  offers a 3-hit attack on it, once per activation. Suite 315/0; headless exit 0, both movers strafed once.
+  * SEAM CHOICE — IN-STAGE, not the ExecutableOperation seam the plan assumed. KEY FINDING: the engine's
+    stage transitions are async-VOID fire-and-forget (StageBase.SignalEvent is void; ParentStage's Transition
+    delegate is void and ExecuteTransition doesn't await it). A multi-stage resolution pipeline therefore only
+    sequences correctly when it runs as a real CHILD STAGE in the state machine — running it from
+    GameOperationServices via OperationExecutor would return before the AssignWounds request is answered. So
+    DealHits is resolved by a movement sub-stage (mirroring how Impact's hits resolve as a child of the melee
+    stage), NOT via IOperationServices.DealHits. InvokeDealHits stays a plain marker the stage reads (so the
+    queue-level test 19 is untouched); no IOperationServices/GameOperationServices/terminal-layer churn.
+  * WIRING: new MoveThroughEnemyContext(IUnit) : IHookContext, IHasActingUnit at hook
+    Movement_OnMoveThroughEnemy. New StrafingStage : ParentStage<IMovementActionContext, ICombatMetadata>,
+    inserted in MovementStage AFTER ApplyNonMovementTerrainEffects and BEFORE ExecuteMove (so move-through is
+    read from each model's START position, pre-commit). Enter: detect crossed enemy units, GatherOffers ->
+    YesNo -> ResolveAbility(offer, [enemy]); grant the cost marker stage-side; seed the DealHits count as a
+    synthetic AP-0 RollToHitResults + CoverCheckResults(0) and run the SAME save->wound children as Impact
+    (DetermineSaveRollsNeeded -> RollToSave -> AssignWounds -> ApplyWounds). The child pipeline + SyntheticHits
+    are duplicated from ResolveImpactHitsStage (the two are now candidates for a shared synthetic-hits base —
+    deliberately NOT extracted to avoid touching the live Impact path mid-slice).
+  * GEOMETRY: MovementUtilities.GetEnemyUnitsMovedThrough — a move-through is any moving model's path segment
+    coming within base-to-base contact (moving radius + enemy radius) of a living enemy model
+    (point-to-segment distance in x/z). Fills the role the empty ValidateMovingThroughEnemyUnits TODO hinted
+    at, but as DETECTION (for the strafe trigger), not move VALIDATION.
+  * CATALOG: CoreRuleCatalog.Strafing ("Strafing", OncePerActivation, Foe TargetSelector, DealHits(3)) + .All.
+    ARMY: built-in Warriors (Very Fast, so they cover ground and pass through enemies) declare "Strafing".
+  * TESTS: StrafingRuleIntegrationTests (5) — geometry detects a crossed enemy and ignores one off the line;
+    dispatch offers + queues InvokeDealHits(target,3) & the cost marker; once-per-activation closes after the
+    marker; the real StrafingStage feeds 3 hits through save->wound on accept (AllOnFaceDiceRoller(1) fails all
+    saves -> 3 wounds reach assignment) and resolves nothing on decline.
+  * DEFERRED (Appendix C): (a) only the FIRST crossed enemy is offered (OncePerActivation caps to one strafe);
+    (b) DealHits.WithRules not applied (Strafing carries none — AP/Blast-carrying spells pending); (c) the
+    OncePerActivation marker is granted but never auto-cleared (no activation-end token-clear), so in practice
+    a unit strafes at most once per GAME, not once per activation.
+
+INTEGRATION PROGRESS (2026-06-08, cont. 26) — COST-GATE LIFECYCLE pass: the two cross-cutting gaps from
+  cont. 24/25 are closed. Suite 320/0; headless exit 0, a unit now strafes on multiple activations.
+  * COST-OP APPLIER: new OperationApplier.ApplyTokenOperations(ops) applies the token grants/consumes the
+    activated-ability dispatcher emits (GrantTokenToUnit/Model, ConsumeTokensFromUnit/Model) to live
+    containers — the synchronous, non-executable counterpart to OperationExecutor (which runs only
+    ExecutableOperations and so never applied cost tokens). Wired into the three ResolveAbility sites:
+    DeployUnitStage (Vanguard's OncePerGame is now ACTUALLY enforced — was latent), DeterminePlayerTurnStage
+    (Reactivate), StrafingStage — replacing the two by-hand grant loops.
+  * TOKEN-CLEAR: new TokenClearService.ClearForHook(firedHook, containers) removes tokens whose
+    ClearTrigger fires at the hook (ActivationEnd@Activation_OnEndOfActivation, RoundEnd@Round_OnRoundEnd,
+    CustomHook), owner-scoped when stamped. Driven by ReconcileEndOfActivationStage (clears the just-activated
+    unit's markers) and ReconcileObjectivesStage (round-end sweep over all units). Strafing's OncePerActivation
+    now genuinely resets each activation (headless: strafes went 2 -> 4, same unit re-strafing across turns).
+  * TESTS: TokenLifecycleTests (5) — ClearForHook clears Activation/Round markers at the matching hook and
+    leaves others; OperationApplier grants+consumes; ReconcileEndOfActivationStage clears the activated unit's
+    marker. Existing Reactivate/Strafing stage tests unchanged (marker still ends up granted, now via the
+    shared applier).
+  * Appendix C updated: Strafing's "marker never clears" facet REMOVED (now per-activation); Martial Prowess's
+    "no general cost-op applier" cross-cutting note REMOVED. Remaining token-clear triggers (AttackEnd,
+    FirstTrigger, UnitDestroyed) are still unwired — no live consumer yet.
+
+INTEGRATION PROGRESS (2026-06-11, cont. 27) — Artillery's defensive facet (W12) live: enemies shooting
+  it from >9" take -2 to hit. Suite 325/0.
+  * PURE CATALOG ADDITION — no new sink, stage, condition, or context. Artillery gains a SECOND HookEntry
+    at Shooting_OnHitRollModifier (DistanceGreaterThan(9) -> RollModifier(Hit,-2), Subject seat), the
+    exact mirror of Stealth's already-live defender-seat distance modifier. The shared both-seats
+    EvaluateAll in DetermineHitRollNeededStage already folds it through the live RollModifierSink — the
+    attacker's +1 (Actor) and the target's -2 (Subject) entries fire independently by seat and stack.
+  * NO COMBAT-KIND GATE NEEDED: DistanceGreaterThan(9) is only ever true for ranged attacks (melee is
+    within 2"), so the facet self-excludes melee without an IsMelee condition — same reasoning that lets
+    Stealth/Artillery's existing distance entries stay un-gated.
+  * TESTS: 3 added to HitRollRuleIntegrationTests (Artillery defender beyond 9" -> threshold 4->6; within
+    9" -> no change; BOTH-seats Artillery -> 4 -1 +2 = 5, proving Actor and Subject stack). Suite 322 -> 325.
+  * APPENDIX C: Artillery's deferred-facet row trimmed to just the Hold-only action restriction (W5),
+    which still awaits the shared action-restriction enforcement (also blocks Immobile).
+
+INTEGRATION PROGRESS (2026-06-11, cont. 28) — two companion facets closed: Counter's impact reduction
+  and Ambush's no-seize-the-round-it-arrives. Both rules now FULLY implemented. Suite 331/0; headless exit 0.
+  * COUNTER "-1 impact die per Counter model" (W8). The charged unit's Counter now reduces the charger's
+    Impact dice by one per living Counter model. Implemented as a defender-seat HookEntry on Counter at
+    Melee_OnChargeContact (the same when the charger's Impact(X) fires) emitting a NEGATIVE
+    ChargeImpactHits that folds into the SAME ImpactSink — so ResolveImpactHitsStage rolls the NET dice
+    with no new sink/op. New Effect.ReduceImpactDicePerModel resolves the bearer's living-model count at
+    Apply time (Counter is unit-wide, so every living model is a "Counter model") and emits
+    ChargeImpactHits(-count); reuses the existing operation + AddDice. ResolveImpactHitsStage now evaluates
+    the charge-contact when for BOTH combatants ((attacker,Actor),(defender,Subject)); the existing
+    TotalDice<=0 skip naturally handles a reduction that meets or exceeds the impact dice. 3 tests in
+    ImpactRuleIntegrationTests (2 Counter models cut Impact(3)->1 wound; 3 models cancel it entirely; a
+    Counter defender vs a no-Impact charger is a clean skip). Headless: "Counter rolled -1 impact dice" ->
+    Warriors' Impact(2) became 1 die live.
+  * AMBUSH "can't seize/contest the round it arrives" (W4). New engine-known TokenType.ArrivedFromReserve:
+    StartOfRoundExtraActionStage stamps it (RoundEnd clear) on each unit as it arrives from reserve;
+    ReconcileObjectivesStage's PlayersNearObjective skips models whose unit carries it, so the newcomer
+    counts toward neither seizure NOR contest. ORDERING FIX: the stage's Round_OnRoundEnd token sweep
+    (once-per-round cost gates) MOVED from the top of Enter to AFTER the objective check, so the arrival
+    marker survives the check it gates and is cleared the same round-end — i.e. the exclusion lasts exactly
+    one round. (Moving the sweep is behavior-preserving for cost markers; nothing between the two points
+    read them.) 3 tests in ObjectiveOwnershipTests (arrived unit alone doesn't seize; doesn't contest so an
+    enemy seizes uncontested; marker clears after the check so it seizes the next round). Headless:
+    Infiltrators arrived from Ambush, game ran to a winner.
+  * APPENDIX C: Counter and Ambush rows removed (now fully implemented, added to the "fully implemented"
+    set); the Counter clause on the Impact row removed. Live core-combat depth unchanged in count; two
+    deferred facets retired.
+
+INTEGRATION PROGRESS (2026-06-11, cont. 29) — Deadly's no-carry-over confinement live. Suite 333/0.
+  * Deadly(X) no longer multiplies a flat pool that spills across the unit. AssignWoundsStage now confines
+    each failed save to a CLUMP of X wounds that lands on one model with overkill lost (new ConfineToClumps,
+    gated on NetMultiplier>1). Faithful consequences: the multiplier is WASTED vs single-wound models (a
+    1-wound model absorbs 1 of the X — Deadly's whole point is anti-Tough), and against Tough models a
+    clump deals min(X, capacity) with the killing clump's excess discarded rather than carrying to the next
+    model. Walks the defender's living models in list order (matches AutoFill); single-wound is order-
+    irrelevant (the common case + the headline fix over the old total*X over-kill).
+  * Updated the existing behavior test (Deadly(3) vs 1-wound models now = 1 wound, not 3) and added two:
+    a clump deals the full X to a Tough(5) model (3, not 1); two clumps kill a Tough(5) model for 5 with the
+    overkill NOT carried to the second model (naive total*X would be 6). The queue-level MultiplyWounds test
+    in SpecialRuleTests is unaffected (it asserts the op, not execution).
+  * DEFERRED (Appendix C, now overlapping Tough's W18 row): only the defender's free CHOICE of which models
+    absorb clumps to minimise casualties — the tough-aware allocation-order nuance — remains.
+
+INTEGRATION PROGRESS (2026-06-11, cont. 30) — Indirect + Takedown "ignore LoS / cover" (W9) live, end to
+  end through the real stages AND reflected in the movement + shooting resolvers. Suite 338/0; headless exit 0.
+  * NEW VOCAB: Effect.IgnoreLineOfSight + RuleOperation.IgnoreLineOfSight (a marker, mirroring IgnoreCover;
+    distinct from Flying/Strider's MOVEMENT-terrain IgnoreTerrainEffects). Fired at Shooting_OnSaveRollModifier
+    via the reused attacker-only CoverIgnoreContext (now the general "weapon sight properties" context).
+    SightRuleQueries.IgnoresTerrain — the seam left false since cont. 21 — now returns whether that op is
+    queued; IgnoresCover already existed (Blast).
+  * CATALOG: Indirect gains IgnoreLineOfSight + IgnoreCover HookEntries, and its -1-after-moving is now gated
+    And(AfterMoving, Not(IsMelee)) — fixing the latent bug where a charge (which sets HasMoved) wrongly
+    penalised melee swings. Takedown gains IgnoreLineOfSight + IgnoreCover. Both reuse the same machinery as
+    Blast's cover-ignore.
+  * STAGES: ChooseRangedAttackStage threads a per-weapon ignoresLineOfSight flag into CanWeaponShootAtUnit so
+    a LoS-ignoring weapon enumerates targets behind terrain as shootable (range-gated only); OcclusionCheckStage
+    early-returns not-occluded for such weapons so the shot isn't cancelled at resolution. CoverCheckStage
+    already dropped cover via SightRuleQueries.IgnoresCover, so Indirect/Takedown get cover-ignore for free.
+  * RESOLVERS REFLECT INDIRECT (the requested part): the per-weapon IgnoresCover/IgnoresTerrain flags
+    (ChooseRangedAttackRequest.WeaponOption) and WeaponSightProfiles (DefineMovementPathRequest) were threaded
+    in cont. 21 but never consumed. Now: the CLI + GUI ranged resolvers show "[ignores LoS]" / "Cover (ignored)"
+    instead of a cover penalty; the GUI movement targeting overlay (post-move shootability) treats LoS-ignoring
+    weapons as able to hit behind terrain (aggregate weapon counts + per-model fire lines) and drops the dashed
+    cover line for cover-ignoring weapons. The data was already correct via WeaponSightProfileBuilder ->
+    SightRuleQueries; these consume it.
+  * TESTS: IndirectLineOfSightRuleIntegrationTests (Blocking wall between attacker/defender: occluded without
+    the rule, NOT occluded with Indirect or Takedown; + SightRuleQueries derives both flags from Indirect) and
+    a melee-gate test in HitRollRuleIntegrationTests (Indirect's -1 doesn't apply to a melee swing). Suite
+    333 -> 338. Headless: Infiltrators (Takedown) log "ignored intervening line of sight" / "ignored the
+    target's cover" live.
+  * Takedown and Indirect are now FULLY implemented (both rows removed from Appendix C).
+  * [2026-08-02, #314] The Takedown half of this entry was WRONG and has been reverted: its rule text
+    grants no LoS/cover bypass (the PER-RULE MAPPING row it was built from had Indirect's clause
+    appended by mistake), so snipers shot through Blocking terrain. Both hooks removed; Takedown's
+    real ordering clause implemented instead. Indirect keeps everything described above.
+
+INTEGRATION PROGRESS (2026-06-28, cont. 31) — CATCH-UP: the roster drifted out of date between cont. 30
+  (2026-06-11) and now. CoreRuleCatalog.All grew from ~35 to 55 player-facing rules across #100 (primitive
+  gaps), #093 (combat-kind), #091 (morale-core), #020 (fatigue), #006 (Hero), #035 (Transport), and
+  #033/#034 (casting + spell content). This entry brings the tracker current; per-slice detail lives in
+  those work items + WorkItems/100-special-rule-primitive-gaps.md's Notes. Suite 879/0; headless exit 0.
+  * NOW LIVE since cont. 30 (added to All, effect wired through real stages):
+    - Accuracy: Evasive, Melee Evasion, Precise, Good Shot (hit-roll modifiers, Subject/Actor seats).
+    - Movement: Agile, Quick, Rapid Advance, Rapid Rush, Rapid Charge (movement-bonus sink); Immobile
+      (RestrictActions, #100).
+    - Wound/damage: Crack (Rending's AP-on-6 as -2 save), Lacerate (Bane's save-reroll), Shred
+      (wound injection), + the "when shooting" combat-kind variants Unstoppable / Shred / Bane-when-
+      Shooting (#093 save-context combat-kind gate).
+    - Melee: Counter-Attack (Counter's strike-first facet alone, unit-scoped).
+    - Morale: Fear, Fearless (real — #091; MoraleUtilities.TakeMoraleTest is rule-aware, Fearless re-roll).
+    - Buff/heal: Furious Buff, Mend (pre-attack target buff / heal, #100 #2 cross-unit targeting).
+    - Structural: Hero (#006 per-model stats + rules), Transport (#035 embark/disembark/spillout),
+      Caster (#033 spell subsystem — Cast action, token economy, CastSpellStage).
+    - Post-combat move (this session, #5 dormant-hook seam): Harassing, Hit & Run, Hit & Run Shooter,
+      Hit & Run Fighter, Guerrilla — TriggeredMove(3") at the now-live Shooting_OnPostShoot /
+      Melee_OnPostMelee hooks (see Appendix C for the "once per round" gap).
+  * NEW SEAMS lit since cont. 30: the post-combat-move hooks (PostShootStage / PostMeleeStage); the
+    cross-unit MARK primitive (Effect.MarkTarget -> claim at DetermineHitRollStage); combat-kind threaded
+    into the save context; and the #034 Part-1 spell effects (conditional MoraleTestThen, forced enemy
+    TriggeredMove, ApplyFatigue).
+  * APPENDIX C updated below: the "not yet implemented" set shrinks from 10 to 4 (Aircraft, Flying,
+    Limited, Strider — the rest now live), and the post-combat-move family's "once per round" gap is a row.
+  * AUTHORITATIVE SET: CoreRuleCatalog.All is the source of truth for "what's pickable/implemented"; this
+    checklist's prose roster is a periodic snapshot and will drift again — prefer All when in doubt.
+
+INTEGRATION PROGRESS (2026-06-28, cont. 32) — post-combat-move family's "once per round" gate live.
+  Suite 881/0; headless exit 0.
+  * NEW VOCAB: TokenType.PostCombatMoveUsed (RoundEnd clear, swept by the round-end pass like Fatigue)
+    + a shared PostCombatMoveGate helper both PostShootStage and PostMeleeStage route their hook ops
+    through. The gate enacts the move and sets the marker ONLY when the unit actually repositions (model
+    positions compared before/after, so a declined zero move keeps the budget); skips while the marker is
+    present. One shared budget across shooting and melee.
+  * Closes the Appendix-C deferred facet added the same day (row removed). Minor known edge: a unit
+    carrying two separate family rules (Shooter + Fighter) shares the one budget rather than one each.
+
+INTEGRATION PROGRESS (2026-06-28, cont. 33) — post-combat-move Boost + Aura variants (All now 61 rules).
+  Suite 884/0; headless exit 0.
+  * Boosts (Harassing Boost, Guerrilla Boost): 6" instead of 3" gated on UnitHasRule(base). Realized by a
+    PostCombatMoveGate tweak — coalesce the hook's InvokeTriggeredMove ops to ONE move at the MAX budget
+    (also fixes a latent double-move when a unit stacks family rules).
+  * Auras (Hit & Run Shooter/Fighter Aura, Harassing/Guerrilla Boost Aura): Effect.Aura("<base>") at
+    Lifecycle_OnUnitCreated — first production uses of Effect.Aura; granted rule projects unit-wide via the
+    #100 #1 read-back and fires at the post-combat hooks. NB UnitHasRule (unit-level) stands in for the
+    corpus's "most MODELS have X" (per-model majority is #093).
+
+INTEGRATION PROGRESS (2026-06-28, cont. 34) — Aura cluster generalized (All now 78 rules). Suite 885/0.
+  * 17 new "X Aura" rules via a UnitAura(name, grantedRule) factory — every base already in All:
+    Regeneration / Furious / Stealth / Scout / Relentless / Ambush / Counter-Attack / Evasive / Fast /
+    Fearless / Melee Evasion / Rapid Advance / Rapid Charge / Rapid Rush + Bane/Shred/Unstoppable-when-
+    Shooting. The 4 post-combat auras fold into the same factory. All map to Effect.Aura (corpus auras are
+    uniformly unit-wide, no ranged ones). Catalog-integrity test asserts every Effect.Aura grants a
+    resolver-known name (case-sensitive). Deferred: auras whose base isn't cataloged yet (Courage, Melee
+    Shrouding, the "in melee" mirrors, …).
+  * FLAGGED (not fixed): 3 rules are registered lowercase ("Bane when shooting" …) but the corpus writes
+    "Bane when Shooting"; the case-sensitive resolver drops a direct corpus reference. See WorkItems/100.
+
+INTEGRATION PROGRESS (2026-06-28, cont. 35) — case-insensitive resolution + next aura wave. All now 88.
+  Suite 889/0; headless exit 0.
+  * RuleResolver is now an OrdinalIgnoreCase dictionary (UnitHasRule/TargetHasRule conditions too) — fixes
+    the cont. 34 casing flag: "Bane when Shooting" resolves to the registered "Bane when shooting", and any
+    corpus reference differing only by case now resolves.
+  * 10 new rules unlocking the auras whose base wasn't cataloged: Courage (+1 morale at
+    Morale_OnPreMoraleTest) and the "in melee" mirrors Bane/Rending/Shred/Unstoppable in melee (the exact
+    flip of the when-shooting trio, Condition.IsMelee()), plus their 5 auras via UnitAura.
+
+INTEGRATION PROGRESS (2026-06-28, cont. 36) — aura wave 3: defensive wound-ignore + AP rules. All now 96.
+  Suite 894/0; headless exit 0.
+  * Resistance + Protected (wound ignored on 6+ = IgnoreWoundOnRoll(6), Subject — Regeneration at a higher
+    threshold); Piercing Assault (AP+1 charging = Thrust's AP facet alone); Piercing Hunter (AP+1 shooting
+    >9", DistanceGreaterThan gate) + their 4 auras. All reuse existing primitives.
+  * Deferred (need machinery, see WorkItems/100): Shielded/Fortified (defender-Subject-at-hit-complete seam
+    + AP-reduction primitive), Shrouding/Increased-Range (#102), Versatile/Unpredictable (choice/dice-branch
+    primitives), Steadfast/No-Retreat/Reanimation (round-start/morale machinery), Quick Shot/Swift (action
+    permission), and the aura-only rules with no corpus base def (Precision Fighter/Shooter, …).
+
+INTEGRATION PROGRESS (2026-06-28, cont. 37) — Shielded seam: defender as Subject at hit-complete. All → 98.
+  Suite 896/0; headless exit 0.
+  * RollToHitStage's hit-complete EvaluateAll now passes (defender, ERuleSeat.Subject) alongside the
+    attacker (Actor) — mirror of DetermineHitRollStage — so a defender's defensive save modifier folds into
+    RollToHitResults.SaveModifier next to the attacker's AP. No existing Subject-seat rule at that hook, so
+    nothing dormant activates (suite unchanged). Shared by shooting + the melee swing.
+  * On the seam: Shielded (RollModifier(Save,+1) Subject) + Shielded Aura. Fortified still deferred (needs
+    an AP-reduction-with-floor primitive).
+
+INTEGRATION PROGRESS (2026-06-28, cont. 38) — Fortified: AP-reduction-with-floor primitive. All → 100.
+  Suite 899/0; headless exit 0.
+  * New Effect.ReduceArmorPenetration(Amount) → RuleOperation.ReduceArmorPenetration (plain op). A defender
+    (Subject) rule at Shooting_OnHitRollComplete (on the Shielded seam) emits it; RollToHitStage sums into
+    RollToHitResults.ArmorPenetrationReduction; DetermineSaveRollsNeededStage clamps weapon AP:
+    ap = max(0, weaponAP - reduction). The floor is what separates Fortified from Shielded — it does nothing
+    vs an AP(0) hit. Rule Fortified + Fortified Aura. Tests assert AP(2)→5, AP(0)→4 (floor), baseline 6.
+  * Scope: clamps the WEAPON AP only; rule-granted AP rides SaveModifier (de-conflating that is a save-
+    pipeline refactor, deferred). The defensive aura family (Resistance/Protected/Piercing*/Shielded/
+    Fortified) is now complete.
+
+RECONCILIATION (2026-06-30) — vs GF Core Rules v3.5.1 special-rules reference (33 core rules). 32/33 implemented;
+  only LIMITED ("once per game") unbuilt — tracked under #032. v3.5.1 renames retired the prior gaps (Lance,
+  Lock-On, Poison, Sniper, Entrenched are no longer core). Counter has both v3.5.1 facets; Furious gates on
+  IsCharging (#051 done). Done-umbrellas #030/#031/#051 moved to WorkItemsList Done. (No catalog change; All 111.)
+
+INTEGRATION PROGRESS (2026-06-30, cont. 47) — Limited weapon rule (#032 DONE). Suite 945/0; build; headless 0.
+  All → 112. Completes the GF v3.5.1 core special-rules set (33/33). Limited = weapon-scoped marker rule read
+  via LimitedRules; spent-state a per-MODEL LimitedSpent token (new TokenType + TokenPayload.WeaponName) keyed by
+  weapon name (independent carriers, two-Limited-per-model, casualty-safe, Limited(X)-ready). ChooseRangedAttack
+  marks spent on commit-to-fire, excludes at the offer seam once all living carriers fired, grays Shoot when only
+  a spent Limited weapon remains. Engine-only. (Canonical record: WorkItemsList Done #032.)
+
+INTEGRATION PROGRESS (2026-06-30, cont. 46) — Aircraft forced-movement mode (#029 DONE). Suite 938/0; build; hl 0.
+  (No new rules; All stays 111. Canonical record: WorkItems/029.) Closes #029 entirely.
+  * UnitData.AircraftHeading (Float2?, additive) — a heading, set lazily toward table centre, never turned.
+    Aircraft rule gains RestrictActions([Advance]). DefinePathStage branches IsAircraft to a forced straight-line
+    move (distance via StringSelectionRequest, reusing existing string resolvers) along the heading; if it crosses
+    a table edge it leaves play (models to origin + TokenType.OffTableFromForcedMove), redeployed from an edge at
+    round start by StartOfRoundExtraActionStage (reuses the reserve-placement flow). No app changes.
+  * Simplifications (faithful, recorded in WorkItems/029): heading auto-aims to centre; redeploy zone = whole
+    table; off-table-ends-activation realised via the reserve state. #029's whole rule roster is now complete.
+
+INTEGRATION PROGRESS (2026-06-30, cont. 45) — Aircraft stage gates (#029). Suite 932/0; full build; headless 0.
+  (No new rules; All stays 111. Canonical record: WorkItems/029.) New AircraftRules.IsAircraft helper.
+  * Can't seize objectives: ReconcileObjectivesStage skips Aircraft models. Can't be charged: EnemyModelFootprint
+    Uncontactable tag (engine + all 6 resolver footprint builders) — a move can't end within the standoff of an
+    uncontactable enemy (passes under it OK); excluded from ValidateChargeReach/GetCanCharge/ChooseMeleeDefender.
+    Deploy first: ChooseUnitToDeployStage offers only Aircraft while any remain undeployed.
+  * STILL DEFERRED: Aircraft's forced straight-line movement mode (needs a facing notion + constrained resolvers
+    — a large sub-system; pending a design call). See WorkItems/029.
+
+INTEGRATION PROGRESS (2026-06-30, cont. 44) — Darkborn split + Flying + Aircraft (partial) (#029). All → 111.
+  Suite 926/0; full build clean; headless exit 0. (Canonical record: WorkItems/029; logged here for roster.)
+  * Darkborn split into "Darkborn (Offensive)" / "Darkborn (Defensive)" (disambiguate the corpus's two same-named
+    rules); Defensive = -4 range floor 6 + -2 charge floor 6, both Subject (reuses #102 range + #029 charge).
+  * Flying (full): ETerrainIgnoreScope on IgnoreTerrainEffects (DifficultOnly=Strider, AllTerrain=Flying);
+    IgnoresAllTerrain query; new ignoresImpassibleTerrain flag threaded through ValidatePaths + both move requests
+    + every GUI/CLI/AI resolver; Dangerous-roll skip in MovementExecutor/ApplyNonMovementTerrainEffectsStage;
+    Flying = IgnoreTerrainEffects(AllTerrain) + IgnoreEnemyMovementBlock.
+  * Aircraft (partial): enemies get -12 range (Subject RangeModifier, immune to <=12" weapons) + -1 to hit
+    (Subject RollModifier(Hit), the Stealth mechanism w/o the distance gate) + Flying's terrain/unit ignore.
+    DEFERRED (loudly doc'd): forced straight-line movement mode, can't-be-charged, can't-seize-objectives,
+    deploy-first. See WorkItems/029.
+
+INTEGRATION PROGRESS (2026-06-30, cont. 43) — per-target charge debuff + Melee Shrouding (#029). All → 108.
+  Suite 917/0; full build clean; headless exit 0. (Canonical record: WorkItems/029; logged here for roster.)
+  * Lights up the dormant Movement_OnChargeDeclared hook / ChargeDeclaredContext. New
+    MovementRuleQueries.EffectiveChargeDistanceAgainst folds the target's Subject-seat MovementBonus(Charge) +
+    a new MovementBonus.MinResultInches floor (Actor-seat Fast/Slow sink path ignores the floor). DefinePathStage
+    reduces the charge budget to the worst case among in-reach enemies — one scalar, so preview/validation/AI all
+    shrink. Rule: Melee Shrouding (-3 charge, floor 6, Subject) + aura — the charge twin of Ranged Shrouding.
+  * Worst-case (not per-target) by user sign-off: charge is geometric (target picked after the move), budget is a
+    single scalar; never allows an illegal over-charge, occasionally shortens a charge toward a normal enemy when
+    a shrouding one is also in range. Same mechanism unblocks defensive Darkborn's -2 charge + Aircraft facets.
+
+INTEGRATION PROGRESS (2026-06-29, cont. 42) — move-overlay shooting-range preview (#102 facet 3 — item DONE). All 106.
+  Suite 913/0; full build clean; headless exit 0. (Canonical record: WorkItems/102; logged here for roster.)
+  * DefineMovementPathRequest carries WeaponRangeOverrides (weaponName + enemy UnitID -> effective range),
+    precomputed in DefinePathStage via RangeRuleQueries.EffectiveRange (mover's ranged weapons x on-table enemies,
+    only differing pairs). GuiDefineMovementResolver's "Show targeting" gates now use it instead of raw RangeInches,
+    so the post-move shooting preview reflects Increased Shooting Range / Ranged Shrouding. JSON round-trip tested.
+  * #102 closed: Strider + Increased Shooting Range + Ranged Shrouding (floored) + offensive Darkborn + this
+    preview all shipped. Sole follow-up = DEFENSIVE Darkborn (enemy -range/-charge, Subject) — its charge debuff
+    needs a per-target charge-distance mechanic (its own item; would also unblock Aircraft's -12" facets).
+
+INTEGRATION PROGRESS (2026-06-29, cont. 41) — RangeModifier floor + offensive Darkborn (#102 facets 1+2). All → 106.
+  Suite 912/0; full build clean; headless exit 0. (Canonical record: WorkItems/102; logged here for roster.)
+  * RangeModifier effect/op gained a MinResultInches floor; RangeRuleQueries.EffectiveRangeDelta → EffectiveRange
+    (folds delta + floor, returns final range = max(maxFloor, base + Σdelta)). Ranged Shrouding now floored at 6".
+  * Darkborn (offensive) catalogued: +3 range (RangeModifier, Actor) + +3 charge (MovementBonus(Charge), Actor,
+    gated to Charge) — the charge half reuses the live Fast/Agile/RapidCharge move-distance seam, no new primitive.
+  * Defensive Darkborn deferred: its enemy charge debuff needs a per-target charge-distance mechanism the engine
+    lacks (MovementActionContext folds only the mover's Actor-seat rules). See WorkItems/102.
+
+INTEGRATION PROGRESS (2026-06-29, cont. 40) — RangeModifier family (#102 second slice). All → 105.
+  Suite 909/0; full build clean; headless exit 0. (Canonical record: WorkItems/102; logged here for roster.)
+  * Consumes the long-declared Effect.RangeModifier → RuleOperation.ApplyRangeModifier. New Shooting_OnRangeCheck
+    hook (81) + RangeModifierContext + RangeRuleQueries.EffectiveRangeDelta — a two-participant non-logging read
+    folding the attacker's own +range (Actor seat) and the defender's -range (Subject seat). Threaded into the
+    single authoritative gate: ChooseRangedAttackStage.BuildAttacksForEnemyUnit computes per-weapon effective
+    range = max(0, RangeInches + delta) (cached, model-independent) → CanWeaponShootAtUnit → IsTargetWithinRange.
+    All three ChooseRangedAttack resolvers read modelsThatCanShoot, so one point covers them + the gray-out.
+  * Catalogued Increased Shooting Range (+6, Actor) + aura, Ranged Shrouding (-6, Subject) + aura. Seat carries
+    direction; effect/op docs updated from Aircraft/Subject-only to both seats.
+  * Deferred (see WorkItems/102): Darkborn (range + charge-move bundle → needs a charge-distance primitive),
+    the "min 6\"" floor variant, and the movement-overlay shooting preview (planning nicety; real shooting is
+    authoritative regardless).
+
+INTEGRATION PROGRESS (2026-06-29, cont. 39) — Strider (#102 first slice): difficult-terrain cap waiver. All → 101.
+  Suite 905/0; full build clean; headless exit 0. (Tracked canonically in WorkItems/102; logged here for roster.)
+  * Wires the long-declared-but-unconsumed Effect.IgnoreTerrainEffects → RuleOperation.IgnoreTerrainEffects.
+    New MovementRuleQueries.IgnoresDifficultTerrain (reads it via the new MoveThroughTerrainContext at the
+    pre-existing Movement_OnMoveThroughTerrain hook) — exact parallel of #090's CanMoveThroughEnemies. New
+    ignoresDifficultTerrain param threaded through ValidateMovingThroughDifficultTerrain (early-return skip) +
+    the 3 terrain-aware ValidatePaths overloads; IgnoresDifficultTerrain flag on the two move requests;
+    computed+passed at 4 engine sites + read+passed at 6 resolver sites (both repos). Catalogued Strider —
+    which ALSO fixes its absence from the Army Creator picker (picker derives from CoreRuleCatalog.All).
+  * Scope: waives ONLY the difficult-terrain move cap. Dangerous-terrain tests + enemy move-through block
+    untouched; Flying's "ignore all terrain + move through units" stays #029 (can reuse the same effect once
+    those consumers honour it). RangeModifier family (Increased Shooting Range / Ranged Shrouding / Darkborn)
+    is the remaining half of #102, not started.
+
+[x] SUPPRESSION vs. PER-RULE LOG (DONE 2026-06-07; see INTEGRATION PROGRESS cont. 6).
+    Was: the per-rule game-log line emitted at QUEUE TIME, before the suppression first-pass,
+    so a suppressed rule would print a phantom "X added -1 to hit". FIXED by moving log emission
+    after the suppression pass in EvaluateAll (chose option 1 — log surviving ops only). The
+    per-unit Evaluate still logs all its ops (no suppression at that level, so accurate).
+
+
+
+Phases 6/7 are deliberately QUEUE-LEVEL: tests assert the right RuleOperation is
+queued; an Effect may be defined but its execution against engine state left
+unimplemented. This second pass closes that gap:
+
+[ ] Implement operation EXECUTION against live engine state (wound actually
+       multiplied, model actually healed, token actually granted, etc.).
+[ ] Add behavior-level tests asserting the EFFECT happened, not just that the
+       operation was queued. Drive the execution work test-first.
+
+Rationale (decided 2026-05-28): queue-level now lets us get tests green by
+implementing rules + hooks + dispatch while effects stay "defined but inert";
+executing them is a focused later pass. End state = layered coverage (operation
+queued AND effect applied). See architecture doc Phase 6 notes.
+
+
+PARALLEL / DOWNSTREAM
+---------------------
+
+[~] 042 — Refactor stages to expose core operations as invocable subsystems
+       (movement, attack, deploy, wound application). Required for Phase 7h.
+       Can start any time after Phase 3.
+       MOVEMENT done 2026-06-07 (MovementExecutor; see INTEGRATION PROGRESS cont. 11).
+       DEPLOY done 2026-06-07 (defer/reserve primitive: Scout cont. 13, Ambush cont. 14;
+       PlaceDeferredUnitsStage + StartOfRoundExtraActionStage arrival + PlaceObjectsRequest
+       enemy-distance constraint).
+       Attack / wound-application still to expose (Reactivate/Strafing/Impact next).
+
+[ ] Future: JSON/YAML data loader + schema validation. Wait until C# model
+       is settled by Phases 6 and 7 against real rules. ALSO gated on #027
+       (weapon-scoped rules): the army/rule schema must know rules can attach
+       to WEAPONS, not just units, before it's committed — otherwise the loader
+       and army creator bake in a unit-only model that forces a save-format
+       migration once weapon-scoping lands. Settle #027's attachment model first.
+       (Decided 2026-06-11; see WorkItemsList #027 sequencing note.)
+
+[ ] Future: networking sync — hash rule registry at lobby-ready, reject on mismatch.
+
+[ ] Future: more army samples (vehicle-heavy, psychic/horror, swarm) to
+       stress-test the vocabulary before locking it down.
+
+
+NOTES
+-----
+
+- Don't write the JSON/YAML loader until Phase 7 is done AND #027's weapon-
+  attachment model is settled (the schema must allow rules on weapons, not just
+  units — see the PARALLEL/DOWNSTREAM note above). Definitions are inline-
+  constructed C# objects in tests until the model is proven.
+- The engine refactor (042) is parallel work, not a prerequisite for Phases 1–6.
+  Most rule tests assert that the right operation is queued, not that the
+  operation actually executes against the engine.
+- If you discover a missing helper while writing tests, add it to TestRuleHarness,
+  not to the fixture file.
+
+
+APPENDIX A — Hook surface (37 hooks)
+------------------------------------
+
+Full descriptions of each hook (when it fires, context payload) live in
+WorkItems/042-special-rules-architecture.md under "Hook surface". This list
+is the canonical enum population for HookId.cs.
+
+Round-level (2):
+    OnRoundStart
+    OnRoundEnd
+
+Activation-level (5):
+    OnNextActivatorRequested
+    OnActivationStart
+    OnActionChoice
+    OnPreAttack
+    OnEndOfActivation
+
+Movement (5):
+    OnMoveActionDeclared
+    OnChargeDeclared
+    OnMoveThroughEnemy
+    OnMoveThroughTerrain
+    OnMoveResolved
+
+Shooting (11):
+    OnShootTargetsSelected
+    OnPreHitRollCount
+    OnHitRollModifier
+    OnHitRollComplete
+    OnPreSaveRollCount
+    OnSaveRollModifier
+    OnSaveRollComplete
+    OnPreApplyWound
+    OnPostApplyWound
+    OnUnitDestroyed
+    OnPostShoot
+
+Melee (4 melee-specific; shoot hooks reused with a combatKind flag for everything else):
+    OnChargeContact
+    OnCounterTrigger
+    OnMeleeResolution
+    OnPostMelee
+
+Morale (4):
+    OnPreMoraleTest
+    OnMoraleTestComplete
+    OnShakenApplied
+    OnShakenCleared
+
+Deployment (3):
+    OnPreDeploymentSelect
+    OnUnitDeployed
+    OnPostDeploymentComplete
+
+Casting (3):
+    OnSpellCastAttempt
+    OnSpellAssistOffered
+    OnSpellResolved
+
+Lifecycle / token bookkeeping (2):
+    OnUnitCreated
+    OnWoundIgnored
+
+
+APPENDIX B — Whens per special rule (brainstorm 2026-05-29)
+----------------------------------------------------------
+
+Source: GF Beginner's Guide "Special Rules Reference" (pp.13-15) — matches the
+project's v3.5.1 corpus (has Takedown/Artillery/Limited). All 32 rules except AP.
+
+A "when" is the perspective-FUSED trigger (moment x seat) decided in the Phase 7
+design session: "when I shoot" and "when an enemy shoots me" are DIFFERENT whens
+over the same engine event. Under the hood a when maps to (EHookID x seat); the
+seat is resolved by which participant carries the rule, so authoring a wrong seat
+is impossible. Conditions/effects are shown in [..] only to justify the when — they
+are NOT part of it (they layer on top and stack). High reuse below is the point:
+basic whens cover many rules.
+
+CANONICAL WHEN VOCABULARY (deduped, grouped by resolution phase)
+  Round/lifecycle
+    [W1] when a round starts (self)
+    [W2] when this model is created (self)
+  Deployment
+    [W3] when this unit deploys (self)
+    [W4] when objective control is checked for this unit (self)
+  Action / movement (actor seat)
+    [W5] when this unit declares an action (self=actor)
+    [W6] when this unit moves (self=mover)
+    [W7] when this unit charges (self=charger)
+  Charge defense (defender seat)
+    [W8] when this unit is charged (self=charged)
+  Shooting — attacker seat
+    [W9]  when this unit selects a shooting target (self=attacker)
+    [W10] when this unit rolls to hit (self=attacker)  -- shooting OR melee; the
+          shoot/melee split is a CONDITION (combatKind), NOT a separate when
+    [W11] when this unit's hits are totaled (self=attacker)
+  Shooting — defender seat
+    [W12] when an enemy rolls to hit this unit, shooting (self=target)
+  Melee
+    [W13] -- MERGED INTO W10. Melee hit rolls reuse the hit-roll when via the combatKind
+          flag (arch doc hook-surface: "shoot hooks reused ... for everything else").
+          Only charge-contact / counter / melee-resolution / post-melee are melee-only moments.
+    [W14] when melee is resolved (self=combatant)
+  Saves / wounds
+    [W15] when the target saves against this unit's attack (self=attacker)
+    [W16] when this unit's attack wounds the target (self=attacker)
+    [W17] when this unit takes a wound (self=defender)
+    [W18] when wounds are assigned to this unit (self=defender)
+    [W19] when the target would ignore a wound from this unit's attack (self=attacker)
+  Morale
+    [W20] when this unit fails a morale test (self)
+  Casting
+    [W21] when this unit casts a spell (self=caster)
+    [W22] when a friendly caster casts within 18" of this unit (self=assisting)  *** TRIPWIRE
+  Weapon availability
+    [W23] when this unit attacks with this weapon (self=attacker)
+
+PER-RULE MAPPING (rule [primary seat] -> when(s); [condition -> effect])
+  Aircraft [mixed]  -> W6 [Advance-only, straight, +30", ignore units/terrain],
+                       W8 [cannot be charged], W12 [-12" to attacker range],
+                       W4 [cannot seize/contest]
+  Ambush [self]     -> W3 [set aside], W1 [from rnd 2: place >9" from enemies],
+                       W4 [no seize/contest the round it arrives]
+  Artillery [mixed] -> W5 [Hold-only], W10 [dist>9 -> +1 hit], W12 [dist>9 -> -2 to attacker]
+  Bane [attacker]   -> W15 [unmodified Defense 6 -> reroll], W19 [suppress Regeneration]
+  Blast(X) [atk]    -> W9 [ignore cover], W11 [each hit x X, cap = target model count]  (ORDERING: "after other rules")
+  Caster(X) [caster]-> W1 [gain X spell tokens, cap 6], W21 [spend tokens to cast],
+                       W22 [assist +/-1 per token]  *** proximity tripwire; likely deferred
+  Counter [defender]-> W8 [strike first; -1 charger Impact rolls per Counter model]
+  Deadly(X) [atk]   -> W16 [wound x X, single model, no carry-over]  (ORDERING: "resolved first")
+  Fast [mover]      -> W6 [Advance +2", Rush/Charge +4"]
+  Fear(X) [combatant]-> W14 [counts as +X wounds dealt for who-won-melee]
+  Fearless [self]   -> W20 [roll d6; 4+ counts as passed]
+  Flying [mover]    -> W6 [move through units+terrain; ignore terrain effects]
+  Furious [atk]     -> W10 [melee AND charging AND unmodified 6 -> +1 hit]
+  Immobile [actor]  -> W5 [Hold-only]
+  Impact(X) [charger]-> W7 [not fatigued -> roll X; each 2+ -> 1 hit]
+  Indirect [atk]    -> W10 [after moving -> -1 hit], W9 [target non-LoS as if LoS; ignore cover]
+  Limited [atk]     -> W23 [once per game -> consume once-per-game token]
+  Regeneration [def]-> W17 [roll d6 per wound; 5+ ignored]
+  Relentless [atk]  -> W10 [dist>9 AND unmodified 6 -> +1 hit]
+  Rending [atk]     -> W10 [unmodified 6 -> those hits get AP(4)], W19 [suppress Regeneration]
+  Reliable [atk]    -> W10 [set base Quality to 2+ (still modifiable)]
+  Scout [self]      -> W3 [set aside; after all deploy, place within 12" of zone]
+  Slow [mover]      -> W6 [Advance -2", Rush/Charge -4"]
+  Stealth [def]     -> W12 [dist>9 -> -1 to attacker hit]
+  Strider [mover]   -> W6 [ignore difficult-terrain effects]  (narrower than Flying)
+  Surge [atk]       -> W10 [unmodified 6 -> +1 hit]  (NO combat-kind condition -> fires in shooting AND melee)
+  Takedown [atk]    -> W9 [target individual model, resolve as unit of [1]]  (ORDERING: "resolved before other weapons")
+                    *** CORRECTED 2026-08-02 (#314): this row used to append "; ignore intervening
+                    LoS/cover" -- Indirect's clause, which Takedown's v3.5.1 text does NOT grant. The
+                    catalog was built from this row (cont. 30), so snipers shot through Blocking
+                    terrain until #314 removed both hooks and implemented the ordering clause. ***
+  Thrust [atk]      -> W10 [melee AND charging -> +1 hit and AP(+1)]
+  Tough(X) [self/def]-> W2 [set max wounds = X], W18 [assignment order: most-wounded tough first; heroes last]
+  Unstoppable [atk] -> W10 [ignore all negative modifiers to this weapon], W19 [suppress Regeneration]
+
+DEFERRED (static metadata; no runtime when until #042 engine primitives exist)
+  Hero      -> would be W3 [deploy joined], W20 [take morale on unit's behalf],
+               + "use unit's Defense until others dead" (a stat-read relationship).
+  Transport(X) -> W3 [units inside deploy with it], "when this transport is destroyed"
+               [occupants: dangerous test + Shaken + place within 6"], embark/disembark.
+
+OBSERVATIONS
+  - TWO distinct mechanisms, don't confuse them: (a) a rule may list MULTIPLE whens
+    (a SpecialRuleDefinition is a LIST of HookEntries) for genuinely DIFFERENT moments
+    -- Aircraft 4, Bane 2, Tough 2; (b) a single moment that occurs in BOTH shooting
+    and melee (hit/save/wound rolls) is ONE when with combatKind as a CONDITION, not
+    two whens. Surge is case (b); splitting it into shoot+melee whens was over-cutting.
+  - W6 ("when this unit moves") alone carries Fast/Slow/Flying/Strider/Aircraft —
+    confirms whens should stay basic and let conditions/effects differentiate.
+  - W10 ("rolls to hit") is the busiest by far: Artillery/Indirect/Relentless/Surge/
+    Reliable/Rending/Unstoppable + melee Furious/Thrust. Shooting-only ones add a
+    [shooting] condition, melee-only ones add [melee]; pure weapon rules (Surge/
+    Reliable/Rending/Unstoppable) add neither and fire in both. All differ only by
+    condition/effect.
+  - W19 is a pure SUPPRESSION when shared by Bane/Rending/Unstoppable (all "ignore
+    Regeneration") — feeds the 7b first-pass suppression decision.
+  - ORDERING flags (Blast "after other rules", Deadly/Takedown "resolved first") are
+    the concrete cases behind the 7b feedback/precedence open question.
+  - W22 (Caster assist within 18") is the ONE proximity-to-non-participant rule in
+    the corpus — the aura tripwire. If we implement assist, the pull model returns
+    for it alone; otherwise defer.
+
+
+APPENDIX C — Partial-facet ledger (implemented rules with deferred facets)
+-------------------------------------------------------------------------
+
+Added 2026-06-08. The rules below are LIVE in CoreRuleCatalog but ship only their
+headline facet; a secondary facet from the v3.5.1 text (see Appendix B's per-rule
+W-mapping for the authoritative full behavior) is not yet implemented. This table
+is the single at-a-glance "implemented vs deferred facets" ledger — previously the
+gaps were scattered across the arch doc, this checklist, and a few catalog XML
+comments (and several were unrecorded). Rules NOT in this table are either fully
+implemented (most of CoreRuleCatalog.All — 55 rules as of cont. 31; the original
+core set was Stealth, Reliable, Fast, Slow, Surge, Relentless, Regeneration, Bane,
+Scout, Thrust, Blast, Furious, Counter, Ambush, Takedown, Indirect) or not
+implemented at all — now just 4: Aircraft, Flying, Limited, Strider (Caster, Fear,
+Fearless, Immobile, Hero, Transport have since gone live; see cont. 31).
+
+  Rule         Live facet                       Deferred facet (NOT yet done)
+  ----         ----------                        -----------------------------
+  Impact(X)    X dice on charge contact, each    "Not fatigued" gate (W7) — fatigue is absent
+               2+ a hit, resolved through        (ApplyFatigueStage is a stub), so Impact always rolls
+               save+wound before normal swings   even on a charge that should be fatigued.
+  Artillery    +1 to hit beyond 9" (Actor) +    Hold-only action restriction (W5) — needs the
+               enemies shooting it from >9"      action-restriction enforcement (shared with Immobile,
+               take -2 to hit (Subject)          not yet live). The defensive -2 facet (W12) is now
+                                                DONE (cont. 27).
+  Deadly(X)    wounds x X, confined per-clump    Only the defender's free CHOICE of which models
+               to a single model with no          absorb clumps (to minimise casualties) is deferred —
+               carry-over of overkill (W16);      the same tough-aware allocation-order choice as
+               multiplier wasted vs 1-wound       Tough's W18 row below. ConfineToClumps fills models in
+               models, kills Tough by clumping    list order; faithful for single-wound (order-irrelevant).
+  Tough(X)     sets model max wounds (W2)       Wound-assignment ORDER (most-wounded tough
+                                                first; heroes last) not enforced (W18). Its
+                                                heroes-last half also needs Hero (see ~806).
+  Unstoppable  ignores Regeneration (suppress)  "Ignores all negative modifiers to this
+                                                weapon" facet — needs a modifier-immunity
+                                                effect (noted in catalog XML comment).
+  Rending      whole-attack AP-4 when ANY hit   True PER-HIT AP (only the 6s get AP) —
+               rolled a 6                        simplified to whole-attack (catalog comment).
+  Martial      once-per-game second activation   Offered ONLY while the player still has a pending
+  Prowess      of an already-activated unit      normal activation that turn — if the bearer is the
+               (re-added to the unactivated      player's LAST unit, TryAdvanceToNextPlayer ends their
+               pool, marker enforces once)       turns before the offer fires (round-end doesn't consult
+                                                pending reactivations).
+  Strafing     moving through an enemy offers a   (1) only the FIRST crossed enemy is offered;
+               3-hit mid-move attack on it,       (2) DealHits.WithRules not applied (Strafing carries
+               resolved through save+wound            none — AP/Blast-carrying spell hits pending).
+               (OncePerActivation, resets each
+               activation via the token-clear pass)
+
+  Maintenance: when a deferred facet ships, delete its row (or move the rule out of
+  this table). When a NEW rule goes live with a known gap, add a row here at the same
+  time — this is the canonical place, so the catalog/arch-doc no longer need to each
+  carry their own partial copy.

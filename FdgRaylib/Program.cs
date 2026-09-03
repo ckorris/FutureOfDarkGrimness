@@ -1,5 +1,20 @@
+using System.Text.Json;
 using FdgRaylib.Cli;
+using FdgRaylib.Config;
+using FdgRaylib.Import;
+using FdgRaylib.ListServer;
 using FdgRaylib.Rendering;
+using FDG;
+using FDG.ArmyBuilding;
+using FDG.Data;
+using FDG.GameModel;
+using FDG.Network.Connection;
+using FDG.Network.Connection.Lobby;
+using FDG.Presentation;
+using FDG.Rules.Serialization;
+using FDG.SaveLoad;
+using FdgRaylib.SaveLoad;
+using TinyDialogsNet;
 
 string crashLogPath = Path.Combine(AppContext.BaseDirectory, "crash.log");
 
@@ -19,7 +34,39 @@ TaskScheduler.UnobservedTaskException += (_, e) =>
     e.SetObserved();
 };
 
+// --field-harness (#162): offscreen GPU-vs-CPU field pixel diff. Hidden GL window, no game, exits with
+// 0 iff every synthetic scene matches the CPU reference renderer within tolerance.
+if (args.Contains("--field-harness"))
+{
+    Environment.Exit(FdgRaylib.Rendering.TacticalOverlay.FieldHarness.Run());
+}
+
+// #310: every install gets a config file (player name + the last hosted game's settings). Created with
+// defaults on first run; best-effort, so a read-only home directory just means nothing is remembered.
+UserConfig.EnsureExists();
+
 bool headless = args.Contains("--headless");
+
+// #354: let army load see the CURRENT rulebook, not just the frozen copy a saved .fdgarmy embeds, so a
+// list saved before a rule was implemented picks that rule up instead of silently fielding nothing.
+// Installed in every mode - this is army data, not a UI concern.
+FdgRaylib.Import.BundledBookRulebook.Install();
+
+// #168: in any windowed mode, collect the engine's rule-load warnings for the in-game log (they fire
+// before the log exists and would otherwise only reach stdout, invisible in a GUI session). Headless
+// keeps the channel's plain stdout fallback that automated runs grep.
+if (!headless)
+{
+    FdgRaylib.Rendering.RuleLoadWarnings.Install();
+}
+
+// --trace-rules (#163): narrate every live rule hook evaluation (fired / condition failed / suppressed /
+// ability offered) through the Debug log channel — printed as [LOG] lines headless, shown in the GUI
+// console's Debug view. The GUI Debug toggle flips the same switch at runtime.
+if (args.Contains("--trace-rules"))
+{
+    FDG.Rules.Dispatch.RuleTrace.Enabled = true;
+}
 
 // --slow [ms]  — pause N milliseconds before each resolver call (default 1500ms)
 int slowDelayMs = 0;
@@ -27,10 +74,586 @@ int slowIdx = Array.IndexOf(args, "--slow");
 if (slowIdx >= 0)
     slowDelayMs = slowIdx + 1 < args.Length && int.TryParse(args[slowIdx + 1], out int ms) ? ms : 1500;
 
-var app = new CliApp(headless, slowDelayMs);
+// --seed <int> (#193): seeds the whole game — dice, decisive rolls, objective auto-placement, and each
+// AI player's own stream. Same seed + same build => identical game. Overrides a seed saved in a scenario.
+int? diceSeed = null;
+int seedIdx = Array.IndexOf(args, "--seed");
+if (seedIdx >= 0 && seedIdx + 1 < args.Length && int.TryParse(args[seedIdx + 1], out int parsedSeed))
+    diceSeed = parsedSeed;
+
+// --ai-profile <solorules|tactician> (#191): which AI drives the computer slots on the headless and
+// scenario paths (lobby AI selection is a later slice, plan A6). Default: solo-rules.
+var aiProfile = FDG.Ai.EAiProfile.SoloRules;
+int profileIdx = Array.IndexOf(args, "--ai-profile");
+if (profileIdx >= 0 && profileIdx + 1 < args.Length)
+{
+    if (!Enum.TryParse(args[profileIdx + 1], ignoreCase: true, out aiProfile))
+    {
+        Console.Error.WriteLine($"Unknown --ai-profile '{args[profileIdx + 1]}'. Known: " +
+            string.Join(", ", Enum.GetNames<FDG.Ai.EAiProfile>()).ToLowerInvariant());
+        Environment.Exit(2);
+    }
+}
+
+// The flag's file arguments from startIdx up to the next --flag (#375: the supplement CLI flags take
+// one or more supplement files).
+static List<string> TrailingPaths(string[] args, int startIdx)
+{
+    List<string> paths = new();
+    for (int i = startIdx; i < args.Length && !args[i].StartsWith("--"); i++)
+        paths.Add(args[i]);
+    return paths;
+}
+
+// --import-opr <in.json> <out.fdgbook> [supplement.json ...]  (#153 P0b): one-time OnePageRules Army
+// Forge JSON → .fdgbook snapshot, via the engine importer. Data is OPR's, used under CC-BY-SA (stamped
+// on the book). Optional supplements embed curated rule definitions the book references (see
+// --apply-rules); multiple files merge later-wins by name (#375).
+int importIdx = Array.IndexOf(args, "--import-opr");
+if (importIdx >= 0 && importIdx + 2 < args.Length)
+{
+    string inJson = args[importIdx + 1];
+    string outPath = args[importIdx + 2];
+    BookFile book = OprBookImporter.Import(File.ReadAllText(inJson),
+        source: "OnePageRules - Army Forge (army-forge.onepagerules.com)",
+        license: "CC-BY-SA 4.0",
+        warn: msg => Console.WriteLine($"  {msg}"));
+    var importSupplementPaths = TrailingPaths(args, importIdx + 3);
+    if (importSupplementPaths.Count > 0)
+    {
+        var supplement = RuleSupplementSet.LoadMerged(importSupplementPaths);
+        var embedded = BookRuleSupplement.Apply(book, supplement, msg => Console.WriteLine($"  {msg}"));
+        Console.WriteLine($"  supplement: embedded {embedded.Count} rule definitions ({string.Join(", ", embedded)})");
+    }
+    Directory.CreateDirectory(Path.GetDirectoryName(Path.GetFullPath(outPath))!);
+    File.WriteAllText(outPath, JsonSerializer.Serialize(book, RuleJson.Options));
+    Console.WriteLine($"Imported '{book.Name}' {book.Version}: {book.Units.Count} units, {book.Spells.Count} spells -> {outPath}");
+    return;
+}
+
+// --import-army <share-link-or-id> <out.fdgarmy>  (#241): fetch an Army Forge share list and write a
+// playable army file (same pipeline as the Forge screen's Import Link button). Refuses on an OPR
+// version / game-system mismatch. Exit 0 on success, 1 on any failure.
+int importArmyIdx = Array.IndexOf(args, "--import-army");
+if (importArmyIdx >= 0 && importArmyIdx + 2 < args.Length)
+{
+    try
+    {
+        var outcome = FdgRaylib.Import.ArmyForgeShareService
+            .FetchAndImportAsync(args[importArmyIdx + 1]).GetAwaiter().GetResult();
+        foreach (string w in outcome.Result.Warnings) Console.WriteLine($"  warning: {w}");
+        foreach (string e in outcome.Result.ListErrors) Console.WriteLine($"  Army Forge list error: {e}");
+        if (outcome.InertRules.Count > 0)
+            Console.WriteLine($"  not enforced by engine: {string.Join(", ", outcome.InertRules)}");
+
+        // #241 v2: pricing reconciliation - our ListCompiler vs Army Forge (a #218/#219 detector).
+        if (outcome.ForgeSession is { } session)
+        {
+            foreach ((string name, int pts) in session.ExcludedUnits)
+                Console.WriteLine($"  excluded (not in bundled book): {name} ({pts} pts)");
+            foreach ((string name, int ours, int theirs) in session.UnitPointsDeltas)
+                Console.WriteLine($"  base cost drift: {name} - bundled book {ours} pts, Army Forge {theirs} pts");
+            if (session.UnpricedUpgradeCount > 0)
+                Console.WriteLine($"  {session.UnpricedUpgradeCount} selected upgrade(s) have no published " +
+                    "Army Forge price - our total counts them as free (#219)");
+            Console.WriteLine(session.OurTotalPoints == session.TheirTotalPoints
+                ? $"  points check: OK ({session.OurTotalPoints} pts both ways)"
+                : $"  points check: our Forge {session.OurTotalPoints} pts vs Army Forge " +
+                  $"{session.TheirTotalPoints} pts" +
+                  (session.UnpricedUpgradeCount > 0 ? " (expected - unpriced upgrades above)" : ""));
+        }
+
+        string outArmyPath = args[importArmyIdx + 2];
+        if (Path.GetExtension(outArmyPath) != ArmyListFile.EXTENSION_WITH_PERIOD)
+            outArmyPath = Path.ChangeExtension(outArmyPath, ArmyListFile.EXTENSION_WITH_PERIOD);
+        string? outArmyDir = Path.GetDirectoryName(Path.GetFullPath(outArmyPath));
+        if (!string.IsNullOrEmpty(outArmyDir)) Directory.CreateDirectory(outArmyDir);
+        File.WriteAllText(outArmyPath, JsonSerializer.Serialize(outcome.Result.Army, RuleJson.Options));
+        Console.WriteLine($"Imported '{outcome.Result.Army.Name}' ({outcome.Result.Army.Faction}): " +
+            $"{outcome.Result.Army.Units.Count} units, {outcome.Result.Army.TotalPoints} pts -> {outArmyPath}");
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"Import failed: {ex.Message}");
+        Environment.Exit(1);
+    }
+    return;
+}
+
+// --import-book <book.fdgbook | dir>  (#219): refresh the "unpriced upgrade" flags on a bundled book (or
+// every .fdgbook in a directory) from OPR's live army-book endpoint. Re-imports to a throwaway book and
+// copies only costUnpriced onto the existing snapshot by option Id - all other curation (effect sets,
+// embedded rules, base retrofits) is preserved. Writes in place. Exit 0 on success, 1 on any failure.
+int importBookIdx = Array.IndexOf(args, "--import-book");
+if (importBookIdx >= 0 && importBookIdx + 1 < args.Length)
+{
+    try
+    {
+        string target = args[importBookIdx + 1];
+        string[] bookPaths = Directory.Exists(target)
+            ? Directory.EnumerateFiles(target, "*" + BookFile.EXTENSION_WITH_PERIOD).OrderBy(p => p).ToArray()
+            : new[] { target };
+        if (bookPaths.Length == 0) { Console.WriteLine($"No {BookFile.EXTENSION_WITH_PERIOD} files in '{target}'."); return; }
+
+        // #378: the official-book index is per game system - fetched lazily so a GDF-only run never
+        // touches the AoF endpoint (and vice versa). A book with no GameSystem field is GDF.
+        var indexBySystem = new Dictionary<string, IReadOnlyDictionary<string, string>>(StringComparer.OrdinalIgnoreCase);
+        int totalPriced = 0, missing = 0;
+        foreach (string path in bookPaths)
+        {
+            BookFile book = JsonSerializer.Deserialize<BookFile>(File.ReadAllText(path), RuleJson.Options)!;
+            string system = FDG.ArmyBuilding.GameSystems.Normalize(book.GameSystem);
+            if (!indexBySystem.TryGetValue(system, out var index))
+                indexBySystem[system] = index =
+                    FdgRaylib.Import.ArmyForgeBookService.FetchBookIndexAsync(system).GetAwaiter().GetResult();
+            if (!index.TryGetValue(book.Name, out string? uid))
+            {
+                Console.WriteLine($"  {book.Name}: no OPR official {system} book by that name - skipped.");
+                missing++;
+                continue;
+            }
+            string raw = FdgRaylib.Import.ArmyForgeBookService.FetchBookJsonAsync(uid, system).GetAwaiter().GetResult();
+            var report = FdgRaylib.Import.ArmyForgeBookService.RefreshCosts(book, raw);
+            File.WriteAllText(path, JsonSerializer.Serialize(book, RuleJson.Options));
+            totalPriced += report.Priced;
+            Console.WriteLine($"  {report.BookName}: recovered {report.Priced} previously-unpriced cost(s), "
+                + $"repriced {report.Repriced}, {report.Unmatched} option(s) not in the live book.");
+            foreach (string s in report.Samples) Console.WriteLine($"      {s}");
+        }
+        Console.WriteLine($"Done: {bookPaths.Length - missing}/{bookPaths.Length} book(s) refreshed, "
+            + $"{totalPriced} option(s) got a recovered price.");
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"Book refresh failed: {ex.Message}");
+        Environment.Exit(1);
+    }
+    return;
+}
+
+// --import-section-shapes <book.fdgbook | dir>  (#383): re-stamp the per-model "Any model may ..."
+// upgrade sections (Affects=Any + perModelBudget) on a bundled book (or every .fdgbook in a directory)
+// from OPR's live army-book endpoint - the classification needs the raw `select`/`model` fields the
+// snapshot never stored. Same transfer discipline as --import-book: matched by (unit, section) Id,
+// everything else on the snapshot preserved. Writes in place. Exit 0 on success, 1 on any failure.
+int shapesIdx = Array.IndexOf(args, "--import-section-shapes");
+if (shapesIdx >= 0 && shapesIdx + 1 < args.Length)
+{
+    try
+    {
+        string target = args[shapesIdx + 1];
+        string[] bookPaths = Directory.Exists(target)
+            ? Directory.EnumerateFiles(target, "*" + BookFile.EXTENSION_WITH_PERIOD).OrderBy(p => p).ToArray()
+            : new[] { target };
+        if (bookPaths.Length == 0) { Console.WriteLine($"No {BookFile.EXTENSION_WITH_PERIOD} files in '{target}'."); return; }
+
+        // #378: per-system index, lazily fetched - same discipline as --import-book above.
+        var indexBySystem = new Dictionary<string, IReadOnlyDictionary<string, string>>(StringComparer.OrdinalIgnoreCase);
+        int totalStamped = 0, missing = 0;
+        foreach (string path in bookPaths)
+        {
+            BookFile book = JsonSerializer.Deserialize<BookFile>(File.ReadAllText(path), RuleJson.Options)!;
+            string system = FDG.ArmyBuilding.GameSystems.Normalize(book.GameSystem);
+            if (!indexBySystem.TryGetValue(system, out var index))
+                indexBySystem[system] = index =
+                    FdgRaylib.Import.ArmyForgeBookService.FetchBookIndexAsync(system).GetAwaiter().GetResult();
+            if (!index.TryGetValue(book.Name, out string? uid))
+            {
+                Console.WriteLine($"  {book.Name}: no OPR official {system} book by that name - skipped.");
+                missing++;
+                continue;
+            }
+            string raw = FdgRaylib.Import.ArmyForgeBookService.FetchBookJsonAsync(uid, system).GetAwaiter().GetResult();
+            var report = FdgRaylib.Import.ArmyForgeBookService.RefreshPerModelSections(book, raw);
+            if (report.Stamped > 0)
+                File.WriteAllText(path, JsonSerializer.Serialize(book, RuleJson.Options));
+            totalStamped += report.Stamped;
+            Console.WriteLine($"  {report.BookName}: stamped {report.Stamped} per-model section(s), "
+                + $"{report.Unmatched} section(s) not in the live book.");
+            foreach (string s in report.Samples) Console.WriteLine($"      {s}");
+        }
+        Console.WriteLine($"Done: {bookPaths.Length - missing}/{bookPaths.Length} book(s) checked, "
+            + $"{totalStamped} section(s) stamped per-model.");
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"Section-shape refresh failed: {ex.Message}");
+        Environment.Exit(1);
+    }
+    return;
+}
+
+// --import-spells <snapshotDir> <book.fdgbook | dir>  (#377): re-stamp ONLY the spells (and their
+// synthesized "<Spell> Effect" definitions) on a bundled book (or every .fdgbook in a directory) from
+// the off-repo OPR JSON snapshots, matched by book name -> "<Name>.json". Same targeted-stamp
+// discipline as --import-section-shapes: the bundled books carry post-bake live-API passes (#219
+// prices, #383 shapes) that a full re-import would wipe. Writes in place only when spells changed.
+int spellsIdx = Array.IndexOf(args, "--import-spells");
+if (spellsIdx >= 0 && spellsIdx + 2 < args.Length)
+{
+    try
+    {
+        string snapshotDir = args[spellsIdx + 1];
+        string target = args[spellsIdx + 2];
+        string[] bookPaths = Directory.Exists(target)
+            ? Directory.EnumerateFiles(target, "*" + BookFile.EXTENSION_WITH_PERIOD).OrderBy(p => p).ToArray()
+            : new[] { target };
+        if (bookPaths.Length == 0) { Console.WriteLine($"No {BookFile.EXTENSION_WITH_PERIOD} files in '{target}'."); return; }
+
+        int totalStamped = 0, missing = 0;
+        foreach (string path in bookPaths)
+        {
+            string before = File.ReadAllText(path);
+            BookFile book = JsonSerializer.Deserialize<BookFile>(before, RuleJson.Options)!;
+            string snapshotPath = Path.Combine(snapshotDir, book.Name + ".json");
+            if (!File.Exists(snapshotPath))
+            {
+                Console.WriteLine($"  {book.Name}: no snapshot '{snapshotPath}' - skipped.");
+                missing++;
+                continue;
+            }
+            int stamped = OprBookImporter.RestampSpells(book, File.ReadAllText(snapshotPath),
+                msg => Console.WriteLine($"  {msg}"));
+            string after = JsonSerializer.Serialize(book, RuleJson.Options);
+            if (after != before) File.WriteAllText(path, after);
+            totalStamped += stamped;
+            Console.WriteLine($"  {book.Name}: {stamped} spell(s) stamped" +
+                (after == before ? " (unchanged)" : ""));
+        }
+        Console.WriteLine($"Done: {bookPaths.Length - missing}/{bookPaths.Length} book(s) stamped, " +
+            $"{totalStamped} spell(s).");
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"Spell re-stamp failed: {ex.Message}");
+        Environment.Exit(1);
+    }
+    return;
+}
+
+// --apply-rules <book.fdgbook> <supplement.json ...>  (#153): merge curated rule definitions into an
+// existing book snapshot in place — the definitions the book references (plus what those grant) embed
+// into the book's ruleDefinitions, replace-by-name, so re-applying after editing the supplement is
+// idempotent. Multiple supplement files merge later-wins by name before the bake (#375: AoF books bake
+// against GDF + AoF, so an AoF redefinition of a shared name wins; GDF books keep GDF alone).
+// Validation is hard-fail; an invalid supplement leaves the book untouched.
+int applyIdx = Array.IndexOf(args, "--apply-rules");
+if (applyIdx >= 0 && applyIdx + 2 < args.Length)
+{
+    string bookPath = args[applyIdx + 1];
+    BookFile book = JsonSerializer.Deserialize<BookFile>(File.ReadAllText(bookPath), RuleJson.Options)!;
+    var supplement = RuleSupplementSet.LoadMerged(TrailingPaths(args, applyIdx + 2));
+    var embedded = BookRuleSupplement.Apply(book, supplement, msg => Console.WriteLine($"  {msg}"));
+    File.WriteAllText(bookPath, JsonSerializer.Serialize(book, RuleJson.Options));
+    Console.WriteLine($"'{book.Name}': embedded {embedded.Count} rule definitions " +
+        $"({string.Join(", ", embedded)}) -> {bookPath}");
+    return;
+}
+
+// --validate-rules <supplement.json ...>  (#153): authoring aid — strict-parse the supplement(s) and
+// validate every definition (hook/capability fit, granted names resolve, no duplicates) without touching
+// a book. Multiple files validate as one later-wins merged universe (#375), so an AoF definition may
+// grant a GDF-supplement name; validate a file alone to check it is self-contained.
+int validateIdx = Array.IndexOf(args, "--validate-rules");
+if (validateIdx >= 0 && validateIdx + 1 < args.Length)
+{
+    var supplement = RuleSupplementSet.LoadMerged(TrailingPaths(args, validateIdx + 1));
+    var problems = BookRuleSupplement.ValidateAll(supplement);
+    foreach (string problem in problems)
+        Console.WriteLine($"  {problem}");
+    Console.WriteLine(problems.Count == 0
+        ? $"OK: {supplement.Count} definitions, no problems."
+        : $"{problems.Count} problem(s) in {supplement.Count} definitions.");
+    return;
+}
+
+// --rule-coverage <booksDir>  (#196 slice 1 / SYS-5): the import reconciliation report the audit asked
+// for. Mirrors what army load actually does — CoreRuleCatalog + each book's own embedded rule
+// definitions, walked over every reference at its real attachment scope (unit rules/items, weapon
+// profiles, and the same three inside every upgrade option) — so a name with no definition anywhere and
+// a name whose definition disagrees with its attachment scope are reported separately, and a name that
+// resolves cleanly (including a weapon-scoped rule reached via a unit-level wargear bundle, which #197
+// slice 0 made a legal attach, not a mismatch) is not reported at all.
+int coverageIdx = Array.IndexOf(args, "--rule-coverage");
+if (coverageIdx >= 0 && coverageIdx + 1 < args.Length)
+{
+    RuleCoverageReport.Run(args[coverageIdx + 1]);
+    return;
+}
+
+// --book-to-army <book.fdgbook> <out.fdgarmy>  (#153): dev/verify — compile every unit of a book at base size,
+// proving the whole book compiles; writes a small (first-few-units) playable army for a headless smoke.
+int b2aIdx = Array.IndexOf(args, "--book-to-army");
+if (b2aIdx >= 0 && b2aIdx + 2 < args.Length)
+{
+    BookFile book = JsonSerializer.Deserialize<BookFile>(File.ReadAllText(args[b2aIdx + 1]), RuleJson.Options)!;
+
+    BuilderList Base(IEnumerable<FDG.SaveLoad.UnitFileEntry>? _ = null, int take = int.MaxValue)
+    {
+        var list = new BuilderList { Name = book.Name, BookName = book.Name, PointsLimit = 100000 };
+        foreach (RosterUnit u in book.Units.Take(take))
+            list.Units.Add(new BuilderUnit { RosterUnitId = u.Id, ModelCount = u.BaseModelCount });
+        return list;
+    }
+
+    BuiltArmyFile all = ListCompiler.Compile(book, Base());               // proves every unit compiles
+    BuiltArmyFile small = ListCompiler.Compile(book, Base(take: 4));      // small, playable for a smoke
+    File.WriteAllText(args[b2aIdx + 2], JsonSerializer.Serialize(small, RuleJson.Options));
+    Console.WriteLine($"'{book.Name}': all {all.Units.Count} units compiled ({all.TotalPoints} pts); wrote {small.Units.Count}-unit army -> {args[b2aIdx + 2]}");
+    return;
+}
+
+// --retrofit-editable <fileOrDir> [more...]  (#357): make already-saved armies re-editable in the Forge.
+// A plain .fdgarmy stores the RESULT of its upgrade picks, never the picks, so the Forge cannot reopen it
+// (#307). This solves the picks back out against the bundled book (SelectionSolver) and attaches them as an
+// editable session, leaving the playable half byte-for-byte alone. Idempotent - a file that already carries
+// a session is skipped. Writes in place ONLY when every unit solved exactly; add --dry-run to report first.
+int editableIdx = Array.IndexOf(args, "--retrofit-editable");
+if (editableIdx >= 0 && editableIdx + 1 < args.Length)
+{
+    bool dryRun = args.Contains("--dry-run");
+    List<string> targets = args.Skip(editableIdx + 1).TakeWhile(a => !a.StartsWith("--"))
+        .SelectMany(t => Directory.Exists(t)
+            ? Directory.GetFiles(t, "*" + ArmyListFile.EXTENSION_WITH_PERIOD).OrderBy(p => p).ToArray()
+            : new[] { t })
+        .ToList();
+
+    var books = new List<BookFile>();
+    string booksDir = Path.Combine(AppContext.BaseDirectory, "Assets", "Books");
+    if (Directory.Exists(booksDir))
+        foreach (string p in Directory.EnumerateFiles(booksDir, "*" + BookFile.EXTENSION_WITH_PERIOD).OrderBy(p => p))
+            try
+            {
+                BookFile? b = JsonSerializer.Deserialize<BookFile>(File.ReadAllText(p), RuleJson.Options);
+                if (b is not null) books.Add(b);
+            }
+            catch { /* a malformed book just means one fewer faction can be matched */ }
+
+    int converted = 0, alreadyEditable = 0, failed = 0;
+    foreach (string path in targets)
+    {
+        string name = Path.GetFileName(path);
+        BuiltArmyFile? army;
+        try { army = JsonSerializer.Deserialize<BuiltArmyFile>(File.ReadAllText(path), RuleJson.Options); }
+        catch (Exception ex) { Console.WriteLine($"  UNREADABLE {name}: {ex.Message}"); failed++; continue; }
+
+        if (army is null) { Console.WriteLine($"  UNREADABLE {name}: not an army list."); failed++; continue; }
+        if (army.Selections is not null && army.Book is not null)
+        {
+            Console.WriteLine($"  already editable: {name}");
+            alreadyEditable++;
+            continue;
+        }
+
+        // #378: the faction-name match is gated on the army's game system (absent = GDF), because four
+        // AoF faction names collide with GDF books and the wrong book solves to the wrong upgrades.
+        BookFile? book = books.FirstOrDefault(b =>
+            (string.Equals(b.Faction, army.Faction, StringComparison.OrdinalIgnoreCase)
+             || string.Equals(b.Name, army.Faction, StringComparison.OrdinalIgnoreCase))
+            && FDG.ArmyBuilding.GameSystems.SameSystem(b.GameSystem, army.GameSystem));
+        if (book is null)
+        {
+            Console.WriteLine($"  NO BOOK    {name}: no bundled book matches faction '{army.Faction}'.");
+            failed++;
+            continue;
+        }
+
+        ArmySolve solve = SelectionSolver.Solve(book, army);
+        if (!solve.Complete)
+        {
+            Console.WriteLine($"  UNSOLVED   {name}: {solve.SolvedCount}/{solve.Units.Count} units solved.");
+            foreach (UnitSolve u in solve.Units.Where(u => !u.Solved))
+                Console.WriteLine($"               - {u.UnitName}: {u.Failure}");
+            failed++;
+            continue;
+        }
+
+        BuiltArmyFile attached = EditableSession.Attach(army, solve.Selections!, book);
+
+        // Hard guard: this tool ADDS an editable session, it never re-prices or re-shapes the army. Compare
+        // the playable projection (the base-type view, which is all the engine ever reads) before and after,
+        // and refuse to write if a single byte moved.
+        string before = JsonSerializer.Serialize<ArmyListFile>(army, RuleJson.Options);
+        string after = JsonSerializer.Serialize<ArmyListFile>(attached, RuleJson.Options);
+        if (before != after)
+        {
+            Console.WriteLine($"  REFUSED    {name}: the playable half would change - not written.");
+            failed++;
+            continue;
+        }
+
+        if (!dryRun) File.WriteAllText(path, JsonSerializer.Serialize(attached, attached.GetType(), RuleJson.Options));
+        Console.WriteLine($"  {(dryRun ? "would convert" : "converted")}: {name} ({solve.Units.Count} units)");
+
+        // What reopening it in the Forge would change (#356 shows the same figures in its modal). Nonzero is
+        // expected on an OPR import - their points are theirs - but the user should see it before playing.
+        EditableSessionDrift? drift = EditableSession.Measure(attached);
+        if (drift is { Differs: true })
+            Console.WriteLine($"               reopening rebuilds it as {drift.RebuiltPoints} pts "
+                + $"(saved: {drift.SavedPoints}), {drift.RebuiltUnitCount} units (saved: {drift.SavedUnitCount})"
+                + (drift.DroppedUnits.Count > 0 ? $", dropping {string.Join(", ", drift.DroppedUnits)}" : ""));
+        converted++;
+    }
+
+    Console.WriteLine($"Retrofit complete: {converted} converted, {alreadyEditable} already editable, " +
+        $"{failed} left alone (of {targets.Count}).{(dryRun ? " [dry run - nothing written]" : "")}");
+    return;
+}
+
+// --retrofit-effects <fileOrDir> [more...]  (#239): stamp weapon effect-set keys into existing data.
+// Books get their faction's default sets; armies get army-level defaults plus per-weapon keyword keys
+// (explicit keys already in a file are never touched). Idempotent — re-run after a keyword-table change.
+int retrofitIdx = Array.IndexOf(args, "--retrofit-effects");
+if (retrofitIdx >= 0 && retrofitIdx + 1 < args.Length)
+{
+    List<string> retrofitTargets = args.Skip(retrofitIdx + 1).TakeWhile(a => !a.StartsWith("--"))
+        .SelectMany(t => Directory.Exists(t)
+            ? Directory.GetFiles(t, "*" + BookFile.EXTENSION_WITH_PERIOD)
+                .Concat(Directory.GetFiles(t, "*" + ArmyListFile.EXTENSION_WITH_PERIOD))
+            : new[] { t })
+        .ToList();
+    int retrofitPatched = 0;
+    foreach (string path in retrofitTargets)
+    {
+        bool changed;
+        if (path.EndsWith(BookFile.EXTENSION_WITH_PERIOD, StringComparison.OrdinalIgnoreCase))
+        {
+            BookFile book = JsonSerializer.Deserialize<BookFile>(File.ReadAllText(path), RuleJson.Options)!;
+            changed = WeaponEffectAssigner.ApplyToBook(book);
+            if (changed) File.WriteAllText(path, JsonSerializer.Serialize(book, RuleJson.Options));
+        }
+        else
+        {
+            // Deserialize as BuiltArmyFile so a forge army's selections/book snapshot survives the
+            // round-trip (#236); a hand-authored army has both null and re-saves as the base type.
+            BuiltArmyFile army = JsonSerializer.Deserialize<BuiltArmyFile>(File.ReadAllText(path), RuleJson.Options)!;
+            changed = WeaponEffectAssigner.ApplyToArmy(army);
+            if (changed)
+                File.WriteAllText(path, army.Book != null
+                    ? JsonSerializer.Serialize(army, RuleJson.Options)
+                    : JsonSerializer.Serialize<ArmyListFile>(army, RuleJson.Options));
+        }
+        Console.WriteLine($"  {(changed ? "patched" : "unchanged")}: {path}");
+        if (changed) retrofitPatched++;
+    }
+    Console.WriteLine($"Retrofit complete: {retrofitPatched}/{retrofitTargets.Count} file(s) patched.");
+    return;
+}
+
+// --retrofit-bases <fileOrDir> [more...]  (#225): correct rectangular base orientation in existing data.
+// OPR writes its base spec length-first and the engine runs HeightInches along the facing, so books
+// imported before the fix have the two swapped (a 60x35 bike faced across its 35mm axis). Idempotent —
+// only entries with Width > Height are touched, and a corrected base never matches again.
+int retrofitBasesIdx = Array.IndexOf(args, "--retrofit-bases");
+if (retrofitBasesIdx >= 0 && retrofitBasesIdx + 1 < args.Length)
+{
+    List<string> targets = args.Skip(retrofitBasesIdx + 1).TakeWhile(a => !a.StartsWith("--"))
+        .SelectMany(t => Directory.Exists(t)
+            ? Directory.GetFiles(t, "*" + BookFile.EXTENSION_WITH_PERIOD)
+                .Concat(Directory.GetFiles(t, "*" + ArmyListFile.EXTENSION_WITH_PERIOD))
+            : new[] { t })
+        .ToList();
+    int patched = 0;
+    int estimated = 0;
+    bool verbose = args.Contains("--verbose");
+    foreach (string path in targets)
+    {
+        bool changed;
+        var estimates = new List<string>();
+        if (path.EndsWith(BookFile.EXTENSION_WITH_PERIOD, StringComparison.OrdinalIgnoreCase))
+        {
+            BookFile book = JsonSerializer.Deserialize<BookFile>(File.ReadAllText(path), RuleJson.Options)!;
+            changed = BaseOrientationRetrofit.ApplyToBook(book, estimates);
+            if (changed) File.WriteAllText(path, JsonSerializer.Serialize(book, RuleJson.Options));
+        }
+        else
+        {
+            // As #239: read as BuiltArmyFile so a forge army's selections/book snapshot survive the
+            // round-trip (#236), and re-serialize as the base type when there is no forge block.
+            BuiltArmyFile army = JsonSerializer.Deserialize<BuiltArmyFile>(File.ReadAllText(path), RuleJson.Options)!;
+            changed = BaseOrientationRetrofit.ApplyToArmy(army, estimates);
+            if (changed)
+                File.WriteAllText(path, army.Book != null
+                    ? JsonSerializer.Serialize(army, RuleJson.Options)
+                    : JsonSerializer.Serialize<ArmyListFile>(army, RuleJson.Options));
+        }
+        Console.WriteLine($"  {(changed ? "patched" : "unchanged")}: {path}"
+            + (estimates.Count > 0 ? $"  ({estimates.Count} base(s) estimated)" : string.Empty));
+        // #225 defect B: an estimated base is invented, not imported. Never let that pass silently -
+        // --verbose names every one so the guesses can be reviewed.
+        if (verbose)
+            foreach (string e in estimates) Console.WriteLine($"      estimated: {e}");
+        estimated += estimates.Count;
+        if (changed) patched++;
+    }
+    Console.WriteLine($"Base retrofit complete: {patched}/{targets.Count} file(s) patched, "
+        + $"{estimated} base(s) estimated from unit rules (pass --verbose to list them).");
+    return;
+}
+
+// --make-scenario <scenario.json> <out.fdgsave>  (#167 T1): compile a compact scenario JSON (armies,
+// placements, wounds/tokens, whose activation it is) into a resumable save positioned at the start of
+// the active player's activation. Author a rule test in ~20 lines of JSON instead of playing to it.
+int makeScenarioIdx = Array.IndexOf(args, "--make-scenario");
+if (makeScenarioIdx >= 0 && makeScenarioIdx + 2 < args.Length)
+{
+    string outPath = args[makeScenarioIdx + 2];
+    try
+    {
+        string saveJson = ScenarioCompiler.CompileFileToSaveJson(args[makeScenarioIdx + 1]);
+        string? outDir = Path.GetDirectoryName(Path.GetFullPath(outPath));
+        if (!string.IsNullOrEmpty(outDir)) Directory.CreateDirectory(outDir);
+        File.WriteAllText(outPath, saveJson);
+        Console.WriteLine($"Compiled scenario '{args[makeScenarioIdx + 1]}' -> {outPath}");
+    }
+    catch (ScenarioCompileException ex)
+    {
+        Console.WriteLine($"Scenario error: {ex.Message}");
+        Environment.Exit(1);
+    }
+    return;
+}
+
+// --scenario <file.json|file.fdgsave>  (#167): launch straight into a scenario, skipping the main menu
+// AND the lobby — slot 0 is the local player, every other slot is AI. A .json compiles in-memory first;
+// a .fdgsave (from --make-scenario or an in-game save) loads directly. Works headless and in the GUI.
+int scenarioIdx = Array.IndexOf(args, "--scenario");
+string? scenarioPath = scenarioIdx >= 0 && scenarioIdx + 1 < args.Length ? args[scenarioIdx + 1] : null;
+
+// --all-ai: scenario slot 0 is AI too (bot-vs-bot observation, GUI or headless).
+// --log-decisions: interleave each planning AI's candidate-table narration into stdout (FdgLab's
+// flag on the scenario path; the AI resolvers have no other sink in an ordinary game - #264 note).
+bool scenarioAllAi = args.Contains("--all-ai");
+bool scenarioLogDecisions = args.Contains("--log-decisions");
+
+// --army <path> (#153): non-interactive headless smoke — both players load <path>, then EOF defaults take
+// over (exactly what the old `printf "1\n<path>\n..." |` pipe idiom did, minus the pipe).
+int armyIdx = Array.IndexOf(args, "--army");
+if (headless && armyIdx >= 0 && armyIdx + 1 < args.Length)
+{
+    string armyPath = args[armyIdx + 1];
+    Console.SetIn(new StringReader($"1\n{armyPath}\n1\n{armyPath}\n"));
+}
+
+var app = new CliApp(headless, slowDelayMs, diceSeed, aiProfile);
 
 if (headless)
 {
+    if (scenarioPath != null)
+    {
+        try
+        {
+            await app.RunScenarioAsync(ScenarioLauncher.LoadStore(scenarioPath),
+                scenarioAllAi, scenarioLogDecisions);
+        }
+        catch (ScenarioCompileException ex)
+        {
+            Console.WriteLine($"Scenario error: {ex.Message}");
+            Environment.Exit(1);
+        }
+        return;
+    }
+
     app.Prepare();
     await app.RunAsync();
 }
@@ -45,8 +668,92 @@ else
     renderer.MainMenu.OnArmyBuilderClicked = () =>
         renderer.NavigateTo(renderer.ArmyBuilder);
 
+    renderer.MainMenu.OnArmyForgeClicked = () =>
+        renderer.NavigateTo(renderer.ArmyForge);
+
     renderer.MainMenu.OnClientClicked = () =>
         renderer.NavigateTo(renderer.ClientModal);
+
+    // The public-listing heartbeat (#271), when the host ticked "List publicly". Stopped on every
+    // lobby/game exit path below; a missed path only means the entry lingers until the registry's
+    // 90s TTL, so this is belt-and-braces rather than load-bearing.
+    PublicListingService? activeListing = null;
+    NatPortMapper? activeMapper = null;
+    // The live lobby view model, host or client (#279). Unlike the listing, tearing this down IS
+    // load-bearing: disposing it stops the host's listener (releasing the port for the next lobby)
+    // or closes the client's connection (freeing its roster slot on the host). Before this, an
+    // abandoned host lobby kept serving the port as a zombie while the next lobby's listener
+    // silently failed to bind - joins and chat went to a lobby no UI was bound to.
+    ILobbyViewModel? activeLobby = null;
+    void TeardownLobby()
+    {
+        StopListing();
+        activeLobby?.Dispose();
+        activeLobby = null;
+    }
+    // `blocking` is for app exit only: it waits for the router to confirm the UPnP removal, which there
+    // is no later moment to do. Every in-session call leaves it false - waiting on a slow router there
+    // froze the UI for most of a second on the way back to the main menu.
+    void StopListing(bool blocking = false)
+    {
+        activeListing?.Dispose();
+        activeListing = null;
+        // Removes the UPnP port mapping too (#271), so we don't leave a router port open past the
+        // session. Best-effort; a missed path just leaves the mapping to the router's lease TTL.
+        if (blocking) activeMapper?.DisposeBlocking();
+        else activeMapper?.Dispose();
+        activeMapper = null;
+    }
+
+    // ── Load Game (work item #052): open a .fdgsave, resume it as host ───────────
+    // Shared by the main menu's Load Game and the in-game menu's Load (#246); the latter tears the
+    // current game down and returns to the menu before calling this.
+    void LoadGameFlow()
+    {
+        var saveFilter = new FileFilter(
+            $"Saved Game (*{GameSaveFile.EXTENSION_WITH_PERIOD})",
+            new[] { $"*{GameSaveFile.EXTENSION_WITH_PERIOD}" });
+
+        var (canceled, paths) = TinyDialogs.OpenFileDialog("Load Game", "", false, saveFilter);
+        if (canceled) return;
+
+        string path = paths?.FirstOrDefault() ?? "";
+        if (!File.Exists(path)) return;
+
+        GameDataStore loadedStore;
+        try
+        {
+            loadedStore = GameSaveSerializer.Load(File.ReadAllText(path));
+        }
+        catch (Exception ex)
+        {
+            WriteCrash("Load game failed", ex);
+            return;
+        }
+
+        // Release any previous lobby's listener/connection first (#279), so this host can bind.
+        TeardownLobby();
+
+        FDGHost host = new FDGHost();
+        Task hostTask = host.StartAsync();
+
+        // Same silent-bind-failure guard as HostModal.CreateServer (#279): a port conflict faults the
+        // task before its first await, and discarding it would open a lobby around a dead server.
+        if (hostTask.IsFaulted)
+        {
+            Console.WriteLine($"Host failed to start: {hostTask.Exception?.GetBaseException().Message}");
+            return;
+        }
+
+        // #310: the saved player name, same as a fresh host lobby uses.
+        var lobby = new LobbyViewModel_Host(UserConfig.Current.PlayerName, "Loaded Game", "", host, loadedStore);
+        activeLobby = lobby;
+        renderer.LobbyScreen.SetViewModel(lobby);
+        renderer.NavigateTo(renderer.LobbyScreen);
+    }
+
+    renderer.MainMenu.OnLoadGameClicked = LoadGameFlow;
+    renderer.OnLoadGameRequested        = LoadGameFlow;
 
     renderer.MainMenu.OnQuitClicked = renderer.RequestClose;
 
@@ -54,12 +761,20 @@ else
     renderer.ArmyBuilder.OnBack = () =>
         renderer.NavigateTo(renderer.MainMenu);
 
+    // ── Army Forge (#153) ────────────────────────────────────────────────────────
+    renderer.ArmyForge.OnBack = () =>
+        renderer.NavigateTo(renderer.MainMenu);
+
     // ── Host Modal ─────────────────────────────────────────────────────────────
     renderer.HostModal.OnCancel = () =>
         renderer.NavigateTo(renderer.MainMenu);
 
-    renderer.HostModal.OnCreated = lobby =>
+    renderer.HostModal.OnCreated = (lobby, listing, mapper) =>
     {
+        TeardownLobby();
+        activeLobby = lobby;
+        activeListing = listing;
+        activeMapper = mapper;
         renderer.LobbyScreen.SetViewModel(lobby);
         renderer.NavigateTo(renderer.LobbyScreen);
     };
@@ -70,20 +785,103 @@ else
 
     renderer.ClientModal.OnConnected = lobby =>
     {
+        TeardownLobby();
+        activeLobby = lobby;
         renderer.LobbyScreen.SetViewModel(lobby);
         renderer.NavigateTo(renderer.LobbyScreen);
     };
 
     // ── Lobby ──────────────────────────────────────────────────────────────────
     renderer.LobbyScreen.OnBack = () =>
+    {
+        // Backing out must actually shut the networking down (#279): stop the host's listener /
+        // close the client's connection, not just the listing heartbeat.
+        TeardownLobby();
         renderer.NavigateTo(renderer.MainMenu);
+    };
 
-    renderer.LobbyScreen.OnGameLaunched = (tableState, colorFunc, log, overlay, taskDisplay) =>
-        renderer.TransitionToGame(tableState, colorFunc, log, overlay, taskDisplay);
+    // Covers game-over, escape-menu quit-to-menu, and escape-menu load (#271, #279).
+    renderer.OnGameExited = TeardownLobby;
+
+    renderer.LobbyScreen.OnGameLaunched = (tableState, colorFunc, log, overlay, taskDisplay, presentationPlayer, saveGame, chatUI) =>
+        renderer.TransitionToGame(tableState, colorFunc, log, overlay, taskDisplay, presentationPlayer, saveGame, chatUI);
+
+    renderer.LobbyScreen.OnGameEnded = result => renderer.ShowGameOver(result);
+
+    // #187: a game the engine ended because a player's connection dropped is not lost - the host writes a
+    // recovery save automatically (over the internet a brief drop is common, and nobody should have to
+    // have thought to save first). This runs on the engine thread, synchronously, before the game-over
+    // card is shown: the state machine has unwound but nothing has torn the game down yet, so it is the
+    // cleanest snapshot of the game there is. Host only - a client's SaveGameToJson returns null (#054).
+    renderer.LobbyScreen.OnGameCompleted = result =>
+    {
+        if (result.Outcome != EGameOutcome.Disconnect) return;
+
+        string? path = RecoverySave.TryWrite(activeLobby?.SaveGameToJson(), DateTime.UtcNow);
+        renderer.SetGameOverNote(path != null
+            ? $"Recovery save written to:\n{path}\nLoad Game from the main menu to resume it."
+            : "Could not write a recovery save (see the console for why).");
+    };
 
     // ── Local play (Host with no network players) also still works via CliApp ─
     // The old "Host" path now goes through the lobby. CliApp is only used
     // in headless mode above.
+
+    // ── --scenario (#167): straight into the game, no menu, no lobby ──────────
+    // Load/compile eagerly so a bad scenario fails fast with a message and no window. The game
+    // wiring is deferred to OnWindowReady (first thing inside Run(), window + ImGui live):
+    // TransitionToGame attaches the tactical overlay, which creates GL resources (#162) and
+    // segfaults before InitWindow. Slot 0 = local player, other slots AI; the engine waits on
+    // the resolver registry (assigned in GameGuiWiring.Launch) before requesting decisions.
+    if (scenarioPath != null)
+    {
+        // Headless-only for now: the GUI wiring assigns its interfaces onto the human game, which
+        // owns no player under --all-ai (spectator rendering is its own slice if ever wanted).
+        if (scenarioAllAi)
+        {
+            Console.Error.WriteLine("--all-ai requires --headless (the GUI needs a local player on slot 0).");
+            Environment.Exit(2);
+        }
+        try
+        {
+            GameDataStore scenarioStore = ScenarioLauncher.LoadStore(scenarioPath);
+            var parts = ScenarioLauncher.BuildResume(scenarioStore, diceSeed, aiProfile,
+                scenarioAllAi,
+                scenarioLogDecisions ? slot => line => Console.WriteLine($"[ai {slot}] {line}") : null);
+
+            var players = new List<(PlayerID ID, string Name)>();
+            for (int i = 0; i < parts.SavedInfos.Count; i++)
+                players.Add((parts.SavedInfos[i].PlayerID,
+                    i == 0 && !scenarioAllAi ? "Player 1" : $"Player {i + 1} (AI)"));
+
+            // #201: a compiled scenario carries its GameSettings in the store's progress record;
+            // absent (or a pre-#201 save) means the default ON.
+            GameSettings scenarioSettings = GameProgressUtilities.TryGetProgress(parts.Store)?.Settings
+                ?? GameSettings.GetDefault();
+
+            renderer.OnWindowReady = () =>
+            {
+                GameGuiWiring.Launch(parts.HumanGame, players,
+                    saveGameToJson: () => GameSaveSerializer.Save(parts.Store),
+                    onLaunched: renderer.TransitionToGame,
+                    coverProximityExceptions: scenarioSettings.CoverProximityExceptionsEnabled,
+                    tableBackground: scenarioSettings.TableBackground,
+                    seeThroughFriendlyUnits: scenarioSettings.SeeThroughFriendlyUnits);
+
+                var scenarioServer = new FDGServer(parts.Store, parts.Bus, parts.Slots,
+                    new RealtimePresentationClock());
+                // #168: this path builds the server (whose resume re-runs rule/spell resolution) after
+                // Launch attached the log - push any drops it just produced into the visible summary.
+                RuleLoadWarnings.FlushPending();
+                scenarioServer.OnGameEnded += result => renderer.ShowGameOver(result);
+            };
+        }
+        catch (ScenarioCompileException ex)
+        {
+            Console.WriteLine($"Scenario error: {ex.Message}");
+            Environment.Exit(1);
+        }
+    }
 
     try
     {
@@ -95,5 +893,12 @@ else
         Console.Error.WriteLine("Press Enter to exit.");
         Console.ReadLine();
         throw;
+    }
+    finally
+    {
+        // App exit: send the polite delist so the entry vanishes now, not at TTL (#271), and wait for
+        // the router to drop the port mapping - the process is about to end, so a background removal
+        // would die with it.
+        StopListing(blocking: true);
     }
 }
