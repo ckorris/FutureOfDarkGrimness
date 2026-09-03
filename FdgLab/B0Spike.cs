@@ -1,0 +1,453 @@
+using System.Diagnostics;
+using FDG;
+using FDG.Ai;
+using FDG.Data;
+using FDG.GameModel;
+using FDG.Players;
+using FDG.SaveLoad;
+using FDG.StageResolution;
+using FDG.StageResolution.Requests;
+
+namespace FdgLab;
+
+/// <summary>
+/// The B0 spike (docs/ai-agent-plan.md sec 9 B0; campaign step 3): pure measurement, no Tactician
+/// behavior change. Answers the three questions Phase B's design depends on -
+/// <list type="number">
+/// <item>what does <see cref="GameSaveSerializer"/> Save/Load cost, in time and bytes, on real
+/// mid-game states at 2k AND 4k (clone cost scales with unit count);</item>
+/// <item>can a snapshot be resumed in-process, advanced EXACTLY one activation, and the next
+/// activation-boundary state captured (the plan's node-expansion primitive);</item>
+/// <item>can those simulation servers be stopped/abandoned without cumulative leaks (the plan's
+/// R1, its top engineering risk).</item>
+/// </list>
+/// <para>
+/// Boundary detection rides on the engine's own rolling save point: DeterminePlayerTurnStage writes
+/// GameProgressData at the start of every activation cycle, and the very next request is this
+/// player's ChooseUnitToActivateRequest. So the Nth such request IS the Nth activation boundary,
+/// with the world fully settled from the previous activation - no engine hook needed to FIND a
+/// boundary.
+/// </para>
+/// <para>
+/// Two stop modes are measured against each other. THROW rides an existing engine path: a resolver
+/// exception is caught by NetworkedRequestMessageReceiver, returned as StageTaskRequestErrorMessage,
+/// rethrown into the awaiting stage, and unwound by FDGServer's own catch into a Fault game-end -
+/// i.e. the state machine genuinely stops. ABANDON is the pattern GameRunner's watchdog already
+/// relies on (orphan the tasks and walk away), which leaves the simulated game RUNNING in the
+/// background. The soak measures what each costs across many simulations.
+/// </para>
+/// </summary>
+public static class B0Spike
+{
+    /// <summary>Thrown from a resolver at the target boundary to unwind the simulated game.</summary>
+    public sealed class StopSignal : Exception
+    {
+        public StopSignal() : base("b0: simulation stop signal") { }
+    }
+
+    public static async Task<int> RunAsync(string[] args)
+    {
+        string armyA = Arg(args, "--a") ?? "FdgLab/armies/Alien Hives 2k - Horde Melee.fdgarmy";
+        string armyB = Arg(args, "--b") ?? "FdgLab/armies/Battle Brothers 2k - Elite Shooting.fdgarmy";
+        string label = Arg(args, "--label") ?? "2k";
+        int boundary = IntArg(args, "--boundary", 20);
+        int roundTrips = IntArg(args, "--round-trips", 20);
+        int advances = IntArg(args, "--advances", 20);
+        int soak = IntArg(args, "--soak", 0);
+        int timeoutSeconds = IntArg(args, "--timeout", 60);
+        EAiProfile profile = (Arg(args, "--profile") ?? "tactician").ToLowerInvariant() switch
+        {
+            "solorules" => EAiProfile.SoloRules,
+            "gunline" => EAiProfile.Gunline,
+            _ => EAiProfile.Tactician,
+        };
+
+        Console.WriteLine($"=== B0 spike [{label}] profile={profile} boundary={boundary} ===");
+        Console.WriteLine($"  A: {Path.GetFileNameWithoutExtension(armyA)}");
+        Console.WriteLine($"  B: {Path.GetFileNameWithoutExtension(armyB)}");
+
+        // --- Phase 1: capture a real mid-game activation-boundary snapshot -----------------------
+        var captureWall = Stopwatch.StartNew();
+        (string? snapshot, string captureNote) = await CaptureBoundarySnapshotAsync(
+            armyA, armyB, profile, boundary, seed: 4242, timeoutSeconds);
+        captureWall.Stop();
+
+        if (snapshot == null)
+        {
+            Console.Error.WriteLine($"FAILED to capture a boundary snapshot: {captureNote}");
+            return 1;
+        }
+
+        Console.WriteLine($"\n[1] Capture: {captureNote} in {captureWall.Elapsed.TotalSeconds:F1}s");
+        Console.WriteLine($"    Snapshot size: {snapshot.Length / 1024.0:F1} KiB ({snapshot.Length} chars)");
+
+        // --- Phase 2: Save/Load round-trip cost --------------------------------------------------
+        var loadMs = new List<double>();
+        var saveMs = new List<double>();
+        for (int i = 0; i < roundTrips; i++)
+        {
+            var sw = Stopwatch.StartNew();
+            GameDataStore store = GameSaveSerializer.Load(snapshot);
+            sw.Stop();
+            loadMs.Add(sw.Elapsed.TotalMilliseconds);
+
+            sw.Restart();
+            string reSaved = GameSaveSerializer.Save(store);
+            sw.Stop();
+            saveMs.Add(sw.Elapsed.TotalMilliseconds);
+
+            if (i == 0)
+                Console.WriteLine($"    Re-save size: {reSaved.Length / 1024.0:F1} KiB " +
+                                  $"(delta {reSaved.Length - snapshot.Length} chars)");
+        }
+        Console.WriteLine($"\n[2] Round trip over {roundTrips} iterations:");
+        Console.WriteLine($"    Load: {Describe(loadMs)}");
+        Console.WriteLine($"    Save: {Describe(saveMs)}");
+        Console.WriteLine($"    Clone (load+save): mean {loadMs.Average() + saveMs.Average():F1}ms");
+
+        // --- Phase 3: advance exactly one activation, both stop modes ----------------------------
+        foreach (bool throwToStop in new[] { true, false })
+        {
+            string mode = throwToStop ? "THROW (unwind via resolver exception)" : "ABANDON (orphan the tasks)";
+            Console.WriteLine($"\n[3] Advance one activation x{advances} - stop mode: {mode}");
+
+            var totalMs = new List<double>();
+            var loadPart = new List<double>();
+            var runPart = new List<double>();
+            var savePart = new List<double>();
+            int reachedBoundary = 0, gameEnded = 0, timedOut = 0, stoppedCleanly = 0;
+
+            for (int i = 0; i < advances; i++)
+            {
+                AdvanceResult r = await AdvanceOneActivationAsync(snapshot, profile, throwToStop, timeoutSeconds);
+                if (r.ReachedBoundary) reachedBoundary++;
+                if (r.GameEndedFirst) gameEnded++;
+                if (r.TimedOut) timedOut++;
+                if (r.StopObserved) stoppedCleanly++;
+                if (r.ReachedBoundary)
+                {
+                    totalMs.Add(r.TotalMs);
+                    loadPart.Add(r.LoadMs);
+                    runPart.Add(r.RunMs);
+                    savePart.Add(r.SaveMs);
+                }
+            }
+
+            Console.WriteLine($"    reached_boundary={reachedBoundary}/{advances} " +
+                              $"game_ended_first={gameEnded} timed_out={timedOut} stop_observed={stoppedCleanly}");
+            if (totalMs.Count > 0)
+            {
+                Console.WriteLine($"    total : {Describe(totalMs)}");
+                Console.WriteLine($"      load: {Describe(loadPart)}");
+                Console.WriteLine($"      run : {Describe(runPart)}");
+                Console.WriteLine($"      save: {Describe(savePart)}");
+                Console.WriteLine($"    -> plan decision table: node expansion mean " +
+                                  $"{totalMs.Average():F0}ms => {DecisionBand(totalMs.Average())}");
+            }
+        }
+
+        // --- Phase 4: leak soak ------------------------------------------------------------------
+        if (soak > 0)
+        {
+            foreach (bool throwToStop in new[] { true, false })
+            {
+                string mode = throwToStop ? "THROW" : "ABANDON";
+                Console.WriteLine($"\n[4] Soak: {soak} simulations, stop mode {mode}");
+                await SoakAsync(snapshot, profile, throwToStop, soak, timeoutSeconds);
+            }
+        }
+
+        Console.WriteLine("\n=== B0 spike complete ===");
+        return 0;
+    }
+
+    // ---------------------------------------------------------------------------------------------
+
+    private sealed record AdvanceResult(bool ReachedBoundary, bool GameEndedFirst, bool TimedOut,
+        bool StopObserved, double TotalMs, double LoadMs, double RunMs, double SaveMs);
+
+    /// <summary>
+    /// Plays a fresh game until the Nth activation boundary and returns the store serialized at that
+    /// exact moment. Stops the game by throwing from the resolver (which also gives the throw-stop
+    /// mechanism its first live test).
+    /// </summary>
+    private static async Task<(string? Snapshot, string Note)> CaptureBoundarySnapshotAsync(
+        string armyA, string armyB, EAiProfile profile, int boundary, int seed, int timeoutSeconds)
+    {
+        var store = GameDataStore.GameDataStoreBuilder.GetDefault();
+        var bus = new LabMessageBus();
+        var captured = new TaskCompletionSource<string>(TaskCreationOptions.RunContinuationsAsynchronously);
+
+        var watcher = new BoundaryWatcher(targetOccurrence: boundary, onBoundary: () =>
+        {
+            captured.TrySetResult(GameSaveSerializer.Save(store));
+        }, throwAfter: true);
+
+        SlotSpec specA = Armies.LoadSlot(armyA) with { Profile = profile };
+        SlotSpec specB = Armies.LoadSlot(armyB) with { Profile = profile };
+        var slotSpecs = new[] { specA, specB };
+
+        var slots = new PlayerSlot[2];
+        for (int i = 0; i < 2; i++)
+        {
+            slots[i] = new PlayerSlot(i, teamNumber: i, new PlayerID(Guid.NewGuid()), slotSpecs[i].Army, store);
+            var aiGame = new FDGGame_AsLocal(store, bus);
+            IStageResolverRegistry registry = AiProfileFactory.BuildRegistry(
+                slotSpecs[i].Profile, aiGame.TableState, slots[i].PlayerID, seed, i);
+            slots[i].AssignPlayerController(new LabPlayerController(
+                $"slot {i}", slots[i].PlayerID, aiGame, watcher.Wrap(registry)));
+        }
+
+        GameSettings settings = GameSettings.GetDefault();
+        settings.RandomnessType = ERandomnessType.Realistic;
+        settings.DiceSeed = seed;
+
+        var ended = new TaskCompletionSource<GameResult>(TaskCreationOptions.RunContinuationsAsynchronously);
+        var server = new FDGServer(store, bus, settings, slots);
+        server.OnGameCompleted += r => ended.TrySetResult(r);
+
+        Task finished = await Task.WhenAny(captured.Task, ended.Task,
+            Task.Delay(TimeSpan.FromSeconds(timeoutSeconds)));
+
+        if (finished == captured.Task)
+        {
+            string snapshot = await captured.Task;
+            // Give the throw-unwind a moment so we can report whether the game actually stopped.
+            Task stopRace = await Task.WhenAny(ended.Task, Task.Delay(TimeSpan.FromSeconds(5)));
+            string stopped = stopRace == ended.Task
+                ? $"game stopped ({(await ended.Task).Outcome})"
+                : "game did NOT stop within 5s";
+            return (snapshot, $"boundary {boundary} reached, {stopped}");
+        }
+
+        if (finished == ended.Task)
+            return (null, $"game ended before boundary {boundary}: {(await ended.Task).ToSummaryLine()}");
+
+        return (null, $"timed out after {timeoutSeconds}s before boundary {boundary}");
+    }
+
+    /// <summary>
+    /// The node-expansion primitive under test: load the snapshot, resume it in-process, let exactly
+    /// ONE activation play out, and capture the state at the next activation boundary.
+    /// <para>
+    /// On resume the state machine re-enters at MainPhaseRoundStage -> DeterminePlayerTurnStage,
+    /// so the FIRST ChooseUnitToActivateRequest is the replay of the snapshotted activation and the
+    /// SECOND is the next boundary - which is why the watcher targets occurrence 2.
+    /// </para>
+    /// </summary>
+    private static async Task<AdvanceResult> AdvanceOneActivationAsync(string snapshot, EAiProfile profile,
+        bool throwToStop, int timeoutSeconds)
+    {
+        var total = Stopwatch.StartNew();
+
+        var loadSw = Stopwatch.StartNew();
+        GameDataStore store = GameSaveSerializer.Load(snapshot);
+        loadSw.Stop();
+
+        double saveMs = 0;
+        var captured = new TaskCompletionSource<string>(TaskCreationOptions.RunContinuationsAsynchronously);
+        var watcher = new BoundaryWatcher(targetOccurrence: 2, onBoundary: () =>
+        {
+            var saveSw = Stopwatch.StartNew();
+            string next = GameSaveSerializer.Save(store);
+            saveSw.Stop();
+            saveMs = saveSw.Elapsed.TotalMilliseconds;
+            captured.TrySetResult(next);
+        }, throwAfter: throwToStop);
+
+        var ended = new TaskCompletionSource<GameResult>(TaskCreationOptions.RunContinuationsAsynchronously);
+        var runSw = Stopwatch.StartNew();
+        BuildResumedServer(store, profile, watcher, ended);
+
+        Task finished = await Task.WhenAny(captured.Task, ended.Task,
+            Task.Delay(TimeSpan.FromSeconds(timeoutSeconds)));
+        runSw.Stop();
+        total.Stop();
+
+        if (finished == captured.Task)
+        {
+            bool stopObserved = false;
+            if (throwToStop)
+            {
+                Task stopRace = await Task.WhenAny(ended.Task, Task.Delay(TimeSpan.FromSeconds(5)));
+                stopObserved = stopRace == ended.Task;
+            }
+            return new AdvanceResult(true, false, false, stopObserved,
+                total.Elapsed.TotalMilliseconds, loadSw.Elapsed.TotalMilliseconds,
+                runSw.Elapsed.TotalMilliseconds - saveMs, saveMs);
+        }
+
+        if (finished == ended.Task)
+            return new AdvanceResult(false, true, false, true, total.Elapsed.TotalMilliseconds, 0, 0, 0);
+
+        return new AdvanceResult(false, false, true, false, total.Elapsed.TotalMilliseconds, 0, 0, 0);
+    }
+
+    /// <summary>
+    /// FdgLab's port of ScenarioLauncher.BuildResume (which lives app-side, and FdgLab depends on the
+    /// engine only): rebuild player slots on the SAVED PlayerIDs, all AI, and enter the resume ctor.
+    /// B1 productionizes this engine-side as SimulationService.
+    /// </summary>
+    private static FDGServer BuildResumedServer(GameDataStore store, EAiProfile profile,
+        BoundaryWatcher watcher, TaskCompletionSource<GameResult> ended)
+    {
+        List<PlayerSlotInfo> savedInfos = store.GetAllValues<PlayerSlotInfo>()
+            .OrderBy(info => info.SlotID).ToList();
+        if (savedInfos.Count == 0)
+            throw new InvalidOperationException("b0: snapshot carries no player slots.");
+
+        GameProgressData? progress = GameProgressUtilities.TryGetProgress(store);
+        int? seed = progress?.Settings.DiceSeed;
+        bool seeThrough = progress?.Settings.SeeThroughFriendlyUnits ?? false;
+
+        foreach (DataReference oldInfo in store.GetAllDataReferences<PlayerSlotInfo>().ToList())
+            store.Destroy(oldInfo);
+
+        var bus = new LabMessageBus();
+        var slots = new PlayerSlot[savedInfos.Count];
+        for (int i = 0; i < savedInfos.Count; i++)
+        {
+            slots[i] = new PlayerSlot(i, savedInfos[i].TeamNumber, savedInfos[i].PlayerID,
+                new ArmyListFile(), store);
+            var aiGame = new FDGGame_AsLocal(store, bus);
+            IStageResolverRegistry registry = AiProfileFactory.BuildRegistry(
+                profile, aiGame.TableState, savedInfos[i].PlayerID, seed, slots[i].SlotID,
+                decisionLog: null, seeThroughFriendlyUnits: seeThrough);
+            slots[i].AssignPlayerController(new LabPlayerController(
+                $"slot {i}", savedInfos[i].PlayerID, aiGame, watcher.Wrap(registry)));
+        }
+
+        var server = new FDGServer(store, bus, slots);
+        server.OnGameCompleted += r => ended.TrySetResult(r);
+        return server;
+    }
+
+    private static async Task SoakAsync(string snapshot, EAiProfile profile, bool throwToStop,
+        int iterations, int timeoutSeconds)
+    {
+        var proc = Process.GetCurrentProcess();
+        long baseHeap = GC.GetTotalMemory(forceFullCollection: true);
+        proc.Refresh();
+        long baseRss = proc.WorkingSet64;
+        var wall = Stopwatch.StartNew();
+        int boundaries = 0, misses = 0;
+
+        Console.WriteLine($"    start: heap {Mib(baseHeap)} rss {Mib(baseRss)}");
+        int sampleEvery = Math.Max(1, iterations / 10);
+
+        for (int i = 1; i <= iterations; i++)
+        {
+            AdvanceResult r = await AdvanceOneActivationAsync(snapshot, profile, throwToStop, timeoutSeconds);
+            if (r.ReachedBoundary) boundaries++; else misses++;
+
+            if (i % sampleEvery == 0 || i == iterations)
+            {
+                long heapNoCollect = GC.GetTotalMemory(forceFullCollection: false);
+                long heapCollected = GC.GetTotalMemory(forceFullCollection: true);
+                proc.Refresh();
+                Console.WriteLine($"    {i,6}/{iterations}: heap {Mib(heapNoCollect)} " +
+                                  $"(after GC {Mib(heapCollected)}) rss {Mib(proc.WorkingSet64)} " +
+                                  $"threads {proc.Threads.Count} elapsed {wall.Elapsed.TotalSeconds:F0}s");
+            }
+        }
+
+        wall.Stop();
+        long endHeap = GC.GetTotalMemory(forceFullCollection: true);
+        proc.Refresh();
+        Console.WriteLine($"    end: heap {Mib(endHeap)} (delta {Mib(endHeap - baseHeap)}) " +
+                          $"rss {Mib(proc.WorkingSet64)} (delta {Mib(proc.WorkingSet64 - baseRss)})");
+        Console.WriteLine($"    boundaries={boundaries} misses={misses} " +
+                          $"throughput={iterations / Math.Max(0.001, wall.Elapsed.TotalSeconds):F1} sims/s");
+    }
+
+    // ---------------------------------------------------------------------------------------------
+
+    /// <summary>
+    /// Counts ChooseUnitToActivateRequest occurrences (the first request after each activation
+    /// boundary) and fires once at the target one. Local games deliver through the JSON path, so
+    /// that override is the one that matters; the typed path is covered for completeness.
+    /// </summary>
+    private sealed class BoundaryWatcher
+    {
+        private readonly int _target;
+        private readonly Action _onBoundary;
+        private readonly bool _throwAfter;
+        private int _seen;
+
+        public BoundaryWatcher(int targetOccurrence, Action onBoundary, bool throwAfter)
+        {
+            _target = targetOccurrence;
+            _onBoundary = onBoundary;
+            _throwAfter = throwAfter;
+        }
+
+        public IStageResolverRegistry Wrap(IStageResolverRegistry inner) => new WatchRegistry(inner, this);
+
+        private void Observe()
+        {
+            if (Interlocked.Increment(ref _seen) != _target) return;
+            _onBoundary();
+            if (_throwAfter) throw new StopSignal();
+        }
+
+        private sealed class WatchRegistry : IStageResolverRegistry
+        {
+            private readonly IStageResolverRegistry _inner;
+            private readonly BoundaryWatcher _watcher;
+
+            public WatchRegistry(IStageResolverRegistry inner, BoundaryWatcher watcher)
+            {
+                _inner = inner;
+                _watcher = watcher;
+            }
+
+            public IStageResolverRegistry RegisterResolver<TRequest, TReply>(IStageResolver<TRequest, TReply> resolver)
+                where TRequest : IStageTaskRequest<TReply>
+            {
+                _inner.RegisterResolver(resolver);
+                return this;
+            }
+
+            public Task<TReply> ResolveRequest<TRequest, TReply>(TRequest request)
+                where TRequest : IStageTaskRequest<TReply>
+            {
+                if (request is ChooseUnitToActivateRequest) _watcher.Observe();
+                return _inner.ResolveRequest<TRequest, TReply>(request);
+            }
+
+            public Task<string> ResolveRequestAsJson(string typeFullName, string requestJson,
+                IReadableGameDataStore gameDataStore)
+            {
+                if (typeFullName == typeof(ChooseUnitToActivateRequest).FullName) _watcher.Observe();
+                return _inner.ResolveRequestAsJson(typeFullName, requestJson, gameDataStore);
+            }
+        }
+    }
+
+    private static string DecisionBand(double meanMs) => meanMs switch
+    {
+        < 30 => "FULL MCTS (hundreds of nodes at a 5-10s budget)",
+        <= 200 => "MCTS with small node counts, leaning on the evaluator",
+        _ => "optimize the snapshot path before proceeding (plan G6)",
+    };
+
+    private static string Describe(IReadOnlyList<double> ms)
+    {
+        if (ms.Count == 0) return "no samples";
+        var sorted = ms.OrderBy(x => x).ToArray();
+        double p95 = sorted[(int)Math.Min(sorted.Length - 1, Math.Ceiling(sorted.Length * 0.95) - 1)];
+        return $"mean {sorted.Average():F1}ms | median {sorted[sorted.Length / 2]:F1}ms | " +
+               $"p95 {p95:F1}ms | min {sorted[0]:F1}ms | max {sorted[^1]:F1}ms";
+    }
+
+    private static string Mib(long bytes) => $"{bytes / 1024.0 / 1024.0:F0}MiB";
+
+    private static string? Arg(string[] args, string name)
+    {
+        int i = Array.IndexOf(args, name);
+        return i >= 0 && i + 1 < args.Length ? args[i + 1] : null;
+    }
+
+    private static int IntArg(string[] args, string name, int fallback) =>
+        int.TryParse(Arg(args, name), out int value) ? value : fallback;
+}

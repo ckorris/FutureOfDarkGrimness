@@ -10,6 +10,7 @@ return args.FirstOrDefault() switch
     "smoke" => await RunSmoke(args.Skip(1).ToArray()),
     "probes" => await RunProbes(args.Skip(1).ToArray()),
     "analyze" => FdgLab.Analyze.Run(args.Skip(1).ToArray()),
+    "b0" => await FdgLab.B0Spike.RunAsync(args.Skip(1).ToArray()),
     _ => Usage(),
 };
 
@@ -51,6 +52,12 @@ static int Usage()
                   dump + the action it would take from that exact state - point it at a parked
                   save from a hand-played game (#191 tooling); [--urgency] prepends each army's
                   activation-urgency table + the unit the resolver would pick next (#389)
+          b0      [--a <army>] [--b <army>] [--label L] [--profile P] [--boundary N]
+                  [--round-trips N] [--advances N] [--soak N] [--timeout S]
+                  #191 Phase B spike (campaign step 3): measures GameSaveSerializer round-trip cost
+                  on a real mid-game boundary snapshot, the cost of resuming it and advancing
+                  EXACTLY one activation, and whether simulated games stop/abandon without leaks.
+                  Pure measurement - no Tactician behavior changes.
           probes  --feasibility [--games N] [--seed-base S] [--a/--b <army>]   #191 A3 gate metric:
                   shadow-runs the MacroActionGenerator at every movement decision of real games and
                   reports the fraction of activations with a valid non-Hold candidate (target >= 95%)
