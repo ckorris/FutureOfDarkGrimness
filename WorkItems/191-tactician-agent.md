@@ -23,6 +23,52 @@ campaigns re-base.)*
 
 ## Notes (newest first)
 
+**2026-09-03 - STEP 2: A's GENERALIZATION BASELINE. The 2k-overfit worry is INVERTED against
+the solo baseline - the Tactician's margin GROWS with army size - but that same result makes the
+vs-solo panels useless as a gate, and the gate design was corrected because of it.** 100
+games/cell, side-swapped, paired seeds from 6000, DOP 16, realistic dice. Reports:
+`FdgLab/reports/step2-baseline-2026-09-03/` (gitignored; numbers of record are here).
+
+**Tactician vs SoloRules, by point level** (2k reference is the historical main matrix, 83.9):
+- 1k: PENDING - the cell was lost to a crash, see below; re-queued.
+- 3k: 90.0 / 90.0 / 95.0 / 96.0 (BB-vs-Goblin, Knight-vs-RL, Saurian-vs-SoulSnatcher, Eternal-vs-DAO)
+- 4k: 98.0 / 99.5 / 96.0 (Hives-vs-Havoc, Hives-vs-HEF, Havoc-vs-HEF)
+- 2v2 (2k/player): 97.0 / 81.0 / 96.5 / 90.5; (3k/player): 96.2 (7 timeouts, see below) / 79.0
+
+**Tactician mirrors** (both sides Tactician - these measure ARMY imbalance under equal play, not
+bot asymmetry, since the side swap cancels slot advantage): 1k 77.5 / 61.5 / 52.0 / 46.5;
+3k 39.5 / 46.0 / 60.0 / 74.0; 4k 69.0 / 54.5 / 51.5. Alien Hives is the strongest 4k list; the
+other two 4k pairs are near-even. Zero faults in every mirror cell.
+
+**G2 (never trust a number without reading games).** 99.5% invited exactly the suspicion the rule
+exists for, so a seed-6000 4k game was read: solo-rules is NOT collapsing - it seizes a marker in
+round 3 and contests one in round 4, and only 3 units die all game (an objective race, not a
+bloodbath). The widening margin is its DOCUMENTED baseline weakness compounding: solo-rules is
+objective-blind, which costs more the more units and board there are. Real effect, understood
+mechanism, no degenerate play.
+
+**Consequence: the panel gate design was wrong and is fixed (superproject `4f77c02`).** At 96-99.5
+the vs-solo panels are at ceiling, so "no cell below baseline minus 5" would happily pass a Phase
+B bot that got WORSE. Panels now gate on the head-to-head score against the INCUMBENT rung (B vs
+A, later C vs B; 50 = parity because sides swap), with vs-solo demoted to a cheap collapse check.
+
+**Two ops findings, both now written into the docs.**
+(a) A DOP-16 bench died mid-run to a Server GC SIGSEGV (core dump captured; second occurrence -
+see #210's 2026-09-03 note), and the runner reported `exit=0` because `$?` had been reset by a
+`$(date)` inside the same echo. A lost cell looked like a clean one and was caught only by reading
+results. Every campaign runner now captures the real exit code, RETRIES, and VERIFIES the expected
+report exists; step 4's self-play driver must do the same.
+(b) The 120s watchdog is sized for 2k 1v1 (~16s/game) and cost 7 games in the 3k 2v2 cell
+(12k points, ~50 units, 686 decisions/game) - which silently shrinks the denominator its score is
+computed over. Panels at 3k+/2v2 now run at `--timeout 600`; a timeout is a measurement failure,
+not a bot fault, and such a cell is re-run rather than reported. The 2v2 panel is re-queued clean.
+
+**Cost data for Phase B** (decision mean / worst p95, per cell type): 2k 1v1 ~20/332ms,
+3k 1v1 41.6/721ms, 4k 1v1 41.5/586ms, 2v2 33.8/685ms. A full 4k Tactician self-play game is ~20s
+of wall and ~412 decisions - so a single MCTS ROLLOUT to game end at 4k costs ~20s, which is a
+direct argument for value-truncated rollouts (C) or a cheaper rollout policy than full Tactician
+in B3, and belongs in the B replan.
+
 **2026-09-03 - STEP 3 (B0 SPIKE): MECHANISM FINDINGS. R1 (stop/abandon) is answerable with
 EXISTING machinery; prescribing a decision is NOT as simple as answering the request.** Cost
 numbers pending a clean idle-box run (chained behind step 2); these four findings are
