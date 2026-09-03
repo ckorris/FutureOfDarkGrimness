@@ -142,7 +142,7 @@ Per plan sec. 9 B0, on 2k AND 4k mid-game states (clone cost scales with unit co
 - Fable turn: read the numbers, write B1's design into the ledger (what `SimulationService`
   owns, RNG per simulation, how a simulation is torn down, what B2's node cost budget is).
 
-### Step 4 - C1-lite exporter + self-play driver (Sonnet / medium; schema review: Opus / high; ~1-2 bursts)
+### Step 4 - C1-lite exporter + self-play driver (Sonnet / medium; schema review: Opus / high; ~1-2 bursts) - DONE 2026-09-03
 Built now because it is the only thing that uses the box during B1-B3, and its data is C's
 bootstrap set. **The feature schema is a lock-in** (regenerating costs box-days), so it gets an
 Opus review before the first long run.

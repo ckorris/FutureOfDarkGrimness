@@ -11,6 +11,7 @@ return args.FirstOrDefault() switch
     "probes" => await RunProbes(args.Skip(1).ToArray()),
     "analyze" => FdgLab.Analyze.Run(args.Skip(1).ToArray()),
     "b0" => await FdgLab.B0Spike.RunAsync(args.Skip(1).ToArray()),
+    "selfplay" => await RunSelfPlay(args.Skip(1).ToArray()),
     _ => Usage(),
 };
 
@@ -62,6 +63,15 @@ static int Usage()
           probes  --feasibility [--games N] [--seed-base S] [--a/--b <army>]   #191 A3 gate metric:
                   shadow-runs the MacroActionGenerator at every movement decision of real games and
                   reports the fraction of activations with a valid non-Hold candidate (target >= 95%)
+          selfplay [--mix FdgLab/armies/mix.json] (armies drawn from FdgLab/armies/pool.json,
+                  same manifest as bench --panel; held-out pairings are always excluded)
+                  [--out DIR] [--dop 12] [--seed-base 1000] [--games-per-file 200]
+                  [--entity-sample-rate 0.05] [--boundary-sample-every 4] [--timeout 120]
+                  [--pause-file PATH] [--max-batches N]   #191 campaign step 4: C1 self-play data
+                  generation. Samples (points level, shape, armies, profiles) from --mix, plays
+                  games, writes gzipped JSONL batches under --out (schema docs/tactician-c1-
+                  schema.md); restartable - resumes after the last complete batch found in --out.
+                  --max-batches bounds the run (omit for the real unattended launch).
 
         An <army> is a .fdgarmy path, 'builtin' (the CLI's EOF-fallback test army), or
         'builtin-basic' (builtin minus its Ambush unit - the harness-determinism gate army, see #198).
@@ -231,6 +241,30 @@ static async Task<int> RunFeasibilityProbe(string[] args)
         $"with_non_hold_candidate={shadow.WithNonHoldCandidate} generator_faults={shadow.GeneratorFaults}");
     Console.WriteLine($"feasibility={pct:F1}% (gate: >= 95%) -> {(pct >= 95.0 ? "PASS" : "FAIL")}");
     return pct >= 95.0 ? 0 : 1;
+}
+
+static async Task<int> RunSelfPlay(string[] args)
+{
+    var options = new SelfPlayOptions(
+        OutDir: Arg(args, "--out") ?? Path.Combine("FdgLab", "data", DateTime.UtcNow.ToString("yyyy-MM-dd")),
+        MixPath: Arg(args, "--mix") ?? Path.Combine("FdgLab", "armies", "mix.json"),
+        Dop: IntArg(args, "--dop", 12),
+        SeedBase: IntArg(args, "--seed-base", 1000),
+        GamesPerFile: IntArg(args, "--games-per-file", 200),
+        EntitySampleRate: DoubleArg(args, "--entity-sample-rate", 0.05),
+        BoundarySampleEvery: IntArg(args, "--boundary-sample-every", 4),
+        WatchdogSeconds: IntArg(args, "--timeout", 120),
+        PauseFilePath: Arg(args, "--pause-file"),
+        MaxBatches: Arg(args, "--max-batches") is string mb ? int.Parse(mb) : null);
+
+    return await FdgLab.SelfPlay.RunAsync(options);
+}
+
+static double DoubleArg(string[] args, string name, double fallback)
+{
+    string? raw = Arg(args, name);
+    return raw != null && double.TryParse(raw, System.Globalization.CultureInfo.InvariantCulture, out double value)
+        ? value : fallback;
 }
 
 static string? Arg(string[] args, string name)

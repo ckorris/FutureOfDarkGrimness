@@ -23,6 +23,81 @@ campaigns re-base.)*
 
 ## Notes (newest first)
 
+**2026-09-03 (night) - STEP 4 BUILT AND LAUNCHED: C1 EXPORTER + SELF-PLAY DRIVER, ALL SIX
+PRE-LAUNCH CHECKS GREEN, GENERATION RUNNING.** Chris signed off on all four schema sign-off
+items (`docs/tactician-c1-schema.md`) unchanged from the authored spec. Built exactly to that
+spec:
+
+- Engine (`FutureOfDarkGrimness/Ai/Tactician/Learning/PositionEncoder.cs`, two commits): the
+  67-float v1 vector (7 global + 4x15 per-side blocks) and the 16-float entity table, both pure
+  reads of `ITableState` - no dice, no mutation. `TacticalAnalysis.MeleeOutputWounds` added
+  (melee twin of `RangedOutputWounds`, needed for `melee_share`). `TacticianPlanner.LastMacroLabel`
+  exposed for `chosen_macro`; `TacticianResolverRegistryFactory.Build` and
+  `AiProfileFactory.BuildRegistry` gained additive `out TacticianPlanner?` overloads so the
+  exporter can read it without building a second planner.
+- **Boundary seam - a scope note for B1.** The spec named `DeterminePlayerTurnStage.Enter` as
+  the activation boundary (B0's snapshot point). Building that literally needs a per-game engine
+  hook with no existing seam (`GameProgressData`'s store-level writes fire at that point too, but
+  collapse the "about to choose a unit" and "activation just ended" writes to the same
+  indistinguishable shape - not a reliable signal from outside the engine). Used instead: the
+  already-typed `ChooseUnitToActivateRequest` (#191 A4-1, no engine change needed) as the
+  boundary - encode BEFORE it resolves, read the chosen unit off the reply. Functionally
+  equivalent (state-before-the-decision, same activation), but if B1 needs the literal stage-entry
+  point later, this is the one seam that would need to move first.
+- **Real gotcha - local AI decisions go through the JSON wire path, not the typed one.**
+  `RequestMessageSender.RequestDecision` serializes every request before dispatch, local players
+  included (the profiling ledger's "~7% JSON round-trip" note, still unpaid off). First exporter
+  version hooked `IStageResolverRegistry.ResolveRequest<TRequest,TReply>` and silently captured
+  ZERO rows across 6 real games (0 faults, so no error - just quietly wrong). Fixed by hooking
+  `ResolveRequestAsJson` instead, deserializing with the engine's own `WireJsonSettings.For(store)`
+  so the parse matches the real wire format exactly. Recorded here because it is the kind of bug
+  that would have wasted the whole unattended window silently (schema sec 7's stated worst case).
+- **Cost gate - first measurement was 2x over budget, fixed.** `threat_coverage`'s first cut did
+  an O(units^2) `TacticalAnalysis.ThreatRangeAgainst` sweep (a rule evaluation per target per
+  pair) - measured 9.53ms/call, over the schema's 5ms cap. Replaced with an O(units) per-unit
+  cheap-reach precompute (raw weapon range + `AdvanceDistance`/`ChargeBudget`, no per-target
+  conditioning) compared via O(1) distance arithmetic; remeasured 1.7-3.6ms/call across mixed
+  1k-4k, 1v1/2v2 samples. Documented as an accepted precision loss (a pair's real threat range is
+  target-conditioned - Melee Shrouding etc - which this coarse coverage fraction was never going
+  to capture at 5ms anyway).
+- **Hash-verify.** `bench --a builtin-basic --b builtin-basic --profile-a tactician --profile-b
+  tactician --games 6 --dop 1` (this session's own invocation, not literally the historical
+  `72C6968E75359448` cell - could not find its exact recorded command) produces the SAME hash
+  (`8D6EFA0AF0B4019E`) with the engine changes stashed vs applied, and again after the
+  threat_coverage rewrite. Full suite green both times (3166/3167, 1 skipped by design).
+- **FdgLab (`FdgLab/Export/`, `FdgLab/SelfPlay.cs`, `FdgLab/armies/mix.json`):** `fdglab selfplay`
+  samples (profile pairing, points level/shape, armies) per-game from `mix.json`'s weights
+  (default 70/20/10 mirror/vs-solo/vs-gunline, levels weighted roughly even across 1k-4k plus
+  2v2), refusing any `pool.json` `heldOut` pairing by construction (never sampled, not just
+  filtered after). Writes gzipped JSONL in fixed 200-game batches (one file = one atomic unit:
+  written under `.tmp`, renamed on completion) under `--out`; restart resumes at one past the
+  highest complete batch found there. Header carries the schema's provenance fields for the
+  batch's FIRST game; since a batch mixes matchups, a `kind=game` line per completed game
+  restores real per-row provenance (recorded as a deviation from the schema doc's literal
+  single-header assumption, additive, not a schema change). 1-in-4 boundary subsampling is a
+  deterministic `boundary % 4 == 0` keep (uniform, matches sec 5b). Faulted/disconnected games are
+  discarded whole, never labelled.
+- **Six pre-launch checks (schema sec 7), all green** on a 40-game/660-row sample (seeds
+  9000-9039, mixed 1k-4k + 2v2, DOP 12, `--entity-sample-rate 0.05`) plus a separate 2-run
+  determinism pair (seed 5000-5003, `--entity-sample-rate 0.5`):
+  1. No duplicate/missing boundaries within a game (every kept boundary a distinct multiple of 4).
+  2. 0 of ~46,000 feature values (660 rows x 67 + entity floats) outside its declared range.
+  3. Label balance non-degenerate (275 win / 224 loss / 161 tie across 660 rows).
+  4. 0 held-out-pairing violations across 40 games, checked against `pool.json`'s `heldOut` list.
+  5. Byte-identical (modulo GUIDs and concurrent file-write order, which the schema's intent does
+     not cover) across two independent same-seed runs - 95/95 rows, 50/50 entity blocks, exact
+     match sorted by content.
+  6. `encoder_ms_mean` 1.7-3.6ms across samples (post-fix), under the 5ms budget.
+- **Launched:** `fdglab selfplay --out FdgLab/data/2026-09-03/ --dop 12` (no `--max-batches`, runs
+  until stopped), Release binary, in the background. See the "running" line in the same-day
+  phone-format reply for the process handle and ETA.
+- **Not built yet / explicitly deferred, not silently:** the entity table's per-unit `is-caster`
+  feature is a crude proxy (rule-name substring match, not a real caster query) - fine for a
+  sampled, v2-only table nothing in v1 trains on. `points-2k`'s panel wasn't in the original
+  campaign step-4 spec text but exists in `pool.json` already (added alongside the Titan Lords
+  work) and is included in `mix.json`'s levels - a reasonable read of "points and shapes weighted
+  per section 5," flagged here in case Chris meant something narrower.
+
 **2026-09-03 (evening, Fable) - TITAN LORDS: A'S WORST MATCHUP BY A WIDE MARGIN, FOUND FROM
 CHRIS'S REMARK THAT THE LIST IS SIX SINGLE-MODEL HIGH-TOUGH UNITS.** Titan Lords appeared in no
 1v1 panel and no held-out pair - only inside the 2v2-3k cell that was the baseline's weakest (79%).
