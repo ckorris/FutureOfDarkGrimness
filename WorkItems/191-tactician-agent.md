@@ -23,6 +23,51 @@ campaigns re-base.)*
 
 ## Notes (newest first)
 
+**2026-09-03 (night, later) - STEP 5a BUILT: CHOOSEACTIONREQUEST IS ITS OWN REQUEST TYPE.**
+Chris said "continue with B1" once step 4's self-play driver was confirmed generating (PID
+51352 still alive throughout this slice, batches still growing in `FdgLab/data/2026-09-03/`).
+Built exactly the campaign doc's step 5 first bullet, mechanically - no decision logic changed:
+
+- New `StageResolution/Requests/ChooseActionRequest.cs`, mirroring `ChooseAbilityEffectRequest`/
+  `ChooseSpellRequest`'s precedent: carries `ActivatingUnitID` (the follow-up
+  `TacticianActionResolver`'s doc comment recorded) plus the same options/descriptions/
+  `AllowCancel` payload `StringSelectionRequest` had for this menu specifically (not
+  `SecondaryActions`/`OptionRules` - Choose Action never populated those; they stay on the weapon
+  menus that still ride `StringSelectionRequest`). Reply stays `string`.
+- `ChooseActionStage` issues the typed request instead of `StringSelectionRequest` with
+  `Instructions == "Choose Action"`.
+- `AiStringSelectionResolver`, `TacticianActionResolver`, `GunlineResolvers` each split into a
+  `ChooseActionRequest` handler (the old Choose Action branch, verbatim) and a
+  `StringSelectionRequest` handler (everything else, unchanged - hold-or-deploy, weapon menus).
+  Registered explicitly for both types in `AiResolverRegistryFactory`,
+  `TacticianResolverRegistryFactory`, `GunlineResolverRegistryFactory`.
+- CLI (`StringSelectionResolver`) and GUI (`GuiStringSelectionResolver`) each gained a
+  `ChooseActionRequest` overload that mirrors the request into the `StringSelectionRequest` shape
+  their existing menu-printing/ImGui code already draws, then delegates - no rendering code
+  duplicated. **GUI half unverified by eye** (Chris away) - covered by `FdgRaylib.Tests` +
+  headless smoke only; top "awaiting GUI hand-verify" item for Chris's return.
+- `FdgLab/Export/ExportingRegistry.cs` (step 4's exporter) updated to key `chosen_action` off the
+  new typed request instead of the "Choose Action" string sniff - simpler, and no longer fragile
+  to a future rename of that string.
+- Fixed ~13 test-double fixtures across the engine test suite that answered
+  `IPlayerRequestByID.RequestDecision` by pattern-matching `StringSelectionRequest` for what is
+  now a `ChooseActionRequest` (`RecordingActionRequester`, `CapturingStringSelectionRequester`,
+  `CapturingChoiceRequester`, `ActionMenuRequester`, `FirstStringRequester`,
+  `CannedStringChoiceRequester`, `PlaceThenChooseRequester`) - each now answers both types.
+- **Hash-verify:** `./FdgLab/bin/Release/net8.0/FdgLab bench --a builtin-basic --b builtin-basic
+  --profile-a tactician --profile-b tactician --games 6 --dop 1` (Release, same command tonight's
+  step-4 entry used) reproduces `8D6EFA0AF0B4019E` - identical to the value that entry recorded
+  for the engine BEFORE this slice, so the request-type split is confirmed decision-neutral
+  without needing a separate stash/rebuild round-trip.
+- `dotnet test FutureOfDarkGrimness/FutureOfDarkGrimness.csproj` 3166/3167 green (1 skipped by
+  design, unchanged); full `dotnet build` green; `FdgRaylib.Tests` 2830/2830 green; headless
+  smoke (`printf "2\n2\n" | dotnet run ... -- --headless`) exits 0 with the expected
+  `Game result:` line.
+- Step-4 self-play run confirmed undisturbed throughout (PID 51352 unchanged, batches kept
+  landing in `FdgLab/data/2026-09-03/` across the Release rebuild used for hash-verify).
+- **Next: step 5b (prescription seam, policy-side)**, per the campaign doc's protocol Opus /
+  high effort and Chris's model-switch sign-off - not started this slice.
+
 **2026-09-03 (night) - STEP 4 BUILT AND LAUNCHED: C1 EXPORTER + SELF-PLAY DRIVER, ALL SIX
 PRE-LAUNCH CHECKS GREEN, GENERATION RUNNING.** Chris signed off on all four schema sign-off
 items (`docs/tactician-c1-schema.md`) unchanged from the authored spec. Built exactly to that

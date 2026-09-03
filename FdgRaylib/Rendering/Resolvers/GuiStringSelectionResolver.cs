@@ -7,8 +7,20 @@ using ImGuiNET;
 
 namespace FdgRaylib.Rendering.Resolvers;
 
-public class GuiStringSelectionResolver : IStageResolver<StringSelectionRequest, string>, IGuiResolver
+public class GuiStringSelectionResolver : IStageResolver<StringSelectionRequest, string>,
+    IStageResolver<ChooseActionRequest, string>, IGuiResolver
 {
+    /// <summary>
+    /// #191 B1 step 5a: Choose Action is its own request type now, but the menu/canvas rendering
+    /// below is unchanged - so this mirrors the request into the shape <see cref="Resolve(StringSelectionRequest)"/>
+    /// already draws rather than duplicating the ImGui layout. The mirror never crosses the wire;
+    /// it exists only for this one in-process call.
+    /// </summary>
+    public Task<string> Resolve(ChooseActionRequest request) => Resolve(new StringSelectionRequest(
+        request.TargetPlayerID, request.TaskID, "Choose Action", request.ValidOptions, request.InvalidOptions,
+        request.OptionDescriptions, request.AllowCancel, secondaryActions: null, request.DisplayName,
+        optionRules: null, request.OptionDescriptionRules));
+
     /// <summary>#311 — the Pass confirmation's title, which doubles as its ImGui popup id.</summary>
     private const string ConfirmPassTitle = "End this activation?";
 

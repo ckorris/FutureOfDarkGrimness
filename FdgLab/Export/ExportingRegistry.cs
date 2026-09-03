@@ -24,16 +24,16 @@ namespace FdgLab.Export;
 /// <para>
 /// Intercepts two request types that bracket an activation's decision - <see cref="ChooseUnitToActivateRequest"/>
 /// (the activation boundary: encode state BEFORE the unit is known, then read off which unit was
-/// chosen) and the "Choose Action" <see cref="StringSelectionRequest"/> (chosen_action, plus
-/// chosen_macro from the Tactician planner when this profile plans). Everything else passes
-/// straight through untouched - decision-neutral by construction, since it only reads the reply
-/// AFTER awaiting the real resolver.
+/// chosen) and <see cref="ChooseActionRequest"/> (chosen_action, plus chosen_macro from the
+/// Tactician planner when this profile plans - its own request type since #191 B1 step 5a, no
+/// longer a string-instructions sniff). Everything else passes straight through untouched -
+/// decision-neutral by construction, since it only reads the reply AFTER awaiting the real resolver.
 /// </para>
 /// </summary>
 public sealed class ExportingRegistry : IStageResolverRegistry
 {
     private static readonly string ChooseUnitTypeName = typeof(ChooseUnitToActivateRequest).FullName!;
-    private static readonly string StringSelectionTypeName = typeof(StringSelectionRequest).FullName!;
+    private static readonly string ChooseActionTypeName = typeof(ChooseActionRequest).FullName!;
 
     private readonly IStageResolverRegistry _inner;
     private readonly GameExportState _state;
@@ -106,13 +106,12 @@ public sealed class ExportingRegistry : IStageResolverRegistry
             return replyJson;
         }
 
-        if (typeFullName == StringSelectionTypeName)
+        if (typeFullName == ChooseActionTypeName)
         {
             JsonSerializerSettings wire = WireJsonSettings.For(gameDataStore);
-            var request = JsonConvert.DeserializeObject<StringSelectionRequest>(requestJson, wire);
             string replyJson = await _inner.ResolveRequestAsJson(typeFullName, requestJson, gameDataStore);
 
-            if (request?.Instructions == "Choose Action" && _openRow != null)
+            if (_openRow != null)
             {
                 _openRow.ChosenAction = JsonConvert.DeserializeObject<string>(replyJson, wire) ?? "";
                 _openRow.ChosenMacro = _planner?.LastMacroLabel ?? "";

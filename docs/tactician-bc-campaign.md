@@ -172,7 +172,7 @@ measured 12s at 4k, 14x a node expansion. Leaves are evaluated, not rolled out (
 Three commits, in this order, each hash-verified (DOP-1 six-game cell, hash `72C6968E75359448`
 on the current engine; a changed hash is a stop, not a note):
 
-- **5a - `ChooseActionRequest` becomes its own request type** (Chris, 2026-09-03; the follow-up
+- **5a - `ChooseActionRequest` becomes its own request type - DONE 2026-09-03** (Chris, 2026-09-03; the follow-up
   `TacticianActionResolver`'s doc comment already records, with `ChooseAbilityEffectRequest` and
   `ChooseSpellRequest` as the precedent). It carries what the string request cannot: the
   **activating unit's ID**, plus the existing option/invalid-option/description/cancel payload.

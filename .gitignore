@@ -22,3 +22,6 @@ tools/list-server/.wrangler/
 # names, army lists and full game saves, so they must never land in the repo.
 tools/list-server/.dev.vars
 tools/list-server/reports/
+# #191 step 4: self-play generation output - regenerable data, not source (tens of GB over
+# the campaign's generation window).
+FdgLab/data/
