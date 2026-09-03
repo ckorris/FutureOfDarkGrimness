@@ -23,6 +23,35 @@ campaigns re-base.)*
 
 ## Notes (newest first)
 
+**2026-09-03 (evening, Fable) - TITAN LORDS: A'S WORST MATCHUP BY A WIDE MARGIN, FOUND FROM
+CHRIS'S REMARK THAT THE LIST IS SIX SINGLE-MODEL HIGH-TOUGH UNITS.** Titan Lords appeared in no
+1v1 panel and no held-out pair - only inside the 2v2-3k cell that was the baseline's weakest (79%).
+Added `3k Titan Lords vs 3k Goblin Reclaimers` to `points-3k` and ran it three ways (100 games,
+seeds 6000, Release, DOP 16, 0 timeouts; reports `points-3k-titan*` under the step 2 directory):
+
+| Cell | Tactician plays | Score | W/L/T | Hash |
+|---|---|---|---|---|
+| Titan vs Goblin, vs solo | Titans | 98.0% | 96/0/4 | `D8F14884769D2603` |
+| Titan vs Goblin, mirror | both | Titans 77.0% | 64/10/26 | (mirror) |
+| **Goblin vs Titan, vs solo** | **Goblins** | **63.0%** | **51/25/24** | `10F2F797C6859611` |
+
+Every other vs-solo cell in the baseline is 92-98%; here a DerpBot-played Titan list takes 25 wins
+and 24 ties off A. Note the harness fact this exposed: in a panel cell the profile binds to its
+ARMY and the swap flips only seating, so a one-direction cell measures A playing side A only -
+which is why the 98% and the 63% coexist and why the reverse direction is the one that matters.
+
+G2 (two logs of the reverse cell read, seed 6000 fwd loss 1-2 and swp tie 0-0): few units die on
+either side; Titan shooting Shakes the Goblin mobs repeatedly ("Shaken - stays idle this
+activation"), and a single Tough model near a marker contests it indefinitely - the tie ends 0-0
+with everything contested. A's `UnitValue` is wound-based, so it VALUES a Titan correctly; what it
+lacks is focus fire (its target choice spreads expected wounds rather than finishing one Titan to
+unlock an objective) and any notion of activation economy (6 vs ~20 activations). Both are
+multi-ply consequences, so this is the cell where B's search should show value first - recorded
+as a named probe in the campaign doc section 5, both directions reported at every gate.
+
+Schema consequence (sign-off item 5 in `docs/tactician-c1-schema.md`): `activation_share` (this
+side's living units / all sides', a share so still no absolutes) added to the per-side block -
+67 floats now - and the generation mix must include Titan Lords so C sees single-model armies.
 **2026-09-03 (later, Fable) - STEP 2 CLOSED, SECOND PROFILING PASS: THE BENCHES WERE RUNNING
 DEBUG BINARIES (x1.8 FOR FREE), A SMALLER ALLOCATION-CHURN WIN, AND THE B1 PLAN REWRITTEN
 FROM B0'S NUMBERS.**

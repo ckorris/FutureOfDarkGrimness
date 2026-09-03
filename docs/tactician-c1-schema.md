@@ -77,7 +77,7 @@ exporter keys on the same `"Choose Action"` instructions the AI resolvers do.
 | `activation_frac` | boundary / expected boundaries this round | where in the round we are |
 | `acting_side_is_first` | 1 if the acting side moved first this round | alternation matters |
 
-## 3. Per-side block (14 features x 4 blocks = 56)
+## 3. Per-side block (15 features x 4 blocks = 60)
 
 Computed for SELF (the acting player), ALLY (sum over allied players, zeros in 1v1), ENEMY_SUM
 (sum over all opposing players), ENEMY_MAX (per-feature max over opposing players - "the
@@ -99,8 +99,19 @@ strongest single opponent", which is what a max^n backup cares about).
 | `threat_coverage` | fraction of enemy living units inside this side's threat range | `ThreatRangeAgainst` |
 | `reserve_frac` | off-table units (reserve/embarked) / living units | `ReserveRules` / tokens |
 | `seizer_frac` | units that `CanSeizeObjectives` / living units | aircraft cannot seize, so this is not the same as unit count |
+| `activation_share` | this side's living units / all sides' living units (added 2026-09-03, sign-off item) | the activation-economy asymmetry: a share, so still no absolutes. See the Titan Lords note below |
 
-**Vector width v1: 7 + 56 = 63 floats.** (The plan sketched "~200"; that was a guess before the
+**Titan Lords note (Chris, 2026-09-03).** Titan Lords are the schema's stress test: at 3k the list is
+SIX single-model high-Tough units against an opponent's fifteen to twenty-five. Two things follow.
+(1) Unit count and wound pool diverge maximally, which is exactly why `health_frac` (wounds) and
+`value_share` (points) are both present and `units_alive_frac` is not trusted alone. (2) The
+number of activations a side has RELATIVE to its opponent is a real tactical quantity (who runs out
+of moves first, who gets to react) that no per-side fraction captures - hence `activation_share`.
+The step 2 baseline's weakest cell (79%) was the only one containing Titan Lords; a 1v1 Titan cell
+was added to the 3k panel the same day, and the mix for generation must include it so the net sees
+single-model armies, not only hordes.
+
+**Vector width v1: 7 + 60 = 67 floats** (15 per block since `activation_share`). (The plan sketched "~200"; that was a guess before the
 primitives existed. Smaller is better here - every feature is one we can defend, and a wider
 vector is easy to add at v2 while a regenerated dataset is not.)
 
@@ -143,7 +154,7 @@ header).** Rows from one game share a single outcome label and are highly correl
 700th row of a game is worth far less than the 1st row of a NEW game - subsampling within games
 while maximising game count is the right trade. Uniform (not head- or tail-biased) so early,
 middle and late game phases stay equally represented. Yields ~25M rows over the window, which is
-ample for a 63-feature model and still leaves headroom to lower the rate if v2 wants more.
+ample for a 67-feature model and still leaves headroom to lower the rate if v2 wants more.
 
 The rate is a header field, not a constant, so a later run can change it without a schema bump.
 

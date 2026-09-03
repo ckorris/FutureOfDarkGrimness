@@ -1,5 +1,5 @@
 {
-  "_comment": "B+C campaign generalization manifest (docs/tactician-bc-campaign.md sec 5). The 2k main matrix is unchanged: 'bench --pool FdgLab/armies' over the 8 curated files already here. Paths below are relative to the repo root (same convention as --a/--b/--pool). heldOut pairings are excluded from ALL training data (step 4's exporter and step 12's finalize) at every point level and one 2v2 cell - never a whole point level or shape (corrected 2026-09-03). An army may appear in other trained-on pairings; only the exact listed pairing is withheld. Panel cells are informational/non-regression benches and may overlap heldOut pairings (different purpose - panels measure play strength, heldOut measures training generalization). points-2k added 2026-09-03: the cross-LEVEL comparison needs 2k measured the same way as the others (same cell count, same 100 games/cell, same engine); the historical 83.9 main-matrix figure is a different cell set on an older engine and cannot be compared to the panels directly. Cells avoid the two held-out 2k pairs.",
+  "_comment": "B+C campaign generalization manifest (docs/tactician-bc-campaign.md sec 5). The 2k main matrix is unchanged: 'bench --pool FdgLab/armies' over the 8 curated files already here. Paths below are relative to the repo root (same convention as --a/--b/--pool). heldOut pairings are excluded from ALL training data (step 4's exporter and step 12's finalize) at every point level and one 2v2 cell - never a whole point level or shape (corrected 2026-09-03). An army may appear in other trained-on pairings; only the exact listed pairing is withheld. Panel cells are informational/non-regression benches and may overlap heldOut pairings (different purpose - panels measure play strength, heldOut measures training generalization). points-2k added 2026-09-03: the cross-LEVEL comparison needs 2k measured the same way as the others (same cell count, same 100 games/cell, same engine); the historical 83.9 main-matrix figure is a different cell set on an older engine and cannot be compared to the panels directly. Cells avoid the two held-out 2k pairs. points-3k gained Titan Lords vs Goblin Reclaimers 2026-09-03 (Chris): Titan Lords are six single-model high-Tough units at 3k - the activation-economy and wound-pool extreme - and were otherwise only present inside one 2v2 cell, which was the weakest in the whole baseline. The pool must exercise that shape in 1v1 so B's gate and C's training data both see it.",
   "heldOut": [
     {
       "level": "1k",
@@ -158,6 +158,14 @@
         ],
         "sideB": [
           "armies/3k - DAO Union.fdgarmy"
+        ]
+      },
+      {
+        "sideA": [
+          "armies/3k - Titan Lords.fdgarmy"
+        ],
+        "sideB": [
+          "armies/3k - Goblin Reclaimers.fdgarmy"
         ]
       }
     ],

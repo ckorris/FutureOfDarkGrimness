@@ -344,6 +344,17 @@ and never re-run the full set for a change that a 100-game cell can arbitrate.
 
 ---
 
+**Titan Lords probe (added 2026-09-03, Chris's observation).** Titan Lords are six single-model
+high-Tough units at 3k; a panel cell `3k Titan Lords vs 3k Goblin Reclaimers` now exists in
+`points-3k`, and the REVERSE pairing is the diagnostic: A playing Goblins against a SoloRules-played
+Titan list scores only **63%** (51/25/24) where every other vs-solo cell is 92-98%, and A-vs-A the
+Titan side wins 64-10-26. Mechanism (G2, logs read): a single Tough model near a marker is an
+objective contester a horde cannot remove (ties end 0-0 with everything contested), and Titan
+shooting Shakes mobs into idle activations. Beating it needs focus fire to actually kill a Titan
+and out-holding elsewhere - both multi-ply consequences, so this is the cell where search should
+show its value first. Report both directions of this pairing at every B and C gate; it is not
+extra gate math, just the cell to read first.
+
 ## 6. Operating rules for the unattended window (2026-09-04 to 2026-09-07)
 
 - **Every lab run uses the Release build**: `dotnet build FdgLab/FdgLab.csproj -c Release` and
