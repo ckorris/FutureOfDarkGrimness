@@ -196,7 +196,11 @@ A-heuristic; feature flag / profile name so A-greedy and B-search are both bench
 Watchdog raised for search profiles. G3 fallback to A-greedy on any search failure, logged and
 counted. 100-game smoke cells at 2k 1v1 and 3k 2v2 (box: 1-2h each, data gen paused).
 **R9 check:** first GUI game with search - the window stays live; add a "thinking..." line if
-not present. Ledger.
+not present. **Lobby exposure (Chris, 2026-09-03): every ladder rung is a real, player-facing
+option, same as DerpBot (SoloRules) and Tactician Bot (A-greedy) today** - a new `EAiProfile`
+value, an "Add \<Name\> Bot" button and a per-slot picker entry in `LobbyScreen.cs`
+(`AddAiPlayer`/`SetSavedSlotPlayerType`), name TBD with Chris at this step (unlike `Gunline`,
+which stays lab-only benchmark tooling, never lobby-exposed). Ledger.
 
 ### Step 10 - B-gate (runs: Sonnet / low; failure analysis: Opus / high; Chris games)
 Section 5 gate. Iterate fix -> overnight bench. Chris plays >= 2 games ("does it anticipate?"),
@@ -227,6 +231,11 @@ via `TacticianOptions`; < 1ms CPU inference target; R7 verified on Linux.
 ### Step 15 - C4 integration (design: Opus / high; build: Sonnet / medium)
 Leaf evaluation vs value-truncated rollouts, blend factor - decided on the benchmark. One data
 regeneration from the best agent.
+
+### Step 15b - C lobby exposure (Sonnet / medium; folds into step 15)
+Same treatment as step 9: a new `EAiProfile` value, "Add \<Name\> Bot" button + slot picker
+entry in `LobbyScreen.cs`, name TBD with Chris, once C4 is promoted (not before - an unpromoted
+evaluator stays lab-only per G9).
 
 ### Step 16 - C-gate (as step 10). **L2 merge.**
 
