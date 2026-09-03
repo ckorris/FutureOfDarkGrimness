@@ -19,7 +19,7 @@ Three independent version axes; keep them straight and never merge them into one
 
 Both numbers surface together everywhere a human sees a release, never in the tag: release **title** `Future of Dark Grimness v0.2.0 (OPR 3.5.1)`, **archive names** `FdgRaylib-<rid>-v0.2.0-OPR_3_5_1.{zip,tar.gz}`, and binary **ProductVersion** `0.2.0+opr.3.5.1.git-<sha>-<date>` (OPR + commit as SemVer build metadata after the `+`; local/IDE builds report `<Version>-dev`).
 
-**Cutting a release:** set `<Version>` (+ `RULES_VERSION` if the ruleset changed), then `git tag v<Version> && git push --tags`. The `v*` tag triggers `release.yml`, which runs `build-dist.sh` on CI and publishes the GitHub Release with all four platform archives + `SHA256SUMS.txt`. Releases come from **CI, not a local build** (SignPath requires verifiable automated builds); the local script is for dev/testing. Signing is wired into the same workflow but disabled until SignPath accepts the project — the first release is unsigned by design and is itself the application evidence.
+**Cutting a release:** set `<Version>` (+ `RULES_VERSION` if the ruleset changed), then `git tag v<Version> && git push --tags`. The `v*` tag triggers `release.yml`, which runs `build-dist.sh` on CI and publishes the GitHub Release with all four platform archives + `SHA256SUMS.txt`. Releases come from **CI, not a local build** so every published binary traces back to a verifiable automated build; the local script is for dev/testing. Builds are unsigned on every platform (a SignPath Foundation application was denied in September 2026), so the README's SmartScreen/Gatekeeper notes stay.
 
 ## Working Conventions
 

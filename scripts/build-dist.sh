@@ -46,7 +46,7 @@ COMMON_ARGS=(-c Release --self-contained true -p:PublishTrimmed=false)
 # #226: stamp the build so bug reports can be tied to the binary that produced them
 # (surfaced via AppVersion.cs; non-dist builds report Directory.Build.props' "<version>-dev").
 # The stamp leads with the app version from Directory.Build.props so the binaries'
-# ProductVersion stays recognizable (SignPath metadata restrictions match on it), then carries
+# ProductVersion stays recognizable, then carries
 # the OPR rules version and the git commit as SemVer build metadata after the '+':
 #   0.2.0+opr.3.5.1.git-<sha>-<date>
 # so the ProductVersion in the binary names both the app and the rules version too.

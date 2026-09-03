@@ -2,9 +2,8 @@
 
   <!-- Shared assembly metadata for every project in this checkout, including the
        FutureOfDarkGrimness submodule (MSBuild finds this file by walking up from each
-       project directory). SignPath requires Product and product version to be set and
-       identical across all binaries in a signed build - keep this the single source of
-       truth and don't re-set these properties in individual csproj files. -->
+       project directory). Keep this the single source of truth for Product/version metadata
+       and don't re-set these properties in individual csproj files. -->
   <PropertyGroup>
     <Product>Future of Dark Grimness</Product>
     <Company>Chris Orris</Company>

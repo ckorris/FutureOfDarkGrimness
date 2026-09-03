@@ -7,9 +7,9 @@ description: Build self-contained, sendable FdgRaylib executables for Windows (x
 
 **Official releases now come from CI, not this script.** Pushing a `v*` tag runs
 `.github/workflows/release.yml`, which calls the same `scripts/build-dist.sh` and creates
-the GitHub Release (required for SignPath code signing - only binaries from a verifiable
-automated build qualify). Use the local script for dev/testing builds only; never hand a
-locally built archive out as an official release.
+the GitHub Release, so every published binary traces back to a verifiable automated build.
+Use the local script for dev/testing builds only; never hand a locally built archive out as
+an official release.
 
 `scripts/build-dist.sh` is the only supported way to produce sendable builds locally. Do not
 hand-roll `dotnet publish` — the script pins the flags that keep the output working

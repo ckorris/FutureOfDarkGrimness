@@ -11,7 +11,6 @@ This is a fan project that’s not officially affiliated with OnePageRules.
 
 <br>
 
-https://github.com/ckorris/FutureOfDarkGrimness
 ## More than a Virtual Tabletop
 
 <img width="712" height="401" alt="TerrainObjZonePick_small" src="https://github.com/user-attachments/assets/90da9357-68bf-46c4-8ebf-fbb84a56ee9d" />
@@ -71,10 +70,6 @@ Download the latest release for your platform from the [Releases page](https://g
 ### Windows will warn you about this app
 
 The first time you run `FdgRaylib.exe`, SmartScreen may show a "Windows protected your PC" dialog. That's because the app is new and hasn't built up a download reputation yet, not because anything is wrong with it. Click **More info**, then **Run anyway**.
-
-<!-- Uncomment once the first SignPath-signed release ships:
-Windows releases are code-signed via SignPath Foundation (see "Code signing policy" below), which makes this warning go away as the certificate builds reputation.
--->
 
 <br>
 
@@ -167,15 +162,7 @@ Discord post [here](https://discord.com/channels/610199287346888743/152300780986
 Discord post [here](https://discord.com/channels/610199287346888743/1523023020615143655/1523023020615143655), website [here](https://www.joshuaates.com/OnePageRulesGame/index.html).
 
 
-## Code signing policy
-
-*Free code signing provided by [SignPath.io](https://about.signpath.io), certificate by [SignPath Foundation](https://signpath.org)*
-
-This is a solo-maintainer project: the author, reviewer, and approver roles are all held by [@ckorris](https://github.com/ckorris). All external pull requests are reviewed by the maintainer before merge, and each signing request is manually approved by the maintainer.
-
-Only the Windows build is signed; the Linux and macOS builds are unsigned.
-
-### Privacy
+## Privacy
 
 The app collects no telemetry or analytics, and nothing is transferred over the network except as a result of these user-initiated actions:
 
