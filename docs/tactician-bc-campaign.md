@@ -247,6 +247,18 @@ evaluator stays lab-only per G9).
 seeds, side-swapped (plan 6.1). Score = wins + 0.5 ties.
 
 **Panels (non-regression):** ~100 games/cell, side-swapped, paired seeds.
+
+*Comparison baseline, corrected 2026-09-03 from step 2's measured numbers.* A panel cell's
+primary number is the CANDIDATE-vs-INCUMBENT score (B vs A, later C vs B), NOT the score against
+solo-rules. Step 2 measured Tactician-vs-SoloRules at 90-96% (3k) and 96-99.5% (4k) - the
+vs-solo panels are at or near ceiling above 2k, so they cannot detect whether a later rung
+improved, and "no cell below baseline minus 5" would pass a bot that got worse. The vs-solo run
+stays as a cheap sanity/fault check (a collapse shows up immediately); the gate reads the
+head-to-head. G2 note for these cells: the widening vs-solo margin with army size is REAL and
+explained - solo-rules is objective-blind (its documented baseline character), which costs more
+the more units and board there are - verified by reading a seed-6000 4k game where solo still
+seized a marker in round 3 and contested one in round 4, losing 2-0 with only 3 units destroyed.
+Not a degenerate opponent, just a compounding weakness.
 - `points-1k`: 4 cells from the 1k lists. `points-3k`: 4 cells. `points-4k`: 3 cells.
 - `shape-2v2`: 4 cells at 2k per player (mixed archetypes per side), 2 cells at 3k per player.
 - `ffa-smoke`: 1 four-player game per gate, must produce a `GameResult` with no fault.
@@ -261,8 +273,8 @@ probe.) Size extrapolation, if ever wanted, is an informational probe at a level
 
 | Gate | Main matrix | Panels | Probes | Chris |
 |---|---|---|---|---|
-| B | >= 60% vs A, >= 85% vs solo | no panel cell below A's step-2 baseline minus 5 points; ffa-smoke clean; decision time within budget at 4k; memory stable over 500 games | last-round steal, charge-vs-shoot | >= 2 games, verbatim |
-| C | >= 55% vs B | held-out pairs (at every point level) within ~5 points of trained pairs; held-out 2v2 cell within ~5 points | lane-block, buff-anticipation | >= 2 games, verbatim |
+| B | >= 60% vs A, >= 85% vs solo | every panel cell >= 50% HEAD-TO-HEAD vs A (side-swapped, so 50 = parity), and no cell's vs-solo score below step 2's baseline minus 5 (fault/collapse check only); ffa-smoke clean; decision time within budget at 4k; memory stable over 500 games | last-round steal, charge-vs-shoot | >= 2 games, verbatim |
+| C | >= 55% vs B | every panel cell >= 50% head-to-head vs B; held-out pairs (at every point level) within ~5 points of trained pairs; held-out 2v2 cell within ~5 points | lane-block, buff-anticipation | >= 2 games, verbatim |
 
 Bench compute with search: a 2k 1v1 search game is ~150-300s, so the main matrix is ~12-24h at
 DOP 16 and panels are ~2-3x that in total. Run the main matrix first, panels overnight after,
