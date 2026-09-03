@@ -23,6 +23,47 @@ campaigns re-base.)*
 
 ## Notes (newest first)
 
+**2026-09-03 - STEP 3 (c) PROFILING: THE PHASE B FIDELITY TRADE IS UNNECESSARY, AND A 10-LINE
+GEOMETRY FIX TOOK 32% OFF EVERY TACTICIAN DECISION.** Chris approved (c) "regardless and first",
+and asked what (a)/(b) would cost long-term. The measurements answered both questions.
+
+**Where an activation's policy time actually goes** (new `smoke --timing-breakdown`, per-request-
+type tally in `TimingRegistry`; seeded 2k Tactician mirror):
+
+| Request | share | mean | calls |
+|---|---|---|---|
+| StringSelectionRequest (Choose Action) | **80.3%** | 60.6ms | 79 |
+| ChooseUnitToActivateRequest | 6.0% | 7.6ms | 47 |
+| PlaceObjectsRequest<ModelData> (deployment only) | 6.0% | 20.9ms | 17 |
+| SelectionRequest<UnitData> (deploy order) | 4.4% | 17.4ms | 15 |
+| ChooseRangedAttack / DefineMovementPath / AssignWounds / melee / consolidation | **1.8% combined** | <2.6ms | 100 |
+
+**Consequence: option (b) is moot.** Choose Action plus activation choice is 86% of policy cost,
+and both are exactly what a search PRESCRIBES - during a simulated activation they are answered
+from the tree edge, not computed, so that cost vanishes by construction with ZERO fidelity loss.
+The decisions a cheap in-sim policy would have had to own total under 2%, so the full Tactician
+can answer them for free. No bias trade, and no need to accept option (a)'s depth ceiling either.
+DefineMovementPath being just 1.0% (1.6ms) is the tell: by the time the engine asks for the path,
+the planner has already decided it during Choose Action.
+
+**The profile, and the fix it produced.** dotnet-trace on a Tactician game: discounting ~83% idle
+thread-pool wait, real CPU was ~40-50% SEGMENT GEOMETRY (SegmentToSegmentDistanceSquared,
+PointToSegmentDistanceSquared, SegmentsIntersect, RectangularZone.LinesIntersect, Float2
+arithmetic) and ~20% List growth/Resize. Cause: `LineOfSightUtilities.EvaluateSightLine` walks
+EVERY terrain piece linearly, each piece costing four LinesIntersect (16 cross products) plus,
+when inflated, four segment-to-segment distance computations - and `TacticianPlanner.Score` issues
+one sight test per (candidate x enemy) on tables #268 made dense. Fix (engine `a741423`): a
+four-comparison bounding-box rejection in `RectangularZone.DoesPathIntersectZone`, conservative by
+construction. Measured on the seeded 2k mirror: **decision mean 22.18 -> 15.03ms (-32%), p95 136.2
+-> 76.0ms (-44%), Choose Action 60.63 -> 38.30ms, game wall 7879 -> 6000ms (-24%)**. Neutrality
+proven this repo's way - dop-1 six-game outcome hash IDENTICAL (`72C6968E75359448`) before and
+after - plus suite 3166/3167, full build, headless smoke exit 0. This is the second time profiling
+this path has found a large win in one rebuildable/skippable structure (cf. the 2026-07-26
+TerrainGrid cache, 2.2x); a third look at the remaining List-growth churn is likely worth it.
+
+The win compounds everywhere at once: the shipped bot's in-game pause, data-generation throughput
+for the C1 window (~24% more games for free), and Phase B's node-expansion cost.
+
 **2026-09-03 - STEP 3 (B0) COST NUMBERS, CLEAN BOX. The plan's decision-table remedy targets the
 wrong component, rollouts are dead as a leaf estimate, and there IS a measured path to real
 multi-ply search.** Reports: `FdgLab/reports/`, raw logs in the session scratchpad.
