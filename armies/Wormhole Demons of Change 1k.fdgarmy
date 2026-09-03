@@ -4960,9 +4960,10 @@
           "requiredRule": null
         },
         "effect": {
-          "kind": "addRule",
-          "ruleName": "-3 to casting rolls",
-          "scope": "NextTrigger"
+          "kind": "statModifier",
+          "roll": "Cast",
+          "delta": -3,
+          "lifetimeScope": "NextTrigger"
         }
       },
       {
@@ -6001,9 +6002,10 @@
         "requiredRule": null
       },
       "effect": {
-        "kind": "addRule",
-        "ruleName": "-3 to casting rolls",
-        "scope": "NextTrigger"
+        "kind": "statModifier",
+        "roll": "Cast",
+        "delta": -3,
+        "lifetimeScope": "NextTrigger"
       }
     },
     {
