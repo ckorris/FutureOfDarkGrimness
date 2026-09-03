@@ -30,10 +30,23 @@ games/cell, side-swapped, paired seeds from 6000, DOP 16, realistic dice. Report
 `FdgLab/reports/step2-baseline-2026-09-03/` (gitignored; numbers of record are here).
 
 **Tactician vs SoloRules, by point level** (2k reference is the historical main matrix, 83.9):
-- 1k: PENDING - the cell was lost to a crash, see below; re-queued.
+- 1k: 99.5 / 97.5 / 94.5 / 96.0 (mean 96.9)
+- 2k PANEL, added 2026-09-03 and run on the CURRENT engine: 99.5 / 92.0 / 83.0 / 96.0 (mean 92.6)
 - 3k: 90.0 / 90.0 / 95.0 / 96.0 (BB-vs-Goblin, Knight-vs-RL, Saurian-vs-SoulSnatcher, Eternal-vs-DAO)
 - 4k: 98.0 / 99.5 / 96.0 (Hives-vs-Havoc, Hives-vs-HEF, Havoc-vs-HEF)
 - 2v2 (2k/player): 97.0 / 81.0 / 96.5 / 90.5; (3k/player): 96.2 (7 timeouts, see below) / 79.0
+
+**Cross-level conclusion, and a correction to the first read.** With every level measured the
+same way (4 cells, 100 games/cell, current engine), the margin over solo-rules is 96.9 (1k) /
+92.6 (2k) / 92.8 (3k) / 97.8 (4k) / 91.3 (2v2 at 2k per player). The apparent "2k dip" in the
+first pass was an ARTIFACT of comparing panels against the historical 83.9 main-matrix number,
+which is a different cell set (all 72 ordered pairs incl. self-mirrors, i.e. harder cells) on a
+July engine - not comparable to a 4-cell panel. Corrected reading: **no evidence of 2k-specific
+overfitting; A's strength against the baseline is flat-to-strong across 1k-4k and 2v2.** Two
+honest caveats: (a) this is all measured against an objective-BLIND opponent, a weak yardstick
+that saturates above 90, so it bounds "does A collapse off-pool" and not "how good is A" - the
+head-to-head panels are what will measure B and C; (b) 4 cells at 100 games carries per-cell
+sigma of roughly 3-5 points, so single-cell differences below ~10 points are not signal.
 
 **Tactician mirrors** (both sides Tactician - these measure ARMY imbalance under equal play, not
 bot asymmetry, since the side swap cancels slot advantage): 1k 77.5 / 61.5 / 52.0 / 46.5;
