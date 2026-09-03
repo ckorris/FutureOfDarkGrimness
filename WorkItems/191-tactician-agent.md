@@ -23,6 +23,57 @@ campaigns re-base.)*
 
 ## Notes (newest first)
 
+**2026-09-03 - STEP 3 (B0) COST NUMBERS, CLEAN BOX. The plan's decision-table remedy targets the
+wrong component, rollouts are dead as a leaf estimate, and there IS a measured path to real
+multi-ply search.** Reports: `FdgLab/reports/`, raw logs in the session scratchpad.
+
+**Node expansion (clone -> advance exactly one activation -> snapshot), THROW stop:**
+
+| | 2k | 4k | 2k, solo-rules as the in-sim policy |
+|---|---|---|---|
+| total | 222.7ms | 845.9ms | **76.4ms** |
+| run (policy thinking) | 165.4 (74%) | 764.5 (90%) | **10.5** |
+| load | 37.0 | 53.6 | 43.2 |
+| save | 17.3 | 24.8 | 19.7 |
+| assemble | 2.9 | 2.9 | 3.0 |
+
+Snapshot size 401.6 KiB (2k) / 640.5 KiB (4k); re-save delta 0 chars, so the round trip is
+byte-exact. Boundary reached 30/30 in every configuration; determinism holds; chained advances
+8/8 at both sizes.
+
+**Four findings, in order of consequence.**
+1. **The dominant cost is the POLICY, not the snapshot path** - 74% at 2k, 90% at 4k. The plan's
+   own decision table prescribes "> 200ms -> optimize the snapshot path before proceeding"; we
+   measured, and that remedy would have chased 24% of the cost while the other 76% sat untouched
+   (G6 vindicated, plan sec 9 B0's remedy line superseded - G10).
+2. **A cheap in-simulation policy collapses it 16x** (run 165 -> 10.5ms), and then the picture
+   INVERTS: at 76ms/node the snapshot path is 82% of the cost, which is exactly when the
+   pre-authorized pause/step hook (reusable server, no clone per node) becomes the big lever
+   rather than the ~20% it is today. **(b) + the hook projects to ~11-20ms/node = the plan's own
+   "FULL MCTS, hundreds of nodes at a 5-10s budget" band.** Genuine multi-ply search is reachable;
+   it is not a 1-ply-forever situation.
+3. **Rollouts to game end are dead as a per-leaf estimate.** Measured 12.0s at 4k = 14x a 4k node
+   expansion, 49x a 2k one. Plan B3 ("both sides play the Phase-A greedy policy to game end") is
+   not affordable per leaf at any budget we would ship. The leaf estimate must be an EVALUATOR -
+   heuristic now, learned in C - which also means C's value is higher than the ladder implies.
+4. **THROW beats ABANDON on every axis, so R1 is closed.** 4k soak, 400 sims: THROW ends at heap
+   delta **0MiB** (RSS actually fell 182MiB); ABANDON ends +52MiB heap, +328MiB RSS, and is SLOWER
+   per advance (960 vs 846ms) because orphaned games keep burning CPU. Zero misses either way.
+
+**Benchmark affordability, corrected.** An earlier read of these numbers called a B-gate
+infeasible; that was wrong, because it reasoned in wall-clock with root parallelism instead of
+CPU-seconds with games parallelised across cores. At 25-50 expansions per searched decision a
+100-game 2k cell costs 1-2h at DOP 16 - a normal overnight gate. Root parallelism is for
+human-facing latency, not for benching.
+
+**Open design fork (Chris's call, in progress):** (a) selective shallow lookahead vs (b) cheap
+in-sim policy vs (c) profile the planner first. Chris has approved (c) regardless and first, and
+asked specifically what (a)/(b) cost long-term. Analysis in the reply of record; the short version
+is that (a)'s cost is a permanent DEPTH ceiling and a weaker policy-improvement operator for the
+C/D loop, (b)'s cost is a systematic evaluation BIAS (smaller than it first looks, because a
+fully-specified macro-action prescribes most of what the in-sim policy would otherwise decide),
+and NEITHER corrupts C's training labels, which are real game outcomes.
+
 **2026-09-03 - STEP 2 ADDENDUM: THE TACTICIAN'S PER-DECISION COST SCALES BADLY WITH UNIT COUNT,
 and it is a Phase B feasibility problem, not just a bench annoyance.** The 3k 2v2 cell (Saurian+
 Goblin vs SoulSnatcher+DarkElf - ~50 units, 12k points, the #296 crowded shape) measured:
