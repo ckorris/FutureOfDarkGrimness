@@ -23,6 +23,34 @@ campaigns re-base.)*
 
 ## Notes (newest first)
 
+**2026-09-03 - STEP 2 ADDENDUM: THE TACTICIAN'S PER-DECISION COST SCALES BADLY WITH UNIT COUNT,
+and it is a Phase B feasibility problem, not just a bench annoyance.** The 3k 2v2 cell (Saurian+
+Goblin vs SoulSnatcher+DarkElf - ~50 units, 12k points, the #296 crowded shape) measured:
+
+| 3k 2v2 cell | decision mean | worst p95 | watchdog timeouts |
+|---|---|---|---|
+| Tactician vs SoloRules | 33.8ms | 685ms | 7 / 100 |
+| Tactician BOTH sides | 90.1ms | 3166ms | **97 / 100** |
+
+Both sides planning roughly TRIPLES the per-decision mean and pushes p95 past three seconds, and
+97 of 100 games blew the 120s watchdog (that cell's reported 66.7 is computed over 3 completed
+games and is meaningless - the fault list is what makes it visible, which is the whole reason
+faults are listed per plan G2). Two causes compound: the planner's scoring is roughly
+O(candidates x enemies) with CombatMath per pair, so cost grows superlinearly in army size; and
+at DOP 16 sixteen such games oversubscribe the box, inflating the per-game WALL time the watchdog
+actually measures. Re-queued as its own `shape-2v2-3k` panel at DOP 6 / 900s - the 2k 2v2 cells
+measured clean (0 faults) and stand.
+
+**Why this matters for B, and it should go into the B replan.** Search multiplies decision cost.
+A policy that already costs 90ms/decision at 3k 2v2, with a 3.2s p95, cannot also be the rollout
+policy for a 1-2s search budget - and a rollout to game end at 4k already measures ~20s (previous
+entry). Concretely, the replan should weigh: (a) a CHEAPER rollout policy than full Tactician
+(solo-rules is roughly half the per-decision cost and was always the plan's baseline), (b) leaning
+on value-truncated rollouts sooner, i.e. pulling part of C forward into B, and (c) profiling the
+planner's enemy loop before B4 rather than after - the #191 2026-07-26 TerrainGrid cache pass
+found HALF the busy CPU in one rebuildable structure, so there may well be another such win here.
+Recorded as measurement, not as a decision - the B0 cost numbers arbitrate.
+
 **2026-09-03 - STEP 2: A's GENERALIZATION BASELINE. The 2k-overfit worry is INVERTED against
 the solo baseline - the Tactician's margin GROWS with army size - but that same result makes the
 vs-solo panels useless as a gate, and the gate design was corrected because of it.** 100
