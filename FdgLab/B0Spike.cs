@@ -54,6 +54,7 @@ public static class B0Spike
         int roundTrips = IntArg(args, "--round-trips", 20);
         int advances = IntArg(args, "--advances", 20);
         int soak = IntArg(args, "--soak", 0);
+        int chain = IntArg(args, "--chain", 8);
         int timeoutSeconds = IntArg(args, "--timeout", 60);
         EAiProfile profile = (Arg(args, "--profile") ?? "tactician").ToLowerInvariant() switch
         {
@@ -113,6 +114,7 @@ public static class B0Spike
 
             var totalMs = new List<double>();
             var loadPart = new List<double>();
+            var assemblePart = new List<double>();
             var runPart = new List<double>();
             var savePart = new List<double>();
             int reachedBoundary = 0, gameEnded = 0, timedOut = 0, stoppedCleanly = 0;
@@ -128,6 +130,7 @@ public static class B0Spike
                 {
                     totalMs.Add(r.TotalMs);
                     loadPart.Add(r.LoadMs);
+                    assemblePart.Add(r.AssembleMs);
                     runPart.Add(r.RunMs);
                     savePart.Add(r.SaveMs);
                 }
@@ -137,14 +140,46 @@ public static class B0Spike
                               $"game_ended_first={gameEnded} timed_out={timedOut} stop_observed={stoppedCleanly}");
             if (totalMs.Count > 0)
             {
-                Console.WriteLine($"    total : {Describe(totalMs)}");
-                Console.WriteLine($"      load: {Describe(loadPart)}");
-                Console.WriteLine($"      run : {Describe(runPart)}");
-                Console.WriteLine($"      save: {Describe(savePart)}");
+                Console.WriteLine($"    total   : {Describe(totalMs)}");
+                Console.WriteLine($"      load  : {Describe(loadPart)}");
+                Console.WriteLine($"      assemb: {Describe(assemblePart)}");
+                Console.WriteLine($"      run   : {Describe(runPart)}");
+                Console.WriteLine($"      save  : {Describe(savePart)}");
+                Console.WriteLine($"    reusable-server ceiling (run only, if a paused server could be " +
+                                  $"stepped instead of rebuilt): mean {runPart.Average():F0}ms => " +
+                                  $"{DecisionBand(runPart.Average())}");
                 Console.WriteLine($"    -> plan decision table: node expansion mean " +
                                   $"{totalMs.Average():F0}ms => {DecisionBand(totalMs.Average())}");
             }
         }
+
+        // --- Phase 3b: chained advances ----------------------------------------------------------
+        // The tree-search question the single-advance numbers do NOT answer: does a captured
+        // boundary snapshot resume again? MCTS walks several plies down a path, each expansion
+        // starting from the previous one's output, so a snapshot that cannot itself be advanced
+        // would cap the tree at depth 1.
+        Console.WriteLine($"\n[3b] Chained advances (each from the previous capture) x{chain}");
+        string chained = snapshot;
+        int depth = 0;
+        var chainMs = new List<double>();
+        for (int i = 0; i < chain; i++)
+        {
+            var sw = Stopwatch.StartNew();
+            (string? next, string note) = await AdvanceCapturingAsync(chained, profile, timeoutSeconds);
+            sw.Stop();
+            if (next == null)
+            {
+                Console.WriteLine($"    depth {i + 1}: STOPPED - {note}");
+                break;
+            }
+            chained = next;
+            depth++;
+            chainMs.Add(sw.Elapsed.TotalMilliseconds);
+            Console.WriteLine($"    depth {i + 1}: ok, {next.Length / 1024.0:F1} KiB, " +
+                              $"{sw.Elapsed.TotalMilliseconds:F0}ms, round {RoundOf(next)}");
+        }
+        Console.WriteLine($"    chained depth reached: {depth}/{chain}" +
+                          (chainMs.Count > 0 ? $" | {Describe(chainMs)}" : ""));
 
         // --- Phase 4: leak soak ------------------------------------------------------------------
         if (soak > 0)
@@ -164,7 +199,7 @@ public static class B0Spike
     // ---------------------------------------------------------------------------------------------
 
     private sealed record AdvanceResult(bool ReachedBoundary, bool GameEndedFirst, bool TimedOut,
-        bool StopObserved, double TotalMs, double LoadMs, double RunMs, double SaveMs);
+        bool StopObserved, double TotalMs, double LoadMs, double AssembleMs, double RunMs, double SaveMs);
 
     /// <summary>
     /// Plays a fresh game until the Nth activation boundary and returns the store serialized at that
@@ -256,9 +291,14 @@ public static class B0Spike
         }, throwAfter: throwToStop);
 
         var ended = new TaskCompletionSource<GameResult>(TaskCreationOptions.RunContinuationsAsynchronously);
-        var runSw = Stopwatch.StartNew();
+        // Assembly (rebuilding slots, registries, RuleResolver, the server) is timed apart from the
+        // activation itself: if assembly dominates, the lever is a REUSABLE simulation server (the
+        // plan's pause/step hook), not a faster serializer.
+        var assembleSw = Stopwatch.StartNew();
         BuildResumedServer(store, profile, watcher, ended);
+        assembleSw.Stop();
 
+        var runSw = Stopwatch.StartNew();
         Task finished = await Task.WhenAny(captured.Task, ended.Task,
             Task.Delay(TimeSpan.FromSeconds(timeoutSeconds)));
         runSw.Stop();
@@ -274,13 +314,46 @@ public static class B0Spike
             }
             return new AdvanceResult(true, false, false, stopObserved,
                 total.Elapsed.TotalMilliseconds, loadSw.Elapsed.TotalMilliseconds,
-                runSw.Elapsed.TotalMilliseconds - saveMs, saveMs);
+                assembleSw.Elapsed.TotalMilliseconds, runSw.Elapsed.TotalMilliseconds - saveMs, saveMs);
         }
 
         if (finished == ended.Task)
-            return new AdvanceResult(false, true, false, true, total.Elapsed.TotalMilliseconds, 0, 0, 0);
+            return new AdvanceResult(false, true, false, true, total.Elapsed.TotalMilliseconds, 0, 0, 0, 0);
 
-        return new AdvanceResult(false, false, true, false, total.Elapsed.TotalMilliseconds, 0, 0, 0);
+        return new AdvanceResult(false, false, true, false, total.Elapsed.TotalMilliseconds, 0, 0, 0, 0);
+    }
+
+    /// <summary>
+    /// One advance that RETURNS the captured snapshot (Phase 3b's chaining), throw-stopped.
+    /// </summary>
+    private static async Task<(string? Snapshot, string Note)> AdvanceCapturingAsync(string snapshot,
+        EAiProfile profile, int timeoutSeconds)
+    {
+        GameDataStore store = GameSaveSerializer.Load(snapshot);
+        var captured = new TaskCompletionSource<string>(TaskCreationOptions.RunContinuationsAsynchronously);
+        var watcher = new BoundaryWatcher(targetOccurrence: 2,
+            onBoundary: () => captured.TrySetResult(GameSaveSerializer.Save(store)), throwAfter: true);
+
+        var ended = new TaskCompletionSource<GameResult>(TaskCreationOptions.RunContinuationsAsynchronously);
+        BuildResumedServer(store, profile, watcher, ended);
+
+        Task finished = await Task.WhenAny(captured.Task, ended.Task,
+            Task.Delay(TimeSpan.FromSeconds(timeoutSeconds)));
+        if (finished == captured.Task) return (await captured.Task, "ok");
+        if (finished == ended.Task) return (null, $"game ended: {(await ended.Task).ToSummaryLine()}");
+        return (null, $"timed out after {timeoutSeconds}s");
+    }
+
+    /// <summary>Round number recorded in a snapshot's GameProgressData, for the chain trace.</summary>
+    private static string RoundOf(string snapshot)
+    {
+        try
+        {
+            GameDataStore store = GameSaveSerializer.Load(snapshot);
+            GameProgressData? progress = GameProgressUtilities.TryGetProgress(store);
+            return progress?.RoundCount.ToString() ?? "?";
+        }
+        catch { return "?"; }
     }
 
     /// <summary>
