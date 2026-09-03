@@ -47,6 +47,22 @@ about 1MB, so this is free):
 Faulted, disconnected and watchdog-killed games are **discarded entirely**, not labelled - a
 game that did not reach victory calculation has no ground truth.
 
+**Decision taken at this boundary (added 2026-09-03, sign-off item).** A row records the STATE
+before the decision; without also recording WHAT was then decided, the data supports a value net
+only, and a v2 policy head (or a behavior-cloning warm start for B's tree policy) would need a
+regeneration run. Three cheap fields, captured when the boundary's decision resolves and
+written with the row:
+
+| Field | Meaning |
+|---|---|
+| `chosen_unit` | index of the activated unit in the acting player's roster order (never a GUID) |
+| `chosen_action` | the Choose Action reply string (`ChooseActionStage` constants or a rule-offer name); empty if the activation backed out |
+| `chosen_macro` | the Tactician's winning macro-action label, or empty for non-planning profiles |
+
+Capturing `chosen_action` is trivially reliable once step 5a's typed `ChooseActionRequest`
+exists (the exporter wraps one request type instead of sniffing a prompt); until then the
+exporter keys on the same `"Choose Action"` instructions the AI resolvers do.
+
 ---
 
 ## 2. Global scalars (7)

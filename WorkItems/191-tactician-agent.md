@@ -23,6 +23,66 @@ campaigns re-base.)*
 
 ## Notes (newest first)
 
+**2026-09-03 (later, Fable) - STEP 2 CLOSED, SECOND PROFILING PASS: THE BENCHES WERE RUNNING
+DEBUG BINARIES (x1.8 FOR FREE), A SMALLER ALLOCATION-CHURN WIN, AND THE B1 PLAN REWRITTEN
+FROM B0'S NUMBERS.**
+
+**Step 2 close-out - the 3k 2v2 cells** (DOP 6, 900s watchdog, 100 games/cell, 0 timeouts in
+both cells; reports under `FdgLab/reports/step2-baseline-2026-09-03/shape-2v2-3k__*`):
+Tactician vs solo 96.5% (Saurian+Goblin vs Cults+DE) and **79.0%** (Battle+Knight vs Robot+Titan,
+70/12/18 - the weakest cell of the whole baseline, 18 ties); mirror 49.5% / 40.5% (hashes
+`C4817F42DD71E720` / `7E8077ED6FD1B6C2`). Per-game wall mean 45s, p95 93s, decisions/game 769,
+decision mean 44.5ms. The earlier 97/100 "timeouts" were the 120s watchdog, not the engine - at
+900s there are none. Step 2 is complete: vs-solo panel means 1k 96.9 / 2k 92.6 / 3k 92.8 / 4k
+97.8 / 2v2-2k 91.3 / 2v2-3k 87.8. The Battle+Knight cell is the one to read first when B's gate
+asks "where is A weakest" (G2).
+
+**Finding 1 - every lab run to date used the Debug build.** `dotnet run --no-build` defaults to
+Debug; `FdgLab/bin/Release` was dated Aug 6. Rebuilt Release and re-ran the DOP-1 six-game
+neutrality cell: outcome hash IDENTICAL (`72C6968E75359448`), total wall 23.7 -> 12.9s, per-game
+mean 3936 -> 2136ms, **decision mean 11.04 -> 5.58ms (-49%)**. Recorded as an operating rule in
+the campaign doc section 6; step 4's driver and every bench from now on run
+`./FdgLab/bin/Release/net8.0/FdgLab` directly. Historical PERFORMANCE lines in bench reports
+before today are Debug numbers and not comparable; hashes are unaffected.
+
+**Finding 2 - the profile, second look (Release binary, sample profiler, single 2k mirror).**
+Non-idle CPU was 17.7% of samples (the rest is the single game's bus/await hops - filled by other
+games at DOP > 1, so not a throughput loss). Inclusive: `TacticianPlanner.Score` 28%,
+`RuleEvaluator.Collect*` 21% (of which `DedupState.ShouldFire` 14.6%), `MacroActionGenerator.
+Enumerate` 17%, `CombatMath.EstimateVolley` 16%, `MovementPlanner.PlanMoveAlongRoute` 13%.
+Exclusive leaves: `HashSet<(UnitID, ResolvedRule)>.Resize` 19%, `List.set_Capacity` 10.7%,
+`TokenContainer.HasToken` 6.0%, JSON request round-trip ~7% (`RequestDecision` ->
+`ResolveRequestAsJson_Typed`). Geometry is gone from the top (`PointToSegmentDistanceSquared`
+0.06%) - the AABB fix did what it said.
+
+Fix (engine, this commit): `RuleEvaluator.DedupState` is now rented from a per-thread pool
+(`Rent`/`Return`, `Clear()` between uses, capped at 8, Stack so nested evaluations rent a second
+one; per-thread because the render thread's read-only queries run concurrently with the engine
+thread - #328's shape); `CollectFromRules` reuses one `produced` scratch list per walk instead of
+one per firing entry; `TokenContainer.HasToken`/`GetAllTokens(type)` lose their LINQ closures;
+`HeroStatRules.LivingModels` is a pre-sized loop. **Measured honestly, the sampler over-sold it:**
+smoke seed 4242 A/B (best of two each, Release): Choose Action mean 32.8 -> 30.4ms (-7%), whole-
+game decision mean on the DOP-1 cell 5.58 -> 5.47ms (-2%); same game outcome, same hash. Kept
+because it is a clean allocation removal with zero semantic change, not because it is large. The
+sampler's exclusive attribution to `Resize` evidently absorbs allocation/GC time that the pool
+does not eliminate. Lesson for G6: a sample profile ranks CAUSES well and sizes them badly -
+A/B every fix with the timing breakdown before claiming a number.
+
+Left on the table, recorded: the JSON round-trip for local AI players (~7%) - noted in step 5c as
+"bypass the bus inside a simulation" (the search answers prescribed requests via the typed
+registry path, never the wire); `AllWeapons` / `GetTotalMoveDistances` /
+`ValidateCoherencyNotWorsened` list growth (~1.5-1.8% each); `AircraftRules.IsAircraft` string
+scans inside `CanSeizeObjectives`. None is worth a third pass before B1 exists.
+
+**Plan changes (campaign doc):** Step 5 rewritten from B0's numbers - 5a typed
+`ChooseActionRequest` carrying the activating unit ID (Chris, 2026-09-03; the recorded follow-up
+in `TacticianActionResolver`'s doc comment, same precedent as `ChooseAbilityEffectRequest`),
+5b policy-side prescription seam with B0's failing control test as the pin, 5c pause/step hook
+targeting ~20ms/simulated activation; `Rollout(...)` removed from the API; depth is a parameter.
+Step 7 is now static leaf evaluation on the C1 encoder vector (B and C share one code path).
+C1 schema gains a sign-off item: `chosen_unit` / `chosen_action` / `chosen_macro` per row, so
+the data supports a policy head without a regeneration run.
+
 **2026-09-03 - STEP 3 (c) PROFILING: THE PHASE B FIDELITY TRADE IS UNNECESSARY, AND A 10-LINE
 GEOMETRY FIX TOOK 32% OFF EVERY TACTICIAN DECISION.** Chris approved (c) "regardless and first",
 and asked what (a)/(b) would cost long-term. The measurements answered both questions.

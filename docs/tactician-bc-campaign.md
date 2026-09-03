@@ -124,13 +124,13 @@ Each step: goal, deliverables, verify, model/effort, box usage. "Ledger" = dated
 - Verify: 2v2 seeded game deterministic and hash-reproducible; a 4-slot FFA smoke exits with a
   `GameResult`; panel report renders. Ledger.
 
-### Step 2 - A generalization baseline (Sonnet / low; box: a few hours)
+### Step 2 - A generalization baseline (Sonnet / low; box: a few hours) - DONE 2026-09-03
 Run every panel in section 5 with Tactician-vs-SoloRules and Tactician mirrors at 100 games/cell.
 This is the number B must not regress and the first evidence of where A's 2k weights drift.
 Read 2 logs per panel (G2). Ledger with the full table. **Do not tune weights on this** - that is
 a separate decision for Chris.
 
-### Step 3 - B0 spike (measurement: Sonnet / high; read-out + B1 design: Fable / high; ~1 burst + soak)
+### Step 3 - B0 spike (measurement: Sonnet / high; read-out + B1 design: Fable / high; ~1 burst + soak) - DONE 2026-09-03 (design folded into step 5)
 Per plan sec. 9 B0, on 2k AND 4k mid-game states (clone cost scales with unit count):
 - `GameSaveSerializer.Save/Load` round-trip time and size.
 - In-process resumed server from a snapshot (the `ScenarioLauncher.BuildResume` pattern) playing
@@ -164,11 +164,60 @@ Opus review before the first long run.
   counts, label balance sane, no feature outside its expected range, held-out cells absent,
   reproducible under a fixed seed. Ledger. Then launch and leave running.
 
-### Step 5 - B1 SimulationService (Opus / high; ~2 bursts)
-Engine `Ai/Tactician/Simulation/`: `Snapshot`, `Advance(snapshot, compositeDecision)`,
-`Rollout(snapshot, policy, toEnd)`, per-simulation seeded RNG, probabilistic dice with sampled
-decisive rolls. Built on B0's findings and the hook if it exists. Verify: unit tests on authored
-states (2k and 4k), a 1k-simulation leak soak, determinism under seed. Ledger.
+### Step 5 - B1 SimulationService (5a: Sonnet / medium; 5b-5c: Opus / high; ~2-3 bursts)
+*Revised 2026-09-03 (Fable) from B0's numbers - see the ledger's "B0 cost numbers" and "step 3(c)"
+entries. The original sketch's `Rollout(snapshot, policy, toEnd)` is gone: a rollout to game end
+measured 12s at 4k, 14x a node expansion. Leaves are evaluated, not rolled out (step 7).*
+
+Three commits, in this order, each hash-verified (DOP-1 six-game cell, hash `72C6968E75359448`
+on the current engine; a changed hash is a stop, not a note):
+
+- **5a - `ChooseActionRequest` becomes its own request type** (Chris, 2026-09-03; the follow-up
+  `TacticianActionResolver`'s doc comment already records, with `ChooseAbilityEffectRequest` and
+  `ChooseSpellRequest` as the precedent). It carries what the string request cannot: the
+  **activating unit's ID**, plus the existing option/invalid-option/description/cancel payload.
+  Reply stays a `string` (the option vocabulary is already `ChooseActionStage`'s named
+  constants plus rule-offer names), so every existing resolver ports by changing its request
+  type; a learned policy maps options to indices at the encoder, not on the wire. Deletes the
+  `Instructions == "Choose Action"` sniff in `AiStringSelectionResolver`,
+  `TacticianActionResolver` and `GunlineResolvers`; adds a CLI resolver and a GUI resolver
+  (the GUI one reuses `ActionMenuLayout`/`GuiStringSelectionResolver`'s rendering). Both
+  `ResolverRegistryFactory` sets, `AiProfileFactory`, and the tests that build a
+  `"Choose Action"` StringSelectionRequest by hand move with it. Mechanical, so Sonnet; it is
+  first because 5b's seam is built on the typed request. **The GUI half cannot be hand-verified
+  during the window** - it is the top "awaiting GUI hand-verify" ledger item for Chris's return
+  (FdgRaylib.Tests + headless smoke cover it until then).
+- **5b - prescription seam, policy-side.** B0's control test is the spec: injecting the option
+  the planner would pick anyway reproduces natural play byte-identically under SoloRules but
+  NOT under Tactician, because `TacticianActionResolver.Resolve` runs `_planner.BeginActivation`
+  as a side effect. So prescription goes THROUGH the planner - `TacticianPlanner.Prescribe(unit,
+  action, macroAction)` sets the activation plan the way `ChooseAction` would have, and the
+  downstream resolvers (movement path, target, wounds, consolidation - under 2% of policy time
+  combined) play it out unchanged. The failing B0 control test becomes the pin: prescribe what
+  the planner chooses -> identical game. Prescribing the activation choice
+  (`ChooseUnitToActivateRequest`) is the same seam one level up.
+- **5c - pause/step hook (D10a, pre-authorized)** at `DeterminePlayerTurnStage.Enter`, the
+  activation boundary B0 snapshots at. B0's node cost is 223ms at 2k, of which policy thinking
+  is 165ms (removed by 5b, since a simulated activation's action and unit are read off the tree
+  edge) and load+save is 54ms. The hook removes most of the 54ms: a simulated LINE runs
+  consecutive activations in one game instance, pausing at each boundary for the next
+  prescription, and snapshots only where the tree branches. Target: **~20ms per simulated
+  activation at 2k**, which is what makes multi-ply search affordable (B0's read-out). Stop
+  is the proven throw-stop (30/30, zero heap growth over 400 sims at 4k); ABANDON is not used.
+  **Bypass the bus inside a simulation.** A local AI player's request still round-trips through
+  Newtonsoft (`RequestMessageSender.RequestDecision` -> bus -> `ResolveRequestAsJson_Typed`),
+  about 7% of a Tactician game's CPU in the 2026-09-03 Release profile. The simulation's
+  prescribed decisions never need the wire: answer them through the registry's typed
+  `ResolveRequest<TRequest, TReply>` path (or directly from the tree edge) and leave the JSON path
+  to real networked players. Hash-verify like everything else.
+
+`SimulationService` API: `Snapshot(game)`, `Advance(snapshot, prescription) -> snapshot`,
+`Run(snapshot, prescriptions[]) -> snapshot` (the 5c line), per-simulation seeded RNG,
+probabilistic dice with sampled decisive rolls (the dice memory's threshold-shift invariant).
+**Search depth is a parameter from day one, never hard-coded at 1** - if 5c's number
+disappoints, B ships shallow and deepens later without a rewrite. Verify: unit tests on authored
+states (2k and 4k), a 1k-simulation leak soak, determinism under seed, node cost re-measured
+with `fdglab b0` and recorded against B0's table. Ledger.
 
 ### Step 6 - B2 composite action space + multiplayer backup (design: Fable / high, one turn; build: Sonnet / medium)
 - Node = activation boundary; edge = (unit, action, macro-action, primary target) from
@@ -179,11 +228,17 @@ states (2k and 4k), a 1k-simulation leak soak, determinism under seed. Ledger.
   a hard cap set by Chris for GUI play (plan: 5-10s vs humans, 1-2s in benches).
 - Verify: generator-level tests for candidate counts at 1k/4k; multiplayer backup pins. Ledger.
 
-### Step 7 - B3 rollouts (Sonnet / medium; ~1 burst)
-A-greedy both sides to game end; reward win 1 / tie 0.5 / loss 0 + small objective-differential
-shaping (lambda ~0.1, normalized by objective count so 1k and 4k boards shape alike); several
-rollouts per leaf. Verify: rollout distributions on authored states; no reward-hacking signature
-in 20 read logs (G2). Ledger.
+### Step 7 - B3 leaf evaluation (Sonnet / medium; ~1 burst)
+*Revised 2026-09-03 (Fable): rollouts are dead as a leaf estimate (B0: 12s at 4k, 49x a 2k node
+expansion). A leaf is evaluated statically.*
+The evaluator's INPUT is the C1 `PositionEncoder` vector from step 4 (per-side, scale-free,
+`docs/tactician-c1-schema.md`), so B and C share one code path: in B the leaf value is a
+hand-weighted function of that vector (a per-side value in [0,1] - win-probability shaped, with
+objective share dominant, then value share, then threat coverage); in C3 the weights become a
+net and nothing else in the search changes. Reward vector per side (G13c), tie = 0.5 for both.
+Verify: evaluator monotonicity tests on authored states (losing a unit lowers own value, seizing
+an objective raises it, identical for 1v1 and the reduced 2v2); no reward-hacking signature in 20
+read logs (G2); encoder cost stays under its 5ms budget at every leaf. Ledger.
 
 ### Step 8 - B4 UCT (Opus / high; ~1-2 bursts)
 Time-budgeted UCT, root parallelism across cores, deterministic under a fixed seed, no
@@ -291,6 +346,11 @@ and never re-run the full set for a change that a 100-game cell can arbitrate.
 
 ## 6. Operating rules for the unattended window (2026-09-04 to 2026-09-07)
 
+- **Every lab run uses the Release build**: `dotnet build FdgLab/FdgLab.csproj -c Release` and
+  run `./FdgLab/bin/Release/net8.0/FdgLab ...` directly. Measured 2026-09-03: outcome hash
+  identical to Debug (`72C6968E75359448`), decision mean 11.0 -> 5.6ms, games/s x1.8. Every
+  bench before that date ran the Debug binary (`dotnet run --no-build` defaults to it), so
+  their PERFORMANCE lines are not comparable to Release numbers; their outcome hashes are.
 - Data generation runs at DOP 12 (leaves 4 threads for builds/tests); benches and soaks take the
   whole box - touch the pause file first, remove it after.
 - Every burst ends with a job running or queued (section 0.4) and a one-line "running: X, ETA Y".
