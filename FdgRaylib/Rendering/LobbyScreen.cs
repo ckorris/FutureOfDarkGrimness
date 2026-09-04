@@ -333,6 +333,9 @@ public class LobbyScreen : IAppScreen
                     if (UiButton.NavigateSmall($"Tactician##{i}"))
                         _viewModel.SetSavedSlotPlayerType(info.PlayerID, EPlayerType.AI, EAiProfile.Tactician);
                     ImGui.SameLine();
+                    if (UiButton.NavigateSmall($"Strategist##{i}"))
+                        _viewModel.SetSavedSlotPlayerType(info.PlayerID, EPlayerType.AI, EAiProfile.Strategist);
+                    ImGui.SameLine();
                     if (UiButton.NavigateSmall($"DerpBot##{i}"))
                         _viewModel.SetSavedSlotPlayerType(info.PlayerID, EPlayerType.AI, EAiProfile.SoloRules);
                     ImGui.EndDisabled();
@@ -379,8 +382,12 @@ public class LobbyScreen : IAppScreen
             if (UiButton.Navigate("Add Local Player"))
                 _viewModel.AddLocalPlayer();
             ImGui.SameLine();
-            // #191 A6: two bot flavors - the Tactician (challenge AI) and the legacy
-            // solo-rules bot, rechristened DerpBot (Chris's naming).
+            // #191 A6/B5: three bot flavors, one per ladder rung - the Strategist (searches ahead),
+            // the Tactician (challenge AI, one ply), and the legacy solo-rules bot, rechristened
+            // DerpBot (Chris's naming). Every rung stays selectable forever (plan G4).
+            if (UiButton.Navigate("Add Strategist Bot"))
+                _viewModel.AddAiPlayer(EAiProfile.Strategist);
+            ImGui.SameLine();
             if (UiButton.Navigate("Add Tactician Bot"))
                 _viewModel.AddAiPlayer(EAiProfile.Tactician);
             ImGui.SameLine();

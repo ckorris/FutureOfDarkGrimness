@@ -23,6 +23,74 @@ campaigns re-base.)*
 
 ## Notes (newest first)
 
+**2026-09-03 (night, Opus 5 - Chris said to carry on rather than switch to the doc's Sonnet for
+this step, so no re-prompt inside it) - STEP 9 (B5) DONE: THE SEARCH NOW DRIVES REAL GAMES. THE
+BOT IS "STRATEGIST BOT" AND IT IS IN THE LOBBY.** Everything from B1 to B4 was machinery; this is
+the commit where it becomes a bot a person can pick and play against.
+
+- **`StrategistActivationResolver`** (`Ai/Tactician/Search/`): at each `ChooseUnitToActivateRequest`
+  it serializes the LIVE position (the engine's rolling save point has just written the flow state,
+  so that boundary IS the search root), runs `UctSearch`, and `Prescribe`s the winning root edge -
+  then hands the request to the ordinary `TacticianActivationResolver`, which consumes it. It never
+  answers the request itself. One `Prescribe` covers the whole activation: the unit half is taken
+  here, the action and macro halves survive `BeginActivation` and are consumed at Choose Action.
+- **The seam needed no new engine surface** beyond `ITableState.DataStore`: 5b built the
+  prescription path, B2 built `SimulationService.Rebind` for the foreign-store problem, and B5 is
+  those two called from a resolver instead of from a simulated line. The unit is matched by
+  `DataReference` and the macro rebound onto the live store - skipping that is the silent
+  corruption B2 hit.
+- **One switch between the rungs:** `TacticianOptions.Search`. Null is plain A and stays plain A;
+  set, the activation resolver is wrapped. Both rungs stay benchmarkable forever (G4), and the
+  file's own comment had predicted this field ("search time budgets in Phase B").
+- **Search never runs inside search.** `SimulationService` maps a Strategist in-sim profile down to
+  Tactician - a Strategist opponent model would root a new tree at every boundary of every line of
+  the tree above it, which is unbounded recursion, not a deeper search. It is also the honest
+  opponent model: the search assumes the other side plays A, and now says so in code.
+- **G3 is absolute.** Every failure path - no serializable store, a faulted root probe, an
+  exception from anywhere in the tree - clears the prescription, counts a fallback, and lets the A
+  policy answer. A real game has nowhere to put a fault. Pinned by a test that hands the resolver a
+  non-resumable store and asserts the game continues, the fallback is counted, and NO prescription
+  is left behind to poison the next activation.
+
+**Lobby:** "Add Strategist Bot" button plus a per-slot "Strategist" re-crew entry
+(`LobbyScreen.cs`), and `LobbyViewModel_Host.AddAiPlayer` now maps profile -> product name through
+a switch rather than a Tactician/else ternary. Gunline stays lab-only and unnamed, as specified.
+
+**Lab:** `--profile-a strategist` already parsed (`Enum.TryParse`). Two things did NOT come for
+free and are the step's real lab findings:
+1. **The watchdog.** There is NO per-request watchdog anywhere in the engine - the only timeout in
+   the whole codebase is the lobby greeting. The campaign doc's "watchdog raised for search
+   profiles" is therefore FdgLab's per-game one, and 120s would have killed every game in a cell
+   and reported it as a fault. `bench` now defaults to **900s when either profile is strategist**;
+   an explicit `--timeout` still wins.
+2. **The lab budget.** `GameRunner` passes `UctOptions.Benchmark` (1-2s/activation) instead of the
+   5-10s a human gets, or a 100-game cell would take a day - but keeps **Workers=4, matching lobby
+   play**, because root parallelism is an ensemble over determinizations and changing it would
+   benchmark a different bot than the one that ships. Games run concurrently on top of that, so
+   bench `--dop` x 4 must stay at or under the core count.
+
+**Verification:** **hash `8D6EFA0AF0B4019E` unchanged** - and the exact command is finally RECORDED
+rather than guessed (the gap flagged to Chris at step 4):
+`fdglab bench --a builtin-basic --b builtin-basic --games 6 --dop 1 --profile-a tactician
+--profile-b tactician`, Release. (`builtin` rather than `builtin-basic` gives `7D7A6C2FCDAAE9FA` -
+that is what the ambiguity was worth.) Engine suite **3216/3217** (1 skipped by design, +4 new),
+full solution build green. **End-to-end:** a real Release game, `--profile-a strategist
+--profile-b tactician`, completed with no fault - 3 rounds, 62 decisions, p95 1262ms (the search
+budget, visible in the tail), wall 9.0s. It LOST that game 0-3, which at one game and a 2-unit
+army is noise, not a signal.
+
+**Deferred, said out loud (not silently cut):** the G3 fallback count is exposed on the resolver
+and narrated through the decision log, but nothing AGGREGATES it per game or per cell yet. That
+belongs with step 10's bench, where the fallback rate is a gate input rather than a curiosity.
+
+**Still open from step 8, unchanged:** the intermittent root-probe fault. It is now the single
+thing most worth sizing, because B5 is where it costs something real - every occurrence is an
+activation played by A instead of by search.
+
+**Next:** step 10 (B-gate). The overnight run is the step-9 smoke pair (2k 1v1, 3k 2v2), which is
+also the first honest B-vs-A number anyone has seen.
+
+
 **2026-09-03 (night, Opus 5) - OVERNIGHT WINDOW REOPENED: DATA GEN AT DOP 20, PHASE 4c SOAK
 RUNNING, AND THE LOBBY NAME FOR B IS DECIDED.** Machine came back after the OS swap. No engine
 change in this entry - lab harness and docs only, so the DOP-1 hash needs no re-verification.
@@ -63,11 +131,34 @@ inside themselves, so they are contention-sensitive; record this so the next ses
 re-discover it as a regression. **Verification for this entry:** full `dotnet build` green,
 engine suite 3212/3213 green.
 
-**IN FLIGHT at the time of writing:** phase 4c, 500 searches x 20 iterations x 4 workers. At 50/500
-it read heap 456MiB (**after GC 112MiB**, from a 56MiB baseline), RSS 1146MiB (from 952MiB), 85
-threads, 138s elapsed - i.e. ~23 min for the full run. Numbers are NOT a result until the run
-finishes; the next entry carries the verdict on (a) leak across searches, (b) 5c's +255MiB RSS
-growth, and (c) deferred decision 4 (snapshot-per-child vs branch-point-only storage).
+**PHASE 4c, ATTEMPT 2: STILL NOT A COMPLETE RUN - THE PROCESS SEGFAULTED IN THE .NET SERVER GC AT
+~300/500.** Not an application exception; the kernel log has it:
+`.NET Server GC[5503]: segfault at 71a91c79c128 ... in libcoreclr.so`, one occurrence, on a box
+also running 20-way self-play (both processes use `<ServerGarbageCollection>true</ServerGarbageCollection>`,
+so 32 GC heaps each). No OOM - RSS was FALLING when it died. Cause not diagnosed; do not guess.
+
+**What the 300 searches that did run say - and it is worth having:**
+
+| sample | heap | after GC | RSS | threads |
+|---|---|---|---|---|
+| start | 56MiB | - | 952MiB | - |
+| 50 | 456MiB | **112MiB** | 1146MiB | 85 |
+| 100 | 164MiB | **113MiB** | 1067MiB | 86 |
+| 150 | 396MiB | **113MiB** | 930MiB | 86 |
+| 200 | 266MiB | **113MiB** | 880MiB | 85 |
+| 250 | 444MiB | **113MiB** | 843MiB | 86 |
+| 300 | 258MiB | **113MiB** | 739MiB | 85 |
+
+- **(a) No leak signal across 300 searches.** Post-GC heap is DEAD FLAT at 112-113MiB from sample 1
+  to sample 6 - the rule 5c set. Trees are dropped whole; nothing accumulates.
+- **(b) 5c's +255MiB RSS growth does not reproduce on this primitive - RSS went DOWN**, 1146 ->
+  739MiB, i.e. the runtime handing memory back as the process settles. The 5c flag is not confirmed
+  here; it is also not refuted for 5c's own primitive.
+- **(c) Deferred decision 4 (snapshot-per-child vs branch-point-only) stays OPEN** on purpose: a
+  flat heap over 300 searches says snapshot-per-child is not leaking, not that it is the right
+  storage at B5 depth. Nothing about it needs to change to ship B5.
+- **Still owed:** a clean 500, and an answer on the segfault. Both are cheap to retry; neither
+  blocks step 9, which is why step 9 went ahead.
 
 
 **2026-09-03 (night, Fable) - STEP 8 (B4) BUILT: TIME-BUDGETED UCT WITH ROOT PARALLELISM. THE

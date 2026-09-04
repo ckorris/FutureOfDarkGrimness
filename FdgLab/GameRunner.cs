@@ -114,5 +114,16 @@ public static class GameRunner
     private static FDG.StageResolution.IStageResolverRegistry BuildRegistry(
         EAiProfile profile, FDGGame_AsLocal aiGame, PlayerID playerID, int seed, int slotID,
         Action<string>? decisionLog) =>
-        AiProfileFactory.BuildRegistry(profile, aiGame.TableState, playerID, seed, slotID, decisionLog);
+        AiProfileFactory.BuildRegistry(profile, aiGame.TableState, playerID, seed, slotID, decisionLog,
+            searchBudget: LabSearchBudget);
+
+    /// <summary>
+    /// #191 B5: what a Strategist plays under in the lab - the plan's benchmark budget (1-2s per
+    /// activation) rather than the 5-10s it gets against a human, or a 100-game cell would take a
+    /// day. Worker count deliberately MATCHES lobby play (4): root parallelism is an ensemble over
+    /// determinizations, so changing it would benchmark a different bot than the one that ships.
+    /// Games run concurrently on top of this, so keep bench --dop x 4 at or under the core count.
+    /// </summary>
+    public static FDG.Ai.Tactician.Search.UctOptions LabSearchBudget =>
+        FDG.Ai.Tactician.Search.UctOptions.Benchmark with { Workers = 4 };
 }

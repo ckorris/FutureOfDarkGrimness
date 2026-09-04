@@ -262,7 +262,7 @@ Time-budgeted UCT, root parallelism across cores, deterministic under a fixed se
 transposition table. Verify: seeded search reproducible; node-expansion cost matches B0's table;
 500-game memory soak stable (box: hours). Ledger.
 
-### Step 9 - B5 integration (Sonnet / medium; ~1 burst)
+### Step 9 - B5 integration (Sonnet / medium; ~1 burst) - **DONE 2026-09-03**
 Search drives activation choice, action, movement, shooting target; minor requests stay
 A-heuristic; feature flag / profile name so A-greedy and B-search are both benchmarkable (G4).
 Watchdog raised for search profiles. G3 fallback to A-greedy on any search failure, logged and

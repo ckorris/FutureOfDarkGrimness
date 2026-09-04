@@ -25,3 +25,6 @@ tools/list-server/reports/
 # #191 step 4: self-play generation output - regenerable data, not source (tens of GB over
 # the campaign's generation window).
 FdgLab/data/
+
+# B+C campaign: transient cooperative-pause control file (docs/tactician-bc-campaign.md sec 6)
+FdgLab/.pause

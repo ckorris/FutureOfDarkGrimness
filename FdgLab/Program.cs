@@ -34,7 +34,8 @@ static int Usage()
                   [--games N]        total games per matchup (default 200; played as N/2 seeds x 2 sides)
                   [--seed-base S]    first seed (default 1000)
                   [--dop D]          concurrent games (default: min(16, cores))
-                  [--timeout T]      per-game watchdog seconds (default 120)
+                  [--timeout T]      per-game watchdog seconds (default 120; 900 when either
+                                     profile is 'strategist' - a search spends 1-2s per activation)
                   [--dice realistic|probabilistic]   (default realistic)
                   [--out DIR]        report directory (default FdgLab/reports)
                   [--dump-logs DIR]  write each game's full log (stable filenames - diff two runs
@@ -128,7 +129,7 @@ static async Task<int> RunBench(string[] args)
         GamesPerMatchup: IntArg(args, "--games", 200),
         SeedBase: IntArg(args, "--seed-base", 1000),
         DegreeOfParallelism: IntArg(args, "--dop", Math.Min(16, Environment.ProcessorCount)),
-        WatchdogSeconds: IntArg(args, "--timeout", 120),
+        WatchdogSeconds: IntArg(args, "--timeout", DefaultWatchdogSeconds(benchProfileA, benchProfileB)),
         Randomness: Arg(args, "--dice") == "probabilistic" ? ERandomnessType.Probabilistic : ERandomnessType.Realistic,
         OutDir: Arg(args, "--out") ?? Path.Combine("FdgLab", "reports"),
         ProfileA: benchProfileA,
@@ -301,6 +302,14 @@ static int IntArg(string[] args, string name, int fallback) =>
     int.TryParse(Arg(args, name), out int value) ? value : fallback;
 
 // "solorules" / "tactician" (any case) -> profile; absent -> SoloRules; anything else -> usage error.
+/// <summary>
+/// #191 B5: the per-game watchdog. A search profile spends 1-2s of wall clock on EVERY activation,
+/// so a 2k game of ~100 activations is minutes, not seconds, and the 120s default would kill every
+/// game in the cell and report it as a fault. An explicit --timeout still wins.
+/// </summary>
+static int DefaultWatchdogSeconds(params FDG.Ai.EAiProfile[] profiles) =>
+    profiles.Any(p => p == FDG.Ai.EAiProfile.Strategist) ? 900 : 120;
+
 static bool TryProfileArg(string[] args, string name, out FDG.Ai.EAiProfile profile)
 {
     string? raw = Arg(args, name);
