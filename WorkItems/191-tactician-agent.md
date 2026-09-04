@@ -23,6 +23,41 @@ campaigns re-base.)*
 
 ## Notes (newest first)
 
+**2026-09-03 (night, Fable) - STEP 6 DESIGN TURN: B2 SPECIFIED IN `docs/tactician-b2-design.md`.**
+Chris switched to Fable/high for the design half of step 6 (build is Sonnet/medium). One turn, no
+code. The spec's decisions, each with its reason in the doc:
+
+- **Node** = the 5c boundary (acting player known); acting side/player read from the snapshot's
+  `GameProgressData`, never inferred from the parent (reactivations and P19 break alternation).
+- **Edge enumerated in two levels, lazily** - unit (prior: `TacticianActivationResolver.Urgency`,
+  cheap) then macro-action (prior: `TacticianPlanner.Score` on a scratch planner, the expensive
+  one, paid once per (node, unit)). Both levels belong to the acting player so the tree backs up
+  as one edge. Reason: a flat 4k edge set is ~320 x 165ms per node; two-level makes B's cost "A's
+  cost plus lines", and B with one expansion IS A (a pin, test 4).
+- **Edge vocabulary is the planner's own** `ActionNameFor` mapping (made internal), so search can
+  never prescribe an action the planner would not name.
+- **Honored-prescription flag (new engine requirement):** 5b's G3 fall-through silently turns an
+  unoffered edge into A's natural move; `SimulationResult` must report per boundary whether the
+  prescription was consumed, and a fell-through edge is closed, never credited.
+- **Callback line** (`Run(snapshot, ILineDriver)`, 5c's note 1) so the leaf is evaluated LIVE at
+  the terminal boundary before the line's one Save - no serialization for evaluation.
+- **Progressive widening at both levels**, k(N) = ceil(2 * N^0.5); constants are options, tuned at B4.
+- **Dice: determinization at v1** (an edge's first sim fixes its child), bias controlled by B4's
+  root-parallel ensemble with per-worker seeds; chance nodes recorded as the upgrade, with the
+  charge-vs-shoot probe as the evidence that would trigger it.
+- **`SideValues` indexed by team, max^n backup**, selection reads the acting side's own component;
+  two-side evaluators must satisfy v[other] = 1 - v[self] so 1v1 reduces to minimax (pinned against
+  a scalar negamax, test 5). `IPositionEvaluator` seam ships with terminal-only and objective-share
+  placeholders; B3 fills it.
+- **Memory:** snapshot per created child at v1 (0.4-0.64 MB each); branch-point-only re-run
+  storage recorded as B4's fallback, legal because of the determinism pin.
+- Deferred, recorded: shooting-target prescription (B5), chance nodes, transposition table (still
+  no), in-sim policy and continuation depth and widening constants (B4 on the benchmark).
+
+Verification list is nine items (doc sec 8), including the fully-prescribed line cost 5c could not
+measure. Next: the build (Sonnet/medium per the doc; the protocol forbids a second model prompt
+inside one step, so it proceeds on whatever model the session has, noted in the build's entry).
+
 **2026-09-03 (night, later still) - STEP 5c BUILT: THE PAUSE/STEP HOOK, THE BUS BYPASS AND
 `SimulationService`. A LINE IS 5-8x CHEAPER PER ACTIVATION THAN A CLONE, AND THE ~20ms TARGET IS
 MET WITH A CHEAP IN-SIM POLICY - ON A BOX THAT WAS BUSY GENERATING DATA AT THE TIME.** Chris
