@@ -17,6 +17,7 @@ When closing an item: write the Outcome in its detail file, tick the line, and m
 
 ## Movement
 
+- [ ] 393 — **HIGH PRIORITY (Chris, 2026-09-04):** Random Army is a silent no-op for humans AND bots outside a dist build - the catalog scans an `armies/` folder beside the executable that build trees (VS F5, `dotnet run`) never get. Fix the path + say so in the lobby. ([WorkItems/393](WorkItems/393-random-army-silent-outside-dist.md))
 - [~] 366 — Snake (#256 S4) piled every rank that overran the arc onto one route point, so a big unit ended
   with its own models stacked and its front rank dragged backwards; no validator forbade a same-unit
   end-overlap. Snake re-shaped, `ValidateNoSelfOverlap` added, snake value gate raised. Implemented +

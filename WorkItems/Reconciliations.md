@@ -685,3 +685,5 @@ A per-clone pre-push hook blocks duplicate numbers across the index and the arch
 > **2026-08-30 - number 388 filed clean.** `git fetch origin` before filing: `origin/master`'s index
 > high-water mark 387, archive max 372, and the local copy matches on both. **388 = human slots get a
 > starter army** (extends #372 past the bots). No collision.
+
+> **2026-09-04 - number 393 filed clean.** `git fetch origin` before filing: `origin/master`'s index high-water mark 391, archive max 392, detail files max 392 on every remote branch; local `tactician-bc` matches. **393 = Random Army silent outside a dist build.** No collision.
