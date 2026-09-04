@@ -252,7 +252,12 @@ Verify: evaluator monotonicity tests on authored states (losing a unit lowers ow
 an objective raises it, identical for 1v1 and the reduced 2v2); no reward-hacking signature in 20
 read logs (G2); encoder cost stays under its 5ms budget at every leaf. Ledger.
 
-### Step 8 - B4 UCT (Opus / high; ~1-2 bursts)
+### Step 8 - B4 UCT (Opus / high; ~1-2 bursts) - BUILT 2026-09-03, one verification outstanding
+*`UctSearch`: PUCT on the acting side's own component, root parallelism as a determinization
+ensemble, exact determinism under (seed, workers, iterations). Widening C retuned 2.0 -> 0.5 on
+measurement (depth 1 -> 5 at benchmark budget, and the closed-edge waste went 16 -> 0). The
+500-search memory soak did NOT run (machine shutdown) and is the first thing to finish - see the
+ledger's 2026-09-03 B4 entry.*
 Time-budgeted UCT, root parallelism across cores, deterministic under a fixed seed, no
 transposition table. Verify: seeded search reproducible; node-expansion cost matches B0's table;
 500-game memory soak stable (box: hours). Ledger.

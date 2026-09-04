@@ -23,6 +23,106 @@ campaigns re-base.)*
 
 ## Notes (newest first)
 
+**2026-09-03 (night, Fable) - STEP 8 (B4) BUILT: TIME-BUDGETED UCT WITH ROOT PARALLELISM. THE
+WIDENING CONSTANT WAS THE WHOLE BALLGAME - C=2.0 SEARCHED ONE PLY DEEP AND THREW AWAY 44% OF ITS
+SIMULATIONS; C=0.5 REACHES DEPTH 5 WITH ZERO WASTE AND IS 30% CHEAPER PER ITERATION. THE 500-SEARCH
+MEMORY SOAK IS NOT DONE - IT IS THE TOP OUTSTANDING ITEM.** Chris switched the session to Opus (the
+model step 8 calls for) and said to continue once B3 landed; the build then ran on Fable. Cut short
+by a machine shutdown, so this entry is written before the commit per campaign doc sec 6.
+
+- **`UctSearch`** (`FutureOfDarkGrimness/Ai/Tactician/Search/UctSearch.cs`): PUCT selection reading
+  exactly `SearchEdge.QFor(actingSide)` + `Prior` (design sec 7.4 - B4 knows nothing else about an
+  edge), progressive widening at both levels in prior order, root parallelism, and the merge. No
+  transposition table. `ExpansionScaffold` stays as B2's test-only walk.
+- **Determinism guarantee implemented: EXACT under (RootSeed, Workers, Iterations).** Worker trees
+  share no mutable state and the merge is a reduction in worker order, so thread scheduling cannot
+  leak in - pinned at 1 and 4 workers, asserting identical choice, identical per-edge visit
+  distribution AND an identical set of simulation seeds. A TIME budget is deliberately not
+  reproducible (the iteration count rides the box); no test uses one. `SearchTree` gained
+  `ProbeRootAsync`/`FromRoot` so N workers cost ONE probe, not N.
+- **Budget** scales with root branching within a hard cap, per the campaign doc: `BudgetMsFor(units)
+  = clamp(base + perUnit*units, base, cap)`, with `UctOptions.Benchmark` (1-2s) and
+  `UctOptions.Interactive` (5-10s) as the plan's two named presets.
+
+**Deferred decisions the design doc handed B4, and what decided each:**
+
+1. **Widening C: 2.0 -> 0.5 (alpha unchanged at 0.5).** Measured at 2k, 20 iterations, 1 worker:
+
+   | C | nodes | max depth | root edges opened | closed edges | ms/iteration (serial, warm) |
+   |---|---|---|---|---|---|
+   | 2.0 | 21 | 2 | 17 | **16** | 131 |
+   | 1.0 | 21 | 2 | 9 | - | - |
+   | **0.5** | 21 | **5** | 4 | **0** | **94** |
+
+   At an actual benchmark budget C=2.0 reached max depth **ONE** - no reply seen at all, which is
+   A's horizon with extra steps. The closed-edge collapse is the bigger finding: C=2.0 forces open
+   low-prior edges (unreachable charges, shoots with no target) whose prescriptions then fall
+   through at play, and **each discovery costs a full line** - 16 of 36 lines bought nothing. Narrow
+   widening opens only the top-prior edges, which are the ones the stage actually offers. So the
+   same knob bought depth, removed the waste and cut per-iteration cost together. Which C *plays*
+   best is a games question and belongs to the B-gate; this is the value that makes the search a
+   search.
+2. **In-sim policy: must stay Tactician; the SoloRules option is void.** Not a cost/bias trade at
+   all - a prescription is consumed BY THE PLANNER (5b's seam), and `AiProfileFactory` hands a
+   non-planning profile no planner, so under SoloRules *every* edge falls through and the search
+   has no tree. Pinned (`InSimSoloRules_ClosesEveryEdge_SoTheInSimPolicyMustPlan`) so nobody
+   re-opens the question by flipping the option and finding a silently empty search. 5c's "SoloRules
+   is 40% cheaper" saving is only reachable for CONTINUATION activations, and only via a
+   mixed-profile capability that does not exist - recorded, not built.
+3. **Continuation depth: stays 0** (child = the very next boundary). With 0 there are no natural
+   in-sim activations at all, which is what makes (2) total rather than partial. Tree shape vs
+   budget is a play-quality question -> B5/B-gate.
+4. **Snapshot memory strategy: UNDECIDED - the soak that decides it did not run (see below).**
+   Snapshot-per-child stands as design sec 5.3's v1 choice. Observed: 82MiB live heap after one
+   benchmark-budget 4-worker search of 59 nodes (~1.4MB/node).
+
+**Cost, honestly labelled.** Every number below was taken while the step-4 self-play generator was
+running at DOP 12 on the same box, so all are upper bounds; the serial arm is the most
+contention-sensitive. **A first pass reported 279-291ms/iteration serial and I nearly wrote it
+down - it was warm-up.** A 2-iteration warmup did not fix it (tiered JIT needs a full search to
+promote); a full-size warmup dropped it to 137ms, and the warm repeat to 94-131ms. Lesson for G6,
+the same one the 2026-09-03 profiling entry learned: measure the steady state, and re-measure when
+a number looks too good or too bad to be true.
+
+| Measurement (2k, Release, under load, C=0.5) | Value |
+|---|---|
+| leaf evaluator, both sides, real armies | **1.82ms** (B3 estimated 3.4-7.2ms - resolved BELOW its own estimate) |
+| 1 worker, warm | **94-99ms per iteration** |
+| 4 workers | **23.8ms per iteration wall** (4.2x) |
+| benchmark budget (1480ms, 4 root units, 4 workers) | 55 iterations, 59 nodes, **max depth 5**, 1630ms wall |
+
+Against B0's decision table that is the **30-200ms band: "MCTS with small node counts, leaning on
+the evaluator"** - which is exactly the shape B3 was built for. Consistent with 3f's 58.6ms/activation
+prescribed line plus enumeration.
+
+- **A robustness fix the measurements forced.** One root probe faulted outright ("game ended after 0
+  activations: Fault") and took the whole lab process down with an unhandled exception. A resumed
+  game is a whole engine and can fault; B5 will run this INSIDE real games, where a crash is not an
+  option. `SearchTree.SearchUnavailableException` is now its own type and `UctSearch` turns it into
+  a result with no choice, which is the shape plan G3's "fall back to A-greedy, logged and counted"
+  needs. Re-measured after: **10/10 probes reached a boundary**, so the fault is rare and was not
+  reproduced - reported as observed-once, not as a rate.
+- **B2 test pinning, not weakening.** Three authored-tree tests in `SearchTreeTests` implicitly rode
+  the old default C=2.0 and failed when it changed. They now pin `WideningC = 2f` explicitly, as
+  their neighbours already did - they are testing B2's backup and widening, not B4's tuning.
+- **Verification:** hash `8D6EFA0AF0B4019E` unchanged (DOP-1 six-game cell, Release), **re-run after
+  the last engine edit**; engine suite 3212/3213 (1 skipped by design, +10 new cases); full
+  `dotnet build` green. Reproducibility pinned both in unit tests and on a real 2k board
+  (`fdglab b0` phase 3g reports "IDENTICAL choice and visit distribution").
+
+**NOT DONE - the top item for the next session.** The **500-search memory soak** (`fdglab b0
+--search-soak 500`, phase 4c, written and building) was started and killed at ~2 minutes when the
+machine had to shut down. A partial soak is not a result, so nothing is claimed about it. Until it
+runs, TWO things stay open: (a) whether the search leaks across many searches - post-GC heap is the
+signal, per 5c's rule; (b) 5c's flagged **+255MiB RSS growth**, which this soak was meant to
+re-check on the bigger primitive; and it is what decides deferred decision 4 (snapshot-per-child vs
+branch-point-only re-run storage). Note also that the campaign doc's "500-GAME" soak is properly a
+B5/B-gate item - search only drives real games after step 9 - so phase 4c is the search-level
+stand-in, not a substitute.
+
+**Next:** run phase 4c to completion, then step 9 (B5 integration, Sonnet/medium), which also
+carries the lobby-exposure decision that needs Chris.
+
 **2026-09-04 (Fable, per protocol - step 7 build recommends Sonnet, no re-prompt inside a step) -
 STEP 7 (B3) DONE: HAND-WEIGHTED LEAF EVALUATOR ON THE C1 VECTOR.** B and C now share one code
 path (campaign doc step 7): the search's leaf value is a hand-weighted read of the same

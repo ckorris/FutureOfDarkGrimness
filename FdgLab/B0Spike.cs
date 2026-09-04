@@ -71,6 +71,11 @@ public static class B0Spike
         // sec 8 tests 1 and 9). 0 skips the phase.
         int edgeReps = IntArg(args, "--edge-reps", 5);
         int edgeDepth = IntArg(args, "--edge-depth", 8);
+        // #191 B4: the UCT search itself - iterations per worker, worker count, and how many whole
+        // searches the memory soak runs. 0 iterations skips both search phases.
+        int searchIterations = IntArg(args, "--search-iterations", 0);
+        int searchWorkers = IntArg(args, "--search-workers", 4);
+        int searchSoak = IntArg(args, "--search-soak", 0);
         int timeoutSeconds = IntArg(args, "--timeout", 60);
         EAiProfile profile = (Arg(args, "--profile") ?? "tactician").ToLowerInvariant() switch
         {
@@ -438,6 +443,200 @@ public static class B0Spike
                                       ? " -> the seam reproduces the recorded line exactly (PIN)"
                                       : " -> NOT a faithful replay; the cost number above is not trustworthy"));
             }
+        }
+
+        // --- Phase 3g: B4 search cost, tree shape, evaluator cost (#191 B4, campaign step 8) --------
+        // 3f priced ONE line. A search is many lines plus a leaf evaluation each, so the honest
+        // number for "what does a node expansion cost now" must include B3's evaluator - which B3
+        // could only measure on a bare fixture (1.317ms) and explicitly handed to B4 to confirm on
+        // real armies. Also reports the tree SHAPE a realistic budget buys, which is what says
+        // whether search is meaningfully deeper than A's one ply.
+        if (searchIterations > 0)
+        {
+            Console.WriteLine($"\n[3g] B4 UCT: node cost with the B3 evaluator, and the tree a budget buys");
+            var evaluator = new HandWeightedEvaluator();
+            var baseTree = new SearchOptions
+            {
+                WorkerSeed = 4242,
+                Randomness = ERandomnessType.Realistic,
+                InSimProfile = profile,
+                TimeoutSeconds = timeoutSeconds,
+            };
+
+            // (a) The leaf evaluator on THIS board, standalone - B3's open question.
+            SearchTree.RootBoundary rootBoundary = await SearchTree.ProbeRootAsync(snapshot, baseTree, evaluator);
+            GameDataStore evalStore = GameSaveSerializer.Load(rootBoundary.Snapshot);
+            var evalState = new TableState(evalStore);
+            var evalRules = new FDG.Rules.Dispatch.RuleEvaluator(new ProbabilisticDiceRoller());
+            evaluator.Evaluate(evalState, evalRules, rootBoundary.Sides); // warm
+            var evalMs = new List<double>();
+            for (int i = 0; i < 20; i++)
+            {
+                var sw = Stopwatch.StartNew();
+                evaluator.Evaluate(evalState, evalRules, rootBoundary.Sides);
+                sw.Stop();
+                evalMs.Add(sw.Elapsed.TotalMilliseconds);
+            }
+            Console.WriteLine($"     leaf evaluator, all {rootBoundary.Sides.Count} sides, real armies: " +
+                              $"**{evalMs.Average():F2}ms per leaf** (min {evalMs.Min():F2}, max {evalMs.Max():F2}) " +
+                              $"- B3 measured 1.32ms on a bare fixture and flagged 3.4-7.2ms as the estimate to confirm");
+
+            // (a2) Probe reliability. A resumed game is a whole engine; one probe faulted outright
+            // during this step's measurements on a box already running self-play at DOP 12, which is
+            // why the search now degrades to "no choice" instead of throwing (G3's fallback is the
+            // caller's answer). This counts how often it happens, so B5 knows what fallback rate to
+            // expect rather than guessing.
+            int probeOk = 0, probeFailed = 0;
+            for (int i = 0; i < 10; i++)
+            {
+                try
+                {
+                    await SearchTree.ProbeRootAsync(snapshot, baseTree with { WorkerSeed = 500 + i }, evaluator);
+                    probeOk++;
+                }
+                catch (SearchTree.SearchUnavailableException e)
+                {
+                    probeFailed++;
+                    if (probeFailed == 1) Console.WriteLine($"     probe failure sample: {e.Message}");
+                }
+            }
+            Console.WriteLine($"     root probe reliability: {probeOk}/10 reached a boundary" +
+                              (probeFailed > 0 ? $" - {probeFailed} faulted (search degrades to no-choice, caller falls back to A)" : ""));
+
+            // (b) A real search at a fixed iteration budget (reproducible), single worker.
+            // Warmed first: the FIRST search in a process JITs the whole search + simulation path,
+            // which inflated this number by ~6x in the first 2k run and made the serial arm look
+            // slower than the parallel one that followed it (G6 - measure the steady state).
+            await UctSearch.RunAsync(snapshot, new UctOptions
+            {
+                RootSeed = 1, Workers = 1, Iterations = searchIterations, Tree = baseTree,
+            }, evaluator);
+
+            var searchSw = Stopwatch.StartNew();
+            SearchResult single = await UctSearch.RunAsync(snapshot, new UctOptions
+            {
+                RootSeed = 4242,
+                Workers = 1,
+                Iterations = searchIterations,
+                Tree = baseTree,
+            }, evaluator);
+            searchSw.Stop();
+            double perIteration = searchSw.Elapsed.TotalMilliseconds / Math.Max(1, single.Iterations);
+            Console.WriteLine($"     1 worker x {searchIterations} iterations: {searchSw.Elapsed.TotalMilliseconds:F0}ms => " +
+                              $"**{perIteration:F1}ms per iteration** (one expansion + evaluation + backup) => {DecisionBand(perIteration)}");
+            Console.WriteLine($"     tree: {single.Nodes} nodes, max depth {single.MaxDepth}, " +
+                              $"{single.ClosedEdges} closed edges, root branching {single.RootUnits} units; " +
+                              $"choice {single.Choice?.Label ?? "(none)"} with {single.Choice?.Visits ?? 0} visits");
+
+            // (c) Reproducibility on a real board, and what parallel workers add.
+            var repeatSw = Stopwatch.StartNew();
+            SearchResult repeat = await UctSearch.RunAsync(snapshot, new UctOptions
+            {
+                RootSeed = 4242, Workers = 1, Iterations = searchIterations, Tree = baseTree,
+            }, evaluator);
+            repeatSw.Stop();
+            Console.WriteLine($"     same search again (serial, warm): {repeatSw.Elapsed.TotalMilliseconds:F0}ms => " +
+                              $"{repeatSw.Elapsed.TotalMilliseconds / Math.Max(1, repeat.Iterations):F1}ms per iteration " +
+                              $"- a large gap to the line above would be warm-up; a small one means the serial arm is " +
+                              $"simply the most contention-sensitive on a loaded box");
+            bool reproducible = repeat.Choice?.Label == single.Choice?.Label
+                && repeat.Root.Count == single.Root.Count
+                && repeat.Root.Zip(single.Root).All(p => p.First.Visits == p.Second.Visits);
+            Console.WriteLine($"     same seed twice: {(reproducible ? "IDENTICAL choice and visit distribution (PIN)" : "DIVERGED - determinism is broken")}");
+
+            var parallelSw = Stopwatch.StartNew();
+            SearchResult parallel = await UctSearch.RunAsync(snapshot, new UctOptions
+            {
+                RootSeed = 4242, Workers = searchWorkers, Iterations = searchIterations, Tree = baseTree,
+            }, evaluator);
+            parallelSw.Stop();
+            Console.WriteLine($"     {searchWorkers} workers x {searchIterations} iterations: {parallelSw.Elapsed.TotalMilliseconds:F0}ms " +
+                              $"({parallelSw.Elapsed.TotalMilliseconds / Math.Max(1, parallel.Iterations):F1}ms per iteration, " +
+                              $"{searchSw.Elapsed.TotalMilliseconds * searchWorkers / Math.Max(1.0, parallelSw.Elapsed.TotalMilliseconds):F1}x speedup vs serial); " +
+                              $"{parallel.Nodes} nodes total, choice {parallel.Choice?.Label ?? "(none)"}");
+
+            // (d) Widening constants: the design doc left C/alpha to B4 "on measurement". The
+            // measurement available without games is tree SHAPE at a fixed budget - narrower widening
+            // must actually buy depth, or there is nothing to trade.
+            foreach ((float c, float alpha) in new[] { (2f, 0.5f), (1f, 0.5f), (0.5f, 0.5f) })
+            {
+                SearchResult shaped = await UctSearch.RunAsync(snapshot, new UctOptions
+                {
+                    RootSeed = 4242,
+                    Workers = 1,
+                    Iterations = searchIterations,
+                    Tree = baseTree with { WideningC = c, WideningAlpha = alpha },
+                }, evaluator);
+                Console.WriteLine($"     widening C={c:F1} alpha={alpha:F1}: {shaped.Nodes} nodes, max depth {shaped.MaxDepth}, " +
+                                  $"root edges opened {shaped.Root.Count}");
+            }
+
+            // (e) What a real time budget buys, at the benchmark cap. NOT reproducible by design.
+            SearchResult timed = await UctSearch.RunAsync(snapshot, UctOptions.Benchmark with
+            {
+                RootSeed = 4242, Workers = searchWorkers, Tree = baseTree,
+            }, evaluator);
+            Console.WriteLine($"     benchmark budget ({timed.BudgetMs}ms for {timed.RootUnits} root units, {searchWorkers} workers): " +
+                              $"{timed.Iterations} iterations, {timed.Nodes} nodes, max depth {timed.MaxDepth}, " +
+                              $"{timed.ElapsedMs}ms wall");
+            Console.WriteLine($"     tree memory at that budget: {Mib(GC.GetTotalMemory(forceFullCollection: true))} live heap after the search " +
+                              $"(snapshot-per-child is design sec 5.3's v1 choice; the soak below is what decides it)");
+        }
+
+        // --- Phase 4c: B4 search memory soak (#191 B4) ----------------------------------------------
+        // The campaign doc's "500-game memory soak" belongs to B5/the B-gate, where search actually
+        // DRIVES games. What B4 can soak is the search itself: many searches, each building and
+        // dropping a tree of snapshot-bearing nodes. Post-GC heap is the leak signal (5c's rule); the
+        // 5c entry's +255MiB RSS growth is re-checked here on a bigger primitive.
+        if (searchSoak > 0)
+        {
+            Console.WriteLine($"\n[4c] Search soak: {searchSoak} searches x {searchIterations} iterations x {searchWorkers} workers");
+            var evaluator = new HandWeightedEvaluator();
+            var soakTree = new SearchOptions
+            {
+                Randomness = ERandomnessType.Realistic,
+                InSimProfile = profile,
+                TimeoutSeconds = timeoutSeconds,
+            };
+            var proc = Process.GetCurrentProcess();
+            long baseHeap = GC.GetTotalMemory(forceFullCollection: true);
+            proc.Refresh();
+            long baseRss = proc.WorkingSet64;
+            var wall = Stopwatch.StartNew();
+            int searches = 0, expansions = 0, noChoice = 0;
+            int sampleEvery = Math.Max(1, searchSoak / 10);
+            Console.WriteLine($"    start: heap {Mib(baseHeap)} rss {Mib(baseRss)}");
+
+            for (int i = 1; i <= searchSoak; i++)
+            {
+                SearchResult r = await UctSearch.RunAsync(snapshot, new UctOptions
+                {
+                    RootSeed = 70000 + i,
+                    Workers = searchWorkers,
+                    Iterations = searchIterations,
+                    Tree = soakTree,
+                }, evaluator);
+                searches++;
+                expansions += r.Nodes;
+                if (r.Choice == null) noChoice++;
+
+                if (i % sampleEvery == 0 || i == searchSoak)
+                {
+                    long heapNoCollect = GC.GetTotalMemory(forceFullCollection: false);
+                    long heapCollected = GC.GetTotalMemory(forceFullCollection: true);
+                    proc.Refresh();
+                    Console.WriteLine($"    {i,5}/{searchSoak}: heap {Mib(heapNoCollect)} " +
+                                      $"(after GC {Mib(heapCollected)}) rss {Mib(proc.WorkingSet64)} " +
+                                      $"threads {proc.Threads.Count} elapsed {wall.Elapsed.TotalSeconds:F0}s");
+                }
+            }
+            wall.Stop();
+            long endHeap = GC.GetTotalMemory(forceFullCollection: true);
+            proc.Refresh();
+            Console.WriteLine($"    end: heap {Mib(endHeap)} (delta {Mib(endHeap - baseHeap)}) " +
+                              $"rss {Mib(proc.WorkingSet64)} (delta {Mib(proc.WorkingSet64 - baseRss)})");
+            Console.WriteLine($"    searches={searches} nodes={expansions} no-choice={noChoice} " +
+                              $"throughput={searches / Math.Max(0.001, wall.Elapsed.TotalSeconds):F2} searches/s");
         }
 
         // --- Phase 4b: line leak soak -------------------------------------------------------------
