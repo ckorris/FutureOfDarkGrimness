@@ -23,6 +23,64 @@ campaigns re-base.)*
 
 ## Notes (newest first)
 
+**2026-09-04 (afternoon, Fable 5.1, investigator agent) - R9 FREEZE DIAGNOSED: ~400 FIRST-CHANCE
+EXCEPTIONS PER SIMULATION, EACH A STOP-THE-PROCESS EVENT UNDER THE VS DEBUGGER. FIXED IN THE
+SUBMODULE (UNCOMMITTED, FOR REVIEW).**
+
+*Thread question (Q1):* the bot's `Resolve()` never touches the Raylib thread. `LobbyViewModel_Host.Launch`
+leaves the main thread at its `Task.Delay(300)`; `FDGServer` runs the machine on the pool after
+`Task.Yield()`; `LocalMessageBus.Dispatch` is synchronous on the sender (engine) thread, so
+`StrategistActivationResolver.Resolve` runs on the engine's pool thread until `SimulationService.Run`'s
+`WhenAny`. No `.Result`/`.Wait()` on that path, no `SynchronizationContext`, no shared lock between the
+store and `Draw()`, and the only process-wide sinks (`RuleDiagnostics.OnWarning/OnRuleDropped`) fire 0
+times on the resume path (0 `[rules]` lines across two headless Strategist games).
+
+*Headless reproduction:* neither headless path stalls. `--scenario` 2k 1v1 all-AI Strategist (Debug,
+box at load 34/32): searches 7.3-9.2s, 21-42 iterations, RSS ~230MB, 23 threads. New-game path
+(`--headless --army <2k> --ai-profile strategist`, real deployment): bot's first activation passed at
+~25s. So the freeze is specific to the GUI process and/or the attached debugger.
+
+*The measurement that decided it* (temporary probe test, `AppDomain.FirstChanceException`, 2k snapshot,
+4 workers x 5 iterations): **10,078 first-chance exceptions per 20-iteration search (~400 per
+simulation)** - 8,610 `InvalidDataReferenceException` from `StoreReplay.ReplayEntriesWithRetry` (the
+save loader resolved forward references by catching, ~190 per snapshot load) and 1,468
+`SimulationStopSignal` re-throws (the throw-stop unwinding a 191-frame async chain: the state machine
+nests an `await` per transition, so a stop is re-thrown ~70 times per one-activation line). Invisible
+in Release; in Debug the same search took 15.5-19.5s wall. Under Visual Studio every first-chance
+exception is a debugger round trip with the debuggee suspended (all threads, the Raylib loop included)
+and an Output-window append on VS's UI thread - four workers throwing ~400 per simulation is minutes
+of suspended process plus an unresponsive IDE, which matches "frozen for 2+ minutes and could not
+bring up the IDE". The wall-clock budget could not help: it was checked only between iterations.
+
+*Fix (submodule, 11 files + `Tests/SimulationStopTests.cs`, suite 3223/3224 green, root Debug build
+green):*
+- `SaveLoad/StoreReplay.cs`: readiness is CHECKED (scan each entry's embedded `DataReference`s once,
+  replay only when every one `IsValid`); the catch path survives only as the fallback for dangling or
+  cyclic references, attempted once nothing else resolves. Round trip pinned byte-identical.
+- `IActivationBoundaryHook.AtActivationBoundary` returns `Task<bool>`; `DeterminePlayerTurnStage` on
+  `true` calls `NotifyGameCompleted(ForFault("Simulation stopped at the end of its line."))` and returns
+  - the exact exit `VictoryCalculationStage` takes at a natural end, so the chain unwinds by ordinary
+  returns (every post-await on it is empty; checked). `SimulationStopSignal` and FDGServer's catch stay
+  as a quiet fallback. Race found and closed: the capture and the game end now complete microseconds
+  apart, both `RunContinuationsAsynchronously`, so `Run` reads `captured.Task.IsCompletedSuccessfully`
+  instead of trusting which task `WhenAny` returned (the old unwind won that race by milliseconds).
+- `SimulationOptions.Cancellation` + one linked token per line: a timed-out or cancelled simulation now
+  stops at its next boundary (the "never stopped" gap; a line wedged INSIDE an activation still cannot
+  be stopped). `SearchOptions.Cancellation` carries the search's hard deadline: `UctSearch` arms it at
+  the budget (time budgets only, never under `Iterations` - G5), in-flight lines stop at their next
+  boundary, nothing further opens, and an interrupted edge stays untried rather than closed.
+- `AiProfileFactory.DefaultSearchWorkers = clamp(ProcessorCount - 1, 1, 4)` (design fork, one line to
+  revert: fewer determinizations on a <=4-thread machine in exchange for a core for the GUI).
+
+*After:* 0 first-chance exceptions per search; identical tree (20 iterations, 24 nodes, depth 5); the
+same Debug search 15.5s -> 3.2s wall; headless 2k game: 65-140 iterations per search inside the same
+6.4-8.8s budget (box load had also dropped 34 -> 22, so part of that is load).
+
+*Not verifiable here (no display, no Windows, no VS):* that the GUI window now stays live - the R9 check
+still needs Chris's laptop. The decisive A/B for him: the freeze should be gone under F5 now; if it is
+not, run once with Ctrl+F5 (no debugger) and once with Debug > Options > Output Window > Exception
+Messages off - if either alone cures it, the residual is debugger cost, not the engine.
+
 **2026-09-04 (early afternoon, Fable 5.1) - CRASH CHASE, PART 3: EIGHT ARMS, A HARDWARE CHECK AND
 FIVE HOURS OF SELF-PLAY WITHOUT A SINGLE CRASH. THE CHASE IS PARKED IN "ARMED AND WAITING".**
 
