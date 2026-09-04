@@ -23,6 +23,15 @@ campaigns re-base.)*
 
 ## Notes (newest first)
 
+**2026-09-04 (18:40, Sonnet 5) - CHRIS'S CALL: LET THE GATE FINISH, SELF-PLAY STAYS PAUSED FOR THE
+TRIP.** Chris asked whether the gate's data could train C (no - `bench` writes win/loss outcomes,
+only `selfplay` exports the per-decision PositionEncoder rows C needs) and flagged that self-play,
+paused since step 10 started, was what he'd actually meant to use these four days for - the
+original campaign calendar had step 10 scheduled for after his return for exactly this reason.
+Given self-play data isn't due until step 12 (week of Sep 15 regardless), offered the tradeoff
+explicitly: **Chris chose to let the gate finish** rather than stop it to resume self-play now.
+Self-play stays paused until the chain's own end (~2.5-3 days out), then resumes automatically.
+
 **2026-09-04 (18:15, Sonnet 5) - CRASH #8, AT DOP 12, DURING THE GATE - THE CRASH CHASE'S "CLOSED"
 VERDICT NEEDED A CORRECTION.** 95 minutes into `main-matrix-vs-tactician` (1675/6400 games, dop 12),
 the bench process SIGSEGV'd: `kernel: .NET BGC[80001]: segfault ... in libcoreclr.so[459b4a,...]` -
