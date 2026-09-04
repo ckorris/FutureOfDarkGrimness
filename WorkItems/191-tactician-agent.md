@@ -23,6 +23,18 @@ campaigns re-base.)*
 
 ## Notes (newest first)
 
+**2026-09-04 (16:00, Fable 5.1) - BAD PAGE PINNED.** `scratchpad/badpage-pinner.py 24` (pid in
+`scratchpad/pinner.log`, chunk 29, vaddr `0x712a018b7000`, bad word at `0xa48` in the page - the
+third independent sighting of the same offset) holds that one 4 KiB page mlocked (`VmLck: 4 kB`) and
+released the other 24 GB. While that process lives, no other process can be given the physical page,
+so the lab (and the desktop) run on the remaining 32 GB minus one page. The pinner re-verifies the
+page every 10 min and logs whether it still fails. Stopgap only: it dies with a reboot, and it caught
+the page on its first pass because the RAM test had just released it - after a reboot it may need
+several attempts while the kernel or desktop holds the page. Permanent fix: root turns the vaddr into
+a physical frame with the `/proc/<pid>/pagemap` one-liner printed in `pinner.log`, then either
+`memmap=4K$<phys>` on the kernel command line, or (properly) replace/re-time the DIMM after
+memtest86+ names it. Self-play v3 (capped) was untouched throughout: batch 365, 0 faults.
+
 **2026-09-04 (15:45, Fable 5.1) - HARDWARE CONFIRMED: THE RAM TEST REPRODUCES THE SAME BIT.**
 `memtest.py 22 300` (22 GB in 256 MiB chunks): pattern `5aa5` (bit 23 = 0) clean; pattern `a55a`
 **1 bad word**, chunk 87 offset `0x55b6a48`, expected `0x5aa55aa55aa55aa5` read `0x5aa55aa55a255aa5`,
