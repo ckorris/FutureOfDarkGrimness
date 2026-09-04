@@ -23,6 +23,41 @@ campaigns re-base.)*
 
 ## Notes (newest first)
 
+**2026-09-04 (midday, Fable 5.1) - STEP 9 SMOKE CELLS ARE IN; THE DOP-6 REPRODUCER DID NOT
+REPRODUCE WITH THE BOX TO ITSELF; CHAIN v2.**
+
+*Smoke cells (dop 2, box otherwise idle, Release):*
+- 2k 1v1 Strategist vs SoloRules: 99.0% (98/0/2), hash `2B44D25EDDD7FBB6`. Tactician vs SoloRules on
+  the same cell was 99.5%. Ceiling, as sec 5 predicted - sanity only.
+- 3k 2v2 panel Strategist vs Tactician, 50 games/cell (`FdgLab/reports/b5-smoke-2v2`, hash
+  `17F4A1FF2C246F77`): Saurian+Goblin vs Cults+DarkElf **54.0%** (17/13/20) against the step-2
+  Tactician-vs-Tactician baseline 49.5% (30/31/39, n=100); BattleBrothers+Knight vs Robot+Titan
+  **34.0%** (11/27/12) against baseline 40.5% (28/47/25). **No lift at 2v2 3k** - both cells sit
+  within noise of A-vs-A (SE ~7 pts at n=50) while 1v1 2k gives 87.5%. 155s and 764 decisions per
+  game. Not a gate failure (step 10 runs the real panels) but the first generalization signal, and
+  1v1/2v2 generalization is the campaign's stated goal. Candidate causes, to PROBE in step 10 before
+  touching anything: (a) rollout cost - a 2v2 3k simulation carries ~3x the units, so the 1-2s
+  Benchmark budget buys a fraction of the iterations; (b) the SideValues max^n backup over four
+  slots; (c) the G3 fallback rate (per-game fallback aggregation is still the deferred item).
+  Cheapest probes: b0's search-cost phase on a 2v2 snapshot, and one 2v2 cell at
+  `UctOptions.Interactive` to see whether budget alone closes it.
+
+*Crash chase:*
+- v1 baseline arm (dop 6, 100 games, server GC, runtime dumper armed, box otherwise idle):
+  **survived** - exit 0, 869.6s, 83.0% (78/12/10), hash `6E2A52A68460469E`. So the reproducer is
+  3-for-4, not 3-for-3, and the one clean run is the first with the box to itself. Side result:
+  83.0% at dop 6 vs 87.5% at dop 2 means the 6-game ladder rungs from part 1 (91.7/58.3/50.0) were
+  noise; the contention worry is closed and dop 6 is fine for panels on this box.
+- Runtime counters never attached in v1: `dotnet-counters` inherited a TMPDIR pointing at the
+  scratchpad while the runtime's diagnostics socket lives in `/tmp`. Same trap as `dotnet-dump`
+  yesterday; v2 exports `TMPDIR=/tmp` for the whole chain.
+- **Chain v2** (`scratchpad/gc-experiments-v2.sh`, log `gc-experiments-v2.log`, reports
+  `gcx2-<arm>/`): self-play relaunched FIRST (dop 20, dumper armed, resumes `data/2026-09-03` after
+  batch 207, pause file `FdgLab/.pause-selfplay`), then the same eight arms run on top of it, then
+  hwcheck. Reasoning: the three fastest crashes (23:50-23:53) came with self-play dop 20 and a dop-6
+  bench sharing the box; the only clean dop-6 100-game run had it alone. Arm scores are void under
+  contention - exit codes and dumps are the data. Self-play data gen was dead 07:59-11:11.
+
 **2026-09-04 (late morning, Fable 5.1) - CRASH CHASE, PART 2: A FIFTH CRASH, AND IT IS IN PURE
 MANAGED CODE WITH NO SEARCH ANYWHERE NEAR IT.** Self-play (plain A, exporter path, dop 20) died at
 07:59:51, one minute after the pause lifted, with
