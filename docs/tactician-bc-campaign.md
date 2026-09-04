@@ -164,7 +164,7 @@ Opus review before the first long run.
   counts, label balance sane, no feature outside its expected range, held-out cells absent,
   reproducible under a fixed seed. Ledger. Then launch and leave running.
 
-### Step 5 - B1 SimulationService (5a: Sonnet / medium; 5b-5c: Opus / high; ~2-3 bursts)
+### Step 5 - B1 SimulationService (5a: Sonnet / medium; 5b-5c: Opus / high; ~2-3 bursts) - DONE 2026-09-03
 *Revised 2026-09-03 (Fable) from B0's numbers - see the ledger's "B0 cost numbers" and "step 3(c)"
 entries. The original sketch's `Rollout(snapshot, policy, toEnd)` is gone: a rollout to game end
 measured 12s at 4k, 14x a node expansion. Leaves are evaluated, not rolled out (step 7).*
@@ -198,7 +198,7 @@ on the current engine; a changed hash is a stop, not a note):
   combined) play it out unchanged. The failing B0 control test becomes the pin: prescribe what
   the planner chooses -> identical game. Prescribing the activation choice
   (`ChooseUnitToActivateRequest`) is the same seam one level up.
-- **5c - pause/step hook (D10a, pre-authorized)** at `DeterminePlayerTurnStage.Enter`, the
+- **5c - pause/step hook (D10a, pre-authorized) - DONE 2026-09-03** at `DeterminePlayerTurnStage.Enter`, the
   activation boundary B0 snapshots at. B0's node cost is 223ms at 2k, of which policy thinking
   is 165ms (removed by 5b, since a simulated activation's action and unit are read off the tree
   edge) and load+save is 54ms. The hook removes most of the 54ms: a simulated LINE runs

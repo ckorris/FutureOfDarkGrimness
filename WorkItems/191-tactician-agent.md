@@ -23,6 +23,92 @@ campaigns re-base.)*
 
 ## Notes (newest first)
 
+**2026-09-03 (night, later still) - STEP 5c BUILT: THE PAUSE/STEP HOOK, THE BUS BYPASS AND
+`SimulationService`. A LINE IS 5-8x CHEAPER PER ACTIVATION THAN A CLONE, AND THE ~20ms TARGET IS
+MET WITH A CHEAP IN-SIM POLICY - ON A BOX THAT WAS BUSY GENERATING DATA AT THE TIME.** Chris
+switched the session to Opus (the model step 5b/5c call for) and said to continue; 5c is the last
+of step 5's three commits. Engine commit `34b920a`, superproject bump alongside the lab-side
+measurement phase.
+
+- **The hook (D10a, pre-authorized).** `FDG.Simulation.IActivationBoundaryHook`, called from
+  `DeterminePlayerTurnStage.Enter` once the acting player is determined (P19 override included)
+  and before any decision of that activation, including the reactivation offers. Placed AFTER the
+  player is known because a prescription has to reach the right policy; the rolling save point at
+  the top of `Enter` has already written `GameProgressData`, so a snapshot taken inside the hook is
+  exactly the engine's own save point - which is what makes chaining work. `IGameContext
+  .ActivationBoundaryHook` defaults to null and is set only by `SimulationService`, so **real play
+  pays one null check per activation and nothing else**.
+- **`SimulationService`** (`FutureOfDarkGrimness/Simulation/`): `Snapshot(store)`,
+  `Advance(snapshot, prescription)`, `Run(snapshot, prescriptions[])`, plus `RunNatural(snapshot, n)`.
+  A line runs consecutive activations in ONE resumed instance and serializes once at the end.
+  **Line length IS the search depth** - multi-ply is the same call as single-ply, so a
+  disappointing number would have meant shipping shorter lines, not a rewrite. Per-simulation seed;
+  probabilistic dice with sampled decisive rolls is the default (the threshold-shift invariant
+  lives in the dice roller - this only picks the mode). No `Rollout`, per the step-7 revision.
+- **Bus bypass.** `DirectPlayerRequester` answers a simulation's decisions straight from the target
+  slot's registry via the typed path. Real play keeps `RequestMessageSender` and the bus untouched.
+  `BypassBus` is a switch rather than a hard-coded path specifically so the equivalence pin can run
+  the SAME line both ways and assert byte equality - hash-verify cannot cover the bypass, because
+  real games never travel it.
+- **A defect the first measurement exposed.** The throw-stop unwound into `FDGServer`'s generic
+  catch, which prints `[GAME ERROR]` plus a full state-machine stack trace. Harmless once, but a
+  search runs thousands of simulations, and that is both console noise and real formatting cost.
+  `SimulationStopSignal` is now its own type and FDGServer ends it quietly; genuine faults still
+  print in full. Verified: 0 stop-signal traces from the line primitive in a 1000-simulation soak
+  (the 19 traces still in the b0 log are B0's OLD resolver-throw stop, unchanged).
+
+**The numbers (2k, Release).** Measured while the step-4 self-play generator was running at DOP 12
+on the same box, so **every figure here is an upper bound** and is NOT comparable to B0's
+clean-box table (that run's load alone measured 53ms against B0's 37ms). The comparison that IS
+valid is internal: phase 3 and phase 3e ran in the same process under the same load.
+
+| Primitive (same run, same load) | per activation |
+|---|---|
+| clone per activation, Tactician in-sim (B0's old primitive) | **177.2ms** |
+| line depth 1, Tactician in-sim | 106.4ms |
+| line depth 8, Tactician in-sim | **34.5ms** |
+| line depth 1, SoloRules in-sim | 58.8ms |
+| line depth 4, SoloRules in-sim | 21.4ms |
+| **line depth 8, SoloRules in-sim** | **20.5ms** |
+
+So the hook delivers **5.1x** against the old primitive with the full planner in-sim, and **8.6x**
+with a cheap in-sim policy - and 20.5ms/activation is the campaign doc's ~20ms target, hit on a
+loaded box where a clone alone (load+save) cost 120.7ms. The target's referent is B0 finding 2's
+"(b) cheap in-sim policy + the hook projects to ~11-20ms/node", which is the SoloRules arm. Both
+arms are reported because the choice between them is a real Phase B decision (evaluation bias vs
+cost), not settled here.
+
+**Honest gap in this measurement, recorded rather than papered over.** A *fully prescribed* line -
+unit AND action AND macro-action, which is what B2's tree edges will actually carry - is not
+measured, because synthesizing a real `MacroAction` outside the planner is B2's job. 5b already
+pinned that a prescribed activation runs neither `Urgency` nor `MacroActionGenerator.Enumerate`
++`Score`, so its cost sits at or below the SoloRules arm; the honest statement is that the target
+is met by the arm the projection named, and the fully-prescribed number lands with B2. Re-measure
+on a quiet box at the same time (the running generator is not worth stopping for a number that is
+already inside target).
+
+- **Leak soak (R1, new primitive):** 1000 line-simulations, depth 2, throw-stopped - **1000/1000
+  completed, 0 missed**, post-GC heap flat at 11-15MiB start to finish (end 11MiB, delta **-6MiB**),
+  threads flat at 81, 14.5 sims/s. RSS grew +255MiB where B0's 400-sim THROW run saw RSS fall;
+  post-GC heap is the leak signal and it is flat, so this reads as allocator retention rather than
+  a leak, but it is worth a second look at B4's 500-game soak.
+- **Verification:** hash-verify `8D6EFA0AF0B4019E` (DOP-1 six-game cell), unchanged from step 4,
+  5a and 5b - re-run AFTER the FDGServer catch change, not just before it. Engine suite 3182/3183
+  (1 skipped by design, +6 new pins), full `dotnet build` green, headless smoke exits 0 (tie, 4
+  rounds). Bypass-equals-bus pinned by test, since no hash can cover it.
+- **Self-play undisturbed:** PID 51352 alive throughout (2h17m at the last check), 97 -> 110
+  complete batches during this burst. It was launched without `--pause-file`, so it could not be
+  cooperatively paused for the measurement; that is why the numbers above are labelled as taken
+  under load. Worth launching future generators WITH a pause file.
+- **Step 5 (B1) is complete.** Next is step 6 (B2 composite action space + multiplayer backup) -
+  design is Fable/high for one turn, build is Sonnet/medium. B2 inherits: the line API with depth
+  as a parameter, prescription through the planner, and the boundary hook as the node definition.
+  Two notes for it: (1) a `Run` overload taking a prescription CALLBACK rather than a fixed list is
+  probably wanted, since a tree supplies decisions lazily as the line walks - deliberately not
+  built on spec; (2) reading the planner's chosen `MacroAction` (not just `LastMacroLabel`) is what
+  the fully-prescribed cost measurement needs.
+
+
 **2026-09-03 (night, Opus) - STEP 5b DONE: THE PRESCRIPTION SEAM, AND B0'S CONTROL FLIPPED
 FROM DIVERGING TO IDENTICAL.** Chris switched the session to Opus (the model the campaign doc
 requires for 5b/5c) - that was the sign-off 5b was waiting on. Engine commit `28b6443`.

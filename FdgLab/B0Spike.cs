@@ -6,6 +6,7 @@ using FDG.Data;
 using FDG.GameModel;
 using FDG.Players;
 using FDG.SaveLoad;
+using FDG.Simulation;
 using FDG.StageResolution;
 using FDG.StageResolution.Requests;
 
@@ -57,6 +58,14 @@ public static class B0Spike
         int soak = IntArg(args, "--soak", 0);
         int chain = IntArg(args, "--chain", 8);
         int rollouts = IntArg(args, "--rollouts", 5);
+        // #191 B1 5c: line lengths to price (comma-separated depths), how many lines per depth, and
+        // an optional line-primitive leak soak.
+        List<int> lineLengths = (Arg(args, "--line-lengths") ?? "1,2,4,8")
+            .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+            .Select(part => int.TryParse(part, out int value) ? value : 0)
+            .Where(value => value > 0).ToList();
+        int lineReps = IntArg(args, "--line-reps", 5);
+        int lineSoak = IntArg(args, "--line-soak", 0);
         int timeoutSeconds = IntArg(args, "--timeout", 60);
         EAiProfile profile = (Arg(args, "--profile") ?? "tactician").ToLowerInvariant() switch
         {
@@ -262,6 +271,106 @@ public static class B0Spike
                                   $"= {rollMs.Average() / 243.0:F0}x a measured node expansion (2k reference 243ms)");
             }
             else Console.WriteLine($"    no rollout completed within {timeoutSeconds}s");
+        }
+
+        // --- Phase 3e: SimulationService line cost (#191 B1 5c) ----------------------------------
+        // The number 5c exists for. Phases 3/3b measure the OLD primitive: clone the game per
+        // activation (load + assemble + run + save). A line runs consecutive activations in ONE
+        // instance and serializes once, so its per-activation cost is what a search actually pays
+        // walking a path. Compared here against this run's own phase-3 node cost, not a remembered
+        // one (G6).
+        if (lineLengths.Count > 0)
+        {
+            Console.WriteLine($"\n[3e] SimulationService line cost - per-activation, one instance per line");
+            Console.WriteLine($"     (5c target: ~20ms/activation at 2k, from B0's \"cheap in-sim policy + hook\" read-out)");
+
+            foreach ((EAiProfile inSimProfile, string arm) in new[]
+            {
+                (profile, $"{profile} in-sim policy (natural play)"),
+                (EAiProfile.SoloRules, "SoloRules in-sim policy (B0 finding 2's option (b))"),
+            })
+            {
+                Console.WriteLine($"\n     arm: {arm}");
+                foreach (int length in lineLengths)
+                {
+                    var perLine = new List<double>();
+                    int reached = 0, endedEarly = 0, failed = 0;
+                    for (int i = 0; i < lineReps; i++)
+                    {
+                        var sw = Stopwatch.StartNew();
+                        SimulationService.SimulationResult r = await new SimulationService(
+                            new SimulationService.SimulationOptions
+                            {
+                                Profile = inSimProfile,
+                                Seed = 4242 + i,
+                                Randomness = ERandomnessType.Realistic,
+                                TimeoutSeconds = timeoutSeconds,
+                            }).RunNatural(snapshot, length);
+                        sw.Stop();
+                        if (r.ReachedEndOfLine) { reached++; perLine.Add(sw.Elapsed.TotalMilliseconds); }
+                        else if (r.EndedEarly != null) endedEarly++;
+                        else failed++;
+                    }
+
+                    if (perLine.Count == 0)
+                    {
+                        Console.WriteLine($"       depth {length,2}: no line completed " +
+                                          $"(ended_early={endedEarly} failed={failed})");
+                        continue;
+                    }
+
+                    double perActivation = perLine.Average() / length;
+                    Console.WriteLine($"       depth {length,2}: line {perLine.Average():F0}ms => " +
+                                      $"**{perActivation:F1}ms per activation** " +
+                                      $"(reached {reached}/{lineReps}, ended_early={endedEarly}) " +
+                                      $"=> {DecisionBand(perActivation)}");
+                }
+            }
+        }
+
+        // --- Phase 4b: line leak soak -------------------------------------------------------------
+        // R1 again, for the new primitive: the throw-stop that ends a line must not accumulate.
+        if (lineSoak > 0)
+        {
+            Console.WriteLine($"\n[4b] Line soak: {lineSoak} simulations (depth 2, throw-stopped)");
+            var proc = Process.GetCurrentProcess();
+            long baseHeap = GC.GetTotalMemory(forceFullCollection: true);
+            proc.Refresh();
+            long baseRss = proc.WorkingSet64;
+            var wall = Stopwatch.StartNew();
+            int ok = 0, misses = 0;
+            int sampleEvery = Math.Max(1, lineSoak / 10);
+
+            Console.WriteLine($"    start: heap {Mib(baseHeap)} rss {Mib(baseRss)}");
+            for (int i = 1; i <= lineSoak; i++)
+            {
+                SimulationService.SimulationResult r = await new SimulationService(
+                    new SimulationService.SimulationOptions
+                    {
+                        Profile = EAiProfile.SoloRules,
+                        Seed = 90000 + i,
+                        Randomness = ERandomnessType.Realistic,
+                        TimeoutSeconds = timeoutSeconds,
+                    }).RunNatural(snapshot, 2);
+                if (r.ReachedEndOfLine) ok++; else misses++;
+
+                if (i % sampleEvery == 0 || i == lineSoak)
+                {
+                    long heapNoCollect = GC.GetTotalMemory(forceFullCollection: false);
+                    long heapCollected = GC.GetTotalMemory(forceFullCollection: true);
+                    proc.Refresh();
+                    Console.WriteLine($"    {i,6}/{lineSoak}: heap {Mib(heapNoCollect)} " +
+                                      $"(after GC {Mib(heapCollected)}) rss {Mib(proc.WorkingSet64)} " +
+                                      $"threads {proc.Threads.Count} elapsed {wall.Elapsed.TotalSeconds:F0}s");
+                }
+            }
+            wall.Stop();
+            long endHeap = GC.GetTotalMemory(forceFullCollection: true);
+            proc.Refresh();
+            Console.WriteLine($"    end: heap {Mib(endHeap)} (delta {Mib(endHeap - baseHeap)}) " +
+                              $"rss {Mib(proc.WorkingSet64)} (delta {Mib(proc.WorkingSet64 - baseRss)})");
+            Console.WriteLine($"    completed={ok} missed={misses} " +
+                              $"throughput={lineSoak / Math.Max(0.001, wall.Elapsed.TotalSeconds):F1} sims/s");
         }
 
         // --- Phase 4: leak soak ------------------------------------------------------------------
