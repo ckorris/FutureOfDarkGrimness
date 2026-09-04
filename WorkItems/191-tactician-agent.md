@@ -23,6 +23,63 @@ campaigns re-base.)*
 
 ## Notes (newest first)
 
+**2026-09-04 (morning, Fable 5.1) - CRASH CHASE, PART 1: WHAT IT IS NOT, AND THE TOOLING THAT WILL
+SAY WHAT IT IS.** Chris asked for the crash to be chased after the 87.5% number landed. Reproducer:
+`bench --games 100 --dop 6` with a search profile, SIGSEGV in ~7 min; dop 2 runs 100 games clean.
+
+**Ruled out, each by reading or measurement rather than assumption:**
+- **Native/unsafe code:** none in the engine or lab - no `unsafe`, `DllImport`, `stackalloc`,
+  `Marshal`, no native library shipped. The usual way managed code corrupts a GC heap is absent.
+- **Shared mutable statics:** `TerrainGridCache` (per-table, locked), `RuleEvaluator.t_pool`
+  (`[ThreadStatic]`), `RuleDiagnostics.WarnOnce` (locked), `SaveTypeRegistry` (static ctor),
+  `SpecialRuleRegistry` (local), `CoreRuleCatalog.CreateResolver` (fresh per army load),
+  `TacticianWeights` (written only at startup). Serializer settings and `DataBindingJsonConverter`
+  are per-store instances. Evaluator and encoder are stateless.
+- **Thread-pool starvation:** every `.Result` in the engine follows an `await` of the same task.
+  Bus dispatch is inline; `DirectPlayerRequester` has no threading.
+- **The plain-A path:** self-play at dop 20 on the same binary, 400 games, 0 faults.
+
+**Confirmed mechanism, not yet confirmed as cause:** `SimulationService.Run` never STOPS a timed-out
+simulation - there is no cancel or stop API on `FDGServer`. A line that trips the 60s watchdog
+becomes a zombie engine playing its game out in the background, competing for the CPU that caused
+the timeout. Shaped like "concurrency AND duration"; whether it actually happens at dop 6 is what the
+runtime counters below will show. Left as a known gap - the fix needs a stop API on the server.
+
+**The crash itself:** four threads in the SAME `libcoreclr` function at death - the Server GC's
+parallel workers mid-collection, one hitting a bad pointer. No managed frames on the dying thread.
+Systemd's core lacks the DAC regions so SOS could not run `verifyheap` on it; the runtime is
+Canonical's build, so Microsoft's symbol server has nothing (Ubuntu debuginfod attempted).
+[dotnet/runtime#86183](https://github.com/dotnet/runtime/issues/86183) documents the same shape
+with a workaround of the standalone segments GC (`libclrgc.so`).
+
+**One managed symptom, one minute before the 2v2 cell died:** `NullReferenceException` inside
+Newtonsoft's `SerializeObject`, under `GameSaveSerializer.Save` at a simulation stop boundary. The
+parsimonious reading is ONE defect with two faces - a corrupted reference reads as null to managed
+code first, then kills the GC when it walks the same object. That makes `verifyheap` on a proper
+crash dump the decisive measurement.
+
+**Tooling now in place:** `dotnet-dump`, `dotnet-counters`, `dotnet-symbol` installed. Validated
+end-to-end on this runtime: a live attach and a forced-crash dump both analyze - `verifyheap`
+reports **"No heap corruption detected"** on a healthy mid-search process, 46-47 managed stacks
+resolve to our frames. Every experiment arm runs with the runtime's own full-dump crash handler
+armed and live counters (threads, pool queue, GC, heap) sampled every 2s.
+
+**Queued behind the step-9 cells, one variable each, dop-6 100-game reproducer, 15-min cap:**
+baseline Server GC; the timer fix below; `ThreadPool_MinThreads=256`; workstation GC; segments GC
+(`libclrgc.so`); Server GC with 4 heaps; tiered JIT off. Exit 139 = crash, 124 = survived.
+
+**Fixed along the way (submodule): the watchdog `Task.Delay` is now cancelled when the line
+settles.** A simulation lasts ~100ms and left a 60s timer live every time - measured **1,101
+pending in a 4-worker soak**. An earlier read of the dump had me thinking those timers rooted the
+snapshot strings for a minute each; the dump says otherwise (79KB of timers, 36 strings over 50KB
+on the whole heap), so this is hygiene, not the cause. Hash `8D6EFA0AF0B4019E` unchanged, suite
+3216/3217.
+
+**Process note:** two forced-crash tests signalled my own wrapper shell instead of the target
+(`pgrep -f` matched the command line that contained the pattern) - the two `bash` entries in
+`coredumpctl` this morning are those. Use `$!`.
+
+
 **2026-09-04 (morning, Opus 5) - FIRST REAL B-vs-A NUMBER: STRATEGIST BEATS TACTICIAN 87.5% OVER
 100 GAMES AT 2k. AND THE SEGFAULT IS NOW A REPRODUCER, NOT A MYSTERY.**
 
