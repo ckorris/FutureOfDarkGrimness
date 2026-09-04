@@ -23,6 +23,46 @@ campaigns re-base.)*
 
 ## Notes (newest first)
 
+**2026-09-04 (late morning, Fable 5.1) - CRASH CHASE, PART 2: A FIFTH CRASH, AND IT IS IN PURE
+MANAGED CODE WITH NO SEARCH ANYWHERE NEAR IT.** Self-play (plain A, exporter path, dop 20) died at
+07:59:51, one minute after the pause lifted, with
+`System.AccessViolationException` in `LaneGeometry.AliveFieldedUnits` <- `MacroActionGenerator.Enumerate`
+<- `TacticianPlanner.ChooseAction` - the ordinary A policy. No `unsafe` exists in that path or any
+other. An AV in managed code means the CPU executed wrong machine code or read wrong memory; both
+would also produce the NRE (a corrupted reference reads as null) and the GC segfaults (the GC walks
+the corrupted object). **One cause, three faces** is now the working model.
+
+**Crash ledger so far (all after the 22:56 reboot for Chris's OS swap; zero in the hours before):**
+
+| when | process | signal | where |
+|---|---|---|---|
+| 23:33 | b0 search soak, 4 workers | SIGSEGV | libcoreclr GC worker |
+| 23:50 | bench dop 6, search | SIGSEGV | libcoreclr GC worker |
+| 23:53 | bench dop 6 3k 2v2, search | SIGSEGV | (NRE in Newtonsoft 1 min before) |
+| 23:53 | self-play dop 20, plain A | SIGSEGV | libcoreclr GC worker (same function as 07:18) |
+| 07:18 | bench dop 6, search | SIGSEGV | libcoreclr GC worker, 4 threads in it |
+| 07:59 | self-play dop 20, plain A | SIGABRT | **managed AV in LaneGeometry** |
+
+Clean in the same window: ~6,000 plain-A self-play games, 100 search games at dop 2, 6 at each of
+dop 1/2/4/6. So "search" and "dop 6" were never the cause - they were the fastest way to hit it.
+
+**Two hypotheses left, both with a mechanism, both on the queued chain:**
+1. **JIT miscompilation** (tiered recompilation / dynamic PGO / OSR producing bad code for a hot
+   method after warm-up - which is exactly a "works for minutes, then dies" shape). Arms:
+   `TieredCompilation=0`, `TieredPGO=0`, `TC_QuickJitForLoops=0`, run FIRST now.
+2. **Hardware.** Non-ECC RAM (nothing would be logged), kernel log clean of MCE/EDAC/thermal, and
+   the box is a **Threadripper 1950X** - first-gen Zen, whose early parts had the documented
+   "performance marginality" defect: random segfaults under heavy parallel load, RMA-only fix.
+   Arm: a .NET-free 32-worker consistency check (`hwcheck.py`: repeated SHA-256 of a fixed 64MiB
+   buffer + an integer kernel, any disagreement = hardware) at the end of the chain.
+   Discriminator: if every .NET arm crashes AND hwcheck is clean, the runtime is the suspect; if
+   hwcheck disagrees with itself, it is the silicon and no code change fixes it.
+
+**Chain order now:** baseline -> TC=0 -> PGO off -> OSR off -> workstation GC -> segments GC ->
+timer-fix binary -> minthreads -> hwcheck -> self-play relaunched WITH the crash dumper armed (it
+has been dead since 07:59; nothing was set to restart it - fixed in the chain).
+
+
 **2026-09-04 (morning, Fable 5.1) - CRASH CHASE, PART 1: WHAT IT IS NOT, AND THE TOOLING THAT WILL
 SAY WHAT IT IS.** Chris asked for the crash to be chased after the 87.5% number landed. Reproducer:
 `bench --games 100 --dop 6` with a search profile, SIGSEGV in ~7 min; dop 2 runs 100 games clean.
