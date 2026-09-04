@@ -27,8 +27,10 @@ campaigns re-base.)*
 `scratchpad/pinner.log`, chunk 29, vaddr `0x712a018b7000`, bad word at `0xa48` in the page - the
 third independent sighting of the same offset) holds that one 4 KiB page mlocked (`VmLck: 4 kB`) and
 released the other 24 GB. While that process lives, no other process can be given the physical page,
-so the lab (and the desktop) run on the remaining 32 GB minus one page. The pinner re-verifies the
-page every 10 min and logs whether it still fails. Stopgap only: it dies with a reboot, and it caught
+so the lab (and the desktop) run on the remaining 32 GB minus one page. The pinner's 10-min "still fails" line is NOT a valid re-test (it reads the 4 KiB straight back
+through CPU cache, so it reports False); every test that caught the bit wrote hundreds of MB between
+write and read. The pin does not depend on it; left running rather than restarted, since a restart
+releases the page. Stopgap only: it dies with a reboot, and it caught
 the page on its first pass because the RAM test had just released it - after a reboot it may need
 several attempts while the kernel or desktop holds the page. Permanent fix: root turns the vaddr into
 a physical frame with the `/proc/<pid>/pagemap` one-liner printed in `pinner.log`, then either
