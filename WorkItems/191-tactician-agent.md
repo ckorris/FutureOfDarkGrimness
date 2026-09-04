@@ -23,6 +23,39 @@ campaigns re-base.)*
 
 ## Notes (newest first)
 
+**2026-09-04 (15:30, Fable 5.1) - THE DUMP ANSWERS: ONE BIT FLIPPED IN ONE OBJECT HEADER. HARDWARE
+IS NOW THE PRIMARY HYPOTHESIS. AND THE 18 GB WAS NOT A LEAK.**
+
+*verifyheap on `selfplay-47963.dmp`:* 129,162,220 objects verified, **3 errors, all one object**: the
+`DataBinding<Position>` at `7e28a600ba48` (a model's `PositionBinding`, also referenced from the
+store's `Dictionary<int, DataBinding<Position>>` entry array) has method-table word
+`7e643e412ab1` where its type's table is `7e643ec12ab0`. XOR = `0x800001`: bit 0 is the GC's mark
+bit and is legitimately set on its neighbours too (the dump is mid-mark; `RemainingWoundsBinding`
+and `FacingBinding` next to it carry `...b9` and `...d1`), so the whole corruption is **bit 23 of one
+64-bit word cleared**. Everything else in 15 GB is intact. A single cleared bit in an object header,
+in a process with no unsafe code, is the signature of a memory cell, not of a JIT or GC bug (either
+of those writes whole wrong values, not one bit). The GC then dereferenced the bad table and took a
+general protection fault - the same face as every earlier crash. The region is gen1.
+
+*The 18 GB was lazy server GC, not a leak:* under `DOTNET_GCHeapHardLimit=8 GiB` (v3, pid in
+`selfplay.pid`) the heap oscillates 165-464 MB over 25 samples with gen2 collections happening (46
+in 12 min), and `GameRunner.RunGameAsync` drops every game's graph on return. The census's 129 M
+objects were dead games waiting for a gen2 that a 32 GB box never forced. That also explains the
+timing of every crash: the box only touches its full RAM when something big is resident - self-play
+grown overnight (07:18, 07:59), self-play at 18 GB (14:56), or Chris's own session plus three fresh
+lab processes (23:33-23:53) - and a weak cell only bites when its page is in use. The chain-v2
+window (11:11-13:14) ran while self-play was still small.
+
+*Now running:* `scratchpad/memtest.py 22 300` (22 GB, four patterns, immediate verify, 5-min hold,
+re-verify; reports every bad word with its bit positions) -> `memtest.log`. A hit confirms hardware
+and names the bit; a miss does not clear it (userspace cannot reach the pages the kernel and the
+desktop hold, and a marginal cell can need a specific access pattern), in which case memtest86+
+from boot is the definitive test. **Question for Chris:** what physically changed in the 22:56
+"OS swap" - a DIMM reseated, a drive added, a BIOS reset (which drops XMP/DRAM timings back to
+defaults or, worse, leaves a profile at the wrong voltage)? Zero crashes in the hours before it,
+seven after. Mitigation meanwhile: the 8 GiB cap keeps self-play small so the box stays out of its
+top memory; every lab process keeps the dumper armed.
+
 **2026-09-04 (mid-afternoon, Fable 5.1) - CRASH #7, AND THIS ONE LEFT A DUMP SOS CAN READ. PLUS AN
 18 GB SELF-PLAY PROCESS.** Self-play (plain A, dop 20, pid 47963, the 23:39 Release build) died at
 14:56:48 after 3h45 and batches 208-345 (~27,600 games, 0 faults): kernel `traps: .NET Server GC[47976]
