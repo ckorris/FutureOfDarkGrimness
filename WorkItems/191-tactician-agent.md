@@ -23,6 +23,18 @@ campaigns re-base.)*
 
 ## Notes (newest first)
 
+**2026-09-04 (afternoon, Fable 5.1) - R9 FAILED IN THE FIELD: GUI FREEZE AT THE STRATEGIST'S
+FIRST ACTIVATION.** Chris, Windows laptop, Visual Studio Debug build, tactician-bc at 72f2851 /
+c3c442d, 2k vs 2k human vs Strategist Bot: "it worked until it was the bot's first activation, as in,
+the Choose Action stage. Then it froze, and the UI was unresponsive. I waited two minutes ... For some
+reason I couldn't bring up any other windows like the console or the IDE to see if anything was up."
+The step-9 R9 check ("first GUI game with search - the window stays live") was on the deferred
+hand-verify list, so this is the first time the path ran in a GUI. The whole machine going
+unresponsive points past a blocked main thread to a pegged laptop (4 root workers x in-sim games at
+`UctOptions.Interactive`). A separate investigator agent is on it (thread of Resolve() in a
+GUI-hosted game, per-iteration cost vs the wall-clock budget, thread-pool starvation on few cores,
+store/renderer lock, shared bus flooding); diagnosis and fix to be recorded here.
+
 **2026-09-04 (midday, Fable 5.1) - STEP 9 SMOKE CELLS ARE IN; THE DOP-6 REPRODUCER DID NOT
 REPRODUCE WITH THE BOX TO ITSELF; CHAIN v2.**
 
