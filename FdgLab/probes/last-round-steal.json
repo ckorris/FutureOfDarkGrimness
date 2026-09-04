@@ -1,0 +1,21 @@
+{
+  "name": "B-gate probe: last-round steal - round 4, one reachable unclaimed objective, nothing else in range",
+  "round": 4,
+  "activePlayer": 0,
+  "settings": { "randomness": "Probabilistic" },
+  "objectives": [[38, 21]],
+  "players": [
+    {
+      "army": "armies/probe-mover.fdgarmy",
+      "units": [
+        { "unit": "Scout Squad", "models": [[36, 25], [38, 25], [40, 25]] }
+      ]
+    },
+    {
+      "army": "armies/probe-defender.fdgarmy",
+      "units": [
+        { "unit": "Paper Target", "models": [[10, 4], [12, 4], [14, 4]] }
+      ]
+    }
+  ]
+}

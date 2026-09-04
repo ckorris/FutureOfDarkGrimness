@@ -61,7 +61,11 @@ static int Usage()
                   on a real mid-game boundary snapshot, the cost of resuming it and advancing
                   EXACTLY one activation, and whether simulated games stop/abandon without leaks.
                   Pure measurement - no Tactician behavior changes.
-          probes  --feasibility [--games N] [--seed-base S] [--a/--b <army>]   #191 A3 gate metric:
+          probes  [--dir DIR]   #191 campaign step 10 (plan sec 6.2): runs every ScenarioCompiler
+                  JSON in DIR (default FdgLab/probes/) with a "<name>.expect.json" sidecar through
+                  UctSearch, checks the prescribed unit/action, prints PASS/FAIL - exit 1 if any
+                  fail (last-round-steal, charge-vs-shoot gate the B-merge).
+                  --feasibility [--games N] [--seed-base S] [--a/--b <army>]   #191 A3 gate metric:
                   shadow-runs the MacroActionGenerator at every movement decision of real games and
                   reports the fraction of activations with a valid non-Hold candidate (target >= 95%)
           selfplay [--mix FdgLab/armies/mix.json] (armies drawn from FdgLab/armies/pool.json,
@@ -205,14 +209,11 @@ static async Task<int> RunProbes(string[] args)
     if (args.Contains("--feasibility"))
         return await RunFeasibilityProbe(args);
 
-    // Scaffold (#194): scenario probes are hand-authored states with one known-best decision, scored
-    // automatically. They arrive as ScenarioCompiler JSONs under FdgLab/probes/ once there is a
-    // Tactician whose choices are worth scoring (plan sec. 6.2).
-    string probesDir = Path.Combine("FdgLab", "probes");
-    int count = Directory.Exists(probesDir) ? Directory.GetFiles(probesDir, "*.json").Length : 0;
-    Console.WriteLine($"{count} probe(s) found in {probesDir}. Scenario probes arrive with A4+; " +
-        "the generator feasibility metric runs now via 'probes --feasibility'.");
-    return 0;
+    // #191 campaign step 10 (plan sec 6.2; the 2026-07-11 handoff item 1 harness, built here): each
+    // ScenarioCompiler JSON under --dir plus its "<name>.expect.json" sidecar drives one UctSearch
+    // and checks the prescribed unit/action. Budget: the same one FdgLab benches search under.
+    string probesDir = Arg(args, "--dir") ?? Path.Combine("FdgLab", "probes");
+    return await ScenarioProbes.RunAsync(probesDir, GameRunner.LabSearchBudget);
 }
 
 // #191 A3 gate metric: real solo-rules games, with the MacroActionGenerator shadow-run at every
