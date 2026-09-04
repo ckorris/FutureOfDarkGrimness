@@ -23,6 +23,60 @@ campaigns re-base.)*
 
 ## Notes (newest first)
 
+**2026-09-03 (night, Opus) - STEP 5b DONE: THE PRESCRIPTION SEAM, AND B0'S CONTROL FLIPPED
+FROM DIVERGING TO IDENTICAL.** Chris switched the session to Opus (the model the campaign doc
+requires for 5b/5c) - that was the sign-off 5b was waiting on. Engine commit `28b6443`.
+
+- **Diagnosis re-verified before building on it, and the campaign doc's prose is wrong.** Step 5's
+  bullet says the divergence is because "`TacticianActionResolver.Resolve` runs
+  `_planner.BeginActivation` as a side effect". It does not - `BeginActivation` is called by
+  `TacticianActivationResolver` (the `ChooseUnitToActivateRequest` resolver), which is what the B0
+  ledger entry (finding 4) actually said. The consequence is not cosmetic: the critical prescription
+  level is the ACTIVATION choice, not the action, because that is the one carrying the side effect.
+  The doc's own "prescribing the activation choice is the same seam one level up" has it backwards -
+  the activation choice is the seam, and the action is the level up.
+- **The seam.** `TacticianPlanner.Prescribe(unit, action, macroAction)` sets the decision; the
+  resolvers consume it and the policy's own per-activation setup still runs.
+  `TacticianActivationResolver` takes a prescribed unit (matched by `DataReference`, since a
+  prescription can arrive as a different binding instance) and calls `BeginActivation` on the
+  ENGINE's binding for it; `ChooseAction` consumes a prescribed action ahead of every scoring
+  branch, mirroring the natural path's state exactly (Cast increments `_castAttempts` and carries no
+  plan; Disembark likewise; a plan-bearing action stores `_plan` and `LastMacroLabel`). Prescription
+  fields deliberately survive `BeginActivation` - unit and action are prescribed together and
+  `BeginActivation` runs between them.
+- **Scoring is skipped, not overridden.** A prescribed activation runs neither `Urgency` nor
+  `MacroActionGenerator.Enumerate`+`Score`. That is where 5c's ~20ms/activation budget comes from
+  (B0's 165ms of policy thinking), so it is pinned by a test asserting the decision log stays empty.
+- **G3 fall-through, no half-states.** A stale prescription (unit not activatable now, action not
+  among the offered options) or a plan-bearing action arriving without its `MacroAction` falls back
+  to natural scoring rather than faulting or leaving the movement resolver with no cached move.
+- **The pin, at both levels.** Engine: `Tests/TacticianPrescriptionTests.cs`, 10 tests - prescribing
+  the planner's own choice reproduces action + move + macro label; prescription beats the argmax;
+  a prescribed unit reaches `BeginActivation`; unprescribed play is untouched; the fall-throughs.
+  Game level: `fdglab b0`'s phase 3c control now prescribes THROUGH the seam, and a third arm
+  (`EInjectMode.WireFirst`) keeps the old wire-boundary injection as the regression witness for
+  finding 4. On a real 2k board (Orks vs Robot Legions, boundary 12, 3 valid options):
+
+  | Arm | Result |
+  |---|---|
+  | two natural advances | MATCH (G5 holds) |
+  | steer to last option, through the seam | DIFFERS from natural (prescription really steers) |
+  | **control - policy's own pick, through the seam** | **IDENTICAL to natural (the flip)** |
+  | same pick answered at the wire boundary | DIFFERS from natural (finding 4 still holds) |
+
+  The sharpest form of it is on `builtin-basic`, where the boundary offers exactly ONE option: the
+  choice is identical by construction and the only difference is whether the planner was told, and
+  the wire arm still diverges while the seam arm does not.
+- **Hash-verify:** DOP-1 six-game cell `8D6EFA0AF0B4019E`, unchanged from 5a and step 4 - the seam
+  is decision-neutral for unprescribed play. Engine suite 3176/3177 (1 skipped by design, +10 = the
+  new pins), full `dotnet build` green, headless smoke exits 0 (tie, 4 rounds).
+- **Self-play undisturbed:** PID 51352 ran throughout, 88 -> 95 complete batches during this burst.
+- **Next: 5c** (pause/step hook at the activation boundary, D10a pre-authorized) - the last of
+  step 5's three commits, also Opus/high. Note for it: 5c wants the literal
+  `DeterminePlayerTurnStage.Enter` point, which is also where step 4's exporter took a documented
+  detour (it hooks `ChooseUnitToActivateRequest` instead) - if 5c builds the real stage hook, the
+  exporter's boundary seam can move onto it.
+
 **2026-09-03 (night, later) - STEP 5a BUILT: CHOOSEACTIONREQUEST IS ITS OWN REQUEST TYPE.**
 Chris said "continue with B1" once step 4's self-play driver was confirmed generating (PID
 51352 still alive throughout this slice, batches still growing in `FdgLab/data/2026-09-03/`).

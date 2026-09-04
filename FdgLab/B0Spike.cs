@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using FDG;
 using FDG.Ai;
+using FDG.Ai.Tactician;
 using FDG.Data;
 using FDG.GameModel;
 using FDG.Players;
@@ -190,13 +191,19 @@ public static class B0Spike
         Console.WriteLine("\n[3c] Determinism and decision injection");
         (string? natural1, string n1) = await AdvanceCapturingAsync(snapshot, profile, timeoutSeconds);
         (string? natural2, string n2) = await AdvanceCapturingAsync(snapshot, profile, timeoutSeconds);
-        (string? injected, string n3) = await AdvanceCapturingAsync(snapshot, profile, timeoutSeconds, injectAt: 1);
-        // CONTROL: inject the option the policy would have chosen anyway. A sound injection must
-        // reproduce the natural result byte for byte; a divergence here means answering the request
-        // at the registry boundary SKIPPED policy state the later requests depend on (the Tactician
-        // resolver calls planner.BeginActivation before returning).
+        (string? injected, string n3) = await AdvanceCapturingAsync(snapshot, profile, timeoutSeconds,
+            injectAt: 1, mode: EInjectMode.SeamLast);
+        // CONTROL (#191 B1 5b): prescribe the option the policy would have chosen anyway, THROUGH
+        // the planner's prescription seam. A sound prescription must reproduce the natural result
+        // byte for byte.
         (string? control, string n4) = await AdvanceCapturingAsync(snapshot, profile, timeoutSeconds,
-            injectAt: 1, injectFirst: true);
+            injectAt: 1, mode: EInjectMode.SeamFirst);
+        // The same control answered at the registry/wire boundary instead - B0 finding 4's witness.
+        // Under the Tactician this SKIPS TacticianActivationResolver, so BeginActivation never runs
+        // and the rest of the activation is answered by a planner that does not know its unit. Kept
+        // so the divergence stays measured rather than remembered.
+        (string? bypass, string n5) = await AdvanceCapturingAsync(snapshot, profile, timeoutSeconds,
+            injectAt: 1, mode: EInjectMode.WireFirst);
 
         if (natural1 == null || natural2 == null)
         {
@@ -214,13 +221,21 @@ public static class B0Spike
                                   $"{(injected != natural1 ? "DIFFERS from natural" : "IDENTICAL to natural")}");
 
             if (control == null)
-                Console.WriteLine($"    injection control: FAILED - {n4}");
+                Console.WriteLine($"    prescription control: FAILED - {n4}");
             else
-                Console.WriteLine($"    injection control (policy's own pick, {n4}): " +
+                Console.WriteLine($"    prescription control (policy's own pick THROUGH the seam, {n4}): " +
                     (control == natural1
-                        ? "IDENTICAL to natural -> registry-level injection is side-effect free for this policy"
-                        : "DIFFERS from natural -> BYPASSING THE RESOLVER LOSES POLICY STATE; " +
-                          "B1 must prescribe THROUGH the policy, not around it"));
+                        ? "IDENTICAL to natural -> the 5b seam reproduces natural play (PIN)"
+                        : "DIFFERS from natural -> THE SEAM IS NOT FAITHFUL; nothing built on it can be trusted"));
+
+            if (bypass == null)
+                Console.WriteLine($"    wire-bypass witness: FAILED - {n5}");
+            else
+                Console.WriteLine($"    wire-bypass witness (same pick answered at the boundary, {n5}): " +
+                    (bypass == natural1
+                        ? "identical to natural -> this policy keeps no per-activation state"
+                        : "DIFFERS from natural -> B0 finding 4 still holds; prescription must go " +
+                          "THROUGH the policy (this is why the seam exists)"));
         }
 
         // --- Phase 3d: rollout-to-game-end cost --------------------------------------------------
@@ -395,13 +410,14 @@ public static class B0Spike
     /// One advance that RETURNS the captured snapshot (Phase 3b's chaining), throw-stopped.
     /// </summary>
     private static async Task<(string? Snapshot, string Note)> AdvanceCapturingAsync(string snapshot,
-        EAiProfile profile, int timeoutSeconds, int injectAt = 0, bool injectFirst = false)
+        EAiProfile profile, int timeoutSeconds, int injectAt = 0,
+        EInjectMode mode = EInjectMode.None)
     {
         GameDataStore store = GameSaveSerializer.Load(snapshot);
         var captured = new TaskCompletionSource<string>(TaskCreationOptions.RunContinuationsAsynchronously);
         var watcher = new BoundaryWatcher(targetOccurrence: 2,
             onBoundary: () => captured.TrySetResult(GameSaveSerializer.Save(store)), throwAfter: true,
-            injectAtOccurrence: injectAt, injectFirstOption: injectFirst);
+            injectAtOccurrence: injectAt, mode: mode);
 
         var ended = new TaskCompletionSource<GameResult>(TaskCreationOptions.RunContinuationsAsynchronously);
         BuildResumedServer(store, profile, watcher, ended);
@@ -467,11 +483,13 @@ public static class B0Spike
             slots[i] = new PlayerSlot(i, savedInfos[i].TeamNumber, savedInfos[i].PlayerID,
                 new ArmyListFile(), store);
             var aiGame = new FDGGame_AsLocal(store, bus);
+            // #191 B1 5b: the slot's planner is what a prescribed decision is set on, so the
+            // watcher's control arm can steer THROUGH the policy instead of around it.
             IStageResolverRegistry registry = AiProfileFactory.BuildRegistry(
-                profile, aiGame.TableState, savedInfos[i].PlayerID, seed, slots[i].SlotID,
-                decisionLog: null, seeThroughFriendlyUnits: seeThrough);
+                profile, aiGame.TableState, savedInfos[i].PlayerID, out TacticianPlanner? planner,
+                seed, slots[i].SlotID, decisionLog: null, seeThroughFriendlyUnits: seeThrough);
             slots[i].AssignPlayerController(new LabPlayerController(
-                $"slot {i}", savedInfos[i].PlayerID, aiGame, watcher.Wrap(registry)));
+                $"slot {i}", savedInfos[i].PlayerID, aiGame, watcher.Wrap(registry, planner)));
         }
 
         var server = new FDGServer(store, bus, slots);
@@ -524,43 +542,62 @@ public static class B0Spike
     /// boundary) and fires once at the target one. Local games deliver through the JSON path, so
     /// that override is the one that matters; the typed path is covered for completeness.
     /// </summary>
+    /// <summary>
+    /// How a prescribed decision reaches the game (#191 B1 5b).
+    /// </summary>
+    internal enum EInjectMode
+    {
+        /// <summary>No injection - the AI chooses.</summary>
+        None,
+        /// <summary>Through the planner's prescription seam: the LAST option (the steering test).</summary>
+        SeamLast,
+        /// <summary>Through the seam: the option the policy would itself have picked (the control).</summary>
+        SeamFirst,
+        /// <summary>
+        /// Answered at the registry/wire boundary, bypassing the resolver - what B0 measured
+        /// diverging. Kept as the regression witness for finding 4, not as a supported path.
+        /// </summary>
+        WireFirst,
+    }
+
     private sealed class BoundaryWatcher
     {
         private readonly int _target;
         private readonly Action _onBoundary;
         private readonly bool _throwAfter;
         private readonly int _injectAt;
+        private readonly EInjectMode _mode;
         private int _seen;
         private int _injectedOptionCount = -1;
 
         /// <summary>How many options the injected decision had (-1 = injection never fired).</summary>
         public int InjectedOptionCount => _injectedOptionCount;
 
-        /// <param name="injectAtOccurrence">
-        /// When > 0, the harness ANSWERS that occurrence itself with the LAST valid option instead of
-        /// letting the AI choose - the B1 prescribed-decision primitive. Deliberately the last option,
-        /// because the AI's own pick is usually the first, so a steered game diverges visibly.
-        /// </param>
-        private readonly bool _injectFirst;
-
         public BoundaryWatcher(int targetOccurrence, Action onBoundary, bool throwAfter,
-            int injectAtOccurrence = 0, bool injectFirstOption = false)
+            int injectAtOccurrence = 0, EInjectMode mode = EInjectMode.None)
         {
             _target = targetOccurrence;
             _onBoundary = onBoundary;
             _throwAfter = throwAfter;
             _injectAt = injectAtOccurrence;
-            _injectFirst = injectFirstOption;
+            _mode = mode;
         }
 
-        public IStageResolverRegistry Wrap(IStageResolverRegistry inner) => new WatchRegistry(inner, this);
+        /// <param name="planner">
+        /// This slot's planner (null for non-Tactician profiles). #191 B1 5b: a prescribed decision
+        /// is set on the planner and then travels the NORMAL resolver path, so the policy's own
+        /// per-activation setup still runs. Only <see cref="EInjectMode.WireFirst"/> answers at the
+        /// boundary, and it exists to keep B0 finding 4 visible.
+        /// </param>
+        public IStageResolverRegistry Wrap(IStageResolverRegistry inner, TacticianPlanner? planner = null) =>
+            new WatchRegistry(inner, this, planner);
 
         // Returns a reply JSON to inject, or null to let the inner registry answer normally.
-        private string? Observe(string? requestJson, IReadableGameDataStore store)
+        private string? Observe(string? requestJson, IReadableGameDataStore store, TacticianPlanner? planner)
         {
             int seen = Interlocked.Increment(ref _seen);
 
-            if (seen == _injectAt && _injectAt > 0 && requestJson != null)
+            if (seen == _injectAt && _injectAt > 0 && requestJson != null && _mode != EInjectMode.None)
             {
                 // Mirror StageResolverRegistry.ResolveRequestAsJson_Typed exactly: wire settings for
                 // BOTH directions, and serialize against the declared reply type so TypeNameHandling
@@ -571,14 +608,24 @@ public static class B0Spike
                 if (request != null && request.ValidOptions.Count > 0)
                 {
                     _injectedOptionCount = request.ValidOptions.Count;
-                    // FIRST option is the control: it is what the solo bot would pick anyway, so a
-                    // mechanically sound injection must reproduce the natural result exactly. LAST
-                    // is the steering test.
-                    DataBinding<UnitData> chosen = _injectFirst
-                        ? request.ValidOptions[0].Option
-                        : request.ValidOptions[^1].Option;
-                    return Newtonsoft.Json.JsonConvert.SerializeObject(
-                        chosen, typeof(DataBinding<UnitData>), wire);
+                    // FIRST option is the control: it is what the policy would pick anyway, so a
+                    // sound prescription must reproduce the natural result exactly. LAST is the
+                    // steering test.
+                    DataBinding<UnitData> chosen = _mode == EInjectMode.SeamLast
+                        ? request.ValidOptions[^1].Option
+                        : request.ValidOptions[0].Option;
+
+                    if (_mode == EInjectMode.WireFirst)
+                    {
+                        return Newtonsoft.Json.JsonConvert.SerializeObject(
+                            chosen, typeof(DataBinding<UnitData>), wire);
+                    }
+
+                    // The seam: hand the decision to the policy and let the request through. The
+                    // deserialized binding is a different instance from the engine's, which is why
+                    // the resolver matches prescriptions by DataReference.
+                    planner?.Prescribe(chosen);
+                    return null;
                 }
             }
 
@@ -592,11 +639,14 @@ public static class B0Spike
         {
             private readonly IStageResolverRegistry _inner;
             private readonly BoundaryWatcher _watcher;
+            private readonly TacticianPlanner? _planner;
 
-            public WatchRegistry(IStageResolverRegistry inner, BoundaryWatcher watcher)
+            public WatchRegistry(IStageResolverRegistry inner, BoundaryWatcher watcher,
+                TacticianPlanner? planner)
             {
                 _inner = inner;
                 _watcher = watcher;
+                _planner = planner;
             }
 
             public IStageResolverRegistry RegisterResolver<TRequest, TReply>(IStageResolver<TRequest, TReply> resolver)
@@ -609,7 +659,7 @@ public static class B0Spike
             public Task<TReply> ResolveRequest<TRequest, TReply>(TRequest request)
                 where TRequest : IStageTaskRequest<TReply>
             {
-                if (request is ChooseUnitToActivateRequest) _watcher.Observe(null, null!);
+                if (request is ChooseUnitToActivateRequest) _watcher.Observe(null, null!, _planner);
                 return _inner.ResolveRequest<TRequest, TReply>(request);
             }
 
@@ -618,7 +668,7 @@ public static class B0Spike
             {
                 if (typeFullName == typeof(ChooseUnitToActivateRequest).FullName)
                 {
-                    string? injected = _watcher.Observe(requestJson, gameDataStore);
+                    string? injected = _watcher.Observe(requestJson, gameDataStore, _planner);
                     if (injected != null) return Task.FromResult(injected);
                 }
                 return _inner.ResolveRequestAsJson(typeFullName, requestJson, gameDataStore);

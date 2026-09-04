@@ -187,10 +187,12 @@ on the current engine; a changed hash is a stop, not a note):
   first because 5b's seam is built on the typed request. **The GUI half cannot be hand-verified
   during the window** - it is the top "awaiting GUI hand-verify" ledger item for Chris's return
   (FdgRaylib.Tests + headless smoke cover it until then).
-- **5b - prescription seam, policy-side.** B0's control test is the spec: injecting the option
+- **5b - prescription seam, policy-side - DONE 2026-09-03.** B0's control test is the spec: injecting the option
   the planner would pick anyway reproduces natural play byte-identically under SoloRules but
-  NOT under Tactician, because `TacticianActionResolver.Resolve` runs `_planner.BeginActivation`
-  as a side effect. So prescription goes THROUGH the planner - `TacticianPlanner.Prescribe(unit,
+  NOT under Tactician, because `TacticianActivationResolver.Resolve` runs
+  `_planner.BeginActivation` as a side effect (the bullet originally named
+  `TacticianActionResolver`; corrected 2026-09-03 when 5b re-verified the diagnosis - the
+  side effect is on the ACTIVATION resolver, which is why the unit choice is the seam). So prescription goes THROUGH the planner - `TacticianPlanner.Prescribe(unit,
   action, macroAction)` sets the activation plan the way `ChooseAction` would have, and the
   downstream resolvers (movement path, target, wounds, consolidation - under 2% of policy time
   combined) play it out unchanged. The failing B0 control test becomes the pin: prescribe what
