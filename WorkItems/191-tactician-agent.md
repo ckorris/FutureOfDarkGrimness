@@ -23,6 +23,68 @@ campaigns re-base.)*
 
 ## Notes (newest first)
 
+**2026-09-04 (morning, Opus 5) - FIRST REAL B-vs-A NUMBER: STRATEGIST BEATS TACTICIAN 87.5% OVER
+100 GAMES AT 2k. AND THE SEGFAULT IS NOW A REPRODUCER, NOT A MYSTERY.**
+
+**The number (step 10's gate metric, one cell of it):**
+
+| cell | games | A score | W/L/T | faults | timeouts | hash |
+|---|---|---|---|---|---|---|
+| 2k 1v1 Hives vs Battle Brothers, **Strategist vs Tactician**, dop 2 | 100 | **87.5%** | 83/8/9 | 0 | 0 | `5DF38281DF031258` |
+
+The B-gate wants **>= 60% vs A**. This cell clears it by a wide margin, on the first honest
+measurement anyone has taken of the search actually playing. Per-game 47.6s, 289 decisions/game,
+decision mean 164ms, worst p95 2090ms (the 2s budget cap, visible in the tail). Caveat worth
+keeping: ONE cell, one army pair. The gate is a panel, not a cell, and the rest is step 10.
+
+**The crash: reproducible, and it needs BOTH concurrency and duration.**
+
+| configuration | outcome |
+|---|---|
+| dop 1, 6 games | clean |
+| dop 2, 6 games | clean |
+| dop 4, 6 games | clean |
+| dop 6, 6 games | clean |
+| **dop 2, 100 games (40 min)** | **clean** |
+| **dop 6, 100 games** | **SIGSEGV at ~7 min** (07:18, PID 31446) |
+| dop 6, 100 games (overnight) | SIGSEGV at ~8 min (23:50, PID 10927) |
+| dop 6, 3k 2v2 200 games (overnight) | SIGSEGV at ~2 min (23:53, PID 11486) |
+
+- Short runs at ANY dop pass, which is why the 6-game ladder cleared dop 6 and briefly made this
+  look like it was not a concurrency problem at all. It is: **dop 6 dies in minutes, dop 2 survives
+  40 of them.** Both readings were needed; neither alone was enough.
+- The soak's death (step 8 entry, ~300 searches, `.NET Server GC` segfault in `libcoreclr.so`) fits
+  the same shape - 4 workers is its own concurrency.
+- **Not the A path.** Self-play at dop 20 with the same binary ran 400 games, 0 faults, clean exit;
+  204 batches before that. Plain Tactician is unaffected.
+- **Not the evaluator.** `HandWeightedEvaluator` and `PositionEncoder` are the obvious shared-state
+  suspects (one evaluator instance serves all 4 workers) and both are entirely static/stateless.
+  Checked and ruled out rather than assumed.
+- One managed `NullReferenceException` inside a game during the overnight 2v2 cell - recorded
+  because it is the only MANAGED symptom seen, and it points at shared mutable state somewhere
+  under concurrent simulation. Not chased yet.
+- **Working mitigation, not a fix: bench search profiles at dop <= 2.** Lobby play is one game with
+  one search at a time, which is the dop-1 shape, so this is a lab-throughput problem rather than a
+  player-facing one - but that reasoning is an inference, not a measurement, and a long GUI session
+  has not been run.
+
+**UNRESOLVED - does contention weaken a wall-clock-budgeted bot?** The 6-game ladder read 83.3% /
+91.7% / 58.3% / 50.0% at dop 1/2/4/6, monotonic, with a plausible mechanism (the budget is wall
+clock, so contention buys fewer iterations while per-game wall barely moves, 46 -> 53s). At n=6 per
+rung that is noise-compatible, and the dop-6 100-game run that would have settled it crashed. It
+matters for the gate protocol - benching at high dop may understate B - so step 10 should either
+pin cells to low dop or bench on an ITERATION budget. Flagged, not concluded.
+
+**Process failure worth recording: the box sat idle from 03:56 to 07:05.** The dop-1 diagnostic
+finished and nothing was watching for it, so its result went unread for three hours and no compute
+ran - a straight violation of campaign sec 0.4. Every job since is launched as a chain that ends by
+handing the box back to self-play, with a watcher on it. Overnight loss from the crashes: zero
+games generated between 23:53 and 07:06.
+
+**Running:** 3k 2v2 panel (50 games/cell) then Strategist vs SoloRules 2k (100 games), both at
+dop 2 with data gen paused, then self-play resumes automatically.
+
+
 **2026-09-03 (night, Opus 5 - Chris said to carry on rather than switch to the doc's Sonnet for
 this step, so no re-prompt inside it) - STEP 9 (B5) DONE: THE SEARCH NOW DRIVES REAL GAMES. THE
 BOT IS "STRATEGIST BOT" AND IT IS IN THE LOBBY.** Everything from B1 to B4 was machinery; this is
