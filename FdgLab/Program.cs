@@ -51,6 +51,10 @@ static int Usage()
                   [--log-decisions]  with --dump-logs: interleave each planning AI's Choose Action
                                      narration ("[ai N] plan ..." + full scored candidate table)
                                      into the game log - a decision replay (#191 tooling)
+                  --ffa [--a/-b/-c/-d <army>] [--profile P] [--seed S] [--timeout T]   #191 campaign
+                                     step 10 "ffa-smoke" gate cell: one 4-slot free-for-all game
+                                     (own-team-each), default 4 distinct 2k armies, must produce a
+                                     GameResult with no fault
           analyze <save.fdgsave> [--unit substr] [--no-board]   per-unit Tactician candidate-score
                   dump + the action it would take from that exact state - point it at a parked
                   save from a hand-played game (#191 tooling); [--urgency] prepends each army's
@@ -148,6 +152,9 @@ static async Task<int> RunBench(string[] args)
 
 static async Task<int> RunSmoke(string[] args)
 {
+    if (args.Contains("--ffa"))
+        return await RunFfaSmoke(args);
+
     if (!TryProfileArg(args, "--profile-a", out FDG.Ai.EAiProfile profileA) ||
         !TryProfileArg(args, "--profile-b", out FDG.Ai.EAiProfile profileB))
         return 2;
@@ -202,6 +209,33 @@ static async Task<int> RunSmoke(string[] args)
         anyFault |= record.Result.Outcome == EGameOutcome.Fault;
     }
     return anyFault ? 1 : 0;
+}
+
+// #191 campaign step 10 (plan sec 5): "ffa-smoke" gate cell - one four-slot free-for-all game
+// (every slot its own team, GameSpec's default) that must produce a GameResult with no fault.
+// Four distinct armies, not a repeated one, so the FFA seating/turn-order path gets real variety.
+static async Task<int> RunFfaSmoke(string[] args)
+{
+    if (!TryProfileArg(args, "--profile", out FDG.Ai.EAiProfile profile)) return 2;
+    string[] defaultArmies =
+    {
+        "FdgLab/armies/Alien Hives 2k - Horde Melee.fdgarmy",
+        "FdgLab/armies/Battle Brothers 2k - Elite Shooting.fdgarmy",
+        "FdgLab/armies/Orks 2k - Horde Mixed.fdgarmy",
+        "FdgLab/armies/Robot Legions 2k - Mixed.fdgarmy",
+    };
+    string[] armySpecs =
+    {
+        Arg(args, "--a") ?? defaultArmies[0], Arg(args, "--b") ?? defaultArmies[1],
+        Arg(args, "--c") ?? defaultArmies[2], Arg(args, "--d") ?? defaultArmies[3],
+    };
+    var slots = armySpecs.Select(s => Armies.LoadSlot(s) with { Profile = profile }).ToList();
+    var spec = new GameSpec(slots, IntArg(args, "--seed", 42), WatchdogSeconds: IntArg(args, "--timeout", 900));
+    GameRecord record = await GameRunner.RunGameAsync(spec);
+    Console.WriteLine($"Game result: {record.Result.ToSummaryLine()}");
+    Console.WriteLine($"winner_army={record.WinnerArmy ?? "none"} wall={record.WallClock.TotalMilliseconds:F0}ms " +
+                      $"decisions={record.Decisions.Count}");
+    return record.Result.Outcome == EGameOutcome.Fault ? 1 : 0;
 }
 
 static async Task<int> RunProbes(string[] args)
