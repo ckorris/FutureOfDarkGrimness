@@ -2,6 +2,7 @@ using System.Diagnostics;
 using FDG;
 using FDG.Ai;
 using FDG.Ai.Tactician;
+using FDG.Ai.Tactician.Search;
 using FDG.Data;
 using FDG.GameModel;
 using FDG.Players;
@@ -66,6 +67,10 @@ public static class B0Spike
             .Where(value => value > 0).ToList();
         int lineReps = IntArg(args, "--line-reps", 5);
         int lineSoak = IntArg(args, "--line-soak", 0);
+        // #191 B2: action-space enumeration at the root and the fully prescribed line (design doc
+        // sec 8 tests 1 and 9). 0 skips the phase.
+        int edgeReps = IntArg(args, "--edge-reps", 5);
+        int edgeDepth = IntArg(args, "--edge-depth", 8);
         int timeoutSeconds = IntArg(args, "--timeout", 60);
         EAiProfile profile = (Arg(args, "--profile") ?? "tactician").ToLowerInvariant() switch
         {
@@ -325,6 +330,113 @@ public static class B0Spike
                                       $"(reached {reached}/{lineReps}, ended_early={endedEarly}) " +
                                       $"=> {DecisionBand(perActivation)}");
                 }
+            }
+        }
+
+        // --- Phase 3f: B2 action space + fully prescribed line (#191 B2 sec 8, tests 1 and 9) --------
+        // 5c measured natural lines (the policy thinks at every activation) and a cheap in-sim policy.
+        // What a TREE WALK pays is different: every activation on the path is prescribed from an edge,
+        // so the policy neither ranks units nor enumerates/scores macros. Measured here by recording
+        // what the policy decided along a natural line (LineBoundary.PreviousDecision) and replaying
+        // it as a fully prescribed line under the same seed - which must also be byte-identical and
+        // honored at every boundary, or the number is meaningless.
+        if (edgeReps > 0)
+        {
+            Console.WriteLine($"\n[3f] B2 action space at the root, and the fully prescribed line (depth {edgeDepth})");
+            var searchOptions = new SearchOptions
+            {
+                WorkerSeed = 4242,
+                Randomness = ERandomnessType.Realistic,
+                InSimProfile = profile,
+                TimeoutSeconds = timeoutSeconds,
+            };
+            var space = new TacticianActionSpace(searchOptions);
+
+            var probeSw = Stopwatch.StartNew();
+            SearchTree tree = await SearchTree.FromSnapshotAsync(snapshot, searchOptions, space, new ObjectiveShareEvaluator());
+            probeSw.Stop();
+            var level1Sw = Stopwatch.StartNew();
+            IReadOnlyList<UnitBranch> rootUnits = tree.UnitsOf(tree.Root);
+            level1Sw.Stop();
+            Console.WriteLine($"     root probe {probeSw.Elapsed.TotalMilliseconds:F0}ms; level 1: {rootUnits.Count} activatable units " +
+                              $"ranked in {level1Sw.Elapsed.TotalMilliseconds:F1}ms (top: {(rootUnits.Count > 0 ? rootUnits[0].Name : "-")})");
+            var perUnitMs = new List<double>();
+            int totalEdges = 0;
+            foreach (UnitBranch unit in rootUnits)
+            {
+                var sw = Stopwatch.StartNew();
+                IReadOnlyList<SearchEdge> edges = tree.EdgesOf(tree.Root, unit);
+                sw.Stop();
+                perUnitMs.Add(sw.Elapsed.TotalMilliseconds);
+                totalEdges += edges.Count;
+                if (unit.Index == 0)
+                {
+                    int families = edges.Where(e => e.Prescription.Macro != null)
+                        .Select(e => e.Prescription.Macro!.Intent).Distinct().Count();
+                    Console.WriteLine($"     level 2 (top unit): {edges.Count} edges over {families} intent families in " +
+                                      $"{sw.Elapsed.TotalMilliseconds:F0}ms; first edge: {edges[0].Label}");
+                }
+            }
+            if (perUnitMs.Count > 0)
+            {
+                Console.WriteLine($"     level 2 (all units): {totalEdges} edges total, mean {totalEdges / (double)rootUnits.Count:F1} per unit, " +
+                                  $"enumeration mean {perUnitMs.Average():F0}ms/unit (max {perUnitMs.Max():F0}ms) - " +
+                                  $"paid lazily, once per (node, unit), only as widening reaches the unit");
+            }
+
+            // Pass 1: natural line, recording each activation's decision. Pass 2: the same line, every
+            // activation prescribed, same seed.
+            var naturalMs = new List<double>();
+            var prescribedMs = new List<double>();
+            int identical = 0, honoredAll = 0, completed = 0;
+            for (int rep = 0; rep < edgeReps; rep++)
+            {
+                var recorder = new DecisionRecorder(edgeDepth);
+                var simOptions = new SimulationService.SimulationOptions
+                {
+                    Profile = profile,
+                    Seed = 9000 + rep,
+                    Randomness = ERandomnessType.Realistic,
+                    TimeoutSeconds = timeoutSeconds,
+                };
+                var sw1 = Stopwatch.StartNew();
+                SimulationService.SimulationResult natural = await new SimulationService(simOptions).Run(snapshot, recorder);
+                sw1.Stop();
+                if (!natural.ReachedEndOfLine || recorder.Decisions.Count < edgeDepth
+                    || recorder.Decisions.Any(d => d == null))
+                {
+                    Console.WriteLine($"     rep {rep}: natural line did not complete with a decision at every boundary " +
+                                      $"({natural.Note}; {recorder.Decisions.Count(d => d != null)} decisions) - skipped");
+                    continue;
+                }
+                var sw2 = Stopwatch.StartNew();
+                SimulationService.SimulationResult prescribed = await new SimulationService(simOptions)
+                    .Run(snapshot, recorder.Decisions);
+                sw2.Stop();
+                if (!prescribed.ReachedEndOfLine)
+                {
+                    Console.WriteLine($"     rep {rep}: prescribed replay failed ({prescribed.Note}) - skipped");
+                    continue;
+                }
+                completed++;
+                naturalMs.Add(sw1.Elapsed.TotalMilliseconds);
+                prescribedMs.Add(sw2.Elapsed.TotalMilliseconds);
+                if (prescribed.Honored.All(h => h)) honoredAll++;
+                if (prescribed.Snapshot == natural.Snapshot) identical++;
+            }
+            if (completed > 0)
+            {
+                double naturalPer = naturalMs.Average() / edgeDepth;
+                double prescribedPer = prescribedMs.Average() / edgeDepth;
+                Console.WriteLine($"     natural line depth {edgeDepth}: {naturalMs.Average():F0}ms => {naturalPer:F1}ms per activation " +
+                                  $"({completed}/{edgeReps} reps)");
+                Console.WriteLine($"     **fully prescribed line depth {edgeDepth}: {prescribedMs.Average():F0}ms => " +
+                                  $"{prescribedPer:F1}ms per activation** ({prescribedPer / Math.Max(naturalPer, 0.001) * 100:F0}% of natural) " +
+                                  $"=> {DecisionBand(prescribedPer)}");
+                Console.WriteLine($"     replay honored at every boundary: {honoredAll}/{completed}; byte-identical to natural: {identical}/{completed}" +
+                                  (honoredAll == completed && identical == completed
+                                      ? " -> the seam reproduces the recorded line exactly (PIN)"
+                                      : " -> NOT a faithful replay; the cost number above is not trustworthy"));
             }
         }
 
@@ -802,6 +914,23 @@ public static class B0Spike
     }
 
     private static string Mib(long bytes) => $"{bytes / 1024.0 / 1024.0:F0}MiB";
+
+    /// <summary>
+    /// B2 phase 3f's pass-1 driver: plays <c>depth</c> natural activations and records each one's
+    /// decision as the prescription that reproduces it (LineBoundary.PreviousDecision).
+    /// </summary>
+    private sealed class DecisionRecorder : SimulationService.ILineDriver
+    {
+        private readonly int _depth;
+        public readonly List<SimulationService.Prescription?> Decisions = new();
+        public DecisionRecorder(int depth) => _depth = depth;
+
+        public SimulationService.LineStep AtBoundary(SimulationService.LineBoundary boundary)
+        {
+            if (boundary.Index > 0) Decisions.Add(boundary.PreviousDecision);
+            return boundary.Index >= _depth ? SimulationService.LineStep.Stop : SimulationService.LineStep.Natural;
+        }
+    }
 
     private static string? Arg(string[] args, string name)
     {

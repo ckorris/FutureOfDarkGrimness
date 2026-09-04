@@ -6,9 +6,11 @@ the WHY: `docs/ai-agent-plan.md` sec 9 (B2, B4, B5), invariant **G13(c)** (per-s
 max^n backup, bit-identical 1v1 reduction), Appendix A's generator rules (diversity-preserving
 pruning, explicit feasibility), and the campaign doc's step 6 bullet.
 
-**Status: design turn done, awaiting build.** Nothing here is built. The build lands in the engine
-under `FutureOfDarkGrimness/Ai/Tactician/Search/`, hash-verified like every step 5 commit
-(`8D6EFA0AF0B4019E` on the DOP-1 six-game cell; a changed hash is a stop).
+**Status: built 2026-09-04.** Engine commit `821b6ef` (`FutureOfDarkGrimness/Ai/Tactician/Search/`
+plus the `SimulationService` honored-flag/callback-line additions this design called for), lab
+commit follows in the superproject (`fdglab b0`'s phase 3f). Hash-verify unchanged
+(`8D6EFA0AF0B4019E`). All nine sec 8 verification items green; see the 2026-09-04 ledger entry for
+the fully-prescribed-line cost numbers and the build choices this doc left open.
 
 ---
 

@@ -23,6 +23,104 @@ campaigns re-base.)*
 
 ## Notes (newest first)
 
+**2026-09-04 (Fable) - STEP 6 (B2) BUILT: TWO-LEVEL TREE, ALL NINE VERIFICATION ITEMS GREEN,
+HASH UNCHANGED. FULLY PRESCRIBED LINE MEASURED AT 1K/2K/4K.** Built directly to
+`docs/tactician-b2-design.md` (Fable's own design turn) - no redesign; where the spec left a
+build choice open, made the call and record it below. Model note: the doc names Sonnet/medium for
+the build, but the campaign protocol forbids a second model prompt inside one step (5b/5c already
+got the one prompt, answered with the Opus switch) and blocking a build already unblocked on
+compute is exactly what the protocol says not to do - built on the session's current model
+(Fable) instead, noted here per the doc's own instruction.
+
+- **Engine** (`Ai/Tactician/Search/`, commit `821b6ef`): `SideMap`/`SideValues` (team-indexed, not
+  player-indexed - teammates share a component by construction); `IPositionEvaluator` +
+  `TerminalOnlyEvaluator` + `ObjectiveShareEvaluator` (both pinned against the two-side
+  v[other]=1-v[self] constraint); `SearchNode`/`UnitBranch`/`SearchEdge`; `TacticianActionSpace`
+  (level 1 = `TacticianActivationResolver.Urgency`+frontline-bias prior over the unactivated pool,
+  now exposed as `ActivationScores` so the tree reads exactly what the resolver picks by; level 2 =
+  `MacroActionGenerator.Enumerate` scored by a SCRATCH `TacticianPlanner`, mapped to actions via the
+  planner's own `ActionNameFor` made `internal`); `SimulationExpander` (one line per edge, leaf
+  evaluated live before the Save); `SearchTree` (widening, child creation, max^n backup,
+  `RootChoice`); `ExpansionScaffold` (test-only fixed-count walk, explicitly not B4).
+- **`SimulationService` additions** (same commit): `Honored` per-boundary flags (the planner now
+  tracks `LastPrescriptionHonored` across the unit and action halves separately, reported by
+  `TacticianActivationResolver` for the unit half); the callback `Run(snapshot, ILineDriver)`
+  overload with `LineBoundary`/`LineStep`, the list `Run` reimplemented as a `ListLineDriver` over
+  it (test 7's pin); `Probe(snapshot)` (stop at the very first boundary, for building a tree root);
+  `ActingPlayerAtStart`/`ActingPlayerAtEnd` on the result.
+- **Build choice - a cross-store rebind bug, found by the determinism test itself.** A macro
+  enumerated by the action space's SCRATCH store (a second `GameSaveSerializer.Load` of the same
+  snapshot) carries `ModelMoveEntry` bindings and unit/objective target references into THAT
+  store. Prescribing it into a simulation (a THIRD store) let the movement resolver apply the move
+  onto the scratch store's bindings while the simulation's own models silently never moved - no
+  fault, wrong game, exactly the failure class 5c's C1 finding already trained us to watch for.
+  Fixed with `SimulationService.Rebind(MacroAction, GameDataStore)`, called on every prescribed
+  macro before it reaches the planner: model bindings re-resolved by `DataReference` (stable
+  across every store of one game), targets re-resolved by unit ID / marker position. Caught by
+  `ExpandingTheSameEdge_UnderTheSameSeed...` (test 6) before it could reach anything else.
+- **Build choice - honored flag granularity.** Tracked as two booleans on the planner (unit half,
+  action half) rather than one, because 5b's two prescription levels can independently fall
+  through; `LastPrescriptionHonored` is their conjunction, read by the line driver at the NEXT
+  boundary (the activation is only "over" then) and settled explicitly on early game-end
+  (`SettleAfterGameEnd`) so `Honored` always has one entry per activation actually run.
+- **Build choice - Cast/Disembark edge priors.** The design doc left these at "search sorts out
+  their worth"; built as the mean of the plan-bearing edges' priors (not the max, not a fixed
+  constant) so a unit with strong plan-bearing options doesn't get a Cast edge starved to
+  near-zero relative to them for no principled reason - revisit if B4's benchmark shows it matters.
+- **Test suite** (`Tests/SearchTreeTests.cs`, authored trees with fixed leaf values, no engine;
+  `Tests/TacticianActionSpaceTests.cs`, real engine states via `ScenarioCompiler`): all nine
+  sec-8 items green -
+  (1) candidate counts at 4- and 16-unit-per-side fixtures (the 1k/4k unit-count stand-ins;
+  real-army counts are the b0 numbers below);
+  (2) a last-ranked Reachable ChargeToContact survives as an edge;
+  (3) an edge the stage does not offer (Cast on a non-caster) closes and is never credited, a real
+  edge opens;
+  (4) one expansion at the root reproduces natural Tactician play byte-for-byte (B reduces to A);
+  (5) vector backup on an authored 1v1 tree matches a scalar negamax reference visit-for-visit and
+  picks the same root choice (the true minimax pick, verified against hand-computed values), a
+  2v2 teammate node reads the ROOT's own component, a 3-side authored case shows a non-root side
+  maximizing ITS OWN value rather than minimizing the root's;
+  (6) the same derived seed reproduces a child snapshot byte-identically, a different worker seed
+  does not (and the cross-store bug above was caught here first);
+  (7) the callback line and the list line produce byte-identical results.
+  Plus: `SimulationServiceTests` gained the callback/list equivalence pin, a `Probe` pin, and a
+  stale-prescription-is-unhonored pin. Full engine suite 3199/3200 (1 skipped by design, same
+  tally as before this build - no regression), full solution build green, headless smoke exit 0.
+- **Hash-verify: `8D6EFA0AF0B4019E`**, unchanged from steps 4/5a/5b/5c, re-run after the final
+  engine edit (the DOP-1 six-game Tactician-mirror cell). B2 adds nothing to natural play's path
+  except the honored-flag bookkeeping (also exercised by every existing 5c test, all still green).
+- **Test 9 - the fully prescribed line, measured at 1k/2k/4k** (new `fdglab b0` phase 3f,
+  `--edge-reps`/`--edge-depth`; records a natural line's decisions via `LineBoundary.
+  PreviousDecision` then replays them fully prescribed under the same seed - byte-identical and
+  honored at every boundary in every rep, or the number would not be trustworthy; it was, 5/5 at
+  all three levels). Measured WHILE the step-4 self-play generator was running at DOP 12 (undisturbed
+  throughout, 110 -> 135 batches), so these are upper bounds like 5c's table:
+
+  | Level | Root probe | Level-2 enum (top unit) | Natural line/activation | **Prescribed line/activation** |
+  |---|---|---|---|---|
+  | 1k (3 units) | 145ms | 121ms, 17 edges/11 families | 81.4ms | **29.2ms** (36% of natural) |
+  | 2k (4 units) | 245ms | 111ms, 17 edges/10 families | 111.3ms | **58.6ms** (53% of natural) |
+  | 4k (9 units) | 290ms | 231ms, 17 edges/9 families | 150.7ms | **45.2ms** (30% of natural) |
+
+  Honest report, not tuned to look good: 2k's 58.6ms is ABOVE 5c's ~20ms target (5c's number was
+  the SoloRules-in-sim arm; this is Tactician-in-sim throughout, since a prescribed activation is
+  what B2 actually walks and the point was to measure THAT, not re-measure 5c's arm). 4k landing
+  BELOW 2k is real, not noise - level-2 enumeration is per-unit, not per-army, so more units for
+  the same line depth means more DISTINCT prescribed activations sharing the fixed per-line
+  overhead, and 4k's units also spend more of their prescribed activations on cheap Shoot-only
+  Hold plans (denser deployment, targets already in range) - recorded, not chased down further
+  here. Per the campaign doc's own rule, a disappointing number is a legitimate outcome to report:
+  B4 should treat 2k's in-sim-Tactician cost as the number to beat with the SoloRules arm or a
+  cheaper in-sim policy, not assume 5c's target already stands.
+- **Self-play undisturbed:** PID 51352 alive throughout, batch count climbed through the whole
+  burst (110 -> 135+ in `FdgLab/data/2026-09-03/`).
+- **Deferred, recorded** (design doc sec 9, unchanged by the build): shooting-target prescription,
+  chance nodes, branch-point-only snapshot storage, transposition table, in-sim policy choice /
+  continuation depth / widening constants - all B4.
+
+Next: step 7 (B3 leaf evaluation on the C1 encoder vector - the placeholder `ObjectiveShareEvaluator`
+here gets replaced by the real one; Sonnet/medium per the doc).
+
 **2026-09-03 (night, Fable) - STEP 6 DESIGN TURN: B2 SPECIFIED IN `docs/tactician-b2-design.md`.**
 Chris switched to Fable/high for the design half of step 6 (build is Sonnet/medium). One turn, no
 code. The spec's decisions, each with its reason in the doc:

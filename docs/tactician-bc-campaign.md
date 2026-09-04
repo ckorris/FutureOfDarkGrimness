@@ -221,11 +221,13 @@ disappoints, B ships shallow and deepens later without a rewrite. Verify: unit t
 states (2k and 4k), a 1k-simulation leak soak, determinism under seed, node cost re-measured
 with `fdglab b0` and recorded against B0's table. Ledger.
 
-### Step 6 - B2 composite action space + multiplayer backup (design: Fable / high, one turn; build: Sonnet / medium) - DESIGN DONE 2026-09-03
+### Step 6 - B2 composite action space + multiplayer backup (design: Fable / high, one turn; build: Sonnet / medium) - DONE 2026-09-04
 *Design turn done 2026-09-03 (Fable): `docs/tactician-b2-design.md` is the spec the build is verified
 against - two-level lazy edge enumeration (unit, then macro) with progressive widening at both
 levels, honored-prescription flag, evaluate-live-then-save leaves, determinization with root-
-parallel ensembles, `SideValues` max^n backup, nine verification items.*
+parallel ensembles, `SideValues` max^n backup, nine verification items. Built 2026-09-04 (Fable,
+per the protocol's no-second-prompt-inside-a-step rule - the doc's Sonnet recommendation was not
+re-asked): all nine items green, hash unchanged (`8D6EFA0AF0B4019E`). See the ledger.*
 - Node = activation boundary; edge = (unit, action, macro-action, primary target) from
   `MacroActionGenerator`; progressive widening by visit count.
 - **Per-side reward vector; each node's acting player maximizes its OWN side's value (max^n);
