@@ -23,6 +23,50 @@ campaigns re-base.)*
 
 ## Notes (newest first)
 
+**2026-09-04 (early afternoon, Fable 5.1) - CRASH CHASE, PART 3: EIGHT ARMS, A HARDWARE CHECK AND
+FIVE HOURS OF SELF-PLAY WITHOUT A SINGLE CRASH. THE CHASE IS PARKED IN "ARMED AND WAITING".**
+
+Chain v2 ran every arm on top of self-play at dop 20 (the load shape of the 23:50-23:53 triple
+crash). Exit 0 = 100 games done, 124 = alive at the 15-min cap; no 139 anywhere, no dump, no
+kernel entry.
+
+| arm | exit | 100-game score (void, contended) |
+|---|---|---|
+| baseline-servergc | 0 | 79.0% |
+| no-tiered-jit | 124 | - |
+| tieredpgo-off | 0 | 81.5% |
+| osr-off | 0 | 79.0% |
+| workstation-gc | 124 | - |
+| segments-gc | 0 | 78.0% |
+| fixed-delay-cancel (timer-fix binary) | 0 | 81.5% |
+| minthreads-256 | 0 | 77.0% |
+| hwcheck.py 32 workers x 10 min (no .NET) | consistent | 16,472 rounds, 0 mismatches |
+
+Self-play: alive since 11:11, batches 208-255 (~9,600 games, 0 faults) with the runtime dumper
+armed. Runtime counters (attached this time): thread-pool threads peak ~40 and stay flat over
+every arm, so timed-out simulations do NOT pile up; heap 2.5-3.0 GB under server GC vs 270 MB
+under workstation GC (lazy collection, not a leak).
+
+*What did and did not change at the crash window's edges (23:33-07:59, six crashes; nothing
+since under heavier load):*
+- The binary did not: `FdgLab/bin/Release` dates from 23:39 and never received the timer fix
+  (`c3c442d` is 08:37; only the fixed-delay-cancel arm ran `fixbin/`). The 23:33 and 23:38
+  crashes were an even older build. Two builds crashed; the surviving runs are the 23:39 build.
+- The box did not: no dpkg/apt/snap activity on 09-03/04, runtime files untouched since April,
+  zero swap-in/out since boot, no kernel BUG/WARNING, Tdie 67 C under full load now.
+- The desktop session was active through the whole crash window and has been idle since 07:49;
+  the last crash was 07:59. Loose - Chris was asleep for the 07:18 one.
+- Statistically weak either way: counting bursts (23:33-23:53, 07:18, 07:59) as three events in
+  8.5 h, five crash-free hours had ~14% probability under the same rate. Not evidence the rate
+  changed.
+
+*Conclusion:* no single runtime setting, GC, JIT tier or thread-pool knob is implicated, the
+hardware test is clean, and the reproducer is gone. The remaining hypotheses (Zen 1 marginality
+under a particular load/thermal state; a rare managed-runtime bug) can only be separated by a
+dump with DAC regions, which every process on the box now produces on death. **Parked:** self-play
+stays up with the dumper armed; the next crash writes `scratchpad/dumps/selfplay-<pid>.dmp`, and
+`verifyheap` + `clrstack -all` on it is the next move. No further chase time until then.
+
 **2026-09-04 (afternoon, Fable 5.1) - R9 FAILED IN THE FIELD: GUI FREEZE AT THE STRATEGIST'S
 FIRST ACTIVATION.** Chris, Windows laptop, Visual Studio Debug build, tactician-bc at 72f2851 /
 c3c442d, 2k vs 2k human vs Strategist Bot: "it worked until it was the bot's first activation, as in,
