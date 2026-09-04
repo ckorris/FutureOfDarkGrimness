@@ -23,6 +23,31 @@ campaigns re-base.)*
 
 ## Notes (newest first)
 
+**2026-09-04 (18:15, Sonnet 5) - CRASH #8, AT DOP 12, DURING THE GATE - THE CRASH CHASE'S "CLOSED"
+VERDICT NEEDED A CORRECTION.** 95 minutes into `main-matrix-vs-tactician` (1675/6400 games, dop 12),
+the bench process SIGSEGV'd: `kernel: .NET BGC[80001]: segfault ... in libcoreclr.so[459b4a,...]` -
+an EIGHTH distinct fault offset, same "GC walking corrupted memory" shape as every prior crash. The
+pinned bad page (pid 72538) was confirmed still held (`VmLck: 4 kB`) at the moment of the crash, so
+this is not the same page - either a second marginal cell, or the earlier "3-for-4 then clean"
+evidence was always thinner than the "closed" write-up treated it. **Correction to the 2026-09-04
+midday entry:** dop 6-12 do NOT carry equal risk; dop 6 has an extensive, multi-hour, sometimes
+concurrent-with-self-play clean record this session, dop 12 had never previously run more than a
+few minutes before this gate launch. Compounding the miss: `step10bin` was built without the
+runtime's crash dumper armed, so this crash produced only a DAC-less systemd core (confirmed
+unreadable by `dotnet-dump` - "Failed to load data access module" - same limitation logged on
+2026-09-03), no forensic value beyond the kernel line.
+
+**Response:** the whole gate chain was killed (it had moved on to `main-matrix-vs-solorules` per
+its own design, oblivious to the crash - that design choice, keep-going-past-a-cell-failure, is
+right for an unattended chain but meant the crashed cell's 1675 games of work were simply gone,
+no report). Rewritten (`scratchpad/step10-gate.sh`, v2) and relaunched from the top: **dop 6
+everywhere** (every cell, including panels that were at dop 8-12), the runtime crash dumper armed
+on every invocation, and each cell now retries up to 3 attempts before being reported as failed
+rather than silently skipped. Wall-clock estimate revised upward accordingly - roughly 2.5-3 days
+now, not 1.5. If dop 6 also crashes before this gate completes, that reopens the hardware
+diagnosis (a second weak cell, found the same way: `verifyheap` on whatever dump the dumper now
+guarantees).
+
 **2026-09-04 (evening, Sonnet 5) - STEP 10 STARTED: PROBE HARNESS BUILT, TWO OF THREE PROBES GREEN,
 ONE REAL FINDING ABOUT THE LEAF EVALUATOR. GATE RUNS QUEUED.** Chris: "please do step 10." Model
 switched Fable 5.1 -> Sonnet 5 per the campaign's own protocol (step 10 is "runs: Sonnet/low").
