@@ -23,6 +23,26 @@ campaigns re-base.)*
 
 ## Notes (newest first)
 
+**2026-09-04 (15:45, Fable 5.1) - HARDWARE CONFIRMED: THE RAM TEST REPRODUCES THE SAME BIT.**
+`memtest.py 22 300` (22 GB in 256 MiB chunks): pattern `5aa5` (bit 23 = 0) clean; pattern `a55a`
+**1 bad word**, chunk 87 offset `0x55b6a48`, expected `0x5aa55aa55aa55aa5` read `0x5aa55aa55a255aa5`,
+bits=[23]; all-ones **same word**, read `0xffffffffff7fffff`, bits=[23]; all-zeros clean. A cell
+stuck at zero on bit 23, deterministic on every pass, at page offset `0xa48` - the corrupted object
+in the dump sat at `...ba48`, the same offset within its page. One physical page, one bit, seven
+crashes. Non-ECC DDR4 on a Threadripper 1950X; the JIT, GC, thread-pool and engine arms were all
+chasing a ghost, and the "search"/"dop 6"/"concurrency" readings of part 1 were the box's memory
+footprint, not the code.
+
+*What follows:* (1) stopgap - a page pinner (`scratchpad/badpage-pinner.py`) that grabs RAM, keeps
+only the page that fails the all-ones test, mlocks it and releases the rest, so the physical page
+is never handed to a lab process again (root can turn its virtual address into a PFN via
+`/proc/<pid>/pagemap` and reserve it for good with `memmap=4K$<phys>` on the kernel line);
+(2) Chris: memtest86+ from boot names the physical address and the DIMM; check what the 22:56
+change did to DRAM settings (XMP/timings/voltage) before pulling hardware; (3) the crash chase is
+CLOSED as a software item - no engine or runtime change comes out of it beyond the timer-hygiene
+fix already in (`c3c442d`). Self-play stays capped at 8 GiB so the box stays well under its top
+memory until the page is pinned or the DIMM is replaced.
+
 **2026-09-04 (15:30, Fable 5.1) - THE DUMP ANSWERS: ONE BIT FLIPPED IN ONE OBJECT HEADER. HARDWARE
 IS NOW THE PRIMARY HYPOTHESIS. AND THE 18 GB WAS NOT A LEAK.**
 
