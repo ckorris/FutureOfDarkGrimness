@@ -236,9 +236,13 @@ re-asked): all nine items green, hash unchanged (`8D6EFA0AF0B4019E`). See the le
   a hard cap set by Chris for GUI play (plan: 5-10s vs humans, 1-2s in benches).
 - Verify: generator-level tests for candidate counts at 1k/4k; multiplayer backup pins. Ledger.
 
-### Step 7 - B3 leaf evaluation (Sonnet / medium; ~1 burst)
+### Step 7 - B3 leaf evaluation (Sonnet / medium; ~1 burst) - DONE 2026-09-04
 *Revised 2026-09-03 (Fable): rollouts are dead as a leaf estimate (B0: 12s at 4k, 49x a 2k node
 expansion). A leaf is evaluated statically.*
+*Built 2026-09-04 (Fable, per protocol - no re-prompt inside a step): `HandWeightedEvaluator`
+(`Ai/Tactician/Search/HandWeightedEvaluator.cs`), weights 0.55/0.30/0.15 obj/value/threat. Found
+and fixed a design-doc gap along the way - `IPositionEvaluator` needed a `RuleEvaluator` argument
+the C1 encoder's mobility/threat features require; see the 2026-09-04 ledger entry.*
 The evaluator's INPUT is the C1 `PositionEncoder` vector from step 4 (per-side, scale-free,
 `docs/tactician-c1-schema.md`), so B and C share one code path: in B the leaf value is a
 hand-weighted function of that vector (a per-side value in [0,1] - win-probability shaped, with

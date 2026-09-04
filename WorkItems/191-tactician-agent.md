@@ -23,6 +23,63 @@ campaigns re-base.)*
 
 ## Notes (newest first)
 
+**2026-09-04 (Fable, per protocol - step 7 build recommends Sonnet, no re-prompt inside a step) -
+STEP 7 (B3) DONE: HAND-WEIGHTED LEAF EVALUATOR ON THE C1 VECTOR.** B and C now share one code
+path (campaign doc step 7): the search's leaf value is a hand-weighted read of the same
+`PositionEncoder` block C1 exports; C3 will later swap the weights for a trained net and touch
+nothing else in the tree.
+
+- **A real gap found while wiring it in: `IPositionEvaluator` needed a `RuleEvaluator`.**
+  `PositionEncoder`'s mobility/threat features run movement-rule modifier evaluation
+  (`AdvanceDistance`/`ChargeBudget`), which the interface's original `Evaluate(ITableState,
+  SideMap)` signature (design doc sec 7.2, this session's own earlier design turn) had no way to
+  supply. Corrected the interface to `Evaluate(ITableState, RuleEvaluator, SideMap)` - a design
+  deviation, recorded here per the same precedent as 5b's resolver-attribution correction. Callers
+  (`SearchTree.FromSnapshotAsync`, `SimulationExpander`) construct one unseeded
+  `RuleEvaluator(ProbabilisticDiceRoller())` each; the evaluator contract ("never rolls") makes an
+  unseeded roller behind it inert. Both shipped placeholders (`TerminalOnlyEvaluator`,
+  `ObjectiveShareEvaluator`) and both call sites plus the two-side-constraint test updated to match.
+- **New engine entry point:** `PositionEncoder.EncodeSideBlock(state, evaluator, sideMembers,
+  opposingMembers)` - the same `ComputeBlock` the exporter's four blocks already run, exposed for
+  an arbitrary SIDE rather than one activation's SELF/ALLY/ENEMY perspective. Deliberately not a
+  sum of per-player shares: `obj_held_share` and `threat_coverage` are not additive across a side's
+  players (a target covered by one ally and not another must count once), so the evaluator calls
+  this once per side rather than approximating from `Encode`'s per-player blocks.
+- **`HandWeightedEvaluator`** (`Ai/Tactician/Search/HandWeightedEvaluator.cs`): weights
+  0.55 obj_held_share / 0.30 value_share / 0.15 threat_coverage (sums to 1, so the raw combination
+  needs no clamp - every input share is already in [0,1]), per the doc's ordering (objectives
+  dominant, CLAUDE.md; value share next; threat coverage - already the coarsest, budget-traded
+  feature per the schema doc - least). Two-side complementarity reuses `ObjectiveShareEvaluator`'s
+  own proven shape (`0.5 + (own - bestOther) / 2`) rather than a new normalization, which is
+  algebraically exact for two sides with no clamp ever engaging.
+- **Verification (`Tests/HandWeightedEvaluatorTests.cs`, 4 tests):** losing a unit lowers own value
+  (caught a bug first try - `Kill()` set `RemainingWoundsBinding` to `TotalWounds` instead of 0,
+  the inverse of dead; `GetIsAlive` is `WoundsDealt < TotalWounds`); seizing an objective raises
+  value; a 1v1 board and its reduced 2v2 form (a zero-unit ally on each side, no `ArmyData` at all)
+  evaluate identically BY CONSTRUCTION (every `LivingUnits`/`RosterCount` scan filters by army
+  presence, so an ally with no army contributes exactly zero - not an approximate pin, an exact
+  one); per-leaf cost.
+- **G2 read - the premise holds, not just asserted.** 20 real Tactician-mirror games
+  (`bench --games 20 --dop 6`, hash `955D11EDF1A0500D`): in EVERY game the reported winner held
+  strictly more objectives than the loser at game end (`bench.csv`) - no case of a side winning
+  the game while behind on markers, which is the concrete case a reward-hacking evaluator would
+  get wrong and exactly the reason `obj_held_share` carries the dominant weight. Caveat: the
+  evaluator is not wired into any live decision yet (B4/step 8 does that), so this reads the
+  premise against real play, not the evaluator's own influence on play - that check is B4's gate.
+- **Per-leaf cost:** 1.317ms for a 2-side, 20-unit, 3-objective board (Release, 50-rep mean,
+  `Tests/HandWeightedEvaluatorTests.Evaluate_PerLeafCost_IsReportedAndSane`) - two
+  `EncodeSideBlock` calls per leaf where step 4 measured 1.7-3.6ms for ONE call on real armies with
+  attached special rules; this fixture's units carry none, so the true per-leaf cost on a real
+  board is higher than 1.317ms and closer to roughly double step 4's single-call number (3.4-7.2ms
+  for two sides) - flagged as an estimate, not re-measured against real armies, for B4 to confirm
+  against its actual leaf rate once the search loop exists.
+- **Hash-verify:** `8D6EFA0AF0B4019E` unchanged (DOP-1 six-game cell, Release) - B3 only touches
+  the search tree's leaf evaluation, which no natural game reaches. Full engine suite 3202/3203 (1
+  skipped by design, +3 new), full solution build green.
+- **Self-play undisturbed:** PID 51352 alive throughout (3h+ at last check), 143 batches.
+
+Next: step 8 (B4 UCT search) - Opus / high per the doc. Model switch needed before that step starts.
+
 **2026-09-04 (Fable) - STEP 6 (B2) BUILT: TWO-LEVEL TREE, ALL NINE VERIFICATION ITEMS GREEN,
 HASH UNCHANGED. FULLY PRESCRIBED LINE MEASURED AT 1K/2K/4K.** Built directly to
 `docs/tactician-b2-design.md` (Fable's own design turn) - no redesign; where the spec left a
