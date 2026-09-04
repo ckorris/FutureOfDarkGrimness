@@ -23,6 +23,58 @@ campaigns re-base.)*
 
 ## Notes (newest first)
 
+**2026-09-04 (evening, Sonnet 5) - STEP 10 STARTED: PROBE HARNESS BUILT, TWO OF THREE PROBES GREEN,
+ONE REAL FINDING ABOUT THE LEAF EVALUATOR. GATE RUNS QUEUED.** Chris: "please do step 10." Model
+switched Fable 5.1 -> Sonnet 5 per the campaign's own protocol (step 10 is "runs: Sonnet/low").
+
+*Probe harness (commit 2d2a76b) - the 2026-07-11 handoff item 1, never built before now.* Each
+`FdgLab/probes/*.json` (ScenarioCompiler format) plus a `<name>.expect.json` sidecar compiles to
+the `DeterminePlayerTurnStage` boundary, runs the real `UctSearch` on it (not a plain-policy
+shortcut), and checks the prescribed unit/action. `fdglab probes` (now the default mode; the old
+scaffold moved to `probes --feasibility`).
+
+- `last-round-steal` PASS: round 4, one objective 4in away and reachable, no enemy in range -
+  search correctly prescribes Move every time (checked over several repeats, iteration counts
+  varying 2.4k-175k under the wall-clock budget).
+- `charge-vs-shoot-melee-favored` PASS: weak sidearm (1atk AP0) vs a great axe (4atk AP3) at 8in -
+  search correctly prescribes Charge, also stable over repeats.
+- `charge-vs-shoot-shoot-favored` NOT gating (no `.expect.json`, harness SKIPs it) - **could not get
+  this one to pass despite seven geometry iterations**, and the reason is itself a finding: under
+  `HandWeightedEvaluator`'s 55%/30%/15% objective/value/threat split, this scenario's leaf value
+  landed almost perfectly FLAT (0.500-0.504 across every root edge) whenever no objective was
+  reachable this round, so the search's choice became close to prior noise; when an objective WAS
+  present anywhere reachable-ish, Charging (which happens to close on it too) picked up a real
+  value edge over standing and shooting even against a nearly worthless target, for positional
+  reasons unrelated to the weapon math. The one-ply `TacticianPlanner.Score` ranked "Shoot"
+  correctly in EVERY geometry tried (checked via `fdglab analyze` each time) - only the multi-ply
+  search disagreed. This reproduces the shape of the step-9 "no 2v2 lift" finding (objective-
+  dominant leaf evaluation drowning out tactical differentiation) in a much smaller, easier-to-
+  read scenario, and both should go to the same failure-analysis pass. Scenario + note file kept
+  in the repo (`FdgLab/probes/charge-vs-shoot-shoot-favored.json(.note.md)`) for that review rather
+  than deleted or tuned into passing.
+
+*`smoke --ffa` (commit cbee26d):* the "ffa-smoke" gate cell had no repeatable command before now -
+one 4-slot free-for-all game, own team each, four distinct default 2k armies, fault/no-fault.
+Verified clean at Tactician profile (Tie, 4 rounds, 683 decisions, no fault); the real gate run
+uses Strategist.
+
+*Gate runs (queued/running, `scratchpad/step10-gate.sh`, binary `scratchpad/step10bin` - a fresh
+Release build off the current commit, hash-verified unchanged at `8D6EFA0AF0B4019E`, built to a
+scratch dir rather than `FdgLab/bin/Release` so it does not disturb the running self-play process):*
+main matrix (8-army 2k 1v1 pool, all ordered pairs incl. mirrors, 100 games/matchup) vs Tactician
+AND vs SoloRules at dop 12; panels points-1k/3k/4k vs both at dop 8-12; shape-2v2 (2k+3k cells) vs
+both at dop 6 (the proven-safe number under load, per the crash chase); the Titan Lords reverse
+pairing vs both; ffa-smoke. Self-play paused for the duration (`FdgLab/.pause-selfplay`), resumes
+automatically when the chain touches it off at the end. Dop chosen well above the ultra-conservative
+dop 2 used for step 9's smoke: the crash chase closed the RAM defect as a pinned single page, not an
+open concurrency question, so dop 6-12 carries no more risk now than dop 2 did before that finding.
+Estimated wall clock: roughly a day and a half (main matrix ~15h for both passes, panels ~12h,
+matching the campaign doc's own dop-16 estimate scaled to this box's more conservative dop).
+
+*Not yet run:* Chris's >= 2 games (needs a human); a diagnostic run at `UctOptions.Interactive`
+budget for the 2v2 cell (a step-9 candidate probe, left for the failure-analysis pass rather than
+run speculatively here - it is judgment territory, not a "runs" task).
+
 **2026-09-04 (16:00, Fable 5.1) - BAD PAGE PINNED.** `scratchpad/badpage-pinner.py 24` (pid in
 `scratchpad/pinner.log`, chunk 29, vaddr `0x712a018b7000`, bad word at `0xa48` in the page - the
 third independent sighting of the same offset) holds that one 4 KiB page mlocked (`VmLck: 4 kB`) and
