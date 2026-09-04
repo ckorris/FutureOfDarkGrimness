@@ -23,6 +23,53 @@ campaigns re-base.)*
 
 ## Notes (newest first)
 
+**2026-09-03 (night, Opus 5) - OVERNIGHT WINDOW REOPENED: DATA GEN AT DOP 20, PHASE 4c SOAK
+RUNNING, AND THE LOBBY NAME FOR B IS DECIDED.** Machine came back after the OS swap. No engine
+change in this entry - lab harness and docs only, so the DOP-1 hash needs no re-verification.
+
+- **Self-play resumed** at batch 176 / seed 36200 (the resume logic picked it up with no partial
+  files to clean), now at **DOP 20** rather than 12 - nothing else has the box overnight - and this
+  time WITH `--pause-file FdgLab/.pause`, whose absence made every timing measurement of the
+  previous session "under load". Steady state: 200 games per batch in 55-70s, 0 faults,
+  ~3.3-3.5k rows/batch. That is ~12k games/hour against the 36.2k already banked.
+- **Lobby name for the B rung decided (Chris): "Strategist Bot", `EAiProfile.Strategist`** - the
+  rung above Tactician, and it deliberately leaves a foresight-flavored name (Oracle/Prophet) free
+  for C at step 15. Written into campaign doc step 9, which no longer says "name TBD".
+
+**The 4c soak crashed before it started, and the cause is the step-8 probe fault - now seen a
+second time.** `fdglab b0`'s phase 3g opens with ONE unguarded `SearchTree.ProbeRootAsync` for the
+leaf-evaluator timing; it threw `SearchUnavailableException` ("the root snapshot has no activation
+boundary (game ended after 0 activation(s): Fault)") and took the whole process down before phase
+4c, which runs after it. The irony is that the very next sub-block, (a2), exists to COUNT this
+exact fault - the warm probe above it was simply never guarded.
+
+- **Fix (lab-only, `FdgLab/B0Spike.cs`):** the warm probe retries across 5 seeds, reports each
+  fault, and on total failure skips the leaf-evaluator average rather than the phases after it -
+  the soak is the expensive thing in that run, not a 20-sample mean. Warm-probe faults are folded
+  into 3g's reliability line so the rate stays honest.
+- **Still intermittent, NOT reproduced on demand.** The relaunch probed **10/10 clean**, and 3g
+  otherwise reproduced step 8 exactly: **97.3ms/iteration** (94 measured clean), 21 nodes, **max
+  depth 5, 0 closed edges**, same-seed choice + visit distribution IDENTICAL (PIN). Leaf evaluator
+  on real armies **0.74ms** (B3 estimated 3.4-7.2ms - comfortably under). So this is now
+  observed-twice-across-two-sessions and still un-forced; it stays a **B5/G3 sizing question for
+  step 9** (what fallback rate does search actually pay in real games), not a blind fix.
+
+**A load-flake warning for whoever runs the suite next.** The first full engine run tonight went
+**3210/3213 with 2 failures**, one of them `UctSearchTests.Search_OnARealBoundary_IsReproducible_
+AndPlaysAnHonoredEdge` - on a box simultaneously running 20-way self-play AND the 4-worker soak.
+Re-run in isolation: **UctSearchTests 9/9**. Re-run as the full suite with self-play paused via
+the new pause file: **3212/3213, 0 failures** (1 skipped by design). These tests resume real games
+inside themselves, so they are contention-sensitive; record this so the next session does not
+re-discover it as a regression. **Verification for this entry:** full `dotnet build` green,
+engine suite 3212/3213 green.
+
+**IN FLIGHT at the time of writing:** phase 4c, 500 searches x 20 iterations x 4 workers. At 50/500
+it read heap 456MiB (**after GC 112MiB**, from a 56MiB baseline), RSS 1146MiB (from 952MiB), 85
+threads, 138s elapsed - i.e. ~23 min for the full run. Numbers are NOT a result until the run
+finishes; the next entry carries the verdict on (a) leak across searches, (b) 5c's +255MiB RSS
+growth, and (c) deferred decision 4 (snapshot-per-child vs branch-point-only storage).
+
+
 **2026-09-03 (night, Fable) - STEP 8 (B4) BUILT: TIME-BUDGETED UCT WITH ROOT PARALLELISM. THE
 WIDENING CONSTANT WAS THE WHOLE BALLGAME - C=2.0 SEARCHED ONE PLY DEEP AND THREW AWAY 44% OF ITS
 SIMULATIONS; C=0.5 REACHES DEPTH 5 WITH ZERO WASTE AND IS 30% CHEAPER PER ITERATION. THE 500-SEARCH

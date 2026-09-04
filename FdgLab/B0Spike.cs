@@ -464,22 +464,49 @@ public static class B0Spike
             };
 
             // (a) The leaf evaluator on THIS board, standalone - B3's open question.
-            SearchTree.RootBoundary rootBoundary = await SearchTree.ProbeRootAsync(snapshot, baseTree, evaluator);
-            GameDataStore evalStore = GameSaveSerializer.Load(rootBoundary.Snapshot);
-            var evalState = new TableState(evalStore);
-            var evalRules = new FDG.Rules.Dispatch.RuleEvaluator(new ProbabilisticDiceRoller());
-            evaluator.Evaluate(evalState, evalRules, rootBoundary.Sides); // warm
-            var evalMs = new List<double>();
-            for (int i = 0; i < 20; i++)
+            // The probe faults occasionally (that is what (a2) below measures), and an UNGUARDED
+            // one here took a whole 500-search soak down with it on a box also running self-play.
+            // Retry across seeds, and if every attempt faults, skip this timing rather than the
+            // phases after it - the soak is the expensive thing in this run, not this average.
+            SearchTree.RootBoundary? rootBoundary = null;
+            int warmProbeFailures = 0;
+            for (int attempt = 0; attempt < 5 && rootBoundary == null; attempt++)
             {
-                var sw = Stopwatch.StartNew();
-                evaluator.Evaluate(evalState, evalRules, rootBoundary.Sides);
-                sw.Stop();
-                evalMs.Add(sw.Elapsed.TotalMilliseconds);
+                try
+                {
+                    rootBoundary = await SearchTree.ProbeRootAsync(
+                        snapshot, baseTree with { WorkerSeed = 4242 + attempt }, evaluator);
+                }
+                catch (SearchTree.SearchUnavailableException e)
+                {
+                    warmProbeFailures++;
+                    Console.WriteLine($"     warm probe attempt {attempt + 1} faulted: {e.Message}");
+                }
             }
-            Console.WriteLine($"     leaf evaluator, all {rootBoundary.Sides.Count} sides, real armies: " +
-                              $"**{evalMs.Average():F2}ms per leaf** (min {evalMs.Min():F2}, max {evalMs.Max():F2}) " +
-                              $"- B3 measured 1.32ms on a bare fixture and flagged 3.4-7.2ms as the estimate to confirm");
+
+            if (rootBoundary == null)
+            {
+                Console.WriteLine($"     leaf evaluator: SKIPPED - the root probe faulted on all " +
+                                  $"{warmProbeFailures} attempts from this snapshot.");
+            }
+            else
+            {
+                GameDataStore evalStore = GameSaveSerializer.Load(rootBoundary.Snapshot);
+                var evalState = new TableState(evalStore);
+                var evalRules = new FDG.Rules.Dispatch.RuleEvaluator(new ProbabilisticDiceRoller());
+                evaluator.Evaluate(evalState, evalRules, rootBoundary.Sides); // warm
+                var evalMs = new List<double>();
+                for (int i = 0; i < 20; i++)
+                {
+                    var sw = Stopwatch.StartNew();
+                    evaluator.Evaluate(evalState, evalRules, rootBoundary.Sides);
+                    sw.Stop();
+                    evalMs.Add(sw.Elapsed.TotalMilliseconds);
+                }
+                Console.WriteLine($"     leaf evaluator, all {rootBoundary.Sides.Count} sides, real armies: " +
+                                  $"**{evalMs.Average():F2}ms per leaf** (min {evalMs.Min():F2}, max {evalMs.Max():F2}) " +
+                                  $"- B3 measured 1.32ms on a bare fixture and flagged 3.4-7.2ms as the estimate to confirm");
+            }
 
             // (a2) Probe reliability. A resumed game is a whole engine; one probe faulted outright
             // during this step's measurements on a box already running self-play at DOP 12, which is
@@ -501,7 +528,8 @@ public static class B0Spike
                 }
             }
             Console.WriteLine($"     root probe reliability: {probeOk}/10 reached a boundary" +
-                              (probeFailed > 0 ? $" - {probeFailed} faulted (search degrades to no-choice, caller falls back to A)" : ""));
+                              (probeFailed > 0 ? $" - {probeFailed} faulted (search degrades to no-choice, caller falls back to A)" : "") +
+                              (warmProbeFailures > 0 ? $"; plus {warmProbeFailures} warm-probe fault(s) before this loop" : ""));
 
             // (b) A real search at a fixed iteration budget (reproducible), single worker.
             // Warmed first: the FIRST search in a process JITs the whole search + simulation path,

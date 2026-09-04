@@ -271,8 +271,10 @@ counted. 100-game smoke cells at 2k 1v1 and 3k 2v2 (box: 1-2h each, data gen pau
 not present. **Lobby exposure (Chris, 2026-09-03): every ladder rung is a real, player-facing
 option, same as DerpBot (SoloRules) and Tactician Bot (A-greedy) today** - a new `EAiProfile`
 value, an "Add \<Name\> Bot" button and a per-slot picker entry in `LobbyScreen.cs`
-(`AddAiPlayer`/`SetSavedSlotPlayerType`), name TBD with Chris at this step (unlike `Gunline`,
-which stays lab-only benchmark tooling, never lobby-exposed). Ledger.
+(`AddAiPlayer`/`SetSavedSlotPlayerType`) (unlike `Gunline`, which stays lab-only benchmark
+tooling, never lobby-exposed). **Name decided (Chris, 2026-09-03): "Strategist Bot",
+`EAiProfile.Strategist`** - the rung above Tactician, and it deliberately leaves a
+foresight-flavored name (Oracle/Prophet) free for the C rung at step 15. Ledger.
 
 ### Step 10 - B-gate (runs: Sonnet / low; failure analysis: Opus / high; Chris games)
 Section 5 gate. Iterate fix -> overnight bench. Chris plays >= 2 games ("does it anticipate?"),
