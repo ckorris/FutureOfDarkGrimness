@@ -23,6 +23,30 @@ campaigns re-base.)*
 
 ## Notes (newest first)
 
+**2026-09-04 (mid-afternoon, Fable 5.1) - CRASH #7, AND THIS ONE LEFT A DUMP SOS CAN READ. PLUS AN
+18 GB SELF-PLAY PROCESS.** Self-play (plain A, dop 20, pid 47963, the 23:39 Release build) died at
+14:56:48 after 3h45 and batches 208-345 (~27,600 games, 0 faults): kernel `traps: .NET Server GC[47976]
+general protection fault ip:7e64bc04307f ... in libcoreclr.so[44207f]`. The runtime's own dumper wrote
+`scratchpad/dumps/selfplay-47963.dmp` (19.0 GB, full, with DAC regions) in 34 s. The parked chase is
+unparked: `threads`, `clrstack -all`, `eeheap -gc`, `dumpheap -stat`, `verifyheap` are running on it
+(`scratchpad/sos-selfplay-47963.txt`).
+
+*All seven crashes side by side (kernel lines):* fault offsets 0x43765b, 0x45ed76, 0x441262, 0x4447b5,
+0x44434e, 0x44207f - six different sites, all inside the GC's code region; fault addresses null in two,
+heap-range in three, non-canonical (GPF) in this one; CPUs 1, 2, 2, 21, ... - not one core. gdb on
+the new dump: the GC thread's frame under the signal handler is libcoreclr+0x44207f, 18 frames of GC
+above `start_thread`; no symbols for Canonical's build. That spread is what a corrupted heap looks
+like when the collector walks it, not one bad instruction and not one bad core.
+
+*Second finding:* the process was at **18.1 GB RSS** when it died, from 2.9 GB at launch - and the
+counters from the chain arms showed 2.5-3.0 GB heaps under server GC for a 15-min bench, so growth
+over hours is either server GC being lazy on a 32 GB box or a leak in the exporter/self-play path
+(plain A never simulates, so it is not the simulation timers). The harness killed my watcher for
+"low memory" at about the same time. **Relaunched as v3** (`scratchpad/selfplay-v3.sh`, pid in
+`selfplay.pid`): dumper armed, `DOTNET_GCHeapHardLimit=8 GiB` so lazy growth flattens while a leak
+ends in a managed OutOfMemoryException with a stack, and runtime counters every 30 s
+(`selfplay-v3-counters.csv`). Both answers land on their own.
+
 **2026-09-04 (afternoon, Fable 5.1, investigator agent) - R9 FREEZE DIAGNOSED: ~400 FIRST-CHANCE
 EXCEPTIONS PER SIMULATION, EACH A STOP-THE-PROCESS EVENT UNDER THE VS DEBUGGER. FIXED IN THE
 SUBMODULE (UNCOMMITTED, FOR REVIEW).**
