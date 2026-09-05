@@ -23,6 +23,61 @@ campaigns re-base.)*
 
 ## Notes (newest first)
 
+**2026-09-05 (10:05, Fable 5.1) - THE EVALUATOR FIX (step 10 failure analysis). Chris: "Before doing
+so, fix the evaluator issue. I will turn you up to Fable for that fix."** Engine `23ba22f`,
+superproject `91a0c2d`.
+
+*The defect, quantified from the old evaluator's own arithmetic (0.55 held / 0.30 value / 0.15
+threat, two-sided as 0.5 + (own - other)/2):* one marker of three = +0.092; killing 10% of the
+enemy army = +0.0078. **12:1.** A marker outweighed wiping out more than the entire opposing
+army. And `obj_held_share` is a step at the 3" seizure radius, so between markers the objective
+term was constant for both sides, cancelled in the subtraction, and the whole landscape sat inside
+~0.004 - which is exactly the 0.500-0.504 root spread measured in the charge-vs-shoot probe on
+2026-09-04. The search then ranked by prior noise where the one-ply policy ranked correctly:
+search worse than no search, precisely where a game spends most of its activations.
+
+*The fix (entirely inside the v1 C1 schema - no self-play data invalidated; C3's net gets the
+same features plus the globals it already has):*
+- Objective term gets gradient: 0.70 projected-held + 0.20 contested (in range, not owned) +
+  0.10 approach (1 - closest unit's normalized distance to any marker). Walking at a marker is a
+  slope, not a cliff.
+- Material (`value_share`) weighs 0.55 at the start of the game and decays quadratically to 0 at
+  the last activation of the last round; objectives rise 0.35 -> 0.90 to fill it; threat coverage
+  a constant 0.10. Material is instrumental (it wins the remaining rounds' marker contests); at
+  the final activation only projected holdings are the score.
+- Game progress = (round - 1 + fraction of living units activated this round) / total rounds, read
+  the same way the encoder's round_frac / activation_frac are.
+
+*Measured on the test board (10 units/side, 3 markers):* round 1 - marker +0.044, 30% kill +0.049
+(ratio 1.11, was 0.29); round 4 start - marker +0.082, kill +0.021 (0.26). Approaching a marker
+from 30" to 15" now raises value (was exactly 0). Per-leaf cost 1.22 ms, unchanged. Four new tests
+pin these (three fail on the old evaluator by construction; the fourth pins the progress read).
+Suite 3227/0/1. **Tactician-vs-Tactician DOP-1 hash unchanged `8D6EFA0AF0B4019E`** - the A policy
+is untouched. Headless smoke exit 0; 2-game Strategist smoke on the new binary 0 faults.
+
+*The probes, and a correction to their design (superproject commit):* the charge-vs-shoot probes
+as first authored (round 4, marker unreachable) had NO correct answer under this ruleset -
+eliminating the enemy does not win, markers do, so shoot/charge/pass all end in a tie, and once
+the landscape was no longer flat the search reported exactly that (Pass 0.513, everything else
+0.505: a terminal tie is 0.5 by `SideValues.FromResult`; a non-terminal material lead reads a
+touch higher). Redesigned: round 3, the enemy holds the only marker 8" away - the clean kill
+(gun) frees it for next round, the partial kill (knife) leaves a survivor contesting it, passing
+concedes it. All three probes pass 3/3 on repeats; `shoot-favored` is gating again. In that
+geometry the one-ply planner ranks a walk toward the marker FIRST (1.38 vs Charge 1.20 vs
+Hold+Shoot 0.47) and the search picks Shoot - the search adding value over the heuristic, which is
+the whole point of B. **Honest control:** the OLD evaluator also passes the redesigned probes
+(verified with a properly stashed build - a first attempt at the control silently ran the new
+binary because the old file failed to compile against the new tests, and was discarded). So the
+probes are rule-correct regression guards, not the fix's discriminator. The discriminator is the
+unit tests above and the paired A/B below.
+
+*A/B, running (`scratchpad/evalfix-ab.sh`, report `FdgLab/reports/step10-budget-probe-evalfix`):*
+the exact conditions of the 09:33 run that scored 60.8% on the old evaluator - same 6 cells, seeds
+1000-1024, interactive budget, dop 6, self-play paused - with only the evaluator changed. ~2h10m.
+Then Chris's reduced comprehensive run at shipping budget (target 12-13 h); per-cell costs at that
+budget are only measured for 2k 1v1 (157 s/game), so a short calibration pass sets the game
+counts first.
+
 **2026-09-05 (09:35, Sonnet 5) - THE GATE MEASURED THE WRONG BOT. SHIPPING BUDGET IS WORTH +8.3
 POINTS.** Chris's hypothesis ("was depth capped by time, did the concurrency limit it") - checked,
 and it is the budget, decisively. `bench --search-budget benchmark|interactive` added (commit
