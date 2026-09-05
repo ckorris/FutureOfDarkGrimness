@@ -28,3 +28,4 @@ FdgLab/data/
 
 # B+C campaign: transient cooperative-pause control file (docs/tactician-bc-campaign.md sec 6)
 FdgLab/.pause
+FdgLab/.pause-selfplay
