@@ -23,6 +23,92 @@ campaigns re-base.)*
 
 ## Notes (newest first)
 
+**2026-09-05 (14:00, Fable 5.1) - CALIBRATED; THE COMPREHENSIVE GATE RUN IS LAUNCHED (v4, SHIPPING
+BUDGET, ~12 h); SELF-PLAY v2 CHAINED BEHIND IT. HANDOFF.** Superproject: this commit (engine `41f178d`).
+
+*Calibration (`calibrate.sh` on `step10bin-v6`, dop 6, interactive budget, box idle, 0 timeouts):*
+
+| cell type | games | s/game mean | p95 | games/hour |
+|---|---|---|---|---|
+| 2k 1v1 (A/B runs) | 300 | 157 | - | 138 |
+| 1k 1v1 | 12 | 107 | 121 | 180 |
+| 3k 1v1 | 12 | 169 | 186 | 122 |
+| 4k 1v1 | 12 | 276 | 330 | 66 |
+| 2v2 at 2k | 16 | 341 | 454 | 53 |
+| 2v2 at 3k | 12 | 458 | 633 | 45 |
+
+*The run (`<scratchpad>/step10-gate-v4.sh` -> `FdgLab/reports/step10-gate-v4-2026-09-05/`, launched
+13:56, ETA ~02:00 Sep 6):* Strategist vs Tactician only, dop 6, dumper armed, resumable (same
+`--out` on retry, 3 attempts per cell), self-play paused for the chain. Cells in order: main matrix
+(64 ordered pairs x 12 = 768 games, ~5.6 h - THE reading, aggregate SE ~1.8 points); the three
+weakest Orks-opponent cells again with `--dump-logs` (RL/DE/BB vs Orks, 12 games each, separate
+seeds, not in the aggregate - the round-4 transcripts for the failure analysis, G2); points-1k x30,
+points-3k x30, points-4k x30, shape-2v2-2k x24, shape-2v2-3k x30 (per-cell SE ~9: directional, sec
+5's "every cell >= 50%" is reported, not applied as pass/fail); Titan reverse x30; ffa-smoke. When the
+chain ends it removes the pause file and launches **self-play v2** itself (`step10bin-v6`, `--out
+FdgLab/data/2026-09-05-v2`, dop 12, seed base 200000, schema 2, 8 GiB heap cap; pid in
+`<scratchpad>/selfplay-v2.pid`). The v1 process (pid 69804, old binary) was killed at 13:40 - its
+wrapper had no restart loop; v1 data (`FdgLab/data/2026-09-03`) stays valid v1 data.
+
+*Reading the gate when it lands (step 10 item 6):* `bench.md` per cell dir. Main-matrix aggregate vs
+the 60% threshold is the verdict; the bench-budget reference points are 56.6% (full matrix, old
+evaluator) and 60.8%/60.5% (6-cell probe at interactive budget, parts 0/1). Per-cell numbers are
+directional. Titan reverse first, then the Orks logs. If the aggregate is short, the failure analysis
+is Opus/high per the campaign, reading round-4 transcripts, and P4 (Contest macro) is the one
+vocabulary decision still open for Chris.
+
+**HANDOFF (a fresh instance reads this first, then the entries below down to the 12:20 handoff,
+then `docs/tactician-bc-campaign.md` sec 0/4-6):**
+- Repo state: superproject this commit / engine `41f178d`, branch `tactician-bc` both, pushed.
+- Session scratchpad (absolute; a new session gets a different one):
+  `/tmp/claude-1000/-home-chris-Projects-fdg-raylib-Purple/23109a3d-287a-4386-b169-c5057436f5b9/scratchpad/`
+  - `step10bin-v6/FdgLab`: Release build of engine `41f178d` (P0/P1/P3 + root choice), hash-verified
+    `4241CF7010C28571`. Never build into `FdgLab/bin/Release` while a lab process runs from it.
+  - RUNNING: `step10-gate-v4.sh` (log `step10-gate-v4.log`; bench pids via `pgrep -x FdgLab`). Do
+    not run anything else on the box until it prints `SELF-PLAY v2 LAUNCHED` - the budget is
+    wall-clock. Then self-play v2 runs at dop 12 (leaves room for builds/tests, not for benches:
+    touch `FdgLab/.pause-selfplay` first, remove after).
+  - `verify-p013.sh`: the full verify chain (suite, Release build to `step10bin-v6`, hash x2, probes
+    x3, smokes) - rerun after any engine change, into a NEW bin dir (edit BIN_DIR).
+  - `calibrate.sh`, `calib/`: the table above. `depth-r4.log`: the P2 measurement.
+- MUST KEEP RUNNING: bad-page pinner pid 72538 (`VmLck: 4 kB` in /proc/72538/status; restart with
+  `python3 <old scratchpad>/badpage-pinner.py 24`, old scratchpad path in the 12:20 handoff).
+- Rules that cost hours when broken: dop 6 for anything with search; dumper armed on every lab
+  invocation; never edit a running bash script; never `pgrep -f`/`pkill -f` a pattern that is in your
+  own command line (use `pgrep -x FdgLab`); `setsid ... &` makes `$!` the dead wrapper; every
+  dotnet-* diagnostic tool needs `TMPDIR=/tmp`; `bench` resumes from `<out>/bench.progress.jsonl` -
+  fresh `--out` (or `--fresh`) for a new measurement; only ever one self-play process.
+- Monitors do not survive /clear: re-arm on `step10-gate-v4.log` (cell `exit=`, `FAILED`, `GATE v4
+  DONE`, `SELF-PLAY v2 LAUNCHED`) and on the pinner's death.
+- NEXT: (6) compile the gate (aggregates are the reading, per-cell directional; Titan reverse and
+  the Orks logs first); (7) confirm self-play v2 is running and writing schema-2 batches into the
+  new directory; then the step 10 verdict and, if short, the Opus/high failure analysis on the Orks
+  transcripts before any further change.
+
+**2026-09-05 (13:10, Fable 5.1) - DEPTH AT A ROUND-4 START, INTERACTIVE BUDGET: 6-7. P2 DEFERRED.**
+`b0 --round 4 --search-budget interactive --search-workers 4` on the v6 binary (Alien Hives vs Battle
+Brothers, seed 4242, first boundary of round 4 - 4 root units on the acting side, box idle):
+
+| budget | iterations | nodes | max depth |
+|---|---|---|---|
+| 20 iterations, 1 worker (the B4 reference) | 20 | 21 | 5 |
+| benchmark (1.48 s, 4 workers) | 69 | 69 | 5 |
+| interactive (6.6 s, 4 workers) rep 1/2/3 | 315 / 327 / 346 | 312 / 327 / 343 | **6 / 7 / 7** |
+
+One tree edge = one activation, so from this round-4 start the shipping search sees 6-7 of the
+roughly 4 + (enemy's remaining) activations left in the game - most of the last round on this
+board, and the leaf sits within a few activations of the real result, which P1 now counts. That
+is the case FOR P2 being small and the case AGAINST paying for it: an endgame rollout replaces a
+2 ms leaf with up to K activations of in-sim play (the [3g] line cost is ~95 ms per expansion),
+i.e. it buys the true result at the price of an order of magnitude fewer iterations at exactly the
+budget that produced the only measured lever so far (+8.3 for budget). Whether that trade is
+positive is an A/B question with no room in the window (ends Sep 7; the gate run is 12-13 h).
+**Deferred**, with the caveat recorded: this was a 4-unit root; a horde or a 2v2 side with 10+
+unactivated units in round 4 will be shallower (widening opens ~5 root units and the rest of the
+depth is spent across more branches), and that is exactly where the Orks cells live - the
+comprehensive run's `--dump-logs` on those cells is what says whether depth or the vocabulary (P4)
+is the binding constraint there. P4 (Contest macro) remains Chris's call.
+
 **2026-09-05 (13:05, Fable 5.1) - P0 + P1 + P3 BUILT AND VERIFIED; A/B #2 STOPPED AT 93 GAMES (FLAT);
 THE ROOT CHOICE WAS UNDERCOUNTING WHOLE UNITS.** Engine `41f178d`, superproject: this commit.
 
