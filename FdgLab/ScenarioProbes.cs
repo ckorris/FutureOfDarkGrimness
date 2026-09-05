@@ -13,8 +13,9 @@ namespace FdgLab;
 /// (last-round-steal, charge-vs-shoot) gate the B-merge. Each probe is a <see cref="ScenarioCompiler"/>
 /// JSON (Scenarios/README.md format) under the probes directory, plus a sidecar
 /// "&lt;name&gt;.expect.json" naming the unit and the top-level action ("Move"/"Charge"/"Shoot"/
-/// "Cast"/"Pass" - <c>ChooseActionStage</c>'s vocabulary) expected for that unit's very next
-/// activation. The scenario compiles to exactly the boundary <c>StrategistActivationResolver</c>
+/// "Cast"/"Pass" - <c>ChooseActionStage</c>'s vocabulary, or "*" when only the UNIT matters, e.g.
+/// the last-round tempo probes where the expected pick is "the irrelevant unit, doing anything")
+/// expected for that unit's very next activation. The scenario compiles to exactly the boundary <c>StrategistActivationResolver</c>
 /// snapshots at (<c>DeterminePlayerTurnStage.Enter</c>), so this drives the real B5 search
 /// (<see cref="UctSearch"/>) on the compiled position, not a plain-policy shortcut.
 /// </summary>
@@ -94,7 +95,8 @@ public static class ScenarioProbes
 
             string unitName = store.GetDataBinding<UnitData>(unitRef).GetValue().Name;
             bool unitOk = unitName.Contains(expect.UnitNameContains, StringComparison.OrdinalIgnoreCase);
-            bool actionOk = string.Equals(choice.Prescription.Action, expect.Action, StringComparison.Ordinal);
+            bool actionOk = expect.Action == "*"
+                || string.Equals(choice.Prescription.Action, expect.Action, StringComparison.Ordinal);
             bool pass = unitOk && actionOk;
             if (!pass) failed++;
             Console.WriteLine($"  {(pass ? "PASS" : "FAIL")}  {name}: expected [{expect.UnitNameContains}] -> " +

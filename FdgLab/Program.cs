@@ -73,8 +73,11 @@ static int Usage()
                   dump + the action it would take from that exact state - point it at a parked
                   save from a hand-played game (#191 tooling); [--urgency] prepends each army's
                   activation-urgency table + the unit the resolver would pick next (#389)
-          b0      [--a <army>] [--b <army>] [--label L] [--profile P] [--boundary N]
+          b0      [--a <army>] [--b <army>] [--label L] [--profile P] [--boundary N | --round R]
                   [--round-trips N] [--advances N] [--soak N] [--timeout S]
+                  [--search-iterations N [--search-budget benchmark|interactive] [--search-workers W]]
+                  (--round R captures the first boundary of round R; --search-budget adds a
+                  time-budgeted search from that boundary and prints its max depth - #191 step 10)
                   #191 Phase B spike (campaign step 3): measures GameSaveSerializer round-trip cost
                   on a real mid-game boundary snapshot, the cost of resuming it and advancing
                   EXACTLY one activation, and whether simulated games stop/abandon without leaks.

@@ -23,6 +23,75 @@ campaigns re-base.)*
 
 ## Notes (newest first)
 
+**2026-09-05 (13:05, Fable 5.1) - P0 + P1 + P3 BUILT AND VERIFIED; A/B #2 STOPPED AT 93 GAMES (FLAT);
+THE ROOT CHOICE WAS UNDERCOUNTING WHOLE UNITS.** Engine `41f178d`, superproject: this commit.
+
+*A/B #2 (part 2 vs part 1), stopped by Chris's call at 12:55 after 93 of 300 games* - the argument for
+letting it finish was attribution insurance only, and P1 overwrites part 2's last-round behaviour
+anyway, so the number would have been half stale. Paired on the SAME seeds it completed (the first
+two cells only, both Orks-opponent):
+
+| cell | n | part 1 | part 2 | delta |
+|---|---|---|---|---|
+| Robot Legions vs Orks | 50 | 31.0% | 30.0% | -1.0 |
+| Dark Elf Raiders vs Orks | 43 | 26.7% | 30.2% | +3.5 |
+| **paired aggregate** | **93** | **29.0%** | **30.1%** | **+1.1** |
+
+Noise, same as A/B #1 (-0.3 at n=300). Two evaluator rebalances, no measurable lever at interactive
+depth on 1v1 2k. The data is in `FdgLab/reports/step10-budget-probe-evalfix2/bench.progress.jsonl`
+(resumable if anyone ever wants the other 207 games; nobody should).
+
+*What was built (design per the 11:00 entry; all three below the plan's seams, no schema change):*
+- **P0 - objective-aware wound allocation** (`TacticianAssignWoundsResolver`, now takes the table
+  state; registry passes it). A model within 3" of a marker the unit holds or contests carries a
+  marker stake when it would die: `TacticianWeights.WoundObjectiveHold` (15) x `ObjectiveUrgency`
+  (x0.66 round 1 .. x1.3 last round), split across the unit's models still standing on that marker,
+  so the LAST body on the marker is worth ~10 in round 1 and ~20 in the last round - above any single
+  model's gun (a 10-shot AP2 autocannon prices 13). A fifth of the stake when another allied unit
+  also stands there (then output decides again). Three pins: partial-on-marker unit takes 3 wounds ->
+  both on-marker models survive; the last on-marker rifleman outlives a heavy gunner; with an ally on
+  the marker the gunner is kept instead. Below the search seam: fixes A and B at once.
+- **P1 - last-round counting** (`RoundEndProjection`, new; `HandWeightedEvaluator` last-round branch).
+  Movers = unactivated, seize-eligible units not already on a marker. Pass 1: every held marker is
+  denied if an opposing mover can reach it (rush + 3"), a sticky-held marker with no holder is seized
+  by the one side that can reach it; pass 2: a neutral marker goes to the one side that can reach it,
+  standoffs stay neutral; a mover is SPENT by its assignment (one unit cannot deny two markers; least
+  flexible unit first); pass 3: a marker still held inside an unspent enemy's shooting reach counts
+  half. The evaluator blends it with the realized projection at confidence 0.75, so walking onto a
+  marker you were projected to take is still worth the remaining quarter (gradient kept). Measured
+  on one marker at round-4 start: an unactivated enemy that can walk onto our marker now costs 0.21
+  (v2's flat half: 0.12); a second denier on two held markers costs a second marker (v2: only the
+  material); a neutral marker only we can reach reads 0.17 ours before the unit moves (v2: 0). Four
+  pins, plus the existing v2 pins still pass (the near-vs-far kill premium is now a full marker).
+  Before the last round nothing changes.
+- **P3 - last-round tempo prior** (`TacticianActivationResolver.Urgency`): in the final round the
+  flip term becomes tempo - units that cannot reach a marker they would change are spent first
+  (+0.5), responders are held for last (-0.5); the gap is above the flip bonus and every ordinary
+  kill/threat fraction so it orders the round, with kill/threat ordering inside each group. Lives in
+  the ActivationScores the root priors come from, so A and the tree both get it. Two pins (round 4
+  spends the idler; round 3 the responder still leads).
+- **Root choice, found by the new probe:** `UctSearch.ChooseRoot` picked the single most visited
+  EDGE across all units. In `hold-the-responder` the idle squad's branch took 376 of 525 visits split
+  five ways across interchangeable macros (80 each) and LOST to the responder's one edge at 96 -
+  against the search's own values (0.19 vs 0.06). Now robust-child the way the tree is shaped: the
+  unit with the most visits in total, then the most visited edge under it (ties unchanged). The probe
+  went from 1/3 to 3/3 and nothing else moved.
+
+*Verification (all on engine `41f178d`, box otherwise idle):* suite 3242/0/1 (nine new tests). DOP-1
+Tactician-vs-Tactician six-game hash `4241CF7010C28571` on two consecutive runs - **deterministic, and
+CHANGED from `8D6EFA0AF0B4019E` by construction**: P0 and P3 alter the A policy (wound picks, round-4
+activation order), so the transcripts differ; the handoff's "unchanged" expectation could not hold
+for this change and the check now reads determinism + liveness. Probes 5/5 on three consecutive
+runs (`hold-the-responder`, `count-says-they-win` new; the harness accepts `"Action": "*"` for
+"this unit, doing anything"). Headless smoke exit 0; 1-game Strategist smoke exit 0, 0 faults, hash
+`8027DC5F2D7F85FF`. Release binary `<scratchpad>/step10bin-v6`.
+
+*Scope, said out loud:* no probe for P0 ("deny-with-one-model-last"). Wound allocation sits below
+the search seam, so a unit->action expectation cannot discriminate it; its three pin tests carry it.
+`b0` grew `--round R` (capture the first boundary of round R) and `--search-budget
+benchmark|interactive` (the tree a TIME budget buys, shipping worker count, prints max depth) for
+the P2 sizing measurement - running now, next entry.
+
 **2026-09-05 (12:20, Fable 5.1) - A/B #1 IS FLAT; P0 FILED (OBJECTIVE-BLIND WOUND ALLOCATION); HANDOFF
 FOR THE NEXT INSTANCE.**
 

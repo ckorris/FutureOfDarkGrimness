@@ -75,6 +75,12 @@ public static class B0Spike
         // searches the memory soak runs. 0 iterations skips both search phases.
         int searchIterations = IntArg(args, "--search-iterations", 0);
         int searchWorkers = IntArg(args, "--search-workers", 4);
+        // #191 step 10 (P2 sizing): the tree a TIME budget buys from this boundary - the search as it
+        // ships (benchmark: 1-2s, interactive: 5-10s), --search-workers workers. Prints max depth.
+        string? searchBudget = Arg(args, "--search-budget")?.ToLowerInvariant();
+        // #191 step 10: capture at the FIRST boundary of round R instead of the Nth boundary (the
+        // last-round measurements need a round-4 start, and where that falls depends on the armies).
+        int captureRound = IntArg(args, "--round", 0);
         int searchSoak = IntArg(args, "--search-soak", 0);
         int timeoutSeconds = IntArg(args, "--timeout", 60);
         EAiProfile profile = (Arg(args, "--profile") ?? "tactician").ToLowerInvariant() switch
@@ -84,14 +90,15 @@ public static class B0Spike
             _ => EAiProfile.Tactician,
         };
 
-        Console.WriteLine($"=== B0 spike [{label}] profile={profile} boundary={boundary} ===");
+        Console.WriteLine($"=== B0 spike [{label}] profile={profile} boundary={boundary}" +
+                          (captureRound > 0 ? $" (first boundary of round {captureRound})" : "") + " ===");
         Console.WriteLine($"  A: {Path.GetFileNameWithoutExtension(armyA)}");
         Console.WriteLine($"  B: {Path.GetFileNameWithoutExtension(armyB)}");
 
         // --- Phase 1: capture a real mid-game activation-boundary snapshot -----------------------
         var captureWall = Stopwatch.StartNew();
         (string? snapshot, string captureNote) = await CaptureBoundarySnapshotAsync(
-            armyA, armyB, profile, boundary, seed: 4242, timeoutSeconds);
+            armyA, armyB, profile, boundary, seed: 4242, timeoutSeconds, captureRound);
         captureWall.Stop();
 
         if (snapshot == null)
@@ -556,6 +563,24 @@ public static class B0Spike
                               $"{single.ClosedEdges} closed edges, root branching {single.RootUnits} units; " +
                               $"choice {single.Choice?.Label ?? "(none)"} with {single.Choice?.Visits ?? 0} visits");
 
+            // #191 step 10 (P2 sizing): the same search under the TIME budget that ships, with the
+            // shipping worker count - what depth the real bot actually reaches from this boundary.
+            if (searchBudget is "benchmark" or "interactive")
+            {
+                UctOptions budgeted = (searchBudget == "interactive" ? UctOptions.Interactive : UctOptions.Benchmark)
+                    with { RootSeed = 4242, Workers = searchWorkers, Tree = baseTree };
+                for (int rep = 0; rep < 3; rep++)
+                {
+                    var budgetSw = Stopwatch.StartNew();
+                    SearchResult budgetedResult = await UctSearch.RunAsync(snapshot, budgeted with { RootSeed = 4242 + rep }, evaluator);
+                    budgetSw.Stop();
+                    Console.WriteLine($"     **{searchBudget} budget** ({budgetedResult.BudgetMs}ms, {searchWorkers} workers) rep {rep + 1}: " +
+                                      $"{budgetedResult.Iterations} iterations in {budgetSw.ElapsedMilliseconds}ms, {budgetedResult.Nodes} nodes, " +
+                                      $"**max depth {budgetedResult.MaxDepth}**, {budgetedResult.ClosedEdges} closed edges, root {budgetedResult.RootUnits} units; " +
+                                      $"choice {budgetedResult.Choice?.Label ?? "(none)"} with {budgetedResult.Choice?.Visits ?? 0} visits");
+                }
+            }
+
             // (c) Reproducibility on a real board, and what parallel workers add.
             var repeatSw = Stopwatch.StartNew();
             SearchResult repeat = await UctSearch.RunAsync(snapshot, new UctOptions
@@ -738,16 +763,22 @@ public static class B0Spike
     /// mechanism its first live test).
     /// </summary>
     private static async Task<(string? Snapshot, string Note)> CaptureBoundarySnapshotAsync(
-        string armyA, string armyB, EAiProfile profile, int boundary, int seed, int timeoutSeconds)
+        string armyA, string armyB, EAiProfile profile, int boundary, int seed, int timeoutSeconds,
+        int captureRound = 0)
     {
         var store = GameDataStore.GameDataStoreBuilder.GetDefault();
         var bus = new LabMessageBus();
         var captured = new TaskCompletionSource<string>(TaskCreationOptions.RunContinuationsAsynchronously);
 
-        var watcher = new BoundaryWatcher(targetOccurrence: boundary, onBoundary: () =>
+        // --round R: the first boundary whose progress record reads round R (or later), whatever
+        // its ordinal; otherwise the Nth boundary as before.
+        Func<IReadableGameDataStore, bool>? roundReached = captureRound <= 0 ? null
+            : s => (GameProgressUtilities.TryGetProgress(store)?.RoundCount ?? 0) >= captureRound;
+        var watcher = new BoundaryWatcher(targetOccurrence: roundReached == null ? boundary : int.MaxValue,
+            onBoundary: () =>
         {
             captured.TrySetResult(GameSaveSerializer.Save(store));
-        }, throwAfter: true);
+        }, throwAfter: true, capturePredicate: roundReached);
 
         SlotSpec specA = Armies.LoadSlot(armyA) with { Profile = profile };
         SlotSpec specB = Armies.LoadSlot(armyB) with { Profile = profile };
@@ -1021,14 +1052,20 @@ public static class B0Spike
         /// <summary>How many options the injected decision had (-1 = injection never fired).</summary>
         public int InjectedOptionCount => _injectedOptionCount;
 
+        // Optional: capture at the first boundary where this holds (--round), instead of the Nth.
+        private readonly Func<IReadableGameDataStore, bool>? _capturePredicate;
+        private int _captured;
+
         public BoundaryWatcher(int targetOccurrence, Action onBoundary, bool throwAfter,
-            int injectAtOccurrence = 0, EInjectMode mode = EInjectMode.None)
+            int injectAtOccurrence = 0, EInjectMode mode = EInjectMode.None,
+            Func<IReadableGameDataStore, bool>? capturePredicate = null)
         {
             _target = targetOccurrence;
             _onBoundary = onBoundary;
             _throwAfter = throwAfter;
             _injectAt = injectAtOccurrence;
             _mode = mode;
+            _capturePredicate = capturePredicate;
         }
 
         /// <param name="planner">
@@ -1077,7 +1114,10 @@ public static class B0Spike
                 }
             }
 
-            if (seen != _target) return null;
+            bool hit = _capturePredicate == null
+                ? seen == _target
+                : _capturePredicate(store) && Interlocked.Exchange(ref _captured, 1) == 0;
+            if (!hit) return null;
             _onBoundary();
             if (_throwAfter) throw new StopSignal();
             return null;
