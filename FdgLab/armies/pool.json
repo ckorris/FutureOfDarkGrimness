@@ -278,6 +278,56 @@
           "armies/3k - Titan Lords.fdgarmy"
         ]
       }
+    ],
+    "budget-probe": [
+      {
+        "sideA": [
+          "FdgLab/armies/Robot Legions 2k - Mixed.fdgarmy"
+        ],
+        "sideB": [
+          "FdgLab/armies/Orks 2k - Horde Mixed.fdgarmy"
+        ]
+      },
+      {
+        "sideA": [
+          "FdgLab/armies/Dark Elf Raiders 2k - Transport.fdgarmy"
+        ],
+        "sideB": [
+          "FdgLab/armies/Orks 2k - Horde Mixed.fdgarmy"
+        ]
+      },
+      {
+        "sideA": [
+          "FdgLab/armies/Battle Brothers 2k - Elite Shooting.fdgarmy"
+        ],
+        "sideB": [
+          "FdgLab/armies/Human Defense Force 2k - Tough and Vehicle-Heavy.fdgarmy"
+        ]
+      },
+      {
+        "sideA": [
+          "FdgLab/armies/Dwarf Guilds 2k - Ambush and Scout-Heavy.fdgarmy"
+        ],
+        "sideB": [
+          "FdgLab/armies/High Elf Fleets 2k  - Caster-Heavy.fdgarmy"
+        ]
+      },
+      {
+        "sideA": [
+          "FdgLab/armies/High Elf Fleets 2k  - Caster-Heavy.fdgarmy"
+        ],
+        "sideB": [
+          "FdgLab/armies/Robot Legions 2k - Mixed.fdgarmy"
+        ]
+      },
+      {
+        "sideA": [
+          "FdgLab/armies/Alien Hives 2k - Horde Melee.fdgarmy"
+        ],
+        "sideB": [
+          "FdgLab/armies/Battle Brothers 2k - Elite Shooting.fdgarmy"
+        ]
+      }
     ]
   }
 }
