@@ -23,6 +23,24 @@ campaigns re-base.)*
 
 ## Notes (newest first)
 
+**2026-09-04 (23:25, Sonnet 5) - CRASH-RESUMABLE BENCH, PER CHRIS'S REQUEST ("resuming from a
+crash is not so bad").** Commits `77fae12`/`061e782`/`73a08bf`: `bench` now appends every completed
+game to `<out>/bench.progress.jsonl` the instant it finishes, and a rerun with the same `--out`
+skips whatever is already recorded and plays only the rest, then writes the final report over the
+FULL merged set. Verified: a killed-mid-run cell resumed to the exact same outcome hash as an
+uninterrupted reference run; re-invoking an already-complete `--out` resumes instantly with the
+same hash; `--fresh` forces a real replay; the DOP-1 six-game hash-verify is unchanged
+(`8D6EFA0AF0B4019E`). (Correction: the first commit mistakenly cited "#391", a real unrelated item -
+fixed to #191 in the very next commit before anything else built on it.)
+
+Applied starting with the NEXT cell, per Chris's own scoping - cell 1 (`main-matrix-vs-tactician`)
+was already 2800/6400 games into its non-resumable v2 attempt when this landed, too far along to
+usefully restart. `scratchpad/handover.sh` (running detached) watches for cell 1's conclusion and
+then kills the old chain and launches `scratchpad/step10-gate-v3.sh` for cells 2-13, now using the
+resumable binary (`scratchpad/step10bin-v2`) and retaining the same dop 6 / armed dumper / 3-attempt
+retry from the v2 correction - except a retry within a cell now RESUMES rather than replaying it
+from zero.
+
 **2026-09-04 (evening, Sonnet 5) - CHRIS'S GAME 2 OF 2 (step 10 gate requirement), verbatim, AND
 HE APPROVES THE GUI CHECK:** "I played the second game. 3k. I won my even more but I think the bot
 played quite well there, too. Go ahead and file that as a GUI approval for me." Second and final
