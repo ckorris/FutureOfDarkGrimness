@@ -23,6 +23,29 @@ campaigns re-base.)*
 
 ## Notes (newest first)
 
+**2026-09-05 (06:50, Sonnet 5) - FIRST GATE NUMBER: MAIN MATRIX VS TACTICIAN, 56.6% - SHORT OF THE
+60% THRESHOLD.** `main-matrix-vs-tactician` completed clean (exit 0, 0 faults across all 6,400
+games, hash `48624762BA037DF1`, ~12h49m wall at dop 6). 64 matchups (8-army 2k pool, ordered pairs
+incl. mirrors), 100 games each:
+
+- **2853 A(Strategist) wins / 2014 B(Tactician) wins / 1533 ties -> aggregate 56.6% (gate: >=60%).**
+- Wide per-cell spread: 22 of 64 cells have Strategist LOSING head-to-head (below 50%), weakest at
+  19.0% (Robot Legions vs Orks) and 21.5% (Dark Elf Raiders vs Orks); strongest at 85.5% (Alien
+  Hives vs Battle Brothers).
+- **Pattern worth flagging, not yet explained:** Orks 2k - Horde Mixed appears as the OPPONENT in 4
+  of the 5 weakest cells (Strategist struggling against a Tactician-piloted Orks list specifically),
+  while Strategist-piloted-Orks appears in several of the strongest cells. Could be an Orks-specific
+  matchup weakness, or Orks could simply be a strong list regardless of pilot (undetermined without
+  comparing against the A-vs-A Orks baseline) - a candidate thread for the failure analysis, not
+  chased further here (Sonnet/low is measurement, not diagnosis).
+
+Zero faults over 6,400 games is itself a real result: the R9 freeze fix and the crash-resilience
+work are holding up under real volume, not just the smoke-sized runs that verified them.
+
+**Not yet a gate verdict** - `main-matrix-vs-solorules` (the >=85% sanity reading), every panel,
+and the Titan Lords reverse pairing are still queued (now under the resumable v3 chain). This
+number alone is a real, specific shortfall on the gate's primary reading, though.
+
 **2026-09-04 (23:25, Sonnet 5) - CRASH-RESUMABLE BENCH, PER CHRIS'S REQUEST ("resuming from a
 crash is not so bad").** Commits `77fae12`/`061e782`/`73a08bf`: `bench` now appends every completed
 game to `<out>/bench.progress.jsonl` the instant it finishes, and a rerun with the same `--out`
