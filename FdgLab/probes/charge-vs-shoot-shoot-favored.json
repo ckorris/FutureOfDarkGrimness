@@ -1,22 +1,14 @@
 {
-  "name": "B-gate probe: shoot favored - strong gun, weak melee weapon, target in both charge and shoot range",
-  "round": 4,
+  "name": "B-gate probe: shoot favored - round 3, enemy holds the only marker 8in away",
+  "round": 3,
   "activePlayer": 0,
   "settings": {
     "randomness": "Probabilistic"
   },
   "objectives": [
     [
-      10,
-      44
-    ],
-    [
-      36,
-      44
-    ],
-    [
-      62,
-      44
+      32,
+      24
     ]
   ],
   "players": [
