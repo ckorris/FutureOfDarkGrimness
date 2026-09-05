@@ -126,6 +126,7 @@ Corpus coverage is now complete too: **0 of 13,870** book rule references are de
 
 ## AI agent (Tactician)
 
+- [ ] 394 — Simulation state copy without the JSON round trip: a search expansion spends ~40% of its CPU serializing/deserializing the store and another ~28% finalizing dynamic methods (profiled 2026-09-05); a typed clone behind a determinism pin, churn source first. ([WorkItems/394-simulation-state-copy.md](WorkItems/394-simulation-state-copy.md))
 Master plan: `docs/ai-agent-plan.md` (heuristics -> MCTS -> learned value net; gates, invariants, vocabulary).
 
 - [~] 191 — Tactician AI agent umbrella: A-phase automated gate passed; B (MCTS) + C (value net) campaign started 2026-09-03 on branch `tactician-bc` per `docs/tactician-bc-campaign.md` (generalization across 1k-4k and 1v1/2v2, panels, model policy). ([WorkItems/191](WorkItems/191-tactician-agent.md))

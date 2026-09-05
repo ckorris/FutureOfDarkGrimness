@@ -23,6 +23,25 @@ campaigns re-base.)*
 
 ## Notes (newest first)
 
+**2026-09-05 (15:10, Fable 5.1) - WHERE THE SEARCH'S CYCLES GO: A CPU PROFILE OF A REAL STRATEGIST
+GAME. #394 FILED.** Chris: "why do we serialize at all for simulation?" - and "a better way to copy
+the game state is a clear win". Measured rather than argued: the gate was killed (resumable, 104
+games on disk), one Strategist-vs-Tactician 2k game was played under `dotnet-trace` on two spare
+cores, and the gate resumed at 14:55 from its progress file (six in-flight games replayed, ~3 min).
+
+Of 133 s of CPU, 63% inside the simulations: **41% JSON serialize/deserialize, 28% finalizing
+dynamic methods on the finalizer thread (an emitter somewhere lets `DynamicMethod`s die at a high
+rate - unexplained, first thing #394 pins), 13% rules/tokens, 6% the planner, 4% stage machinery,
+0.3% the evaluator.** The state copy is the dominant cost of a search expansion, two-thirds of it
+if the churn is part of it. Full table, the b0 wall-clock cross-check, and the plan are in
+`WorkItems/394-simulation-state-copy.md` (filed, todo, not inside this window).
+
+A first profile of `b0` itself was a trap worth recording: 46% of ITS CPU was exception unwinding
+from b0's own throw-stops - the stage machine nests every transition as an awaited call, 300-500
+frames deep by round 3, and a throw is rethrown at every frame while walking the rest: quadratic,
+seconds per throw. The engine's simulation stop has been cooperative since R9 and pays nothing; the
+b0 capture and THROW phases still do. Any real engine fault deep in a game pays it too.
+
 **2026-09-05 (14:00, Fable 5.1) - CALIBRATED; THE COMPREHENSIVE GATE RUN IS LAUNCHED (v4, SHIPPING
 BUDGET, ~12 h); SELF-PLAY v2 CHAINED BEHIND IT. HANDOFF.** Superproject: this commit (engine `41f178d`).
 
