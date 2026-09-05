@@ -66,7 +66,7 @@ public static class GameRunner
                 : null;
 
             var aiGame = new FDGGame_AsLocal(store, bus);
-            var registry = BuildRegistry(slotSpec.Profile, aiGame, slots[i].PlayerID, spec.Seed, i, decisionLog);
+            var registry = BuildRegistry(slotSpec.Profile, aiGame, slots[i].PlayerID, spec.Seed, i, decisionLog, spec.SearchBudget);
             if (registryWrapper != null)
                 registry = registryWrapper(registry, aiGame);
             var timed = new TimingRegistry(registry, samples, sampleLock, byType);
@@ -111,11 +111,13 @@ public static class GameRunner
     }
 
     // The game seed goes in whole; the engine derives the per-player stream by slot ID (#193).
+    // searchBudget: the spec's own when it names one (#191 step 10's --search-budget), else the
+    // lab default below.
     private static FDG.StageResolution.IStageResolverRegistry BuildRegistry(
         EAiProfile profile, FDGGame_AsLocal aiGame, PlayerID playerID, int seed, int slotID,
-        Action<string>? decisionLog) =>
+        Action<string>? decisionLog, FDG.Ai.Tactician.Search.UctOptions? searchBudget) =>
         AiProfileFactory.BuildRegistry(profile, aiGame.TableState, playerID, seed, slotID, decisionLog,
-            searchBudget: LabSearchBudget);
+            searchBudget: searchBudget ?? LabSearchBudget);
 
     /// <summary>
     /// #191 B5: what a Strategist plays under in the lab - the plan's benchmark budget (1-2s per

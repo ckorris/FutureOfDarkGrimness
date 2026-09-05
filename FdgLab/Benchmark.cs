@@ -42,7 +42,13 @@ public sealed record BenchmarkOptions(
     string? PauseFilePath = null,
     // #191: wipe any prior bench.progress.jsonl in OutDir instead of resuming from it - for a
     // deliberate full rerun (changed weights, changed engine) that happens to reuse an old --out.
-    bool Fresh = false);
+    bool Fresh = false,
+    // #191 step 10: the Strategist search budget these games are played under. Null = the lab's
+    // 1-2s benchmark budget. SearchBudgetLabel goes in the report header so a run at the shipping
+    // (5-10s Interactive) budget can never be mistaken for a default-budget one - same reasoning
+    // as WeightOverrides above.
+    FDG.Ai.Tactician.Search.UctOptions? SearchBudget = null,
+    string? SearchBudgetLabel = null);
 
 /// <summary>
 /// The seeded, side-swapped benchmark matrix (#194; plan sec. 6.1). Scoring: for a matchup (A, B),
@@ -196,7 +202,7 @@ public static class Benchmark
         List<SlotSpec> sideB = BuildSide(matchup.SideB, options.ProfileB, team: swapped ? 0 : 1);
         List<SlotSpec> slots = swapped ? sideB.Concat(sideA).ToList() : sideA.Concat(sideB).ToList();
         return new GameSpec(slots, seed, options.Randomness, options.WatchdogSeconds,
-            CaptureLog: dump, Trace: dump && options.Trace);
+            CaptureLog: dump, Trace: dump && options.Trace, SearchBudget: options.SearchBudget);
     }
 
     // #210: write the game's log/trace the moment it completes and strip them from the kept
@@ -285,6 +291,8 @@ public static class Benchmark
         sb.AppendLine($"- Profiles: A = {options.ProfileA}, B = {options.ProfileB}");
         if (options.WeightOverrides != null)
             sb.AppendLine($"- Weight overrides: `{options.WeightOverrides}`");
+        if (options.SearchBudgetLabel != null)
+            sb.AppendLine($"- Search budget: **{options.SearchBudgetLabel}** (default benches use the 1-2s benchmark budget)");
         int resumedCount = rows.Count - freshRows.Count;
         if (resumedCount > 0)
             sb.AppendLine($"- Resumed: {resumedCount} game(s) carried over from an earlier (crashed/interrupted) attempt via `bench.progress.jsonl`");

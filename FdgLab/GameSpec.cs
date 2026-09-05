@@ -26,7 +26,13 @@ public sealed record GameSpec(
     // #191 tooling: interleave each planning AI's Choose Action narration (winner + full scored
     // candidate table, prefixed "[ai N]") into the captured log - a replay of decisions, not
     // just outcomes. Requires CaptureLog.
-    bool LogDecisions = false)
+    bool LogDecisions = false,
+    // #191 step 10: what a Strategist in this game thinks under. Null = GameRunner.LabSearchBudget
+    // (the 1-2s benchmark budget every bench before 2026-09-05 used). Set it to measure a DIFFERENT
+    // bot than the lab default - notably UctOptions.Interactive, the 5-10s budget that actually
+    // ships to players, which is ~4.3x the thinking time per activation at 2k and had never been
+    // benchmarked when the B-gate's main matrix came in at 56.6%.
+    FDG.Ai.Tactician.Search.UctOptions? SearchBudget = null)
 {
     public static GameSpec TwoPlayer(SlotSpec a, SlotSpec b, int seed,
         ERandomnessType randomness = ERandomnessType.Realistic) =>

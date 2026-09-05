@@ -49,6 +49,11 @@ static int Usage()
                                      #198 position-write trace next to each log
                   [--triangle]       pool: unordered pairs only (pre-2026-07-10 shape; skews the
                                      aggregate toward profile A's alphabetically-early armies)
+                  [--search-budget benchmark|interactive]   #191 step 10: what a Strategist
+                                     thinks under. Default benchmark (1-2s/activation, what every
+                                     bench before 2026-09-05 measured); interactive is the 5-10s
+                                     budget that actually ships to players (~4.3x the time at 2k).
+                                     Recorded in the report header either way.
                   [--fresh]          #191: ignore/delete any bench.progress.jsonl already in --out
                                      instead of resuming from it (a deliberate full rerun reusing an
                                      old --out dir - changed weights, changed engine, etc.)
@@ -140,6 +145,9 @@ static async Task<int> RunBench(string[] args)
         return 2;
 
     if (!TryApplyWeights(args)) return 2;
+    if (!TrySearchBudgetArg(args, out FDG.Ai.Tactician.Search.UctOptions? searchBudget,
+            out string? searchBudgetLabel))
+        return 2;
 
     var options = new BenchmarkOptions(
         Matchups: matchups,
@@ -155,7 +163,9 @@ static async Task<int> RunBench(string[] args)
         DumpLogsDir: Arg(args, "--dump-logs"),
         Trace: args.Contains("--trace"),
         WeightOverrides: Arg(args, "--weights"),
-        Fresh: args.Contains("--fresh"));
+        Fresh: args.Contains("--fresh"),
+        SearchBudget: searchBudget,
+        SearchBudgetLabel: searchBudgetLabel);
 
     return await Benchmark.RunAsync(options);
 }
@@ -354,6 +364,36 @@ static int IntArg(string[] args, string name, int fallback) =>
 /// </summary>
 static int DefaultWatchdogSeconds(params FDG.Ai.EAiProfile[] profiles) =>
     profiles.Any(p => p == FDG.Ai.EAiProfile.Strategist) ? 900 : 120;
+
+/// <summary>
+/// #191 step 10: --search-budget benchmark|interactive. The lab has always benched the 1-2s
+/// benchmark budget, but a Strategist against a human plays at Interactive (5-10s, ~4.3x the
+/// thinking time per activation at 2k) - so every number before this flag existed measured a
+/// deliberately handicapped bot. Worker count stays 4 either way: root parallelism is an ensemble
+/// over determinizations, so changing it would measure a different bot rather than a faster one.
+/// </summary>
+static bool TrySearchBudgetArg(string[] args, out FDG.Ai.Tactician.Search.UctOptions? budget,
+    out string? label)
+{
+    budget = null;
+    label = null;
+    string? raw = Arg(args, "--search-budget");
+    if (raw == null) return true;
+    switch (raw.ToLowerInvariant())
+    {
+        case "benchmark":
+            budget = FDG.Ai.Tactician.Search.UctOptions.Benchmark with { Workers = 4 };
+            label = "benchmark (1-2s/activation)";
+            return true;
+        case "interactive":
+            budget = FDG.Ai.Tactician.Search.UctOptions.Interactive with { Workers = 4 };
+            label = "interactive (5-10s/activation - the budget that ships to players)";
+            return true;
+        default:
+            Console.Error.WriteLine($"Unknown --search-budget '{raw}'. Known: benchmark, interactive.");
+            return false;
+    }
+}
 
 static bool TryProfileArg(string[] args, string name, out FDG.Ai.EAiProfile profile)
 {
