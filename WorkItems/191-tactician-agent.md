@@ -23,6 +23,17 @@ campaigns re-base.)*
 
 ## Notes (newest first)
 
+**2026-09-04 (evening, Sonnet 5) - CHRIS'S GAME 2 OF 2 (step 10 gate requirement), verbatim, AND
+HE APPROVES THE GUI CHECK:** "I played the second game. 3k. I won my even more but I think the bot
+played quite well there, too. Go ahead and file that as a GUI approval for me." Second and final
+game at 3k (game 1 was smaller/unspecified points, both wins for Chris, both with the bot playing
+well by his read). **Gate requirement "Chris plays >= 2 games ('does it anticipate?'), verbatim" -
+DONE, Chris-approved.** The R9 check (first GUI game with search - window stays live) is likewise
+CLOSED: two full GUI games on the freeze-fix build (`dc2c354`/`75cda37`) with no freeze reported.
+Remaining step 10 items: the compute gate (running), the probe harness (done, 2/2 gating probes
+green), last-round-steal/charge-vs-shoot (done). Once the gate's numbers are in, step 10 needs only
+the pass/fail compile against sec 5's table before L1.
+
 **2026-09-04 (evening, Sonnet 5) - CHRIS'S GAME 1 OF 2 (step 10 gate requirement), verbatim:**
 "I just played a game in the GUI. I won, but had to work hard for it and had some luck on my side.
 I think the Strategist played very well." Played on the Windows laptop, tactician-bc at (or after)
