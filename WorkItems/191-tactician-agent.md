@@ -23,6 +23,43 @@ campaigns re-base.)*
 
 ## Notes (newest first)
 
+**2026-09-05 (09:35, Sonnet 5) - THE GATE MEASURED THE WRONG BOT. SHIPPING BUDGET IS WORTH +8.3
+POINTS.** Chris's hypothesis ("was depth capped by time, did the concurrency limit it") - checked,
+and it is the budget, decisively. `bench --search-budget benchmark|interactive` added (commit
+`f8b9234`); `budget-probe` panel of 6 cells spanning the main matrix's measured range added
+(`b9940f2`). 300 games, 0 faults, 0 timeouts, hash `E79A0ACD9176B85A`, 2h11m.
+
+**This is a controlled comparison, not an approximate one:** same 6 cells, same seeds (1000-1024),
+same opponent profile, same dop 6, same otherwise-idle box. The ONLY difference is how long the
+search may think - 1-2s (lab benchmark budget, what every bench in this campaign has ever used) vs
+5-10s (Interactive, what actually ships to a player). Measured cost: 157s/game vs ~52s, decision
+mean 498ms vs 167ms, worst p95 6.8s vs 1.8s.
+
+| cell | benchmark | interactive | delta |
+|---|---|---|---|
+| Robot Legions vs Orks | 22.0% | 27.0% | +5.0 |
+| Dark Elf Raiders vs Orks | 24.0% | 33.0% | +9.0 |
+| Battle Brothers vs HDF | 44.0% | 52.0% | +8.0 |
+| Dwarf Guilds vs HEF | 52.0% | 72.0% | +20.0 |
+| HEF vs Robot Legions | 88.0% | 94.0% | +6.0 |
+| Alien Hives vs Battle Brothers | 85.0% | 87.0% | +2.0 |
+| **aggregate (n=300)** | **52.5%** | **60.8%** | **+8.3** |
+
+**Every cell improved.** Naive extrapolation onto the full matrix's 56.6% gives ~64.9%, above the
+60% threshold - but that is 6 of 64 cells extrapolated, NOT a measurement, and must not be reported
+as if the gate passed.
+
+**What this means for step 10.** The gate's headline 56.6% is a real number about a deliberately
+handicapped configuration (the campaign chose the cheap budget for benches on purpose - benching at
+shipping budget costs ~4x). The remaining queued cells are all at the same handicapped budget. The
+gate's budget policy is now a live design question for Chris, not something to settle by carrying
+on. Options costed: full main matrix at interactive budget is ~46h at 100 games/cell, ~23h at 50
+(the aggregate is what the main-matrix threshold reads, and n=3200 is ample for it).
+
+The evaluator defect (previous entry) is unaffected by this and still stands on its own - more
+thinking time does not fix a leaf signal that goes flat when no objective is live; it just buys
+more search around it.
+
 **2026-09-05 (06:50, Sonnet 5) - FIRST GATE NUMBER: MAIN MATRIX VS TACTICIAN, 56.6% - SHORT OF THE
 60% THRESHOLD.** `main-matrix-vs-tactician` completed clean (exit 0, 0 faults across all 6,400
 games, hash `48624762BA037DF1`, ~12h49m wall at dop 6). 64 matchups (8-army 2k pool, ordered pairs
