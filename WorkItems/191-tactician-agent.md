@@ -23,6 +23,15 @@ campaigns re-base.)*
 
 ## Notes (newest first)
 
+**2026-09-04 (evening, Sonnet 5) - CHRIS'S GAME 1 OF 2 (step 10 gate requirement), verbatim:**
+"I just played a game in the GUI. I won, but had to work hard for it and had some luck on my side.
+I think the Strategist played very well." Played on the Windows laptop, tactician-bc at (or after)
+superproject `dc2c354` / submodule `75cda37` - the R9 freeze fix build. **No freeze reported**, so
+the R9 check (GUI game with search stays live) is READ AS PASSED pending any contrary detail Chris
+adds later; the earlier "cooperative simulation stop stops it re-throwing 400 exceptions per
+activation" diagnosis holds up in the field. One of the gate's required >= 2 games logged; one more
+still needed.
+
 **2026-09-04 (18:40, Sonnet 5) - CHRIS'S CALL: LET THE GATE FINISH, SELF-PLAY STAYS PAUSED FOR THE
 TRIP.** Chris asked whether the gate's data could train C (no - `bench` writes win/loss outcomes,
 only `selfplay` exports the per-decision PositionEncoder rows C needs) and flagged that self-play,
