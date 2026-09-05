@@ -23,6 +23,68 @@ campaigns re-base.)*
 
 ## Notes (newest first)
 
+**2026-09-05 (11:00, Fable 5.1) - THINKING PASS: LAST-ROUND BEHAVIOUR. A PROPOSAL, NOT A CHANGE.**
+Chris: "most of my hard-earned wins against the bot come down to my micro-managing of objective
+holding toward the end ... Don't change anything about the plan yet."
+
+*The rules that make the last round what it is (read, not remembered):* `ReconcileObjectiveOwner`
+- nobody in range: previous owner keeps it; one side in range: they take it; BOTH in range: it goes
+NEUTRAL. So a single surviving model within 3" of an enemy-held marker at round end denies it
+outright; a holder must be fully removed from 3" to be taken, but merely contested to be lost.
+Activations alternate, so the side with more unactivated units gets the last unopposed moves.
+The A-era ledger already named this: "remaining losses/ties are objective endgames," "the horde's
+surplus bodies take every marker in round 4" - and the A-era straggler cells (RL/DE/BB vs Orks) are
+exactly the Strategist's worst cells today. Chris's observation is the same fact from the other
+side of the table.
+
+*Where the machinery falls short, each tied to code:*
+1. **Horizon.** `Continuation = 0`: one tree edge = one activation, so depth = activations seen.
+   Depth 5 at benchmark budget; perhaps 8-12 at interactive (unmeasured). A 2k round is ~18
+   activations. From the start of round 4 the search sees about half the round and hands the rest
+   to the evaluator; it only reaches the real result (terminal = true score) in the last third.
+2. **The evaluator cannot count.** held / contested / threatened are per-marker yes/no. "They have
+   three unactivated units that can reach my two markers and I have one responder" is invisible.
+   `activation_share` and `activations_left_frac` are encoded but unused by the evaluator.
+3. **Activation order is tactics-only.** `Urgency()` = kill / threat / flip terms; no round
+   awareness, no "keep the responder for last." The root's unit priors come from it and widening
+   (C=0.5) opens ~5 units, so "activate the irrelevant unit now" is rarely even explored.
+4. **No sliver-contest.** M2/M3 path the unit's MASS to within the 3" goal radius. A human parks
+   one model within 3" and keeps the rest safe or spread toward a second marker (coherency allows
+   9"). Under the neutral rule one model is a full denial; the vocabulary cannot say it.
+5. **Holder survivability is not modelled.** "threatened" is reach-based: a 20-model horde in reach
+   and a 3-model squad in reach are the same threat. Expected survivors within 3" is the real
+   quantity (CombatMath can price it per held marker).
+
+*Proposals, cheapest and most certain first:*
+- **P1 - round-end projection in the evaluator (counting).** In the last round, replace the per-
+  marker yes/no with a projected round-end tally: for every unactivated unit on both sides, the
+  markers it can reach; a greedy assignment (deny enemy-held, secure own-held, then seize neutral);
+  reconcile with the neutral rule; value from the projected (mine - theirs). O(units x markers).
+  Verify: a probe where the count says the enemy wins unless a specific unit moves; A/B on the
+  Orks cells. Also a natural v3 encoder feature later.
+- **P2 - endgame rollouts.** When <= K activations remain (K ~ 6-8), the leaf = play the round out
+  with the in-sim A policy and take the REAL result. The machinery exists (`Continuation`); a
+  per-node dynamic continuation is a small change in `SimulationExpander`. Cost-bounded by K.
+  Verify depth FIRST: `fdglab b0 --search-iterations` prints max depth - measure from a round-4
+  start at interactive budget (5 min, during the calibration window; not now, it would perturb
+  the A/B).
+- **P3 - last-round tempo prior.** In round 4, boost the activation prior of units that cannot
+  affect any marker (spend them first) and hold units that can secure/deny one. Lives in the
+  `ActivationScores` the root priors come from, so A and the search both benefit. Verify: probe
+  "irrelevant unit + responder: activate the irrelevant one."
+- **P4 - a Contest macro (M14): sliver denial.** Move so one model ends within 3" of the target
+  marker while the unit's centroid ends as far back/aside as coherency allows. A vocabulary change
+  (Appendix A is Chris-confirmed) and movement-planner geometry: the biggest lift here, and the
+  one a human most visibly exploits. Verify: probe + the DE/RL-vs-Orks cells.
+- **P5 - round-4 budget headroom.** Under the 10 s GUI cap there is ~16% headroom (8.6 -> 10 s);
+  anything more is Chris's call on feel. Benches could reallocate rounds 1-2 -> round 4.
+
+*Recommendation:* P1 + P3 first (cheap, address counting and tempo directly), P2 sized by the
+depth measurement, P4 as the one vocabulary decision for Chris, P5 optional. Sequencing relative to
+the current plan (unchanged): measure depth in the calibration window; in the comprehensive run,
+`--dump-logs` the Orks cells so the failure analysis has round-4 transcripts to read (G2); decide
+P1-P4 on that evidence after the run, not before it.
+
 **2026-09-05 (10:35, Fable 5.1) - EVALUATOR FIX PART 2, FROM CHRIS'S REVIEW: THREAT TO HOLDINGS,
 AND THE C1 SCHEMA GOES TO v2.** Chris: "In the final round, unactivated material not on objectives
 can still be important to kill because it can 1. move to objectives and 2. destroy your units that
