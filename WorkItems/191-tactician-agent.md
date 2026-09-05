@@ -23,6 +23,46 @@ campaigns re-base.)*
 
 ## Notes (newest first)
 
+**2026-09-05 (11:10, Fable 5.1) - EVALUATOR FIX PART 2, FROM CHRIS'S REVIEW: THREAT TO HOLDINGS,
+AND THE C1 SCHEMA GOES TO v2.** Chris: "In the final round, unactivated material not on objectives
+can still be important to kill because it can 1. move to objectives and 2. destroy your units that
+hold objectives." Answered in two parts: the decay itself was not the problem (progress is by
+activations, so round 4 opens with material at 0.24, 44% of its round-1 weight, and the last
+boundary is covered by the search reaching the real result) - but the review exposed that
+material was FUNGIBLE: the unit 6" from your held marker and the one 40" away were worth the same
+(0.006 to kill either, against a 0.077 marker swing), and the search only saw the difference
+inside its horizon. Chris chose both halves: the evaluator term and the v2 encoder feature.
+Engine `$(cd FutureOfDarkGrimness && git rev-parse --short HEAD)`, superproject `$(git rev-parse --short HEAD)`.
+
+- `obj_held_threatened_share` (block[15]): of a side's projected-held markers, the share an
+  opposing unit can reach this round (cheap threat reach + 3" seizure radius covers the marker
+  point - contest it or hit the holder). Last round: only UNACTIVATED enemies count; earlier
+  rounds: any living enemy in reach. Width 67 -> 71, `SchemaVersion` 2. Per-leaf 1.2 -> 2.0 ms.
+- Evaluator: a threatened held marker counts half. Round-4 measurement: killing the unit that can
+  take our marker +0.175, killing its distant twin +0.065 (old evaluator: equal). The premium is
+  the half-marker exactly.
+- Suite 3233/0/1 (five encoder tests - the encoder's first - and one evaluator test). Hash
+  `8D6EFA0AF0B4019E` unchanged. Probes 3/3 x3. Smokes clean.
+- **Data:** self-play files before this are v1, after are v2; v1 stays valid v1 data; the loader at
+  step 12/13 trains on v2 only or imputes (the 4 columns are not recomputable from a row). When
+  self-play resumes it goes to a NEW --out with a seed base past batch ~420 of the v1 run.
+
+*Chris's second question - is a 12-13 h gate too reduced to mean anything?* Answered in the chat and
+recorded here: the AGGREGATES are meaningful at that size (all 64 matrix cells at ~12 games each is
+768 games, aggregate SE ~1.8 points and no subset bias - the 6-cell probe ran 4 points under the full
+matrix at the same budget); individual panel cells at ~30 games are directional only (SE ~9), so
+sec 5's "every cell >= 50%" cannot be applied as a strict pass/fail there and will be reported as
+such. Skip the vs-SoloRules passes (ceiling checks; a collapse would show against Tactician).
+Chris's human-judgment point is right and is why the gate carries his games: outcome-only
+measurement across 8 armies x 2 sides is a poor signal per game, and the volume pays for the
+signal's poverty, not for the bot being hard to read - and the per-cell breakdown is what made the
+Orks finding visible at all.
+
+*Sequence from here:* A/B #1 (fix part 1 vs old, running since 10:02) lands ~12:05 -> A/B #2 (part 2
+vs part 1, same cells/seeds/budget, ~2h10m) -> 20-min calibration of per-cell costs at shipping
+budget -> the 12-13 h comprehensive run -> self-play (v2 schema, new directory) for the rest of the
+window.
+
 **2026-09-05 (10:05, Fable 5.1) - THE EVALUATOR FIX (step 10 failure analysis). Chris: "Before doing
 so, fix the evaluator issue. I will turn you up to Fable for that fix."** Engine `23ba22f`,
 superproject `91a0c2d`.
