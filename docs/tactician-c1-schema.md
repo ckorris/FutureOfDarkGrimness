@@ -100,6 +100,7 @@ strongest single opponent", which is what a max^n backup cares about).
 | `reserve_frac` | off-table units (reserve/embarked) / living units | `ReserveRules` / tokens |
 | `seizer_frac` | units that `CanSeizeObjectives` / living units | aircraft cannot seize, so this is not the same as unit count |
 | `activation_share` | this side's living units / all sides' living units (added 2026-09-03, sign-off item) | the activation-economy asymmetry: a share, so still no absolutes. See the Titan Lords note below |
+| `obj_held_threatened_share` | **v2 (2026-09-05).** Of this side's projected-held markers, the share an opposing unit can still reach this round: its cheap threat reach + the 3" seizure radius covers the marker point (so it can contest it or hit the holder). Last round: only UNACTIVATED enemies count (an activated one never acts again); earlier rounds: any living enemy in reach (it acts again next round) | same reach as `threat_coverage`, for the opposing units |
 
 **Titan Lords note (Chris, 2026-09-03).** Titan Lords are the schema's stress test: at 3k the list is
 SIX single-model high-Tough units against an opponent's fifteen to twenty-five. Two things follow.
@@ -111,7 +112,19 @@ The step 2 baseline's weakest cell (79%) was the only one containing Titan Lords
 was added to the 3k panel the same day, and the mix for generation must include it so the net sees
 single-model armies, not only hordes.
 
-**Vector width v1: 7 + 60 = 67 floats** (15 per block since `activation_share`). (The plan sketched "~200"; that was a guess before the
+**Vector width v2: 7 + 64 = 71 floats** (16 per block since `obj_held_threatened_share`, 2026-09-05; v1 was 67 with 15 per block).
+
+**v2 change record (2026-09-05, #191 step 10, Chris's sign-off).** The B-gate failure analysis found the
+hand evaluator treated material as fungible - a unit 6" from your held marker counted the same as one
+40" away - and Chris's review made the round-4 case explicit: unactivated enemy material off the
+markers still matters because it can move onto one or kill the holder. `obj_held_threatened_share`
+is that quantity; B's evaluator counts a threatened held marker as half held, and C's net gets the
+same feature. **Data consequence:** every self-play file written before this change is v1 (67
+wide, `schema=1` in its header); files written after are v2 (71 wide, `schema=2`). The v1 files stay
+valid v1 data. Step 12/13's loader must either train on v2 only, or widen v1 rows with the 4 new
+columns imputed (they are NOT recomputable from a row - the feature needs the board). The
+2026-09-03 self-play run (~85k games at v1) resumes into a NEW output directory with a seed base
+past its last batch, so no directory mixes schemas. (The plan sketched "~200"; that was a guess before the
 primitives existed. Smaller is better here - every feature is one we can defend, and a wider
 vector is easy to add at v2 while a regenerated dataset is not.)
 
