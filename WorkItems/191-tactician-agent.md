@@ -23,6 +23,78 @@ campaigns re-base.)*
 
 ## Notes (newest first)
 
+**2026-09-05 (12:20, Fable 5.1) - A/B #1 IS FLAT; P0 FILED (OBJECTIVE-BLIND WOUND ALLOCATION); HANDOFF
+FOR THE NEXT INSTANCE.**
+
+*A/B #1 (evaluator part 1 vs old; `FdgLab/reports/step10-budget-probe-evalfix`, hash
+`FB77A685052A1BB9`, 300 paired games, 0 faults/timeouts, 155.8 s/game):* **60.8% -> 60.5%, delta
+-0.3.** Per cell +4.0 / -9.0 / +4.0 / -2.0 / 0.0 / +1.0 - noise at n=50 per cell. The rebalance
+that the 12:1 ratio and the flat 0.500-0.504 landscape argued for did NOT move win rate on six
+1v1 2k cells at shipping budget. Honest reading: at interactive depth on 1v1 2k the root choice is
+dominated by the A-policy priors and the tree, not by leaf weights; the defect may still bite at
+bench budget (shallower) and in 2v2 (more of the game away from markers), neither measured here.
+The BUDGET (+8.3) remains the only lever with a measured effect. **A/B #2** (part 2, threat to
+holdings, vs part 1; same cells/seeds/budget) launched 12:15, `scratchpad/evalfix2-ab.sh` ->
+`FdgLab/reports/step10-budget-probe-evalfix2`, ETA ~14:25.
+
+*P0 - objective-blind wound allocation (Chris, from a GUI game):* "an enemy unit partially on an
+objective ... took losses, and assigned wounds that killed off models that were ON the objective,
+such that the unit was no longer holding the objective. A human would never."
+`Ai/Tactician/Resolvers/TacticianAssignWoundsResolver.cs` (`CostPerWound`) prices which model to
+lose with no marker awareness. Fix shape: models within the 3" seizure radius of a marker the unit
+holds or contests are last to die (a large cost term, round-scaled like ObjectiveUrgency), with
+a pin test (partial-on-marker unit takes N wounds -> the on-marker models survive) and a probe.
+Cheap, certain, and squarely inside Chris's "micro-managing objective holding" observation. It is a
+resolver below the search seam, so it fixes A and B at once.
+
+*Decisions (Chris):* P1 (round-end counting in the evaluator) and P3 (last-round tempo prior)
+first; P0 alongside as the cheapest of the three. P2 sized by the depth measurement; P4 (Contest
+macro) still his call. Chris also chose to /clear before this work - the handoff below is for the
+next instance.
+
+**HANDOFF (read this first, then the previous ~6 entries, then `docs/tactician-bc-campaign.md`
+sec 0/4-6; model: this is design+build work -> Opus or Fable per sec 3, then Sonnet for the runs):**
+- Repo state: superproject `ad6de4e`+ / engine `0b0721d`, branch `tactician-bc` both, pushed.
+- Session scratchpad (absolute; a new session gets a DIFFERENT one, read these by path):
+  `/tmp/claude-1000/-home-chris-Projects-fdg-raylib-Purple/3de923b1-0a6a-4cc9-9335-4dbfcfd958aa/scratchpad/`
+  - `step10bin-v5/FdgLab`: Release build of the CURRENT engine (part-2 evaluator, schema v2),
+    hash-verified `8D6EFA0AF0B4019E`. Build a fresh one after any engine change (never into
+    `FdgLab/bin/Release` while a lab process runs from it).
+  - RUNNING: `evalfix2-ab.sh` (pid of the bench: `pgrep -f step10bin-v5`), log `evalfix2-ab.log`,
+    prints the part-1 vs part-2 table when done (~14:25). Do not run anything else on the box
+    until it finishes - its budget is wall-clock, contention makes it measure a weaker bot.
+  - `calibrate.sh` (ready, NOT run): ~20 min of games per cell type at shipping budget; sets the
+    comprehensive run's game counts from measured throughput. Run after A/B #2.
+  - `paired-compare.py`: paired scorer (score_a vs score_b from bench.csv; never match on
+    winner_army - it is the army's internal name, not the filename).
+  - `HANDOFF-step10.md`, `HANDOFF.md`: earlier operational notes (crash chase, pinner, gate v1-v3).
+- MUST KEEP RUNNING: bad-page pinner pid 72538 (`VmLck: 4 kB` in /proc/72538/status). It holds
+  the faulty RAM page (bit 23 stuck at 0). If it dies: `python3 <scratchpad>/badpage-pinner.py 24`.
+- Self-play: PAUSED (`FdgLab/.pause-selfplay`), v1 process pid in `<scratchpad>/selfplay.pid` (old
+  binary, schema v1). When resuming, KILL that process and start fresh on the new binary into a
+  NEW dir: `<bin> selfplay --out FdgLab/data/2026-09-05-v2 --dop 12 --seed-base 200000 --pause-file
+  FdgLab/.pause-selfplay` (v1 ended at seed 86999; 200000 is safely past; schema=2 files must
+  not share a directory with v1 files). Only ever one self-play process.
+- Rules that cost hours when broken: dop 6 for anything with search (dop 12 crashed within 95
+  min); every lab invocation with the runtime dumper armed
+  (`DOTNET_DbgEnableMiniDump=1 DOTNET_DbgMiniDumpType=4 DOTNET_DbgMiniDumpName=<dir>/x-%p.dmp`);
+  never edit a running bash script; never `pgrep -f`/`pkill -f` a pattern that is in your own
+  command line; `setsid ... &` makes `$!` the dead wrapper - find pids with `pgrep -f <binary>`;
+  every dotnet-* diagnostic tool needs `TMPDIR=/tmp`; `bench` now resumes from
+  `<out>/bench.progress.jsonl` - use a FRESH `--out` (or `--fresh`) for a new measurement.
+- Monitors do not survive /clear: re-arm one on `evalfix2-ab.log` ("EVALFIX2 A/B DONE") and one on
+  the pinner's death.
+- NEXT, in order: (1) collect A/B #2 into the ledger; (2) P0 + P1 + P3 with tests, new endgame
+  probes (`FdgLab/probes/`: deny-with-one-model-last, hold-the-responder, count-says-they-win),
+  suite, hash-verify, smokes, commit submodule-first; (3) 5-min depth measurement
+  (`fdglab b0 --search-iterations` from a round-4 start at interactive budget) -> size P2 or
+  defer it; (4) `calibrate.sh`; (5) the 12-13 h comprehensive run at shipping budget: all 64
+  main-matrix cells x ~12 games, every panel cell x ~30, Titan reverse, ffa-smoke, vs Tactician
+  only, `--dump-logs` on the Orks cells, dop 6, dumper armed, resumable, self-play paused; (6)
+  compile the gate: aggregates are the reading, per-cell is directional (sec 5's "every cell
+  >= 50%" cannot be applied strictly at n~30, say so); (7) resume self-play v2 for the rest of the
+  window (ends Sep 7).
+
 **2026-09-05 (11:00, Fable 5.1) - THINKING PASS: LAST-ROUND BEHAVIOUR. A PROPOSAL, NOT A CHANGE.**
 Chris: "most of my hard-earned wins against the bot come down to my micro-managing of objective
 holding toward the end ... Don't change anything about the plan yet."
