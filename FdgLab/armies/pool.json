@@ -328,6 +328,48 @@
           "FdgLab/armies/Battle Brothers 2k - Elite Shooting.fdgarmy"
         ]
       }
+    ],
+    "shape-2v2-2k": [
+      {
+        "sideA": [
+          "FdgLab/armies/Alien Hives 2k - Horde Melee.fdgarmy",
+          "FdgLab/armies/Orks 2k - Horde Mixed.fdgarmy"
+        ],
+        "sideB": [
+          "FdgLab/armies/Battle Brothers 2k - Elite Shooting.fdgarmy",
+          "FdgLab/armies/Human Defense Force 2k - Tough and Vehicle-Heavy.fdgarmy"
+        ]
+      },
+      {
+        "sideA": [
+          "FdgLab/armies/Dark Elf Raiders 2k - Transport.fdgarmy",
+          "FdgLab/armies/Robot Legions 2k - Mixed.fdgarmy"
+        ],
+        "sideB": [
+          "FdgLab/armies/Dwarf Guilds 2k - Ambush and Scout-Heavy.fdgarmy",
+          "FdgLab/armies/High Elf Fleets 2k  - Caster-Heavy.fdgarmy"
+        ]
+      },
+      {
+        "sideA": [
+          "FdgLab/armies/Alien Hives 2k - Horde Melee.fdgarmy",
+          "FdgLab/armies/High Elf Fleets 2k  - Caster-Heavy.fdgarmy"
+        ],
+        "sideB": [
+          "FdgLab/armies/Orks 2k - Horde Mixed.fdgarmy",
+          "FdgLab/armies/Battle Brothers 2k - Elite Shooting.fdgarmy"
+        ]
+      },
+      {
+        "sideA": [
+          "FdgLab/armies/Dwarf Guilds 2k - Ambush and Scout-Heavy.fdgarmy",
+          "FdgLab/armies/Robot Legions 2k - Mixed.fdgarmy"
+        ],
+        "sideB": [
+          "FdgLab/armies/Dark Elf Raiders 2k - Transport.fdgarmy",
+          "FdgLab/armies/Human Defense Force 2k - Tough and Vehicle-Heavy.fdgarmy"
+        ]
+      }
     ]
   }
 }

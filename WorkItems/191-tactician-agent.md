@@ -23,7 +23,7 @@ campaigns re-base.)*
 
 ## Notes (newest first)
 
-**2026-09-05 (11:10, Fable 5.1) - EVALUATOR FIX PART 2, FROM CHRIS'S REVIEW: THREAT TO HOLDINGS,
+**2026-09-05 (10:35, Fable 5.1) - EVALUATOR FIX PART 2, FROM CHRIS'S REVIEW: THREAT TO HOLDINGS,
 AND THE C1 SCHEMA GOES TO v2.** Chris: "In the final round, unactivated material not on objectives
 can still be important to kill because it can 1. move to objectives and 2. destroy your units that
 hold objectives." Answered in two parts: the decay itself was not the problem (progress is by
@@ -32,7 +32,7 @@ boundary is covered by the search reaching the real result) - but the review exp
 material was FUNGIBLE: the unit 6" from your held marker and the one 40" away were worth the same
 (0.006 to kill either, against a 0.077 marker swing), and the search only saw the difference
 inside its horizon. Chris chose both halves: the evaluator term and the v2 encoder feature.
-Engine `$(cd FutureOfDarkGrimness && git rev-parse --short HEAD)`, superproject `$(git rev-parse --short HEAD)`.
+Engine `0b0721d`, superproject `072201c`.
 
 - `obj_held_threatened_share` (block[15]): of a side's projected-held markers, the share an
   opposing unit can reach this round (cheap threat reach + 3" seizure radius covers the marker
