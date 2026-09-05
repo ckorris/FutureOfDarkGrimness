@@ -40,7 +40,7 @@ public sealed record BenchmarkOptions(
     // B+C campaign: touch this file to pause new game starts (a soak/data-gen driver sharing the
     // box signals through it); already-running games finish normally.
     string? PauseFilePath = null,
-    // #391: wipe any prior bench.progress.jsonl in OutDir instead of resuming from it - for a
+    // #191: wipe any prior bench.progress.jsonl in OutDir instead of resuming from it - for a
     // deliberate full rerun (changed weights, changed engine) that happens to reuse an old --out.
     bool Fresh = false);
 
@@ -57,7 +57,7 @@ public static class Benchmark
         bool dump = options.DumpLogsDir != null;
         if (dump) Directory.CreateDirectory(options.DumpLogsDir!);
 
-        // #391: crash resilience. A cell this size is hours of work; a process-level fault (the RAM
+        // #191: crash resilience. A cell this size is hours of work; a process-level fault (the RAM
         // defect chased in #191's crash log, or anything else that takes the whole process down)
         // used to lose every game already played, because bench.md/bench.csv are only written once,
         // at the very end. Every completed game is now appended to bench.progress.jsonl immediately
@@ -154,7 +154,7 @@ public static class Benchmark
         return faults == rows.Count ? 1 : 0; // all-fault run means the harness itself is broken
     }
 
-    // #391: just enough of a GameRow to rebuild it after a restart - matchup identity comes back
+    // #191: just enough of a GameRow to rebuild it after a restart - matchup identity comes back
     // from re-indexing into the SAME (args-determined) matchup list, so only the per-game result
     // needs serializing. PlayerID is never persisted (#193: minted fresh per run, meaningless
     // across one) - a fresh one is fine since nothing downstream reads it, only ObjectiveCount.
@@ -183,7 +183,7 @@ public static class Benchmark
         }
     }
 
-    // #391: a FRESH ArmyListFile per game, never one shared instance per matchup (see the comment
+    // #191: a FRESH ArmyListFile per game, never one shared instance per matchup (see the comment
     // this replaced, above the old inline build). Team seating: side A occupies the FIRST slot
     // block when not swapped, the SECOND block when swapped - matches GameSpec.TeamGame's
     // convention and reduces to the historical [a,b]/[b2,a2] order for one-army-per-side matchups.
@@ -224,7 +224,7 @@ public static class Benchmark
         return sb.ToString();
     }
 
-    // #391: Resumed defaults false for every ordinary game this process actually plays; a row
+    // #191: Resumed defaults false for every ordinary game this process actually plays; a row
     // rebuilt from bench.progress.jsonl sets it true so Performance stats (WriteMarkdown) can skip
     // it - its WallClock/Decisions are placeholders, not a measurement from THIS run's box state.
     private sealed record GameRow(Matchup Matchup, int Seed, bool Swapped, GameRecord Record, bool Resumed = false)
@@ -252,12 +252,12 @@ public static class Benchmark
     /// SHA-256 over the ordered outcome tuples — everything deterministic, nothing timing-derived.
     /// Two runs with identical options must print identical hashes (#193); this is the single value
     /// the reproducibility gate compares. <paramref name="matchups"/> gives the canonical (build)
-    /// order to sort by - #391's resumed rows arrive in FILE order (actual completion order from a
+    /// order to sort by - #191's resumed rows arrive in FILE order (actual completion order from a
     /// prior attempt), not build order, so without re-sorting a resumed run's hash would depend on
     /// how the two attempts happened to interleave instead of only on the games played. Sorting by
     /// matchup INDEX (not by army name) reduces to a no-op for every existing non-resumed caller,
     /// single- or multi-matchup: it reproduces the exact order <c>work</c> was already built in, so
-    /// every hash on record before #391 stays byte-identical.
+    /// every hash on record before #191 stays byte-identical.
     /// </summary>
     private static string OutcomeHash(IReadOnlyList<GameRow> rows, IReadOnlyList<Matchup> matchups)
     {
@@ -323,7 +323,7 @@ public static class Benchmark
         }
 
         // Performance lives in its own section: wall times vary run to run, outcomes must not. Only
-        // FRESH rows go in (#391) - a resumed row's WallClock/Decisions are zeroed placeholders, not
+        // FRESH rows go in (#191) - a resumed row's WallClock/Decisions are zeroed placeholders, not
         // a real measurement, and mixing them in would understate every mean/percentile silently.
         var wallMs = freshRows.Select(r => r.Record.WallClock.TotalMilliseconds).OrderBy(x => x).ToArray();
         var decisions = freshRows.Select(r => r.Record.Decisions).ToArray();

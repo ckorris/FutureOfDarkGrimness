@@ -26,7 +26,7 @@ static int Usage()
                                      named generalization panel (B+C campaign, docs/tactician-bc-
                                      campaign.md sec 5): points-1k | points-3k | points-4k |
                                      shape-2v2
-                                     #391: every completed game is appended to --out's
+                                     #191: every completed game is appended to --out's
                                      bench.progress.jsonl immediately, and a rerun with the SAME
                                      --out (and the same matchup-producing args) resumes from it
                                      instead of replaying already-recorded games - a process-level
@@ -49,7 +49,7 @@ static int Usage()
                                      #198 position-write trace next to each log
                   [--triangle]       pool: unordered pairs only (pre-2026-07-10 shape; skews the
                                      aggregate toward profile A's alphabetically-early armies)
-                  [--fresh]          #391: ignore/delete any bench.progress.jsonl already in --out
+                  [--fresh]          #191: ignore/delete any bench.progress.jsonl already in --out
                                      instead of resuming from it (a deliberate full rerun reusing an
                                      old --out dir - changed weights, changed engine, etc.)
           smoke   [--seed S] [--a <army>] [--b <army>]   one game, prints the record
