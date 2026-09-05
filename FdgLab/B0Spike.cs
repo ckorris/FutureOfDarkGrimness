@@ -132,7 +132,36 @@ public static class B0Spike
         Console.WriteLine($"\n[2] Round trip over {roundTrips} iterations:");
         Console.WriteLine($"    Load: {Describe(loadMs)}");
         Console.WriteLine($"    Save: {Describe(saveMs)}");
-        Console.WriteLine($"    Clone (load+save): mean {loadMs.Average() + saveMs.Average():F1}ms");
+        Console.WriteLine($"    JSON round trip (load+save): mean {loadMs.Average() + saveMs.Average():F1}ms");
+
+        // #394: the typed copy the search runs on now - Capture (clone the live store) and
+        // Materialize (clone the frozen copy) are the two halves of one expansion's state cost, in
+        // place of the load and the save above. Same iterations, same board.
+        var captureMs = new List<double>();
+        var materializeMs = new List<double>();
+        {
+            GameDataStore live = GameSaveSerializer.Load(snapshot);
+            for (int i = 0; i < roundTrips; i++)
+            {
+                var sw = Stopwatch.StartNew();
+                StoreSnapshot captured = StoreSnapshot.Capture(live);
+                sw.Stop();
+                captureMs.Add(sw.Elapsed.TotalMilliseconds);
+
+                sw.Restart();
+                GameDataStore materialized = captured.Materialize();
+                sw.Stop();
+                materializeMs.Add(sw.Elapsed.TotalMilliseconds);
+
+                if (i == 0 && GameSaveSerializer.Save(materialized) != GameSaveSerializer.Save(live))
+                    Console.WriteLine("    WARNING: the typed copy does not save byte-identically to the live store");
+            }
+        }
+        Console.WriteLine($"[2b] Typed copy (#394) over {roundTrips} iterations:");
+        Console.WriteLine($"    Capture:     {Describe(captureMs)}");
+        Console.WriteLine($"    Materialize: {Describe(materializeMs)}");
+        Console.WriteLine($"    Copy round trip (capture+materialize): mean {captureMs.Average() + materializeMs.Average():F1}ms " +
+                          $"(vs JSON {loadMs.Average() + saveMs.Average():F1}ms)");
 
         // --- Phase 3: advance exactly one activation, both stop modes ----------------------------
         foreach (bool throwToStop in new[] { true, false })
@@ -498,7 +527,7 @@ public static class B0Spike
             }
             else
             {
-                GameDataStore evalStore = GameSaveSerializer.Load(rootBoundary.Snapshot);
+                GameDataStore evalStore = rootBoundary.Snapshot.Materialize();
                 var evalState = new TableState(evalStore);
                 var evalRules = new FDG.Rules.Dispatch.RuleEvaluator(new ProbabilisticDiceRoller());
                 evaluator.Evaluate(evalState, evalRules, rootBoundary.Sides); // warm

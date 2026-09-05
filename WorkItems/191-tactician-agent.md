@@ -23,6 +23,62 @@ campaigns re-base.)*
 
 ## Notes (newest first)
 
+**2026-09-05 (16:30, Fable 5.1) - #394 BUILT: THE SEARCH RUNS ON A TYPED STATE COPY. THE GATE IS
+RELAUNCHED FRESH (v5) ON IT.** Chris: "do 394 now - way more games, way faster". Engine `53a917e`.
+
+*What changed.* `StoreClone.Clone` builds what `Load(Save(store))` builds without the text
+(per-type copy constructors, bindings rebound, tokens/weapons copied, immutable rules and shapes
+shared, the loader's post-steps in its order, a serializer fallback for any type without a typed
+cloner); `IStoreSnapshot` is the seam through `SimulationService` and the tree (`StoreSnapshot` =
+a frozen clone, materialized per simulation; `JsonSnapshot` = the old path, kept behind every
+string entry point). The Strategist captures the live store by cloning it. Separately, the
+finalizer-thread share of the profile was pinned by counting JIT events: the store constructor's
+`Activator.CreateInstance` / `MakeGenericMethod().Invoke` per type emitted reflection invoke
+stubs that .NET's WEAK type cache dropped at every GC, so they were re-emitted and re-finalized
+per store; one cached delegate per type now. Details, decisions and the pins are in
+`WorkItems/394-simulation-state-copy.md`.
+
+*Numbers (b0, the default 2k pair, boundary 20, 20 iterations):*
+
+| | JSON (v6) | typed copy (v7) |
+|---|---|---|
+| state round trip per expansion | 76-81 ms (load 47 + save 30) | **1.0 ms** (capture 0.8 + materialize 0.2) |
+| round-4 root, interactive budget (6.6 s, 4 workers) | 315-346 iterations, depth 6-7, 95 ms/iteration serial | **752-798 iterations**, depth 7, 43 ms/iteration serial |
+| benchmark budget (1.5 s), same root | 69 iterations, 94 MiB live tree | 166 iterations, 46 MiB live tree |
+| probes: charge-vs-shoot (shoot-favored) | ~1-3k iterations | 30-39k iterations |
+| probes: last-round-steal | (hundreds) | 0.4-3.5 M iterations |
+
+Note the b0 [3] "advance" phase did not move (105 vs 117 ms): b0's advance uses its own
+`GameSaveSerializer` calls, not the seam - the row that matters is the round trip and the search's
+own iteration counts.
+
+*Verification (`verify-394.sh`):* suite 3249/0/1; superproject build; DOP-1 Tactician hash
+`4241CF7010C28571` twice (unchanged - the A policy never touches a snapshot); headless smoke exit
+0; Strategist smoke exit 0, 0 faults; `Save(Clone(x)) == Save(x)` at every boundary of a played
+line and a 2-worker search choosing identically through both paths (StoreCloneTests, 7).
+
+*The probe that now fails, and why it is a finding rather than a regression: `count-says-they-win`
+4/5 x3.* With 20-45k iterations instead of hundreds, the search reaches the game's END in every
+line and every root edge scores exactly 0.500: in simulation the Paper Runner never denies our
+marker. Replayed naturally (scratchpad `jitpin runner`): the in-sim Tactician plays the runner as
+Move / AdvanceOnObjective and stops at 6" from the marker - outside the holder's 6" guns, and
+outside the 3" seizure radius - so the round ends 1-1 whatever the gunners do. Two things are
+true at once: (1) the probe's premise ("the runner walks on") is what a human does and what P1's
+projection assumes, and against a human Shoot is the only safe move; (2) the search's opponent
+model is A (B5's honest limitation), and A's last-round movement lets threat avoidance beat a
+game-winning denial. Before #394 the search never got deep enough to notice, and P1's leaf
+carried the probe. The fix is in A, not in the probe or the search: in the last round a unit
+that can deny or seize a marker should walk into range to do it. Not built here (it is a
+Tactician facet, Chris's call whether it goes into this window); the probe is left as is and
+counted 4/5 until then.
+
+*The gate.* v4 was stopped at 215 matrix games (15:1x) and NOT resumed: it is a wall-clock budget,
+and the same budget now buys an order of magnitude more iterations, so the old games measure a
+different bot. v5 launched 15:58 on `step10bin-v7`, same script otherwise
+(`<scratchpad>/step10-gate-v5.sh` -> `FdgLab/reports/step10-gate-v5-2026-09-05/`), self-play v2
+chained behind it as before. Peak RSS of one interactive-budget search at a round-4 2k root:
+1.5 GB for the whole b0 run (search phases included), live tree 46 MiB at benchmark budget - dop 6 is safe on memory. What is left of an expansion at 2k is the in-sim policy itself (a natural activation costs 25-70 ms, a prescribed one 7 ms), so the next speed-up, if one is wanted, is in A's planner, not in state handling.
+
 **2026-09-05 (15:10, Fable 5.1) - WHERE THE SEARCH'S CYCLES GO: A CPU PROFILE OF A REAL STRATEGIST
 GAME. #394 FILED.** Chris: "why do we serialize at all for simulation?" - and "a better way to copy
 the game state is a clear win". Measured rather than argued: the gate was killed (resumable, 104
