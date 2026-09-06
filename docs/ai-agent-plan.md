@@ -581,6 +581,23 @@ than intents — see "Generator rules" below.
   condition if it ever returns: gate it on the transport's mobility meaningfully exceeding the
   cargo's (e.g. Flying), never as a universal candidate.
 
+- **M13 SideStep** (#359, 2026-08) - perpendicular Advance-budget steps off the advance lane of an
+  unactivated friendly. Recorded here after the fact; see `MacroActionGenerator`.
+- **M14 Contest(o)** (#191 step 10 P4, added 2026-09-06 with Chris's go-ahead after the B-gate's
+  Orks failure analysis) - *sliver denial*: move so ONE model ends inside the 3" seizure radius of
+  a marker our side does not own (enemy-held, neutral or contested) while the rest of the unit
+  strings back along the route at the widest cohesion gap, i.e. the mass ends as far from the
+  marker as the 1"/9" rules allow (with a short route the tail extends behind the start). Under
+  the neutral rule one body is a full deny/seize; M2/M3 path the centroid onto the marker, a human
+  parks a toe and keeps the squad out of the holder's charge arc or spread toward the next marker.
+  Generated at both budgets in one family (Advance keeps the unit shooting, Rush reaches farther);
+  not offered where a model already touches the marker (Hold covers it). Feasibility is graded by
+  the lead model's achieved base-edge distance, never the centroid. Alongside it the planner's
+  objective delta and the leaf evaluator measure "on the marker" on END positions (the reconcile
+  rule) instead of the centroid stand-in, and the evaluator's contested and approach terms became
+  contest STRENGTH (value share inside the contest zone) and per-marker OPEN approach
+  (`MarkerTerms`).
+
 **Deployment intents:** zone-constrained analogues of M2/M4/M7/M10, plus reserve declarations
 (Ambush/Scout timing: simple round/threat heuristics in A5).
 

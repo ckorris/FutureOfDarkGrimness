@@ -23,6 +23,62 @@ campaigns re-base.)*
 
 ## Notes (newest first)
 
+**2026-09-06 (09:10, Fable 5.1) - P4 BUILT (CHRIS: "LET'S DO P4, WITH THE SECOND HALF TOO"): THE
+CONTEST MACRO (M14, SLIVER DENIAL), THE SEIZE TEST ON END POSITIONS, AND TWO EVALUATOR TERMS
+(CONTEST STRENGTH, PER-MARKER OPEN APPROACH). VERIFIED GREEN; ORKS A/B RUNNING.** Engine `b36cfca`.
+
+*Part 1 - M14 Contest(o).* For every marker the side does not own (enemy-held, neutral, contested)
+and no model already touches: aim the LEAD model's center at (3" - 0.4" + its circumscribed radius)
+from the marker so its base edge ends inside the seizure radius at any facing, and string the rest
+back along the route at the widest cohesion gap - `MovementPlanner.PlanSliverAlongRoute`, an on-path
+snake with rank spacing 2r + 0.9" (across-file spacing stays tight so up to three files keep the 9"
+diagonal; wider units fall back to the tight file) and an 0.08" anchor back-off so bends do not
+overshoot the 1" rule. The head clamps at the route's end (an arc past the end collapsed every rank
+onto the head, failed cohesion, and the ladder halved the head 0.6" short - the first cut's bug).
+Ladder: the sliver at halving arcs, then reform, then hold; no grid fallback (that is M2/M3). Both
+budgets in one family; graded by the lead's ACHIEVED base-edge distance (`TacticalAnalysis.
+MinEndBaseEdgeDistanceToPoint`, at the end facing per #312). Measured on the test board (5 models,
+marker 10" out, rush 12): lead edge 2.6", centroid 7.4" from the marker vs Rush's 0.0" - the two
+shapes the plan's item 4 wanted.
+
+*The seize test itself was wrong.* `TacticianPlanner.ObjectiveDelta` credited "centroid within
+4.5"" - it could not see a sliver at all and over-credited compact units. It now measures END
+positions (one base edge within 3" + 0.05", the reconcile rule), keeping the centroid stand-in only
+for endpoint-only candidates (tests). That changes A on its own: DOP-1 Tactician hash
+`4241CF7010C28571` -> `620F181E09E66153` (stable x2). Every existing planner pin still passes.
+
+*Part 2 - `MarkerTerms` in the leaf evaluator.* (a) Contest strength replaces the flat contested
+share: per contested marker, our share of the unit VALUE inside the contest zone (3" + 3"), summed
+over markers / marker count - a contest we out-mass is worth most of the 0.20, a toe-hold under a
+horde almost nothing. (b) Per-marker open approach replaces "closest unit to ANY marker over the
+table diagonal": for each marker we do not own, 1 - (nearest eligible unit's distance beyond 3")/24",
+averaged - a slope from two rush moves out that does NOT saturate when one unit sits on the home
+marker (the exact mechanism the 02:35 analysis named: N->S 5 vs N->O 13). Both leave the v2 encoder
+vector; they are the v3 feature candidates for the step-11 replan (obj_contest_strength_share,
+obj_open_approach) and are computed from the same projections at the encoder's own O(units x
+markers) cost. Weights unchanged (0.70 held / 0.20 contested / 0.10 approach).
+
+*Tests (+5, suite 3254/0/1):* Contest puts one edge inside 3" with the centroid > 2.5" behind the
+lead and > 1.5" behind Rush's, engine-valid; no Contest where a model already touches; the planner
+scores a sliver above Hold on a neutral marker; a contested marker loses value when the enemy masses
+into its zone (material and threat coverage held constant); a spare unit walking toward the enemy's
+marker raises value at each step while another sits on ours.
+
+*Verification (`step10bin-v8`, self-play paused):* superproject build green; headless smoke exit 0;
+strategist smoke exit 0 (hash `734F56F7781739C4`, wall-clock budget); probes 4/5 x2 with a CHANGED
+split: `count-says-they-win` now PASSES (the last-round denial the 2026-09-05 16:30 entry left open -
+the open-approach slope and the Contest edge give the search the line), and
+`charge-vs-shoot-shoot-favored` now FAILS: round 3, enemy holds the only marker 8" away; the probe
+expects Shoot (the gun clears the holder), the search takes Contest at value 1.000 vs Shoot 0.997 -
+under sticky ownership a cleared marker is still THEIRS until we walk on, while a sliver makes it
+neutral at this round's reconcile and the gunners shoot from 2.6" next round. Both lines win every
+simulation; the probe's expectation predates the vocabulary. Left failing, NOT rewritten - Chris's
+call whether "Shoot" stays the pin or the probe accepts either.
+
+*A/B running:* `scratchpad/p4-orks-ab.sh` -> `FdgLab/reports/p4-orks-ab-2026-09-06/`, the three
+Orks dump-logs cells (same seeds 3000+, interactive budget, dop 6, GC knobs), v7 read RL 29.2 / DE
+16.7 / BB 33.3. Self-play v2 unpauses when it ends.
+
 **2026-09-06 (08:40, Fable 5.1) - STEP 10 GATE v5 COMPLETE: THE B GATE IS MET AT THE SHIPPING BUDGET.
 MAIN MATRIX 70.1% (bar 60), EVERY PANEL CELL >= 50, TITAN REVERSE 53.3, FFA CLEAN, 0 FAULTS IN 1,332
 SCORED GAMES. SELF-PLAY v2 RUNNING.**

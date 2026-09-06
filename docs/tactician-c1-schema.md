@@ -57,7 +57,7 @@ written with the row:
 |---|---|
 | `chosen_unit` | index of the activated unit in the acting player's roster order (never a GUID) |
 | `chosen_action` | the Choose Action reply string (`ChooseActionStage` constants or a rule-offer name); empty if the activation backed out |
-| `chosen_macro` | the Tactician's winning macro-action label, or empty for non-planning profiles |
+| `chosen_macro` | the Tactician's winning macro-action label, or empty for non-planning profiles (labels are the generator's `intent=...` rationale strings; `intent=Contest` joined the vocabulary 2026-09-06, #191 step 10 P4 - rows from before that date simply never carry it) |
 
 Capturing `chosen_action` is trivially reliable once step 5a's typed `ChooseActionRequest`
 exists (the exporter wraps one request type instead of sniffing a prompt); until then the
