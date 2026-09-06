@@ -23,6 +23,35 @@ campaigns re-base.)*
 
 ## Notes (newest first)
 
+**2026-09-06 (09:25, Fable 5.1) - P4 ORKS A/B: 26.4% -> 44.4% ON THE SAME 36 GAMES (+18). REGRESSION
+SLICE OF THE 2k MATRIX RUNNING.**
+
+`FdgLab/reports/p4-orks-ab-2026-09-06/` (v8 = engine `b36cfca`; seeds 3000+, interactive, dop 6, 0 faults):
+| cell | v7 (gate v5) | v8 (P4) |
+|---|---|---|
+| Robot Legions vs Orks | 29.2% (1/6/5) | 25.0% (2/8/2) |
+| Dark Elf Raiders vs Orks | 16.7% (1/9/2) | **58.3%** (6/4/2) |
+| Battle Brothers vs Orks | 33.3% (2/6/4) | **50.0%** (3/3/6) |
+| all 36 | 26.4% (4/21/11) | **44.4%** (11/15/10) |
+Per-cell SE ~13 and 36-game SE ~8, so: two of three cells moved by 2-3 SE, the third is flat, and the
+aggregate is a +18 that is unlikely to be noise. The Dark Elves - the one list the analysis found
+out-traded (Light Skimmers charged 46 times) - gained the most, which fits: a sliver keeps the
+skimmer's mass out of the charge arc while a toe denies. Robot Legions did not move; their problem
+was never contest resolution alone (48.9 as the piloted army across the whole matrix).
+
+*Next, running:* `scratchpad/p4-slice.sh` -> `FdgLab/reports/p4-slice-2026-09-06/`: the 8 ring
+pairs of the 2k pool x 12 games (96), v5 read them at 71.9% - a change to A's seize test and the
+leaf's marker terms touches every cell, so the Orks gain must not come out of the strong cells. Self-play
+v2 paused for it (~45 min), unpaused at the end. If the slice holds (within ~5 of 71.9), P4 ships in
+the gate's binary lineage and the campaign's next step is 11. If it drops, the knobs are the
+approach scale (24") and the contest zone (6") before any rollback - the macro itself is inert
+unless the search picks it.
+
+*Open for Chris:* (a) `charge-vs-shoot-shoot-favored` (Shoot pin vs the Contest line, both value ~1.0);
+(b) self-play v2 (pid 218664) is generating on the PRE-P4 A (v7): restart it on v8 into a new
+directory to keep the C1 dataset's policy version single, or keep v7 data and note the version -
+the step-11 replan decides what C trains on either way.
+
 **2026-09-06 (09:10, Fable 5.1) - P4 BUILT (CHRIS: "LET'S DO P4, WITH THE SECOND HALF TOO"): THE
 CONTEST MACRO (M14, SLIVER DENIAL), THE SEIZE TEST ON END POSITIONS, AND TWO EVALUATOR TERMS
 (CONTEST STRENGTH, PER-MARKER OPEN APPROACH). VERIFIED GREEN; ORKS A/B RUNNING.** Engine `b36cfca`.
