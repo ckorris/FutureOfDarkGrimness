@@ -23,6 +23,39 @@ campaigns re-base.)*
 
 ## Notes (newest first)
 
+**2026-09-06 (18:10, Opus 5) - STEP 12c DONE: LOADER + THE BASELINE THE NET HAS TO BEAT. THE HAND
+EVALUATOR SCORES AUC 0.818 ON HELD-OUT GAMES - AND 0.576 IN ROUND 1, WHICH IS WHERE C'S HEADROOM IS.**
+
+`FdgLab/python/` (uv, `package = false`): `load.py` reads self-play jsonl.gz to parquet and re-asserts
+schema sec 7's checks on EVERY row that could reach a model (not the export-time sample); `baseline.py`
+scores `hand_value` as a predictor of `result`. Deps installed: pandas, pyarrow, numpy, lightgbm,
+scikit-learn; torch/onnx are an optional extra, not installed until step 13 needs them.
+
+*Loader run over the v3 data written so far* (79 files, 15,799 games, 267,575 rows): schema versions
+seen `[3]`, features outside [0,1] **0**, bad widths **0**, NaN hand values **0**, rows from a held-out
+pairing **0**. Split is by GAME (never by row - both sides' rows share one outcome label, so a row-wise
+split leaks the answer), deterministic from the game seed so a resumed dataset extends the same split:
+14,279 train / 1,520 val games. Mix as configured: 2v2 40%, then 3k/2k/4k/1k.
+
+*The baseline (val split, 1,520 games neither model has seen):*
+| predictor | brier | logloss | auc |
+|---|---|---|---|
+| hand evaluator | 0.1690 | 0.6389 | **0.818** |
+| constant (train mean) | 0.1950 | 0.6924 | 0.506 |
+
+By round: **0.576 / 0.837 / 0.920 / 0.942** (rounds 1-4). By level: 1k 0.797, 2k 0.847, 3k 0.801,
+**4k 0.719**; by shape 1v1 0.794, 2v2 0.856.
+
+*What this says for step 13, before a single model is trained.* The hand evaluator is already a real
+predictor late in a game - by round 3-4 it orders wins above losses 92-94% of the time, and a net will
+not beat that by much. Round 1 is where it is nearly blind (0.576, barely above a coin), and 4k is its
+weakest level. So C's value is concentrated in EARLY-GAME evaluation and at the top of the point range,
+which is also where B's search has the least depth relative to the game left. The step-13 report prints
+these same metrics beside the model's, per round and per level, and "beat 0.818 overall" is the wrong
+bar to steer by - "beat 0.576 in round 1 without losing round 4" is the real one.
+
+*Not built yet:* 12b (the Strategist/B-play channel) - it needs the box, and the v3 A-play run has it.
+
 **2026-09-06 (17:35, Opus 5) - v3 GENERATION HIT A MANAGED OOM AT BATCH 77 (15,400 GAMES). RELAUNCHED
 WITH A 12 GiB CAP AND DOP 10, RESUMED AT BATCH 77, RSS SAMPLER ADDED.**
 

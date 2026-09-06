@@ -26,6 +26,12 @@ tools/list-server/reports/
 # the campaign's generation window).
 FdgLab/data/
 
+# Phase C python workspace (#191 step 12c): the venv and byte-code are per-machine, uv.lock is not.
+FdgLab/python/.venv/
+FdgLab/python/__pycache__/
+FdgLab/python/**/__pycache__/
+FdgLab/python/models/
+
 # B+C campaign: transient cooperative-pause control file (docs/tactician-bc-campaign.md sec 6)
 FdgLab/.pause
 FdgLab/.pause-selfplay
