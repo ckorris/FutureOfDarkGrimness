@@ -23,6 +23,58 @@ campaigns re-base.)*
 
 ## Notes (newest first)
 
+**2026-09-06 (02:35, Fable 5.1) - ORKS FAILURE ANALYSIS (36 dump-logs games): THE STRATEGIST PUTS TOO
+FEW BODIES ON MARKERS TOO LATE, AND NEVER CONTESTS AN ORK-HELD MARKER. LOSING IS SETTLED IN ROUND 2.**
+
+Cells (Strategist-piloted vs Tactician Orks 2k Horde Mixed, n=12 each, 0 faults): Robot Legions
+29.2% (1/6/5), Dark Elf Raiders 16.7% (1/9/2), Battle Brothers 33.3% (2/6/4). Split by side: with the
+Strategist in slot 0 it lost 14 of 18 and won 1; in slot 1 it tied 8 of 18 (1-1 or 2-2) and won 3.
+Full report (a subagent parsed all 36 transcripts; counts, not anecdotes):
+`FdgLab/reports/step10-gate-v5-2026-09-05/orks-failure-analysis.md` (gitignored dir; copy in the scratchpad).
+
+*Marker-rounds, 18 games per side (S = Strategist, O = Orks, C = contested, N = neutral):*
+| side | end R1 | end R2 | end R3 | end R4 |
+|---|---|---|---|---|
+| slot 0 | S18 O18 C4 N23 | S11 O28 C17 N7 | S13 O31 C17 N2 | S13 O36 C13 N1 |
+| slot 1 | S19 O14 C4 N26 | S16 O20 C15 N12 | S23 O19 C15 N6 | S21 O27 C11 N4 |
+The deficit is made at the end of round 2 (11 vs 28) and never recovered (S 13 -> 13). The
+Strategist's own markers are rarely flipped by melee (S->O 5 marker-rounds in 18 slot-0 games); the
+Orks convert the neutral and contested ones instead (N->O 13 vs N->S 5, C->O 10 vs C->S 4). The
+Strategist takes an Ork-held marker in 5 of 36 games. The dominant final shape is "holds exactly one
+marker" (11/18 on both sides). Attrition is NOT the story: Robot Legions trade even (3.0 vs 3.3 units
+lost per game), Battle Brothers win it outright (1.8 vs 4.2) and still lose on markers; only the Dark
+Elves are out-traded (4.3 vs 2.0; Light Skimmers charged 46 times, the most on the table).
+
+*Round 1-2 behaviour:* round 1 is pure movement on both sides (Orks 98% move-only); Battle Brothers
+and Dark Elves stand and shoot in round 1 (13/11 and 18/24 shoot/move activations). The Orks charge
+Strategist units 212 times vs 150 the other way and out-charge it in rounds 3-4 (38 vs 27, 45 vs 28).
+With 4-7 activations against 9-10 the Orks close every round (last 3-5 activations, 144/144).
+
+*Why slot 0 loses and slot 1 ties:* the slot difference is round-1 initiative AND deployment order -
+the deploy roll-off is seed-locked to Team 0 (Strategist deploys first in 15/18 slot-0 games, Orks in
+15/18 slot-1 games), so a side swap does not isolate initiative; deploy-first vs result: Strategist
+first 13 O / 4 T / 1 S, Orks first 8 O / 7 T / 3 S. From round 2 on the engine opens every round with
+the side that finished activating first (the Strategist, 36/36 - the OPR rule). Going first reveals the
+deployment and round-1 move before nine Ork units respond: Orks reach 28 marker-rounds by round 2 vs
+20 in slot 1 - the one marker that turns a 1-1 tie into a 1-2 loss. On 3-marker maps in slot 1 each
+side keeps its flank marker and the centre ends contested or Ork-held; the Strategist never goes for
+the second uncontested marker.
+
+*Anomalies:* none that look like engine faults. "No actions available for X - passing" is the
+end-of-activation sentinel on every activation, not idle units. Every reserve arrives at the start of
+round 2 (36/36). One rules question for #175: Flesh-Eaters' Infiltrate is handled as an Ambush
+variant (reserve, arrives round 2, over 3" from enemies) - if Infiltrate is a deployment-time rule,
+Robot Legions play round 1 with 5 units instead of 6.
+
+*Reading:* (1) the evaluator scores a contested marker as neutral and does not model who wins the
+contest (activation count, charges, last activation) - so the search is content to leave the centre
+contested while outnumbered, which loses it 10:4; (2) it does not value marching a spare unit onto an
+Ork-held or neutral far marker early enough. Both are exactly the P4 (Contest macro / contest-aware
+marker term) design question, Chris's call - now with numbers. The main-matrix bar is met regardless
+(70.1%); this is the failure profile for the follow-on, not a gate blocker. An initiative-isolating
+rerun (roll-off re-seeded independently of slot) is a cheap side experiment if the slot asymmetry
+matters for the campaign's side-swap reading.
+
 **2026-09-06 (02:05, Fable 5.1) - GATE v5 MAIN MATRIX CLOSED: STRATEGIST 70.1% vs TACTICIAN AT THE
 SHIPPING BUDGET (bar 60%). 768 games, 0 faults, hash `F6B9F7052EA6E125`.**
 
