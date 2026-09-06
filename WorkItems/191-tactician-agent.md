@@ -23,6 +23,42 @@ campaigns re-base.)*
 
 ## Notes (newest first)
 
+**2026-09-06 (18:45, Opus 5) - STEP 13 FIRST PASS: THE TREE BASELINE BEATS THE HAND EVALUATOR
+EVERYWHERE, AND BY +0.28 AUC IN ROUND 1. THE RESEARCH RISK IN PHASE C IS LOOKING SMALL.**
+
+`FdgLab/python/train.py`, LightGBM on the 15.8k v3 games written so far (267,575 rows, 79 features,
+early-stopped, 8 threads so generation kept its cores). Two splits, because they answer different
+questions - and the second one exists because the C-gate's own held-out PAIRS never appear in exported
+data at all (the exporter refuses to write them), so without it the generalization gap is invisible
+until ~30 h of bench time says so.
+
+| split | model auc | hand auc | model brier | hand brier |
+|---|---|---|---|---|
+| held-out GAMES (same pairings) | **0.9136** | 0.8183 | 0.1034 | 0.1690 |
+| held-out PAIRINGS (3 of 20, unseen armies) | **0.8865** | 0.8328 | 0.1176 | 0.1707 |
+
+*By round (held-out games), model vs hand:* R1 **0.857 vs 0.576 (+0.28)**, R2 0.890 vs 0.837, R3 0.937
+vs 0.920, R4 0.971 vs 0.942. Exactly the shape the 18:10 baseline predicted: the headroom is early-game
+evaluation, where the hand evaluator is barely above a coin and the search has the least depth relative
+to the game remaining. *By level:* the gain is largest at 4k (+0.165), the hand evaluator's weakest
+cell, and real at every level (1k +0.107, 2k +0.075, 3k +0.113, 2v2 +0.065).
+
+*Generalization:* 0.9136 -> 0.8865 moving from unseen games to unseen ARMY PAIRINGS, a 0.027 auc drop,
+still 0.054 above the hand evaluator on those same rows. That is the offline analogue of the C-gate's
+"held-out pairs within ~5 points" criterion and it looks healthy - the model is not memorizing rosters.
+
+*Top features by gain* (a sanity read, not a decision): enemy obj_held_share, our obj_held_share,
+objective_count_norm, enemy value_share, round_frac, then **self__obj_open_approach and
+enemy_sum__obj_open_approach** - two of the four v3 features earn their place in the top seven, which
+is the S1 schema bump paying for itself immediately.
+
+*Status and honesty about what this is not.* LightGBM is a DIAGNOSTIC, not the ship target (plan sec
+10: trees would mean a feature-engineering signal, not a deployable evaluator - a boosted forest is far
+too slow for a leaf called ~800 times per decision). The MLP is next (torch installing). And none of
+this is a strength result: predicting an outcome better than the hand evaluator is necessary, not
+sufficient - C4 still has to show it makes the SEARCH play better, on the bench. But the failure mode
+this phase feared most, "the net cannot beat the heuristic offline", is not what the data says.
+
 **2026-09-06 (18:10, Opus 5) - STEP 12c DONE: LOADER + THE BASELINE THE NET HAS TO BEAT. THE HAND
 EVALUATOR SCORES AUC 0.818 ON HELD-OUT GAMES - AND 0.576 IN ROUND 1, WHICH IS WHERE C'S HEADROOM IS.**
 
