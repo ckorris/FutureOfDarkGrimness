@@ -58,6 +58,20 @@ and the script retries with resume. The 6 in-flight games of matchup 30 are simp
 up under the cap, the next arm is workstation GC (`DOTNET_gcServer=0`) for the remaining cells,
 throughput cost accepted; and memtest86+ from boot stays the real answer to the hardware question.
 
+*22:50 addendum - v5b lasted five minutes.* Attempt 1 died at 22:41:13, exit 139: dmesg
+`.NET BGC[187073]: segfault at 734085f54d28 ... error 6 in libcoreclr.so` - the background GC thread
+WRITING to a not-present page. The dumper fired (`dumps/step10v5-main-matrix-187012.dmp`, full,
+3.2 GB); `verifyheap` lists 4,027 bad references, and NONE of the first dozen resolves with bit 23
+restored, so this is not yesterday's flipped-bit signature - the bad values all point into memory
+the GC had just given back. Two faces in four hours (a GC thread spinning in kernel time; the BGC
+touching decommitted memory) both fit region decommit, runtime 8.0.26 (Canonical). Relaunched as
+`step10-gate-v5c.sh` (pid in `gate-v5c.pid`, 372 resumed) with `DOTNET_GCRetainVM=1` added to the
+cap - the GC keeps its memory instead of decommitting, same server GC and regions so the wall-clock
+budget stays comparable with the 372 games already recorded - and 6 attempts per cell instead of 3
+so an overnight crash cannot abandon a cell. Old logs kept as `main-matrix.attempt{1,2}-v5b.log`.
+If v5c also dies: the segments GC (`DOTNET_GCName=libclrgc.so`, present in 8.0.26) is the next arm,
+then hardware (memtest86+). A 40-minute stall watcher runs alongside the monitor.
+
 **2026-09-05 (16:30, Fable 5.1) - #394 BUILT: THE SEARCH RUNS ON A TYPED STATE COPY. THE GATE IS
 RELAUNCHED FRESH (v5) ON IT.** Chris: "do 394 now - way more games, way faster". Engine `53a917e`.
 
