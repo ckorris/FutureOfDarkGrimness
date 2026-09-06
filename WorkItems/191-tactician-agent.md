@@ -23,6 +23,52 @@ campaigns re-base.)*
 
 ## Notes (newest first)
 
+**2026-09-06 (10:15, Fable 5.1) - P4 REGRESSION SLICE HOLDS: 72.9% vs 71.9% ON THE GATE BINARY. P4 SHIPS.**
+`scratchpad/p4-slice.sh`, out `FdgLab/reports/p4-slice-2026-09-06/pair{0..7}`: the 8 ring pairs of the
+gate matrix (the same 8-army ring, seeds from 1000, 12 games each, interactive budget, dop 6, v8 =
+engine b36cfca) re-run on the P4 binary, with self-play paused so wall-clock budgets were honest.
+96 games, 0 faults, 0 timeouts. Strategist vs Tactician (W + 0.5T)/N = (63 + 7)/96 = **72.9%**, against
+the v5 gate's **71.9%** on the same cells and seeds (+1.0, well inside the ~5-point tolerance set in the
+09:25 entry; 96 games is a coarse instrument, so read this as "flat", not "up").
+
+| Pair (A = Strategist) | v5 | P4 | delta |
+|---|---|---|---|
+| Alien Hives vs Battle Brothers | 91.7 | 95.8 | +4.1 |
+| Battle Brothers vs Dark Elf Raiders | 87.5 | 95.8 | +8.3 |
+| Dark Elf Raiders vs Dwarf Guilds | 58.3 | 45.8 | -12.5 |
+| Dwarf Guilds vs High Elf Fleets | 54.2 | 66.7 | +12.5 |
+| High Elf Fleets vs Human Defense Force | 100.0 | 91.7 | -8.3 |
+| Human Defense Force vs Orks | 41.7 | 37.5 | -4.2 |
+| Orks vs Robot Legions | 91.7 | 100.0 | +8.3 |
+| Robot Legions vs Alien Hives | 50.0 | 50.0 | 0.0 |
+
+The per-cell swings are what 12-game cells do (one game = 8.3 points); no cell moved in a way that
+suggests the Contest macro or the marker terms broke a matchup. Combined with the Orks A/B (26.4 ->
+44.4 on the same 36 seeds, 09:25 entry), P4 is a net gain with no measured regression and ships in
+the gate's binary lineage: **the B-gate record now stands on engine b36cfca (v8)**, not 41f178d - the
+70.1% matrix / panels were measured on 41f178d and the slice is the bridge. If Chris wants the full
+gate re-measured on v8 that is a ~10h rerun of `step10-gate-v5.sh` with the v8 binary; my
+recommendation is not to, the slice + Orks A/B are the evidence and the next step is 11.
+
+Still open for Chris (unchanged from 09:25): the `charge-vs-shoot-shoot-favored` probe pin (Contest
+walk 1.000 vs Shoot 0.997 - the probe asserts a shoot that the search now rates a hair below claiming
+the marker; either re-pin the probe or treat it as the P4 trade-off), >= 2 verbatim games, L1 merge,
+memtest86+. Self-play v2 unpaused itself at 10:08 when the slice ended and is generating P4 A-play
+from batch 23 (10:00 entry).
+
+**2026-09-06 (10:00, Fable 5.1) - SELF-PLAY v2 MOVED TO THE P4 BINARY (same directory, resumed).**
+Chris asked to pause self-play v2 and resume it on the new binary. `selfplay` resumes by scanning the
+output directory for complete `selfplay_*.jsonl.gz` batches (DetermineStartBatch), so the v7 process
+(pid 218664) was killed at 09:5x and the v8 build (engine b36cfca, P4) relaunched with identical
+arguments (`--out FdgLab/data/2026-09-05-v2 --seed-base 200000 --dop 12`); it reported
+"starting at batch 23 (seed 204600)". No partial batch was lost (no `.tmp` present). Provenance:
+batches 0-22 (seeds 200000-204599, files written 08:30-09:03) are PRE-P4 A-play; batch 23 onward is
+P4 A-play. Note the file header's engine commit is read from the git checkout, not the binary, so
+the last few v7 files may carry b36cfca (committed 09:04) - trust the batch boundary above, not the
+header, for the v7/v8 split. The new process honours the same pause file and is idle until the P4
+regression slice ends (the slice script removes `FdgLab/.pause-selfplay`). GC knobs (8 GiB cap +
+RetainVM + libclrgc.so) now on self-play too. New pid in scratchpad `selfplay-v2.pid` (228240).
+
 **2026-09-06 (09:25, Fable 5.1) - P4 ORKS A/B: 26.4% -> 44.4% ON THE SAME 36 GAMES (+18). REGRESSION
 SLICE OF THE 2k MATRIX RUNNING.**
 
