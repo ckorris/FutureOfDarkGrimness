@@ -23,6 +23,32 @@ campaigns re-base.)*
 
 ## Notes (newest first)
 
+**2026-09-06 (17:35, Opus 5) - v3 GENERATION HIT A MANAGED OOM AT BATCH 77 (15,400 GAMES). RELAUNCHED
+WITH A 12 GiB CAP AND DOP 10, RESUMED AT BATCH 77, RSS SAMPLER ADDED.**
+
+*What happened.* `selfplay-v3.log`: "Out of memory." then createdump, signal 6, 9.4 GB core
+(`scratchpad/dumps/selfplay-v3-243944.dmp`). Not one of the three faults from the gate night (GC kernel
+spin, BGC write fault, TP GPF) - this is the managed heap reaching `DOTNET_GCHeapHardLimit=0x200000000`
+(8 GiB) and the allocator giving up. 77 batches completed cleanly first, 0 faulted games, no partial
+`.tmp`; the resumable design cost nothing.
+
+*Why v3 and not v2 (which ran 166 batches on the same cap).* Nothing here retains: `HandWeightedEvaluator`
+is stateless (consts only), and neither it nor `PositionEncoder`/`MarkerTerms`/`TacticalAnalysis` holds a
+static cache. What v3 added is ALLOCATION RATE at every boundary - a second full per-side encode inside the
+hand value, on top of the encoder's own four blocks - against a hard cap with 12 games live at once. That
+is pressure, not a leak, unless the numbers say otherwise.
+
+*Relaunch (`scratchpad/selfplay-v3-run.sh`, pid file `selfplay-v3.pid`):* cap 12 GiB
+(`0x300000000`, box has 27 GB available), dop 12 -> 10, mini-dump type 2 instead of 4 (a 9.4 GB full core
+per fault is not worth the disk or the 19 s pause), and an RSS+batch sample every 60 s to
+`selfplay-v3-rss.log`. **That sampler is the actual test:** flat-with-sawtooth RSS across a few hundred
+batches says pressure and the cap change is the fix; a monotone climb says a real leak, and the first
+suspect is then the exporter's per-game buffers rather than anything in the engine. Resumed at batch 77
+(seed 315400) - the 15,400 games already written are valid v3 data.
+
+*Cost of the interruption:* ~2 h of generation (the OOM was at ~16:0x, found at 17:30). v3 now reaches
+v2's 33k-game volume around 21:00 rather than 19:30.
+
 **2026-09-06 (15:20, Opus 5) - STEP 12a BUILT: SCHEMA v3 (79 FLOATS + hand_value), ALL SIX PRE-RUN
 CHECKS GREEN, SELF-PLAY RELAUNCHED ON IT.** Chris signed off S1 ("Yes, please do that"). Engine `46e9d03`.
 
