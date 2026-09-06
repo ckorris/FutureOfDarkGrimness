@@ -48,7 +48,13 @@ public sealed record BenchmarkOptions(
     // (5-10s Interactive) budget can never be mistaken for a default-budget one - same reasoning
     // as WeightOverrides above.
     FDG.Ai.Tactician.Search.UctOptions? SearchBudget = null,
-    string? SearchBudgetLabel = null);
+    string? SearchBudgetLabel = null,
+    // #191 step 14: a learned leaf evaluator (--evaluator PATH) for every Strategist in the run.
+    // Null = the hand-weighted evaluator the B gate was measured on. EvaluatorLabel goes in the
+    // report header for the same reason SearchBudgetLabel does: a run with a learned evaluator must
+    // never be mistakable for a default one.
+    FDG.Ai.Tactician.Search.IPositionEvaluator? Evaluator = null,
+    string? EvaluatorLabel = null);
 
 /// <summary>
 /// The seeded, side-swapped benchmark matrix (#194; plan sec. 6.1). Scoring: for a matchup (A, B),
@@ -202,7 +208,8 @@ public static class Benchmark
         List<SlotSpec> sideB = BuildSide(matchup.SideB, options.ProfileB, team: swapped ? 0 : 1);
         List<SlotSpec> slots = swapped ? sideB.Concat(sideA).ToList() : sideA.Concat(sideB).ToList();
         return new GameSpec(slots, seed, options.Randomness, options.WatchdogSeconds,
-            CaptureLog: dump, Trace: dump && options.Trace, SearchBudget: options.SearchBudget);
+            CaptureLog: dump, Trace: dump && options.Trace, SearchBudget: options.SearchBudget,
+            Evaluator: options.Evaluator);
     }
 
     // #210: write the game's log/trace the moment it completes and strip them from the kept
@@ -293,6 +300,8 @@ public static class Benchmark
             sb.AppendLine($"- Weight overrides: `{options.WeightOverrides}`");
         if (options.SearchBudgetLabel != null)
             sb.AppendLine($"- Search budget: **{options.SearchBudgetLabel}** (default benches use the 1-2s benchmark budget)");
+        if (options.EvaluatorLabel != null)
+            sb.AppendLine($"- Leaf evaluator: **{options.EvaluatorLabel}** (default benches use the hand-weighted evaluator)");
         int resumedCount = rows.Count - freshRows.Count;
         if (resumedCount > 0)
             sb.AppendLine($"- Resumed: {resumedCount} game(s) carried over from an earlier (crashed/interrupted) attempt via `bench.progress.jsonl`");

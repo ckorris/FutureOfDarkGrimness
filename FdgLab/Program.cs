@@ -49,6 +49,8 @@ static int Usage()
                                      #198 position-write trace next to each log
                   [--triangle]       pool: unordered pairs only (pre-2026-07-10 shape; skews the
                                      aggregate toward profile A's alphabetically-early armies)
+                  [--evaluator PATH]   #191 step 14: a learned leaf evaluator (the weights JSON
+                                       from FdgLab/python/train.py --export). Default: hand-weighted.
                   [--search-budget benchmark|interactive]   #191 step 10: what a Strategist
                                      thinks under. Default benchmark (1-2s/activation, what every
                                      bench before 2026-09-05 measured); interactive is the 5-10s
@@ -151,6 +153,9 @@ static async Task<int> RunBench(string[] args)
     if (!TrySearchBudgetArg(args, out FDG.Ai.Tactician.Search.UctOptions? searchBudget,
             out string? searchBudgetLabel))
         return 2;
+    if (!TryEvaluatorArg(args, out FDG.Ai.Tactician.Search.IPositionEvaluator? benchEvaluator,
+            out string? benchEvaluatorLabel))
+        return 2;
 
     var options = new BenchmarkOptions(
         Matchups: matchups,
@@ -168,7 +173,9 @@ static async Task<int> RunBench(string[] args)
         WeightOverrides: Arg(args, "--weights"),
         Fresh: args.Contains("--fresh"),
         SearchBudget: searchBudget,
-        SearchBudgetLabel: searchBudgetLabel);
+        SearchBudgetLabel: searchBudgetLabel,
+        Evaluator: benchEvaluator,
+        EvaluatorLabel: benchEvaluatorLabel);
 
     return await Benchmark.RunAsync(options);
 }
@@ -375,6 +382,34 @@ static int DefaultWatchdogSeconds(params FDG.Ai.EAiProfile[] profiles) =>
 /// deliberately handicapped bot. Worker count stays 4 either way: root parallelism is an ensemble
 /// over determinizations, so changing it would measure a different bot rather than a faster one.
 /// </summary>
+// #191 step 14: --evaluator PATH loads a learned leaf evaluator from the weights JSON that
+// FdgLab/python/train.py --export writes. Absent = the hand-weighted evaluator, so every existing
+// command line keeps meaning exactly what it meant.
+static bool TryEvaluatorArg(string[] args, out FDG.Ai.Tactician.Search.IPositionEvaluator? evaluator,
+    out string? label)
+{
+    evaluator = null;
+    label = null;
+    string? path = Arg(args, "--evaluator");
+    if (path == null) return true;
+    if (!File.Exists(path))
+    {
+        Console.Error.WriteLine($"--evaluator: no such file '{path}'.");
+        return false;
+    }
+    try
+    {
+        evaluator = FDG.Ai.Tactician.Search.MlpPositionEvaluator.FromFile(path);
+        label = $"MLP from {Path.GetFileName(path)}";
+        return true;
+    }
+    catch (Exception error)
+    {
+        Console.Error.WriteLine($"--evaluator: {error.Message}");
+        return false;
+    }
+}
+
 static bool TrySearchBudgetArg(string[] args, out FDG.Ai.Tactician.Search.UctOptions? budget,
     out string? label)
 {

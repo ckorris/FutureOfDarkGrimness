@@ -128,13 +128,65 @@ def train_mlp(x_train, y_train, aux_train, x_test, epochs: int, threads: int, hi
             loss = bce(logit, yt[index]) + 0.2 * mse(aux, at[index])
             loss.backward()
             opt.step()
-            total += float(loss) * len(index)
+            total += float(loss.detach()) * len(index)
         print(f"    epoch {epoch + 1}/{epochs} loss {total / len(order):.5f}")
     net.eval()
     with torch.no_grad():
         xv = torch.tensor(x_test, dtype=torch.float32, device=device)
         pred = torch.sigmoid(net(xv)[0]).cpu().numpy()
     return net, pred
+
+
+
+def export_model(net, features: list[str], stem: Path, sample) -> None:
+    """weights.json for the C# forward pass, model.onnx as the interchange + parity oracle.
+
+    The C# evaluator ships the JSON, not the ONNX: at this size a dense forward pass is tens of
+    microseconds and it keeps a native runtime out of four unsigned platform archives (plan sec 10,
+    step 14). The ONNX file exists so a test can assert the two agree - if they ever diverge, the
+    C# code is wrong, and without an independent oracle that is silent.
+    """
+    import numpy as np
+    import torch
+
+    layers = []
+    modules = list(net.body) + [net.head]
+    for module in modules:
+        if isinstance(module, torch.nn.Linear):
+            layers.append({
+                "weight": module.weight.detach().cpu().numpy().tolist(),  # [out][in]
+                "bias": module.bias.detach().cpu().numpy().tolist(),
+                "activation": "relu",
+            })
+    layers[-1]["activation"] = "none"  # heads are raw: [result logit, obj_diff_norm]
+
+    payload = {
+        "schema": 3,
+        "note": "input order is exactly `features`; result = sigmoid(out[0]), obj_diff_norm = out[1]",
+        "features": features,
+        "layers": layers,
+    }
+    (stem.parent / f"{stem.name}-weights.json").write_text(json.dumps(payload))
+
+    device = next(net.parameters()).device
+    dummy = torch.tensor(sample[:1], dtype=torch.float32, device=device)
+    torch.onnx.export(net, dummy, str(stem.parent / f"{stem.name}.onnx"),
+                      input_names=["features"], output_names=["result_logit", "obj_diff"],
+                      dynamic_axes={"features": {0: "batch"}}, opset_version=17)
+
+    # Parity rows the C# test reads: inputs plus what torch says, so the test needs no python.
+    with torch.no_grad():
+        xs = torch.tensor(sample, dtype=torch.float32, device=device)
+        logit, aux = net(xs)
+        value = torch.sigmoid(logit).cpu().numpy()
+    (stem.parent / f"{stem.name}-parity.json").write_text(json.dumps({
+        "features": features,
+        "inputs": np.asarray(sample, dtype=float).tolist(),
+        "expected_value": value.astype(float).tolist(),
+        "expected_obj_diff": aux.cpu().numpy().astype(float).tolist(),
+    }))
+    print(f"  exported {stem.name}-weights.json, {stem.name}.onnx, {stem.name}-parity.json "
+          f"({len(features)} inputs, {len(layers)} layers)")
 
 
 def main() -> None:
@@ -147,6 +199,9 @@ def main() -> None:
     parser.add_argument("--rounds", type=int, default=2000, help="lgbm boosting rounds (early stopped)")
     parser.add_argument("--epochs", type=int, default=12)
     parser.add_argument("--tag", default="", help="suffix for the saved report/model")
+    parser.add_argument("--drop", default="", help="comma-separated features to exclude (serving-parity ablation)")
+    parser.add_argument("--export", action="store_true",
+                        help="write weights.json + model.onnx for the C# evaluator (mlp only)")
     args = parser.parse_args()
 
     os.environ["OMP_NUM_THREADS"] = str(args.threads)
@@ -154,6 +209,13 @@ def main() -> None:
     features = [c for c in frame.columns if "__" in c or c in
                 ("round_frac", "rounds_left_frac", "objective_count_norm", "players_per_side_norm",
                  "points_norm", "activation_frac", "acting_side_is_first")]
+    dropped = [d.strip() for d in args.drop.split(",") if d.strip()]
+    if dropped:
+        missing = [d for d in dropped if d not in features]
+        if missing:
+            raise SystemExit(f"--drop names features that are not in the parquet: {missing}")
+        features = [f for f in features if f not in dropped]
+        print(f"  dropped {len(dropped)} features: {', '.join(dropped)} -> {len(features)} inputs")
     train, test, note = split_frames(frame, args.split_mode, args.holdout_pairings, seed=191)
     print(f"{args.parquet.name}: {len(frame)} rows | split={args.split_mode} -> {note}")
     print(f"  train {len(train)} rows / {train['game_id'].nunique()} games | "
@@ -177,6 +239,8 @@ def main() -> None:
         import torch
         torch.save(model.state_dict(), MODELS_DIR / f"{tag}.pt")
         gains = []
+        if args.export:
+            export_model(model, features, MODELS_DIR / tag, x_test[:1024])
 
     out = report(f"{args.model} / {note}", np.asarray(pred, dtype=np.float64), hand,
                  y_test.astype(np.float64), test)

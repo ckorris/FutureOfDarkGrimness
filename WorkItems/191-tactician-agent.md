@@ -23,6 +23,44 @@ campaigns re-base.)*
 
 ## Notes (newest first)
 
+**2026-09-06 (19:40, Opus 5) - STEP 14 DONE: THE LEARNED EVALUATOR RUNS IN THE ENGINE, MATCHES TORCH
+TO 1e-5, COSTS 2.5 us, AND PLAYS REAL BENCH GAMES. Engine `a3c0080`.**
+
+*Serving vector (77 floats).* Two of the encoder's seven globals - `activation_frac` and
+`acting_side_is_first` - describe an activation boundary, and a leaf sits mid-simulation with no
+boundary to describe. Serving them as zeros would be a train/serve mismatch that nothing would catch,
+so the serving model is TRAINED without them; measured cost of dropping both: held-out auc 0.9136 ->
+0.9133, unseen-pairing auc 0.8865 -> 0.8862, i.e. nothing. `points_norm` survives because it IS
+reconstructible at a leaf: `PositionEncoder.TotalGamePoints` sums each army's `PointsLimit`, the same
+quantity `SelfPlay` passes the exporter. `EncodeForEvaluation` builds SELF = one member of the side
+(deterministically chosen) and ALLY = the rest, matching how a training row is shaped - serving the
+whole side as SELF with an empty ALLY block would be a shape the model never saw in 2v2.
+
+*`MlpPositionEvaluator`.* Hand-written dense forward pass over a weights JSON. **2.5 us per call**
+(target was < 100 us; the hand evaluator it replaces costs ~1800 us, nearly all of it encoding). Two-side
+games are symmetrized so `IsComplementaryTwoSide` holds by construction. Guards: refuses weights whose
+schema is not the build's, refuses a wrong input width.
+
+*Parity.* `Tests/Fixtures/mlp-parity-{weights,cases}.json` - fixed-seed random weights (arithmetic, not a
+model, so the fixture stays valid when the real weights are retrained) plus torch's output on 24 real
+feature rows; the C# pass matches every case to 1e-5. The test also asserts the fixture's outputs SPAN a
+range, or it could not fail for an implementation that ignored its input. The REAL 128/64 serving model
+was parity-checked the same way on 1024 rows via the `FDG_MLP_WEIGHTS`/`FDG_MLP_CASES` overrides - passed.
+
+*Wiring.* `TacticianOptions.Evaluator` (null = hand-weighted, so an unpromoted net cannot become the
+default by accident - G9), threaded through `AiProfileFactory.BuildRegistry` beside `searchBudget`; lab
+`--evaluator PATH` on `bench`, stamped into the report header the way `--search-budget` is. Smoke: a
+2-game Strategist-vs-Tactician cell with the learned evaluator ran clean, header line
+"Leaf evaluator: **MLP from serving-weights.json**".
+
+*Verification:* engine suite 3260 passed / 0 failed / 1 skipped, full build clean, headless smoke exit 0.
+
+*Deliberately NOT done (recorded, not dropped).* The shipping weights are not committed: the current
+model is trained on partial data (15.8k games of a run still going) and step 15 retrains on the full set,
+so committing 400 KB of throwaway weights would be noise. The committed fixture covers the arithmetic;
+the real model is verified through the env-var override. Promotion (weights as an asset + an
+`EAiProfile` value + the lobby button, step 15b) waits for C4's bench result - not for an offline metric.
+
 **2026-09-06 (18:45, Opus 5) - STEP 13 FIRST PASS: THE TREE BASELINE BEATS THE HAND EVALUATOR
 EVERYWHERE, AND BY +0.28 AUC IN ROUND 1. THE RESEARCH RISK IN PHASE C IS LOOKING SMALL.**
 

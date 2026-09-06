@@ -32,7 +32,10 @@ public sealed record GameSpec(
     // bot than the lab default - notably UctOptions.Interactive, the 5-10s budget that actually
     // ships to players, which is ~4.3x the thinking time per activation at 2k and had never been
     // benchmarked when the B-gate's main matrix came in at 56.6%.
-    FDG.Ai.Tactician.Search.UctOptions? SearchBudget = null)
+    FDG.Ai.Tactician.Search.UctOptions? SearchBudget = null,
+    // #191 step 14: a learned leaf evaluator for the Strategists in this game (--evaluator PATH).
+    // Null = the hand-weighted evaluator the B gate was measured on.
+    FDG.Ai.Tactician.Search.IPositionEvaluator? Evaluator = null)
 {
     public static GameSpec TwoPlayer(SlotSpec a, SlotSpec b, int seed,
         ERandomnessType randomness = ERandomnessType.Realistic) =>

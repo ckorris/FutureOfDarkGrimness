@@ -66,7 +66,8 @@ public static class GameRunner
                 : null;
 
             var aiGame = new FDGGame_AsLocal(store, bus);
-            var registry = BuildRegistry(slotSpec.Profile, aiGame, slots[i].PlayerID, spec.Seed, i, decisionLog, spec.SearchBudget);
+            var registry = BuildRegistry(slotSpec.Profile, aiGame, slots[i].PlayerID, spec.Seed, i, decisionLog,
+            spec.SearchBudget, spec.Evaluator);
             if (registryWrapper != null)
                 registry = registryWrapper(registry, aiGame);
             var timed = new TimingRegistry(registry, samples, sampleLock, byType);
@@ -115,9 +116,10 @@ public static class GameRunner
     // lab default below.
     private static FDG.StageResolution.IStageResolverRegistry BuildRegistry(
         EAiProfile profile, FDGGame_AsLocal aiGame, PlayerID playerID, int seed, int slotID,
-        Action<string>? decisionLog, FDG.Ai.Tactician.Search.UctOptions? searchBudget) =>
+        Action<string>? decisionLog, FDG.Ai.Tactician.Search.UctOptions? searchBudget,
+        FDG.Ai.Tactician.Search.IPositionEvaluator? evaluator = null) =>
         AiProfileFactory.BuildRegistry(profile, aiGame.TableState, playerID, seed, slotID, decisionLog,
-            searchBudget: searchBudget ?? LabSearchBudget);
+            searchBudget: searchBudget ?? LabSearchBudget, evaluator: evaluator);
 
     /// <summary>
     /// #191 B5: what a Strategist plays under in the lab - the plan's benchmark budget (1-2s per

@@ -12,7 +12,7 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-torch = ["torch>=2.3", "onnx>=1.16", "onnxruntime>=1.18"]
+torch = ["torch>=2.3", "onnx>=1.16", "onnxruntime>=1.18", "onnxscript>=0.1"]
 
 [tool.uv]
 package = false
