@@ -398,38 +398,97 @@ over a 500-game run; *last-round steal* and *charge-vs-shoot* probes green (gati
 
 ---
 
-## 10. Phase C — learned value function (design level; re-detail at the B replan)
+## 10. Phase C — learned value function (RE-DETAILED 2026-09-06 at the B replan, campaign step 11)
 
-Estimated effort: 10-20 sessions including training iteration. First phase with genuine research
-risk; the fallback (Phase B with the hand-crafted evaluator) remains a shipped, strong bot.
+*Replan record (checkpoint 13.2, Fable 5.1, 2026-09-06). Inputs: B's measured costs (typed state copy
+1.0 ms per expansion, hand leaf evaluator 1.8 ms, 750-800 iterations per interactive-budget decision at
+2k, tree depth 7, 4 root workers), the exporter's data (v1: 86k A-play games at schema 1; v2: 33k+ at
+schema 2 and growing ~8k games/h, ~17 rows per game after 1-in-4 boundary sampling, 20 trained-on
+pairings across 1k/2k/3k/4k/2v2, 80/20 win/tie labels), the B-gate record (70.1% main matrix, panels
+73/72/84 at 1k/3k/4k, 2v2 70/60, 0 faults in 1,332 games), the P4 result (Contest macro + contest-aware
+marker terms: Orks 26 -> 44 on paired seeds, 8-pair regression slice 72.9 vs 71.9), and the code map
+(`IPositionEvaluator` seam exists engine-side and is constructor-threaded; `TacticianOptions` has no
+evaluator knob yet; the encoder is 71 wide and CombatMath-free; `MarkerTerms` feeds only the evaluator).
+The original section is superseded by what follows; its estimates ("~200 floats", "10-20 sessions")
+were pre-measurement guesses. Execution detail lives in `docs/tactician-bc-campaign.md` steps 12-16.*
 
-**C1 — PositionEncoder + data pipeline.** Army-agnostic features at activation boundaries.
-- v1: global summary vector (~200 floats): per player — objective control counts/margins,
-  min/mean distance to each objective, remaining-wounds fraction, expected firepower vs defense
-  bands 2+..6+ (from CombatMath — this is what makes features army-agnostic), mobility
-  aggregates, activation economy, casting resources; plus round number and acting-player context.
-- v2 (only if v1 plateaus): per-unit entity vectors + attention/DeepSets pooling in PyTorch.
-- FdgLab exporter: self-play games emit (features, final result) pairs to parquet; provenance
-  (generating agent, commits, seed) in the file metadata (G9).
+**What the net is for, stated precisely.** B's leaf value approximates "the result if both sides play
+the in-sim A policy from this boundary" - that is what a rollout with `InSimProfile = Tactician` would
+return, and it is exactly the quantity A-vs-A self-play outcomes sample. So the FIRST net trains on the
+A-play data already on disk (no B-play needed to start); B-play data enters once, as the C4
+regeneration, to correct the tree's own state distribution. This resolves the "why train on A-play"
+question the campaign doc left open at step 12 (D7 pulled the exporter forward for precisely this).
 
-**C2 — Training (Python).** Baseline: LightGBM/XGBoost regression on final objective
-differential + a win-probability classification head; then a small MLP (2-4 layers, 64-256
-units — tiny on purpose; CPU-inferable). Split discipline: hold out entire army *pairs*, plus
-seed-splits within pairs. Loss curves are diagnostics; the benchmark is the only promotion
-criterion (G9).
+**Vocabulary review (13.2), verdict: no change beyond M14.** Post-P4 A-play picks Contest for 13% of
+planned activations (fourth most common after AdvanceOnObjective, ChargeToContact, RushObjective); the
+Orks failure analysis (36 transcripts) found the gap was contest RESOLUTION (bodies, mass, tempo), not a
+missing move type, and P4 closed the measured half of it. M1-M14 stand for C. The two known A facets
+(last-round marker denial in the in-sim policy; the `charge-vs-shoot-shoot-favored` probe pin) are
+carried as B/A items, not C blockers.
 
-**C3 — ONNX export + `OnnxPositionEvaluator`.** Implements the `IPositionEvaluator` seam;
-lives in FdgLab first, ships as an FdgRaylib asset when promoted. Inference target < 1ms CPU;
-batch leaf evaluations if profiling says so (G6).
+**C1 - schema v3 + finalize (the one stop-and-ask).** The hand evaluator now reads v2's side block PLUS
+`MarkerTerms` (contest strength = our mass share among units within 6" of a non-owned marker; open
+approach = nearest-friendly proximity to each non-owned marker), which no exported row carries. A net
+trained on v2 rows is blind to the term that produced P4's gain. **v3 = v2 + 2 per-side features
+(`obj_contest_strength`, `obj_open_approach`) = 7 + 18 x 4 = 79 floats, plus one per-row field
+`hand_value` (the shipping hand evaluator's value for the acting side at that boundary).** The rule:
+*the net must see everything the hand evaluator sees, and every row must record what the hand
+evaluator said*, so training has an offline baseline to beat before any box-day is spent. Cost fits
+the 5 ms exporter budget (encoder 1.5 + hand 1.8). Fatigue and firepower bands stay deferred (schema
+sec 4). Self-play restarts into a NEW directory at a new seed base (v2 data stays valid v2 data);
+generation is cheap enough (~190k games/day) that the bump costs a day, and it is only cheap NOW.
 
-**C4 — Integration.** Value-truncated rollouts (roll k activations with the greedy policy, then
-evaluate) or pure leaf evaluation — decide empirically; blend factor between rollout result and
-net evaluation tuned on the benchmark. Regenerate training data from the current best agent once
-(a single improvement iteration; the full loop is Phase D).
+**C1 data mix.** The 20 trained-on pairings from `pool.json` at the existing five level/shape panels,
+held-out pairs excluded by the exporter (unchanged). *The step-12 item "extract the lobby's random-army
+generator so the mix can draw armies at any point level" is dropped: no generator exists - `BotArmyPicker`
+selects among pre-built `.fdgarmy` files by points, and FdgLab cannot reference FdgRaylib by design.* A
+book-based random army builder is a separate work item (useful for R6 pool refresh), not on C's path.
+B-play at low volume: `selfplay` gains a profile/budget passthrough (mix.json entry `Strategist` at the
+benchmark budget, 4 workers, dop 6) for ~5k games as a VALIDATION set (calibration on tree-reached
+states) and later as C4's regeneration channel.
 
-**C-gate:** >= 55% vs Phase B; held-out army-pair performance within ~5 points of trained pairs
-(the generalization requirement — this gate is the "any army" promise); *lane-block* and
-*buff-anticipation* probes green (gating). Chris feel test, ledger verbatim.
+**C2 - training.** `FdgLab/python/` (uv: lightgbm, torch, pandas, pyarrow, onnx, onnxruntime; the box has
+an RTX 4070 Ti Super). Loader: jsonl.gz -> parquet with the schema-v3 range checks of schema sec 7.
+Targets: two heads, `result` (expected score in [0,1], BCE) and `obj_diff_norm` (MSE, auxiliary). Split:
+held-out pairs at every level + the 2v2 cell (never trained), plus a by-game seed split inside trained
+pairs. Baseline first: LightGBM on the 79 floats (diagnostic, reports held-out vs trained gap); then the
+MLP 79 -> 128 -> 64 -> 2 (about 20k weights - CPU-trivial, and small on purpose). **Offline promotion
+bar before C3:** held-out log-loss beats the `hand_value` baseline (the hand evaluator scored on the
+same rows as a predictor) AND the held-out-pair gap to trained pairs is within the noise of the split.
+If LightGBM beats the MLP by a wide margin that is a feature-engineering signal, not a reason to ship
+trees. Loss curves are diagnostics only (G9).
+
+**C3 - inference: plain C# forward pass, ONNX as the interchange format (design change, flagged).**
+The original C3 named an `OnnxPositionEvaluator` over ONNX Runtime. At this net size (a 3-layer MLP,
+~20k weights) a hand-written dense forward pass in C# runs in tens of microseconds, and it removes a
+native-library dependency from four unsigned platform archives (R7 disappears instead of being
+verified). So: `MlpPositionEvaluator : IPositionEvaluator` engine-side, weights loaded from a small
+JSON asset (layers, activations, per-feature normalization); the python side exports BOTH the JSON and
+an ONNX file, and a parity test asserts the C# forward pass matches onnxruntime to 1e-5 on 1,000 rows.
+Per-side evaluation: build each side's v3 block (SELF/ALLY/ENEMY_SUM/ENEMY_MAX from that side's
+perspective) and run the net once per side; in two-side games symmetrize `v = (v_self + 1 - v_other)/2`
+so `SideValues.IsComplementaryTwoSide` holds by construction; n-side normalizes to sum 1 as
+`ObjectiveShareEvaluator` does. `TacticianOptions` gains the evaluator knob (the seam is already
+constructor-threaded through `StrategistActivationResolver`); a new `EAiProfile` value selects it.
+
+**C4 - integration.** Three arms on a 4-pair slice at the BENCHMARK budget (cheap, 48 games each):
+net-only leaf, blend 0.5 net/hand, hand (control). Pick on the slice, confirm at the interactive
+budget on the same pairs. Then ONE regeneration: ~5k B-play games with the winning arm, retrain with
+those rows added (weighted so they are not swamped), re-slice. Two iterations maximum before the gate;
+a second miss is a 13.4 stop. Value-truncated rollouts (P2) stay deferred unless the slice says the
+leaf is the bottleneck - depth 7 at 2k already reaches the last round from a round-4 root.
+
+**C-gate (unchanged bar, costed).** >= 55% vs B on the 2k main matrix, every panel cell >= 50 vs B,
+held-out pairs within ~5 of trained pairs, held-out 2v2 within ~5, lane-block and buff-anticipation
+probes green (they do not exist yet - authored before the gate, in the step-10 probe harness), Chris's
+>= 2 games verbatim. Both sides search, so a C-vs-B game costs ~2x a B-vs-A game: main matrix ~14 h
+and panels ~16 h at dop 6, interactive budget. Screen at the benchmark budget first (4x cheaper) and
+spend the interactive-budget run only on a candidate that passed the screen.
+
+**Effort (re-estimated).** Step 12: 2 bursts (Sonnet). Step 13: 2-3 bursts (Sonnet; Opus reads the
+first training result). Step 14: 1-2 bursts (Sonnet). Step 15: Opus design turn + 1-2 Sonnet bursts +
+~2 box-days. Step 16: ~1.5 box-days per attempt. Calendar: lobby-playable C around 2026-09-10 to 12,
+L2 within the following week if the net clears the offline bar on the first serious attempt.
 
 ---
 

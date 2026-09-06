@@ -23,6 +23,40 @@ campaigns re-base.)*
 
 ## Notes (newest first)
 
+**2026-09-06 (14:10, Fable 5.1) - STEP 11 DONE: C REPLAN WRITTEN (plan sec 10 + campaign steps 12-16). THREE
+SIGN-OFFS ASKED.** Chris: "Please continue." Inputs and the reasoning are in plan doc sec 10 (re-detailed);
+the executable detail in the campaign doc steps 12-16; this entry records what the replan CHANGED and why.
+
+*Facts that moved the plan.* (1) `IPositionEvaluator` already exists and is constructor-threaded through
+`StrategistActivationResolver`; `TacticianOptions` has no evaluator knob (one to add). (2) The hand evaluator
+reads v2's block PLUS `MarkerTerms` (contest strength, open approach), which no exported row carries - a net
+on v2 rows cannot see the term that produced P4's +18. (3) The step-12 "extract the lobby random-army
+generator" item rests on a false premise: `BotArmyPicker` is a file selector by points, no generator exists,
+and FdgLab cannot reference FdgRaylib by design. (4) `selfplay` cannot play the Strategist (no profile/budget
+passthrough; `SelfPlayGameRunner` never passes `searchBudget`). (5) Data: v1 86k games (schema 1), v2 167
+files / 33.4k games at 13:35 (schema 2, ~17 rows/game), 20 trained pairings, 80/20 win/tie; post-P4 A-play
+picks Contest 13% of planned activations. (6) Costs: 1.0 ms/expansion, 1.8 ms hand leaf, 750-800
+iterations/decision at 2k interactive, depth 7; B games 110-120/h at dop 6 (2k), 48/h (3k 2v2). (7) Box has an
+RTX 4070 Ti Super and uv; no python env, no ONNX anywhere in code.
+
+*Decisions (mine, in the replan):* the first net trains on A-play because B's leaf value IS the A-vs-A
+continuation value (what a rollout under `InSimProfile=Tactician` returns) - B-play enters once as C4's
+regeneration; vocabulary unchanged beyond M14 (13.2 review: the gap was contest resolution, not a missing
+move type); two-head MLP 79->128->64->2 with an OFFLINE bar (beat the logged `hand_value` on held-out rows)
+before any box-day; C4 as a 3-arm slice at the benchmark budget; C-gate costed at ~30 h (both sides search).
+
+*Sign-offs asked of Chris (the replan is written assuming yes; nothing is built until answered):*
+- **S1 - schema v3** (+2 per-side marker features = 79 floats, + per-row `hand_value`; sec 6 stop-and-ask).
+  Self-play restarts into a new directory at seed base 300000. Cost: v2's ~1 day of data becomes v2-only.
+- **S2 - drop the step-12 generator extraction** (premise false); file a book-based random army builder as a
+  separate item if wanted (R6 pool refresh).
+- **S3 - C3 as a plain-C# MLP forward pass** (weights JSON asset, ONNX kept as interchange + parity test)
+  instead of an ONNX Runtime dependency - removes R7 and a native lib from four unsigned archives.
+Also pending from earlier: probe pin (`charge-vs-shoot-shoot-favored`), verbatim games, L1, memtest86+.
+
+*Next:* step 12 is Sonnet/medium work; per the section-0 protocol the model switch is prompted at step
+start. Self-play v2 keeps generating until S1 is answered (every batch is valid v2 data either way).
+
 **2026-09-06 (10:15, Fable 5.1) - P4 REGRESSION SLICE HOLDS: 72.9% vs 71.9% ON THE GATE BINARY. P4 SHIPS.**
 `scratchpad/p4-slice.sh`, out `FdgLab/reports/p4-slice-2026-09-06/pair{0..7}`: the 8 ring pairs of the
 gate matrix (the same 8-army ring, seeds from 1000, 12 games each, interactive budget, dop 6, v8 =

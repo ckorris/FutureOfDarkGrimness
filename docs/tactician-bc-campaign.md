@@ -287,31 +287,57 @@ Re-detail C1-C4 with: B's measured node costs, the exporter's data (how much, wh
 A-baseline vs B-baseline panels, and the vocabulary review against observed B play (plan sec.
 13.2). Output: updated plan-doc section 10 + this file's steps 12-16, in one commit.
 
-### Step 12 - C1 finalize (Sonnet / medium)
-Encoder v1 promoted from step 4 (or v2 entity encoder if the replan says so); extract the lobby's
-random-army generator (`FdgRaylib/Rendering/LobbyScreen.cs`) into a callable the lab can use, so
-the data mix can draw armies at ANY point level from the books instead of the fixed lists;
-regenerate a B-play dataset at low volume alongside the A-play set.
+### Step 12 - C1 finalize (Sonnet / medium; ~2 bursts) - RE-DETAILED 2026-09-06 (step 11)
+Design authority: plan doc sec 10 (re-detailed). Slices, each verified and committed on its own:
+- **12a. Schema v3 (STOP-AND-ASK, sec 6 rule; asked 2026-09-06).** `PositionEncoder` v3 = v2 + per-side
+  `obj_contest_strength` and `obj_open_approach` (the `MarkerTerms` the hand evaluator already reads;
+  79 floats), plus a per-row `hand_value` (the shipping `HandWeightedEvaluator` value for the acting
+  side). Parity test: the evaluator's inputs == the encoder's v3 block for the same side (the net sees
+  what the hand sees). Schema doc gets a v3 record; exporter header `schema=3`. Relaunch self-play into
+  `FdgLab/data/<date>-v3` at seed base 300000 (v2 data stays valid v2 data; nothing mixes schemas).
+- **12b. B-play channel.** `selfplay` passes a per-mix-entry profile + search budget through
+  `SelfPlayGameRunner` -> `AiProfileFactory.BuildRegistry` (today it never passes `searchBudget`). A
+  second mix file (`mix-strategist.json`: Strategist-vs-Tactician and Strategist mirror, benchmark
+  budget, 4 workers) runs at dop 6 into its own directory for ~5k games (~15 h) - the validation set
+  for C2 and the regeneration channel for C4. Runs AFTER the v3 A-play run has a day of data (one
+  self-play process at a time).
+- **12c. Loader.** `FdgLab/python/` (uv project): `load.py` reads jsonl.gz -> parquet (per-file
+  provenance kept as columns), asserts the schema-sec-7 ranges per column, stamps the split
+  (held-out pairs from `pool.json`; by-game seed split inside trained pairs).
+- **DROPPED (premise false, 2026-09-06):** "extract the lobby's random-army generator" - there is none;
+  `BotArmyPicker` selects pre-built files by points and FdgLab cannot reference FdgRaylib. The mix
+  keeps the pool's 20 trained pairings. A book-based random army builder is filed separately if Chris
+  wants it (R6 pool refresh), not on C's path.
 
-### Step 13 - C2 training (Sonnet / medium; GPU: minutes-hours)
-`FdgLab/python/` (uv-managed: torch, lightgbm, pandas, pyarrow, onnx, onnxruntime): LightGBM
-baseline, then a small MLP. Hold out entire army pairs at every point level plus one 2v2 cell (section
-5); never a whole point level or shape. Loss curves are diagnostics only (G9).
+### Step 13 - C2 training (Sonnet / medium; first-result read-out: Opus / high; GPU minutes)
+LightGBM baseline on v3 rows (held-out vs trained gap is the number to read), then the MLP
+79 -> 128 -> 64 -> 2 heads (`result` BCE, `obj_diff_norm` MSE aux). **Offline bar before step 14:**
+held-out log-loss beats the `hand_value` baseline scored on the same rows, and the held-out-pair gap is
+within split noise. Miss the bar -> feature work (fatigue, firepower bands: schema sec 4) before more
+data; a second miss is a 13.4 stop with analysis to Chris. Exports: `weights.json` + `model.onnx`.
 
-### Step 14 - C3 ONNX evaluator (Sonnet / medium)
-`IPositionEvaluator` seam engine-side (heuristic impl there); `OnnxPositionEvaluator` app/lab-side
-via `TacticianOptions`; < 1ms CPU inference target; R7 verified on Linux.
+### Step 14 - C3 MLP evaluator (Sonnet / medium; ~1-2 bursts)
+`MlpPositionEvaluator : IPositionEvaluator` in the engine (plain C# dense forward pass; no ONNX Runtime
+dependency - plan sec 10 records why), weights from a JSON asset, per-side evaluation with the two-side
+symmetrization so `IsComplementaryTwoSide` holds. Tests: parity vs onnxruntime on 1,000 exported rows
+(1e-5), the existing evaluator contract test over the new impl, < 0.1 ms per call. `TacticianOptions`
+gains `Evaluator`; `AiProfileFactory` gains the profile (name with Chris at 15b); lab `--profile` and
+`--evaluator` flags.
 
-### Step 15 - C4 integration (design: Opus / high; build: Sonnet / medium)
-Leaf evaluation vs value-truncated rollouts, blend factor - decided on the benchmark. One data
-regeneration from the best agent.
+### Step 15 - C4 integration (design: Opus / high, one turn; build: Sonnet / medium; ~2 box-days)
+Three-arm slice at the benchmark budget on 4 ring pairs (net / blend 0.5 / hand control, 48 games each,
+paired seeds), confirm the winner at the interactive budget on the same pairs, then ONE regeneration
+(~5k B-play games with the winner, step 12b channel) -> retrain with those rows added (weighted) ->
+re-slice. Two iterations maximum before the gate.
 
 ### Step 15b - C lobby exposure (Sonnet / medium; folds into step 15)
-Same treatment as step 9: a new `EAiProfile` value, "Add \<Name\> Bot" button + slot picker
-entry in `LobbyScreen.cs`, name TBD with Chris, once C4 is promoted (not before - an unpromoted
-evaluator stays lab-only per G9).
+Unchanged: a new `EAiProfile` value, "Add <Name> Bot" button + slot picker entry in `LobbyScreen.cs`,
+name TBD with Chris, only once C4 is promoted (G9).
 
-### Step 16 - C-gate (as step 10). **L2 merge.**
+### Step 16 - C-gate (as step 10; both sides search, so ~2x per game: matrix ~14 h + panels ~16 h at dop 6). **L2 merge.**
+Author the `lane-block` and `buff-anticipation` probes FIRST (gating, not yet written; step-10 probe
+harness). Screen at the benchmark budget, gate at the interactive budget; every search run with the
+three GC knobs from the step-10 record.
 
 ---
 
@@ -403,6 +429,10 @@ extra gate math, just the cell to read first.
 | Week of Sep 8 | 10 (B-gate iterations, probes, Chris's games) -> L1; 11 (C replan) |
 | Weeks of Sep 15-29 | 12-15 |
 | ~early Oct | 16 -> L2 |
+
+*Re-estimated 2026-09-06 at step 11 (B-gate met Sep 6, a week early):* 12 on Sep 6-7, 13 on Sep 7-8, 14 on
+Sep 8-9, 15 on Sep 9-11 (lobby-playable C ~Sep 10-12), 16 -> L2 in the week after if the net clears the
+step-13 offline bar first time; a step-13 miss adds ~1 week of feature work.
 
 The phone cadence is what compresses B into the trip: each check-in is one 30-90 minute
 autonomous burst on a well-specified step. If limits bite, the box keeps generating data and the
