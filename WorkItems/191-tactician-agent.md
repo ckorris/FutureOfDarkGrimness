@@ -23,6 +23,30 @@ campaigns re-base.)*
 
 ## Notes (newest first)
 
+**2026-09-06 (18:55, Opus 5) - HANDOFF: STEPS 12a/12c/13/14 DONE, BOX GENERATING, NEXT IS 12b.**
+
+*Box state.* v3 A-play self-play running: pid 254871, binary `scratchpad/step10bin-v9`, 12 GiB cap /
+dop 10, into `FdgLab/data/2026-09-06-v3` (seed base 300000). **24,800 games at 18:50**, RSS flat
+~620 MB, ~7,300 games/hour. Pause with `touch FdgLab/.pause-selfplay`; pinner pid 72538 must keep
+running. Nothing is blocked on this run - step 13's bar was already cleared on 15.8k of it.
+
+*Where the phase stands.* 12a (schema v3), 12c (python loader), 13 first pass (offline bar CLEARED:
+hand 0.818 auc, lgbm 0.914, mlp 0.906 game-split / 0.892 unseen pairings) and 14 (MlpPositionEvaluator,
+engine `a3c0080`, super `9d0b6ce`, 2.5 us/call, torch parity 1e-5) are all committed and pushed.
+
+*Next actions, in order.* **12b** (Sonnet/medium, no box needed to BUILD): thread a per-mix-entry
+profile + search budget through `SelfPlayGameRunner` -> `AiProfileFactory.BuildRegistry` (it never
+passes `searchBudget` today), add `FdgLab/armies/mix-strategist.json` (Strategist-vs-Tactician +
+Strategist mirror, benchmark budget, 4 workers). Then STOP the A-play run and launch B-play at dop 6
+into its own directory for ~5k games (~15 h) - one self-play process at a time. Then retrain the
+serving model on the full v3 set (current weights come from 15.8k rows of an ongoing run and are
+deliberately NOT committed), then step 15 (design turn is Opus/high).
+
+*Carried, unanswered by Chris.* S2 (drop the generator-extraction item - already dropped in the doc)
+and S3 (plain-C# MLP - already built that way); the `charge-vs-shoot-shoot-favored` probe re-pin;
+>= 2 verbatim games; L1 merge to master; memtest86+. Step 16's `lane-block` and `buff-anticipation`
+probes are still unwritten and are gating.
+
 **2026-09-06 (19:40, Opus 5) - STEP 14 DONE: THE LEARNED EVALUATOR RUNS IN THE ENGINE, MATCHES TORCH
 TO 1e-5, COSTS 2.5 us, AND PLAYS REAL BENCH GAMES. Engine `a3c0080`.**
 
