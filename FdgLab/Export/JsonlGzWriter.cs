@@ -58,6 +58,7 @@ public static class JsonlGzWriter
         public int ChosenUnit { get; }
         public string ChosenAction { get; }
         public string ChosenMacro { get; }
+        public float HandValue { get; }
         public float Result { get; }
         public float ObjDiffNorm { get; }
         public int RoundsPlayed { get; }
@@ -72,6 +73,7 @@ public static class JsonlGzWriter
             ChosenUnit = row.ChosenUnit;
             ChosenAction = row.ChosenAction;
             ChosenMacro = row.ChosenMacro;
+            HandValue = row.HandValue;
             Result = row.Result;
             ObjDiffNorm = row.ObjDiffNorm;
             RoundsPlayed = row.RoundsPlayed;

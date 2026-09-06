@@ -23,6 +23,49 @@ campaigns re-base.)*
 
 ## Notes (newest first)
 
+**2026-09-06 (15:20, Opus 5) - STEP 12a BUILT: SCHEMA v3 (79 FLOATS + hand_value), ALL SIX PRE-RUN
+CHECKS GREEN, SELF-PLAY RELAUNCHED ON IT.** Chris signed off S1 ("Yes, please do that"). Engine `46e9d03`.
+
+*What changed.* `PositionEncoder` v3: per-side block 16 -> 18 floats, adding `obj_contest_strength` (16)
+and `obj_open_approach` (17) - the two `MarkerTerms` the shipping leaf evaluator already reads. Width
+71 -> 79, `SchemaVersion = 3`. The parity is structural, not a convention: `HandWeightedEvaluator` now
+READS indices 16/17 out of the encoder block instead of calling `MarkerTerms` itself (and its own
+`ProjectObjectives` call went away with it), so the exported row and the evaluator are the same numbers
+by construction. Test `MarkerTerms_AreExposedAtIndices16And17` fails the moment someone recomputes them
+with different arguments. Lab side: `ExportRow.HandValue` per row (the evaluator's value for the ACTING
+side at that boundary, via a new `SideMap.FromStore(IReadableGameDataStore)` overload), written by
+`JsonlGzWriter`; the file header's `schema` field follows the encoder constant, so it reads 3 with no
+edit. Suite 3255 passed / 0 failed / 1 skipped; full build clean; headless smoke exit 0 (Player 2 wins,
+4 rounds).
+
+*Schema sec 7's six pre-run checks, on a quiet box (self-play paused), 24 games at seeds 999000+:*
+| check | result |
+|---|---|
+| 1. rows per game == sampled boundary count | 24/24 games have rows, 9-42 rows/game (1-in-4 sampling) |
+| 2. every feature in range | 0 of 417 rows out of [0,1]; `obj_diff_norm` in [-1,1] |
+| 3. label balance | 128 win / 115 loss / 174 tie rows - the mirror mix's real rate, not one class |
+| 4. held-out pairings absent | 10 pairings sampled, none from `pool.json`'s heldOut |
+| 5. determinism on a fixed seed | **content-identical**, hash `b5016651...` both runs |
+| 6. encoder under budget | 3.63 ms mean (budget 5), up from 1.5 - the marker terms and the hand value are inside the same stopwatch |
+New features look alive: contest strength nonzero on 192/417 rows (mean 0.073), open approach nonzero on
+405/417 (mean 0.669).
+
+*One extra change, flagged because it was not in S1's text:* `game_id` is now derived from the game seed
+(SHA-256, first 16 bytes) instead of `Guid.NewGuid()`. Check 5 asks for byte-identical output on a fixed
+seed, and with a random id per game that could never be checked literally - the first run "failed" it
+with every row's content identical and only the ids and line order differing. Seeds never repeat inside
+an output directory, so ids stay unique where it matters, and the check is now a real check rather than
+a thing verified by hand. Reversible in one line if Chris dislikes it.
+
+*Generation.* Self-play v2 stopped at batch 166 (33.4k games, `FdgLab/data/2026-09-05-v2`, kept as valid
+v2 data alongside the 86k-game v1 run). v3 launched on the Release build `step10bin-v9` into
+`FdgLab/data/2026-09-06-v3`, seed base 300000, dop 12, same GC knobs, same pause file. At ~8k games/h it
+matches v2's volume by ~19:30 tonight. NOT started: 12b (the Strategist/B-play channel) - it needs the
+box to itself and the v3 A-play run has priority.
+
+*Model note:* step 12 recommends Sonnet/medium in the campaign's section 3 policy; this ran on Opus 5.
+Nothing here needed it. Steps 12b/12c are the same shape.
+
 **2026-09-06 (14:10, Fable 5.1) - STEP 11 DONE: C REPLAN WRITTEN (plan sec 10 + campaign steps 12-16). THREE
 SIGN-OFFS ASKED.** Chris: "Please continue." Inputs and the reasoning are in plan doc sec 10 (re-detailed);
 the executable detail in the campaign doc steps 12-16; this entry records what the replan CHANGED and why.

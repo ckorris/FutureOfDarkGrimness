@@ -1,12 +1,13 @@
-# C1 self-play data schema v1 (campaign step 4)
+# C1 self-play data schema (campaign step 4; v3 since 2026-09-06)
 
 Authored 2026-09-03 (Opus, per the campaign doc's "the feature schema is a lock-in, so it gets an
 Opus review before the first long run"). Implementation is Sonnet work; this file is the spec, and
 it exists because regenerating days of data costs box-days. Design authority for the WHY:
 `docs/ai-agent-plan.md` sec 10 (C1) plus invariant **G13** (scale/shape generalization).
 
-**Status: awaiting Chris's go. Nothing here is built yet.** Changing this schema after the first
-long generation run is a stop-and-ask (it invalidates data).
+**Status: built and generating. Current schema v3** (2026-09-06, #191 step 11 sign-off S1; v1 record
+2026-09-03, v2 2026-09-05 - both change records are kept below). Changing this schema after a long
+generation run is a stop-and-ask, every time: it invalidates data that costs box-days to replace.
 
 ---
 
@@ -30,7 +31,7 @@ One row per activation boundary, from the ACTING player's perspective.
 
 | Field | Meaning |
 |---|---|
-| `game_id` | GUID per game, joins rows to their outcome |
+| `game_id` | Per-game id, joins rows to their outcome. **v3:** derived from the game seed (SHA-256, first 16 bytes), not random - see the v3 record in sec 3 |
 | `boundary` | 0-based index of this activation boundary within the game |
 | `round` | `GameProgressData.RoundCount` |
 | `acting_slot` | slot ID of the player about to activate (never the PlayerID GUID - #193's rule) |
@@ -57,6 +58,7 @@ written with the row:
 |---|---|
 | `chosen_unit` | index of the activated unit in the acting player's roster order (never a GUID) |
 | `chosen_action` | the Choose Action reply string (`ChooseActionStage` constants or a rule-offer name); empty if the activation backed out |
+| `hand_value` | **v3 (2026-09-06).** The shipping `HandWeightedEvaluator`'s value for the ACTING side at this boundary, in [0,1]. The offline baseline step 13 must beat; never an input feature |
 | `chosen_macro` | the Tactician's winning macro-action label, or empty for non-planning profiles (labels are the generator's `intent=...` rationale strings; `intent=Contest` joined the vocabulary 2026-09-06, #191 step 10 P4 - rows from before that date simply never carry it) |
 
 Capturing `chosen_action` is trivially reliable once step 5a's typed `ChooseActionRequest`
@@ -77,7 +79,7 @@ exporter keys on the same `"Choose Action"` instructions the AI resolvers do.
 | `activation_frac` | boundary / expected boundaries this round | where in the round we are |
 | `acting_side_is_first` | 1 if the acting side moved first this round | alternation matters |
 
-## 3. Per-side block (15 features x 4 blocks = 60)
+## 3. Per-side block (18 features x 4 blocks = 72 since v3; v2 16x4=64, v1 15x4=60)
 
 Computed for SELF (the acting player), ALLY (sum over allied players, zeros in 1v1), ENEMY_SUM
 (sum over all opposing players), ENEMY_MAX (per-feature max over opposing players - "the
@@ -112,7 +114,38 @@ The step 2 baseline's weakest cell (79%) was the only one containing Titan Lords
 was added to the 3k panel the same day, and the mix for generation must include it so the net sees
 single-model armies, not only hordes.
 
-**Vector width v2: 7 + 64 = 71 floats** (16 per block since `obj_held_threatened_share`, 2026-09-05; v1 was 67 with 15 per block).
+| `obj_contest_strength` | **v3 (2026-09-06).** For every marker this side is in range of but does not own, its share of the unit VALUE both sides have within the contest zone (seizure radius + 3"), summed and divided by the objective count. A contest we out-mass is nearly a held marker; a toe-hold under a horde is nearly nothing | `MarkerTerms.Compute` |
+| `obj_open_approach` | **v3 (2026-09-06).** For every marker this side does not own, 1 - (nearest eligible unit's base-edge distance beyond the seizure radius) / 24", averaged over those markers. A slope from two rush moves out, per marker; holding everything reads as 1 (nothing left to approach) | same call |
+
+**Vector width v3: 7 + 72 = 79 floats** (18 per block; v2 was 71 with 16, v1 67 with 15).
+
+**v3 change record (2026-09-06, #191 step 11 C replan, Chris's sign-off S1).** The step-11 replan found
+the shipping leaf evaluator reads v2's block PLUS two `MarkerTerms` quantities that no exported row
+carried - the very terms P4 added, which moved the Orks cells from 26.4% to 44.4%. A net trained on v2
+rows would be blind to them, and would be graded against an evaluator that can see more than it can.
+So v3 adds both as per-side features, and the parity is **structural**: `HandWeightedEvaluator` now
+reads indices 16/17 out of the encoder block instead of computing the terms itself, so the two cannot
+drift (test: `PositionEncoderTests.MarkerTerms_AreExposedAtIndices16And17`). The rule this sets, for
+every later schema bump: *the net must see everything the hand evaluator sees.*
+
+**Also v3: `hand_value` per row** (sec 1's table). Not a feature - the acting side's value under the
+shipping `HandWeightedEvaluator` at that boundary, logged so step 13 can ask the only question that
+matters before any bench time is spent: *does the net predict the outcome better than the evaluator it
+would replace, on the same held-out rows?* Without it that comparison needs a re-scoring pass over the
+data with a pinned evaluator build, which is exactly the kind of thing that rots.
+
+**Also v3: `game_id` is derived from the game seed** (SHA-256 of the seed, first 16 bytes) rather than
+`Guid.NewGuid()`. Check 5 below asks for byte-identical output on a fixed seed; with a random id per
+game that could never be checked literally (it was verified by hand, keyed on seed+boundary, and passed).
+Seeds never repeat inside an output directory, so ids stay unique where it matters.
+
+*Data consequence, same shape as v2's:* files written before 2026-09-06 are v1 (67, `schema=1`) or v2
+(71, `schema=2`) and stay valid data at their own schema; v3 files are 79 wide with `schema=3`. The new
+columns are NOT recomputable from an old row (they need the board). Self-play restarted into
+`FdgLab/data/2026-09-06-v3` at seed base 300000; no directory mixes schemas. The 2026-09-05-v2 run
+(33.4k games) and the 2026-09-03 v1 run (86k games) are kept.
+
+**Vector width v2 (superseded): 7 + 64 = 71 floats** (16 per block since `obj_held_threatened_share`, 2026-09-05; v1 was 67 with 15 per block).
 
 **v2 change record (2026-09-05, #191 step 10, Chris's sign-off).** The B-gate failure analysis found the
 hand evaluator treated material as fungible - a unit 6" from your held marker counted the same as one

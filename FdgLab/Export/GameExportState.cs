@@ -12,7 +12,7 @@ namespace FdgLab.Export;
 /// </summary>
 public sealed class GameExportState
 {
-    public readonly string GameId = Guid.NewGuid().ToString("N");
+    public readonly string GameId;
     public readonly bool EntitySampled;
     private readonly List<ExportRow> _rows = new();
     private readonly List<(int Boundary, List<float[]> Entities)> _entityRows = new();
@@ -27,7 +27,20 @@ public sealed class GameExportState
     private double _encoderMsTotal;
     private int _encoderCalls;
 
-    public GameExportState(bool entitySampled) => EntitySampled = entitySampled;
+    /// <summary>
+    /// <paramref name="seed"/> is the game's own seed, and the GameId is derived from it rather
+    /// than random (#191 step 12a): schema sec 7 check 5 asks for byte-identical output on a fixed
+    /// seed, which a fresh <c>Guid.NewGuid()</c> per game made impossible to check literally - the
+    /// content matched but every id differed. Seeds never repeat inside an output directory (a
+    /// resumed run starts past the last batch, a new run gets a new seed base), so this is unique
+    /// where it needs to be and reproducible where that is worth more.
+    /// </summary>
+    public GameExportState(bool entitySampled, int seed)
+    {
+        EntitySampled = entitySampled;
+        byte[] hash = System.Security.Cryptography.SHA256.HashData(BitConverter.GetBytes(seed));
+        GameId = new Guid(hash.AsSpan(0, 16)).ToString("N");
+    }
 
     public int NextGlobalBoundary() { lock (_lock) return ++_globalBoundary; }
 

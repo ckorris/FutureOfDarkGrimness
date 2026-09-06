@@ -1,6 +1,7 @@
 using FDG;
 using FDG.Ai.Tactician;
 using FDG.Ai.Tactician.Learning;
+using FDG.Ai.Tactician.Search;
 using FDG.Data;
 using FDG.Network;
 using FDG.Rules.Dispatch;
@@ -44,6 +45,8 @@ public sealed class ExportingRegistry : IStageResolverRegistry
     private readonly TacticianPlanner? _planner;
     private readonly float _totalGamePoints;
 
+    private readonly HandWeightedEvaluator _handEvaluator = new();
+
     private ExportRow? _openRow;
 
     public ExportingRegistry(IStageResolverRegistry inner, GameExportState state, PlayerID playerID, int slotID,
@@ -82,6 +85,7 @@ public sealed class ExportingRegistry : IStageResolverRegistry
             (int boundaryInRound, int expected, bool first) = _state.OpenBoundary(tableState, _playerID);
             float[] features = PositionEncoder.Encode(tableState, _queryEvaluator, _playerID,
                 boundaryInRound, expected, first, _totalGamePoints);
+            float handValue = HandValueFor(tableState, gameDataStore);
             sw.Stop();
             _state.RecordEncoderMs(sw.Elapsed.TotalMilliseconds);
             List<float[]>? entities = _state.EntitySampled
@@ -99,6 +103,7 @@ public sealed class ExportingRegistry : IStageResolverRegistry
                 Round = tableState.Progress.RoundCount ?? 1,
                 ActingSlot = _slotID,
                 Features = features,
+                HandValue = handValue,
                 ChosenUnit = chosen == null ? -1 : RosterIndex(tableState, _playerID, chosen),
             };
             if (entities != null) _state.AddEntityRows(row.Boundary, entities);
@@ -129,6 +134,25 @@ public sealed class ExportingRegistry : IStageResolverRegistry
         if (_openRow == null) return;
         _state.FlushRow(_openRow); // chosen_action/chosen_macro stay "" per schema sec 1
         _openRow = null;
+    }
+
+    // The hand evaluator's value for the acting side (schema v3's hand_value). Same instance the
+    // Strategist's leaf uses, called on the live table state - it is a pure read (IPositionEvaluator's
+    // contract: never rolls, never mutates), so it cannot perturb the game being exported. Costs
+    // ~1.8ms, inside the encoder stopwatch on purpose: the 5ms budget covers what the exporter adds
+    // to a boundary, and this is part of it now (schema sec 7 check 6's canary watches the sum).
+    private float HandValueFor(ITableState tableState, IReadableGameDataStore gameDataStore)
+    {
+        try
+        {
+            SideMap sides = SideMap.FromStore(gameDataStore);
+            SideValues values = _handEvaluator.Evaluate(tableState, _queryEvaluator, sides);
+            return values[sides.SideOf(_playerID)];
+        }
+        catch (KeyNotFoundException)
+        {
+            return float.NaN; // a player the slot records do not know: log nothing rather than a wrong number
+        }
     }
 
     private static int RosterIndex(ITableState tableState, PlayerID player, DataBinding<UnitData> chosen)

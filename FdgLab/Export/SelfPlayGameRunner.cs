@@ -25,7 +25,7 @@ public static class SelfPlayGameRunner
     {
         var store = GameDataStore.GameDataStoreBuilder.GetDefault();
         var bus = new LabMessageBus();
-        var exportState = new GameExportState(entitySampled);
+        var exportState = new GameExportState(entitySampled, spec.Seed);
 
         var slots = new PlayerSlot[spec.Slots.Count];
         for (int i = 0; i < slots.Length; i++)
