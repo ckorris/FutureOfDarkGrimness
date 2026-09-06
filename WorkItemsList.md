@@ -154,6 +154,9 @@ from the tree 2026-08-12 - recover it from git history if needed.) Remainders be
 
 ## Client / renderer
 
+- [~] 393 - Large 3-point terrain pieces: the heavy tier was seven pieces, so games placed one of each. Ten palette-only templates added (9-11.5" long side, all four filter types), auto layout untouched. Implemented + tested; **awaiting GUI hand-verify**. ([WorkItems/393](WorkItems/393-large-terrain-pieces.md))
+- [~] 394 - Terrain picker type filter: All / Impassible / Cover / Difficult / Dangerous buttons above the piece list, filtering as a pure view (pool indices untouched). CLI picker deferred. Implemented + tested; **awaiting GUI hand-verify** (the ImGui row is not unit-testable). ([WorkItems/394](WorkItems/394-terrain-picker-type-filter.md))
+
 - [~] 386 — Dice panels froze mid-tumble while wounds resolved audibly (seen while screen-recording): #327's hover-freeze captured a parked/stale cursor as the stack grew to meet it, and froze the engine-paced part. Hover now freezes the linger only + `IsCursorOnScreen` gate. Implemented + tested; awaiting user re-record. ([WorkItems/386](WorkItems/386-dice-stack-hover-freeze-desync.md))
 - [~] 344 — Options slider for how long dice-roll popups stay up (1/3x .. 2x, default 1x): scales the panel's LINGER only, never the engine-paced tumble. Implemented + tested; awaiting GUI hand-verify. ([WorkItems/344](WorkItems/344-dice-popup-duration-option.md))
 - [~] 346 — Terrain placement panel said "Right-click or Esc to switch template" (Esc opens the menu, #248), so the only way-out hint named the wrong key; now Backspace/right-click, in a visible colour, both placement steps, plus footprint/height/rules-effect lines for the piece being placed. Implemented; awaiting GUI hand-verify. ([WorkItems/346](WorkItems/346-terrain-placement-hints.md))

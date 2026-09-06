@@ -56,6 +56,17 @@ public class GuiPlaceOneTerrainResolver
     // #301 points mode: the debt notice / debt warning tint (amber, matching the stage's Toast color).
     private static readonly Vector4 WarningYellow = new Vector4(0.94f, 0.78f, 0.35f, 1f);
 
+    // #394: which type the picker list is filtered to; TerrainTypeFilter.All = unfiltered. Main thread
+    // only (Draw writes it, Draw reads it), so unlike _request/_selectedTemplate it needs no lock, and
+    // Resolve deliberately does NOT reset it - one game asks for many placements in a row and re-picking
+    // the filter every time is exactly the friction this removes.
+    private ETerrainType _typeFilter = TerrainTypeFilter.All;
+
+    // #394: the active filter button's tint. Reads as "pressed" against the default button color without
+    // borrowing ResolverButtons.Primary, which means "commit" everywhere else in the panel.
+    private static readonly Vector4 FilterActive        = new Vector4(0.16f, 0.37f, 0.48f, 1f);
+    private static readonly Vector4 FilterActiveHovered = new Vector4(0.22f, 0.47f, 0.60f, 1f);
+
     public GuiPlaceOneTerrainResolver(ITableState tableState) => _tableState = tableState;
 
     public void UpdateLayout(float scale, int originX, int originY, float tableH)
@@ -316,6 +327,7 @@ public class GuiPlaceOneTerrainResolver
         else
         {
             ImGui.TextUnformatted("Pick a piece:");
+            DrawTypeFilterBar(request.Pool, PanelWidth);   // #394
             DrawTemplatePicker(request, PanelWidth);
         }
 
@@ -366,6 +378,66 @@ public class GuiPlaceOneTerrainResolver
     }
 
     /// <summary>
+    /// #394 - the type filter row above the piece list: All, then one button per
+    /// <see cref="TerrainTypeFilter.Options"/> flag. Clicking a type shows only pieces carrying it;
+    /// clicking the active one again, or All, clears the filter. Buttons flow onto as many rows as the
+    /// panel width needs, so the row survives a narrow panel and a large UI scale.
+    ///
+    /// <para>Purely a view over the pool: nothing here changes a piece's cost, its index, or whether the
+    /// budget will allow it. A filtered-out piece is hidden, never disabled.</para>
+    /// </summary>
+    private void DrawTypeFilterBar(IReadOnlyList<TerrainPieceEntry> pool, float panelWidth)
+    {
+        float rowW = panelWidth - 20f;
+        float padX = ImGui.GetStyle().FramePadding.X * 2f;
+        float spacing = ImGui.GetStyle().ItemSpacing.X;
+        float xUsed = 0f;
+        bool first = true;
+
+        void FilterButton(ETerrainType flag, string label)
+        {
+            float w = ImGui.CalcTextSize(label).X + padX;
+            // Wrap when this button would overflow the row. SameLine only after something is on the line.
+            if (!first && xUsed + spacing + w > rowW) { xUsed = 0f; }
+            else if (!first) { ImGui.SameLine(); xUsed += spacing; }
+            first = false;
+            xUsed += w;
+
+            bool active = _typeFilter == flag;
+            if (active)
+            {
+                ImGui.PushStyleColor(ImGuiCol.Button, FilterActive);
+                ImGui.PushStyleColor(ImGuiCol.ButtonHovered, FilterActiveHovered);
+                ImGui.PushStyleColor(ImGuiCol.ButtonActive, FilterActive);
+            }
+            bool clicked = ImGui.Button(label, new Vector2(w, ResolverPanelLayout.ActionRowHeight()));
+            if (active) ImGui.PopStyleColor(3);
+
+            if (ImGui.IsItemHovered())
+            {
+                ImGui.SetTooltip(flag == TerrainTypeFilter.All
+                    ? $"Show all {pool.Count} pieces"
+                    : $"Show only {label} pieces ({TerrainTypeFilter.CountMatching(pool, flag)})");
+            }
+
+            if (clicked)
+            {
+                // Clicking the active filter clears it, so the row is its own way back to All.
+                _typeFilter = active ? TerrainTypeFilter.All : flag;
+                UiSound.Toggle();
+            }
+        }
+
+        FilterButton(TerrainTypeFilter.All, "All");
+        foreach ((ETerrainType flag, string label) in TerrainTypeFilter.Options)
+            FilterButton(flag, label);
+
+        string? summary = TerrainTypeFilter.SummaryLine(
+            TerrainTypeFilter.CountMatching(pool, _typeFilter), pool.Count, _typeFilter);
+        if (summary != null) ImGui.TextDisabled(summary);
+    }
+
+    /// <summary>
     /// Per-row template picker with a small to-scale shape preview on the left and the
     /// type/dimensions label on the right. All thumbnails share one pixels-per-inch
     /// scale derived from the largest piece in the pool, so relative sizes read
@@ -374,6 +446,12 @@ public class GuiPlaceOneTerrainResolver
     /// #301 points mode: each row carries its cost; a row the budget forbids is dimmed and
     /// unclickable with the reason in its hover tooltip, and a playable-but-debt row gets a
     /// yellow label plus the "will take N points from your next turn" tooltip.
+    ///
+    /// <para>#394: rows the active type filter excludes are skipped entirely. The loop still runs over
+    /// POOL indices, because <see cref="TerrainPlacementResult.TemplateIndex"/> indexes the pool the
+    /// stage holds - re-packing the visible rows into their own list would place the wrong piece. The
+    /// thumbnail scale also stays keyed to the whole pool, so a piece is the same size on screen
+    /// whichever filter is up.</para>
     /// </summary>
     private void DrawTemplatePicker(PlaceOneTerrainRequest request, float panelWidth)
     {
@@ -397,6 +475,7 @@ public class GuiPlaceOneTerrainResolver
         for (int i = 0; i < pool.Count; i++)
         {
             TerrainPieceEntry entry = pool[i];
+            if (!TerrainTypeFilter.Matches(entry.TerrainType, _typeFilter)) continue;   // #394
 
             string label = DescribeTemplate(entry);
             bool blocked = false;
