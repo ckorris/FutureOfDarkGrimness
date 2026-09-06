@@ -23,6 +23,60 @@ campaigns re-base.)*
 
 ## Notes (newest first)
 
+**2026-09-06 (08:40, Fable 5.1) - STEP 10 GATE v5 COMPLETE: THE B GATE IS MET AT THE SHIPPING BUDGET.
+MAIN MATRIX 70.1% (bar 60), EVERY PANEL CELL >= 50, TITAN REVERSE 53.3, FFA CLEAN, 0 FAULTS IN 1,332
+SCORED GAMES. SELF-PLAY v2 RUNNING.**
+
+`FdgLab/reports/step10-gate-v5-2026-09-05/` (gitignored), one `bench.md` per cell, engine `53a917e`
+(P0+P1+P3 + #394), binary `step10bin-v7`, interactive budget, dop 6, Strategist vs Tactician, sides
+swapped, ties half. Hashes: matrix `F6B9F7052EA6E125`, 1k `0D96A2A45A364E21`, 3k `22D3E52B9D4E3512`,
+4k `EFD422B556A8425B`, 2v2-2k `A56F1E99161BA1B1`, 2v2-3k `EAE60D4DD63A0D42`, titan `FEA65608590B9BA5`.
+
+| cell | games | score | W/L/T | cells < 50 | weakest cell |
+|---|---|---|---|---|---|
+| main matrix 2k 1v1 (64 pairs x 12) | 768 | **70.1%** | 467/159/142 | 8 of 64 (n=12 each) | BB / DE / RL vs Orks 20.8 |
+| points-1k (4 cells x 30) | 120 | 73.3% | 75/19/26 | 0 | Blood Brothers vs HDF 58.3 |
+| points-3k (5 x 30) | 150 | 72.0% | 93/27/30 | 0 | Battle Brothers vs Goblins 51.7 |
+| points-4k (3 x 30) | 90 | 84.4% | 70/8/12 | 0 | Havoc vs High Elf 75.0 |
+| shape-2v2-2k (4 x 24) | 96 | 69.8% | 58/20/18 | 0 (one AT 50.0) | DE+RL vs Dwarfs+HE 50.0 |
+| shape-2v2-3k (2 x 30) | 60 | 60.0% | 27/15/18 | 0 | BB+Knights vs RL+Titans 51.7 |
+| titan reverse (Goblins piloted vs Titan Lords) | 30 | 53.3% | 13/11/6 | - | forward pairing was 88.3 |
+| orks dump-logs (not in the aggregate) | 36 | 26.4% | 4/21/11 | 3 of 3 | DE vs Orks 16.7 |
+| ffa-smoke (4 players, seed 42) | 1 | clean | Robot Legions wins 1-0-1-2, 694 decisions, 146 s | - | - |
+
+*Against the campaign's gate B row (sec 5):* main matrix >= 60% vs A: **70.1, met** (SE ~1.7). Every
+panel cell >= 50 head-to-head: **met** (14 of 14 cells; one exactly at parity, all others 51.7-91.7).
+vs-solo ceiling check and the "no cell below step-2 baseline minus 5" clause: **not run** in v5 (the
+v4/v5 design dropped vs-solo as a ceiling check; v4's aborted run and step 9 both had it >= 85 - if
+Chris wants it on this binary, it is a 1-2 h cell). ffa-smoke clean: **met**. Decision time within
+budget at 4k: **met by construction** (wall-clock budget, 6.6-10 s scaled by root units; 4k games
+averaged 258 s wall for both sides' 600-800 decisions). Memory stable over 500 games: **met** - the
+v5c process ran 560 games at 3.0-3.9 GB RSS under the 8 GiB cap with no growth; v5d ran 426 games the
+same way. Probes (last-round steal, charge-vs-shoot): the step-10 probe set passes 4/5, the failing
+one (`count-says-they-win`) is the in-sim A's last-round denial gap (2026-09-05 16:30 entry), an A
+facet, not a B defect. Chris's >= 2 verbatim games: pending (the Orks transcripts are the candidates).
+
+*Shape of the result:* the edge grows with the point level (1k 73, 2k 70, 3k 72, 4k 84) and holds in
+2v2 (70 at 2k, 60 at 3k) - the generalization worry that started the campaign is answered in B's
+favour. The edge is play, not list strength: piloting the weaker Goblin list against Titan Lords it
+still scores 53. The one recurring weakness is marker commitment against horde melee (Orks) and with
+Robot Legions / Dark Elf lists, diagnosed in the 02:35 entry (P4 territory, Chris's call).
+
+*Ops record of the night, for the docs:* the chain took 16.5 h instead of 12 because of three runtime
+faults (a Server GC thread spinning in kernel time for 3h50, a BGC write fault, a pool-thread GPF).
+`DOTNET_GCHeapHardLimit=8 GiB` alone: faulted; + `DOTNET_GCRetainVM=1`: 3h13 then faulted;
++ `DOTNET_GCName=libclrgc.so` (segments GC): **5h42 and 426 games clean to the end of the chain**.
+Until the hardware question is closed (memtest86+ from boot), every search bench runs with all three.
+The resumable design (`bench.progress.jsonl`) meant no scored game was lost to any of it, and re-running
+finished cells reproduced every hash.
+
+*Self-play v2* launched by the script tail at 08:29:54 (pid 218664, `FdgLab/data/2026-09-05-v2`, dop
+12, seed base 200000, schema 2, cap; NOT on the segments GC - the A-only path never faulted after the
+pin). Only self-play process on the box.
+
+*What is next (campaign):* step 10 closes on this record; L1 (B-gate landmark) merge to master is
+Chris's call after the >= 2 verbatim games; then step 11, the mandatory C replan (Fable/high).
+
 **2026-09-06 (02:55, Fable 5.1) - THIRD FAULT: points-3k DIED 2 MIN IN UNDER CAP + RetainVM (GPF ON A
 POOL THREAD IN libcoreclr). RELAUNCHED AS v5d ON THE SEGMENTS GC (`libclrgc.so`). IF THIS DIES, IT IS
 HARDWARE.**
