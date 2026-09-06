@@ -23,6 +23,30 @@ campaigns re-base.)*
 
 ## Notes (newest first)
 
+**2026-09-06 (02:05, Fable 5.1) - GATE v5 MAIN MATRIX CLOSED: STRATEGIST 70.1% vs TACTICIAN AT THE
+SHIPPING BUDGET (bar 60%). 768 games, 0 faults, hash `F6B9F7052EA6E125`.**
+
+`FdgLab/reports/step10-gate-v5-2026-09-05/main-matrix/` (bench.md / bench.csv / progress). 467 W /
+159 L / 142 T (ties 18.5%). The relaunches did not bend it: 69.3% over the 366 games before the GC
+wedge, 70.8% over the 402 after (v5c, cap + RetainVM). v5c ran the last 3h13 clean - no crash, no
+stall - so RetainVM is the working mitigation for the region-decommit faces of 2026-09-05 22:xx.
+
+*Side asymmetry worth keeping in mind:* 74.5% when the Strategist is slot 0 (moves first) vs 65.6%
+when it is slot 1 - a 9-point first-mover edge at 2k, larger than v4 suggested. Panels are side-swapped
+too, so it washes out of every aggregate, but it says slot order is a real term in the game itself.
+
+*Per-cell (n=12, directional only):* 8 of 64 cells under 50%, no faults anywhere. Five of the eight
+have Orks as the opponent or Robot Legions as the piloted army, the same two names as v4's four
+weakest cells: Battle Brothers vs Orks 20.8, Dark Elf vs Orks 20.8, Robot Legions vs Orks 20.8, Robot
+Legions vs High Elf 25.0, Robot Legions vs Dwarfs 33.3, HDF vs Dwarfs 37.5, HDF vs Orks 41.7, Dark
+Elf vs High Elf 45.8. Piloted-army means: Robot Legions 48.9 (the only sub-50 row), Dark Elf 56.8,
+HDF 64.6, Battle Brothers 65.1, Dwarfs 75.0, Orks 81.8, Alien Hives 83.3, High Elf 84.9. As the
+opponent, Orks hold the Strategist to 49.5 on average. The Orks `--dump-logs` cells running now are
+the failure analysis for exactly this; read them first when the chain ends.
+
+*Chain:* orks-rl started 01:56; remaining ~8 h (panels, titan reverse, ffa-smoke), then self-play v2
+launches from the script tail.
+
 **2026-09-05 (22:40, Fable 5.1) - GATE v5 WEDGED IN THE .NET SERVER GC FOR 3h50; KILLED AND RESUMED
 AS v5b WITH THE 8 GiB HEAP CAP. 366/768 MATRIX GAMES AT 69.3% STRATEGIST.**
 
