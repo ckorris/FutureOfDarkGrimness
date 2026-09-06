@@ -23,6 +23,36 @@ campaigns re-base.)*
 
 ## Notes (newest first)
 
+**2026-09-06 (02:55, Fable 5.1) - THIRD FAULT: points-3k DIED 2 MIN IN UNDER CAP + RetainVM (GPF ON A
+POOL THREAD IN libcoreclr). RELAUNCHED AS v5d ON THE SEGMENTS GC (`libclrgc.so`). IF THIS DIES, IT IS
+HARDWARE.**
+
+02:47:41, exit 139, dmesg `traps: .NET TP Worker[201295] general protection fault ... in libcoreclr.so`
+(a non-canonical pointer dereferenced by runtime code on a thread-pool thread; a GPF, not a page fault).
+Dump `dumps/step10v5-points-3k-201161.dmp` (3.7 GB): 66 managed threads, none of them the faulting
+one (native frames only - lldb+SOS territory, not pursued). That is three distinct faces in eight
+hours: a Server GC thread spinning in kernel time (18:44-22:31), a BGC write to a not-present page
+(22:41), a GPF on a pool thread (02:47). `DOTNET_GCRetainVM=1` bought 3h13 clean through the end of
+the matrix plus the orks/1k cells (~560 games), then lost the first 3k cell. v5c ran the last 3h13 clean -
+no crash, no stall - so RetainVM is NOT the answer, only a delay.
+
+Relaunched 02:48 as `step10-gate-v5d.sh` (pid in `gate-v5d.pid`): cap + RetainVM + `DOTNET_GCName=libclrgc.so`,
+the standalone segments GC that ships in 8.0.26 - same server-GC semantics (so the wall-clock budget
+stays comparable), none of the regions code. The chain re-ran the finished cells first: each resumed
+in full and exited 0 with an unchanged hash (matrix `F6B9F7052EA6E125`, orks `417F58DBEF9B324A` /
+`A2CCA9EB402DA6EB` / `4C6152A28C0C3C20`, 1k `0D96A2A45A364E21`), which also overwrote their `.log`
+files with the trivial resumed-run log (the bench.md/csv are regenerated from progress and identical;
+the wedged/v5b/v5c attempt logs are kept under their suffixed names). points-3k restarted from 0/150.
+
+*Reading so far:* three faces with the same "corrupted pointer" shape, all in runtime code, none in a
+managed frame, on a box with one confirmed and pinned bad DRAM page (2026-09-04) - and self-play's
+A-only path never faulted after the pin (tens of thousands of games). The search path is the
+allocation-heaviest thing this box runs (6 games x 4 root workers x snapshots), so it is also the best
+detector of a second bad page. If v5d faults too, stop chasing GC knobs: the next step is memtest86+
+from boot (Chris) and, until then, `--dop 3` benches with the cap, which halve the resident set. If
+v5d runs the remaining ~7 h clean, regions were the trigger and `DOTNET_GCName=libclrgc.so` joins the
+cap in every search bench.
+
 **2026-09-06 (02:35, Fable 5.1) - ORKS FAILURE ANALYSIS (36 dump-logs games): THE STRATEGIST PUTS TOO
 FEW BODIES ON MARKERS TOO LATE, AND NEVER CONTESTS AN ORK-HELD MARKER. LOSING IS SETTLED IN ROUND 2.**
 
