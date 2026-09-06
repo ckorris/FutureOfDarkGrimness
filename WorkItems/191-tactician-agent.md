@@ -23,6 +23,41 @@ campaigns re-base.)*
 
 ## Notes (newest first)
 
+**2026-09-05 (22:40, Fable 5.1) - GATE v5 WEDGED IN THE .NET SERVER GC FOR 3h50; KILLED AND RESUMED
+AS v5b WITH THE 8 GiB HEAP CAP. 366/768 MATRIX GAMES AT 69.3% STRATEGIST.**
+
+*What happened:* the main-matrix bench (pid 169734, dop 6) wrote its last game at 18:44:51 (366/768,
+matchup 30 half done) and then nothing until found at 22:31. Process state: load average 1.0, one
+thread at 100% - `.NET Server GC` (tid 169768) with 4 h of SYSTEM time and 0.3 s of user time - every
+`.NET TP Worker` idle; RSS 3.9 GB, VmSize 281 GB (the uncapped server GC reservation), no swap,
+memory fine. `clrstack -all` on a live mini dump shows all 6 games' search workers parked on awaits
+(19 `UctSearch.RunWorkerAsync`, 22 `SimulationService.Run`) - the shape of managed threads suspended
+for a GC that never finishes. Not a crash (no dumper fire, no dmesg line), not the watchdog's case
+either: `Task.Delay` cannot fire while the runtime is suspended. Kernel stack unreachable without
+root (ptrace scope; `/proc/<tid>/stack` denied). Different face from the 2026-09-04 crashes (those
+were a flipped bit in an object header, hardware, pinned since); the pinner (72538) was alive and
+holding its page (`VmLck: 4 kB`) throughout. Whether this is a second bad page, a runtime GC bug in
+region decommit under a 256 GB reservation, or something else is open - the `-heap` dump is kept.
+
+*Evidence kept:* `scratchpad/gate-v5-stall.dmp` (mini, 29 MB), `gate-v5-stall-heap.dmp` (4.6 GB),
+`gate-v5-stall-clrstack.txt`, `FdgLab/reports/step10-gate-v5-2026-09-05/main-matrix.attempt1-wedged.log`.
+
+*Action:* killed script + bench (SIGKILL; the runtime would not have processed SIGTERM), relaunched
+as `scratchpad/step10-gate-v5b.sh` (pid in `gate-v5b.pid`, appends to the same `step10-gate-v5.log`),
+identical chain resuming the same `--out` (366 resumed, 402 to play, seeds unchanged) with ONE change:
+`DOTNET_GCHeapHardLimit=0x200000000` (8 GiB) on every bench cell, as self-play v3/v2 already run.
+The cap bounds the GC's reserved range (roughly 2x the limit instead of 256 GB) and with it the
+decommit bookkeeping; RSS was 3.9 GB so 8 GiB is 2x headroom. If the cap trips, the dumper fires
+and the script retries with resume. The 6 in-flight games of matchup 30 are simply replayed.
+
+*Score at the wedge (366 games, Strategist = slot 0 unswapped / slot 1 swapped, ties half):*
+217 W / 76 L / 73 T = **69.3%** (bar 60%). v4 at 215 games on the old binary read 70.7%.
+
+*ETA:* 402 games at ~138/h is ~3 h -> matrix closes ~01:40 Sep 6; chain end moves from ~04:00 to
+~10:00 Sep 6 (self-play v2 launches at the end of the chain as before). If a second wedge shows
+up under the cap, the next arm is workstation GC (`DOTNET_gcServer=0`) for the remaining cells,
+throughput cost accepted; and memtest86+ from boot stays the real answer to the hardware question.
+
 **2026-09-05 (16:30, Fable 5.1) - #394 BUILT: THE SEARCH RUNS ON A TYPED STATE COPY. THE GATE IS
 RELAUNCHED FRESH (v5) ON IT.** Chris: "do 394 now - way more games, way faster". Engine `53a917e`.
 
