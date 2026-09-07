@@ -23,6 +23,41 @@ campaigns re-base.)*
 
 ## Notes (newest first)
 
+**2026-09-06 (21:00, Fable 5.1) - C4 SCREEN: THE NET LEAF WINS. +8.9 POOLED OVER HAND, AHEAD ON ALL FOUR
+PAIRS, 576 GAMES, 0 FAULTS. INTERACTIVE CONFIRM RUNNING.**
+
+`FdgLab/tools/c4-slice.sh FdgLab/reports/c4-slice-2026-09-06 benchmark 48 hand net blend`, binary
+`scratchpad/step15bin` (engine `06c05f5`), 19:46-20:54, self-play paused throughout (drained to 0% CPU before
+the first cell). Strategist(leaf) vs Tactician, benchmark budget, 4 workers, dop 6, 24 seeds x 2 sides from
+1000, identical seeds per arm. Reports are gitignored; the table is the record.
+
+| Pair (A = Strategist vs Tactician) | hand | net | blend 0.5 |
+|---|---|---|---|
+| Dark Elf Raiders vs Dwarf Guilds | 31.2 | 43.8 | 45.8 |
+| Dwarf Guilds vs High Elf Fleets | 55.2 | 62.5 | 65.6 |
+| Human Defense Force vs Orks | 41.7 | 43.8 | 37.5 |
+| Robot Legions vs Alien Hives | 42.7 | 56.2 | 45.8 |
+| **pooled (192 games each)** | **42.7** | **51.6** | **48.7** |
+
+*Decision (rule from the step-15 design):* **net** - +8.9 pooled (bar >= +5), ahead on every pair (+12.5, +7.3,
++2.1, +13.5). Blend is +6.0 but lost HDF-Orks by 4.2 and trails net on two of four; it is not the pick. Cost:
+~5.4 min per 48-game cell, 38.7 s per game, 0.15 games/s at dop 6 - the screen took 68 min, under the estimate.
+
+*Read.* The net's gain is concentrated where the hand leaf was weakest (DE-DG +12.5, RL-AH +13.5) - the same
+shape as the offline round-1 auc gap. The hand control's 42.7 pooled is NOT comparable to the P4 slice's
+numbers on these cells (those were interactive budget, these are benchmark); the interactive confirm is what
+makes that comparison. 192 games per arm is a coarse instrument (SE ~3.6 before pairing), which is why the
+rule demanded +5 and the confirm exists.
+
+*Now running.* `c4-slice.sh FdgLab/reports/c4-confirm-2026-09-06 interactive 48 hand net`, launched 20:56
+after draining B-play again, bench pid 277268, 8 cells, ~3 h (P4's interactive cells ran 12 games in 4-7 min).
+B-play resumes when it ends. Promotion of the net (weights as an asset, `EAiProfile` value, lobby button - step
+15b) waits on the confirm; the regeneration (~5k B-play games with the net leaf) follows it.
+
+*B-play batch 0 (landed 20:55 during the resume window):* 200 games, 0 faults, 3,207 rows, ~45 min of active
+generation across the pauses, i.e. **~270 games/h at dop 6 -> 5k games is ~19 h of unpaused box time**, not
+the doc's 15. Cell logs are in `scratchpad/selfplay-b1.log`.
+
 **2026-09-06 (19:55, Fable 5.1 - step 15's design turn recommends Opus/high; Chris said "continue") - STEP 15
 DESIGNED AND BUILT, NOT YET RUN. Engine `06c05f5`. ONE DECISION OPEN: pause B-play now for the slice, or after
 its 5k games.**
