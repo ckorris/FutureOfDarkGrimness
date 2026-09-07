@@ -42,7 +42,10 @@ def report(name: str, pred: np.ndarray, hand: np.ndarray, label: np.ndarray, fra
     print(f"\n=== {name} ===")
     print(line("model", out["overall"]["model"]))
     print(line("hand evaluator", out["overall"]["hand"]))
-    for column in ("round", "points_level", "shape"):
+    columns = ["round", "points_level", "shape"]
+    if "source" in frame.columns and frame["source"].nunique() > 1:
+        columns.append("source")  # #191 step 15: A-play vs B-play rows (tree-reached states)
+    for column in columns:
         print(f"\n  by {column}:")
         slice_out = {}
         for value, group in frame.groupby(column):
@@ -86,7 +89,8 @@ def train_lgbm(x_train, y_train, x_test, y_test, threads: int, rounds: int):
     return model, np.clip(model.predict(x_test), 0.0, 1.0)
 
 
-def train_mlp(x_train, y_train, aux_train, x_test, epochs: int, threads: int, hidden=(128, 64)):
+def train_mlp(x_train, y_train, aux_train, x_test, epochs: int, threads: int, hidden=(128, 64),
+              sample_weight=None):
     import torch
     from torch import nn
     torch.set_num_threads(threads)
@@ -115,7 +119,10 @@ def train_mlp(x_train, y_train, aux_train, x_test, epochs: int, threads: int, hi
     xt = torch.tensor(x_train, dtype=torch.float32, device=device)
     yt = torch.tensor(y_train, dtype=torch.float32, device=device)
     at = torch.tensor(aux_train, dtype=torch.float32, device=device)
-    bce, mse = nn.BCEWithLogitsLoss(), nn.MSELoss()
+    # #191 step 15: per-row weights (source balancing). Mean of 1 keeps the loss scale comparable.
+    wt = torch.tensor(sample_weight if sample_weight is not None else np.ones(len(x_train), np.float32),
+                      dtype=torch.float32, device=device)
+    bce, mse = nn.BCEWithLogitsLoss(reduction="none"), nn.MSELoss(reduction="none")
     batch = 4096
     for epoch in range(epochs):
         net.train()
@@ -125,7 +132,8 @@ def train_mlp(x_train, y_train, aux_train, x_test, epochs: int, threads: int, hi
             index = order[start:start + batch]
             opt.zero_grad()
             logit, aux = net(xt[index])
-            loss = bce(logit, yt[index]) + 0.2 * mse(aux, at[index])
+            w = wt[index]
+            loss = ((bce(logit, yt[index]) + 0.2 * mse(aux, at[index])) * w).sum() / w.sum()
             loss.backward()
             opt.step()
             total += float(loss.detach()) * len(index)
@@ -200,12 +208,19 @@ def main() -> None:
     parser.add_argument("--epochs", type=int, default=12)
     parser.add_argument("--tag", default="", help="suffix for the saved report/model")
     parser.add_argument("--drop", default="", help="comma-separated features to exclude (serving-parity ablation)")
+    parser.add_argument("--balance-sources", action="store_true",
+                        help="#191 step 15: weight B-play rows (search_budget != none) so both sources carry "
+                             "equal total weight in the MLP loss (the plan's 'weighted so they are not swamped')")
     parser.add_argument("--export", action="store_true",
                         help="write weights.json + model.onnx for the C# evaluator (mlp only)")
     args = parser.parse_args()
 
     os.environ["OMP_NUM_THREADS"] = str(args.threads)
     frame = pd.read_parquet(args.parquet)
+    if "search_budget" in frame.columns:
+        frame["source"] = np.where(frame["search_budget"].astype(str) == "none", "A-play", "B-play")
+        counts = frame["source"].value_counts().to_dict()
+        print(f"  sources: {counts}")
     features = [c for c in frame.columns if "__" in c or c in
                 ("round_frac", "rounds_left_frac", "objective_count_norm", "players_per_side_norm",
                  "points_norm", "activation_frac", "acting_side_is_first")]
@@ -223,6 +238,17 @@ def main() -> None:
 
     x_train = train[features].to_numpy(np.float32)
     y_train = train["result"].to_numpy(np.float32)
+    sample_weight = None
+    if args.balance_sources:
+        if "source" not in train.columns or train["source"].nunique() < 2:
+            raise SystemExit("--balance-sources: the training rows do not contain both A-play and B-play sources")
+        is_b = (train["source"] == "B-play").to_numpy()
+        n_a, n_b = int((~is_b).sum()), int(is_b.sum())
+        # B-play rows get n_a/n_b each, A-play rows 1, then rescale to mean 1.
+        raw = np.where(is_b, n_a / n_b, 1.0).astype(np.float32)
+        sample_weight = raw / raw.mean()
+        print(f"  --balance-sources: A-play {n_a} rows x 1.00, B-play {n_b} rows x {n_a / n_b:.2f} "
+              f"(equal total weight; per-row weights rescaled to mean 1)")
     x_test = test[features].to_numpy(np.float32)
     y_test = test["result"].to_numpy(np.float32)
     hand = test["hand_value"].to_numpy(np.float64)
@@ -235,7 +261,8 @@ def main() -> None:
         gains = sorted(zip(features, model.feature_importance("gain")), key=lambda t: -t[1])[:12]
     else:
         aux_train = train["obj_diff_norm"].to_numpy(np.float32)
-        model, pred = train_mlp(x_train, y_train, aux_train, x_test, args.epochs, args.threads)
+        model, pred = train_mlp(x_train, y_train, aux_train, x_test, args.epochs, args.threads,
+                                sample_weight=sample_weight)
         import torch
         torch.save(model.state_dict(), MODELS_DIR / f"{tag}.pt")
         gains = []
