@@ -23,6 +23,23 @@ campaigns re-base.)*
 
 ## Notes (newest first)
 
+**2026-09-07 (Fable 5.1) - merge to master done 2026-09-07, super `4339768`, engine `406c0c0` (merge) /
+`ae80842` (override); FDG_STRATEGIST_WEIGHTS dev override added.** `tactician-bc` merged into master
+with a real merge commit on both repos; engine suite 3275/0/1 at the merge, 3280/0/1 after the
+override. Reconciliation 58: the branch's #393 (Random Army) and #394 (simulation state copy) collided
+with master's terrain items and yielded -> **#395** / **#396** (detail files, index, archive, this
+ledger, engine + FdgLab comments renumbered; commit messages and quoted "do 394 now" left as-is).
+Override: `AiProfileFactory.BuildRegistry`'s Strategist case loads
+`MlpPositionEvaluator.FromFile(FDG_STRATEGIST_WEIGHTS)` when the variable names an existing file and
+no caller supplied a leaf; unset = hand-weighted default (G9 holds). One line says which file loaded
+(decision log, else console); a missing file keeps the default and says so, a bad file throws.
+`TacticianPlanner.SearchLeaf` exposes the wired leaf for the tests (`StrategistWeightsOverrideTests`,
+5 tests against the parity fixture). Headless Strategist run with the fixture prints the load line
+and finishes. Launch: `FDG_STRATEGIST_WEIGHTS=<abs path to serving-full-weights.json>
+./FdgRaylib/bin/Debug/net8.0/FdgRaylib`. The Purple box's `serving-full-weights.json` was NOT copied
+here - this checkout is on a Windows machine without WSL, so the Linux path is unreachable; copy it
+into `FdgLab/python/models/` (gitignored) by hand.
+
 **2026-09-07 (00:10, Fable 5.1) - C4 CONFIRM AT THE INTERACTIVE BUDGET: THE NET LEAF HOLDS. +6.0 POOLED, AHEAD ON
 ALL FOUR PAIRS, 384 GAMES, 0 FAULTS. REGENERATION WITH THE NET LEAF IS RUNNING.**
 
