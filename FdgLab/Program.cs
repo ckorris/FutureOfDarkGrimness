@@ -51,6 +51,8 @@ static int Usage()
                                      aggregate toward profile A's alphabetically-early armies)
                   [--evaluator PATH]   #191 step 14: a learned leaf evaluator (the weights JSON
                                        from FdgLab/python/train.py --export). Default: hand-weighted.
+                  [--blend W]          #191 C4: with --evaluator, play W net + (1-W) hand (the slice's
+                                       middle arm; W in (0,1)). Also honoured by selfplay.
                   [--search-budget benchmark|interactive]   #191 step 10: what a Strategist
                                      thinks under. Default benchmark (1-2s/activation, what every
                                      bench before 2026-09-05 measured); interactive is the 5-10s
@@ -404,7 +406,15 @@ static bool TryEvaluatorArg(string[] args, out FDG.Ai.Tactician.Search.IPosition
     evaluator = null;
     label = null;
     string? path = Arg(args, "--evaluator");
-    if (path == null) return true;
+    if (path == null)
+    {
+        if (Arg(args, "--blend") != null)
+        {
+            Console.Error.WriteLine("--blend needs --evaluator PATH (it mixes that net with the hand evaluator).");
+            return false;
+        }
+        return true;
+    }
     if (!File.Exists(path))
     {
         Console.Error.WriteLine($"--evaluator: no such file '{path}'.");
@@ -414,6 +424,21 @@ static bool TryEvaluatorArg(string[] args, out FDG.Ai.Tactician.Search.IPosition
     {
         evaluator = FDG.Ai.Tactician.Search.MlpPositionEvaluator.FromFile(path);
         label = $"MLP from {Path.GetFileName(path)}";
+        // #191 C4: --blend W mixes W of the net with (1 - W) of the hand evaluator - the slice's
+        // middle arm. Requires --evaluator; W in (0, 1) exclusive, the endpoints are the other arms.
+        string? blendRaw = Arg(args, "--blend");
+        if (blendRaw != null)
+        {
+            if (!float.TryParse(blendRaw, System.Globalization.NumberStyles.Float,
+                    System.Globalization.CultureInfo.InvariantCulture, out float weight) || !(weight > 0f && weight < 1f))
+            {
+                Console.Error.WriteLine($"--blend: '{blendRaw}' is not a weight in (0, 1).");
+                return false;
+            }
+            evaluator = new FDG.Ai.Tactician.Search.BlendedPositionEvaluator(evaluator,
+                new FDG.Ai.Tactician.Search.HandWeightedEvaluator(), weight);
+            label = $"blend {weight:0.##} MLP ({Path.GetFileName(path)}) + {1 - weight:0.##} hand";
+        }
         return true;
     }
     catch (Exception error)

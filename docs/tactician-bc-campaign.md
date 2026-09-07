@@ -329,11 +329,40 @@ symmetrization so `IsComplementaryTwoSide` holds. Tests: parity vs onnxruntime o
 gains `Evaluator`; `AiProfileFactory` gains the profile (name with Chris at 15b); lab `--profile` and
 `--evaluator` flags.
 
-### Step 15 - C4 integration (design: Opus / high, one turn; build: Sonnet / medium; ~2 box-days)
+### Step 15 - C4 integration (design: Opus / high, one turn; build: Sonnet / medium; ~2 box-days) - DESIGNED + BUILT 2026-09-06 (Fable 5.1, Chris said continue)
 Three-arm slice at the benchmark budget on 4 ring pairs (net / blend 0.5 / hand control, 48 games each,
 paired seeds), confirm the winner at the interactive budget on the same pairs, then ONE regeneration
 (~5k B-play games with the winner, step 12b channel) -> retrain with those rows added (weighted) ->
 re-slice. Two iterations maximum before the gate.
+
+*Design record (2026-09-06).*
+- **Arms.** Strategist(leaf X) vs Tactician, benchmark budget, 4 workers, dop 6, self-play paused. X =
+  hand (control) | net (`models/serving-full-weights.json`, the full-v3 model) | blend 0.5 net + 0.5 hand
+  (`BlendedPositionEvaluator`, engine; lab `--blend 0.5` beside `--evaluator`). Arms interleaved per pair.
+- **Opponent is A, not B**, for three reasons: the bench applies `--evaluator` to every Strategist in a
+  game, so C-vs-B is not expressible yet (per-side evaluator is a step-16 build item); one searching side
+  halves the cost; and the numbers land on the same scale as the P4 slice (72.9 over 8 pairs).
+- **Pairs.** The four ring pairs where the hand-leaf control sat lowest on the P4 slice: Dark Elf
+  Raiders-Dwarf Guilds (45.8), Dwarf Guilds-High Elf Fleets (66.7), Human Defense Force-Orks (37.5),
+  Robot Legions-Alien Hives (50.0). A leaf swap is invisible in the four 90+ cells. Known bias, accepted:
+  a leaf that only helps in already-won cells is missed.
+- **Seeds.** 48 games/cell = 24 seeds x 2 sides from seed 1000, identical across arms (paired). 576 games
+  for the screen; P4's interactive cells ran 12 games in 4-7 min at dop 6, so the benchmark screen is
+  ~1.5-2 h and the interactive confirm (2 arms x 4 cells x 48) ~3.5 h.
+- **Decision rule.** Pooled (W + 0.5T)/N over the 4 cells. Promote net or blend only if it beats hand by
+  >= 5 points pooled (P4's tolerance; SE ~3.6 at 192 games/arm before pairing) and loses no single pair
+  by more than 10. Anything less: hand stays (G9 - a net cannot become the default by a coin flip).
+- **Confirm.** Winner vs hand at the interactive budget, same pairs and seeds. Skipped if hand won.
+- **Regeneration.** Winner net/blend: ~5k B-play games via `selfplay --mix mix-strategist.json
+  --evaluator ... [--blend 0.5]` into a new directory. Winner hand: the B-play run already going IS the
+  regeneration. Then retrain with B-play rows weighted so both sources carry equal total weight (~5x at
+  85k vs 443k rows), validated on B-play held-out games, and re-slice. Two iterations maximum.
+- **Tooling.** `FdgLab/tools/c4-slice.sh <out> <budget> <games> <arm>...` (pauses/unpauses self-play,
+  per-cell bench dirs, resumable through bench.progress.jsonl) and `c4-summarize.py` (arm x pair table
+  with pooled scores).
+- **Scheduling fork (Chris).** Pause the B-play run for the ~5.5 h slice+confirm now, or wait for its
+  5k games (~23 h at the observed rate). Recommendation: now - the slice is the critical path and the
+  paused run resumes at its next game with nothing lost.
 
 ### Step 15b - C lobby exposure (Sonnet / medium; folds into step 15)
 Unchanged: a new `EAiProfile` value, "Add <Name> Bot" button + slot picker entry in `LobbyScreen.cs`,

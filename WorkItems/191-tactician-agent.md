@@ -23,6 +23,33 @@ campaigns re-base.)*
 
 ## Notes (newest first)
 
+**2026-09-06 (19:55, Fable 5.1 - step 15's design turn recommends Opus/high; Chris said "continue") - STEP 15
+DESIGNED AND BUILT, NOT YET RUN. Engine `06c05f5`. ONE DECISION OPEN: pause B-play now for the slice, or after
+its 5k games.**
+
+*Design* is recorded in full in `docs/tactician-bc-campaign.md` step 15 (arms, opponent, pairs, seeds, decision
+rule, confirm, regeneration, tooling). The short form: Strategist(hand | net | blend 0.5) vs Tactician at the
+benchmark budget on the four low-ceiling ring pairs (DE-DG, DG-HE, HDF-Orks, RL-AH), 48 paired-seed games per
+cell, 576 games (~1.5-2 h); promote only on >= +5 pooled over hand with no pair lost by > 10; confirm the winner
+at interactive (~3.5 h); regeneration with the winner (hand winning means the running B-play set already is it).
+Opponent is A rather than B because the bench's `--evaluator` binds to every Strategist in the game - **per-side
+evaluator on bench is a step-16 build item** (needed for C-vs-B), filed here, not dropped.
+
+*Built.* `BlendedPositionEvaluator(primary, secondary, weight)` (engine; linear mix, so complementarity and
+[0,1] survive; refuses weights outside [0,1] incl. NaN; 5 tests). Lab `--blend W` beside `--evaluator` on
+bench AND selfplay (the regeneration channel can play the blend arm), label stamped in the bench header:
+"blend 0.5 MLP (serving-full-weights.json) + 0.5 hand". `FdgLab/tools/c4-slice.sh` + `c4-summarize.py`.
+Release binary snapshot `scratchpad/step15bin` (so later builds cannot disturb a running slice).
+
+*Verification.* Engine suite 3266/0/1, full build clean, headless smoke exit 0, 2-game blend bench at the
+benchmark budget: 0 faults, header correct, summarizer reads it.
+
+*B-play at 19:55:* pid 267005 alive, batch 0 (200 games, dop 6) still not written after 52 min - the doc's
+15 h for 5k games is not going to hold; rate recorded when batch 0 lands.
+
+*Command, once the go is given (the box must be otherwise idle):*
+`FDGLAB_BIN=<scratchpad>/step15bin/FdgLab setsid nohup FdgLab/tools/c4-slice.sh FdgLab/reports/c4-slice-2026-09-06 benchmark 48 hand net blend &`
+
 **2026-09-06 (19:08, Fable 5.1) - SERVING MODEL RETRAINED ON THE FULL v3 A-PLAY SET: 26,199 games / 443,608
 rows, `models/serving-full-weights.json` (uncommitted, same policy as step 14), C# parity 5/5.**
 
