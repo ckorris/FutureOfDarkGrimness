@@ -3,8 +3,21 @@ using FDG.StageResolution.Requests;
 
 namespace FdgRaylib.Cli.Resolvers;
 
-public class StringSelectionResolver : IStageResolver<StringSelectionRequest, string>
+public class StringSelectionResolver : IStageResolver<StringSelectionRequest, string>,
+    IStageResolver<ChooseActionRequest, string>
 {
+    /// <summary>
+    /// #191 B1 step 5a: Choose Action is its own request type now, but the CLI's menu rendering
+    /// (numbered options, invalid-option reasons, rule subtext) is unchanged - so this mirrors the
+    /// request into the shape <see cref="Resolve(StringSelectionRequest)"/> already knows how to
+    /// print rather than duplicating that printer. The mirror never crosses the wire; it exists
+    /// only for this one in-process call.
+    /// </summary>
+    public Task<string> Resolve(ChooseActionRequest request) => Resolve(new StringSelectionRequest(
+        request.TargetPlayerID, request.TaskID, "Choose Action", request.ValidOptions, request.InvalidOptions,
+        request.OptionDescriptions, request.AllowCancel, secondaryActions: null, request.DisplayName,
+        optionRules: null, request.OptionDescriptionRules));
+
     public Task<string> Resolve(StringSelectionRequest request)
     {
         Console.WriteLine();

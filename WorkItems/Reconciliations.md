@@ -6,6 +6,20 @@ from origin/master. Standing precedent: numbers are never reused, and when two p
 claim the same number, the *unmerged local* item yields to the *merged* one and takes a fresh number.
 A per-clone pre-push hook blocks duplicate numbers across the index and the archive.
 
+> **2026-09-07 - reconciliation 58.** Merging `origin/tactician-bc` (the #191 Tactician B+C campaign
+> branch, ~94 commits) into master surfaced a double collision, the reconciliation-13 shape. Master had
+> filed **393 = large 3-point terrain pieces** and **394 = terrain picker type filter** (2026-09-06,
+> merged, engine + app source comments), while the branch had filed **393 = Random Army silent outside a
+> dist build** (2026-09-04, todo) and **394 = simulation state copy without the JSON round trip**
+> (2026-09-05, closed, archived, ~20 engine source comments + `FdgLab/B0Spike.cs`). Per merged-wins
+> precedent both branch items yield: **Random Army 393 -> 395**
+> (`WorkItems/395-random-army-silent-outside-dist.md`) and **simulation state copy 394 -> 396**
+> (`WorkItems/396-simulation-state-copy.md`). Detail files, index, archive, the #191 ledger, and the
+> engine/FdgLab source comments were renumbered in the merge (engine comments in a follow-up engine
+> commit, since the engine merge had already been pushed). **Left as-is on purpose:** the branch's commit
+> messages saying "#394" for the store clone, and Chris's quoted "do 394 now" in the #191 notes. Master's
+> #393/#394 keep their numbers. 395/396 verified free across every remote branch's `WorkItems/`.
+
 > **2026-08-31 — reconciliation 57.** The stale-DURING-the-session shape again (reconciliations
 > 54/56): a `git fetch` at filing time showed origin/master topping out at 390, so **391 = FdgLab
 > parallel-bench cross-game coupling** was filed legitimately (WorkItems file + index committed
@@ -690,3 +704,5 @@ A per-clone pre-push hook blocks duplicate numbers across the index and the arch
 > index high-water mark 392 (the #392 parallel-bench item, archived), archive max 392, and the local
 > copy matches on both. **393 = large 3-point terrain pieces**, **394 = terrain picker type filter**.
 > No collision.
+
+> **2026-09-04 - number 393 filed clean.** `git fetch origin` before filing: `origin/master`'s index high-water mark 391, archive max 392, detail files max 392 on every remote branch; local `tactician-bc` matches. **393 = Random Army silent outside a dist build.** No collision. (Renumbered 393 -> 395 in reconciliation 58 above.)

@@ -1,0 +1,14 @@
+{
+  "_comment": "B-play self-play mix (docs/tactician-bc-campaign.md step 12b): the validation set for C2 and the regeneration channel for C4. Same sampling as mix.json (per-game, seeded; held-out pool.json pairings always excluded) but the Strategist searches - searchBudget benchmark (1-2s/activation, UctOptions.Benchmark) with searchWorkers 4, the exact bot the B-gate measured. Half the games pit the search against the A-play Tactician it wraps, half are a search mirror. Run at --dop 6 (6 games x 4 root workers = 24 threads) into its own dated directory; never alongside another self-play process. Data, not code - edit and relaunch without a rebuild.",
+  "profileMix": [
+    { "name": "strategist_vs_tactician", "weight": 0.5, "profileA": "Strategist", "profileB": "Tactician", "searchBudget": "benchmark", "searchWorkers": 4 },
+    { "name": "strategist_mirror", "weight": 0.5, "profileA": "Strategist", "profileB": "Strategist", "searchBudget": "benchmark", "searchWorkers": 4 }
+  ],
+  "levels": [
+    { "panel": "points-1k", "weight": 0.2 },
+    { "panel": "points-2k", "weight": 0.2 },
+    { "panel": "points-3k", "weight": 0.2 },
+    { "panel": "points-4k", "weight": 0.15 },
+    { "panel": "shape-2v2", "weight": 0.25 }
+  ]
+}

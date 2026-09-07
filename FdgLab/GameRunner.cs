@@ -26,6 +26,10 @@ public static class GameRunner
         var wall = Stopwatch.StartNew();
         var samples = new List<double>();
         var sampleLock = new object();
+        // #191 step 3/5: per-request-type cost, so "where does an activation's policy time go" is a
+        // measurement instead of a guess. Always collected (a dictionary add against a ~20ms
+        // decision is free); only reported when asked for.
+        var byType = new System.Collections.Concurrent.ConcurrentDictionary<string, TimingRegistry.TypeTally>();
 
         var store = GameDataStore.GameDataStoreBuilder.GetDefault();
         var bus = new LabMessageBus();
@@ -52,7 +56,9 @@ public static class GameRunner
         for (int i = 0; i < slots.Length; i++)
         {
             SlotSpec slotSpec = spec.Slots[i];
-            slots[i] = new PlayerSlot(i, teamNumber: i, new PlayerID(Guid.NewGuid()), slotSpec.Army, store);
+            // Team=null (the default) means "own team" - every existing 1v1/FFA caller is
+            // unaffected; GameSpec.TeamGame stamps real team numbers for grouped-team games.
+            slots[i] = new PlayerSlot(i, teamNumber: slotSpec.Team ?? i, new PlayerID(Guid.NewGuid()), slotSpec.Army, store);
 
             int slot = i; // the decision sink must not capture the shared loop variable
             Action<string>? decisionLog = spec.LogDecisions && log != null
@@ -60,10 +66,11 @@ public static class GameRunner
                 : null;
 
             var aiGame = new FDGGame_AsLocal(store, bus);
-            var registry = BuildRegistry(slotSpec.Profile, aiGame, slots[i].PlayerID, spec.Seed, i, decisionLog);
+            var registry = BuildRegistry(slotSpec.Profile, aiGame, slots[i].PlayerID, spec.Seed, i, decisionLog,
+            spec.SearchBudget, spec.Evaluator);
             if (registryWrapper != null)
                 registry = registryWrapper(registry, aiGame);
-            var timed = new TimingRegistry(registry, samples, sampleLock);
+            var timed = new TimingRegistry(registry, samples, sampleLock, byType);
             slots[i].AssignPlayerController(new LabPlayerController(
                 $"{slotSpec.ArmyLabel} (slot {i})", slots[i].PlayerID, aiGame, timed,
                 logSink: i == 0 ? logSink : null));
@@ -100,12 +107,27 @@ public static class GameRunner
         lock (sampleLock) stats = DecisionStats.From(samples);
         IReadOnlyList<string>? capturedLog;
         lock (logLock) capturedLog = log?.ToArray();
-        return new GameRecord(spec, result, wall.Elapsed, stats, winnerSlot, capturedLog, tracer?.Entries);
+        return new GameRecord(spec, result, wall.Elapsed, stats, winnerSlot, capturedLog, tracer?.Entries,
+            byType.ToDictionary(kv => kv.Key, kv => (kv.Value.Count, kv.Value.TotalMs)));
     }
 
     // The game seed goes in whole; the engine derives the per-player stream by slot ID (#193).
+    // searchBudget: the spec's own when it names one (#191 step 10's --search-budget), else the
+    // lab default below.
     private static FDG.StageResolution.IStageResolverRegistry BuildRegistry(
         EAiProfile profile, FDGGame_AsLocal aiGame, PlayerID playerID, int seed, int slotID,
-        Action<string>? decisionLog) =>
-        AiProfileFactory.BuildRegistry(profile, aiGame.TableState, playerID, seed, slotID, decisionLog);
+        Action<string>? decisionLog, FDG.Ai.Tactician.Search.UctOptions? searchBudget,
+        FDG.Ai.Tactician.Search.IPositionEvaluator? evaluator = null) =>
+        AiProfileFactory.BuildRegistry(profile, aiGame.TableState, playerID, seed, slotID, decisionLog,
+            searchBudget: searchBudget ?? LabSearchBudget, evaluator: evaluator);
+
+    /// <summary>
+    /// #191 B5: what a Strategist plays under in the lab - the plan's benchmark budget (1-2s per
+    /// activation) rather than the 5-10s it gets against a human, or a 100-game cell would take a
+    /// day. Worker count deliberately MATCHES lobby play (4): root parallelism is an ensemble over
+    /// determinizations, so changing it would benchmark a different bot than the one that ships.
+    /// Games run concurrently on top of this, so keep bench --dop x 4 at or under the core count.
+    /// </summary>
+    public static FDG.Ai.Tactician.Search.UctOptions LabSearchBudget =>
+        FDG.Ai.Tactician.Search.UctOptions.Benchmark with { Workers = 4 };
 }

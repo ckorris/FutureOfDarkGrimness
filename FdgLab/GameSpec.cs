@@ -26,15 +26,46 @@ public sealed record GameSpec(
     // #191 tooling: interleave each planning AI's Choose Action narration (winner + full scored
     // candidate table, prefixed "[ai N]") into the captured log - a replay of decisions, not
     // just outcomes. Requires CaptureLog.
-    bool LogDecisions = false)
+    bool LogDecisions = false,
+    // #191 step 10: what a Strategist in this game thinks under. Null = GameRunner.LabSearchBudget
+    // (the 1-2s benchmark budget every bench before 2026-09-05 used). Set it to measure a DIFFERENT
+    // bot than the lab default - notably UctOptions.Interactive, the 5-10s budget that actually
+    // ships to players, which is ~4.3x the thinking time per activation at 2k and had never been
+    // benchmarked when the B-gate's main matrix came in at 56.6%.
+    FDG.Ai.Tactician.Search.UctOptions? SearchBudget = null,
+    // #191 step 14: a learned leaf evaluator for the Strategists in this game (--evaluator PATH).
+    // Null = the hand-weighted evaluator the B gate was measured on.
+    FDG.Ai.Tactician.Search.IPositionEvaluator? Evaluator = null)
 {
     public static GameSpec TwoPlayer(SlotSpec a, SlotSpec b, int seed,
         ERandomnessType randomness = ERandomnessType.Realistic) =>
         new(new[] { a, b }, seed, randomness);
+
+    /// <summary>
+    /// A team game (B+C campaign generalization axis: 2v2 panels, section 5 of
+    /// docs/tactician-bc-campaign.md): every slot in <paramref name="teamA"/> is stamped Team=0,
+    /// every slot in <paramref name="teamB"/> Team=1, concatenated teamA-then-teamB - the same
+    /// grouped seating convention as Scenarios/crowded-2v2-3k.json and ScenarioCompiler (teams
+    /// occupy consecutive slots, not interleaved). FDGServer wires TeamData from these Team
+    /// numbers automatically (GameBootstrap.AddTeams) - no other plumbing needed.
+    /// </summary>
+    public static GameSpec TeamGame(IReadOnlyList<SlotSpec> teamA, IReadOnlyList<SlotSpec> teamB, int seed,
+        ERandomnessType randomness = ERandomnessType.Realistic)
+    {
+        var slots = new List<SlotSpec>(teamA.Count + teamB.Count);
+        slots.AddRange(teamA.Select(s => s with { Team = 0 }));
+        slots.AddRange(teamB.Select(s => s with { Team = 1 }));
+        return new GameSpec(slots, seed, randomness);
+    }
 }
 
-/// <summary>One player slot: an army (already loaded) and the AI profile that plays it.</summary>
-public sealed record SlotSpec(string ArmyLabel, ArmyListFile Army, EAiProfile Profile = EAiProfile.SoloRules);
+/// <summary>
+/// One player slot: an army (already loaded) and the AI profile that plays it.
+/// <see cref="Team"/> is null by default (every slot its own team - free-for-all, matching every
+/// existing 1v1/FFA caller unchanged); set it to group slots into shared teams (2v2 etc).
+/// </summary>
+public sealed record SlotSpec(string ArmyLabel, ArmyListFile Army, EAiProfile Profile = EAiProfile.SoloRules,
+    int? Team = null);
 
 /// <summary>What one game produced. <see cref="Result"/> is the engine's structured record (#192).</summary>
 public sealed record GameRecord(
@@ -44,7 +75,9 @@ public sealed record GameRecord(
     DecisionStats Decisions,
     int? WinnerSlot,
     IReadOnlyList<string>? Log = null,
-    IReadOnlyList<string>? Trace = null)
+    IReadOnlyList<string>? Trace = null,
+    /// <summary>Per-request-type decision cost: type name -> (calls, total ms). #191 step 3/5.</summary>
+    IReadOnlyDictionary<string, (long Count, double TotalMs)>? DecisionsByType = null)
 {
     /// <summary>True when the watchdog killed the game rather than the engine finishing it.</summary>
     public bool TimedOut => Result.Outcome == EGameOutcome.Fault && Result.Message.StartsWith("watchdog:");

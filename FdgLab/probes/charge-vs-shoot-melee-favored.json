@@ -1,0 +1,60 @@
+{
+  "name": "B-gate probe: charge favored - round 3, enemy holds the only marker 8in away",
+  "round": 3,
+  "activePlayer": 0,
+  "settings": {
+    "randomness": "Probabilistic"
+  },
+  "objectives": [
+    [
+      32,
+      24
+    ]
+  ],
+  "players": [
+    {
+      "army": "armies/probe-attacker-melee.fdgarmy",
+      "units": [
+        {
+          "unit": "Bruiser Squad",
+          "models": [
+            [
+              30,
+              16
+            ],
+            [
+              32,
+              16
+            ],
+            [
+              34,
+              16
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "army": "armies/probe-defender.fdgarmy",
+      "units": [
+        {
+          "unit": "Paper Target",
+          "models": [
+            [
+              30,
+              24
+            ],
+            [
+              32,
+              24
+            ],
+            [
+              34,
+              24
+            ]
+          ]
+        }
+      ]
+    }
+  ]
+}

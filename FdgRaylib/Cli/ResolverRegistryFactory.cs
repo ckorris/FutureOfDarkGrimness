@@ -15,9 +15,12 @@ public static class ResolverRegistryFactory
         // same stdin selection flow via the adapter.
         var selectUnit = new SelectionResolver<UnitData>();
         var cancelSelectUnitCli = new CancellableSelectionResolver<UnitData>();
+        var stringSelection = new StringSelectionResolver();
         return new StageResolverRegistry()
             .RegisterResolver(new YesNoResolver())
-            .RegisterResolver(new StringSelectionResolver())
+            .RegisterResolver<StringSelectionRequest, string>(stringSelection)
+            // #191 B1 step 5a: Choose Action is its own request type; the same instance renders it.
+            .RegisterResolver<ChooseActionRequest, string>(stringSelection)
             .RegisterResolver(new ChooseAbilityEffectResolver())
             .RegisterResolver(new ChooseSpellResolver())
             .RegisterResolver(new CastAssistResolver())
@@ -119,7 +122,9 @@ public static class ResolverRegistryFactory
             // picker for 2+ defenders and renders a one-click confirm card for a sole defender (#237).
             .RegisterResolver<ChooseMeleeDefenderRequest, CancellableResult<FDG.Data.DataBinding<UnitData>>>(
                 meleeDefender)
-            .RegisterResolver(strSel)                                        // GUI
+            .RegisterResolver<StringSelectionRequest, string>(strSel)        // GUI
+            // #191 B1 step 5a: Choose Action is its own request type; the same instance renders it.
+            .RegisterResolver<ChooseActionRequest, string>(strSel)           // GUI
             .RegisterResolver(abilityEffect)                                 // GUI
             .RegisterResolver(chooseSpell)                                   // GUI
             .RegisterResolver(castAssist)                                    // GUI

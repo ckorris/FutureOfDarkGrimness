@@ -40,6 +40,32 @@ game by game.
 
 ## Notes (newest first)
 
+**2026-09-03 - SECOND SERVER-GC SEGFAULT, this time with a core dump: a DOP-16 bench died
+mid-run and silently produced no report.** During the #191 B+C campaign's step-2 baseline
+(`bench --panel points-1k --profile-a tactician --profile-b solorules --games 100 --dop 16`,
+seeds 6000), the FdgLab process crashed after 50/400 games. Evidence, unlike the 2026-07-27
+occurrence whose cause was recorded as unknown: `dmesg` shows `.NET Server GC[24263]: segfault
+at 0 ip ... error 4 in libcoreclr.so`, and systemd captured a 51.2MB core
+(`coredumpctl`, PID 24228, Thu 2026-09-03 13:00:04 CDT, SIGSEGV). Not OOM - 22GB free at the
+time. The fault is in the RUNTIME's GC thread, not managed code, and FdgLab deliberately runs
+`ServerGarbageCollection=true` (#392, 2.2x throughput). So the two known crashes now share a
+signature: DOP 16, Server GC, transient, no managed stack.
+
+Whether this is the same root cause as this item's outcome nondeterminism is UNKNOWN and should
+not be assumed - a GC-thread segfault and a decision-order race are different failure classes;
+they share only "concurrency at DOP 16". Recorded here because this is where the first one was
+filed and because the practical mitigation is the same.
+
+**Practical impact, and why it mattered more this time:** the crash is survivable ONLY if the
+runner notices. The step-2 script reported `exit=0` for the dead cell because `$?` had already
+been reset by a `$(date)` substitution inside the same echo - so a lost cell looked like a
+clean one, and the missing report was found only by reading the results. Any long unattended
+run (the campaign's 4-day self-play window especially) must therefore: capture the real exit
+code immediately after the command, RETRY a crashed run, and VERIFY the expected output file
+exists rather than trusting the exit code alone. The campaign chain script now does all three;
+step 4's self-play driver must too (its "crash-tolerant, restartable" requirement in
+docs/tactician-bc-campaign.md now has a measured reason behind it).
+
 **2026-08-06 (later) - the bit-identical repeat below does NOT mean the race narrowed; it means the
 BINARY was the same.** While gating #365, two builds differing only by a hoist of a duplicated
 `HasLineOfSight` call - verified behaviour-neutral - were run on the same matchup (Alien Hives vs

@@ -1,0 +1,32 @@
+{
+  "name": "Probe Gunner And Holder (signal army: a marker holder with no guns and a long-range autocannon squad)",
+  "faction": "",
+  "pointsLimit": 0,
+  "units": [
+    {
+      "name": "Marker Holder",
+      "modelCount": 3,
+      "quality": 6,
+      "defense": 6,
+      "specialRules": [],
+      "weapons": [
+        { "name": "Fists", "quantity": 1, "rangeInches": 0, "attacks": 1, "armorPenetration": 0, "specialRules": [] }
+      ],
+      "pointCost": 0
+    },
+    {
+      "name": "Gunner Squad",
+      "modelCount": 3,
+      "quality": 3,
+      "defense": 4,
+      "specialRules": [],
+      "weapons": [
+        { "name": "Auto-cannon", "quantity": 1, "rangeInches": 24, "attacks": 10, "armorPenetration": 2, "specialRules": [] },
+        { "name": "Combat Knife", "quantity": 1, "rangeInches": 0, "attacks": 1, "armorPenetration": 0, "specialRules": [] }
+      ],
+      "pointCost": 0
+    }
+  ],
+  "ruleDefinitions": [],
+  "spells": []
+}

@@ -17,6 +17,7 @@ When closing an item: write the Outcome in its detail file, tick the line, and m
 
 ## Movement
 
+- [ ] 395 — **HIGH PRIORITY (Chris, 2026-09-04):** Random Army is a silent no-op for humans AND bots outside a dist build - the catalog scans an `armies/` folder beside the executable that build trees (VS F5, `dotnet run`) never get. Fix the path + say so in the lobby. ([WorkItems/395](WorkItems/395-random-army-silent-outside-dist.md))
 - [~] 366 — Snake (#256 S4) piled every rank that overran the arc onto one route point, so a big unit ended
   with its own models stacked and its front rank dragged backwards; no validator forbade a same-unit
   end-overlap. Snake re-shaped, `ValidateNoSelfOverlap` added, snake value gate raised. Implemented +
@@ -127,7 +128,7 @@ Corpus coverage is now complete too: **0 of 13,870** book rule references are de
 
 Master plan: `docs/ai-agent-plan.md` (heuristics -> MCTS -> learned value net; gates, invariants, vocabulary).
 
-- [ ] 191 — Tactician AI agent umbrella: challenge-level game-playing AI as a new profile alongside the solo-rules bot; phased A-D, benchmark-gated. ([WorkItems/191](WorkItems/191-tactician-agent.md))
+- [~] 191 — Tactician AI agent umbrella: B (MCTS) gate MET 2026-09-06 (step 10 v5: 70.1% vs A at the shipping budget, every panel cell >= 50, 1k-4k + 2v2; P4 contest macro + marker terms shipped on engine b36cfca, slice 72.9 vs 71.9 flat, Orks 26 -> 44); L1 merge awaits Chris's verbatim games; step 11 C replan DONE 2026-09-06 (3 sign-offs pending: schema v3, drop generator item, plain-C# MLP), step 12 next per `docs/tactician-bc-campaign.md` on branch `tactician-bc`. ([WorkItems/191](WorkItems/191-tactician-agent.md))
 - [~] 264 — Tactician unit behind large impassible terrain rushes sideways/backwards round 1: all 8 causes fixed and merged to master, 11 pins green (`TacticianWalledUnitTests`); issue 1's melee half folded in 2026-07-25. Open: 8b hysteresis (owner's call, deferred) + GUI eyeball check. ([WorkItems/264](WorkItems/264-tactician-walled-unit-lateral-retreat.md))
 - [~] 296 — Tactician crowded-game drift (#264's friendly-congestion + team-game sibling): 2v2 scoring is team-BLIND (teammate priced as enemy everywhere but deployment/spells), screen credit pays behind the ward, no front-first activation order, markers undervalued vs safety. All four fix slices landed + observation-verified; pool bench in progress. ([WorkItems/296](WorkItems/296-tactician-crowded-game-drift.md))
 - [~] 297 — Objectives held per SIDE (Chris's call): allied players guarding one marker no longer contest it to neutral; `ITeamExtensions.ReconcileObjectiveOwner` is the one authority for reconcile + AI projection, 1v1 bit-identical. Backend done; UI treatment (team-colored markers/scoreboard) awaiting Chris's pick. ([WorkItems/297](WorkItems/297-team-owned-objectives.md))
