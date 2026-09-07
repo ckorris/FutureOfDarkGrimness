@@ -23,6 +23,50 @@ campaigns re-base.)*
 
 ## Notes (newest first)
 
+**2026-09-06 (19:05, Fable 5.1 - step recommends Sonnet; Chris assigned it in the handoff prompt) - STEP 12b
+DONE: THE B-PLAY CHANNEL EXISTS, A-PLAY IS PAUSED AT A BATCH BOUNDARY, B-PLAY IS GENERATING. Super `24d08c8`
+(engine untouched).**
+
+*The gap, confirmed.* `SelfPlayGameRunner` called `BuildRegistry` without `searchBudget`, so a Strategist in
+any mix fell through to `AiProfileFactory.DefaultSearchBudget` - the 5-10s interactive budget, NOT A-play as
+the handoff guessed, but not what any mix meant either. Now `spec.SearchBudget ?? GameRunner.LabSearchBudget`
+and `spec.Evaluator` reach the factory exactly as `GameRunner.BuildRegistry` passes them for a bench.
+
+*As built.* Mix entries carry `searchBudget` (benchmark|interactive) + `searchWorkers` (default 4), parsed by
+a new `SearchBudgets` shared with bench `--search-budget` so one name cannot mean two things. `MixConfig.Load`
+fails at load (unknown budget, budget on a no-Strategist entry, workers < 1) rather than at the first game
+that draws the bad entry. `selfplay` gains `--evaluator PATH` (the C4 regeneration channel, same flag as
+bench) and a profile-derived watchdog (Strategist: 900s 1v1 / 1800s 2v2; A-play keeps 120/600; `--timeout`
+overrides - it was silently dead before, SampleGame ignored it). Every `game` line records `search_budget` +
+`evaluator` ("none"/"hand" for A-play; additive, old files read as the defaults), and `load.py` carries both
+into the parquet. `FdgLab/armies/mix-strategist.json`: strategist_vs_tactician 0.5 + strategist_mirror 0.5,
+benchmark/4, same level weights as mix.json.
+
+*Verification.* Engine suite 3260/0/1, full build clean, headless smoke exit 0. A-play regression: the new
+binary on seeds 300000-300001 with mix.json reproduces the running v3 file's samples, profiles, outcomes and
+round counts (Tie/4, Win/4). B-play smoke (2 games, dop 2, seeds 900000-900001): 0 faults, exit 0, **155s vs
+13s for the A-play pair** - the search is engaged - and both game lines read `benchmark`/`hand`.
+
+*Box swap (19:01-19:03).* Pause file touched after batch 130 (26,200 games; 131 files, no .tmp), process
+drained to 0% CPU in 30s, SIGTERM'd, `pgrep -x FdgLab` empty, pinner 72538 untouched. **v3 A-play final:
+26,200 games in `FdgLab/data/2026-09-06-v3`** (restartable: DetermineStartBatch resumes at batch 131 if it
+is ever relaunched). Then B-play launched: pid **267005** (watcher 267004, pid file
+`scratchpad/selfplay-b1.pid`), binary `scratchpad/step12bbin`, `FdgLab/data/2026-09-06-v3-bplay`, seed base
+400000, dop 6, all three GC knobs, RSS sampled to `selfplay-b1-rss.log`. ~25 cores at launch.
+
+*Throughput caveat (not yet measured at dop 6).* The smoke's ~78s/game at dop 2 while sharing the box says
+5k games is nearer 30 h than the doc's 15 h; the first 200-game batch is the real number. Recorded in
+the campaign doc when it lands.
+
+*Deferred, recorded.* No unit test for `MixConfig.Load` validation or `SearchBudgets` - FdgLab has no test
+project and the campaign's lab convention is a smoke run; filed here rather than dropped. `--evaluator` on
+selfplay is wired but has only been exercised through bench (step 14's smoke); its first real use is C4's
+regeneration.
+
+*Next.* When B-play has a few batches: retrain on the full v3 set (26.2k games) with B-play rows as the
+validation/held-out-budget slice, then step 15 - **design turn is Opus/high, prompt Chris to switch models
+before starting it.**
+
 **2026-09-06 (18:55, Opus 5) - HANDOFF: STEPS 12a/12c/13/14 DONE, BOX GENERATING, NEXT IS 12b.**
 
 *Box state.* v3 A-play self-play running: pid 254871, binary `scratchpad/step10bin-v9`, 12 GiB cap /
