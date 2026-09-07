@@ -94,12 +94,16 @@ static int Usage()
           selfplay [--mix FdgLab/armies/mix.json] (armies drawn from FdgLab/armies/pool.json,
                   same manifest as bench --panel; held-out pairings are always excluded)
                   [--out DIR] [--dop 12] [--seed-base 1000] [--games-per-file 200]
-                  [--entity-sample-rate 0.05] [--boundary-sample-every 4] [--timeout 120]
-                  [--pause-file PATH] [--max-batches N]   #191 campaign step 4: C1 self-play data
+                  [--entity-sample-rate 0.05] [--boundary-sample-every 4] [--timeout S]
+                  [--pause-file PATH] [--max-batches N] [--evaluator PATH]   #191 campaign step 4: C1 self-play data
                   generation. Samples (points level, shape, armies, profiles) from --mix, plays
                   games, writes gzipped JSONL batches under --out (schema docs/tactician-c1-
                   schema.md); restartable - resumes after the last complete batch found in --out.
                   --max-batches bounds the run (omit for the real unattended launch).
+                  #191 step 12b (B-play channel): a mix entry may name "searchBudget":
+                  benchmark|interactive and "searchWorkers" (default 4) - a Strategist in that
+                  entry thinks under it (unnamed = the bench's benchmark/4). Each game line in
+                  the output records search_budget + evaluator. See armies/mix-strategist.json.
 
         An <army> is a .fdgarmy path, 'builtin' (the CLI's EOF-fallback test army), or
         'builtin-basic' (builtin minus its Ambush unit - the harness-determinism gate army, see #198).
@@ -311,6 +315,11 @@ static async Task<int> RunFeasibilityProbe(string[] args)
 
 static async Task<int> RunSelfPlay(string[] args)
 {
+    // #191 step 12b: the C4 regeneration channel plays with a learned leaf evaluator (--evaluator
+    // PATH, same flag as bench); absent = the hand-weighted evaluator every earlier run used.
+    if (!TryEvaluatorArg(args, out FDG.Ai.Tactician.Search.IPositionEvaluator? evaluator,
+            out string? evaluatorLabel))
+        return 2;
     var options = new SelfPlayOptions(
         OutDir: Arg(args, "--out") ?? Path.Combine("FdgLab", "data", DateTime.UtcNow.ToString("yyyy-MM-dd")),
         MixPath: Arg(args, "--mix") ?? Path.Combine("FdgLab", "armies", "mix.json"),
@@ -319,9 +328,13 @@ static async Task<int> RunSelfPlay(string[] args)
         GamesPerFile: IntArg(args, "--games-per-file", 200),
         EntitySampleRate: DoubleArg(args, "--entity-sample-rate", 0.05),
         BoundarySampleEvery: IntArg(args, "--boundary-sample-every", 4),
-        WatchdogSeconds: IntArg(args, "--timeout", 120),
+        // null = per game from its profiles (Strategist games get the bench's 900s, step 12b);
+        // an explicit --timeout applies to every game.
+        WatchdogSeconds: Arg(args, "--timeout") is string t ? int.Parse(t) : null,
         PauseFilePath: Arg(args, "--pause-file"),
-        MaxBatches: Arg(args, "--max-batches") is string mb ? int.Parse(mb) : null);
+        MaxBatches: Arg(args, "--max-batches") is string mb ? int.Parse(mb) : null,
+        Evaluator: evaluator,
+        EvaluatorLabel: evaluatorLabel);
 
     return await FdgLab.SelfPlay.RunAsync(options);
 }
@@ -417,20 +430,9 @@ static bool TrySearchBudgetArg(string[] args, out FDG.Ai.Tactician.Search.UctOpt
     label = null;
     string? raw = Arg(args, "--search-budget");
     if (raw == null) return true;
-    switch (raw.ToLowerInvariant())
-    {
-        case "benchmark":
-            budget = FDG.Ai.Tactician.Search.UctOptions.Benchmark with { Workers = 4 };
-            label = "benchmark (1-2s/activation)";
-            return true;
-        case "interactive":
-            budget = FDG.Ai.Tactician.Search.UctOptions.Interactive with { Workers = 4 };
-            label = "interactive (5-10s/activation - the budget that ships to players)";
-            return true;
-        default:
-            Console.Error.WriteLine($"Unknown --search-budget '{raw}'. Known: benchmark, interactive.");
-            return false;
-    }
+    if (SearchBudgets.TryParse(raw, SearchBudgets.DefaultWorkers, out budget, out label)) return true;
+    Console.Error.WriteLine($"Unknown --search-budget '{raw}'. Known: {SearchBudgets.KnownNames}.");
+    return false;
 }
 
 static bool TryProfileArg(string[] args, string name, out FDG.Ai.EAiProfile profile)

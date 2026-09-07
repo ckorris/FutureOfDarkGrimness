@@ -175,6 +175,9 @@ def load_dir(data_dir: Path, checks: Checks, limit_files: int | None) -> pd.Data
                 army_b=game["ArmyB"],
                 profile_a=game["ProfileA"],
                 profile_b=game["ProfileB"],
+                # #191 step 12b: absent in v1-v3 A-play files (all "none"/"hand").
+                search_budget=game.get("SearchBudget", "none"),
+                evaluator=game.get("Evaluator", "hand"),
             )
             records.append(record)
         checks.games += len(games)

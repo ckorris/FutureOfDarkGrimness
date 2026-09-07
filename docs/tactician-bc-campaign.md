@@ -295,12 +295,17 @@ Design authority: plan doc sec 10 (re-detailed). Slices, each verified and commi
   side). Parity test: the evaluator's inputs == the encoder's v3 block for the same side (the net sees
   what the hand sees). Schema doc gets a v3 record; exporter header `schema=3`. Relaunch self-play into
   `FdgLab/data/<date>-v3` at seed base 300000 (v2 data stays valid v2 data; nothing mixes schemas).
-- **12b. B-play channel.** `selfplay` passes a per-mix-entry profile + search budget through
+- **12b. B-play channel - DONE 2026-09-06 (Fable 5.1; the step recommends Sonnet, Chris assigned it in
+  the handoff prompt).** `selfplay` passes a per-mix-entry profile + search budget through
   `SelfPlayGameRunner` -> `AiProfileFactory.BuildRegistry` (today it never passes `searchBudget`). A
   second mix file (`mix-strategist.json`: Strategist-vs-Tactician and Strategist mirror, benchmark
   budget, 4 workers) runs at dop 6 into its own directory for ~5k games (~15 h) - the validation set
   for C2 and the regeneration channel for C4. Runs AFTER the v3 A-play run has a day of data (one
-  self-play process at a time).
+  self-play process at a time). *As built:* mix entries carry `searchBudget` + `searchWorkers`,
+  `selfplay` gains `--evaluator PATH` (the C4 regeneration channel) and a profile-derived watchdog
+  (900s / 1800s for Strategist 1v1 / 2v2; `--timeout` overrides), every game line records
+  `search_budget` + `evaluator` (schema sec 6). A-play output is unchanged (verified: seeds
+  300000-300001 reproduce the running v3 file's samples and outcomes).
 - **12c. Loader.** `FdgLab/python/` (uv project): `load.py` reads jsonl.gz -> parquet (per-file
   provenance kept as columns), asserts the schema-sec-7 ranges per column, stamps the split
   (held-out pairs from `pool.json`; by-game seed split inside trained pairs).

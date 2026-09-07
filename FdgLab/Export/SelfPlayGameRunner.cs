@@ -34,8 +34,13 @@ public static class SelfPlayGameRunner
             slots[i] = new PlayerSlot(i, teamNumber: slotSpec.Team ?? i, new PlayerID(Guid.NewGuid()), slotSpec.Army, store);
 
             var aiGame = new FDGGame_AsLocal(store, bus);
+            // #191 step 12b: the spec's budget and evaluator reach the factory here, the same way
+            // GameRunner.BuildRegistry passes them for a bench. Before this, no budget was passed
+            // and a Strategist slot fell through to AiProfileFactory.DefaultSearchBudget - the
+            // 5-10s interactive budget - which is not what any mix meant.
             IStageResolverRegistry inner = AiProfileFactory.BuildRegistry(slotSpec.Profile, aiGame.TableState,
-                slots[i].PlayerID, out TacticianPlanner? planner, spec.Seed, i);
+                slots[i].PlayerID, out TacticianPlanner? planner, spec.Seed, i,
+                searchBudget: spec.SearchBudget ?? GameRunner.LabSearchBudget, evaluator: spec.Evaluator);
             var queryEvaluator = new RuleEvaluator(new ProbabilisticDiceRoller());
             var exportRegistry = new ExportingRegistry(inner, exportState, slots[i].PlayerID, i,
                 () => aiGame.TableState, queryEvaluator, planner, totalGamePoints);

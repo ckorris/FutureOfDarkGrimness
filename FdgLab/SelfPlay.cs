@@ -12,6 +12,29 @@ public sealed class MixEntry
     public double Weight { get; set; }
     public string ProfileA { get; set; } = "SoloRules";
     public string ProfileB { get; set; } = "SoloRules";
+    // #191 step 12b: what a Strategist in this entry thinks under (SearchBudgets: benchmark |
+    // interactive). Null = GameRunner.LabSearchBudget, the same default a bench gets, so a mix
+    // that names Strategist without a budget still plays B - before 12b the self-play path never
+    // passed a budget at all and every "Strategist" game was silently A-play at the interactive
+    // default's cost. Workers default to lobby play's 4 (an ensemble setting, not a speed one).
+    public string? SearchBudget { get; set; }
+    public int SearchWorkers { get; set; } = SearchBudgets.DefaultWorkers;
+
+    public bool NamesStrategist =>
+        ParseProfile(ProfileA) == EAiProfile.Strategist || ParseProfile(ProfileB) == EAiProfile.Strategist;
+
+    public static EAiProfile ParseProfile(string name) => Enum.Parse<EAiProfile>(name, ignoreCase: true);
+
+    /// <summary>The resolved budget (null = lab default) and the label the game line records.</summary>
+    public (FDG.Ai.Tactician.Search.UctOptions? Budget, string Label) ResolveSearchBudget()
+    {
+        if (SearchBudget == null)
+            return (null, NamesStrategist ? "benchmark" : "none");
+        if (!SearchBudgets.TryParse(SearchBudget, SearchWorkers, out var budget, out _))
+            throw new InvalidOperationException(
+                $"mix entry '{Name}': unknown searchBudget '{SearchBudget}'. Known: {SearchBudgets.KnownNames}.");
+        return (budget, SearchBudget.Trim().ToLowerInvariant());
+    }
 }
 
 public sealed class LevelEntry
@@ -32,6 +55,20 @@ public sealed class MixConfig
         MixConfig? config = JsonSerializer.Deserialize<MixConfig>(File.ReadAllText(path), Options);
         if (config == null || config.ProfileMix.Count == 0 || config.Levels.Count == 0)
             throw new InvalidOperationException($"{path}: mix config missing profileMix/levels.");
+        // Fail at load, not at the first game that happens to draw the bad entry: profiles must
+        // parse, budgets must be known names, and a budget on an entry with no Strategist would be
+        // a mix that says B-play and generates A-play.
+        foreach (MixEntry entry in config.ProfileMix)
+        {
+            MixEntry.ParseProfile(entry.ProfileA);
+            MixEntry.ParseProfile(entry.ProfileB);
+            entry.ResolveSearchBudget();
+            if (entry.SearchBudget != null && !entry.NamesStrategist)
+                throw new InvalidOperationException(
+                    $"{path}: mix entry '{entry.Name}' names searchBudget but neither profile is Strategist.");
+            if (entry.SearchWorkers < 1)
+                throw new InvalidOperationException($"{path}: mix entry '{entry.Name}': searchWorkers must be >= 1.");
+        }
         return config;
     }
 }
@@ -44,9 +81,13 @@ public sealed record SelfPlayOptions(
     int GamesPerFile,
     double EntitySampleRate,
     int BoundarySampleEvery, // keep 1 row in N (uniform)
-    int WatchdogSeconds,
+    int? WatchdogSeconds, // null = per game from its profiles (Strategist: the bench's 900s)
     string? PauseFilePath,
-    int? MaxBatches = null); // null = run forever (the real launch); set for the verification sample
+    int? MaxBatches = null, // null = run forever (the real launch); set for the verification sample
+    // #191 step 12b: the learned leaf evaluator the Strategists play with (--evaluator PATH);
+    // null = hand-weighted. Label is what every game line records.
+    FDG.Ai.Tactician.Search.IPositionEvaluator? Evaluator = null,
+    string? EvaluatorLabel = null);
 
 /// <summary>
 /// The C1 self-play driver (#191 campaign step 4): samples (points level, shape, armies, profiles)
@@ -85,7 +126,7 @@ public static class SelfPlay
             var completedGames = new System.Collections.Concurrent.ConcurrentBag<JsonlGzWriter.GameLine>();
             int played = 0, faults = 0;
             (GameSpec Spec, string Level, bool Shape2v2, string ArmyA, string ArmyB, EAiProfile ProfileA,
-                EAiProfile ProfileB, bool EntitySampled, float TotalPoints)? firstSample = null;
+                EAiProfile ProfileB, bool EntitySampled, float TotalPoints, string SearchBudget)? firstSample = null;
 
             await Parallel.ForEachAsync(Enumerable.Range(0, options.GamesPerFile),
                 new ParallelOptions { MaxDegreeOfParallelism = options.Dop },
@@ -93,7 +134,8 @@ public static class SelfPlay
                 {
                     await PauseGate.WaitWhilePausedAsync(options.PauseFilePath, ct);
                     int seed = seedStart + i;
-                    var sample = SampleGame(mix, heldOut, seed, options.EntitySampleRate);
+                    var sample = SampleGame(mix, heldOut, seed, options.EntitySampleRate,
+                        options.WatchdogSeconds, options.Evaluator);
                     if (sample == null) return; // every panel cell for the drawn level was held out (should not happen)
                     if (firstSample == null) firstSample = sample;
 
@@ -138,7 +180,8 @@ public static class SelfPlay
                     completedGames.Add(new JsonlGzWriter.GameLine(export.GameId, seed, sample.Value.Level,
                         sample.Value.Shape2v2 ? "2v2" : "1v1", sample.Value.ArmyA, sample.Value.ArmyB,
                         sample.Value.ProfileA.ToString(), sample.Value.ProfileB.ToString(),
-                        result.Outcome.ToString(), result.RoundsPlayed));
+                        result.Outcome.ToString(), result.RoundsPlayed,
+                        sample.Value.SearchBudget, options.EvaluatorLabel ?? "hand"));
                 });
 
             if (firstSample == null)
@@ -171,8 +214,9 @@ public static class SelfPlay
     public const int PositionEncoderSchema = FDG.Ai.Tactician.Learning.PositionEncoder.SchemaVersion;
 
     private static (GameSpec Spec, string Level, bool Shape2v2, string ArmyA, string ArmyB,
-        EAiProfile ProfileA, EAiProfile ProfileB, bool EntitySampled, float TotalPoints)? SampleGame(
-        MixConfig mix, IReadOnlyList<Pool.HeldOutEntry> heldOut, int seed, double entitySampleRate)
+        EAiProfile ProfileA, EAiProfile ProfileB, bool EntitySampled, float TotalPoints, string SearchBudget)? SampleGame(
+        MixConfig mix, IReadOnlyList<Pool.HeldOutEntry> heldOut, int seed, double entitySampleRate,
+        int? watchdogOverride, FDG.Ai.Tactician.Search.IPositionEvaluator? evaluator)
     {
         var rnd = new Random(seed);
         MixEntry mixEntry = WeightedPick(mix.ProfileMix, e => e.Weight, rnd);
@@ -185,8 +229,8 @@ public static class SelfPlay
         Matchup matchup = allowed[rnd.Next(allowed.Count)];
 
         bool swap = rnd.NextDouble() < 0.5; // #392/Program.cs lesson: don't always bind profile A to side A
-        EAiProfile profileA = Enum.Parse<EAiProfile>(mixEntry.ProfileA, ignoreCase: true);
-        EAiProfile profileB = Enum.Parse<EAiProfile>(mixEntry.ProfileB, ignoreCase: true);
+        EAiProfile profileA = MixEntry.ParseProfile(mixEntry.ProfileA);
+        EAiProfile profileB = MixEntry.ParseProfile(mixEntry.ProfileB);
         if (swap) (profileA, profileB) = (profileB, profileA);
 
         bool entitySampled = rnd.NextDouble() < entitySampleRate;
@@ -202,11 +246,16 @@ public static class SelfPlay
         GameSpec spec = shape2v2
             ? GameSpec.TeamGame(sideA, sideB, seed)
             : GameSpec.TwoPlayer(sideA[0], sideB[0], seed);
-        spec = spec with { WatchdogSeconds = shape2v2 ? 600 : 120 };
+        // #191 step 12b: a searching side spends 1-2s per activation, so a Strategist game gets
+        // the bench's 900s (Program.DefaultWatchdogSeconds) and a 2v2 twice that; A-play keeps
+        // the 120/600 every v1-v3 run used. --timeout overrides all of it.
+        (FDG.Ai.Tactician.Search.UctOptions? budget, string budgetLabel) = mixEntry.ResolveSearchBudget();
+        int watchdog = watchdogOverride ?? (mixEntry.NamesStrategist ? (shape2v2 ? 1800 : 900) : (shape2v2 ? 600 : 120));
+        spec = spec with { WatchdogSeconds = watchdog, SearchBudget = budget, Evaluator = evaluator };
 
         string armyA = string.Join("+", matchup.SideA.Select(Path.GetFileNameWithoutExtension));
         string armyB = string.Join("+", matchup.SideB.Select(Path.GetFileNameWithoutExtension));
-        return (spec, levelEntry.Panel, shape2v2, armyA, armyB, profileA, profileB, entitySampled, totalPoints);
+        return (spec, levelEntry.Panel, shape2v2, armyA, armyB, profileA, profileB, entitySampled, totalPoints, budgetLabel);
     }
 
     private static bool IsHeldOut(Matchup m, IReadOnlyList<Pool.HeldOutEntry> heldOut)

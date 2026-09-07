@@ -92,8 +92,11 @@ public static class JsonlGzWriter
     /// describe on its own. Faulted/disconnected games are never in this list (they are discarded
     /// entirely, schema sec 1) or in <c>rows</c>.
     /// </summary>
+    // SearchBudget/Evaluator (#191 step 12b): "none" / "hand" for A-play; a budget name and the
+    // weights file for the B-play channel. Per game, because a mix may hold both kinds.
     public sealed record GameLine(string GameId, int Seed, string PointsLevel, string Shape,
-        string ArmyA, string ArmyB, string ProfileA, string ProfileB, string Outcome, int RoundsPlayed)
+        string ArmyA, string ArmyB, string ProfileA, string ProfileB, string Outcome, int RoundsPlayed,
+        string SearchBudget = "none", string Evaluator = "hand")
     {
         public string Kind => "game";
     }

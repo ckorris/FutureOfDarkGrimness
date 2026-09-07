@@ -216,6 +216,13 @@ seed_range, shape, points_level, army_a, army_b, held_out (bool), entity_sample_
 boundary_sample_rate, encoder_ms_mean
 ```
 
+Per-game provenance is a `game` record per completed game (the header can only describe a batch's
+first game, since a mix samples per game): `game_id, seed, points_level, shape, army_a, army_b,
+profile_a, profile_b, outcome, rounds_played`, plus since 2026-09-06 (#191 step 12b, additive -
+older files read as the defaults) `search_budget` (`none` for A-play, else the mix entry's budget
+name: `benchmark` / `interactive`) and `evaluator` (`hand`, or the `--evaluator` weights file). The
+loader carries both into the parquet as columns so B-play rows can be weighted or split apart.
+
 `held_out` is stamped from `FdgLab/armies/pool.json`'s `heldOut` list so a held-out pairing can
 never silently enter training even if the mix config is wrong - the exporter refuses to write a
 row whose pairing is held out, rather than relying on the sampler to have excluded it.
