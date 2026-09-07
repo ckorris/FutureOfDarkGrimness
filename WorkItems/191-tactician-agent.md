@@ -23,6 +23,30 @@ campaigns re-base.)*
 
 ## Notes (newest first)
 
+**2026-09-06 (19:08, Fable 5.1) - SERVING MODEL RETRAINED ON THE FULL v3 A-PLAY SET: 26,199 games / 443,608
+rows, `models/serving-full-weights.json` (uncommitted, same policy as step 14), C# parity 5/5.**
+
+`load.py` on the closed v3 directory (131 files, schema 3 only, 0 out-of-range / 0 held-out rows; 81.8 MB
+parquet `v3-full.parquet`, the 15.8k `v3.parquet` kept for comparison), then `train.py --model mlp --drop
+activation_frac,acting_side_is_first --export` at 4 threads while B-play ran (both fits took 28s total).
+
+| split | rows | model auc | hand auc | model brier | 15.8k model |
+|---|---|---|---|---|---|
+| held-out GAMES | 43,004 | **0.9038** | 0.8132 | 0.1085 | 0.906 |
+| held-out PAIRINGS (3 of 20) | 41,178 | **0.8920** | 0.8340 | 0.1187 | 0.8865 |
+
+Round 1 delta +0.257 (games) / +0.161 (pairings); largest level gain again 4k (+0.161). Read: 1.66x the data
+moved the unseen-pairing number up 0.006 and the same-pairing number down 0.002 - both inside split noise,
+so the model is data-saturated at this capacity/epoch count, not data-starved. Training loss was still
+falling at epoch 12 (0.500), so a longer schedule is the cheap thing to try if C4 wants more; not done here
+because C4's arm slice is the arbiter, not an offline metric. Parity: `MlpPositionEvaluatorTests` with
+`FDG_MLP_WEIGHTS`/`FDG_MLP_CASES` pointed at `serving-full-{weights,parity}.json` - 5 passed. **C4 should
+bench `--evaluator FdgLab/python/models/serving-full-weights.json`.** `serving-weights.json` (15.8k) stays
+on disk as the step-14 reference.
+
+*B-play at 19:08:* pid 267005 alive, RSS 981 MB, batch 0 (200 games) not yet complete after 5 min - rate
+to be recorded when it lands.
+
 **2026-09-06 (19:05, Fable 5.1 - step recommends Sonnet; Chris assigned it in the handoff prompt) - STEP 12b
 DONE: THE B-PLAY CHANNEL EXISTS, A-PLAY IS PAUSED AT A BATCH BOUNDARY, B-PLAY IS GENERATING. Super `24d08c8`
 (engine untouched).**
