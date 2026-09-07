@@ -23,6 +23,47 @@ campaigns re-base.)*
 
 ## Notes (newest first)
 
+**2026-09-07 (00:10, Fable 5.1) - C4 CONFIRM AT THE INTERACTIVE BUDGET: THE NET LEAF HOLDS. +6.0 POOLED, AHEAD ON
+ALL FOUR PAIRS, 384 GAMES, 0 FAULTS. REGENERATION WITH THE NET LEAF IS RUNNING.**
+
+*What a cell measures (for the record):* Strategist(leaf) as side A vs the A-play Tactician, 48 games with sides
+swapped, scored (W + 0.5T)/N for the Strategist. The pairs are the four where the hand leaf sat lowest, so the
+absolute levels are low by construction; the number that matters is the gap between arms on identical seeds.
+
+`c4-slice.sh FdgLab/reports/c4-confirm-2026-09-06 interactive 48 hand net`, 20:56-00:03, B-play paused and
+drained throughout, ~23 min per cell (48 games), 0 faults, 0 timeouts.
+
+| Pair (A = Strategist vs Tactician), interactive | hand | net | delta | (screen delta, benchmark) |
+|---|---|---|---|---|
+| Dark Elf Raiders vs Dwarf Guilds | 47.9 | 49.0 | +1.0 | +12.5 |
+| Dwarf Guilds vs High Elf Fleets | 65.6 | 74.0 | +8.3 | +7.3 |
+| Human Defense Force vs Orks | 45.8 | 52.1 | +6.3 | +2.1 |
+| Robot Legions vs Alien Hives | 51.0 | 59.4 | +8.3 | +13.5 |
+| **pooled (192 games each)** | **52.6** | **58.6** | **+6.0** | **+8.9** |
+
+*Decision:* net confirmed (bar: >= +5 pooled, no pair lost by > 10 - met on both counts at both budgets). The
+gap shrinks from +8.9 to +6.0 as the search deepens 4x, which is the expected direction (a deeper tree leans
+less on its leaf) and still clears the bar. Per-pair deltas reshuffle between budgets (DE-DG +12.5 -> +1.0,
+HDF-Orks +2.1 -> +6.3): 48 games per cell is coarse, read the pooled line.
+
+*Hand-leaf B-play run stopped* at 00:06 after batch 0 (200 games, 0 faults, 3,207 rows in
+`FdgLab/data/2026-09-06-v3-bplay`, seeds 400000-400199) - kept as the hand-leaf tree-state validation slice;
+batch 1's in-flight games were lost (reproducible from seed). Design says the regeneration is with the WINNER,
+so the box goes to the net.
+
+*Regeneration launched 00:07:* pid **290269** (watcher script `scratchpad/selfplay-b2-net-run.sh`, pid file
+`selfplay-b2.pid`, log `selfplay-b2.log`, RSS log `selfplay-b2-rss.log`), binary `scratchpad/step15bin`,
+`selfplay --mix mix-strategist.json --evaluator models/serving-full-weights.json --dop 6 --seed-base 500000`
+into `FdgLab/data/2026-09-07-v3-bplay-net`. Every game line stamps `evaluator=serving-full-weights.json`.
+Target ~5k games; at the hand run's ~270 games/h that is ~19 h (net leaf is cheaper per call, so likely less).
+
+*Next (in order).* (1) When the net B-play set has ~5k games: retrain with those rows added, weighted so the
+two sources carry equal total weight, validated on B-play held-out games; re-slice at the benchmark budget
+(hand vs net-v1 vs net-v2) - iteration 2 of 2. (2) Step 15b promotion: weights as an engine asset, an
+`EAiProfile` value, lobby button - **profile name needed from Chris**. (3) Step 16 build item: per-side
+evaluator on bench so C-vs-B is expressible. (4) Step 16's lane-block and buff-anticipation probes are still
+unwritten and gate the C-gate.
+
 **2026-09-06 (21:00, Fable 5.1) - C4 SCREEN: THE NET LEAF WINS. +8.9 POOLED OVER HAND, AHEAD ON ALL FOUR
 PAIRS, 576 GAMES, 0 FAULTS. INTERACTIVE CONFIRM RUNNING.**
 

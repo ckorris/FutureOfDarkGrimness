@@ -329,7 +329,7 @@ symmetrization so `IsComplementaryTwoSide` holds. Tests: parity vs onnxruntime o
 gains `Evaluator`; `AiProfileFactory` gains the profile (name with Chris at 15b); lab `--profile` and
 `--evaluator` flags.
 
-### Step 15 - C4 integration (design: Opus / high, one turn; build: Sonnet / medium; ~2 box-days) - DESIGNED + BUILT 2026-09-06 (Fable 5.1, Chris said continue)
+### Step 15 - C4 integration (design: Opus / high, one turn; build: Sonnet / medium; ~2 box-days) - DESIGNED + BUILT 2026-09-06 (Fable 5.1, Chris said continue); SCREEN + CONFIRM DONE 2026-09-07: net leaf +8.9 (benchmark) / +6.0 (interactive) pooled over hand, regeneration running (ledger 00:10 entry)
 Three-arm slice at the benchmark budget on 4 ring pairs (net / blend 0.5 / hand control, 48 games each,
 paired seeds), confirm the winner at the interactive budget on the same pairs, then ONE regeneration
 (~5k B-play games with the winner, step 12b channel) -> retrain with those rows added (weighted) ->

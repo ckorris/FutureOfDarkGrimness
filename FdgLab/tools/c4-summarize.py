@@ -26,7 +26,7 @@ print("| Pair (A = Strategist vs Tactician) | " + " | ".join(arms) + " |")
 print("|---|" + "---|" * len(arms))
 for p in pairs:
     name = next((c["match"] for (a, q), c in cells.items() if q == p), p)
-    name = re.sub(r" 2k - [^|]*?(?= vs |$)", "", name)
+    name = re.sub(r"\s+2k\s+- [^|]*?(?= vs |$)", "", name)  # some army files carry a double space
     print(f"| {name} | " + " | ".join(
         (f"{cells[(a, p)]['score']:.1f} ({cells[(a, p)]['games']}g, {cells[(a, p)]['f']}f)" if (a, p) in cells else "-")
         for a in arms) + " |")
