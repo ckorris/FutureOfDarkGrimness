@@ -37,6 +37,22 @@ the rest of the app, and no clipped text in either side column.
 
 _Newest on top._
 
+- 2026-09-08 (slices 1-3, the middle column): app **2878/0**, build clean. The pane now reads
+  headline -> table -> working:
+  - **Headline**: the two numbers in `LargeFont` on the header accent, captioned, with a wound meter
+    (`UiChrome.DrawMeter`) and "7.33 of 9.00 wounds remain" under them. They are the only large,
+    coloured thing in the pane, so the eye lands there and can stop there (finding 1).
+  - **Pipeline table**: one row per weapon, columns DICE / HIT / HITS / SAVE / WOUNDS in the order the
+    rules resolve, with the weapon's stat subline in the in-game shoot panel's notation and each rule
+    underlined + hoverable via `RuleHoverText.DrawInline` (findings 2 and 3). The working - modifier
+    chips and any real save split - sits in a sub-row beneath the row it explains, and is omitted
+    entirely when there is nothing to say.
+  - **Situation bar**: the inputs moved from a fixed bottom third to a single row directly under the
+    tabs, so an input sits beside the output it changes (finding 4). The distance is a slider over
+    0-48in with ticks at every reach the fight's weapons actually have, plus a numeric field for exact
+    values; dragging it walks the whole table through its thresholds, which is what makes a range-gated
+    rule visible instead of mysterious (finding 7).
+
 - 2026-09-08 (slice 0, view model): app **2877/0** (+11), build clean. `CombatReportView` +
   `VolleyRowView` + `SaveLineView` (`FdgRaylib/Rendering/CombatCalc/CombatReportView.cs`) turn a
   `CombatReport` into every string the pane draws, so the formatting is unit-testable and the ImGui code

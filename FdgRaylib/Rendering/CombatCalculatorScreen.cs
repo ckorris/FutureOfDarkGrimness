@@ -1,4 +1,5 @@
 using System.IO;
+using System.Linq;
 using System.Numerics;
 using System.Text.Json;
 using FDG;
@@ -409,16 +410,14 @@ public class CombatCalculatorScreen : IAppScreen
             ImGui.EndTabBar();
         }
 
-        Vector2 avail = ImGui.GetContentRegionAvail();
-        float variablesHeight = avail.Y / 3f;
-
-        ImGui.BeginChild("##calc-results", new Vector2(0, avail.Y - variablesHeight - ImGui.GetStyle().ItemSpacing.Y));
-        DrawResults();
-        ImGui.EndChild();
-
+        // The inputs sit directly above the output they change. They used to live in a fixed bottom
+        // third of the column, which put a screen-height of empty space between a checkbox and the
+        // number it moves - the reader had to remember what they had just toggled.
+        DrawSituationBar();
         ImGui.Separator();
-        ImGui.BeginChild("##calc-variables", new Vector2(0, 0));
-        DrawVariables();
+
+        ImGui.BeginChild("##calc-results", Vector2.Zero);
+        DrawResults();
         ImGui.EndChild();
     }
 
@@ -437,16 +436,13 @@ public class CombatCalculatorScreen : IAppScreen
 
         var view = CombatReportView.From(report);
 
-        ImGui.TextColored(HeadText, view.Headline);
-        ImGui.Text($"{CombatReportView.HitsCaption} {view.HitsValue}      " +
-            $"{CombatReportView.WoundsCaption} {view.WoundsValue}");
-        ImGui.TextColored(DimText, view.WoundBarText);
+        DrawHeadline(view);
 
         foreach (string warning in view.Warnings) ImGui.TextColored(WarnText, "! " + warning);
 
         ImGui.Separator();
 
-        foreach (VolleyRowView row in view.Rows) DrawVolley(row);
+        DrawVolleyTable(view);
 
         if (view.Notes.Count > 0)
         {
@@ -456,78 +452,237 @@ public class CombatCalculatorScreen : IAppScreen
         }
     }
 
-    private static void DrawVolley(VolleyRowView row)
+    /// <summary>
+    /// The answer, before the working. Everything else in this pane explains these two numbers, so they
+    /// are the only thing set in the large font and the only thing in the accent colour - the eye lands
+    /// here first and can stop here. The wound bar underneath answers the question the numbers do not:
+    /// whether that damage actually matters to this defender.
+    /// </summary>
+    private void DrawHeadline(CombatReportView view)
     {
+        ImGui.TextColored(HeadText, view.Headline);
         ImGui.Spacing();
-        ImGui.TextUnformatted($"{row.CopiesPrefix}{row.Weapon.Name}");
-        ImGui.SameLine();
-        ImGui.TextColored(DimText, "(" + WeaponStats(row.Weapon) + ")");
 
-        foreach (RuleHoverText.Segment rule in RuleHoverText.RuleSegments(row.Weapon))
+        if (ImGui.BeginTable("##calc-headline", 2, ImGuiTableFlags.SizingStretchSame))
         {
-            ImGui.SameLine();
-            ImGui.TextColored(RuleText, rule.Text);
-            if (ImGui.IsItemHovered()) RuleHoverText.ShowTooltip(RuleHoverText.Tooltip(rule));
+            ImGui.TableNextRow();
+
+            ImGui.TableNextColumn();
+            DrawBigNumber(view.HitsValue, CombatReportView.HitsCaption);
+
+            ImGui.TableNextColumn();
+            DrawBigNumber(view.WoundsValue, CombatReportView.WoundsCaption);
+
+            ImGui.EndTable();
         }
 
-        ImGui.Indent();
+        ImGui.Spacing();
+        UiChrome.DrawMeter(view.WoundFractionRemaining, ImGui.GetContentRegionAvail().X, ImGuiTheme.AccentBlue);
+        ImGui.TextColored(DimText, view.WoundBarText);
+    }
+
+    private static void DrawBigNumber(string value, string caption)
+    {
+        ImGui.PushFont(RaylibRenderer.LargeFont);
+        ImGui.TextColored(ImGuiTheme.HeaderAccent, value);
+        ImGui.PopFont();
+        ImGui.TextColored(DimText, caption);
+    }
+
+    /// <summary>
+    /// One row per weapon, in the order the rules resolve it: dice -> hit -> hits -> save -> wounds.
+    /// The old pane nested those as an indented tree with arrows, which made the reader reconstruct the
+    /// sequence and made two weapons impossible to compare; as columns the same numbers line up and a
+    /// six-weapon unit still fits.
+    /// </summary>
+    private void DrawVolleyTable(CombatReportView view)
+    {
+        if (!ImGui.BeginTable("##calc-volleys", 6,
+            ImGuiTableFlags.RowBg | ImGuiTableFlags.BordersInnerH | ImGuiTableFlags.SizingStretchProp))
+            return;
+
+        float num = ImGui.CalcTextSize("00.00").X * 1.6f;
+        ImGui.TableSetupColumn("WEAPON", ImGuiTableColumnFlags.WidthStretch, 3f);
+        ImGui.TableSetupColumn("DICE", ImGuiTableColumnFlags.WidthFixed, num);
+        ImGui.TableSetupColumn("HIT", ImGuiTableColumnFlags.WidthFixed, num * 0.7f);
+        ImGui.TableSetupColumn("HITS", ImGuiTableColumnFlags.WidthFixed, num);
+        ImGui.TableSetupColumn("SAVE", ImGuiTableColumnFlags.WidthFixed, num);
+        ImGui.TableSetupColumn("WOUNDS", ImGuiTableColumnFlags.WidthFixed, num);
+        ImGui.TableHeadersRow();
+
+        string? tooltip = null;
+        foreach (VolleyRowView row in view.Rows) tooltip ??= DrawVolleyRow(row);
+
+        ImGui.EndTable();
+        if (tooltip != null) RuleHoverText.ShowTooltip(tooltip);
+    }
+
+    /// <summary>Returns the tooltip body for a hovered rule name, or null.</summary>
+    private static string? DrawVolleyRow(VolleyRowView row)
+    {
+        ImGui.TableNextRow();
+        ImGui.TableNextColumn();
+
+        Vector4 nameColor = row.InRange ? new Vector4(1f, 1f, 1f, 1f) : DimText;
+        ImGui.TextColored(nameColor, $"{row.CopiesPrefix}{row.Weapon.Name}");
+
+        // The stat subline in the in-game shoot panel's own notation, each rule underlined and hoverable
+        // (#292). Drawn on the draw list because a table cell gives no wrapping for SameLine runs.
+        uint sub = ImGui.GetColorU32(DimText);
+        uint ruleCol = ImGui.GetColorU32(row.InRange ? RuleText : DimText);
+        string? hovered = RuleHoverText.DrawInline(ImGui.GetWindowDrawList(), ImGui.GetCursorScreenPos(),
+            RuleHoverText.WeaponStatLine(row.Weapon), sub, ruleCol, ImGui.IsWindowHovered());
+        ImGui.Dummy(new Vector2(0f, ImGui.GetTextLineHeight()));
+
         if (!row.InRange)
         {
+            ImGui.TableNextColumn();
             ImGui.TextColored(DimText, row.OutOfRangeText);
-            ImGui.Unindent();
-            return;
+            return hovered;
         }
 
-        ImGui.TextUnformatted($"Hit {row.Hit}   {Chips(row.HitChips)}");
-        ImGui.SameLine();
-        ImGui.TextColored(DimText, $"-> {row.Hits} hits from {row.Dice} dice");
+        Cell(row.Dice);
+        Cell(row.Hit);
+        Cell(row.Hits);
+        Cell(row.Save);
+        Cell(row.Wounds, ImGuiTheme.HeaderAccent);
 
-        foreach (SaveLineView save in row.SaveLines)
-            ImGui.TextUnformatted($"Save {save.SaveNeeded}+   {save.Describe()}");
+        DrawVolleyDetail(row);
+        return hovered;
+    }
 
-        if (row.SaveChips.Count > 0) ImGui.TextColored(DimText, Chips(row.SaveChips));
-        ImGui.TextUnformatted($"-> {row.Wounds} wounds");
+    private static void Cell(string text, Vector4? color = null)
+    {
+        ImGui.TableNextColumn();
+        if (color is { } c) ImGui.TextColored(c, text); else ImGui.TextUnformatted(text);
+    }
+
+    /// <summary>
+    /// The working, under the row it explains: the modifier chips that produced each threshold, and the
+    /// save split when a rule really did make one. Chip wording arrives verbatim from the engine's own
+    /// composers, so it matches the dice beats the player sees in a live game.
+    /// </summary>
+    private static void DrawVolleyDetail(VolleyRowView row)
+    {
+        bool splitSaves = row.SaveLines.Count > 1 || row.SaveLines.Any(s => s.Sources.Count > 0);
+        if (row.HitChips.Count == 0 && row.SaveChips.Count == 0 && !splitSaves && row.Notes.Count == 0)
+            return;
+
+        ImGui.TableNextRow();
+        ImGui.TableNextColumn();
+        ImGui.Indent();
+
+        if (row.HitChips.Count > 0) DrawChipLine("to hit", row.HitChips, row.Hit);
+        if (row.SaveChips.Count > 0) DrawChipLine("save", row.SaveChips, row.Save);
+
+        if (splitSaves)
+            foreach (SaveLineView save in row.SaveLines)
+                ImGui.TextColored(DimText, $"   {save.SaveNeeded}+  {save.Describe()}");
 
         foreach (string note in row.Notes) ImGui.TextColored(DimText, note);
+
         ImGui.Unindent();
     }
 
-    /// <summary>The weapon's numbers, in the notation the in-game shoot panel uses.</summary>
-    private static string WeaponStats(IWeapon weapon) =>
-        $"{CombatReportView.Inches(weapon.RangeInches)}, A{weapon.Attacks} AP{weapon.ArmorPenetration}";
-
-    private static string Chips(IReadOnlyList<string> chips) =>
-        chips.Count == 0 ? string.Empty : "[" + string.Join(", ", chips) + "]";
-
-    private void DrawVariables()
+    private static void DrawChipLine(string label, IReadOnlyList<string> chips, string result)
     {
-        ImGui.TextColored(DimText, VariablesHeader);
-        ImGui.Separator();
-
-        if (_situation.Mode == ECombatMode.Shooting)
+        ImGui.TextColored(DimText, label);
+        foreach (string chip in chips)
         {
-            float distance = _situation.DistanceInches;
-            ImGui.SetNextItemWidth(160f);
-            if (ImGui.InputFloat(DistanceLabel, ref distance, 0.5f, 1f, "%.1f"))
-                _situation = _situation with { DistanceInches = MathF.Max(0f, distance) };
-
-            bool cover = _situation.DefenderInCover;
-            if (ImGui.Checkbox(CoverLabel, ref cover))
-                _situation = _situation with { DefenderInCover = cover };
-
-            bool moved = _situation.AttackerMoved;
-            if (ImGui.Checkbox(MovedLabel, ref moved))
-                _situation = _situation with { AttackerMoved = moved };
+            ImGui.SameLine();
+            UiChrome.DrawChip(chip);
         }
-        else
-        {
-            bool charging = _situation.AttackerCharging;
-            if (ImGui.Checkbox(ChargingLabel, ref charging))
-                _situation = _situation with { AttackerCharging = charging };
+        ImGui.SameLine();
+        ImGui.TextColored(DimText, "->");
+        ImGui.SameLine();
+        ImGui.TextUnformatted(result);
+    }
 
-            bool fatigued = _situation.AttackerFatigued;
-            if (ImGui.Checkbox(FatiguedLabel, ref fatigued))
-                _situation = _situation with { AttackerFatigued = fatigued };
+
+    private void DrawSituationBar()
+    {
+        ImGui.AlignTextToFramePadding();
+        ImGui.TextColored(DimText, VariablesHeader);
+        ImGui.SameLine();
+
+        if (_situation.Mode == ECombatMode.Shooting) DrawShootingSituation();
+        else DrawMeleeSituation();
+    }
+
+    private void DrawShootingSituation()
+    {
+        float distance = _situation.DistanceInches;
+
+        // The slider is the point: dragging it walks the whole table through its thresholds at once, so
+        // a range-gated rule (Stealth at 9in, a weapon running out of reach) shows itself instead of
+        // waiting to be guessed. Ticks mark where this fight's weapons stop reaching.
+        float sliderWidth = MathF.Max(160f, ImGui.GetContentRegionAvail().X * 0.35f);
+        ImGui.SetNextItemWidth(sliderWidth);
+        if (ImGui.SliderFloat("##calc-distance", ref distance, 0f, MaxDistanceInches, "%.1f"))
+            _situation = _situation with { DistanceInches = Math.Clamp(distance, 0f, MaxDistanceInches) };
+        DrawRangeTicks();
+
+        ImGui.SameLine();
+        ImGui.SetNextItemWidth(ImGui.CalcTextSize("00.0").X * 3.2f);
+        float typed = _situation.DistanceInches;
+        if (ImGui.InputFloat(DistanceLabel, ref typed, 0.5f, 1f, "%.1f"))
+            _situation = _situation with { DistanceInches = Math.Clamp(typed, 0f, MaxDistanceInches) };
+
+        ImGui.SameLine(0f, ImGui.GetTextLineHeight() * 1.5f);
+        bool cover = _situation.DefenderInCover;
+        if (ImGui.Checkbox(CoverLabel, ref cover)) _situation = _situation with { DefenderInCover = cover };
+
+        ImGui.SameLine(0f, ImGui.GetTextLineHeight());
+        bool moved = _situation.AttackerMoved;
+        if (ImGui.Checkbox(MovedLabel, ref moved)) _situation = _situation with { AttackerMoved = moved };
+    }
+
+    private void DrawMeleeSituation()
+    {
+        bool charging = _situation.AttackerCharging;
+        if (ImGui.Checkbox(ChargingLabel, ref charging))
+            _situation = _situation with { AttackerCharging = charging };
+
+        ImGui.SameLine(0f, ImGui.GetTextLineHeight());
+        bool fatigued = _situation.AttackerFatigued;
+        if (ImGui.Checkbox(FatiguedLabel, ref fatigued))
+            _situation = _situation with { AttackerFatigued = fatigued };
+    }
+
+    /// <summary>
+    /// A tick on the distance slider at every range this fight's weapons actually reach, so the player
+    /// can see where the next row drops out before dragging past it.
+    /// </summary>
+    private void DrawRangeTicks()
+    {
+        if (_report is not { } report) return;
+
+        Vector2 min = ImGui.GetItemRectMin();
+        Vector2 max = ImGui.GetItemRectMax();
+        float span = max.X - min.X;
+        if (span <= 0f) return;
+
+        ImDrawListPtr dl = ImGui.GetWindowDrawList();
+        uint tick = ImGui.GetColorU32(DimText);
+
+        foreach (float range in RangeTicks(report))
+        {
+            float x = min.X + (range / MaxDistanceInches * span);
+            dl.AddLine(new Vector2(x, min.Y), new Vector2(x, min.Y + (max.Y - min.Y) * 0.28f), tick);
         }
     }
+
+    /// <summary>The distinct weapon reaches worth marking. Internal so the arithmetic can be tested
+    /// without a window.</summary>
+    internal static IReadOnlyList<float> RangeTicks(CombatReport report) =>
+        report.Volleys
+            .Select(v => v.EffectiveRangeInches)
+            .Where(r => r > 0f && r <= MaxDistanceInches)
+            .Distinct()
+            .OrderBy(r => r)
+            .ToList();
+
+    /// <summary>The longest range the slider offers - the long edge of a standard table, past which no
+    /// weapon in the corpus reaches and the answer is always "out of range".</summary>
+    internal const float MaxDistanceInches = 48f;
 }

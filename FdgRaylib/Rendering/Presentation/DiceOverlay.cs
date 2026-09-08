@@ -107,8 +107,9 @@ public static class DiceOverlay
     private static readonly Color MagicAccent   = new(85, 170, 225, 255);  // arcane   — cast rolls
     private static readonly Color MiscAccent    = new(160, 115, 210, 255); // amethyst — morale, terrain, objectives
 
-    private static readonly Color ChipBg     = new(45, 45, 52, 230);
-    private static readonly Color ChipText   = new(210, 210, 215, 255);
+    // #398: one definition, shared with UiChrome so the calculator's chips and these match.
+    private static readonly Color ChipBg     = UiChrome.ChipBackgroundRaylib;
+    private static readonly Color ChipText   = UiChrome.ChipForegroundRaylib;
     private static readonly Color ProcChipBg = new(58, 48, 24, 230);
 
     // Per-panel smoothing state, keyed by beat reference and pruned each frame. Render-thread only.

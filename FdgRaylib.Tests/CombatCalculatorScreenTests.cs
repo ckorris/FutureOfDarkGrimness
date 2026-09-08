@@ -216,6 +216,25 @@ public class CombatCalculatorScreenTests
     }
 
     [Test]
+    public void RangeTicksMarkEachDistinctWeaponReachInsideTheSlidersSpan()
+    {
+        var report = new CombatReport(ECombatMode.Shooting, "A", "B", 5f, 5f, new List<VolleyReport>
+        {
+            Volley(range: 24f),
+            Volley(range: 18f),
+            Volley(range: 24f),          // duplicate reach - one tick, not two
+            Volley(range: 0f),           // melee weapon - nothing to mark
+            Volley(range: 240f),         // beyond the slider - would draw off the end
+        }, 0f, 0f, new List<string>(), new List<string>());
+
+        Assert.That(CombatCalculatorScreen.RangeTicks(report), Is.EqualTo(new[] { 18f, 24f }));
+    }
+
+    private static VolleyReport Volley(float range) =>
+        new(null!, 1, true, range, 1f, 4, new List<string>(), 0f,
+            new List<SaveBucket>(), new List<string>(), 0f, new List<string>());
+
+    [Test]
     public void TheScreensTextIsAsciiOnly()
     {
         // CLAUDE.md: the ImGui font atlas bakes Basic Latin + Latin-1 only; anything above U+00FF
