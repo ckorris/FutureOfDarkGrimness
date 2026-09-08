@@ -711,3 +711,7 @@ A per-clone pre-push hook blocks duplicate numbers across the index and the arch
 > `9c7baad` -> `6fb3162`, engine -> `883b676`): `origin/master`'s index high-water mark **395**,
 > archive max **396**, detail files max **396**, and no `WorkItems/397*` on any remote branch.
 > **397 = Combat Calculator.** No collision.
+
+> **2026-09-08 - number 398 filed clean.** `git fetch origin` before filing: `origin/master`'s index
+> high-water mark **397**, archive max **396**, detail files max **397**, and no `WorkItems/398*` on any
+> remote branch. **398 = Combat Calculator visual/usability pass.** No collision.
