@@ -20,6 +20,23 @@ and the deferred facets below are recorded rather than dropped.
 
 ## Notes
 
+- 2026-09-08 (GUI drive-through, owner-authorized): drove the real window on the owner's X session -
+  they asked for it while working remotely, which is the only reason it happened; the standing rule is
+  that I do not touch their desktop uninvited. Menu -> Combat Calculator -> Human Defense Force /
+  Infantry Squad [10] vs Alien Hives / Hive Warriors [3] at 12in gave **3.33 hits, 1.67 wounds,
+  defender 9 -> 7.33** (10 dice at Quality 5+ = 3.33; Defense 4+ with no AP halves them), and the Melee
+  tab swapped the variables to charging/fatigue and the weapon row to 10x CCW. That confirms
+  hand-verify 1, 2 and the melee half of 17. Two things the run caught that no test did:
+  - **Fixed here**: the Melee tab opened with "Attacker is charging" OFF. The approved plan called for
+    default-ON and it should be - in OPR a unit only fights in melee because it charged (or struck
+    back, which is not modelled yet), so an un-charged melee is the rare case, not the default.
+    `_situation` now starts `AttackerCharging: true`, pinned in
+    `BothColumnsAskForAUnitWhenTheScreenOpens`.
+  - **Open, owner's call**: in the unit picker only the unit NAME is an `ImGui.Selectable`; the stat
+    line beneath it is inert text. The two lines read as one row, so clicking the stats - the half that
+    carries the information you are choosing on - does nothing. Cost me three misdirected clicks before
+    I read the source. Fix is to draw the pair as a single Selectable spanning both lines.
+
 - 2026-09-08 (slice 7, close-out): **app 2866/0, engine 3307/0**, full build clean, headless smoke
   exits 0. `CombatCalculatorBookProbeTests` points the calculator at EVERY unit of every bundled book,
   both game systems, shooting and melee, and requires an answer from each - thousands of simulations in
@@ -189,7 +206,9 @@ and the deferred facets below are recorded rather than dropped.
 
 ## HAND-VERIFY (owner)
 
-The ImGui layout is not unit-testable, so these need eyes. After slice 3 (shooting, bundled books):
+The ImGui layout is not unit-testable, so these need eyes. After slice 3 (shooting, bundled books).
+**1, 2 and the melee half of 17 were confirmed on 2026-09-08** by a driven run (see Notes); the rest
+still need eyes:
 
 1. Main menu shows **Combat Calculator** under Army Forge; Load Game and Quit still work (they moved
    down a row). Back returns to the menu.

@@ -158,6 +158,8 @@ public class CombatCalculatorScreenTests
             Assert.That(screen.DefenderPicker.IsOpen, Is.True);
             Assert.That(screen.Report, Is.Null, "nothing to work out until both sides are chosen");
             Assert.That(screen.Situation.Mode, Is.EqualTo(ECombatMode.Shooting), "shooting is the default");
+            Assert.That(screen.Situation.AttackerCharging, Is.True,
+                "a unit only fights in melee because it charged, so the melee tab opens on the charge");
         });
     }
 

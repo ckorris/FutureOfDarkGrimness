@@ -72,7 +72,9 @@ public class CombatCalculatorScreen : IAppScreen
     private readonly List<ArmySource> _loaded = new();
 
     private string? _loadError;
-    private CombatSituation _situation = new();
+    // Charging defaults ON: in OPR a unit only ever fights in melee because it charged (or because it
+    // struck back, which the calculator does not model yet), so an un-charged melee is the rare case.
+    private CombatSituation _situation = new(AttackerCharging: true);
     private CombatReport? _report;
     private string _reportKey = string.Empty;
 
