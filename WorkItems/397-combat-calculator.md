@@ -20,6 +20,22 @@ and the deferred facets below are recorded rather than dropped.
 
 ## Notes
 
+- 2026-09-08 (slice 1, engine `ed9fd10`): `Calculator/{CombatCalculator, CombatReport,
+  SandboxGameContext}.cs` + `StateMachine/PassThroughLayer.cs`. Shooting works end to end; the melee
+  path already shares the same batch loop, but its Impact stage and its tests are slice 6. Engine suite
+  **3301/0** (1 skipped), full `dotnet build` clean. 11 tests in `Tests/CombatCalculatorTests.cs`, every
+  expectation hand-computed from the rules (10 dice needing 4+ is 5.0 hits, and so on) rather than
+  golden-mastered off a first run.
+  - Two of those pins matter more than the arithmetic. **Tough(3) survives army creation** - the guard
+    against forgetting `UnitCreationRules.Apply`, which would otherwise give every model one wound and
+    be wrong about every tough unit in the game, silently. And **Stealth flips exactly across 9in**
+    (5+ at 10in, 4+ at 8in), which pins the placement geometry: the distance the rules measure is the
+    distance that was asked for.
+  - **The `CombatMath` parity test named in the plan was deliberately not written** (recorded, not
+    dropped). It would be circular - `CombatMathPinTests` already pins `CombatMath` against these exact
+    stages, so something that runs the stages agrees with it by construction. Hand-computed
+    expectations pin the arithmetic harder than a cross-check against another estimator would.
+
 - 2026-09-08: filed. `git fetch origin` before filing put `origin/master`'s index high-water mark at
   **395**, archive at **396**, detail files at **396**; no `WorkItems/397*` on any remote branch.
   **397 = Combat Calculator.** No collision. Superproject synced to `6fb3162`, engine to `883b676`.
