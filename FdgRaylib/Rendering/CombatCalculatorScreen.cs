@@ -4,6 +4,7 @@ using System.Numerics;
 using System.Text.Json;
 using FDG;
 using FDG.ArmyBuilding;
+using FdgRaylib.Config;
 using FDG.Calculator;
 using FDG.Rules.Dispatch;
 using FDG.Rules.Serialization;
@@ -88,7 +89,22 @@ public class CombatCalculatorScreen : IAppScreen
     {
         // Warm the shared parse so the first frame does not stall on ~90 books.
         BookLibrary.LoadAsync();
+        RestoreSystems(UserConfig.Current.CalculatorSystemA, UserConfig.Current.CalculatorSystemB);
     }
+
+    /// <summary>Puts each side back on the system it was last left browsing. An unrecognised slug (a
+    /// hand-edited config, a system this build no longer ships) falls back to the default rather than
+    /// leaving a side pointed at an empty list.</summary>
+    internal void RestoreSystems(string? a, string? b)
+    {
+        _attackerPicker.GameSystem = KnownSystem(a);
+        _defenderPicker.GameSystem = KnownSystem(b);
+    }
+
+    internal static string KnownSystem(string? slug) =>
+        Systems.Any(sys => GameSystems.SameSystem(sys.Slug, slug))
+            ? GameSystems.Normalize(slug)
+            : GameSystems.GrimdarkFuture;
 
     internal CombatCalculatorScreen(List<BookFile> armies) =>
         _armies = armies.Select(ArmySource.FromBook).ToList();
@@ -361,9 +377,10 @@ public class CombatCalculatorScreen : IAppScreen
         if (UiButton.NavigateSmall($"{LoadListLabel}##load-{id}")) LoadArmyFromDisk();
         if (_loadError is not null) ImGui.TextColored(WarnText, _loadError);
 
+        DrawSystemToggle(picker, id);
         DrawFilter(picker, id);
 
-        foreach (ArmySource candidate in UnitPicker.MatchingArmies(AllArmies, picker.Filter))
+        foreach (ArmySource candidate in UnitPicker.MatchingArmies(AllArmies, picker.Filter, picker.GameSystem))
         {
             string tag = candidate.Path is null ? string.Empty
                 : candidate.IsEditable ? "  [saved list]" : "  [saved list, read-only]";
@@ -442,6 +459,45 @@ public class CombatCalculatorScreen : IAppScreen
     }
 
     internal string? LoadError => _loadError;
+
+    /// <summary>
+    /// #398: Grimdark Future or Age of Fantasy, one or the other. Two exclusive buttons rather than a
+    /// dropdown - there are exactly two, so a combo would cost a click to show what a pair of buttons
+    /// shows for free. The choice is per side and is written straight back to the user config, so it is
+    /// still there next launch.
+    /// </summary>
+    private void DrawSystemToggle(UnitPicker picker, string id)
+    {
+        for (int i = 0; i < Systems.Length; i++)
+        {
+            if (i > 0) ImGui.SameLine();
+            (string label, string slug) = Systems[i];
+            bool active = GameSystems.SameSystem(picker.GameSystem, slug);
+
+            if (active) ImGui.PushStyleColor(ImGuiCol.Button, ImGuiTheme.AccentBlue);
+            if (ImGui.Button($"{label}##sys-{id}")) SetSystem(picker, slug);
+            if (active) ImGui.PopStyleColor();
+        }
+    }
+
+    private void SetSystem(UnitPicker picker, string slug)
+    {
+        if (GameSystems.SameSystem(picker.GameSystem, slug)) return;
+
+        picker.GameSystem = slug;
+        picker.BackToArmies();
+
+        if (ReferenceEquals(picker, _attackerPicker)) UserConfig.Current.CalculatorSystemA = slug;
+        else UserConfig.Current.CalculatorSystemB = slug;
+        UserConfig.Save();
+    }
+
+    /// <summary>The two OPR systems, labelled as the Army Forge labels them.</summary>
+    private static readonly (string Label, string Slug)[] Systems =
+    {
+        ("Grimdark Future", GameSystems.GrimdarkFuture),
+        ("Age of Fantasy", GameSystems.AgeOfFantasy),
+    };
 
     private static void DrawFilter(UnitPicker picker, string id)
     {
@@ -591,16 +647,24 @@ public class CombatCalculatorScreen : IAppScreen
         // (#292). Drawn on the draw list because a table cell gives no wrapping for SameLine runs.
         uint sub = ImGui.GetColorU32(DimText);
         uint ruleCol = ImGui.GetColorU32(row.InRange ? RuleText : DimText);
-        string? hovered = RuleHoverText.DrawInline(ImGui.GetWindowDrawList(), ImGui.GetCursorScreenPos(),
+        float indent = ImGui.GetTextLineHeight();
+        string? hovered = RuleHoverText.DrawInline(ImGui.GetWindowDrawList(),
+            ImGui.GetCursorScreenPos() + new Vector2(indent, 0f),
             RuleHoverText.WeaponStatLine(row.Weapon), sub, ruleCol, ImGui.IsWindowHovered());
-        ImGui.Dummy(new Vector2(0f, ImGui.GetTextLineHeight()));
+        ImGui.Dummy(new Vector2(indent, ImGui.GetTextLineHeight()));
 
         if (!row.InRange)
         {
-            ImGui.TableNextColumn();
+            ImGui.Indent();
             ImGui.TextColored(DimText, row.OutOfRangeText);
+            ImGui.Unindent();
             return hovered;
         }
+
+        // The working stays INSIDE the weapon cell, under the subline it belongs to. As its own table
+        // row it detached from the weapon it explained - a horizontal rule landed between them and it
+        // read as a separate entry.
+        DrawVolleyDetail(row);
 
         Cell(row.Dice);
         Cell(row.Hit);
@@ -608,7 +672,6 @@ public class CombatCalculatorScreen : IAppScreen
         Cell(row.Save);
         Cell(row.Wounds, ImGuiTheme.HeaderAccent);
 
-        DrawVolleyDetail(row);
         return hovered;
     }
 
@@ -629,8 +692,6 @@ public class CombatCalculatorScreen : IAppScreen
         if (row.HitChips.Count == 0 && row.SaveChips.Count == 0 && !splitSaves && row.Notes.Count == 0)
             return;
 
-        ImGui.TableNextRow();
-        ImGui.TableNextColumn();
         ImGui.Indent();
 
         if (row.HitChips.Count > 0) DrawChipLine("to hit", row.HitChips, row.Hit);
@@ -662,9 +723,7 @@ public class CombatCalculatorScreen : IAppScreen
 
     private void DrawSituationBar()
     {
-        ImGui.AlignTextToFramePadding();
         ImGui.TextColored(DimText, VariablesHeader);
-        ImGui.SameLine();
 
         if (_situation.Mode == ECombatMode.Shooting) DrawShootingSituation();
         else DrawMeleeSituation();
@@ -677,19 +736,22 @@ public class CombatCalculatorScreen : IAppScreen
         // The slider is the point: dragging it walks the whole table through its thresholds at once, so
         // a range-gated rule (Stealth at 9in, a weapon running out of reach) shows itself instead of
         // waiting to be guessed. Ticks mark where this fight's weapons stop reaching.
-        float sliderWidth = MathF.Max(160f, ImGui.GetContentRegionAvail().X * 0.35f);
+        // The slider carries no number of its own: the field beside it is the number, and printing it
+        // twice (once inside the track, once in the box) read as two different controls.
+        float sliderWidth = MathF.Max(120f, ImGui.GetContentRegionAvail().X * 0.40f);
         ImGui.SetNextItemWidth(sliderWidth);
-        if (ImGui.SliderFloat("##calc-distance", ref distance, 0f, MaxDistanceInches, "%.1f"))
+        if (ImGui.SliderFloat("##calc-distance", ref distance, 0f, MaxDistanceInches, string.Empty))
             _situation = _situation with { DistanceInches = Math.Clamp(distance, 0f, MaxDistanceInches) };
         DrawRangeTicks();
 
         ImGui.SameLine();
-        ImGui.SetNextItemWidth(ImGui.CalcTextSize("00.0").X * 3.2f);
+        ImGui.SetNextItemWidth(ImGui.CalcTextSize("00.0").X * 4.5f);
         float typed = _situation.DistanceInches;
         if (ImGui.InputFloat(DistanceLabel, ref typed, 0.5f, 1f, "%.1f"))
             _situation = _situation with { DistanceInches = Math.Clamp(typed, 0f, MaxDistanceInches) };
 
-        ImGui.SameLine(0f, ImGui.GetTextLineHeight() * 1.5f);
+        // Second line. The three shooting inputs did not fit across one row at this column width and the
+        // last checkbox was being cut off by the column edge.
         bool cover = _situation.DefenderInCover;
         if (ImGui.Checkbox(CoverLabel, ref cover)) _situation = _situation with { DefenderInCover = cover };
 

@@ -37,6 +37,23 @@ the rest of the app, and no clipped text in either side column.
 
 _Newest on top._
 
+- 2026-09-08 (round 2, owner screenshot): app **2888/0** (+9), build clean, smoke exits 0.
+  - **Game-system filter** (owner request): Grimdark Future / Age of Fantasy, mutually exclusive, GDF
+    default, **per side**, remembered in `UserConfig` as `CalculatorSystemA`/`B`. Slugs rather than an
+    enum so the file stays hand-readable and an unknown value degrades to the default instead of
+    throwing - pinned, along with a pre-#398 config having no such field at all. Per-side because a
+    cross-system what-if is a fair question of a calculator even though no real game allows it. Two
+    exclusive buttons, not a combo: there are exactly two options, so a dropdown would cost a click to
+    show what buttons show for free. Labels match the Army Forge's.
+  - **Situation bar overflowed its column** - "Defender is in cover" was cut off at the edge, and the
+    distance appeared TWICE (once inside the slider track, once in the field beside it, reading as two
+    controls). Now: SITUATION on its own line, slider + numeric field, checkboxes on a second line, and
+    the slider prints no number of its own.
+  - **The working detached from its weapon.** The chips were their own table row, so a horizontal rule
+    landed between a weapon and the explanation of its numbers. They now live inside the weapon cell,
+    under an indented stat subline, and the out-of-range note stays in that cell too rather than
+    spilling into the DICE column.
+
 - 2026-09-08 (slices 4-5, the side columns and polish): app **2879/0**, build clean. Columns widened to
   30/40/30 (finding 5); each column headed by an **ATTACKER/DEFENDER badge** that follows Swap, with the
   points right-aligned so the two costs line up against the screen edges and can be compared; the unit

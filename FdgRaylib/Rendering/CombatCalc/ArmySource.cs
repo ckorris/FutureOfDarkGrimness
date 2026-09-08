@@ -38,6 +38,13 @@ internal sealed class ArmySource
 
     internal bool IsEditable => Book is not null;
 
+    /// <summary>
+    /// #398: the OPR game system this army belongs to, normalised (absent means Grimdark Future - the
+    /// only system that existed before the field did). A bundled book carries it; a saved list carries
+    /// it on the file.
+    /// </summary>
+    internal string GameSystem => GameSystems.Normalize(Book?.GameSystem ?? Saved?.GameSystem);
+
     internal static ArmySource FromBook(BookFile book) => new(book.Name, book, saved: null, path: null);
 
     /// <summary>

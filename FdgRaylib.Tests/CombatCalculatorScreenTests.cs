@@ -216,6 +216,75 @@ public class CombatCalculatorScreenTests
     }
 
     [Test]
+    public void ArmiesAreFilteredToOneGameSystemAtATime()
+    {
+        var gdf = ArmySource.FromBook(new BookFile { Name = "Human Defense Force", GameSystem = GameSystems.GrimdarkFuture });
+        var aof = ArmySource.FromBook(new BookFile { Name = "High Elves", GameSystem = GameSystems.AgeOfFantasy });
+        var legacy = ArmySource.FromBook(new BookFile { Name = "Old Book" });   // no field at all
+        var all = new[] { gdf, aof, legacy };
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(UnitPicker.MatchingArmies(all, string.Empty, GameSystems.GrimdarkFuture)
+                    .Select(a => a.Name),
+                Is.EqualTo(new[] { "Human Defense Force", "Old Book" }),
+                "a book with no system field is Grimdark Future");
+            Assert.That(UnitPicker.MatchingArmies(all, string.Empty, GameSystems.AgeOfFantasy)
+                    .Select(a => a.Name),
+                Is.EqualTo(new[] { "High Elves" }));
+        });
+    }
+
+    [Test]
+    public void TheSystemFilterCombinesWithTheSearchBox()
+    {
+        var a = ArmySource.FromBook(new BookFile { Name = "High Elves", GameSystem = GameSystems.AgeOfFantasy });
+        var b = ArmySource.FromBook(new BookFile { Name = "High Elf Fleets", GameSystem = GameSystems.AgeOfFantasy });
+        var c = ArmySource.FromBook(new BookFile { Name = "High Guard", GameSystem = GameSystems.GrimdarkFuture });
+
+        Assert.That(UnitPicker.MatchingArmies(new[] { a, b, c }, "fleet", GameSystems.AgeOfFantasy)
+                .Select(x => x.Name),
+            Is.EqualTo(new[] { "High Elf Fleets" }));
+    }
+
+    [Test]
+    public void GrimdarkFutureIsWhatABothSidesStartOn()
+    {
+        var screen = new CombatCalculatorScreen(new List<BookFile> { Book });
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(screen.AttackerPicker.GameSystem, Is.EqualTo(GameSystems.GrimdarkFuture));
+            Assert.That(screen.DefenderPicker.GameSystem, Is.EqualTo(GameSystems.GrimdarkFuture));
+        });
+    }
+
+    [Test]
+    public void EachSideRestoresItsOwnRememberedSystem()
+    {
+        var screen = new CombatCalculatorScreen(new List<BookFile> { Book });
+
+        screen.RestoreSystems(GameSystems.AgeOfFantasy, GameSystems.GrimdarkFuture);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(screen.AttackerPicker.GameSystem, Is.EqualTo(GameSystems.AgeOfFantasy));
+            Assert.That(screen.DefenderPicker.GameSystem, Is.EqualTo(GameSystems.GrimdarkFuture),
+                "the two sides are remembered separately");
+        });
+    }
+
+    [TestCase(null)]
+    [TestCase("")]
+    [TestCase("warhammer-40k")]
+    public void AnUnknownRememberedSystemFallsBackToTheDefault(string? slug)
+    {
+        // A hand-edited config, or a system a later build stops shipping, must not strand a side on an
+        // empty army list with no way to tell why.
+        Assert.That(CombatCalculatorScreen.KnownSystem(slug), Is.EqualTo(GameSystems.GrimdarkFuture));
+    }
+
+    [Test]
     public void TheEmptyStateNamesTheSideThatIsStillMissing()
     {
         Assert.Multiple(() =>
