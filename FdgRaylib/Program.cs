@@ -671,6 +671,9 @@ else
     renderer.MainMenu.OnArmyForgeClicked = () =>
         renderer.NavigateTo(renderer.ArmyForge);
 
+    renderer.MainMenu.OnCombatCalculatorClicked = () =>
+        renderer.NavigateTo(renderer.CombatCalculator);
+
     renderer.MainMenu.OnClientClicked = () =>
         renderer.NavigateTo(renderer.ClientModal);
 
@@ -763,6 +766,10 @@ else
 
     // ── Army Forge (#153) ────────────────────────────────────────────────────────
     renderer.ArmyForge.OnBack = () =>
+        renderer.NavigateTo(renderer.MainMenu);
+
+    // ── Combat Calculator (#397) ─────────────────────────────────────────────────
+    renderer.CombatCalculator.OnBack = () =>
         renderer.NavigateTo(renderer.MainMenu);
 
     // ── Host Modal ─────────────────────────────────────────────────────────────

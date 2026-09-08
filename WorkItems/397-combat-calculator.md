@@ -20,6 +20,18 @@ and the deferred facets below are recorded rather than dropped.
 
 ## Notes
 
+- 2026-09-08 (slice 3, the screen - shooting, books only): app suite **2850/0** (+12), engine
+  **3301/0**, build clean, headless smoke exits 0. `CombatCalculatorScreen` + `CombatCalc/
+  {CalculatorSide, UnitPicker}`, wired into the main menu (Combat Calculator sits below Army Forge;
+  Load Game and Quit shift down a row).
+  - The screen computes nothing. It re-runs `CombatCalculator` only when a fingerprint of both sides
+    plus the situation changes, so editing is live but idle frames cost nothing.
+  - `CalculatorSide` holds the unit as the Forge's own `BuilderList`, so upgrades, combining and prices
+    are the Forge's rules by construction, not by imitation. There is deliberately no points limit.
+  - A stray non-ASCII character (an Arabic letter, from a typo in a numeric literal) got into the
+    source during this slice and the compiler caught it. The ASCII test now covers the screen's labels
+    AND the engine notes it displays verbatim, so the next one fails a test rather than drawing '?'.
+
 - 2026-09-08 (slice 2, shared Forge pieces; engine `e2a9679`): pure refactor, no behaviour change -
   app suite **2838/0** (2836 before, +2 new glossary tests), engine **3301/0**, build clean, headless
   smoke exits 0.
@@ -128,7 +140,22 @@ and the deferred facets below are recorded rather than dropped.
 
 ## HAND-VERIFY (owner)
 
-_Written as the slices land; the ImGui layout itself is not unit-testable._
+The ImGui layout is not unit-testable, so these need eyes. After slice 3 (shooting, bundled books):
+
+1. Main menu shows **Combat Calculator** under Army Forge; Load Game and Quit still work (they moved
+   down a row). Back returns to the menu.
+2. Both columns open showing "Choose an army" - the search box filters the ~90 books, picking one lists
+   its units with their stat lines, picking a unit fills the column.
+3. **Choose unit** on a filled column reopens at that army's UNIT list, not the army list; Back inside
+   the picker steps out to the armies; Cancel returns to the unit you had.
+4. Upgrades behave exactly as in the Army Forge (same widgets, same gray-outs), and the points figure
+   at the top of the column moves as you buy things.
+5. **Combined Unit** doubles the model count and the price, and doubles the dice in the middle column.
+6. The middle column updates as you edit either side - no stale numbers, no visible stutter.
+7. Distance past a weapon's range greys that weapon's row and says what it reaches; cover and "moved"
+   change the Hit/Save lines, and the bracketed tags match what the in-game to-hit beat says.
+8. Hovering a weapon's special rule shows its description.
+9. **Swap A <-> B** exchanges the columns, upgrades and all.
 
 ## Outcome
 
