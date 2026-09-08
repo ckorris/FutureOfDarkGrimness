@@ -23,6 +23,78 @@ campaigns re-base.)*
 
 ## Notes (newest first)
 
+**2026-09-08 (11:45, Opus 5 / xhigh) - SEARCH PERF PASS, PHASE 1: SEMANTICS-PRESERVING EDITS VERIFIED EXACT BY
+AN IDENTICAL-TREE ORACLE, SPEEDUP ~0-3%. THE SAMPLER LIED ABOUT THE FINE STRUCTURE; STOPWATCHES GIVE THE REAL
+SPLIT: ~56% ENUMERATING CANDIDATES THE SEARCH NEVER EXPANDS, ~37% SIMULATING ONE ACTIVATION.**
+
+*Why this pass exists.* The B-gate measured 56.6% -> 70.1% vs the Tactician for 4.3x thinking time, and the
+leaf swap bought ~+2: the search is compute-bound, not knowledge-bound. Chris (2026-09-08): speed first - it is
+also the difficulty knob (`UctOptions.Iterations` already exists) and a better play experience.
+
+*Profile (dotnet-trace, 1,200 single-worker iterations, Orks vs Robot Legions, round 2, quiet box).* Coarse
+structure: edge enumeration >> simulation; state copy, server bootstrap, leaf and tree ops together < 10%.
+Fine structure it reported: pathfinding ~35%, `List.set_Capacity` ~17%, token scans ~19%, combat estimates
+~29%. A first-chance-exception probe on a real 40-iteration search found ZERO throws, so the 26 s of
+exception frames in the trace belong to b0's own setup (a game played from deployment), not the search.
+
+*Phase 1 (eleven edits, engine + lab):* route memo on `TerrainGrid` shared across every snapshot of a game
+(the grid cache re-keyed on terrain IDENTITY - `TerrainData` is immutable and `StoreClone` copies it by
+reference - instead of per table state, bounded at 32 sets; routes copied in and out; own tables for the
+two pathfinders), a search root that turns a JSON snapshot into a typed one once, lock-free empty fast paths
+in `TokenContainer`, one move-distance dictionary per validation instead of three, pre-sized weapon lists,
+single-pass `AllocationOrder`. Tests: 6 new (`RouteMemoTests`, grid-cache identity/eviction), 2 rewritten
+(`DifferentGames_NeverShareEntries` deliberately inverted: same terrain instances SHARE, equal-but-distinct
+instances do not).
+
+*Verification.* Engine 3290/0/1, FdgRaylib.Tests 2836/0, build clean, headless exit 0. **Identical-tree
+oracle** (`scratchpad/verify-perf1.sh`): the same fixed-iteration deterministic search on the pre-change
+binary and the new one - board A (Orks vs Robot Legions, round 2): 276 nodes / depth 6 / 214 closed edges /
+same choice with 23 visits on both; board B (Dark Elf Raiders vs Dwarf Guilds, round 3): 295 / 6 / 43 / same
+choice with 24 visits on both. **Timing: 66.6 -> 66.1 ms and 46.3 -> 44.8 ms per iteration.** Exact, and
+useless as a speedup. The edits stay (correct, tested, and the memo matters once enumeration is lazy) but
+they answered the wrong question.
+
+*Stopwatch split (`SearchTiming`, FDG_SEARCH_TIMING=1, 300 iterations, board A, 60 ms/iteration):*
+
+| stage | share | per call | calls |
+|---|---|---|---|
+| EnumerateEdges (per opened unit) | **56.2%** | 41.5 ms | 244 |
+| - MacroActionGenerator.Enumerate (plan 16 candidates) | 24.4% | 18.0 ms | 244 |
+| - TacticianPlanner.Score x16 | 31.8% | 1.47 ms | 3,904 |
+| EnumerateUnits (activation urgency per node) | 6.2% | 5.4 ms | 208 |
+| Expand (one simulated activation) | **37.5%** | 13.8 ms | 489 |
+| - SimRun (engine, boundary to boundary) | 31.5% | 11.6 ms | 490 |
+| - SimServer (FDGServer ctor) | 5.3% | 1.9 ms | 490 |
+| - materialize + registries | 0.8% | | |
+| Leaf (hand evaluator) | 2.7% | 1.0 ms | 489 |
+| Select / scratch build | ~0% | | |
+
+**The number that matters: 489 expansions for 244 enumerations - the search expands ~2 of the 16 candidates
+it plans and scores per unit.** About half of every iteration is spent on edges never taken. The sampler's
+"pathfinding 35% / list growth 17% / tokens 19%" were attribution artifacts (it oversamples allocation and
+walkable sites); the stopwatch split supersedes it.
+
+*Phase 2 (needs Chris - changes what the search considers).* Options, cheapest first: (a) `--candidate-budget
+N` bench - the knob already exists (`SearchOptions.CandidateBudget`), now exposed in the lab and as slice
+arms `cb16/cb8/cb4`; a 4-pair benchmark-budget slice at equal wall-clock (~1 h) says directly whether
+breadth or depth wins at this budget. (b) Lazy enumeration: plan+score a candidate only when the search first
+selects its edge, with a cheap prior for ordering - the structural fix, up to ~2x, but the prior quality is
+the risk. (c) Simulation: SimRun's 11.6 ms is the engine playing one activation; SimServer's 1.9 ms could go
+with a reusable server - deep engine work, park unless (a)/(b) land and it becomes the bottleneck.
+
+*Instrumentation kept:* `Ai/Tactician/Search/SearchTiming.cs` (opt-in, one static-readonly branch per probe
+when off), reported by `b0` after the measured search. Panel screen paused/resumed three times today for
+quiet-box windows; it resumes from its progress files and lost nothing.
+
+*Committed (11:50).* Engine master `883b676` (Phase 1 + `SearchTiming` + tests), super follows with the
+submodule bump, `b0` timing report, the `--candidate-budget` lab flag and the `cb16/cb8/cb4` slice arms.
+**Chris (11:47): "Run the breadth slice."** Queued behind the interactive panel screen (`scratchpad/
+queue-breadth-slice.sh`, waits for the panels' DONE line and a quiet box): `c4-slice.sh` benchmark budget,
+4 ring pairs x 48 games x arms cb16/cb8/cb4, shipped net leaf, seeds 1000 (cb16 = the old `net` arm's
+settings, so it doubles as a replication of the +8.9 slice), Phase-1 Release snapshot `phase1bin`, out
+`FdgLab/reports/breadth-slice-2026-09-08`. Reads: the cb8/cb4 gap to cb16 at equal wall-clock says whether
+breadth or depth wins at this budget; a null result parks lazy enumeration.
+
 **2026-09-08 (08:20, Opus 5 / xhigh) - THE PANEL SCREEN DISAGREES WITH THE 4-PAIR SLICE: THE NET LEAF IS ONLY
 +1.8 POOLED ACROSS THE PANELS AND -7.1 AT 1k. THE 15b PROMOTION IS PROVISIONAL UNTIL THE INTERACTIVE PANELS
 LAND. Interactive re-run started 08:19.**

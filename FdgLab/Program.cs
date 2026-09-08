@@ -57,6 +57,9 @@ static int Usage()
                                        '--evaluator hand' to reproduce one. Stamped in every report.
                   [--blend W]          #191 C4: with --evaluator PATH, play W net + (1-W) hand (the
                                        slice's middle arm; W in (0,1)). Also honoured by selfplay.
+                  [--candidate-budget N]   #191 search perf pass: macro-actions planned+scored per
+                                     unit per opened node (default 16). Breadth vs depth; stamped
+                                     in the report header beside the search budget.
                   [--search-budget benchmark|interactive]   #191 step 10: what a Strategist
                                      thinks under. Default benchmark (1-2s/activation, what every
                                      bench before 2026-09-05 measured); interactive is the 5-10s
@@ -163,6 +166,22 @@ static async Task<int> RunBench(string[] args)
     if (!TrySearchBudgetArg(args, out FDG.Ai.Tactician.Search.UctOptions? searchBudget,
             out string? searchBudgetLabel))
         return 2;
+    // #191 search perf pass: --candidate-budget N caps the macro-actions the search plans and scores
+    // per unit at every opened node (SearchOptions.CandidateBudget, default 16). The stopwatch split
+    // measured ~56% of an iteration in that enumeration while the search expands ~2 of the 16, so this
+    // is the breadth-vs-depth knob: fewer candidates, more iterations per second. A different bot, so
+    // it is stamped beside the budget in the report header.
+    if (Arg(args, "--candidate-budget") is string candidateRaw)
+    {
+        if (!int.TryParse(candidateRaw, out int candidateBudget) || candidateBudget < 1)
+        {
+            Console.Error.WriteLine($"--candidate-budget: '{candidateRaw}' is not a positive integer.");
+            return 2;
+        }
+        FDG.Ai.Tactician.Search.UctOptions baseBudget = searchBudget ?? GameRunner.LabSearchBudget;
+        searchBudget = baseBudget with { Tree = baseBudget.Tree with { CandidateBudget = candidateBudget } };
+        searchBudgetLabel = $"{searchBudgetLabel ?? "benchmark (1-2s/activation)"}, candidate budget {candidateBudget}";
+    }
     if (!TryEvaluatorArg(args, out FDG.Ai.Tactician.Search.IPositionEvaluator? benchEvaluator,
             out string? benchEvaluatorLabel))
         return 2;

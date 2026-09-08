@@ -576,6 +576,7 @@ public static class B0Spike
                 RootSeed = 1, Workers = 1, Iterations = searchIterations, Tree = baseTree,
             }, evaluator);
 
+            FDG.Ai.Tactician.Search.SearchTiming.Reset();
             var searchSw = Stopwatch.StartNew();
             SearchResult single = await UctSearch.RunAsync(snapshot, new UctOptions
             {
@@ -591,6 +592,8 @@ public static class B0Spike
             Console.WriteLine($"     tree: {single.Nodes} nodes, max depth {single.MaxDepth}, " +
                               $"{single.ClosedEdges} closed edges, root branching {single.RootUnits} units; " +
                               $"choice {single.Choice?.Label ?? "(none)"} with {single.Choice?.Visits ?? 0} visits");
+            if (FDG.Ai.Tactician.Search.SearchTiming.Enabled)
+                Console.WriteLine(FDG.Ai.Tactician.Search.SearchTiming.Report());
 
             // #191 step 10 (P2 sizing): the same search under the TIME budget that ships, with the
             // shipping worker count - what depth the real bot actually reaches from this boundary.

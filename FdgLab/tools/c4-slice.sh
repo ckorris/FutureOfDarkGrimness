@@ -5,7 +5,8 @@
 # for the whole run (wall-clock search budgets are only honest on a quiet box) and unpaused at the end.
 #
 #   FdgLab/tools/c4-slice.sh <out-dir> <benchmark|interactive> <games-per-cell> <arm>...
-#   arm = hand | net | blend | net2   (hand = the hand-weighted control, passed explicitly since the
+#   arm = hand | net | blend | net2 | cb16 | cb8 | cb4
+#                                     (hand = the hand-weighted control, passed explicitly since the
 #                                      shipped default became a net; net/blend read $NET_WEIGHTS,
 #                                      default the full-v3 serving model;
 #                                      net2 reads $NET2_WEIGHTS - the re-slice's retrained candidate)
@@ -33,6 +34,9 @@ arm_flags() {
     net)   echo "--evaluator $NET_WEIGHTS" ;;
     blend) echo "--evaluator $NET_WEIGHTS --blend 0.5" ;;
     net2)  echo "--evaluator $NET2_WEIGHTS" ;;
+    cb8)   echo "--candidate-budget 8" ;;    # breadth-vs-depth experiment (search perf pass): shipped leaf, 8 candidates
+    cb4)   echo "--candidate-budget 4" ;;
+    cb16)  echo "--candidate-budget 16" ;;   # explicit control for the experiment (= the default)
     *) echo "unknown arm $1" >&2; exit 2 ;;
   esac
 }
