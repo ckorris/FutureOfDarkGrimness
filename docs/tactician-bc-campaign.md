@@ -364,7 +364,11 @@ re-slice. Two iterations maximum before the gate.
   5k games (~23 h at the observed rate). Recommendation: now - the slice is the critical path and the
   paused run resumes at its next game with nothing lost.
 
-### Step 15b - C lobby exposure (Sonnet / medium; folds into step 15) - DONE 2026-09-07 (Opus 5)
+### Step 15b - C lobby exposure (Sonnet / medium; folds into step 15) - SHIPPED 2026-09-07, EVIDENCE CONTESTED 2026-09-08
+**Read the 2026-09-08 08:20 ledger entry before relying on this.** The paired panel screen puts the promoted
+leaf at +1.8 pooled (and -7.1 at 1k), not the 4-pair slice's +8.9 - the slice's cells were selected on the
+hand leaf's weakness. The promotion stands provisionally while the interactive-budget panels run; no release
+should be cut off master until they land.
 **Superseded by Chris's 2026-09-07 call: REPLACE the Strategist's leaf, do not add a second bot.** No new
 `EAiProfile` value, no lobby button, no name needed - the lobby's Strategist simply searches with the shipped
 net (`BuiltInAssets/StrategistLeafV1.json`) instead of the hand evaluator. The hand leaf stays reachable in

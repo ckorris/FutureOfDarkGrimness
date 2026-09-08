@@ -23,6 +23,61 @@ campaigns re-base.)*
 
 ## Notes (newest first)
 
+**2026-09-08 (08:20, Opus 5 / xhigh) - THE PANEL SCREEN DISAGREES WITH THE 4-PAIR SLICE: THE NET LEAF IS ONLY
++1.8 POOLED ACROSS THE PANELS AND -7.1 AT 1k. THE 15b PROMOTION IS PROVISIONAL UNTIL THE INTERACTIVE PANELS
+LAND. Interactive re-run started 08:19.**
+
+`FdgLab/reports/c-panels-2026-09-07`, finished 23:02 unattended: hand-leaf and net-leaf Strategist vs the
+Tactician on all four panels, 30 games/cell, seeds 6000, benchmark budget, dop 6, paired cells and seeds.
+**1,080 games, 0 faults, 0 timeouts.**
+
+| panel | hand | net | delta | games/arm |
+|---|---|---|---|---|
+| points-1k | 75.4 | **68.3** | **-7.1** | 120 |
+| points-3k | 67.7 | 74.0 | +6.3 | 150 |
+| points-4k | 77.2 | 77.2 | 0.0 | 90 |
+| shape-2v2 | 52.5 | 57.2 | +4.7 | 180 |
+| **pooled** | **65.9** | **67.7** | **+1.8** | **540** |
+
+*Why this and the slice disagree, and which one to believe.* The C4 slice measured +8.9. Its four pairs were
+SELECTED as the cells where the hand leaf scored lowest on the P4 slice - that is a sample chosen on the
+control arm's weakness, so it measures the net exactly where the hand leaf has the most room and nowhere
+else. I recorded that selection as a known bias at design time but reasoned about it in the wrong direction
+("a leaf that only helps in already-won cells is missed"); the likelier direction is the one that happened -
+it OVER-credits. The panels are the unbiased sample of the same question and they are 540 games per arm to
+the slice's 192. **Believe the panels.**
+
+*Is +1.8 anything?* No. Unpaired SE of the pooled difference is ~3.0 points, so +1.8 is inside noise; pairing
+tightens it but not to where +1.8 becomes a result. The 1k regression (-7.1 over 120 games/arm, SE ~6.5) is
+~1.1 SE - suggestive, not conclusive on its own, but two of its four cells fell 10.0 and 15.0.
+
+*A mechanism worth testing, not just noise.* The gain tracks training mass by level: 2v2 is 41% of the
+training rows (179,765 of 443,608) and gained most (+4.7); 3k is 19% and gained +6.3; 1k is the smallest at
+10% (44,459) and is the one that regressed. If that holds, the fix is a level-balanced training mix or
+level-balanced generation, not a bigger net - and it is cheap to test offline on data already on disk.
+
+*The measurement that actually decides it.* The lobby plays at the INTERACTIVE budget, and the C4 confirm
+already showed the net's edge shrinking as the budget deepens (+8.9 -> +6.0 on the same four pairs). A
+benchmark-budget +1.8 could easily be <= 0 at interactive. Started 08:19:
+`scratchpad/c-panels-interactive.sh` -> `FdgLab/reports/c-panels-interactive-2026-09-08`, same binary, cells
+and seeds, panels ordered 1k (the regression) -> 2v2 -> 3k -> 4k so the decision-relevant numbers land first,
+arms interleaved per panel. ~11 h.
+
+*What this does NOT change.* The net is not worse - across 1,620 games at two budgets it is somewhere between
+even and modestly ahead, and it is clearly ahead where the hand leaf is weak. Nothing is broken, no faults in
+any of it. What changed is the SIZE of the claim: "+8.9, promote it" is not supportable; "roughly even
+overall, better on hard cells, worse at 1k" is.
+
+*Recommendation to Chris.* Leave the promotion in place while the interactive panels run - master is not a
+release, he is playing it now, and reverting is a one-line change with the asset already committed. But
+**15b's evidence is contested and the campaign doc now says so**; do not treat the leaf as settled, and do not
+cut a release off master until the interactive panels land. If they come in <= 0, the honest move is to revert
+the default to the hand leaf and keep the asset for a level-balanced retrain.
+
+*My earlier caution was right for a shakier reason than I gave it.* The 2026-09-07 19:30 entry flagged
+level-nonuniformity from the regeneration data; the 19:55 entry correctly noted that comparison mixed budgets
+and sampling. The concern itself survived that correction - the paired screen confirms it.
+
 **2026-09-07 (20:30, Opus 5 / xhigh) - STEP 15b DONE: THE STRATEGIST SHIPS THE LEARNED LEAF, AND IT REPLACED
 THE HAND EVALUATOR RATHER THAN JOINING IT. MERGED TO MASTER. Engine `1ca296e`, super `79fe8a4`.**
 
