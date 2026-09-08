@@ -1,6 +1,6 @@
 # 397 - Combat Calculator
 
-**Status**: in-progress (filed 2026-09-08; implementation starting)
+**Status**: in-progress (implemented + tested; **awaiting GUI hand-verify**)
 **Related**: #153 (Army Forge - the column-3 unit detail this reuses), #191 (`CombatMath`, the AI
 estimator this deliberately does NOT compute from), #325/#345 (`ShootingForecast` - the
 preview-and-resolution-share-one-implementation doctrine this follows), #167 (`ScenarioCompiler` - the
@@ -19,6 +19,16 @@ Done = the screen ships, its numbers come from the real combat stages (never a h
 and the deferred facets below are recorded rather than dropped.
 
 ## Notes
+
+- 2026-09-08 (slice 7, close-out): **app 2866/0, engine 3307/0**, full build clean, headless smoke
+  exits 0. `CombatCalculatorBookProbeTests` points the calculator at EVERY unit of every bundled book,
+  both game systems, shooting and melee, and requires an answer from each - thousands of simulations in
+  ~9s. That is the guard that matters here: a green unit suite can still sit on a calculator that throws
+  the moment it meets a real book, and the fixtures alone would never have caught it.
+  - Shipped in this pass: the engine sandbox (slice 1), the shared Forge pieces (2), the screen (3),
+    hero joins (4), saved lists (5), melee with charge impact (6). Slices were taken 0-1-2-3-6-4-5-7:
+    melee jumped ahead of joins and saved lists because it completes the feature as the owner described
+    it (two tabs), and the other two are additive.
 
 - 2026-09-08 (slice 5, saved lists): app **2865/0** (+8), build clean, smoke exits 0. "Load list..."
   opens a `.fdgarmy` through the file dialog and the army then stays in the picker as its own entry for
@@ -196,6 +206,30 @@ The ImGui layout is not unit-testable, so these need eyes. After slice 3 (shooti
 8. Hovering a weapon's special rule shows its description.
 9. **Swap A <-> B** exchanges the columns, upgrades and all.
 
+After slices 4-6 (hero joins, saved lists, melee):
+
+10. **+ Join a hero** on a normal unit offers only that army's heroes; the column splits with the hero
+    on top, each row with its own gear and upgrades, and the points cover both. **Remove join** puts it
+    back. On a Hero the button reads **+ Join a unit** and offers only multi-model non-heroes.
+11. A joined pair fights as ONE unit - the defender's wound pool should include the hero (a 5-model
+    squad with a hero shows 6 wounds to chew through), with no warning line.
+12. A hero the rules refuse (Tough over the cap) IS still offered, and the result shows a warning naming
+    the unit that did not join, rather than silently dropping it.
+13. **Load list...** opens a .fdgarmy; the army then appears in the picker for BOTH columns and stays
+    there. Picking a second unit from it must not reopen the file dialog.
+14. A list from `armies/` (no embedded book) shows its units read-only with the explanatory line and no
+    upgrade controls; a list saved out of the Army Forge opens fully editable instead.
+15. A saved unit that its own list joined a hero to arrives with both rows already filled in.
+16. Cancelling the file dialog, or picking a missing/corrupt file, shows a message and leaves the screen
+    exactly as it was - no crash, no half-loaded army.
+17. **Melee tab**: only melee weapons appear; "Attacker is charging" adds an **Impact** row above the
+    swings when the unit has Impact(X); "Attacker is fatigued" moves the hit line to 6+.
+18. The melee results say strike-back is not included - confirm that reads clearly, since it is the
+    one part of a melee deliberately missing.
+
 ## Outcome
 
-_Open._
+_Open - implemented and tested end to end (engine sandbox, shared Forge editing, the screen, hero
+joins, saved lists, melee with impact), awaiting the owner's GUI hand-verify above. The two facets the
+owner asked to keep in mind, the probability bell curve and strike-back, are deliberately not built and
+are recorded in Deferred with the route each should take._
