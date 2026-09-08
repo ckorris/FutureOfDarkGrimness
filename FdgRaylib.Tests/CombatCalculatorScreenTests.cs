@@ -241,6 +241,161 @@ public class CombatCalculatorScreenTests
             Assert.That(text.All(c => c <= 0xFF), Is.True, $"non-Latin-1 character in: {text}");
     }
 
+
+    // ---- hero joins ----------------------------------------------------------------------------
+
+    [Test]
+    public void JoiningAHero_SplitsTheColumnWithTheHeroOnTop()
+    {
+        BookFile force = HeroBook();
+        var side = new CalculatorSide();
+        side.SetUnit(force, "squad");
+
+        side.SetJoin("captain");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(side.Joined, Is.Not.Null);
+            Assert.That(side.Rows().Select(row => side.DetailOf(row).Unit.Name),
+                Is.EqualTo(new[] { "Captain", "Squad" }), "hero first, as the owner asked");
+            Assert.That(side.Points, Is.EqualTo(110), "both halves are paid for");
+        });
+    }
+
+    [Test]
+    public void AJoinedHeroActuallyMergesIntoOneFightingUnit()
+    {
+        // The proof that the link is real: army creation folds the hero's model into the squad, so the
+        // pair has six models' worth of wounds and there is nothing left over to warn about.
+        BookFile force = HeroBook();
+        var defender = new CalculatorSide();
+        defender.SetUnit(force, "squad");
+        defender.SetJoin("captain");
+
+        var attacker = new CalculatorSide();
+        attacker.SetUnit(force, "squad");
+
+        CombatReport report = CombatCalculator.Run(attacker.Compile(), defender.Compile(),
+            new CombatSituation(DistanceInches: 12f));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(report.DefenderWoundsBefore, Is.EqualTo(6f).Within(0.001f), "5 troopers plus the hero");
+            Assert.That(report.Warnings, Is.Empty, "a legal join produces no complaint");
+            Assert.That(report.DefenderName, Is.EqualTo("Squad"), "the host is the unit that fights");
+        });
+    }
+
+    [Test]
+    public void AHeroAsTheMainUnit_JoinsTheOtherWayRound()
+    {
+        BookFile force = HeroBook();
+        var side = new CalculatorSide();
+        side.SetUnit(force, "captain");
+        Assert.That(side.MainIsHero, Is.True);
+
+        side.SetJoin("squad");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(side.Rows().Select(row => side.DetailOf(row).Unit.Name),
+                Is.EqualTo(new[] { "Captain", "Squad" }), "the hero is still on top");
+            Assert.That(side.List.Units[CalculatorSide.MainIndex].JoinsUnitId, Is.Not.Null,
+                "the hero carries the link, whichever side it was picked from");
+        });
+    }
+
+    [Test]
+    public void RemovingAJoinLeavesACleanSingleUnit()
+    {
+        BookFile force = HeroBook();
+        var side = new CalculatorSide();
+        side.SetUnit(force, "squad");
+        side.SetJoin("captain");
+
+        side.RemoveJoin();
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(side.Joined, Is.Null);
+            Assert.That(side.List.Units, Has.Count.EqualTo(1));
+            Assert.That(side.List.Units[0].JoinsUnitId, Is.Null, "no dangling link left behind");
+            Assert.That(side.Points, Is.EqualTo(50));
+        });
+    }
+
+    [Test]
+    public void ChoosingANewUnitDropsAnyJoin()
+    {
+        BookFile force = HeroBook();
+        var side = new CalculatorSide();
+        side.SetUnit(force, "squad");
+        side.SetJoin("captain");
+
+        side.SetUnit(force, "squad");
+
+        Assert.That(side.Joined, Is.Null);
+        Assert.That(side.List.Units, Has.Count.EqualTo(1));
+    }
+
+    [Test]
+    public void TheJoinPickerOffersOnlyTheRightKindOfUnit()
+    {
+        BookFile force = HeroBook();
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(UnitPicker.MatchingUnits(force, "", UnitPicker.ERoles.HeroesOnly).Select(u => u.Id),
+                Is.EqualTo(new[] { "captain" }));
+            Assert.That(UnitPicker.MatchingUnits(force, "", UnitPicker.ERoles.HostsOnly).Select(u => u.Id),
+                Is.EqualTo(new[] { "squad" }));
+            Assert.That(UnitPicker.MatchingUnits(force, "", UnitPicker.ERoles.Any).Count(), Is.EqualTo(2));
+        });
+    }
+
+    [Test]
+    public void OpeningTheJoinPickerStaysInsideTheUnitsOwnArmy()
+    {
+        var picker = new UnitPicker();
+        BookFile force = HeroBook();
+
+        picker.OpenForJoin(force, UnitPicker.ERoles.HeroesOnly);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(picker.JoinMode, Is.True);
+            Assert.That(picker.Level, Is.EqualTo(UnitPicker.ELevel.Units), "no army level to wander into");
+            Assert.That(picker.Army, Is.SameAs(force));
+            Assert.That(picker.Roles, Is.EqualTo(UnitPicker.ERoles.HeroesOnly));
+        });
+
+        picker.Close();
+        Assert.That(picker.JoinMode, Is.False, "closing leaves join mode behind");
+    }
+
+    /// A tiny force with one squad and one Hero - DemoBook has no Hero to join.
+    private static BookFile HeroBook() => new()
+    {
+        Name = "Test Force",
+        Faction = "Test",
+        Units =
+        {
+            new RosterUnit
+            {
+                Id = "squad", Name = "Squad", Quality = 4, Defense = 4,
+                BaseModelCount = 5, MinModels = 5, MaxModels = 10, BasePointCost = 50,
+                Weapons = { new WeaponFileEntry { Name = "Rifle", Quantity = 5, RangeInches = 24, Attacks = 1 } },
+            },
+            new RosterUnit
+            {
+                Id = "captain", Name = "Captain", Quality = 3, Defense = 3,
+                BaseModelCount = 1, MinModels = 1, MaxModels = 1, BasePointCost = 60,
+                Rules = { new SpecialRuleEntry_Core("Hero") },
+                Weapons = { new WeaponFileEntry { Name = "Pistol", Quantity = 1, RangeInches = 12, Attacks = 2 } },
+            },
+        },
+    };
+
     // One book per test: fresh state, but a stable identity within a test so reference checks mean
     // something.
     private BookFile Book = null!;

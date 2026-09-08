@@ -20,6 +20,15 @@ and the deferred facets below are recorded rather than dropped.
 
 ## Notes
 
+- 2026-09-08 (slice 4, hero joins): app **2857/0** (+7), build clean. A column splits into two rows -
+  hero always on top, whichever way the join was made - each row with its own gear and upgrades, and a
+  Remove that leaves no dangling link.
+  - The join picker is locked to the unit's OWN army and to one role (heroes, or hosts), so it cannot
+    offer an illegal partner. A Hero over the Tough join cap is deliberately still LISTED: army creation
+    refuses it and the report warns by name, which is more use than a unit that silently is not there.
+  - Pinned by the merge itself rather than by the link: a squad of 5 with a joined Hero reports 6 wounds
+    to chew through and produces no warning - proof that army creation folded the two into one unit.
+
 - 2026-09-08 (slice 6 taken early - melee; engine `HEAD`): engine **3307/0** (+6), build clean. The
   melee tab already worked through the shared batch loop, so this slice was really about the one thing
   melee has that shooting does not: **charge impact hits**, which now run through the engine's own

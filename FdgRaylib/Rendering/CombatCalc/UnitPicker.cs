@@ -19,7 +19,20 @@ internal sealed class UnitPicker
         Units,
     }
 
+    /// <summary>Which units the list should offer - a join only accepts one kind.</summary>
+    internal enum ERoles
+    {
+        Any,
+        HeroesOnly,
+        HostsOnly,
+    }
+
     internal ELevel Level { get; private set; } = ELevel.Armies;
+
+    internal ERoles Roles { get; private set; } = ERoles.Any;
+
+    /// <summary>True while picking a unit to JOIN the column's unit rather than to replace it.</summary>
+    internal bool JoinMode { get; private set; }
 
     internal BookFile? Army { get; private set; }
 
@@ -32,11 +45,32 @@ internal sealed class UnitPicker
     internal void Open()
     {
         IsOpen = true;
+        JoinMode = false;
+        Roles = ERoles.Any;
         Level = Army is null ? ELevel.Armies : ELevel.Units;
         Filter = string.Empty;
     }
 
-    internal void Close() => IsOpen = false;
+    /// <summary>
+    /// Open it to pick a joining unit. Locked to <paramref name="army"/> and to one role: a hero joins
+    /// a unit from its own army, so there is no army level to browse here.
+    /// </summary>
+    internal void OpenForJoin(BookFile army, ERoles roles)
+    {
+        IsOpen = true;
+        JoinMode = true;
+        Roles = roles;
+        Army = army;
+        Level = ELevel.Units;
+        Filter = string.Empty;
+    }
+
+    internal void Close()
+    {
+        IsOpen = false;
+        JoinMode = false;
+        Roles = ERoles.Any;
+    }
 
     internal void ChooseArmy(BookFile army)
     {
@@ -59,5 +93,18 @@ internal sealed class UnitPicker
         armies.Where(army => Matches(army.Name, filter));
 
     internal static IEnumerable<RosterUnit> MatchingUnits(BookFile army, string filter) =>
-        army.Units.Where(unit => Matches(unit.Name, filter));
+        MatchingUnits(army, filter, ERoles.Any);
+
+    /// <summary>
+    /// The army's units that match the filter AND the wanted role. A Hero whose Tough exceeds the join
+    /// cap is deliberately still listed: army creation refuses it and the result says so, which is more
+    /// use than a unit that silently is not there.
+    /// </summary>
+    internal static IEnumerable<RosterUnit> MatchingUnits(BookFile army, string filter, ERoles roles) =>
+        army.Units.Where(unit => Matches(unit.Name, filter) && roles switch
+        {
+            ERoles.HeroesOnly => CalculatorSide.IsHeroRoster(army, unit),
+            ERoles.HostsOnly => CalculatorSide.IsHostRoster(army, unit),
+            _ => true,
+        });
 }

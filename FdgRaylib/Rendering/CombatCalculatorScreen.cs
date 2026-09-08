@@ -32,6 +32,11 @@ public class CombatCalculatorScreen : IAppScreen
     internal const string ChooseUnitLabel = "Choose unit";
     internal const string NoUnitsHint = "Choose a unit on both sides.";
     internal const string ArmyPrompt = "Choose an army:";
+    internal const string JoinHeroLabel = "+ Join a hero";
+    internal const string JoinUnitLabel = "+ Join a unit";
+    internal const string RemoveJoinLabel = "Remove join";
+    internal const string WhichHeroPrompt = "Which hero joins?";
+    internal const string WhichUnitPrompt = "Join which unit?";
     internal const string VariablesHeader = "VARIABLES";
     internal const string DistanceLabel = "Distance (in)";
     internal const string CoverLabel = "Defender is in cover";
@@ -163,21 +168,59 @@ public class CombatCalculatorScreen : IAppScreen
         ImGui.TextColored(DimText, $"UNIT {label}   {side.Points} pts");
         ImGui.Separator();
 
-        (UnitFileEntry unit, List<ItemEntry> items) = side.Detail();
-        ForgeUnitDetail.DrawHeader(unit);
-        ForgeUnitDetail.DrawGear(unit, items, side.Glossary);
+        // A joined pair splits the column into two rows, hero first.
+        IReadOnlyList<BuilderUnit> rows = side.Rows();
+        for (int row = 0; row < rows.Count; row++)
+        {
+            if (row > 0)
+            {
+                ImGui.Spacing();
+                ImGui.Separator();
+            }
+            DrawUnitRow(side, rows[row], id, row);
+        }
 
-        if (side.CanCombine || side.IsCombined)
+        DrawJoinControl(side, picker, id);
+    }
+
+    private static void DrawUnitRow(CalculatorSide side, BuilderUnit unit, string id, int row)
+    {
+        (UnitFileEntry compiled, List<ItemEntry> items) = side.DetailOf(unit);
+        bool isMain = ReferenceEquals(unit, side.List.Units[CalculatorSide.MainIndex]);
+
+        ForgeUnitDetail.DrawHeader(compiled);
+        ForgeUnitDetail.DrawGear(compiled, items, side.Glossary);
+
+        // Only the main unit can be doubled up; a joined hero is a single model by definition.
+        if (isMain && (side.CanCombine || side.IsCombined))
         {
             ImGui.Spacing();
             bool combined = side.IsCombined;
             if (ImGui.Checkbox($"Combined Unit##combine-{id}", ref combined)) side.SetCombined(combined);
         }
 
-        if (side.Roster is { } roster)
+        if (side.RosterOf(unit) is { } roster)
         {
-            ForgeUnitDetail.DrawUpgrades(side.Book!, side.Glossary, side.List.Units[CalculatorSide.MainIndex],
-                roster, unit, items, side.Mirror);
+            ForgeUnitDetail.DrawUpgrades(side.Book!, side.Glossary, unit, roster, compiled, items,
+                isMain ? side.Mirror : null);
+        }
+    }
+
+    private static void DrawJoinControl(CalculatorSide side, UnitPicker picker, string id)
+    {
+        ImGui.Spacing();
+
+        if (side.Joined is not null)
+        {
+            if (UiButton.Back($"{RemoveJoinLabel}##unjoin-{id}")) side.RemoveJoin();
+            return;
+        }
+
+        bool mainIsHero = side.MainIsHero;
+        if (UiButton.NavigateSmall($"{(mainIsHero ? JoinUnitLabel : JoinHeroLabel)}##join-{id}"))
+        {
+            picker.OpenForJoin(side.Book!,
+                mainIsHero ? UnitPicker.ERoles.HostsOnly : UnitPicker.ERoles.HeroesOnly);
         }
     }
 
@@ -188,17 +231,28 @@ public class CombatCalculatorScreen : IAppScreen
 
         if (picker.Level == UnitPicker.ELevel.Units && picker.Army is { } army)
         {
-            if (UiButton.Back($"Back##armies-{id}")) picker.BackToArmies();
-            ImGui.SameLine();
-            ImGui.TextUnformatted(army.Name);
+            if (picker.JoinMode)
+            {
+                // A join stays inside the unit's own army, so there is no army level to step back to.
+                if (UiButton.Back($"Cancel##joincancel-{id}")) picker.Close();
+                ImGui.SameLine();
+                ImGui.TextUnformatted(side.MainIsHero ? WhichUnitPrompt : WhichHeroPrompt);
+            }
+            else
+            {
+                if (UiButton.Back($"Back##armies-{id}")) picker.BackToArmies();
+                ImGui.SameLine();
+                ImGui.TextUnformatted(army.Name);
+            }
             ImGui.Separator();
 
             DrawFilter(picker, id);
-            foreach (RosterUnit unit in UnitPicker.MatchingUnits(army, picker.Filter))
+            foreach (RosterUnit unit in UnitPicker.MatchingUnits(army, picker.Filter, picker.Roles))
             {
                 if (ImGui.Selectable($"{unit.Name}##unit-{id}-{unit.Id}"))
                 {
-                    side.SetUnit(army, unit.Id);
+                    if (picker.JoinMode) side.SetJoin(unit.Id);
+                    else side.SetUnit(army, unit.Id);
                     picker.Close();
                 }
                 ImGui.Indent();
