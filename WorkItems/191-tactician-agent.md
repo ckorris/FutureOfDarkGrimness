@@ -23,6 +23,33 @@ campaigns re-base.)*
 
 ## Notes (newest first)
 
+**2026-09-07 (19:30, Fable 5.1) - REGENERATION DONE: 5,000 NET-LEAF B-PLAY GAMES, 0 FAULTS. ITERATION-2 RETRAIN
++ RE-SLICE RUNNING.**
+
+`FdgLab/data/2026-09-07-v3-bplay-net`: 25 files, seeds 500000-504999, every game line `evaluator=serving-full-
+weights.json`, `search_budget=benchmark`; ~3,260 rows per 200-game file (~81k rows), ~45 min per batch at dop 6
+(265 games/h, 18.5 h wall). Stopped at the batch boundary 19:25 after draining.
+
+*A caution from the data, NOT a result.* Half the games are net-Strategist vs Tactician across the 20 training
+pairings; at 3,800 games the net Strategist scored 66.8 / 63.0 / 59.8 / 65.8 at 1k/2k/3k/4k and 55.4 in 2v2
+(61.8 pooled, n=1,721). The hand Strategist's B-gate PANEL numbers on these panels were 73/72/84 at 1k/3k/4k.
+Not paired (older engine, sampler draws rather than side-swapped seeds, no hand arm in this run), so it does
+not overturn the slice, but it is the first hint the net's gain may not be uniform across levels. Step 16's
+panels are the proper measurement; this line exists so nobody reads the 4-pair slice as the whole story.
+
+*Chain launched 19:25 (`scratchpad/retrain-v2.sh`, log `retrain-v2.log`):* load v3 + bplay-net into
+`v3-plus-bnet.parquet` -> `train.py --balance-sources --tag serving-v2 --export` (B-play rows weighted to equal
+total weight; report now slices by source) + a pairing-split fit -> C# parity on `serving-v2-{weights,parity}`
+-> `c4-slice.sh ... benchmark 48 net2` into the screen's directory -> combined hand/net/blend/net2 table
+(`summary-iter2.md`). net2 alone is re-run: hand/net/blend already have benchmark cells on these seeds from a
+quiet box, and wall-clock search means a re-run would not reproduce them bit-for-bit anyway.
+
+*Also today:* Chris asked for a merge-to-master prompt for another instance plus an `FDG_STRATEGIST_WEIGHTS`
+dev-only override so the lobby Strategist can load the net; `serving-full-weights.json` was sent to him directly
+(the models dir is gitignored by design - step 14 policy). Chris's 15b question - replace the Strategist's leaf
+vs a new lobby bot - my recommendation is REPLACE (hand leaf stays lab-reachable as the C-gate baseline); no
+decision recorded yet.
+
 **2026-09-07 (00:10, Fable 5.1) - C4 CONFIRM AT THE INTERACTIVE BUDGET: THE NET LEAF HOLDS. +6.0 POOLED, AHEAD ON
 ALL FOUR PAIRS, 384 GAMES, 0 FAULTS. REGENERATION WITH THE NET LEAF IS RUNNING.**
 
